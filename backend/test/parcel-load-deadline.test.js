@@ -30,7 +30,8 @@ function loadApp({ ensureBounds, fallback = vi.fn(), timeoutMs = 10 } = {}) {
         ParcelsState: { setIsFetchingParcels: vi.fn() },
         updateStatus: vi.fn(),
         ParcelSourceSettings: { clearFailure: vi.fn() },
-        ParcelSourceInView: { latest: () => null }
+        ParcelSourceInView: { latest: () => null },
+        ParcelPreview: { show: vi.fn(), clear: vi.fn() }
     };
     vm.runInNewContext(fetchSource, {
         window, globalThis: window, AbortController, setTimeout, clearTimeout,
@@ -98,6 +99,19 @@ describe('parcel load deadlines', () => {
         await vi.advanceTimersByTimeAsync(40);
         await expect(pending).resolves.toMatchObject({ features: [] });
         expect(fallback).not.toHaveBeenCalled();
+    });
+
+    it('previewed parcels from a council import reach the preview layer, which is cleared once the view settles', async () => {
+        const features = [{ type: 'Feature', id: 'GB-HMLR-BROWSER-v1-1', properties: { id: 'GB-HMLR-BROWSER-v1-1', preview: true },
+            geometry: { type: 'Polygon', coordinates: [[[-1.9, 52.5], [-1.89, 52.5], [-1.89, 52.51], [-1.9, 52.5]]] } }];
+        const window = loadApp({ timeoutMs: 1000, ensureBounds: async (_bounds, { onProgress }) => {
+            onProgress({ phase: 'source-preview', authority: 'Birmingham City Council', features });
+            return { features: [] };
+        } });
+        await expect(window.fetchParcelData({})).resolves.toMatchObject({ features: [] });
+        expect(window.ParcelPreview.show).toHaveBeenCalledWith(features, expect.anything());
+        expect(window.ParcelPreview.clear).toHaveBeenCalledOnce();
+        expect(window.updateStatus).not.toHaveBeenCalledWith(expect.stringMatching(/undefined/), expect.anything());
     });
 
     it('propagates an external abort promptly without offering an outage fallback', async () => {

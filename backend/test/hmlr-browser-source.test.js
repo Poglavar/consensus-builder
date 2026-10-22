@@ -265,6 +265,45 @@ test('a download that stops delivering bytes is abandoned after the silence limi
     vi.useRealTimers();
 });
 
+test('councils a view needs download smallest first and in parallel, and parsed parcels under the view are previewed before the index completes', async () => {
+    const f = fixture();
+    const started = [], gate = { pending: [] };
+    let inFlight = 0, maxInFlight = 0;
+    const fetchImpl = async (url, options) => {
+        if (!f.endpoints.includes(url)) return f.fetchImpl(url, options);
+        const index = f.endpoints.indexOf(url);
+        started.push(index); inFlight++; maxInFlight = Math.max(maxInFlight, inFlight);
+        // Hold every archive until both have been requested, so a serial download could never finish.
+        await new Promise(resolve => { gate.pending.push(resolve); if (gate.pending.length === 2) gate.pending.splice(0).forEach(fn => fn()); });
+        inFlight--;
+        return f.fetchImpl(url, options);
+    };
+    const progress = [];
+    const [x, y] = proj4('EPSG:27700', 'EPSG:4326', [530812, 180212]);
+    const bounds = [x - 0.0003, y - 0.0002, x + 0.0003, y + 0.0002];
+    const result = await f.create({}, { fetchImpl, onProgress: detail => progress.push(detail) }).queryBounds(bounds);
+    const bySize = [0, 1].sort((a, b) => f.authorityData[a].bytes - f.authorityData[b].bytes);
+    assert.deepEqual(started, bySize);
+    assert.equal(maxInFlight, 2);
+    assert.deepEqual(result.features.map(item => item.id).sort(), [`${HMLR_BROWSER_GROUND_PREFIX}1001`, `${HMLR_BROWSER_GROUND_PREFIX}1002`]);
+    const previews = progress.filter(detail => detail.phase === 'source-preview');
+    assert.ok(previews.length >= 1, 'the import previews parcels under the waiting view');
+    const previewed = previews.flatMap(detail => detail.features);
+    assert.ok(previewed.some(feature => feature.id === `${HMLR_BROWSER_GROUND_PREFIX}1001`));
+    assert.ok(previewed.some(feature => feature.id === `${HMLR_BROWSER_GROUND_PREFIX}1002`));
+    for (const feature of previewed) {
+        assert.equal(feature.properties.preview, true);
+        assert.equal(feature.properties.sourceId, 'gb-hmlr-browser-v1');
+        const ring = feature.geometry.type === 'Polygon' ? feature.geometry.coordinates[0] : feature.geometry.coordinates[0][0];
+        const [lon, lat] = ring[0];
+        assert.ok(lon > -1 && lon < 1 && lat > 51 && lat < 52, `preview coordinates are public WGS84, got ${lon},${lat}`);
+    }
+    // Parcels far from the view (the South archive's distant rows) are not previewed.
+    assert.ok(!previewed.some(feature => feature.id === `${HMLR_BROWSER_GROUND_PREFIX}9001`));
+    // Previews precede the resolved answer and the index being ready.
+    assert.ok(progress.findIndex(detail => detail.phase === 'source-preview') < progress.findIndex(detail => detail.phase === 'source-prepare'));
+});
+
 test('archive request-budget exhaustion remains actionable instead of becoming provider unavailable', async () => {
     const f = fixture();
     const failure = Object.assign(new Error('Provider city probe reached its request limit'), { code: 'provider-probe-request-budget' });
@@ -396,7 +435,7 @@ test('missing, corrupt, unpinned, or incomplete land scopes fail before archive 
     assert.deepEqual(f.archiveCalls, [0, 1]);
 });
 
-test('cold authority archives load serially while same-authority work remains coalesced', async () => {
+test('cold authority archives download at most two at a time while indexing stays one council at a time', async () => {
     const f = fixture({ authorityCount: 4 });
     let activeArchives = 0, peakArchives = 0;
     const fetchImpl = async (url, options) => {
@@ -407,12 +446,20 @@ test('cold authority archives load serially while same-authority work remains co
         try { return await f.fetchImpl(url, options); }
         finally { activeArchives--; }
     };
-    const source = f.create({}, { fetchImpl });
+    const progress = [];
+    const source = f.create({}, { fetchImpl, onProgress: detail => progress.push(detail) });
     const center = proj4('EPSG:27700', 'EPSG:4326', [530820, 180210]);
     const result = await source.queryBounds([center[0] - 0.002, center[1] - 0.001, center[0] + 0.002, center[1] + 0.001]);
     assert.equal(result.complete, true);
     assert.deepEqual(f.archiveCalls.sort(), [0, 1, 2, 3]);
-    assert.equal(peakArchives, 1);
+    assert.equal(peakArchives, 2);
+    // A council starts decompressing only after the previous one reported its last parcel.
+    let indexing = null;
+    for (const detail of progress) {
+        if (detail.phase === 'source-decompress') { assert.equal(indexing, null, `${detail.authority} started while ${indexing} was indexing`); indexing = detail.authority; }
+        if (detail.phase === 'source-process' && detail.processedFeatures === detail.totalFeatures) indexing = null;
+    }
+    assert.equal(progress.filter(detail => detail.phase === 'source-decompress').length, 4);
 });
 
 test('ID shards resolve exact, suppressed, and truly absent IDs; missing catalog rows fail closed', async () => {

@@ -728,6 +728,9 @@
                     // a council import runs as long as it keeps reporting.
                     activity?.touch?.();
                     if (currentViewFetch !== view) return;
+                    // Parcels a council import has parsed under this view go to the map at once,
+                    // as a preview; the resolved ground replaces them when the load completes.
+                    if (detail?.phase === 'source-preview') { global.ParcelPreview?.show?.(detail.features, requestedBounds); return; }
                     const message = global.ParcelSourceProgress?.format(detail, {
                         language: global.i18n?.getLanguage?.() || 'en',
                         translate: (key, params) => global.i18n?.t?.(key, params)
@@ -788,6 +791,7 @@
                 currentViewFetch = null;
                 global._fetchParcelDataInProgress = false;
                 global.ParcelsState?.setIsFetchingParcels?.(false);
+                global.ParcelPreview?.clear?.();
             }
         }
     }

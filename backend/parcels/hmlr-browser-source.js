@@ -2,6 +2,7 @@
 import { bbox as geometryBbox, bboxPolygon, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import { hmlrRoutingProjection, hmlrRoutingBounds } from './hmlr-routing-projection.js';
 import { ensureOstn15 } from './osgb36-grid-loader.js';
+import { toWgs84 } from './osgb36-projection.js';
 import { HttpError } from '../utils/helpers.js';
 import { providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
 import { sha256Hex } from './portable-hash.js';
@@ -22,6 +23,11 @@ const MAX_QUERY_AUTHORITIES = 32;
 // longer on a phone. Download and local indexing each fail only after this much silence.
 const ARCHIVE_IDLE_MS = 60_000;
 const PARSE_IDLE_MS = 60_000;
+// Time to parcels on the ground matters more than a tidy sequence: council archives a view needs
+// download two at a time (smallest first), only indexing is serial, and every so many parsed
+// parcels the ones under a waiting view go to the map as a preview before the index is complete.
+const MAX_PARALLEL_DOWNLOADS = 2;
+const PREVIEW_BATCH_FEATURES = 10_000;
 // A superseded view's cancellations reach the worker just before the next view's queries, which
 // then need a moment (scope reads, the per-source query queue) to claim the archives they share.
 const ORPHANED_LOAD_GRACE_MS = 2000;
@@ -327,6 +333,17 @@ async function responseBytes(response, expectedBytes, limit, label, onBytes) {
     return bytes;
 }
 
+function projectCoordinates(coordinates) {
+    return typeof coordinates[0] === 'number' ? toWgs84(coordinates) : coordinates.map(projectCoordinates);
+}
+// A parsed title polygon as the map may draw it while its council is still importing: public
+// coordinates, no ownership fields, and marked so it is never mistaken for resolved ground.
+function previewFeature(nativeId, geometry) {
+    const id = `${ID_PREFIX}${nativeId}`;
+    return { type: 'Feature', id, properties: { id, parcelId: nativeId, preview: true, sourceId: HMLR_BROWSER_GROUND_SOURCE },
+        geometry: { type: geometry.type, coordinates: projectCoordinates(geometry.coordinates) } };
+}
+
 // Aborts after `idleMs` without a touch(); work that keeps producing bytes or features never times out.
 function idleWatchdog(idleMs, message) {
     const controller = new AbortController();
@@ -377,7 +394,21 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
     const authorityState = new Map(), authorityPending = new Map(), shardPending = new Map(), shardCache = new Map();
     const scopeCache = new Map(), scopePending = new Map();
     let manifestPromise, enginePromise;
-    let authorityLoadQueue = Promise.resolve();
+    // Downloads overlap up to the cap; indexing takes one council at a time, in download order.
+    let parseQueue = Promise.resolve(), downloadsInFlight = 0;
+    const downloadWaiters = [];
+    async function withDownloadSlot(run) {
+        if (downloadsInFlight >= MAX_PARALLEL_DOWNLOADS) await new Promise(resolve => downloadWaiters.push(resolve));
+        downloadsInFlight++;
+        try { return await run(); } finally { downloadsInFlight--; downloadWaiters.shift()?.(); }
+    }
+    function parseTurn(run) {
+        const turn = parseQueue.catch(() => {}).then(run);
+        parseQueue = turn.then(() => undefined, () => undefined);
+        return turn;
+    }
+    const previewing = typeof onProgress === 'function';
+    const smallestFirst = (manifest, indices) => [...indices].sort((a, b) => manifest.authorities[a].bytes - manifest.authorities[b].bytes || a - b);
     let lastProgress, lastProgressTime = -Infinity;
     function reportProgress(detail) {
         if (typeof onProgress !== 'function') return;
@@ -493,32 +524,30 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
     }
     // One load per authority serves every query that needs it. A query that passes a signal can
     // be cancelled; the load stops only once no query wants it. A running load nobody claims
-    // again within the grace period is aborted, and a queued one nobody wants is skipped.
+    // again within the grace period is aborted, and a queued one nobody wants is skipped. A query
+    // with a viewport registers it, and parcels parsed under it are previewed while it waits.
     function abandonAuthorityLoad(index, entry, reason) {
         clearTimeout(entry.graceTimer);
         if (authorityPending.get(index) === entry) authorityPending.delete(index);
         entry.controller.abort(reason ?? undefined);
     }
     const unwanted = entry => entry.interest === 0 && !entry.pinned;
-    async function loadAuthority(index, signal) {
+    async function loadAuthority(index, signal, previewBounds = []) {
         const manifest = await getManifest(), authority = manifest.authorities[index];
         if (!authority) throw upstreamError('HMLR ID directory references an unknown authority.');
         signal?.throwIfAborted();
         if (authorityState.has(index)) return authorityState.get(index);
         let entry = authorityPending.get(index);
         if (!entry) {
-            const created = { controller: new AbortController(), interest: 0, pinned: false, graceTimer: null, reason: null };
-            created.task = authorityLoadQueue.catch(() => {}).then(() => {
-                if (unwanted(created)) abandonAuthorityLoad(index, created, created.reason);
-                return runAuthorityLoad(manifest, authority, index, created.controller.signal);
-            });
-            authorityLoadQueue = created.task.then(() => undefined, () => undefined);
+            const created = { controller: new AbortController(), interest: 0, pinned: false, graceTimer: null, reason: null, previewBounds: [] };
+            created.task = Promise.resolve().then(() => runAuthorityLoad(manifest, authority, index, created));
             authorityPending.set(index, created);
             const settled = () => { clearTimeout(created.graceTimer); if (authorityPending.get(index) === created) authorityPending.delete(index); };
             created.task.then(settled, settled);
             entry = created;
         }
         clearTimeout(entry.graceTimer);
+        if (previewing) entry.previewBounds.push(...previewBounds);
         if (!signal) { entry.pinned = true; return entry.task; }
         entry.interest++;
         let counted = true;
@@ -535,8 +564,11 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
         try { return await untilCancelled(entry.task, signal); }
         finally { signal.removeEventListener('abort', cancel); leave(false); }
     }
-    async function runAuthorityLoad(manifest, authority, index, cancelSignal) {
-        cancelSignal.throwIfAborted();
+    async function runAuthorityLoad(manifest, authority, index, entry) {
+        const cancelSignal = entry.controller.signal;
+        // A load nobody wants any more is abandoned before each costly step, never started for nothing.
+        const unlessAbandoned = () => { if (unwanted(entry)) abandonAuthorityLoad(index, entry, entry.reason); cancelSignal.throwIfAborted(); };
+        unlessAbandoned();
         const load = async () => {
             let stored = await store.getAuthority(manifest.releaseId, index);
             if (stored?.ready && stored.archiveSha256 === authority.archiveSha256 && stored.featureCount === authority.featureCount
@@ -559,11 +591,18 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
             await store.setAuthority(manifest.releaseId, index, { ready: false, archiveSha256: authority.archiveSha256, featureCount: authority.featureCount });
             // Download and local parsing have separate silence budgets, never a total clock. A
             // completed download's watchdog is cleared before indexing starts.
-            const download = idleWatchdog(ARCHIVE_IDLE_MS, 'HMLR authority archive download stalled.');
-            let bytes;
-            try {
-                bytes = await getArchiveBytes(manifest, authority, AbortSignal.any([download.signal, cancelSignal]), cancelSignal, download.touch);
-            } finally { download.clear(); }
+            const bytes = await withDownloadSlot(async () => {
+                unlessAbandoned();
+                const download = idleWatchdog(ARCHIVE_IDLE_MS, 'HMLR authority archive download stalled.');
+                try {
+                    return await getArchiveBytes(manifest, authority, AbortSignal.any([download.signal, cancelSignal]), cancelSignal, download.touch);
+                } finally { download.clear(); }
+            });
+            return parseTurn(() => indexArchive(bytes));
+        };
+        const indexArchive = async bytes => {
+            unlessAbandoned();
+            if (previewing) await ensureOstn15();
             reportProgress({ phase: 'source-decompress', authority: authority.name });
             const parse = idleWatchdog(PARSE_IDLE_MS, 'HMLR authority archive processing stalled.');
             const signal = AbortSignal.any([parse.signal, cancelSignal]);
@@ -578,6 +617,11 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
                 const current = batch; batch = [];
                 const pending = store.putBatch(manifest.releaseId, index, current).catch(error => { writeFailure = error; });
                 pendingWrites.push(pending);
+            };
+            const preview = [];
+            const emitPreview = () => {
+                if (!preview.length) return;
+                reportProgress({ phase: 'source-preview', authority: authority.name, features: preview.splice(0) });
             };
             try {
                 const parsed = await parseGmlParcels(withBatchWriteBackpressure(
@@ -598,6 +642,8 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
                         const record = { nativeId, bboxWgs: bounds.bboxWgs, bboxNative: bounds.bboxNative, feature };
                         rows.push({ nativeId, bboxWgs: bounds.bboxWgs, bboxNative: bounds.bboxNative });
                         batch.push(record); if (batch.length >= 250) flush();
+                        if (previewing && entry.previewBounds.some(box => overlaps(bounds.bboxWgs, box))) preview.push(previewFeature(nativeId, feature.geometry));
+                        if (rows.length % PREVIEW_BATCH_FEATURES === 0) emitPreview();
                         // Decompression and parsing stream together; report actual accepted
                         // features, without inventing a separate completed unpacking phase.
                         if (rows.length === 1 || rows.length % 250 === 0 || rows.length === authority.featureCount) {
@@ -607,6 +653,7 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
                     }
                 });
                 flush(); await drainWrites();
+                emitPreview();
                 if (parsed.sourceCrs !== 'EPSG:27700' || parsed.featureCount !== authority.featureCount
                     || parsed.numberMatched !== authority.featureCount || parsed.numberReturned !== authority.featureCount
                     || parsed.sourceTimestamp?.slice(0, 10) !== manifest.sourceDate || rows.length !== authority.featureCount) {
@@ -700,9 +747,9 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
     async function resolveCandidates(manifest, candidates, signal) {
         if (!candidates.length) return { features: [], suppressedIds: [] };
         if (candidates.length > MAX_QUERY_FEATURES) throw upstreamError('HMLR browser query exceeds the parcel limit; use a smaller viewport.', 413);
-        const boxes = candidates.map(item => item.bboxWgs), needed = await authoritiesForParcels(manifest, candidates);
+        const boxes = candidates.map(item => item.bboxWgs), needed = smallestFirst(manifest, await authoritiesForParcels(manifest, candidates));
         if (needed.length > MAX_QUERY_AUTHORITIES) throw upstreamError('HMLR overlap context spans too many authority archives; use a smaller query.', 413);
-        await Promise.all(needed.map(index => loadAuthority(index, signal)));
+        await Promise.all(needed.map(index => loadAuthority(index, signal, boxes)));
         reportProgress({ phase: 'source-prepare' });
         const fullIndexes = needed.map(index => [index, authorityState.get(index)]);
         const contextRows = rowsMatching(fullIndexes, boxes), context = [];
@@ -725,11 +772,15 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
     }
     async function queryBounds(bounds, { signal } = {}) {
         validateBounds(bounds, descriptor.maxBboxKm2 ?? 25, descriptor);
-        await ensureOstn15();
-        const routingBounds = hmlrRoutingBounds(bounds);
-        const manifest = await getManifest(), viewport = bboxPolygon(bounds), initial = await authoritiesForBounds(manifest, [routingBounds]);
+        // The grid asset and the release manifest download together; routing the view to its
+        // councils needs both, so neither waits for the other.
+        const grid = ensureOstn15();
+        const manifest = await getManifest();
+        await grid;
+        const routingBounds = hmlrRoutingBounds(bounds), viewport = bboxPolygon(bounds);
+        const initial = smallestFirst(manifest, await authoritiesForBounds(manifest, [routingBounds]));
         if (initial.length > MAX_QUERY_AUTHORITIES) throw upstreamError('HMLR viewport spans too many authority archives; use a smaller query.', 413);
-        await Promise.all(initial.map(index => loadAuthority(index, signal)));
+        await Promise.all(initial.map(index => loadAuthority(index, signal, [bounds])));
         reportProgress({ phase: 'source-prepare' });
         const loaded = initial.map(index => [index, authorityState.get(index)]);
         const candidateRows = rowsMatching(loaded, [routingBounds]);
@@ -779,7 +830,7 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
         if (authorities.size > MAX_QUERY_AUTHORITIES || declaredReferences > MAX_QUERY_FEATURES) {
             throw upstreamError('HMLR ID lookup spans too many authority parcels; use fewer IDs.', 413);
         }
-        await Promise.all([...authorities].map(index => loadAuthority(index, signal)));
+        await Promise.all(smallestFirst(manifest, authorities).map(index => loadAuthority(index, signal)));
         reportProgress({ phase: 'source-prepare' });
         const targetRows = [];
         for (const [nativeId, indices] of declared) {

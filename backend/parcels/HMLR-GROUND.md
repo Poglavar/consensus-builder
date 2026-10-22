@@ -62,6 +62,15 @@ nothing for the limit is abandoned. Birmingham (46.6 MB, 347,719 parcels) measur
 about 30 s of download and 205 s of indexing on a loaded laptop in 2026-10; its default
 view then also needs neighbouring Sandwell.
 
+Time to parcels on the ground is the metric. The councils a view needs download
+smallest first and two at a time; only indexing is serial, in download order. The
+OSTN15 grid asset downloads alongside the release metadata and archives rather
+than before them. While a council indexes, every 10,000 parsed parcels (and at the
+end) the parcels under a waiting view go to the map as a preview (`source-preview`
+progress, drawn by `frontend/js/parcels/preview-layer.js` in its own pane, dashed,
+not interactive). A preview is a raw title polygon in public coordinates, never
+resolved ground; the resolved parcels replace it when the view's load settles.
+
 The map requests 0.001-degree grid cells, but HMLR cities fetch the cells a view
 needs in aligned 5x5 blocks: one adapter query per block, answered to each cell by
 parcel extent (`frontend/js/parcels/fetch.js`, `CELL_BLOCK_SIDE_BY_SOURCE`). Per cell,

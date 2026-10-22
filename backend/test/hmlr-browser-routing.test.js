@@ -173,18 +173,21 @@ describe('cancelled HMLR queries', () => {
         expect(f.archiveCalls).toEqual([0]);
     });
 
-    it('a queued council load that nobody wants any more never starts', async () => {
-        const g = gates(), f = fixture(twoCouncils, { archiveGate: g.gate }), source = f.create();
+    it('a council load still waiting for a download slot that nobody wants any more never starts', async () => {
+        // Two downloads may run at once; a third council queues behind them.
+        const threeCouncils = [...twoCouncils, [['3001', square(532500, 180205, 10)]]];
+        const g = gates(), f = fixture(threeCouncils, { archiveGate: g.gate }), source = f.create();
         const first = source.queryBounds(around(QUERY), { signal: new AbortController().signal });
-        while (!g.started(0)) await wait();
+        const second = source.queryBounds(around([531505, 180210]), { signal: new AbortController().signal });
+        while (!g.started(0) || !g.started(1)) await wait();
         const stale = new AbortController();
-        const queued = source.queryBounds(around([531505, 180210]), { signal: stale.signal });
+        const queued = source.queryBounds(around([532505, 180210]), { signal: stale.signal });
         await wait();
         stale.abort();
         await expect(queued).rejects.toMatchObject({ name: 'AbortError' });
-        g.release(0);
-        await first;
+        g.release(0); g.release(1);
+        await first; await second;
         await wait();
-        expect(f.archiveCalls).toEqual([0]);
+        expect([...f.archiveCalls].sort()).toEqual([0, 1]);
     });
 });

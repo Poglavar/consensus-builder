@@ -127,6 +127,10 @@ body:has(.info-panel.right-dock-panel.visible) .leaflet-control-scale {
 
 
 
+/* Parcels previewed while a council archive imports (js/parcels/preview-layer.js): a dashed outline
+   under the real parcel vectors, never clickable; the layer clears itself when the view's load settles. */
+.leaflet-parcelPreview-pane { z-index: var(--cb-z-map-pane-parcel-preview); pointer-events: none; }
+
 /* Cadastre view (claims model, rethink-proposals.md §13): the original cadastral parcels are the
    only interactive citizens; every proposal layer dims to context. The clone pane and the base
    tiles stay full-strength. Leaflet strips the 'Pane' suffix when naming pane classes, so the
