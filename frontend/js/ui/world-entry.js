@@ -187,7 +187,7 @@
         if (state.opening) return state.opening;
         state.focus = focus;
         try { if (global.MapShell && typeof global.MapShell.closeSheets === 'function') global.MapShell.closeSheets(); } catch (_) { /* no sheet open */ }
-        try { if (global.ParcelMenu && typeof global.ParcelMenu.close === 'function') global.ParcelMenu.close(); } catch (_) { /* no menu */ }
+        global.ClickStack?.close();
         const map = global.map;
         let initialView;
         if (focus) initialView = { lat: focus.lat, lon: focus.lon };

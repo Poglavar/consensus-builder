@@ -2038,7 +2038,7 @@ function clearMapSelectionsForDrawing() {
     try { if (typeof hideProposalDetailsPanel === 'function') hideProposalDetailsPanel(true); } catch (_) { }
     try { if (typeof clearProposalHighlights === 'function') clearProposalHighlights(); } catch (_) { }
     try { window.ProposalSelection?.clear?.(); } catch (_) { }
-    try { window.__drillUi?.hidePanel?.(); } catch (_) { }
+    try { window.ClickStack?.close(); } catch (_) { }
 
     // The single-parcel selection: its style, the state the rest of the app reads, its panel.
     try {

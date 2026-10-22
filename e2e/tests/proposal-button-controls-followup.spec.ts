@@ -1,4 +1,4 @@
-// Verify the walk gate's publish actions and the drill-stack dialog actions.
+// Verify the walk gate's publish actions and the click stack's instance strips.
 import { test, expect } from '../helpers/fixtures';
 import { clickMapPoint, openCity, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
@@ -63,7 +63,7 @@ test.describe('proposal button controls follow-up @features', () => {
     expect(new Set(published.map(entry => entry.mark))).toEqual(new Set(index.designs.keys()));
   });
 
-  test('drill stack lets the user switch base parcel and proposal, then close the stack', async ({ mockApi: page }) => {
+  test('click stack strips switch the cadastral parcel and the design, then the stack closes', async ({ mockApi: page }) => {
     await openCity(page);
     await establishLocalProfile(page);
     await page.evaluate(async parcelId => {
@@ -71,9 +71,8 @@ test.describe('proposal button controls follow-up @features', () => {
     }, SECOND_PARCEL_ID);
     await page.evaluate(({ parcelIds, geometry }) => {
       const storage = (window as any).proposalStorage;
-      // Both proposals cover either base parcel. The drill stack is re-evaluated when the
-      // selected parcel changes, so a footprint limited to the first parcel would disappear
-      // before the user can select the proposal row.
+      // Both proposals stand on both base parcels, so the click stack lists two designs and the
+      // two cadastral parcels under them, each as a strip of chips.
       const footprint = {
         type: 'MultiPolygon',
         coordinates: [geometry.coordinates, (window as any).CadastralParcelRepository.get(parcelIds[1]).geometry.coordinates],
@@ -94,22 +93,28 @@ test.describe('proposal button controls follow-up @features', () => {
     }, { parcelIds: [PARCEL_ID, SECOND_PARCEL_ID], geometry: PARCEL_GEOMETRY });
     await clickMapPoint(page, 15.9822, 45.80025);
 
-    const stack = page.locator('#drill-stack-panel');
+    const stack = page.locator('#click-stack');
     await expect(stack).toBeVisible();
-    const parcelRows = stack.locator('.drill-stack-parcel-btn');
-    await expect(parcelRows).toHaveCount(2);
-    await parcelRows.nth(1).click();
-    await expect(parcelRows.nth(1)).toHaveAttribute('aria-pressed', 'true');
+    const parcels = stack.locator('.click-stack__section[data-kind="parcels"]');
+    const parcelChips = parcels.locator('.click-stack__chip');
+    await expect(parcelChips).toHaveCount(2);
+    await expect(parcelChips.nth(0)).toHaveAttribute('aria-pressed', 'true');
+    await parcelChips.nth(1).click();
+    await expect(parcelChips.nth(1)).toHaveAttribute('aria-pressed', 'true');
+    await expect(parcels.locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'true');
+    await expect(parcels.locator('#parcel-info-panel')).toBeVisible();
+    await expect(page.locator('#parcel-info-title')).toContainText(SECOND_PARCEL_ID);
 
-    // Opening the chosen base parcel dismisses the current stack. Click that parcel's authored
-    // footprint to open its own stack before choosing the proposal level.
-    await clickMapPoint(page, 15.9829, 45.80025);
-    await expect(stack).toBeVisible();
-    const proposalRow = stack.locator('.drill-stack-row[data-ref^="p:"]').first();
-    await expect(proposalRow).toBeVisible();
-    await proposalRow.click();
-    await expect(proposalRow).toHaveAttribute('aria-pressed', 'true');
-    await stack.getByRole('button', { name: 'Close', exact: true }).click();
+    // The designs' strip: choosing the other design expands the designs section on it.
+    const designs = stack.locator('.click-stack__section[data-kind="designs"]');
+    await expect(designs.locator('.click-stack__row-title')).toHaveText('Designs (2)');
+    const other = designs.locator('.click-stack__chip[aria-pressed="false"]');
+    const otherId = await other.getAttribute('data-id');
+    await other.click();
+    await expect(designs.locator(`.click-stack__chip[data-id="${otherId}"]`)).toHaveAttribute('aria-pressed', 'true');
+    await expect(designs.locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'true');
+    await expect(parcels.locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'false');
+    await stack.locator('.click-stack__close').click();
     await expect(stack).toBeHidden();
   });
 });

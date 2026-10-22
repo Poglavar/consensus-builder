@@ -385,8 +385,8 @@ test.describe('World navigation and open ground @features', () => {
     await openCity(page);
     await page.evaluate(() => (window as any).map.setView([45.8008, 15.9817], 18, { animate: false }));
     await clickMapPoint(page, 15.9817, 45.8008);
-    await expect(page.locator('#ground-menu')).toBeVisible();
-    await page.locator('#ground-menu [data-command="ground.drawSite"]').click();
+    await expect(page.locator('#click-stack .click-stack__section[data-kind="ground"]')).toBeVisible();
+    await page.locator('#click-stack [data-command="ground.drawSite"]').click();
     await expect(page.locator('#site-panel')).toBeVisible();
     await expect.poll(() => page.evaluate(() => (window as any).SiteTool.isActive())).toBe(true);
     await page.locator('#site-panel [data-site-action="cancel"]').first().click();

@@ -4,7 +4,8 @@
 // and which existed only on this machine.
 //
 // Since M3 the panel picks on the map through js/map-pick.js (MapPick 'share'): the map's own click
-// resolution hands the design it found to MapPick.pick, which hands it to the panel. That click path
+// resolution hands the design it found to MapPick.pick, which hands it to the panel (outside pick mode
+// the click goes to the click stack, click-stack.md). That click path
 // (parcels/ui/parcel-selection.js onParcelClick) and the panel's overlay style are executed here on
 // fakes; the panel's own wiring around them is read from source.
 
@@ -36,15 +37,16 @@ const between = (from, to) => {
 function clickParcel({ picking = 'share', stack = [], onParcel = [] } = {}) {
     const pick = vi.fn(() => true);
     const stopPropagation = vi.fn();
-    // Without a picking surface the drill selects the topmost design (and the click ends there).
-    const handleParcelClick = vi.fn(() => ({ handled: true, selectedKind: 'proposal', selectedRef: 'p:building-1' }));
+    // Without a picking surface the click stack shows everything under the point.
+    const handleClick = vi.fn(() => true);
     const showParcelInfoPanel = vi.fn();
     const layer = { feature: { type: 'Feature', properties: { parcelId: 'HR-1' }, geometry: { type: 'Polygon', coordinates: [] } }, setStyle: vi.fn(), bringToFront: vi.fn() };
     const context = {
         console,
         document: { addEventListener: vi.fn(), getElementById: vi.fn(() => null), querySelector: vi.fn(() => null) },
         MapPick: { active: () => picking, pick },
-        __drillUi: { stackAt: vi.fn(() => stack), handleParcelClick },
+        __drillUi: { stackAt: vi.fn(() => stack) },
+        ClickStack: { handleClick },
         LiveParcelFabric: { get: id => (String(id) === 'HR-1' ? layer.feature : null) },
         ParcelPresenter: { getLayer: id => (String(id) === 'HR-1' ? layer : null), getIdForLayer: candidate => (candidate === layer ? 'HR-1' : null) },
         ParcelsUIParcelPanel: { showParcelInfoPanel },
@@ -60,7 +62,7 @@ function clickParcel({ picking = 'share', stack = [], onParcel = [] } = {}) {
     vm.runInNewContext(selection, context);
     const event = { target: layer, latlng: { lat: 45.8, lng: 15.97 }, originalEvent: { shiftKey: false } };
     context.onParcelClick(event);
-    return { pick, stopPropagation, handleParcelClick, showParcelInfoPanel, event, stackAt: context.__drillUi.stackAt };
+    return { pick, stopPropagation, handleClick, showParcelInfoPanel, event, stackAt: context.__drillUi.stackAt };
 }
 
 describe('a click on the map finds the row', () => {
@@ -74,7 +76,7 @@ describe('a click on the map finds the row', () => {
         expect(click.pick).toHaveBeenCalledWith('building-1', { parcelId: 'HR-1' });
         // Pan/zoom only: the click selects nothing and opens nothing of the fabric's own.
         expect(click.stopPropagation).toHaveBeenCalledWith(click.event);
-        expect(click.handleParcelClick).not.toHaveBeenCalled();
+        expect(click.handleClick).not.toHaveBeenCalled();
         expect(click.showParcelInfoPanel).not.toHaveBeenCalled();
     });
 
@@ -91,13 +93,13 @@ describe('a click on the map finds the row', () => {
         const click = clickParcel({ stack: [], onParcel: [] });
         expect(click.pick).not.toHaveBeenCalled();
         expect(click.stopPropagation).toHaveBeenCalledWith(click.event);
-        expect(click.handleParcelClick).not.toHaveBeenCalled();
+        expect(click.handleClick).not.toHaveBeenCalled();
     });
 
-    it('leaves the click to the fabric when no surface picks', () => {
+    it('leaves the click to the click stack when no surface picks', () => {
         const click = clickParcel({ picking: null, stack: [{ kind: 'proposal', key: 'building-1', proposal: building }] });
         expect(click.pick).not.toHaveBeenCalled();
-        expect(click.handleParcelClick).toHaveBeenCalledWith(click.event.latlng, 'HR-1');
+        expect(click.handleClick).toHaveBeenCalledWith(click.event.latlng);
     });
 
     it('the pick mode ends when the panel closes, and a late pick is ignored', () => {

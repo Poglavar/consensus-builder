@@ -518,7 +518,7 @@
     // parcel's panel and a design's panel make way.
     function makeWay(doc) {
         if (root.MapShell && typeof root.MapShell.closeSheets === 'function') root.MapShell.closeSheets();
-        if (root.ParcelMenu && typeof root.ParcelMenu.close === 'function') root.ParcelMenu.close();
+        root.ClickStack?.close();
         if (doc.getElementById('parcel-info-panel')?.classList.contains('visible') && typeof root.hideParcelInfoPanel === 'function') root.hideParcelInfoPanel();
         if (doc.getElementById('proposal-details-panel')?.classList.contains('visible') && typeof root.hideProposalDetailsPanel === 'function') root.hideProposalDetailsPanel(true);
     }

@@ -2004,13 +2004,6 @@
             "histogramSubtitle": "Ukupna vidljiva dužina puta agregirana po prosečnoj širini.",
             "segmentTitle": "Segmenti",
             "segmentSubtitle": "Sortirani po prosečnoj širini (opadajuće). Klikni da fokusiraš mapu."
-        },
-        "drill": {
-            "title": "Na ovom mestu",
-            "close": "Zatvori",
-            "baseParcel": "Katastarska parcela",
-            "slice": "Formirana parcela",
-            "baseParcelCount": "Katastarska parcela ({{count}})"
         }
     },
     "modal": {
@@ -7349,5 +7342,21 @@
         },
         "zoningArea": "Izvorno područje zoniranja",
         "inspectArea": "Pregledaj izvorno područje zoniranja {{parcel}}"
+    },
+    "clickStack": {
+        "title": "Na ovom mestu",
+        "agreements": "Sporazumi ({{count}})",
+        "designs": "Dizajni ({{count}})",
+        "builtMany": "Izgrađeno ({{count}})",
+        "formed": "Formirana parcela",
+        "formedBy": "Formirana dizajnom {{design}}",
+        "parcel": "Katastarska parcela",
+        "parcels": "Katastarske parcele ({{count}})",
+        "demolished": "Srušeno",
+        "demolishedBy": "Srušeno dizajnom {{design}}",
+        "showDesigns": "Prikaži njegove dizajne",
+        "inAgreements": "U sporazumima ({{count}})",
+        "copyCoordinates": "Kopiraj koordinate",
+        "copied": "Koordinate su kopirane"
     }
 }

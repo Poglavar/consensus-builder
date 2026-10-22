@@ -1,6 +1,8 @@
-// The parcel menu (frontend/js/ui/parcel-menu-model.js + its UiCommands entries) and the end of the
-// parcel click chain (frontend/js/parcels/ui/parcel-selection.js onParcelClick), which now opens the
-// menu at the click point instead of the parcel panel (UI-REWORK.md, "Parcel interaction").
+// The parcel menu's actions and facts (frontend/js/ui/parcel-menu-model.js + its UiCommands entries),
+// shown in the click stack's parcel section since the popover was removed (click-stack.md), and the
+// parcel click chain (frontend/js/parcels/ui/parcel-selection.js): onParcelClick keeps its gates and
+// hands an ordinary click to ClickStack.handleClick; selectParcelFromStack selects the parcel and
+// opens its panel when the stack's parcel section expands.
 import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
@@ -167,61 +169,6 @@ describe('parcel identity presentation', () => {
     });
 });
 
-describe('parcel menu placement', () => {
-    const viewport = { width: 1000, height: 700 };
-    const size = { width: 230, height: 300 };
-
-    it('opens right of and below the click point', () => {
-        expect(Model.placeMenuAtPoint({ x: 100, y: 100 }, size, viewport))
-            .toEqual({ left: 110, top: 110, flippedX: false, flippedY: false });
-    });
-
-    it('flips left near the right edge and up near the bottom edge', () => {
-        expect(Model.placeMenuAtPoint({ x: 900, y: 600 }, size, viewport))
-            .toEqual({ left: 660, top: 290, flippedX: true, flippedY: true });
-    });
-
-    it('stays inside a container smaller than it would like', () => {
-        const place = Model.placeMenuAtPoint({ x: 150, y: 120 }, size, { width: 300, height: 260 });
-        expect(place.left).toBeGreaterThanOrEqual(8);
-        expect(place.top).toBe(8);
-        expect(place.left + size.width).toBeLessThanOrEqual(300 - 8 + 0.5);
-    });
-});
-
-describe('parcel menu leaves the selected parcel visible', () => {
-    const size = { width: 230, height: 300 };
-    const viewport = { width: 1200, height: 900 };
-    const overlaps = (place, bounds) => place.left < bounds.right && place.left + size.width > bounds.left
-        && place.top < bounds.bottom && place.top + size.height > bounds.top;
-
-    it.each([
-        ['right', { x: 600, y: 400 }, { left: 400, right: 650, top: 300, bottom: 550 }],
-        ['left', { x: 1040, y: 400 }, { left: 950, right: 1150, top: 300, bottom: 550 }],
-        ['nearest left', { x: 410, y: 400 }, { left: 400, right: 650, top: 300, bottom: 550 }],
-        ['above', { x: 600, y: 420 }, { left: 150, right: 1050, top: 400, bottom: 800 }],
-        ['below', { x: 600, y: 470 }, { left: 150, right: 1050, top: 50, bottom: 500 }]
-    ])('uses clear space %s of the whole parcel', (side, point, parcelBounds) => {
-        const place = Model.placeMenuAtPoint(point, size, viewport, { parcelBounds });
-        expect(overlaps(place, parcelBounds)).toBe(false);
-        expect(place.left).toBeGreaterThanOrEqual(8);
-        expect(place.top).toBeGreaterThanOrEqual(8);
-        expect(place.left + size.width).toBeLessThanOrEqual(viewport.width - 8);
-        expect(place.top + size.height).toBeLessThanOrEqual(viewport.height - 8);
-        if (side.includes('left')) expect(place.left + size.width).toBeLessThanOrEqual(parcelBounds.left - 10);
-        if (side === 'right') expect(place.left).toBeGreaterThanOrEqual(parcelBounds.right + 10);
-        if (side === 'above') expect(place.top + size.height).toBeLessThanOrEqual(parcelBounds.top - 10);
-        if (side === 'below') expect(place.top).toBeGreaterThanOrEqual(parcelBounds.bottom + 10);
-    });
-
-    it('allows overlap when the parcel leaves no room for the menu', () => {
-        const point = { x: 600, y: 400 };
-        const parcelBounds = { left: 20, right: 1180, top: 20, bottom: 880 };
-        expect(Model.placeMenuAtPoint(point, size, viewport, { parcelBounds }))
-            .toEqual(Model.placeMenuAtPoint(point, size, viewport));
-    });
-});
-
 describe('parcel menu and selection tray commands', () => {
     const ctx = (extra = {}) => ({ global: {}, isControlAvailable: () => true, ...extra });
 
@@ -231,9 +178,13 @@ describe('parcel menu and selection tray commands', () => {
         expect(UiCommands.commandsFor('parcel-menu', ctx())).toEqual([]);
     });
 
-    it('lists the parcel menu in menu order, following the model', () => {
-        expect(UiCommands.commandsFor('parcel-menu', ctx({ parcel: baseFacts({ isRoad: true, can3d: false }) })).map(c => c.id))
-            .toEqual(['parcel.propose', 'parcel.selectMore', 'parcel.details', 'parcel.proposals', 'parcel.history', 'parcel.tools']);
+    it('shows in the parcel section only what the hosted parcel panel does not offer; the rest stays in the palette', () => {
+        const parcel = baseFacts({ compareCount: 2, siteToolAvailable: true });
+        expect(UiCommands.commandsFor('parcel-menu', ctx({ parcel })).map(c => c.id))
+            .toEqual(['parcel.compare', 'parcel.useAsSite']);
+        expect(UiCommands.commandsFor('parcel-menu', ctx({ parcel: baseFacts({ isRoad: true, can3d: false }) }))).toEqual([]);
+        expect(UiCommands.commandsFor('palette', ctx({ parcel })).map(c => c.id)).toEqual(expect.arrayContaining([
+            'parcel.propose', 'parcel.selectMore', 'parcel.details', 'parcel.proposals', 'parcel.history', 'parcel.tools', 'parcel.detectBlock']));
         // The same commands appear in the palette once a parcel is in hand.
         expect(UiCommands.commandsFor('palette', ctx({ parcel: baseFacts() })).map(c => c.id)).not.toContain('parcel.view3d');
     });
@@ -282,10 +233,10 @@ describe('parcel menu and selection tray commands', () => {
     });
 });
 
-// Characterization of the end of onParcelClick: a fake page around the real function, every
-// collaborator a spy, asserting what it calls and what state it leaves.
-function loadClickChain({ multiActive = false, panelOpen = false, appliedProposal = null } = {}) {
-    const panelClasses = new Set(panelOpen ? ['visible'] : []);
+// Characterization of onParcelClick and selectParcelFromStack: a fake page around the real
+// functions, every collaborator a spy, asserting what they call and what state they leave.
+function loadClickChain({ multiActive = false } = {}) {
+    const panelClasses = new Set();
     const parcelPanel = {
         classList: {
             contains: name => panelClasses.has(name),
@@ -296,13 +247,13 @@ function loadClickChain({ multiActive = false, panelOpen = false, appliedProposa
     const multi = {
         isActive: multiActive,
         selectedParcels: new Set(),
-        clearSelection: vi.fn(() => { panelClasses.delete('visible'); }), // its updateUI hides the panel
+        clearSelection: vi.fn(),
         clearSingleParcelSelection: vi.fn(),
         toggle: vi.fn(function () { this.isActive = !this.isActive; }),
         toggleParcel: vi.fn(() => true)
     };
     const showParcelInfoPanel = vi.fn(() => panelClasses.add('visible'));
-    const open = vi.fn();
+    const handleClick = vi.fn(() => true);
     const stopPropagation = vi.fn();
     const selectedParcelStyle = { color: 'blue', weight: 3 };
     const context = {
@@ -313,13 +264,12 @@ function loadClickChain({ multiActive = false, panelOpen = false, appliedProposa
             querySelector: () => null
         },
         ParcelsUIParcelPanel: { showParcelInfoPanel },
-        ParcelMenu: { open },
+        ClickStack: { handleClick },
         multiParcelSelection: multi,
         isRoadParcel: () => false,
         map: { hasLayer: () => false },
         selectedParcelStyle,
-        proposalStorage: { getProposalsForParcel: () => (appliedProposal ? [appliedProposal] : []) },
-        isProposalApplied: proposal => proposal === appliedProposal,
+        proposalStorage: { getProposalsForParcel: () => [] },
         selectAndHighlightProposal: vi.fn(),
         L: { DomEvent: { stopPropagation } }
     };
@@ -338,56 +288,71 @@ function loadClickChain({ multiActive = false, panelOpen = false, appliedProposa
         context.onParcelClick(event);
         return event;
     };
-    return { context, multi, layer, feature, open, showParcelInfoPanel, stopPropagation, selectedParcelStyle, panelClasses, click };
+    return { context, multi, layer, feature, handleClick, showParcelInfoPanel, stopPropagation, selectedParcelStyle, panelClasses, click };
 }
 
-describe('the parcel click chain ends in the parcel menu', () => {
-    it('opens the menu at the click point — not the panel — and selects the parcel as before', () => {
+describe('the parcel click chain ends in the click stack', () => {
+    it('hands an ordinary click to the click stack and selects nothing until its parcel section expands', () => {
         const h = loadClickChain();
         const event = h.click();
-        expect(h.open).toHaveBeenCalledOnce();
-        expect(h.open).toHaveBeenCalledWith({ parcelId: 'HR-335550-1234', feature: h.feature, layer: h.layer, latlng: event.latlng });
-        expect(h.showParcelInfoPanel).not.toHaveBeenCalled();
-        expect(h.panelClasses.has('visible')).toBe(false);
-        expect(h.context.selectedParcelId).toBe('HR-335550-1234');
-        expect(h.context.currentParcel).toEqual({ id: 'HR-335550-1234', layer: h.layer, isRoad: false });
-        expect(h.layer.setStyle).toHaveBeenCalledWith(h.selectedParcelStyle);
-        expect(h.multi.clearSelection).toHaveBeenCalledOnce();
+        expect(h.handleClick).toHaveBeenCalledOnce();
+        expect(h.handleClick).toHaveBeenCalledWith(event.latlng);
         expect(h.stopPropagation).toHaveBeenCalledWith(event);
+        expect(h.showParcelInfoPanel).not.toHaveBeenCalled();
+        expect(h.context.selectedParcelId).toBeUndefined();
+        expect(h.layer.setStyle).not.toHaveBeenCalled();
+        expect(h.multi.clearSelection).toHaveBeenCalledOnce();
+        // An applied proposal on the parcel is the stack's Designs section now, not a second selection.
+        expect(h.context.selectAndHighlightProposal).not.toHaveBeenCalled();
     });
 
-    it('toggles the parcel in multi-select without opening the menu', () => {
+    it('toggles the parcel in multi-select without the click stack', () => {
         const h = loadClickChain({ multiActive: true });
         h.click();
         expect(h.multi.toggleParcel).toHaveBeenCalledWith(h.layer);
-        expect(h.open).not.toHaveBeenCalled();
+        expect(h.handleClick).not.toHaveBeenCalled();
         expect(h.context.selectedParcelId).toBeUndefined();
     });
 
-    it('enters multi-select on Shift+click, seeded with the current parcel, without the menu', () => {
+    it('enters multi-select on Shift+click, seeded with the current parcel, without the click stack', () => {
         const h = loadClickChain();
         h.click(true);
         expect(h.multi.toggle).toHaveBeenCalledWith({ preserveSelectedParcel: true });
         expect(h.multi.toggleParcel).toHaveBeenCalledWith(h.layer);
-        expect(h.open).not.toHaveBeenCalled();
+        expect(h.handleClick).not.toHaveBeenCalled();
     });
 
-    it('keeps an already open parcel panel as the inspector and moves it to the clicked parcel', () => {
-        const h = loadClickChain({ panelOpen: true });
+    it('stays out of a tool that owns map clicks', () => {
+        const h = loadClickChain();
+        h.context.measureMode = true;
         h.click();
+        expect(h.handleClick).not.toHaveBeenCalled();
+        expect(h.stopPropagation).not.toHaveBeenCalled();
+    });
+
+    it('selects the parcel and opens its panel when the stack\'s parcel section expands', () => {
+        const h = loadClickChain();
+        expect(h.context.ParcelsUISelection.selectParcelFromStack('HR-335550-1234')).toBe(true);
+        expect(h.context.selectedParcelId).toBe('HR-335550-1234');
+        expect(h.context.currentParcel).toEqual({ id: 'HR-335550-1234', layer: h.layer, isRoad: false });
+        expect(h.layer.setStyle).toHaveBeenCalledWith(h.selectedParcelStyle);
+        expect(h.layer.bringToFront).toHaveBeenCalledOnce();
         expect(h.showParcelInfoPanel).toHaveBeenCalledWith(h.feature);
         expect(h.panelClasses.has('visible')).toBe(true);
-        expect(h.open).not.toHaveBeenCalled();
-        expect(h.context.selectedParcelId).toBe('HR-335550-1234');
+        // A parcel no longer on the map: nothing to select.
+        expect(h.context.ParcelsUISelection.selectParcelFromStack('gone')).toBe(false);
+        expect(h.showParcelInfoPanel).toHaveBeenCalledOnce();
     });
 
-    it('answers a parcel under an applied proposal with that proposal, as before', () => {
-        const applied = { proposalId: 'p-7' };
-        const h = loadClickChain({ appliedProposal: applied });
-        h.click();
-        expect(h.context.selectAndHighlightProposal).toHaveBeenCalledWith('p-7', 'HR-335550-1234', false, true);
-        expect(h.multi.clearSingleParcelSelection).toHaveBeenCalledOnce();
-        expect(h.open).not.toHaveBeenCalled();
+    it('restores the previously selected parcel\'s style when another one is selected from the stack', () => {
+        const h = loadClickChain();
+        const previous = { setStyle: vi.fn() };
+        h.context.selectedParcelId = 'HR-335550-9';
+        h.context.currentParcel = { id: 'HR-335550-9', layer: previous };
+        h.context.restoreParcelLayerStyle = vi.fn();
+        h.context.ParcelsUISelection.selectParcelFromStack('HR-335550-1234');
+        expect(h.context.restoreParcelLayerStyle).toHaveBeenCalledWith(previous);
+        expect(h.context.selectedParcelId).toBe('HR-335550-1234');
     });
 });
 

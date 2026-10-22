@@ -1,6 +1,6 @@
-// ui/parcel-menu-model.js — the pure half of the parcel menu (the popover a parcel click opens):
-// which actions apply to a parcel given what is known about it, the one-line facts it shows, and
-// where the popover goes relative to the parcel and click point. No DOM, no Leaflet; UMD so
+// ui/parcel-menu-model.js — the pure half of the parcel's actions (shown in the click stack's parcel
+// section, click-stack.md): which actions apply to a parcel given what is known about it, and the
+// one-line facts shown about it. No DOM, no Leaflet; UMD so
 // backend/test/frontend-parcel-menu.test.js loads it headlessly. The DOM half is ui/parcel-menu.js.
 (function (root, factory) {
     const api = factory();
@@ -166,50 +166,6 @@
         return parcelId === undefined || parcelId === null ? '' : String(parcelId);
     }
 
-    // Prefer a clear side of the whole parcel, nearest the click, then space above or below it.
-    // If the parcel fills the view, position from the click and allow overlap, clamped in view.
-    function placeMenuAtPoint(point, size, viewport, options = {}) {
-        const gap = typeof options.gap === 'number' ? options.gap : 10;
-        const margin = typeof options.margin === 'number' ? options.margin : 8;
-        const width = Math.max(0, size.width);
-        const height = Math.max(0, size.height);
-        const bounds = options.parcelBounds;
-        if (bounds && [bounds.left, bounds.top, bounds.right, bounds.bottom].every(Number.isFinite)
-            && bounds.right >= bounds.left && bounds.bottom >= bounds.top) {
-            const clampX = x => Math.max(margin, Math.min(x, viewport.width - margin - width));
-            const clampY = y => Math.max(margin, Math.min(y, viewport.height - margin - height));
-            const fits = candidate => candidate.left >= margin && candidate.top >= margin
-                && candidate.left + width <= viewport.width - margin
-                && candidate.top + height <= viewport.height - margin;
-            const sides = [
-                { left: bounds.right + gap, top: clampY(point.y - height / 2), distance: bounds.right - point.x, flippedX: false, flippedY: false },
-                { left: bounds.left - gap - width, top: clampY(point.y - height / 2), distance: point.x - bounds.left, flippedX: true, flippedY: false }
-            ];
-            const ends = [
-                { left: clampX(point.x - width / 2), top: bounds.bottom + gap, distance: bounds.bottom - point.y, flippedX: false, flippedY: false },
-                { left: clampX(point.x - width / 2), top: bounds.top - gap - height, distance: point.y - bounds.top, flippedX: false, flippedY: true }
-            ];
-            const nearest = candidates => candidates.filter(fits).sort((a, b) => a.distance - b.distance)[0];
-            const clear = nearest(sides) || nearest(ends);
-            if (clear) return { left: Math.round(clear.left), top: Math.round(clear.top), flippedX: clear.flippedX, flippedY: clear.flippedY };
-        }
-        let left = point.x + gap;
-        let top = point.y + gap;
-        let flippedX = false;
-        let flippedY = false;
-        if (left + width > viewport.width - margin) {
-            left = point.x - gap - width;
-            flippedX = true;
-        }
-        if (top + height > viewport.height - margin) {
-            top = point.y - gap - height;
-            flippedY = true;
-        }
-        left = Math.min(Math.max(margin, left), Math.max(margin, viewport.width - margin - width));
-        top = Math.min(Math.max(margin, top), Math.max(margin, viewport.height - margin - height));
-        return { left: Math.round(left), top: Math.round(top), flippedX, flippedY };
-    }
-
     return {
         ACTIONS,
         buildPaletteAvailable,
@@ -220,7 +176,6 @@
         ownershipFacts,
         parcelIdentityKind,
         parcelIdentityTitle,
-        displayParcelId,
-        placeMenuAtPoint
+        displayParcelId
     };
 });

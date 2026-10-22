@@ -691,7 +691,6 @@ function clearProposalOwnParcelInfo(expectedParcelIds = null) {
         window.currentParcelCoordinates = null;
     }
     document.getElementById('parcel-info-panel')?.classList.remove('visible');
-    try { window.__drillUi?.hideIfNothingSelected?.(); } catch (_) { }
     return true;
 }
 

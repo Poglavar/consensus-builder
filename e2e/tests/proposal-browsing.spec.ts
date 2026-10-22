@@ -1,6 +1,6 @@
 import { selectNativeOption } from '../helpers/controls';
 import { test, expect } from '../helpers/fixtures';
-import { clickMapPoint, openCity, openParcel, PARCEL_GEOMETRY, PARCEL_ID, proposalState, showProposal } from '../helpers/runtime';
+import { clickMapPoint, openCity, openParcel, PARCEL_GEOMETRY, PARCEL_ID, proposalState, showProposal, expandStackSection, runParcelCommand, stackCommand, stackSection } from '../helpers/runtime';
 
 const SOLANA_WALLET = '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT';
 const ANCHOR_ACCOUNT = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
@@ -156,16 +156,21 @@ test.describe('Proposal browsing @features', () => {
     }, { parcelId: PARCEL_ID, geometry: PARCEL_GEOMETRY });
     await clickMapPoint(page, 15.9822, 45.80025);
 
-    const stack = page.locator('#drill-stack-panel');
-    await expect(stack.locator('.drill-stack-compare')).toBeVisible();
-    await stack.locator('.drill-stack-compare').click();
+    // The click stack lists both designs; the cadastral parcel's section offers the comparison.
+    await expect(stackSection(page, 'designs').locator('.click-stack__row-title')).toHaveText('Designs (2)');
+    await expandStackSection(page, 'parcels');
+    const compare = stackCommand(page, 'parcel.compare');
+    await expect(compare).toBeVisible();
+    await compare.click();
     const comparison = page.locator('#parcel-compare-dialog');
     await expect(comparison).toBeVisible();
+    // The comparison is a modal of its own: the stack steps aside.
+    await expect(page.locator('#click-stack')).toBeHidden();
     await expect(comparison).toContainText('Compare park plan');
     await expect(comparison).toContainText('Compare square plan');
     await comparison.getByRole('button', { name: 'Close', exact: true }).click();
     await expect(comparison).toBeHidden();
-    await stack.locator('.drill-stack-compare').click();
+    await runParcelCommand(page, 15.9822, 45.80025, 'parcel.compare');
     await expect(comparison).toBeVisible();
     const selectedId = await comparison.locator('.parcel-compare__picker--a select').inputValue();
     await comparison.locator('.parcel-compare__picker--a .parcel-compare__details').click();

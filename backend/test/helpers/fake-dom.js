@@ -1,7 +1,8 @@
 // A small DOM for node tests of browser editors that build their UI from HTML templates: elements
 // with attributes, classList, dataset, style, children, events, innerHTML parsing and simple
-// querySelector(All) (tag, #id, .class, [attr], [attr="value"], compounds and comma lists — no
-// combinators: an unsupported selector throws, so a test cannot pass by matching nothing).
+// querySelector(All) (tag, #id, .class, [attr], [attr="value"], compounds, comma lists and the
+// descendant combinator; other combinators are unsupported and throw, so a test cannot pass by
+// matching nothing).
 
 const VOID_TAGS = new Set(['input', 'br', 'img', 'hr', 'meta', 'link', 'source', 'col', 'wbr']);
 const ENTITIES = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ' };
@@ -86,10 +87,41 @@ function compileCompound(selector) {
     return el => parts.every(test => test(el));
 }
 
+// Splits on whitespace outside [attribute] brackets and quotes: the compounds of a descendant chain.
+function splitDescendants(selector) {
+    const parts = [];
+    let current = '', depth = 0, quote = null;
+    for (const ch of selector) {
+        if (quote) { if (ch === quote) quote = null; current += ch; continue; }
+        if (ch === '"' || ch === "'") { quote = ch; current += ch; continue; }
+        if (ch === '[') depth += 1;
+        if (ch === ']') depth -= 1;
+        if (/\s/.test(ch) && depth === 0) { if (current) parts.push(current); current = ''; continue; }
+        current += ch;
+    }
+    if (current) parts.push(current);
+    if (parts.some(part => /^[>+~]$/.test(part))) throw new Error(`fake-dom: unsupported combinator in "${selector}"`);
+    return parts;
+}
+
+// "a b c": the element matches c and has ancestors matching b then a, nearest first.
+function compileChain(selector) {
+    const tests = splitDescendants(selector).map(compileCompound);
+    const last = tests.pop();
+    return el => {
+        if (!last(el)) return false;
+        let index = tests.length - 1;
+        for (let current = el.parentNode; current && index >= 0; current = current.parentNode) {
+            if (current.nodeType === 1 && tests[index](current)) index -= 1;
+        }
+        return index < 0;
+    };
+}
+
 function compile(selector) {
     const groups = String(selector).split(',').map(part => part.trim()).filter(Boolean);
     if (!groups.length) throw new Error('fake-dom: empty selector');
-    const tests = groups.map(compileCompound);
+    const tests = groups.map(compileChain);
     return el => tests.some(test => test(el));
 }
 
@@ -148,6 +180,13 @@ class FakeElement {
     get children() { return this.childNodes.filter(node => node.nodeType === 1); }
     get cells() { return this.children.filter(child => child.tagName === 'TD' || child.tagName === 'TH'); }
     get firstChild() { return this.childNodes[0] || null; }
+    get childElementCount() { return this.children.length; }
+    get nextSibling() {
+        if (!this.parentNode) return null;
+        const siblings = this.parentNode.childNodes;
+        return siblings[siblings.indexOf(this) + 1] || null;
+    }
+    get isConnected() { return !!(this.ownerDocument && this.ownerDocument.documentElement.contains(this)); }
 
     setAttribute(name, value) {
         const key = String(name).toLowerCase();
@@ -182,6 +221,15 @@ class FakeElement {
         if (node.parentNode) node.parentNode.removeChild(node);
         node.parentNode = this;
         this.childNodes.push(node);
+        return node;
+    }
+    insertBefore(node, reference) {
+        if (!reference) return this.appendChild(node);
+        if (node.parentNode) node.parentNode.removeChild(node);
+        const index = this.childNodes.indexOf(reference);
+        if (index < 0) throw new Error('fake-dom: insertBefore reference is not a child');
+        node.parentNode = this;
+        this.childNodes.splice(index, 0, node);
         return node;
     }
     append(...nodes) { nodes.forEach(node => this.appendChild(typeof node === 'string' ? new FakeText(node) : node)); }

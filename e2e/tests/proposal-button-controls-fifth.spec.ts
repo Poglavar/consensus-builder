@@ -40,9 +40,8 @@ async function openFreshProposalFromBlock(page: import('@playwright/test').Page)
     return { x: rect.left + point.x, y: rect.top + point.y };
   }, center);
   await page.mouse.click(screen.x, screen.y);
-  await expect(page.locator('#parcel-menu')).toBeVisible();
-  await page.locator('#parcel-menu').getByRole('menuitem', { name: 'Details', exact: true }).click();
-  await expect(page.locator('#parcel-info-panel')).toBeVisible();
+  // The click stack's parcel section opens on the parcel panel's Info tab.
+  await expect(page.locator('#click-stack .click-stack__section[data-kind="parcels"] #parcel-info-panel')).toBeVisible();
   await page.locator('#layers-button').click();
   const tools = page.locator('#layers-sheet details.layer-actions:has(> summary[data-i18n-key="mapShell.reorg.blockData"])');
   if (!(await tools.evaluate((element: HTMLDetailsElement) => element.open))) await tools.locator('> summary').click();

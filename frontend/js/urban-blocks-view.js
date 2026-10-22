@@ -432,8 +432,7 @@
 
     function closeOtherPanels() {
         win.MapShell?.closeSheets?.();
-        win.ParcelMenu?.close?.(); win.GroundMenu?.close?.();
-        win.hideParcelInfoPanel?.(); win.__drillUi?.hidePanel?.();
+        win.hideParcelInfoPanel?.(); win.ClickStack?.close();
     }
 
     function showBlock(feature) {

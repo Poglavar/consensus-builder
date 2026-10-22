@@ -397,7 +397,7 @@
         const defaults = state.candidates.map(c => keyOf(c.proposal)).filter(key => !wanted.includes(key));
         const picks = wanted.concat(defaults);
         state.picked = [picks[0] || null, picks.find(key => key !== picks[0]) || null];
-        if (global.ParcelMenu && typeof global.ParcelMenu.close === 'function') global.ParcelMenu.close();
+        global.ClickStack?.close();
         render();
         const dialog = ensureDialog();
         if (!dialog.open) dialog.showModal();

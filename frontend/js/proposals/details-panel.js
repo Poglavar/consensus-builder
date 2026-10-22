@@ -1370,9 +1370,6 @@ function hideProposalDetailsPanel(clearHighlights = false, { preserveCorridorSeg
         }
     } catch (_) { }
 
-    // The "At this spot" stack described this selection; with nothing selected it has nothing to
-    // describe. It stays put when a parcel is still selected underneath.
-    try { window.__drillUi?.hideIfNothingSelected?.(); } catch (_) { }
 }
 
 function getProposalDetailsPanelLabels() {

@@ -1,6 +1,6 @@
 // Purpose: verify runtime Leaflet controls by their user-visible map effect, including controls whose DOM is created by Leaflet rather than authored with source IDs.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, clickMapPoint, createSpace, showProposal, drawCorridor } from '../helpers/runtime';
+import { openCity, openParcel, clickMapPoint, createSpace, showProposal, drawCorridor, openParcelTabAt } from '../helpers/runtime';
 import type { Page } from '@playwright/test';
 
 async function clickEditorMapPoint(page: Page, xRatio: number, yRatio: number) {
@@ -59,9 +59,7 @@ test.describe('Leaflet runtime control effects @features', () => {
   test('clicking an applied transit station marker selects and opens its proposal', async ({ mockApi: page }) => {
     await openCity(page);
     await drawCorridor(page, 'road');
-    await clickMapPoint(page, 15.9822, 45.80045);
-    await expect(page.locator('#parcel-menu')).toBeVisible();
-    await page.locator('#parcel-menu').getByRole('menuitem', { name: 'Propose here', exact: true }).click();
+    await openParcelTabAt(page, 15.9822, 45.80045, 'propose-tab');
     await page.locator('#parcel-info-panel .parcel-transport-btn--bus').click();
     await clickMapPoint(page, 15.9822, 45.80025);
     const station = await page.evaluate(() => {

@@ -1193,7 +1193,7 @@
         // The agreement takes the right dock: the sheets, a parcel's panel and a design's panel make way.
         function makeWay() {
             if (win.MapShell && typeof win.MapShell.closeSheets === 'function') win.MapShell.closeSheets();
-            if (win.ParcelMenu && typeof win.ParcelMenu.close === 'function') win.ParcelMenu.close();
+            win.ClickStack?.close({ keepPanels: true });
             if (doc.getElementById('parcel-info-panel')?.classList.contains('visible') && typeof win.hideParcelInfoPanel === 'function') win.hideParcelInfoPanel();
             if (doc.getElementById('proposal-details-panel')?.classList.contains('visible') && typeof win.hideProposalDetailsPanel === 'function') win.hideProposalDetailsPanel(true);
         }

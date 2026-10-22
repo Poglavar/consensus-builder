@@ -13,15 +13,9 @@ test.describe('Parcel inspector @core', () => {
     await expect(page.locator('#info-content')).toContainText('Private owner');
     await expect(page.locator('#info-content')).not.toContainText('Privatni vlasnik');
     await page.locator('#parcel-info-panel .close-button').click();
+    await expect(page.locator('#parcel-info-panel')).toBeHidden();
     await page.evaluate(() => (window as any).i18n.setLanguage('hr'));
-    const center = await page.evaluate(id => {
-      const bounds = (window as any).ParcelPresenter.getLayer(id).getBounds();
-      const point = bounds.getCenter();
-      return { lng: point.lng, lat: point.lat };
-    }, PARCEL_ID);
-    await clickMapPoint(page, center.lng, center.lat);
-    await expect(page.locator('#parcel-menu')).toBeVisible();
-    await page.locator('#parcel-menu').getByRole('menuitem', { name: 'Detalji', exact: true }).click();
+    await openParcel(page);
     await expect(page.locator('#parcel-info-panel')).toBeVisible();
     await expect(page.locator('#info-content')).toContainText('Privatni vlasnik');
     await expect(page.locator('#info-content')).not.toContainText('Private owner');
@@ -60,7 +54,9 @@ test.describe('Parcel inspector @core', () => {
       || bottomRow!.y + bottomRow!.height <= credit!.y;
     expect(separatedFromBottomRowHorizontally || separatedFromBottomRowVertically).toBe(true);
   });
-  test('formed ground keeps its own identity in the menu and inspector', async ({ mockApi: page }) => {
+  // The click stack names formed ground in its non-expanding Formed section; its own inspector opens
+  // through the parcel commands' Details runner (ParcelMenu.runAction), the palette's path.
+  test('formed ground keeps its own identity in the inspector', async ({ mockApi: page }) => {
     await openCity(page);
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));
     const proposalId = await createSpace(page, 'park');
@@ -69,11 +65,9 @@ test.describe('Parcel inspector @core', () => {
       const feature = w.LiveParcelFabric.producedBy(proposalId)[0];
       if (!feature) throw new Error('Applied park produced no ground piece');
       w.hideProposalDetailsPanel();
-      w.ParcelMenu.open({ parcelId: feature.properties.parcelId, feature });
+      w.ParcelMenu.runAction('details', w.ParcelMenu.factsFor(feature.properties.parcelId, feature));
       return feature.properties.parcelId;
     }, proposalId);
-    await expect(page.locator('#parcel-menu .parcel-menu__title')).toHaveText(`Formed ground piece ${pieceId}`);
-    await page.locator('#parcel-menu').getByRole('menuitem', { name: 'Details', exact: true }).click();
     await expect(page.locator('#parcel-info-title')).toHaveText(`Formed ground piece ${pieceId}`);
     await expect(page.locator('#info-content [role="note"]')).toContainText('Ground formed by the applied proposals');
     await expect(page.locator('#parcel-info-title .parcel-title-id')).toHaveAttribute('aria-label', `Copy to clipboard: ${pieceId}`);

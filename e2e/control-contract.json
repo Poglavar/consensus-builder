@@ -3274,6 +3274,148 @@
       "controlType": "button"
     },
     {
+      "id": "control-bda2b1e4843e6b-1",
+      "source": "js/click-stack/click-stack-panel.js",
+      "markup": "doc.createElement('button')",
+      "variants": [
+        {
+          "name": "close",
+          "attrs": {
+            "data-action": "close"
+          }
+        },
+        {
+          "name": "row",
+          "attrs": {
+            "data-action": "row"
+          }
+        },
+        {
+          "name": "instance",
+          "attrs": {
+            "data-action": "instance"
+          }
+        },
+        {
+          "name": "openAgreement",
+          "attrs": {
+            "data-action": "open-agreement"
+          }
+        },
+        {
+          "name": "agreementDesigns",
+          "attrs": {
+            "data-action": "agreement-designs"
+          }
+        },
+        {
+          "name": "agreementDetails",
+          "attrs": {
+            "data-action": "agreement-details"
+          }
+        },
+        {
+          "name": "coords",
+          "attrs": {
+            "data-action": "coords"
+          }
+        },
+        {
+          "name": "parcelPropose",
+          "attrs": {
+            "data-command": "parcel.propose"
+          }
+        },
+        {
+          "name": "parcelSelectMore",
+          "attrs": {
+            "data-command": "parcel.selectMore"
+          }
+        },
+        {
+          "name": "parcelHistory",
+          "attrs": {
+            "data-command": "parcel.history"
+          }
+        },
+        {
+          "name": "parcelProposals",
+          "attrs": {
+            "data-command": "parcel.proposals"
+          }
+        },
+        {
+          "name": "parcelCompare",
+          "attrs": {
+            "data-command": "parcel.compare"
+          }
+        },
+        {
+          "name": "parcelTools",
+          "attrs": {
+            "data-command": "parcel.tools"
+          }
+        },
+        {
+          "name": "parcelDetectBlock",
+          "attrs": {
+            "data-command": "parcel.detectBlock"
+          }
+        },
+        {
+          "name": "parcelUseAsSite",
+          "attrs": {
+            "data-command": "parcel.useAsSite"
+          }
+        },
+        {
+          "name": "groundDrawSite",
+          "attrs": {
+            "data-command": "ground.drawSite"
+          }
+        },
+        {
+          "name": "groundRoad",
+          "attrs": {
+            "data-command": "ground.road"
+          }
+        },
+        {
+          "name": "groundTrack",
+          "attrs": {
+            "data-command": "ground.track"
+          }
+        },
+        {
+          "name": "groundBusStation",
+          "attrs": {
+            "data-command": "ground.busStation"
+          }
+        },
+        {
+          "name": "groundTramStation",
+          "attrs": {
+            "data-command": "ground.tramStation"
+          }
+        },
+        {
+          "name": "groundUndergroundStation",
+          "attrs": {
+            "data-command": "ground.undergroundStation"
+          }
+        },
+        {
+          "name": "groundElevatedStation",
+          "attrs": {
+            "data-command": "ground.elevatedStation"
+          }
+        }
+      ],
+      "exhaustiveVariants": true,
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-d7ec6e346dbca4-1",
       "source": "js/corridor-editor.js",
       "markup": "<button type=\"button\" class=\"btn corridor-fit-move\" data-shift=\"${fit.shift}\">",
@@ -6394,34 +6536,6 @@
       "controlType": "button"
     },
     {
-      "id": "control-cd24de0ddeaec2-1",
-      "source": "js/proposals/drill-ui.js",
-      "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-cd24de0ddeaec2-2",
-      "source": "js/proposals/drill-ui.js",
-      "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-cd24de0ddeaec2-3",
-      "source": "js/proposals/drill-ui.js",
-      "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-cd24de0ddeaec2-4",
-      "source": "js/proposals/drill-ui.js",
-      "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-5ea11b34e3cfd2-1",
       "source": "js/proposals/epoch.js",
       "markup": "<select class=\"proposal-epoch-card-select${trenutna === null ? ' is-empty' : ''}\"` + ` data-proposal-id=\"${esc(proposalId)}\" title=\"${esc(naslov)}\" aria-label=\"${esc(naslov)}\">",
@@ -7550,65 +7664,6 @@
       "controlType": "input"
     },
     {
-      "id": "control-85b60b5d92e9ef-1",
-      "source": "js/ui/ground-menu.js",
-      "markup": "<button type=\"button\" class=\"parcel-menu__close close-circle-btn\" data-ground-menu-close>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-483b17662ef892-1",
-      "source": "js/ui/ground-menu.js",
-      "markup": "doc.createElement('button')",
-      "variants": [
-        {
-          "name": "drawSite",
-          "attrs": {
-            "data-command": "ground.drawSite"
-          }
-        },
-        {
-          "name": "road",
-          "attrs": {
-            "data-command": "ground.road"
-          }
-        },
-        {
-          "name": "track",
-          "attrs": {
-            "data-command": "ground.track"
-          }
-        },
-        {
-          "name": "busStation",
-          "attrs": {
-            "data-command": "ground.busStation"
-          }
-        },
-        {
-          "name": "tramStation",
-          "attrs": {
-            "data-command": "ground.tramStation"
-          }
-        },
-        {
-          "name": "undergroundStation",
-          "attrs": {
-            "data-command": "ground.undergroundStation"
-          }
-        },
-        {
-          "name": "elevatedStation",
-          "attrs": {
-            "data-command": "ground.elevatedStation"
-          }
-        }
-      ],
-      "exhaustiveVariants": true,
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-238f8889bfb66b-1",
       "source": "js/ui/map-compare-control.js",
       "markup": "handle.setAttribute('role', 'slider')",
@@ -7650,83 +7705,6 @@
       "dispatchEvidence": "The shared map-search button factory creates the current-city chip, Search opener, and Clear control; each dispatches to world view, search presentation, and query/results reset respectively.",
       "interaction": "auto",
       "controlType": "dynamic"
-    },
-    {
-      "id": "control-0608e4c65fd44f-1",
-      "source": "js/ui/parcel-menu.js",
-      "markup": "<button type=\"button\" class=\"parcel-menu__close close-circle-btn\" data-parcel-menu-close>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-bd7c8c30fb095e-1",
-      "source": "js/ui/parcel-menu.js",
-      "markup": "doc.createElement('button')",
-      "variants": [
-        {
-          "name": "propose",
-          "attrs": {
-            "data-command": "parcel.propose"
-          }
-        },
-        {
-          "name": "selectMore",
-          "attrs": {
-            "data-command": "parcel.selectMore"
-          }
-        },
-        {
-          "name": "details",
-          "attrs": {
-            "data-command": "parcel.details"
-          }
-        },
-        {
-          "name": "history",
-          "attrs": {
-            "data-command": "parcel.history"
-          }
-        },
-        {
-          "name": "proposals",
-          "attrs": {
-            "data-command": "parcel.proposals"
-          }
-        },
-        {
-          "name": "compare",
-          "attrs": {
-            "data-command": "parcel.compare"
-          }
-        },
-        {
-          "name": "tools",
-          "attrs": {
-            "data-command": "parcel.tools"
-          }
-        },
-        {
-          "name": "offer",
-          "attrs": {
-            "data-command": "parcel.offer"
-          }
-        },
-        {
-          "name": "detectBlock",
-          "attrs": {
-            "data-command": "parcel.detectBlock"
-          }
-        },
-        {
-          "name": "useAsSite",
-          "attrs": {
-            "data-command": "parcel.useAsSite"
-          }
-        }
-      ],
-      "exhaustiveVariants": true,
-      "interaction": "click",
-      "controlType": "button"
     },
     {
       "id": "control-bb46d4f2373a89-1",

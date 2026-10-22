@@ -1,7 +1,7 @@
 // Verify the proposal comparison pickers through their visible effects.
 import { selectNativeOption } from '../helpers/controls';
 import { test, expect } from '../helpers/fixtures';
-import { clickMapPoint, openCity, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
+import { clickMapPoint, openCity, PARCEL_GEOMETRY, PARCEL_ID, runParcelCommand } from '../helpers/runtime';
 
 test('comparison pickers update both proposal geometries and their side-by-side details', async ({ mockApi: page }) => {
   await openCity(page);
@@ -19,9 +19,7 @@ test('comparison pickers update both proposal geometries and their side-by-side 
     ];
   }, { parcelId: PARCEL_ID, geometry: PARCEL_GEOMETRY });
 
-  await clickMapPoint(page, 15.9822, 45.80025);
-  await expect(page.locator('#parcel-menu')).toBeVisible();
-  await page.locator('#parcel-menu [data-command="parcel.compare"]').click();
+  await runParcelCommand(page, 15.9822, 45.80025, 'parcel.compare');
   const compare = page.locator('#parcel-compare-dialog');
   const pickerA = compare.locator('.parcel-compare__picker--a select');
   const pickerB = compare.locator('.parcel-compare__picker--b select');

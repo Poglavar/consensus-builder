@@ -95,8 +95,8 @@
                 // swallowed the event to select the proposal that was already being edited.
                 if (window.__mapEditLock?.isHeld()) return;
                 try { if (event && event.originalEvent) L.DomEvent.stop(event); } catch (_) { }
-                // The drill resolves the whole stack at the point (something may stand above
-                // this structure) and shows the chain; without it, select the structure itself.
+                // The click stack shows everything at the point (something may stand above this
+                // structure); without it, select the structure itself.
                 let drillHandled = false;
                 try {
                     if (window.__drillUi && event && event.latlng) {

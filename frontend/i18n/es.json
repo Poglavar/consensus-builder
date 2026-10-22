@@ -2009,13 +2009,6 @@
             "histogramSubtitle": "Longitud total visible agrupada por ancho promedio.",
             "segmentTitle": "Segmentos",
             "segmentSubtitle": "Ordenados por ancho promedio (descendente). Haz clic para enfocar el mapa."
-        },
-        "drill": {
-            "title": "En este punto",
-            "close": "Cerrar",
-            "baseParcel": "Parcela catastral",
-            "slice": "Parcela formada",
-            "baseParcelCount": "Parcela catastral ({{count}})"
         }
     },
     "modal": {
@@ -7325,5 +7318,21 @@
         },
         "zoningArea": "Área de zonificación de la fuente",
         "inspectArea": "Inspeccionar área de zonificación {{parcel}}"
+    },
+    "clickStack": {
+        "title": "En este punto",
+        "agreements": "Acuerdos ({{count}})",
+        "designs": "Diseños ({{count}})",
+        "builtMany": "Construido ({{count}})",
+        "formed": "Parcela formada",
+        "formedBy": "Formada por {{design}}",
+        "parcel": "Parcela catastral",
+        "parcels": "Parcelas catastrales ({{count}})",
+        "demolished": "Demolido",
+        "demolishedBy": "Demolido por {{design}}",
+        "showDesigns": "Mostrar sus diseños",
+        "inAgreements": "En acuerdos ({{count}})",
+        "copyCoordinates": "Copiar coordenadas",
+        "copied": "Coordenadas copiadas"
     }
 }

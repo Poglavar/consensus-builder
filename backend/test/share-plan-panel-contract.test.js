@@ -18,6 +18,7 @@ const mapEditLock = read('../../frontend/js/map-edit-lock.js');
 const parcelHover = read('../../frontend/js/parcels/selection.js');
 const parcelClick = read('../../frontend/js/parcels/ui/parcel-selection.js');
 const drillUi = read('../../frontend/js/proposals/drill-ui.js');
+const clickStackPanel = read('../../frontend/js/click-stack/click-stack-panel.js');
 const layerRender = read('../../frontend/js/proposals/layer-render.js');
 const listUi = read('../../frontend/js/proposals/list-ui.js');
 const proposalsCss = read('../../frontend/css/proposals.css');
@@ -183,13 +184,14 @@ describe('share plan panel contract', () => {
         // Parcel click (incl. applied designs under the click): handed to the picking surface.
         expect(sourceSection(parcelClick, 'function onParcelClick(e)', 'proposalListBrowseMode'))
             .toContain('if (global.MapPick?.active()) {');
-        // Drill: the fallback block list, and the direct structure/corridor surface entry, which hands
-        // the topmost design to the picking surface instead of selecting it.
+        // Drill: the fallback block list (its hover and background click). Structure and corridor
+        // clicks reach the click stack, whose pick-mode hand-off is executed in
+        // click-stack-panel.test.js ("a surface picking designs").
         expect(sourceSection(drillUi, 'function interactionBlocked()', 'let hoverPending'))
             .toContain('if (global.MapPick?.active()) return true;');
-        const surface = sourceSection(drillUi, 'function handleSurfaceClick(latlng)', 'const stack = stackAt(latlng);');
-        expect(surface).toContain('if (global.MapPick?.active()) {');
-        expect(surface).toContain('if (top) global.MapPick.pick(top.key);');
+        const stackClick = sourceSection(clickStackPanel, 'function handleClick(latlng)', 'const hits =');
+        expect(stackClick).toContain('if (global.MapPick?.active()) {');
+        expect(stackClick).toContain('if (top) global.MapPick.pick(top.key);');
         // The one funnel every proposal-opening surface goes through.
         expect(sourceSection(layerRender, 'function selectAndHighlightProposal(', 'const resolvedId'))
             .toContain('if (window.MapPick?.active()) return;');

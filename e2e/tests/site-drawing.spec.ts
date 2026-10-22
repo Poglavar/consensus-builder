@@ -1,12 +1,11 @@
 // Exercise site authoring and verify both dismiss controls discard only the temporary site.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, clickMapPoint } from '../helpers/runtime';
+import { openCity, openParcel, clickMapPoint, runParcelCommand } from '../helpers/runtime';
 
 test.describe('Site authoring @features', () => {
   test('a parcel becomes an editable site; redraw, undo, finish and build persist its authored geometry', async ({ mockApi: page }) => {
     await openCity(page);
-    await clickMapPoint(page, 15.9822, 45.80025);
-    await page.locator('#parcel-menu [data-command="parcel.useAsSite"]').click();
+    await runParcelCommand(page, 15.9822, 45.80025, 'parcel.useAsSite');
     await expect(page.locator('#site-panel')).toBeVisible();
     await expect(page.locator('.site-panel__area')).toContainText('m²');
     await page.locator('[data-site-action="redraw"]').click();
@@ -34,8 +33,7 @@ test.describe('Site authoring @features', () => {
 
   for (const close of ['.site-panel__close', '.site-panel__actions [data-site-action="cancel"]']) test(`site ${close} discards temporary geometry without creating a proposal`, async ({ mockApi: page }) => {
     await openCity(page);
-    await clickMapPoint(page, 15.9822, 45.80025);
-    await page.locator('#parcel-menu [data-command="parcel.useAsSite"]').click();
+    await runParcelCommand(page, 15.9822, 45.80025, 'parcel.useAsSite');
     await page.locator(`#site-panel ${close}`).click();
     await expect(page.locator('#site-panel')).toBeHidden();
     expect(await page.evaluate(() => (window as any).SiteTool.isActive())).toBe(false);

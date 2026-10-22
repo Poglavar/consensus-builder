@@ -413,13 +413,14 @@
     {
       "id": "parcel.propose",
       "specs": [
-        "tests/proposal-creation.spec.ts"
+        "tests/proposal-creation.spec.ts",
+        "tests/click-stack.spec.ts"
       ]
     },
     {
       "id": "parcel.selectMore",
       "specs": [
-        "tests/multi-parcel-selection.spec.ts"
+        "tests/menu-button-controls.spec.ts"
       ]
     },
     {
@@ -431,6 +432,7 @@
     {
       "id": "parcel.history",
       "specs": [
+        "tests/menu-button-controls.spec.ts",
         "tests/proposal-browsing.spec.ts"
       ]
     },
@@ -443,7 +445,8 @@
     {
       "id": "parcel.compare",
       "specs": [
-        "tests/proposal-browsing.spec.ts"
+        "tests/proposal-browsing.spec.ts",
+        "tests/menu-button-controls.spec.ts"
       ]
     },
     {
@@ -455,25 +458,28 @@
     {
       "id": "parcel.detectBlock",
       "specs": [
+        "tests/menu-button-controls.spec.ts",
         "tests/dataset-tools.spec.ts"
       ]
     },
     {
       "id": "parcel.useAsSite",
       "specs": [
-        "tests/site-drawing.spec.ts"
+        "tests/site-drawing.spec.ts",
+        "tests/editor-button-controls.spec.ts"
       ]
     },
     {
       "id": "ground.drawSite",
       "specs": [
-        "tests/context-actions.spec.ts"
+        "tests/world-and-ground.spec.ts",
+        "tests/site-palette-controls.spec.ts"
       ]
     },
     {
       "id": "ground.road",
       "specs": [
-        "tests/context-actions.spec.ts"
+        "tests/menu-button-controls.spec.ts"
       ]
     },
     {
@@ -491,19 +497,19 @@
     {
       "id": "ground.tramStation",
       "specs": [
-        "tests/context-actions.spec.ts"
+        "tests/menu-button-controls.spec.ts"
       ]
     },
     {
       "id": "ground.undergroundStation",
       "specs": [
-        "tests/context-actions.spec.ts"
+        "tests/menu-button-controls.spec.ts"
       ]
     },
     {
       "id": "ground.elevatedStation",
       "specs": [
-        "tests/context-actions.spec.ts"
+        "tests/menu-button-controls.spec.ts"
       ]
     },
     {
@@ -915,7 +921,7 @@
       ]
     },
     {
-      "feature": "on-map editor dock and collapse, nested road mode locks, mobile sheet stacking, parcel menu placement and empty-plan stats",
+      "feature": "on-map editor dock and collapse, nested road mode locks, mobile sheet stacking, click stack placement and empty-plan stats",
       "specs": [
         "tests/on-map-editor-shell.spec.ts",
         "tests/structure-placement.spec.ts"
@@ -925,6 +931,14 @@
       "feature": "explicit and system appearance choices update rendering and persist across reload",
       "specs": [
         "tests/theme-controls.spec.ts"
+      ]
+    },
+    {
+      "feature": "the click stack: one right-docked panel for everything under a 2D map click (agreements, designs, built, permitted, formed and cadastral parcels, bare ground), the parcel section hosting the parcel panel and its actions, a second click on the same spot or Escape closing it, another spot switching it, one expanded section remembered across clicks, and instance strips switching the agreement, design or cadastral parcel",
+      "specs": [
+        "tests/click-stack.spec.ts",
+        "tests/proposal-button-controls-followup.spec.ts",
+        "tests/context-actions.spec.ts"
       ]
     }
   ],

@@ -37,8 +37,7 @@ function makeHarness() {
             producedBy: vi.fn(() => Array.from(features.values())),
             get: vi.fn(id => features.get(String(id)) || null)
         },
-        Parcels: { uiParcelPanel: { showParcelInfoPanel } },
-        __drillUi: { hideIfNothingSelected: vi.fn() }
+        Parcels: { uiParcelPanel: { showParcelInfoPanel } }
     };
     const document = { getElementById: vi.fn(() => panel) };
     return { window, document, panel, features, showParcelInfoPanel };
@@ -67,7 +66,6 @@ describe('proposal-owned parcel panel lifecycle', () => {
         expect(harness.panel.visible).toBe(false);
         expect(harness.window.__proposalOwnParcelPanelId).toBeNull();
         expect(harness.window.currentlyHighlightedProposalId).toBe('lake-1');
-        expect(harness.window.__drillUi.hideIfNothingSelected).toHaveBeenCalledOnce();
     });
 
     it('does not close a parcel panel that a later direct map selection now owns', () => {
@@ -133,7 +131,7 @@ describe('closing the proposal card', () => {
 
     it('also closes the collapsed own-parcel companion panel', () => {
         // Left open, the companion turned the next parcel click into "move the open panel"
-        // instead of opening the parcel menu.
+        // instead of handing it to the click stack.
         const clearProposalOwnParcelInfo = vi.fn();
         const panel = { classList: { remove: vi.fn(), contains: vi.fn(() => false) } };
         const hide = loadHideProposalDetailsPanel({

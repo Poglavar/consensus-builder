@@ -92,6 +92,47 @@ export async function clickDesignOnMap(page: Page, id: string, at = { x: 0.3, y:
   await clickMapPoint(page, point.lng, point.lat);
 }
 
+// The click stack (click-stack.md): one right-docked panel for everything under a map click, a
+// section per kind of thing there. The parcel section hosts #parcel-info-panel and the parcel's
+// actions as [data-command="parcel.*"] buttons; bare ground's section carries [data-command="ground.*"].
+export const clickStack = (page: Page) => page.locator('#click-stack');
+export const stackSection = (page: Page, kind: string) => page.locator(`#click-stack .click-stack__section[data-kind="${kind}"]`);
+export const stackCommand = (page: Page, id: string) => page.locator(`#click-stack [data-command="${id}"]`);
+
+// Expands a section of the open stack unless it already is.
+export async function expandStackSection(page: Page, kind: string): Promise<void> {
+  const row = stackSection(page, kind).locator('.click-stack__row');
+  if (await row.getAttribute('aria-expanded') !== 'true') await row.click();
+  await expect(row).toHaveAttribute('aria-expanded', 'true');
+}
+
+// The hosted parcel panel's tab buttons (Info, Propose, Proposals, Tools). The parcel section shows
+// only the actions the panel does not offer (Compare, Use as site) as [data-command] buttons.
+export const parcelTab = (page: Page, tabId: string) => page.locator(`#parcel-info-panel [data-parcel-tab-id="${tabId}"]`);
+
+// A map click at a point whose stack holds a parcel, with the parcel section expanded.
+export async function openParcelAt(page: Page, lng: number, lat: number): Promise<void> {
+  await clickMapPoint(page, lng, lat);
+  await expect(clickStack(page)).toBeVisible();
+  await expandStackSection(page, 'parcels');
+  await expect(stackSection(page, 'parcels').locator('#parcel-info-panel')).toBeVisible();
+}
+
+// The parcel at a point, then one of the parcel section's actions.
+export async function runParcelCommand(page: Page, lng: number, lat: number, command: string): Promise<void> {
+  await openParcelAt(page, lng, lat);
+  await stackCommand(page, command).click();
+}
+
+// The parcel at a point, with its panel on one tab.
+export async function openParcelTabAt(page: Page, lng: number, lat: number, tabId: string): Promise<void> {
+  await openParcelAt(page, lng, lat);
+  await parcelTab(page, tabId).click();
+  await expect(page.locator(`#${tabId}`)).toBeVisible();
+}
+
+// Clicks the parcel's centre and brings up its section in the click stack, with the parcel panel on
+// `tab` (info is what the section shows; proposals opens its Propose tab, tools its Tools tab).
 export async function openParcel(page: Page, tab = 'info', id = PARCEL_ID): Promise<void> {
   const center = await page.evaluate(parcelId => {
     const w = window as any;
@@ -101,9 +142,17 @@ export async function openParcel(page: Page, tab = 'info', id = PARCEL_ID): Prom
     w.map.panTo(center, { animate: false });
     return { lng: center.lng, lat: center.lat };
   }, id);
+  // A second click on the same spot closes an open stack; start from a closed one.
+  if (await clickStack(page).isVisible()) {
+    await clickStack(page).locator('.click-stack__close').click();
+    await expect(clickStack(page)).toBeHidden();
+  }
   await clickMapPoint(page, center.lng, center.lat);
-  await expect(page.locator('#parcel-menu')).toBeVisible();
-  await page.locator('#parcel-menu').getByRole('menuitem', { name: tab === 'proposals' ? 'Propose here' : tab === 'tools' ? 'Tools' : 'Details', exact: true }).click();
+  await expect(clickStack(page)).toBeVisible();
+  await expandStackSection(page, 'parcels');
+  await expect(stackSection(page, 'parcels').locator('#parcel-info-panel')).toBeVisible();
+  if (tab === 'proposals') await parcelTab(page, 'propose-tab').click();
+  else if (tab === 'tools') await parcelTab(page, 'tools-tab').click();
   await expect(page.locator('#parcel-info-panel')).toBeVisible();
 }
 

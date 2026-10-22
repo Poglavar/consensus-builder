@@ -23,7 +23,7 @@ test.describe('Supporting tertiary controls @core', () => {
     await expect(banner).toHaveCount(0);
     expect(await isSecondary(secondary)).toBe(true);
 
-    // A real creation through the parcel menu attempts persistence. The secondary tab parks the
+    // A real creation through the click stack's parcel section attempts persistence. The secondary tab parks the
     // proposal for recovery, keeps it out of the primary tab's store, and restores the warning.
     const proposalId = await createSpace(secondary, 'park');
     await expect(banner).toBeVisible({ timeout: 5_000 });

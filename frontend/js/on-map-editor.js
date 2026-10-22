@@ -317,7 +317,7 @@
                 env.hideParcelInfoPanel?.();
                 env.clearParcelHover?.();
                 env.releaseEditorSeededMultiSelection?.();
-                env.__drillUi?.hidePanel?.();
+                env.ClickStack?.close();
                 env.MapShell?.closeSheet?.({ restoreFocus: false });
                 map.on('move zoom resize', positionTools);
                 map.on('move zoom resize', positionPopupPane);

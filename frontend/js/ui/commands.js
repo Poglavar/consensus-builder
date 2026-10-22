@@ -425,15 +425,19 @@
         { id: 'bets.open', group: 'bets', surfaces: ['palette'], run: callGlobal('openBetsSheet'),
             labelKey: 'mapShell.commands.openBets', fallbackLabel: 'Open bets', icon: 'fas fa-coins' },
 
-        // ---- Parcel menu (ui/parcel-menu.js), in menu order ----
-        parcelCommand('propose', { modes: ['2d'], labelKey: 'parcelMenu.actions.propose', fallbackLabel: 'Propose here', icon: 'fas fa-pen-ruler' }),
-        parcelCommand('selectMore', { labelKey: 'parcelMenu.actions.selectMore', fallbackLabel: 'Select more', icon: 'fas fa-object-group' }),
-        parcelCommand('details', { labelKey: 'parcelMenu.actions.details', fallbackLabel: 'Details', icon: 'fas fa-circle-info' }),
-        parcelCommand('proposals', { labelKey: 'panel.parcel.tabProposals', fallbackLabel: 'Proposals', icon: 'fas fa-layer-group' }),
-        parcelCommand('history', { labelKey: 'parcelMenu.actions.history', fallbackLabel: 'History', icon: 'fas fa-clock-rotate-left' }),
+        // ---- Parcel actions (ui/parcel-menu.js), in menu order ----
+        // The click stack's parcel section hosts the parcel panel, whose tabs (Info, Propose,
+        // Proposals, Tools) and Info-tab controls (Select multiple, Detect block, History) already
+        // offer these; they stay in the palette only (surfaces: []).
+        parcelCommand('propose', { surfaces: [], modes: ['2d'], labelKey: 'parcelMenu.actions.propose', fallbackLabel: 'Propose here', icon: 'fas fa-pen-ruler' }),
+        parcelCommand('selectMore', { surfaces: [], labelKey: 'parcelMenu.actions.selectMore', fallbackLabel: 'Select more', icon: 'fas fa-object-group' }),
+        parcelCommand('details', { surfaces: [], labelKey: 'parcelMenu.actions.details', fallbackLabel: 'Details', icon: 'fas fa-circle-info' }),
+        parcelCommand('proposals', { surfaces: [], labelKey: 'panel.parcel.tabProposals', fallbackLabel: 'Proposals', icon: 'fas fa-layer-group' }),
+        parcelCommand('history', { surfaces: [], labelKey: 'parcelMenu.actions.history', fallbackLabel: 'History', icon: 'fas fa-clock-rotate-left' }),
+        parcelCommand('tools', { surfaces: [], labelKey: 'parcelMenu.actions.tools', fallbackLabel: 'Tools', icon: 'fas fa-screwdriver-wrench' }),
+        parcelCommand('detectBlock', { surfaces: [], modes: ['2d'], labelKey: 'parcelMenu.actions.detectBlock', fallbackLabel: 'Detect block', icon: 'fas fa-fill-drip' }),
+        // What the panel does not offer: shown as the parcel section's buttons.
         parcelCommand('compare', { labelKey: 'parcelMenu.actions.compare', fallbackLabel: 'Compare proposals here', icon: 'fas fa-code-compare' }),
-        parcelCommand('tools', { labelKey: 'parcelMenu.actions.tools', fallbackLabel: 'Tools', icon: 'fas fa-screwdriver-wrench' }),
-        parcelCommand('detectBlock', { modes: ['2d'], labelKey: 'parcelMenu.actions.detectBlock', fallbackLabel: 'Detect block', icon: 'fas fa-fill-drip' }),
         parcelCommand('useAsSite', { modes: ['2d'], labelKey: 'parcelMenu.actions.useAsSite', fallbackLabel: 'Use as site', icon: 'fas fa-draw-polygon' }),
 
         // ---- Ground menu (a click where there is no parcel), in menu order ----

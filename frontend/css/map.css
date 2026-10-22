@@ -899,122 +899,269 @@ body.three-mode-active #agent-bubbles-container {
     filter: grayscale(1);
 }
 
-/* The drill panel: the vertical stack found under a map click — the middle slot of the right
-   dock, between the proposal card and the parcel panel (drill-ui.js computes top/max-height so
-   the three never overlap and keep one --right-dock-gap between them). Width comes from
-   .right-dock-panel, same as its neighbours. One row per object (top of the stack first, each a
-   cb-option with a cb-badge for its kind), a connector glyph between rows. */
-#drill-stack-panel {
+/* The click stack (click-stack.md, js/click-stack/): everything under a map click as one column
+   of sections in the right dock. Each section is a card with a one-line row; the gap and the
+   connector line between cards say "separate layers of one spot". The expanded card hosts its
+   action view: the planning inspector, proposal card or parcel info panel is moved inside and
+   loses its own docking (the .is-hosted rules below). On phones the stack is the bottom sheet. */
+#click-stack {
     position: fixed;
-    right: var(--right-dock-gap, 10px);
-    top: 10px;
-    display: none;
-    flex-direction: column;
-    padding: 8px 12px 10px;
-    background: var(--cb-glass-sheet);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    border: 1px solid var(--cb-line-strong);
-    border-radius: var(--cb-radius-lg);
-    box-shadow: var(--cb-shadow-md);
-    z-index: var(--cb-z-panel); /* the right dock's rung; the proposal card sits a step above it, so an expanded card wins the corner */
+    right: var(--right-dock-gap);
+    top: calc(var(--map-shell-top-clearance) + var(--cb-space-2));
+    bottom: var(--right-dock-bottom);
+    max-height: none;
+    padding: var(--cb-space-2) var(--cb-space-3) var(--cb-space-3);
+    gap: 0;
+    z-index: var(--cb-z-panel);
     overflow-y: auto;
-    /* Wide content scrolls inside its own row (the parcel strip below) — never the panel. */
     overflow-x: hidden;
 }
 
-#drill-stack-panel.visible {
+#click-stack.visible {
     display: flex;
+    flex-direction: column;
 }
 
-/* The slot between the neighbours got too small to be usable — hide rather than squeeze. */
-#drill-stack-panel.no-room {
-    display: none;
+/* The column ends where its content does; only a hosted panel (with its own scrolling body) makes
+   it run to the dock's bottom. */
+#click-stack:not(:has(.is-hosted)) {
+    bottom: auto;
 }
 
-#drill-stack-panel .drill-stack-header {
+.click-stack__head {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
+    gap: var(--cb-space-2);
+    margin-bottom: var(--cb-space-2);
+}
+
+.click-stack__title {
+    margin: 0;
     font-size: var(--cb-text-xs);
     font-weight: var(--cb-weight-semibold);
     text-transform: uppercase;
     letter-spacing: var(--cb-tracking-caps);
     color: var(--cb-text-muted);
-    margin-bottom: 6px;
 }
 
-/* A level of the stack: a cb-option row, its kind badge then its name on one line. */
-#drill-stack-panel .drill-stack-row {
-    align-items: center;
-    gap: var(--cb-space-2);
-}
-
-#drill-stack-panel .drill-stack-row .cb-badge {
-    flex-shrink: 0;
-}
-
-#drill-stack-panel .drill-stack-label {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-/* A formed parcel minted from several base parcels shows them ALL (§15a): count badge first,
-   then a horizontally scrollable strip of small parcel buttons (btn btn-sm, aria-pressed). The
-   row frames them like the cb-option rows around it but is not itself a choice. */
-#drill-stack-panel .drill-stack-row--multi {
+.click-stack__sections {
     display: flex;
-    align-items: center;
-    gap: var(--cb-space-2);
-    min-width: 0;
-    padding: var(--cb-space-2) var(--cb-space-3);
+    flex-direction: column;
+    min-height: 0;
+    flex: 1 1 auto;
+}
+
+.click-stack__section {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
     border: 1px solid var(--cb-line);
     border-radius: var(--cb-radius-lg);
     background: var(--cb-surface);
 }
 
-#drill-stack-panel .drill-stack-parcel-strip {
+.click-stack__section + .click-stack__section {
+    margin-top: var(--cb-space-3);
+}
+
+/* The connector: a short line from the card above into this one, under its icon column. */
+.click-stack__section + .click-stack__section::before {
+    content: '';
+    position: absolute;
+    left: calc(var(--cb-space-3) + 7px);
+    top: calc(-1 * var(--cb-space-3) - 1px);
+    height: var(--cb-space-3);
+    border-left: 2px solid var(--cb-line-strong);
+}
+
+.click-stack__section.is-expanded {
+    border-color: var(--cb-primary);
+}
+
+.click-stack__section.is-expanded:has(.is-hosted) {
+    flex: 1 1 auto;
+}
+
+.click-stack__row {
     display: flex;
     align-items: center;
-    gap: 4px;
-    flex: 1 1 0;
+    gap: var(--cb-space-2);
+    width: 100%;
+    min-height: 40px;
+    padding: var(--cb-space-2) var(--cb-space-3);
+    border: 0;
+    border-radius: var(--cb-radius-lg);
+    background: transparent;
+    color: var(--cb-text);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.click-stack__row:hover:not(:disabled) {
+    background: var(--cb-primary-soft);
+}
+
+.click-stack__row:focus-visible {
+    outline: 2px solid var(--cb-focus);
+    outline-offset: -2px;
+}
+
+/* A formed parcel names its design and has nothing to act on: a row, not a control. */
+.click-stack__row:disabled {
+    cursor: default;
+    color: var(--cb-text);
+}
+
+.click-stack__row > i:first-child {
+    flex: 0 0 16px;
+    text-align: center;
+    color: var(--cb-text-muted);
+}
+
+.click-stack__row-title {
+    flex: 0 0 auto;
+    font-weight: var(--cb-weight-semibold);
+}
+
+.click-stack__row-detail {
+    flex: 1 1 auto;
     min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--cb-text-muted);
+}
+
+.click-stack__chevron {
+    flex: 0 0 auto;
+    color: var(--cb-text-muted);
+    transition: transform 120ms ease;
+}
+
+.is-expanded > .click-stack__row .click-stack__chevron {
+    transform: rotate(180deg);
+}
+
+/* Several instances at the spot (agreements, designs, cadastral parcels): one scrolling strip,
+   the same component everywhere; the chosen one is aria-pressed. */
+.click-stack__strip {
+    display: flex;
+    align-items: center;
+    gap: var(--cb-space-1);
+    min-width: 0;
+    padding: 0 var(--cb-space-3) var(--cb-space-2);
     overflow-x: auto;
     scrollbar-width: thin;
-    padding-bottom: 2px;
 }
 
-#drill-stack-panel .drill-stack-parcel-btn {
+.click-stack__strip--inline {
+    padding: 0 0 var(--cb-space-2);
+}
+
+.click-stack__strip-label {
     flex: 0 0 auto;
-    white-space: nowrap;
-}
-
-/* The connector glyph between rows: the lower row is the ground the upper one stands on. */
-#drill-stack-panel .drill-stack-connector {
-    text-align: center;
     font-size: var(--cb-text-xs);
-    line-height: 1;
-    color: var(--cb-text-faint);
-    padding: 2px 0;
-    user-select: none;
+    color: var(--cb-text-muted);
+    margin-right: var(--cb-space-1);
 }
 
-/* Phones: the stack takes a full-width row under the top bar (drill-ui.js sets top below the menu
-   button and Guest pill). At 200px in the top-right corner it lay over the Guest pill and cut the
-   parcel number to "7160…". A single row repeats the header of the sheet below, so it stays hidden. */
-@media (max-width: 767.98px) {
-    #drill-stack-panel {
-        left: 10px;
-        right: 10px;
-        width: auto;
-    }
+.click-stack__chip {
+    flex: 0 0 auto;
+    max-width: 14em;
+    padding: 2px var(--cb-space-2);
+    border: 1px solid var(--cb-line-strong);
+    border-radius: 999px;
+    background: var(--cb-surface);
+    color: var(--cb-text);
+    font-size: var(--cb-text-sm);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+}
 
-    #drill-stack-panel.is-single {
-        display: none;
-    }
+.click-stack__chip[aria-pressed="true"] {
+    border-color: var(--cb-primary);
+    background: var(--cb-primary-soft);
+    color: var(--cb-primary-soft-ink);
+}
+
+.click-stack__chip:focus-visible {
+    outline: 2px solid var(--cb-focus);
+    outline-offset: 1px;
+}
+
+.click-stack__body {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    flex: 1 1 auto;
+    padding: 0 var(--cb-space-3) var(--cb-space-3);
+    overflow-y: auto;
+}
+
+.click-stack__summary {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: var(--cb-space-2);
+}
+
+.click-stack__facts {
+    margin: 0 0 var(--cb-space-2);
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+
+.click-stack__actions {
+    flex-wrap: wrap;
+    margin-bottom: var(--cb-space-2);
+}
+
+.click-stack__coords {
+    align-self: flex-start;
+    margin-top: var(--cb-space-2);
+    padding: 2px var(--cb-space-2);
+    border: 0;
+    background: transparent;
+    color: var(--cb-text-muted);
+    font: inherit;
+    font-size: var(--cb-text-xs);
+    font-variant-numeric: tabular-nums;
+    cursor: copy;
+}
+
+/* A panel hosted in an expanded section is part of the card: no docking, size, frame or sheet of
+   its own. Two ids each, so these win over each panel's own id rules. */
+#click-stack #parcel-info-panel.is-hosted,
+#click-stack #proposal-details-panel.is-hosted,
+#click-stack #planning-inspector.is-hosted {
+    position: static;
+    inset: auto;
+    width: auto;
+    max-width: none;
+    height: auto;
+    max-height: none;
+    min-height: 0;
+    flex: 1 1 auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+    transform: none;
+    z-index: auto;
+    overflow: visible;
+}
+
+#click-stack .is-hosted .mobile-dock-sheet-handle {
+    display: none;
 }
 
 /* One cursor for the map surface. Every point on the 2D map now resolves to a claim — the drill

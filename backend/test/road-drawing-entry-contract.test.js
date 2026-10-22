@@ -23,7 +23,7 @@ function spy(impl) {
 function loadWithSelections(globals = {}) {
     const selection = {
         clearProposalHighlights: spy(),
-        __drillUi: { hidePanel: spy() },
+        ClickStack: { close: spy() },
         multiParcelSelection: { isActive: false, clearSelection: spy() },
         selectedParcelId: 'HR-9',
         currentParcel: { id: 'HR-9' },
@@ -38,7 +38,7 @@ function loadWithSelections(globals = {}) {
 function expectSelectionsCleared(selection) {
     expect(globalThis.ProposalSelection.clear.calls.length).toBeGreaterThan(0);   // the proposal itself
     expect(selection.clearProposalHighlights.calls.length).toBeGreaterThan(0);    // and its painted parcels
-    expect(selection.__drillUi.hidePanel.calls.length).toBeGreaterThan(0);        // "At this spot"
+    expect(selection.ClickStack.close.calls.length).toBeGreaterThan(0);           // "At this spot"
     expect(globalThis.selectedParcelId).toBeNull();                               // the single parcel
     expect(globalThis.currentParcel).toBeNull();
     expect(env.element('parcel-info-panel').classList.contains('visible')).toBe(false);

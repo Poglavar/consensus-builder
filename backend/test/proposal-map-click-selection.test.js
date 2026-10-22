@@ -6,16 +6,12 @@ const parcelSelectionSource = readFileSync(
     new URL('../../frontend/js/parcels/ui/parcel-selection.js', import.meta.url),
     'utf8'
 );
-const drillUiSource = readFileSync(
-    new URL('../../frontend/js/proposals/drill-ui.js', import.meta.url),
-    'utf8'
-);
 const layerRenderSource = readFileSync(
     new URL('../../frontend/js/proposals/layer-render.js', import.meta.url),
     'utf8'
 );
 
-function loadParcelSelection(drillResult) {
+function loadParcelSelection() {
     const clearSingleParcelSelection = vi.fn();
     const clearSelection = vi.fn();
     const showParcelInfoPanel = vi.fn();
@@ -34,9 +30,8 @@ function loadParcelSelection(drillResult) {
             clearSelection,
             clearSingleParcelSelection
         },
-        __drillUi: {
-            handleParcelClick: vi.fn(() => drillResult)
-        },
+        ClickStack: { handleClick: vi.fn(() => true) },
+        selectAndHighlightProposal: vi.fn(),
         isRoadParcel: vi.fn(() => false),
         map: { hasLayer: vi.fn(() => false) },
         L: { DomEvent: { stopPropagation } }
@@ -62,12 +57,10 @@ function loadParcelSelection(drillResult) {
 }
 
 describe('map click selection ownership', () => {
-    it('selects a topmost proposal without selecting its ground parcel first', () => {
-        const harness = loadParcelSelection({
-            handled: true,
-            selectedKind: 'proposal',
-            selectedRef: 'p:block-1'
-        });
+    // The click stack owns what a click selects: a parcel under a design is neither selected nor
+    // painted by the parcel layer; the stack's Designs section answers it (click-stack.md).
+    it('hands a click on a parcel under a proposal to the click stack without selecting the ground', () => {
+        const harness = loadParcelSelection();
         const targetLayer = {
             feature: {
                 type: 'Feature',
@@ -86,23 +79,23 @@ describe('map click selection ownership', () => {
 
         harness.context.onParcelClick(event);
 
-        expect(harness.context.__drillUi.handleParcelClick)
-            .toHaveBeenCalledWith(event.latlng, 'HR-330264-628');
-        expect(harness.clearSingleParcelSelection).toHaveBeenCalledOnce();
+        expect(harness.context.ClickStack.handleClick).toHaveBeenCalledWith(event.latlng);
         expect(targetLayer.setStyle).not.toHaveBeenCalled();
         expect(targetLayer.bringToFront).not.toHaveBeenCalled();
         expect(harness.showParcelInfoPanel).not.toHaveBeenCalled();
+        expect(harness.context.selectAndHighlightProposal).not.toHaveBeenCalled();
         expect(harness.context.selectedParcelId).toBeUndefined();
         expect(harness.stopPropagation).toHaveBeenCalledWith(event);
     });
 
-    it('makes the drill result identify which level won the click', () => {
-        const handleParcelClick = drillUiSource.slice(
-            drillUiSource.indexOf('function handleParcelClick('),
-            drillUiSource.indexOf('function handleSurfaceClick(')
-        );
-        expect(handleParcelClick).toContain('selectedKind: top.kind');
-        expect(handleParcelClick).toContain('return null;');
+    it('ignores a click from a layer the fabric has already replaced', () => {
+        const harness = loadParcelSelection();
+        const current = { feature: { type: 'Feature', properties: { parcelId: 'HR-1' }, geometry: { type: 'Polygon', coordinates: [] } } };
+        harness.bindLiveLayer(current);
+        const stale = { feature: current.feature };
+        harness.context.ParcelPresenter.getIdForLayer = () => 'HR-1';
+        harness.context.onParcelClick({ target: stale, latlng: { lat: 1, lng: 2 }, originalEvent: {} });
+        expect(harness.context.ClickStack.handleClick).not.toHaveBeenCalled();
     });
 
     it('renders a body proposal without walking its cadastral parents', () => {

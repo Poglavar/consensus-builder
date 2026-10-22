@@ -30,7 +30,7 @@ test.describe('Shift+drag box selection @core', () => {
     await expect.poll(() => page.evaluate(id => (window as any).multiParcelSelection.selectedParcels.has(id), PARCEL_ID)).toBe(true);
     expect(await page.evaluate(() => (window as any).map.getZoom())).toBe(zoom);
     await expect(page.locator('#selection-tray')).toBeVisible();
-    await expect(page.locator('#parcel-menu')).toBeHidden();
+    await expect(page.locator('#click-stack')).toBeHidden();
 
     // The selection's Proposals tab totals what stands on its parcels, published ones included.
     await page.locator('#selection-tray [data-command="selection.propose"]').click();

@@ -126,7 +126,7 @@ test.describe('Map shell sheets @features', () => {
     await expect(page.locator(selectors.activitySheet)).toBeVisible();
 
     // The sheet covers the map center; click the exposed map to its right. Below parcel zoom (the
-    // city's default view), so the click cannot open a parcel menu instead.
+    // city's default view), so the click cannot open the click stack on a parcel instead.
     await clickMapAt(page, 500, 0);
     await expect(page.locator(selectors.activitySheet)).toBeHidden();
   });

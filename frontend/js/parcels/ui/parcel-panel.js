@@ -1018,8 +1018,6 @@
 
         try { if (typeof global.clearProposalInfoHoverOverlay === 'function') global.clearProposalInfoHoverOverlay(); } catch (_) { }
         try { if (!preserveProposalSelection && typeof global.clearProposalHighlights === 'function') global.clearProposalHighlights(); } catch (_) { }
-        // The stack panel described THIS selection — run after the state above is cleared.
-        try { global.__drillUi?.hideIfNothingSelected?.(); } catch (_) { }
 
 
         if (typeof global.neighborHighlightActive !== 'undefined' && global.neighborHighlightActive) {

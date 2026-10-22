@@ -317,11 +317,11 @@ test('Done applies the plots, and every live piece keeps its authored plot refer
     const w = window as any;
     const feature = w.LiveParcelFabric.producedBy(id).find((piece: any) => piece.properties.readjustmentPiece?.role === 'plot');
     w.hideProposalDetailsPanel();
-    w.ParcelMenu.open({ parcelId: feature.properties.parcelId, feature });
+    // A plot piece is formed ground: the click stack names it without expanding, so its inspector
+    // opens through the parcel commands' Details runner.
+    w.ParcelMenu.runAction('details', w.ParcelMenu.factsFor(feature.properties.parcelId, feature));
     return feature.properties.parcelId;
   }, proposalId);
-  await expect(page.locator('#parcel-menu .parcel-menu__title')).toHaveText(`Plot piece ${pieceId}`);
-  await page.locator('#parcel-menu').getByRole('menuitem', { name: 'Details', exact: true }).click();
   await expect(page.locator('#parcel-info-title')).toHaveText(`Plot piece ${pieceId}`);
   await expect(page.locator('#info-content [role="note"]')).toContainText('Ground derived from one authored parcel-layout plot');
 

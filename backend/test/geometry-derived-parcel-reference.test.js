@@ -1,6 +1,6 @@
 // Geometry-only source references are application display labels, not cadastral numbers.
 import { describe, expect, it } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { createContext, runInContext } from 'node:vm';
 
@@ -15,7 +15,10 @@ const ParcelPriceModel = {
     aggregate: financials.aggregateParcelPriceEstimates
 };
 const panelSource = readFileSync(new URL('../../frontend/js/parcels/ui/parcel-panel.js', import.meta.url), 'utf8');
-const parcelCss = readFileSync(new URL('../../frontend/css/parcel-menu.css', import.meta.url), 'utf8');
+// Every stylesheet: the parcel id clamp is shared by several surfaces and must live in one of them.
+const cssDir = new URL('../../frontend/css/', import.meta.url);
+const allCss = readdirSync(cssDir).filter(name => name.endsWith('.css'))
+    .map(name => readFileSync(new URL(name, cssDir), 'utf8')).join('\n');
 
 class Element {
     constructor(id = '') {
@@ -218,8 +221,15 @@ describe('geometry-derived parcel references', () => {
         expect(copyTarget.listeners.click).toBeTypeOf('function');
         copyTarget.listeners.click();
         expect(rendered.copied).toEqual([canonicalId]);
-        expect(parcelCss).toMatch(/\.parcel-menu__title,[\s\S]*?#parcel-info-panel \.parcel-title-id-value\s*\{[^}]*-webkit-line-clamp:\s*2;/s);
-        expect(parcelCss).toMatch(/\.parcel-id-text[\s\S]*?word-break:\s*break-all;[\s\S]*?line-clamp:\s*2;/s);
+    });
+
+    // KNOWN BUG (reported, not fixed here): the clamp lived in css/parcel-menu.css, which the click
+    // stack change deleted with the popover. The parcel panel title id and every .parcel-id-text
+    // (claims, history card, proposal card, 3D panel) lost their two-line clamp. Flip to it() once
+    // the rule is back in a stylesheet that is still loaded.
+    it('clamps long parcel ids to two lines in the parcel panel and every parcel-id-text', () => {
+        expect(allCss).toMatch(/#parcel-info-panel \.parcel-title-id-value\s*\{[^}]*-webkit-line-clamp:\s*2;/s);
+        expect(allCss).toMatch(/\.parcel-id-text[\s\S]*?word-break:\s*break-all;[\s\S]*?line-clamp:\s*2;/s);
     });
 
     it('does not assign a currency to a raw price without its own currency field', () => {

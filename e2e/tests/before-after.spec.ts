@@ -114,8 +114,8 @@ test.describe('Before / after on the main map @features', () => {
     await divider(page).locator('.map-compare__grip').click();
     expect(await page.evaluate(() => (window as any).__dividerMapClicks)).toBe(0);
     await clickMapPoint(page, 15.9829, 45.80025);
-    await expect(page.locator('#parcel-menu')).toBeVisible();
-    await expect(page.locator('#parcel-menu')).toContainText('1235');
+    await expect(page.locator('#click-stack')).toBeVisible();
+    await expect(page.locator('#click-stack .click-stack__section[data-kind="parcels"]')).toContainText('1235');
     await expect(beforeMap(page)).toHaveCount(0);
     expect(await dragging(page)).toBe(true);
   });
@@ -241,8 +241,8 @@ test.describe('Before / after on a phone @features', () => {
       return { x: box.left + p.x, y: box.top + p.y };
     });
     await page.touchscreen.tap(outside.x, outside.y);
-    await expect(page.locator('#parcel-menu')).toBeVisible();
-    await expect(page.locator('#parcel-menu')).toContainText('1235');
+    await expect(page.locator('#click-stack')).toBeVisible();
+    await expect(page.locator('#click-stack .click-stack__section[data-kind="parcels"]')).toContainText('1235');
     await expect(beforeMap(page)).toHaveCount(0);
     expect(await dragging(page)).toBe(true);
     await cdp.detach();

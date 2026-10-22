@@ -1,13 +1,12 @@
 // Exercise every action of the site's proposal panel ("Propose here") through its real UI handlers.
 import { test, expect } from '../helpers/fixtures';
-import { clickMapPoint, openCity, publishOn, PARCEL_ID } from '../helpers/runtime';
+import { clickMapPoint, openCity, publishOn, PARCEL_ID, runParcelCommand } from '../helpers/runtime';
 
 const SECOND_PARCEL_ID = 'HR-335754-1235';
 
 async function beginParcelSite(page: import('@playwright/test').Page) {
   await openCity(page);
-  await clickMapPoint(page, 15.9822, 45.80025);
-  await page.locator('#parcel-menu [data-command="parcel.useAsSite"]').click();
+  await runParcelCommand(page, 15.9822, 45.80025, 'parcel.useAsSite');
   const panel = page.locator('#site-panel');
   await expect(panel).toBeVisible();
   const site = await page.evaluate(() => JSON.parse(JSON.stringify((window as any).SiteTool.current().site)));
@@ -84,8 +83,7 @@ test.describe('Site proposals already on its parcels @core', () => {
   test('the card counts them, Show opens the Proposals tab, and the tabs switch', async ({ mockApi: page }) => {
     const publishedCid = await publishOn(page, PARCEL_ID);
     await openCity(page);
-    await clickMapPoint(page, 15.9822, 45.80025);
-    await page.locator('#parcel-menu [data-command="parcel.useAsSite"]').click();
+    await runParcelCommand(page, 15.9822, 45.80025, 'parcel.useAsSite');
     const card = page.locator('#site-panel');
     await expect(card.locator('.site-panel__existing')).toContainText('1 proposal already on these parcels');
     await card.locator('[data-site-action="show-proposals"]').click();
@@ -160,8 +158,8 @@ test.describe('Site build palette controls @core', () => {
     await expect.poll(() => page.evaluate(id => !!(window as any).LiveParcelFabric.get(id), SECOND_PARCEL_ID)).toBe(true);
     await page.evaluate(() => (window as any).map.setView([45.80025, 15.98255], 19, { animate: false }));
     await clickMapPoint(page, 15.98255, 45.80025);
-    await expect(page.locator('#ground-menu')).toBeVisible();
-    await page.locator('#ground-menu [data-command="ground.drawSite"]').click();
+    await expect(page.locator('#click-stack .click-stack__section[data-kind="ground"]')).toBeVisible();
+    await page.locator('#click-stack [data-command="ground.drawSite"]').click();
     const panel = page.locator('#site-panel');
     await expect(panel).toBeVisible();
     await clickMapPoint(page, 15.98235, 45.80012);

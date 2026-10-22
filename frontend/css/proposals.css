@@ -1208,11 +1208,6 @@ textarea.proposal-description-input {
     margin: 0;
     cursor: pointer;
 }
-#drill-stack-panel .drill-stack-compare {
-    width: 100%;
-    margin-top: 6px;
-}
-
 /* Phones: a bottom sheet, and the two columns stack — each row shows its label, then A, then B. */
 @media (max-width: 767.98px) {
     .parcel-compare[open] {

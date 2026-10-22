@@ -1258,8 +1258,7 @@
 
     function prepareMap() {
         win.MapShell?.closeSheets();
-        try { win.ParcelMenu && win.ParcelMenu.close(); } catch (_) { }
-        try { win.GroundMenu && win.GroundMenu.close(); } catch (_) { }
+        win.ClickStack?.close();
         try { if (typeof win.hideParcelInfoPanel === 'function') win.hideParcelInfoPanel(); } catch (_) { }
     }
 

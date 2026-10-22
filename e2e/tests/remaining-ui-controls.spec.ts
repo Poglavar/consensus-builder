@@ -1,6 +1,6 @@
 // Cover reachable controls left outside the focused feature suites.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, clickMapPoint, showProposal, PARCEL_ID, PARCEL_GEOMETRY } from '../helpers/runtime';
+import { openCity, openParcel, clickMapPoint, showProposal, PARCEL_ID, PARCEL_GEOMETRY, runParcelCommand } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { installAreaMonitorSpaFallback } from '../helpers/mocks/area-monitor-server';
 import { selectNativeOption } from '../helpers/controls';
@@ -68,8 +68,7 @@ test.describe('Remaining UI controls @features', () => {
 
   test('site card and proposal panel minimize, switch tabs, and close independently', async ({ mockApi: page }) => {
     await openCity(page);
-    await clickMapPoint(page, 15.9822, 45.80025);
-    await page.locator('#parcel-menu [data-command="parcel.useAsSite"]').click();
+    await runParcelCommand(page, 15.9822, 45.80025, 'parcel.useAsSite');
     const card = page.locator('#site-panel');
     await expect(card).toBeVisible();
     const cardMinimize = card.locator('[data-site-action="minimize"]');

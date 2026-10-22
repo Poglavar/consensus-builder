@@ -1986,13 +1986,6 @@
             "histogramSubtitle": "Total visible road length aggregated by average width.",
             "segmentTitle": "Segments",
             "segmentSubtitle": "Sorted by average width (descending). Click to focus the map."
-        },
-        "drill": {
-            "title": "At this spot",
-            "close": "Close",
-            "baseParcel": "Cadastral parcel",
-            "slice": "Formed parcel",
-            "baseParcelCount": "Cadastral parcel ({{count}})"
         }
     },
     "modal": {
@@ -7297,5 +7290,21 @@
         },
         "zoningArea": "Source zoning area",
         "inspectArea": "Inspect source zoning area {{parcel}}"
+    },
+    "clickStack": {
+        "title": "At this spot",
+        "agreements": "Agreements ({{count}})",
+        "designs": "Designs ({{count}})",
+        "builtMany": "Built ({{count}})",
+        "formed": "Formed parcel",
+        "formedBy": "Formed by {{design}}",
+        "parcel": "Cadastral parcel",
+        "parcels": "Cadastral parcels ({{count}})",
+        "demolished": "Demolished",
+        "demolishedBy": "Demolished by {{design}}",
+        "showDesigns": "Show its designs",
+        "inAgreements": "In agreements ({{count}})",
+        "copyCoordinates": "Copy coordinates",
+        "copied": "Coordinates copied"
     }
 }

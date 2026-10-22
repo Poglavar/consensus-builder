@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, createSpace, publishOn, clickMapPoint, PARCEL_ID } from '../helpers/runtime';
+import { openCity, openParcel, createSpace, publishOn, clickMapPoint, stackSection, parcelTab, PARCEL_ID } from '../helpers/runtime';
 
 async function openDetails(page: any) {
   await openCity(page);
@@ -88,10 +88,10 @@ test.describe('Parcel info panel tabs @core', () => {
   });
 });
 
-// The parcel menu's Proposals entry counts what stands on the parcel, the designs index's published
-// ones included, and opens the panel's Proposals tab on them.
-test.describe('Parcel menu proposals @features', () => {
-  test('the parcel menu counts the proposals here, published ones included, and opens the Proposals tab', async ({ mockApi: page }) => {
+// The click stack's parcel section carries the Proposals action: it counts what stands on the
+// parcel, the designs index's published ones included, and opens the panel's Proposals tab on them.
+test.describe('Parcel section proposals @features', () => {
+  test('the parcel section counts the proposals here, published ones included, and opens the Proposals tab', async ({ mockApi: page }) => {
     const cid = await publishOn(page, PARCEL_ID);
     await openCity(page);
     const center = await page.evaluate((id: string) => {
@@ -101,10 +101,9 @@ test.describe('Parcel menu proposals @features', () => {
       return { lng: c.lng, lat: c.lat };
     }, PARCEL_ID);
     await clickMapPoint(page, center.lng, center.lat);
-    await expect(page.locator('#parcel-menu')).toBeVisible();
-    const item = page.locator('#parcel-menu [data-command="parcel.proposals"]');
-    await expect(item).toHaveText('Proposals (1)');
-    await expect(item).not.toHaveClass(/cb-busy/);
+    await expect(stackSection(page, 'parcels').locator('#parcel-info-panel')).toBeVisible();
+    const item = parcelTab(page, 'proposals-tab');
+    await expect(item.locator('.parcel-tab-count')).toHaveText('1');
     await item.click();
     await expect(page.locator('#proposals-tab')).toBeVisible();
     await expect(page.locator('#proposals-content .parcel-set-proposal')).toHaveCount(1);

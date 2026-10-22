@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, createSpace, proposalState, showProposal, clickMapPoint, drawCorridor, PARCEL_ID } from '../helpers/runtime';
+import { openCity, openParcel, createSpace, proposalState, showProposal, clickMapPoint, drawCorridor, PARCEL_ID, openParcelTabAt } from '../helpers/runtime';
 
 test.describe('Proposal creation and map lifecycle @features', () => {
   for (const kind of ['park', 'square', 'lake'] as const) {
@@ -31,9 +31,7 @@ test.describe('Proposal creation and map lifecycle @features', () => {
       await drawCorridor(page, type === 'bus' ? 'road' : 'track');
       // Stops are transport tools in the parcel palette since the Tools sheet went (fbe3758d). The
       // corridor split parcel 1234, so open the palette from its northern remainder.
-      await clickMapPoint(page, 15.9822, 45.80045);
-      await expect(page.locator('#parcel-menu')).toBeVisible();
-      await page.locator('#parcel-menu').getByRole('menuitem', { name: 'Propose here', exact: true }).click();
+      await openParcelTabAt(page, 15.9822, 45.80045, 'propose-tab');
       await page.locator(`#parcel-info-panel .parcel-transport-btn--${type}`).click();
       await clickMapPoint(page, 15.9822, 45.80025);
       await expect.poll(() => page.evaluate(type => (window as any).proposalStorage.getAllProposals().filter((p: any) => p.structureProposal?.stationType === type).length, type)).toBe(1);

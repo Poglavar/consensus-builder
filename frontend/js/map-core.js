@@ -677,6 +677,27 @@ function hideOsmBuildingLayer() {
 }
 window.hideOsmBuildingLayer = hideOsmBuildingLayer;
 
+// Existing buildings drawn on the map whose footprint covers a point, with what demolishes them
+// (the click stack's Built section). Footprints come from the rendered layers, so only what the
+// person can see is reported.
+function buildingsAt(latlng) {
+    if (!latlng || !window.turf) return [];
+    const point = window.turf.point([latlng.lng, latlng.lat]);
+    const hits = [];
+    buildingRenderedLayersById.forEach((layers, id) => {
+        const layer = layers[0];
+        const feature = layer?.feature;
+        if (!feature?.geometry || typeof layer.getBounds !== 'function' || !layer.getBounds().contains(latlng)) return;
+        if (!window.turf.booleanPointInPolygon(point, feature)) return;
+        hits.push({ id, feature });
+    });
+    if (!hits.length) return hits;
+    const outcomes = currentBuildingOutcomeState();
+    return hits.map(hit => ({ ...hit, demolition: outcomes.demolishedById.get(hit.id) || null,
+        tunnelled: outcomes.tunnelledIds.has(hit.id) }));
+}
+window.buildingsAt = buildingsAt;
+
 function buildingPoolFeatureKey(feature) {
     if (typeof window.corridorBuildingKey === 'function') return window.corridorBuildingKey(feature);
     const props = feature?.properties || {};
@@ -819,10 +840,12 @@ function buildingLayerOptions() {
             const layers = buildingRenderedLayersById.get(id) || [];
             layers.push(layer);
             buildingRenderedLayersById.set(id, layers);
+            // A building click is a map click like any other: the click stack collects everything
+            // under the point (click-stack.md), the building being one of its sections.
             layer.on('click', event => {
                 if (window.__mapEditLock?.isHeld()) return;
                 L.DomEvent.stopPropagation(event);
-                window.PlanningViews?.inspectBuilding(feature, id);
+                window.ClickStack.handleClick(event.latlng);
             });
         }
     };

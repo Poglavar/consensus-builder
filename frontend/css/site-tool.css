@@ -1,7 +1,6 @@
 /* ========== Site tool and ground menu ==========
    The site panel (js/site-drawing.js): drawing a proposal's site, its binding preview (bound
-   parcels, small intrusions, open ground hatched, coverage) and the build palette on the site.
-   The ground menu reuses the parcel menu's styles (css/parcel-menu.css); only its emphasis is here. */
+   parcels, small intrusions, open ground hatched, coverage) and the build palette on the site. */
 
 :root {
     --site-outline: #111827;
@@ -12,16 +11,6 @@
     --site-plot: #7c3aed;
     --site-building: #be185d;
     --site-street: #0f766e;
-}
-
-/* The ground menu's first action (Draw a site here) is the main one. */
-.ground-menu .parcel-menu__action[data-command="ground.drawSite"] {
-    color: var(--cb-primary-hover);
-    font-weight: 600;
-}
-
-.ground-menu .parcel-menu__action[data-command="ground.drawSite"] i {
-    color: var(--cb-primary);
 }
 
 /* ---- map layers (pane siteToolPane) ---- */

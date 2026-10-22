@@ -1,13 +1,11 @@
 // Purpose: exercise dynamically created editor controls that appeared after the primary editor-control audit.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, clickMapPoint, openParcel, drawCorridor, showProposal } from '../helpers/runtime';
+import { openCity, clickMapPoint, openParcel, drawCorridor, showProposal, runParcelCommand } from '../helpers/runtime';
 
 test.describe('Dynamic editor control effects @features', () => {
   test('selecting and deleting a polygon vertex removes it from the live site boundary', async ({ mockApi: page }) => {
     await openCity(page);
-    await clickMapPoint(page, 15.9822, 45.80025);
-    await expect(page.locator('#parcel-menu')).toBeVisible();
-    await page.locator('#parcel-menu [data-command="parcel.useAsSite"]').click();
+    await runParcelCommand(page, 15.9822, 45.80025, 'parcel.useAsSite');
     const ring = () => page.evaluate(() => (window as any).SiteTool.current().ring.length);
     const initialCount = await ring();
     expect(initialCount).toBeGreaterThan(3);

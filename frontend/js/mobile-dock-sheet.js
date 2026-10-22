@@ -8,9 +8,9 @@
 })(typeof window !== 'undefined' ? window : globalThis, function mobileDockSheetFactory() {
     'use strict';
 
-    // The drill stack also shares the desktop dock width, but it stays a compact top-row card on
-    // phones. Only the actual info panels become bottom sheets.
-    const PANEL_SELECTOR = '.info-panel.right-dock-panel:not(#proposal-details-panel)';
+    // Info panels in the right dock become bottom sheets on phones (the click stack among them);
+    // a panel hosted inside the click stack is part of that sheet, not a sheet of its own.
+    const PANEL_SELECTOR = '.info-panel.right-dock-panel:not(#proposal-details-panel):not(.is-hosted)';
     const HANDLE_CLASS = 'mobile-dock-sheet-handle';
     const DEFAULT_RATIO = 0.66;
     const MIN_RATIO = 0.42;
