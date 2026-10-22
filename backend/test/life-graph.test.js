@@ -122,7 +122,10 @@ describe('addOsmRoads: drive lanes', () => {
     it('sinks an OSM carriageway a kerb below the pavement and drives its lanes down there', () => {
         const graph = osmGraph([road({ highway: 'residential', lanes: '2' }, [[0, 0], [100, 0]])]);
         expect(KERB_M).toBe(0.15);
-        expect(graph.surface.carriageways).toEqual([{ pts: [[0, 0, 0], [100, 0, 0]], halfWidth: LANE_WIDTH_M, drop: KERB_M, zcode: ZCODE.ROAD }]);
+        expect(graph.surface.carriageways).toEqual([{
+            pts: [[0, 0, 0], [100, 0, 0]], halfWidth: LANE_WIDTH_M, drop: KERB_M, zcode: ZCODE.ROAD,
+            lanes: [{ offset: -LANE_WIDTH_M / 2, dir: 1 }, { offset: LANE_WIDTH_M / 2, dir: -1 }]
+        }]);
         driveTracks(graph).forEach(track => track.pts.forEach(p => expect(p[2]).toBeCloseTo(-KERB_M, 9)));
     });
 

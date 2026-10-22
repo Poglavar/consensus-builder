@@ -377,7 +377,9 @@
             ways.forEach(way => {
                 if (way.carriageway) {
                     const pts = offsetPolyline(way.points, way.carriageway.offset);
-                    if (pts) carriageways.push({ pts, halfWidth: way.carriageway.halfWidth, drop: way.carriageway.drop || 0, zcode: way.carriageway.zcode || 0 });
+                    // Lane centres relative to the carriageway's own centreline, for the painted lane lines.
+                    const lanes = way.lanes.map(lane => ({ offset: lane.offset - (way.carriageway.offset || 0), dir: lane.dir }));
+                    if (pts) carriageways.push({ pts, halfWidth: way.carriageway.halfWidth, drop: way.carriageway.drop || 0, zcode: way.carriageway.zcode || 0, lanes });
                 }
                 way.bands.forEach(band => {
                     const pts = offsetPolyline(way.points, band.offset);

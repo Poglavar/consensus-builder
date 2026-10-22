@@ -1,11 +1,11 @@
 // Ground geometry (frontend/js/life/ground-geometry.js): ribbon width and winding, mitred and
 // rounded bends, junction discs versus dead ends, the sunk roadbed with its lid and kerb walls,
-// junction openings in the kerb, the pavement plane and degenerate input.
+// junction openings in the kerb, lane lines, the pavement plane and degenerate input.
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { buildGroundGeometry, ribbonEdges, splitAtSharpBends, MITRE_LIMIT, DISC_SEGMENTS } = require('../../frontend/js/life/ground-geometry.js');
+const { buildGroundGeometry, ribbonEdges, splitAtSharpBends, MITRE_LIMIT, DISC_SEGMENTS, MARK_HALF_M, MARK_DASH_M, MARK_GAP_M, MARK_LIFT_M } = require('../../frontend/js/life/ground-geometry.js');
 
 const P = (part, i) => [part.positions[i * 3], part.positions[i * 3 + 1], part.positions[i * 3 + 2]];
 function triangleArea2(part, t) {
@@ -160,6 +160,65 @@ describe('sunk roadbed, lid and kerb', () => {
     });
 });
 
+// Lane-line strips as { a, b } from the four vertices each quad uploads (left a, left b, right a, right b).
+const strips = part => Array.from({ length: part.positions.length / 12 }, (_, q) => {
+    const la = P(part, q * 4), lb = P(part, q * 4 + 1), ra = P(part, q * 4 + 2);
+    return { a: [(la[0] + ra[0]) / 2, (la[1] + ra[1]) / 2, la[2]], b: [(lb[0] + ra[0] + lb[0] - la[0]) / 2, (lb[1] + ra[1] + lb[1] - la[1]) / 2, lb[2]], width: Math.hypot(la[0] - ra[0], la[1] - ra[1]), length: Math.hypot(lb[0] - la[0], lb[1] - la[1]) };
+});
+const twoWay = [{ offset: -1.75, dir: 1 }, { offset: 1.75, dir: -1 }];
+
+describe('lane markings', () => {
+    it('paints a solid centre line between opposing lanes, 12 cm wide, 1 cm above the sunk asphalt', () => {
+        const { markings, stats } = build([{ pts: [[0, 0], [100, 0]], halfWidth: 3.5, drop: 0.15, lanes: twoWay }]);
+        expect(markings.triangles).toBe(2);
+        const [line] = strips(markings);
+        expect(line.width).toBeCloseTo(2 * MARK_HALF_M, 6);
+        expect(line.length).toBeCloseTo(100, 6);
+        expect(line.a[1]).toBeCloseTo(0, 6);
+        expect(line.a[2]).toBeCloseTo(MARK_LIFT_M - 0.15, 6);
+        expect(stats.markingM).toBe(100);
+        expect(stats.markingTriangles).toBe(2);
+    });
+
+    it('dashes the separators of a oneway street and paints none on a single lane', () => {
+        const lanes = [-3.5, 0, 3.5].map(offset => ({ offset, dir: 1 }));
+        const { markings, stats } = build([{ pts: [[0, 0], [100, 0]], halfWidth: 5.25, drop: 0.15, lanes }]);
+        const dashes = strips(markings);
+        const perLine = Math.ceil(100 / (MARK_DASH_M + MARK_GAP_M));
+        expect(dashes).toHaveLength(2 * perLine);
+        expect(dashes.filter(d => Math.abs(d.a[1] - 1.75) < 1e-6)).toHaveLength(perLine);
+        expect(dashes.filter(d => Math.abs(d.a[1] + 1.75) < 1e-6)).toHaveLength(perLine);
+        expect(dashes[0].length).toBeCloseTo(MARK_DASH_M, 6);
+        expect(dashes[1].a[0]).toBeCloseTo(MARK_DASH_M + MARK_GAP_M, 6);
+        expect(stats.markingM).toBe(2 * ((perLine - 1) * MARK_DASH_M + (100 - (perLine - 1) * (MARK_DASH_M + MARK_GAP_M))));
+        expect(build([{ pts: [[0, 0], [100, 0]], halfWidth: 3.5, drop: 0.15, lanes: [{ offset: 0, dir: 1 }] }]).markings.triangles).toBe(0);
+    });
+
+    it('stops lines at a junction and under another street', () => {
+        const { markings } = build([
+            { pts: [[-50, 0], [0, 0], [50, 0]], halfWidth: 5, drop: 0.15, lanes: twoWay },
+            { pts: [[0, 0], [0, 40]], halfWidth: 2.5, drop: 0.15, lanes: twoWay }
+        ]);
+        const lines = strips(markings);
+        // The main street's centre line breaks across the junction disc (radius 5).
+        const main = lines.filter(l => Math.abs(l.a[1]) < 1e-6);
+        expect(main).toHaveLength(2);
+        main.forEach(l => expect(Math.min(Math.abs(l.a[0]), Math.abs(l.b[0]))).toBeCloseTo(5, 1));
+        // The side street's centre line starts at the main street's edge.
+        const side = lines.filter(l => Math.abs(l.a[0]) < 1e-6);
+        expect(side).toHaveLength(1);
+        expect(Math.min(side[0].a[1], side[0].b[1])).toBeCloseTo(5, 1);
+        expect(Math.max(side[0].a[1], side[0].b[1])).toBeCloseTo(40, 6);
+    });
+
+    it('offsets a corridor-style lane layout from the carriageway centre and ignores bad lanes', () => {
+        const { markings } = build([{ pts: [[0, 0], [60, 0]], halfWidth: 4, lanes: [{ offset: -2, dir: 1 }, { offset: 2, dir: -1 }, { offset: NaN, dir: 1 }, null] }]);
+        const [line] = strips(markings);
+        expect(line.a[1]).toBeCloseTo(0, 6);
+        expect(line.a[2]).toBeCloseTo(MARK_LIFT_M, 6);
+    });
+});
+
 describe('junctions', () => {
     it('fills a T junction with a disc as wide as the widest way, once per node', () => {
         const through = { pts: [[-50, 0], [0, 0], [50, 0]], halfWidth: 5 };
@@ -218,12 +277,13 @@ describe('pavement plane and input hygiene', () => {
     });
 
     it('uploads typed arrays', () => {
-        const { roadbed, lid, kerb } = build([{ pts: [[0, 0], [10, 0]], halfWidth: 1, drop: 0.1 }]);
+        const { roadbed, lid, kerb, markings } = build([{ pts: [[0, 0], [10, 0]], halfWidth: 1, drop: 0.1, lanes: twoWay }]);
         expect(roadbed.positions).toBeInstanceOf(Float32Array);
         expect(roadbed.indices).toBeInstanceOf(Uint32Array);
         expect(lid.positions).toBeInstanceOf(Float32Array);
         expect(kerb.positions).toBeInstanceOf(Float32Array);
         expect(kerb.normals).toBeInstanceOf(Float32Array);
         expect(kerb.indices).toBeInstanceOf(Uint32Array);
+        expect(markings.positions).toBeInstanceOf(Float32Array);
     });
 });

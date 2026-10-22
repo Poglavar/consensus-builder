@@ -52,6 +52,20 @@ everything else is pavement up to the buildings.
   walkable grid paints OSM carriageways with `ZCODE.ROAD` (`Z_LEVELS` −0.15) so people step
   down to cross. The kerb colour is darker than asphalt and pavement: a sunlit vertical face
   renders brighter than a flat one and a light kerb read as a white line.
+- Lane lines (2026-10-22, user: "can we draw lane lines on the road?"): the carriageway entry now
+  carries the life graph's lane layout (`lanes: [{offset, dir}]`, left-positive of the carriageway
+  centre), and every boundary between two adjacent lanes gets a 12 cm line 1 cm above the
+  asphalt: solid between opposing directions (the centre line), dashed 3 m on / 6 m off between
+  lanes of one direction. The same run-finder that clips the kerb clips the lines, skipping the
+  way's own asphalt, so lines stop at every junction disc and under every other street. A single
+  lane paints nothing. Pulled forward by polygon offset so they never sink into the asphalt at
+  distance. Fifth draw call.
+- Darker asphalt (0x5b5d61, was 0x7d8085) and a paving pattern on the sidewalks: no texture
+  image, a shader patch (`paveTexture`) on the pavement material and on the cadastral road-parcel
+  material (scaled back from scene units to metres by 1/k) draws 1.5 m slabs with a thin darker
+  joint and a faint per-slab tint from the mesh's local XY. The joint is anti-aliased over one
+  pixel and its weight shrinks once a pixel outgrows it, so distant pavement settles to a flat
+  tone instead of moiré (checked at z18 over Lower Manhattan).
 - three-mode.js: the ground rebuilds whenever the life layer rebuilds (same graph, one build), and
   builds its own graph when the life layer is off; the `/osm-road` fetch now runs when either layer
   is on. Toggle "Streets and pavement" in the model-mode layer panel (`cb_3d_ground_enabled`,
@@ -60,12 +74,14 @@ everything else is pavement up to the buildings.
 
 | Budget | Value |
 |---|---|
-| Draw calls added | 4 (lid stencil, roadbed, kerb, pavement) |
+| Draw calls added | 5 (lid stencil, roadbed, kerb, lane lines, pavement) |
 | Per-frame work | none |
 | Build (Zagreb station, 183 carriageways, flat) | 10 ms |
 | Build (Lower Manhattan, 429 carriageways, 9,082 triangles, flat) | 38 ms |
 | Build with kerbs (Lower Manhattan z18, 61.7 km kerb, 10,140 wall triangles) | 60 ms |
 | Build with kerbs (Zagreb station z19, 84 carriageways, 12.2 km kerb) | ~15 ms |
+| Lane lines (Lower Manhattan z20, 305 carriageways) | 7.4 km, 3,536 triangles |
+| Lane lines (Zagreb station z19) | 3.5 km, 1,618 triangles |
 
 ## Phases
 
@@ -78,7 +94,12 @@ everything else is pavement up to the buildings.
       unit tests across ground-geometry, three-ground, life-graph, life-surface, three-life and
       life-agents; checked in a launched Chrome at street level in New York and Zagreb (far kerb
       face visible, near edge hides the trench, kerbs stop at junctions, no page errors).
-- [ ] P6 User review of the kerb (height 0.15 m, colour) and of the corners at angled junctions.
+- [x] P6 Lane lines, darker asphalt, procedural paving on pavement and road parcels; 118 headless unit
+      tests across the eight files above plus the static-build and home-path guards; checked in a
+      launched Chrome at street level, oblique and overview in New York and Zagreb (lines stop at
+      junctions, no moiré at z18, slabs on a Zagreb road parcel, no page or shader errors).
+- [ ] P7 User review of the kerb (0.15 m, colour), the line style (white only, dashed separators,
+      solid centre line) and the slab size (1.5 m).
 
 ## Deferred
 
@@ -90,6 +111,11 @@ everything else is pavement up to the buildings.
 - The Zagreb WFS road-use polygons (z 0.3) share the road-parcel material, so they get the same
   stencil holes where OSM asphalt runs under them.
 - Stencil holes are screen-space: a pavement sheet seen exactly edge-on has no thickness.
+- Lines are one colour and one style per boundary: no yellow centre lines (US), no double lines,
+  no stop lines or arrows, no edge lines (the kerb is the edge). A main street's centre line
+  breaks across the junction disc at every side-street T, as the disc is as wide as the street.
+- Zagreb's cadastral parcels load late and unevenly in this dev setup (0, 202 or 356 lot slabs on
+  three loads of the same view); not touched here.
 - `service` roads, parking aisles and footway paving: the carriageway list is only the driveable
   classes the vehicles use, so driveways and parking lots are pavement for now.
 - Grade separation of OSM bridges and ramps: everything is at z 0 (the Brooklyn Bridge approaches

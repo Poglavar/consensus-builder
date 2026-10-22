@@ -1,9 +1,10 @@
 // Ground geometry for the 3D model view: the roadbed every street's carriageway covers, sunk a kerb
-// below the pavement, the kerb walls along its edges, and the pavement plane everything else stands
-// on ("everything that is not a car lane is sidewalk, up to the buildings"). Input is the life graph's
-// carriageway list (centreline points, half-width and the drop below the pavement, true metres), so
-// the asphalt is exactly the surface the schematic cars drive on; output is plain typed arrays a thin
-// THREE layer uploads. Pure: no DOM, no THREE.
+// below the pavement, the kerb walls along its edges, the lane lines painted on it, and the pavement
+// plane everything else stands on ("everything that is not a car lane is sidewalk, up to the
+// buildings"). Input is the life graph's carriageway list (centreline points, half-width, lane
+// layout and the drop below the pavement, true metres), so the asphalt is exactly the surface the
+// schematic cars drive on; output is plain typed arrays a thin THREE layer uploads. Pure: no DOM,
+// no THREE.
 (function (root, factory) {
     if (typeof module !== 'undefined' && module.exports) module.exports = factory();
     else root.__groundGeometry = factory();
@@ -18,6 +19,10 @@
     const KERB_TOL_M = 0.05;      // a sample this far inside any asphalt is in a junction opening
     const KERB_REFINE = 5;        // bisections that pin an opening's end to about 3 cm
     const INDEX_CELL_M = 32;
+    const MARK_HALF_M = 0.06;     // lane lines are 12 cm wide
+    const MARK_DASH_M = 3;        // a lane separator is dashed 3 m on, 6 m off; a centre line is solid
+    const MARK_GAP_M = 6;
+    const MARK_LIFT_M = 0.01;     // lines float this far above the asphalt
 
     function nodeKey(x, y) {
         return Math.round(x / NODE_SNAP_M) + ':' + Math.round(y / NODE_SNAP_M);
@@ -120,6 +125,13 @@
             const rim = discRim(x, y, z, r).slice(0, DISC_SEGMENTS).map(p => vertex(p, drop));
             for (let i = 0; i < DISC_SEGMENTS; i++) triangle(centre, rim[i], rim[(i + 1) % DISC_SEGMENTS]);
         }
+        // A flat strip of half-width `half` from a to b (a lane line or one dash of it).
+        function quad(a, b, half) {
+            const { left, right } = ribbonEdges([a, b], half);
+            const l0 = vertex(left[0], 0), l1 = vertex(left[1], 0), r0 = vertex(right[0], 0), r1 = vertex(right[1], 0);
+            triangle(l0, r0, r1);
+            triangle(l0, r1, l1);
+        }
         // One mitred ribbon; returns its edges (sunk z) for the kerb walker.
         function ribbon(points, half, drop) {
             const { left, right } = ribbonEdges(points, half);
@@ -138,7 +150,7 @@
                 lid: { positions: new Float32Array(lid), indices: index, triangles: index.length / 3 }
             };
         }
-        return { vertex, triangle, disc, discRim, ribbon, finish };
+        return { vertex, triangle, disc, discRim, ribbon, quad, finish };
     }
 
     // Growable list of vertical quads (the kerb walls), with the normal of each quad's geometric
@@ -166,10 +178,11 @@
         return { wall, finish };
     }
 
-    // Everything the asphalt covers, for clipping the kerb: each way as its segment strips plus a
-    // disc of its half-width at every interior vertex (the join), and the junction discs. A coarse
-    // grid keyed by bounding box keeps a sample's visit to what lies around it. `inside` is strict by
-    // KERB_TOL_M, so a way's own edge (exactly half-width out) never counts as inside itself.
+    // Everything the asphalt covers, for clipping the kerb and the lane lines: each way as its segment
+    // strips plus a disc of its half-width at every interior vertex (the join), and the junction
+    // discs. A coarse grid keyed by bounding box keeps a sample's visit to what lies around it.
+    // `inside` is strict by KERB_TOL_M, so a way's own edge (exactly half-width out) never counts as
+    // inside itself; `exceptWay` skips one way's own asphalt (a lane line lies inside its own way).
     function createAsphaltIndex(ways, discs) {
         const cells = new Map();
         const cellKey = (cx, cy) => cx + ':' + cy;
@@ -182,23 +195,24 @@
                 }
             }
         }
-        ways.forEach(way => {
+        ways.forEach((way, wayIndex) => {
             const limit = way.half - KERB_TOL_M;
             for (let i = 0; i < way.pts.length - 1; i++) {
                 const a = way.pts[i], b = way.pts[i + 1];
-                insert({ ax: a[0], ay: a[1], dx: b[0] - a[0], dy: b[1] - a[1], limit },
+                insert({ ax: a[0], ay: a[1], dx: b[0] - a[0], dy: b[1] - a[1], limit, way: wayIndex },
                     Math.min(a[0], b[0]) - way.half, Math.min(a[1], b[1]) - way.half, Math.max(a[0], b[0]) + way.half, Math.max(a[1], b[1]) + way.half);
             }
             for (let i = 1; i < way.pts.length - 1; i++) {
                 const p = way.pts[i];
-                insert({ x: p[0], y: p[1], limit }, p[0] - way.half, p[1] - way.half, p[0] + way.half, p[1] + way.half);
+                insert({ x: p[0], y: p[1], limit, way: wayIndex }, p[0] - way.half, p[1] - way.half, p[0] + way.half, p[1] + way.half);
             }
         });
-        discs.forEach(d => insert({ x: d.x, y: d.y, limit: d.r - KERB_TOL_M }, d.x - d.r, d.y - d.r, d.x + d.r, d.y + d.r));
-        function inside(x, y) {
+        discs.forEach(d => insert({ x: d.x, y: d.y, limit: d.r - KERB_TOL_M, way: null }, d.x - d.r, d.y - d.r, d.x + d.r, d.y + d.r));
+        function inside(x, y, exceptWay) {
             const bucket = cells.get(cellKey(Math.floor(x / INDEX_CELL_M), Math.floor(y / INDEX_CELL_M)));
             if (!bucket) return false;
             for (const item of bucket) {
+                if (exceptWay !== undefined && item.way === exceptWay) continue;
                 if (item.dx === undefined) {
                     if (Math.hypot(x - item.x, y - item.y) < item.limit) return true;
                     continue;
@@ -214,17 +228,18 @@
         return { inside };
     }
 
-    // Kerb along one edge polyline (a ribbon side, a dead-end cap or a disc rim, sunk z): sampled
-    // every KERB_STEP_M against the asphalt index, the runs outside all asphalt become walls of
-    // `height`; each run end is bisected onto the asphalt boundary, so a side street opens the main
-    // street's kerb exactly across its own width.
-    function kerbAlong(edge, height, index, walls) {
+    // The runs of one polyline that lie outside the asphalt (except `exceptWay`'s own): sampled every
+    // KERB_STEP_M against the index, each run end bisected onto the asphalt boundary, then handed to
+    // `emit(a, b)` with z interpolated. A kerb edge (a ribbon side, a dead-end cap or a disc rim)
+    // becomes walls this way, so a side street opens the main street's kerb exactly across its own
+    // width; a lane line becomes paint that stops at every junction.
+    function runsAlong(edge, index, exceptWay, emit) {
         for (let i = 0; i < edge.length - 1; i++) {
             const a = edge[i], b = edge[i + 1];
             const len = Math.hypot(b[0] - a[0], b[1] - a[1]);
             if (len < MIN_SEGMENT_M) continue;
             const at = t => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, (a[2] || 0) + ((b[2] || 0) - (a[2] || 0)) * t];
-            const insideAt = t => { const p = at(t); return index.inside(p[0], p[1]); };
+            const insideAt = t => { const p = at(t); return index.inside(p[0], p[1], exceptWay); };
             const boundary = (tOut, tIn) => {
                 for (let k = 0; k < KERB_REFINE; k++) { const m = (tOut + tIn) / 2; if (insideAt(m)) tIn = m; else tOut = m; }
                 return tOut;
@@ -235,13 +250,38 @@
                 const t = s / steps;
                 const nowIn = insideAt(t);
                 if (nowIn !== prevIn) {
-                    if (nowIn) { walls.wall(at(runStart), at(boundary(prevT, t)), height); runStart = null; }
+                    if (nowIn) { emit(at(runStart), at(boundary(prevT, t))); runStart = null; }
                     else runStart = boundary(t, prevT);
                 }
                 prevT = t; prevIn = nowIn;
             }
-            if (runStart !== null) walls.wall(at(runStart), at(1), height);
+            if (runStart !== null) emit(at(runStart), at(1));
         }
+    }
+
+    // A ribbon piece's parallel at a signed offset (positive to the left of travel, like the life
+    // graph's lane offsets); pieces have no capped joints, so the ribbon edge is a clean offset.
+    function offsetPiece(piece, offset) {
+        if (!offset) return piece.map(p => p.slice());
+        const edges = ribbonEdges(piece, Math.abs(offset));
+        return offset > 0 ? edges.left : edges.right;
+    }
+
+    // Paint one run of a lane line from a to b: solid, or dashed from the run's start. Returns the
+    // painted length.
+    function paintRun(list, a, b, dashed) {
+        const len = Math.hypot(b[0] - a[0], b[1] - a[1]);
+        if (len < MIN_SEGMENT_M) return 0;
+        if (!dashed) { list.quad(a, b, MARK_HALF_M); return len; }
+        const at = d => [a[0] + (b[0] - a[0]) * d / len, a[1] + (b[1] - a[1]) * d / len, a[2] + (b[2] - a[2]) * d / len];
+        let painted = 0;
+        for (let s = 0; s < len; s += MARK_DASH_M + MARK_GAP_M) {
+            const e = Math.min(len, s + MARK_DASH_M);
+            if (e - s < MIN_SEGMENT_M) break;
+            list.quad(at(s), at(e), MARK_HALF_M);
+            painted += e - s;
+        }
+        return painted;
     }
 
     function polylineLength(points) {
@@ -250,11 +290,14 @@
         return len;
     }
 
-    // `carriageways`: [{ pts: [[x, y, z?], …], halfWidth, drop? }] in true metres (the life graph's
-    // surface.carriageways; `drop` sinks that way's asphalt below its centreline z and is its kerb
-    // height, 0 or absent for flush). `bounds`: [minX, minY, maxX, maxY] of the pavement plane, or
-    // null for no plane. Returns typed-array parts: `roadbed` (sunk asphalt), `lid` (the roadbed at
-    // pavement level, for the stencil), `kerb` (walls, with normals) and `plane` (pavement), plus stats.
+    // `carriageways`: [{ pts: [[x, y, z?], …], halfWidth, drop?, lanes? }] in true metres (the life
+    // graph's surface.carriageways; `drop` sinks that way's asphalt below its centreline z and is its
+    // kerb height, 0 or absent for flush; `lanes` [{ offset, dir }] are the lane centres left-positive
+    // of the centreline, and every boundary between two lanes gets a line: solid between opposing
+    // directions, dashed between lanes of one direction). `bounds`: [minX, minY, maxX, maxY] of the
+    // pavement plane, or null for no plane. Returns typed-array parts: `roadbed` (sunk asphalt), `lid`
+    // (the roadbed at pavement level, for the stencil), `kerb` (walls, with normals), `markings` (lane
+    // lines) and `plane` (pavement), plus stats.
     function buildGroundGeometry(input) {
         const ways = [];
         (input && Array.isArray(input.carriageways) ? input.carriageways : []).forEach(c => {
@@ -262,7 +305,8 @@
             if (!(half > 0)) return;
             const pts = dedupe(c.pts);
             const drop = Number.isFinite(c.drop) && c.drop > 0 ? c.drop : 0;
-            if (pts.length >= 2) ways.push({ pts, half, drop });
+            const lanes = (Array.isArray(c.lanes) ? c.lanes : []).filter(l => l && Number.isFinite(l.offset)).map(l => ({ offset: l.offset, dir: l.dir < 0 ? -1 : 1 }));
+            if (pts.length >= 2) ways.push({ pts, half, drop, lanes });
         });
 
         // Where a way ends on another way's vertex, the two ribbons meet with notched corners; a
@@ -318,8 +362,28 @@
 
         const index = createAsphaltIndex(ways, Array.from(junctions.values()));
         const walls = createWallList();
-        kerbEdges.forEach(k => { if (k.height > 0) kerbAlong(k.edge, k.height, index, walls); });
+        kerbEdges.forEach(k => { if (k.height > 0) runsAlong(k.edge, index, undefined, (a, b) => walls.wall(a, b, k.height)); });
         const kerb = walls.finish();
+
+        // Lane lines: one per boundary between adjacent lanes, on the sunk surface, stopping at every
+        // other way's asphalt and at the junction discs.
+        const marks = createTriangleList();
+        let markingM = 0;
+        ways.forEach((way, wayIndex) => {
+            const lanes = way.lanes.slice().sort((p, q) => p.offset - q.offset);
+            if (lanes.length < 2) return;
+            const lift = MARK_LIFT_M - way.drop;
+            const { pieces } = splitAtSharpBends(way.pts, way.half);
+            for (let i = 0; i < lanes.length - 1; i++) {
+                const offset = (lanes[i].offset + lanes[i + 1].offset) / 2;
+                const dashed = lanes[i].dir === lanes[i + 1].dir;
+                pieces.forEach(piece => {
+                    const line = offsetPiece(piece, offset).map(p => [p[0], p[1], (p[2] || 0) + lift]);
+                    runsAlong(line, index, wayIndex, (a, b) => { markingM += paintRun(marks, a, b, dashed); });
+                });
+            }
+        });
+        const markings = marks.finish().roadbed;
 
         let plane = null;
         const b = input && input.bounds;
@@ -332,14 +396,18 @@
         }
 
         return {
-            roadbed, lid, kerb, plane,
+            roadbed, lid, kerb, markings, plane,
             stats: {
                 ways: ways.length, triangles: roadbed.triangles + (plane ? 2 : 0), junctions: junctions.size,
                 roundedBends, roadAreaM2: Math.round(roadAreaM2), dropped: roadbed.dropped,
-                kerbM: Math.round(kerb.lengthM), kerbTriangles: kerb.triangles
+                kerbM: Math.round(kerb.lengthM), kerbTriangles: kerb.triangles,
+                markingM: Math.round(markingM), markingTriangles: markings.triangles
             }
         };
     }
 
-    return { buildGroundGeometry, ribbonEdges, splitAtSharpBends, nodeKey, NODE_SNAP_M, MITRE_LIMIT, DISC_SEGMENTS, KERB_TOL_M };
+    return {
+        buildGroundGeometry, ribbonEdges, splitAtSharpBends, nodeKey,
+        NODE_SNAP_M, MITRE_LIMIT, DISC_SEGMENTS, KERB_TOL_M, MARK_HALF_M, MARK_DASH_M, MARK_GAP_M, MARK_LIFT_M
+    };
 });

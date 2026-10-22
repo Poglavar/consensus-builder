@@ -4,8 +4,9 @@
 // plane and the parcel slabs need holes over it: the roadbed's lid (the same triangles at pavement
 // level) is drawn first into the stencil buffer only, and every pavement-level material skips the
 // pixels it marked (`cutHoles`). Depth sorts the rest: the kerb walls show on the far side of a
-// street, the near pavement edge hides the floor behind it. Four draw calls, no textures, no
-// per-frame work.
+// street, the near pavement edge hides the floor behind it. Lane lines are flat strips just above
+// the asphalt; the pavement (and, in three-mode, the cadastral road parcels) carries a procedural
+// paving pattern in its shader instead of a texture image. Five draw calls, no per-frame work.
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -17,16 +18,34 @@
     // asphalt is darker than the 0xb0b0b0 road parcels so a street reads as a street; the kerb is
     // darker than both, because a sunlit vertical face renders brighter than a flat one and a
     // light kerb read as a white line instead of a step.
-    const COLORS = Object.freeze({ pavement: 0xcdccc8, asphalt: 0x7d8085, kerb: 0x8e8c87 });
-    // The pavement is coplanar with the parcel slabs and stays under them by polygon offset.
-    const OFFSET = Object.freeze({ pavement: 3 });
+    const COLORS = Object.freeze({ pavement: 0xcdccc8, asphalt: 0x5b5d61, kerb: 0x8e8c87, markings: 0xe9e7df });
+    // The pavement is coplanar with the parcel slabs and stays under them by polygon offset; the
+    // lane lines sit 1 cm over the asphalt and are pulled forward so they never sink into it at distance.
+    const OFFSET = Object.freeze({ pavement: 3, markings: -1 });
+    // Procedural paving: slabs this big, a thin darker joint between them and a faint per-slab tint.
+    const PAVE_SLAB_M = 1.5;
+    // Runs after Lambert's colour setup. `vPaveXY` is the local XY in metres; the joint is
+    // anti-aliased over one pixel (fwidth) and its weight shrinks as a pixel outgrows the joint, so
+    // distant pavement settles to a flat tone instead of moiré.
+    const PAVE_FRAGMENT = [
+        '{',
+        '    vec2 slab = vPaveXY / uPaveSlab;',
+        '    vec2 cell = floor(slab);',
+        '    vec2 edge = abs(fract(slab) - 0.5);',
+        '    vec2 px = fwidth(slab);',
+        '    vec2 joint = smoothstep(vec2(0.47) - px, vec2(0.47), edge);',
+        '    float j = max(joint.x, joint.y) * clamp(0.06 / max(max(px.x, px.y), 1e-4), 0.0, 1.0);',
+        '    float tint = fract(sin(dot(cell + 0.5, vec2(12.9898, 78.233))) * 43758.5453);',
+        '    diffuseColor.rgb *= (0.975 + 0.05 * tint) * (1.0 - 0.12 * j);',
+        '}'
+    ].join('\n');
     // The stencil bit the lid marks. The ghost-building pass owns ref 1 under a full mask, but it
     // runs in the transparent list after every opaque surface here has been drawn, so the two
     // never meet; a NotEqual-1 test also passes on this bit exactly as it does on a clear pixel.
     const STENCIL_BIT = 0x02;
     // Draw order inside the opaque list: the lid must mark the stencil before any pavement-level
     // surface tests it; everything else is sorted by depth.
-    const ORDER = Object.freeze({ lid: -20, roadbed: -10, kerb: -10, pavement: 0 });
+    const ORDER = Object.freeze({ lid: -20, roadbed: -10, kerb: -10, markings: -10, pavement: 0 });
 
     function create(options) {
         const THREE = options.THREE;
@@ -48,6 +67,27 @@
             return material;
         }
 
+        // Give a pavement-level material the paving pattern. `metresPerUnit` converts the mesh's local
+        // XY to metres (1 for the ground group, 1/k for a mesh laid out in scene units).
+        function paveTexture(material, metresPerUnit) {
+            material.userData = material.userData || {};
+            const uniforms = material.userData.cbPave || (material.userData.cbPave = { uPaveScale: { value: 1 }, uPaveSlab: { value: PAVE_SLAB_M } });
+            uniforms.uPaveScale.value = Number.isFinite(metresPerUnit) && metresPerUnit > 0 ? metresPerUnit : 1;
+            material.onBeforeCompile = function (shader) {
+                shader.uniforms.uPaveScale = uniforms.uPaveScale;
+                shader.uniforms.uPaveSlab = uniforms.uPaveSlab;
+                shader.vertexShader = shader.vertexShader
+                    .replace('#include <common>', '#include <common>\nvarying vec2 vPaveXY;\nuniform float uPaveScale;')
+                    .replace('#include <begin_vertex>', '#include <begin_vertex>\nvPaveXY = transformed.xy * uPaveScale;');
+                shader.fragmentShader = shader.fragmentShader
+                    .replace('#include <common>', '#include <common>\nvarying vec2 vPaveXY;\nuniform float uPaveSlab;')
+                    .replace('#include <color_fragment>', '#include <color_fragment>\n' + PAVE_FRAGMENT);
+            };
+            material.customProgramCacheKey = function () { return 'cb-pave'; };
+            material.needsUpdate = true;
+            return material;
+        }
+
         const materials = {
             // Stencil only: no colour, no depth, marks the lid's footprint wherever it projects.
             lid: new THREE.MeshBasicMaterial({
@@ -57,7 +97,8 @@
             }),
             asphalt: new THREE.MeshLambertMaterial({ color: COLORS.asphalt }),
             kerb: new THREE.MeshLambertMaterial({ color: COLORS.kerb, side: THREE.DoubleSide }),
-            pavement: cutHoles(new THREE.MeshLambertMaterial({ color: COLORS.pavement, polygonOffset: true, polygonOffsetFactor: OFFSET.pavement, polygonOffsetUnits: OFFSET.pavement }))
+            markings: new THREE.MeshLambertMaterial({ color: COLORS.markings, polygonOffset: true, polygonOffsetFactor: OFFSET.markings, polygonOffsetUnits: OFFSET.markings }),
+            pavement: paveTexture(cutHoles(new THREE.MeshLambertMaterial({ color: COLORS.pavement, polygonOffset: true, polygonOffsetFactor: OFFSET.pavement, polygonOffsetUnits: OFFSET.pavement })), 1)
         };
         let meshes = [];
         let lastStats = null;
@@ -99,6 +140,7 @@
             add(result.lid, materials.lid, 'ground-lid', ORDER.lid);
             add(result.roadbed, materials.asphalt, 'ground-roadbed', ORDER.roadbed);
             add(result.kerb, materials.kerb, 'ground-kerb', ORDER.kerb);
+            add(result.markings, materials.markings, 'ground-markings', ORDER.markings);
             add(result.plane, materials.pavement, 'ground-pavement', ORDER.pavement);
             lastStats = result.stats || null;
         }
@@ -109,10 +151,10 @@
         }
 
         return {
-            group, setGeometry, clear, dispose, cutHoles,
+            group, setGeometry, clear, dispose, cutHoles, paveTexture,
             stats: () => ({ drawCalls: meshes.length, ...(lastStats || {}) })
         };
     }
 
-    return { create, COLORS, OFFSET, ORDER, STENCIL_BIT };
+    return { create, COLORS, OFFSET, ORDER, STENCIL_BIT, PAVE_SLAB_M };
 });
