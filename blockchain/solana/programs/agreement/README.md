@@ -12,7 +12,7 @@ the outcome, and this program checks that attestation plus the escrow. JS codec:
 `window.AgreementClient` in the browser, `require` in node); the browser drives it through
 `frontend/js/solana/agreement-bridge.js`.
 
-**Status (2026-10-21): written; `anchor build -p agreement` passes (anchor-lang 0.30.1, CLI 0.32.1);
+**Status (2026-10-23): deployed to devnet (see Program id).** Earlier: `anchor build -p agreement` passes (anchor-lang 0.30.1, CLI 0.32.1);
 not deployed, not tested** (M3 rule: all code first, then every test in one pass).
 [`../../idl/agreement.json`](../../idl/agreement.json) is the generated IDL.
 
@@ -142,10 +142,10 @@ decision: schemaDefinition(
 
 ## Program id
 
-`Agreement1111111111111111111111111111111111` is a readable placeholder (the convention of the first
-programs), in `declare_id!`, both `Anchor.toml` sections and `frontend/js/solana/agreement-client.js`. It works for a
-localnet `anchor test` (Anchor loads the program at that address at genesis), but nobody holds its
-key, so it can never be deployed. Before the first devnet deploy, generate the program keypair, put
-its public key in those four places by hand (never `anchor keys sync`; see `../../README.md`),
-rebuild, copy `target/idl/agreement.json` to `idl/`, and deploy this program alone:
-`anchor deploy --program-name agreement --provider.cluster devnet`.
+`GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ` on devnet (deployed 2026-10-23, upgrade authority the
+deployer wallet `~/.config/solana/id.json`), in `declare_id!`, both `Anchor.toml` sections,
+`frontend/js/solana/agreement-client.js` and `idl/agreement.json`. The program keypair is kept outside
+the repo (`~/.config/solana/program-keys/`). `proposal_market` and `proposal_pledge` compile this id in
+(they read agreement accounts), so a change of id means rebuilding and upgrading both as well. Upgrade
+one program at a time, never with `anchor keys sync` (see `../../README.md`):
+`solana program deploy target/deploy/agreement.so --program-id <id> --url devnet`.

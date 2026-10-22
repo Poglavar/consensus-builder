@@ -57,7 +57,7 @@ describe('buildAddressBook', () => {
         expect(book.entryFor('3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg')).toBeNull();
         expect(book.labelFor('GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB').label).toBe('proposal_market program');
         expect(book.labelFor('1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g').label).toBe('proposal_pledge program');
-        expect(AGREEMENT_PROGRAM_ID).toBe('Agreement1111111111111111111111111111111111');
+        expect(AGREEMENT_PROGRAM_ID).toBe('GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ');
         expect(book.labelFor(AGREEMENT_PROGRAM_ID)).toMatchObject({ label: 'agreement program', kind: 'program' });
     });
 

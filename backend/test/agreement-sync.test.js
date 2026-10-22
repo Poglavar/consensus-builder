@@ -124,7 +124,7 @@ describe('recordFromPublished', () => {
     });
 
     it('keeps the sponsor it was proposed with, and the index\'s chain account once minted', () => {
-        const onchain = { chain: 'solana', cluster: 'devnet', programId: 'Agreement1111111111111111111111111111111111', account: ACCOUNT,
+        const onchain = { chain: 'solana', cluster: 'devnet', programId: 'GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ', account: ACCOUNT,
             sponsor: SPONSOR, status: 'active', decision: 'pending', observedAt: '2026-10-22T08:00:00.000Z' };
         const minted = AgreementSync.recordFromPublished({ ...row, onchain }, { id: 'ag-imported', apiBase: API, localIdOf });
         expect(minted.published).toEqual({ cid: row.cid, publishedAt: row.createdAt, apiBase: API, sponsor: SPONSOR });
@@ -327,7 +327,7 @@ describe('fetchAgreement and refusals', () => {
 const PROPOSED_CID = AgreementRecord.publishedCid({ ...agreement(), sponsor: SPONSOR });
 const proposed = (extra = {}) => agreement({ published: { cid: PROPOSED_CID, publishedAt: '2026-10-21T12:00:05.000Z', apiBase: API, sponsor: SPONSOR }, ...extra });
 const indexed = ({ cluster, account }) => ({
-    chain: 'solana', cluster, programId: 'Agreement1111111111111111111111111111111111', account, sponsor: SPONSOR, lens: SPONSOR,
+    chain: 'solana', cluster, programId: 'GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ', account, sponsor: SPONSOR, lens: SPONSOR,
     status: 'active', decision: 'pending', deadline: null, requiredLamports: '0', escrowLamports: '0',
     executedAt: null, observedAt: '2026-10-22T08:00:00.000Z', observedSlot: 4321
 });

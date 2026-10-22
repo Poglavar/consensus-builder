@@ -28,7 +28,7 @@ Playwright 621 of 645 (26 of the 28 rerun pass alone; dynamic-factory-controls p
 worker; schelling-plan.spec.ts:87 fails headed on the base branch too), control contract 862 sites,
 feature inventory 109 commands. Needs the user: deploy the `agreement` program (the id is still the
 placeholder, so nothing can mint), seed devnet owners (`scripts/seed-lens-owners.mjs`),
-`AGREEMENT_LIFECYCLE_LENS_OPERATOR_TOKEN` for live runs, `scripts/drop-proposal-era.mjs --apply`
+`AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN` for live runs, `scripts/drop-proposal-era.mjs --apply`
 after a backup (dry run only so far), and the demo content recreated through the restatement scripts.
 Leftovers to flatten when touched: `readjustment-contributions.js` is loaded but unused;
 `subdivision.js planCreateVerdict` and `formation-edit.js clipPiecesByTaking` are used only by

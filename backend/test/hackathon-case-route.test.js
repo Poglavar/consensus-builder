@@ -205,7 +205,7 @@ describe('hackathon case readers', () => {
         const pool = poolOf([{
             event_id: 'e1', event_type: 'agreement_lifecycle', subject_type: 'agreement', subject_id: ACCOUNT, outcome: 'executed',
             source_url: 'https://explorer.example/tx', source_hash: 'sha256:abc', source_observed_at: '2026-10-01T00:00:00.000Z',
-            attester: 'Agreement1111111111111111111111111111111111', transaction_signature: 'exec-tx', evidence: {}, created_at: '2026-10-01T00:05:00.000Z'
+            attester: 'GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ', transaction_signature: 'exec-tx', evidence: {}, created_at: '2026-10-01T00:05:00.000Z'
         }]);
         const events = await loadOracleEvents(pool, { account: ACCOUNT, cid: CID });
         expect(pool.query.mock.calls[0][1]).toEqual([ACCOUNT, CID]);

@@ -55,7 +55,7 @@ use sas_attestation::{PayloadReader, SasError, SAS_PROGRAM_ID};
 
 // Placeholder id, never deployed. Whoever deploys generates the program keypair and replaces it here,
 // in Anchor.toml and in frontend/js/solana/agreement-client.js (programs/agreement/README.md, "Program id").
-declare_id!("Agreement1111111111111111111111111111111111");
+declare_id!("GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ");
 
 pub const AGREEMENT_SEED: &[u8] = b"agreement";
 /// Longest CID an agreement can store (a raw sha2-256 CIDv1 in base32 is 59 bytes).

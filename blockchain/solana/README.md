@@ -12,13 +12,12 @@ Solana equivalents of the EVM ParcelNFT and ProposalNFT contracts.
   evidence, optionally bound to an agreement's lens
 - **proposal_pledge**: USDC donations and soft pledges on an agreement; its authority (the sponsor)
   is the beneficiary
-- Since 2026-10-22 (source only, not deployed) `proposal_market` and `proposal_pledge` read
+- Since 2026-10-22 (upgraded on devnet 2026-10-23) `proposal_market` and `proposal_pledge` read
   `agreement` accounts, never `proposal_nft`: owner the agreement program, the Agreement
   discriminator, status at byte 136, through `agreement::read_agreement_view`. They keep their names,
   ids and the `proposal` account and field names (the IDL interfaces are unchanged); that word now
-  names the agreement account. Renaming them is a deploy-time matter. The devnet binaries at these
-  ids still read `proposal_nft` until they are redeployed.
-- **agreement** (M3 of `../../plan-design-agreement.md`; placeholder id, not deployed): one account
+  names the agreement account. Renaming them is a deploy-time matter.
+- **agreement** (M3 of `../../plan-design-agreement.md`; devnet `GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ`): one account
   per agreement (PDA of its sponsor and CID) with a SOL escrow, settled by its lens's
   AgreementDecision-v1 attestation;
   replaces the per-proposal consent machinery. See [`programs/agreement/README.md`](programs/agreement/README.md)

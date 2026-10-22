@@ -5,16 +5,16 @@ resolution = true
 skip-lint = false
 
 [programs.devnet]
-# agreement: placeholder id, not deployed; regenerate at deploy (programs/agreement/README.md).
-agreement = "Agreement1111111111111111111111111111111111"
+# agreement: deployed to devnet 2026-10-23 (programs/agreement/README.md).
+agreement = "GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ"
 parcel_nft = "4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1"
 proposal_market = "GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB"
 proposal_nft = "3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg"
 proposal_pledge = "1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g"
 
 [programs.localnet]
-# agreement: placeholder id, not deployed; regenerate at deploy (programs/agreement/README.md).
-agreement = "Agreement1111111111111111111111111111111111"
+# agreement: deployed to devnet 2026-10-23 (programs/agreement/README.md).
+agreement = "GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ"
 parcel_nft = "4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1"
 proposal_market = "GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB"
 proposal_nft = "3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg"
