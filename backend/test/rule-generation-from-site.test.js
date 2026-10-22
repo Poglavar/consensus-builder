@@ -34,6 +34,15 @@ const ROW_WITH_SLIVER = [
     poly('C', [[40, 0], [60, 0], [60, 30], [40, 30]])
 ];
 
+// Four parcels whose interior hides a 1 cm gap closed on both ends: two titles that do not quite
+// meet, between neighbours that do. HM Land Registry's INSPIRE polygons are full of these.
+const BLOCK_WITH_HAIRLINE = [
+    poly('W', [[0, 0], [20, 0], [20, 15], [20, 30], [0, 30]]),
+    poly('S', [[20, 0], [40, 0], [40, 15], [20, 15]]),
+    poly('N', [[20, 15.01], [40, 15.01], [40, 30], [20, 30]]),
+    poly('E', [[40, 0], [60, 0], [60, 30], [40, 30], [40, 15.01], [40, 15]])
+];
+
 let blockRingOutline;
 beforeAll(() => {
     const noop = () => {};
@@ -79,5 +88,13 @@ describe('the Block massing from the stored site equals the massing from the liv
         // the massing is the same either way.
         expect(siteDraft.siteFromFeatures(ROW_WITH_SLIVER).coordinates).toHaveLength(2);
         expect(differenceM2(live, stored)).toBeLessThan(0.01);
+    });
+
+    // A kept hairline hole is widened by the setback into a 4 m gap through the building, and the
+    // courtyard inset splits around it. Placing a Block in Hemel Hempstead showed both.
+    it('on parcels with a hairline gap inside the block', () => {
+        const site = siteDraft.siteFromFeatures(BLOCK_WITH_HAIRLINE);
+        expect(site.coordinates.map(polygon => polygon.length)).toEqual([1]);
+        expect(differenceM2(massing(fromParcels(BLOCK_WITH_HAIRLINE)), massing(fromStoredSite(BLOCK_WITH_HAIRLINE)))).toBeLessThan(0.01);
     });
 });

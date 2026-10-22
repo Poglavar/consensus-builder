@@ -27,6 +27,12 @@
         return api;
     }
 
+    function siteClipApi() {
+        const api = (global && global.__siteClip) || (typeof require === 'function' ? require('./site-clip.js') : null);
+        if (!api || typeof api.fillMicroHoles !== 'function') throw new Error('site-clip.js is not loaded');
+        return api;
+    }
+
     function T(options) {
         if (options && options.turf) return options.turf;
         if (typeof turf !== 'undefined' && turf) return turf; // eslint-disable-line no-undef
@@ -105,7 +111,9 @@
                 throw clipFailureApi().clipFailure('union', error, { site: 'site-draft.siteFromFeatures' }, [acc, f]);
             }
         });
-        return acc ? toMultiPolygon(acc.geometry) : null;
+        // Hairline gaps between parcels that do not quite meet are nobody's ground; kept as holes,
+        // a rule's setback widens them into gaps through the building.
+        return acc ? toMultiPolygon(siteClipApi().fillMicroHoles(acc, { turf: t }).geometry) : null;
     }
 
     function siteAreaM2(site, options) {

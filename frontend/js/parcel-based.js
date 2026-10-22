@@ -342,7 +342,10 @@
             if (!merged) throw parcelBasedClipFailure('union', new Error('union came back empty'), 'parcel-based.siteFeature', [site, feature]);
             site = merged;
         }
-        return site;
+        // Hairline gaps between parcels that do not quite meet are nobody's ground, not holes.
+        const siteClip = (typeof window !== 'undefined' && window.__siteClip)
+            || (typeof require === 'function' ? require('./proposals/site-clip.js') : null);
+        return siteClip.fillMicroHoles(site, { turf });
     }
 
     // A polygon clip that cannot be done, typed and counted (parcel-arrangement.js ClipFailure).
