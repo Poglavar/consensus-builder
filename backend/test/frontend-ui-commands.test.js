@@ -50,6 +50,10 @@ const NOT_COMMANDS = {
     'mode-realistic-toggle': 'map view control',
     'mode-ai-toggle': 'map view control',
     'planning-reroll': 'example build-out view control, handled by PlanningViews',
+    'sun-enabled': 'model-view lighting setting, handled by three-sun.js',
+    'sun-time': 'model-view lighting setting, handled by three-sun.js',
+    'sun-date': 'model-view lighting setting, handled by three-sun.js',
+    'sun-now': 'model-view lighting setting, handled by three-sun.js',
     'planning-view-retry': 'retry the current source request after an error',
     'planning-open-model': 'same model navigation as mode-3d-toggle',
     areaMonitorUploadButton: 'permanently disabled (upload not built)',
@@ -419,9 +423,9 @@ describe('the floating shell', () => {
     it('wires every shell button to a sheet that exists', () => {
         const sheets = new Set(openingTags(shellHtml, 'section')
             .filter(tag => /class="map-sheet\b/.test(tag)).map(tag => attr(tag, 'id')));
-        expect([...sheets].sort()).toEqual(['activity-sheet', 'bets-sheet', 'layers-sheet', 'measurement-sheet', 'planning-views', 'proposals-sheet', 'settings-sheet']);
+        expect([...sheets].sort()).toEqual(['activity-sheet', 'bets-sheet', 'layers-sheet', 'measurement-sheet', 'planning-views', 'proposals-sheet', 'settings-sheet', 'sun-sheet']);
         const triggers = openingTags(shellHtml, 'button').filter(tag => attr(tag, 'data-sheet-target') !== null);
-        expect(triggers.length).toBe(7);
+        expect(triggers.length).toBe(8);
         for (const tag of triggers) {
             const target = attr(tag, 'data-sheet-target');
             expect(sheets.has(target), target).toBe(true);

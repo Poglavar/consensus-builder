@@ -6533,6 +6533,18 @@
         }
     },
     "threeMode": {
+        "sun": {
+            "title": "Sun and shadows",
+            "enabled": "Show sun and shadows",
+            "when": "When",
+            "time": "Time of day",
+            "date": "Date",
+            "now": "Now",
+            "sunrise": "Sunrise {{time}}",
+            "sunset": "Sunset {{time}}",
+            "zone": "Local time at this place ({{zone}})",
+            "belowHorizon": "The sun is below the horizon at this time."
+        },
         "walkPickHint": "Click the ground where you want to start walking (Esc cancels).",
         "controls": {
             "buildingRenderingAria": "Building rendering",

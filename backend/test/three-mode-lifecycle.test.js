@@ -119,6 +119,7 @@ it('resolves a caller waiting on scene readiness as false when the pending scene
         xrayNote: null,
         floorCutawayControl: null,
         floorCutawaySelect: null,
+        sunLayer: null,
         rerollBtn: null,
         rerollBusy: false,
         sceneLoadGeometry: null,

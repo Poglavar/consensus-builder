@@ -1,0 +1,55 @@
+/* Sun and shadows sheet and button in the 3D model view (js/three-sun.js, #sun-sheet in index.html).
+   The button takes the mode strip's utility slot through .map-utility-button (css/map-shell.css). */
+
+.sun-controls {
+    margin: var(--cb-space-3) 0 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+}
+
+.sun-controls:disabled {
+    opacity: 0.5;
+}
+
+.sun-time-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--cb-space-2);
+}
+
+.sun-time-value {
+    font-size: var(--cb-text-lg);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.sun-time-slider {
+    width: 100%;
+    margin: var(--cb-space-2) 0 var(--cb-space-1);
+}
+
+.sun-time-bounds {
+    display: flex;
+    justify-content: space-between;
+    color: var(--sheet-muted);
+    font-size: var(--cb-text-xs);
+    font-variant-numeric: tabular-nums;
+}
+
+.sun-date-row {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--cb-space-2);
+    margin: var(--cb-space-3) 0;
+}
+
+.sun-date-row .sheet-field {
+    flex: 1 1 auto;
+}
+
+/* Off: the sun stays reachable, but reads as switched off. */
+#sun-button[data-sun="off"] i {
+    opacity: 0.45;
+}

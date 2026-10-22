@@ -6589,6 +6589,18 @@
         }
     },
     "threeMode": {
+        "sun": {
+            "title": "Sunce i sjene",
+            "enabled": "Prikaži sunce i sjene",
+            "when": "Kada",
+            "time": "Doba dana",
+            "date": "Datum",
+            "now": "Sada",
+            "sunrise": "Izlazak {{time}}",
+            "sunset": "Zalazak {{time}}",
+            "zone": "Lokalno vrijeme na ovom mjestu ({{zone}})",
+            "belowHorizon": "Sunce je u to vrijeme ispod obzora."
+        },
         "walkPickHint": "Kliknite tlo gdje želite započeti šetnju (Esc odustaje).",
         "controls": {
             "buildingRenderingAria": "Prikaz zgrada",

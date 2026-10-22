@@ -230,6 +230,7 @@
     let treesEnabled = true; // user toggle (default ON); real value loaded from storage on 3D init
     let lifeGroup = null; // schematic people and vehicles (three-life.js), toggleable layer
     let lifeLayer = null; // __threeLife instance owning the instanced meshes of the current scene
+    let sunLayer = null; // __threeSun attachment: the directional light as the sun, with shadows
     let lifeEnabled = true; // user toggle (default ON); real value loaded from storage on 3D init
     let lifeToggleEl = null;
     let groundLayer = null; // __threeGround instance: OSM-derived asphalt roadbed + pavement plane under the scene
@@ -7326,6 +7327,17 @@
         const dir = new THREE.DirectionalLight(0xffffff, 0.8 * Math.PI);
         dir.position.set(200, 200, 400);
         scene.add(dir);
+        // The same light becomes the sun over the scene's place, with shadows (three-sun.js).
+        sunLayer = window.__threeSun.attach({
+            THREE, scene, renderer, light: dir, hemi,
+            getOrigin: () => xyToLatLng(0, 0),
+            getK: lifeMercatorK,
+            getCamera: () => camera,
+            getTarget: () => controls?.target || null,
+            isPhotoActive: () => !!window.PhotorealMode?.isActive?.(),
+            invalidate: () => invalidateThreeView(),
+            excludedRoots: () => [lifeGroup]
+        });
 
         // Groups
         flatGroup = new THREE.Group();
@@ -7793,6 +7805,7 @@
     function renderFrame(now) {
         frameId = null;
         if (!isActive || !loopRunning || document.hidden) return;
+        const wasInvalidated = renderInvalidated;
         renderInvalidated = false;
         const perfT0 = perfReadout ? performance.now() : 0;
         stepManualAutoRotate(now);
@@ -7810,6 +7823,9 @@
             try { hook(now); } catch (error) { console.error('[3D] frame hook failed', error); }
         }
         const perfT1 = perfReadout ? performance.now() : 0;
+        // Frames that only advance the life layer reuse the last shadow map.
+        sunLayer?.beforeRender({ fullFrame: wasInvalidated || renderInvalidated || moving || !!controls?.autoRotate
+            || manualAutoRotateActive || frameHooks.length === 0 });
         renderScene();
         if (perfReadout) recordPerfFrame(now, perfT0, perfT1, performance.now());
         const hooksOnly = !renderInvalidated && !moving && !controls?.autoRotate && !manualAutoRotateActive && frameHooks.length > 0;
@@ -7937,6 +7953,8 @@
         xrayNote = null;
         floorCutawayControl = null;
         floorCutawaySelect = null;
+        sunLayer?.detach();
+        sunLayer = null;
         if (renderer) {
             try { renderer.forceContextLoss && renderer.forceContextLoss(); } catch (_) { }
             try { renderer.dispose(); } catch (_) { }
