@@ -187,16 +187,14 @@
         return entry;
     }
 
-    // The proposals on these parcels, the way the parcel panel lists one parcel's (Canton proposals
-    // have their own section and are left out), plus the published ones this browser does not hold.
+    // The proposals on these parcels, the way the parcel panel lists one parcel's, plus the published
+    // ones this browser does not hold.
     // onPublished runs once when a server answer that was not yet known arrives (the same function
     // passed by several renders while it is on its way runs once).
     function lookup(parcelIds, { onPublished } = {}) {
         const ids = Array.from(new Set((parcelIds || []).map(String).filter(Boolean)));
         const store = storage();
-        const isCanton = root.CantonMode && root.CantonMode.isCantonProposal;
-        const local = id => (store && typeof store.getProposalsForParcel === 'function' ? store.getProposalsForParcel(id) : [])
-            .filter(proposal => !(isCanton && isCanton(proposal)));
+        const local = id => (store && typeof store.getProposalsForParcel === 'function' ? store.getProposalsForParcel(id) : []);
         const cadastreIds = Array.from(new Set(ids.flatMap(cadastreIdsOf)));
         const state = cadastreIds.length ? loadPublished(cadastreIds) : { summaries: [], error: null, promise: null };
         if (state.promise && typeof onPublished === 'function') state.listeners.add(onPublished);

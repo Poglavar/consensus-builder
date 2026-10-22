@@ -80,14 +80,14 @@
         const connection = await root.SolanaChainDataLoader.getVerifiedConnection('devnet');
         const wallet = root.solanaWalletManager?.getProvider?.()?.publicKey || null;
         const [marketAddress] = client.getMarketPda(proposal);
-        const [market, chainStatus] = await Promise.all([client.readMarket(connection, proposal), readChainStatus(connection, proposal)]);
-        if (!market) return { market: null, marketAddress: marketAddress.toBase58(), wallet: wallet?.toBase58?.() || null, chainStatus };
+        const [market, subject] = await Promise.all([client.readMarket(connection, proposal), readAgreementState(connection, proposal)]);
+        if (!market) return { market: null, marketAddress: marketAddress.toBase58(), wallet: wallet?.toBase58?.() || null, ...subject };
         if (market.stakeMint !== DEVNET_USDC_MINT) throw new Error('Market stake mint does not match devnet USDC.');
         const [yes, no] = wallet ? await Promise.all([
             client.readPosition(connection, proposal, wallet, client.constants.SIDE_YES),
             client.readPosition(connection, proposal, wallet, client.constants.SIDE_NO)
         ]) : [null, null];
-        return { market, marketAddress: marketAddress.toBase58(), yes, no, wallet: wallet?.toBase58?.() || null, chainStatus };
+        return { market, marketAddress: marketAddress.toBase58(), yes, no, wallet: wallet?.toBase58?.() || null, ...subject };
     }
 
     // The connected wallet's positions on many proposals' pools in one RPC round trip (the Bets sheet
@@ -123,13 +123,19 @@
         return result;
     }
 
-    // The proposal account's own status name ('Active' | 'Executed' | 'Cancelled' | 'Expired'), which is
-    // what the market program resolves from. A missing or invalid account fails the summary;
-    // it must not make a market look like a valid pool with an unknown subject.
-    async function readChainStatus(connection, proposal) {
-        const decoded = await root.SolanaAcceptanceClient.fetchProposal(connection, proposal);
-        if (!decoded?.status || decoded.status === 'Unknown') throw new Error('Proposal account status is unavailable.');
-        return decoded.status;
+    // The market's subject is an agreement account (M3): its own status name ('Active' | 'Executed' |
+    // 'Cancelled' | 'Expired', proposal_nft's codes), which is what the market resolves from, and its
+    // deadline as an ISO time (null: it has none, stored as 0), after which it can no longer execute.
+    // A missing or invalid account fails the summary; it must not make a market look like a valid pool
+    // with an unknown subject, nor a deadline it could not read look like none.
+    async function readAgreementState(connection, proposal) {
+        const decoded = await root.AgreementClient.fetchAgreement(connection, { address: proposal });
+        if (!decoded?.status || /^Unknown/.test(decoded.status)) throw new Error('Agreement account status is unavailable.');
+        if (!Number.isSafeInteger(decoded.deadline)) throw new Error('Agreement account deadline is unavailable.');
+        return {
+            chainStatus: decoded.status,
+            deadline: decoded.deadline === 0 ? null : new Date(decoded.deadline * 1000).toISOString()
+        };
     }
 
     async function createMarket(options = {}) {

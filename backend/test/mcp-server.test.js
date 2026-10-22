@@ -1,7 +1,21 @@
+// The stdio MCP server (agents/mcp-server.mjs) over an in-memory transport: its 26 ugt_* tools on
+// designs and agreements, their annotations and argument schemas (CIDs, lamports, confirm: true), and
+// that every call reaches the shared tool surface (ugt-agent-tools.js) only when its arguments validate,
+// with refusals coming back as tool errors.
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import { Client } from '@modelcontextprotocol/client';
 import { InMemoryTransport } from '@modelcontextprotocol/server';
+import { Keypair } from '@solana/web3.js';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createUrbanGameTheoryMcpServer } from '../agents/mcp-server.mjs';
+import { createUrbanGameTheoryTools } from '../agents/ugt-agent-tools.js';
+import { cidOfObject } from '../cid.js';
+
+const CID = cidOfObject({ schema: 'agreement/v1', title: 'An agreement' });
+const DESIGN_CID = cidOfObject({ schema: 'design/v1', title: 'A design' });
+const ACCOUNT = '11111111111111111111111111111111';
 
 let client;
 let server;
@@ -12,6 +26,7 @@ afterEach(async () => {
     client = null;
     server = null;
 });
+
 async function connect(tools) {
     const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
     server = createUrbanGameTheoryMcpServer({ tools });
@@ -19,143 +34,128 @@ async function connect(tools) {
     await Promise.all([server.connect(serverTransport), client.connect(clientTransport)]);
 }
 
+const TOOL_METHODS = [
+    'capabilities', 'getActivity', 'listAgreements', 'getAgreement', 'listAttesters', 'getSupport', 'getOracleEvents',
+    'inspectVerifiedFact', 'publishDesign', 'proposeAgreement', 'mintAgreement', 'fundAgreement', 'betOnAgreement',
+    'buyVerifiedFact', 'requestOwnership', 'pledge', 'donate', 'refundDonation', 'voidPledge', 'revokePledge',
+    'releaseDonations', 'fulfillPledge', 'resolve', 'claim', 'resolveExternal', 'claimExternal'
+];
+
 function stubTools() {
-    return {
-        capabilities: vi.fn(async () => ({ x402: { enabled: true } })),
-        listProposals: vi.fn(async args => ({ proposals: [], args })),
-        getActivity: vi.fn(async () => ({ events: [] })),
-        getSupport: vi.fn(async () => ({ donations: null, pledges: null })),
-        getOracleEvents: vi.fn(async () => ({ events: [] })),
-        listAttesters: vi.fn(async () => ({ members: [] })),
-        requestOwnership: vi.fn(async () => ({ address: 'attestation', accountHash: 'hash' })),
-        mintProposal: vi.fn(async () => ({ signature: 'mint-tx', proposalPda: 'pda' })),
-        inspectVerifiedFact: vi.fn(async () => ({ accepts: [] })),
-        buyVerifiedFact: vi.fn(async () => ({ status: 200 })),
-        submitProposal: vi.fn(async () => ({ status: 201 })),
-        pledge: vi.fn(async () => ({ signature: 'pledge-tx' })),
-        donate: vi.fn(async () => ({ signature: 'donate-tx' })),
-        forecast: vi.fn(async () => ({ stakeSignature: 'stake-tx' })),
-        acceptParcel: vi.fn(async () => ({ signature: 'accept-tx' })),
-        submitVerdict: vi.fn(async () => ({ signature: 'settle-tx', record: 'verdict-record-pda' })),
-        cancel: vi.fn(async () => ({ signature: 'cancel-tx' })),
-        refundDonation: vi.fn(async () => ({ signature: 'refund-tx' })),
-        voidPledge: vi.fn(async () => ({ signature: 'void-tx' })),
-        revokePledge: vi.fn(async () => ({ signature: 'revoke-tx' })),
-        releaseDonations: vi.fn(async () => ({ signature: 'release-tx' })),
-        fulfillPledge: vi.fn(async () => ({ signature: 'fulfill-tx' })),
-        resolve: vi.fn(async () => ({ signature: 'resolve-tx' })),
-        claim: vi.fn(async () => ({ signature: 'claim-tx' })),
-        resolveExternal: vi.fn(async () => ({ signature: 'external-resolve-tx' })),
-        claimExternal: vi.fn(async () => ({ signature: 'external-claim-tx' }))
-    };
+    return Object.fromEntries(TOOL_METHODS.map(name => [name, vi.fn(async args => ({ tool: name, args }))]));
+}
+
+async function toolsByName() {
+    return Object.fromEntries((await client.listTools()).tools.map(tool => [tool.name, tool]));
 }
 
 describe('Urban Game Theory MCP server', () => {
-    it('publishes one tool surface for proposal, support, forecast, activity and oracle facts', async () => {
+    it('publishes one 26-tool surface for designs, agreements, markets, support, activity and oracle facts', async () => {
         await connect(stubTools());
-        const response = await client.listTools();
-        const names = response.tools.map(tool => tool.name);
-
+        const names = (await client.listTools()).tools.map(tool => tool.name);
         expect(names).toEqual([
-            'ugt_capabilities', 'ugt_list_proposals', 'ugt_activity', 'ugt_support_status',
-            'ugt_oracle_events', 'ugt_list_attesters', 'ugt_request_ownership', 'ugt_mint_proposal',
-            'ugt_inspect_verified_fact', 'ugt_buy_verified_fact',
-            'ugt_submit_proposal', 'ugt_pledge', 'ugt_donate', 'ugt_forecast',
-            'ugt_cancel_proposal', 'ugt_accept_parcel', 'ugt_submit_verdict', 'ugt_refund_donation', 'ugt_void_pledge',
-            'ugt_revoke_pledge', 'ugt_release_donations', 'ugt_fulfill_pledge',
-            'ugt_resolve_market', 'ugt_claim_market',
-            'ugt_resolve_external_market', 'ugt_claim_external_market'
+            'ugt_capabilities', 'ugt_activity', 'ugt_list_agreements', 'ugt_get_agreement', 'ugt_list_attesters',
+            'ugt_support_status', 'ugt_oracle_events', 'ugt_inspect_verified_fact', 'ugt_publish_design',
+            'ugt_propose_agreement', 'ugt_mint_agreement', 'ugt_fund_agreement', 'ugt_bet_on_agreement',
+            'ugt_buy_verified_fact', 'ugt_request_ownership', 'ugt_pledge', 'ugt_donate', 'ugt_refund_donation',
+            'ugt_void_pledge', 'ugt_revoke_pledge', 'ugt_release_donations', 'ugt_fulfill_pledge',
+            'ugt_resolve_market', 'ugt_claim_market', 'ugt_resolve_external_market', 'ugt_claim_external_market'
         ]);
-        expect(response.tools.find(tool => tool.name === 'ugt_activity').annotations.readOnlyHint).toBe(true);
-        expect(response.tools.find(tool => tool.name === 'ugt_donate').annotations.destructiveHint).toBe(true);
+        expect(names).toHaveLength(26);
+        expect(names.some(name => /proposal|forecast|verdict|accept/.test(name))).toBe(false);
     });
 
-    it('validates arguments and returns structured tool output', async () => {
-        const tools = stubTools();
-        await connect(tools);
-
-        const result = await client.callTool({
-            name: 'ugt_list_proposals',
-            arguments: { city: 'zagreb', lifecycle: 'Active', limit: 5 }
-        });
-
-        expect(result.isError).not.toBe(true);
-        expect(result.structuredContent).toMatchObject({ proposals: [], args: { city: 'zagreb', lifecycle: 'Active', limit: 5 } });
-        expect(tools.listProposals).toHaveBeenCalledWith({ city: 'zagreb', lifecycle: 'Active', limit: 5 });
+    it('marks reads read-only, publishing additive and idempotent, and chain actions destructive', async () => {
+        await connect(stubTools());
+        const byName = await toolsByName();
+        for (const name of ['ugt_capabilities', 'ugt_activity', 'ugt_list_agreements', 'ugt_get_agreement', 'ugt_list_attesters', 'ugt_support_status', 'ugt_oracle_events', 'ugt_inspect_verified_fact']) {
+            expect(byName[name].annotations).toMatchObject({ readOnlyHint: true, destructiveHint: false });
+        }
+        for (const name of ['ugt_publish_design', 'ugt_propose_agreement']) {
+            expect(byName[name].annotations).toMatchObject({ readOnlyHint: false, destructiveHint: false, idempotentHint: true });
+        }
+        expect(byName.ugt_mint_agreement.annotations).toMatchObject({ destructiveHint: true, idempotentHint: true });
+        expect(byName.ugt_bet_on_agreement.annotations).toMatchObject({ destructiveHint: true, idempotentHint: false });
+        expect(byName.ugt_donate.annotations.destructiveHint).toBe(true);
     });
 
-    it('requires explicit confirmation in every live tool schema', async () => {
-        const tools = stubTools();
-        await connect(tools);
-
-        const result = await client.callTool({
-            name: 'ugt_donate',
-            arguments: { proposalAccount: '11111111111111111111111111111111', amountUsdc: '0.01', operationId: 'once' }
-        });
-
-        expect(result.isError).toBe(true);
-        expect(tools.donate).not.toHaveBeenCalled();
-    });
-
-    it('registers the lens tools with their argument schemas', async () => {
-        const tools = stubTools();
-        await connect(tools);
-        const byName = Object.fromEntries((await client.listTools()).tools.map(tool => [tool.name, tool]));
-
-        expect(byName.ugt_list_attesters.annotations.readOnlyHint).toBe(true);
-        expect(Object.keys(byName.ugt_list_attesters.inputSchema.properties)).toEqual(['kind']);
-
+    it('declares the agreement tools\' arguments: CIDs, whole lamports and confirm', async () => {
+        await connect(stubTools());
+        const byName = await toolsByName();
+        const mint = byName.ugt_mint_agreement.inputSchema;
+        expect(Object.keys(mint.properties)).toEqual(['agreementCid', 'lamports', 'confirm']);
+        expect([...mint.required].sort()).toEqual(['agreementCid', 'confirm', 'lamports']);
+        expect(Object.keys(byName.ugt_bet_on_agreement.inputSchema.properties)).toEqual(['agreementCid', 'side', 'amountUsdc', 'confirm']);
+        expect(byName.ugt_bet_on_agreement.inputSchema.properties.side.enum).toEqual(['yes', 'no']);
+        expect(Object.keys(byName.ugt_propose_agreement.inputSchema.properties)).toEqual(['agreement', 'designs', 'confirm']);
+        expect(Object.keys(byName.ugt_publish_design.inputSchema.properties)).toEqual(['design', 'parcelSourceId', 'confirm']);
+        expect(Object.keys(byName.ugt_list_agreements.inputSchema.properties)).toEqual(['city', 'design', 'parcel', 'limit']);
+        expect(Object.keys(byName.ugt_pledge.inputSchema.properties)).toEqual(['agreementAccount', 'amountUsdc', 'confirm']);
         const ownership = byName.ugt_request_ownership.inputSchema;
         expect(Object.keys(ownership.properties)).toEqual(['serviceUrl', 'parcelUid', 'confirm']);
         expect(ownership.required).toEqual(['serviceUrl', 'parcelUid']);
-
-        const mint = byName.ugt_mint_proposal.inputSchema;
-        expect(Object.keys(mint.properties)).toEqual(['parcelIds', 'site', 'binding', 'lens', 'imageUri', 'isConditional', 'confirm']);
-        expect(mint.required).toEqual(expect.arrayContaining(['lens', 'confirm']));
-        // proposal_nft v3: parcels may be empty when a site (and its server binding) is given.
-        expect(mint.required).not.toContain('parcelIds');
-        expect(mint.properties.parcelIds.minItems).toBeUndefined();
-        expect(mint.properties.site.properties.type.enum).toEqual(['Polygon', 'MultiPolygon']);
-        expect(mint.properties.binding.properties.coverage.enum).toEqual(['complete', 'partial', 'none', 'unknown']);
-        expect(mint.properties.lens.minItems).toBe(1);
-        expect(byName.ugt_mint_proposal.annotations.destructiveHint).toBe(true);
-        expect(byName.ugt_submit_proposal.inputSchema.properties.proposal.properties).toHaveProperty('lens');
     });
 
-    it('refuses a mint without a lens or confirmation before calling the tool', async () => {
+    it('validates arguments and returns structured output, with defaults applied', async () => {
         const tools = stubTools();
         await connect(tools);
-        const lens = '11111111111111111111111111111111';
-        expect((await client.callTool({ name: 'ugt_mint_proposal', arguments: { parcelIds: ['HR-1'], lens: [], confirm: true } })).isError).toBe(true);
-        expect((await client.callTool({ name: 'ugt_mint_proposal', arguments: { parcelIds: ['HR-1'], lens: [lens] } })).isError).toBe(true);
-        expect(tools.mintProposal).not.toHaveBeenCalled();
-        const ok = await client.callTool({ name: 'ugt_mint_proposal', arguments: { parcelIds: ['HR-1'], lens: [lens], confirm: true } });
-        expect(ok.isError).not.toBe(true);
-        expect(tools.mintProposal).toHaveBeenCalledWith({ parcelIds: ['HR-1'], lens: [lens], imageUri: '', isConditional: true, confirm: true });
+        const result = await client.callTool({ name: 'ugt_list_agreements', arguments: { city: 'zagreb', design: DESIGN_CID } });
+        expect(result.isError).not.toBe(true);
+        expect(tools.listAgreements).toHaveBeenCalledWith({ city: 'zagreb', design: DESIGN_CID, limit: 20 });
+        expect(result.structuredContent).toMatchObject({ tool: 'listAgreements', args: { city: 'zagreb', design: DESIGN_CID, limit: 20 } });
+        const bad = await client.callTool({ name: 'ugt_list_agreements', arguments: { design: 'not-a-cid' } });
+        expect(bad.isError).toBe(true);
+        expect(tools.listAgreements).toHaveBeenCalledTimes(1);
     });
 
-    it('registers the attested accept and the verdict tools with their argument schemas, behind confirm', async () => {
+    it('requires confirm: true, a CID and whole lamports before a chain action reaches the tools', async () => {
         const tools = stubTools();
         await connect(tools);
-        const byName = Object.fromEntries((await client.listTools()).tools.map(tool => [tool.name, tool]));
-        expect(byName).not.toHaveProperty('ugt_accept_proposal');
-
-        const accept = byName.ugt_accept_parcel.inputSchema;
-        expect(Object.keys(accept.properties)).toEqual(['proposalAccount', 'parcelId', 'member', 'ownershipAttestation', 'payout', 'confirm']);
-        expect([...accept.required].sort()).toEqual(['confirm', 'member', 'parcelId', 'proposalAccount']);
-        const verdict = byName.ugt_submit_verdict.inputSchema;
-        expect(Object.keys(verdict.properties)).toEqual(['proposalAccount', 'verdictAttestation', 'member', 'confirm']);
-        expect([...verdict.required].sort()).toEqual(['confirm', 'member', 'proposalAccount', 'verdictAttestation']);
-        for (const name of ['ugt_accept_parcel', 'ugt_submit_verdict']) expect(byName[name].annotations.destructiveHint).toBe(true);
-
-        const key = '11111111111111111111111111111111';
-        const unconfirmed = await client.callTool({ name: 'ugt_accept_parcel', arguments: { proposalAccount: key, parcelId: 'HR-1', member: key } });
-        expect(unconfirmed.isError).toBe(true);
-        expect(tools.acceptParcel).not.toHaveBeenCalled();
-        const ok = await client.callTool({ name: 'ugt_accept_parcel', arguments: { proposalAccount: key, parcelId: 'HR-1', member: key, confirm: true } });
+        const call = args => client.callTool({ name: 'ugt_mint_agreement', arguments: args });
+        expect((await call({ agreementCid: CID, lamports: '1000' })).isError).toBe(true);
+        expect((await call({ agreementCid: CID, lamports: '1000', confirm: false })).isError).toBe(true);
+        expect((await call({ agreementCid: 'proposal-7', lamports: '1000', confirm: true })).isError).toBe(true);
+        expect((await call({ agreementCid: CID, lamports: '0.5', confirm: true })).isError).toBe(true);
+        expect((await client.callTool({ name: 'ugt_donate', arguments: { agreementAccount: ACCOUNT, amountUsdc: '0.01', operationId: 'once' } })).isError).toBe(true);
+        expect((await client.callTool({ name: 'ugt_publish_design', arguments: { design: { schema: 'proposal/v3' }, confirm: true } })).isError).toBe(true);
+        expect(tools.mintAgreement).not.toHaveBeenCalled();
+        expect(tools.donate).not.toHaveBeenCalled();
+        expect(tools.publishDesign).not.toHaveBeenCalled();
+        const ok = await call({ agreementCid: CID, lamports: '1000', confirm: true });
         expect(ok.isError).not.toBe(true);
-        expect(tools.acceptParcel).toHaveBeenCalledWith({ proposalAccount: key, parcelId: 'HR-1', member: key, confirm: true });
-        const settled = await client.callTool({ name: 'ugt_submit_verdict', arguments: { proposalAccount: key, verdictAttestation: key, member: key, confirm: true } });
-        expect(settled.structuredContent).toMatchObject({ signature: 'settle-tx', record: 'verdict-record-pda' });
+        expect(tools.mintAgreement).toHaveBeenCalledWith({ agreementCid: CID, lamports: '1000', confirm: true });
+    });
+
+    it('answers a tool\'s refusal as a tool error and serialises bigint results', async () => {
+        const tools = stubTools();
+        tools.betOnAgreement.mockRejectedValueOnce(new Error('agreement X is Executed; its market takes no more stakes'));
+        tools.fundAgreement.mockResolvedValueOnce({ escrowLamports: 9000n, nested: { amount: 5n } });
+        await connect(tools);
+        const refused = await client.callTool({ name: 'ugt_bet_on_agreement', arguments: { agreementCid: CID, side: 'yes', amountUsdc: '0.01', confirm: true } });
+        expect(refused).toMatchObject({ isError: true, content: [{ type: 'text', text: 'agreement X is Executed; its market takes no more stakes' }] });
+        const funded = await client.callTool({ name: 'ugt_fund_agreement', arguments: { agreementCid: CID, targetLamports: '9000', confirm: true } });
+        expect(funded.structuredContent).toEqual({ escrowLamports: '9000', nested: { amount: '5' } });
+    });
+
+    it('surfaces the real tool surface\'s refusal to mint a poll', async () => {
+        const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'ugt-mcp-test-'));
+        try {
+            const keypairFile = path.join(directory, 'agent.json');
+            const agent = Keypair.generate();
+            fs.writeFileSync(keypairFile, JSON.stringify(Array.from(agent.secretKey)), { mode: 0o600 });
+            const content = { schema: 'agreement/v1', title: 'A vote', sponsor: agent.publicKey.toBase58(), rule: { electorate: 'community', binding: false, approvalConfig: null, lens: [] } };
+            const cid = cidOfObject(content);
+            const fetchImpl = vi.fn(async () => new Response(JSON.stringify({ cid, content }), { status: 200, headers: { 'content-type': 'application/json' } }));
+            const tools = createUrbanGameTheoryTools({
+                env: { UGT_API_BASE: 'https://api.example.test', UGT_MCP_LIVE: '1', UGT_AGENT_KEYPAIR: keypairFile },
+                fetchImpl, createConnection: () => ({}), dependencies: { mintAgreement: vi.fn() }
+            });
+            await connect(tools);
+            const result = await client.callTool({ name: 'ugt_mint_agreement', arguments: { agreementCid: cid, lamports: '0', confirm: true } });
+            expect(result.isError).toBe(true);
+            expect(result.content[0].text).toMatch(/is a non-binding community vote: it is a poll in the index and is never minted/);
+        } finally {
+            fs.rmSync(directory, { recursive: true, force: true });
+        }
     });
 });

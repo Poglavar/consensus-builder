@@ -491,12 +491,20 @@ describe('dossier: an unmeasurable take is unknown, never smaller', () => {
     });
 });
 
-describe('dialog-share ground (display)', () => {
+describe('map-pick ground (display)', () => {
+    // The ground a design stands on, as the share panel's hover and every pick highlight measure it
+    // (js/map-pick.js groundIntersectionArea, MapPick.groundOf).
     it('an unknown overlap keeps the parcel, reported', () => {
-        const share = require('../../frontend/js/proposals/dialog-share.js');
+        const MapPick = require('../../frontend/js/map-pick.js');
         install('turf', failing(['intersect']));
-        const m2 = expectReported('dialog-share.groundUnderBody', () => share.shareGroundIntersectionArea(LEFT, RIGHT));
+        const m2 = expectReported('map-pick.groundUnderBody', () => MapPick.groundIntersectionArea(LEFT, RIGHT));
         expect(m2).toBe(Number.POSITIVE_INFINITY);
+        // So every parcel whose overlap is unknown stays under the body rather than silently dropping
+        // out of the highlight, each clip reported.
+        install('__hoverGround', require('../../frontend/js/proposals/hover-ground.js'));
+        const before = count('map-pick.groundUnderBody');
+        expect(MapPick.groundOf([LEFT, FAR], [RIGHT])).toEqual([LEFT, FAR]);
+        expect(count('map-pick.groundUnderBody')).toBe(before + 2);
     });
 });
 

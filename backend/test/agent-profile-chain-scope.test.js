@@ -1,11 +1,12 @@
-// Characterize the connected-wallet loader's profile boundary and asynchronous result ownership.
+// Characterize the connected-wallet loader's profile boundary and asynchronous result ownership. The
+// wallet fills only the profile's parcels: designs are not minted, so it names no chain proposals
+// (plan-design-agreement.md, M3).
 import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { parse } from '@babel/parser';
 import vm from 'node:vm';
 import { createRequire } from 'node:module';
 const walletScope = createRequire(import.meta.url)('../../frontend/js/agent-wallet-scope.js');
-const proposalLinks = createRequire(import.meta.url)('../../frontend/js/agent-proposal-links.js');
 
 const source = readFileSync(new URL('../../frontend/js/agents.js', import.meta.url), 'utf8');
 const node = parse(source, { sourceType: 'script' }).program.body.find(n => n.id?.name === 'loadAgentChainData');
@@ -15,38 +16,35 @@ const deferred = () => {
     const promise = new Promise((yes, no) => { resolve = yes; reject = no; });
     return { promise, resolve, reject };
 };
-function harness({ chainProposals = [], acceptedTokens = [] } = {}) {
+function harness() {
     let walletState = { status: 'connected', accounts: ['wallet-a'], chainId: '0x1' };
     let localParcels = [];
     const requested = deferred();
     const response = deferred();
     let modal = { dataset: { agentId: 'user' }, isConnected: true };
-    const lists = () => Object.fromEntries(['parcels', 'created', 'accepted', 'pending'].map(key => [key, { data: [], loaded: 0 }]));
+    const lists = () => Object.fromEntries(['parcels', 'created'].map(key => [key, { data: [], loaded: 0 }]));
     const fetchParcels = vi.fn(() => { requested.resolve(); return response.promise; });
     const merge = vi.fn(() => true);
     const cache = vi.fn();
     const errors = vi.fn();
     const context = vm.createContext({
         window: {
-            AgentWalletScope: walletScope, AgentProposalLinks: proposalLinks,
+            AgentWalletScope: walletScope,
             walletManager: { getState: () => walletState, getProvider: () => ({}) },
             ChainDataLoader: {
-                resolveContractAddress: async (_chain, name) => name === 'ParcelNFT' ? 'parcel-contract' : (chainProposals.length ? '0xabc' : null),
-                getParcelsFromChain: fetchParcels, getProposalsFromChain: async () => chainProposals,
-                getProposalsAffectingParcels: async () => ({ accepted: acceptedTokens, pending: [] })
+                resolveContractAddress: async (_chain, name) => name === 'ParcelNFT' ? 'parcel-contract' : null,
+                getParcelsFromChain: fetchParcels
             },
-            ContractsLoader: {}, ethers: {}
+            ethers: {}
         },
         document: { querySelector: () => modal },
         console: { log() {}, debug() {}, warn() {} },
-        handleAgentDialogChainChange() {}, pruneAgentDialogListDataForChain() {},
         getAgentDialogCache: () => null,
         getCurrentAgentWalletScope: () => walletScope.connected({ evm: walletState }),
-        agentStorage: { getAgent: () => ({ id: 'user', userControlled: true }) },
-        getAgentParcelDetails: () => localParcels, filterAgentProposalLinksForChain: ids => ids, getUserPendingProposals: () => [],
+        getAgentParcelDetails: () => localParcels,
         agentDialogListData: lists(), agentWalletObservations: {}, agentDialogFetchPromises: new Map(), AGENT_DIALOG_CACHE_TTL_MS: 60000,
         setListLoading() {}, replaceAgentDialogListData: merge, renderFirstPageForList() {}, setSectionCount() {},
-        updatePendingProposalsCount() {}, setAgentDialogCache: cache, setListError: errors
+        setAgentDialogCache: cache, setListError: errors
     });
     vm.runInContext(loaderSource, context);
     const load = (isUser = true) => context.loadAgentChainData({ id: 'user' }, isUser);
@@ -66,14 +64,14 @@ describe('connected-wallet profile scope', () => {
         expect(h.merge).not.toHaveBeenCalled();
         expect(h.cache).not.toHaveBeenCalled();
     });
-    it('merges a completed wallet observation into its current profile', async () => {
+    it('merges a completed wallet observation into its current profile, parcels only', async () => {
         const h = harness();
         const loading = h.load();
         await h.requested.promise;
         h.response.resolve([{ parcelId: 'wallet-parcel' }]);
         await loading;
         expect(h.fetchParcels).toHaveBeenCalledWith('wallet-a', '0x1', 'parcel-contract');
-        expect(h.merge).toHaveBeenCalledWith('parcels', ['wallet-parcel']);
+        expect(h.merge.mock.calls).toEqual([['parcels', ['wallet-parcel']]]);
         expect(h.context.agentWalletObservations.user).toMatchObject({ scope: { walletAddress: 'wallet-a', chainId: '0x1' }, contractAddress: 'parcel-contract', parcelIds: ['wallet-parcel'] });
         expect(h.cache).toHaveBeenCalledWith('user', expect.objectContaining({ scope: { walletAddress: 'wallet-a', chainId: '0x1' } }));
     });
@@ -139,16 +137,4 @@ describe('connected-wallet profile scope', () => {
         expect(h.context.agentWalletObservations.user.parcelIds).toEqual([]);
         expect(h.merge).toHaveBeenCalledWith('parcels', ['model-parcel']);
     });
-
-    it('keeps created and accepted chain tokens qualified even when their records could not be hydrated', async () => {
-        const h = harness({ chainProposals: [{ proposalId: '77' }], acceptedTokens: ['77'] });
-        const loading = h.load();
-        await h.requested.promise;
-        h.response.resolve([{ parcelId: 'wallet-parcel' }]);
-        await loading;
-        const link = proposalLinks.chain('0x1', '0xabc', '77');
-        expect(h.merge).toHaveBeenCalledWith('created', [link]);
-        expect(h.merge).toHaveBeenCalledWith('accepted', [link]);
-    });
-
 });

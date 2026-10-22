@@ -417,7 +417,6 @@
             "acceptAsOwner": "Soy {{owner}}: revisar y aceptar"
         },
         "areaUnknown": "Las superficies de las parcelas no están resueltas.",
-        "chainUnsupported": "El adaptador de cadena actual no admite esta configuración de aprobación.",
         "approvalUnavailable": "El lente seleccionado no ha establecido estos derechos ni tu autoridad para actuar por este propietario.",
         "status": {
             "passed": "Se cumplen las reglas de aprobación configuradas",
@@ -1057,7 +1056,6 @@
                 "ethBalance": "Saldo en ETH",
                 "parcelsOwned": "Parcelas en propiedad",
                 "proposalsCreated": "Propuestas creadas",
-                "proposalsAccepted": "Propuestas aceptadas",
                 "proposalsApplied": "Propuestas aplicadas",
                 "you": "(Tú)"
             }
@@ -1224,11 +1222,11 @@
         "proposals": {
             "title": "Propuestas",
             "listButton": "Lista de propuestas ({{count}})",
-            "mintedButton": "Propuestas acuñadas",
             "shareButton": "Compartir propuestas aplicadas",
             "shareButtonEmpty": "No hay propuestas aplicadas. Aplica algunas primero",
             "shareButtonPreparing": "Preparando propuestas…",
             "agreementsButton": "Acuerdos",
+            "mintedAgreementsButton": "Acuerdos acuñados",
             "clearButton": "Restablecer propuestas (este navegador)",
             "planStats": {
                 "buttonLabel": "Estadísticas de propuestas aplicadas",
@@ -1316,11 +1314,7 @@
                     "other": "Revisión terminada · {{eaten}} de {{total}} parcelas comidas"
                 }
             },
-            "newGame": "Nueva partida",
-            "showAgents": "Agentes",
-            "showAgentsCount": "Agentes ({{count}})",
-            "showGameLog": "Mostrar registro del juego",
-            "showGameLogCount": "Mostrar registro del juego ({{count}})"
+            "listButtonLoading": "Cargando propuestas…"
         },
         "areaMonitor": {
             "title": "Monitor de zona",
@@ -1391,49 +1385,25 @@
         }
     },
     "agentDialog": {
-        "languageLabel": "Idioma",
-        "english": "Inglés",
-        "spanish": "Español",
-        "serbian": "Serbio",
-        "croatian": "Croata",
         "agentNotFound": "Agente no encontrado.",
         "userLabel": "Tú",
         "ethBalance": "Saldo en ETH",
         "portfolioValue": "Valor modelado del terreno",
         "totalWealth": "Total modelado",
         "portfolioBasis": "Modelo del terreno: USD {{pricePerSqmUsd}}/m², convertido al tipo de cambio de USD {{usdPerEth}} por ETH.",
-        "parcelsOwned": "Parcelas en propiedad",
-        "walletAddresses": "Direcciones de billetera",
-        "proposalsPending": "Propuestas pendientes ({{count}})",
-        "noPendingProposals": "Sin propuestas pendientes",
         "ownedParcels": "Parcelas vinculadas ({{count}})",
-        "noParcels": "No hay parcelas vinculadas",
         "proposalsCreated": "Propuestas creadas ({{count}})",
-        "noProposalsCreated": "No hay propuestas creadas",
-        "proposalsAccepted": "Aceptaciones registradas ({{count}})",
-        "noProposalsAccepted": "No hay aceptaciones registradas",
         "localProposalUnavailable": "Registro de propuesta local no disponible",
-        "chainProposalUnloaded": "Propuesta de la cadena no cargada",
         "localProposalKey": "ID local {{id}}",
         "localParcelsBasis": "Parcelas asignadas a este agente en el modelo local.",
         "walletParcelsBasis": "Asignaciones del modelo local y NFT de parcelas observados en la cartera conectada; no acreditan la titularidad registral del terreno.",
-        "acceptanceBasis": "Consentimientos locales registrados y aceptaciones observadas en la cadena; por sí solos no acreditan la ejecución ni el pago.",
         "agentLog": "Registro del agente",
-        "noLogEntries": "Aún no hay registros. Inicia el juego para ver las actividades de este agente.",
-        "noAgentActivities": "Todavía no hay actividades registradas para este agente.",
         "parcelLabel": "Parcela {{number}}",
         "proposalCount": {
             "one": "{{count}} propuesta",
             "other": "{{count}} propuestas"
         },
-        "proposalDeleted": "(eliminada)",
-        "pendingUnseen": "Sin ver",
-        "moreEntries": "… y {{count}} entradas anteriores",
-        "logoutButton": "Cerrar sesión",
-        "proposalStatus": {
-            "local": "Local",
-            "minted": "Acuñada"
-        }
+        "logoutButton": "Cerrar sesión"
     },
     "hud": {
         "totalSpentLabel": "Total gastado:",
@@ -1450,31 +1420,6 @@
     },
     "panel": {
         "parcel": {
-            "mintedProposals": {
-                "title": "Propuestas acuñadas",
-                "loading": "Cargando tus propuestas acuñadas…",
-                "loadingShort": "Cargando…",
-                "empty": "Aún no hay propuestas acuñadas con esta wallet.",
-                "walletRequired": "Conecta una wallet para ver las propuestas acuñadas.",
-                "error": "No se pudieron cargar las propuestas acuñadas.",
-                "refresh": "Actualizar",
-                "metadataButton": "Metadatos",
-                "metadataTitle": "Metadatos de la propuesta",
-                "metadataUnavailable": "Los metadatos no están disponibles para esta propuesta.",
-                "ok": "Aceptar",
-                "proposalIdLabel": "Propuesta #{{id}}",
-                "statusLabel": "Estado: {{status}}",
-                "parcelsLabel": "Parcelas: {{count}}",
-                "lensLabel": "Lentes: {{count}}",
-                "createdLabel": "Creado: {{date}}",
-                "acceptancePossible": "Aceptación posible",
-                "conditional": "Condicional",
-                "chainLabel": "Red: {{chain}}",
-                "ownerLabel": "Propietario: {{owner}}",
-                "explorer": "Ver en el explorador",
-                "detailsButton": "Detalles",
-                "openFailed": "No se pudieron abrir los detalles de la propuesta."
-            },
             "title": "Información de la parcela",
             "titleWithNumber": "Información de la parcela ({{number}})",
             "multiSelectionTitle": "Selección múltiple de parcelas",
@@ -1616,13 +1561,6 @@
                 "unavailable": "No se pudieron cargar las propuestas publicadas: {{reason}}",
                 "publishedHeading": "También publicadas aquí"
             },
-            "acceptance": {
-                "parcelTitle": "Aceptación de parcelas",
-                "ownerTitle": "Aceptación de propietarios",
-                "parcelLabel": "Parcela {{id}}",
-                "accepted": "aceptada",
-                "pending": "pendiente"
-            },
             "actions": {
                 "measureAsRoad": "Medir como carretera",
                 "measurementsAdded": "Mediciones añadidas",
@@ -1691,9 +1629,7 @@
                 "relationContains": "Incluye todas estas referencias",
                 "relationInside": "Subconjunto de estas referencias",
                 "relationOverlap": "Algunas referencias compartidas",
-                "sharedCount": "{{shared}} de {{count}} referencias compartidas",
-                "activityProposal": "Actividad de esta propuesta",
-                "activityLand": "Actividad de este conjunto de referencias"
+                "sharedCount": "{{shared}} de {{count}} referencias compartidas"
             },
             "actions": {
                 "apply": "Aplicar al mapa",
@@ -1731,46 +1667,8 @@
                 "unapplyFailed": "No se pudo quitar esta propuesta del mapa: {{reason}}",
                 "unapplyFailedUnknown": "No se pudo quitar esta propuesta del mapa. Inténtalo de nuevo.",
                 "unapplyUnavailable": "Esta propuesta no se puede quitar del mapa.",
-                "betOutcome": "Apostar al resultado",
-                "createAgreement": "Crear acuerdo",
+                "addToAgreement": "Añadir a un acuerdo",
                 "convertToFreeformHint": "Conserva el volumen de la regla a la mayor altura que permite, como un edificio que editas directamente. Después los parámetros de la regla ya no se aplican."
-            },
-            "acceptance": {
-                "title": "Estado de aceptación de las parcelas:",
-                "parcelTitle": "Estado de aceptación de parcelas:",
-                "noRoster": "No hay una lista de propietarios disponible para esta parcela.",
-                "ownerTitle": "Estado de aceptación de propietarios:",
-                "termsChanged": "Las condiciones cambiaron — revíselas y acepte de nuevo",
-                "accept": "Aceptar",
-                "undo": "Deshacer",
-                "accepted": "Aceptada",
-                "pending": "Pendiente",
-                "local": {
-                    "parcelTitle": "Consentimiento de parcelas registrado localmente:",
-                    "ownerTitle": "Consentimiento para los registros locales de propietarios:",
-                    "accepted": "Consentimiento registrado en este navegador",
-                    "pending": "No hay un registro local vigente de consentimiento",
-                    "hint": "Registros sin firma en este navegador, vinculados a las condiciones actuales y al registro de propietarios. No verifican la autoridad para firmar ni la titularidad legal.",
-                    "parcelSummary": "{{accepted}}/{{total}} parcelas con consentimiento local"
-                },
-                "signed": {
-                    "parcelTitle": "Consentimiento de parcelas según recibos verificados:",
-                    "ownerTitle": "Aprobaciones de propietarios según recibos verificados:",
-                    "accepted": "Aprobación verificada para las condiciones actuales",
-                    "pending": "No hay una aprobación verificada vigente",
-                    "hint": "Recibos firmados verificados frente a las condiciones actuales y al contexto de aprobación declarado. No acreditan la titularidad legal ni el pago.",
-                    "parcelSummary": "{{accepted}}/{{total}} parcelas con recibos verificados"
-                },
-                "recipient": "destinatario",
-                "solanaLensHint": "Di sí en la tarjeta Lente"
-            },
-            "ownerAcceptance": {
-                "statusLabel": "Estado de aceptación de propietarios:",
-                "accept": "Aceptar",
-                "undo": "Deshacer",
-                "accepted": "Aceptada",
-                "pending": "Pendiente",
-                "expiredTooltip": "La propuesta ha caducado"
             },
             "metrics": {
                 "id": "ID:",
@@ -1789,10 +1687,6 @@
                 "buttonLabel": "Aportar USDC a esta propuesta",
                 "copy": "Aporta USDC de devnet a un depósito en garantía. Solo se libera al propietario de la propuesta tras su ejecución, o se te reembolsa si se cancela o expira."
             },
-            "pledge": {
-                "none": "0 USDC · aún sin aportantes",
-                "proposalExplorer": "Cuenta de la propuesta"
-            },
             "market": {
                 "yesSide": "Sí · ejecutada en la cadena",
                 "noSide": "No · cancelada o vencida",
@@ -1802,29 +1696,18 @@
                 "historySettled": "Liquidado",
                 "poolAccount": "Cuenta del fondo",
                 "yourBets": "Tus apuestas: {{lines}}",
-                "noBets": "No tienes apuestas en esta propuesta.",
                 "betLine": "{{side}} {{amount}}",
                 "collect": "Cobrar las ganancias ({{side}})",
                 "dialogTitle": "Apostar {{side}}",
-                "dialogCopy": "Apuesta USDC de devnet sobre el estado de la propuesta en la cadena: Ejecutada liquida sí; Cancelada o Vencida liquida no. Las apuestas permanecen en el fondo hasta la liquidación.",
                 "collectedMessage": "Ganancias cobradas ({{side}}).",
-                "settledMessage": "Liquidado según el estado en cadena de la propuesta.",
-                "rule": "El fondo lee la cuenta de la propuesta en Solana: ejecutada liquida sí; cancelada o expirada liquida no. Cualquiera puede liquidarlo.",
                 "state": {
                     "open": "Abierto a apuestas",
                     "needsPool": "Aún sin fondo",
                     "settleYes": "Listo para liquidar sí",
                     "settleNo": "Listo para liquidar no",
+                    "settledYes": "Liquidado: sí",
+                    "settledNo": "Liquidado: no",
                     "closed": "No abierto a apuestas"
-                },
-                "next": {
-                    "open": "Las apuestas se quedan en el fondo mientras la propuesta está activa; no hay salida anticipada.",
-                    "needsPool": "Cualquier billetera puede abrir el único fondo de esta propuesta activa y luego apostar sí o no.",
-                    "settleYes": "Cualquiera puede liquidarlo; el programa lee Ejecutada directamente de la cuenta de la propuesta.",
-                    "settleNo": "Cualquiera puede liquidarlo; el programa lee Cancelada o Vencida en la cuenta de la propuesta.",
-                    "settledSplit": "El lado ganador se reparte todo el fondo en proporción a sus apuestas. El lado perdedor no recibe nada.",
-                    "settledRefund": "Nadie apostó al lado ganador, así que cada apuesta puede cobrarse íntegra.",
-                    "closed": "La propuesta debe estar activa en cadena antes de que pueda abrirse un fondo."
                 },
                 "paidOut": "cobrado",
                 "placedTitle": "Apuesta realizada",
@@ -1842,11 +1725,9 @@
                 "executed": "Ejecución registrada",
                 "executionUnverified": "Ejecución declarada; verificación no disponible",
                 "executedHint": "Este registro indica que se ejecutó. El estado por sí solo no verifica el pago, la inscripción legal ni la construcción física.",
-                "minted": "Acuñada",
                 "inMemory": "En memoria",
                 "awaitingFunding": "A la espera de financiación",
-                "viewOnExplorer": "Ver en el explorador",
-                "mintedHint": "Acuñada en la cadena"
+                "viewOnExplorer": "Ver en el explorador"
             },
             "loading": "Cargando detalles de la propuesta…",
             "rendering": "Renderizando detalles de la propuesta…",
@@ -1861,7 +1742,6 @@
                 "label": "Parcela {{id}}",
                 "tooltip": "Haz clic para ver los detalles de la parcela",
                 "tooltipReplaced": "Haz clic para enfocar la ubicación de la parcela de origen",
-                "acceptedBadge": "Aceptada",
                 "pendingBadge": "Pendiente",
                 "replacedInModel": "Sustituida en el modelo del mapa",
                 "newPlot": "Nueva parcela {{n}}",
@@ -1908,75 +1788,21 @@
                 "totalAcquiringDifficulty": "Dificultad de adquisición modelada:"
             },
             "lens": {
-                "eyebrow": "Atestadores de confianza",
-                "title": "Lente",
-                "loading": "Cargando lente…",
-                "empty": "Esta propuesta no nombra ninguna lente.",
-                "directoryUnavailable": "Directorio de miembros no disponible; solo se muestran las claves.",
-                "unknownMember": "no está en el directorio",
-                "ownershipTitle": "Atestación de propiedad",
-                "ownershipHint": "Si eres propietario de una de estas parcelas, pide a un miembro de la lente que lo atestigüe: tu billetera firma un desafío de un solo uso, el miembro consulta su registro y emite la atestación.",
                 "memberSelect": "Miembro de la lente",
-                "requestAttestation": "Atestiguar mi propiedad",
-                "noServiceUrl": "Sin URL de servicio: ningún miembro de esta lente publica dónde pedir una atestación.",
                 "noServiceUrlShort": "sin URL de servicio",
-                "working": "Esperando a la billetera y al miembro de la lente…",
-                "attested": "Atestiguado.",
-                "attestedExisting": "Ya atestiguado.",
-                "attestationAddress": "Atestación",
-                "accountHash": "Hash de la cuenta",
                 "noWallet": "No se encontró ninguna billetera de Solana en este navegador.",
                 "noSignMessage": "Esta billetera no puede firmar mensajes.",
-                "paymentRequired": "Este miembro de la lente cobra {{price}} por atestación de propiedad, pagado vía x402. El pago desde el navegador aún no está disponible; puede pagarlo un agente o un cliente x402 de línea de comandos.",
-                "paymentRequiredNoPrice": "Este miembro de la lente exige un pago x402 por las atestaciones de propiedad. El pago desde el navegador aún no está disponible.",
-                "badChallenge": "El servicio devolvió un desafío que no corresponde a esta billetera y parcela ({{reason}}); no se firmó nada.",
-                "notConfigured": "Este miembro de la lente no está configurado para emitir atestaciones: {{message}}",
-                "refused": "El miembro de la lente se negó: {{message}}",
-                "noSignTransaction": "Esta billetera no puede firmar transacciones.",
-                "findingAttestation": "Buscando la atestación de tu propiedad…",
-                "preparing": "Preparando la transacción…",
-                "awaitingSignature": "Esperando la firma de tu billetera…",
-                "submitted": "Enviada; esperando confirmación…",
-                "viewTransaction": "Ver transacción",
-                "noAttestation": "Ningún miembro de la lente ha atestiguado esta billetera como propietaria de esta parcela. Usa primero \"Atestiguar mi propiedad\".",
-                "noAttestationMember": "No hay atestación de propiedad para esta billetera de {{member}}, el miembro de la lente que abrió el recuento de esta parcela. Pídesela primero con \"Atestiguar mi propiedad\".",
-                "alreadyAccepted": "Esta billetera ya dijo sí para esta parcela.",
-                "badPayout": "La dirección de pago debe ser una dirección de Solana, o quedar vacía.",
-                "badVerdictAddress": "Pega la dirección de una atestación de veredicto.",
-                "precheckFailed": "El programa rechazaría esto ({{reason}}); no se firmó nada.",
-                "consentLoading": "Leyendo el consentimiento de la cadena…",
-                "consentComplete": "Consentimiento completo: {{accepted}} de {{required}} propietarios atestiguados dijeron sí.",
-                "consentCompleteLegacy": "Aceptada en la cadena.",
-                "consentProgress": "{{accepted}} de {{required}} propietarios atestiguados dijeron sí (propietarios atestiguados por {{member}}).",
-                "consentNone": "Ningún propietario atestiguado ha dicho sí todavía.",
-                "consentYours": "Tu billetera dijo sí.",
-                "consentUnavailable": "Estado del consentimiento no disponible: {{message}}",
-                "proposalStatus": "Estado en la cadena: {{status}}.",
-                "payoutPlaceholder": "Dirección de pago (opcional)",
-                "payoutLabel": "Dirección de pago para tu parte de los fondos de la propuesta (opcional)",
-                "sayYes": "Decir sí",
-                "sayYesHint": "Una vez atestiguado, \"Decir sí\" firma tu consentimiento en la cadena. Todos los propietarios que el miembro atestiguó deben decir sí para que la parcela cuente; un sí no se puede retirar.",
-                "saidYes": "Dijiste sí.",
-                "tallyAfter": "Han firmado {{accepted}} de {{required}} propietarios atestiguados.",
-                "parcelComplete": "El consentimiento de esta parcela está completo.",
-                "proposalExecuted": "Todas las parcelas han consentido: la propuesta está ejecutada.",
-                "verdictTitle": "Resolver con un veredicto",
-                "verdictHint": "Cualquiera puede presentar la atestación de veredicto de un miembro de la lente. \"expired\" termina la propuesta; \"executed\" solo se aplica a propuestas acuñadas para aceptarlo.",
-                "verdictPlaceholder": "Dirección de la atestación de veredicto",
-                "submitVerdict": "Presentar veredicto",
-                "verdictSettled": "Veredicto \"{{verdict}}\" de {{member}} aplicado; el estado en la cadena ahora es {{status}}."
+                "awaitingSignature": "Esperando la firma de tu billetera…"
             },
             "parcelHistory": {
-                "eyebrow": "Registro permanente por parcela",
-                "title": "Historial de la parcela",
-                "hint": "Cada propuesta, atestación de propiedad y consentimiento registrados para cada parcela, del más antiguo al más reciente, en el momento que indica su fuente.",
+                "agreementHint": "Cada acuerdo propuesto sobre la parcela, cada atestación de propiedad y cada acuerdo ejecutado, del más antiguo al más reciente, en el momento que indica su fuente.",
                 "summary": "Historial: {{parcel}}",
                 "loading": "Cargando historial…",
                 "unavailable": "Historial no disponible: {{message}}",
                 "empty": "Aún no hay nada registrado para esta parcela.",
                 "untimed": "hora desconocida",
                 "view": "Ver",
-                "proposal": "Propuesta {{id}}",
+                "agreement": "Acuerdo {{cid}}",
                 "member": "Miembro {{key}}",
                 "owner": "Propietario {{key}}",
                 "ownerCount": "Propietarios atestados: {{count}}",
@@ -1986,36 +1812,11 @@
                 "anchorMissing": "No se encontró el ancla de parcela en Solana devnet",
                 "anchorUnknown": "El estado del ancla de parcela no está disponible",
                 "event": {
-                    "created": "Propuesta creada",
-                    "chainObserved": "Propuesta observada en Solana devnet",
+                    "agreementPublished": "Acuerdo propuesto",
                     "ownership": "Propiedad atestada",
-                    "acceptance": "El propietario dijo sí",
-                    "verdict": "Veredicto liquidado",
-                    "lifecycle": "La propuesta llegó a un estado final",
+                    "agreementExecuted": "Acuerdo ejecutado",
                     "other": "Evento"
-                },
-                "chainObservationHint": "Observación verificada en el registro espejo; esta no es la hora de acuñación.",
-                "outcome": {
-                    "executed": "ejecutada",
-                    "cancelled": "cancelada",
-                    "expired": "expirada"
                 }
-            },
-            "ownerOffer": {
-                "eyebrow": "Oferta del propietario",
-                "title": "Pujas",
-                "loading": "Cargando pujas…",
-                "unavailable": "Pujas no disponibles",
-                "explainer": "El propietario de este terreno invita a pujar. Las pujas son los compromisos y donaciones de arriba; el propietario ejecuta la oferta diciendo sí.",
-                "total": "Puja total {{amount}} · {{count}} postor(es)",
-                "empty": "Aún no hay pujas. Comprométete o dona arriba para pujar.",
-                "pledge": "Compromiso",
-                "pledgeFulfilled": "Compromiso · cumplido",
-                "donation": "Donación",
-                "explorer": "Explorador",
-                "unknownTime": "hora desconocida",
-                "sayYes": "Decir sí y ejecutar",
-                "ownerHint": "Esta oferta es tuya. Decir sí en cada una de tus parcelas en la tarjeta de la lente la ejecuta y te libera las donaciones."
             },
             "detailsSections": {
                 "land": "Terreno y propiedad",
@@ -2026,15 +1827,6 @@
                 "recordHint": "Fecha de creación, ID local y enlaces",
                 "actions": "Más acciones",
                 "actionsHint": "Crea una versión y explora el terreno"
-            },
-            "bet": {
-                "mintFirst": "Esta propuesta debe acuñarse en Solana antes de que alguien pueda apostar a su resultado.",
-                "connect": "Conecta tu billetera de Solana antes de acuñar esta propuesta.",
-                "mint": "Abre Compartir y elige Acuñar. Sigue las indicaciones de la billetera y los requisitos previos de las parcelas.",
-                "return": "Vuelve a esta propuesta y elige Apostar al resultado. Abre el fondo si es necesario, elige Sí o No e introduce tu apuesta.",
-                "openMint": "Abrir opciones de acuñación",
-                "approval": "Las apuestas aún no están disponibles para propuestas con reglas de propiedad y aprobación. Esas decisiones no liquidan un fondo de apuestas.",
-                "chain": "Actualmente solo se puede apostar a propuestas acuñadas en Solana. Esta propuesta se acuñó en otra cadena."
             },
             "forkedFrom": "Derivado de {{cid}}"
         },
@@ -2234,33 +2026,6 @@
             "useConnected": "Usar la billetera conectada",
             "memory": "Crear en memoria",
             "bodyConnected": "Hay una billetera conectada. ¿Usarla para acuñar on-chain o crear una propuesta en memoria?"
-        },
-        "mintedProposals": {
-            "title": "Propuestas acuñadas",
-            "loading": "Cargando propuestas on-chain…",
-            "loadingWithCount": "{{count}} propuestas encontradas. Cargando…",
-            "loadingShort": "Cargando…",
-            "empty": "Aún no hay propuestas acuñadas con esta wallet.",
-            "walletRequired": "Conecta una wallet para ver las propuestas acuñadas.",
-            "error": "No se pudieron cargar las propuestas acuñadas.",
-            "refresh": "Actualizar",
-            "metadataButton": "Metadatos",
-            "metadataTitle": "Metadatos de la propuesta",
-            "metadataUnavailable": "Los metadatos no están disponibles para esta propuesta.",
-            "ok": "Aceptar",
-            "proposalIdLabel": "Propuesta #{{id}}",
-            "statusLabel": "Estado: {{status}}",
-            "parcelsLabel": "Parcelas: {{count}}",
-            "lensLabel": "Lentes: {{count}}",
-            "createdLabel": "Creado: {{date}}",
-            "acceptancePossible": "Aceptación posible",
-            "conditional": "Condicional",
-            "chainLabel": "Red: {{chain}}",
-            "ownerLabel": "Propietario: {{owner}}",
-            "explorer": "Ver en el explorador",
-            "detailsButton": "Detalles",
-            "openFailed": "No se pudieron abrir los detalles de la propuesta.",
-            "authorLabel": "Autor: {{author}}"
         },
         "track": {
             "speedPickerTitle": "Elegir velocidad de vía",
@@ -2802,8 +2567,7 @@
                 "resultCountWord": "mostrados",
                 "sources": {
                     "local": "Este navegador",
-                    "server": "Publicadas",
-                    "blockchain": "Acuñadas"
+                    "server": "Publicadas"
                 },
                 "actions": {
                     "download": "Descargar",
@@ -2859,8 +2623,6 @@
                 "meta": {
                     "author": "Autor:",
                     "created": "Creada:",
-                    "acceptance": "Aceptación:",
-                    "acceptedWord": "aceptadas",
                     "parcels": "Parcelas:",
                     "area": "Área:",
                     "applied": "Aplicada:",
@@ -2890,7 +2652,6 @@
                     "inMemory": "En memoria",
                     "awaitingFunding": "A la espera de financiación"
                 },
-                "syncBlockchainLabel": "Sincronizar",
                 "downloadConfirm": "La propuesta no está en el almacenamiento local. ¿Descargar?",
                 "epoch": {
                     "rowLabel": "Época del plan",
@@ -2904,8 +2665,6 @@
                     "toApply": "por aplicar: {n}",
                     "toUnapply": "por quitar: {n}"
                 },
-                "syncBlockchain": "Actualizar desde la blockchain",
-                "syncBlockchainNoWallet": "Conecta una billetera para sincronizar desde la blockchain",
                 "navigation": {
                     "hint2d": "Para proponer, toca un terreno o un espacio abierto en el mapa.",
                     "hint3d": "Las propuestas se dibujan en el mapa 2D.",
@@ -2918,126 +2677,21 @@
                 "author": "Autor",
                 "offer": "Oferta",
                 "currency": "€",
-                "parcels": "Parcelas",
-                "accepted": "Aceptada"
+                "parcels": "Parcelas"
             },
             "share": {
-                "sizeWarning": "Advertencia: este enlace está cerca del tamaño máximo que acepta el servidor. Considera compartir menos parcelas si falla.",
-                "defaultIntro": {
-                    "one": "Comparte este enlace para cargar {{count}} propuesta aplicada.",
-                    "few": "Comparte este enlace para cargar {{count}} propuestas aplicadas.",
-                    "other": "Comparte este enlace para cargar {{count}} propuestas aplicadas."
-                },
-                "singleIntro": "Comparte este enlace para cargar la propuesta <strong>{{title}}</strong>.",
-                "authorLabel": "Autor:",
-                "cameraLabel": "Zoom de la cámara:",
-                "proposalsLabel": "Propuestas:",
-                "stats": {
-                    "contentLabel": "Contenido:",
-                    "sizeLabel": "Tamaño:",
-                    "contentSummary": "{{total}} propuestas • {{roads}} carreteras • {{buildings}} edificios • {{parcels}} parcelas",
-                    "sizeSummary": "~{{kb}} KB del enlace codificado (límite del servidor ~{{maxKb}} KB)"
-                },
                 "note": "El intercambio respaldado por el servidor llegará pronto. La exportación JSON se proporciona para archivado/uso manual; no se garantiza compatibilidad futura.",
                 "title": "Compartir plan actual",
-                "copyLink": "Copiar enlace",
-                "saveJson": "Guardar como JSON",
                 "copySuccess": "¡Enlace de compartición copiado al portapapeles!",
-                "shareViaLabel": "Compartir vía",
-                "tweetButton": "Publicar en X.com",
-                "tweetText": "¡He creado una nueva propuesta urbana!",
-                "nativeShareButton": "Compartir…",
-                "tooLargeTitle": "Conjunto de propuestas demasiado grande",
-                "tooLargeBody": "Los enlaces están limitados a aproximadamente 7,5 KB en el servidor, por lo que este conjunto de propuestas no puede incrustarse en la URL. Reduce la cantidad de parcelas/propuestas o usa la exportación JSON mientras terminamos el intercambio del lado del servidor.",
-                "invalidTitle": "Enlace de compartición inválido",
-                "invalidBody": "No pudimos decodificar este enlace de propuestas compartidas. Pide al remitente que lo regenere.",
-                "emptyTitle": "No se encontró propuesta",
-                "emptyBody": "El enlace compartido no contenía ninguna propuesta para cargar.",
-                "unknownError": "Se produjo un error desconocido al cargar la propuesta compartida.",
-                "failureTitle": "No se pudo cargar la propuesta compartida",
-                "invalidBulkTitle": "Enlace de propuestas compartidas inválido",
-                "invalidBulkBody": "No pudimos decodificar el enlace de propuestas compartidas. Pide al remitente que lo regenere.",
-                "noBulkTitle": "No se encontraron propuestas",
-                "noBulkBody": "El enlace compartido no contenía propuestas para aplicar.",
-                "importCancelled": "Importación de propuestas compartidas cancelada.",
                 "untitled": "(Sin título)",
-                "stopIntro": "Detenido al aplicar en la propuesta: <strong>{{title}}</strong> · {{hash}}",
-                "stopMissingIntro": "Faltan parcelas ascendentes para esta propuesta:",
-                "stopGenericFailure": "No se pudo aplicar la propuesta. Revisa la consola para más detalles.",
-                "stopSuccessCount": {
-                    "one": "Se ha aplicado correctamente {{count}} propuesta hasta ahora.",
-                    "few": "Se han aplicado correctamente {{count}} propuestas hasta ahora.",
-                    "other": "Se han aplicado correctamente {{count}} propuestas hasta ahora."
-                },
-                "uploadAncestorsMissing": {
-                    "one": "Primero sube la propuesta antecesora: {{list}}",
-                    "few": "Primero sube las propuestas antecesoras: {{list}}",
-                    "other": "Primero sube las propuestas antecesoras: {{list}}"
-                },
-                "stopTitle": "Aplicación de propuestas detenida",
-                "leaveAsIs": "Dejar como está",
-                "unapplySuccessful": "Deshacer propuestas aplicadas",
-                "summary": {
-                    "appliedFrom": "Propuestas aplicadas de {{author}}.",
-                    "appliedCount": "{{count}} aplicadas.",
-                    "skippedCount": {
-                        "one": "Se omitió {{count}} propuesta duplicada (ya presente).",
-                        "few": "Se omitieron {{count}} propuestas duplicadas (ya presentes).",
-                        "other": "Se omitieron {{count}} propuestas duplicadas (ya presentes)."
-                    },
-                    "failedCount": "{{count}} fallaron.",
-                    "blockedAncestors": "Bloqueado por antecesores aplicados faltantes:",
-                    "blockedWaitingOn": "esperando a {{titles}}",
-                    "blockedMissingFabric": "el terreno recortado debajo no está presente aquí",
-                    "blockedMissingParcels": "faltan parcelas catastrales: {{list}}",
-                    "title": "Propuestas compartidas aplicadas",
-                    "unapplyApplied": "Deshacer aplicadas"
-                },
-                "saveJsonError": "No se pudo guardar el JSON.",
-                "shareExplainer": "Para guardar o compartir una propuesta con otros puedes:",
-                "shareOptionUpload": "subirla al servidor",
-                "shareOptionMint": "acuñarla en la blockchain",
-                "shareOptionDownload": "descargarla como JSON",
-                "uploadSuccess": "¡Propuesta subida! Ahora puedes compartirla con otros",
-                "uploadButton": "Subir",
-                "uploading": "Subiendo…",
                 "uploadError": "No se pudo subir la propuesta. Por favor, inténtalo de nuevo.",
-                "mintButton": "Acuñar",
-                "connectWalletButton": "Conectar Cartera",
-                "walletConnectedStatus": "Cartera conectada. Puedes proceder a acuñar la propuesta",
-                "mintSuccess": "¡Propuesta acuñada con éxito!",
-                "mintError": "Error al acuñar la propuesta",
-                "mintCapturingImage": "Capturando imagen de la propuesta…",
-                "mintPreparing": "Comprobando qué parcelas ocupa la propuesta…",
-                "mintNoImage": "No se pudo capturar la imagen de la propuesta. Se canceló la acuñación antes de firmar con la cartera.",
-                "mintStorageUnavailable": "El almacenamiento de archivos de la propuesta no está disponible. Se canceló la acuñación antes de firmar con la cartera.",
-                "mintMetadataMissing": "La subida del archivo no devolvió un URI de metadatos. Se canceló la acuñación antes de firmar con la cartera.",
-                "mintUploadingIPFS": "Subiendo a IPFS…",
-                "mintWaitingSignature": "Esperando firma de la cartera…",
-                "mintingOnChain": "Acuñando en la cadena…",
-                "mintSavingServer": "Guardando la propuesta en el servidor…",
-                "processingImageForUpload": "Procesando imagen para subir…",
-                "downloadButton": "Descargar",
-                "downloadSuccess": "Propuesta descargada como JSON",
-                "downloadError": "Error al descargar la propuesta",
-                "shareModalTitle": "Compartir una propuesta",
-                "shareUrlLabel": "URL para compartir:",
                 "copyUrlButton": "Copiar URL",
-                "sharePlanButton": "Compartir propuestas aplicadas…",
                 "plan": {
-                    "uploadAncestorsMissing": "Incluye estas propuestas antecesoras en el plan: {{list}}",
-                    "title": "Compartir propuestas aplicadas",
-                    "fetching": "Obteniendo propuesta #{{id}}…",
-                    "fetchingParcels": "Obteniendo parcelas ancestras para propuesta #{{id}}…",
-                    "applying": "Aplicando propuesta #{{id}}…",
                     "applyingNamed": "Aplicando {{label}} ({{done}}/{{total}})…",
-                    "preparingNamed": "Preparando {{label}} ({{done}}/{{total}})…",
                     "materializing": "Iniciando la materialización de las propuestas…",
                     "applyingAllTitle": "Aplicando propuestas compartidas",
-                    "fetchingPlan": "Obteniendo propuestas compartidas…",
                     "loadFailed": "No se pudo cargar el plan o la propuesta del enlace. Inténtalo de nuevo.",
                     "fetchingPlanTitle": "Obteniendo propuestas compartidas",
-                    "changedSincePreview": "Este plan con nombre cambió o no se pudo verificar. Ábrelo de nuevo para revisar sus miembros actuales.",
                     "rebuildingStatus": "Reconstruyendo la composición aplicada…",
                     "rebuildingStatusCount": "Reconstruyendo la composición aplicada {{done}}/{{total}}…",
                     "progress": {
@@ -3074,96 +2728,18 @@
                         "fabricArrange": "Cortando las parcelas catastrales afectadas ({{done}}/{{total}})…",
                         "mapUpdate": "Actualizando el mapa: {{added}} piezas añadidas, {{removed}} eliminadas…",
                         "fabricReady": "Tejido parcelario listo en {{parcels}} parcelas catastrales.",
-                        "networkNoding": "Conectando las intersecciones de carreteras y vías…",
                         "saving": "Guardando las propuestas aplicadas…",
                         "corridorReady": "Aplicación terminada: {{corridors}}.",
                         "rollback": "Restaurando el tejido parcelario tras un error…",
                         "presentation": "Actualizando el mapa y la lista de propuestas…",
                         "corridorStrips": "Actualizando las superficies de carreteras y vías…"
                     },
-                    "applyUnknownFailure": "Error desconocido al aplicar.",
-                    "checking": "Comprobando…",
-                    "checkingHint": "Comprobando el estado de la subida…",
-                    "uploading": "Subiendo…",
-                    "uploadHint": "Sube todas las propuestas seleccionadas para habilitar el enlace, o deselecciona algunas.",
-                    "noUploadedHint": "Sube al menos una propuesta para habilitar el enlace.",
-                    "alreadyAppliedTitle": "Plan ya aplicado",
-                    "alreadyAppliedMessage": "Estas propuestas compartidas ya están aplicadas en el mapa.",
-                    "goneFromServer": "La propuesta {{ids}} ya no está en el servidor. Solo queda tu copia local, así que este enlace no se abrirá para nadie más.",
-                    "alreadyAppliedWithOthersTitle": "Plan ya aplicado",
-                    "alreadyAppliedWithOthersMessage": {
-                        "one": "Este plan compartido ya está en el mapa, junto con {{count}} propuesta más.",
-                        "few": "Este plan compartido ya está en el mapa, junto con {{count}} propuestas más.",
-                        "other": "Este plan compartido ya está en el mapa, junto con {{count}} propuestas más."
-                    },
-                    "otherProposalsAppliedTitle": "Otras propuestas aplicadas",
-                    "otherProposalsAppliedMessage": {
-                        "one": "Hay {{count}} otra propuesta aplicada actualmente en el mapa.",
-                        "few": "Hay {{count}} otras propuestas aplicadas actualmente en el mapa.",
-                        "other": "Hay {{count}} otras propuestas aplicadas actualmente en el mapa."
-                    },
-                    "showMe": "Mostrar",
-                    "addToThem": "Agregar a ellas",
-                    "clearThenAdd": "Limpiar y agregar",
-                    "clearThenShow": "Limpiar otras y mostrar",
-                    "attemptToApply": "Intentar aplicar",
-                    "unapplyThenApply": "Desaplicar existentes y aplicar",
-                    "someAlreadyAppliedTitle": "Algunas propuestas ya aplicadas",
-                    "someAlreadyAppliedMessage": "Algunas propuestas ya están aplicadas en el mapa:",
-                    "whatToDo": "¿Qué te gustaría hacer?",
-                    "applyRemaining": "Aplicar restantes",
-                    "replacedConflicting": "Se reemplazaron {{count}} propuesta(s) en las mismas parcelas: {{list}}",
-                    "notFoundOnServer": "No encontrado en el servidor",
-                    "recordOutdated": "Esta propuesta se creó con una versión anterior del sitio y ya no se puede abrir.",
-                    "partiallyAppliedTitle": "Parcialmente aplicado",
-                    "partiallyAppliedMessage": "{{applied}} de {{total}} propuestas en este plan ya están aplicadas. ¿Desea agregar las {{remaining}} restantes?",
-                    "continueAdding": "Continuar agregando",
-                    "startFresh": "Empezar de nuevo",
-                    "overlappedCountDetailed": "{{count}} propuesta(s) quedan sin aplicar — su espacio ya está ocupado. Encuéntralas en la lista de propuestas para previsualizarlas o aplicarlas:",
-                    "overlapsWith": "se superpone con",
-                    "overlappedToast": "{{count}} quedan sin aplicar (espacio ocupado) — mira la lista de propuestas.",
-                    "appliedCountDetailed": {
-                        "one": "Se aplicó {{count}} propuesta:",
-                        "few": "Se aplicaron {{count}} propuestas:",
-                        "other": "Se aplicaron {{count}} propuestas:"
-                    },
-                    "skippedCountDetailed": {
-                        "one": "Se omitió {{count}} propuesta duplicada (ya presente):",
-                        "few": "Se omitieron {{count}} propuestas duplicadas (ya presentes):",
-                        "other": "Se omitieron {{count}} propuestas duplicadas (ya presentes):"
-                    },
-                    "failedCountDetailed": {
-                        "one": "No se pudo aplicar {{count}} propuesta:",
-                        "few": "No se pudieron aplicar {{count}} propuestas:",
-                        "other": "No se pudieron aplicar {{count}} propuestas:"
-                    },
-                    "applyBlockedByDependencies": "Bloqueado: dependencias no satisfechas tras los reintentos.",
-                    "summary": "Resultado de las propuestas compartidas",
-                    "cancelledToast": "No aplicada, retirada: {{titles}}.",
-                    "appliedToast": {
-                        "one": "Se aplicó {{count}} propuesta.",
-                        "few": "Se aplicaron {{count}} propuestas.",
-                        "other": "Se aplicaron {{count}} propuestas."
-                    },
-                    "tour": {
-                        "title": "Conflicto de espacio",
-                        "body": "«{{incoming}}» necesita terreno ocupado actualmente por:",
-                        "replace": "Reemplazar existente",
-                        "keep": "Mantener existente",
-                        "applyToAll": "Aplicar a todos los conflictos restantes",
-                        "keptCountDetailed": "Mantuviste las propuestas existentes — {{count}} propuesta(s) entrante(s) quedan sin aplicar (búscalas en la lista de propuestas):"
-                    },
-                    "copyResult": "Copiar",
-                    "copiedResult": "Resultado copiado.",
                     "picked": "Seleccionado: {{title}}",
                     "pickedOnMap": "Seleccionado: {{title}} — {{parcel}}",
                     "pickedNotInPlan": "Esa propuesta no está en este plan.",
                     "filterLabel": "Resaltar en el mapa",
                     "filterAll": "Todos"
-                },
-                "rebased": "{{count}} de ellas ocupan aquí un terreno distinto al de su publicación: {{titles}} (detalles en la consola).",
-                "drawingProposals": "Dibujando {{done}}/{{total}} propuestas en el mapa…",
-                "uploadExplainer": "Para compartir una propuesta con otros, primero debes subirla al servidor"
+                }
             },
             "sharedInspector": {
                 "author": "Autor:",
@@ -3351,31 +2927,6 @@
                 "couldNotDetermineParcels": "No se pudieron determinar las parcelas para este bloque.",
                 "parcelsNotContiguous": "Las parcelas no son contiguas",
                 "undeclaredParcels": "La geometría de esta propuesta ocupa {{count}} parcela(s) que no seleccionaste: {{list}}. Selecciónalas también o mantén la geometría dentro de las parcelas seleccionadas."
-            },
-            "walletNotConnected": {
-                "message": "No estás conectado con una billetera, por lo que no puedes acuñar propuestas en cadena.",
-                "proceedQuestion": "¿Proceder a crear una propuesta en memoria?",
-                "cancel": "Cancelar",
-                "confirm": "Crear"
-            },
-            "missingParcels": {
-                "defaultChain": "la blockchain",
-                "messageSingle": "La siguiente parcela no está representada como un NFT en <strong>{{chain}}</strong>, por lo que no se puede acuñar en cadena una propuesta para ella.",
-                "messagePlural": "Las siguientes parcelas no están representadas como NFTs en <strong>{{chain}}</strong>, por lo que no se puede acuñar en cadena una propuesta para ellas.",
-                "more": ", y {{count}} más…",
-                "proceedQuestion": "¿Proceder a crear una propuesta en memoria?",
-                "explainer": "Puedes crear una propuesta en memoria o proceder a acuñar las parcelas prerequisito. Acuñar no otorga propiedad; solo crea una representación on-chain. Cualquiera puede acuñar cualquier parcela para incorporarla a la plataforma. También puedes acuñarlas desde la pestaña Herramientas del panel de información de la parcela.",
-                "createInMemory": "Crear en memoria",
-                "mintPrerequisites": "Acuñar los requisitos previos",
-                "cancel": "Cancelar",
-                "confirm": "Crear",
-                "anchorMessageSingle": "La siguiente parcela todavía no tiene un ancla de parcela en <strong>{{chain}}</strong>, así que una propuesta para ella no se puede acuñar en la cadena:",
-                "anchorMessagePlural": "Las siguientes parcelas todavía no tienen un ancla de parcela en <strong>{{chain}}</strong>, así que una propuesta para ellas no se puede acuñar en la cadena:",
-                "anchorExplainer": "Un ancla de parcela es la identidad de la parcela en la cadena. Nadie la posee y crearla no otorga propiedad; solo pagas su renta. La propiedad llega a la cadena por separado, como la atestación de un miembro de la lente. También puedes crear anclas desde la pestaña Herramientas del panel Información de la parcela.",
-                "createAnchor": "Crear el ancla de la parcela",
-                "createAnchors": "Crear las anclas de las parcelas",
-                "title": "Parcelas que aún no están en la cadena",
-                "anchorTitle": "Faltan anclas de parcela"
             },
             "optionsSectionTitle": "Opciones",
             "titleLake": "Crear propuesta de lago",
@@ -4035,8 +3586,6 @@
             "resolving_parcel_claim_details": "Resolviendo los detalles del reclamo de la parcela…",
             "review_proposal_before_applying": "Revisa la propuesta antes de aplicarla.",
             "revoked_acceptance_for_owner_on_parcel": "Se revocó la aceptación de {{owner}} en la parcela {{parcelId}}.",
-            "withdrawing_acceptance_on_chain": "Retirando la aceptación en la cadena…",
-            "acceptance_withdrawn_on_chain": "Aceptación retirada en la cadena.",
             "analyzed_roads_summary": "Se analizaron {{count}} carreteras. {{summary}}",
             "road_measurements_calculated_and_added_to_panel": "Mediciones de carretera calculadas y añadidas al panel.",
             "road_proposal_created_and_applied": "La propuesta vial \"{{name}}\" se creó y aplicó.",
@@ -4067,9 +3616,6 @@
             "highlighted_neighboring_parcels_count": "Se resaltaron {{count}} parcelas vecinas",
             "showing_all_parcels": "Mostrando todas las parcelas",
             "showing_vertices_for_parcel": "Mostrando {{count}} vértices de la parcela {{parcel}}",
-            "solana_sync_incomplete": "Sincronización de Solana incompleta; se sincronizaron {{count}} propuestas. {{reason}}",
-            "solana_sync_complete": "Se sincronizaron {{count}} propuestas de Solana",
-            "solana_sync_no_new": "No hay propuestas nuevas de Solana",
             "single_building_design_saved_complete_the_proposal_form_to_submit": "Diseño de edificio único guardado. Completa el formulario de propuesta para enviarlo.",
             "single_building_proposal_created_use_apply_when_ready": "Propuesta \"{{title}}\" creada. Usa Aplicar al mapa desde los detalles de la propuesta cuando esté lista.",
             "single_building_tool_is_unavailable": "La herramienta de edificio único no está disponible.",
@@ -5995,7 +5541,6 @@
             "failed_to_create_proposal": "No se pudo crear la propuesta.",
             "solana_lens_required": "Elige al menos un miembro de la lente (el botón de la lente) antes de acuñar en Solana.",
             "solana_accept_in_lens_card": "En Solana, los propietarios dicen sí en la tarjeta Lente de la propuesta: un miembro de la lente atestigua tu propiedad y luego tu billetera firma.",
-            "solana_acceptance_final": "Las aceptaciones en Solana son definitivas: un sí firmado no se puede retirar.",
             "owner_offer_not_attested": "Una oferta del propietario solo puede incluir parcelas que un miembro de tu lente haya atestado como propiedad de tu cartera. {{detail}}"
         }
     },
@@ -6003,7 +5548,6 @@
         "log": {
             "title": "Actividad",
             "closeAria": "Cerrar actividad",
-            "empty": "Aún no hay eventos del juego. Inicia el juego para ver las actividades de los agentes.",
             "viewsAria": "Vista de actividad",
             "viewEvents": "Eventos",
             "viewActors": "Actores",
@@ -6019,8 +5563,7 @@
             "controllerLlm": "LLM",
             "clearScope": "Quitar filtro",
             "scopeActor": "Actor: {{id}}",
-            "scopeProposal": "Propuesta: {{id}}",
-            "scopeParcelSet": "Terreno: {{id}}",
+            "scopeAgreement": "Acuerdo: {{id}}",
             "scopeRun": "Ejecución: {{id}}",
             "sourceFailed": "No se pudo cargar: {{sources}}",
             "count": {
@@ -6030,25 +5573,25 @@
             "noMatch": "Aún no hay actividad que coincida.",
             "row": {
                 "turn": "Turno {{turn}}",
-                "openProposal": "Abrir propuesta",
                 "transaction": "Transacción",
                 "source": "Fuente: {{value}}",
                 "controller": "Controlador: {{value}}",
                 "action": "Acción: {{value}}",
                 "resultSuccess": "Resultado: éxito",
                 "resultFailed": "Resultado: fallido",
-                "scopeProposal": "Toda la actividad de esta propuesta",
-                "scopeLand": "Toda la actividad en este terreno",
                 "actorFallback": "Actor",
                 "details": "Detalles",
                 "actor": "Actor:",
                 "model": "Modelo:",
                 "run": "Ejecución",
-                "batch": "Lote"
+                "batch": "Lote",
+                "openAgreement": "Abrir acuerdo",
+                "openDesign": "Abrir diseño",
+                "scopeAgreement": "Toda la actividad de este acuerdo"
             },
             "filtersAria": "Filtrar actividad",
             "searchAria": "Buscar actividad",
-            "searchPlaceholder": "Actor, propuesta o transacción",
+            "searchPlaceholder": "Actor, acuerdo o transacción",
             "sourceAria": "Fuente de la actividad",
             "sourceAll": "Todas las fuentes",
             "sourceLive": "En vivo",
@@ -6063,9 +5606,13 @@
             "refresh": "Actualizar",
             "actions": {
                 "create": "Creada",
-                "publish": "Publicada",
-                "accept": "Aceptada",
-                "withdrawAcceptance": "Aceptación retirada",
+                "design": "Publicó diseño",
+                "propose": "Propuso acuerdo",
+                "mint": "Acuñó",
+                "fund": "Aportó depósito",
+                "decide": "Decisión del propietario",
+                "lens-decision": "Decisión de la lente",
+                "attest": "Registró decisión",
                 "donate": "Donó",
                 "pledge": "Comprometió",
                 "stake": "Apuesta",
@@ -6078,14 +5625,8 @@
                 "refundMyDonations": "Reembolsó donación",
                 "releaseDonations": "Liberó donaciones",
                 "cancel": "Cancelada",
-                "vote": "Votó",
-                "x402Payment": "Pagó (x402)",
+                "expire": "Expiró",
                 "run_status": "Estado de la ejecución",
-                "certifyParcel": "Certificó la propiedad",
-                "anchorParcel": "Ancló la parcela",
-                "attestOwnership": "Atestiguó la propiedad",
-                "acceptance": "Dijo sí",
-                "verdict": "Presentó veredicto",
                 "execute": "Ejecutada"
             }
         },
@@ -6097,7 +5638,6 @@
             "ethBalance": "Saldo en ETH",
             "parcelsOwned": "Parcelas en propiedad",
             "proposalsCreated": "Propuestas creadas",
-            "proposalsAccepted": "Propuestas aceptadas",
             "proposalsApplied": "Propuestas aplicadas",
             "you": "(Tú)"
         },
@@ -6156,8 +5696,6 @@
             "profile_personalized": "¡Genial, {{name}}! Tu perfil está personalizado.",
             "name_to_publish": "Elige un nombre de perfil para publicar: las propuestas publicadas llevan su autor. Todo lo que queda en este dispositivo funciona sin él.",
             "name_to_share": "Elige un nombre de perfil para compartir: un enlace compartido lleva su autor. Todo lo que queda en este dispositivo funciona sin él.",
-            "name_to_mint": "Elige un nombre de perfil para registrar esta propuesta en cadena: el registro lleva su autor.",
-            "name_to_join_list": "Elige un nombre de perfil para unirte a una lista pública.",
             "all_parcels_in_block_selected": "¡Todas las parcelas del bloque seleccionadas!"
         }
     },
@@ -6415,7 +5953,7 @@
     },
     "lensConsole": {
         "title": "Consola del miembro de la lente",
-        "intro": "Un miembro de la lente declara hechos sobre parcelas como atestaciones. Apunta esta consola a tu servicio de miembro para ver lo que ha emitido y registrar veredictos.",
+        "introAgreements": "Un miembro de la lente declara hechos sobre parcelas y acuerdos como atestaciones. Apunta esta consola a tu servicio de miembro para ver lo que ha emitido y atestiguar las decisiones de los acuerdos.",
         "backToMap": "Volver al mapa",
         "runOwn": "Cualquiera puede operar un miembro de la lente: registra una credencial, inicia el servicio de referencia y se inscribe solo en el directorio.",
         "runOwnLink": "Cómo operar tu propio miembro",
@@ -6454,33 +5992,48 @@
             "kind": "Tipo",
             "kindAll": "Todas",
             "kindOwnership": "Propiedad",
-            "kindVerdict": "Veredicto",
+            "kindDecision": "Decisión de acuerdo",
+            "kindEvidence": "Evidencia de mercado",
             "parcel": "Parcela",
             "owner": "Propietario",
+            "agreement": "Acuerdo",
+            "decision": "Decisión",
             "hash": "Hash de la cuenta",
             "issuedAt": "Emitida (hora de la cadena)",
             "unknownTime": "desconocida",
             "load": "Actualizar",
             "empty": "Ninguna atestación coincide."
         },
-        "verdict": {
-            "title": "Veredicto del operador",
-            "hint": "Un veredicto declara que una propuesta se ejecutó (para tipos de evidencia sin consentimiento por parcela, como un registro de permisos) o expiró. Solo el operador del miembro puede publicarlo.",
-            "proposal": "Cuenta de la propuesta",
-            "verdict": "Veredicto",
-            "executed": "ejecutada",
-            "expired": "expirada",
-            "evidence": "Referencia de evidencia (opcional)",
-            "observed": "Cuándo lo registró la fuente",
+        "decision": {
+            "title": "Atestiguar la decisión de un acuerdo",
+            "hint": "El miembro cuenta las decisiones de los propietarios transmitidas para el acuerdo y, cuando se cumple su regla antes del plazo, emite la decisión que registra la cuenta del acuerdo. Solo el operador del miembro puede solicitarla.",
+            "cid": "CID del acuerdo",
             "token": "Token del operador (no se guarda)",
-            "submit": "Publicar veredicto",
-            "done": "Veredicto atestiguado.",
-            "reused": "Ya atestiguado; se devolvió el veredicto guardado.",
+            "submit": "Atestiguar la decisión",
+            "done": "Decisión atestiguada.",
+            "reused": "Ya atestiguada; se devolvió la decisión guardada.",
+            "address": "Atestación",
+            "counted": "Decisiones de los propietarios contadas",
+            "tally": {
+                "rule": "Regla de decisión",
+                "met": "se cumple",
+                "notMet": "no se cumple",
+                "uncounted": "no se puede contar ({{reason}})"
+            },
             "errors": {
-                "proposal": "La cuenta de la propuesta debe ser una clave pública de Solana.",
-                "verdict": "Elige ejecutada o expirada.",
-                "time": "Indica cuándo registró la fuente el resultado.",
-                "token": "Introduce el token del operador."
+                "cid": "Introduce el CID de un acuerdo (bafkrei…).",
+                "token": "Introduce el token del operador.",
+                "answer": "El miembro respondió algo distinto de la decisión de este acuerdo.",
+                "ruleNotMet": "Las decisiones de los propietarios transmitidas hasta ahora no cumplen la regla de decisión del acuerdo.",
+                "deadlinePassed": "El plazo del acuerdo ha vencido; su cuenta solo puede expirar.",
+                "agreementClosed": "El acuerdo ya está ejecutado o cancelado.",
+                "notInLens": "Este miembro no está en la lente del acuerdo.",
+                "notAgreementLens": "La cuenta del acuerdo nombra a otro miembro de la lente; solo su decisión lo resuelve.",
+                "decisionRecorded": "La cuenta del acuerdo ya registra una decisión.",
+                "noSponsor": "El acuerdo no indica ninguna billetera del promotor, así que ninguna cuenta en la cadena puede llevar su decisión.",
+                "notFound": "El índice de acuerdos de este miembro no contiene ese acuerdo.",
+                "operatorOnly": "El miembro rechazó el token del operador.",
+                "notConfigured": "Este miembro no está configurado para atestiguar decisiones de acuerdos ({{message}})."
             }
         },
         "errors": {
@@ -6500,6 +6053,10 @@
         "canvasLabel": "Globo. Arrastra para girar, desplázate para acercar y selecciona una ciudad o una ubicación exacta.",
         "close": "Cerrar",
         "backToMap": "Volver al mapa",
+        "agreementCount": {
+            "one": "{{count}} acuerdo",
+            "other": "{{count}} acuerdos"
+        },
         "search": {
             "placeholder": "Nombre de la ciudad",
             "label": "Buscar ciudades",
@@ -6609,10 +6166,10 @@
             "empty": "Todavía no hay actividad reciente.",
             "error": "La actividad no está disponible temporalmente.",
             "actions": {
-                "create": "Propuesta creada",
-                "execute": "Propuesta ejecutada",
-                "accept": "Propuesta aceptada",
-                "cancel": "Propuesta cancelada",
+                "propose": "Acuerdo propuesto",
+                "execute": "Acuerdo ejecutado",
+                "cancel": "Acuerdo cancelado",
+                "expire": "Acuerdo expirado",
                 "createMarket": "Mercado abierto",
                 "resolve": "Mercado resuelto",
                 "donate": "Donación realizada",
@@ -6625,6 +6182,7 @@
                 "no": "Apuesta de {{amount}} a no"
             },
             "openError": "No se pudo abrir la propuesta. Inténtalo de nuevo.",
+            "openAgreementError": "No se pudo abrir el acuerdo. Inténtalo de nuevo.",
             "location": {
                 "near": "cerca de {{place}}",
                 "country": "en {{place}}",
@@ -7220,9 +6778,9 @@
     },
     "bets": {
         "tagline": "Apuesta por las ciudades",
-        "intro": "Estos fondos se liquidan según el estado de la propuesta en Solana devnet: Ejecutada significa sí; Cancelada o Vencida significa no.",
+        "intro": "Estos fondos se liquidan según el estado del acuerdo en Solana devnet: Ejecutado significa sí; Cancelado o Expirado significa no.",
         "loading": "Cargando apuestas…",
-        "empty": "Todavía no hay fondos en esta ciudad. Acuña una propuesta para abrir el primero.",
+        "emptyAgreements": "Todavía no hay fondos en esta ciudad. Acuña un acuerdo para abrir el primero.",
         "retry": "Intentar de nuevo",
         "copyLink": "Copiar enlace",
         "filter": {
@@ -7231,42 +6789,53 @@
             "mine": "Mías",
             "empty": "Ninguna apuesta coincide con este filtro."
         },
+        "question": {
+            "agreement": "¿Se ejecutará {{title}} en la cadena?",
+            "contest": "{{place}}: ¿qué acuerdo se ejecutará?"
+        },
         "dialog": {
             "poolLabel": "Fondo",
             "paysLabel": "Paga",
             "yesPays": "Sí {{multiple}}×",
             "noPays": "No {{multiple}}×",
             "settlesLabel": "Liquidación",
-            "marketDeadline": "Cierre del fondo",
-            "proposalDeadline": "Plazo de la propuesta",
+            "agreementDeadline": "Plazo del acuerdo",
             "noDeadline": "Sin plazo fijado; la liquidación sigue a un estado final en la cadena",
             "authorLabel": "Propuesta por",
             "amount": "Importe",
             "max": "Máx.",
             "toWin": "Ganancia de unos {{amount}} si gana {{side}}",
             "toWinNote": "El pago final depende del fondo al liquidar.",
-            "members": "Miembros del plan: {{count}} propuestas",
-            "openPlan": "Abrir el plan",
             "onThisLandCount": "{{entries}} en este terreno",
-            "superseded": "Versión anterior: las apuestas nuevas van a la versión actual"
+            "agreementAccount": "Cuenta del acuerdo",
+            "openAgreement": "Abrir el acuerdo",
+            "noBets": "No tienes apuestas en este acuerdo.",
+            "settledMessage": "Liquidado según el estado del acuerdo en la cadena.",
+            "rule": "El fondo lee la cuenta del acuerdo en Solana: ejecutado liquida sí; cancelado o expirado liquida no. Cualquiera puede liquidarlo.",
+            "next": {
+                "open": "Las apuestas se quedan en el fondo mientras el acuerdo está activo; no hay salida anticipada.",
+                "needsPool": "Cualquier billetera puede abrir el único fondo de este acuerdo activo y luego apostar sí o no.",
+                "settleYes": "Cualquiera puede liquidarlo; el programa lee Ejecutado directamente de la cuenta del acuerdo.",
+                "settleNo": "Cualquiera puede liquidarlo; el programa lee Cancelado o Expirado de la cuenta del acuerdo.",
+                "settledSplit": "El lado ganador se reparte todo el fondo en proporción a sus apuestas. El lado perdedor no recibe nada.",
+                "settledRefund": "Nadie apostó al lado ganador, así que cada apuesta puede cobrarse íntegra.",
+                "closed": "El acuerdo debe estar activo en la cadena, antes de su plazo, para que un fondo pueda abrirse o aceptar apuestas."
+            }
         },
         "error": {
             "load": "No se pudieron cargar las apuestas.",
-            "open": "No se pudo abrir la propuesta.",
             "transaction": "La transacción falló.",
-            "openPlan": "No se pudo abrir el plan."
+            "openAgreement": "No se pudo abrir el acuerdo."
         },
         "contest": {
-            "title": "¿Qué propuestas se ejecutarán en la cadena?",
-            "titleSingle": "¿Se ejecutará esta propuesta en la cadena?",
             "land": "Parcela {{parcel}}",
             "landMore": "Parcela {{parcel}} y {{count}} más",
-            "site": "Sitio dibujado",
+            "openGround": "Terreno abierto",
             "withoutPool": "Sin fondo: {{count}}",
-            "olderVersions": "Versiones anteriores: {{count}}",
-            "titlePlans": "¿Qué planes se ejecutarán en la cadena?",
-            "titleSinglePlan": "¿Se ejecutará este plan en la cadena?",
-            "planCount": "{{count}} planes"
+            "agreementCount": {
+                "one": "{{count}} acuerdo",
+                "other": "{{count}} acuerdos"
+            }
         },
         "row": {
             "yesPoolShare": "Sí: {{percent}} del fondo",
@@ -7276,8 +6845,8 @@
             "pays": "Paga {{multiple}}×",
             "yes": "Sí",
             "no": "No",
-            "yesTitle": "Apuesta a que la propuesta alcance el estado Ejecutada en la cadena.",
-            "noTitle": "Apuesta a que la propuesta alcance el estado Cancelada o Vencida en la cadena.",
+            "yesExecutes": "Apuesta a que el acuerdo se ejecute en la cadena.",
+            "noExecutes": "Apuesta a que el acuerdo se cancele o expire en la cadena.",
             "openMarket": "Abrir el fondo",
             "opened": "Fondo abierto",
             "settle": "Liquidar el fondo",
@@ -7287,16 +6856,15 @@
             "closed": "No admite apuestas",
             "resolvedYes": "Liquidado: sí",
             "resolvedNo": "Liquidado: no",
-            "closes": "Cierra el {{date}}",
-            "untitled": "Propuesta sin título",
+            "deadline": "Plazo {{date}}",
+            "untitledAgreement": "Acuerdo sin título",
             "paysTitle": "1 USDC en este lado paga {{multiple}} USDC si gana.",
             "onlyYes": "Por ahora solo apuestas a sí",
-            "onlyNo": "Por ahora solo apuestas a no",
-            "plan": "Plan de {{count}} propuestas"
+            "onlyNo": "Por ahora solo apuestas a no"
         },
         "how": {
             "title": "Cómo funcionan las apuestas",
-            "pools": "Cada propuesta tiene su propio fondo sí/no. Los grupos se forman por referencias de parcelas compartidas; varias propuestas de un grupo pueden ejecutarse.",
+            "pools": "Cada acuerdo acuñado tiene su propio fondo sí/no. Los grupos se forman por parcelas aportadas compartidas; dos acuerdos sobre la misma parcela no pueden ejecutarse ambos.",
             "settle": "La ejecución en cadena liquida sí; la cancelación o la expiración liquidan no. El lado ganador se reparte todo el fondo en proporción a sus apuestas.",
             "devnet": "Las apuestas usan USDC de devnet, que no tiene valor. Consigue SOL y USDC de devnet en los grifos.",
             "faucetSol": "Grifo de Solana",
@@ -7337,7 +6905,10 @@
         "designs": {
             "hint": "Solo los diseños aplicados al mapa pueden formar parte de un acuerdo.",
             "empty": "No hay diseños aplicados. Aplica primero un diseño.",
-            "onMap": "Aplicado"
+            "onMap": "Aplicado",
+            "mapHint": "Haz clic en un diseño del mapa para añadirlo o quitarlo",
+            "added": "Se añadió «{{title}}».",
+            "removed": "Se quitó «{{title}}»."
         },
         "land": {
             "loading": "Leyendo el suelo bajo los diseños…",
@@ -7355,7 +6926,6 @@
         },
         "allocation": {
             "hint": "Quién recibe cada porción resultante. Los titulares actuales son los que los diseños conservaron.",
-            "to": "Se asigna a",
             "holders": "Titulares actuales",
             "public": "Público"
         },
@@ -7397,7 +6967,8 @@
             "ruleInvalid": "La regla de decisión está incompleta: {{reason}}",
             "ruleCommunityBinding": "Un voto vecinal no puede ser vinculante.",
             "deadlineInvalid": "El plazo debe ser una fecha futura.",
-            "secondaryTab": "Otra pestaña tiene los datos de esta ciudad; los acuerdos solo se pueden editar allí."
+            "secondaryTab": "Otra pestaña tiene los datos de esta ciudad; los acuerdos solo se pueden editar allí.",
+            "published": "Un acuerdo propuesto no se puede editar; propón uno nuevo."
         },
         "warnings": {
             "ruleNotReady": "Todavía no se puede evaluar la regla: {{reason}}",
@@ -7427,6 +6998,7 @@
             },
             "deadline": "Plazo: {{date}}",
             "actions": {
+                "bet": "Apostar",
                 "edit": "Editar",
                 "delete": "Eliminar"
             },
@@ -7481,6 +7053,125 @@
                 },
                 "failed": "No se pudo abrir el acuerdo."
             }
+        },
+        "addTo": {
+            "title": "Añadir a un acuerdo",
+            "message": "Añade «{{title}}» a un acuerdo nuevo o a uno que aún no se haya propuesto.",
+            "new": "Nuevo acuerdo",
+            "alreadyIn": "«{{title}}» ya está en este acuerdo."
+        },
+        "chain": {
+            "heading": "En la cadena",
+            "cluster": "Solana {{cluster}}",
+            "notMinted": "Sin acuñar. Acuñarlo registra este acuerdo en Solana en la dirección de su promotor; después su lente atestigua la decisión y, al ejecutarlo, se libera el depósito.",
+            "nonBinding": "Una votación no se acuña; sus decisiones se cuentan fuera de la cadena.",
+            "reading": "Leyendo la cadena…",
+            "readFailed": "No se pudo leer la cuenta en la cadena: {{reason}}",
+            "missing": "La cuenta no está en Solana {{cluster}}.",
+            "escrowOf": "{{escrow}} de {{required}}",
+            "escrowNoneRequired": "{{escrow}} (no se requiere)",
+            "noDeadline": "Ninguno",
+            "status": {
+                "active": "Activo",
+                "executed": "Ejecutado",
+                "cancelled": "Cancelado",
+                "expired": "Expirado"
+            },
+            "decision": {
+                "pending": "Pendiente",
+                "satisfied": "Cumplida"
+            },
+            "phase": {
+                "preparing": "Preparando la transacción…",
+                "awaitingSignature": "Esperando la firma de la billetera…",
+                "submitted": "Enviada; esperando la confirmación…",
+                "confirmed": "Confirmada.",
+                "indexing": "Registrando la acuñación en el servidor…"
+            },
+            "facts": {
+                "status": "Estado",
+                "decision": "Decisión",
+                "escrow": "Depósito",
+                "deadline": "Plazo",
+                "lens": "Lente",
+                "payout": "Beneficiario",
+                "executedAt": "Ejecutado"
+            },
+            "actions": {
+                "repropose": "Volver a proponer con esta billetera",
+                "mint": "Acuñar",
+                "attest": "Registrar la decisión",
+                "execute": "Ejecutar",
+                "fund": "Depositar",
+                "cancel": "Cancelar",
+                "expire": "Marcar como expirado"
+            },
+            "hints": {
+                "noSponsor": "Se propuso sin billetera del promotor, así que no se puede acuñar. Vuelve a proponerlo con una billetera Solana conectada: será un acuerdo nuevo, con su propio enlace y sus propias decisiones.",
+                "connectSponsor": "Conecta la billetera Solana del promotor ({{sponsor}}) para acuñarlo.",
+                "notSponsor": "Solo la billetera del promotor ({{sponsor}}) puede acuñarlo; la billetera conectada es {{wallet}}.",
+                "noRuleLens": "Su regla de decisión no nombra a ningún miembro de la lente, así que ninguna lente puede atestiguar su decisión.",
+                "noConfiguredLens": "Elige un miembro de la lente en los ajustes de la lente: atestigua el recuento de votos.",
+                "deadlinePassed": "Su plazo ya ha pasado.",
+                "connectWallet": "Conecta una billetera Solana para operar con este acuerdo.",
+                "awaitingLens": "Esperando a que su lente atestigüe la decisión.",
+                "attested": "Su lente ha atestiguado la decisión: regístrala en la cadena.",
+                "awaitingFunds": "La ejecución espera hasta que el depósito tenga {{required}}.",
+                "expired": "Su plazo ya ha pasado: cualquiera puede marcarlo como expirado, lo que devuelve el depósito al promotor."
+            },
+            "mint": {
+                "title": "Acuñar el acuerdo",
+                "intro": "Acuñar registra el CID de este acuerdo en Solana en la dirección de su promotor. Su lente atestigua la decisión; al ejecutarlo, el depósito se libera a la cuenta beneficiaria.",
+                "required": "Depósito necesario para ejecutar (SOL)",
+                "requiredHint": "La ejecución espera hasta que el depósito tenga esta cantidad; 0 significa que no hace falta. El promotor aporta el depósito después de acuñar.",
+                "payout": "Cuenta beneficiaria",
+                "payoutHint": "Recibe todo el depósito cuando se ejecuta el acuerdo."
+            },
+            "minted": "Acuerdo acuñado.",
+            "mintedNotIndexed": "Acuerdo acuñado, pero el servidor no lo registró: {{reason}}",
+            "reproposed": "Propuesto de nuevo como un acuerdo nuevo. Se ha copiado su enlace.",
+            "fundPrompt": "¿Cuánto SOL debe recibir el depósito desde la billetera del promotor?",
+            "funded": "El depósito recibió {{amount}}.",
+            "attested": "Decisión registrada: la regla se cumple.",
+            "executed": "Acuerdo ejecutado: el depósito fue a su cuenta beneficiaria.",
+            "cancelConfirm": "¿Cancelar este acuerdo en la cadena? Termina para siempre y el depósito vuelve al promotor.",
+            "keep": "Mantenerlo",
+            "cancelled": "Acuerdo cancelado; el depósito volvió al promotor.",
+            "expired": "Acuerdo expirado; el depósito volvió al promotor.",
+            "errors": {
+                "amount": "Introduce una cantidad de SOL, por ejemplo 0,5.",
+                "payout": "La cuenta beneficiaria debe ser una dirección de Solana.",
+                "web3Unavailable": "No se pudo cargar la biblioteca de Solana.",
+                "walletRequired": "Conecta primero una billetera Solana.",
+                "notDeployed": "El programa de acuerdos aún no está desplegado en Solana {{cluster}}.",
+                "simulationFailed": "La transacción fallaría: {{reason}}",
+                "confirmationUnknown": "La transacción se envió, pero se agotó el tiempo de espera de su confirmación. Compruébala en el explorador.",
+                "confirmationFailed": "La transacción falló en la cadena.",
+                "notProposed": "Propón el acuerdo antes de acuñarlo.",
+                "notMinted": "Este acuerdo no está acuñado.",
+                "lensUnavailable": "No se pudo pedir su decisión al miembro de la lente: {{reason}}",
+                "accountMissing": "La cuenta del acuerdo no está en Solana {{cluster}}.",
+                "alreadyMinted": "Este acuerdo ya está acuñado.",
+                "noSponsor": "Este acuerdo se propuso sin billetera, así que no se puede acuñar. Vuelve a proponerlo con esta billetera conectada.",
+                "notSponsor": "Solo la billetera del promotor ({{sponsor}}) puede acuñar este acuerdo.",
+                "noLens": "No se ha nombrado a ningún miembro de la lente para atestiguar la decisión de este acuerdo.",
+                "deadlinePassed": "El plazo del acuerdo ya ha pasado.",
+                "notAuthority": "Solo la billetera del promotor ({{sponsor}}) puede hacerlo.",
+                "attestationMissing": "La atestación de la lente no está en Solana {{cluster}}.",
+                "attestPrecheck": "No se puede registrar la decisión de la lente ({{reason}}).",
+                "accountMismatch": "El servidor deriva otra cuenta en la cadena para este acuerdo, así que no registró la acuñación.",
+                "cidMismatch": "La cuenta en la cadena contiene otro acuerdo, así que el servidor no registró la acuñación.",
+                "accountNotSeen": "El servidor aún no ve la cuenta del acuerdo en la cadena. Vuelve a abrir el acuerdo más tarde para enviarla.",
+                "clusterUnsupported": "El servidor solo registra acuerdos acuñados en Solana devnet.",
+                "indexRefused": "El servidor no registró la acuñación: {{reason}}"
+            }
+        },
+        "minted": {
+            "title": "Acuerdos acuñados",
+            "loading": "Leyendo los acuerdos acuñados…",
+            "failed": "No se pudieron leer los acuerdos acuñados: {{reason}}",
+            "refresh": "Actualizar",
+            "empty": "Aún no se ha acuñado ningún acuerdo de esta ciudad."
         }
     },
     "planningViews": {

@@ -1,4 +1,4 @@
-<!-- Documents the evidence, geometry choices and reproducible local proposal for Savica F1–F3. -->
+<!-- Documents the evidence, geometry choices and reproducible canonical archive for Savica F1–F3. -->
 
 # Savica F1–F3
 
@@ -52,12 +52,14 @@ Geometry-derived diagnostics for the three above-ground footprints are:
 
 The last line is explicitly not permit GBP and 24 m is not a measured height. OSM/Overture reports eight floors for all three buildings, while Pionir directly reports P+7 for F3; the proposal uses 24 m only so the editable volumes have a useful 3D display height.
 
-Rebuild the source snapshots and proposal with:
+Rebuild the source snapshots and the canonical archive with:
 
 ```sh
 node backend/scripts/fetch-pionir-edozvola-sources.mjs --project savica-f1-f3
-node backend/scripts/seed-savica-f1-f3-proposal.mjs --apply --export
+node backend/scripts/seed-savica-f1-f3-proposal.mjs --export
 ```
+
+Publish it as designs plus the project's agreement with `backend/scripts/publish-restatement-archives.mjs` ([collection README](../README.md#publishing-designs-and-agreements)).
 
 The export path performs an export/import/export identity check before writing the canonical GeoJSON.
 

@@ -21,7 +21,7 @@ const NAMED = { isGuest: false };
 describe('GuestPolicy.requires', () => {
     it.each([
         ['create', 'none'], ['edit', 'none'], ['fork', 'none'], ['apply', 'none'], ['compare', 'none'],
-        ['publish', 'name'], ['share', 'name'], ['mint', 'name'], ['joinList', 'name']
+        ['publish', 'name'], ['share', 'name']
     ])('%s -> %s', (action, requirement) => {
         expect(policy.requires(action)).toBe(requirement);
     });
@@ -30,6 +30,10 @@ describe('GuestPolicy.requires', () => {
         expect(() => policy.requires('deleteEverything')).toThrow(/unknown action/);
         // Offering one's land is no longer an act of a design (owner offers went with the terms).
         expect(() => policy.requires('ownerOffer')).toThrow(/unknown action/);
+        // Nor is minting: designs are not minted (M3), and no gate asks a name for it. Nor joining a
+        // public list, which no gate ever asked for.
+        expect(() => policy.requires('mint')).toThrow(/unknown action/);
+        expect(() => policy.requires('joinList')).toThrow(/unknown action/);
     });
 });
 
@@ -41,7 +45,7 @@ describe('GuestPolicy.check', () => {
     });
 
     it('asks a guest for a name for everything that leaves the device, and nothing more', () => {
-        for (const action of ['publish', 'share', 'mint', 'joinList']) {
+        for (const action of ['publish', 'share']) {
             expect(policy.check(action, GUEST)).toMatchObject({ allowed: false, missing: ['name'] });
             expect(policy.check(action, NAMED).allowed).toBe(true);
         }

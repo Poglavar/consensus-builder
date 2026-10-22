@@ -1,5 +1,7 @@
 # Lens model: soulbound parcels, a list of trusted attesters, attested execution
 
+> **2026-10-22 (M3 of the plan/design/agreement rework):** the per-proposal verdict (`ProposalVerdict`, `POST /lens/verdict`, `settle_with_verdict`) is replaced by the agreement decision: the lens counts the relayed owner decisions of a binding agreement and attests `AgreementDecision` (`satisfied` only); the agreement program records it and executes. Where this document says "verdict", read "agreement decision"; the mechanics below are otherwise current.
+
 **Ownership abstraction clarification (2026-10-11):** LR and other proposal tools are to work with
 stable abstract owner entities. Lens-trusted providers separately establish each entity's parcel
 rights/exact shares and which authenticated actors may act for it. Geometry proposals can be
@@ -100,7 +102,7 @@ the contract checks the credential's authority, not a registry.
 
 ```
 ParcelOwnership-v1:     string parcelUid, string owner, uint8 ownerCount, string evidenceRef, int64 sourceObservedAt
-ProposalVerdict-v1:     string proposalAccount, string verdict, string evidenceRef, int64 sourceObservedAt
+AgreementDecision-v1:   string agreementCid, string sponsor, string decision, string evidenceRef, int64 sourceObservedAt  (decision is always "satisfied"; M3, 2026-10-22)
 ```
 
 `owner` is a base58 pubkey. `ownerCount` is how many owners the
@@ -166,7 +168,7 @@ frontend parser decode a prefix of it and must keep working.
 
 All three programs are built with a shared `crates/sas_attestation` parser crate and pass 139 localnet
 tests (proposal_nft 39, proposal_market 26, proposal_pledge 68, parcel_nft 6). The attestation's schema
-must equal the SAS schema PDA for `ParcelOwnership` or `ProposalVerdict` version 1 under the member's
+must equal the SAS schema PDA for `ParcelOwnership` or `AgreementDecision` version 1 under the member's
 credential; attestations must carry a strictly future expiry (0 counts as expired). `verdict_may_execute`
 is appended after `bump` inside the fixed account, which every existing prefix decoder tolerates.
 `mint_and_fund` gained the trailing bool, so v1 clients must send it. The external market takes the
@@ -270,7 +272,7 @@ receives an equal share of its parcel's share.
     EVM oracle-voting draft specifies (`consensus-builder-oracle-voting/oracle-voting.md`), never
     writing the OIB anywhere.
   It exposes `GET /lens/status` (kind, credential, counts), `POST /lens/challenge`,
-  `GET /lens/attestations`, an operator-only `POST /lens/verdict`, and prices `POST /lens/ownership`
+  `GET /lens/attestations`, an operator-only `POST /lens/agreements/:cid/decision`, and prices `POST /lens/ownership`
   over x402 like the other agent routes (refusals happen before payment; an existing attestation is
   returned free), so running a lens member is a business anyone can enter. Attestation nonces are
   deterministic per fact, so retries are idempotent. Built in `backend/lens/`; live issuance needs

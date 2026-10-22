@@ -1,17 +1,13 @@
 // ENS CCIP-Read gateway route. Resolves names forwarded by the L1
 // OffchainResolver and returns signed records, for two namespaces:
 //   <slug>.parcels.urbangametheory.eth     -> parcel_ens mapping
-//   <cid>.proposals.urbangametheory.eth    -> a published agreement or design (its CID), or a chain mirror
+//   <cid>.proposals.urbangametheory.eth    -> a published agreement or design (its CID)
 // ownerOf (addr record) is best-effort and parcel-only.
 import { JsonRpcProvider, Contract } from 'ethers';
-import { createRequire } from 'node:module';
 import { resolveQuery, buildTextValue } from '../ens/gateway.js';
 import { parcelIdToCity } from '../ens/slug.js';
 import { cityNameAt } from '../jurisdiction.js';
 import { isCid } from '../cid.js';
-
-const require = createRequire(import.meta.url);
-const { buildChainProposalPath } = require('../../frontend/js/proposals/chain-ref.js');
 
 const DEFAULT_PUBLIC_BASE_URL = 'https://urbangametheory.xyz';
 const DEFAULT_PARCELS_PARENT = 'parcels.urbangametheory.eth';
@@ -39,24 +35,19 @@ function buildConfig(env) {
 // /agreements/<cid>).
 const RECORD_PATHS = Object.freeze({ agreement: 'agreements', design: 'designs' });
 
-// Text records for CID names (agreements, designs) and chain-qualified mirror names.
-function proposalTextValue(key, { record, config, isApex }) {
+// Text records for CID names: a published agreement or design.
+function recordTextValue(key, { record, config, isApex }) {
     if (!record) {
-        if (!isApex) return ''; // not a resolvable agreement, design or mirror
+        if (!isApex) return ''; // not a published agreement or design
         if (key === 'url') return config.publicBaseUrl;
         if (key === 'description') return 'Urban Game Theory — proposals';
         return '';
     }
     switch (key) {
         case 'url':
-            if (record.cid) return `${config.publicBaseUrl}/${RECORD_PATHS[record.kind]}/${record.cid}`;
-            if (record.chainRef) {
-                const path = buildChainProposalPath(record.chainRef);
-                return path ? `${config.publicBaseUrl}${path}` : '';
-            }
-            return '';
+            return `${config.publicBaseUrl}/${RECORD_PATHS[record.kind]}/${record.cid}`;
         case 'description':
-            return record.title || (record.kind === 'agreement' ? 'Agreement' : record.kind === 'design' ? 'Design' : 'Proposal');
+            return record.title || (record.kind === 'agreement' ? 'Agreement' : 'Design');
         case 'avatar':
             return record.screenshot_url || '';
         default:
@@ -103,52 +94,22 @@ export function setupEnsRoute(app, pool) {
         return { ...row, city_name: placed || (city ? city.cityName : null) };
     }
 
-    // Resolve a proposals label to the record it names:
-    //   - a CID (bafkrei…) → the published agreement with that CID, else the published design
-    //   - chain-<48 hex chars> → one unique canonical chain_<sha256> mirror
-    async function lookupProposal(label) {
-        if (isCid(label)) {
-            try {
-                for (const kind of ['agreement', 'design']) {
-                    const { rows } = await pool.query(
-                        `SELECT cid, title, screenshot_url FROM consensus.${kind} WHERE cid = $1 LIMIT 1`,
-                        [label],
-                    );
-                    if (rows.length) return { kind, cid: rows[0].cid, title: rows[0].title, screenshot_url: rows[0].screenshot_url };
-                }
-            } catch (_) {
-                return null; // table absent / query failed → don't fabricate a link
-            }
-            return null;
-        }
-        const chainMatch = /^chain-([0-9a-f]{48})$/i.exec(label);
-        if (chainMatch) {
-            const prefix = `chain_${chainMatch[1].toLowerCase()}`;
-            const upperBound = `${prefix}g`;
-            try {
+    // Resolve a proposals label to the record it names: a CID (bafkrei…) is the published agreement
+    // with that CID, else the published design. Any other label names nothing.
+    async function lookupRecord(label) {
+        if (!isCid(label)) return null;
+        try {
+            for (const kind of ['agreement', 'design']) {
                 const { rows } = await pool.query(
-                    `SELECT proposal_id, title, name, screenshot_url,
-                            proposal_data->'chainMirror'->'ref' AS chain_ref
-                     FROM proposal
-                     WHERE proposal_id >= $1 AND proposal_id < $2
-                     LIMIT 2`,
-                    [prefix, upperBound],
+                    `SELECT cid, title, screenshot_url FROM consensus.${kind} WHERE cid = $1 LIMIT 1`,
+                    [label],
                 );
-                // A truncated hash is only a name when it maps to one stored row.
-                if (rows.length !== 1 || !rows[0].chain_ref) return null;
-                const row = rows[0];
-                const chainRef = { ...row.chain_ref };
-                // The canonical stored Solana network is namespaced; public paths
-                // use the bare cluster expected by the chain proposal loader.
-                if (chainRef.chainType === 'solana') {
-                    chainRef.chainId = String(chainRef.chainId || '').replace(/^solana-/i, '');
-                }
-                if (!buildChainProposalPath(chainRef)) return null;
-                return { chainRef, title: row.title || row.name,
-                    screenshot_url: row.screenshot_url };
-            } catch (_) {
-                return null; // absent/old schema or query failure → fail closed
+                if (rows.length) return { kind, cid: rows[0].cid, title: rows[0].title, screenshot_url: rows[0].screenshot_url };
             }
+        } catch (error) {
+            // Fail closed (no record, so no fabricated link), but say why.
+            console.error(`[${new Date().toISOString()}] [ens] looking up ${label} failed:`, error);
+            return null;
         }
         return null;
     }
@@ -162,9 +123,10 @@ export function setupEnsRoute(app, pool) {
         },
         {
             parentLabels: (process.env.ENS_PROPOSALS_PARENT_NAME || DEFAULT_PROPOSALS_PARENT).split('.'),
-            lookup: lookupProposal,
-            buildText: proposalTextValue,
-            apexAddress: process.env.ENS_PROPOSAL_NFT_ADDRESS || null,
+            lookup: lookupRecord,
+            buildText: recordTextValue,
+            // No apex contract: an agreement or design name resolves to its record, not to an NFT.
+            apexAddress: null,
         },
     ];
 

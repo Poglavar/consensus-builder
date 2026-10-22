@@ -2,22 +2,15 @@ import { effectiveLifecycleStatus } from './lifecycle.js';
 import { buildParcelSet } from './parcel-set.js';
 import { createRequire } from 'node:module';
 
+import { PROPOSAL_RECORD_INVALID, invalidRecord, stripLocalProposalState } from './archive-state.js';
+
 const requireCjs = createRequire(import.meta.url);
-const proposalOrigin = requireCjs('../../frontend/js/proposals/origin.js');
 const authoredRecord = requireCjs('../../frontend/js/proposals/authored-record.js');
-const chainRecord = requireCjs('../../frontend/js/proposals/chain-record.js');
 const lifecycleEvidence = requireCjs('../../frontend/js/proposals/lifecycle-evidence.js');
-const sourceProposal = requireCjs('../../frontend/js/planning/source-proposal.js');
 
 const isPolygonGeometry = value => !!value && typeof value === 'object'
     && (value.type === 'Polygon' || value.type === 'MultiPolygon') && Array.isArray(value.coordinates);
 
-const LOCAL_STATE_SUB_KEYS = Object.freeze([
-    'roadProposal',
-    'buildingProposal',
-    'structureProposal',
-    'reparcellization'
-]);
 
 const present = value => value !== undefined && value !== null;
 const owns = (value, key) => value && typeof value === 'object'
@@ -48,22 +41,7 @@ function sameIdSet(left, right) {
     return right.every(id => expected.has(String(id)));
 }
 
-// A stored row that violates the flat-record contract is a data error, not a server fault. Routes
-// map this code to 422 with the reason, and list routes skip the row and report it, so one
-// unmigrated record never turns a whole plan or city list into "HTTP 500".
-export const PROPOSAL_RECORD_INVALID = 'proposal-record-invalid';
-// What a person is told. The technical reason (which field, which id) is on `error.detail` for
-// logs and the console; it means nothing to a visitor opening an old share link.
-export const PROPOSAL_RECORD_INVALID_MESSAGE =
-    'This proposal was made with an older version of the site and can no longer be opened.';
 
-function invalidRecord(detail) {
-    const error = new Error(PROPOSAL_RECORD_INVALID_MESSAGE);
-    error.code = PROPOSAL_RECORD_INVALID;
-    error.status = 422;
-    error.detail = detail;
-    return error;
-}
 
 export function isInvalidRecordError(error) {
     return !!error && error.code === PROPOSAL_RECORD_INVALID;
@@ -122,99 +100,8 @@ export function assertCanonicalProposalRow(row) {
     }
 }
 
-const clearRoadDemolition = definition => {
-    if (!definition || typeof definition !== 'object' || Array.isArray(definition)) return;
-    delete definition.surfaceFootprint;
-    delete definition.demolishedBuildings;
-    delete definition.demolitionScanned;
-};
 
-export function stripLocalProposalState(proposal) {
-    if (!proposal || typeof proposal !== 'object' || Array.isArray(proposal)) return proposal;
-    // Authored designs may pin a source revision; serialization must never follow the latest
-    // cache value and silently replace that reference or treat its authority as owner consent.
-    sourceProposal.validateReferences(proposal.sourceReferences);
-    const sanitized = JSON.parse(JSON.stringify(proposal));
-    [
-        'applied', 'appliedAt', 'localPurchaseSimulation', 'status', 'localEditAt', 'editSeq', 'revertSnapshot',
-        // No current producer verifies an execution-event time. Observation/receipt times stay
-        // in their qualified evidence records; this client field is not that evidence.
-        'executedAt', 'publicationApiBase', 'lifecycleEvidence', 'proposalDraftId', 'proposalDraftRevision',
-        // These identifiers belong to this browser's agent/draft state, not the published record.
-        'authorAgentId',
-        'sourceProposalId', 'replacementOfProposalId', 'copiedFromProposalId', 'copiedFromName',
-        'childParcelIds', 'descendantParcelIds', 'parentFeatures',
-        'parentProposals', 'childProposals', 'parentProposalIds', 'childProposalIds',
-        'formation', 'demolishedBuildings', 'demolitionScanned', 'parcelSourceId',
-        // Approval configuration is authored content and survives publication. Approval
-        // decisions and authority workflow state are runtime claims from one client and never do.
-        'ownerApprovals', 'ownerApprovalHistory', 'approvalState', 'approvalRuntimeState',
-        'authorityApprovals', 'authorityApprovalHistory', 'authorityState', 'authorityRuntimeState',
-        'acceptedParcelIds', 'ownerAcceptances'
-    ].forEach(key => delete sanitized[key]);
-    // An origin names a local key or a design CID (proposals/origin.js); one naming a server row of
-    // this table predates M2, so the record refuses by name like any other older-version record.
-    if (sanitized.proposalOrigin) {
-        try {
-            sanitized.proposalOrigin = proposalOrigin.portable(sanitized.proposalOrigin);
-        } catch (error) {
-            throw invalidRecord(`Invalid proposal record: proposalOrigin: ${error.message}`);
-        }
-    }
-    delete sanitized.childFeatures;
 
-    if (sanitized.geometry && typeof sanitized.geometry === 'object') {
-        // Architectural evidence is owned by the building registry and joined by read routes.
-        // Saving an API response or a copied proposal must not persist a stale model snapshot.
-        for (const building of sanitized.geometry.buildings || []) {
-            if (!building.properties) continue;
-            delete building.properties.floorPlans;
-            delete building.properties.floorModel;
-        }
-        delete sanitized.geometry.parentFeatures;
-        delete sanitized.geometry.childFeatures;
-        if (sanitized.roadProposal) {
-            delete sanitized.geometry.roadPlan;
-            delete sanitized.geometry.roadGeometry;
-            if (Object.keys(sanitized.geometry).length === 0) delete sanitized.geometry;
-        }
-    }
-
-    LOCAL_STATE_SUB_KEYS.forEach(key => {
-        const sub = sanitized[key];
-        if (!sub || typeof sub !== 'object' || Array.isArray(sub)) return;
-        delete sub.applied;
-        delete sub.appliedAt;
-        delete sub.status;
-        delete sub.childParcelIds;
-        delete sub.parentFeatures;
-        delete sub.parentsToRemove;
-        delete sub.formation;
-        delete sub.demolishedBuildings;
-        delete sub.demolitionScanned;
-        delete sub.childFeatures;
-        clearRoadDemolition(sub.definition);
-    });
-    if (sanitized.roadProposal) {
-        delete sanitized.definition;
-        delete sanitized.roadProposal.roadGeometry;
-    }
-    return authoredRecord.stripCadastreAliases(
-        authoredRecord.cleanFeatureContainers(sanitized)
-    );
-}
-
-// Reconstruction archives are portable authored records, not API rows or browser snapshots.
-// Keep the authored metadata sanitizer above, then remove identities that only make sense in the
-// source database and paid-agent claim projection (a verified mirror can carry its own provenance).
-export function stripProposalArchiveState(proposal) {
-    const sanitized = stripLocalProposalState(proposal);
-    if (!sanitized || typeof sanitized !== 'object' || Array.isArray(sanitized)) return sanitized;
-    delete sanitized.id;
-    delete sanitized.serverProposalId;
-    delete sanitized.agent;
-    return sanitized;
-}
 
 export function projectProposalLifecycleEvidence({ lifecycleStatus, chainMirror, lifecycleEvent, expiresAt, now } = {}) {
     return lifecycleEvidence.projectLifecycleEvidence({
@@ -297,21 +184,8 @@ export function serializeProposalRow(row, options = {}) {
     // declarations.mjs). It stays in the row so the migration is reversible, but it is not part
     // of the proposal and must never be served, forked or re-published by a client.
     delete proposal.legacy;
-
-    if (proposal.chainMirror?.protocol === chainRecord.PROTOCOL) {
-        // A mirror serves the committed authored values. Database columns still index receipt
-        // time and normalized search fields, but cannot rewrite what chain + IPFS reconstructs.
-        const source = chainRecord.fromMetadata({ properties: {
-            proposalProtocol: chainRecord.PROTOCOL, proposal: proposal.chainMirror.record
-        } });
-        proposal.mirroredAt = iso(row.created_at, proposal.chainMirror.verifiedAt);
-        for (const key of chainRecord.FIELDS) if (key !== 'proposalId') delete proposal[key];
-        Object.assign(proposal, source, { proposalId: row.proposal_id });
-        // Authored metadata can claim an agent name; only the mirror's signer-verified stamp is
-        // activity provenance. Keep the exact claim in chainMirror.record for reconstruction.
-        delete proposal.agent;
-        if (proposal.chainMirror.agent) proposal.agent = structuredClone(proposal.chainMirror.agent);
-    }
+    // The chain-mirror projection (rebuilding a mirrored row from its chain record) went with the
+    // mirror's read side in M3: these read-only rows serve as stored until the proposal table is dropped.
 
     const projection = projectProposalLifecycleEvidence({
         lifecycleStatus: proposal.lifecycleStatus,

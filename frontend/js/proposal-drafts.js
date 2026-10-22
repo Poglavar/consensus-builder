@@ -171,13 +171,11 @@
                 if (key !== undefined && key !== null && String(key)) return String(key);
             }
         } catch (_) { }
+        // A record's local key. Designs are not minted (M3) and the server rows' ids and content hashes
+        // are gone (M2), so neither a chain token nor a row id nor a hash is a record's identity.
         const candidates = [
             proposal.proposalId,
-            proposal.proposal_id,
-            proposal.chainProposalId,
-            proposal.hash,
-            proposal.id,
-            proposal.onchain && proposal.onchain.proposalId
+            proposal.id
         ];
         const found = candidates.find(value => value !== undefined && value !== null && String(value));
         return found === undefined ? null : String(found);
@@ -813,14 +811,12 @@
             let output = cloneDraftValue(proposal);
             delete output.id;
             delete output.proposalId;
-            delete output.proposal_id;
             // A proposal built from a draft is a NEW design (buildings, structures, parcel layouts,
             // station, road design-finalize all commit through here): it must not inherit the
-            // source's published or minted identity (`published`, the chain token). Those describe
-            // the source's publication; this record is published, when it is, under its own CID.
+            // source's publication mark (`published`). That describes the source's publication; this
+            // record is published, when it is, under its own CID.
             publishedIdentityKeys().forEach(key => delete output[key]);
-            ['acceptedParcelIds', 'ownerAcceptances', 'ownerApprovals', 'ownerApprovalHistory', 'ownershipApprovals', 'localPurchaseSimulation']
-                .forEach(key => delete output[key]);
+            delete output.localPurchaseSimulation;
             delete output.proposalOrigin;
             if (draft.sourceLocalProposalId) {
                 const origin = global.ProposalOrigin || require('./proposals/origin.js');

@@ -73,7 +73,6 @@ test('agent profiles keep connected-wallet observations out of other agents', as
   await expect(dialog.locator('[data-list-type="parcels"] .parcel-item')).toHaveCount(1);
   await expect(dialog.locator('[data-agent-parcels-basis]')).toHaveText('Parcels assigned to this agent in the local model.');
   await expect(dialog).toContainText('Linked parcels (1)');
-  await expect(dialog).toContainText('Recorded acceptances (0)');
   expect(await page.evaluate(() => (window as any).__profileWalletCalls)).toBe(0);
   await dialog.locator('.agent-dialog-modal-close').click();
   await page.evaluate(id => (window as any).showAgentDialog(id), ids.user);

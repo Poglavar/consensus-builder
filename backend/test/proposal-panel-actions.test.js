@@ -1,6 +1,7 @@
 // Protect the real proposal details renderer from hiding or dropping actions as its footer is reorganized.
 // Since M2 (plan-design-agreement.md) a design's details carry no lifecycle badges, consent card,
 // terms, funding, support, market or bet: those belong to the agreement that includes the design.
+// Since M3 only an agreement is minted: a design reads Draft or Published, never Minted.
 import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
@@ -9,7 +10,6 @@ import { createRequire } from 'node:module';
 import * as turf from '@turf/turf';
 
 const require = createRequire(import.meta.url);
-const supportView = require('../../frontend/js/proposals/support-view.js');
 const displayText = require('../../frontend/js/proposals/display-text.js');
 const groundRebase = require('../../frontend/js/proposals/ground-rebase.js');
 const designRecord = require('../../frontend/js/design-record.js');
@@ -18,11 +18,7 @@ const displayState = require('../../frontend/js/proposals/display-state.js');
 const panelPresentation = require('../../frontend/js/proposals/panel-presentation.js');
 const referenceRelations = require('../../frontend/js/proposals/parcel-set-relations.js');
 const siteDraft = require('../../frontend/js/proposals/site-draft.js');
-const chainRef = require('../../frontend/js/proposals/chain-ref.js');
 const proposalOrigin = require('../../frontend/js/proposals/origin.js');
-const acceptanceClient = require('../../frontend/js/solana/acceptance-client.js');
-// A mint record as the mint paths write it (proposals/display-state.js hasMintRecord).
-const MINT_RECORD = Object.freeze({ chain: 'solana-devnet', contract: acceptanceClient.constants.PROPOSAL_NFT_PROGRAM_ID, tokenId: 'Token1111111111111111111111111111111111' });
 // The index the renderer's DesignSync reads publication against (design-sync.js publishedCid).
 const API_BASE = 'https://api.example.test';
 // A local design marked published at API_BASE under the CID it hashes to.
@@ -33,7 +29,7 @@ const renderEnd = source.indexOf('\nfunction rerenderProposalDetailsForLanguage(
 if (renderStart < 0 || renderEnd <= renderStart) throw new Error('Could not isolate proposal details renderer');
 const renderSource = `let proposalDetailsEscapeHandler = null;\n${source.slice(renderStart, renderEnd)}`;
 
-function render(proposal, { applied = false, connected = false, road = false, summary = null, lifecycle = 'Active', approvalSetup = false, editable = null, actionError = '', forkOffer = false, sourceFeature = null, sourceFeatures = null, sourceReplaced = false, relatedProposals = null } = {}) {
+function render(proposal, { applied = false, road = false, lifecycle = 'Active', actionError = '', forkOffer = false, sourceFeature = null, sourceFeatures = null, sourceReplaced = false, relatedProposals = null } = {}) {
     // Model the renderer's deferred HTML mount as well as its direct innerHTML path.
     const timers = [];
     const htmlContainer = () => ({ innerHTML: '', appendChild(node) { this.innerHTML += node.innerHTML; } });
@@ -45,7 +41,6 @@ function render(proposal, { applied = false, connected = false, road = false, su
         classList: { contains: key => panelClasses.has(key), add: key => panelClasses.add(key), toggle: (key, yes) => yes ? panelClasses.add(key) : panelClasses.delete(key) },
         querySelector: selector => selector === '.panel-body' ? body : null
     };
-    const fundingCard = { querySelector: () => ({ textContent: '' }) };
     const elements = new Map([
         ['proposal-details-content', content], ['proposal-details-footer', footer],
         ['proposal-details-panel', panel], ['proposal-details-title', { textContent: '', title: '' }],
@@ -54,15 +49,7 @@ function render(proposal, { applied = false, connected = false, road = false, su
     const document = {
         body,
         getElementById: id => elements.get(id) || null,
-        querySelector: selector => {
-            if (selector.includes('data-proposal-support-actions')) {
-                const $ = parse(footer.innerHTML);
-                const mount = $('[data-proposal-support-actions]');
-                if (!mount.length) return null;
-                return { set innerHTML(value) { mount.html(value); footer.innerHTML = $('main').html(); } };
-            }
-            return selector.includes('proposal-pledge-summary') ? fundingCard : null;
-        },
+        querySelector: () => null,
         querySelectorAll: () => [],
         addEventListener() {}, removeEventListener() {},
         createDocumentFragment: htmlContainer,
@@ -70,8 +57,6 @@ function render(proposal, { applied = false, connected = false, road = false, su
     };
     const window = {
         i18n: null,
-        ChainProposalRef: chainRef,
-        SolanaAcceptanceClient: acceptanceClient,
         __proposalMapActionFailures: actionError ? { [String(proposal.proposalId)]: actionError } : {},
         __proposalGroundForkOffers: forkOffer ? { [String(proposal.proposalId)]: true } : {},
         ProposalGroundRebase: groundRebase,
@@ -80,30 +65,17 @@ function render(proposal, { applied = false, connected = false, road = false, su
         ProposalDisplayText: displayText,
         __proposalDisplayState: displayState,
         ProposalPanelPresentation: panelPresentation,
-        ProposalApprovalText: require('../../frontend/js/proposals/approval-text.js'),
         ProposalArea: require('../../frontend/js/proposals/area.js'),
         CadastralParcelRepository: {
             get: vi.fn(id => sourceFeatures ? sourceFeatures.find(feature => feature.properties.parcelId === id) : sourceFeature),
             peekMany: ids => (sourceFeatures || [sourceFeature].filter(Boolean)).filter(feature => ids.includes(feature.properties.parcelId))
         },
         __siteDraft: { siteAreaM2: site => siteDraft.siteAreaM2(site, { turf }) },
-        ProposalSupportView: supportView,
         ProposalOrigin: proposalOrigin,
         DesignSync: { publishedCid: record => designSync.publishedCid(record, API_BASE) },
         ProposalPublishTerms: require('../../frontend/js/proposals/publish-terms.js'),
-        ProposalOrigin: require('../../frontend/js/proposals/origin.js'),
-        solanaWalletManager: { getState: () => connected ? { status: 'connected', accounts: ['wallet'] } : { status: 'disconnected', accounts: [] } },
-        SolanaPledgeBridge: { readSummary: vi.fn(() => Promise.resolve(summary || {})) },
-        SolanaPledgeClient: { formatUsdc: value => String(value) },
         ProposalAgentProvenance: null,
         ParcelSetRelations: relatedProposals ? referenceRelations : null,
-        OwnerOffer: null,
-        ProposalLensCard: null,
-        ProposalParcelHistoryCard: { mountAfter() {} },
-        ProposalPossibilityTimeline: null,
-        getSerialProposalId: () => road ? 'track-1' : null,
-        SolanaMarketBridge: null,
-        ProposalApprovalRuntime: approvalSetup ? { uses: () => true } : null,
         RoadActions: road ? { factsFor: () => ({ proposalKey: proposal.proposalId, applied: true }), runAction() {} } : null,
         RoadActionsModel: road ? { isActionAvailable: () => true } : null,
         __claims: { materializedParcelIdsOf: () => [] }
@@ -121,37 +93,28 @@ function render(proposal, { applied = false, connected = false, road = false, su
         inlineJsArg: value => JSON.stringify(String(value ?? '')),
         getProposalI18nHelper: () => (_key, fallback, params = {}) => fallback.replace(/\{\{(\w+)\}\}/g, (match, key) => params[key] ?? match),
         getProposalDisplayTitle: item => item.title || 'Untitled', getProposalDisplayTypeLabel: () => '',
-        getProposalDisplayDescription: () => '', getProposalNftInfo: item => item.nft ? { tokenId: 'Token1111111111111111111111111111111111', chain: 'solana-devnet' } : null,
-        buildProposalNftExplorerUrl: () => null,
-        isProposalMinted: item => !!item.nft, isProposalApplied: () => applied,
+        getProposalDisplayDescription: () => '', isProposalApplied: () => applied,
         ProposalMapAction: { presentation: isApplied => ({ label: isApplied ? 'Unapply' : 'Apply', iconClass: 'fa-check', className: 'btn-warning' }) },
         computeProposalCategoryFlags: () => ({ isRoadProposal: road, isBuildingProposal: false, isStructureProposal: false, isParcelLayoutProposal: false, supportsMapToggle: true }),
         resolveProposalActionTypeKey: () => 'building', getLifecycleStatus: () => lifecycle,
         getProposalLifecycleKey: () => lifecycle.toLowerCase(), getProposalLifecycleClass: () => '', getProposalLifecycleLabel: () => lifecycle,
-        buildProposalOwnerAcceptanceSummaryFast: () => ({ totalOwners: 0 }),
-        getProposalLensEntries: () => [], getLensPatternDataUrl: () => null,
         getProposalKey: item => item.proposalId, resolveProposalIdKey: value => value,
         computeProposalArea: () => 0, getProposalParcelCount: () => 0,
         getParcelDisplayNumberFromProperties: (_props, id) => id, getProposalActionTypeLabel: () => '',
         isParcelReplacedByChildren: () => sourceReplaced, ensureParcelIdOnFeature: feature => feature,
         getParcelIdFromFeature: feature => feature.properties.parcelId,
         canEditProposalGeometry: () => !road, editProposalGeometry() {},
-        isProposalOpenSaleOffer: item => !!item.saleOffer, simulateSaleOfferPurchase() {},
         CityConfigManager: { getDriveConfig: () => ({ url: 'https://example.test' }) },
         corridorIsTrack: () => road,
         toggleProposalDetailsPanelMinimized() {}, shareProposalFromDetails() {},
         applyProposalToMap() {}, removeProposalFromMap() {}, proposeExistingProposal() {},
         setupLazyList() {}, restoreProposalDetailsScroll() {},
-        initializeExpiryCountdown() {}, initializeDecayCountdown() {},
         ensureProposalOverlayGroups: () => ({ buildingPreview: { clearLayers() {} } }),
         clearProposalInfoHoverOverlay() {}, clearProposalHoverLayers() {},
         renderProposalBuildingPreview() {}, installProposalDetailsEscapeHandler() {},
-        bindProposalSupportWalletRefresh() {}, getProposalDetailsPanelLabels: () => ({}),
-        ensureProposalMetadataLoaded: async () => null,
+        getProposalDetailsPanelLabels: () => ({}),
         setProposalDetailsPanelMinimized() {}, setupGameLogClickListeners() {},
-        hideProposalDetailsPanel() {},
-        buildOwnerAcceptanceSectionHtml: () => '',
-        ...(editable === null ? {} : { getProposalEditCapability: () => ({ editable }), editProposalApproval() {} })
+        hideProposalDetailsPanel() {}
     };
     if (proposal.lifecycleStatus === undefined) proposal.lifecycleStatus = lifecycle;
     const context = vm.createContext(globals);
@@ -292,9 +255,9 @@ describe('proposal details action footer', () => {
 
     it.each([
         { proposalId: 'local-1', cadastreParcelIds: [] },
-        { proposalId: 'minted-1', cadastreParcelIds: [], nft: MINT_RECORD }
+        published({ proposalId: 'published-1', goal: 'park', title: 'Park', cadastreParcelIds: [] })
     ])('offers no bet, support or approval action on a design: those are its agreement\'s (%j)', proposal => {
-        const result = render(proposal, { applied: true, connected: true, approvalSetup: true, editable: true });
+        const result = render(proposal, { applied: true });
         const footer = parse(result.footer.innerHTML);
         const content = parse(result.content.innerHTML);
         expect(footer('.btn-bet-proposal, [data-proposal-support-actions], .btn-connect-proposal-support, .proposal-buy-btn').length).toBe(0);
@@ -308,7 +271,7 @@ describe('proposal details action footer', () => {
 
     it('keeps a parcel layout local: Share disabled with its reason, no Fork, Bet or approval action', () => {
         const proposal = { proposalId: 'layout-1', goal: 'parcel-layout', title: 'Layout', cadastreParcelIds: ['source-1'], parcelLayout: { plots: [] } };
-        const result = render(proposal, { applied: true, editable: true });
+        const result = render(proposal, { applied: true });
         const footer = parse(result.footer.innerHTML);
         const share = footer('.btn-share-proposal');
         expect(share.length).toBe(1);
@@ -324,7 +287,7 @@ describe('proposal details action footer', () => {
         expect(park('.proposal-publish-later').length).toBe(0);
     });
 
-    it('offers Create agreement over an applied design: before the disabled Share for a parcel layout, after Share otherwise', () => {
+    it('offers Add to agreement over an applied design: before the disabled Share for a parcel layout, after Share otherwise', () => {
         // The primary row's buttons in order, by the action each one is.
         const primaryRow = result => {
             const $ = parse(result.footer.innerHTML);
@@ -335,21 +298,21 @@ describe('proposal details action footer', () => {
         const layout = { proposalId: 'layout-2', goal: 'parcel-layout', title: 'Layout', cadastreParcelIds: ['source-1'], parcelLayout: { plots: [] } };
         const appliedLayout = render(layout, { applied: true });
         const layoutRow = primaryRow(appliedLayout);
-        const layoutCreate = layoutRow[position(layoutRow, 'btn-create-agreement')];
-        expect(layoutCreate.hasClass('btn-primary')).toBe(true);
-        expect(layoutCreate.text()).toContain('Create agreement');
+        const layoutAdd = layoutRow[position(layoutRow, 'btn-create-agreement')];
+        expect(layoutAdd.hasClass('btn-primary')).toBe(true);
+        expect(layoutAdd.text()).toContain('Add to agreement');
         expect(position(layoutRow, 'btn-create-agreement')).toBeLessThan(position(layoutRow, 'btn-share-proposal'));
         expect(layoutRow[position(layoutRow, 'btn-share-proposal')].attr('disabled')).toBeDefined();
-        expect(appliedLayout.footer.innerHTML).toContain('window.AgreementDialog.open({ designIds: ["layout-2"] })');
+        expect(appliedLayout.footer.innerHTML).toContain('window.AgreementDialog.addDesign("layout-2")');
 
         const park = { proposalId: 'park-3', goal: 'park', title: 'Park', cadastreParcelIds: [] };
         const appliedPark = render(park, { applied: true });
         const parkRow = primaryRow(appliedPark);
-        const parkCreate = parkRow[position(parkRow, 'btn-create-agreement')];
-        expect(parkCreate.hasClass('btn-primary')).toBe(false);
+        const parkAdd = parkRow[position(parkRow, 'btn-create-agreement')];
+        expect(parkAdd.hasClass('btn-primary')).toBe(false);
         expect(position(parkRow, 'btn-create-agreement')).toBe(position(parkRow, 'btn-share-proposal') + 1);
         expect(parkRow[position(parkRow, 'btn-share-proposal')].hasClass('btn-primary')).toBe(true);
-        expect(appliedPark.footer.innerHTML).toContain('window.AgreementDialog.open({ designIds: ["park-3"] })');
+        expect(appliedPark.footer.innerHTML).toContain('window.AgreementDialog.addDesign("park-3")');
 
         // An agreement bundles designs applied to the map; one that is not offers none.
         for (const proposal of [layout, park]) {
@@ -358,8 +321,8 @@ describe('proposal details action footer', () => {
     });
 
     it('renders the primary and contextual actions once, Fork named for the design', () => {
-        const proposal = { proposalId: 'proposal-1', title: 'Garden', cadastreParcelIds: [], nft: MINT_RECORD };
-        const result = render(proposal, { connected: false });
+        const proposal = { proposalId: 'proposal-1', title: 'Garden', cadastreParcelIds: [] };
+        const result = render(proposal);
         const $ = parse(result.footer.innerHTML);
         expect($('.proposal-action-default').length + $('[onclick^="removeProposalFromMap"]').length).toBe(1);
         expect($('[onclick*="shareProposalFromDetails"]').length).toBe(1);
@@ -388,9 +351,10 @@ describe('proposal details action footer', () => {
         const edited = { ...published(track), title: 'Rail, edited' };
         expect(parse(render(edited, { applied: true, road: true }).footer.innerHTML)('.btn-drive-proposal').length).toBe(0);
 
-        const onchain = render({ proposalId: 'chain-1', title: 'Garden', cadastreParcelIds: [], nft: MINT_RECORD }, { connected: true });
-        expect(parse(onchain.footer.innerHTML)('.btn-edit-geometry').length).toBe(1);
-        expect(parse(onchain.footer.innerHTML)('.btn-donate-proposal, .btn-pledge-proposal, .proposal-support-actions').length).toBe(0);
+        // A published design keeps Edit geometry (the edit forks it) and takes no donation or pledge.
+        const garden = render(published({ proposalId: 'garden-1', goal: 'park', title: 'Garden', cadastreParcelIds: [] }));
+        expect(parse(garden.footer.innerHTML)('.btn-edit-geometry').length).toBe(1);
+        expect(parse(garden.footer.innerHTML)('.btn-donate-proposal, .btn-pledge-proposal, .proposal-support-actions').length).toBe(0);
     });
 
     // Proposal 781 on the local stack: Cancelled on the server, applied in this browser. The panel
@@ -402,7 +366,6 @@ describe('proposal details action footer', () => {
         const badges = parse(cancelled.content.innerHTML)('.proposal-badges-row');
         expect(badges.find('.cb-badge--applied')).toHaveLength(0);
         expect(badges.text()).not.toContain('Cancelled');
-        expect(badges.find('.cb-badge--minted')).toHaveLength(0);
         const footer = parse(cancelled.footer.innerHTML);
         expect(footer('[onclick^="removeProposalFromMap"]')).toHaveLength(0);
         expect(footer('[onclick^="applyProposalToMap"]')).toHaveLength(0);
@@ -414,9 +377,8 @@ describe('proposal details action footer', () => {
         expect(parse(active.footer.innerHTML)('[onclick^="removeProposalFromMap"]')).toHaveLength(1);
     });
 
-    it('badges a mint record Minted, a design published here Published, and anything else Draft', () => {
+    it('badges a design published here Published, and anything else Draft', () => {
         const badge = proposal => parse(render(proposal).content.innerHTML)('.proposal-badges-row .cb-badge').first();
-        expect(badge({ proposalId: 'chain-2', title: 'Garden', cadastreParcelIds: [], nft: MINT_RECORD }).hasClass('cb-badge--minted')).toBe(true);
         const design = { proposalId: 'park-780', goal: 'park', title: 'Block', cadastreParcelIds: [], site: { type: 'Polygon', coordinates: [[[0, 0], [0.001, 0], [0.001, 0.001], [0, 0]]] } };
         expect(badge(published(design)).hasClass('cb-badge--published')).toBe(true);
         // A bare numeric id says nothing about publication.

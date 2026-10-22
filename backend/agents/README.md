@@ -1,477 +1,269 @@
-# `backend/agents/` — the agent runner
+# `backend/agents/` — the agent runners
 
-Release status (2026-10-02): devnet ParcelNFT v2, ProposalMarket v2 and ProposalNFT v3 are byte-verified. An API deploy does not activate opt-in signing personas or lens-member services. Live member-service/schema setup and a real attested owner journey remain separate follow-ups; see [next steps](../../next-steps.md).
-
-Server-side personas that plan building proposals, choose and justify them with either a deterministic
-algorithm or an explicitly requested model, pin complete `proposal-chain/1` metadata to IPFS, mint it,
-and index it through the independently verified `/proposals/mirror` route.
-Design: `agents-functionality-for-ugt.md` §WS3.
+Status (2026-10-22, plan-design-agreement M3): the agents publish designs and agreements
+(`plan-design-agreement.md`). A proposer publishes a design (a building on a parcel it owns alone in the
+lens member's devnet owner registry), proposes a binding owners' agreement over that parcel, mints it on
+Solana devnet (the `agreement` program, `blockchain/solana/programs/agreement`), records its account in
+the index and stakes on its market; on its next run it approves the agreement as the owner, has the lens
+member it operates attest the decision, records it on chain and executes it. A vote (community or
+owners, not binding) is a poll in the index: never minted, no market. Supporters and society personas
+bet and pledge on agreement markets. Written, not yet run: the agreement program is not deployed (its id
+in `frontend/js/solana/agreement-client.js` is a placeholder), and the lens member's approval facts must
+read the devnet owner registry (today they read only a `--rights` file).
 
 ## Data flow
 
 ```
-personas.json ──▶ parcel-source.js ──▶ planner.js ──▶ algorithmic-picker.js ──▶ record-builder.js ──▶ chain-publication.js ──▶ mint ──▶ mirror
-  (who, where)      parcels + rules      candidates       picks + text ($0)      authored record      cadastre + IPFS          chain proof
-                                                    └──▶ llm-picker.js (explicit optional controller)
+personas.json ──▶ parcel-source.js ──▶ planner.js ──▶ candidate-preflight.js ──▶ algorithmic-picker.js ──▶ record-builder.js
+  (who, where)      parcels + rules      candidates     the design binds exactly      picks + text ($0)       design + terms
+                                                        its parcel                └─▶ llm-picker.js (explicit optional controller)
+
+record-builder ──▶ agreement-objects ──▶ publication-client ──▶ lens-owner-registry ──▶ agreement-objects ──▶ publication-client ──▶ agreement-minter ──▶ index ──▶ bettor
+                   design/v1 + CID       POST /pins, /designs    the parcel's owners       binding owners'         POST /pins, /agreements   create + fund        onchain    YES stake
+                                                                 (--seed-owners)           agreement + CID
+
+next run: lens-approval-client ──▶ publication-client ──▶ lens-approval-client ──▶ agreement-minter ──▶ lifecycle-actions
+          owner approval receipt     POST /decisions        lens decision (operator)    attest, execute       resolve YES, claim
 ```
 
-| stage | what it is | pure? |
+| module | what it is | pure? |
 |---|---|---|
-| `parcel-source.js` | one SQL statement: parcels in a persona's bbox with area, geometry, the GDI buildings on them and the urban rule over them | no — the only I/O here |
-| `planner.js` | envelope, one legal build-out, GFA, € gain, offer, persona score | yes (turf injected) |
-| `record-builder.js` | the POST body, in the shape the app stores for a single freeform building | yes (turf injected) |
-| `algorithmic-picker.js` | explicit guardrails plus seeded variation among the near-best candidates | yes |
+| `parcel-source.js` | one SQL statement: parcels in a persona's bbox with area, geometry, the GDI buildings on them and the urban rule over them | no |
+| `planner.js` | envelope, one legal build-out, GFA, € gain, persona score | yes (turf injected) |
+| `candidate-preflight.js` | the binding the index will give the candidate's design (`proposals/binding.js` checkProposalBinding, as POST /designs runs it): kept only when it is exactly the candidate parcel with complete coverage | orchestration (checker injected) |
+| `algorithmic-picker.js` | guardrails plus seeded variation among the near-best candidates | yes |
 | `llm-picker.js` | the Anthropic Batches step: request building, parsing, cost estimate, submit/await/collect | pure except `runPickBatch` |
+| `record-builder.js` | the recipe of one pick: the local design record (goal `buildings`, single-building typology: the massing stands on its parcel and forms no new piece) and the agreement terms (title, `deadlineDays`, `lamports` from the persona) | yes |
+| `agreement-objects.js` | design/v1 and agreement/v1 objects and their CIDs, built on the browser's own `design-record.js`, `agreement-record.js` and `cid.js`; `ownersRule` (binding, unanimous, one lens), `registryRights` (parcel-rights/v1 from the devnet owner registry), `holdersFromRights`, `communityRule` (a poll: the restatement scripts), `parcelOutputs`, `deadlineAfterDays` | yes |
+| `lens-owner-registry.js` | the lens member's devnet owner registry (`consensus.lens_devnet_owner`): read a parcel's owners, plan and register a persona as sole owner (never replacing another owner) | no |
+| `lens-approval-client.js` | the owner's approval receipt as the browser makes it (lens challenge → rights and authority facts → signed `agreement-decision/v1`, admitted by the relay's own rules) and the lens operator's `POST /lens/agreements/:cid/decision` | no |
+| `publication-client.js` | the index client: pin (`POST /pins`), index designs and agreements, `POST /designs/binding`, relay owner decisions (`GET`/`POST /agreements/:cid/decisions`), `POST /agreements/:cid/onchain`, reads; every CID computed locally, every write repeatable | no |
+| `agreement-minter.js` | `mintAgreement` (create + fund up to the escrow in one transaction), `fundAgreement`, `recordAgreementDecision` (attest), `executeAgreement`, `expireAgreement`, `readAgreementAccount`; every step reads the chain first | no |
+| `bettor.js`, `pledger.js`, `donor.js`, `lifecycle-actions.js` | market stake, soft pledge, donation, and their resolve/claim/refund/release/fulfil/void steps, all on the agreement account as subject; the proposer's settlement (`inspectSettlement`, `executeSettlement`) | no |
 
 Several runs a day: `--slot auto|LABEL` (all three runners) puts the slot into the run id
-(`<day>-<slot>-<persona>`), the proposal ids and the seed, while `consensus.agent_run.day` stays the
-date; `auto` is `h` + the UTC hour. The PM2 schedules in `ecosystem.config.cjs` run every proposer and
-bettor every two or three hours with `--slot auto`; `consensus-builder-tx-sync` refreshes the
-transaction store every 20 minutes so the public activity feed shows each bet soon after it lands.
+(`<day>-<slot>-<persona>`), the pick ids and the seed, while `consensus.agent_run.day` stays the date;
+`auto` is `h` + the UTC hour.
 
 Server RPC reads retry transient transport, rate-limit and provider failures up to four total
-attempts, with 1/2/4-second backoff. The shared transaction sender checks the locally derived
-signature even if the submission response is lost, and rebroadcasts the identical signed bytes
-up to three times while the blockhash remains valid. It never refreshes the blockhash after an
-ambiguous submission. Confirmed chain errors and deterministic preflight failures remain failures;
-the durable run checkpoint records them. This follows Solana's distinction between
-[submission and confirmation](https://solana.com/docs/rpc/http/sendtransaction).
-Society account reads use batches of five, matching the configured provider's limit, and reject
-truncated responses instead of assigning balances or markets to the wrong proposal.
+attempts, with 1/2/4-second backoff. The shared transaction sender (`solana-send.js`) checks the
+locally derived signature even if the submission response is lost, and rebroadcasts the identical
+signed bytes up to three times while the blockhash remains valid. Confirmation polls
+`getSignatureStatuses` (Alchemy's devnet RPC has no `signatureSubscribe`). Proposer parcel reads get at
+most three attempts within 180 seconds (`parcel-read-retry.js`); signed actions are never retried by
+that policy.
 
-Proposer parcel reads (source fetch, candidate binding and mint preparation) get at most three
-attempts within 180 seconds, with 5/15-second backoff or a longer provider cooldown. Access blocks,
-quota limits and other deterministic client failures are not retried. Incomplete parcel sets stay
-unavailable; failures include their declared and received counts. This policy retries reads only.
+Funding: with `AGENT_SOL_FUNDING_ENABLED=1` a configured bot below 0.05 SOL is topped up to 0.2 SOL
+from the main bot wallet before it signs; with `AGENT_USDC_FUNDING_ENABLED=1` an actor about to stake
+or donate is topped up to 0.5 test USDC (`funding.js`). The escrow lamports an agreement is funded with
+come from the proposer's own SOL and return to it when the agreement expires or is cancelled.
 
-The server actor/lens configuration enables `AGENT_SOL_FUNDING_ENABLED=1`. The existing main bot
-wallet, `G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg`, accepts devnet SOL for fee funding.
-Before a live actor run or lens attestation, a configured bot below 0.05 SOL receives only the
-shortfall to 0.2 SOL. The helper checks the full devnet genesis, configured recipient and source
-signer, and a 0.5 SOL source reserve plus fee allowance; it reads balances back after confirmation.
-Actor runs checkpoint the transfer receipt. Existing USDC/action limits for proposal support and betting still apply.
+## The proposer run (`run.mjs`)
 
-The same main bot wallet also accepts **Solana devnet USDC** for the actors. With
-`AGENT_USDC_FUNDING_ENABLED=1`, a configured actor about to stake or donate is topped up to
-0.5 test USDC if its balance is below 0.1 USDC or below the intended action amount. Transfers
-retain at least 1 test USDC in the source wallet, use the fixed devnet mint with six decimals,
-and verify balances after confirmation. A shared database lock serializes source-wallet funding
-across bot processes. Each successful transfer is recorded as `summary.usdcFunding` on the run.
-Pledges, revocations, claims, dry runs and adequately funded wallets trigger no USDC top-up.
-The actor's normal spending caps apply to its selected action; funding does not increase them.
+For each proposer persona: plan → choose → for each pick, in order, each stage checkpointed in
+`consensus.agent_run.summary` before the next starts:
 
-Supporter and society discovery read paginated proposal summaries; unavailable API or chain
-reads fail the run. Chain state determines whether a proposal is active or settled.
+| stage | what happens | checkpoint |
+|---|---|---|
+| `planned` | candidates in this run's area window, preflighted against the index's binding rule | `candidates`, `candidatePreflight`, `city`, `area` |
+| `chosen` | the controller's picks (`pickId` = `agent-<persona>-<runKey>-<n>`, a stable pick id, not a record) | `picks`, `decisionInput`, `decisionResult` |
+| `designed` | the design/v1 object is built and checkpointed with its CID **before** it leaves the machine, then pinned and indexed (`POST /pins`, `POST /designs` with the candidate's `parcelSourceId`); the index's binding must be exactly the candidate parcel with complete coverage, or the pick fails | `designs[candidateId] = { cid, content, terms, city, binding: { parcelIds, coverage }, indexedAt }` |
+| `proposed` | the parcel's owners are read from the devnet owner registry (with `--seed-owners` a parcel nobody owns is registered to the persona first; a parcel without owners fails the pick); then the binding owners' agreement/v1 object (`rule = { electorate: 'owners', binding: true, approvalConfig: { schema: 'proposal-approval/v1', rights: <parcel-rights/v1 from the registry, provider lens-devnet-owners>, policy: { type: 'unanimous' } }, lens: [<the operated lens member>] }`; inputs = the design's binding with the registered owners as holders; outputs = that parcel as it stands, role `parcel`, hashed over the parcel geometry its source serves; `deadline` = build time + `agreement.deadlineDays`; `sponsor` = the persona's wallet; `author` = the persona) is built and checkpointed, then pinned and indexed (`POST /agreements`) | `owners[candidateId] = { parcelId, owners, soleOwner, readAt }`, `agreements[candidateId] = { cid, content, title, deadline, lamports, soleOwner, indexedAt }` |
+| `minted` | `create(cid, lens, deadline, open_ground = false, required_lamports = lamports, payout = sponsor)` and `fund(lamports)` in one transaction; an existing account is read and only funded up to what it lacks | `mints[candidateId] = { account, signature, createSignature, created, fundedLamports, escrowLamports, status, cluster, mintedAt }` |
+| `recorded` | `POST /agreements/:cid/onchain { chain: 'solana', cluster: 'devnet', account, signature }`: the index reads the account itself (201 first record, 200 refresh) | `onchain[candidateId]` |
+| `staked` | YES stake of `stakeUsdc` on the agreement's market (created when missing); skipped when `stakeUsdc` is 0 | `stakes[candidateId]` |
 
-`run.mjs` (the orchestrator) owns the sequencing, the checkpoints, the proposal ids, the daily
-spend cap, signed-action/USDC caps and the Telegram summary. The modules here hold no state and
-never decide to spend. `run-policy.js` refuses a live plan before it touches a wallet when it would
-exceed four possible signed actions or 0.35 USDC by default.
+`--until STAGE` stops after a stage; a rerun resumes at the first unfinished one and never builds a
+second CID for a pick (the stored content is reused). The run also stores `lens`, `bindingFailures`,
+`activities` (action-engine events: `design`, `propose`, `mint`, `stake`, `decide`, `lens-decision`,
+`attest`, `execute`, `expire`, `resolve`, `claim`, entity `{ type: 'agreement' | 'design', id: <cid> }`), `executionPolicy` and `outcome`
+(`completed`, `partial`, `no-picks`, `failed`). The headline `AGENT DAILY RUN — status=completed` is the
+monitor's success sentinel; Telegram carries failures only.
 
-The daily schedule is intentionally algorithmic: SQL and the deterministic planner decide what is
-feasible, then `algorithmic-picker.js` accepts only urban-rule-backed positive-uplift candidates and
-uses a stable day/persona hash to vary among the top three candidates within 90% of the best score.
-It has zero model spend and is reproducible for a given day. An LLM can still be demonstrated by
-passing `--controller llm`; deterministic adapters validate, pin, mint, mirror and stake in both modes.
-`donor.js` funds refundable proposal escrow
-with an idempotent receipt, while `pledger.js` records an updateable commitment without moving USDC
-and can later fulfil it after execution.
-Policy—what proposal another agent wants to back and for how much—stays outside the money-moving
-module and can be supplied by a later model step.
+`run-policy.js` refuses a live plan before it touches a wallet when it would exceed
+`AGENT_DAILY_ACTION_CAP` signed actions (default 4; a pick needs at most 3: create+fund, market
+creation, stake) or `AGENT_DAILY_USDC_CAP` (default 0.35). Pinning and indexing sign nothing.
 
-`support-run.mjs` is another persona role in the same runtime, not a second agent system. It reads
-active minted proposals from the public summary endpoint, uses `supporter-picker.js` for a stable
-daily `$0` choice, executes one pledge/donation/market action through the existing Solana adapters,
-and writes the same `consensus.agent_run` and activity envelope. The initial `supporter-01` policy
-uses a soft pledge, so it produces real signed evidence without requiring a funded USDC transfer.
+**Lens.** An agreement program account holds one lens key, so every agreement names exactly one: the
+lens member this runner operates, a `lens-member` persona whose `service` names an `operatorTokenEnv`
+(`--lens NAME|KEY`, else `AGENT_LENS`, else the only such persona: `lifecycle-01`). Its approval facts
+verify the owners' receipts, and its operator-only decision is what the program records, so a live run
+refuses to start without that token. Its key is checkpointed as `summary.lens`.
 
-Supporter and society discovery verify every Solana proposal's current account status, including
-ordinary records, before policy selection. Supporter market and position reads are batched to the
-provider limit; resolved markets and existing support are excluded. The selected target is checked
-again before action funding or signing. Live reads and proposer retirement checkpoints reconcile
-confirmed terminal lifecycle states into the API immediately, instead of waiting for the daily
-oracle. Dry runs do not write this read model. The oracle still materializes transaction evidence
-and land events independently.
+**Settlement phase.** Before anything new, each run settles the persona's own agreements of earlier runs
+(`ownedAgreementsFromRuns` over its runs, leaving out accounts already settled → `inspectSettlement`
+reads the account, market and YES position), so every market stays open for at least one run:
 
-## A society of agents that disagree
+- **decidable** (Active, before its deadline, decision pending, the persona owns all its land alone, its
+  lens is the operated member): `decide` (the approval receipt, signed and relayed to
+  `POST /agreements/:cid/decisions`; nothing when the relay holds one) → `lens-decision` (the operated
+  member's `AgreementDecision-v1`, `POST /lens/agreements/:cid/decision`) → `attest` → `execute` (once
+  the escrow holds what it requires; the whole escrow goes to the payout, the sponsor) → `resolve` (YES)
+  → `claim` the YES winnings;
+- **due** (Active, past its deadline): `expire` (the escrow returns to the sponsor) → `resolve` (NO) →
+  `claim` the YES refund (a full refund when nobody staked NO; otherwise the stake is lost);
+- **executed / cancelled / expired**: `resolve` → `claim` when still open; **awaiting-owners** (a contest
+  answer on land the persona does not own), **lens-not-operated** and **awaiting-funds** wait.
 
-`society-run.mjs` runs any persona whose role has a pure policy module at `policies/<role>.js`
-(`decide(input)` → one action or none, plus `NEEDS` saying what to gather). Each turn it reads the
-proposals of the persona's `policy.cities` (every lifecycle; `["*"]` = every city in one unfiltered
-`/proposals/summary` read, an explicit list = one read per city, default `["zagreb"]`; up to 3000
-proposals, of which the newest 500 Solana-minted ones get their market and both own positions read in
-batched `getMultipleAccountsInfo` calls; EVM-minted rows are skipped), and the persona's own history
-(its checkpointed turns, its on-chain positions/pledges, and in a dry run the earlier simulated turns).
-First comes the shared **collect** step (`policies/collect.js`): if the persona holds an unclaimed
-position on a settled market it is owed money from (the winning side, or any side when nobody backed
-the winner, which refunds every stake — the Bets sheet's `claimSides` rule), the turn's action is a
-`claim` of it (no USDC, one signature). A market still open on a proposal that is already terminal
-on-chain (Executed → YES, Cancelled/Expired → NO) is settled first with `resolve`, which anyone may
-sign (two signatures). Only when nothing is owed does it ask the role's policy, and it executes the
-one action through `AgentActionEngine` with the same `consensus.agent_run` rows,
-activity envelope and Telegram summary as the supporter. `$0` by default; `--controller llm` lets a
-model (Batches, via `llm-picker.js` and `society-llm.js`) pick one of the policy's options that fit the
-caps, or none — never anything the policy did not offer. `support-run.mjs` is unchanged.
+Each step goes through the action engine and is checkpointed under `summary.settlements[account]`; the
+index is then refreshed (`POST /agreements/:cid/onchain`), and an account that reached its end is marked
+`settled: true` so later runs skip it. At most `AGENT_SETTLE_MAX_PER_RUN` (default 3) agreements a run;
+their transactions (attest, execute, expire, resolve, claim: at most 4 each) share
+`AGENT_DAILY_ACTION_CAP` with the picks. `--dry-run` lists what would be settled.
+
+**Contest mode.** An area `{ mode: 'contest', floorCap, withinDays }` answers other proposers'
+agreements on the same parcels (proposed in the last `withinDays` days, deadline still ahead, still
+open) with a lower build-out, so both agreements share input land and form one market contest.
+Whether a rival is still open comes from the chain, by two routes: its index row's `onchain.status`
+(read with `GET /agreements/:cid`; written when it is minted and refreshed, with `onchain.endedAt`, the
+chain time it ended, on every pass of the lifecycle oracle, `oracle/agreement-lifecycle.js`), which
+knows an agreement whoever executed, cancelled or expired it; and its author's own settlement
+checkpoints (`execution`, `expiry`), which say so before the next oracle pass. An executed agreement
+already settled its land; a cancelled or expired one can never execute. The rival does not own that
+land: its agreement names the registered owners, waits for them and expires when they do not decide it.
+
+**Owner registry.** `scripts/seed-lens-owners.mjs` registers proposer personas as the sole owners of the
+parcels their runs picked (`--day [--slot] [--persona]`, from the runs' checkpoints; or `--parcel ID
+--persona NAME`), dry run unless `--apply`; a parcel another wallet holds is reported, never replaced.
+`run.mjs --seed-owners` does the same for each pick as it reaches `proposed`.
+
+**Affordabot** (`AFFORDABOT.md`) is a proposer persona with `housingResearch`; its published
+agreements fill `summary.outreach` (drafts linking `/agreements/<cid>`), read with
+`node agents/affordabot-outreach.mjs --list`; `affordabot-outcome.mjs` is its monitor check.
+
+## Supporters and a society of agents that disagree
+
+`discovery.js` reads the agreements of a persona's cities from the index (`GET /agreements?city=`,
+newest first, at most 1000 per read; `["*"]` = one read over every city), derives each one's account
+from its sponsor and CID, and reads every account's status from the chain in batches
+(`readAgreementStatuses`; an account owned by another program, or holding another CID or sponsor,
+fails the read). Only the chain's word counts: minted = the account exists; open = Active on chain and
+before its deadline.
+
+`support-run.mjs` (role `supporter`) chooses one open agreement by another actor with
+`supporter-picker.js` (a stable daily `$0` hash) and performs one pledge, donation or YES stake on it;
+`supporter-state.js` excludes resolved markets and agreements this wallet already supports and
+re-checks the target on chain before funding or signing.
+
+`society-run.mjs` runs any persona whose role has a pure policy at `policies/<role>.js` (`decide(input)`
+→ one action or none, plus `NEEDS`). Each turn reads the agreements, their markets, the persona's
+positions and pledges, and (for density policies) the designs of open agreements by others
+(`POST /designs/batch`). The shared collect step (`policies/collect.js`) first claims what a settled
+market owes the persona (an unresolved market on a terminal agreement is resolved first: Executed →
+YES, Cancelled/Expired → NO). Otherwise the role decides:
 
 | persona | role | rule |
 |---|---|---|
-| `preservationist-01` | `contrarian` (`policies/contrarian.js`) | Among active minted proposals by other actors it has not already bet against (on-chain NO position or checkpointed stake) and whose market is unresolved, score density: proposed gross floor area = Σ footprint m² × floors from the record's `geometry.buildings` (floors from the feature, else `buildingProposal.parameters.floors`, else height / 3); without a massing, a text heuristic (floors mentioned × 100 + 50 per density word) ranked after every measured one. Score 0 (parks, squares) is never a target. Stake NO `policy.amountUsdc` (0.01) on the highest; ties by a `seed`-stable hash. A missing market costs a second signature. |
-| `backer-01` | `backer` (`policies/backer.js`) | The contrarian's mirror. Among active minted proposals by other actors it has not already backed (on-chain YES position or checkpointed YES stake) and whose market is unresolved, rank by the contrarian's `densityEvidence`: record-measured massings first (lowest proposed gross floor area first), then proposals with no density signal (parks, unmeasured summaries), then ones only the text calls dense; within a tier the underdog (market YES pool < NO pool) goes first; ties by a `seed`-stable hash. Stake YES `policy.amountUsdc` (0.02) on the first. A missing market costs a second signature. |
-| `speculator-01` | `speculator` (`policies/speculator.js`) | Implied YES = yesPool / (yesPool + noPool); no/empty/resolved market = no signal. First, revoke (`revoke_pledge`) an active own pledge on a still-Active proposal whose probability < `revokeBelowProbability` (0.5) or whose age (from its `createdAt`) > `maxAgeDays` (7), lowest probability first. Otherwise pledge `amountUsdc` (0.05) to the proposal with the highest probability ≥ `minPledgeProbability` (0.6) that is ≤ `pledgeWithinDays` (3) old and was never pledged to before (a revoked pledge is not re-made, so it cannot flap). |
-| `lifecycle-01` | `lens-member`, kind `lifecycle` | Runs the reference lens member through `lens-member-run.mjs` (port 3096). Its `service.operatorTokenEnv` maps `AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN` to the member's `LENS_OPERATOR_TOKEN`, so the proposer's retire phase and the member share one token; set `AGENT_LIFECYCLE_LENS_SERVICE_URL=http://127.0.0.1:3096` for the proposer to expire stale proposals by verdict. |
+| `preservationist-01` | `contrarian` | NO stake on the densest open agreement by another actor (proposed gross floor area of its building designs; a text heuristic ranks after measured ones; parks score 0) |
+| `backer-01` | `backer` | YES stake on the most modest open agreement by another actor, the underdog (YES pool < NO pool) first |
+| `speculator-01` | `speculator` | revoke an own pledge when the market's implied YES falls below `revokeBelowProbability` or the agreement is older than `maxAgeDays`; else pledge to the favourite ≥ `minPledgeProbability` and ≤ `pledgeWithinDays` old |
 
-Society personas have `wallet: null` until the operator generates `~/.config/solana/ugt-<name>.json`; a
-`--live` society run refuses before reading anything until the key exists and `wallet` matches it.
-
-Caps bound one invocation: `AGENT_SOCIETY_ACTION_CAP` signed actions (default 4) and
-`AGENT_SOCIETY_USDC_CAP` (default 0.05; stakes and pledge commitments count, revokes and claims are free). The
-policy sees the remaining budget, so a revoke can still happen after the USDC is spent; when options
-exist but none fits, the turn ends `cap-reached` and the invocation stops.
-
-Game days: `--turns N` (1–10) plays N turns in one invocation. Turn k is checkpointed as
-`<day>-<persona>-t<k>` with seed `<day>:t<k>` and re-reads the chain, so turn k sees what turn k−1
-signed; a rerun resumes at the first unfinished turn and counts the finished ones against the caps.
-Without `--turns` the run id is `<day>-<persona>` and the seed `<day>`. Proposal ages always use the
-real clock. `--slot LABEL` runs a persona again on the same UTC day: run ids `<day>-<LABEL>-<persona>`
-(`-t<k>` with `--turns`) and seeds `<day>:<LABEL>` (`:t<k>`); `--slot auto` is `h` + the UTC hour
-(`h08`), so an hourly or 3-hourly schedule gets a fresh run each time while a retry within the same
-hour resumes. The run row's `day` stays the UTC day. Each invocation has its own caps.
-`--personas FILE` reads another personas file (dry runs of a persona not yet configured). Outcomes: `completed`, `no-action`, `replayed` (already on-chain), `cap-reached`, `failed`.
-
-`/hackathon/operations.json` lists these roles under `optionalJobs` (not `jobs`, so the proof audit's
-four-job check is unchanged): no row = `not-configured`; the newest finished row older than 36 h =
-`inactive`; only a recent failure turns the overall status to `attention`.
-
-`canonical-case-run.mjs` is a manual, resumable demonstration over those same modules. It uses the
-configured proposer and supporter to mint one small real parcel set, pay the x402 endpoint, donate,
-pledge, and forecast both YES and NO. Each action is checkpointed in `consensus.agent_run` and
-appears through the shared activity envelope; it is not scheduled and does not introduce another
-agent runtime. Preview it with `npm run demo:case`; execute only on devnet with
-`npm run demo:case:live`.
-After the setup is publicly inspected, add `-- --terminal` to cancel the case, resolve its NO
-market outcome, refund the donation, void the unfunded pledge and claim the winning position.
-
-The executed path is a second case on a second parcel set (`npm run demo:case:executed` to preview,
-`npm run demo:case:executed:live` to run). It sets up the same way, then the supporter persona, which
-holds the devnet ownership certificate of every listed parcel, accepts each parcel; the last acceptance
-puts the proposal in `Executed` on-chain, the market resolves YES, the donation escrow is released, the
-pledge is fulfilled from the supporter's wallet and the proposer claims the winning YES position. The
-land-event materializer (daily 02:30 UTC) publishes the `executed` event that completes the public case
-page and the `executed_case_yes` audit check.
-That case was recorded on the v1 programs (2026-09). Lens model v2 removes `accept_proposal`, so the
-runner replays it only from its checkpoint: the anchor step reads each parcel anchor (minting it
-ownerless via `ensureParcelAnchor` if missing), and a new executed case with no recorded acceptances
-stops with a message pointing at `--outcome attested`.
-
-Both this runner and the browser simulation use `frontend/js/agent-action-engine.js`. A controller
-(`human`, `algorithm`, or `llm`) chooses an action, the registered deterministic handler executes
-it, and the engine emits the same actor/action/entity/activity envelope. The browser Activity view
-merges simulation events with `GET /agent/activity`; actor rows look the same by default, while the
-closed Details disclosure preserves controller and source provenance for audits.
+Caps bound one invocation: `AGENT_SOCIETY_ACTION_CAP` (default 4) and `AGENT_SOCIETY_USDC_CAP`
+(default 0.05). `--turns N` plays N game days; `--slot` runs again on the same UTC day;
+`--controller llm` lets a model pick one of the policy's options (`society-llm.js`), never anything
+else. History (`policies/history.js`) is keyed by agreement CID.
 
 ## Persona config (`personas.json`)
 
 | field | meaning |
 |---|---|
-| `name` | the persona's id; appears in `candidateId`, `custom_id`, the record's `agent.persona` and the building's `author` |
-| `role` | `proposer`, `supporter`, `lens-member`, or a society role with a `policies/<role>.js` module (`contrarian`, `backer`, `speculator`); all but lens members share the controller, checkpoint and activity system |
-| `wallet` | public key, for labels; the record's `author` is bound by the paid route from the settlement, never from here |
+| `name` | the persona's id; the author of its designs and agreements |
+| `role` | `proposer`, `supporter`, `lens-member`, or a society role with a `policies/<role>.js` module |
+| `wallet` | public key; a proposer's wallet is the sponsor of its agreements (their account is PDA(sponsor, CID)) |
 | `keypairPath` | where the signing key lives — **outside the repo** |
-| `weights` | `{ density, openSpace, valueUplift, heritage }`; drives the planner's score and is put into the prompt in words |
-| `areas` | where the proposer looks; each run visits ONE of them (a stable rotation by run key, `agents/area-plan.js`) and a ~350 m window inside its bbox (`windowM` overrides), and never re-plans a parcel the persona already minted on. Three forms: `{ city, bbox }` — Croatian cadastre and the GUP urban rules in the database; `{ city, label, sourceId, bbox }` — any city with a live parcel source (`GET /parcel-sources/:sourceId?bbox=`), which carries no buildings or zoning, so the candidate uses the default envelope and says that existing buildings are not measured; `{ mode: 'contest', floorCap, withinDays }` — the parcels other proposers published on in the last `withinDays` days and did not retire, answered with a lower build-out (`floorCap`), so both proposals compete in one contest. `floorCap` on any area builds lower than the ceiling. |
-| `dailyProposals` | how many picks a controller may make for this persona in one run (the hackathon persona is capped at one) |
-| `stakeUsdc` | the bettor's stake size |
-| `support` | supporter cities, allowed action types and per-action USDC amount |
-| `service` | lens members only: `port`, `url`, `kind` (`owner-consent` or `lifecycle`), `priceUsdc` per ownership attestation, `credentialName`, `identity` adapter, optional `operatorTokenEnv` (the env var passed on as `LENS_OPERATOR_TOKEN`) |
-| `policy` | society roles only: `cities` (`["*"]` = every city with proposals) plus the policy module's parameters (see the table above) |
+| `weights` | `{ density, openSpace, valueUplift, heritage }`; the planner's score, put into the LLM prompt in words |
+| `areas` | where the proposer looks: `{ city, bbox }` (Croatian cadastre and GUP rules in the database), `{ city, label, sourceId, bbox }` (a live parcel source), or `{ mode: 'contest', floorCap, withinDays }` |
+| `dailyProposals` | how many picks a controller may make in one run |
+| `agreement` | proposers: `{ deadlineDays, lamports }`: each binding agreement's deadline (days after it is built; unexecuted by then it expires) and the escrow it is funded with at mint and execution requires, paid back to the sponsor at execution (`"0"` for none) |
+| `stakeUsdc` | proposers: the YES stake on each own agreement's market (`"0"` skips the stage) |
+| `support` | supporters: cities, allowed action types and per-action USDC amount |
+| `service` | lens members: `port`, `url`, `kind`, `priceUsdc`, `credentialName`, `identity`, optional `operatorTokenEnv` |
+| `policy` | society roles: `cities` plus the policy module's parameters |
 
-`heritage` is declared and weighted but contributes **0**: there is no heritage dataset wired in
-yet, and a term faked from something else would look like a judgement nobody made.
+`heritage` is declared and weighted but contributes **0**: no heritage dataset is wired in.
 
-## Lens: who decides an agent proposal
+### Lens-member personas
 
-A proposal's lens is the list of lens member keys whose attestations its contract accepts
-(`../../lens-model.md`). Proposers never name themselves: `run.mjs` and `canonical-case-run.mjs`
-take `--lens KEY,KEY`, or, without it, choose from the attester directory
-(`GET /agent/lenses/members`) with `lens-directory-client.js`:
-
-- `chooseLens(members, { kinds: ['owner-consent'], min: 1, exclude: [proposerWallet] })` keeps
-  members of those kinds that are not excluded, ranks them by `coverage.ownership` descending then
-  `key` ascending, and returns the first `min` (or `max`). Fewer than `min` throws.
-- An empty or unreachable directory, or a `--lens` naming only the proposer, refuses the mint with a
-  message; nothing falls back to a self-lens. `minter.js` itself throws when `lens` is empty.
-- The daily run checkpoints the choice in `summary.lensChoice` (the canonical case in
-  `canonicalCase.lensChoice` and `summary.lensChoice`), so a resumed run mints with the same
-  authorities. `--dry-run` prints the chosen lens and why, or the refusal.
-- The mint's `create` action carries the lens (`run-policy.js createAction`), so every create event in
-  the activity feed has `action.lens` for the proof audit's `no_self_lens` check.
-
-### `notary-01`, the lens-member persona
-
-`notary-01` (role `lens-member`) runs the reference lens member in `../lens/` for its key
-(`~/.config/solana/ugt-notary-01.json`; `wallet` stays `null` until that key is generated):
-
-```bash
-node agents/lens-member-run.mjs --persona notary-01 --owners /tmp/owners.json   # dry run (default)
-node agents/lens-member-run.mjs --persona notary-01 --print                     # show the command only
-node agents/lens-member-run.mjs --persona notary-01 --live                      # after schemas are registered
-```
-
-The runner registers nothing on chain. Before `--live`: generate the key, register its credential
-and the two schemas (`scripts/register-lens-schemas.mjs`), install `sas-lib` and set `X402_*`. Its
-PM2 entry `consensus-builder-lens-member` is inactive and unscheduled until then.
-
-### Canonical case v3 (`--outcome attested`)
-
-`node agents/canonical-case-run.mjs --dry-run --outcome attested [--owners rows.json]` prints every
-step (`attestedCaseSteps` in `canonical-case.js`): mint with lens `[notary-01]`, publish, donate,
-pledge, YES and NO stakes, one ownerless parcel anchor per parcel (existing anchors replay), one
-`ParcelOwnership-v1` attestation per recorded owner wallet, requested from the notary service
-(`--lens-service`, default the persona's `service.url`) with that owner's own challenge signature and
-x402 payment, one `accept_with_attestations` signature per owner (the last one executes), a check that
-the proposal is `Executed`, market YES, release, fulfil, claim. Owners come from `--owners` (every
-wallet must be a persona wallet, since its keypair signs; each parcel must list exactly `ownerCount`
-wallets) or default to the supporter wallet holding both parcels with `ownerCount` 1.
-
-`--live` is refused before anything is read or signed until `LENS_V2_DEPLOYED=1` is set: the v2
-programs are deployed on devnet and their binaries verified (`blockchain/solana/README.md`). After
-allowed, it always runs the terminal path and checkpoints each step under `summary.canonicalCase`
-(`anchors`, `attestations` and `ownerAcceptances` keyed `parcel|owner`, then `executed`,
-`resolution`, `release`, `fulfilment`, `claim`); a rerun resumes at the first step not done.
-
-### Lens v2 signing adapters (`lifecycle-actions.js`)
-
-| function | instruction | accounts, in order |
-|---|---|---|
-| `acceptWithAttestations` / `buildAcceptWithAttestationsIx` | `accept_with_attestations(parcel_id, payout: Option<Pubkey>)` | proposal (w), parcel anchor `["parcel", id]` (parcel_nft), ownership attestation, ownership credential, tally `["consent", proposal, id]` (w), record `["acceptance", proposal, id, owner]` (w), owner (signer), payer (signer, w), system program |
-| `settleWithVerdict` / `buildSettleWithVerdictIx` | `settle_with_verdict()` | proposal (w), verdict attestation, verdict credential, verdict record `["verdict", proposal, verdict_attestation]` (w, `init`), submitter (signer, w: pays the record's rent), system program |
-| `ensureParcelAnchor` / `buildMintParcelIx` | `mint_parcel(id, metadata_uri)` | parcel anchor (w), payer (signer, w), system program |
-
-The credential is `PDA(["credential", member, credentialName])` under SAS (`deriveCredentialPda`,
-default name `LensMember`). Both write paths read first: an existing acceptance record, an existing
-verdict record for that attestation, or a proposal already in the verdict's status, is replayed
-without sending. Before signing they check what the
-program will check (member in the lens, attestation signer/credential/payload, an existing tally's
-member and `ownerCount`, the anchor) so a mismatch fails with a message, not a program error.
-`readConsentTally`, `readAcceptanceRecord`, `readVerdictRecord` (`getVerdictRecordPda`) and `decodeProposalState` (now with `lens`, `bump`,
-`verdictMayExecute`; status 3 = Expired) are the read side. `mint_and_fund` sends the trailing
-`verdict_may_execute` (default false) from `minter.js`.
-
-## Candidate and record shapes
-
-`planCandidates()` returns, best first:
-
-```
-candidateId  `${persona}:${parcelId}`      massing         Feature, the sampled build-out
-parcelId, koName, areaM2, centroid          proposedGfaM2   from plan-yield measureBuilding
-geometry     the parcel, WGS84              gainEur         from gain.js computeGain
-buildingCount, builtGfaM2                   offerEur        round(gain × offerShareOfGain)
-rule         { maxFloors, minSetbackM,      score           the persona's weights applied
-               source: 'urban-rule'|'default' }
-allowedFloors, envelope                     scoreParts      { density, valueUplift, openSpace,
-normalizedRule  what the massing derives from              heritage, capped? }
-```
-
-`source: 'default'` means **no urban rule stated anything** and the module defaults were used
-(5 floors, 3 m setback). In the sampled Zagreb bbox that is 26 of 60 parcels, and the default is
-*taller* than every value the plan does state there (3) — so a runner that wants to stay inside the
-plan should prefer `source: 'urban-rule'` or lower the default.
-
-`buildProposalRecord()` mirrors what the app itself stores for a single freeform building
-(local proposal 660): `type: 'building'`, `goal/typologyType: 'single'`, `primaryType: 'Urban Rule'`,
-`facets`, `buildingProposal.parameters` (with the rule the massing came from), one
-`geometry.buildings[0]` feature, `bounds` from `turf.bbox`, `cadastreParcelIds`, `offer` /
-`offerCurrency`, and an authored `agent` claim. `chain-publication.js` adds the signing wallet as
-`author`, the resolving lens, the complete binding and a snapshot of every touched source geometry.
-The mirror issues an agent activity stamp only when the chain signer matches that configured persona;
-it never invents an x402 payment receipt. The pure builder also serves the separate paid-write tools. With an `onchain` argument it also writes `onchain`, `nft`, `isMinted` and `tokenId`,
-which is what `frontend/js/proposals/chain.js` reads to show a proposal as minted.
+`notary-01` and `lifecycle-01` run the reference lens member in `../lens/` through
+`lens-member-run.mjs` (`--print` shows the command, `--live` after the key exists and the credential and
+schemas are registered with `scripts/register-lens-schemas.mjs`). The member attests ownership and,
+with its operator token, agreement decisions (`AgreementDecision-v1`, `../lens/README.md`). The proposer
+runner operates `lifecycle-01`: it asks for its approval facts as an owner and for its decision as its
+operator, with the token the persona's `operatorTokenEnv` names.
 
 ## Optional LLM cost
 
-The default and scheduled algorithmic controller makes no model calls and costs `$0`. When
-`--controller llm` is explicitly selected, every call goes through the shared LLM layer
-(`agents/lib/llm-cost/llm.mjs`, via `createAgentLlm()` in `llm-picker.js`), in **batch only** — half
-price, ledgered per item as it arrives, so a killed run still accounts for what it spent. Read it
-back with `llm-cost --repo consensus-builder --by script`.
-
-`estimateBatchCostUsd()` is an **upper bound**, not a prediction: input tokens are estimated at 4
-characters each and every request is billed as if the model wrote its full `max_tokens`. One
-persona with 8 candidates estimates at ~$0.04 on the layer default (`claude-opus-5-5`, effort `high`,
-2026-10-09); the real item cost is far lower. The model is never set in this repo: it is the layer's
-default (`agents/lib/llm-cost/defaults.json`), and the run header logs which one ran. A refused or
-truncated item (`max_tokens`) is a failed pick, and its cost still goes into `consensus.agent_cost`.
-
-A batch that has not finished inside `awaitMs` is not an error — `runPickBatch` returns
-`{ batchId, done: false, results: [] }` so the caller can checkpoint the id and resume with
-`existingBatchId`. A batch already paid for must never be resubmitted.
+The default algorithmic controller makes no model calls and costs `$0`. With `--controller llm` every
+call goes through the shared LLM layer (`agents/lib/llm-cost/llm.mjs`, via `createAgentLlm()` in
+`llm-picker.js`), in batch only, ledgered per item; `estimateBatchCostUsd()` is an upper bound, and
+calls are refused when the day's `agent_cost` plus the estimate would exceed
+`AGENT_LLM_DAILY_CAP_USD`. A batch still processing is checkpointed (`batchId`) and resumed, never
+resubmitted. The model is the layer's default; the run header logs which one ran.
 
 ## Environment
 
 | variable | used by | meaning |
 |---|---|---|
-| `ANTHROPIC_API_KEY` | explicit `--controller llm` only | the optional Batches API key; not needed by the scheduled agent |
-| `AGENT_LLM_DAILY_CAP_USD` | `ledger.js` | hard metered-model ceiling; safe default 0.25 |
-| `AGENT_DAILY_ACTION_CAP` | `run-policy.js` | maximum signed mint/market-create/stake actions; safe default 4; a new proposal needs at most 3 |
-| `AGENT_DAILY_USDC_CAP` | `run-policy.js` | maximum stake spend; safe default 0.35 USDC; the chain mirror is free |
-| `AGENT_SUPPORT_USDC_CAP` | `support-run.mjs` | maximum amount of its one daily support action; safe default 0.25 USDC |
-| `AGENT_SOCIETY_ACTION_CAP` / `AGENT_SOCIETY_USDC_CAP` | `society-run.mjs` | signed actions / USDC per invocation across all turns; defaults 4 / 0.05 |
-| `DATABASE_URL` | `parcel-source.js` (via the pool the caller passes, built by `db/connection.cjs`) | the shared `geodata` database, from backend/.env |
-| `X402_*`, `CDP_API_KEY_ID`, `CDP_API_KEY_SECRET` | `routes/agent-proposals.js`, `routes/agent-oracle-facts.js` | hosted-CDP pay-to-propose and paid verified-fact gates; see the agent quickstart |
-
-## Tests
-
-```
-cd backend && npx vitest run test/agent-parcel-source.test.js test/agent-planner.test.js \
-                              test/agent-record-builder.test.js test/agent-llm-picker.test.js
-```
-
-None of them touch the network or the ledger. The one test that needs the database is opt-in:
-`RUN_DB_TESTS=1 npx vitest run test/agent-parcel-source.test.js`.
+| `DATABASE_URL` | all runners (`db/connection.cjs`) | the shared `geodata` database (ledger, candidate parcels, binding preflight) |
+| `AGENT_API_BASE` | all runners (`--api` overrides) | the index the designs and agreements are published to and read from |
+| `AGENT_APP_ORIGIN` | `run.mjs` | the Origin the index writes send (default `https://urbangametheory.xyz`); the API's write guard admits the app's origins |
+| `AGENT_LENS` | `run.mjs` | the lens member to operate (a lens-member persona's name or key) when `--lens` is not given |
+| `AGENT_LENS_SERVICE_URL` | `run.mjs` | overrides that persona's `service.url` |
+| `AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN` (the persona's `operatorTokenEnv`) | `run.mjs`, the lens member | the operator token of agreement decisions; a live proposer run refuses to start without it |
+| `AGENT_DAILY_ACTION_CAP` / `AGENT_DAILY_USDC_CAP` | `run-policy.js` | signed actions (default 4) and stake USDC (default 0.35) per proposer run |
+| `AGENT_SETTLE_MAX_PER_RUN` | `run-policy.js` | own agreements settled per run (default 3) |
+| `AGENT_SUPPORT_USDC_CAP` | `support-run.mjs` | the supporter's one action (default 0.25 USDC) |
+| `AGENT_SOCIETY_ACTION_CAP` / `AGENT_SOCIETY_USDC_CAP` | `society-run.mjs` | per invocation, defaults 4 / 0.05 |
+| `AGENT_SOL_FUNDING_ENABLED` / `AGENT_USDC_FUNDING_ENABLED` | `funding.js` | bot wallet top-ups |
+| `SOLANA_RPC_URL`, `SOLANA_RPC_MAX_ACCOUNTS` | all runners | devnet RPC and its batch size |
+| `ANTHROPIC_API_KEY`, `AGENT_LLM_DAILY_CAP_USD` | explicit `--controller llm` only | the optional Batches API |
+| `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` | all runners | failure alerts |
 
 ## Running
 
 ```bash
 cd backend
-node agents/run.mjs --dry-run                       # algorithmic plan + pick, writes nothing
+node agents/run.mjs --dry-run                                   # plan + pick, settlement preview; writes, pins and signs nothing
+node scripts/seed-lens-owners.mjs --day 2026-10-22              # who the day's picks would register as owners (dry run)
+node scripts/seed-lens-owners.mjs --day 2026-10-22 --apply
+node agents/run.mjs --live --persona densifier-01 --seed-owners --api http://localhost:3999
 node agents/run.mjs --live --persona densifier-01 --api http://localhost:3999
-node agents/run.mjs --live --controller llm         # optional explicit Anthropic mode
-node agents/run.mjs --live --until posted          # stop before staking
+node agents/run.mjs --live --persona densifier-01 --until proposed --api http://localhost:3999   # publish, do not mint
+node agents/run.mjs --live --controller llm                     # optional explicit Anthropic mode
 node agents/support-run.mjs --dry-run --api https://api.urbangametheory.xyz
 node agents/support-run.mjs --live --persona supporter-01 --api https://api.urbangametheory.xyz
-npm run sync:land-events -- --dry-run
 node agents/society-run.mjs --persona preservationist-01 --turns 3 --api https://api.urbangametheory.xyz   # dry run (default)
-node agents/society-run.mjs --persona speculator-01 --api https://api.urbangametheory.xyz
-node agents/society-run.mjs --persona backer-01 --slot auto --api https://api.urbangametheory.xyz          # a second run today
-node agents/lens-member-run.mjs --persona lifecycle-01 --print
+node agents/society-run.mjs --persona backer-01 --slot auto --api https://api.urbangametheory.xyz
+node agents/lens-member-run.mjs --persona notary-01 --print
 ```
 
 ## MCP: one surface for any controller
 
-`npm run mcp` starts `agents/mcp-server.mjs` over stdio. Its twenty-six tools expose the same proposal,
-activity, x402, pledge, donation, and market adapters used elsewhere in this directory. This lets an
-MCP-capable LLM host choose actions while the deterministic runners keep their existing algorithmic
-choice policy; both execute through the same modules and appear in the same product views.
+`npm run mcp` starts `agents/mcp-server.mjs` over stdio; `ugt-agent-tools.js` implements its 26 tools on
+the same modules: `ugt_list_agreements`, `ugt_get_agreement`, `ugt_publish_design`,
+`ugt_propose_agreement`, `ugt_mint_agreement`, `ugt_fund_agreement`, `ugt_bet_on_agreement`, pledges and
+donations on the agreement account and their settlement (`ugt_pledge`, `ugt_donate`, `ugt_refund_donation`,
+`ugt_void_pledge`, `ugt_revoke_pledge`, `ugt_release_donations`, `ugt_fulfill_pledge`), market settlement
+(`ugt_resolve_market`, `ugt_claim_market`), external markets, activity, attesters, ownership
+attestations, oracle events and verified facts over x402. Index writes (`ugt_publish_design`,
+`ugt_propose_agreement`) and signed or paid tools need a low-value devnet key at `UGT_AGENT_KEYPAIR`,
+`UGT_MCP_LIVE=1` and `confirm: true`; index writes send `Origin` from `UGT_APP_ORIGIN` (default
+`https://urbangametheory.xyz`). `ugt_mint_agreement` refuses unless the agent's wallet is the
+agreement's sponsor and `rule.lens` holds exactly one key that is not the agent's.
+`UGT_MCP_MAX_USDC_PER_ACTION` (default 0.25) caps every USDC action and x402 price. `GET /docs/agents.json`
+lists the tools; `/docs/agents` is the quickstart.
 
-Lens tools: `ugt_list_attesters` (read the directory, optional `kind`), `ugt_request_ownership`
-(`serviceUrl`, `parcelUid`, optional `confirm`: challenge → ed25519 signature with the agent key →
-`POST /lens/ownership`; returns the attestation address and account hash; free members answer
-without the live gate, a priced member is paid only under the controls below) and
-`ugt_mint_proposal` (`parcelIds`, `lens`, `imageUri`, `isConditional`, `confirm`; a lens naming only
-the agent's own key is refused). `ugt_submit_proposal` accepts the minted `lens` in its body.
-`ugt_accept_parcel` (`proposalAccount`, `parcelId`, `member`, optional `ownershipAttestation` and
-`payout`, `confirm`) signs `accept_with_attestations` as the attested owner; without an attestation it
-looks one up on the member's service (`serviceUrl` from the directory, `GET /lens/attestations`).
-`ugt_submit_verdict` (`proposalAccount`, `verdictAttestation`, `member`, `confirm`) submits a lens
-member's verdict with `settle_with_verdict` and returns `record`, the VerdictRecord PDA it created
-(null when the proposal was already in that status through another settlement). The v1 `ugt_accept_proposal` is gone with the instruction.
+## Schedule (opt-in)
 
-The server is read-only by default. Signed or paid tools require all three controls:
-
-- a low-value devnet key at `UGT_AGENT_KEYPAIR`;
-- `UGT_MCP_LIVE=1` in the MCP process environment;
-- `confirm: true` in the individual tool call.
-
-`UGT_MCP_MAX_USDC_PER_ACTION` defaults to `0.25`. It caps pledges, donations and forecasts before a
-transaction is built, and the server inspects proposal and verified-fact x402 challenges against the
-same ceiling before it permits payment. Prices remain server-declared. See
-`GET /docs/agents.json` for the machine-readable tool list and `/docs/agents` for setup.
-
-The opt-in PM2 ecosystem schedules the proposer at 02:00 UTC, the supporter at 02:15 UTC,
-and the deterministic proposal-lifecycle oracle at 02:30 UTC. The oracle only materializes
-terminal Solana account state that has matching transaction evidence in the shared ledger.
-
-One `consensus.agent_run` row per persona per UTC day is the checkpoint (`stage`, `summary` with
-candidates, controller input/result, picks and rationales, execution policy,
-immutable publication records, mint receipts, verified mirror receipts, stakes and activity); a rerun resumes at the
-first unfinished stage and a finished day is a no-op. A valid zero-pick answer is terminal and is
-stored as `outcome: "no-picks"`, rather than leaving a permanently-running row. In explicit LLM
-mode, the complete prompt/model/batch/usage/cost is also stored and calls are refused when the day's
-`agent_cost` total plus the estimate would exceed `AGENT_LLM_DAILY_CAP_USD` (safe default 0.25).
-The complete source snapshot and binding are checked, rendered, pinned and read back before mint.
-The mirror accepts only the chain location and verifies its committed IPFS record. An older mint
-with a mutable HTTP metadata URL cannot be upgraded by publishing different metadata; it stays
-visible in the ledger and can follow the existing stale-proposal retirement policy.
-Confirmation polls `getSignatureStatuses` (`solana-send.js`): Alchemy's devnet RPC has no
-`signatureSubscribe`, and web3's default confirm then reports a landed transaction as expired.
-Env: `AGENT_API_BASE`, `SOLANA_RPC_URL`, `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID` (optional; one
-summary per run). Anthropic variables are optional and read only in explicit LLM mode.
-
-## Daily schedule (opt-in)
-
-`agents/ecosystem.config.cjs` defines `consensus-builder-agents` at 02:00 UTC, the shared-runtime
-`consensus-builder-supporter` persona at 02:15 UTC, the society personas
-`consensus-builder-preservationist` (02:20) and `consensus-builder-speculator` (02:25) — opt-in until
-their keys exist, one action per invocation each — and the deterministic
-`consensus-builder-land-oracle` materializer at 02:30 UTC. `consensus-builder-lifecycle-member` is
-inactive and unscheduled like the notary member. All three are one-shot,
-non-restarting scheduled processes; the proposer has the limits above and four candidates offered
-to the algorithmic controller.
-
-Each proposer run starts with a retire phase, before it mints anything new. Nobody accepts the
-persona's real-parcel proposals, so without it every day would leave another open market with a
-locked stake. The phase lists the persona's own minted proposals from its `consensus.agent_run`
-rows (age = the row's UTC run `day`), reads each proposal, market and YES position from the chain,
-and retires those still Active, without acceptances and at least `AGENT_RETIRE_AFTER_DAYS` old
-(default 7): owner `cancel_and_refund` → permissionless `resolve` (NO) → `claim`, which refunds the
-YES stake in full because the NO pool is empty (with NO stakers present the stake is lost and no
-claim is sent). A proposal already cancelled with steps outstanding is finished regardless of age.
-Each step goes through the action engine (`cancel`, `resolve`, `claim` in the activity feed) and is
-checkpointed under `summary.retirements[proposalPda]`; a rerun re-reads the chain and skips what is
-done. At most `AGENT_RETIRE_MAX_PER_RUN` (default 3) retire per day, and their signatures share
-`AGENT_DAILY_ACTION_CAP` with the day's proposal: retirements get only what the proposal plan leaves
-over, so with the scheduled cap of 4 and one proposal (4 worst-case actions) they retire only on
-no-pick days unless the cap is raised (4 + 3 × 3 = 13 drains three a day). `--dry-run` lists what
-would be retired, and why the rest was skipped, without signing.
-
-Expiry by verdict. With `AGENT_LIFECYCLE_LENS_SERVICE_URL` (a lens member service, typically kind
-`lifecycle`) and `AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN` (its `LENS_OPERATOR_TOKEN`) set, the member's
-key (read from its `GET /lens/status`) is appended to every new mint's lens, and a stale proposal
-whose lens includes that key is retired with `expire` instead of `cancel`: the member attests
-`ProposalVerdict-v1` "expired" (`POST /lens/verdict`), the persona submits it with
-`settle_with_verdict`, the proposal becomes Expired (status 3) and the market resolves NO as after a
-cancel. The verdict's `sourceObservedAt` is the run day's UTC midnight plus `AGENT_RETIRE_AFTER_DAYS`
-(the instant the policy made it stale), so a retry maps to the same attestation. The activity type is
-`verdict`; the checkpoint key is `summary.retirements[pda].expiry`. Proposals minted before (whose
-lens lacks the member) keep the cancel path. A URL without the token, or an unreachable member,
-fails the retire phase for that run instead of silently cancelling. Without the URL nothing changes.
-
-The scheduled processes are deliberately separate from the API
-ecosystem file, so an ordinary backend deploy cannot silently acquire a signing key or start an
-autonomous spender.
-
-After the dedicated low-value devnet key exists at the persona's `keypairPath` and the server-local
-`.env` has database credentials and `SOLANA_RPC_URL`, activation is explicit:
-
-```bash
-cd /root/code/consensus-builder/backend
-pm2 start agents/ecosystem.config.cjs --only consensus-builder-agents
-pm2 start agents/ecosystem.config.cjs --only consensus-builder-supporter
-pm2 start agents/ecosystem.config.cjs --only consensus-builder-land-oracle
-# only after ugt-preservationist-01.json / ugt-speculator-01.json exist and their wallets are set:
-pm2 start agents/ecosystem.config.cjs --only consensus-builder-preservationist
-pm2 start agents/ecosystem.config.cjs --only consensus-builder-speculator
-pm2 save
-```
-
-The proposer is covered by the active `UGT Agent Runner` outcome check in
-`alerts-server-telegram/bot-list.json`. The supporter and land oracle still need their own central
-registry entries. Until those are added, `/hackathon/operations.json` exposes their redacted latest
-outcome and freshness: supporter evidence comes from `consensus.agent_run`, and the land oracle
-writes `logs/land-oracle-stats.json` atomically only after deriving its complete verdict. Process
-status or a recent log line alone is not proof that either job finished successfully.
-
-Candidate discovery repairs malformed imported parcel, building-footprint and urban-rule polygons
-with `ST_MakeValid` before topology operations. This keeps one invalid source geometry from aborting
-the bounded daily run; it does not rewrite the source tables.
+`agents/ecosystem.config.cjs` defines the scheduled proposers (`consensus-builder-agents`,
+`-builder`, `-gentle`, `-affordabot`), the supporter, the society personas and the lens members; all
+one-shot, non-restarting processes started explicitly with
+`pm2 start agents/ecosystem.config.cjs --only <name>`, never by an API deploy. The proposer outcome is
+covered by the `UGT Agent Runner` check in `alerts-server-telegram/bot-list.json` (its
+`consensus.agent_run` rows).
 
 ## Actor and run explorer
 
-`frontend/actor-explorer.html` is a read-only explorer of the shared activity envelope. It loads
-`GET /agent/activity` and opens `GET /agent/runs/:runId` only when a run is selected; the latter
-returns the recorded rationales plus exact `consensus.agent_cost` rows, not a cost estimate.
-
-The map-app wiring seam is `window.ActorExplorer.mount(element, { events, loadRun })`. Feed it the
-same merged activity list already used by the Activity UI (human, algorithmic, and LLM events all
-share that shape), and provide `loadRun` only for live run IDs. It deliberately does not create,
-schedule, or execute an agent.
+`frontend/actor-explorer.html` is a read-only explorer of the shared activity envelope: it loads
+`GET /agent/activity` (`routes/agent-activity.js`) and opens `GET /agent/runs/:runId` when a run is
+selected, with the recorded rationales and exact `consensus.agent_cost` rows.

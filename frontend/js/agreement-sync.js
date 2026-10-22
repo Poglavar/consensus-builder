@@ -1,9 +1,11 @@
 // agreement-sync.js — an agreement leaves the device and comes back (plan-design-agreement.md, M2
 // "Browser"). Propose pins and indexes its designs (a parcel layout travels with its agreement), pins
 // the agreement/v1 object, indexes it (POST /agreements) and marks the local record
-// `published: { cid, publishedAt, apiBase }`; an /agreements/<cid> link reads the agreement and its
-// designs from the index, applies the designs, stores the agreement as a local record and opens its
-// panel. window.AgreementSync; the pure helpers are exported for node.
+// `published: { cid, publishedAt, apiBase, sponsor }`; an /agreements/<cid> link reads the agreement
+// and its designs from the index, applies the designs, stores the agreement as a local record and
+// opens its panel. Once minted (M3, solana/agreement-bridge.js), recordOnchain mirrors the chain
+// account into the index (POST /agreements/<cid>/onchain) and keeps it on the local record as
+// `onchain`. window.AgreementSync; the pure helpers are exported for node.
 (function (root, factory) {
     const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -90,7 +92,9 @@
             money: content.money,
             rule: content.rule,
             deadline: content.deadline,
-            published: { cid: row.cid, publishedAt: row.createdAt || null, apiBase }
+            published: { cid: row.cid, publishedAt: row.createdAt || null, apiBase, sponsor: content.sponsor || null },
+            // The index's record of the agreement's chain account, when it is minted (M3).
+            onchain: isObject(row.onchain) ? row.onchain : null
         };
     }
 
@@ -261,9 +265,102 @@
             const publishedAt = row.createdAt || new Date().toISOString();
             // A parcel layout is published with its agreement.
             layouts.forEach(({ record, cid: layoutCid }) => win.DesignSync.markPublished(record, { cid: layoutCid, publishedAt, apiBase }));
-            store().save({ ...agreement, published: { cid, publishedAt, apiBase } });
-            log(`proposed ${agreementId} as ${cid} (${agreement.designs.length} design(s), ${carried.length} sent with it)`);
+            store().save({ ...agreement, published: { cid, publishedAt, apiBase, sponsor: content.sponsor } });
+            log(`proposed ${agreementId} as ${cid} (${agreement.designs.length} design(s), ${carried.length} sent with it, sponsor ${content.sponsor || 'none'})`);
             return { cid, row, link: agreementLink(cid, { city: agreement.city }) };
+        }
+
+        /**
+         * Proposes the agreement again as a new one sponsored by the connected Solana wallet: a copy of
+         * the local record without its publication (a new local id and creation time), proposed as
+         * Propose does. The sponsor is part of the published object, so this is a new CID; decisions
+         * signed on the old one do not carry over, and the old record stays as it was.
+         * @returns {Promise<{ id, cid, link }>}
+         */
+        async function proposeAgain(agreementId) {
+            const agreement = store().get(agreementId);
+            if (!agreement) throw failure('agreement-missing', t('agreement.publish.errors.missing', 'The agreement is no longer on this device.'));
+            if (!sponsorKey()) throw failure('wallet-required', t('agreement.chain.errors.walletRequired', 'Connect a Solana wallet first.'));
+            const copy = store().save({
+                ...agreement,
+                id: win.AgreementRecord.newId(),
+                createdAt: new Date().toISOString(),
+                published: null,
+                onchain: null
+            });
+            log(`proposing ${agreementId} again as ${copy.id} with sponsor ${sponsorKey()}`);
+            const { cid, link } = await publishAgreement(copy.id);
+            return { id: copy.id, cid, link };
+        }
+
+        // The user-facing sentence for the index's refusal of a mint record, by the server's code.
+        function onchainRefusalMessage(status, body) {
+            const code = body && body.code;
+            if (code === 'onchain-account-mismatch') {
+                return t('agreement.chain.errors.accountMismatch', 'The server derives a different chain account for this agreement, so it did not record the mint.');
+            }
+            if (code === 'onchain-cid-mismatch') {
+                return t('agreement.chain.errors.cidMismatch', 'The chain account holds a different agreement, so the server did not record the mint.');
+            }
+            if (code === 'onchain-account-missing') {
+                return t('agreement.chain.errors.accountNotSeen', 'The server does not see the agreement’s account on chain yet. Open the agreement again later to send it.');
+            }
+            if (code === 'unsupported-cluster') {
+                return t('agreement.chain.errors.clusterUnsupported', 'The server records agreements minted on Solana devnet only.');
+            }
+            const reason = (body && body.error) || `HTTP ${status}`;
+            return t('agreement.chain.errors.indexRefused', 'The server did not record the mint: {{reason}}', { reason });
+        }
+
+        // Keeps the chain account on the local record (the chain is the truth, so it is kept even
+        // when the index has not recorded it). Returns the saved record.
+        function adoptOnchain(agreementId, onchain) {
+            const agreement = store().get(agreementId);
+            if (!agreement) throw failure('agreement-missing', t('agreement.publish.errors.missing', 'The agreement is no longer on this device.'));
+            if (!isObject(onchain)) throw new TypeError('adoptOnchain needs an onchain object.');
+            return store().save({ ...agreement, onchain });
+        }
+
+        /**
+         * Mirrors a minted agreement's chain account into the index: POST /agreements/<cid>/onchain with
+         * { chain, cluster, account, signature? }; the index answers the agreement row with `onchain`.
+         * The local record keeps the index's `onchain` (ours when the index refused or could not be
+         * reached), then a refusal throws with `code` ('onchain-account-mismatch',
+         * 'onchain-cid-mismatch', …), a translated `message` and `kept: true`.
+         * @returns {Promise<{ onchain, row }>}
+         */
+        async function recordOnchain(agreementId, { chain, cluster, account, signature = null } = {}) {
+            const agreement = store().get(agreementId);
+            if (!agreement) throw failure('agreement-missing', t('agreement.publish.errors.missing', 'The agreement is no longer on this device.'));
+            if (!agreement.published) throw failure('not-proposed', t('agreement.chain.errors.notProposed', 'Propose the agreement before minting it.'));
+            if (chain !== 'solana' || !idOf(cluster) || !idOf(account)) throw new TypeError('recordOnchain needs { chain: \'solana\', cluster, account }.');
+            const cid = agreement.published.cid;
+            const pointer = signature ? { chain, cluster, account, signature } : { chain, cluster, account };
+            const post = async body => {
+                const response = await request('POST', `/agreements/${encodeURIComponent(cid)}/onchain`, body);
+                if (response.ok && response.body && isObject(response.body.onchain)) return { row: response.body, refusal: null };
+                const code = (response.body && response.body.code) || `http-${response.status}`;
+                return { row: null, refusal: failure(code, onchainRefusalMessage(response.status, response.body), { status: response.status, body: response.body }) };
+            };
+            let refusal = null;
+            let row = null;
+            try {
+                ({ row, refusal } = await post(pointer));
+                // The server's RPC may not see a just-confirmed transaction yet; the account alone is enough.
+                if (refusal && refusal.code === 'onchain-signature-not-found') {
+                    log(`the index does not see ${signature} yet; recording ${account} without it`);
+                    ({ row, refusal } = await post({ chain, cluster, account }));
+                }
+            } catch (error) {
+                refusal = error;
+            }
+            const saved = adoptOnchain(agreementId, row ? row.onchain : pointer);
+            if (refusal) {
+                console.warn(`[${new Date().toISOString()}] [AgreementSync] the index did not record the mint of ${cid} at ${account}`, refusal);
+                throw Object.assign(refusal, { kept: true });
+            }
+            log(`recorded the mint of ${cid} at ${account} (${cluster}) in the index`);
+            return { onchain: saved.onchain, row };
         }
 
         // The local agreement published as `cid`, or null.
@@ -330,7 +427,8 @@
                     localIdOf,
                     derived
                 });
-                const saved = store().save(record);
+                // A mint this device made but the index has not recorded yet stays on the record.
+                const saved = store().save(!record.onchain && existing && existing.onchain ? { ...record, onchain: existing.onchain } : record);
                 log(`stored ${cid} as ${saved.id}${saved.outputs.every(output => output.geometry) ? '' : ' (its pieces differ here)'}`);
                 await win.AgreementPanel.open(saved.id);
             } catch (error) {
@@ -339,7 +437,22 @@
             }
         }
 
-        return { publishAgreement, fetchAgreement, handleAgreementRoute, agreementLink, localCopyOf, refusalMessage };
+        // The agreements of a city the index lists as minted (GET /agreements?city=&minted=1), newest first.
+        async function fetchMinted({ city = null, limit = 100 } = {}) {
+            const params = new URLSearchParams({ minted: '1', limit: String(limit) });
+            if (city) params.set('city', city);
+            const response = await request('GET', `/agreements?${params}`, undefined, { deadline: true });
+            if (!response.ok || !response.body || !Array.isArray(response.body.agreements)) {
+                throw failure((response.body && response.body.code) || `http-${response.status}`, (response.body && response.body.error) || `HTTP ${response.status}`);
+            }
+            // The filter is the server's; a row without a chain account is not minted, whatever it says.
+            return response.body.agreements.filter(row => row && cidApi().isCid(row.cid) && isObject(row.onchain));
+        }
+
+        return {
+            publishAgreement, proposeAgain, fetchAgreement, fetchMinted, handleAgreementRoute, agreementLink, localCopyOf,
+            refusalMessage, recordOnchain, adoptOnchain
+        };
     }
 
     return { parseAgreementPath, agreementPath, shortCid, recordFromPublished, browser };

@@ -5,9 +5,6 @@
   "status": "ready",
   "reason": null,
   "generatedAt": "2026-08-13T00:00:00.000Z",
-  "planSlug": "pionir-spansko-stenjevecki-odvojak",
-  "planTitle": "Špansko – Stenjevečki odvojak – rekonstrukcija izvedenog stanja – zgrade i prometnice",
-  "localPath": "/proposals/pionir-spansko-stenjevecki-odvojak?city=zagreb",
   "building": {
     "proposalId": "pionir-spansko-stenjevecki-odvojak-observed",
     "file": "proposal.geojson"

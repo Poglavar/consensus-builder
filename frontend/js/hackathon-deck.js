@@ -28,7 +28,7 @@
             const element = document.getElementById(id);
             if (element) element.textContent = value;
         };
-        set('proof-x402-price', docs.status === 'fulfilled' ? docs.value.x402?.priceProposal || '—' : '—');
+        set('proof-x402-price', docs.status === 'fulfilled' ? docs.value.x402?.priceOracleFact || '—' : '—');
         set('proof-program-count', manifest.status === 'fulfilled' ? String(manifest.value.hackathonPrograms?.length || '—') : '—');
         set('proof-attestation-count', records.status === 'fulfilled' ? String(records.value.attestations ?? '—') : '—');
         set('proof-attestation-detail', records.status === 'fulfilled'

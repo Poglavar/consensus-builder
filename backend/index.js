@@ -62,7 +62,6 @@ import { setupRoadCorridorRoute } from './routes/road-corridor.js';
 import { setupCityStatsRoute } from './routes/city-stats.js';
 import { setupAreaMonitorsRoute } from './routes/area-monitors.js';
 import { setupEnsRoute } from './routes/ens.js';
-import { setupCantonRoute } from './routes/canton.js';
 import { setupAiSceneRoute } from './routes/ai-scene.js';
 import { forwardAsyncErrors } from './utils/async-routes.js';
 import { createPool as createDatabasePool } from './db/connection.cjs';
@@ -230,13 +229,6 @@ export const READ_ONLY_POST_PATHS = new Set([
     '/designs/binding'
 ]);
 const PARCEL_SOURCE_UNDER_PATH = /^\/parcel-sources\/[^/]+\/under$/;
-
-// Canton is off unless explicitly enabled: its OAuth client is currently rejected (invalid_grant)
-// and every /canton/* request failed. Disabled means the routes are not registered at all, so
-// nothing can reach the token endpoint. The code stays intact for re-enabling.
-export function isCantonEnabled(env = process.env) {
-    return String(env.CANTON_ENABLED || '').trim().toLowerCase() === 'true';
-}
 
 export function createApp({
     env = process.env,
@@ -453,15 +445,15 @@ export function createApp({
     setupAdsRoute(app, activePool);
     setupRoadParcelsRoute(app, activePool);
     setupProposalsRoute(app, activePool);
-    registerContentRoutes(app, activePool); // designs and agreements: pins, the index, decisions (plan-design-agreement.md M2)
+    registerContentRoutes(app, activePool); // designs and agreements: pins, the index, decisions, the chain account (plan-design-agreement.md M2, M3)
     setupAgentPledgesRoute(app, { env }); // read-only view; pledge writes go directly to Solana
     setupAgentActivityRoute(app, activePool); // shared live activity source for human/agent explorer UI
     setupAgentDiscoveryRoute(app, { env }); // hosted Bazaar listing proof; credentials remain server-side
     setupAgentOracleFactsRoute(app, activePool, { env }); // paid, discoverable recipe-bound oracle facts
-    setupLandEventsRoute(app, activePool); // deterministic proposal lifecycle events + recipe declarations
+    setupLandEventsRoute(app, activePool); // deterministic agreement lifecycle events + court recipe declarations
     setupLensesRoute(app, activePool); // lens attester directory + SAS schema definitions (lens-model.md)
     setupCityRequestsRoute(app, activePool); // world view "Ask for this city" demand counts
-    setupParcelHistoryRoute(app, activePool); // permanent per-parcel log: proposals, ownership attestations, land events
+    setupParcelHistoryRoute(app, activePool); // permanent per-parcel log: agreements, ownership attestations, executions
     setupHackathonProofRoute(app, { env }); // public hackathon scope plus redacted prospective resolver status
     setupHackathonCasesRoute(app, activePool, { env }); // one data-derived proposal → support/forecast/evidence graph
     setupHackathonOperationsRoute(app, activePool, { env }); // redacted scheduled-job outcomes and freshness
@@ -472,11 +464,6 @@ export function createApp({
     setupCityStatsRoute(app, activePool);
     setupAreaMonitorsRoute(app, activePool);
     setupEnsRoute(app, activePool);
-    if (isCantonEnabled(env)) {
-        setupCantonRoute(app); // Canton chain option — no DB pool needed (talks to Ledger API)
-    } else {
-        console.log(`[${new Date().toISOString()}] Canton disabled (CANTON_ENABLED is not 'true'); /canton/* routes not registered.`);
-    }
     setupAiSceneRoute(app, activePool); // AI photorealistic scene render + shared-render persistence (ai_scene)
 
     // Global error handler — catches errors thrown or rejected by routes/middleware (async ones

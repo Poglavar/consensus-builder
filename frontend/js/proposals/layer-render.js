@@ -582,7 +582,7 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
                 onClick: standsOnMap ? null : event => {
                     // A selected preview is an interaction surface, not a change to the fabric.
                     // Editing tools retain the click through normal Leaflet map bubbling.
-                    if (window.sharePlanMode || window.measureMode || window.__mapEditLock?.isHeld()
+                    if (window.MapPick?.active() || window.measureMode || window.__mapEditLock?.isHeld()
                         || window.isParcelDrawingModeActive?.() || window.pinpointToolIsActive?.()) return;
                     L.DomEvent.stopPropagation(event);
                     const panel = document.getElementById('proposal-details-panel');
@@ -756,9 +756,9 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
         });
         return;
     }
-    // Share-plan mode: no surface may select a proposal or open its details — the panel's own
-    // row hover/click highlight is the only proposal interaction while the plan is being composed.
-    if (window.sharePlanMode) return;
+    // A surface picks designs on the map (js/map-pick.js): nothing may select a proposal or open its
+    // details — the picking surface's own rows and the map pick are the only design interactions.
+    if (window.MapPick?.active()) return;
 
     const resolvedId = resolveProposalIdKey(proposalIdOrHash);
     // 3D is a viewing mode: the 2D card cannot open there, and the scene is the visible UI of the

@@ -135,34 +135,7 @@ function handleProposalParcelClick(parcelId, event) {
         return;
     }
 
-    // Handle event-based call (from proposal details modal)
-    let node = event.target || event.srcElement || null;
-    if (node && node.nodeType === Node.TEXT_NODE) {
-        node = node.parentElement;
-    }
-
-    let hasOwnerAcceptanceTarget = false;
-    while (node && node !== event.currentTarget) {
-        if (node.classList && (
-            node.classList.contains('owner-acceptance-row') ||
-            node.classList.contains('owner-acceptance-list') ||
-            node.classList.contains('owner-actions') ||
-            node.classList.contains('owner-share') ||
-            node.classList.contains('owner-identity') ||
-            node.classList.contains('parcel-owner-acceptance')
-        )) {
-            hasOwnerAcceptanceTarget = true;
-            break;
-        }
-        node = node.parentElement;
-    }
-
-    if (hasOwnerAcceptanceTarget) {
-        event.stopPropagation();
-        event.preventDefault();
-        return false;
-    }
-
+    // Event-based call (from the proposal details panel's parcel rows).
     event.stopPropagation();
     event.preventDefault();
 
@@ -403,23 +376,11 @@ function collectProposalDisplayCandidates(proposal, fallbackProposal = null) {
         subject.structureProposal && subject.structureProposal.blockName,
         subject.roadProposal && subject.roadProposal.name,
         subject.buildingProposal && subject.buildingProposal.name,
-        subject.metadata && subject.metadata.title,
-        subject.metadata && subject.metadata.name,
-        subject.metadata && subject.metadata.properties && subject.metadata.properties.title,
-        subject.metadata && subject.metadata.properties && subject.metadata.properties.name,
-        subject.onchain && subject.onchain.metadata && subject.onchain.metadata.title,
-        subject.onchain && subject.onchain.metadata && subject.onchain.metadata.name,
-        subject.onchain && subject.onchain.metadata && subject.onchain.metadata.properties && subject.onchain.metadata.properties.title,
-        subject.onchain && subject.onchain.metadata && subject.onchain.metadata.properties && subject.onchain.metadata.properties.name,
         fallback && fallback.title,
         fallback && fallback.name,
         fallback && fallback.proposalName,
         fallback && fallback.blockName,
-        fallback && fallback.structureProposal && fallback.structureProposal.blockName,
-        fallback && fallback.metadata && fallback.metadata.title,
-        fallback && fallback.metadata && fallback.metadata.name,
-        fallback && fallback.metadata && fallback.metadata.properties && fallback.metadata.properties.title,
-        fallback && fallback.metadata && fallback.metadata.properties && fallback.metadata.properties.name
+        fallback && fallback.structureProposal && fallback.structureProposal.blockName
     ];
 }
 
@@ -427,7 +388,9 @@ function getProposalDisplayTitle(proposal, fallbackProposal = null) {
     const subject = proposal || fallbackProposal || {};
     const goalKey = resolveProposalGoalKey(subject, fallbackProposal) || '';
     const typeLabel = goalKey ? getProposalGoalLabel(goalKey) : '';
-    const fallbackId = subject.onchain?.proposalId || subject.tokenId || subject.proposalId || '';
+    // A record's id: a published design's CID, else its local key. Designs are not minted (M3), so
+    // there is no chain token or metadata to name one by.
+    const fallbackId = subject.published?.cid || subject.cid || subject.proposalId || '';
     const candidates = collectProposalDisplayCandidates(subject, fallbackProposal);
 
     let best = '';
@@ -488,11 +451,7 @@ function getProposalDisplayDescription(proposal, fallbackProposal = null, curren
     const fallback = fallbackProposal || null;
     const candidates = [
         subject.description,
-        subject.metadata && subject.metadata.description,
-        subject.onchain && subject.onchain.metadata && subject.onchain.metadata.description,
-        fallback && fallback.description,
-        fallback && fallback.metadata && fallback.metadata.description,
-        fallback && fallback.onchain && fallback.onchain.metadata && fallback.onchain.metadata.description
+        fallback && fallback.description
     ];
 
     const normalizedTitle = typeof currentTitle === 'string' ? currentTitle.trim().toLowerCase() : '';
@@ -648,9 +607,8 @@ function buildProposalListItemsHtml(dataset, options = {}) {
         const createdDate = (metrics.createdAt && CbFormat.formatDate(metrics.createdAt)) || '—';
         const isExecuted = getLifecycleStatus(proposal) === 'Executed';
         // Save state is a property of the PROPOSAL, not of which tab it is shown in: it is "Unsaved"
-        // (local-only, at risk) unless it is minted on-chain or published (it has a CID).
-        const isMinted = isProposalMinted(proposal);
-        const isUnsaved = !isMinted && !publishedCid;
+        // (local-only, at risk) unless it is published (it has a CID).
+        const isUnsaved = !publishedCid;
         const classes = ['proposal-list-item'];
 
         if (isExecuted) classes.push('is-executed');

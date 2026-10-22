@@ -1,9 +1,9 @@
 // Guest rules: what a visitor without a profile name may do. One table, consulted by every gate
-// (publish, share link, mint); see next-steps.md.
+// (publish, share link); see next-steps.md.
 //
 //   none            Stays on this device: create, edit, fork, apply, compare.
-//   name            Leaves the device and carries an author: publish/upload, share link, mint,
-//                   joining a public list. A guest is asked to choose a profile name.
+//   name            Leaves the device and carries an author: publish/upload, share link. A guest
+//                   is asked to choose a profile name.
 //
 // Also decides which author an outgoing record carries (claimAuthorAgentId / outgoingAuthor below).
 //
@@ -22,9 +22,7 @@
         apply: 'none',
         compare: 'none',
         publish: 'name',
-        share: 'name',
-        mint: 'name',
-        joinList: 'name'
+        share: 'name'
     });
 
     function requires(action) {
@@ -61,10 +59,10 @@
     //   - claimAuthorAgentId: a new record whose author is the current profile's name belongs to
     //     that profile. Records by other agents (AI agents, imports of other people's records) carry
     //     another name and stay unclaimed.
-    //   - outgoingAuthor: a record that has never left the device (not published, not minted) and
-    //     belongs to the current profile carries the profile's current name. A published or minted
-    //     record is immutable and keeps its author; so does a record of another agent, or one made
-    //     before authorAgentId existed (it has no proof whose it is).
+    //   - outgoingAuthor: a record that has never left the device (not published) and belongs to the
+    //     current profile carries the profile's current name. A published record is immutable and
+    //     keeps its author; so does a record of another agent, or one made before authorAgentId
+    //     existed (it has no proof whose it is).
     // Lineage: a fork or an edit is a new record created by whoever forks it, so it is claimed by the
     // current profile and carries its name; the source keeps its own author, reached through
     // proposalOrigin. Author names are never inherited along a fork.
@@ -87,7 +85,7 @@
         return author === identity.name ? identity.id : null;
     }
 
-    // options.immutable: the record has left the device (published or minted).
+    // options.immutable: the record has left the device (published).
     // -> { author, restamped, reason } where reason is why the author was kept:
     //    'immutable' | 'no-profile' | 'unclaimed' | 'other-profile' | null when it is the profile's.
     function outgoingAuthor(record, agent, options) {

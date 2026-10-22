@@ -28,7 +28,7 @@
                 if (key) return String(key);
             }
         } catch (_) { }
-        const fallback = proposal.proposalId || proposal.hash || null;
+        const fallback = proposal.proposalId || null;
         return fallback ? String(fallback) : null;
     }
 

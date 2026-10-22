@@ -9,7 +9,7 @@
 // collection's foreign `reconstruction` member, which GeoJSON explicitly permits.
 
 import { createRequire } from 'node:module';
-import { stripProposalArchiveState } from './serializer.js';
+import { stripProposalArchiveState } from './archive-state.js';
 
 const corridorOsmForm = createRequire(import.meta.url)('../../frontend/js/corridor-osm-form.js');
 

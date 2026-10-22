@@ -37,35 +37,37 @@
         return { ...action, type };
     }
 
+    // Every activity is about an agreement or a design, named by its CID (plan-design-agreement.md,
+    // M3), or about a parcel.
     function entityFromAction(action) {
-        if (action.proposalId) return { type: 'proposal', id: String(action.proposalId) };
+        if (action.agreementCid) return { type: 'agreement', id: String(action.agreementCid) };
+        if (action.designCid) return { type: 'design', id: String(action.designCid) };
         if (action.parcelId) return { type: 'parcel', id: String(action.parcelId) };
         return null;
     }
 
     function defaultMessage(actor, action) {
-        const proposal = action.proposalId ? ` proposal ${action.proposalId}` : '';
+        const agreement = action.agreementCid ? ` agreement ${action.agreementCid}` : '';
         const amount = action.amount ? ` ${action.amount} USDC` : '';
-        if (action.type === 'create') return `${actor.name} created${proposal}.`;
-        if (action.type === 'publish') return `${actor.name} published${proposal} through x402.`;
-        if (action.type === 'stake') return `${actor.name} staked${amount}${proposal ? ` on${proposal}` : ''}.`;
-        if (action.type === 'donate') return `${actor.name} donated${amount}${proposal ? ` to${proposal}` : ''}.`;
-        if (action.type === 'pledge') return `${actor.name} pledged${amount}${proposal ? ` to${proposal}` : ''}.`;
-        const parcel = action.parcelId ? ` parcel ${action.parcelId}` : '';
         const side = action.side ? ` ${String(action.side).toUpperCase()}` : '';
-        if (action.type === 'certifyParcel') return `${actor.name} holds the ownership certificate for${parcel}.`;
-        if (action.type === 'anchorParcel') return `${actor.name} created the parcel anchor for${parcel}.`;
-        if (action.type === 'attestOwnership') return `${actor.name} attested the owner of${parcel}.`;
-        if (action.type === 'acceptance') return `${actor.name} said yes to${proposal} for${parcel}.`;
-        if (action.type === 'verdict') return `${actor.name} submitted a verdict on${proposal}.`;
-        if (action.type === 'accept') return `${actor.name} accepted${proposal} for${parcel}.`;
-        if (action.type === 'cancel') return `${actor.name} cancelled${proposal}.`;
-        if (action.type === 'resolve') return `${actor.name} resolved the market of${proposal}.`;
-        if (action.type === 'claim') return `${actor.name} claimed the${side} payout of${proposal}.`;
-        if (action.type === 'refundMyDonations') return `${actor.name} refunded their donation to${proposal}.`;
-        if (action.type === 'releaseDonations') return `${actor.name} released the donation escrow of${proposal}.`;
-        if (action.type === 'fulfillPledge') return `${actor.name} fulfilled their pledge to${proposal}.`;
-        if (action.type === 'voidPledge') return `${actor.name} voided their pledge to${proposal}.`;
+        if (action.type === 'design') return `${actor.name} published${action.designCid ? ` design ${action.designCid}` : ' a design'}.`;
+        if (action.type === 'propose') return `${actor.name} proposed${agreement || ' an agreement'}.`;
+        if (action.type === 'mint') return `${actor.name} minted${agreement || ' an agreement'}.`;
+        if (action.type === 'fund') return `${actor.name} funded the escrow of${agreement || ' an agreement'}.`;
+        if (action.type === 'attest') return `${actor.name} recorded the decision on${agreement || ' an agreement'}.`;
+        if (action.type === 'execute') return `${actor.name} executed${agreement || ' an agreement'}.`;
+        if (action.type === 'cancel') return `${actor.name} cancelled${agreement || ' an agreement'}.`;
+        if (action.type === 'expire') return `${actor.name} expired${agreement || ' an agreement'}.`;
+        if (action.type === 'stake') return `${actor.name} staked${amount}${side}${agreement ? ` on${agreement}` : ''}.`;
+        if (action.type === 'donate') return `${actor.name} donated${amount}${agreement ? ` to${agreement}` : ''}.`;
+        if (action.type === 'pledge') return `${actor.name} pledged${amount}${agreement ? ` to${agreement}` : ''}.`;
+        if (action.type === 'resolve') return `${actor.name} resolved the market of${agreement || ' an agreement'}.`;
+        if (action.type === 'claim') return `${actor.name} claimed the${side} payout of${agreement || ' a market'}.`;
+        if (action.type === 'refundMyDonations') return `${actor.name} refunded their donation to${agreement || ' an agreement'}.`;
+        if (action.type === 'releaseDonations') return `${actor.name} released the donation escrow of${agreement || ' an agreement'}.`;
+        if (action.type === 'revokePledge') return `${actor.name} revoked their pledge to${agreement || ' an agreement'}.`;
+        if (action.type === 'fulfillPledge') return `${actor.name} fulfilled their pledge to${agreement || ' an agreement'}.`;
+        if (action.type === 'voidPledge') return `${actor.name} voided their pledge to${agreement || ' an agreement'}.`;
         return `${actor.name} ${action.type}.`;
     }
 
@@ -136,16 +138,17 @@
     }
 
     // The explorer's whole filter vocabulary. Every surface (map dialog, per-agent log, deep links)
-    // speaks this one shape; `proposalIds` is how a parcel set is expressed, because events reference
-    // proposals and the caller resolves which proposals share a set.
+    // speaks this one shape; `agreementCid` is the API's ?agreement= scope.
     const EMPTY_ACTIVITY_FILTER = Object.freeze({
         source: 'combined', kind: 'all', controller: 'all', action: 'all', status: 'all',
-        actorId: null, proposalId: null, runId: null, parcelSet: null, proposalIds: null, query: ''
+        actorId: null, agreementCid: null, runId: null, query: ''
     });
 
-    function activityProposalId(event) {
-        if (event?.entity?.type === 'proposal' && event.entity.id) return String(event.entity.id);
-        return event?.action?.proposalId ? String(event.action.proposalId) : null;
+    // The agreement an event is about: its entity, else the action's agreementCid (a bet or support
+    // action names it beside a market or escrow).
+    function activityAgreementCid(event) {
+        if (event?.entity?.type === 'agreement' && event.entity.id) return String(event.entity.id);
+        return event?.action?.agreementCid ? String(event.action.agreementCid) : null;
     }
 
     function matchesActivity(event, filter = {}) {
@@ -161,14 +164,13 @@
         // One agent is "densifier-01" in its run events and its wallet in its chain/x402 events; matching
         // the id alone dropped every on-chain action the server had already returned for that actor.
         if (f.actorId && ![event.actor?.id, event.actor?.wallet, event.actor?.name].map(value => String(value ?? '')).includes(String(f.actorId))) return false;
-        if (f.proposalId && activityProposalId(event) !== String(f.proposalId)) return false;
+        if (f.agreementCid && activityAgreementCid(event) !== String(f.agreementCid)) return false;
         if (f.runId && String(event.runId || '') !== String(f.runId)) return false;
-        if (Array.isArray(f.proposalIds) && !f.proposalIds.includes(activityProposalId(event))) return false;
         return includesQuery(event, f.query);
     }
 
-    // `?activity=<dimension>:<value>` deep links into the explorer, e.g. proposal:abc or actor:wallet.
-    const LINK_DIMENSIONS = Object.freeze({ actor: 'actorId', proposal: 'proposalId', run: 'runId', parcelSet: 'parcelSet' });
+    // `?activity=<dimension>:<value>` deep links into the explorer, e.g. agreement:<cid> or actor:wallet.
+    const LINK_DIMENSIONS = Object.freeze({ actor: 'actorId', agreement: 'agreementCid', run: 'runId' });
 
     function parseActivityLink(value) {
         const text = typeof value === 'string' ? value : '';
@@ -212,7 +214,7 @@
     }
 
     return {
-        EMPTY_ACTIVITY_FILTER, activityLinkFor, activityProposalId, createActivityEvent, createActivitySource, createEngine,
+        EMPTY_ACTIVITY_FILTER, activityLinkFor, activityAgreementCid, createActivityEvent, createActivitySource, createEngine,
         matchesActivity, mergeActivities, normalizeAction, normalizeActor, parseActivityLink
     };
 });

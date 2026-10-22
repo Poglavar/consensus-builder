@@ -1,4 +1,6 @@
-// The landing feed opens the existing proposal selection/preview, never applies a proposal.
+// The globe's and the landing feed's ways into the map: a design opens its selection/preview (never
+// applied), an agreement its link (/agreements/<cid>: its designs applied and its panel open), and a
+// bet its dialog (/bets/<agreement account>).
 (function (global) {
     'use strict';
     let opening = false;
@@ -15,8 +17,8 @@
         url.searchParams.set('city', city);
         return url.pathname + url.search;
     }
-    // `arrive` ('latest' for a city pick, 'pick' for a feed pick) lands in 3D on the proposal
-    // (js/world/arrival.js); it rides the city-switch reload as ?arrive= and is consumed on arrival.
+    // `arrive` ('latest' for a city pick on the globe) lands in 3D on the design (js/world/arrival.js);
+    // it rides the city-switch reload as ?arrive= and is consumed on arrival.
     async function open(event, { fromUrl = false, arrive = null } = {}) {
         if (opening) return;
         opening = true;
@@ -63,8 +65,33 @@
             opening = false;
         }
     }
+    // An agreement in the feed opens its link in its city: here its panel opens over the map
+    // (AgreementSync.handleAgreementRoute); another city reloads on the link, whose route opens it.
+    async function openAgreement(event) {
+        if (opening) return;
+        opening = true;
+        try {
+            const target = href(event);
+            const city = new URL(target, global.location.origin).searchParams.get('city');
+            if (city !== global.CityConfigManager.getCurrentCityId()) {
+                if (global.WorldView.isOpen()) {
+                    global.WorldHandoff.store({ dataUrl: global.WorldView.captureHandoffFrame(), cityId: city });
+                }
+                const navigating = await global.CityConfigManager.switchCity(city, { requireConfirmation: false, url: new URL(target, global.location.origin).href });
+                if (!navigating) throw new Error('City navigation could not open');
+                return;
+            }
+            global.history.pushState(null, '', target);
+            global.WorldView.close();
+            global.WorldEntry.finishNavigation();
+            await global.whenAppBooted();
+            await global.AgreementSync.handleAgreementRoute(event.agreementCid);
+        } finally {
+            opening = false;
+        }
+    }
     // A bet in the feed opens that bet's own dialog over the map of its city; another city's bet
-    // loads that city on the bet link (/bets/<proposal account>), which opens the dialog on arrival.
+    // loads that city on the bet link (/bets/<agreement account>), which opens the dialog on arrival.
     async function openBet(event) {
         if (opening) return;
         opening = true;
@@ -81,13 +108,13 @@
             global.WorldView.close();
             global.WorldEntry.finishNavigation();
             await global.whenAppBooted();
-            const dialog = await global.openBetDialog({ proposalAccount: event.proposalAccount, title: event.subject });
+            const dialog = await global.openBetDialog({ account: event.agreementAccount, title: event.subject });
             if (!dialog) throw new Error('Bet dialog could not open');
         } finally {
             opening = false;
         }
     }
-    global.WorldProposalEntry = { href, open, openBet, isOpening: () => opening };
+    global.WorldProposalEntry = { href, open, openAgreement, openBet, isOpening: () => opening };
     async function fromUrl() {
         const params = new URLSearchParams(global.location.search);
         const id = params.get('focusProposal');

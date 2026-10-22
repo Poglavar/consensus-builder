@@ -1,8 +1,12 @@
+// The world globe and the ground around a city: the Proposals pill, the globe's search, location and
+// city picks, its activity feed (agreements proposed and decided, bets on them: plan-design-agreement.md
+// M3) and city counts, wheel-out to the globe, data-source requests and open ground.
 import { Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
 import { openCity, clickMapPoint, createSpace, PARCEL_GEOMETRY } from '../helpers/runtime';
 import { waitForMapReady } from '../helpers/app';
-import { fileDesign, pageIndex } from '../helpers/mocks/shared-server';
+import { cidOfObject, fileDesign, pageIndex } from '../helpers/mocks/shared-server';
+import { fileIndexedAgreement, proposeOverPark } from '../helpers/agreements';
 
 // `count` parks published in Zagreb, as the design index lists them (GET /designs, newest first).
 function publishParks(page: Page, count: number): string[] {
@@ -12,6 +16,17 @@ function publishParks(page: Page, count: number): string[] {
     structureProposal: { kind: 'park', blockName: null },
   }));
 }
+
+// One /activity/recent event about an agreement (backend/routes/agent-activity.js): a bet action also
+// names the agreement's account.
+function agreementEvent(id: string, type: string, cid: string, extra: Record<string, unknown> = {}): Record<string, unknown> {
+  return {
+    id, source: 'live', ok: true, action: { type, agreementCid: cid }, entity: { type: 'agreement', id: cid },
+    agreementName: 'Community park agreement', designGoal: 'park', cityId: 'zagreb', location: { lat: 45.80025, lon: 15.9822 },
+    occurredAt: '2026-10-02T12:00:00Z', ...extra,
+  };
+}
+const BET_ACCOUNT = 'Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR';
 
 // A park drawn here, as the design/v1 object it would be published as.
 const designOf = (page: Page, id: string) => page.evaluate(id => {
@@ -184,9 +199,12 @@ test.describe('World navigation and open ground @features', () => {
   }
 
   test('globe activity scrolls without buttons, pauses on hover and uses event colors and location labels', async ({ mockApi: page }) => {
-    const events = ['create', 'execute', 'resolve', 'donate', 'accept'].map((type, index) => ({
-      id: `event-${index}`, source: 'live', ok: true, action: { type, proposalId: 'proposal-42' },
-      proposalName: 'Community park', cityId: 'zagreb', location: { lat: 45.8, lon: 16 }, occurredAt: `2026-10-02T12:0${index}:00Z`,
+    // Agreements proposed and decided, and bets on them; a bet opens the bet, the rest the agreement.
+    const cid = cidOfObject({ schema: 'agreement/v1', title: 'Community park agreement' });
+    const events = ['propose', 'execute', 'resolve', 'donate', 'stake'].map((type, index) => agreementEvent(`event-${index}`, type, cid, {
+      occurredAt: `2026-10-02T12:0${index}:00Z`,
+      ...(['resolve', 'stake'].includes(type) ? { agreementAccount: BET_ACCOUNT } : {}),
+      ...(type === 'stake' ? { action: { type, agreementCid: cid, side: 'yes', amount: '1' } } : {}),
     }));
     await page.route('**/activity/recent?*', route => route.fulfill({ json: { events } }));
     await page.goto('/?city=zg&lang=en'); await waitForMapReady(page);
@@ -195,10 +213,16 @@ test.describe('World navigation and open ground @features', () => {
     await expect(activity.getByRole('link')).toHaveCount(5, { timeout: 15000 });
     await expect(activity.getByRole('button')).toHaveCount(0);
     await expect(activity.getByRole('link').first()).toContainText('Zagreb');
-    await expect(activity.getByRole('link').first()).toHaveAttribute('href', '/?focusProposal=proposal-42&city=zagreb&lang=en');
-    const createColor = await activity.locator('[data-event-type="create"] .world-activity__action').first().evaluate(node => getComputedStyle(node).color);
+    // The newest is the bet, at its own link; the agreement's actions link the agreement.
+    await expect(activity.getByRole('link').first()).toContainText(/Bet 1\sUSDC on yes/);
+    await expect(activity.getByRole('link').first()).toHaveAttribute('href', `/bets/${BET_ACCOUNT}?city=zagreb&lang=en`);
+    await expect(activity.locator('[data-event-type="propose"]').first()).toHaveAttribute('href', `/agreements/${cid}?city=zagreb&lang=en`);
+    await expect(activity.locator('[data-event-type="propose"] .world-activity__action').first()).toHaveText('Agreement proposed');
+    await expect(activity.locator('[data-event-type="execute"]').first()).toContainText('Agreement executed');
+    await expect(activity.locator('[data-event-type="propose"] .world-activity__subject').first()).toHaveText('Community park agreement');
+    const proposeColor = await activity.locator('[data-event-type="propose"] .world-activity__action').first().evaluate(node => getComputedStyle(node).color);
     const resolveColor = await activity.locator('[data-event-type="resolve"] .world-activity__action').first().evaluate(node => getComputedStyle(node).color);
-    expect(createColor).not.toBe(resolveColor);
+    expect(proposeColor).not.toBe(resolveColor);
     await page.mouse.move(5, 5);
     const track = activity.locator('.world-activity__track');
     await expect(track).toHaveCSS('animation-duration', '40s');
@@ -215,47 +239,34 @@ test.describe('World navigation and open ground @features', () => {
     await expect.poll(() => activity.locator('.world-activity__viewport').evaluate(node => node.scrollTop)).toBe(0);
   });
 
+  // An agreement in the feed opens its link in place: its designs are applied (a design unapplied here
+  // is applied again) and its panel opens over the map.
   for (const applied of [true, false]) {
-    test(`globe event arrives on a ${applied ? 'locally applied' : 'unapplied'} proposal in 3D, then the map, and leaves Activity reachable`, async ({ mockApi: page }) => {
-      await openCity(page); const id = await createSpace(page, 'park');
-      if (!applied) await page.evaluate(async id => { await (window as any).ProposalManager.unapplyProposal(id, { silent: true, suppressCameraMove: true }); }, id);
-      await page.route('**/activity/recent?*', route => route.fulfill({ json: { events: [{
-        id: 'park-event', action: { type: 'create', proposalId: id }, proposalName: 'Community park', cityId: 'zagreb',
-        location: { lat: 45.80025, lon: 15.9822 }, occurredAt: '2026-10-02T12:00:00Z',
-      }] } }));
+    test(`a globe agreement event opens the agreement over the map with its ${applied ? 'applied' : 'unapplied'} design applied, and leaves Activity reachable`, async ({ mockApi: page }) => {
+      test.setTimeout(120_000);
+      await openCity(page);
+      const title = 'Community park agreement';
+      const { cid, parkId } = await proposeOverPark(page, { title, author: 'Globe fixture' });
+      if (!applied) await page.evaluate(async id => { await (window as any).ProposalManager.unapplyProposal(id, { silent: true, suppressCameraMove: true }); }, parkId);
+      const isApplied = () => page.evaluate(id => (window as any).getProposalByIdOrHash(id).applied === true, parkId);
+      expect(await isApplied()).toBe(applied);
+      await page.route('**/activity/recent?*', route => route.fulfill({ json: { events: [agreementEvent('park-event', 'propose', cid, { agreementName: title })] } }));
       await page.evaluate(() => (window as any).map.setView([45.85, 16.05], 12, { animate: false }));
       await page.locator('#settings-button').click(); await page.locator('#world-view-button').click();
-      await expect(page.locator('.world-activity a')).toBeVisible({ timeout: 15000 });
-      await page.locator('.world-activity a').click();
+      const link = page.locator('.world-activity a').first();
+      await expect(link).toBeVisible({ timeout: 15000 });
+      await expect(link).toHaveAttribute('href', `/agreements/${cid}?city=zagreb&reduceMotion=1`);
+      await link.click();
       await expect(page.locator('#world-view')).toHaveCount(0);
-      // A globe pick arrives in 3D on the proposal (js/world/arrival.js); still under reduced motion.
-      // Its caption card was removed (fbe3758d): the 2D mode tile leads back to the map.
-      await expect.poll(() => page.evaluate(() => (window as any).isThreeModeActive?.() ?? false), { timeout: 20000 }).toBe(true);
-      await expect.poll(() => page.evaluate(id => (window as any).ProposalSelection.getKey() === id, id)).toBe(true);
-      expect(await page.evaluate(() => (window as any).getThreeModeInternals().controls.autoRotate)).toBe(false);
-      await page.locator('#mode-2d-toggle').click();
-      await expect.poll(() => page.evaluate(() => (window as any).isThreeModeActive())).toBe(false);
-      await expect(page.locator('.game-log-modal')).toHaveCount(0);
-      await expect.poll(() => page.evaluate(id => (window as any).getProposalByIdOrHash(id).applied === true, id)).toBe(applied);
-      await expect.poll(() => page.evaluate(() => (window as any).map.getZoom())).toBeGreaterThan(15);
-      await expect.poll(() => page.evaluate(() => Math.abs((window as any).map.getCenter().lat - 45.80025))).toBeLessThan(0.002);
-      const outline = page.locator('path.proposal-primary-outline').first();
-      await expect(outline).toBeVisible();
-      if (applied) await expect(outline).not.toHaveAttribute('stroke-dasharray', '10 5');
-      else await expect(outline).toHaveAttribute('stroke-dasharray', '10 5');
-      // 3D closes the 2D panels; a map click selects the proposal in the Planning inspector.
-      await clickMapPoint(page, 15.9822, 45.80025);
-      const inspector = page.locator('#planning-inspector');
-      await expect(inspector.getByRole('heading', { name: 'Park · parcel 1234', exact: true })).toBeVisible();
-      await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection?.getKey?.())).toBe(id);
-      await expect(inspector.getByRole('button', { name: 'Proposal actions', exact: true })).toBeVisible();
-      await expect(page.locator('#parcel-menu')).toBeHidden();
-      expect(await page.evaluate(id => (window as any).getProposalByIdOrHash(id).applied === true, id)).toBe(applied);
-      // A map click opens the proposal card. The global Activity control remains available even
-      // when there are no sibling proposals to show the per-parcel activity links.
-      const expand = page.locator('#proposal-details-minimize');
-      if (await expand.getAttribute('aria-expanded') === 'false') await expand.click();
-      await expect(expand).toHaveAttribute('aria-expanded', 'true');
+      await expect.poll(() => page.evaluate(() => location.pathname)).toBe(`/agreements/${cid}`);
+      const panel = page.locator('section#agreement-panel');
+      await expect(panel).toBeVisible({ timeout: 30_000 });
+      await expect(page.locator('#agreement-panel-title')).toHaveText(title);
+      await expect(panel.locator('code.agreement-panel-cid')).toHaveAttribute('title', cid);
+      // Its design stands on the map, and the agreement matches what it shapes there.
+      await expect.poll(isApplied, { timeout: 30_000 }).toBe(true);
+      await expect(panel.locator('[data-agreement-status="current"]')).toBeVisible({ timeout: 30_000 });
+      // The global Activity control stays reachable over the agreement.
       const activitySheet = page.locator('#activity-sheet');
       await expect(activitySheet).toBeHidden();
       await page.locator('#activity-button').click();
@@ -263,60 +274,58 @@ test.describe('World navigation and open ground @features', () => {
       await expect(activitySheet.locator('#activity-feed')).toBeVisible();
       await activitySheet.locator('[data-sheet-close]').click();
       await expect(activitySheet).toBeHidden();
-      if (!applied) {
-        await page.mouse.click(180, 150);
-        await expect(page.locator('path.proposal-primary-outline')).toHaveCount(0);
-        expect(await page.evaluate(id => (window as any).getProposalByIdOrHash(id).applied === true, id)).toBe(false);
-      }
     });
   }
 
-  test('a cross-city event keeps the globe cover over the default world map until its downloaded proposal is framed', async ({ mockApi: page }) => {
-    test.setTimeout(120_000);
-    // A record is stored only in the city its parcels are in (c97bceea, projections.md M8), so the
-    // remote proposal is a Zagreb park and the event is picked from another city (Explore). It is a
-    // published design: the event names its CID and the arrival downloads it from the index.
-    await openCity(page); const id = await createSpace(page, 'park');
-    const cid = fileDesign(pageIndex(page), { ...(await designOf(page, id)), title: 'Remote park' });
-    let releaseDownload!: () => void;
-    const download = new Promise<void>(resolve => { releaseDownload = resolve; });
-    await page.route(url => url.pathname.endsWith(`/designs/${cid}`), async route => {
-      if (route.request().resourceType() !== 'fetch' && route.request().resourceType() !== 'xhr') return route.fallback();
-      await download;
-      await route.fallback();
-    });
-    await page.route('**/activity/recent?*', route => route.fulfill({ json: { events: [{
-      id: 'remote-park', action: { type: 'create', proposalId: cid }, proposalName: 'Remote park', cityId: 'zagreb',
-      location: { lat: 45.80025, lon: 15.9822 }, occurredAt: '2026-10-02T12:00:00Z',
-    }] } }));
+  // A record is stored only in the city its parcels are in (c97bceea, projections.md M8): an agreement
+  // event picked from another city (Explore) reloads into its city on the agreement's link, whose
+  // route opens it there.
+  test('a cross-city agreement event reloads in the agreement\'s city and opens it there', async ({ mockApi: page }) => {
+    test.setTimeout(150_000);
+    await openCity(page);
+    const title = 'Remote park agreement';
+    const { cid } = await proposeOverPark(page, { title, author: 'Globe fixture' });
+    await page.route('**/activity/recent?*', route => route.fulfill({ json: { events: [agreementEvent('remote-park', 'propose', cid, { agreementName: title })] } }));
     await page.goto('/?city=explore&at=44.8,20.4,14&reduceMotion=1&lang=en'); await waitForMapReady(page);
     await page.locator('#settings-button').click(); await page.locator('#world-view-button').click();
-    await expect(page.locator('.world-activity a')).toBeVisible({ timeout: 15000 });
-    await page.locator('.world-activity a').click();
-    await page.waitForURL(/city=zagreb/);
-    await expect(page.locator('.world-handoff')).toBeVisible();
-    await expect.poll(() => page.evaluate(() => (window as any).WorldProposalEntry?.isOpening())).toBe(true);
-    await expect(page.locator('.world-handoff')).toBeVisible();
-    releaseDownload();
-    await expect(page.locator('.world-handoff')).toHaveCount(0, { timeout: 15000 });
-    // Zagreb has 3D buildings, so the pick arrives in 3D first (js/world/arrival.js); the 2D tile
-    // goes back to the map (the caption card was removed in fbe3758d).
-    await expect.poll(() => page.evaluate(() => (window as any).isThreeModeActive?.() ?? false), { timeout: 20000 }).toBe(true);
-    await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection.getKey())).toBe(`design-${cid}`);
-    await page.locator('#mode-2d-toggle').click();
-    await expect.poll(() => page.evaluate(() => (window as any).isThreeModeActive())).toBe(false);
+    const link = page.locator('.world-activity a').first();
+    await expect(link).toBeVisible({ timeout: 15000 });
+    await expect(link).toHaveAttribute('href', `/agreements/${cid}?city=zagreb&lang=en&reduceMotion=1`);
+    await link.click();
+    await page.waitForURL(url => url.pathname === `/agreements/${cid}` && url.searchParams.get('city') === 'zagreb', { timeout: 30_000 });
+    await waitForMapReady(page);
     expect(await page.evaluate(() => (window as any).CityConfigManager.getCurrentCityId())).toBe('zagreb');
-    await expect.poll(() => page.evaluate(() => (window as any).map.getZoom())).toBeGreaterThan(15);
-    await expect.poll(() => page.evaluate(() => Math.abs((window as any).map.getCenter().lat - 45.80025))).toBeLessThan(0.002);
-    await expect(page.locator('path.proposal-primary-outline').first()).toHaveAttribute('stroke-dasharray', '10 5');
+    const panel = page.locator('section#agreement-panel');
+    await expect(panel).toBeVisible({ timeout: 60_000 });
+    await expect(page.locator('#agreement-panel-title')).toHaveText(title);
+    await expect(panel.locator('code.agreement-panel-cid')).toHaveAttribute('title', cid);
+    // The globe's last frame covered the reload and is gone once the map has drawn.
+    await expect(page.locator('.world-handoff')).toHaveCount(0, { timeout: 15000 });
+  });
+
+  // The globe paints a city with agreements and puts their count on its label (GET /activity/cities).
+  test('the globe labels a city with the number of agreements proposed there', async ({ mockApi: page }) => {
+    const index = pageIndex(page);
+    fileIndexedAgreement(index, { title: 'First agreement', createdAt: '2026-10-20T09:00:00.000Z', community: true, author: 'Globe fixture' });
+    fileIndexedAgreement(index, { title: 'Second agreement', createdAt: '2026-10-20T09:00:00.000Z', community: true, author: 'Globe fixture' });
+    await openCity(page);
+    await page.locator('#settings-button').click(); await page.locator('#world-view-button').click();
+    const world = page.locator('#world-view');
+    await expect(world.locator('canvas')).toBeVisible({ timeout: 45_000 });
+    await expect.poll(() => index.requests.some(request => request.method === 'GET' && request.path === '/activity/cities')).toBe(true);
+    await page.evaluate(async () => { await (window as any).WorldView.flyTo({ lat: 45.815, lon: 15.982 }, { altitudeKm: 1500 }); });
+    const label = page.locator('.world-city-label[aria-label="Zagreb, 2 agreements"]');
+    await expect(label).toHaveCount(1, { timeout: 20_000 });
+    await expect(label.locator('.world-city-label__count')).toHaveText('2');
+    await expect(label.locator('.world-city-label__name')).toHaveText('Zagreb');
   });
 
   test('phone globe activity shows approximate location with reduced motion', async ({ mockApi: page }) => {
     await page.setViewportSize({ width: 375, height: 812 }); await page.emulateMedia({ reducedMotion: 'reduce' });
-    await page.route('**/activity/recent?*', route => route.fulfill({ json: { events: [{
-      id: 'phone', action: { type: 'execute', proposalId: 'park-1' }, proposalName: 'Community park', cityId: 'explore',
-      location: { lat: 44.3, lon: 16.2 }, occurredAt: '2026-10-02T12:00:00Z',
-    }] } }));
+    const cid = cidOfObject({ schema: 'agreement/v1', title: 'Community park' });
+    await page.route('**/activity/recent?*', route => route.fulfill({ json: { events: [
+      agreementEvent('phone', 'execute', cid, { agreementName: 'Community park', cityId: 'explore', location: { lat: 44.3, lon: 16.2 } }),
+    ] } }));
     await openCity(page); await page.locator('#settings-button').click(); await page.locator('#world-view-button').click();
     const activity = page.locator('.world-activity'); await expect(activity.getByRole('link')).toHaveCount(1, { timeout: 15000 });
     await expect(activity.getByRole('link')).toContainText('in Croatia');

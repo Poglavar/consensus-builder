@@ -366,41 +366,6 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
     margin-bottom: var(--cb-space-1);
 }
 
-/* Acceptance mini-bar inside a proposal list row: grey track, green proportional fill,
-   the exact count centred over it. */
-.proposal-item-acceptbar {
-    position: relative;
-    flex: 1;
-    min-width: 42px;
-    max-width: 90px;
-    height: 12px;
-    margin-left: auto;
-    border-radius: var(--cb-radius-pill);
-    background: var(--cb-surface-3);
-    overflow: hidden;
-}
-
-.proposal-item-acceptbar-fill {
-    position: absolute;
-    inset: 0 auto 0 0;
-    background: var(--cb-success);
-    border-radius: var(--cb-radius-pill);
-}
-
-.proposal-item-acceptbar-text {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 9px;
-    font-weight: 700;
-    line-height: 1;
-    color: var(--cb-text);
-    text-shadow: var(--cb-text-halo);
-    pointer-events: none;
-}
-
 #road-info-panel .metric-label {
     font-weight: 500;
     color: var(--cb-text-muted);

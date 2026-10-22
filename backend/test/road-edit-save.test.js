@@ -46,14 +46,13 @@ describe('runLocalCorridorGeometryUpdate: in place for a local road, a counterpr
     const extend = definition => { definition.points[0][1] = at(150, 0); };
     const endOf = record => record.roadProposal.definition.points[0][1];
 
-    // Where a road was published (DesignSync): its CID at one index. chain.js isProposalImmutable
-    // treats such a record as immutable, which is what the lineage asks.
+    // Where a road was published (DesignSync): its CID at one index, which ProposalLineage.isPublished
+    // takes as immutable.
     const PUBLISHED = { cid: Cid.cidOfObject({ schema: 'design/v1', title: 'Main street' }), publishedAt: '2026-10-21T12:00:00.000Z', apiBase: 'https://api.example.test' };
-    const isProposalImmutable = record => !!(record && record.published && Cid.isCid(record.published.cid));
 
     // The loaded tool over a store holding `source`, and the parcel mutation it runs inside.
     function harness(source) {
-        env = loadRoadDrawing({ proposals: [source], globals: { ProposalLineage: lineage, isProposalImmutable } });
+        env = loadRoadDrawing({ proposals: [source], globals: { ProposalLineage: lineage } });
         source.roadProposal.definition.profile = globalThis.corridorProfileFromLegacy(7.5, 1, false);
         const afterCommit = [];
         const mutation = { proposals: env.store, afterCommit: fn => afterCommit.push(fn) };

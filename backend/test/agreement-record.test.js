@@ -1,6 +1,7 @@
 // Unit tests for frontend/js/agreement-record.js: the agreement record's output hash, canonical
 // form and validation codes, the per-party ledger, the default rights snapshot and the subject the
-// approval engine counts, and the published agreement/v1 object with its CID (M2).
+// approval engine counts, the published agreement/v1 object with its CID (M2), and what a proposed
+// and minted record keeps on this device: its sponsor and its chain account (M3).
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 import { createHash } from 'node:crypto';
@@ -441,9 +442,34 @@ describe('normalize (published records)', () => {
     it('keeps where a proposed agreement went, and refuses a mark without a CID or an API', () => {
         expect(record.normalize(fixture()).published).toBeNull();
         expect(record.normalize({ ...fixture(), published: PUBLISHED }).published)
-            .toEqual({ cid: PUBLISHED.cid, publishedAt: '2026-10-21T12:00:00.000Z', apiBase: 'https://api.example.test' });
+            .toEqual({ cid: PUBLISHED.cid, publishedAt: '2026-10-21T12:00:00.000Z', apiBase: 'https://api.example.test', sponsor: null });
         [{ ...PUBLISHED, cid: 'c2-abc' }, { ...PUBLISHED, apiBase: ' ' }, { ...PUBLISHED, publishedAt: 'noon' }, 'bafy']
             .forEach(published => expect(thrownCode(() => record.normalize({ ...fixture(), published }))).toBe('invalid-agreement'));
+    });
+
+    it('keeps the wallet that sponsors a proposed agreement (M3 mints at its address), trimmed, or null', () => {
+        const SPONSOR = '9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin';
+        expect(record.normalize({ ...fixture(), published: { ...PUBLISHED, sponsor: ` ${SPONSOR} ` } }).published.sponsor).toBe(SPONSOR);
+        for (const sponsor of [null, undefined, '', '   ', 42]) {
+            expect(record.normalize({ ...fixture(), published: { ...PUBLISHED, sponsor } }).published.sponsor, String(sponsor)).toBeNull();
+        }
+    });
+
+    it('keeps the chain account of a minted agreement as given, a copy, and refuses one that is not an object', () => {
+        expect(record.normalize(fixture()).onchain).toBeNull();
+        expect(record.normalize({ ...fixture(), onchain: null }).onchain).toBeNull();
+        // The index's pointer carries more than the browser's own; both are kept whole.
+        const onchain = { chain: 'solana', cluster: 'devnet', account: 'Acct1111111111111111111111111111111111111111', signature: 'sig-1',
+            status: 'active', decision: 'pending', escrowLamports: '0' };
+        const raw = { ...fixture(), published: PUBLISHED, onchain };
+        const kept = record.normalize(raw).onchain;
+        expect(kept).toEqual(onchain);
+        expect(kept).not.toBe(onchain);
+        kept.status = 'executed';
+        expect(raw.onchain.status).toBe('active');
+        for (const bad of ['Acct111', ['solana'], 7, true]) {
+            expect(thrownCode(() => record.normalize({ ...fixture(), onchain: bad })), JSON.stringify(bad)).toBe('invalid-agreement');
+        }
     });
 
     it('keeps an output known by its hash alone, as an agreement read from its published object has them', () => {
@@ -527,8 +553,10 @@ describe('publishedCid', () => {
         expect(cid).toBe(Cid.cidOfObject(record.published(fixture())));
         expect(Cid.isCid(cid)).toBe(true);
         const relabelled = fixture();
+        // Where it went and where it is minted stay on this device: neither is part of the object.
         Object.assign(relabelled, { id: 'ag-other', updatedAt: '2026-10-22T08:00:00.000Z',
-            published: { cid, publishedAt: '2026-10-22T08:00:00.000Z', apiBase: 'https://api.example.test' } });
+            published: { cid, publishedAt: '2026-10-22T08:00:00.000Z', apiBase: 'https://api.example.test', sponsor: '9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin' },
+            onchain: { chain: 'solana', cluster: 'devnet', account: 'Acct1111111111111111111111111111111111111111' } });
         relabelled.outputs[0].pieceId = 'k9-renamed';
         relabelled.outputs[0].holders = [cyril(1)];
         expect(record.publishedCid(relabelled)).toBe(cid);

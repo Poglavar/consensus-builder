@@ -295,7 +295,7 @@
             && !win.roadDrawingMode && !win.isParcelDrawingModeActive?.()
             && !win.isStructureGeometryEditorActive?.() && !win.isTransitStationGeometryEditorActive?.()
             && !win.isTransitStationPlacementActive?.() && !win.AreaMonitorPaint?.isActive()
-            && !win.sharePlanMode && !win.pinpointToolIsActive?.();
+            && !win.MapPick?.active() && !win.pinpointToolIsActive?.();
     }
 
     function fitSelected() {

@@ -1,3 +1,6 @@
+// Wallet and chain boundaries for the specs: injected EVM and Solana wallets, the connector modal,
+// the wallet vendors, Solana RPC reads, the Solana parcel-anchor mint and the EVM ParcelNFT reads.
+// Designs are not minted (plan-design-agreement.md, M3), so nothing here stubs a proposal contract.
 import { expect, Page, Route } from '@playwright/test';
 import { selectors } from './selectors';
 
@@ -27,37 +30,17 @@ type MockSolanaWalletOptions = {
   trusted?: boolean;
 };
 
-type MockEvmProposalMintOptions = {
-  account?: string;
-  chainIdDec?: string;
-  contractAddress?: string;
-  txHash?: string;
-  proposalId?: string;
-  blockNumber?: number;
-};
-
-type MockEvmTxOptions = {
-  account?: string;
-  chainIdDec?: string;
-  contractAddress?: string;
-  txHash?: string;
-};
-
-type MockSolanaBridgeOptions = {
-  publicKey?: string;
+type MockSolanaParcelMintOptions = {
   signature?: string;
-  cluster?: string;
-  proposalProgramId?: string;
   parcelProgramId?: string;
-  proposalId?: string;
+  /** The token id an already-minted anchor reports. */
+  tokenId?: string;
   alreadyMinted?: boolean;
 };
 
 type MockEvmLoaderOptions = {
-  account?: string;
   chainIdDec?: string;
   parcelContractAddress?: string;
-  proposalContractAddress?: string;
 };
 
 /** Wait for the app's versioned local scripts and on-demand wallet vendors to finish loading. */
@@ -236,181 +219,14 @@ async function walletVendorsLoaded(page: Page): Promise<void> {
   if (!loaded) throw new Error('the wallet vendors (ethers) failed to load');
 }
 
-export async function stubEvmProposalMintSuccess(page: Page, options: MockEvmProposalMintOptions = {}): Promise<void> {
-  await walletVendorsLoaded(page);
-  await page.evaluate((stubOptions: MockEvmProposalMintOptions) => {
-    const globalWindow = window as typeof window & {
-      ethers?: {
-        BrowserProvider?: unknown;
-        Contract?: unknown;
-        getAddress?: (value: string) => string;
-      };
-    };
-
-    if (!globalWindow.ethers) {
-      throw new Error('window.ethers is not available');
-    }
-
-    const account = stubOptions.account || '0x1234567890abcdef1234567890abcdef12345678';
-    const chainIdDec = stubOptions.chainIdDec || '31337';
-    const contractAddress = stubOptions.contractAddress || '0x8A791620dd6260079BF849Dc5567aDC3F2FdC318';
-    const txHash = stubOptions.txHash || '0xabc123';
-    const proposalId = stubOptions.proposalId || '7';
-    const blockNumber = stubOptions.blockNumber || 123;
-    const transferTopic = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
-
-    class MockBrowserProvider {
-      provider: unknown;
-
-      constructor(provider: unknown) {
-        this.provider = provider;
-      }
-
-      async getSigner() {
-        return {
-          getAddress: async () => account,
-        };
-      }
-
-      async getNetwork() {
-        return {
-          chainId: BigInt(chainIdDec),
-        };
-      }
-
-      async getCode() {
-        return '0x1234';
-      }
-    }
-
-    class MockContract {
-      address: string;
-      mintAndFund: ((...args: unknown[]) => Promise<{ hash: string; wait: () => Promise<{ hash: string; logs: Array<{ address: string; topics: string[] }>; blockNumber: number }> }>) & {
-        staticCall: (...args: unknown[]) => Promise<boolean>;
-        estimateGas: (...args: unknown[]) => Promise<bigint>;
-      };
-
-      constructor(address: string) {
-        this.address = address;
-        const wait = async () => ({
-          hash: txHash,
-          blockNumber,
-          logs: [
-            {
-              address,
-              topics: [transferTopic, '0x0', '0x0', `0x${BigInt(proposalId).toString(16)}`],
-            },
-          ],
-        });
-
-        const mintAndFund = async () => ({
-          hash: txHash,
-          wait,
-        });
-        mintAndFund.staticCall = async () => true;
-        mintAndFund.estimateGas = async () => 21000n;
-        this.mintAndFund = mintAndFund;
-      }
-    }
-
-    Object.defineProperty(globalWindow.ethers, 'BrowserProvider', {
-      configurable: true,
-      writable: true,
-      value: MockBrowserProvider,
-    });
-    Object.defineProperty(globalWindow.ethers, 'Contract', {
-      configurable: true,
-      writable: true,
-      value: MockContract,
-    });
-    Object.defineProperty(globalWindow, '__mockMintContractAddress', {
-      configurable: true,
-      writable: true,
-      value: contractAddress,
-    });
-  }, options);
-}
-
-export async function stubEvmAcceptWithdrawSuccess(page: Page, options: MockEvmTxOptions = {}): Promise<void> {
-  await walletVendorsLoaded(page);
-  await page.evaluate((stubOptions: MockEvmTxOptions) => {
-    const globalWindow = window as typeof window & {
-      ethers?: {
-        BrowserProvider?: unknown;
-        Contract?: unknown;
-        getAddress?: (value: string) => string;
-      };
-    };
-
-    if (!globalWindow.ethers) {
-      throw new Error('window.ethers is not available');
-    }
-
-    const account = stubOptions.account || '0x1234567890abcdef1234567890abcdef12345678';
-    const chainIdDec = stubOptions.chainIdDec || '84532';
-    const contractAddress = stubOptions.contractAddress || '0x6c3AdE19a8947bC4CC75B2AE3F2E25F4cBb23709';
-    const txHash = stubOptions.txHash || '0xdef456';
-
-    class MockBrowserProvider {
-      async getSigner() {
-        return {
-          getAddress: async () => account,
-        };
-      }
-
-      async getNetwork() {
-        return {
-          chainId: BigInt(chainIdDec),
-        };
-      }
-
-      async getCode() {
-        return '0x1234';
-      }
-    }
-
-    class MockContract {
-      address: string;
-
-      constructor(address: string) {
-        this.address = address;
-      }
-
-      async acceptProposal() {
-        return {
-          hash: txHash,
-          wait: async () => ({ hash: txHash }),
-        };
-      }
-
-      async withdrawAcceptance() {
-        return {
-          hash: txHash,
-          wait: async () => ({ hash: txHash }),
-        };
-      }
-    }
-
-    Object.defineProperty(globalWindow.ethers, 'BrowserProvider', {
-      configurable: true,
-      writable: true,
-      value: MockBrowserProvider,
-    });
-    Object.defineProperty(globalWindow.ethers, 'Contract', {
-      configurable: true,
-      writable: true,
-      value: MockContract,
-    });
-    Object.defineProperty(globalWindow, '__mockAcceptWithdrawContractAddress', {
-      configurable: true,
-      writable: true,
-      value: contractAddress,
-    });
-  }, options);
-}
-
-export async function stubSolanaBridgeSuccess(page: Page, options: MockSolanaBridgeOptions = {}): Promise<void> {
-  await page.evaluate((stubOptions: MockSolanaBridgeOptions) => {
+/**
+ * The Solana parcel-anchor mint (solana/parcel-mint.js) against a local RPC boundary: the
+ * connection answers the blockhash, send and confirmation, the wallet signs, the loader resolves the
+ * ParcelNFT program and reports the anchor's mint status (minted already when `alreadyMinted`).
+ * Instruction building and the mint flow itself stay on their production paths.
+ */
+export async function stubSolanaParcelMint(page: Page, options: MockSolanaParcelMintOptions = {}): Promise<void> {
+  await page.evaluate((stubOptions: MockSolanaParcelMintOptions) => {
     const globalWindow = window as typeof window & {
       solanaWalletManager?: {
         getProvider?: () => {
@@ -421,17 +237,13 @@ export async function stubSolanaBridgeSuccess(page: Page, options: MockSolanaBri
       SolanaChainDataLoader?: {
         getConnection?: (cluster: string) => unknown;
         resolveProgramAddress?: (chainKey: string, contractName: string) => Promise<string | null>;
-        parseProposalAccount?: (data: Uint8Array, address: string) => unknown;
         getParcelMintStatus?: (...args: unknown[]) => Promise<unknown>;
         setParcelMintStatusCache?: (...args: unknown[]) => unknown;
       };
     };
 
     const signature = stubOptions.signature || '5N2o4X1mockSignature';
-    const cluster = stubOptions.cluster || 'devnet';
-    const proposalProgramId = stubOptions.proposalProgramId || '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
     const parcelProgramId = stubOptions.parcelProgramId || '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1';
-    const proposalId = stubOptions.proposalId || proposalProgramId;
     const connection = {
       getLatestBlockhash: async () => ({
         blockhash: 'EkSnNWid2cvwEVnVx9aBqpiCpY1QoUW63D2Hp31e4gwJ',
@@ -439,10 +251,6 @@ export async function stubSolanaBridgeSuccess(page: Page, options: MockSolanaBri
       }),
       sendRawTransaction: async () => signature,
       confirmTransaction: async () => ({ value: { err: null } }),
-      getAccountInfo: async () => ({
-        data: new Uint8Array(32),
-        owner: { toString: () => proposalProgramId },
-      }),
     };
 
     if (!globalWindow.solanaWalletManager || typeof globalWindow.solanaWalletManager.getProvider !== 'function') {
@@ -464,25 +272,18 @@ export async function stubSolanaBridgeSuccess(page: Page, options: MockSolanaBri
     };
 
     globalWindow.SolanaChainDataLoader.getConnection = () => connection;
-    globalWindow.SolanaChainDataLoader.resolveProgramAddress = async (_chainKey: string, contractName: string) => {
-      if (contractName === 'ProposalNFT') return proposalProgramId;
-      if (contractName === 'ParcelNFT') return parcelProgramId;
-      return null;
-    };
-    globalWindow.SolanaChainDataLoader.parseProposalAccount = () => ({
-      acceptancePossible: true,
-      status: 'Active',
-      cadastreParcelIds: ['HR-335754-1234'],
-      acceptedParcels: [],
-    });
+    globalWindow.SolanaChainDataLoader.resolveProgramAddress = async (_chainKey: string, contractName: string) => (
+      contractName === 'ParcelNFT' ? parcelProgramId : null
+    );
     globalWindow.SolanaChainDataLoader.getParcelMintStatus = async () => ({
       minted: Boolean(stubOptions.alreadyMinted),
-      tokenId: stubOptions.alreadyMinted ? proposalId : undefined,
+      tokenId: stubOptions.alreadyMinted ? (stubOptions.tokenId || parcelProgramId) : undefined,
     });
     globalWindow.SolanaChainDataLoader.setParcelMintStatusCache = (...args: unknown[]) => args;
   }, options);
 }
 
+/** The EVM ParcelNFT reads (ChainDataLoader.getParcelsFromChain): token 1 reads whole, token 2 only by its parcel id. */
 export async function stubEvmChainDataReads(page: Page, options: MockEvmLoaderOptions = {}): Promise<void> {
   await walletVendorsLoaded(page);
   await page.evaluate((stubOptions: MockEvmLoaderOptions) => {
@@ -499,10 +300,8 @@ export async function stubEvmChainDataReads(page: Page, options: MockEvmLoaderOp
       throw new Error('window.ethers is not available');
     }
 
-    const account = stubOptions.account || '0x1234567890abcdef1234567890abcdef12345678';
     const chainIdDec = stubOptions.chainIdDec || '31337';
     const parcelContractAddress = stubOptions.parcelContractAddress || '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512';
-    const proposalContractAddress = stubOptions.proposalContractAddress || '0x8A791620dd6260079BF849Dc5567aDC3F2FdC318';
 
     class MockProvider {
       async getNetwork() {
@@ -518,10 +317,7 @@ export async function stubEvmChainDataReads(page: Page, options: MockEvmLoaderOp
       }
 
       async getTokensByOwner() {
-        if (this.address.toLowerCase() === parcelContractAddress.toLowerCase()) {
-          return [1n, 2n];
-        }
-        return [11n, 12n];
+        return this.address.toLowerCase() === parcelContractAddress.toLowerCase() ? [1n, 2n] : [];
       }
 
       async getParcelByToken(tokenId: bigint) {
@@ -536,29 +332,6 @@ export async function stubEvmChainDataReads(page: Page, options: MockEvmLoaderOp
 
       async parcelIdForTokenId(tokenId: bigint) {
         return tokenId === 2n ? 'HR-335754-1235' : 'HR-335754-1234';
-      }
-
-      async getProposalsBatch() {
-        return [
-          [['HR-335754-1234'], ['HR-335754-1235']],
-          [false, true],
-          ['ipfs://proposal-1', 'ipfs://proposal-2'],
-          [true, false],
-          [0n, 1n],
-          [0n, 10n],
-          [100n, 200n],
-          [1n, 2n],
-          [1000n, 2000n],
-          [5n, 10n],
-        ];
-      }
-
-      async getLens(tokenId: bigint) {
-        return tokenId === 11n ? [account] : ['0xabcdefabcdefabcdefabcdefabcdefabcdefabcd'];
-      }
-
-      async ownerOf(tokenId: bigint) {
-        return tokenId === 11n ? account : '0xabcdefabcdefabcdefabcdefabcdefabcdefabcd';
       }
     }
 

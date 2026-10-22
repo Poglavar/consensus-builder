@@ -556,7 +556,7 @@
             if (global.roadDrawingMode === true) return true;
             if (global.cadastreViewActive === true) return true;
             if (global.proposalListBrowseMode) return true;
-            if (global.sharePlanMode) return true;
+            if (global.MapPick?.active()) return true;
             if (typeof global.isParcelDrawingModeActive === 'function' && global.isParcelDrawingModeActive()) return true;
             if (typeof global.isStructureGeometryEditorActive === 'function' && global.isStructureGeometryEditorActive()) return true;
             if (global.AreaMonitorPaint && global.AreaMonitorPaint.isActive()) return true;
@@ -619,9 +619,14 @@
     // From structure fills and corridor hit targets: nothing is selected yet; the drill both
     // selects the topmost object and shows the chain.
     function handleSurfaceClick(latlng) {
-        // Share-plan panel open: surface clicks (structures forward here directly) must not
-        // open the drill panel — the map is pan/zoom only.
-        if (global.sharePlanMode) return false;
+        // A surface picks designs on the map (js/map-pick.js): a surface click (structures and
+        // corridors forward here directly) opens no drill panel and selects nothing — the topmost
+        // design at the point is handed to that surface instead.
+        if (global.MapPick?.active()) {
+            const top = stackAt(latlng).find(entry => entry.kind === 'proposal');
+            if (top) global.MapPick.pick(top.key);
+            return true;
+        }
         const stack = stackAt(latlng);
         if (!stack.length) { hidePanel(); return false; }
         const top = stack[0];

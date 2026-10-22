@@ -435,7 +435,7 @@
             const userInitiated = Date.now() <= state.userZoomIntentUntil;
             state.userZoomIntentUntil = 0;
             const blocked = !!(global.WorldView && (global.WorldView.isOpen() || state.opening))
-                || state.landing || state.bootOpen || global.roadDrawingMode === true || !!global.sharePlanMode
+                || state.landing || state.bootOpen || global.roadDrawingMode === true || !!global.MapPick?.active()
                 || !!global.suppressCameraMoves || !!(global.WorldProposalEntry && global.WorldProposalEntry.isOpening && global.WorldProposalEntry.isOpening())
                 || doc.body.classList.contains('three-mode-active') || doc.body.classList.contains('realistic-mode-active')
                 || !!(global.MapShell && global.MapShell.isBlockingDialogOpen && global.MapShell.isBlockingDialogOpen());

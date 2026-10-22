@@ -1,6 +1,13 @@
-// A slowly cycling, public activity list beside the globe. Owns its fetch and timer lifecycle.
+// A slowly cycling, public activity list beside the globe: agreements proposed, their outcomes, and
+// the bets and support on them (world/activity-model.js). Owns its fetch and timer lifecycle.
 (function (global) {
     'use strict';
+    // English fallbacks of world.activity.actions.<type>, one per type the model keeps.
+    const ACTION_FALLBACKS = Object.freeze({
+        propose: 'Agreement proposed', execute: 'Agreement executed', cancel: 'Agreement cancelled',
+        expire: 'Agreement expired', createMarket: 'Market opened', resolve: 'Market resolved',
+        claim: 'Winnings claimed', donate: 'Donation made', pledge: 'Pledge made', fulfillPledge: 'Pledge fulfilled'
+    });
     function mount(root, { t, reducedMotion, coverage }) {
         const panel = document.createElement('section');
         panel.className = 'world-activity';
@@ -16,8 +23,9 @@
         panel.classList.toggle('world-activity--static', !!reducedMotion);
         const horizontalMode = () => !!global.matchMedia?.('(max-width: 600px)')?.matches;
         const cyclingEnabled = () => events.length > (horizontalMode() ? 1 : 3) && !reducedMotion && !userScrolling;
-        function proposalTypeLabel(event) {
-            const key = global.WorldActivityModel.proposalTypeKey(event);
+        // The type of the agreement's first design.
+        function goalLabel(event) {
+            const key = global.WorldActivityModel.goalKey(event);
             if (key === 'urban-rule') return t('world.activity.zoningType', 'Zoning');
             const fallback = key === 'other' ? 'Other' : key.replace(/-/g, ' ');
             return t(`modal.roadWidth.proposalList.goalLabels.${key}`, fallback);
@@ -29,7 +37,7 @@
                 return t('world.activity.bet.' + event.side, event.side === 'yes' ? 'Bet {{amount}} on yes' : 'Bet {{amount}} on no', { amount });
             }
             if (event.type === 'stake') return t('panel.proposal.market.placedTitle', 'Bet placed');
-            return t('world.activity.actions.' + event.type, event.type);
+            return t('world.activity.actions.' + event.type, ACTION_FALLBACKS[event.type] || event.type);
         }
         function enableManualScroll() {
             if (userScrolling) return;
@@ -109,13 +117,13 @@
                         click.preventDefault();
                         panel.setAttribute('aria-busy', 'true');
                         try {
-                            if (event.proposalAccount) await global.WorldProposalEntry.openBet(event);
-                            else await global.WorldProposalEntry.open(event, { arrive: 'pick' });
+                            if (event.agreementAccount) await global.WorldProposalEntry.openBet(event);
+                            else await global.WorldProposalEntry.openAgreement(event);
                         }
                         catch (error) {
-                            status.textContent = t('world.activity.openError', 'Could not open this proposal. Please try again.');
+                            status.textContent = t('world.activity.openAgreementError', 'Could not open this agreement. Please try again.');
                             status.hidden = false;
-                            console.warn('[world] Proposal could not open', error);
+                            console.warn('[world] Agreement could not open', error);
                         } finally { panel.removeAttribute('aria-busy'); }
                     });
                     if (copy) link.tabIndex = -1;
@@ -142,7 +150,7 @@
                     const compactCity = document.createElement('span'); compactCity.className = 'world-activity__compact-city';
                     compactCity.textContent = ['city', 'near'].includes(place.kind) ? place.name : location.textContent;
                     const compactType = document.createElement('span'); compactType.className = 'world-activity__compact-type';
-                    compactType.textContent = event.type === 'stake' ? actionLabel(event) : proposalTypeLabel(event);
+                    compactType.textContent = event.type === 'stake' ? actionLabel(event) : goalLabel(event);
                     compact.append(compactCity, compactType);
                     link.append(compact, action, subject, meta); li.append(link); list.append(li);
                 }

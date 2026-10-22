@@ -10,12 +10,13 @@ has attested as the owner of a parcel; owners say yes by signing `accept_with_at
 themselves. Lens members never accept proposals. Design of record: `../../lens-model.md`.
 
 This directory is one lens member as a process: one key, one SAS credential, three schemas, and
-(with `--rights`) the off-chain facts behind abstract proposal approval, signed with the same key.
+the off-chain facts behind abstract agreement approval, signed with the same key and checked against
+its devnet owner registry (or a `--rights` file).
 
 | Attestation | Kind | Layout | Who can get it |
 |---|---|---|---|
 | `ParcelOwnership-v1` | `ownership` | `string parcelUid, string owner, uint8 ownerCount, string evidenceRef, int64 sourceObservedAt` | an owner wallet that passes the identity check; x402-priced |
-| `ProposalVerdict-v1` | `verdict` | `string proposalAccount, string verdict, string evidenceRef, int64 sourceObservedAt` | the member's operator only (`executed` or `expired`) |
+| `AgreementDecision-v1` | `decision` | `string agreementCid, string sponsor, string decision, string evidenceRef, int64 sourceObservedAt` | the member's operator only; always `satisfied`, issued only when the member finds the agreement's rule met from its relayed owner decisions |
 | `MarketEvidence-v1` | `evidence` | `string recipeHash, string subject, string value, int64 eventTime, int64 sourceObservedAt, string sourceRef` | the member's operator only, with a fact from a source adapter |
 
 ## Files
@@ -24,14 +25,16 @@ This directory is one lens member as a process: one key, one SAS credential, thr
   turns the identity adapter's owner set into the ownership fact, encodes the payload with
   `../oracle/lens-schemas.js`, issues through the injected issuer, re-parses the returned account
   bytes before recording anything.
+- `agreement-decision.js`: which AgreementDecision an agreement gets (pure; rules below).
 - `identity/devnet-registry.js`: devnet stand-in. The owner set is `consensus.lens_devnet_owner`
   (or an in-memory list); the wallet proves control by signing a challenge (ed25519).
 - `identity/certilia.js`: production adapter stub (Certilia eOsobna OIDC); refuses with "not configured".
 - `issuers.js`: fake issuer (builds the exact SAS account bytes in memory) and the sas-lib issuer.
 - `store.js`: issued attestations in `consensus.lens_attestation`, or in memory.
 - `pricing.js`: x402 gate for `POST /lens/ownership`, same pattern as the other paid agent routes.
-- `approval.js`: abstract proposal approval (`createApprovalAttester`): checks a proposal's pinned
-  rights snapshot against this member's own registry of abstract owners and signs the rights and
+- `approval.js`: abstract agreement approval (`createApprovalAttester`): checks an agreement's pinned
+  rights snapshot against this member's registry, read per request (`devnetOwnerRegistry`: the owner
+  table through the identity adapter; or `fileRegistry`: a `--rights` file), and signs the rights and
   authority facts below. Statement formats and verification: `../../frontend/js/proposals/approval-proof.js`.
 - `server.js`: the Express app (`createLensMemberApp`). `run.mjs`: the CLI.
 - DDL: `../routes/lens-member-ddl.sql` (applied by `deploy-backend.sh`).
@@ -64,6 +67,24 @@ curl -s -H "x-lens-operator-token: $LENS_OPERATOR_TOKEN" -H 'content-type: appli
   -d @evidence.json localhost:3095/lens/market-evidence
 ```
 
+## Agreement decision rules
+
+`AgreementDecision-v1` settles an agreement's account on chain (`../../blockchain/solana/programs/agreement/README.md`):
+the program's `attest` takes the first one the account's lens issues, before the deadline, and execution
+then needs only the escrow. So the member takes nothing from the caller but the agreement's CID:
+
+- It reads the agreement from the index and the owner decisions its relay admitted
+  (`/agreements/:cid/decisions`), folds them with every signature re-verified (`approval-relay.js`) and
+  counts them with the agreement's rule (`approval.js` `tally`), the same subject the relay admits under.
+- `satisfied` only when the tally passes and the deadline has not passed. `sourceObservedAt` is the
+  signing time of the last decision the count applied. There is no refusal: an agreement whose rule is
+  not met by its deadline expires on chain (`expire`), which says everything a refusal would.
+- `sponsor` is the agreement object's `sponsor`; the member must be in the agreement's lens, and once the
+  account is minted (`onchain`) it must be the account's lens.
+- `evidenceRef` is `sha256:` over `approval.stableStringify` of the counted receipts (each party's current
+  approval, in signing order), so anyone can recompute it from the relay.
+- One decision per agreement: asked again, the member answers the one it issued (200).
+
 ## Ownership rules
 
 - `ownerCount` is the member's recognised owner count for the parcel. Every registry row of the
@@ -83,10 +104,10 @@ curl -s -H "x-lens-operator-token: $LENS_OPERATOR_TOKEN" -H 'content-type: appli
 | `GET /lens/status` | key, kind, credential, schema PDAs, identity adapter, counts, pricing |
 | `POST /lens/challenge {parcelUid, owner}` | `{challenge, message, expiresAt}`; the wallet signs `message` (UTF-8). 404 unknown parcel, 403 wallet not recorded. Valid 5 minutes. |
 | `POST /lens/ownership {parcelUid, owner, signature, challenge}` | signature base58 or base64. Signature, registry and source-time checks run before the x402 gate, so refusals are free. 201 with `address`, `payload`, `accountHash` (sha256 over the account bytes), `issuedAt` (chain time), `payment`. |
-| `POST /lens/verdict {proposalAccount, verdict, evidenceRef, sourceObservedAt}` | header `x-lens-operator-token: $LENS_OPERATOR_TOKEN`; 503 when the token is unset. |
-| `POST /lens/market-evidence {recipeHash, subject, value, eventTime, sourceObservedAt, sourceRef}` | same operator header as verdicts. Times are Unix seconds (integers only). 201 issued, 200 already issued (`reused`), 409 same key with another subject, 422 invalid or too large. |
-| `GET /lens/attestations?parcelUid=&proposalAccount=&owner=&recipeHash=&kind=` | issued attestations from the store; `kind` is `ownership`, `verdict` or `evidence` |
-| `POST /lens/approval/rights {cadastreParcelIds, approvalConfig, lens}` | Needs `--rights`; 503 otherwise. The member recomputes the approval context hash, requires its own key in `lens`, and compares every in-scope parcel with its registry (complete owner list, exact shares, area). 201 `{rights}`: a signed `lens-rights-attestation/v1`. Free; names no wallet. 409 `rights_mismatch` / `area_mismatch` / `not_in_lens`, 404 `unknown_parcel`, 422 `rights_incomplete`. |
+| `POST /lens/agreements/:cid/decision` | header `x-lens-operator-token: $LENS_OPERATOR_TOKEN`; no body. The member decides from the indexed agreement and its relayed decisions (rules below). 201 issued, 200 already issued (`reused`): the attestation record plus `tally` (the engine's) and `counted`. Refusals carry `tally`: 409 `rule_not_met`, `deadline_passed`, `not_in_lens`, `not_agreement_lens`, `agreement_closed`, `decision_recorded`, `source_time_in_future`; 422 `no_sponsor`, `source_time_missing`; 404 `agreement_not_found`; 503 without the token or the index. |
+| `POST /lens/market-evidence {recipeHash, subject, value, eventTime, sourceObservedAt, sourceRef}` | same operator header as agreement decisions. Times are Unix seconds (integers only). 201 issued, 200 already issued (`reused`), 409 same key with another subject, 422 invalid or too large. |
+| `GET /lens/attestations?parcelUid=&agreementCid=&owner=&recipeHash=&kind=` | issued attestations from the store; `kind` is `ownership`, `decision` or `evidence` |
+| `POST /lens/approval/rights {cadastreParcelIds, approvalConfig, lens}` | 503 only for an identity adapter without an owner registry and no `--rights`. The member recomputes the approval context hash, requires its own key in `lens`, and compares every in-scope parcel with its registry (complete owner list, exact shares, area). 201 `{rights}`: a signed `lens-rights-attestation/v1`. Free; names no wallet. 409 `rights_mismatch` / `area_mismatch` / `not_in_lens`, 404 `unknown_parcel`, 422 `rights_incomplete`. |
 | `POST /lens/approval/challenge {wallet, contextHash}` | `{challenge, message, expiresAt}`; the wallet signs `message` (UTF-8). Valid 5 minutes, single use. |
 | `POST /lens/approval/authority {wallet, challenge, signature, cadastreParcelIds, approvalConfig, lens}` | After the signature verifies: 201 `{rights, authority: [...]}`, one signed `lens-authority-attestation/v1` per in-scope owner the registry lets this wallet act for. 403 `not_authorized` when there is none; the wallet learns no other owner. |
 
@@ -109,7 +130,7 @@ Without `--owners` the registry is read from `consensus.lens_devnet_owner` via `
 ## Register the schemas, then run live
 
 1. Register the credential and the schemas under the member's key (dry run first):
-   `node scripts/register-lens-schemas.mjs --keypair <member.json> --schemas ownership,verdict,evidence`,
+   `node scripts/register-lens-schemas.mjs --keypair <member.json> --schemas ownership,decision,evidence`,
    then the same with `--live`. Use the same `--credential-name` as the member (default `LensMember`).
 2. Run `npm ci` in `backend/`; `sas-lib` is a declared dependency, loaded by the live issuer.
 3. Set `X402_NETWORK`, `X402_FACILITATOR_URL`, `X402_PAY_TO` (and CDP credentials for the CDP
@@ -146,9 +167,9 @@ same key, credential and kind; then the proposal picker lists you. The public UR
 the process behind any TLS proxy). A refusal is printed with its reason and the member keeps serving,
 so proposers can still paste your key by hand. Re-announcing with new text replaces your entry.
 
-## Proposal approval facts (`--rights`)
+## Agreement approval facts
 
-A proposal with an approval setup pins a parcel-rights snapshot (abstract owner IDs with exact
+An agreement with an owners' rule pins a parcel-rights snapshot (abstract owner IDs with exact
 shares). Owners accept for themselves; a lens member only states two separate facts about them,
 each an Ed25519 signature by the member key over a canonical statement:
 
@@ -159,10 +180,18 @@ each an Ed25519 signature by the member key over a canonical statement:
 
 Both carry `issuedAt`/`expiresAt` (`--approval-validity-days`, default 7). The owner's decision is
 the wallet's own signature (`ed25519-wallet/v1`); a receipt counts only when all three signatures
-verify and both members are in the proposal's lens. Rights and authority may come from different
+verify and both members are in the agreement's lens. Rights and authority may come from different
 members. A dry run signs with an ephemeral key, which `/lens/status` reports as the member key.
 
-The registry (`lens-rights-registry/v1`) holds no names: opaque party IDs, exact fractions, areas,
+The registry the facts are checked against is read on every request. By default it is the devnet owner
+registry the identity adapter reads (`consensus.lens_devnet_owner` through the member's database pool,
+or the `--owners` rows): each parcel with recorded wallets is complete, has no area, and is owned by
+those wallets in equal shares (`1/<rows>`), and each wallet acts for itself as its own party
+(`agents/lens-owner-registry.js` seeds it). `/lens/status` reports `.approval.source: "devnet-owners"`.
+That registry names no leases, public bodies or authorities; a member that attests those runs with a
+static `--rights` file instead, described below (`.approval.source: "file"`).
+
+The file registry (`lens-rights-registry/v1`) holds no names: opaque party IDs, exact fractions, areas,
 and which wallets act for which party. One owner may hold several parcels; one wallet may act for
 several parties. A parcel may list its `leases` (holders with shares, and the leased area when it is
 not the whole parcel); `publicBodies` names the holders that "private only" tests leave out; and
@@ -198,7 +227,7 @@ then approves through the same signed-decision path.
 ```bash
 cd backend
 node lens/run.mjs --dry-run --owners /tmp/owners.json --rights /tmp/rights.json --port 3095
-curl -s localhost:3095/lens/status   # .approval: { enabled, parcels, owners, authorities, signers, validitySeconds }
+curl -s localhost:3095/lens/status   # .approval: { enabled, source: "file", parcels, owners, authorities, signers, validitySeconds }
 ```
 
 The live notary-01 persona (`agents/lens-member-run.mjs --persona notary-01 --live`) reads its registry

@@ -2,7 +2,8 @@
 // CID, the agreement/v1 shape section by section, that every linked design is indexed (a parcel
 // layout comes along in `designs` and is indexed in the same transaction), that the input parcels are
 // exactly the parcels the designs' sites take, and that the deadline lies ahead; the reads answer the
-// index with the status computed from the deadline.
+// index with the status from the chain once minted, else from the deadline (the chain account itself:
+// agreements-onchain.test.js).
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { createMockPool } from './helpers/mock-pool.js';
@@ -321,7 +322,7 @@ describe('validateAgreementContent', () => {
 });
 
 describe('GET /agreements/:cid', () => {
-    it('answers the indexed row with its status computed from the deadline in SQL', async () => {
+    it('answers the indexed row with its status from the chain account, else from the deadline, in SQL', async () => {
         const active = agreementContent([park]);
         const expired = agreementContent([park], { title: 'Lapsed deal' });
         const pool = indexPool({ agreements: [agreementRow(active), agreementRow(expired, { status: 'expired' })] });
@@ -330,7 +331,13 @@ describe('GET /agreements/:cid', () => {
         expect(one.status).toBe(200);
         expect(one.body).toMatchObject({ cid: cidOf(active), status: 'active', designCids: [cidOf(park)], createdAt: '2026-10-21T09:05:00.000Z' });
         expect((await request(app).get(`/agreements/${cidOf(expired)}`)).body.status).toBe('expired');
-        expect(pool.getCalls()[0].sql).toMatch(/CASE WHEN deadline IS NOT NULL AND deadline <= now\(\) THEN 'expired' ELSE 'active' END AS status/);
+        // A terminal status the account reached wins; only an active (or unminted) agreement expires by its deadline.
+        expect(pool.getCalls()[0].sql).toMatch(new RegExp(String.raw`CASE WHEN onchain->>'status' IN \('executed', 'cancelled', 'expired'\) THEN onchain->>'status'\s+`
+            + String.raw`WHEN deadline IS NOT NULL AND deadline <= now\(\) THEN 'expired' ELSE 'active' END AS status`));
+        const executed = agreementContent([park], { title: 'Executed deal' });
+        const minted = indexPool({ agreements: [agreementRow(executed, { status: 'executed', onchain: { account: 'acc', status: 'executed' } })] });
+        const res = await request(appFor(minted).app).get(`/agreements/${cidOf(executed)}`);
+        expect(res.body).toMatchObject({ status: 'executed', onchain: { account: 'acc', status: 'executed' } });
     });
 
     it('answers 404 and 400, and JSON-LD only under a canonical PUBLIC_API_BASE_URL', async () => {

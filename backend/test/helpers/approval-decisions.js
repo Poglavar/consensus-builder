@@ -1,11 +1,13 @@
 // Signed owner-decision fixtures for approval tests: four owners across three parcels (C co-owned,
-// with a second signer for C), a lens member attesting rights and authority, wallets that sign, and
-// the published agreement every decision is taken on: decisions sign its CID (agreement-decision/v1,
-// plan-design-agreement.md M2), so a counter-agreement over the same land has decisions of its own.
+// with a second signer for C), a lens member attesting rights and authority from a static registry
+// (lens-rights-registry/v1, the member's --rights file), wallets that sign, and the published agreement
+// every decision is taken on: decisions sign its CID (agreement-decision/v1, plan-design-agreement.md
+// M2), so a counter-agreement over the same land has decisions of its own. The attester reads its
+// registry per request (lens/approval.js), so evidence and decisions are async.
 import { createRequire } from 'node:module';
 import { generateKeyPairSync, sign } from 'node:crypto';
 import { Keypair } from '@solana/web3.js';
-import { createApprovalAttester, normalizeRegistry } from '../../lens/approval.js';
+import { createApprovalAttester, fileRegistry } from '../../lens/approval.js';
 
 const require = createRequire(import.meta.url);
 const approval = require('../../../frontend/js/proposals/approval.js');
@@ -34,11 +36,13 @@ export const parcels = [
 ];
 export const PARCEL_IDS = parcels.map(parcel => parcel.parcelId);
 // Owner C has two signers: its own wallet and a second one (e.g. a representative).
-export const registry = normalizeRegistry({
+export const registryFile = {
     schema: 'lens-rights-registry/v1', parcels,
     signers: [...['a', 'b', 'c', 'd'].map(id => ({ ownerId: `owner-${id}`, wallet: wallets[id].address })),
         { ownerId: 'owner-c', wallet: wallets.c2.address }]
-});
+};
+// The member's registry source, as lens/run.mjs builds it from --rights.
+export const registry = fileRegistry(registryFile);
 export const approvalConfig = {
     schema: 'proposal-approval/v1',
     rights: { schema: 'parcel-rights/v1', source: { provider: 'upload', reference: 'register-2026-10' }, parcels: parcels.map(p => ({ ...p, complete: true })) },
@@ -86,16 +90,16 @@ export const agreement = (overrides = {}) => JSON.parse(JSON.stringify({
 export function attesterFor(keypair = memberKeypair) {
     return createApprovalAttester({ keypair, registry, clock: { nowSeconds: () => NOW } });
 }
-export function evidenceFor(who, ownerId, item = agreement(), attester = attesterFor()) {
+export async function evidenceFor(who, ownerId, item = agreement(), attester = attesterFor()) {
     const contextHash = approval.contextHash(item);
     const challenged = attester.issueChallenge({ wallet: who.address, contextHash });
-    const facts = attester.attestAuthority({ wallet: who.address, challenge: challenged.challenge, signature: who.signText(challenged.message),
+    const facts = await attester.attestAuthority({ wallet: who.address, challenge: challenged.challenge, signature: who.signText(challenged.message),
         cadastreParcelIds: item.cadastreParcelIds, approvalConfig: item.approvalConfig, lens: item.lens });
     return { rights: facts.rights, authority: facts.authority.find(fact => fact.ownerId === ownerId) };
 }
 // One wallet-signed decision on `item`'s CID, `offset` seconds after NOW.
-export function decision(who, ownerId, { decision: kind = 'approve', offset = 0, item = agreement(), evidence } = {}) {
-    const receipt = { ownerId, actorId: who.address, evidence: evidence || evidenceFor(who, ownerId, item),
+export async function decision(who, ownerId, { decision: kind = 'approve', offset = 0, item = agreement(), evidence } = {}) {
+    const receipt = { ownerId, actorId: who.address, evidence: evidence || await evidenceFor(who, ownerId, item),
         decidedAt: at(offset), decision: kind, providerId: relay.LENS_PROVIDER };
     const statement = approval.decisionContent(item, receipt);
     return { ...receipt, decisionProof: { scheme: proof.DECISION_SCHEME, signature: who.signText(proof.decisionMessage(statement)) } };

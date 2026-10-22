@@ -1,8 +1,13 @@
 // The Bets sheet's numbers: chance from pool share, the payout multiple of a reference bet, and the
-// state word per proposal. All exact integer math on atomic USDC.
+// state word per agreement (frontend/js/bets/bets-model.js), that the sheet settles a pool as the
+// agreement-execution-v1 recipe does (oracle/market-recipe.js), that it orders a GET /markets
+// payload (markets/contests.js) exactly as the API does, and that an agreement read straight from the
+// chain takes bets by the API's rule. All exact integer math on atomic USDC.
 import { createRequire } from 'node:module';
 import { describe, expect, it } from 'vitest';
 import { buildContests } from '../markets/contests.js';
+import { SETTLEMENT as RECIPE_SETTLEMENT, marketOutcome } from '../oracle/market-recipe.js';
+import { ONCHAIN_STATUSES } from '../agreements/onchain.js';
 
 const require = createRequire(import.meta.url);
 const BetsModel = require('../../frontend/js/bets/bets-model.js');
@@ -35,46 +40,73 @@ describe('BetsModel.payoutMultiple', () => {
 });
 
 describe('BetsModel.rowState', () => {
-    const base = { proposalAccount: 'acct', lifecycleStatus: 'Active', bettable: false, canOpenMarket: false, market: null };
+    const base = { account: 'acct', chainStatus: 'active', bettable: false, canOpenMarket: false, market: null };
     it('names each situation a bettor can meet', () => {
         expect(BetsModel.rowState({ ...base, bettable: true, market: { resolved: false } })).toBe('open');
         expect(BetsModel.rowState({ ...base, canOpenMarket: true })).toBe('needs-market');
-        expect(BetsModel.rowState({ ...base, proposalAccount: null })).toBe('not-minted');
+        expect(BetsModel.rowState({ ...base, account: null })).toBe('not-minted');
         expect(BetsModel.rowState({ ...base, market: { resolved: true, outcome: 'yes' } })).toBe('resolved-yes');
         expect(BetsModel.rowState({ ...base, market: { resolved: true, outcome: 'no' } })).toBe('resolved-no');
-        expect(BetsModel.rowState({ ...base, chainStatus: 'Cancelled', market: { resolved: false } })).toBe('settling');
-        expect(BetsModel.rowState({ ...base, lifecycleStatus: 'Executed' })).toBe('closed');
-        // The chain's word wins over the database's expiry-aware one.
-        expect(BetsModel.rowState({ ...base, lifecycleStatus: 'Expired', chainStatus: 'Active', market: { resolved: false } })).toBe('closed');
-        expect(BetsModel.rowState({ ...base, lifecycleStatus: 'Active', chainStatus: 'Expired', market: { resolved: false } })).toBe('settling');
+        // The account left Active on chain: its pool only needs someone to settle it.
+        for (const chainStatus of ['executed', 'cancelled', 'expired']) {
+            expect(BetsModel.rowState({ ...base, chainStatus, market: { resolved: false } }), chainStatus).toBe('settling');
+            // Decided before anyone opened a pool: nothing to settle.
+            expect(BetsModel.rowState({ ...base, chainStatus }), chainStatus).toBe('closed');
+        }
+        expect(BetsModel.rowState(null)).toBe('not-minted');
     });
 
-    it('never offers settlement from an app deadline or unknown chain status', () => {
-        for (const lifecycleStatus of [undefined, 'Unknown', 'Active', 'Expired', 'Executed']) {
-            for (const chainStatus of [undefined, null, 'Unknown', 'unsupported']) {
-                expect(BetsModel.rowState({ ...base, lifecycleStatus, chainStatus, market: { resolved: false } })).toBe('closed');
-            }
+    it('never offers settlement from a passed deadline or an unknown chain status', () => {
+        // Active on chain with its deadline passed (the server says not bettable), or nothing observed.
+        for (const chainStatus of [undefined, null, 'active', 'Executed', 'unsupported']) {
+            expect(BetsModel.rowState({ ...base, status: 'expired', chainStatus, market: { resolved: false } }), String(chainStatus)).toBe('closed');
         }
-        expect(BetsModel.row({ proposalAccount: 'acct' }).lifecycleStatus).toBe('Unknown');
+        expect(BetsModel.settlementOf('executed')).toBe('yes');
+        expect(BetsModel.settlementOf('expired')).toBe('no');
+        expect(BetsModel.settlementOf('toString')).toBeNull();
+    });
+});
+
+describe('BetsModel.settlementOf', () => {
+    it('settles as agreement-execution-v1 does: executed yes, cancelled or expired no, nothing else', () => {
+        expect(BetsModel.SETTLEMENT).toEqual({ executed: 'yes', cancelled: 'no', expired: 'no' });
+        expect(BetsModel.SETTLEMENT).toEqual(RECIPE_SETTLEMENT);
+        expect(Object.isFrozen(BetsModel.SETTLEMENT)).toBe(true);
+        for (const status of [...ONCHAIN_STATUSES, undefined, null, '', 'Executed', 'constructor']) {
+            expect(BetsModel.settlementOf(status), String(status)).toBe(marketOutcome(status));
+        }
+        expect(BetsModel.settlementOf('cancelled')).toBe('no');
+        expect(BetsModel.settlementOf('active')).toBeNull();
+        expect(BetsModel.settlementOf('constructor')).toBeNull();
+    });
+});
+
+describe('BetsModel.labelOf', () => {
+    it('is the agreement\'s title, else its design titles in authored order, else empty', () => {
+        expect(BetsModel.labelOf({ title: ' Riverside deal ', designTitles: ['A'] })).toBe('Riverside deal');
+        expect(BetsModel.labelOf({ title: '', designTitles: ['Six storeys', ' ', 'A park'] })).toBe('Six storeys + A park');
+        expect(BetsModel.labelOf({ designTitles: ['A', 'B', 'C', 'D'] })).toBe('A + B + C + …');
+        expect(BetsModel.labelOf({})).toBe('');
+        expect(BetsModel.labelOf(null)).toBe('');
     });
 });
 
 describe('BetsModel.contest', () => {
     it('shapes a GET /markets contest into sheet rows with text amounts', () => {
         const out = BetsModel.contest({
-            id: 'c-1', parcelIds: ['L1', 'L2', 'L3'], poolAtomic: '300000', siteName: 'Candlestick Point',
-            proposals: [
-                { id: 1, proposalId: 'a', title: 'A', proposalAccount: 'acct', lifecycleStatus: 'Active', bettable: true, canOpenMarket: false, expiresAt: '2026-12-31T00:00:00Z',
+            id: 'c-1', parcelIds: ['L1', 'L2', 'L3'], poolAtomic: '300000', latestCreatedAt: '2026-10-02T00:00:00Z',
+            agreements: [
+                { cid: 'a', title: 'A', account: 'acct', chainStatus: 'active', status: 'active', bettable: true, canOpenMarket: false, deadline: '2026-12-31T00:00:00Z',
                     market: { address: 'MKT', yesPool: '250000', noPool: '50000', poolAtomic: '300000', resolved: false, outcome: null } },
-                { id: 2, proposalId: 'b', title: 'B', proposalAccount: null, lifecycleStatus: 'Active', bettable: false, canOpenMarket: false, market: null }
+                { cid: 'b', title: '', designTitles: ['A park'], account: null, chainStatus: null, bettable: false, canOpenMarket: false, market: null }
             ]
         });
-        expect(out).toMatchObject({ id: 'c-1', siteName: 'Candlestick Point', land: { first: 'L1', more: 2 }, proposalCount: 2, openCount: 1, pool: '0.3' });
-        // closesAt is the market's own deadline (none on a legacy pool); the proposal's expiry stays beside it.
-        expect(out.rows[0]).toMatchObject({ state: 'open', chanceYes: 83.3, chanceNo: 16.7, pool: '0.3', paysYes: 1.04, paysNo: 1.23, closesAt: null, expiresAt: '2026-12-31T00:00:00Z', marketAddress: 'MKT' });
-        expect(out.rows[1]).toMatchObject({ state: 'not-minted', chanceYes: null, pool: null, paysYes: null });
-        expect(BetsModel.row({ proposalAccount: 'A', bettable: true, closesAt: '2026-11-18T00:00:00.000Z', market: { yesPool: '1', noPool: '0', poolAtomic: '1' } }).closesAt)
-            .toBe('2026-11-18T00:00:00.000Z');
+        expect(out).toMatchObject({ id: 'c-1', land: { first: 'L1', more: 2 }, agreementCount: 2, openCount: 1, pool: '0.3', poolAtomic: 300000n, latestCreatedAt: '2026-10-02T00:00:00Z' });
+        expect(out.rows[0]).toMatchObject({
+            kind: 'agreement', cid: 'a', account: 'acct', contest: 'c-1', label: 'A', state: 'open', chanceYes: 83.3, chanceNo: 16.7, pool: '0.3',
+            paysYes: 1.04, paysNo: 1.23, deadline: '2026-12-31T00:00:00Z', marketAddress: 'MKT', outcome: null
+        });
+        expect(out.rows[1]).toMatchObject({ cid: 'b', label: 'A park', state: 'not-minted', chanceYes: null, pool: null, paysYes: null, marketAddress: null });
         expect(BetsModel.landLabel([])).toEqual({ first: null, more: 0 });
     });
 
@@ -105,12 +137,12 @@ describe('BetsModel.oneSided', () => {
         expect(BetsModel.oneSided('0', '50000')).toBe('no');
         expect(BetsModel.oneSided('0', '0')).toBeNull();
         expect(BetsModel.oneSided('1', '1')).toBeNull();
-        expect(BetsModel.row({ proposalAccount: 'A', bettable: true, market: { yesPool: '250000', noPool: '0', poolAtomic: '250000' } }).oneSided).toBe('yes');
+        expect(BetsModel.row({ account: 'A', bettable: true, market: { yesPool: '250000', noPool: '0', poolAtomic: '250000' } }).oneSided).toBe('yes');
     });
 });
 
 describe('BetsModel.claimSides', () => {
-    const settled = outcome => BetsModel.row({ proposalAccount: 'A', market: { yesPool: '250000', noPool: '50000', poolAtomic: '300000', resolved: true, outcome } });
+    const settled = outcome => BetsModel.row({ account: 'A', market: { yesPool: '250000', noPool: '50000', poolAtomic: '300000', resolved: true, outcome } });
     it('is the unclaimed winning side only', () => {
         const positions = { yes: { amount: 100000n, claimed: false }, no: { amount: 20000n, claimed: false } };
         expect(BetsModel.claimSides(settled('yes'), positions)).toEqual(['yes']);
@@ -118,19 +150,19 @@ describe('BetsModel.claimSides', () => {
         expect(BetsModel.claimSides(settled('no'), { no: { amount: 20000n, claimed: true } })).toEqual([]);
     });
     it('is every unclaimed bet when nobody backed the winner (the program refunds)', () => {
-        const row = BetsModel.row({ proposalAccount: 'A', market: { yesPool: '250000', noPool: '0', poolAtomic: '250000', resolved: true, outcome: 'no' } });
+        const row = BetsModel.row({ account: 'A', market: { yesPool: '250000', noPool: '0', poolAtomic: '250000', resolved: true, outcome: 'no' } });
         expect(BetsModel.claimSides(row, { yes: { amount: 250000n, claimed: false } })).toEqual(['yes']);
     });
     it('is nothing while the pool is open', () => {
-        const open = BetsModel.row({ proposalAccount: 'A', bettable: true, market: { yesPool: '250000', noPool: '0', poolAtomic: '250000' } });
+        const open = BetsModel.row({ account: 'A', bettable: true, market: { yesPool: '250000', noPool: '0', poolAtomic: '250000' } });
         expect(BetsModel.claimSides(open, { yes: { amount: 250000n, claimed: false } })).toEqual([]);
     });
 });
 
 describe('BetsModel.splitRows and filterRows', () => {
     const rows = [
-        { proposalAccount: 'A', state: 'open' }, { proposalAccount: null, state: 'not-minted' }, { proposalAccount: 'B', state: 'resolved-no' },
-        { proposalAccount: 'C', state: 'closed' }, { proposalAccount: 'D', state: 'needs-market' }, { proposalAccount: 'E', state: 'settling' }
+        { account: 'A', state: 'open' }, { account: null, state: 'not-minted' }, { account: 'B', state: 'resolved-no' },
+        { account: 'C', state: 'closed' }, { account: 'D', state: 'needs-market' }, { account: 'E', state: 'settling' }
     ];
     it('folds unminted and never-pooled rows away', () => {
         const { shown, hidden } = BetsModel.splitRows(rows);
@@ -138,22 +170,22 @@ describe('BetsModel.splitRows and filterRows', () => {
         expect(hidden.map(r => r.state)).toEqual(['not-minted', 'closed']);
     });
     it('keeps an existing pool visible when its current chain status is unavailable', () => {
-        const closed = { proposalAccount: 'A', state: 'closed', pool: '0' };
+        const closed = { account: 'A', state: 'closed', pool: '0' };
         expect(BetsModel.splitRows([closed])).toEqual({ shown: [closed], hidden: [] });
     });
-    it('filters by open, settled and the wallet\'s own bets', () => {
-        expect(BetsModel.filterRows(rows, 'open').map(r => r.proposalAccount)).toEqual(['A', 'D', 'E']);
-        expect(BetsModel.filterRows(rows, 'settled').map(r => r.proposalAccount)).toEqual(['B']);
+    it('filters by open, settled and the wallet\'s own bets, keyed by the agreement account', () => {
+        expect(BetsModel.filterRows(rows, 'open').map(r => r.account)).toEqual(['A', 'D', 'E']);
+        expect(BetsModel.filterRows(rows, 'settled').map(r => r.account)).toEqual(['B']);
         const positions = { B: { yes: null, no: { amount: 50000n, claimed: false } }, A: { yes: { amount: 0n }, no: null } };
-        expect(BetsModel.filterRows(rows, 'mine', positions).map(r => r.proposalAccount)).toEqual(['B']);
+        expect(BetsModel.filterRows(rows, 'mine', positions).map(r => r.account)).toEqual(['B']);
         expect(BetsModel.filterRows(rows, 'all')).toHaveLength(6);
     });
 });
 
 describe('BetsModel.orderContests', () => {
     // A sheet contest as BetsModel.contest shapes it, from GET /markets entries.
-    const shaped = (id, proposals, poolAtomic = '0') => BetsModel.contest({ id, parcelIds: [], poolAtomic, proposals });
-    const entry = (proposalId, overrides) => ({ id: proposalId, proposalId, proposalAccount: `acct-${proposalId}`, lifecycleStatus: 'Active', ...overrides });
+    const shaped = (id, agreements, poolAtomic = '0') => BetsModel.contest({ id, parcelIds: [], poolAtomic, agreements });
+    const entry = (cid, overrides) => ({ cid, account: `acct-${cid}`, chainStatus: 'active', ...overrides });
     const open = (yes, no = '0') => ({ bettable: true, market: { yesPool: yes, noPool: no, poolAtomic: (BigInt(yes) + BigInt(no)).toString(), resolved: false } });
     const settled = (pool, outcome) => ({ market: { yesPool: pool, noPool: '0', poolAtomic: pool, resolved: true, outcome } });
 
@@ -162,7 +194,7 @@ describe('BetsModel.orderContests', () => {
             shaped('settled-bots', [entry('s1', settled('5000000', 'no')), entry('s2', settled('3000000', 'no'))], '8000000'),
             shaped('open-small', [entry('o1', open('1000'))], '1000'),
             shaped('needs-pool', [entry('n1', { canOpenMarket: true })]),
-            shaped('open-dated', [entry('d1', { ...open('1'), closesAt: '2026-11-18T00:00:00.000Z' })], '1')
+            shaped('open-dated', [entry('d1', { ...open('1'), deadline: '2026-11-18T00:00:00.000Z' })], '1')
         ];
         expect(BetsModel.orderContests(contests).map(c => c.id)).toEqual(['open-dated', 'open-small', 'needs-pool', 'settled-bots']);
         expect(contests.map(c => c.id)).toEqual(['settled-bots', 'open-small', 'needs-pool', 'open-dated']);
@@ -172,46 +204,119 @@ describe('BetsModel.orderContests', () => {
         const contests = ['a', 'b', 'c'].map(id => shaped(id, [entry(`${id}1`, { ...open('0'), createdAt: '2026-10-01T00:00:00Z' })]));
         expect(BetsModel.orderContests(contests).map(c => c.id)).toEqual(['a', 'b', 'c']);
     });
+
+    it('breaks a tie by the number of agreements', () => {
+        const same = { ...open('0'), createdAt: '2026-10-01T00:00:00Z' };
+        const one = shaped('one', [entry('a1', same)]);
+        const two = shaped('two', [entry('b1', same), entry('b2', same)]);
+        expect(BetsModel.orderContests([one, two]).map(c => c.id)).toEqual(['two', 'one']);
+    });
 });
 
-describe('BetsModel.contest row order (D6)', () => {
+describe('BetsModel.contest row order', () => {
     it('puts rows in play first by deadline then pool, settled rows after by pool, whatever order they arrive in', () => {
-        const out = BetsModel.contest({ id: 'c', parcelIds: [], proposals: [
-            { id: 1, proposalId: 'settled-big', proposalAccount: 'A1', market: { yesPool: '0', noPool: '5000000', poolAtomic: '5000000', resolved: true, outcome: 'no' } },
-            { id: 2, proposalId: 'not-minted', proposalAccount: null },
-            { id: 3, proposalId: 'open-small', proposalAccount: 'A3', bettable: true, market: { yesPool: '1000', noPool: '0', poolAtomic: '1000', resolved: false } },
-            { id: 4, proposalId: 'settled-small', proposalAccount: 'A4', market: { yesPool: '100', noPool: '0', poolAtomic: '100', resolved: true, outcome: 'yes' } },
-            { id: 5, proposalId: 'open-dated', proposalAccount: 'A5', bettable: true, closesAt: '2026-11-18T00:00:00.000Z', market: { yesPool: '0', noPool: '0', poolAtomic: '0', resolved: false } },
-            { id: 6, proposalId: 'needs-market', proposalAccount: 'A6', canOpenMarket: true }
+        const out = BetsModel.contest({ id: 'c', parcelIds: [], agreements: [
+            { cid: 'settled-big', account: 'A1', market: { yesPool: '0', noPool: '5000000', poolAtomic: '5000000', resolved: true, outcome: 'no' } },
+            { cid: 'not-minted', account: null },
+            { cid: 'open-small', account: 'A3', bettable: true, market: { yesPool: '1000', noPool: '0', poolAtomic: '1000', resolved: false } },
+            { cid: 'settled-small', account: 'A4', market: { yesPool: '100', noPool: '0', poolAtomic: '100', resolved: true, outcome: 'yes' } },
+            { cid: 'open-dated', account: 'A5', bettable: true, deadline: '2026-11-18T00:00:00.000Z', market: { yesPool: '0', noPool: '0', poolAtomic: '0', resolved: false } },
+            { cid: 'needs-market', account: 'A6', canOpenMarket: true }
         ] });
-        expect(out.rows.map(item => item.proposalId)).toEqual(['open-dated', 'open-small', 'needs-market', 'settled-big', 'settled-small', 'not-minted']);
+        expect(out.rows.map(item => item.cid)).toEqual(['open-dated', 'open-small', 'needs-market', 'settled-big', 'settled-small', 'not-minted']);
+    });
+
+    it('leads with the soonest agreement deadline, even over a bigger pool', () => {
+        const out = BetsModel.contest({ id: 'c', parcelIds: [], agreements: [
+            { cid: 'later-big', account: 'A1', bettable: true, deadline: '2026-12-31T00:00:00.000Z', market: { yesPool: '5000000', noPool: '0', poolAtomic: '5000000', resolved: false } },
+            { cid: 'sooner-small', account: 'A2', bettable: true, deadline: '2026-11-18T00:00:00.000Z', market: { yesPool: '1', noPool: '0', poolAtomic: '1', resolved: false } }
+        ] });
+        expect(out.rows.map(item => item.cid)).toEqual(['sooner-small', 'later-big']);
+    });
+});
+
+describe('BetsModel.chainEntry', () => {
+    const NOW = Date.parse('2026-10-22T12:00:00Z');
+    const pool = { yesPool: 300000n, noPool: 100000n, resolved: false, outcome: 0 };
+    // A market-bridge.js readSummary: the agreement account's status and deadline, and its pool.
+    const summary = (overrides = {}) => ({ chainStatus: 'Active', deadline: '2026-10-25T00:00:00.000Z', market: pool, marketAddress: 'market-1', ...overrides });
+
+    it('takes bets while the account is Active and its deadline is ahead or unset', () => {
+        const entry = BetsModel.chainEntry('acct', summary(), NOW);
+        expect(entry).toMatchObject({ account: 'acct', chainStatus: 'active', deadline: '2026-10-25T00:00:00.000Z', bettable: true, canOpenMarket: false });
+        expect(entry.market).toEqual({ address: 'market-1', yesPool: 300000n, noPool: 100000n, poolAtomic: 400000n, resolved: false, outcome: null });
+        expect(BetsModel.row(entry)).toMatchObject({ state: 'open', deadline: '2026-10-25T00:00:00.000Z', pool: '0.4' });
+        expect(BetsModel.chainEntry('acct', summary({ deadline: null }), NOW).bettable).toBe(true);
+        // No pool yet: one can be opened on the same terms.
+        expect(BetsModel.chainEntry('acct', summary({ market: null }), NOW)).toMatchObject({ bettable: false, canOpenMarket: true, market: null });
+    });
+
+    it('takes no bet once the deadline is reached, though the account is still Active', () => {
+        for (const deadline of ['2026-10-22T12:00:00.000Z', '2026-10-01T00:00:00.000Z']) {
+            const lapsed = BetsModel.chainEntry('acct', summary({ deadline }), NOW);
+            expect(lapsed, deadline).toMatchObject({ chainStatus: 'active', bettable: false, canOpenMarket: false });
+            expect(BetsModel.row(lapsed).state, deadline).toBe('closed');
+            expect(BetsModel.chainEntry('acct', summary({ deadline, market: null }), NOW).canOpenMarket, deadline).toBe(false);
+        }
+    });
+
+    it('takes no bet on a terminal account or a resolved pool', () => {
+        const executed = BetsModel.chainEntry('acct', summary({ chainStatus: 'Executed' }), NOW);
+        expect(executed).toMatchObject({ chainStatus: 'executed', bettable: false, canOpenMarket: false });
+        expect(BetsModel.row(executed).state).toBe('settling');
+        const resolved = BetsModel.chainEntry('acct', summary({ market: { ...pool, resolved: true, outcome: 1 } }), NOW);
+        expect(resolved).toMatchObject({ bettable: false, market: { resolved: true, outcome: 'yes' } });
+        expect(BetsModel.row(resolved).state).toBe('resolved-yes');
+    });
+
+    it('decides as GET /markets does for the same account status, deadline and pool', () => {
+        const cases = [
+            ['active', null, true], ['active', '2026-10-25T00:00:00.000Z', true], ['active', '2026-10-22T12:00:00.000Z', true],
+            ['active', '2026-10-01T00:00:00.000Z', false], ['active', '2026-10-25T00:00:00.000Z', false], ['executed', null, true]
+        ];
+        cases.forEach(([chainStatus, deadline, pooled], index) => {
+            const account = `acct-${index}`;
+            const decoded = pooled ? { ...pool } : null;
+            const [api] = buildContests({
+                city: 'zagreb', now: new Date(NOW),
+                agreements: [{ cid: `cid-${index}`, city: 'zagreb', inputParcelIds: [`P${index}`], parcelSourceId: null, deadline, createdAt: '2026-10-01T00:00:00Z', account, chainStatus }],
+                markets: new Map([[account, { address: 'market-1', market: decoded }]])
+            }).contests[0].agreements;
+            // The chain spells the status as the account decoder names it ('Active'); the index lower-cases it.
+            const onChain = BetsModel.chainEntry(account, summary({ chainStatus: chainStatus[0].toUpperCase() + chainStatus.slice(1), deadline, market: decoded }), NOW);
+            expect({ bettable: onChain.bettable, canOpenMarket: onChain.canOpenMarket }, `${chainStatus} ${deadline} ${pooled}`)
+                .toEqual({ bettable: api.bettable, canOpenMarket: api.canOpenMarket });
+        });
     });
 });
 
 describe('the sheet and GET /markets agree on the order', () => {
     it('re-sorting the API\'s contests and rows in the sheet changes nothing, from any arrival order', () => {
-        const proposal = (id, parcel, account, createdAt) => ({ id, proposalId: `p-${id}`, title: `P${id}`, goal: 'single', lifecycleStatus: 'Active',
-            createdAt, expiresAt: null, author: 'a', agent: false, proposalRole: null, screenshotUrl: null,
-            parcelIds: [parcel], parcelSource: { sourceId: 'hr-cadastre', snapshotId: null }, proposalAccount: account });
-        const market = (yesPool, noPool, resolved = false, outcome = 0, closesAt) => ({ address: 'M', market: { yesPool, noPool, resolved, outcome, closesAt } });
+        const agreement = (n, parcel, account, createdAt, overrides = {}) => ({
+            cid: `cid-${n}`, city: 'zagreb', title: `A${n}`, author: 'a', designTitles: [], inputParcelIds: [parcel], parcelSourceId: null,
+            deadline: null, createdAt, screenshotUrl: null, account, chainStatus: account ? 'active' : null, ...overrides
+        });
+        const market = (yesPool, noPool, resolved = false, outcome = 0) => ({ address: 'M', market: { yesPool, noPool, resolved, outcome } });
         const payload = buildContests({
             city: 'zagreb',
-            proposals: [
-                proposal(1, 'A', 'acct-1', '2026-10-01T00:00:00Z'), proposal(2, 'A', 'acct-2', '2026-10-02T00:00:00Z'),
-                proposal(3, 'A', 'acct-3', '2026-10-03T00:00:00Z'), proposal(4, 'B', 'acct-4', '2026-10-04T00:00:00Z'),
-                proposal(5, 'B', null, '2026-10-05T00:00:00Z'), proposal(6, 'C', 'acct-6', '2026-10-06T00:00:00Z'),
-                proposal(7, 'D', 'acct-7', '2026-10-07T00:00:00Z')
+            now: new Date('2026-10-09T00:00:00Z'),
+            agreements: [
+                agreement(1, 'A', 'acct-1', '2026-10-01T00:00:00Z', { chainStatus: 'executed' }), agreement(2, 'A', 'acct-2', '2026-10-02T00:00:00Z'),
+                agreement(3, 'A', 'acct-3', '2026-10-03T00:00:00Z', { deadline: '2026-11-18T00:00:00.000Z' }), agreement(4, 'B', 'acct-4', '2026-10-04T00:00:00Z', { chainStatus: 'cancelled' }),
+                agreement(5, 'B', null, '2026-10-05T00:00:00Z'), agreement(6, 'C', 'acct-6', '2026-10-06T00:00:00Z'),
+                agreement(7, 'D', 'acct-7', '2026-10-07T00:00:00Z')
             ],
             markets: new Map([
-                ['acct-1', market(9_000_000n, 0n, true, 1)], ['acct-2', market(1n, 0n)], ['acct-3', market(0n, 0n, false, 0, 1795000000n)],
+                ['acct-1', market(9_000_000n, 0n, true, 1)], ['acct-2', market(1n, 0n)], ['acct-3', market(0n, 0n)],
                 ['acct-4', market(0n, 7_000_000n, true, 0)], ['acct-6', { address: 'M', market: null }], ['acct-7', market(40n, 2n)]
-            ]),
-            statuses: new Map(['acct-1', 'acct-2', 'acct-3', 'acct-4', 'acct-6', 'acct-7'].map(item => [item, 'Active']))
+            ])
         });
-        const apiOrder = payload.contests.map(contest => contest.proposals.map(item => item.proposalId));
-        expect(apiOrder).toEqual([['p-3', 'p-2', 'p-1'], ['p-7'], ['p-6'], ['p-4', 'p-5']]);
-        const reversed = payload.contests.slice().reverse().map(contest => BetsModel.contest({ ...contest, proposals: contest.proposals.slice().reverse() }));
-        expect(BetsModel.orderContests(reversed).map(contest => contest.rows.map(item => item.proposalId))).toEqual(apiOrder);
+        const apiOrder = payload.contests.map(contest => contest.agreements.map(item => item.cid));
+        expect(apiOrder).toEqual([['cid-3', 'cid-2', 'cid-1'], ['cid-7'], ['cid-6'], ['cid-4', 'cid-5']]);
+        const reversed = payload.contests.slice().reverse().map(contest => BetsModel.contest({ ...contest, agreements: contest.agreements.slice().reverse() }));
+        expect(BetsModel.orderContests(reversed).map(contest => contest.rows.map(item => item.cid))).toEqual(apiOrder);
+        // The row states the sheet derives are the ones the API's flags say.
+        expect(BetsModel.contest(payload.contests[0]).rows.map(item => item.state)).toEqual(['open', 'open', 'resolved-yes']);
     });
 });
 

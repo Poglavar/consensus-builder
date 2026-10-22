@@ -1,6 +1,7 @@
-// Pure lens-model logic shared by the Solana lens picker, proposal Details, the chain parser and the
-// member console: base58 keys, directory normalisation, per-parcel coverage, the lens vector codec
-// and challenge/response handling. No DOM, no network; exposed as window.LensCore and via CommonJS.
+// Pure lens-model logic shared by the Solana lens picker, proposal Details, the agreement panel and the
+// member console: base58 keys, directory normalisation, per-parcel coverage, challenge/response
+// handling and the member's answer to an agreement decision. No DOM, no network; exposed as
+// window.LensCore and via CommonJS.
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -9,10 +10,6 @@
     const ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
     const ALPHABET_INDEX = new Map([...ALPHABET].map((char, index) => [char, index]));
     const COVERAGE_KEYS = ['ownership', 'parcels', 'executed'];
-    const VERDICTS = ['executed', 'expired'];
-    // A lens is bounded by the 4096-byte proposal account; this only stops a corrupt count from
-    // allocating an absurd array before the bounds check catches it.
-    const MAX_LENS_KEYS = 120;
 
     function base58Encode(bytes) {
         const input = bytes instanceof Uint8Array ? bytes : Uint8Array.from(bytes || []);
@@ -223,36 +220,6 @@
         return { ok: true, error: null, keys, invalid };
     }
 
-    function readU32(bytes, offset) {
-        if (offset + 4 > bytes.length) throw new RangeError(`lens vector truncated at byte ${offset}`);
-        return (bytes[offset] | (bytes[offset + 1] << 8) | (bytes[offset + 2] << 16)) + bytes[offset + 3] * 0x1000000;
-    }
-
-    // Borsh Vec<Pubkey>: u32 LE count, then count x 32 bytes. Throws on a truncated or absurd vector.
-    function readPubkeyVec(bytes, offset) {
-        const body = bytes instanceof Uint8Array ? bytes : Uint8Array.from(bytes || []);
-        const length = readU32(body, offset);
-        let cursor = offset + 4;
-        if (length > MAX_LENS_KEYS || cursor + length * 32 > body.length) {
-            throw new RangeError(`lens vector of ${length} keys does not fit in ${body.length - cursor} bytes`);
-        }
-        const keys = [];
-        for (let i = 0; i < length; i++) {
-            keys.push(base58Encode(body.subarray(cursor, cursor + 32)));
-            cursor += 32;
-        }
-        return { keys, offset: cursor };
-    }
-
-    // The proposal account tail after accepted_parcels: `lens: Vec<Pubkey>`, then `bump: u8`.
-    // Anything after the bump (newer fields, zero padding of the fixed-size account) is ignored.
-    function decodeProposalLensTail(bytes, offset) {
-        const body = bytes instanceof Uint8Array ? bytes : Uint8Array.from(bytes || []);
-        const { keys, offset: next } = readPubkeyVec(body, offset);
-        const bump = next < body.length ? body[next] : null;
-        return { lens: keys, bump, offset: bump === null ? next : next + 1 };
-    }
-
     // Before a wallet signs anything, the service's message must be the challenge it claims to be:
     // naming this wallet, this parcel, the returned nonce, the member key when known, and unexpired.
     function checkChallenge(response, { parcelUid, owner, memberKey = null, nowMs = Date.now() } = {}) {
@@ -321,7 +288,6 @@
             kind: cleanText(att.kind),
             authority: cleanText(att.authority),
             parcelUid: cleanText(att.parcelUid),
-            proposalAccount: cleanText(att.proposalAccount),
             owner: cleanText(att.owner),
             accountHash: cleanText(att.accountHash),
             expiry: Number.isFinite(Number(att.expiry)) ? Number(att.expiry) : null,
@@ -331,24 +297,43 @@
         }));
     }
 
-    // Operator verdict form -> request body for POST /lens/verdict, or the first problem.
-    function buildVerdictRequest(form) {
-        const proposalAccount = cleanText(form && form.proposalAccount);
-        if (!proposalAccount || !isBase58Pubkey(proposalAccount)) return { ok: false, error: 'proposal' };
-        const verdict = cleanText(form.verdict);
-        if (!VERDICTS.includes(verdict)) return { ok: false, error: 'verdict' };
-        const observed = cleanText(form.sourceObservedAt);
-        const ms = observed ? Date.parse(observed) : NaN;
-        if (!Number.isFinite(ms)) return { ok: false, error: 'time' };
-        const body = { proposalAccount, verdict, sourceObservedAt: Math.floor(ms / 1000) };
-        const evidenceRef = cleanText(form.evidenceRef);
-        if (evidenceRef) body.evidenceRef = evidenceRef;
-        return { ok: true, error: null, body };
+    // The approval engine's tally a member returns with an agreement decision, issued or refused
+    // (backend/lens/agreement-decision.js) -> what the console shows, or null without one. A count the
+    // answer does not carry stays null, never 0.
+    function describeDecisionTally(tally) {
+        if (!tally || typeof tally !== 'object') return null;
+        const whole = value => (Number.isSafeInteger(value) && value >= 0 ? value : null);
+        const amount = value => (typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : null);
+        return {
+            passed: tally.passed === true,
+            ready: tally.ready === true,
+            reason: cleanText(tally.reason),
+            acceptedOwners: whole(tally.acceptedOwners),
+            totalOwners: whole(tally.totalOwners),
+            acceptedAreaM2: amount(tally.acceptedAreaM2),
+            totalAreaM2: amount(tally.totalAreaM2)
+        };
+    }
+
+    // A 200/201 answer of POST /lens/agreements/:cid/decision -> the AgreementDecision it reports, or
+    // why it is not the decision of the agreement that was asked about.
+    function readDecisionAnswer(body, agreementCid) {
+        if (!body || typeof body !== 'object' || !cleanText(body.address)) return { ok: false, reason: 'malformed' };
+        const payload = body.payload && typeof body.payload === 'object' ? body.payload : {};
+        if (body.kind !== 'decision' || payload.agreementCid !== agreementCid) return { ok: false, reason: 'wrong_agreement' };
+        return {
+            ok: true,
+            reason: null,
+            address: cleanText(body.address),
+            reused: body.reused === true,
+            decision: cleanText(payload.decision),
+            counted: Number.isSafeInteger(body.counted) && body.counted >= 0 ? body.counted : null,
+            tally: describeDecisionTally(body.tally)
+        };
     }
 
     return {
         COVERAGE_KEYS,
-        VERDICTS,
         base58Encode,
         base58Decode,
         isBase58Pubkey,
@@ -363,14 +348,13 @@
         sortMembersByCoverage,
         parsePastedKeys,
         validateSolanaLens,
-        readPubkeyVec,
-        decodeProposalLensTail,
         checkChallenge,
         encodeMessage,
         signatureToBase58,
         classifyServiceResponse,
         describeOwnershipPrice,
         normalizeAttestations,
-        buildVerdictRequest
+        describeDecisionTally,
+        readDecisionAnswer
     };
 });

@@ -1,7 +1,6 @@
 #!/usr/bin/env node
-// Runs a lens-member persona from personas.json (role "lens-member", e.g. notary-01 or the
-// lifecycle-01 expiry-verdict member) as the reference
-// lens member process (backend/lens/run.mjs). Dry run unless --live: fake SAS issuer, in-memory store,
+// Runs a lens-member persona from personas.json (role "lens-member", e.g. notary-01 or lifecycle-01)
+// as the reference lens member process (backend/lens/run.mjs). Dry run unless --live: fake SAS issuer, in-memory store,
 // ephemeral key, no x402. It registers nothing on chain; the credential and schemas are registered
 // separately with scripts/register-lens-schemas.mjs before a live run makes sense.
 
@@ -25,8 +24,9 @@ function usage(code) {
         '  --live             sign real SAS attestations with the persona keypair (schemas must be registered',
         '                     first: scripts/register-lens-schemas.mjs; needs sas-lib and X402_* env)',
         '  --owners FILE      dry run only: devnet-registry rows in memory instead of consensus.lens_devnet_owner',
-        '  --rights FILE      lens-rights-registry/v1 for proposal approval; live runs default to the persona',
-        '                     service "rights" path. A named file must exist; with none, approval answers 503',
+        '  --rights FILE      lens-rights-registry/v1 for agreement approval; live runs default to the persona',
+        '                     service "rights" path. A named file must exist; with none, approval checks the',
+        '                     devnet owner registry (consensus.lens_devnet_owner, or the --owners rows)',
         '  --port N           override the persona service port',
         '  --print            print the lens/run.mjs command and exit',
         '  --help             this text'
@@ -75,13 +75,12 @@ export function lensMemberCommand(persona, { live = false, owners = null, rights
     if (rightsPath) args.push('--rights', rightsPath);
     const env = service.priceUsdc ? { LENS_OWNERSHIP_PRICE_USDC: String(service.priceUsdc) } : {};
     if (live && service.publicUrl) env.LENS_PUBLIC_BASE_URL = service.publicUrl;
-    // A member that issues verdicts (kind "lifecycle") reads its operator token from the variable the
-    // service block names, e.g. AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN, the same one the proposer's retire
-    // phase sends, so the two cannot drift apart.
+    // A member whose operator routes are on (agreement decisions, market evidence) reads its operator
+    // token from the variable the service block names, e.g. AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN.
     if (service.operatorTokenEnv) {
         const token = String(sourceEnv[service.operatorTokenEnv] || '').trim();
         if (token) env.LENS_OPERATOR_TOKEN = token;
-        else if (live) throw new Error(`${persona.name} (kind ${service.kind}) issues verdicts; set ${service.operatorTokenEnv} before a live run`);
+        else if (live) throw new Error(`${persona.name} (kind ${service.kind}) attests agreement decisions; set ${service.operatorTokenEnv} before a live run`);
     }
     return { args, env, keypairPath, rightsPath };
 }
@@ -107,7 +106,7 @@ function parseArgs(argv) {
 
 function main() {
     const args = parseArgs(process.argv.slice(2));
-    // PM2 starts this without backend/.env loaded; a lifecycle member's operator token lives there.
+    // PM2 starts this without backend/.env loaded; a member's operator token lives there.
     dotenv.config({ path: path.join(__dirname, '..', '.env'), quiet: true });
     const persona = loadLensMemberPersona(args.persona);
     const port = args.port === undefined ? null : Number(args.port);

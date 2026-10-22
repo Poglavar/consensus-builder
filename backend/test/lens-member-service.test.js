@@ -8,19 +8,23 @@ import request from 'supertest';
 import { PublicKey } from '@solana/web3.js';
 import { getBase58Decoder } from '@solana/kit';
 import { decodeLensAttestation, sha256Hex } from '../oracle/lens-schemas.js';
+import { cidOfObject } from '../cid.js';
 import { createLensMember } from '../lens/member.js';
 import { createDevnetRegistryIdentity } from '../lens/identity/devnet-registry.js';
 import { createCertiliaIdentity } from '../lens/identity/certilia.js';
 import { createFakeIssuer } from '../lens/issuers.js';
 import { createMemoryStore, createPgStore } from '../lens/store.js';
 import { createLensPricing } from '../lens/pricing.js';
-import { createLensMemberApp, OPERATOR_TOKEN_HEADER } from '../lens/server.js';
+import { createLensMemberApp } from '../lens/server.js';
 
 const NOW = 1790000000; // 2026-09-21
 const clock = { nowSeconds: () => NOW };
 const AUTHORITY = 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ';
-const PROPOSAL = 'Gsvt6nMhsvfrEDgvcqZDzPKZhhqACFEi3mueMxQNQ6UT';
+const SPONSOR = 'Gsvt6nMhsvfrEDgvcqZDzPKZhhqACFEi3mueMxQNQ6UT';
+const AGREEMENT_CID = cidOfObject({ schema: 'agreement/v1', title: 'lens member service' });
 const TOKEN = 'operator-secret';
+// An AgreementDecision-v1 as the member issues it once the agreement's rule is met (lens-agreement-decision.test.js).
+const DECISION = { agreementCid: AGREEMENT_CID, sponsor: SPONSOR, decision: 'satisfied', evidenceRef: `sha256:${'cd'.repeat(32)}`, sourceObservedAt: NOW - 60 };
 
 function wallet() {
     const { publicKey, privateKey } = generateKeyPairSync('ed25519');
@@ -78,12 +82,16 @@ describe('reference lens member', () => {
             key: AUTHORITY,
             kind: 'owner-consent',
             credential: member.credential,
-            schemas: { ownership: member.schemas.ownership, verdict: member.schemas.verdict },
+            schemas: { ownership: member.schemas.ownership, decision: member.schemas.decision, evidence: member.schemas.evidence },
             identity: 'devnet-registry',
             dryRun: true,
-            counts: { ownership: 0, verdict: 0, parcels: 0 },
-            pricing: { ownership: { mode: 'dry-run', enabled: false } }
+            counts: { ownership: 0, decision: 0, evidence: 0, parcels: 0, agreements: 0 },
+            pricing: { ownership: { mode: 'dry-run', enabled: false } },
+            // No approval registry and no agreement index in this setup: those routes answer 503.
+            approval: null,
+            decisions: { operatorToken: true, agreementIndex: false }
         });
+        expect(Object.keys(res.body.schemas)).toEqual(['ownership', 'decision', 'evidence']);
         expect(res.body.pricing.ownership.reason).toMatch(/dry run/);
         // Same PDA the register script prints for this authority and the default credential name.
         expect(member.credential).toBe('8xXFCwX7ktNopNTi2LxNrNwAUhnpCjzU76V8KetnFAMJ');
@@ -167,48 +175,28 @@ describe('reference lens member', () => {
         expect(a.body.payload.evidenceRef).toBe(b.body.payload.evidenceRef);
     });
 
-    it('issues verdicts only with the operator token', async () => {
-        const { app } = setup();
-        const verdict = { proposalAccount: PROPOSAL, verdict: 'expired', evidenceRef: 'case-17', sourceObservedAt: '2026-09-20T00:00:00Z' };
-        const anonymous = await request(app).post('/lens/verdict').send(verdict);
-        expect(anonymous.status).toBe(401);
-        expect(anonymous.body.error).toBe('operator_only');
-        const wrong = await request(app).post('/lens/verdict').set(OPERATOR_TOKEN_HEADER, 'guess').send(verdict);
-        expect(wrong.status).toBe(401);
-        const ok = await request(app).post('/lens/verdict').set(OPERATOR_TOKEN_HEADER, TOKEN).send(verdict);
-        expect(ok.status).toBe(201);
-        expect(ok.body).toMatchObject({
-            kind: 'verdict',
-            proposalAccount: PROPOSAL,
-            payload: { proposalAccount: PROPOSAL, verdict: 'expired', evidenceRef: 'case-17', sourceObservedAt: Date.parse('2026-09-20T00:00:00Z') / 1000 }
-        });
-        const bad = await request(app).post('/lens/verdict').set(OPERATOR_TOKEN_HEADER, TOKEN).send({ ...verdict, verdict: 'maybe' });
-        expect(bad.status).toBe(422);
-        const future = await request(app).post('/lens/verdict').set(OPERATOR_TOKEN_HEADER, TOKEN).send({ ...verdict, sourceObservedAt: NOW + 3600 });
-        expect(future.status).toBe(422);
-
-        const unset = setup({ operatorToken: null });
-        const off = await request(unset.app).post('/lens/verdict').set(OPERATOR_TOKEN_HEADER, TOKEN).send(verdict);
-        expect(off.status).toBe(503);
-    });
-
-    it('lists issued attestations by parcel and kind', async () => {
-        const { app } = setup();
+    it('lists issued attestations by parcel, kind and agreement', async () => {
+        const { app, member } = setup();
         await request(app).post('/lens/ownership').send(await challengeAndSign(app, alice, 'HR-335550-1/1'));
         await request(app).post('/lens/ownership').send(await challengeAndSign(app, alice, 'HR-335550-2/1'));
-        await request(app).post('/lens/verdict').set(OPERATOR_TOKEN_HEADER, TOKEN)
-            .send({ proposalAccount: PROPOSAL, verdict: 'executed', evidenceRef: '', sourceObservedAt: NOW - 60 });
+        await member.attestDecision(DECISION);
 
         const one = await request(app).get('/lens/attestations').query({ parcelUid: 'HR-335550-2/1' });
         expect(one.status).toBe(200);
         expect(one.body.attestations).toHaveLength(1);
         expect(one.body.attestations[0]).toMatchObject({ parcelUid: 'HR-335550-2/1', owner: alice.address });
-        const verdicts = await request(app).get('/lens/attestations').query({ kind: 'verdict' });
-        expect(verdicts.body.attestations.map(a => a.proposalAccount)).toEqual([PROPOSAL]);
+        const decisions = await request(app).get('/lens/attestations').query({ kind: 'decision' });
+        expect(decisions.body.attestations.map(a => a.payload)).toEqual([DECISION]);
+        const byAgreement = await request(app).get('/lens/attestations').query({ agreementCid: AGREEMENT_CID });
+        expect(byAgreement.body.attestations.map(a => a.kind)).toEqual(['decision']);
+        const otherAgreement = await request(app).get('/lens/attestations').query({ agreementCid: cidOfObject({ schema: 'agreement/v1', title: 'another' }) });
+        expect(otherAgreement.body.attestations).toEqual([]);
         const all = await request(app).get('/lens/attestations');
         expect(all.body.attestations).toHaveLength(3);
+        const unknownKind = await request(app).get('/lens/attestations').query({ kind: 'verdict' });
+        expect([unknownKind.status, unknownKind.body.error]).toEqual([400, 'bad_request']);
         const status = await request(app).get('/lens/status');
-        expect(status.body.counts).toMatchObject({ ownership: 2, verdict: 1, parcels: 2, proposals: 1 });
+        expect(status.body.counts).toMatchObject({ ownership: 2, decision: 1, evidence: 0, parcels: 2, agreements: 1 });
     });
 
     it('refuses to issue for free when a live member has no x402 config', async () => {
@@ -230,18 +218,31 @@ describe('reference lens member', () => {
         const pool = { query: async (sql, params) => { queries.push({ sql, params }); return { rows: [], rowCount: 1 }; } };
         const store = createPgStore(pool);
         await store.record({
-            address: PROPOSAL, kind: 'verdict', credential: AUTHORITY, schema: AUTHORITY, authority: AUTHORITY,
-            parcelUid: null, proposalAccount: PROPOSAL, owner: null, payload: { verdict: 'expired' },
+            address: SPONSOR, kind: 'decision', credential: AUTHORITY, schema: AUTHORITY, authority: AUTHORITY,
+            parcelUid: null, owner: null, payload: DECISION,
             accountHash: 'ab', expiry: NOW + 10, transactionSignature: 'sig', payment: null, issuedAt: '2026-09-21T00:00:00.000Z'
         });
         expect(queries[0].sql).toContain('INSERT INTO consensus.lens_attestation');
         expect(queries[0].sql).not.toMatch(/now\(\)/i);
+        // A decision names its agreement in the payload; the table has no per-proposal column.
+        expect(queries[0].sql).not.toMatch(/proposal_account/);
+        expect(queries[0].params).toHaveLength(13);
+        expect(JSON.parse(queries[0].params[7])).toEqual(DECISION);
         expect(queries[0].params.at(-1)).toBe('2026-09-21T00:00:00.000Z');
+
+        await store.list({ agreementCid: AGREEMENT_CID, kind: 'decision' });
+        expect(queries[1].sql).toMatch(/payload->>'agreementCid' = \$2/);
+        expect(queries[1].params).toEqual([null, AGREEMENT_CID, null, 'decision', null, 200]);
 
         const identity = createDevnetRegistryIdentity({ pool, clock, authority: AUTHORITY });
         await identity.ownerSet('HR-335550-1/1');
-        expect(queries[1].sql).toContain('FROM consensus.lens_devnet_owner');
-        expect(queries[1].params).toEqual(['HR-335550-1/1']);
+        expect(queries[2].sql).toContain('FROM consensus.lens_devnet_owner');
+        expect(queries[2].params).toEqual(['HR-335550-1/1']);
+        // The approval registry's batch read (approval.js devnetOwnerRegistry): one statement for every parcel.
+        const sets = await identity.ownerSets(['HR-335550-2/1', 'HR-335550-1/1', 'HR-335550-2/1']);
+        expect(queries[3].sql).toMatch(/WHERE parcel_uid = ANY\(\$1::text\[\]\)/);
+        expect(queries[3].params).toEqual([['HR-335550-2/1', 'HR-335550-1/1']]);
+        expect([...sets.entries()]).toEqual([['HR-335550-2/1', []], ['HR-335550-1/1', []]]);
     });
 });
 

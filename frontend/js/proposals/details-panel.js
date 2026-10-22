@@ -383,18 +383,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         serial: publishedCid
     });
     const appliedState = displayState.applied;
-    const isMinted = displayState.minted;
     const mapStatusBadgeLabel = tProposal('panel.proposal.mapStatus.applied', 'Applied');
-
-    const nftInfo = getProposalNftInfo(fullProposal);
-    const mintedExplorerUrl = nftInfo ? buildProposalNftExplorerUrl(fullProposal) : null;
-
-    // ENS line for legacy minted ids and chain mirrors. Mirrors use their
-    // canonical proposal id so token ids cannot collide across chains.
-    const proposalEnsHtml = (isMinted && nftInfo
-        && typeof proposalEnsName === 'function' && typeof ensNameLineHtml === 'function')
-        ? ensNameLineHtml(proposalEnsName(fullProposal))
-        : '';
 
     // Use stable proposalId only (hash support removed)
     const proposalKey = fullProposal.proposalId
@@ -456,12 +445,14 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         </button>
     `;
 
-    // Create agreement (plan-design-agreement.md, M1 b) over an applied design: who decides, who
-    // receives which piece and what money moves. A parcel layout leaves the device only with its
-    // agreement, so there it is the main action, before the disabled Share; elsewhere it follows Share.
-    const createAgreementButtonHtml = (appliedState === true && proposalKey) ? `
-        <button type="button" class="btn ${publishRefusal ? 'btn-primary ' : ''}btn-create-agreement" onclick="window.AgreementDialog.open({ designIds: [${inlineJsArg(proposalKey)}] })">
-            <i class="fas fa-handshake" aria-hidden="true"></i> ${tProposal('panel.proposal.actions.createAgreement', 'Create agreement')}
+    // Add to agreement (plan-design-agreement.md, M1 b; UI decision 2026-10-22) over an applied
+    // design: a new agreement, or one this device holds that is not proposed yet
+    // (AgreementDialog.addDesign) — who decides, who receives which piece and what money moves. A
+    // parcel layout leaves the device only with its agreement, so there it is the main action, before
+    // the disabled Share; elsewhere it follows Share.
+    const addToAgreementButtonHtml = (appliedState === true && proposalKey) ? `
+        <button type="button" class="btn ${publishRefusal ? 'btn-primary ' : ''}btn-create-agreement" onclick="window.AgreementDialog.addDesign(${inlineJsArg(proposalKey)})">
+            <i class="fas fa-handshake" aria-hidden="true"></i> ${tProposal('panel.proposal.actions.addToAgreement', 'Add to agreement')}
         </button>
     ` : '';
 
@@ -480,7 +471,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     // A road's cross-section is edited like its nodes are: directly, on the applied road the click
     // selected (proposals/road-actions-model.js decides when). Unlike Fork it does not clone the
     // proposal; it goes through updateLocalCorridorGeometry, which edits one's own local road in
-    // place and saves an edit of a published/minted road as a counterproposal, leaving the published
+    // place and saves an edit of a published road as a counterproposal, leaving the published
     // road as it is. That is the node handles' rule, not a new one.
     const roadActionFacts = (proposalKey && window.RoadActions)
         ? window.RoadActions.factsFor(fullProposal || proposal, { proposalKey: String(proposalKey), applied: appliedState === true })
@@ -546,9 +537,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const primaryActionsHtml = `
         <div class="proposal-actions proposal-actions-group proposal-primary-actions">
             ${mapActionButtonHtml}
-            ${publishRefusal ? createAgreementButtonHtml : ''}
+            ${publishRefusal ? addToAgreementButtonHtml : ''}
             ${shareButtonHtml}
-            ${publishRefusal ? '' : createAgreementButtonHtml}
+            ${publishRefusal ? '' : addToAgreementButtonHtml}
             ${forkButtonHtml}
             <button type="button" class="btn btn-proposal-details" onclick="toggleProposalDetailsPanelMinimized(false)">
                 <i class="fas fa-circle-info" aria-hidden="true"></i> ${tProposal('panel.proposal.actions.details', 'Details')}
@@ -701,10 +692,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 <p>${safeAgentText(summary)}</p>
                 ${shortHash ? `<div class="proposal-parcel-set-hash" title="${safeAgentText(setHash)}"><span>${safeAgentText(tProposal('panel.proposal.parcelSet.hash', 'Recorded set hash'))}</span><code>${safeAgentText(shortHash)}</code></div>` : ''}
                 ${rows ? `<div class="proposal-parcel-set-relations">${rows}</div>` : ''}
-                <div class="cb-link-row proposal-parcel-set-activity">
-                    <button type="button" class="cb-link activity-scope-link" data-activity-scope="proposalId" data-activity-value="${safeAgentText(relationApi.proposalKey(activeProposal))}">${safeAgentText(tProposal('panel.proposal.parcelSet.activityProposal', 'Activity on this proposal'))}</button>
-                    ${setHash ? `<button type="button" class="cb-link activity-scope-link" data-activity-scope="parcelSet" data-activity-value="${safeAgentText(setHash)}">${safeAgentText(tProposal('panel.proposal.parcelSet.activityLand', 'Activity for this reference set'))}</button>` : ''}
-                </div>
             </section>`;
     })();
 
@@ -757,14 +744,12 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         <div class="proposal-info">
             <div class="proposal-badges-row">
                 ${(() => {
-            // One badge from the ladder (docs/design-language.md), the same as the list rows: Draft,
-            // Published or Minted; "Applied" when it is on this map (proposals/display-state.js).
+            // One badge from the ladder (docs/design-language.md), the same as the list rows: Draft
+            // or Published; "Applied" when it is on this map (proposals/display-state.js).
             const ladder = displayState.rung;
             const ladderLabel = window.__proposalDisplayState.rungLabel(ladder, tProposal);
             const ladderTitle = escapeHtml(window.__proposalDisplayState.rungHint(ladder, tProposal));
-            const ladderBadge = (isMinted && mintedExplorerUrl)
-                ? `<a class="cb-badge cb-badge--${ladder} cb-link--external" href="${mintedExplorerUrl}" target="_blank" rel="noopener noreferrer" title="${ladderTitle}">${ladderLabel}</a>`
-                : `<span class="cb-badge cb-badge--${ladder}" title="${ladderTitle}">${ladderLabel}</span>`;
+            const ladderBadge = `<span class="cb-badge cb-badge--${ladder}" title="${ladderTitle}">${ladderLabel}</span>`;
             const applied = appliedState
                 ? `<span class="cb-badge cb-badge--applied"><i class="fas fa-check" aria-hidden="true"></i> ${mapStatusBadgeLabel}</span>`
                 : '';
@@ -972,7 +957,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             ${escapedProposalDisplayId ? `<div class="proposal-id-row">
                     <button type="button" class="btn btn-quiet btn-sm proposal-id-copy" title="${escapedProposalDisplayId}" onclick="copyProposalIdToClipboard(${inlineJsArg(String(fullProposal.proposalId || proposal.proposalId || ''))})"><i class="fas fa-copy" aria-hidden="true"></i> ${tProposal('panel.proposal.copyId', 'Copy local ID')}</button>
                 </div>` : ''}
-                ${proposalEnsHtml ? `<div class="proposal-ens-row">${proposalEnsHtml}</div>` : ''}
             ${sectionEnd}
         </div>
     `;
@@ -995,7 +979,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     // Show loading spinner briefly while rendering (for large proposals)
     // WHY HTML: The HTML string contains the entire proposal details UI:
     //   - Design metadata (title, description, author, dates)
-    //   - Status badges (draft, published or minted; applied)
+    //   - Status badges (draft or published; applied)
     //   - List of all ancestor parcels with their details (parcel numbers, owners)
     //   - Ancestors/descendants proposals
     //   - Ownership & acquisition stats
@@ -1104,34 +1088,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             });
         }
     }
-
-    // Lazily hydrate on-chain proposal metadata so synced/minted proposals recover their real title/type.
-    (async () => {
-        try {
-            const hadMetadata = !!(
-                (fullProposal && fullProposal.metadata && Object.keys(fullProposal.metadata).length)
-                || (fullProposal && fullProposal.onchain && fullProposal.onchain.metadata && Object.keys(fullProposal.onchain.metadata).length)
-            );
-            if (hadMetadata) return;
-
-            const refreshedProposal = await ensureProposalMetadataLoaded(fullProposal);
-            if (!refreshedProposal) return;
-
-            const currentDetailsKey = currentProposalDetailsContext
-                ? (getProposalKey(currentProposalDetailsContext) || currentProposalDetailsContext.proposalId || null)
-                : null;
-            const refreshedKey = getProposalKey(refreshedProposal) || refreshedProposal.proposalId || null;
-            if (!currentDetailsKey || !refreshedKey || currentDetailsKey !== refreshedKey) {
-                return;
-            }
-
-            const panelBodyCurrent = panel ? panel.querySelector('.panel-body') : null;
-            const scrollTop = panelBodyCurrent ? panelBodyCurrent.scrollTop : preservedScrollTop;
-            showProposalInfo(refreshedProposal, currentParcelId, scrollTop);
-        } catch (err) {
-            console.warn('lazy proposal metadata hydration failed', err);
-        }
-    })();
 
     function setupLazyList(containerId, items, renderItem) {
         if (!items || items.length === 0) return;

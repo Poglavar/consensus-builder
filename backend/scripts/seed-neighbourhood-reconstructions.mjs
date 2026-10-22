@@ -1,4 +1,6 @@
-// Reconstructs three recent Zagreb neighbourhood plans from local authoritative spatial data.
+// Reconstructs three recent Zagreb neighbourhood plans from local authoritative spatial data and writes
+// them as canonical archives with their manifests (restatements/nova-naselja). It reads the local
+// database and writes no rows; backend/scripts/publish-restatement-archives.mjs publishes the archives.
 //
 // Buildings use current DGU footprints and matched GDI heights. Podbrežje additionally carries
 // seven explicitly marked plan-derived residential envelopes because only four of its eleven M1
@@ -8,8 +10,8 @@
 // spaces; the reconstruction does not carry a second, presentation-only application mode.
 //
 // Usage:
-//   node backend/scripts/seed-neighbourhood-reconstructions.mjs --dry-run --export
-//   node backend/scripts/seed-neighbourhood-reconstructions.mjs --apply --export
+//   node backend/scripts/seed-neighbourhood-reconstructions.mjs --dry-run
+//   node backend/scripts/seed-neighbourhood-reconstructions.mjs --export
 
 import { createRequire } from 'node:module';
 import dotenv from 'dotenv';
@@ -21,7 +23,6 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { assertReconstructionGeoJSONRoundTrip } from '../proposals/reconstruction-geojson.js';
 import { assertCorridorReconstructionGeoJSONRoundTrip } from '../proposals/corridor-reconstruction-geojson.js';
 import { assertStructureReconstructionGeoJSONRoundTrip } from '../proposals/structure-reconstruction-geojson.js';
-import { canonicalSeedRecord } from './lib/canonical-seed-record.mjs';
 
 dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet: true });
 
@@ -110,20 +111,19 @@ export const NEIGHBOURHOODS = Object.freeze([
 ]);
 
 function usage() {
-    console.log(`Usage: node backend/scripts/seed-neighbourhood-reconstructions.mjs --dry-run|--apply [--export] [--only key,key]
+    console.log(`Usage: node backend/scripts/seed-neighbourhood-reconstructions.mjs --dry-run|--export [--only key,key]
 
-  --dry-run  Build and validate all proposals without writing database rows.
-  --apply    Upsert proposals in the local database.
+  --dry-run  Build and validate all archives without writing a file.
   --export   Write canonical GeoJSON archives and plan manifests.
-  --only     Limit the run to comma-separated keys: novi-jelkovec,podbrezje,vrbani-iii.`);
+  --only     Limit the run to comma-separated keys: novi-jelkovec,podbrezje,vrbani-iii.
+Both read the local database. Publish the archives with backend/scripts/publish-restatement-archives.mjs.`);
 }
 
 export function parseArgs(argv) {
-    const args = { apply: false, dryRun: false, export: false, only: null, help: false };
+    const args = { dryRun: false, export: false, only: null, help: false };
     for (let index = 0; index < argv.length; index += 1) {
         const arg = argv[index];
         if (arg === '--help' || arg === '-h') args.help = true;
-        else if (arg === '--apply') args.apply = true;
         else if (arg === '--dry-run') args.dryRun = true;
         else if (arg === '--export') args.export = true;
         else if (arg === '--only') {
@@ -131,13 +131,13 @@ export function parseArgs(argv) {
             if (!args.only.size) throw new Error('--only requires at least one project key.');
         } else throw new Error(`Unknown argument: ${arg}`);
     }
-    if (!args.help && args.apply === args.dryRun) throw new Error('Choose exactly one of --dry-run or --apply.');
+    if (!args.help && args.export === args.dryRun) throw new Error('Choose exactly one of --dry-run or --export.');
     return args;
 }
 
 function assertLocalDatabase() {
     if (!isLocalDatabase()) {
-        throw new Error(`Refusing to seed non-local database host ${describeDatabase().host || '(empty)'}.`);
+        throw new Error(`Refusing to read the reconstruction sources from non-local database host ${describeDatabase().host || '(empty)'}.`);
     }
 }
 
@@ -839,64 +839,6 @@ async function buildNeighbourhood(pool, config) {
     };
 }
 
-async function upsertProposal(pool, authored) {
-    // Same projection as the API write path; throws before writing if the row would be unreadable.
-    const proposal = canonicalSeedRecord(authored);
-    const { rows } = await pool.query(`
-        INSERT INTO public.proposal (
-            proposal_id, city, name, title, description, author, type,
-            lifecycle_status, created_at, updated_at,
-            ancestor_parcel_ids, cadastre_parcel_ids,
-            road_proposal, building_proposal, structure_proposal,
-            bounds, proposal_data, applied
-        ) VALUES (
-            $1, $2, $3, $4, $5, $6, $7,
-            $8, $9, $10,
-            $11::jsonb, $12::jsonb,
-            $13::jsonb, $14::jsonb, $15::jsonb,
-            $16::jsonb, $17::jsonb, false
-        )
-        ON CONFLICT (proposal_id) DO UPDATE SET
-            city = EXCLUDED.city,
-            name = EXCLUDED.name,
-            title = EXCLUDED.title,
-            description = EXCLUDED.description,
-            author = EXCLUDED.author,
-            type = EXCLUDED.type,
-            lifecycle_status = EXCLUDED.lifecycle_status,
-            created_at = EXCLUDED.created_at,
-            updated_at = EXCLUDED.updated_at,
-            ancestor_parcel_ids = EXCLUDED.ancestor_parcel_ids,
-            cadastre_parcel_ids = EXCLUDED.cadastre_parcel_ids,
-            road_proposal = EXCLUDED.road_proposal,
-            building_proposal = EXCLUDED.building_proposal,
-            structure_proposal = EXCLUDED.structure_proposal,
-            bounds = EXCLUDED.bounds,
-            proposal_data = EXCLUDED.proposal_data,
-            applied = false
-        RETURNING id, proposal_id
-    `, [
-        proposal.proposalId,
-        proposal.city,
-        proposal.name,
-        proposal.title,
-        proposal.description,
-        proposal.author,
-        proposal.type,
-        proposal.lifecycleStatus,
-        proposal.createdAt,
-        proposal.updatedAt,
-        null, // ancestor_parcel_ids is retired; cadastre_parcel_ids is the declaration
-        JSON.stringify(proposal.cadastreParcelIds || []),
-        proposal.roadProposal ? JSON.stringify(proposal.roadProposal) : null,
-        proposal.buildingProposal ? JSON.stringify(proposal.buildingProposal) : null,
-        proposal.structureProposal ? JSON.stringify(proposal.structureProposal) : null,
-        JSON.stringify(proposal.bounds || null),
-        JSON.stringify(proposal)
-    ]);
-    return rows[0];
-}
-
 function archiveFilename(proposal) {
     if (proposal.roadProposal) return 'proposal-roads.geojson';
     if (proposal.buildingProposal) return 'proposal-buildings.geojson';
@@ -983,6 +925,7 @@ function summary(result) {
 }
 
 export async function main(argv = process.argv.slice(2)) {
+    if (!argv.length) { usage(); return; }
     const args = parseArgs(argv);
     if (args.help) { usage(); return; }
     assertLocalDatabase();
@@ -1000,23 +943,11 @@ export async function main(argv = process.argv.slice(2)) {
         for (const config of selected) {
             const result = await buildNeighbourhood(pool, config);
             console.log(JSON.stringify(summary(result), null, 2));
-            let manifest = null;
             if (args.export) {
-                manifest = await exportNeighbourhood(result);
+                const manifest = await exportNeighbourhood(result);
                 console.log(`Exported ${manifest.proposals.length} canonical proposal archives to ${ARCHIVE_ROOT}${config.key}/.`);
             }
-            if (args.apply) {
-                await pool.query('BEGIN');
-                try {
-                    const rows = [];
-                    for (const proposal of result.proposals) rows.push(await upsertProposal(pool, proposal));
-                    await pool.query('COMMIT');
-                    console.log(`Stored ${rows.length} local proposals.`);
-                } catch (error) {
-                    await pool.query('ROLLBACK');
-                    throw error;
-                }
-            }
+            if (args.dryRun) console.log('Dry run complete; no archive was written.');
         }
     } finally {
         await pool.end();

@@ -5,9 +5,6 @@
   "status": "ready",
   "reason": null,
   "generatedAt": "2026-08-13T00:00:00.000Z",
-  "planSlug": "pionir-folnegoviceva-rapska",
-  "planTitle": "Folnegovićeva–Rapska – rekonstrukcija izvedenog stanja – zgrade i prometnice",
-  "localPath": "/proposals/pionir-folnegoviceva-rapska?city=zagreb",
   "building": {
     "proposalId": "paron-folnegoviceva-rapska-observed",
     "file": "proposal.geojson"

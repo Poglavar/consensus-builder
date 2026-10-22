@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Read-only review queue: one draft per published proposal, never sends email or X messages.
+// Read-only review queue: one draft per published agreement, never sends email or X messages.
 import 'dotenv/config';
 import { createPool } from '../db/connection.cjs';
 if (!process.argv.includes('--list')) { console.log('Usage: node agents/affordabot-outreach.mjs --list (read-only; sends nothing)'); process.exit(0); }

@@ -13,7 +13,6 @@
     const ROUTES = Object.freeze([
         /^\/(index\.html)?$/,     // the map
         /^\/proposals\/?$/,       // the proposal list (js/proposals/core.js)
-        /^\/proposals\/[a-z0-9-]+\/[^/]+\/[^/]+\/.+$/i, // /proposals/<chain>/<id>/<contract>/<token> (js/proposals/chain-ref.js)
         /^\/designs\/.+$/,        // /designs/<cid>[,<cid>…] (js/proposals/sharing-routes.js)
         /^\/agreements\/.+$/,     // /agreements/<cid> (js/agreement-sync.js)
         /^\/parcel\/.+$/,         // /parcel/<id> (js/parcels/route.js)

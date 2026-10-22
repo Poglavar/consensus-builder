@@ -2,10 +2,9 @@
 import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 import { gupRecord } from '../planning/providers/zagreb-gup.js';
-import { stripLocalProposalState } from '../proposals/serializer.js';
+import { stripLocalProposalState } from '../proposals/archive-state.js';
 const require = createRequire(import.meta.url);
 const contract = require('../../frontend/js/planning/source-proposal.js');
-const chain = require('../../frontend/js/proposals/chain-record.js');
 const row = { gup_id: 2025, parcel_id: 'HR-1-17', gbp_m2: 123, current: true,
     result_status: 'evidence_missing', reason: 'exception_unresolved', computed_at: '2026-10-09T00:00:00Z', floors: [] };
 
@@ -41,15 +40,7 @@ describe('source-backed obligatory proposal', () => {
         expect(result.sourceReferences).toEqual(sourceReferences); expect(result).not.toHaveProperty('applied');
         expect(result.sourceReferences).not.toBe(sourceReferences);
     });
-    // Only the reading side of chain metadata remains (the design mint went in M2): a record minted
-    // earlier reads back with its references, and a malformed reference is refused, never dropped.
-    it('keeps the same references through portable chain metadata, and refuses malformed ones', () => {
-        const geometry = { type: 'Polygon', coordinates: [[[10,40],[10.001,40],[10.001,40.001],[10,40]]] };
-        const authored = { proposalId: 'design', type: 'structure', cadastreParcelIds: ['HR-1-17'],
-            site: geometry, binding: { parcels: [] }, cadastreSnapshot: { parcels: [] },
-            sourceReferences: [contract.reference(gupRecord(row).proposal)] };
-        const metadata = proposal => ({ properties: { proposalProtocol: chain.PROTOCOL, proposal } });
-        expect(chain.fromMetadata(metadata(authored)).sourceReferences).toEqual(authored.sourceReferences);
-        expect(() => chain.fromMetadata(metadata({ ...authored, sourceReferences: [{ revision: 'latest' }] }))).toThrow(/source reference/);
+    it('refuses a malformed pinned reference instead of dropping it', () => {
+        expect(() => stripLocalProposalState({ proposalId: 'design', sourceReferences: [{ revision: 'latest' }] })).toThrow(/source reference/);
     });
 });

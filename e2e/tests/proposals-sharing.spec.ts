@@ -1,4 +1,5 @@
 // Purpose: sharing the applied plan from the share panel (plan-design-agreement.md, M2 "Browser"):
+// the panel picks on the map (js/map-pick.js, M3), so a click on an applied design finds its row;
 // each selected design is published (POST /pins + POST /designs) from its row, the panel links the
 // selection as /designs/<cid>,<cid> once all of it is published, and another device applies that link
 // once; a parcel layout's row is refused (it is published with its agreement); a link naming a design
@@ -6,7 +7,7 @@
 import { Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
-import { openCity, openParcel, createSpace, chooseProfileName, stubBasemapTiles, openOnAnotherDevice } from '../helpers/runtime';
+import { openCity, openParcel, createSpace, chooseProfileName, stubBasemapTiles, openOnAnotherDevice, clickDesignOnMap } from '../helpers/runtime';
 import { applyLayout } from '../helpers/agreements';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 import { cidOfObject, createSharedIndex, pageIndex } from '../helpers/mocks/shared-server';
@@ -61,6 +62,18 @@ test.describe('Sharing the applied plan @core', () => {
     const linkRow = panel.locator('.share-plan-link');
     await expect(linkRow).toBeHidden();
     await expect(panel.locator('.share-plan-status')).toHaveText('Publish at least one design to get a link.');
+    // The panel picks on the map through the one pick mode it shares with the agreement editor
+    // (js/map-pick.js): a click on an applied design there finds its row.
+    await expect(sender.locator('body')).toHaveClass(/\bmap-pick-mode\b/);
+    await expect(sender.locator('body')).toHaveAttribute('data-map-pick', 'share');
+    await expect(sender.locator('body')).not.toHaveClass(/\bshare-plan-mode\b/);
+    expect(await sender.evaluate(() => (window as any).MapPick.active())).toBe('share');
+    const parkId = await sender.evaluate(() => String((window as any).proposalStorage.getAllProposals()
+      .find((proposal: any) => proposal.structureProposal?.kind === 'park').proposalId));
+    await clickDesignOnMap(sender, parkId);
+    await expect(park).toHaveClass(/\bis-picked\b/);
+    await expect(square).not.toHaveClass(/\bis-picked\b/);
+    await expect(panel.locator('.share-plan-status')).toHaveText(/^Selected .*park/i);
 
     await park.getByRole('button', { name: 'Publish', exact: true }).click();
     await expect(park.locator('.share-plan-row__published')).toBeVisible({ timeout: 30_000 });
@@ -85,6 +98,12 @@ test.describe('Sharing the applied plan @core', () => {
     await expect(link).toHaveValue(new RegExp(`/designs/${squareCid}\\?`));
     await park.locator('input[type="checkbox"]').check();
     await expect(link).toHaveValue(new RegExp(`/designs/${cids.join(',')}\\?`));
+
+    // Closing the panel ends its pick mode: the map selects again.
+    await panel.locator('.close-circle-btn').first().click();
+    await expect(panel).toHaveCount(0);
+    await expect(sender.locator('body')).not.toHaveClass(/\bmap-pick-mode\b/);
+    expect(await sender.evaluate(() => (window as any).MapPick.active())).toBeNull();
 
     // Another device applies the link's designs once, and again once after a reload.
     const receiver = await openOnAnotherDevice(browser, `/designs/${cids.join(',')}?city=zg&reduceMotion=1`, index, baseURL);

@@ -1,7 +1,10 @@
 // Unit tests for frontend/js/agreement-panel.js and agreement-list.js: the pure helpers that word an
 // agreement in its docked panel and in the Agreements list (status, land, allocations, ledger, rule,
 // title, list rows, and once proposed its CID, link, index status and decision slot), over hand-made
-// records, a stubbed ground check and the real AgreementRecord ledger.
+// records, a stubbed ground check and the real AgreementRecord ledger; and its "On chain" section
+// (M3): only a binding agreement has one (Mint, or the account's status, decision and escrow with the
+// actions its state allows, from AgreementBridge.chainActions), a vote gets one line instead; and the
+// rows of the Minted agreements dialog.
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 
@@ -10,6 +13,8 @@ const panel = require('../../frontend/js/agreement-panel.js');
 const list = require('../../frontend/js/agreement-list.js');
 const record = require('../../frontend/js/agreement-record.js');
 const format = require('../../frontend/js/format.js');
+const bridge = require('../../frontend/js/solana/agreement-bridge.js');
+const client = require('../../frontend/js/solana/agreement-client.js');
 
 // A translator that shows which key was asked for, and with what count.
 const keys = (key, _fallback, params = {}) => (params.count === undefined ? key : `${key}#${params.count}`);
@@ -284,5 +289,218 @@ describe('Agreements list rows', () => {
         expect(html).toContain('A &amp; B');
         expect(list.rowsHtml([])).toContain('No agreements yet. Apply designs, then create one.');
         expect(list.bodyHtml('')).toContain('<button type="button" class="btn btn-primary" data-agreement-action="create">');
+    });
+});
+
+// ---- On chain (M3) -------------------------------------------------------------------------------
+
+const SPONSOR = '9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin';
+const OTHER_WALLET = 'HrcX5vC2ws2sKiLwpTyYG6Dnc3dmHT6zvuUp2xDs2pEx';
+const LENS = 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB';
+const ACCOUNT = 'Cp886ML2Ja4FF3SMmyUeW16rRGsLrBcRW8kfWS1VfN7W';
+const CID = 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq';
+const PUBLISHED = { cid: CID, publishedAt: '2026-10-21T12:00:00.000Z', apiBase: 'https://api.example.test', sponsor: SPONSOR };
+const NOW = 1_790_000_000;
+const SOL = 1_000_000_000n;
+// An agreement account as AgreementClient.readAgreement decodes it.
+const account = (overrides = {}) => ({
+    address: ACCOUNT, cid: CID, authority: SPONSOR, lens: LENS, payout: SPONSOR, deadline: 0, createdAt: NOW - 100,
+    requiredLamports: SOL, escrowLamports: 0n, statusCode: 0, status: 'Active', openGround: false, decisionCode: 0, decision: 'Pending',
+    decisionAttestedAt: 0, decisionObservedAt: 0, decisionAttestation: null, decisionHash: null, executedAt: 0, bump: 254, ...overrides
+});
+// The section's view as the panel builds it (chainView), unminted unless a ref is given.
+const view = (overrides = {}) => ({
+    published: PUBLISHED, sponsor: SPONSOR, ref: null, wallet: SPONSOR, lens: LENS, electorate: 'owners', deadlinePassed: false,
+    chain: null, actions: null, attestation: null, busy: null, ...overrides
+});
+const minted = (value, { wallet = SPONSOR, attestation = null, ...overrides } = {}) => view({
+    ref: { cluster: 'devnet', account: ACCOUNT }, wallet, attestation,
+    chain: { loading: false, value, error: null },
+    actions: value ? bridge.chainActions(value, { wallet, attestation, nowSeconds: NOW }) : null,
+    ...overrides
+});
+// The data-agreement-action of every button, with whether it is disabled.
+const buttons = html => [...html.matchAll(/<button type="button" class="[^"]*" data-agreement-action="([a-z]+)"( disabled)?>/g)]
+    .map(match => `${match[1]}${match[2] ? ':disabled' : ''}`);
+
+describe('On chain: who has a chain section', () => {
+    it('is only a binding agreement', () => {
+        expect(panel.isBinding(agreement())).toBe(true);
+        expect(panel.isBinding(agreement({ rule: { electorate: 'owners', binding: false, approvalConfig: null, lens: [] } }))).toBe(false);
+        expect(panel.isBinding(agreement({ rule: { electorate: 'community', binding: false, approvalConfig: null, lens: [] } }))).toBe(false);
+        expect(panel.isBinding(agreement({ rule: { electorate: 'owners', binding: 'true' } }))).toBe(false);
+        expect(panel.isBinding(agreement({ rule: null }))).toBe(false);
+        expect(panel.isBinding(null)).toBe(false);
+    });
+
+    it('a proposed vote says in one line that it is counted off-chain, and a draft says nothing', () => {
+        const line = panel.nonBindingChainHtml(PUBLISHED);
+        expect(line).toContain('data-agreement-chain="non-binding"');
+        expect(line).toContain('A vote is not minted; its decisions are counted off-chain.');
+        expect(line).not.toContain('data-agreement-action');
+        expect(panel.nonBindingChainHtml(null)).toBe('');
+        expect(panel.chainHtml(view({ published: null }))).toBe('');
+        expect(panel.chainHtml(null)).toBe('');
+    });
+});
+
+describe('On chain: minting', () => {
+    it('is ready only for the sponsor\'s wallet, a lens and a deadline still ahead', () => {
+        expect(panel.mintReadiness({ sponsor: SPONSOR, wallet: SPONSOR, lens: LENS })).toEqual({ canMint: true, repropose: false, canRepropose: false, hints: [] });
+        const hints = options => panel.mintReadiness({ sponsor: SPONSOR, wallet: SPONSOR, lens: LENS, ...options }, keys).hints;
+        expect(hints({ wallet: null })).toEqual(['agreement.chain.hints.connectSponsor']);
+        expect(hints({ wallet: OTHER_WALLET })).toEqual(['agreement.chain.hints.notSponsor']);
+        expect(hints({ lens: null })).toEqual(['agreement.chain.hints.noRuleLens']);
+        expect(hints({ lens: null, electorate: 'community' })).toEqual(['agreement.chain.hints.noConfiguredLens']);
+        expect(hints({ deadlinePassed: true })).toEqual(['agreement.chain.hints.deadlinePassed']);
+        expect(hints({ wallet: OTHER_WALLET, lens: null, deadlinePassed: true }))
+            .toEqual(['agreement.chain.hints.notSponsor', 'agreement.chain.hints.noRuleLens', 'agreement.chain.hints.deadlinePassed']);
+        expect(panel.mintReadiness({ sponsor: SPONSOR, wallet: OTHER_WALLET, lens: LENS }).hints[0])
+            .toBe(`Only the sponsor’s wallet (${panel.shortKey(SPONSOR)}) can mint it; the connected wallet is ${panel.shortKey(OTHER_WALLET)}.`);
+    });
+
+    it('an agreement proposed without a sponsor can only be proposed again, which needs a wallet', () => {
+        expect(panel.mintReadiness({ sponsor: null, wallet: SPONSOR, lens: LENS }, keys))
+            .toEqual({ canMint: false, repropose: true, canRepropose: true, hints: ['agreement.chain.hints.noSponsor'] });
+        expect(panel.mintReadiness({ sponsor: null, wallet: null, lens: LENS }).canRepropose).toBe(false);
+    });
+
+    it('offers Mint while unminted, disabled until it is ready, or Propose again without a sponsor', () => {
+        const ready = panel.chainHtml(view());
+        expect(ready).toContain('data-agreement-chain="unminted"');
+        expect(buttons(ready)).toEqual(['mint']);
+        expect(buttons(panel.chainHtml(view({ wallet: OTHER_WALLET })))).toEqual(['mint:disabled']);
+        expect(panel.chainHtml(view({ wallet: OTHER_WALLET }))).toContain('Only the sponsor’s wallet');
+        const unsponsored = view({ published: { ...PUBLISHED, sponsor: null }, sponsor: null });
+        expect(buttons(panel.chainHtml(unsponsored))).toEqual(['repropose']);
+        expect(buttons(panel.chainHtml({ ...unsponsored, wallet: null }))).toEqual(['repropose:disabled']);
+    });
+
+    it('locks the actions while one runs and says what it is waiting for', () => {
+        const busy = panel.chainHtml(view({ busy: { action: 'mint', phase: 'awaiting_signature' } }));
+        expect(buttons(busy)).toEqual(['mint:disabled']);
+        expect(busy).toContain('data-agreement-chain-busy="mint"');
+        expect(busy).toContain('Waiting for the wallet’s signature…');
+        expect(panel.chainHtml(view({ busy: { action: 'mint', phase: 'something-else' } }))).toContain('Preparing the transaction…');
+    });
+});
+
+describe('On chain: a minted agreement', () => {
+    it('links the account on its cluster\'s explorer while reading it, and says when it cannot', () => {
+        const loading = panel.chainHtml(view({ ref: { cluster: 'devnet', account: ACCOUNT }, chain: { loading: true } }));
+        expect(loading).toContain('data-agreement-chain="loading"');
+        expect(loading).toContain(`href="https://explorer.solana.com/address/${ACCOUNT}?cluster=devnet"`);
+        expect(loading).toContain(`title="${ACCOUNT}">${panel.shortKey(ACCOUNT)}</a>`);
+        expect(buttons(loading)).toEqual([]);
+        const failed = panel.chainHtml(view({ ref: { cluster: 'devnet', account: ACCOUNT }, chain: { loading: false, error: 'rpc down' } }));
+        expect(failed).toContain('data-agreement-chain="error"');
+        expect(failed).toContain('The chain account could not be read: rpc down');
+        const missing = panel.chainHtml(minted(null));
+        expect(missing).toContain('data-agreement-chain="missing"');
+        expect(missing).toContain('The account is not on Solana devnet.');
+    });
+
+    it('shows the status, decision, escrow, lens and payout the account holds', () => {
+        const html = panel.chainHtml(minted(account({ escrowLamports: SOL / 2n })));
+        expect(html).toContain('data-agreement-chain="minted"');
+        expect(html).toContain('data-agreement-chain-status="Active"');
+        expect(html).toContain('cb-badge--minted');
+        expect(html).toContain('data-agreement-chain-decision="Pending"');
+        const sol = value => format.formatMoney(value, 'SOL', { maxFractionDigits: 9, minFractionDigits: 0 });
+        expect(html).toContain(`${sol(0.5)} of ${sol(1)}`);
+        expect(html).toContain(`<code title="${LENS}">${panel.shortKey(LENS)}</code>`);
+        expect(html).toContain('<dt>Deadline</dt><dd>None</dd>');
+        expect(panel.chainHtml(minted(account({ requiredLamports: 0n })))).toContain(`${sol(0)} (none required)`);
+        const executed = panel.chainHtml(minted(account({ statusCode: 1, status: 'Executed', decisionCode: 1, decision: 'Satisfied', escrowLamports: SOL, executedAt: NOW })));
+        expect(executed).toContain('data-agreement-chain-status="Executed"');
+        expect(executed).toContain('cb-badge--executed');
+        expect(executed).toContain(`<dt>Executed</dt><dd>${format.formatDateTime(NOW)}</dd>`);
+        // A closed agreement has nothing left to do.
+        expect(buttons(executed)).toEqual([]);
+        expect(buttons(panel.chainHtml(minted(account({ statusCode: 2, status: 'Cancelled' }))))).toEqual([]);
+    });
+
+    it('gives the sponsor Fund and Cancel and anyone Execute while the decision is pending', () => {
+        expect(buttons(panel.chainHtml(minted(account())))).toEqual(['execute:disabled', 'fund', 'cancel']);
+        const stranger = panel.chainHtml(minted(account(), { wallet: OTHER_WALLET }));
+        expect(buttons(stranger)).toEqual(['execute:disabled']);
+        expect(stranger).toContain('Waiting for its lens to attest the decision.');
+        const disconnected = panel.chainHtml(minted(account(), { wallet: null }));
+        expect(buttons(disconnected)).toEqual(['execute:disabled']);
+        expect(disconnected).toContain('Connect a Solana wallet to act on it.');
+    });
+
+    it('offers Record decision once the lens has attested, and Execute once it is recorded and funded', () => {
+        const attested = panel.chainHtml(minted(account(), { attestation: LENS }));
+        expect(buttons(attested)).toEqual(['attest', 'execute:disabled', 'fund', 'cancel']);
+        expect(attested).toContain('Its lens has attested the decision: record it on chain.');
+        const satisfied = account({ decisionCode: 1, decision: 'Satisfied' });
+        // Recorded but unfunded: Execute waits for the escrow; the sponsor can no longer cancel.
+        const unfunded = panel.chainHtml(minted(satisfied));
+        expect(buttons(unfunded)).toEqual(['execute:disabled', 'fund', 'cancel:disabled']);
+        expect(unfunded).toContain(`Execution waits until the escrow holds ${format.formatMoney(1, 'SOL', { maxFractionDigits: 9, minFractionDigits: 0 })}.`);
+        const funded = panel.chainHtml(minted({ ...satisfied, escrowLamports: SOL }, { wallet: OTHER_WALLET }));
+        expect(buttons(funded)).toEqual(['execute']);
+        expect(funded).toMatch(/class="btn btn-primary" data-agreement-action="execute"/);
+    });
+
+    it('offers Expire to anyone once the deadline has passed, and nothing that would fail', () => {
+        const passed = account({ deadline: NOW - 60, decisionCode: 1, decision: 'Satisfied', escrowLamports: SOL });
+        const html = panel.chainHtml(minted(passed, { wallet: OTHER_WALLET }));
+        expect(buttons(html)).toEqual(['execute:disabled', 'expire']);
+        expect(html).toContain('Its deadline has passed: anyone can expire it');
+        expect(buttons(panel.chainHtml(minted(passed)))).toEqual(['execute:disabled', 'fund:disabled', 'cancel:disabled', 'expire']);
+    });
+
+    it('words a chain status however it is spelled', () => {
+        // The index spells it 'active', the account decoder 'Active'.
+        expect(['active', 'Active', 'EXECUTED', 'cancelled', 'Expired'].map(status => panel.chainStatusText(status)))
+            .toEqual(['Active', 'Active', 'Executed', 'Cancelled', 'Expired']);
+        expect(panel.chainStatusText('active', keys)).toBe('agreement.chain.status.active');
+        expect(panel.chainStatusText('Unknown(9)')).toBe('Unknown(9)');
+        expect(panel.chainStatusText(null)).toBe('');
+        expect(client.STATUS_NAMES.map(status => panel.chainStatusText(status))).toEqual(['Active', 'Executed', 'Cancelled', 'Expired']);
+    });
+
+    it('shortens a key to its ends and leaves a short one whole', () => {
+        expect(panel.shortKey(SPONSOR)).toBe('9xQe…VFin');
+        expect(panel.shortKey('short-key')).toBe('short-key');
+        expect(panel.shortKey(null)).toBe('');
+    });
+});
+
+describe('the actions row of a binding agreement', () => {
+    it('offers Bet only when the markets offer one, never Edit once proposed', () => {
+        expect(panel.actionsHtml({ canCompare: true, published: true, canBet: true })).toMatch(/class="btn" data-agreement-action="bet"/);
+        expect(panel.actionsHtml({ canCompare: true, published: true })).not.toContain('data-agreement-action="bet"');
+    });
+});
+
+describe('Minted agreements rows', () => {
+    // A row of GET /agreements?minted=1: the index's agreement with its chain account.
+    const minted = (extra = {}) => ({
+        cid: CID, title: 'Block 7', createdAt: '2026-10-21T12:00:00.000Z',
+        content: { title: 'Block 7', createdAt: '2026-10-21T10:00:00.000Z', designs: [{ cid: CID }, { cid: CID }] },
+        onchain: { chain: 'solana', cluster: 'devnet', account: ACCOUNT, status: 'active' },
+        ...extra
+    });
+
+    it('words a minted agreement: its title, its designs, its status on chain and its account', () => {
+        expect(list.mintedRowLabel(minted())).toEqual({ title: 'Block 7', meta: `2 designs · Active · ${panel.shortKey(ACCOUNT)}` });
+        const untitled = minted({ title: null, content: { title: null, createdAt: '2026-10-21T10:00:00.000Z', designs: [{ cid: CID }] },
+            onchain: { ...minted().onchain, status: 'executed' } });
+        expect(list.mintedRowLabel(untitled)).toEqual({
+            title: `Agreement of ${format.formatDate('2026-10-21T10:00:00.000Z')}`, meta: `1 design · Executed · ${panel.shortKey(ACCOUNT)}`
+        });
+        expect(list.mintedRowLabel(minted(), keys).meta).toBe(`agreement.list.designs#2 · agreement.chain.status.active · ${panel.shortKey(ACCOUNT)}`);
+    });
+
+    it('renders one button per minted agreement by its CID, or says none is minted yet', () => {
+        const html = list.mintedRowsHtml([minted({ cid: 'bafk"<x>' }), minted()]);
+        expect(html.match(/data-agreement-cid=/g)).toHaveLength(2);
+        expect(html).toContain('<button type="button" class="btn btn-quiet agreement-item" data-agreement-cid="bafk&quot;&lt;x&gt;">');
+        expect(html).toContain(`data-agreement-cid="${CID}"`);
+        expect(html).not.toContain('data-agreement-id=');
+        expect(list.mintedRowsHtml([])).toContain('No agreement of this city is minted yet.');
     });
 });

@@ -104,14 +104,6 @@
             .slice(0, limit);
     }
 
-    // Every proposal id over one canonical parcel set, so activity can be filtered by land, not proposal.
-    function proposalIdsForParcelSet(proposals, setHash) {
-        if (typeof setHash !== 'string' || !setHash) return [];
-        return (Array.isArray(proposals) ? proposals : [])
-            .filter(proposal => parcelSourceOf(proposal) && proposal?.parcelSet?.setHash === setHash)
-            .map(proposalKey)
-            .filter(Boolean);
-    }
 
     // How a fork's parcel set relates to its origin's, phrased from the ORIGIN's point of view via
     // classifyParcelSetRelation(origin, fork): 'contains-target' there means the fork includes the
@@ -186,7 +178,7 @@
 
     const api = {
         proposalKey, normalizeParcelIds, parcelSourceOf, classifyParcelSetRelation, findParcelSetRelations,
-        proposalIdsForParcelSet, describeLandFork, buildLandForkLineage, landForkSummaryMessage
+        describeLandFork, buildLandForkLineage, landForkSummaryMessage
     };
     global.ParcelSetRelations = api;
     if (typeof module !== 'undefined' && module.exports) module.exports = api;

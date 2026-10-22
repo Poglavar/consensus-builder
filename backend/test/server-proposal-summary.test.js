@@ -44,15 +44,18 @@ describe('designSummary', () => {
         expect(designSummary(indexRow)).toMatchObject({
             id: CID, cid: CID, proposalId: CID, indexed: true, city: 'zagreb', goal: 'road-track',
             title: 'Road 1407-0247', name: 'Road 1407-0247', author: 'Guest 9888',
-            createdAt: indexRow.createdAt, cadastreParcelIds: ['HR-335789-1199', 'HR-335789-1204'], isMinted: false
+            createdAt: indexRow.createdAt, cadastreParcelIds: ['HR-335789-1199', 'HR-335789-1204']
         });
     });
 
-    it('carries no lifecycle: a design has none', () => {
-        const summary = designSummary({ ...indexRow, lifecycleStatus: 'Cancelled', status: 'Active', applied: true });
+    it('carries no lifecycle, minted state or consent tally: a design has none', () => {
+        const summary = designSummary({ ...indexRow, lifecycleStatus: 'Cancelled', status: 'Active', applied: true, isMinted: true, acceptedParcelIds: ['HR-335789-1199'] });
         expect(summary).not.toHaveProperty('lifecycleStatus');
         expect(summary).not.toHaveProperty('status');
         expect(summary).not.toHaveProperty('applied');
+        // Designs are not minted (M3) and owners decide on agreements, not on designs (M2).
+        expect(summary).not.toHaveProperty('isMinted');
+        expect(summary).not.toHaveProperty('acceptedParcelIds');
     });
 
     it('does not infer a goal from a backend type, and lists nothing that is not filed under a CID', () => {

@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { createRequire } from 'node:module';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { setupDocsRoute } from '../routes/docs.js';
@@ -311,49 +312,68 @@ describe('GET /docs/database', () => {
 describe('agent quickstart docs', () => {
     const repoFile = (relative) => new URL(`../../${relative}`, import.meta.url);
     const PROGRAMS = JSON.parse(fs.readFileSync(repoFile('frontend/contracts/addresses.json'), 'utf8'))['solana-devnet'];
+    const AGREEMENT_IDL = JSON.parse(fs.readFileSync(repoFile('blockchain/solana/idl/agreement.json'), 'utf8'));
+    // The program ids the page fills in come from the program codecs.
+    const require = createRequire(import.meta.url);
+    const PROGRAM_IDS = {
+        agreement: require('../../frontend/js/solana/agreement-client.js').constants.AGREEMENT_PROGRAM_ID,
+        market: require('../../frontend/js/solana/market-client.js').constants.PROGRAM_ID,
+        pledge: require('../../frontend/js/solana/pledge-client.js').constants.PROGRAM_ID
+    };
     const X402_ENV = {
         PUBLIC_API_BASE_URL: 'https://api.example.test',
         X402_NETWORK: 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1',
         X402_FACILITATOR_URL: 'https://x402.org/facilitator',
         X402_PAY_TO: 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ',
-        X402_PRICE_PROPOSAL: '$0.05',
         X402_PRICE_ORACLE_FACT: '$0.01'
     };
+    // The IDL's own spelling of an argument type, as the docs print it.
+    const typeName = type => (typeof type === 'string' ? type
+        : type.vec !== undefined ? `vec<${typeName(type.vec)}>`
+            : Array.isArray(type.array) ? `[${typeName(type.array[0])}; ${type.array[1]}]` : `option<${typeName(type.option)}>`);
 
-    it('GET /docs/agents renders the quickstart with the live price and base URL substituted', async () => {
+    it('GET /docs/agents renders the quickstart with every placeholder substituted', async () => {
         const app = createRouteApp(setupDocsRoute, createDocsPool(), { env: X402_ENV });
         const res = await request(app).get('/docs/agents');
         expect(res.status).toBe(200);
         expect(res.headers['content-type']).toMatch(/text\/html/);
         expect(res.text).toContain('<title>Agent quickstart');
-        expect(res.text).toContain('$0.05');
-        expect(res.text).toContain('$0.01');
-        expect(res.text).toContain('https://api.example.test/agent/oracle/facts');
+        // No $(base), $(oraclePrice), $(agreementProgram), … survives into the page.
+        expect(res.text).not.toMatch(/\$\([a-zA-Z]+\)/);
+        expect(res.text).toContain('<strong>$0.01</strong> in devnet USDC');
+        expect(res.text).toContain('https://api.example.test/agent/oracle/facts?subject=');
+        expect(res.text).toContain('https://api.example.test/designs/binding');
         expect(res.text).toContain('4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU');
-        expect(res.text).not.toContain('$(base)');
-        expect(res.text).not.toContain('$(price)');
+        expect(res.text).toContain(`on <code>${X402_ENV.X402_NETWORK}</code>`);
     });
 
-    it('GET /docs/agents documents minting before posting, with the program ids filled in', async () => {
+    it('GET /docs/agents documents publishing, then minting a binding agreement, with the program ids filled in', async () => {
         const app = createRouteApp(setupDocsRoute, createDocsPool(), { env: X402_ENV });
         const res = await request(app).get('/docs/agents');
-        expect(res.text).toContain('Mint the on-chain proposal first');
-        expect(res.text).toContain('mint_and_fund');
-        expect(res.text).toContain(PROGRAMS.ProposalNFT);
+        const headings = [...res.text.matchAll(/<h2>([^<]*)<\/h2>/g)].map(match => match[1]);
+        expect(headings).toEqual(expect.arrayContaining(['3. Build and publish a design', '5. Propose it', '6. Mint and fund it on devnet']));
+        expect(headings.indexOf('3. Build and publish a design')).toBeLessThan(headings.indexOf('5. Propose it'));
+        expect(headings.indexOf('5. Propose it')).toBeLessThan(headings.indexOf('6. Mint and fund it on devnet'));
+        expect(res.text).toContain(PROGRAM_IDS.agreement);
+        expect(res.text).toContain(PROGRAM_IDS.market);
+        expect(res.text).toContain(PROGRAM_IDS.pledge);
         expect(res.text).toContain(PROGRAMS.ParcelNFT);
-        expect(res.text).toContain('https://api.example.test/parcels?coordinates=');
-        expect(res.text).not.toContain('$(proposalProgram)');
-        expect(res.text).not.toContain('$(parcelProgram)');
+        // The agreement program is not deployed while its id is the readable placeholder, and the page says so.
+        expect(res.text.includes('pending its devnet deployment')).toBe(/^Agreement1+$/.test(PROGRAM_IDS.agreement));
+        // create's documented signature is the checked-in IDL's.
+        const create = AGREEMENT_IDL.instructions.find(ix => ix.name === 'create');
+        expect(res.text).toContain(`create(${create.args.map(arg => `${arg.name}: ${typeName(arg.type)}`).join(', ')})`);
+        expect(res.text).toContain('/agreements/&lt;cid&gt;/onchain');
+        expect(res.text).toContain('AgreementDecision-v1');
+        expect(res.text).toContain('agreement-execution-v1');
         expect(res.text).toContain('Choosing a lens');
-        expect(res.text).toContain('verdict_may_execute');
-        expect(res.text).toContain('accept_with_attestations(parcel_id: string, payout: option&lt;pubkey&gt;)');
-        expect(res.text).toContain('settle_with_verdict()');
-        expect(res.text).toContain('v2, pending devnet deployment');
-        expect(res.text).not.toContain('signed by the owner of that parcel');
         expect(res.text).toContain('https://api.example.test/agent/lenses/members');
         expect(res.text).toContain('https://api.example.test/lenses/schemas');
-        expect(res.text).toContain('<code>owner-consent</code>, <code>court</code>, <code>permit</code>, <code>imagery</code>, <code>osm</code> or');
-        expect(res.text).toContain('<code>serviceUrl</code>');
+        expect(res.text).toMatch(/<code>owner-consent<\/code>,\s+<code>court<\/code>, <code>permit<\/code>, <code>imagery<\/code>, <code>osm<\/code> or <code>lifecycle<\/code>/);
+        // The proposal program's instructions are gone from the quickstart (M3: designs are not minted).
+        for (const removed of ['mint_and_fund', 'accept_with_attestations', 'settle_with_verdict', 'verdict_may_execute', 'ProposalVerdict']) {
+            expect(res.text, removed).not.toContain(removed);
+        }
     });
 
     it('GET /docs/agents says when the price is not configured instead of printing a placeholder', async () => {
@@ -361,51 +381,74 @@ describe('agent quickstart docs', () => {
         const res = await request(app).get('/docs/agents');
         expect(res.status).toBe(200);
         expect(res.text).toContain('price not configured');
-        expect(res.text).not.toContain('$(price)');
+        expect(res.text).not.toMatch(/\$\([a-zA-Z]+\)/);
     });
 
-    it('GET /docs/agents.json returns the recipe schema with the live x402 terms and endpoints', async () => {
+    it('GET /docs/agents.json returns the design and agreement schemas, the flow and the live x402 terms', async () => {
         const app = createRouteApp(setupDocsRoute, createDocsPool(), { env: X402_ENV });
         const res = await request(app).get('/docs/agents.json');
         expect(res.status).toBe(200);
-        // Land is declared parcels OR a site (PARCEL-OPTIONAL.md): a non-empty declaration, or a site.
-        expect(res.body.schema.anyOf).toEqual([
-            { required: ['cadastreParcelIds'], properties: { cadastreParcelIds: { minItems: 1 } } },
-            { required: ['site'] }
-        ]);
-        expect(res.body.schema.properties.site.properties.type.enum).toEqual(['Polygon', 'MultiPolygon']);
-        expect(res.body.schema.properties.toleranceM).toMatchObject({ minimum: 0, maximum: 1, default: 0 });
+        expect(res.headers['cache-control']).toBe('no-store');
+        expect(res.body.docs).toBe('https://api.example.test/docs/agents');
+        // The schema is the two published objects, checked as the server checks them.
+        expect(res.body.schema.oneOf).toEqual([{ $ref: '#/$defs/design' }, { $ref: '#/$defs/agreement' }]);
+        expect(res.body.schema.$defs.design.required).toEqual(expect.arrayContaining(['schema', 'goal', 'site', 'toleranceM', 'origin', 'authoredAt']));
+        expect(res.body.schema.$defs.agreement.properties).toHaveProperty('sponsor');
+        expect(res.body.schema.$defs.agreement.properties.rule.required).toEqual(['electorate', 'binding', 'lens']);
+        // The one paid resource, queried by agreement account.
         expect(res.body.x402).toMatchObject({
             enabled: true,
+            resource: 'https://api.example.test/agent/oracle/facts',
             network: X402_ENV.X402_NETWORK,
             payTo: X402_ENV.X402_PAY_TO,
-            priceProposal: '$0.05',
-            oracleFactsEnabled: true,
             priceOracleFact: '$0.01',
-            paymentFlow: 'upfront'
+            paymentFlow: 'upfront',
+            usdcMint: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU'
         });
-        // The paid submit route and the binding and prepare helpers went with the server's proposal
-        // writes (plan-design-agreement.md M2).
-        for (const removed of ['submit', 'proposalBinding', 'proposalPrepare']) expect(res.body.endpoints).not.toHaveProperty(removed);
-        expect(JSON.stringify(res.body.endpoints)).not.toMatch(/\/agent\/(proposals|binding|prepare)\b/);
-        expect(res.body.endpoints.oracleFactLatest).toBe('https://api.example.test/agent/oracle/facts');
-        expect(res.body.endpoints.oracleFact).toContain('/agent/oracle/facts?subject=');
-        expect(res.body.endpoints.oracleFactDiscovery).toContain('resource=oracle-facts');
-        expect(res.body.endpoints.hackathonProof).toBe('https://api.example.test/hackathon/proof.json');
-        expect(res.body.endpoints.prospectiveMarketStatus).toBe('https://api.example.test/oracle/markets/prospective/status');
-        expect(res.body.endpoints.markets).toBe('https://api.example.test/markets?city={city}');
+        expect(Object.keys(res.body.x402.query)).toEqual(['subject', 'market']);
+        expect(res.body.x402.query.subject).toMatch(/agreement account/);
+        expect(res.body.x402).not.toHaveProperty('priceProposal');
+        // The flow, in order: bind, publish designs, propose the agreement, stop at a poll or mint a binding one.
+        expect(res.body.flow).toHaveLength(6);
+        expect(res.body.flow[0]).toMatch(/^POST \/designs\/binding/);
+        expect(res.body.flow[1]).toMatch(/POST \/pins \{ kind: "design".*POST \/designs/);
+        expect(res.body.flow[2]).toMatch(/POST \/pins \{ kind: "agreement".*POST \/agreements/);
+        expect(res.body.flow[3]).toMatch(/never minted/);
+        expect(res.body.flow[4]).toMatch(/POST \/agreements\/\{cid\}\/onchain/);
+        expect(res.body.flow[5]).toMatch(/AgreementDecision-v1/);
+        // Endpoints: the publish and read routes, the market recipe and the paid fact by agreement account.
         expect(res.body.endpoints).toMatchObject({
+            designBinding: 'https://api.example.test/designs/binding',
+            pins: 'https://api.example.test/pins',
+            publishDesign: 'https://api.example.test/designs',
+            proposeAgreement: 'https://api.example.test/agreements',
+            agreementDecisions: 'https://api.example.test/agreements/{cid}/decisions',
+            agreementOnchain: 'https://api.example.test/agreements/{cid}/onchain',
+            markets: 'https://api.example.test/markets?city={city}',
+            marketRecipe: 'https://api.example.test/oracle/recipes/agreement-execution-v1?agreement={agreementAccount}',
+            marketRecipeForMarket: 'https://api.example.test/oracle/recipes/agreement-execution-v1?agreement={agreementAccount}&market={marketAccount}',
+            oracleFact: 'https://api.example.test/agent/oracle/facts?subject={agreementAccount}',
+            oracleFactForMarket: 'https://api.example.test/agent/oracle/facts?subject={agreementAccount}&market={marketAccount}',
+            oracleFactLatest: 'https://api.example.test/agent/oracle/facts',
+            oracleFactDiscovery: 'https://api.example.test/agent/discovery?resource=oracle-facts',
+            support: 'https://api.example.test/agent/pledges/{agreementAccount}',
+            hackathonProof: 'https://api.example.test/hackathon/proof.json',
+            prospectiveMarketStatus: 'https://api.example.test/oracle/markets/prospective/status',
             lensMembers: 'https://api.example.test/lenses/members',
             agentLensMembers: 'https://api.example.test/agent/lenses/members',
             lensSchemas: 'https://api.example.test/lenses/schemas'
         });
-        expect(res.body.lens).toMatchObject({
-            recipeField: 'lens',
-            schemas: 'https://api.example.test/lenses/schemas',
-            attestations: ['ParcelOwnership-v1', 'ProposalVerdict-v1']
+        // The proposal routes, the paid submit route and the proposal program are gone.
+        expect(JSON.stringify(res.body.endpoints)).not.toMatch(/\/proposals|\/agent\/(proposals|binding|prepare)\b/);
+        for (const removed of ['proposalAccount', 'parcelAccount', 'proposalSupport']) expect(res.body).not.toHaveProperty(removed);
+        // Only a binding owners' agreement is minted.
+        expect(res.body.agreement.rules).toEqual({
+            ownerDeal: { electorate: 'owners', binding: true },
+            ownerVote: { electorate: 'owners', binding: false },
+            communityVote: { electorate: 'community', binding: false, approvalConfig: null }
         });
-        expect(res.body.lens.ownerAcceptance).toMatch(/accept_with_attestations/);
-        expect(res.body.schema.properties.lens).toMatchObject({ type: 'array', minItems: 1 });
+        expect(res.body.agreement.minting).toMatch(/binding owners' agreements only/);
+        expect(res.body.design.types.parcelLayout).toMatchObject({ goals: ['parcel-layout'], payload: 'parcelLayout' });
         expect(res.body.mcp).toMatchObject({
             transport: 'stdio', source: 'backend/agents/mcp-server.mjs', liveActionsEnabledByDefault: false
         });
@@ -414,106 +457,91 @@ describe('agent quickstart docs', () => {
         const registered = [...mcpSource.matchAll(/registerTool\('(ugt_[a-z_]+)'/g)].map(m => m[1]);
         expect(registered).toHaveLength(26);
         expect([...res.body.mcp.tools].sort()).toEqual([...registered].sort());
-        expect(res.body.lens.memberKinds).toEqual(['owner-consent', 'court', 'permit', 'imagery', 'osm', 'lifecycle']);
+        expect(res.body.lens).toMatchObject({
+            ruleField: 'rule.lens',
+            schemas: 'https://api.example.test/lenses/schemas',
+            attestations: ['ParcelOwnership-v1', 'AgreementDecision-v1', 'MarketEvidence-v1'],
+            memberKinds: ['owner-consent', 'court', 'permit', 'imagery', 'osm', 'lifecycle']
+        });
         expect(res.body.lens.memberFields).toContain('serviceUrl');
-        expect(res.body.market.programId).toMatch(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/);
-        expect(res.headers['cache-control']).toBe('no-store');
-        expect(res.body.proposalAccount).toMatchObject({
-            programId: PROGRAMS.ProposalNFT,
+    });
+
+    it('GET /docs/agents.json documents the agreement program from its checked-in IDL and codec', async () => {
+        const app = createRouteApp(setupDocsRoute, createDocsPool(), { env: X402_ENV });
+        const { body } = await request(app).get('/docs/agents.json');
+        const program = body.agreementProgram;
+        expect(program).toMatchObject({
+            programId: AGREEMENT_IDL.address,
             cluster: 'devnet',
-            mint: { instruction: 'mint_and_fund', accounts: ['proposal', 'proposal_counter', 'owner', 'system_program'] },
-            recordLink: { field: 'onchain', chainId: 'solana-devnet', contractAddress: PROGRAMS.ProposalNFT },
-            idl: 'blockchain/solana/idl/proposal_nft.json',
-            client: 'backend/agents/minter.js'
+            idl: 'blockchain/solana/idl/agreement.json',
+            client: 'frontend/js/solana/agreement-client.js',
+            readme: 'blockchain/solana/programs/agreement/README.md'
         });
-        // The documented signature is the checked-in IDL's, not a hand-kept copy that can drift.
-        const typeName = type => (typeof type === 'string' ? type
-            : type.vec !== undefined ? `vec<${typeName(type.vec)}>`
-                : Array.isArray(type.array) ? `[${typeName(type.array[0])}; ${type.array[1]}]` : `option<${typeName(type.option)}>`);
-        const idl = JSON.parse(fs.readFileSync(repoFile(res.body.proposalAccount.idl), 'utf8'));
-        const documented = (doc, name) => {
-            const ix = idl.instructions.find(instruction => instruction.name === name);
-            expect(doc.instruction).toBe(name);
-            expect(doc.args).toEqual(ix.args.map(arg => `${arg.name}: ${typeName(arg.type)}`));
-            expect(doc.accounts).toEqual(ix.accounts.map(account => account.name));
-        };
-        documented(res.body.proposalAccount.mint, 'mint_and_fund');
-        documented(res.body.proposalAccount.accept, 'accept_with_attestations');
-        documented(res.body.proposalAccount.settle, 'settle_with_verdict');
-        expect(res.body.proposalAccount.interfaceVersion).toMatch(/pending devnet deployment/);
-        const parcelIdl = JSON.parse(fs.readFileSync(repoFile(res.body.parcelAccount.idl), 'utf8'));
-        const mintParcel = parcelIdl.instructions.find(instruction => instruction.name === 'mint_parcel');
-        expect(res.body.parcelAccount.mint.args).toEqual(mintParcel.args.map(arg => `${arg.name}: ${typeName(arg.type)}`));
-        expect(res.body.parcelAccount.mint.accounts).toEqual(mintParcel.accounts.map(account => account.name));
-        expect(res.body.parcelAccount).toMatchObject({ programId: PROGRAMS.ParcelNFT, cluster: 'devnet', idl: 'blockchain/solana/idl/parcel_nft.json' });
-        expect(fs.existsSync(repoFile(res.body.parcelAccount.idl))).toBe(true);
-        expect(fs.existsSync(repoFile(res.body.proposalAccount.client))).toBe(true);
-        expect(res.body.proposalSupport).toMatchObject({
+        for (const file of [program.idl, program.client, program.readme]) expect(fs.existsSync(repoFile(file)), file).toBe(true);
+        expect(program.deployed).toBe(!/^Agreement1+$/.test(program.programId));
+        expect(program.status).toMatch(program.deployed ? /^deployed on devnet$/ : /placeholder/);
+        expect(program.account).toMatchObject({ space: 296, offsets: { authority: 8, lens: 40, payout: 72, deadline: 104, status: 136, decision: 138, cid: 228 } });
+        // Every instruction is documented with the IDL's own argument list and account order.
+        expect(Object.keys(program.instructions).sort()).toEqual(AGREEMENT_IDL.instructions.map(ix => ix.name).sort());
+        for (const ix of AGREEMENT_IDL.instructions) {
+            const doc = program.instructions[ix.name];
+            expect(doc.args, ix.name).toEqual(ix.args.map(arg => `${arg.name}: ${typeName(arg.type)}`));
+            expect(doc.accounts.map(account => account.split(' ')[0]), ix.name).toEqual(ix.accounts.map(account => account.name));
+        }
+        expect(program.decisionAttestation).toMatchObject({
+            schema: 'AgreementDecision-v1',
+            layout: 'string agreementCid, string sponsor, string decision, string evidenceRef, int64 sourceObservedAt',
+            sasLayout: [12, 12, 12, 12, 8]
+        });
+        expect(program.decisionAttestation.decision).toMatch(/always "satisfied"/);
+    });
+
+    it('GET /docs/agents.json names the market recipe, the land events and the support program on agreement accounts', async () => {
+        const app = createRouteApp(setupDocsRoute, createDocsPool(), { env: X402_ENV });
+        const { body } = await request(app).get('/docs/agents.json');
+        expect(body.oracle).toMatchObject({
+            eventType: 'agreement_lifecycle',
+            schema: 'https://api.example.test/oracle/recipe.schema.json',
+            events: 'https://api.example.test/oracle/events?subject={agreementAccount}',
+            recipeId: 'agreement-execution-v1',
+            attester: AGREEMENT_IDL.address
+        });
+        expect(Object.keys(body.oracle.eventTypes)).toEqual(['agreement_lifecycle', 'agreement_executed']);
+        expect(body.oracle.recipe.outcomes).toEqual({ executed: 'YES', cancelled: 'NO', expired: 'NO' });
+        expect(body.oracle.recipe.url).toBe('https://api.example.test/oracle/recipes/agreement-execution-v1?agreement={agreementAccount}');
+        expect(body.oracle.parcelHistory.eventTypes).toEqual(['agreement_published', 'parcel_ownership', 'agreement_executed']);
+        expect(body.oracle.parcelHistory.url).toBe('https://api.example.test/parcels/{parcelUid}/history');
+        expect(body.market).toMatchObject({
             programId: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/),
-            cluster: 'devnet',
-            status: 'https://api.example.test/agent/pledges/{proposalAccount}'
+            pda: 'seeds ["market", agreementAccount]',
+            stakeDecimals: 6,
+            contests: 'https://api.example.test/markets?city={city}',
+            resolution: { yes: expect.stringMatching(/Executed/), no: expect.stringMatching(/Cancelled or Expired/), permissionless: true, oracleRecipe: 'agreement-execution-v1' }
         });
-        expect(res.body.proposalSupport.donations.active).toMatch(/escrow immediately/);
-        expect(res.body.proposalSupport.pledges.active).toMatch(/unfunded/);
-        expect(res.body.market.resolution).toMatchObject({
-            yes: expect.stringMatching(/Executed/),
-            no: expect.stringMatching(/Cancelled/),
-            permissionless: true,
-            deadline: null
+        expect(body.support).toMatchObject({
+            status: 'https://api.example.test/agent/pledges/{agreementAccount}',
+            pdas: { donationEscrow: 'seeds ["donation_escrow", agreementAccount]', pledgeBook: 'seeds ["pledge_book", agreementAccount]' }
         });
-        expect(res.body.market.resolution.expired).toMatch(/not terminal/);
-        expect(res.body.oracle.schema).toBe('https://api.example.test/oracle/recipe.schema.json');
-        expect(res.body.oracle.recipes.map(recipe => recipe.id)).toEqual(['proposal-lifecycle-v1', 'proposal-lifecycle-v2']);
-        expect(res.body.oracle.recipes[0]).toMatchObject({ outcomes: { executed: 'YES', cancelled: 'NO' } });
-        expect(res.body.oracle.recipes[1]).toMatchObject({
-            url: 'https://api.example.test/oracle/recipes/proposal-lifecycle-v2?proposal={proposalAccount}&market={marketAccount}',
-            outcomes: { executed: 'YES', cancelled: 'NO', expired: 'NO' }
-        });
-        expect(res.body.oracle.externalMarket).toMatchObject({
+        expect(body.support.donations.active).toMatch(/escrow immediately/);
+        expect(body.support.pledges.active).toMatch(/unfunded/);
+        // The court-evidence markets are unchanged by M3.
+        expect(body.oracle.externalMarket).toMatchObject({
             status: 'live_devnet',
             recipeId: 'court-parcel-operation-v1',
             verification: expect.stringContaining('direct SAS account'),
             proofMarket: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/),
-            proofResolution: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{64,88}$/),
-            proofClaim: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{64,88}$/),
             proof: expect.objectContaining({
-                recipeHash: expect.stringMatching(/^[0-9a-f]{64}$/),
-                attestation: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/),
-                evidenceHash: expect.stringMatching(/^[0-9a-f]{64}$/),
                 yesStakeAtomic: '10000', noStakeAtomic: '10000', payoutAtomic: '20000', decimals: 6,
-                chronology: expect.objectContaining({
-                    classification: 'retrospective_integration', prospective: false,
-                    marketOrderValid: true, attestationAfterClose: false
-                })
+                chronology: expect.objectContaining({ classification: 'retrospective_integration', prospective: false, marketOrderValid: true, attestationAfterClose: false })
             })
         });
-        expect(res.body.oracle.externalMarket.prospectiveProof).toMatchObject({
+        expect(body.oracle.externalMarket.prospectiveProof).toMatchObject({
             status: 'market_open_awaiting_post_close_evidence',
-            attestationStatus: 'live_devnet',
-            v2Attestations: 5,
-            proofAttestation: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/),
-            proofTransaction: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{64,88}$/),
-            market: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/),
-            recipeHash: expect.stringMatching(/^sha256:[0-9a-f]{64}$/),
-            closesAt: expect.stringMatching(/^2026-/),
-            transactions: expect.objectContaining({
-                create: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{64,88}$/),
-                yesStake: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{64,88}$/),
-                noStake: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{64,88}$/)
-            }),
             recipeId: 'court-parcel-operation-v2',
             recipe: expect.stringContaining('/oracle/recipes/court-parcel-operation-v2'),
-            schema: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/),
-            schemaRegistration: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{64,88}$/),
-            marketProgramUpgrade: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{64,88}$/),
-            temporalGuard: expect.stringContaining('sourceObservedAt'),
-            requirement: expect.stringContaining('wait for a matching official record')
+            temporalGuard: expect.stringContaining('sourceObservedAt')
         });
-        expect(res.body.market.externalResolution).toMatchObject({
-            status: 'live_devnet', account: 'ExternalMarket',
-            proofMarket: res.body.oracle.externalMarket.proofMarket
-        });
-        expect(res.body.docs).toBe('https://api.example.test/docs/agents');
+        expect(body.market.externalResolution).toMatchObject({ status: 'live_devnet', account: 'ExternalMarket', proofMarket: body.oracle.externalMarket.proofMarket });
     });
 
     it('the /docs page links to the agent quickstart', async () => {

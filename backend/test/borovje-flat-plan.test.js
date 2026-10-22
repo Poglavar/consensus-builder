@@ -1,64 +1,82 @@
-// Regression: old coordinated metadata discards the ground needed by later Borovje proposals.
+// The UPU Borovje buildings fitted to their plots (restatements/upu-borovje/flat-plan.mjs): every traced
+// footprint ends up inside the plot the plan gives it, the two slight overhangs of the trace are clipped,
+// and a building that would lose more than a tenth of itself or split in two is refused.
 import { describe, it, expect } from 'vitest';
 import { readFile } from 'node:fs/promises';
-import { createRequire } from 'node:module';
 import * as turf from '@turf/turf';
 import { buildBorovjeTopology } from '../../restatements/upu-borovje/plan-topology.mjs';
-import { BOROVJE_IDS, repairBorovjeRecords } from '../../restatements/upu-borovje/flat-plan.mjs';
-const require = createRequire(import.meta.url);
-const { shouldFormOwnBuildingParcel } = require('../../frontend/js/proposals/apply/buildings.js');
-const load = async file => JSON.parse(await readFile(new URL(`../../restatements/upu-borovje/data/${file}`, import.meta.url), 'utf8'));
+import { fitBuildingsToPlots, MAX_TRIMMED_SHARE } from '../../restatements/upu-borovje/flat-plan.mjs';
 
-async function fixture() {
-    const [parcelation, streets, buildings] = await Promise.all([
-        load('parcelation.geojson'), load('streets.geojson'), load('buildings.geojson')
-    ]);
-    const topology = buildBorovjeTopology(parcelation, streets, turf);
-    const records = BOROVJE_IDS.map(proposalId => ({ proposalId, coordinatedPlanId: 'upu-borovje', cadastreParcelIds: ['HR-335550-1791/69'] }));
-    topology.readjustments.forEach((block, index) => {
-        records[index].goal = 'reparcellization';
-        records[index].reparcellization = { algorithm: 'upu-plan', poolGeometry: block.geometry,
-            polygons: block.plots.map(p => ({ sourceName: p.properties.name, geometry: p.geometry })) };
-    });
-    records[3].roadProposal = { definition: { polygon: topology.roads.main.geometry } };
-    records[4].roadProposal = { definition: { polygon: topology.roads.west.geometry } };
-    for (const record of records.slice(5,16)) {
-        const name = record.proposalId.replace('upu-borovje-', '').toUpperCase();
-        const building = buildings.features.find(f => f.properties.name === name);
-        record.goal = 'single';
-        record.buildingProposal = { parameters: { typology: 'single', height: 21 } };
-        record.geometry = { buildings: [building] };
-    }
-    return records;
+const load = async file => JSON.parse(await readFile(new URL(`../../restatements/upu-borovje/data/${file}`, import.meta.url), 'utf8'));
+const outsideM2 = (geometry, plot) => {
+    const outside = turf.difference(turf.feature(geometry), turf.feature(plot));
+    return outside ? turf.area(outside) : 0;
+};
+
+async function borovje() {
+    const [parcelation, streets, buildings] = await Promise.all([load('parcelation.geojson'), load('streets.geojson'), load('buildings.geojson')]);
+    const plots = buildBorovjeTopology(parcelation, streets, turf).readjustments.flatMap(block => block.plots);
+    const plotOf = name => plots.find(plot => plot.properties.name === name)?.geometry || null;
+    const traced = buildings.features.filter(item => item.properties.pp !== 'PP-5').map(item => ({ name: item.properties.name, geometry: item.geometry }));
+    return { traced, plotOf };
 }
 
-describe('Borovje ordinary plan repair', () => {
-    it('preserves all members and plot boundaries, fits buildings to their plots, and is idempotent', async () => {
-        const input = await fixture();
-        const before = structuredClone(input);
-        const { records, adjustments } = repairBorovjeRecords(input, turf);
-        expect(input).toEqual(before);
-        expect(records.map(r => r.proposalId)).toEqual(BOROVJE_IDS);
-        records.forEach(r => expect(r.coordinatedPlanId).toBeUndefined());
-        const plots = records.flatMap(r => r.reparcellization?.polygons || []);
-        expect(plots).toEqual(before.flatMap(r => r.reparcellization?.polygons || []));
-        expect(records.slice(3,5).map(r => r.roadProposal)).toEqual(before.slice(3,5).map(r => r.roadProposal));
-        for (const r of records.filter(r => r.buildingProposal)) {
-            expect(shouldFormOwnBuildingParcel(r, r.goal, 1)).toBe(false);
-            const plot = plots.find(p => p.sourceName.toLowerCase() === r.proposalId.replace('upu-borovje-',''));
-            const outside = turf.difference(r.geometry.buildings[0], turf.feature(plot.geometry));
-            expect(outside ? turf.area(outside) : 0).toBeLessThan(1e-6);
-            expect(r.typologyType).toBe('single');
-            expect(r.buildingProposal.parameters.height).toBe(21);
-        }
-        expect(adjustments.find(a => a.name === 'M1-11').trimmedM2).toBeGreaterThan(20);
-        expect(repairBorovjeRecords(records,turf).records).toEqual(records);
+// A 100 m × 20 m rectangle near Borovje, in degrees, at an offset in metres.
+const rectangle = (eastM, northM, widthM = 100, heightM = 20) => {
+    const [w, s] = turf.destination(turf.destination([16.0100, 45.7860], eastM / 1000, 90).geometry.coordinates, northM / 1000, 0).geometry.coordinates;
+    const [e] = turf.destination([w, s], widthM / 1000, 90).geometry.coordinates;
+    const [, n] = turf.destination([w, s], heightM / 1000, 0).geometry.coordinates;
+    return { type: 'Polygon', coordinates: [[[w, s], [e, s], [e, n], [w, n], [w, s]]] };
+};
+
+describe('fitBuildingsToPlots', () => {
+    it('fits all eleven traced buildings inside their plots, clipping only the two overhangs, and leaves the trace alone', async () => {
+        const { traced, plotOf } = await borovje();
+        const before = structuredClone(traced);
+        const fitted = fitBuildingsToPlots(traced, plotOf, turf);
+        expect(traced).toEqual(before);
+        expect(fitted.map(entry => entry.name)).toEqual(traced.map(entry => entry.name));
+        expect(fitted).toHaveLength(11);
+        fitted.forEach((entry, index) => {
+            expect(outsideM2(entry.geometry, plotOf(entry.name)), entry.name).toBeLessThan(0.01);
+            expect(entry.geometry.type).toBe('Polygon');
+            expect(entry.beforeM2 - entry.afterM2).toBeCloseTo(entry.trimmedM2, 1);
+            if (entry.trimmedM2 <= 1e-6) expect(entry.geometry, entry.name).toBe(traced[index].geometry);
+        });
+        const trimmed = Object.fromEntries(fitted.filter(entry => entry.trimmedM2 > 1).map(entry => [entry.name, entry.trimmedM2]));
+        expect(Object.keys(trimmed).sort()).toEqual(['M1-11', 'M1-9']);
+        expect(trimmed['M1-9']).toBeGreaterThan(30);
+        expect(trimmed['M1-9']).toBeLessThan(40);
+        expect(trimmed['M1-11']).toBeGreaterThan(20);
+        expect(trimmed['M1-11']).toBeLessThan(30);
+        // Fitting again changes nothing.
+        const again = fitBuildingsToPlots(fitted.map(entry => ({ name: entry.name, geometry: entry.geometry })), plotOf, turf);
+        again.forEach((entry, index) => {
+            expect(entry.trimmedM2, entry.name).toBeLessThan(0.01);
+            expect(entry.afterM2).toBeCloseTo(fitted[index].afterM2, 1);
+        });
     });
 
-    it('refuses an incomplete plan or a building displaced outside its intended plot', async () => {
-        const records = await fixture();
-        expect(() => repairBorovjeRecords(records.slice(1),turf)).toThrow('22 distinct');
-        records[5].geometry.buildings[0] = turf.transformTranslate(records[5].geometry.buildings[0],100,90,{units:'meters'});
-        expect(() => repairBorovjeRecords(records,turf)).toThrow('more than 10%');
+    it('refuses a building without a plot, or one displaced off it', async () => {
+        const { traced, plotOf } = await borovje();
+        expect(() => fitBuildingsToPlots([{ name: 'M1-99', geometry: traced[0].geometry }], plotOf, turf)).toThrow('Missing intended plot for M1-99.');
+        const displaced = { name: traced[4].name, geometry: turf.transformTranslate(turf.feature(traced[4].geometry), 100, 90, { units: 'meters' }).geometry };
+        expect(() => fitBuildingsToPlots([displaced], plotOf, turf)).toThrow(`${traced[4].name}: clipping would disconnect the building or remove more than 10%.`);
+    });
+
+    it('clips an overhang up to a tenth of the footprint, and never splits a building', () => {
+        expect(MAX_TRIMMED_SHARE).toBe(0.1);
+        const plot = rectangle(0, 0, 100, 40);
+        // 5 m of a 100 m building beyond the plot's east edge: 5 % is clipped.
+        const [overhang] = fitBuildingsToPlots([{ name: 'over', geometry: rectangle(5, 10) }], () => plot, turf);
+        expect(overhang.trimmedM2 / overhang.beforeM2).toBeCloseTo(0.05, 2);
+        expect(outsideM2(overhang.geometry, plot)).toBeLessThan(0.01);
+        // 15 m beyond it: refused.
+        expect(() => fitBuildingsToPlots([{ name: 'far', geometry: rectangle(15, 10) }], () => plot, turf)).toThrow('far: clipping would disconnect the building or remove more than 10%.');
+        // A plot notched in the middle would cut the building in two, though it loses only 2 % of itself.
+        const notch = rectangle(49, 20, 2, 20);
+        const notched = turf.difference(turf.feature(plot), turf.feature(notch)).geometry;
+        const across = rectangle(0, 25, 100, 10);
+        expect(() => fitBuildingsToPlots([{ name: 'split', geometry: across }], () => notched, turf)).toThrow('split: clipping would disconnect the building');
     });
 });

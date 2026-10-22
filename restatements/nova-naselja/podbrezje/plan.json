@@ -2,13 +2,10 @@
   "schema": "consensus-builder.reconstruction-plan.v1",
   "project": "podbrezje",
   "title": "Podbrežje – rekonstrukcija UPU-a",
-  "planTitle": "Podbrežje – izvedene i planirane zgrade, park i prometnice",
   "sourcePlan": "UPU Podbrežje",
   "planYears": "UPU 2007.; izmjene 2011.",
   "implementationStatus": "četiri stambena bloka izvedena; A11 u gradnji; ostatak plana fazno neizveden",
   "generatedAt": "2026-08-14T00:00:00.000Z",
-  "planSlug": "podbrezje",
-  "localPath": "/proposals/podbrezje?city=zagreb",
   "sources": [
     "https://zagreb.hr/izmjene-i-dopune-urbanistickog-plana-ure%C4%91enja-podb/89126",
     "https://www.log-urbis.hr/development-podbrezje",

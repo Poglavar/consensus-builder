@@ -1,11 +1,9 @@
-// Owner offers on the server: proposalRole ('owner-offer' or absent) is served in /proposals/summary
-// only when known, and documented in the agent recipe schema.
+// Owner offers on the read-only proposal rows: proposalRole ('owner-offer' or absent) is served in
+// /proposals/summary only when known. (The agent recipe schema documents designs and agreements since M3.)
 import { describe, it, expect, beforeEach } from 'vitest';
-import { readFileSync } from 'node:fs';
 import request from 'supertest';
 import { createMockPool } from './helpers/mock-pool.js';
 import { createTestApp } from './helpers/create-app.js';
-import { PROPOSAL_ROLES } from '../routes/proposals.js';
 import { summaryDbRow } from './helpers/fixtures.js';
 
 let pool;
@@ -27,13 +25,5 @@ describe('GET /proposals/summary proposalRole', () => {
         expect(res.status).toBe(200);
         expect(res.body.proposals.map(p => p.proposalRole)).toEqual(['owner-offer', null, null]);
         expect(pool.getCalls()[0].sql).toMatch(/proposal_data->>'proposalRole' AS proposal_role/);
-    });
-});
-
-describe('agent recipe schema', () => {
-    it('documents proposalRole as the owner-offer enum', () => {
-        const schema = JSON.parse(readFileSync(new URL('../routes/agent-recipe-schema.json', import.meta.url), 'utf8'));
-        expect(schema.properties.proposalRole.type).toBe('string');
-        expect(schema.properties.proposalRole.enum).toEqual(PROPOSAL_ROLES);
     });
 });

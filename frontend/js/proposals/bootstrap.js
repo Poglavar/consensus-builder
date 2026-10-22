@@ -168,8 +168,6 @@ if (typeof document !== 'undefined') {
 if (typeof window !== 'undefined') {
     window.proposalStorage = proposalStorage;
     window.multiParcelSelection = multiParcelSelection;
-    window.getProposalOwnerAcceptanceState = getProposalOwnerAcceptanceState;
-    window.handleUserRejectProposal = handleUserRejectProposal;
     window.handleProposalParcelClick = handleProposalParcelClick;
 
     window.addEventListener('parcelDataLoaded', (event) => {

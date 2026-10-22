@@ -18,25 +18,31 @@ const anchors = require('../../frontend/js/proposals/approval-anchor.js');
 const Cid = require('../../frontend/js/cid.js');
 
 const ACCOUNT = web3.Keypair.generate().publicKey.toBase58();
-const ONCHAIN = { chainId: 'solana-devnet', proposalId: ACCOUNT };
+// The index's `onchain` once the agreement is minted (agreements/onchain.js onchainFromAccount).
+const ONCHAIN = { chain: 'solana', cluster: 'devnet', programId: web3.Keypair.generate().publicKey.toBase58(), account: ACCOUNT,
+    status: 'active', decision: 'pending' };
 const minted = (overrides = {}) => agreement({ onchain: ONCHAIN, ...overrides });
 // The memo subject is the CID every decision signs.
 const SUBJECT = AGREEMENT_CID;
 const counted = (item, approvals) => approval.validOwnerIds({ ...item, ownerApprovals: approvals }, relay.verifyLensReceipt).sort();
 
 describe('the subject a decision signs', () => {
-    it('is the agreement’s CID before and after it is minted, and never another agreement’s', () => {
+    it('is the agreement’s CID before and after it is minted, and never another agreement’s', async () => {
         expect(approval.subjectOf(agreement())).toBe(AGREEMENT_CID);
         expect(approval.subjectOf(minted())).toBe(AGREEMENT_CID);
         expect(() => approval.subjectOf(agreement({ agreementCid: undefined }))).toThrow(/not a CID/);
         expect(() => approval.subjectOf(agreement({ agreementCid: `solana:devnet:${ACCOUNT}` }))).toThrow(/not a CID/);
         // Minting records the agreement on chain; it does not change what its owners signed.
-        const offChain = decision(wallets.a, 'owner-a');
+        const offChain = await decision(wallets.a, 'owner-a');
         expect(relay.verifyLensReceipt(minted(), offChain)).toBe(true);
         expect(relay.verifyLensReceipt(minted({ agreementCid: COUNTER_AGREEMENT_CID }), offChain)).toBe(false);
         expect(anchors.chainRef(minted())).toEqual({ cluster: 'devnet', account: ACCOUNT });
         expect(anchors.chainRef(agreement())).toBeNull();
-        expect(anchors.chainRef(minted({ onchain: { chainId: '11155111', proposalId: '7' } }))).toBeNull();
+        // Only a Solana account in the index's shape is an anchor; the proposal programs' shape is not.
+        expect(anchors.chainRef(minted({ onchain: { chainId: 'solana-devnet', proposalId: ACCOUNT } }))).toBeNull();
+        expect(anchors.chainRef(minted({ onchain: { ...ONCHAIN, chain: 'evm' } }))).toBeNull();
+        expect(anchors.chainRef(minted({ onchain: { ...ONCHAIN, cluster: 'Devnet 1' } }))).toBeNull();
+        expect(anchors.chainRef(minted({ onchain: { ...ONCHAIN, account: '' } }))).toBeNull();
     });
 });
 
@@ -54,8 +60,8 @@ describe('anchor memos and bundles', () => {
         expect(anchors.memoTexts(null)).toEqual([]);
     });
 
-    it('builds the same bundle and hash from the same decisions in any order', () => {
-        const rows = [decision(wallets.a, 'owner-a', { item: minted(), offset: 1 }), decision(wallets.c, 'owner-c', { item: minted(), offset: 2 })];
+    it('builds the same bundle and hash from the same decisions in any order', async () => {
+        const rows = [await decision(wallets.a, 'owner-a', { item: minted(), offset: 1 }), await decision(wallets.c, 'owner-c', { item: minted(), offset: 2 })];
         const forward = anchors.bundleOf(minted(), rows);
         const backward = anchors.bundleOf(minted(), [...rows].reverse().concat(rows));
         expect(forward).toMatchObject({ schema: anchors.BUNDLE_SCHEMA, subject: SUBJECT, contextHash: approval.contextHash(minted()) });
@@ -93,9 +99,9 @@ describe('anchor memos and bundles', () => {
 
     it('recovers decisions from chain + IPFS alone, rejecting bundles that do not match their memo', async () => {
         const item = minted();
-        const good = anchors.bundleOf(item, [decision(wallets.a, 'owner-a', { item, offset: 1 }), decision(wallets.c, 'owner-c', { item, offset: 2 })]);
-        const later = anchors.bundleOf(item, [decision(wallets.d, 'owner-d', { item, offset: 3 })]);
-        const swapped = { ...later, decisions: [decision(wallets.b, 'owner-b', { item, offset: 4 })] };
+        const good = anchors.bundleOf(item, [await decision(wallets.a, 'owner-a', { item, offset: 1 }), await decision(wallets.c, 'owner-c', { item, offset: 2 })]);
+        const later = anchors.bundleOf(item, [await decision(wallets.d, 'owner-d', { item, offset: 3 })]);
+        const swapped = { ...later, decisions: [await decision(wallets.b, 'owner-b', { item, offset: 4 })] };
         // A counter-agreement's bundle, posted under this agreement's subject.
         const foreign = anchors.bundleOf(minted({ agreementCid: COUNTER_AGREEMENT_CID }), []);
         const files = { 'ipfs://bafkgood000000000000000000': good, 'ipfs://bafklater00000000000000000': later,
@@ -155,7 +161,7 @@ describe('bundle pinning route', () => {
         return { server, store };
     }
     async function decided(server, item) {
-        for (const receipt of [decision(wallets.a, 'owner-a', { item, offset: 1 }), decision(wallets.c, 'owner-c', { item, offset: 2 })]) {
+        for (const receipt of [await decision(wallets.a, 'owner-a', { item, offset: 1 }), await decision(wallets.c, 'owner-c', { item, offset: 2 })]) {
             expect((await request(server).post(`/agreements/${AGREEMENT_CID}/decisions`).send({ receipt })).status).toBe(201);
         }
     }

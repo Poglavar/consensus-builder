@@ -68,6 +68,30 @@ export async function clickMapPoint(page: Page, lng: number, lat: number): Promi
   await page.mouse.click(point.x, point.y);
 }
 
+// A real mouse click on an applied design on the map: a point inside its shape (MapPick.outlineOf, the
+// shape a pick highlights) is brought to `at` (fractions of the map's size, clear of the dock or a
+// sheet) and clicked once nothing covers the map there (a notice can sit over it for a few seconds).
+export async function clickDesignOnMap(page: Page, id: string, at = { x: 0.3, y: 0.45 }): Promise<void> {
+  const point = await page.evaluate(({ id, at }) => {
+    const w = window as any;
+    const features = w.MapPick.outlineOf(w.proposalStorage.getProposal(id));
+    if (!features.length) throw new Error(`design ${id} has no shape on the map`);
+    const [lng, lat] = w.turf.pointOnFeature(features[0]).geometry.coordinates;
+    const size = w.map.getSize();
+    const here = w.map.latLngToContainerPoint([lat, lng]);
+    w.map.panBy([here.x - size.x * at.x, here.y - size.y * at.y], { animate: false });
+    return { lng, lat };
+  }, { id, at });
+  await expect.poll(() => page.evaluate(({ lng, lat }) => {
+    const w = window as any;
+    const onScreen = w.map.latLngToContainerPoint([lat, lng]);
+    const box = w.map.getContainer().getBoundingClientRect();
+    const target = document.elementFromPoint(box.left + onScreen.x, box.top + onScreen.y);
+    return target && target.closest('#map') ? 'map' : (target ? target.outerHTML.slice(0, 120) : 'nothing');
+  }, point), { timeout: 20_000, message: `the map at ${id}'s point` }).toBe('map');
+  await clickMapPoint(page, point.lng, point.lat);
+}
+
 export async function openParcel(page: Page, tab = 'info', id = PARCEL_ID): Promise<void> {
   const center = await page.evaluate(parcelId => {
     const w = window as any;

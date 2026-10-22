@@ -1,88 +1,144 @@
-// What the society and supporter policies read (agents/discovery.js): every city's proposal
-// summaries, paged and deduplicated by authored id, newest first, and the chain state of the minted
-// ones checked as a batch before any of it is applied. Named plans are gone (plan-design-agreement.md
-// M2), so discovery never asks for them.
+// What the support and society agents read (agents/discovery.js): the index's agreements per city,
+// de-duplicated by CID and newest first, each with the chain account its sponsor and CID derive, and the
+// accounts' statuses read from the chain in batches. Only the chain's word counts: an account owned by
+// another program, holding another CID or another sponsor fails the whole read and changes nothing.
 import { describe, expect, it, vi } from 'vitest';
-import { applyProposalStatuses, discoverProposalInputs, SUMMARY_PAGE } from '../agents/discovery.js';
-import { proposalAccountBytes } from './fixtures/proposal-account.js';
-import { PublicKey } from '@solana/web3.js';
-import { PROPOSAL_PROGRAM_ID } from '../agents/lifecycle-actions.js';
+import { Keypair, PublicKey } from '@solana/web3.js';
+import { cidOfObject } from '../cid.js';
+import { AGREEMENT_PAGE, agreementSummary, discoverAgreements, isMinted, isOpen, readAgreementStatuses } from '../agents/discovery.js';
+import { agreementAccountOf } from '../agents/agreement-minter.js';
+import { selectSupportAction } from '../agents/supporter-picker.js';
+import { agreementAccountBytes, agreementAccountInfo } from './fixtures/agreement-account.js';
 
-const accountFor = value => new PublicKey(Buffer.alloc(32, value)).toBase58();
-const minted = (proposalId, value, extra = {}) => ({
-    proposalId, lifecycleStatus: 'Active',
-    onchain: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: accountFor(value) }, ...extra
-});
-const chainInfo = status => ({ owner: new PublicKey(PROPOSAL_PROGRAM_ID), data: proposalAccountBytes({ status }) });
+const NOW = Date.parse('2026-10-22T12:00:00Z');
+const sponsors = [0, 1, 2, 3].map(() => Keypair.generate().publicKey.toBase58());
+const cidOf = n => cidOfObject({ schema: 'agreement/v1', title: `Agreement ${n}` });
 
-function apiFetch(byCity) {
-    return vi.fn(async url => {
-        const parsed = new URL(url);
-        if (parsed.pathname !== '/proposals/summary') throw new Error(`unexpected request ${url}`);
-        const proposals = byCity[parsed.searchParams.get('city') || ''] || [];
-        const offset = Number(parsed.searchParams.get('offset') || 0);
-        const limit = Number(parsed.searchParams.get('limit') || SUMMARY_PAGE);
-        return { proposals: proposals.slice(offset, offset + limit), count: proposals.length };
-    });
+// One GET /agreements row (routes/agreements.js serializeAgreementRow).
+function row(n, { sponsor = sponsors[n % sponsors.length], createdAt = `2026-10-${String(10 + n).padStart(2, '0')}T08:00:00.000Z`, ...extra } = {}) {
+    const designCid = cidOfObject({ schema: 'design/v1', title: `Design ${n}` });
+    return {
+        cid: cidOf(n), city: 'zagreb', title: `Agreement ${n}`, author: `author-${n}`,
+        designCids: [designCid], inputParcelIds: [`HR-1-${n}`], parcelSourceId: null,
+        deadline: '2026-11-01T00:00:00.000Z', status: 'active', onchain: null, createdAt,
+        content: {
+            schema: 'agreement/v1', title: `Agreement ${n}`, author: `author-${n}`, sponsor, createdAt,
+            designs: [{ cid: designCid, goal: 'buildings', title: `Design ${n}` }],
+            rule: { electorate: 'owners', binding: true, approvalConfig: null, lens: [] }
+        },
+        ...extra
+    };
 }
 
-describe('agent proposal discovery', () => {
-    it('pages every city\'s summaries, merges them by authored id, newest first, and never asks for named plans', async () => {
-        const ordinary = Array.from({ length: 1001 }, (_, index) => ({
-            id: String(index + 1), proposalId: `authored-${index + 1}`, createdAt: `2026-01-01T00:00:${String(index % 60).padStart(2, '0')}Z`
-        }));
-        const shared = { id: '5000', proposalId: 'shared-record', createdAt: '2026-10-01T00:00:00Z' };
-        const fetchJson = apiFetch({ '': ordinary, zagreb: [shared, { ...ordinary[0] }] });
-        const result = await discoverProposalInputs({ apiBase: 'http://api', cities: [null, 'zagreb'], fetchJson });
-
-        const offsets = fetchJson.mock.calls.map(([url]) => new URL(url)).filter(url => !url.searchParams.get('city'))
-            .map(url => url.searchParams.get('offset'));
-        expect(offsets).toEqual(['0', '1000']);
-        expect(fetchJson.mock.calls.every(([url]) => new URL(url).pathname === '/proposals/summary')).toBe(true);
-        expect(result).toHaveLength(1002);
-        expect(result[0]).toBe(shared);
-        expect(new Set(result.map(item => item.proposalId)).size).toBe(1002);
-        expect(result.some(item => item.planSlug || String(item.id).startsWith('plan:'))).toBe(false);
+describe('agreementSummary', () => {
+    it('keys an agreement by its CID and derives its chain account from sponsor and CID', () => {
+        const summary = agreementSummary(row(1));
+        expect(summary).toMatchObject({
+            cid: cidOf(1), name: 'Agreement 1', city: 'zagreb', author: 'author-1', sponsor: sponsors[1],
+            account: agreementAccountOf(cidOf(1), sponsors[1]), deadline: '2026-11-01T00:00:00.000Z',
+            designCids: row(1).designCids, inputParcelIds: ['HR-1-1'], chainStatus: null
+        });
+        // The same CID under another sponsor is another account: the PDA commits to both.
+        expect(agreementSummary(row(1, { content: { ...row(1).content, sponsor: sponsors[2] } })).account)
+            .not.toBe(summary.account);
     });
 
-    it('refuses a summary without its authored id rather than merging records by row number', async () => {
-        const fetchJson = apiFetch({ '': [{ id: '7', proposalId: '7' }] });
-        await expect(discoverProposalInputs({ apiBase: 'http://api', cities: [null], fetchJson })).rejects.toThrow(/authored proposalId/);
+    it('has no account without a usable sponsor, and refuses a row without its CID', () => {
+        expect(agreementSummary(row(1, { content: { ...row(1).content, sponsor: null } }))).toMatchObject({ sponsor: null, account: null });
+        expect(agreementSummary(row(1, { content: { ...row(1).content, sponsor: 'not-a-wallet' } })).account).toBeNull();
+        expect(() => agreementSummary({ ...row(1), cid: null })).toThrow(/missing its CID/);
+        // Design CIDs come from the content when the row does not list them.
+        expect(agreementSummary({ ...row(2), designCids: undefined }).designCids).toEqual(row(2).designCids);
     });
 });
 
-describe('applyProposalStatuses', () => {
-    it('applies decoded chain states to the minted proposals only, after checking the whole batch', () => {
-        const proposals = [
-            minted('active', 10, { lifecycleStatus: 'Unknown' }),
-            minted('executed', 11),
-            { proposalId: 'off-chain', lifecycleStatus: 'Active' },
-            minted('expired', 12),
-            minted('cancelled', 13)
-        ];
-        const out = applyProposalStatuses(proposals, [0, 1, 3, 2].map(chainInfo));
-        expect(out).toBe(proposals);
-        expect(proposals.map(item => item.lifecycleStatus)).toEqual(['Active', 'Executed', 'Active', 'Expired', 'Cancelled']);
-        expect(proposals.map(item => item.onchainLifecycleStatus)).toEqual(['Active', 'Executed', undefined, 'Expired', 'Cancelled']);
-        // A local deadline that passed still keeps a chain-Active proposal out of support.
-        const lapsed = [minted('lapsed', 14, { expiresAt: '2000-01-01T00:00:00Z' })];
-        applyProposalStatuses(lapsed, [chainInfo(0)]);
-        expect(lapsed[0]).toMatchObject({ onchainLifecycleStatus: 'Active', lifecycleStatus: 'Expired' });
+describe('discoverAgreements', () => {
+    it('reads each city once, merges by CID and orders newest first', async () => {
+        const shared = row(5);
+        const index = {
+            listAgreements: vi.fn(async ({ city }) => ({
+                agreements: city === 'zagreb' ? [shared, row(1)] : [row(3), { ...shared, title: 'second copy' }],
+                count: 2
+            }))
+        };
+        const log = vi.fn();
+        const result = await discoverAgreements({ index, cities: ['zagreb', null], log });
+        expect(index.listAgreements.mock.calls.map(([args]) => args)).toEqual([
+            { city: 'zagreb', limit: AGREEMENT_PAGE }, { city: null, limit: AGREEMENT_PAGE }
+        ]);
+        expect(result.map(item => item.cid)).toEqual([cidOf(5), cidOf(3), cidOf(1)]);
+        // The first copy of a CID is the one kept.
+        expect(result[0].name).toBe('Agreement 5');
+        expect(log).not.toHaveBeenCalled();
     });
 
-    it('refuses a missing, foreign or malformed account, and then changes nothing', () => {
-        const first = () => [minted('first', 20), minted('second', 21)];
-        expect(() => applyProposalStatuses([minted('only', 22)], [null])).toThrow(/chain account .* is missing/);
-        expect(() => applyProposalStatuses([minted('only', 22)], [{ owner: PublicKey.default, data: proposalAccountBytes() }]))
-            .toThrow(/not owned by the proposal program/);
-        expect(() => applyProposalStatuses([minted('only', 22)], [{ owner: new PublicKey(PROPOSAL_PROGRAM_ID), data: Buffer.alloc(64) }]))
-            .toThrow(/not a Proposal account/);
-        expect(() => applyProposalStatuses([minted('only', 22)], [chainInfo(9)])).toThrow(/invalid on-chain status 9/);
-        expect(() => applyProposalStatuses(first(), [chainInfo(1)])).toThrow(/received 1 chain states for 2/);
+    it('says so when a page is cut at the index limit, never silently', async () => {
+        const rows = Array.from({ length: AGREEMENT_PAGE }, (_, n) => row(n, { content: { ...row(n).content, sponsor: null } }));
+        const log = vi.fn();
+        const result = await discoverAgreements({ index: { listAgreements: async () => ({ agreements: rows }) }, cities: [null], log });
+        expect(result).toHaveLength(AGREEMENT_PAGE);
+        expect(log).toHaveBeenCalledWith(`all cities: read the newest ${AGREEMENT_PAGE} agreements (the index answers at most that many)`);
+    });
+});
 
-        const untouched = first();
-        expect(() => applyProposalStatuses(untouched, [chainInfo(1), { owner: PublicKey.default, data: proposalAccountBytes() }]))
-            .toThrow(/not owned by the proposal program/);
-        expect(untouched.map(item => [item.lifecycleStatus, item.onchainLifecycleStatus])).toEqual([['Active', undefined], ['Active', undefined]]);
+describe('readAgreementStatuses', () => {
+    const summaries = () => [row(0), row(1), row(2), row(3, { content: { ...row(3).content, sponsor: null } })].map(agreementSummary);
+    const info = (summary, status, extra = {}) => agreementAccountInfo({ cid: summary.cid, authority: summary.sponsor, status, ...extra });
+    function chain(byAccount) {
+        return { getMultipleAccountsInfo: vi.fn(async keys => keys.map(key => byAccount.get(key.toBase58()) ?? null)) };
+    }
+
+    it('reads the minted accounts in batches and takes the status from the chain, not the index', async () => {
+        const agreements = summaries();
+        const connection = chain(new Map([
+            [agreements[0].account, info(agreements[0], 1)],
+            [agreements[1].account, info(agreements[1], 0)]
+        ]));
+        const out = await readAgreementStatuses(agreements, connection, { env: { SOLANA_RPC_MAX_ACCOUNTS: '2' } });
+        expect(out).toBe(agreements);
+        // Three accounts in batches of two; the agreement without a sponsor has none to read.
+        expect(connection.getMultipleAccountsInfo.mock.calls.map(([keys]) => keys.length)).toEqual([2, 1]);
+        expect(connection.getMultipleAccountsInfo.mock.calls.flatMap(([keys]) => keys.map(key => key.toBase58())))
+            .toEqual(agreements.slice(0, 3).map(item => item.account));
+        expect(agreements.map(item => item.chainStatus)).toEqual(['executed', 'active', null, null]);
+        expect(agreements.map(isMinted)).toEqual([true, true, false, false]);
+        // The index still said active for the executed one: a supporter never picks it.
+        const choice = selectSupportAction({ day: '2026-10-22', persona: { name: 'supporter-01' }, agreements: [agreements[0]], now: NOW });
+        expect(choice.selected).toBeNull();
+    });
+
+    it.each([
+        ['owned by another program', summary => ({ ...agreementAccountInfo({ cid: summary.cid, authority: summary.sponsor }), owner: PublicKey.default }), /not owned by the agreement program/],
+        ['not an Agreement account', summary => ({ ...agreementAccountInfo({ cid: summary.cid, authority: summary.sponsor }), data: Buffer.alloc(296) }), /is not an Agreement account/],
+        ['holding another CID', summary => agreementAccountInfo({ cid: cidOf(99), authority: summary.sponsor }), /holds bafkrei/],
+        ['holding another sponsor', summary => agreementAccountInfo({ cid: summary.cid, authority: sponsors[3] }), new RegExp(`holds .* of ${sponsors[3]}`)],
+        ['truncated', summary => ({ ...agreementAccountInfo({ cid: summary.cid, authority: summary.sponsor }), data: agreementAccountBytes({ cid: summary.cid, authority: summary.sponsor }).subarray(0, 140) }), /truncated/]
+    ])('fails the whole read on an account %s and changes nothing', async (_label, bad, message) => {
+        const agreements = summaries();
+        const connection = chain(new Map([
+            [agreements[0].account, info(agreements[0], 0)],
+            [agreements[1].account, bad(agreements[1])]
+        ]));
+        await expect(readAgreementStatuses(agreements, connection)).rejects.toThrow(message);
+        expect(agreements.map(item => item.chainStatus)).toEqual([null, null, null, null]);
+    });
+
+    it('propagates an RPC failure and calls nothing for agreements without accounts', async () => {
+        await expect(readAgreementStatuses(summaries(), { getMultipleAccountsInfo: async () => { throw new Error('RPC offline'); } }))
+            .rejects.toThrow('RPC offline');
+        const connection = { getMultipleAccountsInfo: vi.fn() };
+        const unminted = [agreementSummary(row(3, { content: { ...row(3).content, sponsor: null } }))];
+        expect(await readAgreementStatuses(unminted, connection)).toBe(unminted);
+        expect(connection.getMultipleAccountsInfo).not.toHaveBeenCalled();
+    });
+});
+
+describe('isOpen', () => {
+    it('is Active on chain and before the deadline (or with none)', () => {
+        const base = { account: 'account', chainStatus: 'active', deadline: '2026-10-22T12:00:01Z' };
+        expect(isOpen(base, NOW)).toBe(true);
+        expect(isOpen({ ...base, deadline: null }, NOW)).toBe(true);
+        expect(isOpen({ ...base, deadline: '2026-10-22T12:00:00Z' }, NOW)).toBe(false);
+        for (const chainStatus of ['executed', 'cancelled', 'expired', null]) expect(isOpen({ ...base, chainStatus }, NOW)).toBe(false);
     });
 });

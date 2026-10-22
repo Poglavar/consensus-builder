@@ -72,12 +72,11 @@ describe('lens/run.mjs --kind', () => {
         expect(run.stderr).toMatch(/unknown --kind oracle/);
     });
 
-    it('serves /lens/status with the kind it was started with (dry run, owners file, no PG)', async () => {
-        const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'lens-kind-'));
-        const owners = path.join(directory, 'owners.json');
-        fs.writeFileSync(owners, '[]');
+    // Starts lens/run.mjs in dry run on a free-ish port and reads its /lens/status, then stops it.
+    async function statusOf(args, env = {}) {
         const port = 40000 + Math.floor(Math.random() * 20000);
-        const child = spawn(process.execPath, [LENS_RUN, '--dry-run', '--kind', 'lifecycle', '--owners', owners, '--port', String(port), '--host', '::'], { stdio: ['ignore', 'pipe', 'pipe'] });
+        const child = spawn(process.execPath, [LENS_RUN, '--dry-run', ...args, '--port', String(port), '--host', '::'],
+            { stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, ...env } });
         try {
             await new Promise((resolve, reject) => {
                 let output = '';
@@ -86,10 +85,41 @@ describe('lens/run.mjs --kind', () => {
                 child.stderr.on('data', onData);
                 child.on('exit', code => reject(new Error(`lens/run.mjs exited ${code}: ${output}`)));
             });
-            const status = await (await fetch(`http://127.0.0.1:${port}/lens/status`)).json();
-            expect(status).toMatchObject({ kind: 'lifecycle', dryRun: true });
+            return await (await fetch(`http://127.0.0.1:${port}/lens/status`)).json();
         } finally {
             child.kill('SIGTERM');
+        }
+    }
+
+    it('serves /lens/status with the kind it was started with, checking approval facts against the devnet owner registry', async () => {
+        const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'lens-kind-'));
+        const owners = path.join(directory, 'owners.json');
+        fs.writeFileSync(owners, '[]');
+        try {
+            // Dry run with an owners file: no database, so no agreement index for decisions.
+            const status = await statusOf(['--kind', 'lifecycle', '--owners', owners], { LENS_OPERATOR_TOKEN: 'test-operator' });
+            expect(status).toMatchObject({ kind: 'lifecycle', dryRun: true });
+            expect(status.approval).toMatchObject({ enabled: true, source: 'devnet-owners', identity: 'devnet-registry' });
+            expect(status.decisions).toEqual({ operatorToken: true, agreementIndex: false });
+        } finally {
+            fs.rmSync(directory, { recursive: true, force: true });
+        }
+    }, 20000);
+
+    it('checks approval facts against a --rights file instead when one is given', async () => {
+        const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'lens-rights-'));
+        const owners = path.join(directory, 'owners.json');
+        const rights = path.join(directory, 'rights.json');
+        fs.writeFileSync(owners, '[]');
+        fs.writeFileSync(rights, JSON.stringify({
+            schema: 'lens-rights-registry/v1',
+            parcels: [{ parcelId: 'HR-335550-1/1', areaM2: 412, owners: [{ ownerId: 'owner-7f3a', share: '1/1' }] }],
+            signers: [{ ownerId: 'owner-7f3a', wallet: 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ' }]
+        }));
+        try {
+            const status = await statusOf(['--owners', owners, '--rights', rights]);
+            expect(status.approval).toMatchObject({ enabled: true, source: 'file', parcels: 1, owners: 1, authorities: 0, signers: 1 });
+        } finally {
             fs.rmSync(directory, { recursive: true, force: true });
         }
     }, 20000);

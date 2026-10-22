@@ -20,7 +20,7 @@ function usage(code = 0) {
         'Choose exactly one: --dry-run | --live',
         'Required: --url <backend>',
         'Live only: --keypair <Solana devnet keypair JSON>',
-        'Optional: --subject <proposal account> (omit for latest) --market <market account> --rpc <URL> --json'
+        'Optional: --subject <agreement account> (omit for latest) --market <market account> --rpc <URL> --json'
     ].join('\n'));
     process.exit(code);
 }
@@ -56,7 +56,7 @@ function assertBundle(bundle, subject) {
 async function main() {
     const args = argsOf(process.argv.slice(2));
     const challenge = await fetchOracleFactChallenge({
-        baseUrl: args.url, proposalAccount: args.subject, marketAccount: args.market
+        baseUrl: args.url, subject: args.subject, marketAccount: args.market
     });
     const accept = challenge.accepts[0];
     const result = {
@@ -72,7 +72,7 @@ async function main() {
             secretKey: secretFrom(args.keypair), rpcUrl: args.rpc
         });
         const paid = await buyOracleFact({
-            baseUrl: args.url, proposalAccount: args.subject, marketAccount: args.market,
+            baseUrl: args.url, subject: args.subject, marketAccount: args.market,
             paidFetch: client.paidFetch
         });
         if (paid.status !== 200) throw new Error(`paid fact request returned ${paid.status}: ${JSON.stringify(paid.body)}`);

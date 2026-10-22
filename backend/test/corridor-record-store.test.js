@@ -43,7 +43,6 @@ beforeAll(() => {
     // Collaborators from sibling classic scripts, as the boundary needs them and no more.
     Object.assign(globalThis, {
         normalizeParcelIdList: ids => (Array.isArray(ids) ? ids.map(String) : []),
-        normalizeOwnerAcceptances: value => value || {},
         normalizeProposalStatusAxes: () => { },
         normalizeLensEntries: () => [],
         isLocalProposalId: id => /^local-/.test(String(id)),

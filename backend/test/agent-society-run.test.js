@@ -1,6 +1,6 @@
 // The society runner's pure pieces: multi-turn and slotted run ids and seeds, invocation caps across
-// turns, persona loading, city discovery, YES/NO stake and claim execution wiring, the optional LLM
-// choice parser, and the lifecycle-01 lens member wiring.
+// turns, persona loading, city discovery, YES/NO stake and claim execution wiring on the agreement
+// account, the optional LLM choice parser over agreement options, and the lifecycle-01 lens member wiring.
 import { describe, expect, it, vi } from 'vitest';
 import { MAX_SOCIETY_TURNS, societyBudget, societyPolicy, societySlot, societyTurnSpent, societyTurns } from '../agents/run-policy.js';
 import { buildChoiceRequest, parseChoice } from '../agents/society-llm.js';
@@ -73,7 +73,7 @@ describe('society personas', () => {
         expect(() => loadSocietyPersona('nobody')).toThrow(/no persona named/);
     });
 
-    it('runs lifecycle-01 as a lens member whose operator token is the retire phase\'s variable', () => {
+    it('runs lifecycle-01 as a lens member whose operator token is the variable its service names', () => {
         const persona = loadLensMemberPersona('lifecycle-01');
         expect(persona).toMatchObject({ wallet: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/), keypairPath: '~/.config/solana/ugt-lifecycle-01.json', service: { port: 3096, kind: 'lifecycle' } });
         const dry = lensMemberCommand(persona, { sourceEnv: { AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN: 'secret' } });
@@ -141,64 +141,78 @@ describe('society execution wiring', () => {
         const calls = [];
         const adapters = {
             ensureMarketAndStake: async args => { calls.push(['stake', args]); return { stakeSignature: 's', replayed: false }; },
-            resolveProposalMarket: async args => { calls.push(['resolve', args]); return { signature: 'r', replayed: false, outcome: 'NO' }; },
-            claimProposalMarket: async args => { calls.push(['claim', args]); return { signature: 'c', replayed: false, claimed: true }; }
+            ensurePledgeBookAndSet: async args => { calls.push(['pledge', args]); return { signature: 'p', replayed: false }; },
+            revokePledge: async args => { calls.push(['revoke', args]); return { signature: 'v', replayed: false }; },
+            resolveAgreementMarket: async args => { calls.push(['resolve', args]); return { signature: 'r', replayed: false, outcome: 'NO' }; },
+            claimAgreementMarket: async args => { calls.push(['claim', args]); return { signature: 'c', replayed: false, claimed: true }; }
         };
         return { calls, adapters };
     }
 
-    it('stakes YES on side 1 and NO on side 0, both as a target amount so a retry replays', async () => {
+    it('stakes YES on side 1 and NO on side 0 on the agreement account, both as a target amount so a retry replays', async () => {
         const { calls, adapters } = recorder();
-        await execute({ action: { type: 'stake', side: 'yes', amount: '0.02', usdc: 0.02, proposalAccount: 'PDA-a' }, keypair, caps, adapters });
-        await execute({ action: { type: 'stake', side: 'no', amount: '0.01', usdc: 0.01, proposalAccount: 'PDA-b' }, keypair, caps, adapters });
-        expect(calls.map(([, args]) => [args.proposalPda, args.side, args.amountAtomic, args.targetAmount])).toEqual([
-            ['PDA-a', 1, 20000n, true], ['PDA-b', 0, 10000n, true]
+        await execute({ action: { type: 'stake', side: 'yes', amount: '0.02', usdc: 0.02, agreementCid: 'cid-a', account: 'account-a' }, keypair, caps, adapters });
+        await execute({ action: { type: 'stake', side: 'no', amount: '0.01', usdc: 0.01, agreementCid: 'cid-b', account: 'account-b' }, keypair, caps, adapters });
+        expect(calls.map(([, args]) => [args.subject, args.side, args.amountAtomic, args.targetAmount])).toEqual([
+            ['account-a', 1, 20000n, true], ['account-b', 0, 10000n, true]
         ]);
         await expect(execute({ action: { type: 'stake', side: 'yes', amount: '0.06', usdc: 0.06 }, keypair, caps, adapters })).rejects.toThrow(/USDC_CAP/);
+        expect(calls).toHaveLength(2);
+    });
+
+    it('pledges and revokes on the agreement account', async () => {
+        const { calls, adapters } = recorder();
+        await execute({ action: { type: 'pledge', amount: '0.05', usdc: 0.05, agreementCid: 'cid-a', account: 'account-a' }, keypair, caps, adapters });
+        await execute({ action: { type: 'revokePledge', usdc: 0, agreementCid: 'cid-a', account: 'account-a' }, keypair, caps, adapters });
+        expect(calls.map(([name, args]) => [name, args.subject, args.amountAtomic])).toEqual([['pledge', 'account-a', 50000n], ['revoke', 'account-a', undefined]]);
     });
 
     it('claims, resolving the market first only when the action says so', async () => {
         const plain = recorder();
-        const result = await execute({ action: { type: 'claim', side: 'yes', usdc: 0, proposalAccount: 'PDA-w' }, keypair, caps, adapters: plain.adapters });
-        expect(plain.calls.map(([name, args]) => [name, args.proposalAccount, args.side])).toEqual([['claim', 'PDA-w', 'yes']]);
+        const result = await execute({ action: { type: 'claim', side: 'yes', usdc: 0, agreementCid: 'cid-w', account: 'account-w' }, keypair, caps, adapters: plain.adapters });
+        expect(plain.calls.map(([name, args]) => [name, args.subject, args.side])).toEqual([['claim', 'account-w', 'yes']]);
         expect(result).toEqual({ resolveSignature: null, outcome: null, signature: 'c', replayed: false });
         const first = recorder();
-        const settled = await execute({ action: { type: 'claim', side: 'no', resolveFirst: true, usdc: 0, proposalAccount: 'PDA-t' }, keypair, caps, adapters: first.adapters });
-        expect(first.calls.map(([name]) => name)).toEqual(['resolve', 'claim']);
+        const settled = await execute({ action: { type: 'claim', side: 'no', resolveFirst: true, usdc: 0, agreementCid: 'cid-t', account: 'account-t' }, keypair, caps, adapters: first.adapters });
+        expect(first.calls.map(([name, args]) => [name, args.subject])).toEqual([['resolve', 'account-t'], ['claim', 'account-t']]);
         expect(settled).toMatchObject({ resolveSignature: 'r', signature: 'c', outcome: 'NO', replayed: false });
         const replay = recorder();
-        replay.adapters.claimProposalMarket = async () => ({ signature: null, replayed: true, claimed: true });
-        expect(await execute({ action: { type: 'claim', side: 'yes', usdc: 0, proposalAccount: 'PDA-w' }, keypair, caps, adapters: replay.adapters })).toMatchObject({ replayed: true });
+        replay.adapters.claimAgreementMarket = async () => ({ signature: null, replayed: true, claimed: true });
+        expect(await execute({ action: { type: 'claim', side: 'yes', usdc: 0, agreementCid: 'cid-w', account: 'account-w' }, keypair, caps, adapters: replay.adapters })).toMatchObject({ replayed: true });
     });
 
     it('words a YES bet as backing, a NO bet as opposition, and a claim as collecting', () => {
         const persona = { name: 'backer-01' };
-        expect(activityMessage(persona, { type: 'stake', side: 'yes', amount: '0.02', proposalName: 'Pocket park' })).toBe('backer-01 bet YES 0.02 USDC on proposal Pocket park.');
-        expect(activityMessage(persona, { type: 'stake', side: 'no', amount: '0.01', proposalName: 'Tower' })).toBe('backer-01 bet NO 0.01 USDC against proposal Tower.');
-        expect(activityMessage(persona, { type: 'claim', side: 'no', payout: '0.0125', resolveFirst: true, proposalName: 'Tower' }))
-            .toBe('backer-01 collected 0.0125 USDC from its NO bet on proposal Tower after settling its market.');
+        expect(activityMessage(persona, { type: 'stake', side: 'yes', amount: '0.02', agreementName: 'Pocket park' })).toBe('backer-01 bet YES 0.02 USDC on agreement Pocket park.');
+        expect(activityMessage(persona, { type: 'stake', side: 'no', amount: '0.01', agreementName: 'Tower' })).toBe('backer-01 bet NO 0.01 USDC against agreement Tower.');
+        expect(activityMessage(persona, { type: 'claim', side: 'no', payout: '0.0125', resolveFirst: true, agreementName: 'Tower' }))
+            .toBe('backer-01 collected 0.0125 USDC from its NO bet on agreement Tower after settling its market.');
+        expect(activityMessage(persona, { type: 'pledge', amount: '0.05', agreementName: 'Tower' })).toBe('backer-01 pledged 0.05 USDC to agreement Tower.');
+        expect(activityMessage(persona, { type: 'revokePledge', agreementName: 'Tower' })).toBe('backer-01 revoked its pledge to agreement Tower.');
     });
 });
 
 describe('optional LLM choice among policy options', () => {
     const options = [
-        { proposalId: 'a', evidence: { detail: 'GFA 4800 m²' }, action: { type: 'stake', side: 'no', amount: '0.01', proposalId: 'a', proposalName: 'A', rationale: 'densest' } },
-        { proposalId: 'b', action: { type: 'stake', side: 'no', amount: '0.01', proposalId: 'b', proposalName: 'B', rationale: 'second' } }
+        { agreementCid: 'cid-a', evidence: { detail: 'GFA 4800 m²' }, action: { type: 'stake', side: 'no', amount: '0.01', agreementCid: 'cid-a', agreementName: 'A', rationale: 'densest' } },
+        { agreementCid: 'cid-b', action: { type: 'stake', side: 'no', amount: '0.01', agreementCid: 'cid-b', agreementName: 'B', rationale: 'second' } }
     ];
 
     it('builds one request listing only the options', () => {
         const llm = createAgentLlm({ client: { messages: { create() { throw new Error('no network in tests'); } } } });
         const request = buildChoiceRequest({ llm, runId: '2026-10-01-preservationist-01-t2', persona: { name: 'preservationist-01' }, role: 'contrarian', seed: '2026-10-01:t2', options });
         expect(request.custom_id).toBe('2026-10-01-preservationist-01-t2_preservationist-01');
-        expect(JSON.parse(request.params.messages[0].content[0].text).options.map(option => option.optionId)).toEqual(['stake:a', 'stake:b']);
+        const listed = JSON.parse(request.params.messages[0].content[0].text).options;
+        expect(listed.map(option => option.optionId)).toEqual(['stake:cid-a', 'stake:cid-b']);
+        expect(listed[0]).toMatchObject({ agreementCid: 'cid-a', agreementName: 'A', evidence: 'GFA 4800 m²', policyRationale: 'densest' });
         expect(request.params.system).toMatch(/preservationist/);
     });
 
     it('accepts a listed option or none, and refuses anything else', () => {
-        expect(parseChoice(JSON.stringify({ choice: 'stake:b', rationale: 'smaller but closer to the river' }), options)).toMatchObject({ option: options[1], rejected: null });
+        expect(parseChoice(JSON.stringify({ choice: 'stake:cid-b', rationale: 'smaller but closer to the river' }), options)).toMatchObject({ option: options[1], rejected: null });
         expect(parseChoice(JSON.stringify({ choice: 'none', rationale: 'nothing worth opposing' }), options)).toMatchObject({ option: null, rejected: null });
         expect(parseChoice(JSON.stringify({ choice: 'stake:zzz', rationale: 'x' }), options).rejected).toMatch(/unknown optionId/);
         expect(parseChoice('not json', options).rejected).toMatch(/unparseable/);
-        expect(parseChoice(JSON.stringify({ choice: 'stake:a', rationale: '' }), options).rejected).toMatch(/missing rationale/);
+        expect(parseChoice(JSON.stringify({ choice: 'stake:cid-a', rationale: '' }), options).rejected).toMatch(/missing rationale/);
     });
 });

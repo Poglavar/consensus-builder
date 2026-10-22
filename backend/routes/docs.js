@@ -1,16 +1,35 @@
 import fs from 'fs';
 import path from 'path';
+import { createRequire } from 'module';
 import { fileURLToPath } from 'url';
 import { marked } from 'marked';
-import { readX402Config, readX402OracleConfig } from '../utils/x402-payment.js';
+import { readX402OracleConfig } from '../utils/x402-payment.js';
 import { describeDatabase } from '../db/connection.cjs';
-import { EVENT_TYPE as LAND_EVENT_TYPE, RECIPE_ID as LAND_RECIPE_ID, RECIPE_V2_ID as LAND_RECIPE_V2_ID } from '../oracle/proposal-lifecycle.js';
+import { AGREEMENT_EXECUTED_EVENT_TYPE, AGREEMENT_LIFECYCLE_EVENT_TYPE } from '../oracle/agreement-lifecycle.js';
+import { AGREEMENT_EXECUTION_RECIPE_ID, SETTLEMENT } from '../oracle/market-recipe.js';
+import { AGREEMENT_PUBLISHED_EVENT_TYPE, OWNERSHIP_EVENT_TYPE, PARCEL_PROGRAM_ID } from '../oracle/parcel-history.js';
+import { LENS_SCHEMAS, SAS_PROGRAM_ID } from '../oracle/lens-schemas.js';
 import { COURT_RECIPE_ID, COURT_RECIPE_V2_ID, COURT_SCHEMA_V2 } from '../oracle/court-parcel-operation.js';
 import { classifyExternalMarketChronology } from '../oracle/external-market-chronology.js';
 import { PROSPECTIVE_MARKET } from '../oracle/prospective-market-public.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const require = createRequire(import.meta.url);
+// The program codecs hold the program ids and seeds the agent docs print (blockchain/solana/programs/*).
+const AgreementClient = require('../../frontend/js/solana/agreement-client.js');
+const MarketClient = require('../../frontend/js/solana/market-client.js');
+const PledgeClient = require('../../frontend/js/solana/pledge-client.js');
+const USDC_DEVNET_MINT = PledgeClient.constants.USDC_DEVNET_MINT;
+// The tools backend/agents/mcp-server.mjs registers, in its order.
+const MCP_TOOLS = Object.freeze([
+    'ugt_capabilities', 'ugt_activity', 'ugt_list_agreements', 'ugt_get_agreement', 'ugt_list_attesters',
+    'ugt_support_status', 'ugt_oracle_events', 'ugt_inspect_verified_fact', 'ugt_publish_design',
+    'ugt_propose_agreement', 'ugt_mint_agreement', 'ugt_fund_agreement', 'ugt_bet_on_agreement',
+    'ugt_buy_verified_fact', 'ugt_request_ownership', 'ugt_pledge', 'ugt_donate', 'ugt_refund_donation',
+    'ugt_void_pledge', 'ugt_revoke_pledge', 'ugt_release_donations', 'ugt_fulfill_pledge',
+    'ugt_resolve_market', 'ugt_claim_market', 'ugt_resolve_external_market', 'ugt_claim_external_market'
+]);
 
 // Cache for database schema to serve previous version if refresh fails
 let cachedDatabaseSchema = null;
@@ -172,33 +191,29 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
     // The base URL printed into the agent docs. Display only (never persisted), so falling back to
     // the request's own host is fine here; PUBLIC_API_BASE_URL wins when set.
     const docsBaseUrl = (req) => (env.PUBLIC_API_BASE_URL || `${req.protocol}://${req.get('host')}`).replace(/\/$/, '');
-    const solanaProgramId = (name) => {
-        try {
-            const addresses = JSON.parse(fs.readFileSync(path.join(__dirname, '../../frontend/contracts/addresses.json'), 'utf8'));
-            return addresses['solana-devnet']?.[name] || '(unknown)';
-        } catch {
-            return '(unknown)';
-        }
-    };
-    const marketProgramId = () => solanaProgramId('ProposalMarket');
-    const pledgeProgramId = () => solanaProgramId('ProposalPledge');
-    const proposalProgramId = () => solanaProgramId('ProposalNFT');
-    const parcelProgramId = () => solanaProgramId('ParcelNFT');
+    const agreementProgramId = AgreementClient.constants.AGREEMENT_PROGRAM_ID;
+    const marketProgramId = MarketClient.constants.PROGRAM_ID;
+    const pledgeProgramId = PledgeClient.constants.PROGRAM_ID;
+    // The agreement program's id is a readable placeholder until its first devnet deploy
+    // (programs/agreement/README.md, "Program id"); the docs say so instead of sending agents to it.
+    const agreementProgramDeployed = !/^Agreement1+$/.test(agreementProgramId);
+    const agreementProgramStatus = agreementProgramDeployed
+        ? 'deployed on devnet'
+        : 'pending its devnet deployment: the id is a placeholder, so minting, funding and agreement markets fail until it is deployed';
 
-    // GET /docs/agents - the agent quickstart: how to pay for and post a proposal over x402.
+    // GET /docs/agents - the agent quickstart: publish designs, propose an agreement, mint it and back it.
     app.get('/docs/agents', (req, res) => {
         try {
-            const x402 = readX402Config(env);
             const oracleX402 = readX402OracleConfig(env);
             const markdown = fs.readFileSync(path.join(__dirname, 'docs-agents.md'), 'utf8')
                 .replace(/\$\(base\)/g, docsBaseUrl(req))
-                .replace(/\$\(price\)/g, x402.priceProposal || '(price not configured on this server)')
                 .replace(/\$\(oraclePrice\)/g, oracleX402.priceOracleFact || '(price not configured on this server)')
-                .replace(/\$\(network\)/g, x402.network || 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1')
-                .replace(/\$\(marketProgram\)/g, marketProgramId())
-                .replace(/\$\(pledgeProgram\)/g, pledgeProgramId())
-                .replace(/\$\(proposalProgram\)/g, proposalProgramId())
-                .replace(/\$\(parcelProgram\)/g, parcelProgramId())
+                .replace(/\$\(network\)/g, oracleX402.network || 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1')
+                .replace(/\$\(agreementProgram\)/g, agreementProgramId)
+                .replace(/\$\(agreementProgramStatus\)/g, agreementProgramStatus)
+                .replace(/\$\(marketProgram\)/g, marketProgramId)
+                .replace(/\$\(pledgeProgram\)/g, pledgeProgramId)
+                .replace(/\$\(parcelProgram\)/g, PARCEL_PROGRAM_ID)
                 .replace(/\$\(date\)/g, new Date().toLocaleDateString());
             res.setHeader('Content-Type', 'text/html');
             res.send(renderDocPage(marked(markdown), 'Agent quickstart — Urban Game Theory'));
@@ -208,130 +223,229 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
         }
     });
 
-    // GET /docs/agents.json - the minimal recipe as JSON Schema plus the live payment terms.
+    // GET /docs/agents.json - what an agent publishes (design/v1 and agreement/v1 as JSON Schema), the
+    // endpoints, the programs, the MCP tools and the live oracle-fact payment terms.
     app.get('/docs/agents.json', (req, res) => {
         try {
             const schema = JSON.parse(fs.readFileSync(path.join(__dirname, 'agent-recipe-schema.json'), 'utf8'));
-            const x402 = readX402Config(env);
             const oracleX402 = readX402OracleConfig(env);
             const base = docsBaseUrl(req);
+            const decision = LENS_SCHEMAS.decision;
             // Live payment terms: never served from a cache (also reached as /agents.json, and through
             // the main site's nginx proxy, which passes this header on).
             res.set('Cache-Control', 'no-store');
             res.json({
                 docs: `${base}/docs/agents`,
                 schema,
+                // The one paid resource: recipe-bound verified facts about agreement accounts.
                 x402: {
-                    enabled: x402.enabled,
-                    network: x402.network,
-                    facilitatorUrl: x402.facilitatorUrl,
-                    payTo: x402.payTo,
-                    priceProposal: x402.priceProposal,
-                    oracleFactsEnabled: oracleX402.enabled,
+                    enabled: oracleX402.enabled,
+                    resource: `${base}/agent/oracle/facts`,
+                    query: {
+                        subject: 'the agreement account; omitted, the newest terminal agreement fact',
+                        market: 'optional: the agreement\'s market account, bound into the fact\'s recipe'
+                    },
+                    network: oracleX402.network,
+                    facilitatorUrl: oracleX402.facilitatorUrl,
+                    payTo: oracleX402.payTo,
                     priceOracleFact: oracleX402.priceOracleFact,
                     paymentFlow: 'upfront',
-                    usdcMint: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU'
+                    usdcMint: USDC_DEVNET_MINT
                 },
+                writes: {
+                    origin: 'POST /pins, /designs, /agreements, /agreements/{cid}/decisions and /agreements/{cid}/onchain need an Origin header of the app: https://urbangametheory.xyz in production (any localhost origin in development).',
+                    readOnlyPosts: ['/designs/binding', '/designs/batch', '/parcels/under', '/buildings/footprints'],
+                    pinLimit: '30 pins per 15 minutes per client; a 429 carries retryAfterSeconds',
+                    idempotence: 'every object is filed under its CID: publishing it again answers 409 with the row the index holds'
+                },
+                flow: [
+                    'POST /designs/binding { site, toleranceM? }: the parcels a site takes (free; nothing stored)',
+                    'POST /pins { kind: "design", cid, bytes }, then POST /designs { cid, content }: one per design; the row carries its binding (a parcel layout waits for its agreement)',
+                    'POST /pins { kind: "agreement", cid, bytes }, then POST /agreements { cid, content, designs? }: inputs are exactly the union of the designs\' bindings; designs carries the linked designs the index does not hold yet',
+                    'a non-binding agreement (an owner or community vote) stops here: it is a poll in the index, never minted, with no market',
+                    'a binding owners\' agreement, as its sponsor: create (and fund) the account on the agreement program, then POST /agreements/{cid}/onchain { chain: "solana", cluster: "devnet", account, signature }',
+                    'its owners relay signed decisions to /agreements/{cid}/decisions and its lens member attests AgreementDecision-v1 once the rule passes; anyone records it (attest) and executes; meanwhile anyone may bet, pledge and donate on the account; after the deadline anyone may expire it'
+                ],
                 endpoints: {
-                    discovery: `${base}/agent/discovery`,
-                    oracleFactDiscovery: `${base}/agent/discovery?resource=oracle-facts`,
-                    oracleFactLatest: `${base}/agent/oracle/facts`,
-                    oracleFact: `${base}/agent/oracle/facts?subject={proposalAccount}&market={marketAccount}`,
-                    read: `${base}/proposals/{id}`,
-                    listByAuthor: `${base}/proposals/summary?city={city}&author={wallet}`,
-                    listByParcel: `${base}/proposals?parcel_id={cadastreParcelId}`,
-                    parcelHistory: `${base}/parcels/{parcelUid}/history`,
+                    designBinding: `${base}/designs/binding`,
+                    pins: `${base}/pins`,
+                    publishDesign: `${base}/designs`,
+                    design: `${base}/designs/{cid}`,
+                    designs: `${base}/designs?city={city}&bbox={minLng},{minLat},{maxLng},{maxLat}&q={text}&limit={n}`,
+                    designsBatch: `${base}/designs/batch`,
+                    proposeAgreement: `${base}/agreements`,
+                    agreement: `${base}/agreements/{cid}`,
+                    agreements: `${base}/agreements?city={city}&design={designCid}&parcel={parcelId}&limit={n}`,
+                    agreementDecisions: `${base}/agreements/{cid}/decisions`,
+                    agreementOnchain: `${base}/agreements/{cid}/onchain`,
+                    parcelAt: `${base}/parcels?coordinates={lng},{lat}`,
                     parcelsUnder: `${base}/parcels/under`,
+                    parcelHistory: `${base}/parcels/{parcelUid}/history`,
                     urbanRules: `${base}/urban-rules?coordinates={lng},{lat}`,
                     buildingFootprints: `${base}/buildings/footprints`,
-                    hackathonProof: `${base}/hackathon/proof.json`,
-                    prospectiveMarketStatus: `${base}/oracle/markets/prospective/status`,
-                    // Every contest in a city (proposals on the same land) with each proposal's yes/no pool.
-                    markets: `${base}/markets?city={city}`,
                     lensMembers: `${base}/lenses/members`,
                     agentLensMembers: `${base}/agent/lenses/members`,
-                    lensSchemas: `${base}/lenses/schemas`
+                    lensSchemas: `${base}/lenses/schemas`,
+                    // Every contest in a city (agreements over shared land) with each minted agreement's yes/no pool.
+                    markets: `${base}/markets?city={city}`,
+                    support: `${base}/agent/pledges/{agreementAccount}`,
+                    oracleEvents: `${base}/oracle/events?subject={agreementAccount}`,
+                    // The recipe a minted agreement's market settles by (routes/markets.js). `market` is optional;
+                    // when given it must be the agreement's pool, PDA ["market", agreementAccount].
+                    marketRecipe: `${base}/oracle/recipes/${AGREEMENT_EXECUTION_RECIPE_ID}?agreement={agreementAccount}`,
+                    marketRecipeForMarket: `${base}/oracle/recipes/${AGREEMENT_EXECUTION_RECIPE_ID}?agreement={agreementAccount}&market={marketAccount}`,
+                    // Paid through x402: `subject` is the agreement account, `market` optional (see x402.query).
+                    oracleFact: `${base}/agent/oracle/facts?subject={agreementAccount}`,
+                    oracleFactForMarket: `${base}/agent/oracle/facts?subject={agreementAccount}&market={marketAccount}`,
+                    oracleFactLatest: `${base}/agent/oracle/facts`,
+                    discovery: `${base}/agent/discovery`,
+                    oracleFactDiscovery: `${base}/agent/discovery?resource=oracle-facts`,
+                    activity: `${base}/agent/activity?limit={n}`,
+                    hackathonProof: `${base}/hackathon/proof.json`,
+                    prospectiveMarketStatus: `${base}/oracle/markets/prospective/status`
                 },
-                // Lens model (lens-model.md): the proposer's chosen list of attesters.
+                design: {
+                    schema: 'design/v1',
+                    jsonSchema: '#/schema/$defs/design',
+                    cid: 'CIDv1, raw codec, sha2-256, base32 lower case (bafkrei…) over the canonical bytes: JSON with keys sorted at every depth, no whitespace, UTF-8',
+                    types: {
+                        road: { goals: ['road-track'], payload: 'roadProposal' },
+                        building: { goals: ['single', 'buildings', 'row', 'parcelBased'], payload: 'buildingProposal' },
+                        structure: { goals: ['park', 'square', 'lake', 'station'], payload: 'structureProposal' },
+                        urbanRule: { goals: ['urban-rule'] },
+                        parcelLayout: { goals: ['parcel-layout'], payload: 'parcelLayout', publish: 'only in the designs of POST /agreements' }
+                    },
+                    binding: 'the server derives the parcels a design\'s site takes (intrusion width above toleranceM); a design names no parcels',
+                    ownership: 'a design never moves ownership: applying it carries ownership over (whoever held the ground still holds the pieces); who receives which piece is an agreement\'s allocations',
+                    examples: `${base}/designs?city=zagreb&limit=5`
+                },
+                agreement: {
+                    schema: 'agreement/v1',
+                    jsonSchema: '#/schema/$defs/agreement',
+                    inputs: 'exactly the parcels the designs take (the union of their server bindings), with a holders snapshot, plus openGroundM2',
+                    outputs: 'every piece on the input land after the designs are applied, by hash (piece1-sha256:…), with areaM2, fromParcelIds, role and producedBy',
+                    outputRoles: ['plot', 'remainder', 'corridor', 'part', 'parcel'],
+                    allocations: { holders: 'the carried-over holding (no line means the same)', party: 'one holder of the input land', public: 'the public', joint: 'shares summing to 1' },
+                    money: '{ currency: "EUR", lines: [{ ownerKey, amountCents }] }: + receives, − pays',
+                    rules: {
+                        ownerDeal: { electorate: 'owners', binding: true },
+                        ownerVote: { electorate: 'owners', binding: false },
+                        communityVote: { electorate: 'community', binding: false, approvalConfig: null }
+                    },
+                    // Only a binding owners' agreement is minted, funded, attested, executed and bet on.
+                    minting: 'binding owners\' agreements only (ownerDeal); an owner or community vote is a poll in the index: never minted, no market',
+                    sponsor: 'the base58 wallet that mints and funds it; its account is PDA ["agreement", sponsor, sha256(cid)]',
+                    status: 'active | executed | cancelled | expired: from the chain once minted (onchain.status), else from the deadline',
+                    decisions: {
+                        relay: `${base}/agreements/{cid}/decisions`,
+                        statement: '{ schema: "agreement-decision/v1", agreementCid, ownerId, actorId, contextHash, decision, decidedAt }',
+                        receipt: '{ ownerId, actorId, evidence: { rights, authority }, decision: "approve" | "withdraw", decidedAt, decisionProof, providerId }',
+                        evidence: 'the lens member\'s rights and authority facts for the agreement: POST {serviceUrl}/lens/approval/rights, /lens/approval/challenge, /lens/approval/authority',
+                        counting: 'owners rules only: the approval engine (frontend/js/proposals/approval.js tally) counts the relayed receipts, each re-verified; a community vote has no owner approval rule, so no owner decision can satisfy it'
+                    }
+                },
+                agreementProgram: {
+                    programId: agreementProgramId,
+                    deployed: agreementProgramDeployed,
+                    status: agreementProgramStatus,
+                    cluster: 'devnet',
+                    idl: 'blockchain/solana/idl/agreement.json',
+                    client: 'frontend/js/solana/agreement-client.js',
+                    readme: 'blockchain/solana/programs/agreement/README.md',
+                    pda: 'seeds ["agreement", sponsor (authority), sha256(cid as UTF-8)]: only the sponsor can create its agreement\'s account',
+                    account: {
+                        space: AgreementClient.constants.AGREEMENT_ACCOUNT_SPACE,
+                        offsets: AgreementClient.AGREEMENT_OFFSETS,
+                        fields: 'authority, lens, payout, deadline (unix s, 0 none), created_at, required_lamports, escrow_lamports, status, open_ground, decision, decision_attested_at, decision_observed_at, decision_attestation, decision_hash, executed_at, bump, cid',
+                        statuses: ['Active', 'Executed', 'Cancelled', 'Expired'],
+                        decisions: ['Pending', 'Satisfied']
+                    },
+                    instructions: {
+                        create: {
+                            args: ['cid: string', 'lens: pubkey', 'deadline: i64', 'open_ground: bool', 'required_lamports: u64', 'payout: pubkey'],
+                            accounts: ['agreement (mut, init: the PDA)', 'authority (signer, mut: the sponsor; pays the rent)', 'system_program'],
+                            requires: 'cid 1-64 ASCII letters and digits; lens and payout not the default key; deadline 0 or in the future'
+                        },
+                        fund: { args: ['lamports: u64'], accounts: ['agreement (mut)', 'authority (signer, mut)', 'system_program'], requires: 'the sponsor; Active; before the deadline' },
+                        attest: { args: [], accounts: ['agreement (mut)', 'attestation (the lens\'s AgreementDecision-v1)', 'credential (its SAS credential)'], requires: 'Active; decision Pending; before the deadline; permissionless' },
+                        execute: { args: [], accounts: ['agreement (mut)', 'payout (mut)'], requires: 'decision Satisfied; before the deadline; escrow_lamports >= required_lamports; permissionless; the whole escrow goes to payout' },
+                        cancel: { args: [], accounts: ['agreement (mut)', 'authority (signer, mut)'], requires: 'the sponsor; Active; no decision recorded; the escrow returns to the sponsor' },
+                        expire: { args: [], accounts: ['agreement (mut)', 'authority (mut)'], requires: 'Active; the deadline set and passed; permissionless; the escrow returns to the sponsor' }
+                    },
+                    decisionAttestation: {
+                        schema: `${decision.name}-v${decision.version}`,
+                        layout: decision.layout,
+                        sasLayout: decision.sasLayout,
+                        schemaPda: `["schema", credential, "${decision.name}", [${decision.version}]] under SAS ${SAS_PROGRAM_ID}`,
+                        decision: 'always "satisfied": the lens attests once the agreement\'s rule passes over the relayed owner decisions, before the deadline; there is no refusal: an agreement not decided by its deadline expires',
+                        sponsor: 'must equal the account\'s authority, so an attestation fits one account only',
+                        evidenceRef: 'sha256: over the counted receipts (approval.stableStringify, in signing order)',
+                        issuer: 'the lens key the account names, on its member service (operator only)'
+                    }
+                },
+                // Lens model (lens-model.md): the attesters an agreement trusts.
                 lens: {
-                    recipeField: 'lens',
-                    mintArgument: 'lens: vec<pubkey>',
-                    rule: 'at least one base58 public key; immutable once minted (fork the proposal to change it)',
+                    ruleField: 'rule.lens',
+                    programLens: 'the agreement program names exactly one lens key per account; it must not be the sponsor',
                     members: `${base}/agent/lenses/members`,
-                    memberFields: ['key', 'kind', 'name', 'description', 'serviceUrl', 'coverage'],
+                    memberFields: ['key', 'kind', 'name', 'description', 'serviceUrl', 'registeredAt', 'coverage'],
                     memberKinds: ['owner-consent', 'court', 'permit', 'imagery', 'osm', 'lifecycle'],
                     kindMeaning: 'what the member attests, not who it is',
                     schemas: `${base}/lenses/schemas`,
-                    attestations: ['ParcelOwnership-v1', 'ProposalVerdict-v1'],
-                    ownerAcceptance: 'the parcel owner signs accept_with_attestations with an optional payout key; a signature, not an attestation'
+                    attestations: Object.values(LENS_SCHEMAS).map(item => `${item.name}-v${item.version}`),
+                    ownerDecision: 'an owner\'s yes is not an attestation: it is a decision signed over the agreement CID and relayed at /agreements/{cid}/decisions'
                 },
                 mcp: {
                     transport: 'stdio',
                     source: 'backend/agents/mcp-server.mjs',
                     command: 'cd backend && npm run mcp',
                     liveActionsEnabledByDefault: false,
-                    liveGuard: 'UGT_MCP_LIVE=1 plus confirm=true; all writes use Solana devnet',
-                    tools: [
-                        'ugt_capabilities', 'ugt_list_proposals', 'ugt_activity', 'ugt_support_status',
-                        'ugt_oracle_events', 'ugt_list_attesters', 'ugt_request_ownership',
-                        'ugt_mint_proposal', 'ugt_inspect_verified_fact', 'ugt_buy_verified_fact',
-                        'ugt_submit_proposal', 'ugt_pledge', 'ugt_donate', 'ugt_forecast',
-                        'ugt_cancel_proposal', 'ugt_accept_parcel', 'ugt_submit_verdict', 'ugt_refund_donation',
-                        'ugt_void_pledge', 'ugt_revoke_pledge', 'ugt_release_donations',
-                        'ugt_fulfill_pledge',
-                        'ugt_resolve_market', 'ugt_claim_market',
-                        'ugt_resolve_external_market', 'ugt_claim_external_market'
-                    ],
+                    liveGuard: 'UGT_MCP_LIVE=1 in the MCP process plus confirm=true in the call, for every index write and every paid or signed action; chain actions use Solana devnet only',
+                    env: ['UGT_API_BASE', 'UGT_APP_ORIGIN', 'UGT_AGENT_KEYPAIR', 'UGT_MCP_LIVE', 'UGT_MCP_MAX_USDC_PER_ACTION', 'SOLANA_RPC_URL'],
+                    usdcCap: 'UGT_MCP_MAX_USDC_PER_ACTION (default 0.25) caps every stake, pledge and donation, and every x402 price, before anything is signed',
+                    tools: MCP_TOOLS,
                     sharedAdapters: [
-                        'x402 proposal client', 'x402 verified-fact client',
-                        'proposal pledge client', 'proposal donation client', 'proposal market client'
+                        'design and agreement index client', 'agreement minter', 'agreement market client',
+                        'agreement pledge and donation clients', 'x402 verified-fact client', 'lens ownership client'
                     ]
                 },
                 oracle: {
-                    eventType: LAND_EVENT_TYPE,
+                    eventType: AGREEMENT_LIFECYCLE_EVENT_TYPE,
                     schema: `${base}/oracle/recipe.schema.json`,
-                    events: `${base}/oracle/events?subject={proposalAccount}`,
-                    // Lens model v2 evidence log, pending devnet deployment: empty until the v2
-                    // proposal_nft program is live. Event times are the on-chain accepted_at / settled_at.
+                    events: `${base}/oracle/events?subject={agreementAccount}`,
+                    // Written by the agreement lifecycle oracle (oracle/agreement-lifecycle-job.mjs) from the
+                    // agreement program's accounts. Event times are the chain's own: executed_at from the
+                    // account, cancelled_at / expired_at from the program's event.
                     eventTypes: {
-                        proposal_lifecycle: 'terminal proposal state: executed, cancelled or expired (default of ?type=)',
-                        proposal_acceptance: 'one per AcceptanceRecord: parcelUid, owner, member, ownership attestation and its sha256 (v2, pending devnet deployment)',
-                        proposal_verdict: 'one per VerdictSettled: verdict attestation, its sha256, member, executed or expired (v2, pending devnet deployment)'
+                        [AGREEMENT_LIFECYCLE_EVENT_TYPE]: 'terminal agreement account state: executed, cancelled or expired (default of ?type=); subject the agreement account',
+                        [AGREEMENT_EXECUTED_EVENT_TYPE]: 'one per input parcel of an executed agreement, its history entry: agreement CID, account, lens and decision attestation; subject the parcel'
                     },
-                    eventsByType: `${base}/oracle/events?type={eventType}&subject={proposalAccount}`,
+                    eventsByAgreement: `${base}/oracle/events?type={eventType}&agreement={agreementCid}`,
                     eventsByParcel: `${base}/oracle/events?type={eventType}&parcelUid={parcelUid}`,
-                    // Permanent per-parcel log: proposals, lens ownership attestations and land events,
-                    // oldest first by each source's own time (null and last when the source has none).
+                    // Permanent per-parcel log: agreements over the parcel, lens ownership attestations and
+                    // executions, oldest first by each source's own time (null and last when it has none).
                     parcelHistory: {
                         url: `${base}/parcels/{parcelUid}/history`,
-                        response: '{ parcelUid, anchor: { account, exists (true | false | null), source (chain | unavailable | unseedable) }, events: [{ type, at, proposalId?, proposalAccount?, chainRef?, member?, owner?, transaction?, hash?, link }] }',
-                        eventTypes: ['proposal_created', 'proposal_chain_observed', 'parcel_ownership', 'proposal_acceptance', 'proposal_verdict', 'proposal_lifecycle'],
-                        chainObservation: 'Verified Solana devnet mirror, at its recorded verification time; not a mint event or mint time. Proposal associations use the exact verified network, program and account reference.',
-                        anchor: 'parcel_nft PDA ["parcel", parcelUid]; an identity only, it carries no ownership. Existence requires a validated devnet account read; unavailable evidence stays null. No mint time is inferred from touched transactions.',
+                        response: '{ parcelUid, anchor: { account, exists (true | false | null), source (chain | unavailable | unseedable) }, events: [{ type, at, agreementCid?, title?, account?, lens?, attestation?, member?, owner?, ownerCount?, outcome?, transaction?, hash?, link }] }',
+                        eventTypes: [AGREEMENT_PUBLISHED_EVENT_TYPE, OWNERSHIP_EVENT_TYPE, AGREEMENT_EXECUTED_EVENT_TYPE],
+                        anchor: `parcel_nft (${PARCEL_PROGRAM_ID}) PDA ["parcel", parcelUid]; an identity only, it carries no ownership. Existence requires a validated devnet account read; unavailable evidence stays null. No mint time is inferred from touched transactions.`,
                         privacy: 'ownership attestations expose member, owner wallet, ownerCount and the account hash; never the evidence reference',
                         caching: 'no-store'
                     },
-                    recipeId: LAND_RECIPE_ID,
-                    recipe: `${base}/oracle/recipes/${LAND_RECIPE_ID}?proposal={proposalAccount}&market={marketAccount}`,
-                    // Precommitted recipes never change under their id: v1 stays byte-identical, v2 adds the lens.
-                    recipes: [
-                        {
-                            id: LAND_RECIPE_ID,
-                            url: `${base}/oracle/recipes/${LAND_RECIPE_ID}?proposal={proposalAccount}&market={marketAccount}`,
-                            trustedAttesters: 'the ProposalNFT program only',
-                            outcomes: { executed: 'YES', cancelled: 'NO' },
-                            use: 'proposals whose account carries no lens key'
-                        },
-                        {
-                            id: LAND_RECIPE_V2_ID,
-                            url: `${base}/oracle/recipes/${LAND_RECIPE_V2_ID}?proposal={proposalAccount}&market={marketAccount}`,
-                            trustedAttesters: 'the ProposalNFT program plus every key in the proposal\'s on-chain lens (read from the account)',
-                            outcomes: { executed: 'YES', cancelled: 'NO', expired: 'NO' },
-                            use: 'every proposal whose account carries a lens with at least one key (all proposals minted from now on)'
-                        }
-                    ],
-                    source: 'Solana proposal account plus its terminal transaction',
-                    attester: solanaProgramId('ProposalNFT'),
+                    // The recipe an agreement's market settles by (oracle/market-recipe.js); the paid
+                    // verified fact binds it to an agreement_lifecycle event.
+                    recipeId: AGREEMENT_EXECUTION_RECIPE_ID,
+                    recipe: {
+                        url: `${base}/oracle/recipes/${AGREEMENT_EXECUTION_RECIPE_ID}?agreement={agreementAccount}`,
+                        urlForMarket: `${base}/oracle/recipes/${AGREEMENT_EXECUTION_RECIPE_ID}?agreement={agreementAccount}&market={marketAccount}`,
+                        market: 'optional; when given it must be the agreement\'s pool, PDA ["market", agreementAccount]',
+                        subject: '{ chain: "solana:devnet", agreementAccount, agreementCid, marketAccount }',
+                        trustedAttesters: 'the agreement program, which executes an account only on the attestation of the lens it names',
+                        outcomes: Object.fromEntries(Object.entries(SETTLEMENT).map(([status, side]) => [status, side.toUpperCase()])),
+                        precommitted: 'never changes under its id; every verified fact carries it too'
+                    },
+                    source: 'Solana agreement account plus its terminal transaction',
+                    attester: agreementProgramId,
                     publicRecords: {
                         summary: `${base}/oracle/public-records/summary`,
                         source: 'Croatian judiciary e-Oglasna archive',
@@ -391,16 +505,21 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                     }
                 },
                 market: {
-                    programId: marketProgramId(),
+                    programId: marketProgramId,
                     cluster: 'devnet',
+                    subject: 'the agreement account (market-client.js names it `proposal`)',
+                    pda: 'seeds ["market", agreementAccount]',
+                    positionPda: 'seeds ["position", market, owner, side (u8: 0 no, 1 yes)]',
+                    stakeMint: USDC_DEVNET_MINT,
+                    stakeDecimals: 6,
                     resolution: {
-                        yes: 'proposal account status is Executed',
-                        no: 'proposal account status is Cancelled',
+                        yes: 'the agreement account is Executed',
+                        no: 'the agreement account is Cancelled or Expired',
                         permissionless: true,
-                        deadline: null,
-                        expired: 'not terminal in the deployed (v1) market program; the proposal must be cancelled or executed on-chain. v2, pending devnet deployment: resolve maps Expired (status 3, set by settle_with_verdict) to NO',
-                        oracleRecipe: LAND_RECIPE_ID
+                        deadline: 'stakes are taken while the agreement is Active and before its deadline; a passed deadline resolves NO only once someone expires the account',
+                        oracleRecipe: AGREEMENT_EXECUTION_RECIPE_ID
                     },
+                    contests: `${base}/markets?city={city}`,
                     idl: 'blockchain/solana/idl/proposal_market.json',
                     client: 'frontend/js/solana/market-client.js',
                     externalResolution: {
@@ -410,76 +529,23 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                         proofMarket: '5wyJ7XjbnoPUaDgaHAttdhdS38VmHf1p3jGwwVUeN8QM'
                     }
                 },
-                // Mint first: markets, pledges, acceptance and the lifecycle oracle all key on the
-                // proposal account, and the paid record names it in `onchain` (docs-agents.md, step 3).
-                proposalAccount: {
-                    programId: proposalProgramId(),
+                support: {
+                    programId: pledgeProgramId,
                     cluster: 'devnet',
-                    // v3 interface (parcel-optional, PARCEL-OPTIONAL.md "Chain (phase 5)"), pending devnet
-                    // deployment. The devnet program is still v1 until the upgrade.
-                    interfaceVersion: 'v3, pending devnet deployment',
-                    mint: {
-                        instruction: 'mint_and_fund',
-                        args: ['parcel_ids: vec<string>', 'is_conditional: bool', 'image_uri: string', 'sol_amount: u64', 'lens: vec<pubkey>', 'verdict_may_execute: bool', 'site_hash: [u8; 32]', 'open_ground: bool'],
-                        accounts: ['proposal', 'proposal_counter', 'owner', 'system_program'],
-                        signer: 'owner: your own wallet; it pays rent for the 4096-byte proposal account',
-                        parcelIds: 'the same strings as the record\'s cadastreParcelIds (the site\'s binding); may be empty only with a site_hash, and then open_ground must be true',
-                        siteHash: 'sha256 of the canonical site encoding (frontend/js/proposals/site-hash.js) of the record\'s site; 32 zero bytes when the proposal has no site',
-                        openGround: 'true when part of the site lies on no bound parcel (binding coverage not complete, or no parcels); needs a site_hash. Such a proposal also needs a lens member\'s executed verdict to execute',
-                        lens: 'must be non-empty; the attesters whose ownership and verdict attestations this proposal accepts',
-                        verdictMayExecute: 'true lets a lens member\'s executed verdict count: without parcels it executes the proposal, with parcels and open ground it clears the open ground (owners still consent), with parcels and no open ground it executes without per-parcel consent (permit-style evidence). Set it exactly when open_ground is true unless you mean permit-style evidence',
-                        v1: 'the devnet program until the upgrade takes the same args without the trailing verdict_may_execute, site_hash and open_ground',
-                        counterPda: 'seeds ["proposal_counter"]',
-                        proposalPda: 'seeds ["proposal", count as 8-byte little-endian u64], count read at byte offset 8 of the counter account'
+                    subject: 'the agreement account (pledge-client.js names it `proposal`)',
+                    mint: USDC_DEVNET_MINT,
+                    status: `${base}/agent/pledges/{agreementAccount}`,
+                    pdas: {
+                        donationEscrow: 'seeds ["donation_escrow", agreementAccount]',
+                        donationPosition: 'seeds ["donation", escrow, donor, sha256(operationId)]',
+                        pledgeBook: 'seeds ["pledge_book", agreementAccount]',
+                        pledge: 'seeds ["pledge", book, pledger]'
                     },
-                    accept: {
-                        instruction: 'accept_with_attestations',
-                        args: ['parcel_id: string', 'payout: option<pubkey>'],
-                        accounts: ['proposal', 'parcel', 'ownership', 'ownership_credential', 'tally', 'record', 'owner', 'payer', 'system_program'],
-                        signer: 'owner: the wallet a lens member attested as the parcel owner (ParcelOwnership-v1); payer may be the owner',
-                        tallyPda: 'seeds ["consent", proposal, parcel_id] (ConsentTally)',
-                        recordPda: 'seeds ["acceptance", proposal, parcel_id, owner] (AcceptanceRecord)',
-                        effect: 'a parcel is accepted when every owner its member attested has signed; the proposal is Executed when every parcel is',
-                        status: 'v2, pending devnet deployment; replaces accept_proposal'
-                    },
-                    settle: {
-                        instruction: 'settle_with_verdict',
-                        args: [],
-                        accounts: ['proposal', 'verdict', 'verdict_credential', 'verdict_record', 'submitter', 'system_program'],
-                        signer: 'submitter: anyone (signer, writable: pays the verdict record\'s rent); the verdict (ProposalVerdict-v1) must be signed by a lens member',
-                        verdictRecordPda: 'seeds ["verdict", proposal, verdict_attestation] (VerdictRecord { proposal, member, verdict_attestation, verdict_hash, verdict, settled_at, bump }); init, so one attestation settles at most once',
-                        effect: 'expired sets Expired (3); executed needs verdict_may_execute and sets Executed (1), except on a proposal with parcels and open ground, where it clears the open ground and the proposal executes once every parcel is accepted',
-                        event: 'VerdictSettled { proposal, verdict_attestation, verdict_hash, member, status (after settlement), settled_at, verdict (1 executed, 3 expired) }',
-                        status: 'v3, pending devnet deployment'
-                    },
-                    recordLink: {
-                        field: 'onchain',
-                        proposalId: 'the proposal PDA, base58',
-                        transactionHash: 'the mint_and_fund signature',
-                        chainId: 'solana-devnet',
-                        contractAddress: proposalProgramId()
-                    },
-                    idl: 'blockchain/solana/idl/proposal_nft.json',
-                    client: 'backend/agents/minter.js'
-                },
-                parcelAccount: {
-                    programId: parcelProgramId(),
-                    cluster: 'devnet',
-                    role: 'parcel anchor: the on-chain identity of a cadastral parcel; v2 (pending devnet deployment) mints it ownerless (owner = default key, the second account is the payer) and ownership reaches the chain only as a lens member\'s ParcelOwnership-v1 attestation',
-                    mint: { instruction: 'mint_parcel', args: ['parcel_id: string', 'metadata_uri: string'], accounts: ['parcel', 'payer', 'system_program'] },
-                    pda: 'seeds ["parcel", parcel id as UTF-8 bytes]',
-                    idl: 'blockchain/solana/idl/parcel_nft.json'
-                },
-                proposalSupport: {
-                    programId: pledgeProgramId(),
-                    cluster: 'devnet',
-                    mint: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU',
-                    status: `${base}/agent/pledges/{proposalAccount}`,
                     idl: 'blockchain/solana/idl/proposal_pledge.json',
                     client: 'frontend/js/solana/pledge-client.js',
                     donations: {
-                        active: 'fund USDC escrow immediately',
-                        executed: 'release to the proposal owner',
+                        active: 'fund the USDC escrow immediately',
+                        executed: 'release to the beneficiary the escrow fixed when it was created',
                         cancelledOrExpired: 'each donor refunds their own receipts',
                         idempotency: 'SHA-256 a stable operation id into an immutable donation-position PDA'
                     },

@@ -10,14 +10,6 @@
         const isDevelopment = isFileProtocol || isLocalHostname;
         window.current_environment = isDevelopment ? 'development' : 'production';
 
-        // Canton (DAML) chain option. Off: the backend does not register /canton/*, so the canton/*
-        // modules do not load their globals — no requests, no warnings, no Canton network option or
-        // badges. Every consumer already null-checks those globals. Set true (here, or before this
-        // script runs) to bring the whole feature back; the code is kept intact for that.
-        if (typeof window.CANTON_ENABLED === 'undefined') {
-            window.CANTON_ENABLED = false;
-        }
-
         // The version badge shows the ACTUAL running build, stamped into build-info.js at deploy
         // (buildId "deploy-N" / buildNumber N). Locally there is no stamp, so it reads "dev".
         // This is deliberately NOT the hand-maintained changelog head (APP_VERSIONS) — that value

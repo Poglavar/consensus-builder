@@ -17,6 +17,7 @@ const read = rel => readFileSync(fileURLToPath(new URL(rel, import.meta.url)), '
 const ui = read('../../frontend/js/ui-helpers.js');
 const manager = read('../../frontend/js/proposal-manager.js');
 const ground = read('../../frontend/js/parcels/ground-service.js');
+const sharing = read('../../frontend/js/proposals/sharing-routes.js');
 const css = read('../../frontend/css/utilities.css');
 const dictOf = locale => JSON.parse(read(`../../frontend/i18n/${locale}.json`));
 const locales = ['en', 'hr', 'sr', 'es'];
@@ -215,18 +216,21 @@ describe('the silence before the first proposal', () => {
         expect(ground).toContain("phase: 'ground-ready'");
     });
 
+    // The phases become words in one place (sharing-routes.js, the corridor count phrase and
+    // sharedPlanProgressView); every key that wording asks for is a phase a locale must translate.
+    const wording = sharing.slice(
+        sharing.indexOf('function sharedCorridorCountPhrase('),
+        sharing.indexOf('function reportSharedPlanProgress(')
+    );
+    const phaseKeys = [...new Set([...wording.matchAll(/tShare\('plan\.([A-Za-z.]+)'/g)].map(match => match[1]))];
+
     it.each(locales)('%s translates every shared-plan materialization phase', locale => {
+        expect(phaseKeys).toEqual(expect.arrayContaining([
+            'applyingNamed', 'progress.groundCheck', 'progress.fabricReady', 'progress.corridorStrips', 'progress.roadCount'
+        ]));
         const plan = dictOf(locale).modal.roadWidth.share.plan;
         expect(plan.applyingNamed).toContain('{{done}}/{{total}}');
-        expect(plan.preparingNamed).toContain('{{done}}/{{total}}');
-        [
-            'groundCheck', 'groundIdCheck', 'groundIdLoad', 'groundIdLoadProgress',
-            'groundIdWait', 'groundFootprintWait', 'groundIdsMissing', 'groundIdsReady', 'groundFootprintLoad',
-            'groundFootprintProgress', 'groundReady', 'groundIncomplete', 'buildingGroundLoad',
-            'buildingGroundProgress', 'buildingGroundReady', 'corridorStart', 'scopeReady',
-            'fabricScan', 'fabricArrange', 'mapUpdate', 'fabricReady', 'networkNoding',
-            'saving', 'corridorReady', 'rollback', 'presentation', 'corridorStrips'
-        ].forEach(key => expect(plan.progress[key], `${locale} missing progress.${key}`).toBeTruthy());
+        phaseKeys.forEach(key => expect(key.split('.').reduce((node, part) => node?.[part], plan), `${locale} missing plan.${key}`).toBeTruthy());
         ['one', 'few', 'other'].forEach(form => {
             expect(plan.progress.roadCount[form], `${locale} missing roadCount.${form}`).toBeTruthy();
             expect(plan.progress.trackCount[form], `${locale} missing trackCount.${form}`).toBeTruthy();

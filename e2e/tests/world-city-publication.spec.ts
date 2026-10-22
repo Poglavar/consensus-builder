@@ -1,13 +1,13 @@
 // Worldwide publication and city routing (projections.md §3, §10 M8, location-first.md phase 4;
-// plan-design-agreement.md M2): a publish sends the design with the parcel source its city binds
-// with, a design opened from another city's feed asks and then opens in its own city's store, the
-// address bar follows the map, and the read-only guard for a second tab applies per city.
+// plan-design-agreement.md M2, M3): a publish sends the design with the parcel source its city binds
+// with, a design or an agreement opened from another city asks and then opens in its own city's
+// store, the address bar follows the map, and the read-only guard for a second tab applies per city.
 import { Browser, BrowserContext, Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady, panMap } from '../helpers/app';
 import { openCity, createSpace, showProposal } from '../helpers/runtime';
 import { mockAllApiRoutes } from '../helpers/mocks/api-routes';
-import { attachSharedIndex, pageIndex, SharedIndex } from '../helpers/mocks/shared-server';
+import { attachSharedIndex, fileAgreement, pageIndex, SharedIndex } from '../helpers/mocks/shared-server';
 
 async function personalizeProfile(page: Page, name: string): Promise<void> {
   await page.locator('#username-display').click();
@@ -106,6 +106,49 @@ test.describe('Worldwide publication and city routing @core', () => {
       await followToCity(device.page, 'zagreb', 'Zagreb');
       expect(new URL(device.page.url()).searchParams.get('focusProposal')).toBe(cid);
       await expect.poll(() => storedIn(device.page, `design-${cid}`), { timeout: 30_000 }).toEqual({ city: 'zagreb', stored: true });
+      expect(device.errors).toEqual([]);
+    } finally {
+      await device.context.close();
+    }
+  });
+
+  test('an agreement opened from another city asks, then opens in its own city', async ({ mockApi: author, browser }) => {
+    test.setTimeout(180_000);
+    // A community agreement over the published park, proposed in Zagreb.
+    const designCid = await publishPark(author);
+    const index = pageIndex(author);
+    const design = index.designs.get(designCid)!;
+    const title = 'Zagreb park agreement';
+    const cid = fileAgreement(index, {
+      schema: 'agreement/v1', title, author: 'City author', sponsor: null, city: 'zagreb', createdAt: '2026-10-21T08:00:00.000Z',
+      designs: [{ cid: designCid, goal: design.goal, title: design.title }],
+      inputs: { parcels: [{ parcelId: 'HR-335754-1234', areaM2: 100, holders: [] }], openGroundM2: 0 },
+      outputs: [], allocations: [], money: { currency: 'EUR', lines: [] },
+      rule: { electorate: 'community', binding: false, approvalConfig: null, lens: [] }, deadline: null,
+    });
+    expect(index.agreements.get(cid)!.city).toBe('zagreb');
+    const baseURL = new URL(author.url()).origin;
+
+    // Its link opened on a device whose city is New York.
+    const device = await deviceIn(browser, index, 'new_york', baseURL);
+    try {
+      await device.page.goto(`/agreements/${cid}?city=new_york&reduceMotion=1`);
+      await followToCity(device.page, 'zagreb', 'Zagreb');
+      expect(new URL(device.page.url()).pathname).toBe(`/agreements/${cid}`);
+      const panel = device.page.locator('section#agreement-panel');
+      await expect(panel).toBeVisible({ timeout: 60_000 });
+      await expect(device.page.locator('#agreement-panel-title')).toHaveText(title);
+      await expect(panel.locator('code.agreement-panel-cid')).toHaveAttribute('title', cid);
+      // Kept in Zagreb's store, with its design applied there.
+      expect(await device.page.evaluate(cid => {
+        const w = window as any;
+        const agreement = w.AgreementStore.list().find((item: any) => item.published && item.published.cid === cid);
+        return {
+          city: w.CityConfigManager.getCurrentCityId(),
+          designs: agreement ? agreement.designs.map((entry: any) => entry.proposalId) : null,
+          applied: agreement ? agreement.designs.every((entry: any) => !!w.isApplied(w.proposalStorage.getProposal(entry.proposalId))) : false,
+        };
+      }, cid)).toEqual({ city: 'zagreb', designs: [`design-${designCid}`], applied: true });
       expect(device.errors).toEqual([]);
     } finally {
       await device.context.close();

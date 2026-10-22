@@ -7,7 +7,7 @@ import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
 import { fillNativeDateTime } from '../helpers/controls';
 import { chooseProfileName, openOnAnotherDevice, stubBasemapTiles, PARCEL_ID } from '../helpers/runtime';
-import { applyLayout, agreementPanel, storedAgreements, createFromDetails, openAgreementsList, panelStatus } from '../helpers/agreements';
+import { applyLayout, agreementPanel, storedAgreements, createFromDetails, openAgreementsList, panelStatus, editorSave, editorClosed } from '../helpers/agreements';
 import { canonicalJson, cidOfBytes, cidOfObject, pageIndex, SharedIndex } from '../helpers/mocks/shared-server';
 
 test.beforeEach(async ({ mockApi: page }) => {
@@ -24,12 +24,12 @@ test('Propose publishes a community agreement with its parcel layout, and its li
   const { layoutId } = await applyLayout(page);
   const index = pageIndex(page);
 
-  const dialog = await createFromDetails(page, layoutId);
-  await dialog.locator('input[name="agreement-electorate"][value="community"]').check();
-  await dialog.locator('[data-agreement-title]').fill(TITLE);
-  await fillNativeDateTime(dialog.locator('[data-agreement-deadline]'), '2030-12-31');
-  await dialog.locator('[data-action-id="save"]').click();
-  await expect(dialog).toHaveCount(0);
+  const editor = await createFromDetails(page, layoutId);
+  await editor.locator('input[name="agreement-electorate"][value="community"]').check();
+  await editor.locator('[data-agreement-title]').fill(TITLE);
+  await fillNativeDateTime(editor.locator('[data-agreement-deadline]'), '2030-12-31');
+  await editorSave(editor).click();
+  await editorClosed(page);
   await panelStatus(page, 'current');
   const panel = agreementPanel(page);
   const propose = panel.locator('[data-agreement-action="propose"]');
@@ -53,6 +53,9 @@ test('Propose publishes a community agreement with its parcel layout, and its li
   await expect(panel.locator('[data-agreement-action="edit"]')).toHaveCount(0);
   await expect(panel.locator('[data-agreement-action="propose"]')).toHaveCount(0);
   await expect(panel.locator('[data-agreement-action="delete"]')).toBeVisible();
+  // A vote binds nobody, so it is never minted: the chain section says so and offers no chain action.
+  await expect(panel.locator('[data-agreement-chain="non-binding"]')).toHaveText('A vote is not minted; its decisions are counted off-chain.');
+  await expect(panel.locator('[data-agreement-action="mint"], [data-agreement-action="repropose"], [data-agreement-action="bet"]')).toHaveCount(0);
 
   // Pinned: the layout's design object, then the agreement; indexed: the agreement, the layout sent with it.
   const posts = postsOf(index);
@@ -135,12 +138,12 @@ test('a proposed owners’ agreement shows the owners’ decisions card, reads i
   const index = pageIndex(page);
 
   // The owners decide by default, and their decision binds.
-  const dialog = await createFromDetails(page, layoutId);
-  await expect(dialog.locator('input[name="agreement-electorate"][value="owners"]')).toBeChecked();
-  await expect(dialog.locator('[data-agreement-binding]')).toBeChecked();
-  await dialog.locator('[data-agreement-title]').fill('Owners decide');
-  await dialog.locator('[data-action-id="save"]').click();
-  await expect(dialog).toHaveCount(0);
+  const editor = await createFromDetails(page, layoutId);
+  await expect(editor.locator('input[name="agreement-electorate"][value="owners"]')).toBeChecked();
+  await expect(editor.locator('[data-agreement-binding]')).toBeChecked();
+  await editor.locator('[data-agreement-title]').fill('Owners decide');
+  await editorSave(editor).click();
+  await editorClosed(page);
   await panelStatus(page, 'current');
   const panel = agreementPanel(page);
   await panel.locator('[data-agreement-action="propose"]').click();

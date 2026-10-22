@@ -7,9 +7,11 @@
 //! chain. Owner decisions are signed documents the approval engine counts off-chain; the
 //! agreement's lens attests the outcome, and this program checks that attestation plus the escrow.
 //!
-//! Lifecycle: create → fund* → attest → execute, or cancel (the authority, unless a satisfied
-//! decision is recorded) or expire (anyone, after the deadline). Status codes are proposal_nft's
-//! ProposalStatus codes (0 Active, 1 Executed, 2 Cancelled, 3 Expired), so market readers keep them.
+//! Lifecycle: create → fund* → attest → execute, or cancel (the authority, while no decision is
+//! recorded) or expire (anyone, after the deadline). The lens never refuses: it attests only a
+//! satisfied decision, and an agreement whose rule is not satisfied by its deadline expires.
+//! Status codes are proposal_nft's ProposalStatus codes (0 Active, 1 Executed, 2 Cancelled,
+//! 3 Expired), so market readers keep them.
 //! Only the authority funds, and every refund returns to it. (A funder recorded at the first fund
 //! would let any stranger pay first and lock the real sponsor out, and the sponsor cannot create
 //! the agreement twice: its address is fixed by sponsor and CID.)
@@ -35,24 +37,24 @@
 //!     (SAS layout bytes [12, 12, 12, 12, 8]; borsh: u32 LE length + UTF-8 per string, i64 LE)
 //!   agreementCid      the agreement's CID, byte for byte as stored on chain
 //!   sponsor           base58 of the agreement's authority (agreement/v1 `sponsor`)
-//!   decision          "satisfied" | "refused"
+//!   decision          always "satisfied" (anything else is InvalidDecision)
 //!   evidenceRef       what the lens counted (e.g. "sha256:<hex>" over the admitted decision receipts)
 //!   sourceObservedAt  unix seconds at which the counted decisions gave this outcome
 //! Checked here: owned by SAS, discriminator 2, expiry after now, issued under the passed credential,
 //! whose authority is the attestation's signer, under that credential's AgreementDecision v1
 //! schema PDA; signer == agreement.lens; agreementCid == agreement.cid; sponsor ==
-//! agreement.authority; sourceObservedAt <= now; every payload byte consumed. The first accepted
-//! attestation fixes the decision: a recorded refusal is final, so a lens issues "refused" only
-//! once the rule can no longer be satisfied. The lens takes `sponsor` from the agreement object,
-//! never from whoever asks for the attestation.
+//! agreement.authority; decision == "satisfied"; sourceObservedAt <= now; every payload byte
+//! consumed. The first accepted attestation is final. The lens takes `sponsor` from the agreement
+//! object, never from whoever asks for the attestation.
 
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::hash::hash;
 use anchor_lang::system_program;
+use anchor_lang::Discriminator;
 use sas_attestation::{PayloadReader, SasError, SAS_PROGRAM_ID};
 
 // Placeholder id, never deployed. Whoever deploys generates the program keypair and replaces it here,
-// in Anchor.toml and in agreement-client.js (programs/agreement/README.md, "Program id").
+// in Anchor.toml and in frontend/js/solana/agreement-client.js (programs/agreement/README.md, "Program id").
 declare_id!("Agreement1111111111111111111111111111111111");
 
 pub const AGREEMENT_SEED: &[u8] = b"agreement";
@@ -132,15 +134,14 @@ pub mod agreement {
         Ok(())
     }
 
-    /// The authority moves `lamports` into the escrow, while the agreement is Active, not refused
-    /// and before its deadline.
+    /// The authority moves `lamports` into the escrow, while the agreement is Active and before its
+    /// deadline (also after the decision, to reach `required_lamports`).
     pub fn fund(ctx: Context<Fund>, lamports: u64) -> Result<()> {
         let now = Clock::get()?.unix_timestamp;
         require!(lamports > 0, AgreementError::ZeroAmount);
         {
             let agreement = &ctx.accounts.agreement;
             require!(agreement.status == AgreementStatus::Active, AgreementError::NotActive);
-            require!(agreement.decision != Decision::Refused, AgreementError::DecisionRefused);
             require!(!agreement.deadline_passed(now), AgreementError::DeadlinePassed);
         }
 
@@ -172,10 +173,11 @@ pub mod agreement {
         Ok(())
     }
 
-    /// Record the lens's decision from its AgreementDecision-v1 SAS attestation (checks in the module
-    /// docs). Permissionless: the outcome comes from the attestation, never from the caller. Only
-    /// one decision is ever recorded, while Active and before the deadline. Keeps the attestation's
-    /// key and the sha256 of its whole account bytes, so the evidence outlives the SAS account.
+    /// Record the lens's satisfied decision from its AgreementDecision-v1 SAS attestation (checks in
+    /// the module docs). Permissionless: the outcome comes from the attestation, never from the
+    /// caller. Only one decision is ever recorded, while Active and before the deadline. Keeps the
+    /// attestation's key and the sha256 of its whole account bytes, so the evidence outlives the SAS
+    /// account.
     pub fn attest(ctx: Context<Attest>) -> Result<()> {
         let now = Clock::get()?.unix_timestamp;
         let accounts = &mut *ctx.accounts;
@@ -194,18 +196,12 @@ pub mod agreement {
         require!(payload.agreement_cid == agreement.cid.as_bytes(), AgreementError::WrongAgreement);
         require_keys_eq!(payload.sponsor, agreement.authority, AgreementError::WrongSponsor);
         require!(payload.source_observed_at <= now, AgreementError::AttestationFromFuture);
-        let decision = if payload.decision == b"satisfied" {
-            Decision::Satisfied
-        } else if payload.decision == b"refused" {
-            Decision::Refused
-        } else {
-            return err!(AgreementError::InvalidDecision);
-        };
+        require!(payload.decision == b"satisfied", AgreementError::InvalidDecision);
         let evidence_ref = String::from_utf8(payload.evidence_ref.to_vec())
             .map_err(|_| error!(AgreementError::InvalidAttestationPayload))?;
         let attestation_hash = hash(&data).to_bytes();
 
-        agreement.decision = decision;
+        agreement.decision = Decision::Satisfied;
         agreement.decision_attested_at = now;
         agreement.decision_observed_at = payload.source_observed_at;
         agreement.decision_attestation = attestation_key;
@@ -214,7 +210,6 @@ pub mod agreement {
         emit!(AgreementAttested {
             agreement: agreement_key,
             cid: agreement.cid.clone(),
-            decision: decision as u8,
             lens: agreement.lens,
             attestation: attestation_key,
             attestation_hash,
@@ -234,11 +229,7 @@ pub mod agreement {
         let (amount, event) = {
             let agreement = &mut ctx.accounts.agreement;
             require!(agreement.status == AgreementStatus::Active, AgreementError::NotActive);
-            match agreement.decision {
-                Decision::Satisfied => {}
-                Decision::Refused => return err!(AgreementError::DecisionRefused),
-                Decision::Pending => return err!(AgreementError::NotAttested),
-            }
+            require!(agreement.decision == Decision::Satisfied, AgreementError::NotAttested);
             require!(!agreement.deadline_passed(now), AgreementError::DeadlinePassed);
             require!(
                 agreement.escrow_lamports >= agreement.required_lamports,
@@ -270,16 +261,16 @@ pub mod agreement {
         Ok(())
     }
 
-    /// The authority withdraws an Active agreement and the escrow returns to it. Refused
-    /// once a satisfied decision is recorded (the parties rely on the escrow from then on); after a
-    /// refusal it is the authority's early exit.
+    /// The authority withdraws an Active agreement while no decision is recorded, and the escrow
+    /// returns to it. Once the lens's satisfied decision is recorded the parties rely on the escrow:
+    /// the agreement then executes, or expires after its deadline.
     pub fn cancel(ctx: Context<Cancel>) -> Result<()> {
         let now = Clock::get()?.unix_timestamp;
         let agreement_key = ctx.accounts.agreement.key();
         let (amount, cid) = {
             let agreement = &mut ctx.accounts.agreement;
             require!(agreement.status == AgreementStatus::Active, AgreementError::NotActive);
-            require!(agreement.decision != Decision::Satisfied, AgreementError::DecisionSatisfied);
+            require!(agreement.decision == Decision::Pending, AgreementError::DecisionSatisfied);
             let amount = agreement.escrow_lamports;
             agreement.escrow_lamports = 0;
             agreement.status = AgreementStatus::Cancelled;
@@ -475,6 +466,43 @@ impl Agreement {
     }
 }
 
+/// Byte offset of `lens` in an Agreement account: the discriminator (8), then `authority` (32).
+pub const LENS_OFFSET: usize = 8 + 32;
+/// Byte offset of `status` (136): the discriminator (8), `authority`, `lens` and `payout`
+/// (3 × 32), then `deadline`, `created_at`, `required_lamports` and `escrow_lamports` (4 × 8).
+pub const STATUS_OFFSET: usize = 8 + 3 * 32 + 4 * 8;
+
+/// What proposal_market and proposal_pledge read of an Agreement account, without deserializing
+/// it (they depend on this crate with `no-entrypoint`, so the id and layout live only here).
+pub struct AgreementView {
+    /// The sponsor.
+    pub authority: Pubkey,
+    pub lens: Pubkey,
+    /// AgreementStatus code: 0 Active, 1 Executed, 2 Cancelled, 3 Expired.
+    pub status: u8,
+}
+
+/// `account` read as an Agreement of this program: owner, discriminator and length are checked.
+/// None when it is any other account.
+pub fn read_agreement_view(account: &AccountInfo) -> Option<AgreementView> {
+    if *account.owner != crate::ID {
+        return None;
+    }
+    let data = account.try_borrow_data().ok()?;
+    if data.len() <= STATUS_OFFSET || data[..8] != Agreement::DISCRIMINATOR {
+        return None;
+    }
+    let key_at = |offset: usize| -> Option<Pubkey> {
+        let bytes: [u8; 32] = data.get(offset..offset + 32)?.try_into().ok()?;
+        Some(Pubkey::new_from_array(bytes))
+    };
+    Some(AgreementView {
+        authority: key_at(8)?,
+        lens: key_at(LENS_OFFSET)?,
+        status: data[STATUS_OFFSET],
+    })
+}
+
 /// Same codes as proposal_nft's ProposalStatus.
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, InitSpace)]
 pub enum AgreementStatus {
@@ -484,12 +512,12 @@ pub enum AgreementStatus {
     Expired = 3,
 }
 
-/// The lens's recorded decision; Pending until `attest`.
+/// The lens's recorded decision; Pending until `attest`. The lens never refuses, so there is no
+/// other value: an agreement whose rule is not satisfied by its deadline expires.
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, InitSpace)]
 pub enum Decision {
     Pending = 0,
     Satisfied = 1,
-    Refused = 2,
 }
 
 #[event]
@@ -519,8 +547,6 @@ pub struct AgreementFunded {
 pub struct AgreementAttested {
     pub agreement: Pubkey,
     pub cid: String,
-    /// 1 satisfied, 2 refused.
-    pub decision: u8,
     pub lens: Pubkey,
     pub attestation: Pubkey,
     /// sha256 of the attestation's whole account bytes.
@@ -566,8 +592,6 @@ pub enum AgreementError {
     NotActive,
     #[msg("No decision has been attested for this agreement")]
     NotAttested,
-    #[msg("The lens attested that the agreement's decision was refused")]
-    DecisionRefused,
     #[msg("The agreement's deadline has passed")]
     DeadlinePassed,
     #[msg("The agreement's deadline has not passed, or it has none")]
@@ -606,7 +630,7 @@ pub enum AgreementError {
     InvalidAttestationPayload,
     #[msg("The attestation is about a different agreement")]
     WrongAgreement,
-    #[msg("The attested decision must be satisfied or refused")]
+    #[msg("The attested decision must be satisfied")]
     InvalidDecision,
     #[msg("The attestation's source time is in the future")]
     AttestationFromFuture,

@@ -14,6 +14,7 @@ const require = createRequire(import.meta.url);
 const approval = require('../../frontend/js/proposals/approval.js');
 const relay = require('../../frontend/js/proposals/approval-relay.js');
 const anchors = require('../../frontend/js/proposals/approval-anchor.js');
+const agreementRecord = require('../../frontend/js/agreement-record.js');
 
 export const AGREEMENT_DECISION_TABLE = 'consensus.agreement_decision';
 // Decisions on one agreement are admitted one at a time, under this advisory-lock namespace (the
@@ -22,19 +23,22 @@ export const AGREEMENT_DECISION_LOCK_NAMESPACE = 480404;
 
 const log = message => console.log(`[${new Date().toISOString()}] [agreement-decisions] ${message}`);
 
+// The index's status word (routes/agreements.js: from the chain once minted, else from the deadline)
+// as the lifecycle the relay closes on.
+const LIFECYCLE_STATUS = Object.freeze({ active: 'Active', executed: 'Executed', cancelled: 'Cancelled', expired: 'Expired' });
+
 /**
  * The agreement-like object approval.js, approval-relay.js and approval-anchor.js take, for an indexed
- * agreement (routes/agreements.js serializeAgreementRow): its CID, its input parcels and rule, the
- * lifecycle the relay closes on, and its chain account once minted (M3).
+ * agreement (routes/agreements.js serializeAgreementRow): the engine's subject of its published content
+ * (AgreementRecord.approvalSubject: input parcels, rule, lens) under its CID, the lifecycle the relay
+ * closes on, and its chain account once minted (agreements/onchain.js). The lens member counts
+ * decisions over this same object (lens/agreement-decision.js), so both judge them alike.
  */
 export function decisionSubject(agreement) {
-    const rule = agreement.content?.rule || {};
     return {
+        ...agreementRecord.approvalSubject(agreement.content),
         agreementCid: agreement.cid,
-        cadastreParcelIds: agreement.inputParcelIds,
-        approvalConfig: rule.approvalConfig ?? null,
-        lens: Array.isArray(rule.lens) ? rule.lens : [],
-        lifecycleStatus: agreement.status === 'expired' ? 'Expired' : 'Active',
+        lifecycleStatus: LIFECYCLE_STATUS[agreement.status] || 'Active',
         onchain: agreement.onchain ?? null
     };
 }

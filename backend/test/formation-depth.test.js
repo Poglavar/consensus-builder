@@ -109,15 +109,14 @@ describe('explicit cadastral conformance', () => {
 });
 
 describe('publish projection', () => {
-    it('retains unsigned consent locally while excluding it from a portable record', () => {
-        const record = { goal: 'as-is', cadastreParcelIds: [BASE], acceptedParcelIds: [BASE],
-            ownerAcceptances: { [BASE]: { acceptedOwnerKeys: ['party-a'] } },
+    it('projects a portable record without the local application state, and leaves the record alone', () => {
+        const record = { goal: 'as-is', cadastreParcelIds: [BASE], applied: true, appliedAt: '2026-10-01T00:00:00.000Z',
             approvalConfig: { schema: 'proposal-approval/v1' } };
         const before = structuredClone(record);
         const gate = records.preparePublishRecord(record);
         expect(gate.verdict.flat).toBe(true);
-        expect(gate.proposal).not.toHaveProperty('acceptedParcelIds');
-        expect(gate.proposal).not.toHaveProperty('ownerAcceptances');
+        expect(gate.proposal).not.toHaveProperty('applied');
+        expect(gate.proposal).not.toHaveProperty('appliedAt');
         expect(gate.proposal.approvalConfig).toEqual(record.approvalConfig);
         expect(records.stripDerivedRecordData(record)).toMatchObject(record);
         expect(record).toEqual(before);
@@ -187,7 +186,6 @@ describe('stripDerivedRecordData', () => {
             childParcelIds: ['opaque-child'],
             descendantParcelIds: ['opaque-child'],
             localEditAt: '2026-08-06T13:30:00.000Z',
-            ownerAcceptances: { 'HR-1': { accepted: true } },
             structureProposal: {
                 kind: 'park', geometry: { type: 'Polygon', coordinates: [] },
                 parentParcelIds: ['HR-1'],
@@ -217,7 +215,6 @@ describe('stripDerivedRecordData', () => {
         expect(out.cadastreParcelIds).toEqual(['HR-1', 'HR-2']);
         expect(out).not.toHaveProperty('parentParcelIds');
         expect(out.structureProposal).not.toHaveProperty('parentParcelIds');
-        expect(out.ownerAcceptances).toEqual({ 'HR-1': { accepted: true } });
         expect(record.childParcelIds).toEqual(['opaque-child']);
         expect(record.structureProposal.formation).toBeTruthy();
     });

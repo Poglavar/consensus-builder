@@ -1,13 +1,15 @@
-// proposal_market: a parimutuel prediction market per proposal_nft Proposal, staked in one SPL
-// token (devnet USDC for the hackathon), with NO deadline. A market resolves only when its proposal
-// reaches a terminal on-chain state: Executed → YES, Cancelled or Expired → NO. Anyone may create the market,
-// stake, resolve and claim. The proposal is read directly from its account (owner, discriminator
-// and layout checked) rather than through declare_program!, the same way proposal_nft reads
-// parcel_nft accounts, so this crate stays on the workspace's single anchor-lang version.
+// proposal_market: a parimutuel prediction market per agreement (an Agreement account of the
+// agreement program), staked in one SPL token (devnet USDC for the hackathon), with NO deadline. A
+// market resolves only when its agreement reaches a terminal on-chain state: Executed → YES,
+// Cancelled or Expired → NO. Anyone may create the market, stake, resolve and claim. The agreement
+// is read directly from its account by agreement::read_agreement_view (owner, discriminator, status
+// at offset 136), never through CPI; proposal_nft is not read at all. The program keeps its name and
+// id, and its accounts and fields keep the word `proposal` (the IDL interface is unchanged), which
+// now names the agreement account: renaming is a deploy-time matter.
 //
 // The same program also hosts the LMSR market (lmsr-market.md, handlers in lmsr_market.rs): dated
 // markets priced by an automated market maker whose worst-case loss the creator deposits, settled
-// from the proposal's state or from MarketEvidence-v1 attestations. The parimutuel instructions and
+// from the agreement's state or from MarketEvidence-v1 attestations. The parimutuel instructions and
 // the Market, ExternalMarket and Position layouts above stay as deployed.
 
 use anchor_lang::prelude::*;
@@ -24,24 +26,17 @@ pub use lmsr_market::*;
 
 declare_id!("GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB");
 
-/// The proposal_nft program whose Proposal accounts markets are opened on (same id on localnet
-/// and devnet, see Anchor.toml).
-pub const PROPOSAL_NFT_PROGRAM_ID: Pubkey = pubkey!("3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg");
-
 /// Solana Attestation Service program used by the court oracle on devnet. External markets do not
 /// trust an API response: they parse an account owned by this program and pin its credential,
 /// schema, issuer, parcel and outcome value against commitments made before staking starts.
 pub const SAS_PROGRAM_ID: Pubkey = sas_attestation::SAS_PROGRAM_ID;
 
-/// Account discriminator of proposal_nft::Proposal (sha256("account:Proposal")[..8], as in the IDL).
-pub const PROPOSAL_DISCRIMINATOR: [u8; 8] = [26, 94, 189, 187, 116, 136, 53, 33];
-
-/// proposal_nft::ProposalStatus variant indices (borsh encodes a unit enum as one u8).
-pub const STATUS_ACTIVE: u8 = 0;
-pub const STATUS_EXECUTED: u8 = 1;
-pub const STATUS_CANCELLED: u8 = 2;
-/// Set by a lens member's ProposalVerdict-v1 `expired` attestation (proposal_nft settle_with_verdict).
-pub const STATUS_EXPIRED: u8 = 3;
+/// agreement::AgreementStatus codes, the status byte a market reads (the codes proposal_nft used).
+pub const STATUS_ACTIVE: u8 = agreement::AgreementStatus::Active as u8;
+pub const STATUS_EXECUTED: u8 = agreement::AgreementStatus::Executed as u8;
+pub const STATUS_CANCELLED: u8 = agreement::AgreementStatus::Cancelled as u8;
+/// Set by the agreement program's `expire` once the agreement's deadline has passed.
+pub const STATUS_EXPIRED: u8 = agreement::AgreementStatus::Expired as u8;
 
 pub const SIDE_NO: u8 = 0;
 pub const SIDE_YES: u8 = 1;
@@ -58,10 +53,11 @@ pub const SAS_ATTESTATION_DISCRIMINATOR: u8 = sas_attestation::ATTESTATION_DISCR
 pub mod proposal_market {
     use super::*;
 
-    /// Open the (single) market for a proposal. Only an Active proposal can get a market: a
-    /// market on an already-terminal proposal would resolve instantly and take no stakes.
+    /// Open the (single) market for an agreement (the `proposal` account). Only an Active agreement
+    /// can get a market: a market on an already-terminal one would resolve instantly and take no
+    /// stakes.
     pub fn create_market(ctx: Context<CreateMarket>) -> Result<()> {
-        let status = read_proposal_status(&ctx.accounts.proposal, None)?;
+        let status = read_subject(&ctx.accounts.proposal, None)?.status;
         require!(status == STATUS_ACTIVE, MarketError::ProposalNotActive);
 
         let market = &mut ctx.accounts.market;
@@ -76,16 +72,16 @@ pub mod proposal_market {
         Ok(())
     }
 
-    /// Stake `amount` of the market's token on `side` (1 = YES the proposal executes, 0 = NO it
-    /// is cancelled). Allowed only while the proposal is still Active and the market unresolved.
-    /// Stakes are locked until resolution: no early exit, because the visible acceptance count
-    /// would make late exits gameable.
+    /// Stake `amount` of the market's token on `side` (1 = YES the agreement executes, 0 = NO it is
+    /// cancelled or expires). Allowed only while the agreement is still Active and the market
+    /// unresolved. Stakes are locked until resolution: no early exit, because the visible decision
+    /// tally would make late exits gameable.
     pub fn stake(ctx: Context<Stake>, side: u8, amount: u64) -> Result<()> {
         require!(side == SIDE_YES || side == SIDE_NO, MarketError::InvalidSide);
         require!(amount > 0, MarketError::ZeroAmount);
         require!(!ctx.accounts.market.resolved, MarketError::MarketResolved);
 
-        let status = read_proposal_status(&ctx.accounts.proposal, Some(&ctx.accounts.market.proposal))?;
+        let status = read_subject(&ctx.accounts.proposal, Some(&ctx.accounts.market.proposal))?.status;
         require!(status == STATUS_ACTIVE, MarketError::ProposalNotActive);
 
         token::transfer(
@@ -121,12 +117,12 @@ pub mod proposal_market {
         Ok(())
     }
 
-    /// Permissionless. Reads the proposal's on-chain status: Executed → YES, Cancelled or Expired
-    /// → NO, anything else → NotTerminal. There is no clock: an Active proposal keeps the market
+    /// Permissionless. Reads the agreement's on-chain status: Executed → YES, Cancelled or Expired
+    /// → NO, anything else → NotTerminal. There is no clock: an Active agreement keeps the market
     /// open.
     pub fn resolve(ctx: Context<Resolve>) -> Result<()> {
         require!(!ctx.accounts.market.resolved, MarketError::MarketResolved);
-        let status = read_proposal_status(&ctx.accounts.proposal, Some(&ctx.accounts.market.proposal))?;
+        let status = read_subject(&ctx.accounts.proposal, Some(&ctx.accounts.market.proposal))?.status;
         let outcome = match status {
             STATUS_EXECUTED => SIDE_YES,
             STATUS_CANCELLED | STATUS_EXPIRED => SIDE_NO,
@@ -151,8 +147,8 @@ pub mod proposal_market {
 
         ctx.accounts.position.claimed = true;
 
-        let proposal_key = market.proposal;
-        let seeds: &[&[u8]] = &[MARKET_SEED, proposal_key.as_ref(), &[market.bump]];
+        let subject_key = market.proposal;
+        let seeds: &[&[u8]] = &[MARKET_SEED, subject_key.as_ref(), &[market.bump]];
         token::transfer(
             CpiContext::new_with_signer(
                 ctx.accounts.token_program.to_account_info(),
@@ -173,9 +169,9 @@ pub mod proposal_market {
     /// `subject_hash` is sha256(parcelUid); the outcome hashes are sha256(operation) values from the
     /// court oracle's SAS schema.
     ///
-    /// Optional remaining account 0: a proposal_nft Proposal. When passed, the market is bound to
-    /// that proposal's authority choice: `trusted_attester` must be one of its lens members. The
-    /// binding is checked at creation only; the ExternalMarket layout is unchanged.
+    /// Optional remaining account 0: an agreement. When passed, the market is bound to that
+    /// agreement's authority choice: `trusted_attester` must be its lens. The binding is checked at
+    /// creation only; the ExternalMarket layout is unchanged.
     pub fn create_external_market(
         ctx: Context<CreateExternalMarket>,
         recipe_hash: [u8; 32],
@@ -190,9 +186,9 @@ pub mod proposal_market {
         require!(yes_value_hash != no_value_hash, MarketError::AmbiguousOutcomes);
         require!(closes_at > Clock::get()?.unix_timestamp, MarketError::InvalidCloseTime);
         validate_sas_schema(&ctx.accounts.credential, &ctx.accounts.schema)?;
-        if let Some(proposal) = ctx.remaining_accounts.first() {
-            let lens = read_proposal_lens(proposal)?;
-            require!(lens.contains(&trusted_attester), MarketError::AttesterNotInProposalLens);
+        if let Some(subject) = ctx.remaining_accounts.first() {
+            let view = read_subject(subject, None)?;
+            require_keys_eq!(view.lens, trusted_attester, MarketError::AttesterNotInProposalLens);
         }
 
         let market = &mut ctx.accounts.market;
@@ -330,9 +326,10 @@ pub mod proposal_market {
     // LMSR market (lmsr-market.md); handlers in lmsr_market.rs
     // ========================
 
-    /// Open the LMSR market of an Active proposal (kind 0, PDA ["lmsr", proposal]). Anyone may
+    /// Open the LMSR market of an Active agreement (kind 0, PDA ["lmsr", agreement]). Anyone may
     /// open it; the creator deposits the seed max_loss(b) and reclaims what the payouts leave.
-    /// Trading closes at `closes_at`; an Active proposal settles NO after `closes_at + grace_seconds`.
+    /// Trading closes at `closes_at`; an agreement still Active settles NO after
+    /// `closes_at + grace_seconds`.
     /// `max_position` caps shares per wallet per side (0: no cap).
     pub fn create_lmsr_market(
         ctx: Context<CreateLmsrMarket>,
@@ -346,8 +343,8 @@ pub mod proposal_market {
 
     /// Open a recipe-bound LMSR market (kind 1, PDA ["lmsr", recipe_hash]) that settles from
     /// MarketEvidence-v1 attestations against these commitments, as create_external_market does
-    /// for the court schema. Optional remaining account 0: a proposal_nft Proposal whose lens must
-    /// contain `trusted_attester`; it is stored, and its owner and lens may not trade.
+    /// for the court schema. Optional remaining account 0: an agreement whose lens must be
+    /// `trusted_attester`; it is stored, and its sponsor and lens may not trade.
     #[allow(clippy::too_many_arguments)]
     pub fn create_lmsr_external_market(
         ctx: Context<CreateLmsrExternalMarket>,
@@ -376,8 +373,8 @@ pub mod proposal_market {
     }
 
     /// Buy `shares` of `side` at the maker's price; fails if the quote exceeds `max_cost` (the
-    /// client's slippage guard). `proposal` is market.proposal (the System Program id when an
-    /// external market is unbound).
+    /// client's slippage guard). `proposal` is market.proposal, the agreement (the System Program
+    /// id when an external market is unbound).
     pub fn buy(ctx: Context<Buy>, side: u8, shares: u64, max_cost: u64) -> Result<()> {
         lmsr_market::handle_buy(ctx, side, shares, max_cost)
     }
@@ -388,7 +385,7 @@ pub mod proposal_market {
         lmsr_market::handle_sell(ctx, side, shares, min_return)
     }
 
-    /// Permissionless. Kind 0 settles from the proposal's status; kind 1 from the MarketEvidence-v1
+    /// Permissionless. Kind 0 settles from the agreement's status; kind 1 from the MarketEvidence-v1
     /// attestations passed as remaining accounts (one settles, two that disagree void). Without a
     /// settling state or evidence, NO once `closes_at + grace_seconds` has passed.
     pub fn resolve_lmsr(ctx: Context<ResolveLmsr>) -> Result<()> {
@@ -426,69 +423,15 @@ pub fn payout_amount(side: u8, amount: u64, yes_pool: u64, no_pool: u64, outcome
     u64::try_from(payout).map_err(|_| error!(MarketError::MathOverflow))
 }
 
-/// The prefix of proposal_nft::Proposal up to and including `status`. Borsh reads sequentially,
-/// so the fields after `status` need not be mirrored. Field order MUST match
-/// programs/proposal_nft/src/lib.rs (a backend test pins the two files to each other).
-// Only `status` is read; the leading fields exist to advance the Borsh
-// cursor and keep their real names so the backend layout tests can pin them to proposal_nft.
-#[allow(dead_code)]
-#[derive(AnchorDeserialize)]
-struct ProposalHead {
-    pub proposal_id: u64,
-    pub owner: Pubkey,
-    pub parcel_ids: Vec<String>,
-    pub is_conditional: bool,
-    pub image_uri: String,
-    pub acceptance_possible: bool,
-    pub status: u8,
-}
-
-/// Verify that `proposal` is a proposal_nft Proposal (and, when `expected` is given, the one the
-/// market was opened on) and return its status byte.
-fn read_proposal_status(proposal: &AccountInfo, expected: Option<&Pubkey>) -> Result<u8> {
+/// Read `subject` as an Agreement of the agreement program (owner, discriminator and layout are
+/// agreement::read_agreement_view's checks) and, when `expected` is given, require it to be the
+/// market's own. Returns the sponsor, lens and status byte that resolution, kind 0 trading and the
+/// LMSR insider rule read.
+pub(crate) fn read_subject(subject: &AccountInfo, expected: Option<&Pubkey>) -> Result<agreement::AgreementView> {
     if let Some(expected_key) = expected {
-        require_keys_eq!(proposal.key(), *expected_key, MarketError::InvalidProposalAccount);
+        require_keys_eq!(subject.key(), *expected_key, MarketError::InvalidProposalAccount);
     }
-    require_keys_eq!(*proposal.owner, PROPOSAL_NFT_PROGRAM_ID, MarketError::InvalidProposalAccount);
-    let data = proposal.try_borrow_data()?;
-    require!(data.len() > 8 && data[..8] == PROPOSAL_DISCRIMINATOR, MarketError::InvalidProposalAccount);
-    let mut body: &[u8] = &data[8..];
-    let head = ProposalHead::deserialize(&mut body).map_err(|_| error!(MarketError::InvalidProposalAccount))?;
-    Ok(head.status)
-}
-
-/// proposal_nft::Proposal up to and including `lens`, for proposal-bound external markets. Field
-/// order MUST match programs/proposal_nft/src/lib.rs; fields after `lens` are not mirrored.
-#[allow(dead_code)]
-#[derive(AnchorDeserialize)]
-struct ProposalLensView {
-    pub proposal_id: u64,
-    pub owner: Pubkey,
-    pub parcel_ids: Vec<String>,
-    pub is_conditional: bool,
-    pub image_uri: String,
-    pub acceptance_possible: bool,
-    pub status: u8,
-    pub sol_balance: u64,
-    pub token_balance: u64,
-    pub acceptance_count: u64,
-    pub accepted_parcels: Vec<String>,
-    pub lens: Vec<Pubkey>,
-}
-
-/// Verify that `proposal` is a proposal_nft Proposal and return its lens.
-fn read_proposal_lens(proposal: &AccountInfo) -> Result<Vec<Pubkey>> {
-    Ok(read_proposal_view(proposal)?.lens)
-}
-
-/// Verify that `proposal` is a proposal_nft Proposal and return its mirrored prefix: the owner,
-/// status and lens the LMSR insider rule and kind 0 trading read.
-fn read_proposal_view(proposal: &AccountInfo) -> Result<ProposalLensView> {
-    require_keys_eq!(*proposal.owner, PROPOSAL_NFT_PROGRAM_ID, MarketError::InvalidProposalAccount);
-    let data = proposal.try_borrow_data()?;
-    require!(data.len() > 8 && data[..8] == PROPOSAL_DISCRIMINATOR, MarketError::InvalidProposalAccount);
-    let mut body: &[u8] = &data[8..];
-    ProposalLensView::deserialize(&mut body).map_err(|_| error!(MarketError::InvalidProposalAccount))
+    agreement::read_agreement_view(subject).ok_or_else(|| error!(MarketError::InvalidProposalAccount))
 }
 
 /// Map a shared SAS parser error onto this program's error codes.
@@ -634,7 +577,8 @@ pub struct CreateMarket<'info> {
         bump
     )]
     pub market: Account<'info, Market>,
-    /// CHECK: a proposal_nft Proposal; owner, discriminator and status are verified in the handler.
+    /// CHECK: the agreement (an agreement-program Agreement); owner, discriminator and status are
+    /// verified in the handler.
     pub proposal: UncheckedAccount<'info>,
     pub stake_mint: Account<'info, Mint>,
     // init_if_needed: the vault ATA's address is predictable, so anyone can create it first; `init`
@@ -803,11 +747,11 @@ pub struct ExternalMarketResolved {
 
 #[error_code]
 pub enum MarketError {
-    #[msg("The proposal account is not a proposal_nft Proposal (or not this market's)")]
+    #[msg("The proposal account is not an agreement-program Agreement (or not this market's)")]
     InvalidProposalAccount,
-    #[msg("The proposal is not Active")]
+    #[msg("The agreement is not Active")]
     ProposalNotActive,
-    #[msg("The proposal has not reached a terminal state (Executed, Cancelled or Expired)")]
+    #[msg("The agreement has not reached a terminal state (Executed, Cancelled or Expired)")]
     NotTerminal,
     #[msg("Side must be 0 (NO) or 1 (YES)")]
     InvalidSide,
@@ -857,7 +801,7 @@ pub enum MarketError {
     EvidencePredatesMarketClose,
     #[msg("The source-observation timestamp is in the future")]
     EvidenceFromFuture,
-    #[msg("The trusted attester is not a member of the bound proposal's lens")]
+    #[msg("The trusted attester is not the bound agreement's lens")]
     AttesterNotInProposalLens,
     // LMSR market (lmsr-market.md). Appended after the deployed variants so their codes stay fixed.
     #[msg("Liquidity b must be positive")]
@@ -874,7 +818,7 @@ pub enum MarketError {
     SellExceedsPosition,
     #[msg("The position would exceed this market's per-wallet cap")]
     PositionCapExceeded,
-    #[msg("The proposal owner, its lens members and the market's attester cannot trade it")]
+    #[msg("The agreement's sponsor, its lens and the market's attester cannot trade it")]
     InsiderTrade,
     #[msg("No settling state or evidence, and the deadline plus grace has not passed")]
     GraceNotElapsed,

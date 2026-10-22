@@ -1,12 +1,13 @@
 // Lens-backed owner approval end to end: a lens member attests an agreement's rights snapshot and
-// which owners a wallet may act for, wallets sign their own decisions over the agreement's CID
-// (plan-design-agreement.md M2), and every receipt verifies from its signatures alone. Milestone: four
-// owners across three parcels, one of them co-owned.
+// which owners a wallet may act for (against its --rights registry file), wallets sign their own
+// decisions over the agreement's CID (plan-design-agreement.md M2), and every receipt verifies from its
+// signatures alone; those receipts are what the member later counts for its AgreementDecision (M3,
+// lens-agreement-decision.test.js). Milestone: four owners across three parcels, one of them co-owned.
 import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import { createContext, runInContext } from 'node:vm';
-import { generateKeyPairSync, sign } from 'node:crypto';
+import { createHash, generateKeyPairSync, sign } from 'node:crypto';
 import request from 'supertest';
 import { Keypair } from '@solana/web3.js';
 import { createLensMember } from '../lens/member.js';
@@ -15,8 +16,12 @@ import { createFakeIssuer } from '../lens/issuers.js';
 import { createMemoryStore } from '../lens/store.js';
 import { createLensPricing } from '../lens/pricing.js';
 import { createLensMemberApp } from '../lens/server.js';
-import { createApprovalAttester, normalizeRegistry } from '../lens/approval.js';
-import { cidOf } from '../cid.js';
+import { createApprovalAttester, fileRegistry, normalizeRegistry } from '../lens/approval.js';
+import { cidOf, cidOfObject } from '../cid.js';
+import { OPERATOR_TOKEN_HEADER } from '../lens/server.js';
+import { serializeAgreementRow } from '../routes/agreements.js';
+import { agreementRow } from './helpers/content-fixtures.js';
+import { agreementContent } from './helpers/approval-decisions.js';
 
 const require = createRequire(import.meta.url);
 const approval = require('../../frontend/js/proposals/approval.js');
@@ -74,7 +79,8 @@ function memberApp({ registry = registryJson(), keypair = memberKeypair, validit
     const issuer = createFakeIssuer({ authority: keypair.publicKey.toBase58(), clock });
     const identity = createDevnetRegistryIdentity({ rows: [], clock, authority: keypair.publicKey.toBase58() });
     const member = createLensMember({ authority: keypair.publicKey.toBase58(), issuer, store: createMemoryStore(), identity, clock, dryRun: true });
-    const approvalAttester = registry ? createApprovalAttester({ keypair, registry: normalizeRegistry(registry), clock, validitySeconds }) : null;
+    // The member's --rights file (lens/run.mjs); its devnet owner registry is covered in lens-approval-registry.test.js.
+    const approvalAttester = registry ? createApprovalAttester({ keypair, registry: fileRegistry(registry), clock, validitySeconds }) : null;
     return createLensMemberApp({ member, pricing: createLensPricing({ dryRun: true }), approvalAttester });
 }
 
@@ -156,7 +162,7 @@ describe('lens member approval routes', () => {
         expect(refused.body.error).toBe('approval_not_configured');
 
         const status = await request(serve(memberApp())).get('/lens/status');
-        expect(status.body.approval).toMatchObject({ enabled: true, parcels: 3, owners: 4, signers: 4 });
+        expect(status.body.approval).toMatchObject({ enabled: true, source: 'file', parcels: 3, owners: 4, authorities: 0, signers: 4 });
     });
 
     it('attests a matching snapshot and refuses mismatched, incomplete, unknown or out-of-lens contexts', async () => {
@@ -228,7 +234,7 @@ describe('lens member approval routes', () => {
         const issuer = createFakeIssuer({ authority: MEMBER, clock });
         const identity = createDevnetRegistryIdentity({ rows: [], clock, authority: MEMBER });
         const member = createLensMember({ authority: MEMBER, issuer, store: createMemoryStore(), identity, clock, dryRun: true });
-        const approvalAttester = createApprovalAttester({ keypair: other, registry: normalizeRegistry(registryJson()), clock });
+        const approvalAttester = createApprovalAttester({ keypair: other, registry: fileRegistry(registryJson()), clock });
         expect(() => createLensMemberApp({ member, pricing: createLensPricing({ dryRun: true }), approvalAttester }))
             .toThrow(/signs as/);
         expect(() => normalizeRegistry({ ...registryJson(), signers: [{ ownerId: 'owner-x', wallet: wallets.a.address }] }))
@@ -342,6 +348,44 @@ describe('four owners across three parcels approve only for themselves', () => {
         expect(await context.ProposalApprovalRuntime.decide(item, 'parcel-c', 'owner-c', actor))
             .toMatchObject({ acceptedOwners: 2, acceptedAreaM2: 100, passed: false,
                 tests: [expect.objectContaining({ measure: 'area', met: false }), expect.objectContaining({ measure: 'headcount', met: true })] });
+    });
+
+    it('counts the receipts the browser recorded into the member\'s AgreementDecision for the published agreement', async () => {
+        // The published owner deal over the three parcels, with this member as its lens and a sponsor wallet.
+        const sponsor = Keypair.generate().publicKey.toBase58();
+        const content = agreementContent({ sponsor, deadline: isoAt(NOW + 7 * 86400),
+            rule: { electorate: 'owners', binding: true, approvalConfig: agreement().approvalConfig, lens: [MEMBER] } });
+        const cid = cidOfObject(content);
+        const item = agreement({ agreementCid: cid });
+        const { context, authority, use } = runtime();
+        for (const [id, parcelId] of [['a', 'parcel-a'], ['b', 'parcel-b'], ['c', 'parcel-c'], ['d', 'parcel-c']]) {
+            use(wallets[id]);
+            await authority.verifyOwner(item, { memberKey: MEMBER, serviceUrl });
+            await context.ProposalApprovalRuntime.decide(item, parcelId, `owner-${id}`, actor);
+        }
+        const receipts = Object.values(item.ownerApprovals);
+        expect(receipts).toHaveLength(4);
+
+        // The same member, asked by its operator, reads the index and the relayed receipts (decisions are
+        // stamped with the real clock, so this member's clock is the real one).
+        const realClock = { nowSeconds: () => Math.floor(Date.now() / 1000) + 1 };
+        const issuer = createFakeIssuer({ authority: MEMBER, clock: realClock });
+        const identity = createDevnetRegistryIdentity({ rows: [], clock: realClock, authority: MEMBER });
+        const member = createLensMember({ authority: MEMBER, issuer, store: createMemoryStore(), identity, clock: realClock, dryRun: true });
+        const row = serializeAgreementRow(agreementRow(content));
+        const app = createLensMemberApp({ member, pricing: createLensPricing({ dryRun: true }), operatorToken: 'op', clock: realClock,
+            agreements: { load: async asked => (asked === cid ? row : null), decisions: async () => [...receipts].reverse() } });
+        const res = await request(app).post(`/lens/agreements/${cid}/decision`).set(OPERATOR_TOKEN_HEADER, 'op');
+        expect(res.status).toBe(201);
+        // Signing order: by decidedAt, then by signature (code units), as the relay folds them.
+        const inSigningOrder = [...receipts].sort((x, y) => Date.parse(x.decidedAt) - Date.parse(y.decidedAt)
+            || (x.decisionProof.signature < y.decisionProof.signature ? -1 : 1));
+        expect(res.body.payload).toEqual({
+            agreementCid: cid, sponsor, decision: 'satisfied',
+            evidenceRef: `sha256:${createHash('sha256').update(approval.stableStringify(inSigningOrder), 'utf8').digest('hex')}`,
+            sourceObservedAt: Math.floor(Date.parse(inSigningOrder.at(-1).decidedAt) / 1000)
+        });
+        expect(res.body).toMatchObject({ counted: 4, tally: { passed: true, acceptedOwners: 4 } });
     });
 
     it('refuses evidence that does not verify before keeping it, and never signs for another wallet', async () => {

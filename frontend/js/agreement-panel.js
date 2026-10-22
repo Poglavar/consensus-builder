@@ -4,6 +4,11 @@
 // deadline, with Before / after (over its input parcels), Edit and Delete. Propose puts a current
 // agreement to its parties (M2, agreement-sync.js); a proposed one shows its CID with its link, the
 // index's status and the owners' decisions (proposals/approval-panel.js), and is no longer edited.
+// On chain (M3, solana/agreement-bridge.js): its sponsor mints a proposed binding agreement; a minted
+// one shows its account, escrow, status and the lens's decision, read from the chain on open and
+// after every action, with Fund and Cancel for the sponsor, Record decision, Execute and Expire for
+// anyone, and Bet when the markets offer one (window.AgreementBets). A non-binding agreement (a
+// community or owner vote) is never minted and has no market: its decisions are counted off-chain.
 // window.AgreementPanel; the pure helpers are exported for backend/test/agreement-panel.test.js.
 (function (root, factory) {
     const api = factory(root);
@@ -18,6 +23,7 @@
 
     const format = () => root.CbFormat || (typeof require === 'function' ? require('./format.js') : null);
     const dialogApi = () => root.AgreementDialog || (typeof require === 'function' ? require('./agreement-dialog.js') : null);
+    const bridgeApi = () => root.AgreementBridge || (typeof require === 'function' ? require('./solana/agreement-bridge.js') : null);
 
     function t(key, fallback, params = {}) {
         let value = null;
@@ -264,15 +270,181 @@
     }
 
     // Propose is the main action of a current agreement not yet proposed; a proposed agreement is
-    // immutable, so it has no Edit (a change is a new agreement).
-    function actionsHtml({ canCompare = false, comparing = false, canPropose = false, published = false } = {}, tr = t) {
+    // immutable, so it has no Edit (a change is a new agreement). Bet appears when the markets offer
+    // one on the agreement (window.AgreementBets.available).
+    function actionsHtml({ canCompare = false, comparing = false, canPropose = false, published = false, canBet = false } = {}, tr = t) {
         return '<div class="agreement-panel-actions">'
             + (canPropose ? `<button type="button" class="btn btn-primary" data-agreement-action="propose"><i class="fas fa-paper-plane" aria-hidden="true"></i> ${esc(tr('agreement.publish.propose', 'Propose'))}</button>` : '')
             + `<button type="button" class="btn${canPropose ? '' : ' btn-primary'}" data-agreement-action="compare" aria-pressed="${comparing ? 'true' : 'false'}"${canCompare ? '' : ' disabled'}>`
             + `<i class="fas fa-left-right" aria-hidden="true"></i> ${esc(tr('mapCompare.toggle', 'Before / after'))}</button>`
+            + (canBet ? `<button type="button" class="btn" data-agreement-action="bet"><i class="fas fa-chart-line" aria-hidden="true"></i> ${esc(tr('agreement.panel.actions.bet', 'Bet'))}</button>` : '')
             + (published ? '' : `<button type="button" class="btn" data-agreement-action="edit"><i class="fas fa-pen" aria-hidden="true"></i> ${esc(tr('agreement.panel.actions.edit', 'Edit'))}</button>`)
             + `<button type="button" class="btn btn-danger" data-agreement-action="delete"><i class="fas fa-trash" aria-hidden="true"></i> ${esc(tr('agreement.panel.actions.delete', 'Delete'))}</button>`
             + '</div>';
+    }
+
+    // ---- the chain (M3) --------------------------------------------------------------------------
+
+    // "AbCd…wXyZ": enough of a base58 key to recognise it; the whole key is in the title.
+    function shortKey(key) {
+        const text = idOf(key);
+        return text.length > 12 ? `${text.slice(0, 4)}…${text.slice(-4)}` : text;
+    }
+
+    const solText = lamports => format().formatMoney(bridgeApi().solOf(lamports), 'SOL', { maxFractionDigits: 9, minFractionDigits: 0 });
+
+    // One literal key per chain status and decision (AgreementClient.STATUS_NAMES, DECISION_NAMES),
+    // so the locale coverage test sees them; the badge tone follows the shared badge vocabulary.
+    const CHAIN_STATUS = {
+        Active: { tone: 'minted', text: tr => tr('agreement.chain.status.active', 'Active') },
+        Executed: { tone: 'executed', text: tr => tr('agreement.chain.status.executed', 'Executed') },
+        Cancelled: { tone: 'withdrawn', text: tr => tr('agreement.chain.status.cancelled', 'Cancelled') },
+        Expired: { tone: 'expired', text: tr => tr('agreement.chain.status.expired', 'Expired') }
+    };
+    // A lens attests only "satisfied": a decision is Pending until then (there are no refusals).
+    const CHAIN_DECISION = {
+        Pending: { tone: 'neutral', text: tr => tr('agreement.chain.decision.pending', 'Pending') },
+        Satisfied: { tone: 'success', text: tr => tr('agreement.chain.decision.satisfied', 'Satisfied') }
+    };
+    // What a running chain action is doing (the bridge's onStatus states, then the index mirror).
+    const CHAIN_PHASE = {
+        preparing: tr => tr('agreement.chain.phase.preparing', 'Preparing the transaction…'),
+        awaiting_signature: tr => tr('agreement.chain.phase.awaitingSignature', 'Waiting for the wallet’s signature…'),
+        submitted: tr => tr('agreement.chain.phase.submitted', 'Sent; waiting for confirmation…'),
+        confirmed: tr => tr('agreement.chain.phase.confirmed', 'Confirmed.'),
+        indexing: tr => tr('agreement.chain.phase.indexing', 'Recording the mint on the server…')
+    };
+
+    const badgeHtml = (entry, label, attribute) => `<span class="cb-badge cb-badge--${entry ? entry.tone : 'neutral'}" ${attribute}>${esc(label)}</span>`;
+
+    // A chain status in words, spelled as the index records it ('active') or as the account decoder
+    // names it ('Active').
+    function chainStatusText(status, tr = t) {
+        const key = idOf(status);
+        const entry = CHAIN_STATUS[key.charAt(0).toUpperCase() + key.slice(1).toLowerCase()];
+        return entry ? entry.text(tr) : key;
+    }
+
+    function chainButton(action, icon, label, { tone = '', disabled = false } = {}) {
+        return `<button type="button" class="btn${tone ? ` btn-${tone}` : ''}" data-agreement-action="${action}"${disabled ? ' disabled' : ''}>`
+            + `<i class="${icon}" aria-hidden="true"></i> ${esc(label)}</button>`;
+    }
+
+    const hintsHtml = hints => hints.map(hint => `<p class="agreement-panel-hint">${esc(hint)}</p>`).join('');
+
+    /**
+     * Whether a proposed, unminted agreement can be minted from here and, when not, why. `sponsor` is
+     * the wallet it was proposed with (published.sponsor), `wallet` the connected Solana wallet, `lens`
+     * the member its mint would name (AgreementBridge.mintLens). An agreement proposed without a
+     * sponsor can only be proposed again (`repropose`), which needs a connected wallet.
+     */
+    function mintReadiness({ sponsor = null, wallet = null, lens = null, electorate = 'owners', deadlinePassed = false } = {}, tr = t) {
+        if (!sponsor) {
+            return {
+                canMint: false, repropose: true, canRepropose: !!wallet,
+                hints: [tr('agreement.chain.hints.noSponsor', 'It was proposed without a sponsor wallet, so it cannot be minted. Propose it again with a Solana wallet connected: that is a new agreement, with its own link and decisions.')]
+            };
+        }
+        const hints = [];
+        if (!wallet) hints.push(tr('agreement.chain.hints.connectSponsor', 'Connect the sponsor’s Solana wallet ({{sponsor}}) to mint it.', { sponsor: shortKey(sponsor) }));
+        else if (wallet !== sponsor) hints.push(tr('agreement.chain.hints.notSponsor', 'Only the sponsor’s wallet ({{sponsor}}) can mint it; the connected wallet is {{wallet}}.', { sponsor: shortKey(sponsor), wallet: shortKey(wallet) }));
+        if (!lens) {
+            hints.push(electorate === 'owners'
+                ? tr('agreement.chain.hints.noRuleLens', 'Its decision rule names no lens member, so no lens can attest its decision.')
+                : tr('agreement.chain.hints.noConfiguredLens', 'Choose a lens member in the lens settings: it attests the vote count.'));
+        }
+        if (deadlinePassed) hints.push(tr('agreement.chain.hints.deadlinePassed', 'Its deadline has passed.'));
+        return { canMint: !hints.length, repropose: false, canRepropose: false, hints };
+    }
+
+    // Only a binding rule moves land and money at execution, so only a binding agreement is minted
+    // and bet on (user decision, 2026-10-22).
+    const isBinding = agreement => !!agreement && !!agreement.rule && agreement.rule.binding === true;
+
+    // The "On chain" section of a proposed non-binding agreement: one line saying why it has none.
+    function nonBindingChainHtml(published, tr = t) {
+        if (!published) return '';
+        return sectionHtml(tr('agreement.chain.heading', 'On chain'),
+            `<p class="agreement-panel-note" data-agreement-chain="non-binding">${esc(tr('agreement.chain.nonBinding', 'A vote is not minted; its decisions are counted off-chain.'))}</p>`);
+    }
+
+    /**
+     * The "On chain" section of a proposed agreement. view: { published, ref ({ cluster, account } or
+     * null), wallet, lens, electorate, deadlinePassed, chain ({ loading, error, value, lensError } of
+     * the account read back), actions (AgreementBridge.chainActions), attestation (the address of the
+     * lens's decision its member lists, or null), busy ({ action, phase } of a running action, or null) }.
+     */
+    function chainHtml(view, tr = t) {
+        if (!view || !view.published) return '';
+        const busy = view.busy ? `<p class="agreement-panel-hint" role="status" data-agreement-chain-busy="${esc(view.busy.action)}">${esc((CHAIN_PHASE[view.busy.phase] || CHAIN_PHASE.preparing)(tr))}</p>` : '';
+        const locked = !!view.busy;
+        const title = tr('agreement.chain.heading', 'On chain');
+        if (!view.ref) {
+            const ready = mintReadiness(view, tr);
+            const button = ready.repropose
+                ? chainButton('repropose', 'fas fa-paper-plane', tr('agreement.chain.actions.repropose', 'Propose again with this wallet'), { tone: 'primary', disabled: locked || !ready.canRepropose })
+                : chainButton('mint', 'fas fa-cube', tr('agreement.chain.actions.mint', 'Mint'), { tone: 'primary', disabled: locked || !ready.canMint });
+            return sectionHtml(title, '<div class="agreement-chain" data-agreement-chain="unminted">'
+                + `<p class="agreement-panel-meta">${esc(tr('agreement.chain.notMinted', 'Not minted. Minting commits this agreement to Solana at its sponsor’s address; its lens then attests the decision, and executing it releases the escrow.'))}</p>`
+                + `<div class="agreement-panel-actions">${button}</div>${hintsHtml(ready.hints)}${busy}</div>`);
+        }
+        const ref = view.ref;
+        const link = bridgeApi().explorerUrl({ account: ref.account, cluster: ref.cluster });
+        const head = '<div class="agreement-chain-head">'
+            + `<a class="cb-link cb-link--external agreement-chain-account" href="${esc(link)}" target="_blank" rel="noopener noreferrer" title="${esc(ref.account)}">${esc(shortKey(ref.account))}</a>`
+            + `<span class="agreement-panel-meta">${esc(tr('agreement.chain.cluster', 'Solana {{cluster}}', { cluster: ref.cluster }))}</span></div>`;
+        const chain = view.chain || { loading: true };
+        if (chain.loading) return sectionHtml(title, `<div class="agreement-chain" data-agreement-chain="loading">${head}<p class="agreement-panel-hint" role="status">${esc(tr('agreement.chain.reading', 'Reading the chain…'))}</p>${busy}</div>`);
+        if (chain.error) {
+            return sectionHtml(title, `<div class="agreement-chain" data-agreement-chain="error">${head}`
+                + `<p class="agreement-panel-note agreement-panel-note--danger" role="alert">${esc(tr('agreement.chain.readFailed', 'The chain account could not be read: {{reason}}', { reason: chain.error }))}</p>${busy}</div>`);
+        }
+        const value = chain.value;
+        if (!value) {
+            return sectionHtml(title, `<div class="agreement-chain" data-agreement-chain="missing">${head}`
+                + `<p class="agreement-panel-note agreement-panel-note--danger" role="alert">${esc(tr('agreement.chain.missing', 'The account is not on Solana {{cluster}}.', { cluster: ref.cluster }))}</p>${busy}</div>`);
+        }
+        const status = CHAIN_STATUS[value.status];
+        const decision = CHAIN_DECISION[value.decision];
+        const required = value.requiredLamports > 0n;
+        const escrow = required
+            ? tr('agreement.chain.escrowOf', '{{escrow}} of {{required}}', { escrow: solText(value.escrowLamports), required: solText(value.requiredLamports) })
+            : tr('agreement.chain.escrowNoneRequired', '{{escrow}} (none required)', { escrow: solText(value.escrowLamports) });
+        const facts = [
+            [tr('agreement.chain.facts.status', 'Status'), badgeHtml(status, status ? status.text(tr) : value.status, `data-agreement-chain-status="${esc(value.status)}"`)],
+            [tr('agreement.chain.facts.decision', 'Decision'), badgeHtml(decision, decision ? decision.text(tr) : value.decision, `data-agreement-chain-decision="${esc(value.decision)}"`)],
+            [tr('agreement.chain.facts.escrow', 'Escrow'), esc(escrow)],
+            [tr('agreement.chain.facts.deadline', 'Deadline'), esc(value.deadline ? format().formatDateTime(value.deadline) : tr('agreement.chain.noDeadline', 'None'))],
+            [tr('agreement.chain.facts.lens', 'Lens'), `<code title="${esc(value.lens)}">${esc(shortKey(value.lens))}</code>`],
+            [tr('agreement.chain.facts.payout', 'Payout'), `<code title="${esc(value.payout)}">${esc(shortKey(value.payout))}</code>`]
+        ];
+        if (value.executedAt) facts.push([tr('agreement.chain.facts.executedAt', 'Executed'), esc(format().formatDateTime(value.executedAt))]);
+        const factsHtml = `<dl class="agreement-panel-facts">${facts.map(([label, html]) => `<div><dt>${esc(label)}</dt><dd>${html}</dd></div>`).join('')}</dl>`;
+
+        const actions = view.actions || {};
+        const active = value.status === 'Active';
+        const buttons = [];
+        const hints = [];
+        if (active) {
+            if (view.attestation && value.decision === 'Pending') {
+                buttons.push(chainButton('attest', 'fas fa-stamp', tr('agreement.chain.actions.attest', 'Record decision'), { tone: 'primary', disabled: locked || !actions.attest }));
+            }
+            buttons.push(chainButton('execute', 'fas fa-play', tr('agreement.chain.actions.execute', 'Execute'), { tone: value.decision === 'Satisfied' ? 'primary' : '', disabled: locked || !actions.execute }));
+            if (actions.authority) {
+                buttons.push(chainButton('fund', 'fas fa-coins', tr('agreement.chain.actions.fund', 'Fund'), { disabled: locked || !actions.fund }));
+                buttons.push(chainButton('cancel', 'fas fa-ban', tr('agreement.chain.actions.cancel', 'Cancel'), { tone: 'danger', disabled: locked || !actions.cancel }));
+            }
+            if (actions.deadlinePassed) buttons.push(chainButton('expire', 'fas fa-hourglass-end', tr('agreement.chain.actions.expire', 'Expire'), { disabled: locked || !actions.expire }));
+            if (!view.wallet) hints.push(tr('agreement.chain.hints.connectWallet', 'Connect a Solana wallet to act on it.'));
+            if (value.decision === 'Pending' && chain.lensError) hints.push(chain.lensError);
+            else if (value.decision === 'Pending' && !view.attestation && !actions.deadlinePassed) hints.push(tr('agreement.chain.hints.awaitingLens', 'Waiting for its lens to attest the decision.'));
+            if (value.decision === 'Pending' && view.attestation) hints.push(tr('agreement.chain.hints.attested', 'Its lens has attested the decision: record it on chain.'));
+            if (value.decision === 'Satisfied' && !actions.funded) hints.push(tr('agreement.chain.hints.awaitingFunds', 'Execution waits until the escrow holds {{required}}.', { required: solText(value.requiredLamports) }));
+            if (actions.deadlinePassed) hints.push(tr('agreement.chain.hints.expired', 'Its deadline has passed: anyone can expire it, which returns the escrow to the sponsor.'));
+        }
+        return sectionHtml(title, `<div class="agreement-chain" data-agreement-chain="minted">${head}${factsHtml}`
+            + (buttons.length ? `<div class="agreement-panel-actions">${buttons.join('')}</div>` : '')
+            + `${hintsHtml(hints)}${busy}</div>`);
     }
 
     // The index's status of a proposed agreement, in words: active, expired, or not read (yet).
@@ -359,8 +531,13 @@
 
     function browserPanel(win) {
         const doc = win.document;
-        // remote: the index's row of a proposed agreement ({ cid, loading, status, error }), read once per open.
-        const state = { token: 0, id: null, agreement: null, check: null, checking: false, error: null, panel: null, wired: false, remote: null };
+        // remote: the index's row of a proposed agreement ({ cid, loading, status, error, onchain }), read
+        // once per open and after each chain action. chain: the minted account as read back ({ account,
+        // loading, value, error }); chainBusy: the chain action running ({ action, phase }).
+        const state = {
+            token: 0, id: null, agreement: null, check: null, checking: false, error: null, panel: null, wired: false, remote: null,
+            chain: null, chainToken: 0, chainBusy: null
+        };
         const log = (message, ...rest) => console.log(`[${new Date().toISOString()}] [AgreementPanel] ${message}`, ...rest);
         const isOpen = () => !!(state.panel && state.panel.classList.contains('visible'));
         const designOf = id => (win.proposalStorage && typeof win.proposalStorage.getProposal === 'function' ? win.proposalStorage.getProposal(id) || null : null);
@@ -449,14 +626,16 @@
             const deadline = agreement.deadline ? format().formatDate(agreement.deadline) : '';
             const current = !!state.check && state.check.current === true && !state.checking && !state.error;
             const published = !!agreement.published;
+            const binding = isBinding(agreement);
             // An agreement imported from its link whose pieces did not re-derive here keeps them by hash.
             const byHashOnly = (agreement.outputs || []).some(output => !output.geometry)
                 ? `<p class="agreement-panel-note" data-agreement-rederive>${esc(t('agreement.publish.rederive', 'Its pieces are known here by their hashes only: apply its designs on the same ground to re-derive them and compare.'))}</p>`
                 : '';
             return status
                 + byHashOnly
-                + actionsHtml({ canCompare: current, comparing: comparing(state.id), canPropose: current && !published, published })
+                + actionsHtml({ canCompare: current, comparing: comparing(state.id), canPropose: current && !published, published, canBet: binding && betAvailable(agreement) })
                 + publishedHtml({ published: agreement.published, remote: state.remote, electorate: agreement.rule && agreement.rule.electorate })
+                + (binding ? chainHtml(chainView(agreement)) : nonBindingChainHtml(agreement.published))
                 + designsHtml(designRows(agreement, { designOf, isApplied: win.isApplied, typeLabel }))
                 + landHtml(landSummary(agreement))
                 + allocationHtml(allocationLines(agreement))
@@ -479,21 +658,149 @@
             doc.body.classList.add('agreement-panel-open');
         }
 
-        // The index's row of a proposed agreement: its status, and the relay's decisions on it. Read
-        // once per open (and after Propose); a later render reuses it.
-        async function readRemote(agreement) {
-            const cid = agreement && agreement.published ? agreement.published.cid : null;
-            if (!cid || (state.remote && state.remote.cid === cid)) return;
+        // ---- the chain (M3) ----------------------------------------------------------------------
+
+        // The markets offer a bet on this agreement (window.AgreementBets, js/bets/).
+        function betAvailable(agreement) {
+            const bets = win.AgreementBets;
+            if (!bets || typeof bets.available !== 'function' || !agreement) return false;
+            try {
+                return bets.available(agreement) === true;
+            } catch (error) {
+                console.error(`[${new Date().toISOString()}] [AgreementPanel] AgreementBets.available failed for ${agreement.id}`, error);
+                return false;
+            }
+        }
+
+        // The lens member a mint of this agreement names (AgreementBridge.mintLens): the rule's, or for
+        // a community rule the first one configured in the lens settings (LensPicker).
+        function mintLensOf(agreement) {
+            const configured = win.LensPicker && typeof win.LensPicker.getEntries === 'function' ? win.LensPicker.getEntries() : [];
+            return win.AgreementBridge.mintLens(agreement, configured);
+        }
+
+        // Everything the "On chain" section shows (chainHtml), from the record, the connected wallet,
+        // the account read back and the index's row.
+        function chainView(agreement) {
+            if (!agreement || !agreement.published || !win.AgreementBridge) return null;
+            const bridge = win.AgreementBridge;
+            const wallet = bridge.connectedWallet();
+            const ref = bridge.onchainRef(agreement);
+            const deadlineMs = agreement.deadline ? Date.parse(agreement.deadline) : NaN;
+            const chain = ref && state.chain && state.chain.account === ref.account ? state.chain : (ref ? { loading: true } : null);
+            const attestation = chain && chain.attestation ? chain.attestation : null;
+            let actions = null;
+            if (chain && chain.value) {
+                try {
+                    actions = bridge.chainActions(chain.value, { wallet, attestation });
+                } catch (error) {
+                    console.error(`[${new Date().toISOString()}] [AgreementPanel] the chain actions of ${agreement.id} could not be worked out`, error);
+                }
+            }
+            return {
+                published: agreement.published,
+                sponsor: agreement.published.sponsor || null,
+                ref,
+                wallet,
+                lens: ref ? null : mintLensOf(agreement),
+                electorate: agreement.rule && agreement.rule.electorate,
+                deadlinePassed: Number.isFinite(deadlineMs) && deadlineMs <= Date.now(),
+                chain,
+                actions,
+                attestation,
+                busy: state.chainBusy
+            };
+        }
+
+        // Reads the minted account again (the chain is the truth), and while its decision is pending
+        // asks its lens member for the decision (AgreementBridge.findAttestation); a newer read wins.
+        async function readChain(agreement) {
+            const ref = agreement && win.AgreementBridge ? win.AgreementBridge.onchainRef(agreement) : null;
+            if (!ref) {
+                state.chain = null;
+                return;
+            }
             const id = agreement.id;
-            state.remote = { cid, loading: true, status: null, error: null };
+            const token = ++state.chainToken;
+            const current = () => state.id === id && token === state.chainToken;
+            state.chain = { account: ref.account, loading: true, value: null, error: null, attestation: null, lensError: null };
+            if (isOpen() && state.id === id) renderPanel();
+            let value = null;
+            try {
+                value = await win.AgreementBridge.read(agreement);
+                if (!current()) return;
+                state.chain = { account: ref.account, loading: false, value, error: null, attestation: null, lensError: null };
+                log(`${id}: ${ref.account} on ${ref.cluster} is ${value ? `${value.status}, decision ${value.decision}, escrow ${value.escrowLamports}/${value.requiredLamports} lamports` : 'not on chain'}`);
+            } catch (error) {
+                if (!current()) return;
+                console.warn(`[${new Date().toISOString()}] [AgreementPanel] ${ref.account} could not be read`, error);
+                state.chain = { account: ref.account, loading: false, value: null, error: (error && error.message) || String(error), attestation: null, lensError: null };
+            }
+            if (isOpen() && state.id === id) renderPanel();
+            if (!value || value.status !== 'Active' || value.decision !== 'Pending') return;
+            try {
+                const found = await win.AgreementBridge.findAttestation(agreement, value);
+                if (!current()) return;
+                state.chain = { ...state.chain, attestation: found ? found.address : null };
+            } catch (error) {
+                if (!current()) return;
+                console.warn(`[${new Date().toISOString()}] [AgreementPanel] the lens decision of ${id} could not be looked up`, error);
+                state.chain = { ...state.chain, lensError: (error && error.message) || String(error) };
+            }
+            if (isOpen() && state.id === id) renderPanel();
+        }
+
+        // Reads the account when it is not the one read already: on open, after a mint, after the
+        // index's record of a mint made elsewhere is adopted. A non-binding agreement has none.
+        function syncChain(agreement) {
+            const ref = isBinding(agreement) && win.AgreementBridge ? win.AgreementBridge.onchainRef(agreement) : null;
+            if (!ref) {
+                state.chain = null;
+                return;
+            }
+            if (state.chain && state.chain.account === ref.account) return;
+            readChain(agreement);
+        }
+
+        // The index is the usual lookup of the chain account: its record of a mint this device does not
+        // know is kept here, and a mint made here that it lacks is sent to it again.
+        function reconcileOnchain(id, indexed) {
+            const agreement = store().get(id);
+            if (!agreement || !agreement.published || !isBinding(agreement) || !win.AgreementBridge) return;
+            const local = win.AgreementBridge.onchainRef(agreement);
+            const remote = indexed ? win.AgreementBridge.onchainRef({ onchain: indexed }) : null;
+            try {
+                if (remote && !local) {
+                    log(`${id}: the index records its mint at ${remote.account} (${remote.cluster}); keeping it here`);
+                    win.AgreementSync.adoptOnchain(id, indexed);
+                } else if (local && !remote) {
+                    log(`${id}: the index lacks its mint at ${local.account}; sending it again`);
+                    win.AgreementSync.recordOnchain(id, { chain: 'solana', cluster: local.cluster, account: local.account, signature: agreement.onchain.signature || null })
+                        .catch(error => console.warn(`[${new Date().toISOString()}] [AgreementPanel] the index still lacks the mint of ${id}`, error));
+                }
+            } catch (error) {
+                console.warn(`[${new Date().toISOString()}] [AgreementPanel] the mint record of ${id} could not be reconciled`, error);
+            }
+        }
+
+        // The index's row of a proposed agreement: its status, its chain record and the relay's
+        // decisions on it. Read once per open, after Propose and after each chain action; a later
+        // render reuses it.
+        async function readRemote(agreement, { force = false } = {}) {
+            const cid = agreement && agreement.published ? agreement.published.cid : null;
+            if (!cid || (!force && state.remote && state.remote.cid === cid)) return;
+            const id = agreement.id;
+            state.remote = { cid, loading: true, status: null, error: null, onchain: null };
             try {
                 const row = await win.AgreementSync.fetchAgreement(cid);
                 if (state.id !== id) return;
-                state.remote = { cid, loading: false, status: row.status, error: null };
+                const onchain = row.onchain && typeof row.onchain === 'object' ? row.onchain : null;
+                state.remote = { cid, loading: false, status: row.status, error: null, onchain };
+                reconcileOnchain(id, onchain);
             } catch (error) {
                 if (state.id !== id) return;
                 console.warn(`[${new Date().toISOString()}] [AgreementPanel] the server status of ${cid} is unavailable`, error);
-                state.remote = { cid, loading: false, status: null, error: (error && error.message) || String(error) };
+                state.remote = { cid, loading: false, status: null, error: (error && error.message) || String(error), onchain: null };
             }
             if (win.ProposalApprovalPanel) {
                 win.ProposalApprovalPanel.setStatus(id, state.remote.status);
@@ -518,6 +825,7 @@
                 state.error = null;
                 renderPanel();
                 readRemote(agreement);
+                syncChain(agreement);
                 const check = await checkAgreement(agreement);
                 if (token !== state.token) return;
                 state.check = check;
@@ -600,6 +908,220 @@
             else win.showEphemeralMessage(link, 9000, 'info');
         }
 
+        // ---- chain actions -----------------------------------------------------------------------
+
+        const notice = (text, tone = 'success', ms = 5000) => win.showEphemeralMessage(text, ms, tone);
+        // A wallet's "user rejected" is the person changing their mind, not a failure.
+        const rejectedInWallet = error => !!error && (error.code === 4001 || /user rejected|rejected the request|user denied/i.test(String(error.message || '')));
+
+        // Runs one chain action: the section names its phase and every chain button waits until it
+        // ends; the account and the index's row are read again afterwards, whatever happened.
+        async function runChain(action, work) {
+            if (state.chainBusy) return;
+            const id = state.id;
+            state.chainBusy = { action, phase: 'preparing' };
+            renderPanel();
+            const onStatus = ({ state: phase }) => {
+                if (state.id !== id || !state.chainBusy || !CHAIN_PHASE[phase]) return;
+                state.chainBusy = { action, phase };
+                const line = state.panel && state.panel.querySelector('[data-agreement-chain-busy]');
+                if (line) line.textContent = CHAIN_PHASE[phase](t);
+                else renderPanel();
+            };
+            try {
+                await work(onStatus, phase => onStatus({ state: phase }));
+            } catch (error) {
+                if (rejectedInWallet(error)) log(`${action} on ${id}: declined in the wallet`);
+                else report(`${action} on ${id} failed`, error);
+            } finally {
+                if (state.id === id) {
+                    state.chainBusy = null;
+                    const agreement = store().get(id);
+                    if (agreement) {
+                        state.agreement = agreement;
+                        readChain(agreement);
+                        readRemote(agreement, { force: true });
+                    } else {
+                        renderPanel();
+                    }
+                }
+            }
+        }
+
+        // What the program fixes at create beyond the agreement itself: the escrow execution needs and
+        // the account the escrow is released to (the sponsor's wallet unless another is given).
+        // Resolves { requiredLamports, payout } or null when cancelled.
+        function askMintTerms(agreement, lens) {
+            return new Promise(resolve => {
+                const sponsor = agreement.published.sponsor;
+                const body = doc.createElement('div');
+                body.className = 'agreement-mint';
+                body.innerHTML = `<p class="agreement-panel-meta">${esc(t('agreement.chain.mint.intro', 'Minting commits this agreement’s CID to Solana at its sponsor’s address. Its lens attests the decision; executing it then releases the escrow to the payout account.'))}</p>`
+                    + '<dl class="agreement-panel-facts">'
+                    + `<div><dt>${esc(t('agreement.chain.facts.lens', 'Lens'))}</dt><dd><code title="${esc(lens)}">${esc(shortKey(lens))}</code></dd></div>`
+                    + `<div><dt>${esc(t('agreement.chain.facts.deadline', 'Deadline'))}</dt><dd>${esc(agreement.deadline ? format().formatDateTime(agreement.deadline) : t('agreement.chain.noDeadline', 'None'))}</dd></div>`
+                    + '</dl>'
+                    + `<label class="agreement-mint__field"><span>${esc(t('agreement.chain.mint.required', 'Escrow needed to execute (SOL)'))}</span>`
+                    + '<input type="text" inputmode="decimal" autocomplete="off" data-agreement-mint-required value="0"></label>'
+                    + `<p class="agreement-panel-hint">${esc(t('agreement.chain.mint.requiredHint', 'Execution waits until the escrow holds this much; 0 needs none. The sponsor funds the escrow after minting.'))}</p>`
+                    + `<label class="agreement-mint__field"><span>${esc(t('agreement.chain.mint.payout', 'Payout account'))}</span>`
+                    + `<input type="text" autocomplete="off" spellcheck="false" data-agreement-mint-payout value="${esc(sponsor)}"></label>`
+                    + `<p class="agreement-panel-hint">${esc(t('agreement.chain.mint.payoutHint', 'Receives the whole escrow when the agreement executes.'))}</p>`
+                    + '<p class="agreement-panel-note agreement-panel-note--danger" role="alert" data-agreement-mint-error hidden></p>';
+                let settled = false;
+                const finish = value => {
+                    if (settled) return;
+                    settled = true;
+                    resolve(value);
+                };
+                const dialog = win.CbDialog.open({
+                    title: t('agreement.chain.mint.title', 'Mint the agreement'),
+                    size: 'sm',
+                    className: 'agreement-mint-dialog',
+                    body,
+                    onClose: () => finish(null),
+                    actions: [
+                        { id: 'cancel', label: t('common.cancel', 'Cancel'), role: 'secondary' },
+                        {
+                            id: 'mint', label: t('agreement.chain.actions.mint', 'Mint'), role: 'primary', keepOpen: true,
+                            onClick: api => {
+                                const error = body.querySelector('[data-agreement-mint-error]');
+                                const typed = format().parseDecimal(body.querySelector('[data-agreement-mint-required]').value);
+                                const requiredLamports = typed === null ? 0n : bridgeApi().lamportsFromSol(typed, { allowZero: true });
+                                const payout = body.querySelector('[data-agreement-mint-payout]').value.trim();
+                                const problem = requiredLamports === null
+                                    ? t('agreement.chain.errors.amount', 'Enter an amount of SOL, such as 0.5.')
+                                    : (!win.LensCore.isBase58Pubkey(payout) ? t('agreement.chain.errors.payout', 'The payout account must be a Solana address.') : null);
+                                if (problem) {
+                                    error.textContent = problem;
+                                    error.hidden = false;
+                                    return;
+                                }
+                                finish({ requiredLamports, payout });
+                                api.close('mint');
+                            }
+                        }
+                    ]
+                });
+                if (!dialog) finish(null);
+            });
+        }
+
+        // Mint (the sponsor): create the account, then mirror it into the index and keep it here.
+        async function mint() {
+            const id = state.id;
+            const agreement = state.agreement;
+            if (!agreement || !agreement.published) return;
+            const lens = mintLensOf(agreement);
+            const terms = await askMintTerms(agreement, lens);
+            if (!terms || state.id !== id) return;
+            await runChain('mint', async (onStatus, phase) => {
+                const minted = await win.AgreementBridge.mint({ agreement, lens, requiredLamports: terms.requiredLamports, payout: terms.payout, onStatus });
+                phase('indexing');
+                try {
+                    await win.AgreementSync.recordOnchain(id, { chain: 'solana', cluster: minted.cluster, account: minted.account, signature: minted.signature });
+                    notice(t('agreement.chain.minted', 'Agreement minted.'));
+                } catch (error) {
+                    if (!error || !error.kept) throw error;
+                    notice(t('agreement.chain.mintedNotIndexed', 'Agreement minted, but the server did not record it: {{reason}}', { reason: error.message }), 'warning', 9000);
+                }
+            });
+        }
+
+        // Propose again with the connected wallet as the sponsor: a new agreement, opened in its place.
+        async function repropose() {
+            const id = state.id;
+            try {
+                const { id: copyId, cid, link } = await win.AgreementSync.proposeAgain(id);
+                log(`${id} proposed again as ${copyId} (${cid})`);
+                if (await win.DesignSync.copyLink(link)) notice(t('agreement.chain.reproposed', 'Proposed again as a new agreement. Its link is copied.'));
+                else notice(t('agreement.publish.proposedAt', 'Agreement proposed: {{link}}', { link }), 'success', 9000);
+                await open(copyId);
+            } catch (error) {
+                if (error && error.cancelled) return;
+                report(`proposing ${id} again failed`, error);
+            }
+        }
+
+        // Fund (the sponsor): an amount prompt, proposing what the escrow still lacks.
+        async function fund() {
+            const id = state.id;
+            const agreement = state.agreement;
+            const value = state.chain && state.chain.value;
+            if (!agreement || !value) return;
+            const lacking = value.requiredLamports > value.escrowLamports ? value.requiredLamports - value.escrowLamports : 0n;
+            const readLamports = text => {
+                const typed = format().parseDecimal(text);
+                return typed === null ? null : bridgeApi().lamportsFromSol(typed);
+            };
+            const answer = await win.CbDialog.prompt(t('agreement.chain.fundPrompt', 'How much SOL should the escrow receive from the sponsor’s wallet?'), {
+                title: t('agreement.chain.actions.fund', 'Fund'),
+                defaultValue: lacking > 0n ? format().formatNumber(bridgeApi().solOf(lacking), { maxFractionDigits: 9 }) : '',
+                placeholder: format().formatNumber(0.5, { maxFractionDigits: 1 }),
+                okText: t('agreement.chain.actions.fund', 'Fund'),
+                validate: text => readLamports(text) !== null
+            });
+            if (answer === null || state.id !== id) return;
+            const lamports = readLamports(answer);
+            await runChain('fund', async onStatus => {
+                await win.AgreementBridge.fund({ agreement, lamports, onStatus });
+                notice(t('agreement.chain.funded', 'The escrow received {{amount}}.', { amount: solText(lamports) }));
+            });
+        }
+
+        // Record decision (anyone): the lens's attestation its member lists (readChain).
+        async function attest() {
+            const agreement = state.agreement;
+            const attestation = state.chain && state.chain.attestation;
+            if (!agreement || !attestation) return;
+            await runChain('attest', async onStatus => {
+                await win.AgreementBridge.attest({ agreement, attestation, onStatus });
+                notice(t('agreement.chain.attested', 'Decision recorded: the rule is satisfied.'));
+            });
+        }
+
+        // Execute (anyone): the escrow goes to the payout account.
+        async function execute() {
+            const agreement = state.agreement;
+            if (!agreement) return;
+            await runChain('execute', async onStatus => {
+                await win.AgreementBridge.execute({ agreement, onStatus });
+                notice(t('agreement.chain.executed', 'Agreement executed: the escrow went to its payout account.'));
+            });
+        }
+
+        // Cancel (the sponsor): ends the agreement and refunds the escrow.
+        async function cancel() {
+            const id = state.id;
+            const agreement = state.agreement;
+            if (!agreement) return;
+            const confirmed = await win.CbDialog.confirm(t('agreement.chain.cancelConfirm', 'Cancel this agreement on chain? It ends for good and the escrow returns to the sponsor.'), {
+                destructive: true,
+                okText: t('agreement.chain.actions.cancel', 'Cancel'),
+                cancelText: t('agreement.chain.keep', 'Keep it')
+            });
+            if (!confirmed || state.id !== id) return;
+            await runChain('cancel', async onStatus => {
+                await win.AgreementBridge.cancel({ agreement, onStatus });
+                notice(t('agreement.chain.cancelled', 'Agreement cancelled; the escrow returned to the sponsor.'));
+            });
+        }
+
+        // Expire (anyone, after the deadline): ends the agreement and refunds the escrow.
+        async function expire() {
+            const agreement = state.agreement;
+            if (!agreement) return;
+            await runChain('expire', async onStatus => {
+                await win.AgreementBridge.expire({ agreement, onStatus });
+                notice(t('agreement.chain.expired', 'Agreement expired; the escrow returned to the sponsor.'));
+            });
+        }
+
+        function bet() {
+            const id = state.id;
+            Promise.resolve().then(() => win.AgreementBets.open(id)).catch(error => report(`the bet on ${id} could not be opened`, error));
+        }
+
         // A design's own details take the right dock, so this panel steps aside.
         function selectDesign(proposalId) {
             if (typeof win.selectAndHighlightProposal !== 'function') throw new Error('selectAndHighlightProposal is not loaded.');
@@ -617,6 +1139,14 @@
                 case 'compare': win.BusyControl.track(action, () => win.toggleAgreementBeforeAfter(state.id)); break;
                 case 'propose': win.BusyControl.track(action, () => propose()); break;
                 case 'link': copyLink(); break;
+                case 'mint': mint(); break;
+                case 'repropose': win.BusyControl.track(action, () => repropose()); break;
+                case 'fund': fund(); break;
+                case 'attest': attest(); break;
+                case 'execute': execute(); break;
+                case 'cancel': cancel(); break;
+                case 'expire': expire(); break;
+                case 'bet': bet(); break;
                 case 'edit': edit(); break;
                 case 'delete': remove(); break;
                 default: break;
@@ -645,11 +1175,18 @@
             refresh();
         }
 
+        // Connecting, switching or disconnecting the Solana wallet changes who may act on chain.
+        function onWalletChange() {
+            if (!isOpen() || !state.agreement || !state.agreement.published) return;
+            renderPanel();
+        }
+
         function wire() {
             if (state.wired) return;
             doc.addEventListener('keydown', onKeyDown);
             store().subscribe(onStoreChange);
             if (win.LiveParcelFabric && typeof win.LiveParcelFabric.subscribe === 'function') win.LiveParcelFabric.subscribe(onFabricChange);
+            if (win.solanaWalletManager && typeof win.solanaWalletManager.on === 'function') win.solanaWalletManager.on('stateChanged', onWalletChange);
             state.wired = true;
         }
 
@@ -668,7 +1205,12 @@
             const token = ++state.token;
             // Another agreement's before / after does not belong to this one.
             if (state.id && state.id !== agreementId && comparing(state.id)) win.ProposalBeforeAfter.dispose();
-            if (state.id !== agreementId) state.remote = null;
+            if (state.id !== agreementId) {
+                state.remote = null;
+                state.chain = null;
+                state.chainBusy = null;
+                state.chainToken += 1;
+            }
             state.id = agreementId;
             state.agreement = null;
             state.check = null;
@@ -689,6 +1231,9 @@
             state.error = null;
             state.checking = false;
             state.remote = null;
+            state.chain = null;
+            state.chainBusy = null;
+            state.chainToken += 1;
             if (state.panel) state.panel.classList.remove('visible');
             doc.body.classList.remove('agreement-panel-open');
         }
@@ -698,6 +1243,7 @@
 
     return {
         titleOf, statusOf, landSummary, allocationLines, ledgerRows, ruleSummary, ruleShort, designRows, groundIds, holdersLine,
-        statusHtml, actionsHtml, remoteStatusOf, publishedHtml, designsHtml, landHtml, allocationHtml, ledgerHtml, ruleHtml, browserPanel
+        statusHtml, actionsHtml, remoteStatusOf, publishedHtml, designsHtml, landHtml, allocationHtml, ledgerHtml, ruleHtml,
+        shortKey, chainStatusText, mintReadiness, isBinding, chainHtml, nonBindingChainHtml, browserPanel
     };
 });

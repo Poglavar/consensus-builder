@@ -24,11 +24,16 @@
         return then ? Math.max(0, (current - then) / 3_600_000) : Infinity;
     }
 
-    // Money- and consent-moving actions a judge verifies on Explorer, in lifecycle order. Only activity
-    // entries that carry a transaction signature count; anything missing simply is not listed.
+    // Money- and decision-moving actions on the case's agreement a judge verifies on Explorer, in
+    // lifecycle order. Only activity entries that carry a transaction signature count; anything
+    // missing simply is not listed.
     const CASE_ACTIONS = [
-        { type: 'certifyParcel', label: 'Ownership certificate' },
-        { type: 'accept', label: 'Acceptance' },
+        { type: 'mint', label: 'Agreement minted' },
+        { type: 'fund', label: 'Escrow funded' },
+        { type: 'attest', label: 'Decision recorded' },
+        { type: 'execute', label: 'Execution' },
+        { type: 'cancel', label: 'Cancellation' },
+        { type: 'expire', label: 'Expiry' },
         { type: 'resolve', label: 'Market resolution' },
         { type: 'releaseDonations', label: 'Donation release' },
         { type: 'fulfillPledge', label: 'Pledge fulfilment' },
@@ -46,61 +51,55 @@
                 && (!spec.side || event.action?.side === spec.side))
             .map(event => ({
                 type: spec.type,
-                label: event.action?.parcelId ? `${spec.label} ${event.action.parcelId}` : spec.label,
+                label: spec.label,
                 signature: event.transaction,
                 url: explorerTx(event.transaction)
             })));
     }
 
-    // One card model for any aggregate case (cancelled golden case, executed YES counterpart). Success is
-    // earned only by the server's own `state: complete`; a missing record stays pending/unavailable.
+    // One card model for any aggregate case (a cancelled agreement, an executed YES counterpart): a case
+    // is an agreement by its CID (routes/hackathon-cases.js). Success is earned only by the server's own
+    // `state: complete`; a missing record stays pending/unavailable.
     function caseCardModel(caseRecord, { error = null, name = 'Case', missing = 'No aggregate case record was returned.' } = {}) {
         if (!caseRecord) return {
             tone: error ? 'error' : 'waiting',
             state: error ? 'unavailable' : 'pending',
             label: error ? `${name} unavailable` : `${name} pending`,
             detail: error || missing,
-            lifecycle: null, marketOutcome: null, transactions: [], ownerCaveat: false,
+            lifecycle: null, marketOutcome: null, transactions: [],
             case: null
         };
         const forecast = caseRecord.branches?.forecast;
         const transactions = caseTransactions(caseRecord);
-        const actorOf = type => new Set((caseRecord.activity || [])
-            .filter(event => event?.action?.type === type && event.transaction).map(event => event.actor?.id).filter(Boolean));
-        const certifiers = actorOf('certifyParcel');
-        const acceptors = actorOf('accept');
         return {
             tone: caseRecord.state === 'complete' ? 'success' : 'waiting',
             state: caseRecord.state || 'unknown',
-            label: caseRecord.proposal?.name || caseRecord.id || name,
+            label: caseRecord.agreement?.name || caseRecord.id || name,
             detail: `${caseRecord.parcelSet?.parcelCount || 0} real cadastral parcel${caseRecord.parcelSet?.parcelCount === 1 ? '' : 's'} · ${caseRecord.progress?.complete || 0}/${caseRecord.progress?.total || 0} independently verified stages`,
-            lifecycle: caseRecord.proposal?.lifecycleStatus || null,
+            lifecycle: caseRecord.agreement?.status || null,
             marketOutcome: forecast?.resolved ? (forecast.outcome || 'Resolved') : (forecast?.exists ? 'Unresolved' : null),
             transactions,
-            // The ownership certificates were minted to the same agent that accepted: mechanics, not owner consent.
-            ownerCaveat: acceptors.size > 0 && [...acceptors].every(id => certifiers.has(id)),
             case: caseRecord
         };
     }
 
     function buildDemoModel({
-        runs = [], events = [], docs = {}, discovery = null, oracleDiscovery = null,
+        runs = [], events = [], docs = {}, oracleDiscovery = null,
         oracleEvents = [], publicRecords = null, prospectiveMarket = null, proofManifest = null, canonicalCase = null, executedCase = null, errors = {},
         now = new Date().toISOString()
     } = {}) {
         const latestAlgorithm = newest(runs, run => run.controller === 'algorithm' && (run.role || 'proposer') === 'proposer');
         const latestSupporter = newest(runs, run => run.controller === 'algorithm' && run.role === 'supporter');
         const latestLlm = newest(runs, run => run.controller === 'llm');
-        const proposalEvent = newest(events, event => event.entity?.type === 'proposal'
-            && ['create', 'publish'].includes(event.action?.type));
+        // An agent's agreement on chain: its mint, the agreement program's create.
+        const mintEvent = newest(events, event => event.entity?.type === 'agreement' && event.action?.type === 'mint');
         const transactionEvents = events.filter(event => event.transaction);
         const algorithmFresh = Boolean(latestAlgorithm && latestAlgorithm.status === 'done'
             && ageHours(latestAlgorithm.updatedAt || latestAlgorithm.finishedAt, now) <= 36);
         const x402 = docs.x402 || {};
         const independentX402 = proofManifest?.publicProof?.independentX402 || null;
-        const discoveryListed = discovery?.state === 'listed';
         const oracleDiscoveryListed = oracleDiscovery?.state === 'listed';
-        const latestOracle = newest(oracleEvents, event => event.eventType === 'proposal_lifecycle');
+        const latestOracle = newest(oracleEvents, event => event.eventType === 'agreement_lifecycle');
         const external = docs.oracle?.externalMarket || {};
         const externalLive = external.status === 'live_devnet' && external.proofMarket && external.proofResolution;
         const externalProof = external.proof || {};
@@ -121,16 +120,12 @@
             && prospectiveSettlement?.chronology?.classification === 'prospective';
         const prospectiveError = errors.prospective;
         const mcpTools = docs.mcp?.tools || [];
-        const mcpComplete = ['ugt_submit_proposal', 'ugt_pledge', 'ugt_donate', 'ugt_forecast', 'ugt_buy_verified_fact']
-            .every(name => mcpTools.includes(name));
+        const mcpComplete = ['ugt_publish_design', 'ugt_propose_agreement', 'ugt_mint_agreement', 'ugt_bet_on_agreement',
+            'ugt_pledge', 'ugt_donate', 'ugt_buy_verified_fact'].every(name => mcpTools.includes(name));
         const proofChecks = [
             {
-                label: 'Proposal capability',
-                status: errors.discovery ? 'error' : discoveryListed ? 'success' : 'waiting'
-            },
-            {
-                label: 'Agent proposal on-chain',
-                status: algorithmFresh && Boolean(proposalEvent?.transaction) ? 'success' : 'waiting'
+                label: 'Agent agreement on-chain',
+                status: algorithmFresh && Boolean(mintEvent?.transaction) ? 'success' : 'waiting'
             },
             {
                 label: 'Support on-chain',
@@ -153,32 +148,17 @@
         return {
             proofChecks,
             generatedAt: now,
-            x402: {
-                tone: errors.discovery ? 'error' : discoveryListed ? 'success' : 'waiting',
-                label: errors.discovery ? 'Catalog verification unavailable'
-                    : discoveryListed ? 'Listed in the hosted x402 Bazaar'
-                        : x402.enabled ? 'Hosted facilitator configured; listing unverified' : 'Configuration unavailable',
-                detail: errors.discovery ? errors.discovery
-                    : discoveryListed
-                        ? `${x402.priceProposal || 'price unknown'} per proposal · exact catalog resource verified ${discovery.verifiedAt || ''}`.trim()
-                        : x402.enabled
-                            ? `${x402.priceProposal || 'price unknown'} per proposal · ${discovery?.state || 'no catalog result'}`
-                            : 'The public recipe did not report an enabled x402 endpoint.',
-                facilitatorUrl: x402.facilitatorUrl || null,
-                submitUrl: docs.endpoints?.submit || null,
-                discoveryUrl: docs.endpoints?.discovery || null,
-                listing: discovery?.listing || null
-            },
+            // The one paid resource for agents is the verified fact (docs/agents.json x402).
             oracleFacts: {
                 tone: errors.oracleDiscovery ? 'error' : oracleDiscoveryListed ? 'success' : 'waiting',
                 label: errors.oracleDiscovery ? 'Oracle-fact discovery unavailable'
                     : oracleDiscoveryListed && independentX402?.transaction ? 'Independent agent discovered, paid and verified a fact'
                         : oracleDiscoveryListed ? 'Paid verified facts listed in Bazaar'
-                        : x402.oracleFactsEnabled ? 'Paid fact live; Bazaar indexing pending' : 'Paid fact endpoint not configured',
+                        : x402.enabled ? 'Paid fact live; Bazaar indexing pending' : 'Paid fact endpoint not configured',
                 detail: errors.oracleDiscovery ? errors.oracleDiscovery
                     : oracleDiscoveryListed
                         ? `${x402.priceOracleFact || 'price unknown'} per fact · exact catalog resource verified ${oracleDiscovery.verifiedAt || ''}${independentX402?.transaction ? ' · second project wallet settled through a clean-room client' : ''}`.trim()
-                        : x402.oracleFactsEnabled
+                        : x402.enabled
                             ? `${x402.priceOracleFact || 'price unknown'} per fact · ${oracleDiscovery?.state || 'no catalog result'}`
                             : 'Agents can still audit the free event feed; paid recipe-bound bundles await x402 configuration.',
                 endpoint: docs.endpoints?.oracleFact || null,
@@ -188,7 +168,7 @@
             },
             agentTools: mcpComplete ? {
                 tone: 'success', label: `${mcpTools.length} MCP tools share one action layer`,
-                detail: 'Proposal, pledge, donation, forecast and verified-fact actions delegate to the same x402 and Solana adapters as deterministic agents.',
+                detail: 'Design, agreement, bet, pledge, donation and verified-fact actions delegate to the same Solana and x402 adapters as deterministic agents.',
                 source: docs.mcp?.source || null
             } : {
                 tone: 'waiting', label: 'Agent tool package unavailable',
@@ -207,27 +187,27 @@
                 tone: latestSupporter.status === 'done' ? 'success' : latestSupporter.status === 'failed' ? 'error' : 'waiting',
                 label: latestSupporter.status === 'done' ? 'Supporter persona acted on-chain' : `Supporter run ${latestSupporter.status}`,
                 detail: latestSupporter.support
-                    ? `${latestSupporter.persona} · ${latestSupporter.support.type} · proposal ${latestSupporter.support.proposalId}`
+                    ? `${latestSupporter.persona} · ${latestSupporter.support.type} · agreement ${latestSupporter.support.agreementCid}`
                     : `${latestSupporter.persona} · ${latestSupporter.outcome || latestSupporter.stage || 'pending'}`,
                 run: latestSupporter,
                 transaction: latestSupporter.support?.signature || null,
-                proposalId: latestSupporter.support?.proposalId || null
+                agreementCid: latestSupporter.support?.agreementCid || null
             } : {
                 tone: 'waiting', label: 'Supporter persona ready, first run pending',
-                detail: 'The deterministic supporter will pledge to an active minted proposal by another actor.', run: null
+                detail: 'The deterministic supporter will pledge to an active minted agreement by another actor.', run: null
             },
             evidence: {
                 tone: transactionEvents.length ? 'success' : 'waiting',
                 label: `${transactionEvents.length} transaction-backed activit${transactionEvents.length === 1 ? 'y' : 'ies'} loaded`,
-                detail: proposalEvent
-                    ? `Latest proposal evidence: ${proposalEvent.entity.id}`
-                    : 'No proposal event was returned by the live activity endpoint.',
-                latestProposalId: proposalEvent?.entity?.id || null,
+                detail: mintEvent
+                    ? `Latest minted agreement: ${mintEvent.entity.id}`
+                    : 'No agreement mint was returned by the live activity endpoint.',
+                latestAgreementCid: mintEvent?.entity?.id || null,
                 latestTransaction: newest(transactionEvents)?.transaction || null
             },
             programs: {
                 market: docs.market?.programId || null,
-                support: docs.proposalSupport?.programId || null
+                support: docs.support?.programId || null
             },
             publicRecords: publicRecords?.attestations > 0 ? {
                 tone: 'success',
@@ -306,16 +286,16 @@
             },
             oracle: latestOracle ? {
                 tone: 'success',
-                label: `${latestOracle.outcome === 'executed' ? 'Executed' : 'Cancelled'} proposal event attested`,
-                detail: `${latestOracle.subject?.id || 'proposal'} · observed ${latestOracle.observedAt || 'on Solana'}`,
+                label: `${latestOracle.outcome === 'executed' ? 'Executed' : latestOracle.outcome === 'expired' ? 'Expired' : 'Cancelled'} agreement event recorded`,
+                detail: `${latestOracle.subject?.id || 'agreement'} · observed ${latestOracle.observedAt || 'on Solana'}`,
                 event: latestOracle,
-                recipeId: docs.oracle?.recipeId || 'proposal-lifecycle-v1'
+                recipeId: docs.oracle?.recipeId || null
             } : {
                 tone: errors.oracle ? 'error' : 'waiting',
-                label: errors.oracle ? 'Land-event feed unavailable' : 'Waiting for a terminal proposal event',
-                detail: errors.oracle || 'The first oracle records Executed/Cancelled proposal state with source hash, transaction and program attester.',
+                label: errors.oracle ? 'Land-event feed unavailable' : 'Waiting for a terminal agreement event',
+                detail: errors.oracle || 'The lifecycle oracle records an agreement account executed, cancelled or expired, with its source transaction.',
                 event: null,
-                recipeId: docs.oracle?.recipeId || 'proposal-lifecycle-v1'
+                recipeId: docs.oracle?.recipeId || null
             },
             errors,
             proofManifest,
@@ -389,7 +369,7 @@
 
     const STATUS_WORD = { success: 'Live', error: 'Error', waiting: 'Pending' };
 
-    // One proposal followed through every stage: outcome, a compact stage track, two ways in, and the
+    // One agreement followed through every stage: outcome, a compact stage track, two ways in, and the
     // signed transactions folded away for whoever wants to verify them.
     function caseCard(doc, card, fallbackTitle) {
         const article = node(doc, 'article', null, `hd-case is-${card.tone}`);
@@ -412,8 +392,8 @@
         if (card.case) {
             article.append(linkRow(doc, [
                 { label: 'Open on the map', href: card.case.links?.map },
-                // Same `?activity=proposal:<id>` deep link the map explorer parses (AgentActionEngine.parseActivityLink).
-                { label: 'Every action in the explorer', href: card.case.id ? `/?activity=${encodeURIComponent(`proposal:${card.case.id}`)}` : null }
+                // Same `?activity=agreement:<cid>` deep link the map explorer parses (AgentActionEngine.parseActivityLink).
+                { label: 'Every action in the explorer', href: card.case.id ? `/?activity=${encodeURIComponent(`agreement:${card.case.id}`)}` : null }
             ]));
             const more = node(doc, 'details', null, 'hd-fold');
             more.append(node(doc, 'summary', card.transactions.length ? `Transactions (${card.transactions.length})` : 'Raw record'));
@@ -423,7 +403,6 @@
             ]));
             article.append(more);
         }
-        if (card.ownerCaveat) article.append(node(doc, 'p', 'The agent that accepted also holds the devnet ownership certificates, so this shows the mechanics and the payout, not a real owner’s consent.', 'hd-note'));
         return article;
     }
 
@@ -446,8 +425,8 @@
         const how = section(doc, 'How it works');
         const steps = node(doc, 'ol', null, 'hd-steps');
         [
-            ['Propose', 'A person or an agent proposes a change to real cadastral parcels.'],
-            ['Back', 'Supporters donate or pledge devnet USDC to the proposal.'],
+            ['Propose', 'A person or an agent proposes an agreement over real cadastral parcels.'],
+            ['Back', 'Supporters donate or pledge devnet USDC to the agreement.'],
             ['Forecast', 'Anyone stakes YES or NO on whether it will happen.'],
             ['Settle', 'A public record says what happened. The market resolves and pays out.']
         ].forEach(([title, text]) => {
@@ -458,8 +437,8 @@
         how.append(steps);
         element.append(how);
 
-        // The two proven proposals, NO and YES, side by side.
-        const cases = section(doc, 'Two proposals, followed end to end',
+        // The two proven agreements, NO and YES, side by side.
+        const cases = section(doc, 'Two agreements, followed end to end',
             'One was cancelled and its market resolved NO. The other was carried out and resolved YES. Every stage is recorded on Solana devnet.');
         cases.id = 'judge-path';
         const caseGrid = node(doc, 'div', null, 'hd-cases');
@@ -483,7 +462,6 @@
             statusRow(doc, 'Paid facts for agents', model.oracleFacts, model.oracleFacts.independentProof?.transactionUrl
                 ? { label: 'Payment', href: model.oracleFacts.independentProof.transactionUrl }
                 : { label: 'Discovery', href: model.oracleFacts.discoveryUrl || `${apiBase}/agent/discovery?resource=oracle-facts` }),
-            statusRow(doc, 'Paid proposals for agents', model.x402, { label: 'Discovery', href: model.x402.discoveryUrl || `${apiBase}/agent/discovery` }),
             statusRow(doc, 'Agent tools (MCP)', model.agentTools, { label: 'Setup', href: `${apiBase}/docs/agents` }),
             statusRow(doc, 'Daily proposer agent', model.algorithm, model.algorithm.run ? { label: 'Run', href: `${apiBase}/agent/runs/${encodeURIComponent(model.algorithm.run.id)}` } : null),
             statusRow(doc, 'Supporter agent', model.supporter, model.supporter.transaction ? { label: 'Transaction', href: explorerTx(model.supporter.transaction) } : null),
@@ -596,7 +574,6 @@
             runs: `${base}/agent/runs?limit=50`,
             activity: `${base}/agent/activity?limit=150`,
             docs: `${base}/docs/agents.json`,
-            discovery: `${base}/agent/discovery`,
             oracleDiscovery: `${base}/agent/discovery?resource=oracle-facts`,
             oracle: `${base}/oracle/events?limit=25`,
             publicRecords: `${base}/oracle/public-records/summary`,
@@ -612,10 +589,10 @@
             if (result.status === 'fulfilled') values[key] = result.value;
             else errors[key] = result.reason?.message || String(result.reason);
         });
-        // The executed case exists only when the manifest declares it; there is no hardcoded fallback id.
+        // A case exists only when the manifest declares it (an agreement CID); there is no hardcoded
+        // fallback id.
         const caseUrls = {
-            canonicalCase: values.proofManifest?.publicProof?.canonicalCase
-                || `${base}/hackathon/cases/hackathon-golden-borovje-2026`,
+            canonicalCase: values.proofManifest?.publicProof?.canonicalCase || null,
             executedCase: values.proofManifest?.publicProof?.executedCase || null
         };
         await Promise.all(Object.entries(caseUrls).filter(([, url]) => url).map(async ([key, url]) => {
@@ -638,7 +615,6 @@
             runs: values.runs?.runs || [],
             events: values.activity?.events || [],
             docs: values.docs || {},
-            discovery: values.discovery || null,
             oracleDiscovery: values.oracleDiscovery || null,
             oracleEvents: values.oracle?.events || [],
             publicRecords: values.publicRecords || null,

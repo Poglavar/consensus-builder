@@ -1,15 +1,11 @@
-// Additional proposal-control coverage for chain, editor and sharing actions uses local external boundaries:
-// the minted-proposals explorer link, the design index's Download, the create dialog's and details'
-// geometry tools, Sync blockchain, the lens editor and the copy-by-hand link of a published design.
+// Additional proposal-control coverage for editor and sharing actions uses local external boundaries:
+// the design index's Download, the create dialog's and details' geometry tools, the lens editor and
+// the copy-by-hand link of a published design.
 import { test, expect } from '../helpers/fixtures';
 import { openCity, openParcel, createSpace, showProposal, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
 import { cidOfObject, pageIndex } from '../helpers/mocks/shared-server';
-import { connectWalletByConnectorId, injectMockEvmWallet, waitForBlockchainRuntime } from '../helpers/blockchain';
-import { installProposalEvmBoundary, PROPOSAL_EVM_ACCOUNT } from '../helpers/proposal-chain-boundary';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
-import { openAndClosePopup } from '../helpers/controls';
 
-const EVM_WALLET = PROPOSAL_EVM_ACCOUNT;
 const BLOCK_PARCEL_IDS = sampleParcels.features.slice(0, 2).map(feature => feature.properties.parcelId);
 
 async function installProposalBlockGround(page: import('@playwright/test').Page): Promise<void> {
@@ -42,7 +38,7 @@ async function openFreshProposalFromBlock(page: import('@playwright/test').Page)
   await expect(page.locator('.create-proposal-modal:visible')).toBeVisible();
 }
 
-// App handlers remain intact; only wallet/API boundaries are local.
+// App handlers remain intact; only the API boundary is local.
 
 async function establishLocalProfile(page: import('@playwright/test').Page): Promise<void> {
   await page.locator('#username-display').click();
@@ -71,29 +67,6 @@ function indexPublishedPark(page: import('@playwright/test').Page, title: string
 }
 
 test.describe('proposal button controls sixth pass @features', () => {
-  test('minted proposal modal View on Explorer opens the current contract token page', async ({ mockApi: page }) => {
-    await injectMockEvmWallet(page, { account: EVM_WALLET, chainIdHex: '0x14a34', walletKind: 'metamask' });
-    await openCity(page);
-    await connectWalletByConnectorId(page, 'metamask');
-    await waitForBlockchainRuntime(page, ['ChainDataLoader', 'BlockchainSync', 'ethers']);
-    await installProposalEvmBoundary(page, { includeMintedProposal: true });
-    await page.locator('#proposals-button').click();
-    const planActions = page.locator('#proposal-list-actions');
-    if (!(await planActions.evaluate(element => (element as HTMLDetailsElement).open))) await planActions.locator(':scope > summary').click();
-    await page.locator('#mintedProposalsButton').click();
-    const modal = page.locator('.minted-proposals-overlay');
-    await expect(modal).toBeVisible();
-    const link = modal.getByRole('link', { name: /View on explorer/i }).first();
-    await expect(link).toHaveAttribute('href', /sepolia\.basescan\.org\/token\//);
-    const target = await link.getAttribute('href');
-    await page.context().route('https://sepolia.basescan.org/**', route => route.fulfill({ status: 200, contentType: 'text/html', body: '<title>Explorer boundary</title>' }));
-    await openAndClosePopup(page, () => link.click(), async popup => {
-      await expect.poll(() => popup.url()).toBe(target);
-    });
-    await modal.locator('.minted-proposals-close').click();
-    await expect(modal).toBeHidden();
-  });
-
   test('server design Download imports the selected record into this browser', async ({ mockApi: page }) => {
     const cid = indexPublishedPark(page, 'Downloadable design');
     await openCity(page);
@@ -163,24 +136,6 @@ test.describe('proposal button controls sixth pass @features', () => {
     await expect(page.locator('#structure-geometry-editor').locator('.on-map-editor__panel')).toBeVisible();
     await expect(page.locator('#structure-geometry-editor [data-action="save"]')).toBeVisible();
     await expect.poll(() => page.evaluate(() => (window as any).proposalDraftStore.getActiveDraft()?.sourceLocalProposalId)).toBeTruthy();
-  });
-
-  test('local proposal list Sync blockchain performs contract reads through the wallet boundary', async ({ mockApi: page }) => {
-    await injectMockEvmWallet(page, { account: EVM_WALLET, chainIdHex: '0x14a34', walletKind: 'metamask' });
-    await openCity(page);
-    await connectWalletByConnectorId(page, 'metamask');
-    await waitForBlockchainRuntime(page, ['ChainDataLoader', 'BlockchainSync', 'ethers']);
-    await installProposalEvmBoundary(page);
-    await page.locator('#proposals-button').click();
-    const list = page.locator('#proposals-sheet .proposal-list-modal');
-    await expect.poll(() => page.evaluate(() => Boolean((window as any).walletManager?.getProvider?.()))).toBe(true);
-    const filtersToggle = list.locator('.proposal-filters-toggle');
-    await filtersToggle.click();
-    await expect(filtersToggle).toHaveAttribute('aria-expanded', 'true');
-    await expect(list.locator('#sync-blockchain-proposals-btn')).toBeVisible();
-    const ethCallsBefore = await page.evaluate(() => (window as any).__proposalEvmBoundary.filter((method: string) => method === 'eth_call').length);
-    await list.locator('#sync-blockchain-proposals-btn').click();
-    await expect.poll(() => page.evaluate(() => (window as any).__proposalEvmBoundary.filter((method: string) => method === 'eth_call').length)).toBeGreaterThan(ethCallsBefore);
   });
 
   test('lens editor Add creates a real address row and Close saves the cleaned list', async ({ mockApi: page }) => {

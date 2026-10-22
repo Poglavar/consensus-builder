@@ -8,7 +8,9 @@ Design of record: [`plan-design-agreement.md`](../../../../plan-design-agreement
 machinery: no parcels, owner lists, acceptance records, withdrawals or vote variants on chain. Owners
 decide in signed off-chain documents, the approval engine counts them, the agreement's lens attests
 the outcome, and this program checks that attestation plus the escrow. JS codec:
-[`../../agreement-client.js`](../../agreement-client.js).
+[`frontend/js/solana/agreement-client.js`](../../../../frontend/js/solana/agreement-client.js) (UMD:
+`window.AgreementClient` in the browser, `require` in node); the browser drives it through
+`frontend/js/solana/agreement-bridge.js`.
 
 **Status (2026-10-21): written; `anchor build -p agreement` passes (anchor-lang 0.30.1, CLI 0.32.1);
 not deployed, not tested** (M3 rule: all code first, then every test in one pass).
@@ -17,10 +19,13 @@ not deployed, not tested** (M3 rule: all code first, then every test in one pass
 ## Lifecycle
 
 `create` → `fund` (the authority, any number of times) → `attest` (once) → `execute`; or `cancel`
-(the authority, while no satisfied decision is recorded) or `expire` (anyone, after the deadline).
-Statuses use proposal_nft's codes: 0 Active, 1 Executed, 2 Cancelled, 3 Expired. Decisions: 0
-Pending, 1 Satisfied, 2 Refused. Every terminal state moves the whole escrow exactly once: to
-`payout` when Executed, back to the authority when Cancelled or Expired.
+(the authority, while no decision is recorded) or `expire` (anyone, after the deadline). Statuses
+use proposal_nft's codes: 0 Active, 1 Executed, 2 Cancelled, 3 Expired. Decisions: 0 Pending,
+1 Satisfied. The lens never refuses: it attests only a satisfied decision, so an agreement whose
+rule is not satisfied by its deadline simply expires, and one without a deadline stays Active until
+its authority cancels it (while no decision is recorded) or it executes. Every terminal state moves
+the whole escrow exactly once: to `payout` when Executed, back to the authority when Cancelled or
+Expired.
 
 The authority is the only funder. A funder recorded at the first fund would let any stranger pay
 first and lock the real sponsor out, and the sponsor cannot create the agreement twice (its address
@@ -60,7 +65,7 @@ account (memcmp filters on `authority`, `lens` or `status` work):
 | 128 | `escrow_lamports` | u64 | lamports `fund` brought in, not yet paid out or refunded |
 | 136 | `status` | u8 | 0 Active, 1 Executed, 2 Cancelled, 3 Expired |
 | 137 | `open_ground` | bool | the land includes open ground; recorded for readers, no effect here |
-| 138 | `decision` | u8 | 0 Pending, 1 Satisfied, 2 Refused |
+| 138 | `decision` | u8 | 0 Pending, 1 Satisfied |
 | 139 | `decision_attested_at` | i64 | chain time of `attest` |
 | 147 | `decision_observed_at` | i64 | the attestation's `sourceObservedAt` |
 | 155 | `decision_attestation` | Pubkey | the recorded SAS attestation |
@@ -78,10 +83,10 @@ The account is never closed: it stays as the agreement's chain record.
 | Instruction | Accounts (in order) | Requires | Effect |
 |---|---|---|---|
 | `create(cid: String, lens: Pubkey, deadline: i64, open_ground: bool, required_lamports: u64, payout: Pubkey)` | `agreement` (mut, init, PDA of `authority` and `cid`), `authority` (signer, mut: the sponsor), `system_program` | `cid` 1-64 ASCII alphanumerics; `lens` not the default key; `payout` neither the default key nor the agreement; `deadline` 0 or in the future | Active account; emits `AgreementCreated` |
-| `fund(lamports: u64)` | `agreement` (mut), `authority` (signer, mut), `system_program` | the agreement's authority; `lamports` > 0; Active; not refused; deadline not passed | system transfer into the agreement, `escrow_lamports += lamports`; emits `AgreementFunded` |
-| `attest()` | `agreement` (mut), `attestation` (SAS AgreementDecision-v1), `credential` (its SAS credential) | Active; decision Pending; deadline not passed; the attestation checks below | records the decision, times, attestation key and hash; emits `AgreementAttested`. Permissionless |
+| `fund(lamports: u64)` | `agreement` (mut), `authority` (signer, mut), `system_program` | the agreement's authority; `lamports` > 0; Active; deadline not passed (also after the decision) | system transfer into the agreement, `escrow_lamports += lamports`; emits `AgreementFunded` |
+| `attest()` | `agreement` (mut), `attestation` (SAS AgreementDecision-v1), `credential` (its SAS credential) | Active; decision Pending; deadline not passed; the attestation checks below | records the satisfied decision, times, attestation key and hash; emits `AgreementAttested`. Permissionless |
 | `execute()` | `agreement` (mut), `payout` (mut, = `agreement.payout`) | Active; decision Satisfied; deadline not passed; `escrow_lamports >= required_lamports` | whole escrow to `payout`; Executed, `executed_at`; emits `AgreementExecuted`. Permissionless |
-| `cancel()` | `agreement` (mut), `authority` (signer, mut) | the agreement's authority; Active; decision not Satisfied | escrow back to the authority; Cancelled; emits `AgreementCancelled` |
+| `cancel()` | `agreement` (mut), `authority` (signer, mut) | the agreement's authority; Active; no decision recorded | escrow back to the authority; Cancelled; emits `AgreementCancelled` |
 | `expire()` | `agreement` (mut), `authority` (mut, = `agreement.authority`, need not sign) | Active; `deadline` set and passed | escrow back to the authority; Expired; emits `AgreementExpired`. Permissionless |
 
 `payout` must be able to hold what it receives: an account with no lamports that receives less than
@@ -89,8 +94,8 @@ the rent-exempt minimum makes `execute` fail.
 
 Events, all with `agreement` and `cid`: `AgreementCreated` (authority, lens, payout, deadline,
 required_lamports, open_ground, created_at), `AgreementFunded` (lamports, escrow_lamports,
-funded_at), `AgreementAttested` (decision u8, lens, attestation, attestation_hash, evidence_ref,
-source_observed_at, attested_at), `AgreementExecuted` (payout, lamports, lens, decision_attestation,
+funded_at), `AgreementAttested` (lens, attestation, attestation_hash, evidence_ref,
+source_observed_at, attested_at; it always records a satisfied decision), `AgreementExecuted` (payout, lamports, lens, decision_attestation,
 executed_at: the one event parcel history is written from), `AgreementCancelled` and
 `AgreementExpired` (refunded_lamports, cancelled_at / expired_at).
 
@@ -107,7 +112,7 @@ SAS layout    [12, 12, 12, 12, 8]        (borsh: u32 LE length + UTF-8 per strin
 
 agreementCid      the agreement's CID, byte for byte as stored on chain (bafkrei…)
 sponsor           base58 of the agreement's authority: agreement/v1's `sponsor`
-decision          "satisfied" | "refused"
+decision          always "satisfied" (the lens never refuses; anything else is InvalidDecision)
 evidenceRef       what the lens counted, e.g. "sha256:<hex>" over the admitted decision receipts
 sourceObservedAt  unix seconds at which the counted decisions gave this outcome
 ```
@@ -116,12 +121,13 @@ sourceObservedAt  unix seconds at which the counted decisions gave this outcome
 chain time; it was issued under the passed credential, whose authority is the attestation's signer;
 its schema is that credential's AgreementDecision v1 PDA; the signer is `agreement.lens`;
 `agreementCid` equals `agreement.cid`; `sponsor` is a base58 key equal to `agreement.authority`
-(`WrongSponsor` otherwise; a malformed key is `InvalidAttestationPayload`); `decision` is one of the
-two words; `sourceObservedAt` is not in the future; and the payload has no trailing bytes. The lens
-takes `sponsor` from the agreement object, never from whoever asks for the attestation. The first
-accepted attestation fixes the decision for good, so a lens issues `refused` only once the rule can
-no longer be satisfied. A deterministic nonce in member.js's style, `factNonce(["AgreementDecision-v1",
-agreementCid, sponsor, decision, sourceObservedAt])`, keeps a retry on the same attestation address.
+(`WrongSponsor` otherwise; a malformed key is `InvalidAttestationPayload`); `decision` is
+`satisfied` (`InvalidDecision` otherwise); `sourceObservedAt` is not in the future; and the payload
+has no trailing bytes. The lens takes `sponsor` from the agreement object, never from whoever asks
+for the attestation, and issues the attestation only once the rule is satisfied; the first accepted
+attestation is final. The member's deterministic nonce, `factNonce(["AgreementDecision-v1",
+agreementCid, sponsor, decision, sourceObservedAt])` (`backend/lens/member.js`), keeps a retry on the
+same attestation address.
 
 The schema entry for `backend/oracle/lens-schemas.js` (its `sasLayout` comes out as `[12, 12, 12, 12, 8]`):
 
@@ -129,7 +135,7 @@ The schema entry for `backend/oracle/lens-schemas.js` (its `sasLayout` comes out
 decision: schemaDefinition(
     'decision',
     'AgreementDecision',
-    'A lens member attests that the decision rule of an agreement is satisfied or refused as of a source time.',
+    'A lens member attests that the decision rule of an agreement is satisfied as of a source time.',
     'string agreementCid, string sponsor, string decision, string evidenceRef, int64 sourceObservedAt'
 )
 ```
@@ -137,7 +143,7 @@ decision: schemaDefinition(
 ## Program id
 
 `Agreement1111111111111111111111111111111111` is a readable placeholder (the convention of the first
-programs), in `declare_id!`, both `Anchor.toml` sections and `agreement-client.js`. It works for a
+programs), in `declare_id!`, both `Anchor.toml` sections and `frontend/js/solana/agreement-client.js`. It works for a
 localnet `anchor test` (Anchor loads the program at that address at genesis), but nobody holds its
 key, so it can never be deployed. Before the first devnet deploy, generate the program keypair, put
 its public key in those four places by hand (never `anchor keys sync`; see `../../README.md`),

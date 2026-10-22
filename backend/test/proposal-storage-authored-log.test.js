@@ -8,8 +8,6 @@ const require = createRequire(import.meta.url);
 const status = require('../../frontend/js/proposals/status.js');
 const formationDepth = require('../../frontend/js/proposals/formation-depth.js');
 const planOrder = require('../../frontend/js/proposals/plan-order.js');
-const chainRecord = require('../../frontend/js/proposals/chain-record.js');
-const { loadChainProposalFromRef } = require('../../frontend/js/proposals/chain-proposal-loader.js');
 const dataSource = readFileSync(new URL('../../frontend/js/proposals/data.js', import.meta.url), 'utf8');
 const DESIGN_CID = require('../../frontend/js/cid.js').cidOfObject({ schema: 'design/v1', title: 'Published park' });
 
@@ -38,13 +36,9 @@ function bootStore() {
     install('__cbSecondaryTab', false);
     install('__formationDepth', formationDepth);
     install('__planOrder', planOrder);
-    install('ChainProposalRef', require('../../frontend/js/proposals/chain-ref.js'));
     install('ProposalOrigin', require('../../frontend/js/proposals/origin.js'));
-    install('getProposalGoalLabel', value => value);
     install('ProposalAuthoredRecord', require('../../frontend/js/proposals/authored-record.js'));
-    install('buildChainProposalId', (chain, contract, token) => `${chain}-${contract}-${token}`);
     install('normalizeParcelIdList', values => Array.from(new Set((values || []).map(String))));
-    install('normalizeOwnerAcceptances', value => value || {});
     install('normalizeLensEntries', value => value || []);
     install('normalizeProposalStatusAxes', status.normalizeProposalStatusAxes);
     install('getLifecycleStatus', status.getLifecycleStatus);
@@ -68,25 +62,21 @@ function bootStore() {
 }
 
 describe('proposalStorage authored-log persistence', () => {
-    it('keeps local keys, design CIDs and chain aliases in separate namespaces', () => {
+    it('keeps local keys and design CIDs in separate namespaces', () => {
         const { storage } = bootStore();
-        const chain = { proposalId: 'qualified-chain-key', tokenId: '7', chainProposalId: 'old-chain-alias', onchain: { chainProposalId: 'nested-alias' } };
         // A design read back from the index is kept under its own local key (DesignSync.importDesign);
         // its CID names it at the index, never in this store (DesignSync.localCopyOf finds it by CID).
         const publishedCopy = { proposalId: `design-${DESIGN_CID}`, published: { cid: DESIGN_CID, publishedAt: null, apiBase: 'https://api.example' } };
         const numericLocal = { proposalId: '42' };
-        [chain, publishedCopy, numericLocal].forEach(record => storage.proposals.set(record.proposalId, record));
-        for (const alias of ['7', 'old-chain-alias', 'nested-alias', DESIGN_CID]) {
-            expect(storage.getProposal(alias)).toBeNull();
-            expect(storage.removeProposal(alias)).toBeNull();
-        }
-        expect(storage.getProposal(chain.proposalId)).toBe(chain);
+        [publishedCopy, numericLocal].forEach(record => storage.proposals.set(record.proposalId, record));
+        expect(storage.getProposal(DESIGN_CID)).toBeNull();
+        expect(storage.removeProposal(DESIGN_CID)).toBeNull();
         expect(storage.getProposal(publishedCopy.proposalId)).toBe(publishedCopy);
         expect(storage.getProposal('42')).toBe(numericLocal);
         storage.proposals.delete('42');
         expect(storage.getProposal('42')).toBeNull();
         expect(storage.removeProposal('42')).toBeNull();
-        expect(storage.proposals.size).toBe(2);
+        expect(storage.proposals.size).toBe(1);
     });
 
     it('does not infer publication from a numeric imported local key', () => {
@@ -94,26 +84,6 @@ describe('proposalStorage authored-log persistence', () => {
         const imported = storage.importProposal({ proposalId: '42', goal: 'as-is', cadastreParcelIds: ['source-a'] });
         expect(imported.proposalId).toBe('42');
         expect(imported).not.toHaveProperty('published');
-    });
-
-    it('preserves this browser consent on reload but discards imported unsigned claims', () => {
-        const { storage } = bootStore();
-        const record = { proposalId: 'session-consent', goal: 'as-is', cadastreParcelIds: ['parcel-a'],
-            acceptedParcelIds: ['parcel-a'], ownerAcceptances: { 'parcel-a': { acceptedOwnerKeys: ['party-a'] } } };
-        const before = structuredClone(record);
-        storage.addProposal(record);
-        storage.load();
-        expect(storage.getProposal(record.proposalId)).toMatchObject(record);
-        const imported = storage.importProposal({ ...record, proposalId: 'remote-consent' });
-        expect(imported.acceptedParcelIds).toEqual([]);
-        expect(imported.ownerAcceptances).toEqual({});
-        expect(storage.getProposal(record.proposalId)).toMatchObject(record);
-        const refresh = storage.importProposal({ ...record, title: 'Refreshed metadata',
-            ownerAcceptances: { 'parcel-a': { acceptedOwnerKeys: ['remote-party'] } } });
-        expect(refresh.ownerAcceptances).toEqual(record.ownerAcceptances);
-        expect(refresh.ownerAcceptances).not.toBe(record.ownerAcceptances);
-        expect(refresh.acceptedParcelIds).toEqual([]); // no current-terms evaluator in this fixture
-        expect(record).toEqual(before);
     });
 
     it('initializes authored records as Active but preserves unknown lifecycle on import and reload', () => {
@@ -137,111 +107,18 @@ describe('proposalStorage authored-log persistence', () => {
         expect(storage.restoreRecovery()).toBe(1);
         expect(storage.getProposal('parked-record').lifecycleStatus).toBe('Unknown');
     });
-    it.each([false, true])('reconstructs the complete minted record from chain and IPFS alone (local draft present: %s)', async localDraft => {
-        const { storage, persisted } = bootStore();
-        install('__chainRecord', chainRecord);
-        install('ProposalAuthoredRecord', require('../../frontend/js/proposals/authored-record.js'));
-        install('buildChainProposalId', (chain, contract, token) => `${chain}-${contract}-${token}`);
-        install('getProposalGoalLabel', goal => goal);
-        install('proposalStorage', storage);
-        const site = { type: 'Polygon', coordinates: [[[0, 0], [0.001, 0], [0.001, 0.001], [0, 0.001], [0, 0]]] };
-        // The portable record a minted proposal's metadata committed (chain-record.js FIELDS; the mint
-        // that wrote such records is gone, the chain still holds them until agreements mint in M3).
-        const source = {
-            proposalId: 'minted-park', city: 'test-city', goal: 'park', type: 'structure',
-            name: 'Committed park', title: 'Committed park', description: 'As minted', author: 'Park author',
-            createdAt: '2026-10-01T12:00:00Z', lens: [],
-            cadastreParcelIds: ['HR-1'], site, binding: { parcels: [{ parcelId: 'HR-1' }], coverage: 'complete' },
-            cadastreSnapshot: { protocol: 'cadastre-snapshot/1', regionHasCadastre: true, parcels: [{ id: 'HR-1', geometry: site }] },
-            structureProposal: { kind: 'park', geometry: site }
-        };
-        if (localDraft) storage.proposals.set(source.proposalId, {
-            ...source, title: 'A much longer locally edited draft title', author: 'Another author',
-            buildingProposal: { parameters: { floors: 50 } }, preparation: { id: 'stale-server-signature' }
-        });
-        install('ChainDataLoader', { getProposalsByIds: vi.fn(async () => [{
-            proposalId: '77', imageURI: 'ipfs://committed-metadata', cadastreParcelIds: ['HR-1'], isConditional: true, lens: []
-        }]) });
-        const fetch = vi.fn(async url => {
-            expect(url).toBe('https://ipfs.io/ipfs/committed-metadata');
-            return { ok: true, json: async () => ({ properties: { proposalProtocol: chainRecord.PROTOCOL, proposal: source } }) };
-        });
-        install('fetch', fetch);
-        const result = await loadChainProposalFromRef({ chainType: 'evm', chainId: '84532', contract: '0xC', tokenId: '77' });
-        expect(result.ok).toBe(true);
-        expect(result.proposal.lifecycleStatus).toBe('Unknown');
-        const localId = '84532-0xC-77';
-        expect(result.proposal).toMatchObject({ ...source, proposalId: localId });
-        expect(result.proposal.metadata.properties.proposal.proposalId).toBe(source.proposalId);
-        if (localDraft) expect(storage.getProposal(source.proposalId).title).toBe('A much longer locally edited draft title');
-        expect(result.proposal.onchain).toMatchObject({ proposalId: '77', metadataUri: 'ipfs://committed-metadata' });
-        expect(result.proposal).not.toHaveProperty('preparation');
-        expect(result.proposal).not.toHaveProperty('buildingProposal');
-        storage._persist();
-        expect(JSON.parse(persisted.get(`proposal:${localId}`))).toMatchObject({ ...source, proposalId: localId });
-        expect(fetch).toHaveBeenCalledTimes(1);
-    });
 
-    it('uses metadata titles instead of generated chain labels or descriptions', () => {
+    it('keeps an imported record\'s creation time as it arrives and invents none', () => {
+        // A published design hashes its creation time (design-record.js): a clock value stamped on
+        // import would move its CID, and an agreement naming the design would read it as changed.
         const { storage } = bootStore();
-        const raw = { proposalId: '11', chainId: '84532', contractAddress: '0x1234567890abcdef',
-            cadastreParcelIds: ['parcel-a'], description: 'A description longer than the authored name.' };
-        const initial = storage.importOnChainProposal(raw);
-        expect(initial.title).toBe(`Proposal ${initial.proposalId}`);
-        const refreshed = storage.importOnChainProposal({ ...raw,
-            metadata: { name: 'Garden', description: raw.description } });
-        expect(refreshed.proposalId).toBe(initial.proposalId);
-        expect(refreshed).toMatchObject({ title: 'Garden', name: 'Garden', proposalName: 'Garden', description: raw.description });
-        const direct = storage.importOnChainProposal({ ...raw, proposalId: '12', metadata: { title: 'Park' } });
-        expect(direct.title).toBe('Park');
-    });
-
-    it('keeps bare token IDs, authored IDs, shared parcels and different chain locations separate', () => {
-        const { storage } = bootStore();
-        const draft = { proposalId: 'same-authored-id', title: 'Local draft', cadastreParcelIds: ['parcel-a'] };
-        const bare = { ...draft, proposalId: '7' };
-        storage.proposals.set(draft.proposalId, draft);
-        storage.proposals.set(bare.proposalId, bare);
-        const raw = { proposalId: '7', chainId: '84532', contractAddress: '0xA',
-            cadastreParcelIds: ['parcel-a'], lifecycleStatus: 'Active',
-            metadata: { properties: { proposalId: draft.proposalId } } };
-        const first = storage.importOnChainProposal(raw);
-        const otherNetwork = storage.importOnChainProposal({ ...raw, chainId: '1' });
-        const otherContract = storage.importOnChainProposal({ ...raw, contractAddress: '0xB' });
-        expect(new Set([first.proposalId, otherNetwork.proposalId, otherContract.proposalId]).size).toBe(3);
-        const refreshed = storage.importOnChainProposal({ ...raw, lifecycleStatus: 'Executed' });
-        expect(refreshed.proposalId).toBe(first.proposalId);
-        expect(refreshed.lifecycleStatus).toBe('Executed');
-        expect(storage.proposals.size).toBe(5);
-        expect(storage.getProposal(draft.proposalId)).toBe(draft);
-        expect(storage.getProposal(bare.proposalId)).toBe(bare);
-        expect(draft).not.toHaveProperty('onchain');
-        expect(bare).not.toHaveProperty('onchain');
-        expect(() => storage.importOnChainProposal({ ...raw, contractAddress: null })).toThrow('complete chain');
-    });
-
-    it.each([
-        { chainId: '84532', ethBalance: '2000000000000000000', tokenBalance: '0' },
-        { chainId: 'solana-devnet', ethBalance: '2000000000', tokenBalance: '0' },
-        { chainId: '84532', ethBalance: '0', tokenBalance: '2000000' }
-    ])('keeps chain balances separate from authored consideration: %j', balances => {
-        const { storage } = bootStore();
-        const raw = { ...balances, proposalId: '7', contractAddress: 'Program', cadastreParcelIds: ['parcel-a'] };
-        const imported = storage.importOnChainProposal(raw);
-        expect(imported).not.toHaveProperty('offer');
-        expect(imported).not.toHaveProperty('offerCurrency');
-        expect(imported.ethBalance).toBe(balances.ethBalance);
-        expect(imported.tokenBalance).toBe(balances.tokenBalance);
-    });
-
-    it('imports no terms from a chain record: a design carries none (terms live on agreements)', () => {
-        const { storage } = bootStore();
-        const raw = { proposalId: '7', chainId: '84532', contractAddress: '0xA', cadastreParcelIds: ['parcel-a'] };
-        const offered = storage.importOnChainProposal({ ...raw, offer: 5, offerCurrency: 'EUR', isConditional: true,
-            metadata: { properties: { offer: 12, offerCurrency: 'EUR', budget: 90, budgetCurrency: 'USD' } } });
-        for (const field of ['offer', 'offerCurrency', 'budget', 'budgetCurrency', 'isConditional']) {
-            expect(offered).not.toHaveProperty(field);
-        }
+        const record = { goal: 'as-is', cadastreParcelIds: ['HR-1'] };
+        expect(storage.importProposal({ ...record, proposalId: 'dated', createdAt: '2026-10-01T12:00:00.000Z' }).createdAt)
+            .toBe('2026-10-01T12:00:00.000Z');
+        expect(storage.importProposal({ ...record, proposalId: 'undated', createdAt: null }).createdAt).toBeNull();
+        // Authoring is when a record is created: addProposal stamps it.
+        const id = storage.addProposal({ ...record, proposalId: 'authored' });
+        expect(Number.isFinite(Date.parse(storage.getProposal(id).createdAt))).toBe(true);
     });
 
     it('persists flat cadastral declarations and strips all materialization output without mutating runtime state', () => {

@@ -200,7 +200,6 @@ function createAgent() {
         walletAddresses: [],
         ownedParcels: [],
         proposalsCreated: [],
-        proposalsAccepted: [],
         proposalsExecuted: [],
         createdAt: new Date().toISOString(),
         lastActionAt: null,
@@ -228,7 +227,6 @@ function createUserAgent(name, avatarIndex, options = {}) {
         walletAddresses: [],
         ownedParcels: [],
         proposalsCreated: [],
-        proposalsAccepted: [],
         proposalsExecuted: [],
         createdAt: new Date().toISOString(),
         lastActionAt: null,
@@ -388,7 +386,7 @@ function getOrCreateCityAgent(options = {}) {
         store.addAgent({
             id: CITY_AGENT_ID, name: 'City', avatarIndex: 0, isCity: true,
             ethBalance: 0, walletAddresses: [], ownedParcels: [],
-            proposalsCreated: [], proposalsAccepted: [], proposalsExecuted: [],
+            proposalsCreated: [], proposalsExecuted: [],
             createdAt: new Date().toISOString(), lastActionAt: null,
             controller: 'system', aiControlled: false, userControlled: false
         });
@@ -417,7 +415,7 @@ function getOrCreateAgentForRecipient(label, options = {}) {
         store.addAgent({
             id, name: trimmed, avatarIndex: 0, external: true,
             ethBalance: 0, walletAddresses: trimmed.startsWith('0x') ? [trimmed] : [],
-            ownedParcels: [], proposalsCreated: [], proposalsAccepted: [], proposalsExecuted: [],
+            ownedParcels: [], proposalsCreated: [], proposalsExecuted: [],
             createdAt: new Date().toISOString(), lastActionAt: null,
             controller: 'human', aiControlled: false, userControlled: false
         });
@@ -444,7 +442,7 @@ function getOrCreateJointPoolAgent(label, members, options = {}) {
         store.addAgent({
             id, name: label || normalized.map(member => member.name).join(' / '), avatarIndex: 0,
             jointPool: true, members: normalized, ethBalance: 0, walletAddresses: [], ownedParcels: [],
-            proposalsCreated: [], proposalsAccepted: [], proposalsExecuted: [], createdAt: new Date().toISOString(),
+            proposalsCreated: [], proposalsExecuted: [], createdAt: new Date().toISOString(),
             lastActionAt: null, aiControlled: false, userControlled: false
         });
     }
@@ -682,9 +680,6 @@ function buildTurnParcelPool() {
  */
 function agentDecideAction(agent, turnContext = null) {
     const safeTurnContext = turnContext && typeof turnContext === 'object' ? turnContext : {};
-    const preloadedProposals = Array.isArray(safeTurnContext.activeProposals)
-        ? safeTurnContext.activeProposals
-        : null;
     const sharedTurnParcelPool = Array.isArray(safeTurnContext.turnParcelPool)
         ? safeTurnContext.turnParcelPool
         : null;
@@ -692,7 +687,8 @@ function agentDecideAction(agent, turnContext = null) {
         ? safeTurnContext.neighborMap
         : null;
 
-    const actions = ['nothing', 'accept', 'create', 'donate', 'pledge'];
+    // Owners decide on agreements (plan-design-agreement.md, M3); a simulated agent only creates designs.
+    const actions = ['nothing', 'create'];
     const actionType = actions[Math.floor(Math.random() * actions.length)];
 
     const indexedOwnedParcels = safeTurnContext.ownedParcelsByAgent && typeof safeTurnContext.ownedParcelsByAgent.get === 'function'
@@ -704,58 +700,6 @@ function agentDecideAction(agent, turnContext = null) {
 
     switch (actionType) {
         case 'nothing':
-            return { type: 'nothing' };
-
-        case 'accept':
-            // Find proposals that affect agent's parcels and aren't already accepted
-            const acceptableProposals = [];
-            if (typeof proposalStorage !== 'undefined') {
-                const allProposals = preloadedProposals || proposalStorage.getAllProposals();
-                for (const proposal of allProposals) {
-                    if (getLifecycleStatus(proposal) !== 'Executed') {
-                        const parcelIds = Array.isArray(proposal.cadastreParcelIds)
-                            ? proposal.cadastreParcelIds
-                            : [];
-                        for (const parcelId of parcelIds) {
-                            const parcelIdStr = parcelId.toString();
-                            const ownerState = (typeof getProposalOwnerAcceptanceState === 'function')
-                                ? getProposalOwnerAcceptanceState(proposal, parcelIdStr)
-                                : null;
-
-                            let ownerStateHandled = false;
-                            if (ownerState && Array.isArray(ownerState.entries) && ownerState.entries.length > 0) {
-                                ownerState.entries.forEach(entry => {
-                                    if (!entry.accepted && entry.slotType === 'agent' && entry.agentId === agent.id) {
-                                        acceptableProposals.push({ proposal, parcelId: parcelIdStr, ownerKey: entry.key });
-                                        ownerStateHandled = true;
-                                    }
-                                });
-                            }
-
-                            if (!ownerStateHandled && ownedParcels.includes(parcelIdStr)) {
-                                const parcelAccepted = Array.isArray(proposal.acceptedParcelIds)
-                                    ? proposal.acceptedParcelIds.includes(parcelIdStr)
-                                    : false;
-                                if (!parcelAccepted) {
-                                    acceptableProposals.push({ proposal, parcelId: parcelIdStr, ownerKey: null });
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (acceptableProposals.length > 0) {
-                const randomChoice = acceptableProposals[Math.floor(Math.random() * acceptableProposals.length)];
-                const proposalId = randomChoice.proposal.proposalId
-                    || randomChoice.proposal.tokenId;
-                return {
-                    type: 'accept',
-                    proposalId,
-                    parcelId: randomChoice.parcelId,
-                    ownerKey: randomChoice.ownerKey || null
-                };
-            }
             return { type: 'nothing' };
 
         case 'create':
@@ -817,59 +761,6 @@ function agentDecideAction(agent, turnContext = null) {
                 description: `${randomType} development proposed by ${agent.name}`
             };
 
-        case 'donate':
-            // Find other agents' proposals to donate to
-            const donatableProposals = [];
-            if (typeof proposalStorage !== 'undefined') {
-                const allProposals = preloadedProposals || proposalStorage.getAllProposals();
-                for (const proposal of allProposals) {
-                    if (getLifecycleStatus(proposal) === 'Active' && proposal.author !== agent.name) {
-                        donatableProposals.push(proposal);
-                    }
-                }
-            }
-
-            if (donatableProposals.length > 0 && agent.ethBalance > 0.01) {
-                const randomProposal = donatableProposals[Math.floor(Math.random() * donatableProposals.length)];
-                const maxDonation = Math.floor(agent.ethBalance * 0.05 * 100) / 100; // Max 5% of ETH
-                const donation = Math.max(0.01, Math.random() * maxDonation);
-
-                const proposalId = randomProposal.proposalId
-                    || randomProposal.id
-                    || randomProposal.tokenId;
-
-                return {
-                    type: 'donate',
-                    proposalId,
-                    amount: Math.round(donation * 100) / 100,
-                    currency: 'ETH',
-                    basis: 'simulated-agent-eth-balance'
-                };
-            }
-            return { type: 'nothing' };
-
-        case 'pledge': {
-            const pledgeableProposals = [];
-            if (typeof proposalStorage !== 'undefined') {
-                const allProposals = preloadedProposals || proposalStorage.getAllProposals();
-                for (const proposal of allProposals) {
-                    if (getLifecycleStatus(proposal) === 'Active' && proposal.author !== agent.name) {
-                        pledgeableProposals.push(proposal);
-                    }
-                }
-            }
-            if (!pledgeableProposals.length || agent.ethBalance <= 0.01) return { type: 'nothing' };
-            const proposal = pledgeableProposals[Math.floor(Math.random() * pledgeableProposals.length)];
-            const maxPledge = Math.max(0.01, Math.floor(agent.ethBalance * 0.1 * 100) / 100);
-            return {
-                type: 'pledge',
-                proposalId: proposal.proposalId || proposal.id || proposal.tokenId,
-                amount: Math.round(Math.max(0.01, Math.random() * maxPledge) * 100) / 100,
-                currency: 'ETH',
-                basis: 'simulated-agent-eth-balance'
-            };
-        }
-
         default:
             return { type: 'nothing' };
     }
@@ -908,53 +799,6 @@ async function executeAgentAction(agent, action) {
         case 'nothing':
             return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> did nothing this turn.`;
 
-        case 'accept':
-            if (typeof acceptProposal === 'function') {
-                const result = await acceptProposal(action.proposalId, action.parcelId, action.ownerKey || null, {
-                    acceptedByAgentId: agent.id,
-                    acceptedByName: agent.name,
-                    suppressAlerts: true
-                });
-                if (!result) {
-                    return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> tried to accept proposal ${String(action.proposalId).substring(0, 8)} but could not resolve owner acceptance.`;
-                }
-                // Update agent's accepted proposals list
-                if (!agent.proposalsAccepted.includes(action.proposalId)) {
-                    agent.proposalsAccepted.push(action.proposalId);
-                    agentStorage.updateAgent(agent.id, { proposalsAccepted: agent.proposalsAccepted });
-                }
-                // Look up parcel number (BROJ_CESTICE)
-                let parcelNumber = action.parcelId;
-                if (typeof multiParcelSelection !== 'undefined' && typeof multiParcelSelection.findParcelById === 'function') {
-                    const feature = window.LiveParcelFabric?.get?.(String(action.parcelId));
-                    if (feature?.properties?.BROJ_CESTICE) parcelNumber = feature.properties.BROJ_CESTICE;
-                }
-
-                // Show agent bubble for this interaction
-                if (typeof window.agentBubbleManager !== 'undefined') {
-                    const proposalPosition = window.agentBubbleManager.getProposalPosition(action.proposalId);
-                    if (proposalPosition) {
-                        window.agentBubbleManager.addBubble({
-                            agentId: agent.id,
-                            agentName: agent.name,
-                            avatarIndex: agent.avatarIndex,
-                            objectType: 'proposal',
-                            objectId: action.proposalId,
-                            objectPosition: proposalPosition,
-                            action: `accepted proposal ${String(action.proposalId).substring(0, 6)}`
-                        });
-                    }
-                }
-
-                const proposal = (typeof proposalStorage !== 'undefined' && typeof proposalStorage.getProposal === 'function')
-                    ? proposalStorage.getProposal(action.proposalId)
-                    : null;
-                const proposalLink = buildProposalLogLinkAgent(action.proposalId, proposal);
-
-                return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> accepted proposal ${proposalLink} for parcel <button type="button" class="cb-link parcel-link-clickable" data-parcel-id="${action.parcelId}">${parcelNumber}</button>.`;
-            }
-            return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> tried to accept a proposal but failed.`;
-
         case 'create':
             if (typeof proposalStorage !== 'undefined') {
                 // Calculate bounds for the proposal (for reliable positioning)
@@ -991,7 +835,6 @@ async function executeAgentAction(agent, action) {
                         geometry: action.geometry,
                         blockName: action.title || null
                     },
-                    acceptedParcelIds: [],
                     bounds: bounds, // Store bounds for reliable positioning
                     createdAt: new Date().toISOString() // Add creation timestamp
                 };
@@ -1036,85 +879,9 @@ async function executeAgentAction(agent, action) {
             }
             return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> tried to create a proposal but failed.`;
 
-        case 'donate':
-            if (typeof proposalStorage !== 'undefined') {
-                const proposal = proposalStorage.getProposal(action.proposalId);
-                if (proposal && window.AgentSupportSimulation) {
-                    try {
-                        window.AgentSupportSimulation.donate(proposal, agent, action);
-                    } catch (_) {
-                        return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> tried to donate to a proposal but failed.`;
-                    }
-                    proposal.proposalId = proposal.proposalId || proposal.tokenId || action.proposalId;
-                    if (typeof proposalStorage._indexProposal === 'function') {
-                        proposalStorage._indexProposal(proposal);
-                    } else {
-                        proposalStorage.proposals.set(proposal.proposalId, proposal);
-                    }
-                    proposalStorage.save();
-
-                    // AgentSupportSimulation already moved the funded donation out of the wallet.
-                    agentStorage.updateAgent(agent.id, { ethBalance: agent.ethBalance });
-
-                    // Show agent bubble for this interaction
-                    if (typeof window.agentBubbleManager !== 'undefined') {
-                        const proposalPosition = window.agentBubbleManager.getProposalPosition(action.proposalId);
-                        if (proposalPosition) {
-                            window.agentBubbleManager.addBubble({
-                                agentId: agent.id,
-                                agentName: agent.name,
-                                avatarIndex: agent.avatarIndex,
-                                objectType: 'proposal',
-                                objectId: action.proposalId,
-                                objectPosition: proposalPosition,
-                                action: `donated ${action.amount} ${action.currency} to proposal`
-                            });
-                        }
-                    }
-
-                    const proposalLink = buildProposalLogLinkAgent(action.proposalId, proposal);
-                    return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> donated ${action.amount} ${action.currency} to proposal ${proposalLink}.`;
-                }
-            }
-            return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> tried to donate to a proposal but failed.`;
-
-        case 'pledge':
-            if (typeof proposalStorage !== 'undefined' && window.AgentSupportSimulation) {
-                const proposal = proposalStorage.getProposal(action.proposalId);
-                if (proposal) {
-                    try {
-                        window.AgentSupportSimulation.pledge(proposal, agent, action);
-                    } catch (_) {
-                        return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> tried to pledge to a proposal but failed.`;
-                    }
-                    proposal.proposalId = proposal.proposalId || proposal.tokenId || action.proposalId;
-                    if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(proposal);
-                    proposalStorage.save();
-                    if (typeof window.agentBubbleManager !== 'undefined') {
-                        const proposalPosition = window.agentBubbleManager.getProposalPosition(action.proposalId);
-                        if (proposalPosition) window.agentBubbleManager.addBubble({
-                            agentId: agent.id, agentName: agent.name, avatarIndex: agent.avatarIndex,
-                            objectType: 'proposal', objectId: action.proposalId, objectPosition: proposalPosition,
-                            action: `pledged ${action.amount} ${action.currency} to proposal`
-                        });
-                    }
-                    return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> pledged ${action.amount} ${action.currency} to proposal ${buildProposalLogLinkAgent(action.proposalId, proposal)}.`;
-                }
-            }
-            return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> tried to pledge to a proposal but failed.`;
-
         default:
             return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> performed an unknown action.`;
     }
-}
-
-let agentDialogLastChainId = null;
-
-function normalizeChainIdSafe(chainId) {
-    if (typeof normalizeChainId === 'function') {
-        return normalizeChainId(chainId);
-    }
-    return chainId !== undefined && chainId !== null ? String(chainId) : null;
 }
 
 function getCurrentAgentWalletScope() {
@@ -1127,10 +894,6 @@ function getCurrentAgentWalletScope() {
     });
 }
 
-function getCurrentWalletChainId() {
-    return getCurrentAgentWalletScope()?.chainId || null;
-}
-
 function getAgentObservedWalletParcels(agentId) {
     if (agentStorage.getAgent(agentId)?.userControlled !== true) return [];
     return window.AgentWalletScope.parcelIds(agentWalletObservations[agentId], getCurrentAgentWalletScope());
@@ -1138,65 +901,6 @@ function getAgentObservedWalletParcels(agentId) {
 
 function getAgentProposalRecords() {
     return typeof proposalStorage !== 'undefined' ? proposalStorage.getAllProposals() : [];
-}
-
-function filterAgentProposalLinksForChain(links = [], chainId) {
-    const normalizedChain = normalizeChainIdSafe(chainId);
-    const records = getAgentProposalRecords();
-    return links.filter(link => {
-        const proposal = window.AgentProposalLinks.resolve(link, records);
-        const ref = link.chainRef || window.ChainProposalRef.chainRefFromProposal(proposal);
-        if (ref) {
-            const network = ref.chainType === 'evm' ? ref.chainId : `${ref.chainType}-${ref.chainId}`;
-            return !!normalizedChain && normalizeChainIdSafe(network) === normalizedChain;
-        }
-        return !proposal?.isMinted;
-    });
-}
-
-function clearAgentDialogCaches() {
-    if (agentDialogListData) {
-        agentDialogListData = null;
-    }
-    if (agentDialogFetchPromises && typeof agentDialogFetchPromises.clear === 'function') {
-        agentDialogFetchPromises.clear();
-    }
-    if (agentDialogCache) {
-        Object.keys(agentDialogCache).forEach(key => delete agentDialogCache[key]);
-    }
-    if (typeof window !== 'undefined') {
-        window.agentDialogCache = agentDialogCache;
-        window.agentDialogListData = agentDialogListData;
-    }
-}
-
-function pruneAgentDialogListDataForChain(chainId) {
-    if (!agentDialogListData) return;
-    const filterFn = arr => filterAgentProposalLinksForChain(arr, chainId);
-
-    ['created', 'accepted', 'pending'].forEach(type => {
-        if (agentDialogListData[type]) {
-            const data = filterFn(agentDialogListData[type].data || []);
-            agentDialogListData[type].data = data;
-            if (agentDialogListData[type].loaded > data.length) {
-                agentDialogListData[type].loaded = data.length;
-            }
-        }
-    });
-}
-
-function handleAgentDialogChainChange(chainId) {
-    const normalizedChain = normalizeChainIdSafe(chainId);
-    if (agentDialogLastChainId && normalizedChain && agentDialogLastChainId !== normalizedChain) {
-        // Remove minted proposals from other chains and clear cached UI data
-        if (typeof proposalStorage !== 'undefined' && typeof proposalStorage.purgeMintedProposalsNotOnChain === 'function') {
-            proposalStorage.purgeMintedProposalsNotOnChain(normalizedChain);
-        }
-        clearAgentDialogCaches();
-    }
-    if (normalizedChain) {
-        agentDialogLastChainId = normalizedChain;
-    }
 }
 
 function getI18nApi() {
@@ -1247,7 +951,6 @@ async function showAgentDialog(agentId, options = {}) {
     const isUserAgent = agent.userControlled === true;
 
     const walletScope = getCurrentAgentWalletScope();
-    const currentChainId = walletScope?.chainId || null;
     const walletState = window.walletManager ? window.walletManager.getState() : null;
     const walletConnected = walletState && walletState.status === 'connected' && walletState.accounts && walletState.accounts.length > 0;
     const walletAccounts = walletConnected ? (walletState.accounts || []) : [];
@@ -1258,9 +961,6 @@ async function showAgentDialog(agentId, options = {}) {
     const cachedLists = getAgentDialogCache(agentId);
     let portfolioValue = null;
     const createdProposals = window.AgentProposalLinks.locals(agent.proposalsCreated || []);
-    const acceptedProposals = window.AgentProposalLinks.locals(agent.proposalsAccepted || []);
-    const executedProposals = agent.proposalsExecuted || [];
-    const pendingProposals = isUserAgent ? window.AgentProposalLinks.locals(getUserPendingProposals(agentId, currentChainId)) : [];
     const walletAddressesForDisplay = isUserAgent
         ? walletAccounts
         : (agent.walletAddresses || []);
@@ -1270,26 +970,12 @@ async function showAgentDialog(agentId, options = {}) {
         : (Number.isFinite(agent.ethBalance) ? CbFormat.formatMoney(agent.ethBalance, 'ETH') : '-');
     const initialTotalWealthDisplay = '-';
 
-    // Prefer cached on-chain data when available so lists don't rebuild on every open
+    // Prefer the cached wallet parcels when available so the list does not rebuild on every open
     const usableCache = isUserAgent && window.AgentWalletScope.matches(cachedLists?.scope, walletScope) ? cachedLists : null;
 
     const initialParcels = usableCache && Array.isArray(usableCache.parcels) && usableCache.parcels.length
         ? cachedLists.parcels
         : parcelDetails;
-    const initialCreatedRaw = usableCache && Array.isArray(usableCache.created) && usableCache.created.length
-        ? cachedLists.created
-        : createdProposals;
-    const initialAcceptedRaw = usableCache && Array.isArray(usableCache.accepted) && usableCache.accepted.length
-        ? cachedLists.accepted
-        : acceptedProposals;
-    const initialPending = isUserAgent
-        ? (usableCache && Array.isArray(usableCache.pending) && usableCache.pending.length
-            ? usableCache.pending
-            : pendingProposals)
-        : [];
-    const filteredCreated = filterAgentProposalLinksForChain(initialCreatedRaw, currentChainId);
-    const filteredAccepted = filterAgentProposalLinksForChain(initialAcceptedRaw, currentChainId);
-    const filteredPending = filterAgentProposalLinksForChain(initialPending, currentChainId);
     const languageSwitcherHtml = renderAgentLanguageSwitcher();
 
     const lensButtonTitle = translateText('modal.lens.triggerDescription', 'Lens for viewing the world');
@@ -1298,16 +984,12 @@ async function showAgentDialog(agentId, options = {}) {
     const labelTotalWealth = translateText('agentDialog.totalWealth', 'Modeled total (ETH)');
     const portfolioBasisLabel = translateText('agentDialog.portfolioBasis',
         'Area-based land model: USD {{pricePerSqmUsd}}/m², converted at USD {{usdPerEth}}/ETH. Portfolio estimate and total are modeled ETH amounts.', portfolioBasis);
-    const labelProposalsPending = translateText('agentDialog.proposalsPending', 'Proposals Pending ({{count}})', { count: filteredPending.length });
-    const labelProposalsCreated = translateText('agentDialog.proposalsCreated', 'Proposals Created ({{count}})', { count: filteredCreated.length });
-    const labelProposalsAccepted = translateText('agentDialog.proposalsAccepted', 'Recorded acceptances ({{count}})', { count: filteredAccepted.length });
+    const labelProposalsCreated = translateText('agentDialog.proposalsCreated', 'Proposals Created ({{count}})', { count: createdProposals.length });
     const labelOwnedParcels = translateText('agentDialog.ownedParcels', 'Linked parcels ({{count}})', { count: initialParcels.length });
     const parcelBasisKey = isUserAgent ? 'agentDialog.walletParcelsBasis' : 'agentDialog.localParcelsBasis';
     const parcelBasisLabel = translateText(parcelBasisKey, isUserAgent
         ? 'Local model assignments and parcel NFTs observed in the connected wallet; these do not establish registered land ownership.'
         : 'Parcels assigned to this agent in the local model.');
-    const acceptanceBasisLabel = translateText('agentDialog.acceptanceBasis',
-        'Local consent records and observed on-chain acceptances; these do not by themselves establish execution or payment.');
     const labelAgentLog = translateText('agentDialog.agentLog', 'Agent Log');
     const labelUser = translateText('agentDialog.userLabel', 'You');
     const labelLogout = translateText('agentDialog.logoutButton', 'Log Out');
@@ -1381,20 +1063,9 @@ async function showAgentDialog(agentId, options = {}) {
                     </div>
                 </div>
                 <p class="stat-label" data-agent-portfolio-basis data-i18n-key="agentDialog.portfolioBasis" data-i18n-params='${JSON.stringify(portfolioBasis)}'>${portfolioBasisLabel}</p>
-                ${isUserAgent ? `
-                    <div class="info-section">
-                        <h4 data-i18n-key="agentDialog.proposalsPending" data-i18n-params='${JSON.stringify({ count: filteredPending.length })}'>${labelProposalsPending}</h4>
-                        <div class="parcels-list" data-list-type="pending"></div>
-                    </div>
-                ` : ''}
                 <div class="info-section">
-                    <h4 data-i18n-key="agentDialog.proposalsCreated" data-i18n-params='${JSON.stringify({ count: filteredCreated.length })}'>${labelProposalsCreated}</h4>
+                    <h4 data-i18n-key="agentDialog.proposalsCreated" data-i18n-params='${JSON.stringify({ count: createdProposals.length })}'>${labelProposalsCreated}</h4>
                     <div class="parcels-list" data-list-type="created"></div>
-                </div>
-                <div class="info-section">
-                        <h4 data-i18n-key="agentDialog.proposalsAccepted" data-i18n-params='${JSON.stringify({ count: filteredAccepted.length })}'>${labelProposalsAccepted}</h4>
-                    <p class="stat-label" data-i18n-key="agentDialog.acceptanceBasis">${acceptanceBasisLabel}</p>
-                    <div class="parcels-list" data-list-type="accepted"></div>
                 </div>
                 <div class="info-section">
                         <h4 data-i18n-key="agentDialog.ownedParcels" data-i18n-params='${JSON.stringify({ count: initialParcels.length })}'>${labelOwnedParcels}</h4>
@@ -1475,7 +1146,7 @@ async function showAgentDialog(agentId, options = {}) {
     }
 
     // Set up lazy loading for lists
-    setupAgentDialogLazyLoading(agentId, initialParcels, filteredCreated, filteredAccepted, filteredPending);
+    setupAgentDialogLazyLoading(agentId, initialParcels, createdProposals);
 
     // Trigger chain-backed loads (async) with spinners
     // Also re-run when wallet state changes so a later connect populates data
@@ -1490,10 +1161,8 @@ async function showAgentDialog(agentId, options = {}) {
                 const currentAgent = agentStorage.getAgent(agent.id) || agent;
                 ensureAgentDialogListState(agent.id,
                     getAgentParcelDetails(agent.id),
-                    filterAgentProposalLinksForChain(window.AgentProposalLinks.locals(currentAgent.proposalsCreated || []), nextScope?.chainId),
-                    filterAgentProposalLinksForChain(window.AgentProposalLinks.locals(currentAgent.proposalsAccepted || []), nextScope?.chainId),
-                    window.AgentProposalLinks.locals(getUserPendingProposals(agent.id, nextScope?.chainId)));
-                for (const type of ['parcels', 'created', 'accepted', 'pending']) {
+                    window.AgentProposalLinks.locals(currentAgent.proposalsCreated || []));
+                for (const type of ['parcels', 'created']) {
                     modal.querySelector(`[data-list-type="${type}"]`)?.replaceChildren();
                     setSectionCount(type, agentDialogListData[type].data.length);
                     renderFirstPageForList(type);
@@ -1636,51 +1305,6 @@ function renderParcelListItem(parcelId) {
     return renderParcelItem({ id: parcelId, number: parcelId, proposalCount: 0 });
 }
 
-/**
- * Get a human-readable chain label for a proposal
- */
-function getProposalChainLabel(proposal) {
-    if (!proposal) return null;
-    const chainId = proposal.chainId || (proposal.onchain && proposal.onchain.chainId);
-    if (!chainId) return null;
-
-    if (typeof getNetworkDisplayInfo === 'function') {
-        const info = getNetworkDisplayInfo(chainId);
-        if (info && info.text) return info.text;
-    }
-
-    if (typeof normalizeChainId === 'function') {
-        const normalized = normalizeChainId(chainId);
-        if (normalized) return normalized;
-    }
-
-    return String(chainId);
-}
-
-/**
- * Compute display metadata from the record while preserving its exact local key.
- */
-function getProposalDisplayMeta(proposal, fallbackId = '') {
-    const proposalIdRaw = proposal ? (proposal.proposalId || null) : null;
-    const fallbackRaw = fallbackId !== undefined && fallbackId !== null ? String(fallbackId) : '';
-
-    const proposalId = proposalIdRaw !== null && proposalIdRaw !== undefined ? String(proposalIdRaw) : '';
-
-    // The same test the rest of the app uses (proposals/chain.js). "Any id not starting with local-"
-    // stopped meaning minted once local ids became content hashes (p-…): every proposal an agent made
-    // in the simulation was badged Minted.
-    const minted = proposal ? isProposalMinted(proposal) : false;
-
-    // An unloaded record has no lifecycle evidence. Preserve its local key without inventing a prefix.
-    const displayId = proposalId || fallbackRaw || 'unknown';
-
-    return {
-        minted,
-        displayId,
-        chainLabel: getProposalChainLabel(proposal) || ''
-    };
-}
-
 function getAgentProposalTypeLabel(proposal) {
     const defaultType = 'parcel';
     const typeKeyRaw = proposal
@@ -1728,10 +1352,6 @@ function getAgentProposalTitle(proposal, fallbackId = '') {
         proposal && typeof proposal.blockName === 'string' ? proposal.blockName : null,
         proposal && proposal.structureProposal && typeof proposal.structureProposal.blockName === 'string' ? proposal.structureProposal.blockName : null,
         proposal && proposal.roadProposal && typeof proposal.roadProposal.name === 'string' ? proposal.roadProposal.name : null,
-        proposal && proposal.metadata && typeof proposal.metadata.name === 'string' ? proposal.metadata.name : null,
-        proposal && proposal.metadata && typeof proposal.metadata.title === 'string' ? proposal.metadata.title : null,
-        proposal && proposal.onchain && proposal.onchain.metadata && typeof proposal.onchain.metadata.name === 'string' ? proposal.onchain.metadata.name : null,
-        proposal && proposal.onchain && proposal.onchain.metadata && typeof proposal.onchain.metadata.title === 'string' ? proposal.onchain.metadata.title : null,
         proposal && typeof proposal.description === 'string' ? proposal.description : null
     ];
 
@@ -1765,10 +1385,10 @@ function getAgentProposalTitle(proposal, fallbackId = '') {
 }
 
 // A proposal's rung on the lifecycle ladder as the shared badge (docs/design-language.md: Draft →
-// Published → Minted → Executed), from the same derivation as the proposals list and the details
-// panel (proposals/display-state.js), with its modifier (Cancelled, Expired…). proposal may be null
-// (an unloaded record), and then no lifecycle rung is established.
-function agentProposalLifecycleBadgeHtml(proposal, minted) {
+// Published → Executed), from the same derivation as the proposals list and the details panel
+// (proposals/display-state.js), with its modifier (Cancelled, Expired…). proposal may be null (an
+// unloaded record), and then no lifecycle rung is established.
+function agentProposalLifecycleBadgeHtml(proposal) {
     const displayState = window.__proposalDisplayState;
     if (!proposal) return '';
     const state = displayState.of(proposal, { applied: false });
@@ -1850,7 +1470,9 @@ function setSectionCount(sectionType, count, fallbackLabel = '') {
 }
 
 /**
- * Load on-chain data for agent modal and merge into UI
+ * Load the connected wallet's parcel NFTs into the dialog's Linked parcels list: the ParcelNFT
+ * program on Solana, else the EVM ParcelNFT contract of the wallet's chain (ChainDataLoader). Designs
+ * are not minted, so the chain names no proposals here (plan-design-agreement.md, M3).
  */
 async function loadAgentChainData(agent, isUserAgent) {
     // The loaders below observe the connected wallet, never another agent's wallet.
@@ -1859,37 +1481,28 @@ async function loadAgentChainData(agent, isUserAgent) {
     if (!targetModal || targetModal.dataset.agentId !== agent.id) return;
     const walletScope = getCurrentAgentWalletScope();
     if (!walletScope) return;
-    const solanaConnected = walletScope.chainId.startsWith('solana-');
-    const solanaCluster = solanaConnected ? walletScope.chainId.slice(7) : null;
-    const walletProvider = window.walletManager?.getProvider?.();
-    const evmConnected = !solanaConnected && !!walletProvider;
+    const useSolana = walletScope.chainId.startsWith('solana-');
+    const solanaCluster = useSolana ? walletScope.chainId.slice(7) : null;
 
-    const useSolana = solanaConnected;
     if (useSolana) {
         if (!window.SolanaChainDataLoader || !window.solanaWeb3) {
             console.warn('Solana chain data loader not ready');
             return;
         }
-    } else if (!window.ChainDataLoader || !window.ContractsLoader || !window.ethers || !window.walletManager) {
+    } else if (!window.ChainDataLoader || !window.ethers || !window.walletManager) {
         console.warn('Chain data loader not ready');
         return;
-    }
-
-    if (!useSolana && !evmConnected) {
+    } else if (!window.walletManager.getProvider?.()) {
         console.debug('No connected wallet; skipping chain load');
         return;
     }
 
     const walletAddress = walletScope.walletAddress;
     const chainId = walletScope.chainId;
-    const normalizedChainId = typeof normalizeChainId === 'function' ? normalizeChainId(chainId) : chainId;
-    console.log('[AgentDialog] Loading chain data', { walletAddress, chainId, useSolana });
-
-    handleAgentDialogChainChange(normalizedChainId);
-    pruneAgentDialogListDataForChain(normalizedChainId);
+    console.log('[AgentDialog] Loading wallet parcels', { walletAddress, chainId, useSolana });
 
     if (!agentDialogListData) {
-        ensureAgentDialogListState(agent.id, [], [], [], []);
+        ensureAgentDialogListState(agent.id, [], []);
     }
     const targetList = agentDialogListData;
     const isCurrentProfile = () => targetModal.isConnected && agentDialogListData === targetList
@@ -1898,7 +1511,7 @@ async function loadAgentChainData(agent, isUserAgent) {
     const cache = getAgentDialogCache(agent.id);
     const cacheFresh = window.AgentWalletScope.fresh(cache, walletScope, Date.now(), AGENT_DIALOG_CACHE_TTL_MS);
 
-    const cacheKey = `${agent.id}:${normalizedChainId}:${walletAddress}`;
+    const cacheKey = `${agent.id}:${chainId}:${walletAddress}`;
     const existingFetch = agentDialogFetchPromises.get(cacheKey);
     if (existingFetch && existingFetch.list === targetList) {
         console.log('[AgentDialog] Reusing in-flight chain fetch', { cacheKey });
@@ -1909,142 +1522,43 @@ async function loadAgentChainData(agent, isUserAgent) {
         return;
     }
 
-    // Resolve contract/program addresses (with fallbacks)
+    // The ParcelNFT program (Solana) or contract (EVM) of the wallet's chain.
     let parcelAddress = null;
-    let proposalAddress = null;
     try {
         if (useSolana) {
-            const solanaChainKey = `solana-${solanaCluster}`;
-            if (window.SolanaChainDataLoader && typeof window.SolanaChainDataLoader.resolveProgramAddress === 'function') {
-                const [resolvedParcel, resolvedProposal] = await Promise.all([
-                    window.SolanaChainDataLoader.resolveProgramAddress(solanaChainKey, 'ParcelNFT'),
-                    window.SolanaChainDataLoader.resolveProgramAddress(solanaChainKey, 'ProposalNFT')
-                ]);
-                parcelAddress = resolvedParcel;
-                proposalAddress = resolvedProposal;
-                if (solanaCluster === 'devnet') {
-                    parcelAddress = parcelAddress
-                        || await window.SolanaChainDataLoader.resolveProgramAddress('solana', 'ParcelNFT');
-                    proposalAddress = proposalAddress
-                        || await window.SolanaChainDataLoader.resolveProgramAddress('solana', 'ProposalNFT');
-                }
+            parcelAddress = await window.SolanaChainDataLoader.resolveProgramAddress(chainId, 'ParcelNFT');
+            if (!parcelAddress && solanaCluster === 'devnet') {
+                parcelAddress = await window.SolanaChainDataLoader.resolveProgramAddress('solana', 'ParcelNFT');
             }
-        } else if (window.ChainDataLoader && typeof window.ChainDataLoader.resolveContractAddress === 'function') {
+        } else {
             parcelAddress = await window.ChainDataLoader.resolveContractAddress(chainId, 'ParcelNFT');
-            proposalAddress = await window.ChainDataLoader.resolveContractAddress(chainId, 'ProposalNFT');
-        } else if (window.ContractsLoader && typeof window.ContractsLoader.getContractAddress === 'function') {
-            parcelAddress = await window.ContractsLoader.getContractAddress(chainId, 'ParcelNFT');
-            proposalAddress = await window.ContractsLoader.getContractAddress(chainId, 'ProposalNFT');
         }
     } catch (err) {
-        console.warn('Failed to resolve contract addresses', err);
+        console.warn('Failed to resolve the ParcelNFT address', err);
     }
     if (!isCurrentProfile()) return;
-    if (!parcelAddress && !proposalAddress) {
-        console.warn('Missing contract addresses for chain', chainId);
+    if (!parcelAddress) {
+        console.warn('Missing the ParcelNFT address for chain', chainId);
         return;
     }
-    console.log('[AgentDialog] Resolved addresses', { parcelAddress, proposalAddress, useSolana });
+    console.log('[AgentDialog] Resolved the ParcelNFT address', { parcelAddress, useSolana });
 
-    const hasExistingListData = agentDialogListData && (
-        (agentDialogListData.parcels && agentDialogListData.parcels.data.length) ||
-        (agentDialogListData.created && agentDialogListData.created.data.length) ||
-        (agentDialogListData.accepted && agentDialogListData.accepted.data.length) ||
-        (agentDialogListData.pending && agentDialogListData.pending.data.length)
-    );
-
-    if (!hasExistingListData) {
-        // Only show loaders when we don't already have something to show
+    // Only show the loader when there is nothing to show yet.
+    if (!agentDialogListData.parcels || !agentDialogListData.parcels.data.length) {
         setListLoading('parcels');
-        setListLoading('created');
-        setListLoading('accepted');
-        if (isUserAgent) {
-            setListLoading('pending');
-        }
     }
 
     const fetchPromise = (async () => {
         try {
-            const activeChainLabel = useSolana ? solanaCluster : chainId;
-            let parcels = [];
-            let createdProposals = [];
-            let solanaAllProposals = null;
-
-            if (useSolana) {
-                const [loadedParcels, loadedAllProposals] = await Promise.all([
-                    parcelAddress
-                        ? window.SolanaChainDataLoader.getParcelsFromChain(walletAddress, solanaCluster, parcelAddress)
-                        : Promise.resolve([]),
-                    proposalAddress
-                        ? window.SolanaChainDataLoader.getAllProposals(solanaCluster, proposalAddress)
-                        : Promise.resolve([])
-                ]);
-                parcels = loadedParcels;
-                solanaAllProposals = Array.isArray(loadedAllProposals) ? loadedAllProposals : [];
-                createdProposals = solanaAllProposals.filter(proposal => proposal && proposal.owner === walletAddress);
-            } else {
-                [parcels, createdProposals] = await Promise.all([
-                    parcelAddress
-                        ? window.ChainDataLoader.getParcelsFromChain(walletAddress, chainId, parcelAddress)
-                        : Promise.resolve([]),
-                    proposalAddress
-                        ? window.ChainDataLoader.getProposalsFromChain(walletAddress, chainId, proposalAddress)
-                        : Promise.resolve([])
-                ]);
-            }
-
+            const parcels = useSolana
+                ? await window.SolanaChainDataLoader.getParcelsFromChain(walletAddress, solanaCluster, parcelAddress)
+                : await window.ChainDataLoader.getParcelsFromChain(walletAddress, chainId, parcelAddress);
             if (!isCurrentProfile()) return;
 
-            const pendingProposals = [];
-            const acceptedProposals = [];
-            const proposalAcceptanceMap = new Map(); // proposalId -> {cadastreParcelIds:Set, acceptedParcels:Set}
-
-            const uniq = arr => Array.from(new Set(arr));
-            const currentAgent = agentStorage.getAgent(agent.id) || agent;
             const existingParcels = getAgentParcelDetails(agent.id, { includeTransient: false });
-            const existingCreated = filterAgentProposalLinksForChain(window.AgentProposalLinks.locals(currentAgent.proposalsCreated || []), normalizedChainId);
-            const existingAccepted = filterAgentProposalLinksForChain(window.AgentProposalLinks.locals(currentAgent.proposalsAccepted || []), normalizedChainId);
-
-            const uniqParcels = uniq([...existingParcels.map(p => (p.id || p)), ...parcels.map(p => p.parcelId)]);
-            const chainLink = tokenId => window.AgentProposalLinks.chain(normalizedChainId, proposalAddress, tokenId);
-            const uniqCreated = [ ...existingCreated, ...createdProposals.map(p => chainLink(p.proposalId)) ];
-
-            // Hydrate created proposals immediately so list rendering has metadata while status scan runs
-            if (typeof proposalStorage !== 'undefined'
-                && typeof proposalStorage.importOnChainProposal === 'function'
-                && Array.isArray(createdProposals)
-                && createdProposals.length > 0) {
-                createdProposals.forEach(p => {
-                    try {
-                        proposalStorage.importOnChainProposal({
-                            proposalId: p.proposalId,
-                            cadastreParcelIds: Array.isArray(p.cadastreParcelIds) ? p.cadastreParcelIds : [],
-                            acceptedParcels: [],
-                            isConditional: p.isConditional,
-                            imageURI: p.imageURI,
-                            acceptancePossible: p.acceptancePossible,
-                            status: p.status,
-                            ethBalance: p.ethBalance,
-                            tokenBalance: p.tokenBalance,
-                            acceptanceCount: p.acceptanceCount,
-                            expiryTimestamp: p.expiryTimestamp,
-                            expiringPercentage: p.expiringPercentage,
-                            author: p.owner,
-                            chainId: normalizedChainId,
-                            contractAddress: proposalAddress,
-                            isMinted: true
-                        });
-                    } catch (err) {
-                        console.warn('Failed to hydrate created proposal early', p, err);
-                    }
-                });
-            }
-
-            // Merge the data we already have so the UI updates immediately
-            const parcelsAdded = replaceAgentDialogListData('parcels', uniqParcels);
-            const createdAdded = replaceAgentDialogListData('created', uniqCreated);
-            let acceptedAdded = false;
-            let pendingAdded = false;
+            replaceAgentDialogListData('parcels', Array.from(new Set([
+                ...existingParcels.map(p => (p.id || p)), ...parcels.map(p => p.parcelId)
+            ])));
 
             // Keep only this wallet response as chain evidence, including a successful empty result.
             agentWalletObservations[agent.id] = {
@@ -2052,238 +1566,46 @@ async function loadAgentChainData(agent, isUserAgent) {
                 parcelIds: parcels.map(parcel => parcel.parcelId), fetchedAt: Date.now()
             };
 
-            // Render early (and clear loaders) for lists that already have data
             renderFirstPageForList('parcels');
-            renderFirstPageForList('created');
-            if (agentDialogListData && agentDialogListData.parcels) {
-                setSectionCount('parcels', agentDialogListData.parcels.data.length, 'Linked parcels');
-            }
-            if (agentDialogListData && agentDialogListData.created) {
-                setSectionCount('created', agentDialogListData.created.data.length, 'Proposals Created');
-            }
+            setSectionCount('parcels', agentDialogListData.parcels.data.length, 'Linked parcels');
 
-            // Recompute portfolio value now that on-chain parcels are known (do not wait for proposal scan)
-            if (isUserAgent && typeof calculatePortfolioValue === 'function') {
+            // Recompute portfolio value now that on-chain parcels are known
+            if (typeof calculatePortfolioValue === 'function') {
                 try {
                     const ownedNow = getAgentOwnedParcels(agent.id);
                     const displayedBasis = document.querySelector('.agent-dialog-modal')?.dataset.portfolioUsdPerEth;
                     const value = await calculatePortfolioValue(ownedNow, { forceRefresh: true, usdPerEth: Number(displayedBasis) });
                     if (!isCurrentProfile()) return;
-                    const modal = targetModal;
-                    if (modal) {
-                        const portfolioNode = modal.querySelector('[data-agent-portfolio-value]');
-                        const totalWealthNode = modal.querySelector('[data-agent-total-wealth]');
-                        const portfolioValue = Number.isFinite(value) ? value : NaN;
-                        if (portfolioNode) {
-                            portfolioNode.textContent = Number.isFinite(portfolioValue) ? CbFormat.formatMoney(portfolioValue, 'ETH') : '-';
-                        }
-                        if (totalWealthNode) {
-                            totalWealthNode.setAttribute('data-portfolio-value', Number.isFinite(portfolioValue) ? portfolioValue : '');
-                            // The wallet refresh below supplies the actual balance. Until then,
-                            // do not combine this estimate with a simulated/stale agent balance.
-                            totalWealthNode.textContent = '-';
-                        }
-                        if (typeof refreshUserEthBalanceDisplay === 'function') {
-                            refreshUserEthBalanceDisplay();
-                        }
+                    const portfolioNode = targetModal.querySelector('[data-agent-portfolio-value]');
+                    const totalWealthNode = targetModal.querySelector('[data-agent-total-wealth]');
+                    const portfolioValue = Number.isFinite(value) ? value : NaN;
+                    if (portfolioNode) {
+                        portfolioNode.textContent = Number.isFinite(portfolioValue) ? CbFormat.formatMoney(portfolioValue, 'ETH') : '-';
+                    }
+                    if (totalWealthNode) {
+                        totalWealthNode.setAttribute('data-portfolio-value', Number.isFinite(portfolioValue) ? portfolioValue : '');
+                        // The wallet refresh below supplies the actual balance. Until then,
+                        // do not combine this estimate with a simulated/stale agent balance.
+                        totalWealthNode.textContent = '-';
+                    }
+                    if (typeof refreshUserEthBalanceDisplay === 'function') {
+                        refreshUserEthBalanceDisplay();
                     }
                 } catch (err) {
                     console.warn('Failed to recompute portfolio after chain load', err);
                 }
             }
 
-            const ownedParcelIds = parcels.map(p => p.parcelId);
-            const addAcceptanceInfo = (proposalId, cadastreParcelIds = [], acceptedParcels = []) => {
-                let entry = proposalAcceptanceMap.get(proposalId);
-                if (!entry) {
-                    entry = { cadastreParcelIds: new Set(), acceptedParcels: new Set() };
-                    proposalAcceptanceMap.set(proposalId, entry);
-                }
-                (cadastreParcelIds || []).forEach(pid => entry.cadastreParcelIds.add(pid));
-                (acceptedParcels || []).forEach(pid => entry.acceptedParcels.add(pid));
-            };
-
-            const scanPerParcel = async () => {
-                const hasOnChainProposals = useSolana
-                    ? Array.isArray(solanaAllProposals) && solanaAllProposals.length > 0
-                    : Array.isArray(createdProposals) && createdProposals.length > 0;
-                if (ownedParcelIds.length > 0 && proposalAddress && hasOnChainProposals) {
-                    for (const parcel of parcels) {
-                        const proposalsWithStatus = useSolana
-                            ? (solanaAllProposals || [])
-                                .filter(proposal => Array.isArray(proposal.cadastreParcelIds) && proposal.cadastreParcelIds.includes(parcel.parcelId))
-                                .map(proposal => ({
-                                    proposalId: proposal.proposalId,
-                                    hasAccepted: Array.isArray(proposal.acceptedParcels) && proposal.acceptedParcels.includes(parcel.parcelId)
-                                }))
-                            : await window.ChainDataLoader.getProposalsWithAcceptanceStatus(
-                                chainId,
-                                proposalAddress,
-                                parcel.parcelId
-                            );
-                        proposalsWithStatus.forEach(p => {
-                            addAcceptanceInfo(p.proposalId, [parcel.parcelId], p.hasAccepted ? [parcel.parcelId] : []);
-                            if (p.hasAccepted) {
-                                acceptedProposals.push(p.proposalId);
-                            } else {
-                                pendingProposals.push(p.proposalId);
-                            }
-                        });
-                    }
-                } else {
-                    console.log('[AgentDialog] Skipping parcel proposal status scan', {
-                        chainId,
-                        parcelCount: parcels.length,
-                        createdProposalCount: createdProposals.length
-                    });
-                }
-            };
-
-            let usedProposalCentric = false;
-            if (!useSolana && proposalAddress && window.ChainDataLoader && typeof window.ChainDataLoader.getProposalsAffectingParcels === 'function') {
-                try {
-                    const status = await window.ChainDataLoader.getProposalsAffectingParcels(
-                        chainId,
-                        proposalAddress,
-                        ownedParcelIds
-                    );
-                    const acceptanceByProposal = status && status.acceptanceByProposal ? status.acceptanceByProposal : {};
-                    Object.keys(acceptanceByProposal).forEach(pid => {
-                        const info = acceptanceByProposal[pid] || {};
-                        addAcceptanceInfo(pid, info.cadastreParcelIds || [], info.acceptedParcels || []);
-                    });
-                    if (status && Array.isArray(status.pending)) {
-                        pendingProposals.push(...status.pending);
-                    }
-                    if (status && Array.isArray(status.accepted)) {
-                        acceptedProposals.push(...status.accepted);
-                    }
-                    usedProposalCentric = true;
-                } catch (err) {
-                    console.warn('[AgentDialog] Proposal-centric scan failed, falling back to per-parcel', err);
-                }
-            }
-
-            if (!usedProposalCentric) {
-                await scanPerParcel();
-            }
-
-            if (!isCurrentProfile()) return;
-            const existingPending = window.AgentProposalLinks.locals(getUserPendingProposals(agent.id, normalizedChainId));
-            const uniqPending = [...existingPending, ...pendingProposals.map(chainLink)];
-            const uniqAccepted = [...existingAccepted, ...acceptedProposals.map(chainLink)];
-
-            // Hydrate encountered proposals by their full chain location; token IDs are scoped by program/contract.
-            if (proposalAddress && typeof proposalStorage !== 'undefined' && typeof proposalStorage.importOnChainProposal === 'function') {
-                const allProposalIds = uniq([
-                    ...createdProposals.map(p => p.proposalId),
-                    ...Array.from(proposalAcceptanceMap.keys())
-                ]);
-
-                const importHydratedProposal = (proposalId, proposalData = {}, acceptanceInfo = null) => {
-                    proposalStorage.importOnChainProposal({
-                        proposalId: proposalId,
-                        cadastreParcelIds: Array.isArray(proposalData.cadastreParcelIds)
-                            ? proposalData.cadastreParcelIds
-                            : (acceptanceInfo ? Array.from(acceptanceInfo.cadastreParcelIds) : []),
-                        acceptedParcels: acceptanceInfo ? Array.from(acceptanceInfo.acceptedParcels) : [],
-                        isConditional: proposalData.isConditional,
-                        imageURI: proposalData.imageURI,
-                        acceptancePossible: proposalData.acceptancePossible,
-                        status: proposalData.status,
-                        ethBalance: proposalData.ethBalance,
-                        tokenBalance: proposalData.tokenBalance,
-                        acceptanceCount: proposalData.acceptanceCount,
-                        expiryTimestamp: proposalData.expiryTimestamp,
-                        expiringPercentage: proposalData.expiringPercentage,
-                        author: proposalData.owner,
-                        chainId: normalizedChainId,
-                        contractAddress: proposalAddress,
-                        isMinted: true
-                    });
-                };
-
-                if (allProposalIds.length > 0 && useSolana && Array.isArray(solanaAllProposals)) {
-                    try {
-                        const byId = new Map(solanaAllProposals.map(p => [String(p.proposalId), p]));
-                        allProposalIds.forEach(pid => {
-                            const acceptanceInfo = proposalAcceptanceMap.get(pid);
-                            importHydratedProposal(pid, byId.get(String(pid)) || {}, acceptanceInfo);
-                        });
-                    } catch (err) {
-                        console.warn('Failed Solana hydrate of proposals', err);
-                        createdProposals.forEach(p => {
-                            const acceptanceInfo = proposalAcceptanceMap.get(p.proposalId);
-                            importHydratedProposal(p.proposalId, p, acceptanceInfo);
-                        });
-                    }
-                } else if (allProposalIds.length > 0 && window.ChainDataLoader && typeof window.ChainDataLoader.getProposalsBatch === 'function') {
-                    try {
-                        const batch = await window.ChainDataLoader.getProposalsBatch(chainId, proposalAddress, allProposalIds);
-                        if (!isCurrentProfile()) return;
-                        const byId = new Map(batch.map(p => [String(p.proposalId), p]));
-                        allProposalIds.forEach(pid => {
-                            const acceptanceInfo = proposalAcceptanceMap.get(pid);
-                            importHydratedProposal(pid, byId.get(String(pid)) || {}, acceptanceInfo);
-                        });
-                    } catch (err) {
-                        console.warn('Failed batch hydrate of proposals', err);
-                        // Fallback: hydrate only createdProposals
-                        createdProposals.forEach(p => {
-                            const acceptanceInfo = proposalAcceptanceMap.get(p.proposalId);
-                            importHydratedProposal(p.proposalId, p, acceptanceInfo);
-                        });
-                    }
-                }
-            }
-
-            if (!isCurrentProfile()) return;
-            acceptedAdded = replaceAgentDialogListData('accepted', uniqAccepted);
-            pendingAdded = isUserAgent ? replaceAgentDialogListData('pending', uniqPending) : false;
-
-            renderFirstPageForList('accepted');
-            if (isUserAgent) {
-                renderFirstPageForList('pending');
-            }
-
-            // Update header counts
-            if (agentDialogListData && agentDialogListData.parcels) {
-                setSectionCount('parcels', agentDialogListData.parcels.data.length, 'Linked parcels');
-            }
-            if (agentDialogListData && agentDialogListData.created) {
-                setSectionCount('created', agentDialogListData.created.data.length, 'Proposals Created');
-            }
-            if (agentDialogListData && agentDialogListData.accepted) {
-                setSectionCount('accepted', agentDialogListData.accepted.data.length, 'Recorded acceptances');
-            }
-            if (isUserAgent) {
-                updatePendingProposalsCount(agentDialogListData && agentDialogListData.pending ? agentDialogListData.pending.data.length : 0);
-            }
-
-            // Persist latest snapshot for reuse
+            // Persist the wallet's parcels for reuse while the dialog reopens.
             setAgentDialogCache(agent.id, {
                 scope: walletScope,
-                parcels: agentDialogListData && agentDialogListData.parcels ? agentDialogListData.parcels.data.slice() : [],
-                created: agentDialogListData && agentDialogListData.created ? agentDialogListData.created.data.slice() : [],
-                accepted: agentDialogListData && agentDialogListData.accepted ? agentDialogListData.accepted.data.slice() : [],
-                pending: agentDialogListData && agentDialogListData.pending ? agentDialogListData.pending.data.slice() : [],
+                parcels: agentDialogListData.parcels.data.slice(),
                 lastFetchedAt: Date.now()
             });
-
-            const addedAnything = parcelsAdded || createdAdded || acceptedAdded || pendingAdded;
-            if (!addedAnything) {
-                console.log('[AgentDialog] Chain data unchanged; no list updates applied', { chainId: activeChainLabel });
-            }
         } catch (err) {
-            console.warn('[AgentDialog] Failed to load on-chain data', err);
+            console.warn('[AgentDialog] Failed to load wallet parcels', err);
             if (!isCurrentProfile()) return;
-            const errMsg = 'Could not connect to chain';
-            setListError('parcels', errMsg);
-            setListError('created', errMsg);
-            setListError('accepted', errMsg);
-            if (isUserAgent) {
-                setListError('pending', errMsg);
-            }
+            setListError('parcels', 'Could not connect to chain');
             throw err;
         }
     })();
@@ -2301,41 +1623,11 @@ async function loadAgentChainData(agent, isUserAgent) {
 }
 
 /**
- * Get pending proposals for the user's parcels filtered to the active chain (minted) plus locals
- */
-function getUserPendingProposals(agentId, chainId = null) {
-    if (typeof proposalStorage === 'undefined') return [];
-
-    const userParcelIds = getAgentOwnedParcels(agentId);
-    const allProposals = proposalStorage.getAllProposals();
-    const normalizedChain = normalizeChainIdSafe(chainId);
-
-    // Get proposals that affect user's parcels, sorted by creation date (newest first)
-    const relevantProposals = allProposals
-        .filter(proposal =>
-            getLifecycleStatus(proposal) === 'Active' &&
-            (Array.isArray(proposal.cadastreParcelIds) ? proposal.cadastreParcelIds : []).some(parcelId => userParcelIds.includes(parcelId)) &&
-            (
-                proposal.isMinted !== true ||
-                (normalizedChain &&
-                    normalizeChainIdSafe(proposal.chainId || (proposal.onchain && proposal.onchain.chainId)) === normalizedChain)
-            )
-        )
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        .map(proposal => proposal.proposalId || proposal.tokenId)
-        .filter(Boolean);
-
-    return relevantProposals;
-}
-
-/**
  * Set up lazy loading for agent dialog lists
  */
 const AGENT_DIALOG_PAGE_SIZES = {
     parcels: 50, // avoid loading hundreds of parcels at once
-    created: 20,
-    accepted: 20,
-    pending: 20
+    created: 20
 };
 
 // Cache and in-memory state for agent dialog lists (persists while page is open)
@@ -2380,13 +1672,10 @@ function normalizeParcelEntries(entries = []) {
         .filter(Boolean);
 }
 
-function ensureAgentDialogListState(agentId, parcelDetails, createdProposals, acceptedProposals, pendingProposals = []) {
-    const records = getAgentProposalRecords();
+function ensureAgentDialogListState(agentId, parcelDetails, createdProposals) {
     agentDialogListData = {
         parcels: { data: normalizeParcelEntries(parcelDetails), loaded: 0, pageSize: AGENT_DIALOG_PAGE_SIZES.parcels },
-        created: { data: window.AgentProposalLinks.merge(createdProposals, records), loaded: 0, pageSize: AGENT_DIALOG_PAGE_SIZES.created },
-        accepted: { data: window.AgentProposalLinks.merge(acceptedProposals, records), loaded: 0, pageSize: AGENT_DIALOG_PAGE_SIZES.accepted },
-        pending: { data: window.AgentProposalLinks.merge(pendingProposals, records), loaded: 0, pageSize: AGENT_DIALOG_PAGE_SIZES.pending }
+        created: { data: window.AgentProposalLinks.merge(createdProposals), loaded: 0, pageSize: AGENT_DIALOG_PAGE_SIZES.created }
     };
     if (typeof window !== 'undefined') {
         window.agentDialogListData = agentDialogListData;
@@ -2398,7 +1687,7 @@ function ensureAgentDialogListState(agentId, parcelDetails, createdProposals, ac
 function replaceAgentDialogListData(listType, newItems) {
     if (!agentDialogListData || !agentDialogListData[listType]) return false;
     const info = agentDialogListData[listType];
-    info.data = listType === 'parcels' ? normalizeParcelEntries(newItems) : window.AgentProposalLinks.merge(newItems, getAgentProposalRecords());
+    info.data = listType === 'parcels' ? normalizeParcelEntries(newItems) : window.AgentProposalLinks.merge(newItems);
     info.loaded = 0;
     document.querySelector(`[data-list-type="${listType}"]`)?.replaceChildren();
     return true;
@@ -2419,8 +1708,8 @@ function renderFirstPageForList(listType) {
     }
 }
 
-function setupAgentDialogLazyLoading(agentId, parcelDetails, createdProposals, acceptedProposals, pendingProposals = []) {
-    const listData = ensureAgentDialogListState(agentId, parcelDetails, createdProposals, acceptedProposals, pendingProposals);
+function setupAgentDialogLazyLoading(agentId, parcelDetails, createdProposals) {
+    const listData = ensureAgentDialogListState(agentId, parcelDetails, createdProposals);
 
     // Make sure section headers reflect the initial data sizes
     Object.keys(listData).forEach(listType => {
@@ -2475,10 +1764,8 @@ function loadMoreItems(listType, listInfo) {
     items.forEach(item => {
         if (listType === 'parcels') {
             itemsHtml += renderParcelItem(item);
-        } else if (listType === 'created' || listType === 'accepted') {
+        } else if (listType === 'created') {
             itemsHtml += renderProposalItem(item);
-        } else if (listType === 'pending') {
-            itemsHtml += renderPendingProposalItem(item);
         }
     });
 
@@ -2511,160 +1798,36 @@ function renderProposalItem(link) {
     return renderAgentProposalLink(link);
 }
 
-/**
- * Render a pending proposal item with its local notification marker.
- */
-function renderPendingProposalItem(link) {
-    return renderAgentProposalLink(link, true);
-}
-
-function renderAgentProposalLink(link, pending = false) {
+function renderAgentProposalLink(link) {
     const proposal = window.AgentProposalLinks.resolve(link, getAgentProposalRecords());
     const linkData = escapeHtml(JSON.stringify(link));
     if (!proposal) {
-        const chainRef = link.chainRef;
-        const label = chainRef
-            ? translateText('agentDialog.chainProposalUnloaded', 'Chain proposal not loaded')
-            : translateText('agentDialog.localProposalUnavailable', 'Local proposal record unavailable');
-        const reference = chainRef
-            ? `${chainRef.chainType} / ${chainRef.chainId} · ${chainRef.contract} · ${chainRef.tokenId}`
-            : translateText('agentDialog.localProposalKey', 'Local ID {{id}}', { id: link.localProposalId });
-        const action = chainRef ? `onclick="openAgentProposalLink(JSON.parse(this.dataset.proposalLink), ${pending})"` : '';
-        return `<div class="proposal-item agent-dialog-proposal-item" data-proposal-link="${linkData}" ${action}>
-            <span class="agent-dialog-proposal-primary">${escapeHtml(label)}</span>
-            <span class="agent-dialog-proposal-meta">${escapeHtml(reference)}</span>
+        return `<div class="proposal-item agent-dialog-proposal-item" data-proposal-link="${linkData}">
+            <span class="agent-dialog-proposal-primary">${escapeHtml(translateText('agentDialog.localProposalUnavailable', 'Local proposal record unavailable'))}</span>
+            <span class="agent-dialog-proposal-meta">${escapeHtml(translateText('agentDialog.localProposalKey', 'Local ID {{id}}', { id: link.localProposalId }))}</span>
         </div>`;
     }
     const localId = String(proposal.proposalId);
     const proposalColor = typeof getProposalColor === 'function' ? getProposalColor(localId) : null;
     const colorStyle = proposalColor ? `style="--proposal-color: ${escapeHtml(proposalColor)}"` : '';
-    const isUnseen = pending && typeof userNotifications !== 'undefined' && userNotifications.unseenProposals.has(localId);
-    const { minted, displayId, chainLabel } = getProposalDisplayMeta(proposal, localId);
-    const badge = agentProposalLifecycleBadgeHtml(proposal, minted);
-    const displayTitle = getAgentProposalTitle(proposal, displayId);
+    const badge = agentProposalLifecycleBadgeHtml(proposal);
+    const displayTitle = getAgentProposalTitle(proposal, localId);
     const localKeyLabel = translateText('agentDialog.localProposalKey', 'Local ID {{id}}', { id: localId });
-    const chainBadge = chainLabel ? `<span class="proposal-chain-label">[${escapeHtml(chainLabel)}]</span>` : '';
     const typeBadge = agentProposalTypeBadgeHtml(escapeHtml(getAgentProposalTypeLabel(proposal)));
-    return `<div class="proposal-item agent-dialog-proposal-item ${proposalColor ? 'has-color' : ''} ${isUnseen ? 'unseen-proposal' : ''}" ${colorStyle}
-        data-proposal-link="${linkData}" onclick="openAgentProposalLink(JSON.parse(this.dataset.proposalLink), ${pending})">
-        <span class="agent-dialog-proposal-primary">${isUnseen ? '<span class="unseen-indicator">●</span>' : ''}${escapeHtml(displayTitle)} (${escapeHtml(localKeyLabel)})</span>
-        <span class="agent-dialog-proposal-meta">${typeBadge}${badge}${chainBadge}</span>
+    return `<div class="proposal-item agent-dialog-proposal-item ${proposalColor ? 'has-color' : ''}" ${colorStyle}
+        data-proposal-link="${linkData}" onclick="openAgentProposalLink(JSON.parse(this.dataset.proposalLink))">
+        <span class="agent-dialog-proposal-primary">${escapeHtml(displayTitle)} (${escapeHtml(localKeyLabel)})</span>
+        <span class="agent-dialog-proposal-meta">${typeBadge}${badge}</span>
     </div>`;
 }
 
-async function openAgentProposalLink(link, pending = false) {
+async function openAgentProposalLink(link) {
     const proposal = window.AgentProposalLinks.resolve(link, getAgentProposalRecords());
-    if (proposal) {
-        const localId = String(proposal.proposalId);
-        if (pending && typeof userNotifications !== 'undefined') userNotifications.markProposalAsSeen(localId);
-        closeAgentDialog();
-        if (typeof selectAndHighlightProposal === 'function') {
-            selectAndHighlightProposal(localId, proposal.cadastreParcelIds?.[0] || null, true);
-        }
-    } else if (link.chainRef) {
-        closeAgentDialog();
-        await handleChainProposalRoute(link.chainRef);
-    }
-}
-
-/**
- * Update the pending proposals count display
- */
-function updatePendingProposalsCount(count) {
-    setSectionCount('pending', count);
-}
-
-/**
- * When the user accepts a proposal, sync the Agent Details lists/counts in place.
- */
-function updateAgentDialogAfterAcceptance(proposalId) {
-    if (!proposalId) return;
-
-    const modal = document.querySelector('.agent-dialog-modal');
-    const currentAgent = typeof getCurrentUserAgent === 'function' ? getCurrentUserAgent() : null;
-    if (!modal || !agentDialogListData || !currentAgent || modal.dataset.agentId !== currentAgent.id) return;
-
-    const listData = agentDialogListData;
-    const records = getAgentProposalRecords();
-    const localLink = window.AgentProposalLinks.local(proposalId);
-    const targetKey = window.AgentProposalLinks.key(localLink, records);
-    const hasPending = listData.pending && Array.isArray(listData.pending.data);
-    const hasAccepted = listData.accepted && Array.isArray(listData.accepted.data);
-
-    let pendingChanged = false;
-    if (hasPending) {
-        const before = listData.pending.data.length;
-        listData.pending.data = listData.pending.data.filter(link => window.AgentProposalLinks.key(link, records) !== targetKey);
-        if (listData.pending.loaded > listData.pending.data.length) {
-            listData.pending.loaded = listData.pending.data.length;
-        }
-        pendingChanged = before !== listData.pending.data.length;
-    }
-
-    let acceptedChanged = false;
-    if (hasAccepted) {
-        if (!listData.accepted.data.some(link => window.AgentProposalLinks.key(link, records) === targetKey)) {
-            listData.accepted.data.unshift(localLink);
-            acceptedChanged = true;
-        }
-        // Reset paging so the rebuilt list shows the newly added item
-        listData.accepted.loaded = 0;
-    }
-
-    if (pendingChanged) {
-        updatePendingProposalsCount(listData.pending.data.length);
-        const pendingList = modal.querySelector('[data-list-type="pending"]');
-        if (pendingList) {
-            pendingList.innerHTML = '';
-            renderFirstPageForList('pending');
-        }
-    }
-
-    if (acceptedChanged) {
-        const acceptedList = modal.querySelector('[data-list-type="accepted"]');
-        if (acceptedList) {
-            acceptedList.innerHTML = '';
-            renderFirstPageForList('accepted');
-        }
-        setSectionCount('accepted', listData.accepted.data.length, 'Recorded acceptances');
-    }
-
-    // Keep cache aligned so reopen preserves the updated lists
-    const existingCache = getAgentDialogCache(currentAgent.id);
-    if (window.AgentWalletScope.matches(existingCache?.scope, getCurrentAgentWalletScope())) {
-        setAgentDialogCache(currentAgent.id, {
-            ...existingCache,
-            accepted: hasAccepted ? listData.accepted.data.slice() : [],
-            pending: hasPending ? listData.pending.data.slice() : []
-        });
-    }
-}
-
-if (typeof window !== 'undefined') {
-    window.updateAgentDialogAfterAcceptance = updateAgentDialogAfterAcceptance;
-}
-
-/**
- * Handle clicking on a pending proposal
- */
-function viewPendingProposal(proposalId) {
-    // Mark proposal as seen
-    if (typeof userNotifications !== 'undefined') {
-        userNotifications.markProposalAsSeen(proposalId);
-    }
-
-    // Close agent dialog
+    if (!proposal) return;
+    const localId = String(proposal.proposalId);
     closeAgentDialog();
-
-    // Focus and highlight the proposal but don't show details modal
-    if (typeof selectAndHighlightProposal === 'function' && typeof proposalStorage !== 'undefined') {
-        const proposal = proposalStorage.getProposal(proposalId);
-        const parcels = Array.isArray(proposal?.cadastreParcelIds)
-            ? proposal.cadastreParcelIds
-            : [];
-        if (proposal && parcels.length > 0) {
-            selectAndHighlightProposal(proposalId, parcels[0], true);
-        }
+    if (typeof selectAndHighlightProposal === 'function') {
+        selectAndHighlightProposal(localId, proposal.cadastreParcelIds?.[0] || null, true);
     }
 }
 
@@ -2922,5 +2085,3 @@ window.buildTurnParcelPool = buildTurnParcelPool;
 window.buildAgentNeighborMap = buildAgentNeighborMap;
 window.isRoadLikeParcel = isRoadLikeParcel;
 window.isStructureDescendantParcel = isStructureDescendantParcel;
-window.getUserPendingProposals = getUserPendingProposals;
-window.viewPendingProposal = viewPendingProposal; 

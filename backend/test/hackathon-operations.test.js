@@ -6,6 +6,15 @@ import { setupHackathonOperationsRoute } from '../routes/hackathon-operations.js
 import { createRouteApp } from './helpers/create-route-app.js';
 
 const NOW = Date.parse('2026-09-22T12:00:00Z');
+// The personas these fixture rows describe. agents/personas.json configures more (affordabot, the lens
+// members), and a proposer configured there with no row here would put every status in attention, so
+// each case states its actors instead of reading the live file (only the first case reads it).
+const PERSONAS = [
+    { name: 'densifier-01', role: 'proposer' }, { name: 'builder-02', role: 'proposer' }, { name: 'gentle-01', role: 'proposer' },
+    { name: 'supporter-01', role: 'supporter' },
+    { name: 'preservationist-01', role: 'contrarian' }, { name: 'skeptic-02', role: 'contrarian' },
+    { name: 'speculator-01', role: 'speculator' }, { name: 'backer-01', role: 'backer' }
+];
 
 function rows() {
     return [{
@@ -46,7 +55,7 @@ describe('public hackathon operations status', () => {
             ...rows().filter(row => row.persona === 'supporter-01' || row.persona === 'densifier-01')];
         const status = buildPublicOperationsStatus({ runs, landOracle: {
             runStatus: 'completed', endedAt: '2026-09-22T02:30:02Z'
-        }, now: NOW, prospective: { resolver: { lastRun: { status: 'completed', endedAt: '2026-09-22T11:45:03Z' } } } });
+        }, now: NOW, configuredPersonas: PERSONAS, prospective: { resolver: { lastRun: { status: 'completed', endedAt: '2026-09-22T11:45:03Z' } } } });
         expect(status.status).toBe('attention');
         expect(status.agentRuns.find(job => job.persona === 'builder-02')).toMatchObject({ role: 'proposer', status: 'failed' });
     });
@@ -63,7 +72,7 @@ describe('public hackathon operations status', () => {
         }, ...rows()];
         const status = buildPublicOperationsStatus({ runs, landOracle: {
             runStatus: 'completed', endedAt: '2026-09-22T02:30:02Z'
-        }, now: NOW, prospective: { resolver: { lastRun: { status: 'completed', endedAt: '2026-09-22T11:45:03Z' } } } });
+        }, now: NOW, configuredPersonas: PERSONAS, prospective: { resolver: { lastRun: { status: 'completed', endedAt: '2026-09-22T11:45:03Z' } } } });
         expect(status.optionalJobs.find(job => job.role === 'contrarian')).toMatchObject({ status: 'completed' });
         expect(status.status).toBe('attention');
         expect(status.agentRuns.find(job => job.persona === 'skeptic-02')).toMatchObject({ role: 'contrarian', status: 'failed' });
@@ -75,7 +84,7 @@ describe('public hackathon operations status', () => {
             result: { scanned: 4, terminal: 0, events: [], inserted: 0, reconciled: 0, missingEvidence: [], invalidAccounts: [] }
         });
         const status = buildPublicOperationsStatus({
-            runs: rows(), landOracle, now: NOW,
+            runs: rows(), landOracle, now: NOW, configuredPersonas: PERSONAS,
             prospective: { resolver: { cadence: 'hourly at minute 45', lastRun: {
                 status: 'completed', phase: 'awaiting_evidence', endedAt: '2026-09-22T11:45:03Z'
             } } }
@@ -122,7 +131,7 @@ describe('supporter no-op days in the public operations status', () => {
             result: { scanned: 4, terminal: 0, events: [], inserted: 0, reconciled: 0, missingEvidence: [], invalidAccounts: [] }
         });
         const status = buildPublicOperationsStatus({
-            runs, landOracle, now: NOW,
+            runs, landOracle, now: NOW, configuredPersonas: PERSONAS,
             prospective: { resolver: { cadence: 'hourly at minute 45', lastRun: {
                 status: 'completed', phase: 'awaiting_evidence', endedAt: '2026-09-22T11:45:03Z'
             } } }
@@ -141,6 +150,7 @@ describe('optional society roles in the public operations status', () => {
             result: { scanned: 4, terminal: 0, events: [], inserted: 0, reconciled: 0, missingEvidence: [], invalidAccounts: [] }
         }),
         now: NOW,
+        configuredPersonas: PERSONAS,
         prospective: { resolver: { cadence: 'hourly at minute 45', lastRun: {
             status: 'completed', phase: 'awaiting_evidence', endedAt: '2026-09-22T11:45:03Z'
         } } }

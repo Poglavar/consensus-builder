@@ -1,11 +1,15 @@
 #!/usr/bin/env node
-// Recreates the "Courtyard Candlestick" concept (Courtyard Urbanist, 2026-10-05) as a building
-// proposal in this app: 1,105 courtyard-building footprints with levels and heights, on the
-// 271-acre Candlestick Point site, published as independent Freeform buildings through the normal
-// API (site binding first, then each proposal) so the server rules apply as they do for a browser.
-// Without --apply nothing is posted: the conversion is validated, summarized, and written to --out.
+// Recreates the "Courtyard Candlestick" concept (Courtyard Urbanist, 2026-10-05) in this app: 1,105
+// courtyard-building footprints with levels and heights on the 271-acre Candlestick Point site, as one
+// building design per block of the concept (the index links at most 200 designs to one agreement, and
+// the concept has about 106 blocks), published with one agreement through lib/restatement-publish.mjs.
+// Each block design is content on the ground it stands on (goal 'buildings'): its footprints keep their
+// own heights and source identity. --dry-run builds and prints the design objects without network access.
 //
-//   node scripts/import-candlestick-courtyard.mjs --source <Candlestick_FG3D_Editable_Design.json> [--apply]
+//   node scripts/import-candlestick-courtyard.mjs --source <Candlestick_FG3D_Editable_Design.json> --dry-run
+//   node scripts/import-candlestick-courtyard.mjs --source <file> --designs --api <api> [--origin <app>] --apply
+//   node scripts/import-candlestick-courtyard.mjs --source <file> --capture --app <app> --api <api>
+//   node scripts/import-candlestick-courtyard.mjs --source <file> --agreement --api <api> [--origin <app>] [--app <app>] --apply
 //
 // Inputs and provenance: scripts/data/candlestick/README.md.
 
@@ -13,72 +17,26 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { parseArgs } from 'node:util';
 import proj4 from 'proj4';
 import * as turf from '@turf/turf';
-import { canonicalSeedRecord } from './lib/canonical-seed-record.mjs';
 import { polygonBuildingParts } from './lib/building-import-geometry.mjs';
-import { DEFAULTS as COMMON, bboxOf, publish } from './lib/candlestick-common.mjs';
+import { CITY, PARCEL_SOURCE_ID, bboxOf, groundFile } from './lib/candlestick-common.mjs';
+import { log, runRestatementCli } from './lib/restatement-publish.mjs';
 
-const HERE = path.dirname(fileURLToPath(import.meta.url));
-const DEFAULTS = Object.freeze({
-    ...COMMON,
-    proposalId: 'sf-candlestick-courtyard-2026',
-    out: path.join(HERE, '../../output/candlestick-courtyard-proposal.json')
-});
+export const PLAN_KEY = 'candlestick-courtyard';
+export const PLAN_TITLE = 'Courtyard Candlestick: 1,105 courtyard buildings, about 16,400 homes, no towers';
+export const AUTHOR = 'Courtyard Urbanist';
+// The concept's publication date.
+export const AUTHORED_AT = '2026-10-05T00:00:00.000Z';
 // NAD83 / UTM zone 10N, the model's coordinate system (metres).
 const EPSG_26910 = '+proj=utm +zone=10 +ellps=GRS80 +datum=NAD83 +units=m +no_defs';
 const FLOOR_HEIGHT_M = 3.2; // only when a building carries no floorplate heights
+const NO_BLOCK = 'unassigned';
 const SOURCE_LINKS = Object.freeze({
     concept: 'https://candlestick-project.aliciapederson.chatgpt.site/',
     substack: 'https://urbancourtyard.substack.com/p/san-francisco-could-have-a-dense',
     post: 'https://x.com/UrbanCourtyard/status/2107220982914220531'
 });
-
-const log = (message) => console.log(`[${new Date().toISOString()}] ${message}`);
-
-function usage(code = 0) {
-    console.log([
-        'Usage: node scripts/import-candlestick-courtyard.mjs --source <design.json> [options]',
-        '',
-        '  --source <path>           The concept model JSON (Candlestick_FG3D_Editable_Design.json). Required.',
-        `  --backend <url>           API to publish to (default ${DEFAULTS.backend}).`,
-        `  --origin <url>            Origin header for the write gate (default ${DEFAULTS.origin}; localhost only outside production).`,
-        `  --city <id>               City id (default ${DEFAULTS.city}).`,
-        `  --proposal-id <id>        Stable proposal id (default ${DEFAULTS.proposalId}); an existing one is left alone.`,
-        '  --source-proposal-id <id> Counterproposal lineage source row ID (for recreation of an existing record).',
-        `  --expires-in-days <n>     Expiry from now so a market on it can auto-settle (default ${DEFAULTS.expiresInDays}; 0 = never).`,
-        `  --out <path>              Where the converted record is written (default ${path.relative(process.cwd(), DEFAULTS.out)}).`,
-        '  --apply                   Bind and POST each building. Without it: convert, validate, summarize, write --out.',
-        '  --help                    This text.'
-    ].join('\n'));
-    process.exit(code);
-}
-
-function parseCli() {
-    const { values } = parseArgs({
-        options: {
-            source: { type: 'string' }, backend: { type: 'string' }, origin: { type: 'string' },
-            city: { type: 'string' }, 'proposal-id': { type: 'string' }, 'source-proposal-id': { type: 'string' }, 'expires-in-days': { type: 'string' }, out: { type: 'string' },
-            apply: { type: 'boolean', default: false }, help: { type: 'boolean', default: false }
-        },
-        strict: true
-    });
-    if (values.help || !values.source) usage(values.help ? 0 : 1);
-    const expiresInDays = values['expires-in-days'] === undefined ? DEFAULTS.expiresInDays : Number(values['expires-in-days']);
-    if (!Number.isInteger(expiresInDays) || expiresInDays < 0) throw new Error('--expires-in-days must be a non-negative integer');
-    return {
-        source: path.resolve(values.source),
-        backend: (values.backend || DEFAULTS.backend).replace(/\/+$/, ''),
-        origin: values.origin || DEFAULTS.origin,
-        city: values.city || DEFAULTS.city,
-        proposalId: values['proposal-id'] || DEFAULTS.proposalId,
-        sourceProposalId: values['source-proposal-id'] || null,
-        expiresInDays,
-        out: path.resolve(values.out || DEFAULTS.out),
-        apply: values.apply
-    };
-}
 
 // ---- geometry -----------------------------------------------------------------------------
 
@@ -158,8 +116,7 @@ export function convertBuildings(model) {
                 sourceBuildingId: building.id,
                 sourceBlockId: building.block_id || null,
                 sourceControlProperties: control,
-                sourceFootprintAreaM2: building.footprint_area_m2 ?? null,
-                sourceOccupiedFloorplates: building.occupied_floorplates || []
+                sourceFootprintAreaM2: building.footprint_area_m2 ?? null
             },
             geometry: footprint
         });
@@ -189,106 +146,91 @@ function describe(model, stats) {
     ].filter(Boolean).join(' ');
 }
 
-export function buildRecords({ model, stats, city, proposalId, expiresInDays, sourceSha256, sourceProposalId = null }) {
-    const now = new Date();
-    const expiresAt = expiresInDays > 0 ? new Date(now.getTime() + expiresInDays * 86400000).toISOString() : null;
-    const planTitle = 'Courtyard Candlestick: 1,105 courtyard buildings, about 16,400 homes, no towers';
-    const buildings = polygonBuildingParts(stats.features);
-    return buildings.map((building, index) => {
+/**
+ * The plan's design records: one building design per block of the concept (its footprints, each split
+ * into polygons without picking a largest part), blocks in the model's order.
+ * @returns [{ key, record }]
+ */
+export function buildDesigns({ model, stats, sourceSha256 }) {
+    const description = describe(model, stats);
+    const blocks = new Map();
+    polygonBuildingParts(stats.features).forEach((building, index) => {
         const rawSourceId = building.properties.id;
         if (rawSourceId === undefined || rawSourceId === null || rawSourceId === '') throw new Error(`Building at output index ${index} has no stable source ID.`);
-        const sourceId = String(rawSourceId);
-        const slug = sourceId.toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '') || 'building';
-        const idSuffix = `${slug}-${createHash('sha256').update(sourceId).digest('hex').slice(0, 8)}`;
-        const title = `${planTitle} — ${building.properties.name || sourceId}`;
-        const buildingProposal = {
-            typologyType: 'single',
-            createdFrom: 'blockify',
-            blockName: 'Candlestick Point',
-            parameters: {
-                typology: 'single',
-                height: building.properties.height,
-                rotation: 0,
-                footprintMode: 'polygon',
-                source: {
-                    schema: model.schema_version || null,
-                    release: model.release || null,
-                    createdUtc: model.created_utc || null,
-                    sha256: sourceSha256,
-                    crs: 'EPSG:26910',
-                    links: SOURCE_LINKS,
-                    buildingId: sourceId,
-                    componentIndex: building.properties.sourceComponentIndex || null,
-                    blockId: building.properties.sourceBlockId || null,
-                    sourceControlProperties: building.properties.sourceControlProperties || {},
-                    sourceOccupiedFloorplates: building.properties.sourceOccupiedFloorplates || []
-                }
-            },
-            ineligibleParcels: []
-        };
+        const block = building.properties.sourceBlockId ? String(building.properties.sourceBlockId) : NO_BLOCK;
+        if (!blocks.has(block)) blocks.set(block, []);
+        blocks.get(block).push(building);
+    });
+    return [...blocks.entries()].map(([block, buildings]) => {
+        const slug = block.toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '') || 'block';
         return {
-            proposalId: `${proposalId}-${idSuffix}`,
-            ...(sourceProposalId ? { sourceProposalId: String(sourceProposalId) } : {}),
-            city,
-            type: 'building',
-            goal: 'single',
-            typologyType: 'single',
-            primaryType: 'Urban Rule',
-            name: title,
-            title,
-            description: describe(model, stats),
-            author: 'Courtyard Urbanist',
-            lifecycleStatus: 'Active',
-            applied: false,
-            termsConfirmed: true,
-            createdAt: now.toISOString(),
-            ...(expiresAt ? { expiresAt } : {}),
-            site: building.geometry,
-            cadastreParcelIds: [],
-            geometry: { buildings: [building] },
-            buildingProposal,
-            tags: ['buildings', 'candlestick-point', 'courtyard']
+            key: `${slug}-${createHash('sha256').update(block).digest('hex').slice(0, 8)}`,
+            record: {
+                goal: 'buildings',
+                title: `${PLAN_TITLE} — block ${block} (${buildings.length} building${buildings.length === 1 ? '' : 's'})`,
+                description,
+                author: AUTHOR,
+                city: CITY,
+                createdAt: AUTHORED_AT,
+                geometry: { buildings },
+                buildingProposal: {
+                    typologyType: 'single',
+                    createdFrom: 'blockify',
+                    blockName: `Candlestick Point ${block}`,
+                    parameters: {
+                        typology: 'single',
+                        rotation: 0,
+                        footprintMode: 'polygon',
+                        source: {
+                            schema: model.schema_version || null,
+                            release: model.release || null,
+                            createdUtc: model.created_utc || null,
+                            sha256: sourceSha256,
+                            crs: 'EPSG:26910',
+                            links: SOURCE_LINKS,
+                            blockId: block === NO_BLOCK ? null : block
+                        }
+                    },
+                    ineligibleParcels: []
+                }
+            }
         };
     });
 }
 
-// ---- main ---------------------------------------------------------------------------------
+// ---- main ---------------------------------------------------------------------------------------------
 
-async function main() {
-    const cli = parseCli();
-    const sourceBytes = fs.readFileSync(cli.source);
+/** The Courtyard plan from the concept model at `source`: its designs and where its ground file lives. */
+export function courtyardPlan(source) {
+    if (!source) {
+        throw Object.assign(new Error('--source <Candlestick_FG3D_Editable_Design.json> is required (scripts/data/candlestick/README.md says where to get it)'), { stated: true });
+    }
+    const sourceBytes = fs.readFileSync(path.resolve(source));
     const sourceSha256 = createHash('sha256').update(sourceBytes).digest('hex');
     const model = JSON.parse(sourceBytes.toString('utf8'));
-    log(`source ${path.basename(cli.source)} sha256 ${sourceSha256} (${model.release || 'release unknown'}, ${(model.buildings || []).length} buildings)`);
-
+    log(`source ${path.basename(source)} sha256 ${sourceSha256} (${model.release || 'release unknown'}, ${(model.buildings || []).length} buildings)`);
     const stats = convertBuildings(model);
-    const records = buildRecords({ model, stats, city: cli.city, proposalId: cli.proposalId, expiresInDays: cli.expiresInDays, sourceSha256, sourceProposalId: cli.sourceProposalId });
-    // The same projection and readability check every seed gets before a row can exist.
-    records.forEach(canonicalSeedRecord);
+    const designs = buildDesigns({ model, stats, sourceSha256 });
     const heights = stats.features.map(feature => feature.properties.height);
-    log(`converted ${stats.features.length} buildings, dropped ${stats.dropped.length}${stats.dropped.length ? ` (${stats.dropped.slice(0, 5).join(', ')}${stats.dropped.length > 5 ? ', …' : ''})` : ''}`);
-    log(`levels ${JSON.stringify(stats.levelsHistogram)} · heights ${Math.min(...heights)}–${Math.max(...heights)} m · footprints ${stats.footprintM2} m²`);
-    log(`bbox ${bboxOf(stats.features).join(', ')} · ${records.length} Freeform proposals · records ${(JSON.stringify(records).length / 1024).toFixed(0)} KB${records[0]?.expiresAt ? ` · expires ${records[0].expiresAt}` : ''}`);
-
-    fs.mkdirSync(path.dirname(cli.out), { recursive: true });
-    fs.writeFileSync(cli.out, JSON.stringify({ proposals: records }));
-    log(`record written to ${cli.out}`);
-
-    if (!cli.apply) {
-        log('dry run: nothing posted (add --apply to publish)');
-        return;
-    }
-    let created = 0; let skipped = 0;
-    for (const record of records) {
-        const result = await publish(record, { backend: cli.backend, origin: cli.origin, city: cli.city });
-        if (result.skipped) skipped++; else created++;
-    }
-    log(`done: ${created} created, ${skipped} existing`);
+    log(`converted ${stats.features.length} buildings into ${designs.length} block designs, dropped ${stats.dropped.length}${stats.dropped.length ? ` (${stats.dropped.slice(0, 5).join(', ')}${stats.dropped.length > 5 ? ', …' : ''})` : ''}`);
+    log(`levels ${JSON.stringify(stats.levelsHistogram)} · heights ${Math.min(...heights)}–${Math.max(...heights)} m · footprints ${stats.footprintM2} m² · bbox ${bboxOf(stats.features).join(', ')}`);
+    return {
+        key: PLAN_KEY,
+        title: PLAN_TITLE,
+        author: AUTHOR,
+        city: CITY,
+        parcelSourceId: PARCEL_SOURCE_ID,
+        groundFile: groundFile(PLAN_KEY),
+        designs
+    };
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-    main().catch(error => {
-        console.error(`[${new Date().toISOString()}] import failed:`, error);
-        process.exit(1);
+    await runRestatementCli({
+        script: 'backend/scripts/import-candlestick-courtyard.mjs',
+        describe: 'the Courtyard Candlestick concept',
+        planKeys: [PLAN_KEY],
+        options: { source: { type: 'string', description: 'The concept model JSON (Candlestick_FG3D_Editable_Design.json). Required by every step.' } },
+        plans: async values => [courtyardPlan(values.source)]
     });
 }

@@ -64,6 +64,20 @@ describe('ProposalDraftStore', () => {
         });
     });
 
+    it('takes a source\'s local key as its identity, never a chain token (designs are not minted, M3)', () => {
+        const { store } = harness();
+        expect(() => store.createDraftFromProposal({
+            city: 'zagreb', goal: 'park', title: 'Pocket park', cadastreParcelIds: ['a'],
+            chainProposalId: 'solana-devnet-7', onchain: { chainId: 'solana-devnet', proposalId: 'Acc' }
+        })).toThrow(/no stable ID/);
+        // Nor a server row's authored id or a content hash (M2): nothing writes them on a record.
+        expect(() => store.createDraftFromProposal({
+            city: 'zagreb', goal: 'park', title: 'Pocket park', cadastreParcelIds: ['a'],
+            proposal_id: 'authored-7', hash: 'content-hash'
+        })).toThrow(/no stable ID/);
+        expect(store.listDrafts()).toEqual([]);
+    });
+
     it('rejects source records without an explicit canonical goal', () => {
         const { store } = harness();
         expect(() => store.createDraftFromProposal({
@@ -280,22 +294,24 @@ describe('ProposalDraftStore', () => {
         expect(proposal.proposalId).toBeUndefined();
     });
 
-    it('strips the source\'s published and minted identity — an edit is a new design with its own CID', () => {
+    it('strips the source\'s publication mark — an edit is a new design with its own CID, linked to its source', () => {
         // No adapter → the fallback merge copies sourceSnapshot wholesale, which carries the source's
-        // publication mark and chain token; without the explicit strip the "new" design would claim
-        // the source's CID (plan-design-agreement.md, M2) and Share would treat it as published.
+        // publication mark; without the explicit strip the "new" design would claim the source's CID
+        // (plan-design-agreement.md, M2) and Share would treat it as published. Designs are not minted
+        // (M3): the publication mark is the only published identity there is.
         const { store } = harness({ adapterRegistry: { get: () => null } });
+        const SOURCE_CID = 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq';
         const draft = store.createDraftFromProposal({
             localPurchaseSimulation: { buyerAgentId: 'buyer' },
             proposalId: 'source-x', city: 'zagreb', goal: 'park',
-            published: { cid: 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq', publishedAt: '2026-10-21T10:00:00.000Z', apiBase: 'https://api.example.test' },
-            chainProposalId: 'solana-devnet-7', tokenId: '7', onchain: { chainId: 'solana-devnet', proposalId: 'Acc' }, nft: { tokenId: '7' }, isMinted: true,
+            published: { cid: SOURCE_CID, publishedAt: '2026-10-21T10:00:00.000Z', apiBase: 'https://api.example.test' },
             title: 'Park', cadastreParcelIds: ['1'], geometry: { type: 'Polygon' }
         });
         const proposal = store.buildProposalFromDraft(draft.id, { allowInvalid: true });
         expect(proposal).toBeTruthy();
         expect(proposal.title).toBe('Park');
-        for (const key of ['published', 'chainProposalId', 'tokenId', 'onchain', 'nft', 'isMinted', 'hash']) expect(proposal).not.toHaveProperty(key);
+        expect(proposal).not.toHaveProperty('published');
+        expect(proposal.origin).toEqual({ cid: SOURCE_CID });
         expect(draft.sourceSnapshot).not.toHaveProperty('localPurchaseSimulation');
         expect(proposal).not.toHaveProperty('localPurchaseSimulation');
         expect(proposal.proposalId).toBeUndefined();

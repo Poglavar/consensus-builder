@@ -1,6 +1,7 @@
 // Cover proposal and parcel links that navigate from their semantic detail surfaces.
 import { test, expect } from '../helpers/fixtures';
 import { openCity, openParcel, showProposal, PARCEL_ID, PARCEL_GEOMETRY } from '../helpers/runtime';
+import { proposeOverPark } from '../helpers/agreements';
 
 async function addProposal(page: import('@playwright/test').Page, record: Record<string, unknown>): Promise<string> {
   const value = {
@@ -11,40 +12,29 @@ async function addProposal(page: import('@playwright/test').Page, record: Record
 }
 
 test.describe('Detail navigation controls @features', () => {
-  test('Open proposal in live Activity opens the matching local proposal', async ({ mockApi: page }) => {
+  test('Open design in live Activity opens the matching local design', async ({ mockApi: page }) => {
     await openCity(page);
-    const proposalId = await addProposal(page, {
-      proposalId: 'e2e-activity-link-proposal', title: 'Activity link destination', goal: 'park',
-      city: 'zagreb', lifecycleStatus: 'Active', cadastreParcelIds: [PARCEL_ID],
-    });
-    await page.route('**/agent/activity**', route => route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({ events: [{
-        id: 'e2e-activity-proposal-link', occurredAt: '2026-10-01T12:00:00Z', recordedAt: '2026-10-01T12:00:00Z',
-        actor: { id: 'e2e-link-actor', name: 'Navigation actor', kind: 'agent', controller: 'algorithm' },
-        action: { type: 'publish' }, entity: { type: 'proposal', id: proposalId },
-        source: 'live', message: 'Published the activity link destination', ok: true,
-      }] }),
-    }));
+    // An agreement proposed from this device over a park applied here: the feed carries the park as a
+    // design row whose link opens this device's copy (plan-design-agreement.md, M3).
+    const { designCid, parkId, parkTitle } = await proposeOverPark(page, { title: 'Activity link agreement', author: 'Navigation actor' });
 
     await page.locator('#activity-button').click();
     await page.locator('#activity-explorer-button').click();
     const explorer = page.locator('.game-log-modal');
     await expect(explorer).toBeVisible();
-    const link = explorer.locator(`.proposal-link-clickable[data-proposal-id="${proposalId}"]`);
-    await expect(link).toBeVisible();
+    const link = explorer.locator(`.activity-entity-link[data-entity-type="design"][data-entity-id="${designCid}"]`);
+    await expect(link).toBeVisible({ timeout: 30_000 });
     await link.click();
     await expect(explorer).toBeHidden();
     const planningInspector = page.locator('#planning-inspector');
     const proposalPanel = page.locator('#proposal-details-panel');
     await expect.poll(async () => await planningInspector.isVisible() || await proposalPanel.isVisible()).toBe(true);
     if (await planningInspector.isVisible()) {
-      await expect.poll(() => page.evaluate(() => (window as any).PlanningViews?.getSelected()?.proposalId)).toBe(proposalId);
-      await expect(planningInspector).toContainText('Activity link destination');
+      await expect.poll(() => page.evaluate(() => (window as any).PlanningViews?.getSelected()?.proposalId)).toBe(parkId);
+      await expect(planningInspector).toContainText(parkTitle);
     } else {
-      await expect.poll(() => page.evaluate(() => (window as any).currentlyHighlightedProposalId)).toBe(proposalId);
-      await expect(proposalPanel).toContainText('Activity link destination');
+      await expect.poll(() => page.evaluate(() => (window as any).currentlyHighlightedProposalId)).toBe(parkId);
+      await expect(proposalPanel).toContainText(parkTitle);
     }
   });
 

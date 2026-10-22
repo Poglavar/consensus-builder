@@ -1,6 +1,6 @@
 // What saving an edit of a record does to it: one's own local, unpublished record is edited in
-// place; a published design (`published.cid`, proposals/design-sync.js) or a minted record is
-// immutable, so the edit forks a new record that records where it came from (proposalOrigin, and
+// place; a published design (`published.cid`, proposals/design-sync.js) is immutable, so the
+// edit forks a new record that records where it came from (proposalOrigin, and
 // origin.cid for a published source). Published lineage is that CID link (the details panel's
 // "Forked from"); there is no lineage route or list of forks (plan-design-agreement.md,
 // simplification 8).
@@ -13,25 +13,15 @@
 
     const cidApi = () => root?.Cid || (typeof require === 'function' ? require('../cid.js') : null);
 
-    // A published design or explicit mint evidence makes the record immutable. Generic hashes and
-    // lifecycle labels do not establish publication.
+    // A published design makes the record immutable. Generic hashes and lifecycle labels do not
+    // establish publication; designs are not minted (plan-design-agreement.md, M3).
     function isPublished(proposal) {
         if (!proposal || typeof proposal !== 'object') return false;
-        try {
-            if (typeof root?.isProposalImmutable === 'function' && root.isProposalImmutable(proposal)) return true;
-            if (typeof root?.isProposalMinted === 'function' && root.isProposalMinted(proposal)) return true;
-        } catch (_) { }
-        const explicitValue = value => value !== undefined && value !== null && String(value).trim() !== '';
-        return !!(proposal.published && cidApi()?.isCid(proposal.published.cid))
-            || !!proposal.onchain?.transactionHash
-            || !!proposal.onchainData
-            || proposal.isMinted === true
-            || explicitValue(proposal.tokenId)
-            || explicitValue(proposal.chainProposalId);
+        return !!(proposal.published && cidApi()?.isCid(proposal.published.cid));
     }
 
     // What saving an edit of `source` does. One's own local, unpublished record is edited in place:
-    // same id, no new record. A published or minted record is immutable, so an edit forks a
+    // same id, no new record. A published record is immutable, so an edit forks a
     // counterproposal that records its proposalOrigin and leaves the source standing.
     // `fork: true` is the explicit Fork action, which always makes a new record.
     function editsInPlace(source, options = {}) {

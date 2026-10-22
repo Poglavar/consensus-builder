@@ -306,10 +306,13 @@ describe('lineage: what saving an edit does to its source', () => {
     const published = (extra = {}) => ({ cid: Cid.cidOfObject({ schema: 'design/v1', title: 'Published' }), publishedAt: null,
         apiBase: 'https://api.example.test', ...extra });
 
-    it('takes a design CID mark or mint evidence as published, and no generic hash, lifecycle label or row id', () => {
+    it('takes a design CID mark as published, and no mint record, generic hash, lifecycle label or row id', () => {
         expect(lineage.isPublished({ published: published() })).toBe(true);
-        expect(lineage.isPublished({ isMinted: true })).toBe(true);
-        expect(lineage.isPublished({ onchain: { transactionHash: '0xabc' } })).toBe(true);
+        // Whichever index it went to: the CID names the design, not the index.
+        expect(lineage.isPublished({ published: published({ apiBase: 'https://other.example.test' }) })).toBe(true);
+        // Designs are not minted (M3): a mint flag or transaction is no publication.
+        expect(lineage.isPublished({ isMinted: true })).toBe(false);
+        expect(lineage.isPublished({ onchain: { transactionHash: '0xabc' } })).toBe(false);
         expect(lineage.isPublished({ published: published({ cid: 'not-a-cid' }) })).toBe(false);
         expect(lineage.isPublished({ hash: 'abc', lifecycleStatus: 'published' })).toBe(false);
         // A server row id is no publication any more (M2): a published design is named by its CID.
@@ -317,10 +320,9 @@ describe('lineage: what saving an edit does to its source', () => {
         expect(lineage.isPublished(null)).toBe(false);
     });
 
-    it('edits one\'s own local record in place, forks a published or minted one, and forks on an explicit Fork', () => {
+    it('edits one\'s own local record in place, forks a published one, and forks on an explicit Fork', () => {
         expect(lineage.editsInPlace({ proposalId: 'own', applied: true })).toBe(true);
         expect(lineage.editsInPlace({ proposalId: 'p', published: published() })).toBe(false);
-        expect(lineage.editsInPlace({ proposalId: 'p', isMinted: true })).toBe(false);
         expect(lineage.editsInPlace({ proposalId: 'p', lifecycleStatus: 'published' })).toBe(true);
         expect(lineage.editsInPlace({ proposalId: 'p', lifecycleStatus: 'Active', published: published() })).toBe(false);
         expect(lineage.editsInPlace({ proposalId: 'own' }, { fork: true })).toBe(false);

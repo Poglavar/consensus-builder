@@ -77,7 +77,7 @@
             && map.getZoom() >= (config()?.map?.parcelZoomRange?.min ?? 17);
         const canIdentify = event => visible()
             && !event?.originalEvent?._stopped
-            && !root.measureMode && !root.sharePlanMode && !root.proposalListBrowseMode
+            && !root.measureMode && !root.MapPick?.active() && !root.proposalListBrowseMode
             && !root.__mapEditLock?.isHeld?.() && !root.pinpointToolIsActive?.()
             && !root.isParcelDrawingModeActive?.() && !root.isStructureGeometryEditorActive?.()
             && !root.AreaMonitorPaint?.isActive?.();

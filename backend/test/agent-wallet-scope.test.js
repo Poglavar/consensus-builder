@@ -46,12 +46,12 @@ describe('agent wallet scope', () => {
     });
 });
 
-// Exercise both production ownership readers and initial-list cache behavior, not copied logic.
+// Exercise both production ownership readers and the initial profile lists, not copied logic.
 import { readFileSync } from 'node:fs';
 import { parse } from '@babel/parser';
 import vm from 'node:vm';
 const source = readFileSync(new URL('../../frontend/js/agents.js', import.meta.url), 'utf8');
-const names = new Set(['forEachPersistentParcelOwnership', 'getAgentOwnedParcels', 'buildAgentOwnedParcelIndex', 'getAgentObservedWalletParcels', 'normalizeParcelEntries', 'ensureAgentDialogListState', 'updateAgentDialogAfterAcceptance']);
+const names = new Set(['forEachPersistentParcelOwnership', 'getAgentOwnedParcels', 'buildAgentOwnedParcelIndex', 'getAgentObservedWalletParcels', 'normalizeParcelEntries', 'ensureAgentDialogListState']);
 const functions = parse(source, { sourceType: 'script' }).program.body.filter(node => names.has(node.id?.name)).map(node => source.slice(node.start, node.end)).join('\n');
 function readers() {
     let active = evm;
@@ -59,18 +59,13 @@ function readers() {
     const writes = [];
     const context = vm.createContext({
         window: { AgentWalletScope: scope, AgentProposalLinks: proposalLinks },
-        getAgentProposalRecords: () => [],
         PersistentStorage: new Map([['parcel_model-parcel_owner', 'user']]),
         agentStorage: { getAgent: () => ({ userControlled }) },
         getCurrentAgentWalletScope: () => active,
-        getCurrentUserAgent: () => ({ id: 'user' }),
-        document: { querySelector: () => ({ dataset: { agentId: 'user' }, querySelector: () => ({ innerHTML: '' }) }) },
-        updatePendingProposalsCount() {}, renderFirstPageForList() {}, setSectionCount() {},
         agentWalletObservations: { user: { scope: evm, contractAddress: 'contract', parcelIds: ['wallet-parcel'] } },
         agentDialogListData: null,
-        AGENT_DIALOG_PAGE_SIZES: { parcels: 50, created: 20, accepted: 20, pending: 20 },
-        setAgentDialogCache: (...args) => writes.push(args),
-        getAgentDialogCache: () => ({ scope: evm, lastFetchedAt: 1000 })
+        AGENT_DIALOG_PAGE_SIZES: { parcels: 50, created: 20 },
+        setAgentDialogCache: (...args) => writes.push(args)
     });
     vm.runInContext(functions, context);
     return { context, writes, setScope: value => { active = value; }, setUser: value => { userControlled = value; } };
@@ -93,27 +88,13 @@ describe('wallet evidence in ownership readers', () => {
         expect(h.context.getAgentOwnedParcels('user')).toEqual(['model-parcel']);
         expect(h.context.buildAgentOwnedParcelIndex().get('user')).toEqual(['model-parcel']);
     });
-    it('does not advance or overwrite a chain snapshot when initializing a local list', () => {
+    it('initializes the parcels and created lists without writing or advancing a chain snapshot', () => {
         const h = readers();
-        const result = h.context.ensureAgentDialogListState('user', ['model-parcel'], [], [], []);
+        const created = proposalLinks.locals(['design', 'other-design', 'design']);
+        const result = h.context.ensureAgentDialogListState('user', ['model-parcel'], created);
+        expect(Object.keys(result)).toEqual(['parcels', 'created']);
         expect(result.parcels.data).toEqual([{ id: 'model-parcel', number: 'model-parcel', proposalCount: 0 }]);
+        expect(result.created.data).toEqual(proposalLinks.locals(['design', 'other-design']));
         expect(h.writes).toEqual([]);
     });
-    it('updates a matching cached acceptance list without advancing its chain fetch time', () => {
-        const h = readers();
-        h.context.ensureAgentDialogListState('user', [], [], [], [proposalLinks.local('proposal')]);
-        h.context.updateAgentDialogAfterAcceptance('proposal');
-        expect(h.writes).toEqual([['user', { scope: evm, lastFetchedAt: 1000, accepted: [proposalLinks.local('proposal')], pending: [] }]]);
-    });
-    it('does not write local acceptance into another wallet scope or another agent profile', () => {
-        const h = readers();
-        h.context.ensureAgentDialogListState('user', [], [], [], [proposalLinks.local('proposal')]);
-        h.setScope({ chainId: 1, walletAddress: 'other' });
-        h.context.updateAgentDialogAfterAcceptance('proposal');
-        expect(h.writes).toEqual([]);
-        h.context.document.querySelector = () => ({ dataset: { agentId: 'other-agent' } });
-        h.context.updateAgentDialogAfterAcceptance('another-proposal');
-        expect(h.context.agentDialogListData.accepted.data).toEqual([proposalLinks.local('proposal')]);
-    });
-
 });

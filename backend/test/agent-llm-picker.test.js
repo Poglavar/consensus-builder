@@ -4,8 +4,8 @@
 // batch or spends money, and the ledger rows land in a throwaway LLM_COST_DIR.
 //
 // The property that matters most in parsePicks: anything the model invented is DROPPED, not
-// repaired. An unknown candidateId is a parcel nobody planned or measured, and posting it would be
-// a proposal over land the runner never looked at.
+// repaired. An unknown candidateId is a parcel nobody planned or measured, and publishing it would be
+// a design and an agreement over land the runner never looked at.
 import { describe, it, expect, vi } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -148,7 +148,7 @@ describe('buildPickRequests', () => {
         expect(system).toMatch(/at most 60 characters/);
     });
 
-    it('sends the candidate figures and NO geometry', () => {
+    it('sends the candidate figures, NO geometry and no offer (an agreement over the persona\'s own parcel carries no money)', () => {
         const payload = JSON.parse(requests[0].params.messages[0].content[0].text);
         expect(payload.day).toBe(DAY);
         expect(payload.candidates).toHaveLength(2);
@@ -162,9 +162,9 @@ describe('buildPickRequests', () => {
             allowedFloors: 4,
             proposedGfaM2: 900,
             gainEur: 2418801,
-            offerEur: 725640,
             score: 0.7123
         });
+        expect(payload.candidates[0]).not.toHaveProperty('offerEur');
         expect(requests[0].params.messages[0].content[0].text).not.toContain('coordinates');
         expect(requests[0].params.messages[0].content[0].text).not.toContain('massing');
     });
@@ -436,7 +436,7 @@ describe('runPickBatch through the shared layer', () => {
     });
 
     it('society choices ride the same default model', () => {
-        const option = { action: { type: 'stake', side: 'no', amount: '0.01', proposalId: 'a', proposalName: 'A', rationale: 'r' } };
+        const option = { action: { type: 'stake', side: 'no', amount: '0.01', agreementCid: 'cid-a', agreementName: 'A', rationale: 'r' } };
         const request = buildChoiceRequest({ llm: LLM, runId: 'r1', persona: { name: 'p' }, role: 'contrarian', seed: 's', options: [option] });
         expect(request.params.model).toBe(LAYER_MODEL);
         expect(request.params.output_config.effort).toBe(LAYER_EFFORT);

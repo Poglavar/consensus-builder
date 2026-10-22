@@ -83,7 +83,7 @@
     }
 
     function sourceId(proposal) {
-        const candidates = [proposal?.proposalId, proposal?.proposal_id, proposal?.chainProposalId, proposal?.hash, proposal?.id];
+        const candidates = [proposal?.proposalId, proposal?.id];
         const value = candidates.find(item => item !== undefined && item !== null && String(item));
         return value === undefined ? null : String(value);
     }
@@ -404,17 +404,15 @@
         return { errors: (result.errors || []).map(shape), warnings: (result.warnings || []).map(shape) };
     }
 
-    // A draft's source as a new design: none of the source's local, published (`published`) or
-    // minted identity, lifecycle or consent carries over.
+    // A draft's source as a new design: none of the source's local or published (`published`)
+    // identity, lifecycle or consent carries over.
     function stripImmutableProposalIdentity(proposal) {
         const output = clone(proposal || {});
         [
             ...publishedIdentityKeys(),
-            'proposalId', 'proposal_id', 'id',
-            'onchainData', 'chainId', 'contractAddress', 'metadataUri',
-            'imageURI', 'chainRef', 'lifecycleStatus', 'effectiveStatus', 'effective_status', 'mintedAt',
-            'createdAt', 'updatedAt', 'acceptedParcelIds', 'ownerAcceptances', 'ownerApprovals',
-            'ownerApprovalHistory', 'ownershipApprovals', 'executedAt', 'appliedAt', 'localPurchaseSimulation'
+            'proposalId', 'id',
+            'lifecycleStatus', 'effectiveStatus', 'effective_status',
+            'createdAt', 'updatedAt', 'executedAt', 'appliedAt', 'localPurchaseSimulation'
         ].forEach(key => delete output[key]);
         return output;
     }
@@ -447,13 +445,9 @@
             output.site = clone(draft.editorPayload.placement.site);
             output.binding = clone(fields.binding);
             output.freePlacement = true;
-            // A moved draft is a new authored effect. Never inherit a prior server preparation,
-            // approval stamp or effect/cadastre snapshot from its source record.
-            [
-                'preparation', 'preparedArtifact', 'preparedAt', 'preparationId', 'effectHash',
-                'ownershipFlow', 'cadastreFrame', 'acceptedParcelIds', 'ownerAcceptances',
-                'ownerApprovals', 'ownerApprovalHistory', 'ownershipApprovals'
-            ].forEach(key => delete output[key]);
+            // A moved draft is a new authored effect. Never inherit the ownership flow or cadastre
+            // snapshot from its source record.
+            ['ownershipFlow', 'cadastreFrame'].forEach(key => delete output[key]);
         } else if (fields.binding && typeof fields.binding === 'object') output.binding = clone(fields.binding);
         output.title = fields.name || output.title || output.name || '';
         if (fields.titleOrigin === 'generated' || fields.titleOrigin === 'user') output.titleOrigin = fields.titleOrigin;

@@ -1,10 +1,9 @@
 #!/usr/bin/env node
-// What a city's plan yields — floor area, apartments, people — read straight from the database.
-//
-// The stats dialog answers this for the plan loaded in a browser; this answers it for the plan of
-// record, over every proposal the server holds, which is the only version a report can cite. Both
-// call the SAME arithmetic (frontend/js/proposals/plan-yield.js), so a figure quoted from here and a
-// figure read off the dialog cannot drift apart.
+// What published designs yield — floor area, apartments, people — read straight from the design index
+// (consensus.design): every design of a city, or the designs one agreement links. The stats dialog
+// answers this for the designs applied in a browser; this answers it for the published ones, which a
+// report can cite by CID. Both call the SAME arithmetic (frontend/js/proposals/plan-yield.js), so a
+// figure quoted from here and a figure read off the dialog cannot drift apart.
 //
 // Counts urban rules (block/row/parcel-based generators, whose buildings carry an urbanRule) and
 // freeform structures (hand-drawn single buildings; parks/squares/lakes as open space) alike.
@@ -12,7 +11,7 @@
 // Read-only.
 //
 //   node scripts/plan-yield.js --city sibenik
-//   node scripts/plan-yield.js --city sibenik --json
+//   node scripts/plan-yield.js --agreement bafkrei… --json
 //   node scripts/plan-yield.js --city sibenik --housing-share 60 --apartment 70
 
 import { createPool, describeDatabase } from '../db/connection.cjs';
@@ -25,10 +24,10 @@ const { DEFAULTS, planYield } = require('../../frontend/js/proposals/plan-yield.
 
 function usage() {
     console.log([
-        'What a city plan yields: floor area, apartments, people — per epoch.',
+        'What published designs yield: floor area, apartments, people.',
         '',
-        '  --city NAME          City key as stored on the proposals (e.g. sibenik, zagreb). Required.',
-        '  --all                Include proposals that are not applied (default: applied only).',
+        '  --city NAME          Every design the index holds in this city (e.g. sibenik, zagreb), or',
+        '  --agreement CID      the designs this agreement links. One of the two is required.',
         '  --json               Print the raw result as JSON instead of a table.',
         '',
         'Assumptions (all optional, shown with their defaults):',
@@ -86,7 +85,7 @@ function printTable(title, buckets, columns) {
 }
 
 const COLUMNS = [
-    { head: 'proposals', get: b => int(b.proposals) },
+    { head: 'designs', get: b => int(b.proposals) },
     { head: 'buildings', get: b => int(b.buildings) },
     { head: 'footprint m²', get: b => int(b.footprintM2) },
     { head: 'GFA m²', get: b => int(b.grossFloorAreaM2) },
@@ -102,9 +101,11 @@ async function main() {
     if (flag(argv, '--help') || argv.length === 0) { usage(); process.exit(0); }
 
     const city = value(argv, '--city');
-    if (!city) { console.error('--city is required (e.g. --city sibenik)'); process.exit(1); }
+    const agreement = value(argv, '--agreement');
+    if (Boolean(city) === Boolean(agreement)) { console.error('give exactly one of --city NAME or --agreement CID'); process.exit(1); }
 
-    const appliedOnly = !flag(argv, '--all');
+    // Published designs have no applied state on the server: every one counts.
+    const appliedOnly = false;
     const asJson = flag(argv, '--json');
 
     const pct = name => {
@@ -123,28 +124,30 @@ async function main() {
 
     const pool = createPool();
     try {
-        if (!asJson) log(`database: ${describeDatabase().database} · city: ${city} · ${appliedOnly ? 'applied only' : 'all proposals'} (read-only)`);
+        if (!asJson) log(`database: ${describeDatabase().database} · ${city ? `city: ${city}` : `agreement: ${agreement}`} (read-only)`);
 
-        const { rows } = await pool.query(
-            `SELECT id, proposal_id, name, applied, epoch_year, building_proposal, structure_proposal
-               FROM public.proposal
-              WHERE city = $1
-              ORDER BY created_at`,
-            [city]
-        );
+        const { rows } = city
+            ? await pool.query('SELECT cid, title, content FROM consensus.design WHERE city = $1 ORDER BY created_at, cid', [city])
+            : await pool.query(`SELECT d.cid, d.title, d.content
+                                  FROM consensus.agreement a
+                                  JOIN LATERAL unnest(a.design_cids) WITH ORDINALITY AS linked(cid, position) ON true
+                                  JOIN consensus.design d ON d.cid = linked.cid
+                                 WHERE a.cid = $1
+                                 ORDER BY linked.position`, [agreement]);
         if (!rows.length) {
-            console.error(`No proposals found for city "${city}".`);
+            console.error(city ? `No designs indexed for city "${city}".` : `No indexed designs for agreement ${agreement}.`);
             process.exit(1);
         }
+        const designs = rows.map(row => ({ ...row.content, id: row.cid, proposalId: row.cid, name: row.title }));
 
-        const result = planYield(rows, assumptions);
+        const result = planYield(designs, assumptions);
 
         if (asJson) {
-            console.log(JSON.stringify({ city, appliedOnly, ...result }, null, 2));
+            console.log(JSON.stringify({ city, agreement, ...result }, null, 2));
             return;
         }
 
-        log(`${rows.length} proposals on record, ${result.total.proposals} counted`);
+        log(`${rows.length} designs indexed, ${result.total.proposals} counted`);
 
         printTable('ADDED per period', [...result.byEpoch, result.unassigned], COLUMNS);
         if (result.cumulative.length) {
@@ -161,7 +164,7 @@ async function main() {
             `${result.assumptions.m2PerJob} m²/job`,
             `fallback storey ${result.assumptions.floorHeightM} m`
         ].join(' · '));
-        console.log(`rule-driven proposals: ${result.total.ruleProposals} · freeform: ${result.total.freeformProposals} · open spaces: ${result.total.openSpaces}`);
+        console.log(`rule-driven designs: ${result.total.ruleProposals} · freeform: ${result.total.freeformProposals} · open spaces: ${result.total.openSpaces}`);
 
         // A building whose height nothing states contributes footprint but NO floor area. Saying so
         // is the difference between a total that is low and a total that is quietly wrong.
@@ -169,7 +172,7 @@ async function main() {
             console.log(`WARNING: ${result.total.unmeasuredBuildings} of ${result.total.buildings} buildings state no height — their floor area is NOT in these totals.`);
         }
         if (!result.byEpoch.length) {
-            console.log('NOTE: no proposal carries an epoch year, so there is nothing to split by period yet.');
+            console.log('NOTE: no design carries an epoch year, so there is nothing to split by period.');
         }
     } finally {
         await pool.end();

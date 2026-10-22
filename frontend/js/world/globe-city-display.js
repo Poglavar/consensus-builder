@@ -1,6 +1,6 @@
 // Pure, screen-space city detail for the globe: population priority, bounded dots and labels.
 // The renderer projects this catalog; neither the DOM budget nor point budget grows with it.
-// A city with published proposals (its `count`, from GET /activity/cities) outranks a silent one:
+// A city with proposed agreements (its `count`, from GET /activity/cities) outranks a silent one:
 // it is drawn as a painted dot at every scale and carries the count on its label wherever the
 // label fits, so the globe shows where there is something to bet on.
 (function (root, factory) {
@@ -17,7 +17,7 @@
         && city.population2025 > 0 ? city.population2025 : null;
     const wholeCount = value => (typeof value === 'number' && Number.isFinite(value) && value > 0 ? Math.floor(value) : 0);
 
-    // Live cities first, then the ones with proposals, then population; a stable key breaks ties.
+    // Live cities first, then the ones with agreements, then population; a stable key breaks ties.
     function compareRanked(a, b) {
         return Number(b.live) - Number(a.live) || wholeCount(b.count) - wholeCount(a.count)
             || (b.population || 0) - (a.population || 0) || a.key.localeCompare(b.key);
@@ -31,14 +31,14 @@
             .sort(compareRanked);
     }
 
-    // Stamp each live entry with its city's proposal count ([{ id, proposals }], the payload of
+    // Stamp each live entry with its city's agreement count ([{ id, agreements }], the payload of
     // GET /activity/cities) and re-rank the entries in place, so the renderer keeps the objects its
     // label pool already points at. Research points never carry a count.
     function applyCounts(entries, cities) {
         const counts = new Map();
         (Array.isArray(cities) ? cities : []).forEach(city => {
             const id = typeof city?.id === 'string' ? city.id : '';
-            if (id) counts.set(id, wholeCount(city.proposals));
+            if (id) counts.set(id, wholeCount(city.agreements));
         });
         entries.forEach(entry => { entry.count = entry.live ? counts.get(entry.city.id) || 0 : 0; });
         return entries.sort(compareRanked);
@@ -103,7 +103,7 @@
             if (markers.length >= detail.markerLimit) break;
         }
 
-        // A label must not hide a painted dot: the dot is the only sign of that city's proposals
+        // A label must not hide a painted dot: the dot is the only sign of that city's agreements
         // when its own label does not fit. A label first looks for a side clear of every other
         // painted dot; failing that it may cover a dot ranked below its own city, never one above.
         const paintedDots = markers.filter(marker => marker.painted)
@@ -116,7 +116,7 @@
             const { entry, x, y, labelWidth: w, labelHeight: h } = marker;
             if (!entry.live || !(w > 0 && h > 0)) continue;
             // The population gate decides which silent cities earn a label at this scale; a city
-            // with proposals is what the globe is for, so it competes for a label at every scale.
+            // with agreements is what the globe is for, so it competes for a label at every scale.
             if (!pinned.has(entry.key) && !marker.painted && (entry.population === null
                 ? !detail.showUnknownLabels : entry.population < detail.minimumPopulation)) continue;
             const positions = [

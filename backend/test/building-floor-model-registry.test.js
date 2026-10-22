@@ -5,7 +5,7 @@ import * as turf from '@turf/turf';
 import request from 'supertest';
 import { createRouteApp } from './helpers/create-route-app.js';
 import { setupBuildingFloorModelsRoute } from '../routes/building-floor-models.js';
-import { stripLocalProposalState } from '../proposals/serializer.js';
+import { stripLocalProposalState } from '../proposals/archive-state.js';
 import {
     canonicalJson, fingerprint, prepareFloorModel, saveFloorModel, buildingSourceId,
     fetchFloorModels, attachProposalFloorModels, attachNearbyFloorModels, nativeFloorModelSource

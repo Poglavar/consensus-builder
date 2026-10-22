@@ -9,6 +9,7 @@ import { oneProposalByIdentifierClause, partitionProposalIdentifiers, indexPropo
 import { canonicalizeLifecycleStatus } from '../proposals/lifecycle.js';
 import { projectProposalLifecycleEvidence, serializeProposalRow, isInvalidRecordError } from '../proposals/serializer.js';
 import { attachProposalFloorModels } from '../buildings/floor-models.js';
+import { normalizeCityCode } from '../utils/city-code.js';
 
 const require = createRequire(import.meta.url);
 const proposalDesignGoals = require('../../frontend/js/proposals/design-goals.js');
@@ -20,30 +21,6 @@ const MAX_PROPOSAL_ID_LENGTH = 255;
 // call and falls back to per-proposal checks when the list comes back short.
 export const MAX_SUMMARY_LIMIT = 1000;
 export const MAX_PARCEL_PROPOSALS_LIMIT = 200;
-
-// The frontend sends short city codes (frontend/js/city-config.js CITY_QUERY_MAP) but proposals are
-// stored under the full city id. Every code the frontend can produce must map, or that city's
-// proposals become invisible: `?city=ny` used to fall through unmapped and never match `new_york`.
-const CITY_CODE_TO_ID = {
-    zg: 'zagreb',
-    zgb: 'zagreb',
-    st: 'split',
-    si: 'sibenik',
-    bg: 'belgrade',
-    ba: 'buenos_aires',
-    caba: 'buenos_aires',
-    'ar-ba': 'buenos_aires',
-    lj: 'ljubljana',
-    co: 'colorado',
-    ny: 'new_york'
-};
-
-export function normalizeCityCode(code) {
-    const raw = (code || '').toString().trim().toLowerCase();
-    if (!raw) return null;
-    // Already a full city id (or an unknown value) — pass it through unchanged.
-    return CITY_CODE_TO_ID[raw] || raw;
-}
 
 function validateIdentifierField(fieldLabel) {
     return validators.custom((value) => {

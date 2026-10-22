@@ -1,77 +1,65 @@
-// Turns a planned candidate plus the model's pick into the POST body for /agent/proposals. Pure:
-// turf is injected and nothing here talks to the network. The shape mirrors what the app itself
-// stores for a single freeform building (local proposal 660), so an agent's proposal loads, renders
-// and measures in the UI exactly like a human's.
+// Turns a planned candidate plus the controller's pick into the agent's recipe: the local design record
+// of a building on its parcel (published as design/v1 by agreement-objects.js designObject: no terms,
+// kind or cadastre ids; the server derives the parcels its footprint binds) and the terms of the
+// binding owners' agreement the agent puts that design up under (title, deadline days, escrow lamports
+// from the persona's `agreement` block). Pure: nothing here reads the clock or the network; the build
+// time is passed in and checkpointed by the runner, so a rerun publishes the same CIDs.
 //
-// `author` is deliberately ABSENT: the paid route binds it to the wallet the facilitator verified,
-// and a body that names a different author is refused before any USDC moves.
+// The goal is `buildings` with the single-building typology: the massing stands on its parcel as
+// content, so applying the design forms no new pieces and the agreement's outputs are the input
+// parcels themselves (a freeform `single` building would carve its footprint into a parcel of its own).
+
+export const DEFAULT_AGREEMENT_TERMS = Object.freeze({ deadlineDays: 7, lamports: '0' });
+const MAX_DEADLINE_DAYS = 365;
 
 /**
- * @param {Object} args
- * @param {Object} args.candidate  one entry from planner.js planCandidates()
- * @param {Object} args.pick       { proposalId, name, rationale } — the id is the orchestrator's
- * @param {Object} args.persona    the persona that proposed it
- * @param {string} args.runId      the run this belongs to, kept on the record for the ledger
- * @param {string} args.city       city code, e.g. 'zagreb'
- * @param {Object} [args.onchain]  { transactionHash, proposalId (the PDA), chainId, contractAddress }
- * @param {Object} args.turf       injected turf, for the bounds
+ * The persona's agreement terms: { deadlineDays, lamports } with lamports a whole-number string.
+ * Throws for a value that is not a positive number of days or a whole number of lamports.
  */
-export function buildProposalRecord({ candidate, pick, persona, runId, city, onchain = null, turf }) {
-    if (!candidate || !candidate.massing || !candidate.massing.geometry) {
-        throw new Error('buildProposalRecord: candidate.massing must be a geometry-bearing feature.');
+export function agreementTerms(persona = {}) {
+    const configured = persona.agreement || {};
+    const deadlineDays = configured.deadlineDays ?? DEFAULT_AGREEMENT_TERMS.deadlineDays;
+    if (typeof deadlineDays !== 'number' || !Number.isFinite(deadlineDays) || deadlineDays <= 0 || deadlineDays > MAX_DEADLINE_DAYS) {
+        throw new Error(`${persona.name || 'persona'} agreement.deadlineDays must be a number of days in (0, ${MAX_DEADLINE_DAYS}]`);
     }
-    if (!pick || !pick.proposalId) {
-        throw new Error('buildProposalRecord: pick.proposalId is set by the orchestrator and is required.');
-    }
-    if (!turf || typeof turf.bbox !== 'function') {
-        throw new Error('buildProposalRecord: turf must be injected (bounds come from turf.bbox).');
-    }
+    const lamports = String(configured.lamports ?? DEFAULT_AGREEMENT_TERMS.lamports).trim();
+    if (!/^\d+$/.test(lamports)) throw new Error(`${persona.name || 'persona'} agreement.lamports must be a whole number of lamports`);
+    return { deadlineDays, lamports };
+}
 
-    const personaName = persona && persona.name ? String(persona.name) : 'agent';
-    const massingProps = candidate.massing.properties || {};
-    const height = massingProps.height ?? null;
-    const floors = massingProps.floors ?? null;
+/**
+ * The local design record of one pick: a building massing on the candidate's parcel.
+ * @param {Object} args
+ * @param {Object} args.candidate  one entry from planner.js planCandidates() or housing-policy.js
+ * @param {Object} args.pick       { name, rationale } from the controller
+ * @param {Object} args.persona    the persona that proposes it (its name is the author)
+ * @param {string} args.city       city code of the area the candidate came from
+ * @param {string} args.authoredAt ISO time the design was built (checkpointed by the runner)
+ */
+export function buildDesignRecord({ candidate, pick, persona, city, authoredAt }) {
+    if (!candidate?.massing?.geometry) throw new Error('buildDesignRecord: candidate.massing must be a geometry-bearing feature');
+    if (!pick?.name) throw new Error('buildDesignRecord: the pick needs a name');
+    if (!persona?.name) throw new Error('buildDesignRecord: persona.name is required');
+    if (!authoredAt || !Number.isFinite(Date.parse(authoredAt))) throw new Error('buildDesignRecord: authoredAt must be an ISO time');
+    const massing = candidate.massing.properties || {};
+    const height = massing.height ?? null;
+    const floors = massing.floors ?? null;
     const blockName = `Parcel ${candidate.parcelId}`;
-    const name = pick.name;
-    const rationale = pick.rationale;
-
     const building = {
         type: 'Feature',
         geometry: candidate.massing.geometry,
-        properties: {
-            type: 'proposedBuildingSingle',
-            block: blockName,
-            height,
-            floors,
-            title: name,
-            author: personaName,
-            rotation: 0
-        }
+        properties: { type: 'proposedBuildingSingle', block: blockName, height, floors, title: pick.name, author: persona.name, rotation: 0 }
     };
-
-    const record = {
-        proposalId: pick.proposalId,
-        city,
-        type: 'building',
-        goal: 'single',
-        typologyType: 'single',
-        primaryType: 'Urban Rule',
-        name,
-        title: name,
-        description: rationale,
-        agent: {
-            persona: personaName,
-            rationale,
-            run_id: runId,
-            ...(persona?.controller ? { controller: persona.controller } : {}),
-            ...(candidate.housing ? {housing:candidate.housing} : {})
-        },
-        cadastreParcelIds: [candidate.parcelId],
-        offer: candidate.offerEur,
-        offerCurrency: 'EUR', // the offer is derived from the € gain at priceEurPerM2; market stakes are the USDC side,
-        isConditional: true,
-        disbursementMode: 'conditional',
-        facets: { landUse: 'single', parcels: 'as-is', ownership: candidate.housing ? 'no-change' : 'to-me' },
+    return {
+        goal: 'buildings',
+        title: pick.name,
+        description: pick.rationale || null,
+        author: persona.name,
+        city: city || null,
+        site: null,
+        toleranceM: null,
+        origin: null,
+        createdAt: authoredAt,
         buildingProposal: {
             blockName,
             typologyType: 'single',
@@ -81,35 +69,20 @@ export function buildProposalRecord({ candidate, pick, persona, runId, city, onc
                 rotation: 0,
                 typology: 'single',
                 // The rule the envelope was derived from, so the massing can be re-derived from the
-                // record rather than only re-read off it.
+                // design rather than only re-read off it.
                 rule: candidate.normalizedRule ?? null
             }
         },
-        geometry: { buildings: [building] },
-        bounds: turf.bbox(candidate.massing)
+        geometry: { buildings: [building] }
     };
+}
 
-    // Minted: the fields frontend/js/proposals/chain.js reads. isProposalMinted() is satisfied by
-    // isMinted alone, but getProposalNftInfo() needs contract + tokenId to build the explorer link,
-    // and it reads `nft` first and `onchain` second — so both are written, from one source.
-    if (onchain) {
-        if (!onchain.proposalId || !onchain.transactionHash) {
-            throw new Error('buildProposalRecord: onchain needs proposalId (the PDA) and transactionHash — a minted record without them would point nowhere');
-        }
-        record.onchain = {
-            transactionHash: onchain.transactionHash ?? null,
-            proposalId: onchain.proposalId ?? null,
-            chainId: onchain.chainId ?? null,
-            contractAddress: onchain.contractAddress ?? null
-        };
-        record.nft = {
-            chain: onchain.chainId ?? null,
-            contract: onchain.contractAddress ?? null,
-            tokenId: onchain.proposalId ?? null
-        };
-        record.isMinted = true;
-        record.tokenId = onchain.proposalId ?? null;
-    }
-
-    return record;
+/**
+ * The agent's recipe for one pick: { design: local design record, agreement: { title, deadlineDays, lamports } }.
+ */
+export function buildRecipe({ candidate, pick, persona, city, authoredAt }) {
+    return {
+        design: buildDesignRecord({ candidate, pick, persona, city, authoredAt }),
+        agreement: { title: pick.name, ...agreementTerms(persona) }
+    };
 }

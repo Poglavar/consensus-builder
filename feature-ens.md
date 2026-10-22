@@ -353,7 +353,7 @@ The L1 resolver + contract naming (mainnet) and the optional Durin phase remain.
 | CCIP-Read gateway | `backend/ens/gateway.js`, `backend/routes/ens.js`; wired in `backend/index.js` | `GET /ens/{sender}/{data}.json`; signs ENS `SignatureVerifier` responses. `text(url/description/geo/avatar)`, `addr`, apex. 11 tests incl. recovered-signer checks. Dark (503) until `ENS_GATEWAY_SIGNER_KEY` set. |
 | Mapping table | `backend/ens/parcel-ens-ddl.sql` | `parcel_ens(slug PK, parcel_id, city_code, …)`; geo/avatar/token columns nullable for later enrichment. |
 | Populate | `backend/ens/populate-parcel-ens.js` | CLI, restartable, progress/ETA. NYC source live (42,120 rows, 0 collisions). Add cities via the `CITY_SOURCES` registry. |
-| In-app name display | `frontend/js/ens/ens-name.js`; `frontend/js/parcels/ui/parcel-panel.js`; `frontend/js/minted-proposals.js`; `frontend/js/proposals.js`; `.ens-name-*` in `frontend/css/utilities.css` | Compact ENS line in the parcel info panel (`<slug>.parcels.…`), on minted-proposal cards, and in the proposal details panel (`<id>.proposals.…`, minted only — self-gates via `proposalEnsName`): the "ENS ↗" chip links to `app.ens.domains/<name>` (new tab), the name value is click-to-copy. Value ellipsis-truncates (`max-width:100%`) so it never overflows tight 300–400px panels. Helpers mirror the backend slug. |
+| In-app name display | `frontend/js/ens/ens-name.js`; `frontend/js/parcels/ui/parcel-panel.js`; `.ens-name-*` in `frontend/css/utilities.css` | Compact ENS line in the parcel info panel (`<slug>.parcels.…`): the "ENS ↗" chip links to `app.ens.domains/<name>` (new tab), the name value is click-to-copy. Value ellipsis-truncates (`max-width:100%`) so it never overflows tight 300–400px panels. Helpers mirror the backend slug. Proposals have no in-app line any more: designs are not minted, so the minted-proposal cards and `proposalEnsName` went in M3; a published agreement or design resolves as `<cid>.proposals.…` through the gateway ("Proposals namespace" below). |
 
 Dependency added: **`ethers@^6`** in `backend/`.
 
@@ -409,10 +409,11 @@ prod `backend/.env`).
   (e.g. publicnode) — the tx still mines; verify the CREATE address on-chain. `hardhat.config.ts`
   mainnet `url` now defaults to the live Alchemy host and honors `MAINNET_RPC_URL`.
 
-**Proposals namespace.** The gateway also serves **`<id>.proposals.urbangametheory.eth`** for
-**minted** proposals (numeric on-chain ids, matching the existing `/proposals/<id>` deep link):
-`url` → `/proposals/<id>`, `description`/`avatar` enriched from the `proposal` table (singular) when a
-row exists, else a numeric id still resolves to its deep link. Local `p-…` drafts don't resolve.
+**Proposals namespace.** The gateway also serves **`<cid>.proposals.urbangametheory.eth`** for
+published agreements and designs (plan-design-agreement.md: designs are not minted since M3; the
+binding agreement is the minted record). A CID label resolves to the agreement with that CID, else to
+the design: `url` → `/agreements/<cid>` or `/designs/<cid>`, `description` → its title, `avatar` → its
+screenshot. Any other label (the former numeric on-chain ids, local drafts) names nothing.
 The gateway is namespace-driven (`backend/routes/ens.js` defines parcels + proposals), so both are
 served by the same resolver contract.
 
@@ -421,13 +422,11 @@ resolvers both point at the active hybrid OffchainResolver `0x72684C772d8Db1D8A6
 (set by the name owner via `scripts/ens-set-subname-resolvers.mjs`) — so the on-chain apex records
 and the gateway-served children both resolve. Verified end-to-end from a mainnet client.
 
-**Named plans (done & live).** Globally-unique, mutable names for a set of proposals, resolvable as
-`<name>.proposals.urbangametheory.eth` → `/proposals/<ids>`:
-- `ens_plan` table + `/plans` CRUD (`backend/routes/ens-plans.js`): POST creates (returns a one-time
-  `editToken`), PUT updates with the token (mutable, no wallet), GET fetches. Numeric/hyphen labels
-  (`1`, `1-2-3`) resolve to proposal id(s); a name slug resolves to the plan's ids.
-- UI: "name this plan" in the **Share entire plan** modal (`frontend/js/proposals.js`).
-- Verified live: `harbor-redevelopment.proposals.urbangametheory.eth` → `…/proposals/1`.
+**Named plans (removed, M2).** Named plans were dropped in M2 (plan-design-agreement.md: the agreement
+is the container of designs): the `ens_plan` table, the `/plans` routes (`backend/routes/ens-plans.js`)
+and the "name this plan" control are gone, and so are the numeric and named labels they resolved
+(`1`, `1-2-3`, `harbor-redevelopment.proposals.urbangametheory.eth`). The proposals namespace resolves
+CID labels only (above).
 
 **Contract naming — Option A (done & live, fully on-chain).** Dedicated names via the ENS public
 resolver (no gateway), `scripts/ens-set-contract-names.mjs`:
@@ -436,11 +435,12 @@ resolver (no gateway), `scripts/ens-set-contract-names.mjs`:
 - `addr` is coinType 60 (an identifier; the contracts live on Base Sepolia — ENSIP-11 per-chain
   coinType is a possible refinement). Resolve via standard `resolveName`.
 
-**Deployed:** backend `2026-nyc-ens` on `do` (gateway + `/plans`, `parcel_ens` + `ens_plan` on prod
-DB); frontend on krpa (deep-link route, zoom fix, named-plan UI, and the in-app ENS-name display on
-the parcel panel + minted-proposal cards). Parcel + proposal + plan names all verified resolving
-end-to-end on mainnet, and shown (copyable) in the UI. The share-modal strings are localized
-(en/hr/sr/es).
+**Deployed (first release):** backend `2026-nyc-ens` on `do` (gateway, with `parcel_ens` on the prod
+DB); frontend on krpa (deep-link route, zoom fix and the in-app ENS-name display on the parcel panel).
+Parcel and proposal names were verified resolving end-to-end on mainnet and shown (copyable) in the
+UI. That release also shipped named plans (`/plans`, `ens_plan`, the named-plan UI) and the
+minted-proposal cards' names; named plans were removed in M2 and minted proposals in M3
+(plan-design-agreement.md), so neither is live any more.
 
-**Later:** `ownerOf` `addr` records (confirm ParcelNFT chain); populate other cities; named-plan
-abuse controls; optional Durin L2 NFTs.
+**Later:** `ownerOf` `addr` records (confirm ParcelNFT chain); populate other cities; optional Durin
+L2 NFTs.

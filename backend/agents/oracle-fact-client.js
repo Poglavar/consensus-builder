@@ -1,6 +1,7 @@
-// Minimal outside-agent client for the paid verified-fact endpoint. Unlike proposal creation this
-// is a read, so retries need no payment identifier: the x402 client creates a fresh payment only
-// when it receives a fresh 402 challenge.
+// Minimal outside-agent client for the paid verified-fact endpoint (GET /agent/oracle/facts). The
+// subject is an agreement's chain account; omitted, the latest fact is bought. It is a read, so
+// retries need no payment identifier: the x402 client creates a fresh payment only when it receives a
+// fresh 402 challenge.
 
 import { createKeyPairSignerFromBytes } from '@solana/kit';
 import { wrapFetchWithPayment, x402Client } from '@x402/fetch';
@@ -17,10 +18,10 @@ function decodeExtensionResponsesHeader(value) {
     }
 }
 
-export function oracleFactUrl(baseUrl, proposalAccount, marketAccount = null) {
+export function oracleFactUrl(baseUrl, subject, marketAccount = null) {
     if (!baseUrl) throw new Error('baseUrl is required');
     const url = new URL('/agent/oracle/facts', baseUrl);
-    if (proposalAccount) url.searchParams.set('subject', proposalAccount);
+    if (subject) url.searchParams.set('subject', subject);
     if (marketAccount) url.searchParams.set('market', marketAccount);
     return url.toString();
 }
@@ -45,8 +46,8 @@ async function parsedResponse(response) {
     };
 }
 
-export async function fetchOracleFactChallenge({ baseUrl, proposalAccount, marketAccount, fetchImpl } = {}) {
-    const target = oracleFactUrl(baseUrl, proposalAccount, marketAccount);
+export async function fetchOracleFactChallenge({ baseUrl, subject, marketAccount, fetchImpl } = {}) {
+    const target = oracleFactUrl(baseUrl, subject, marketAccount);
     const response = await fetchOf(fetchImpl)(target, { headers: { accept: 'application/json' } });
     if (response.status !== 402) {
         const text = await response.text().catch(() => '<unreadable body>');
@@ -72,9 +73,9 @@ export async function createOracleFactClient({ secretKey, rpcUrl, fetchImpl } = 
     };
 }
 
-export async function buyOracleFact({ baseUrl, proposalAccount, marketAccount, paidFetch } = {}) {
+export async function buyOracleFact({ baseUrl, subject, marketAccount, paidFetch } = {}) {
     if (typeof paidFetch !== 'function') throw new Error('paidFetch is required');
-    const response = await paidFetch(oracleFactUrl(baseUrl, proposalAccount, marketAccount), {
+    const response = await paidFetch(oracleFactUrl(baseUrl, subject, marketAccount), {
         headers: { accept: 'application/json' }
     });
     return parsedResponse(response);

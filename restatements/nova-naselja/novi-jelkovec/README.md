@@ -2,7 +2,7 @@
 
 # Novi Jelkovec
 
-Named local plan: `/proposals/novi-jelkovec?city=zagreb`
+Published as designs plus one agreement (plan key `nova-naselja/novi-jelkovec`) by `backend/scripts/publish-restatement-archives.mjs`; see [the collection README](../README.md#publishing-designs-and-agreements).
 
 This restatement follows the official `DPU stambenog naselja na lokaciji Sopnica - Jelkovec`, adopted in 2003 and amended in 2007, 2016 and 2020. The City classifies the 39.53 ha plan as fully realized and documents 2,722 apartments and 8,166 planned residents. The app name uses today's `Novi Jelkovec`; source metadata retains the legal plan name.
 

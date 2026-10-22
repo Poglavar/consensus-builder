@@ -337,11 +337,7 @@
         const allParcelProposals = storage && typeof storage.getProposalsForParcel === 'function'
             ? storage.getProposalsForParcel(parcelKey)
             : [];
-        // Canton proposals are shown in the dedicated "Canton proposals" section, not
-        // the EVM list — exclude their local copies here to avoid duplication.
-        const parcelProposals = (global.CantonMode && global.CantonMode.isCantonProposal)
-            ? allParcelProposals.filter((p) => !global.CantonMode.isCantonProposal(p))
-            : allParcelProposals.slice();
+        const parcelProposals = allParcelProposals.slice();
         // The live fabric is the only authority that projects this connected parcel back to
         // cadastral ground. proposalStorage performs the same flat projection when it builds the
         // list above; geometry intersections and child-id scans are deliberately not recovery paths.
@@ -488,7 +484,6 @@
                 const isStructureProposal = (!isRoadProposal && !isBuildingProposal) && (['park', 'square', 'lake'].includes(goalKey) || !!proposal.structureProposal);
                 const mapApplied = (typeof global.isProposalApplied === 'function') ? global.isProposalApplied(proposal) : false;
 
-                const hasAccepted = proposal.acceptedParcelIds && proposal.acceptedParcelIds.includes(parcelId.toString());
                 // One-hop output provenance: which proposal produced this disposable live piece.
                 // It is presentation metadata, not a proposal dependency or ancestry edge.
                 const isParcelProducer = parcelProposals.length > 1 && (
@@ -526,32 +521,6 @@
                     }, 'Takes {{area}} m² of this parcel → {{destination}}')}</div>`;
                 })() : '';
 
-                // Acceptance as compact bars sharing the ID/Author rows (grey track filling green);
-                // exact figures live in the proposal details, keeping list items two rows shorter.
-                const acceptanceMiniBar = (accepted, total, title) => {
-                    if (!total) return '';
-                    const percent = Math.max(0, Math.min(100, Math.round((accepted / total) * 100)));
-                    return `<span class="proposal-item-acceptbar" title="${title}: ${accepted}/${total}"><span class="proposal-item-acceptbar-fill" style="width:${percent}%"></span><span class="proposal-item-acceptbar-text">${accepted}/${total}</span></span>`;
-                };
-                const parcelIdsForAcceptance = Array.isArray(proposal.cadastreParcelIds) ? proposal.cadastreParcelIds : [];
-                const acceptedParcelSet = new Set((proposal.acceptedParcelIds || []).map(value => String(value)));
-                const acceptedParcelCount = parcelIdsForAcceptance.filter(value => acceptedParcelSet.has(String(value))).length;
-                const parcelAcceptanceBar = acceptanceMiniBar(
-                    acceptedParcelCount,
-                    parcelIdsForAcceptance.length,
-                    tParcel('panel.parcel.acceptance.parcelTitle', {}, 'Parcel acceptance')
-                );
-                const ownerSummary = typeof global.buildProposalOwnerAcceptanceSummary === 'function'
-                    ? global.buildProposalOwnerAcceptanceSummary(proposal)
-                    : null;
-                const ownerAcceptanceBar = (ownerSummary && ownerSummary.totalOwners > 0)
-                    ? acceptanceMiniBar(
-                        ownerSummary.acceptedOwners || 0,
-                        ownerSummary.totalOwners,
-                        tParcel('panel.parcel.acceptance.ownerTitle', {}, 'Owner acceptance')
-                    )
-                    : '';
-
                 const proposalTypeKey = (typeof global.getProposalDisplayType === 'function') ? global.getProposalDisplayType(proposal) : (goalKey || 'other');
                 const proposalTypeLabel = tParcel(
                     `modal.roadWidth.proposalList.typeLabels.${proposalTypeKey}`,
@@ -562,7 +531,6 @@
                     proposal.title,
                     proposal.name,
                     proposal.proposalName,
-                    proposal.metadata && (proposal.metadata.title || proposal.metadata.name || proposal.metadata.properties?.title || proposal.metadata.properties?.name),
                     proposal.structureProposal && proposal.structureProposal.name,
                     proposal.buildingProposal && proposal.buildingProposal.name,
                     proposal.roadProposal && proposal.roadProposal.name,
@@ -592,11 +560,9 @@
                         ${takesLine}
                         <div class="proposal-item-details">
                             ${proposalIdText}
-                            ${parcelAcceptanceBar}
                         </div>
                         <div class="proposal-item-details">
                             <span class="proposal-item-label" data-i18n-key="panel.parcel.proposalsSection.details.author">${proposalAuthorLabel}</span> <span class="proposal-author-value">${authorValue}</span>
-                            ${ownerAcceptanceBar}
                         </div>
                     </div>
                 `;
@@ -729,7 +695,6 @@
         const proposalsContent = `
         ${parcelProposals.length > 0 ? proposalsHtml : proposalsEmptyHtml}
         <div class="parcel-published-proposals"></div>
-        <div id="canton-proposals-content" class="canton-card-host"></div>
     `;
 
         const titleElement = global.document.getElementById('parcel-info-title');
@@ -970,9 +935,6 @@
         if (typeof renderParcelProposalActions === 'function') {
             renderParcelProposalActions(parcelId);
         }
-        // Canton proposals for this parcel (count is public; details gated to the
-        // current Canton identity). Fire-and-forget — populates #canton-proposals-content.
-        try { if (global.CantonParcel) global.CantonParcel.render(parcelId); } catch (_) { }
 
         applyParcelTranslations(global.document.getElementById('parcel-info-panel'));
 

@@ -246,7 +246,7 @@
             say('map edit lock held', call(() => global.__mapEditLock && global.__mapEditLock.isHeld()) === true),
             say('structure geometry editor', call(global.isStructureGeometryEditorActive) === true),
             say('area monitor paint', call(() => global.AreaMonitorPaint && global.AreaMonitorPaint.isActive()) === true),
-            say('sharePlanMode', !!global.sharePlanMode),
+            say('map pick mode', !!global.MapPick?.active()),
             say('proposalListBrowseMode', !!global.proposalListBrowseMode)
         ];
         const closed = gates.filter(gate => gate.value === true);

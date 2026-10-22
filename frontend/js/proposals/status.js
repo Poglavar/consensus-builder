@@ -4,7 +4,8 @@
 // the axes can never be confused again:
 //
 //   getLifecycleStatus(p) -> 'Active' | 'Executed' | 'Cancelled' | 'Expired' | 'draft' | 'Unknown'
-//       The marketplace / on-chain lifecycle (mirrors the Solidity/Solana ProposalStatus enum).
+//       The record's lifecycle (the order of the former proposal programs' status enum). Designs
+//       are not minted; an agreement's chain status is its account's (plan-design-agreement.md, M3).
 //
 //   isApplied(p, sub)     -> boolean
 //       Whether this proposal's geometry is stamped onto THIS browser's map. The root boolean is
@@ -87,14 +88,12 @@ function setProposalApplied(proposal, applied, options = {}) {
     return proposal.applied;
 }
 
-// Server/chain/share payloads must not carry local visibility, purchase simulation or unsigned consent.
+// Server/chain/share payloads must not carry local visibility or purchase simulation.
 function stripProposalAppliedState(proposal) {
     if (!proposal || typeof proposal !== 'object') return proposal;
     delete proposal.applied;
     delete proposal.appliedAt;
     delete proposal.localPurchaseSimulation;
-    delete proposal.acceptedParcelIds;
-    delete proposal.ownerAcceptances;
     STATUS_SUB_KEYS.forEach(key => {
         const sub = proposal[key];
         if (!sub || typeof sub !== 'object') return;
@@ -105,12 +104,7 @@ function stripProposalAppliedState(proposal) {
 }
 
 function parkProposalForImport(proposal) {
-    if (proposal) {
-        delete proposal.localPurchaseSimulation;
-        // A remote browser's tally is not a decision made in this browser or a signed receipt.
-        proposal.acceptedParcelIds = [];
-        proposal.ownerAcceptances = {};
-    }
+    if (proposal) delete proposal.localPurchaseSimulation;
     normalizeProposalStatusAxes(proposal);
     setProposalApplied(proposal, false, { stamp: false });
     return proposal;

@@ -35,8 +35,8 @@ describe('isEntrypoint', () => {
         }
     });
 
-    it('is the guard the society and lens-member runners use', () => {
-        for (const file of ['agents/society-run.mjs', 'agents/lens-member-run.mjs']) {
+    it('is the guard the proposer, society and lens-member runners use', () => {
+        for (const file of ['agents/run.mjs', 'agents/society-run.mjs', 'agents/lens-member-run.mjs']) {
             const source = fs.readFileSync(file, 'utf8');
             expect(source).toContain('if (isEntrypoint(import.meta.url)) {');
             expect(source).not.toContain('file://${process.argv[1]}');

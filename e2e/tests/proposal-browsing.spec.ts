@@ -3,7 +3,11 @@ import { test, expect } from '../helpers/fixtures';
 import { clickMapPoint, openCity, openParcel, PARCEL_GEOMETRY, PARCEL_ID, proposalState, showProposal } from '../helpers/runtime';
 
 const SOLANA_WALLET = '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT';
-const PROPOSAL_ACCOUNT = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
+const ANCHOR_ACCOUNT = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
+const AGREEMENT_ACCOUNT = 'Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR';
+const LENS_MEMBER = 'GmaDrppBC7P5ARKV8g3djiwP89vz1jLK23V2GBjuAEGB';
+const ATTESTATION = 'F25s3DdjXdCxYBhh2z8FBusVEMT4b9bGNFVKJi3wFoF4';
+const AGREEMENT_CID = `bafkrei${'a'.repeat(52)}`;
 
 async function expandProposalDetails(page: import('@playwright/test').Page): Promise<void> {
   const expand = page.locator('#proposal-details-panel').getByRole('button', { name: 'Expand', exact: true });
@@ -44,10 +48,8 @@ test.describe('Proposal browsing @features', () => {
     await expect(list.locator('.proposal-list-item').first().locator('.proposal-list-title')).toHaveText('North park plan');
     await expect(list.locator('.proposal-list-item').last().locator('.proposal-list-title')).toHaveText('South park plan');
 
-    await list.locator('.proposal-source-btn[data-source="blockchain"]').click();
-    await expect(list.locator('.proposal-source-btn[data-source="blockchain"]')).toHaveAttribute('aria-pressed', 'true');
-    await list.locator('.proposal-source-btn[data-source="local"]').click();
-    await expect(list.locator('.proposal-list-item')).toHaveCount(2);
+    // Designs come from this device or from the server's index; none are read from a chain (M3).
+    await expect(list.locator('.proposal-source-btn')).toHaveCount(2);
     await list.locator('.proposal-source-btn[data-source="server"]').click();
     await expect(list.locator('.proposal-source-btn[data-source="server"]')).toHaveAttribute('aria-pressed', 'true');
     // Restore local source before deleting; deletion is offered only for locally held records.
@@ -93,17 +95,19 @@ test.describe('Proposal browsing @features', () => {
     expect(source.description).toBe(sourceBefore.description);
   });
 
-  test('a parcel\'s History row loads its ownership and consent timeline', async ({ mockApi: page }) => {
+  test('a parcel\'s History row loads the agreements over it, its ownership attestations and the executed agreement', async ({ mockApi: page }) => {
     await page.route(`**/parcels/${encodeURIComponent(PARCEL_ID)}/history`, route => route.fulfill({
       status: 200, contentType: 'application/json',
       body: JSON.stringify({
         parcelUid: PARCEL_ID,
-        anchor: { account: PROPOSAL_ACCOUNT, exists: null, source: 'unavailable' },
+        anchor: { account: ANCHOR_ACCOUNT, exists: null, source: 'unavailable' },
         events: [
-          { type: 'proposal_created', at: '2026-08-10T08:00:00Z', title: 'Parcel history proposal' },
-          { type: 'proposal_chain_observed', at: '2026-08-10T08:06:00Z', proposalId: 'proposal-42',
-            link: `https://explorer.solana.com/address/${PROPOSAL_ACCOUNT}?cluster=devnet` },
-          { type: 'proposal_acceptance', at: '2026-08-11T09:00:00Z', proposalId: 'proposal-42', owner: SOLANA_WALLET },
+          { type: 'agreement_published', at: '2026-08-10T08:00:00Z', agreementCid: AGREEMENT_CID, title: 'Block 1234 readjustment',
+            link: `/agreements/${AGREEMENT_CID}` },
+          { type: 'parcel_ownership', at: '2026-08-10T08:06:00Z', attestation: ATTESTATION, member: LENS_MEMBER, owner: SOLANA_WALLET,
+            ownerCount: 1, hash: `sha256:${'ab'.repeat(32)}`, link: `https://explorer.solana.com/address/${ATTESTATION}?cluster=devnet` },
+          { type: 'agreement_executed', at: '2026-08-11T09:00:00Z', outcome: 'executed', agreementCid: AGREEMENT_CID, account: AGREEMENT_ACCOUNT,
+            lens: LENS_MEMBER, transaction: 'tx-executed', link: 'https://explorer.solana.com/tx/tx-executed?cluster=devnet' },
         ],
       }),
     }));
@@ -113,12 +117,31 @@ test.describe('Proposal browsing @features', () => {
     const history = page.locator(`#parcel-history-section details[data-parcel-history="${PARCEL_ID}"]`);
     await expect(history).toBeVisible();
     await history.locator('summary').click();
-    const observation = history.locator('[data-history-type="proposal_chain_observed"]');
-    await expect(observation).toContainText('Proposal observed on Solana devnet');
-    await expect(observation).toContainText('this is not the mint time');
-    await expect(observation.locator('time')).toHaveAttribute('datetime', '2026-08-10T08:06:00Z');
-    await expect(observation.getByRole('link', { name: 'View' })).toHaveAttribute('href', /\/address\/.+cluster=devnet/);
-    await expect(history.locator('[data-history-type="proposal_acceptance"]')).toContainText('Owner said yes');
+    const events = history.locator('.parcel-history-event');
+    await expect(events).toHaveCount(3);
+    expect(await events.evaluateAll(items => items.map(item => item.getAttribute('data-history-type'))))
+      .toEqual(['agreement_published', 'parcel_ownership', 'agreement_executed']);
+    // The agreement proposed over the parcel, named by its title and CID, its link resolved on the API.
+    const published = history.locator('[data-history-type="agreement_published"]');
+    await expect(published).toContainText('Agreement proposed');
+    await expect(published).toContainText('Block 1234 readjustment');
+    await expect(published).toContainText(`Agreement ${AGREEMENT_CID.slice(0, 4)}…${AGREEMENT_CID.slice(-4)}`);
+    await expect(published.locator('time')).toHaveAttribute('datetime', '2026-08-10T08:00:00Z');
+    const backend = await page.evaluate(() => String((window as any).getBackendBase()).replace(/\/+$/, ''));
+    await expect(published.getByRole('link', { name: 'View' })).toHaveAttribute('href', `${backend}/agreements/${AGREEMENT_CID}`);
+    // The lens member's ownership attestation: who attested whom, and its account hash.
+    const ownership = history.locator('[data-history-type="parcel_ownership"]');
+    await expect(ownership).toContainText('Ownership attested');
+    await expect(ownership).toContainText(`Member ${LENS_MEMBER.slice(0, 4)}…${LENS_MEMBER.slice(-4)}`);
+    await expect(ownership).toContainText(`Owner ${SOLANA_WALLET.slice(0, 4)}…${SOLANA_WALLET.slice(-4)}`);
+    await expect(ownership).toContainText('1 attested owner(s)');
+    await expect(ownership.locator('.parcel-history-hash')).toHaveAttribute('title', `sha256:${'ab'.repeat(32)}`);
+    await expect(ownership.getByRole('link', { name: 'View' })).toHaveAttribute('href', /\/address\/.+cluster=devnet/);
+    // The executed agreement names the lens that attested its decision and links its transaction.
+    const executed = history.locator('[data-history-type="agreement_executed"]');
+    await expect(executed).toContainText('Agreement executed');
+    await expect(executed).toContainText(`Lens: ${LENS_MEMBER.slice(0, 4)}…${LENS_MEMBER.slice(-4)}`);
+    await expect(executed.getByRole('link', { name: 'View' })).toHaveAttribute('href', 'https://explorer.solana.com/tx/tx-executed?cluster=devnet');
     await expect(history.locator('.parcel-history-anchor')).toContainText('Parcel anchor status unavailable');
     await expect(history.locator('.parcel-history-anchor')).not.toContainText('No parcel anchor found');
   });

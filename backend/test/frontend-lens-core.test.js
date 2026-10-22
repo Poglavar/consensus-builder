@@ -1,5 +1,5 @@
-// Unit tests for frontend/js/lens-core.js, the pure lens-model logic behind the Solana lens picker,
-// proposal Details and the member console. Keys are cross-checked against @solana/web3.js, and the
+// Unit tests for frontend/js/lens-core.js, the pure lens-model logic behind the Solana lens picker, the
+// agreement panel and the member console. Keys are cross-checked against @solana/web3.js, and the
 // challenge check runs against the reference member's own challengeMessage so the two cannot drift.
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
@@ -136,27 +136,6 @@ describe('lens selection', () => {
     });
 });
 
-describe('lens vector codec', () => {
-    const vec = (keys, tail = []) => {
-        const count = new Uint8Array(4);
-        new DataView(count.buffer).setUint32(0, keys.length, true);
-        return Uint8Array.from([...count, ...keys.flatMap(k => Array.from(new PublicKey(k).toBytes())), ...tail]);
-    };
-
-    it('reads u32 LE count then 32-byte keys, then the bump, ignoring anything after it', () => {
-        const bytes = Uint8Array.from([0xaa, 0xbb, ...vec([NOTARY, COURT], [254, 1, 0, 0, 0])]);
-        expect(core.decodeProposalLensTail(bytes, 2)).toEqual({ lens: [NOTARY, COURT], bump: 254, offset: 2 + 4 + 64 + 1 });
-        expect(core.decodeProposalLensTail(vec([]), 0)).toEqual({ lens: [], bump: null, offset: 4 });
-    });
-
-    it('throws on a truncated vector rather than returning a partial lens', () => {
-        const bytes = vec([NOTARY, COURT]).slice(0, 4 + 40);
-        expect(() => core.readPubkeyVec(bytes, 0)).toThrow(/does not fit/);
-        expect(() => core.readPubkeyVec(new Uint8Array(2), 0)).toThrow(/truncated/);
-        expect(() => core.readPubkeyVec(Uint8Array.from([0xff, 0xff, 0xff, 0xff]), 0)).toThrow(/does not fit/);
-    });
-});
-
 describe('challenge handling', () => {
     const owner = Keypair.generate().publicKey.toBase58();
     const expiresAt = 1_800_000_300;
@@ -216,15 +195,32 @@ describe('service responses', () => {
     });
 });
 
-describe('operator verdict form', () => {
-    it('builds the POST /lens/verdict body from the source time the operator entered', () => {
-        expect(core.buildVerdictRequest({ proposalAccount: COURT, verdict: 'expired', evidenceRef: ' case-7 ', sourceObservedAt: '2026-09-30T12:00:00Z' }))
-            .toEqual({ ok: true, error: null, body: { proposalAccount: COURT, verdict: 'expired', sourceObservedAt: Date.parse('2026-09-30T12:00:00Z') / 1000, evidenceRef: 'case-7' } });
+describe('agreement decision answers', () => {
+    const CID = 'bafkreihnfsdwy3dz4ywcukbiknoixg3acqt7jozxg532gbcj54ymys7ale';
+    const tally = { ready: true, passed: true, reason: null, acceptedOwners: 4, totalOwners: 4, acceptedAreaM2: 175, totalAreaM2: 175, tests: [] };
+    // A 201 of POST /lens/agreements/:cid/decision (backend/lens/server.js).
+    const answer = (extra = {}) => ({ address: NOTARY, kind: 'decision', reused: false, counted: 4, tally,
+        payload: { agreementCid: CID, sponsor: COURT, decision: 'satisfied', evidenceRef: `sha256:${'a'.repeat(64)}`, sourceObservedAt: 1_800_000_000 }, ...extra });
+
+    it('reads the decision the member reports for the agreement that was asked about', () => {
+        expect(core.readDecisionAnswer(answer(), CID)).toEqual({ ok: true, reason: null, address: NOTARY, reused: false, decision: 'satisfied', counted: 4,
+            tally: { passed: true, ready: true, reason: null, acceptedOwners: 4, totalOwners: 4, acceptedAreaM2: 175, totalAreaM2: 175 } });
+        expect(core.readDecisionAnswer(answer({ reused: true }), CID)).toMatchObject({ ok: true, reused: true });
     });
 
-    it('refuses a bad proposal key, an unknown verdict and a missing source time (never the clock)', () => {
-        expect(core.buildVerdictRequest({ proposalAccount: 'nope', verdict: 'executed', sourceObservedAt: '2026-09-30T12:00:00Z' }).error).toBe('proposal');
-        expect(core.buildVerdictRequest({ proposalAccount: COURT, verdict: 'approved', sourceObservedAt: '2026-09-30T12:00:00Z' }).error).toBe('verdict');
-        expect(core.buildVerdictRequest({ proposalAccount: COURT, verdict: 'executed', sourceObservedAt: '' }).error).toBe('time');
+    it('refuses an answer about another agreement or of another kind, and a malformed one', () => {
+        expect(core.readDecisionAnswer(answer(), 'bafkreigh2akiscaildcqabsyg3dfr6chu3fgpregiymsck7e7aqa4s52zy')).toEqual({ ok: false, reason: 'wrong_agreement' });
+        expect(core.readDecisionAnswer(answer({ kind: 'ownership' }), CID)).toEqual({ ok: false, reason: 'wrong_agreement' });
+        expect(core.readDecisionAnswer({ ...answer(), address: ' ' }, CID)).toEqual({ ok: false, reason: 'malformed' });
+        expect(core.readDecisionAnswer(null, CID)).toEqual({ ok: false, reason: 'malformed' });
+    });
+
+    it('keeps counts the answer does not carry as null, never 0', () => {
+        expect(core.describeDecisionTally({ ready: false, passed: false, reason: 'rights-incomplete' }))
+            .toEqual({ passed: false, ready: false, reason: 'rights-incomplete', acceptedOwners: null, totalOwners: null, acceptedAreaM2: null, totalAreaM2: null });
+        expect(core.describeDecisionTally({ passed: 'yes', acceptedOwners: -1, totalOwners: 2.5, acceptedAreaM2: Number.NaN, totalAreaM2: '10' }))
+            .toMatchObject({ passed: false, acceptedOwners: null, totalOwners: null, acceptedAreaM2: null, totalAreaM2: null });
+        expect(core.describeDecisionTally(null)).toBeNull();
+        expect(core.readDecisionAnswer(answer({ counted: -2, tally: undefined }), CID)).toMatchObject({ ok: true, counted: null, tally: null });
     });
 });

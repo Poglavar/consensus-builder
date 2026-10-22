@@ -1020,8 +1020,9 @@ the two fields wrap under each other, no horizontal scroll.
   `proposals/storage.js`; local draft updated with `proposalStorage.setProposalAuthor`): the publish
   projection `buildUploadReadyProposal` (the share dialog projects before it uploads, so the stamp must
   sit there, before the device-local `authorAgentId` is dropped), `uploadProposalToServer`, the share-plan
-  payload and the share dialog's mint metadata. Published/minted records (`isProposalImmutable`), other
-  agents' records and records without `authorAgentId` keep their author.
+  payload and the share dialog's mint metadata. Published/minted records (then `isProposalImmutable`;
+  since M3 `ProposalLineage.isPublished`: a design published under its CID, designs being no longer
+  minted), other agents' records and records without `authorAgentId` keep their author.
 - **Forking a site-only subdivision** failed with "Reparcellization plan is missing": `createProposal`
   required `pendingReparcellizationPlan.parcelIds`, which a site-pooled plan (`poolSource 'site'`, record
   1348's shape) does not have, and it compared the plan's parcels with the (empty) selection — a Zagreb

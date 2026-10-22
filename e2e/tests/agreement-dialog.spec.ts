@@ -1,12 +1,14 @@
-// Purpose: agreements over applied designs (plan-design-agreement.md, "M1 (b) build contract") from
-// the screen: Create agreement from an applied parcel layout's details, the land it derives, the
-// allocation, cash and decision rule, the docked agreement panel (status, Before / after, Edit,
-// Delete), the Agreements list, an agreement whose design left the map, and a dialog with nothing to bundle.
+// Purpose: agreements over applied designs (plan-design-agreement.md, "M1 (b) build contract"; the
+// editor docked on the map since "M3 notes") from the screen: Add to agreement from an applied parcel
+// layout's details opens the agreement editor, with the land it derives, the allocation, cash and
+// decision rule; the docked agreement panel (status, Before / after, Edit in the editor, Delete), the
+// Agreements list, an agreement whose design left the map, and an editor with nothing to bundle.
 import { test, expect } from '../helpers/fixtures';
 import { openCity, showProposal, stubBasemapTiles, PARCEL_ID } from '../helpers/runtime';
 import { fillNativeDateTime, selectNativeOption } from '../helpers/controls';
 import {
-  OWNER, applyLayout, agreementDialog, agreementPanel, storedAgreements, landLoaded, createFromDetails, openAgreementsList, panelStatus,
+  OWNER, applyLayout, agreementPanel, storedAgreements, landLoaded, createFromDetails, openAgreementsList, panelStatus,
+  editorOpen, editorClosed, editorSave, editorCancel,
 } from '../helpers/agreements';
 import type { Page } from '@playwright/test';
 
@@ -24,40 +26,41 @@ test('an agreement over an applied parcel layout is created from its details, co
   test.setTimeout(180_000);
   const { layoutId, ownerKey } = await applyLayout(page);
 
-  // A parcel layout leaves the device only with its agreement: Create agreement is the main
-  // action, ahead of the disabled Share.
+  // A parcel layout leaves the device only with its agreement: Add to agreement is the main action,
+  // ahead of the disabled Share.
   await showProposal(page, layoutId);
   const primary = page.locator('#proposal-details-panel .proposal-primary-actions');
-  const create = primary.locator('.btn-create-agreement');
-  await expect(create).toHaveClass(/\bbtn-primary\b/);
+  const add = primary.locator('.btn-create-agreement');
+  await expect(add).toHaveClass(/\bbtn-primary\b/);
+  await expect(add).toHaveText('Add to agreement');
   await expect(primary.locator('.btn-share-proposal')).toBeDisabled();
   await expect(page.locator('#proposal-publish-later-note')).toHaveText('A parcel layout is published with its agreement. Propose an agreement that includes it.');
   expect(await primary.locator('.btn-create-agreement, .btn-share-proposal').evaluateAll(buttons => buttons
-    .map(button => (button.classList.contains('btn-create-agreement') ? 'create agreement' : 'share')))).toEqual(['create agreement', 'share']);
-  await create.click();
-
-  const dialog = agreementDialog(page);
-  await expect(dialog.locator('.cb-dialog__title')).toHaveText('Create agreement');
-  const design = dialog.locator(`input[data-agreement-design="${layoutId}"]`);
+    .map(button => (button.classList.contains('btn-create-agreement') ? 'add to agreement' : 'share')))).toEqual(['add to agreement', 'share']);
+  // With no agreement waiting to be proposed, it opens the editor on a new one, in place of the details.
+  await add.click();
+  const editor = await editorOpen(page, 'Create agreement');
+  await expect(page.locator('#proposal-details-panel')).toBeHidden();
+  const design = editor.locator(`input[data-agreement-design="${layoutId}"]`);
   await expect(design).toBeChecked();
-  await landLoaded(dialog);
+  await landLoaded(editor);
   // Unchoosing the one design leaves no land to settle; choosing it again reads the land again.
   await design.uncheck();
-  await expect(dialog.locator('[data-agreement-land] tr[data-agreement-input]')).toHaveCount(0);
-  await expect(dialog.locator('select[data-agreement-allocation]')).toHaveCount(0);
+  await expect(editor.locator('[data-agreement-land] tr[data-agreement-input]')).toHaveCount(0);
+  await expect(editor.locator('select[data-agreement-allocation]')).toHaveCount(0);
   await design.check();
-  await landLoaded(dialog);
+  await landLoaded(editor);
 
   // The land is derived, never typed: the parcel the layout took, with its owner, and its two plots.
-  await expect(dialog.locator(`tr[data-agreement-input="${PARCEL_ID}"]`)).toContainText(`${OWNER} 100%`);
-  const outputs = dialog.locator('table[data-agreement-outputs] tr[data-agreement-output]');
+  await expect(editor.locator(`tr[data-agreement-input="${PARCEL_ID}"]`)).toContainText(`${OWNER} 100%`);
+  const outputs = editor.locator('table[data-agreement-outputs] tr[data-agreement-output]');
   await expect(outputs).toHaveCount(2);
   const hashes = await outputs.evaluateAll(rows => rows.map(row => String(row.getAttribute('data-agreement-output'))));
   for (const hash of hashes) expect(hash).toMatch(/^piece1-sha256:[0-9a-f]{64}$/);
   await expect(outputs.first()).toContainText(OWNER);
 
   // Each piece goes to its current holders (the default), the one input party, or the public.
-  const allocation = dialog.locator(`select[data-agreement-allocation="${hashes[0]}"]`);
+  const allocation = editor.locator(`select[data-agreement-allocation="${hashes[0]}"]`);
   await expect(allocation).toHaveValue('holders');
   expect(await allocation.locator('option').evaluateAll(options => options.map(option => (option as HTMLOptionElement).value)))
     .toEqual(['holders', `party:${ownerKey}`, 'public']);
@@ -65,17 +68,17 @@ test('an agreement over an applied parcel layout is created from its details, co
   await expect(allocation).toHaveValue('public');
 
   // Cash in euros, + receives: the sponsor's line covers the difference.
-  const sponsor = dialog.locator('[data-agreement-sponsor]');
+  const sponsor = editor.locator('[data-agreement-sponsor]');
   await expect(sponsor).toHaveAttribute('data-agreement-sponsor', 'balanced');
-  await dialog.locator(`input[data-agreement-cash="${ownerKey}"]`).fill('2500');
+  await editor.locator(`input[data-agreement-cash="${ownerKey}"]`).fill('2500');
   await expect(sponsor).toHaveAttribute('data-agreement-sponsor', 'funds');
   await expect(sponsor).toContainText(/Sponsor funds .*2,500/);
 
   // The rule: the owners under the approval form, binding unless unticked; a community vote never binds.
-  const owners = dialog.locator('input[name="agreement-electorate"][value="owners"]');
-  const community = dialog.locator('input[name="agreement-electorate"][value="community"]');
-  const binding = dialog.locator('[data-agreement-binding]');
-  const ruleForm = dialog.locator('[data-agreement-rule-form]');
+  const owners = editor.locator('input[name="agreement-electorate"][value="owners"]');
+  const community = editor.locator('input[name="agreement-electorate"][value="community"]');
+  const binding = editor.locator('[data-agreement-binding]');
+  const ruleForm = editor.locator('[data-agreement-rule-form]');
   await expect(owners).toBeChecked();
   await expect(binding).toBeChecked();
   await expect(ruleForm.locator('select[data-approval-regime]')).toBeVisible();
@@ -93,13 +96,14 @@ test('an agreement over an applied parcel layout is created from its details, co
   await expect(binding).toBeDisabled();
   await expect(binding).not.toBeChecked();
 
-  await dialog.locator('[data-agreement-title]').fill(TITLE);
-  const deadline = dialog.locator('[data-agreement-deadline]');
+  await editor.locator('[data-agreement-title]').fill(TITLE);
+  const deadline = editor.locator('[data-agreement-deadline]');
   await fillNativeDateTime(deadline, '2030-12-31');
   await expect(deadline).toHaveValue('2030-12-31');
 
-  await dialog.locator('[data-action-id="save"]').click();
-  await expect(dialog).toHaveCount(0);
+  // Save stores it and the agreement's panel takes the dock; the map stops picking.
+  await editorSave(editor).click();
+  await editorClosed(page);
   await panelStatus(page, 'current');
   await expect(page.locator('body')).toHaveClass(/\bagreement-panel-open\b/);
   await expect(page.locator('#agreement-panel-title')).toHaveText(TITLE);
@@ -110,7 +114,7 @@ test('an agreement over an applied parcel layout is created from its details, co
   await expect(body).toContainText('Decided by a community vote · Non-binding');
   await expect(body).toContainText(/Deadline: .*2030/);
 
-  // What was stored is the record the dialog described.
+  // What was stored is the record the editor described.
   const [saved] = await storedAgreements(page);
   expect(saved).toMatchObject({
     schema: 'agreement/v1',
@@ -142,20 +146,25 @@ test('an agreement over an applied parcel layout is created from its details, co
   await expect(compare).toHaveAttribute('aria-pressed', 'false', { timeout: 15_000 });
   await expect(beforeMap).toHaveCount(0);
 
-  // Edit opens the dialog on the stored terms; Cancel keeps them.
+  // Edit opens the editor on the stored terms in the panel's place; Cancel keeps them and brings the
+  // panel back.
   await body.locator('[data-agreement-action="edit"]').click();
-  await expect(dialog.locator('.cb-dialog__title')).toHaveText('Edit agreement');
-  await landLoaded(dialog);
-  await expect(dialog.locator('[data-agreement-title]')).toHaveValue(TITLE);
-  await expect(dialog.locator(`input[data-agreement-design="${layoutId}"]`)).toBeChecked();
-  await expect(dialog.locator(`select[data-agreement-allocation="${hashes[0]}"]`)).toHaveValue('public');
-  await expect(dialog.locator(`input[data-agreement-cash="${ownerKey}"]`)).toHaveValue('2500');
+  await editorOpen(page, 'Edit agreement');
+  await expect(agreementPanel(page)).toBeHidden();
+  await landLoaded(editor);
+  await expect(editor.locator('[data-agreement-title]')).toHaveValue(TITLE);
+  await expect(editor.locator(`input[data-agreement-design="${layoutId}"]`)).toBeChecked();
+  await expect(editor.locator(`select[data-agreement-allocation="${hashes[0]}"]`)).toHaveValue('public');
+  await expect(editor.locator(`input[data-agreement-cash="${ownerKey}"]`)).toHaveValue('2500');
   await expect(community).toBeChecked();
   await expect(binding).toBeDisabled();
   await expect(deadline).toHaveValue('2030-12-31');
-  await dialog.locator('[data-action-id="cancel"]').click();
-  await expect(dialog).toHaveCount(0);
+  // A change that is cancelled is not kept.
+  await editor.locator('[data-agreement-title]').fill('Not kept');
+  await editorCancel(editor).click();
+  await editorClosed(page);
   await panelStatus(page, 'current');
+  await expect(page.locator('#agreement-panel-title')).toHaveText(TITLE);
   expect(await storedAgreements(page)).toEqual([saved]);
 
   // The panel's close button takes it off the dock; the Agreements list opens it again.
@@ -192,12 +201,14 @@ test('an agreement over an applied parcel layout is created from its details, co
 test('an agreement whose design is taken off the map no longer matches it, and cannot be compared', async ({ mockApi: page }) => {
   test.setTimeout(150_000);
   const { layoutId } = await applyLayout(page);
-  const dialog = await createFromDetails(page, layoutId);
-  await dialog.locator('[data-action-id="save"]').click();
-  await expect(dialog).toHaveCount(0);
+  const editor = await createFromDetails(page, layoutId);
+  // Enter in a text field saves, as the form's submit.
+  await editor.locator('[data-agreement-title]').press('Enter');
+  await editorClosed(page);
   await panelStatus(page, 'current');
   // Untitled, the agreement is named by its date.
   await expect(page.locator('#agreement-panel-title')).toHaveText(/^Agreement of /);
+  expect(await storedAgreements(page)).toHaveLength(1);
 
   // A design row selects the design: its details take the right dock.
   await agreementPanel(page).locator(`[data-agreement-design="${layoutId}"]`).click();
@@ -222,6 +233,18 @@ test('an agreement whose design is taken off the map no longer matches it, and c
   await expect(stale).toContainText(`a design is no longer applied (${layoutTitle})`);
   await expect(agreementPanel(page).locator('[data-agreement-action="compare"]')).toBeDisabled();
   expect(await storedAgreements(page)).toHaveLength(1);
+
+  // Edit names the design that left the map; Save refuses until it is applied again.
+  await agreementPanel(page).locator('[data-agreement-action="edit"]').click();
+  await editorOpen(page, 'Edit agreement');
+  await expect(editor.locator('[data-agreement-designs-missing]')).toHaveText('Every design must be applied to the map.');
+  await expect(editor.locator('input[data-agreement-design]')).toHaveCount(0);
+  await editorSave(editor).click();
+  await expect(editor.locator('[data-agreement-errors] li[data-agreement-issue="no-designs"]')).toHaveText('Choose at least one design.');
+  await expect(editor).toBeVisible();
+  await editorCancel(editor).click();
+  await editorClosed(page);
+  await panelStatus(page, 'stale');
 });
 
 test('Create agreement with no applied design names what is missing and saves nothing', async ({ mockApi: page }) => {
@@ -232,16 +255,17 @@ test('Create agreement with no applied design names what is missing and saves no
   await list.locator('[data-agreement-action="create"]').click();
   await expect(list).toHaveCount(0);
 
-  const dialog = agreementDialog(page);
-  await expect(dialog.locator('.cb-dialog__title')).toHaveText('Create agreement');
-  await expect(dialog.locator('[data-agreement-empty]')).toHaveText('No applied designs. Apply a design first.');
-  await expect(dialog.locator('input[data-agreement-design]')).toHaveCount(0);
-  await expect(dialog.locator('[data-agreement-errors] li')).toHaveCount(0);
-  await dialog.locator('[data-action-id="save"]').click();
-  await expect(dialog.locator('[data-agreement-errors] li[data-agreement-issue="no-designs"]')).toHaveText('Choose at least one design.');
-  await expect(dialog).toBeVisible();
+  const editor = await editorOpen(page, 'Create agreement');
+  await expect(editor.locator('[data-agreement-empty]')).toHaveText('No applied designs. Apply a design first.');
+  await expect(editor.locator('input[data-agreement-design]')).toHaveCount(0);
+  await expect(editor.locator('[data-agreement-errors] li')).toHaveCount(0);
+  await editorSave(editor).click();
+  await expect(editor.locator('[data-agreement-errors] li[data-agreement-issue="no-designs"]')).toHaveText('Choose at least one design.');
+  await expect(editor).toBeVisible();
   expect(await storedAgreements(page)).toEqual([]);
-  await dialog.locator('[data-action-id="cancel"]').click();
-  await expect(dialog).toHaveCount(0);
+  // The header's close button cancels as the footer's does.
+  await editor.locator('.panel-header [data-agreement-action="cancel"]').click();
+  await editorClosed(page);
+  await expect(agreementPanel(page)).toBeHidden();
   expect(await storedAgreements(page)).toEqual([]);
 });

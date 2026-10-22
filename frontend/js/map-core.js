@@ -1003,7 +1003,7 @@ function setupMapEventHandlers() {
         }
         const selected = window.currentlyHighlightedProposal;
         if (selected && typeof isProposalApplied === 'function' && !isProposalApplied(selected)
-            && !window.sharePlanMode && !window.__mapEditLock?.isHeld()
+            && !window.MapPick?.active() && !window.__mapEditLock?.isHeld()
             && !(typeof isParcelDrawingModeActive === 'function' && isParcelDrawingModeActive())) {
             hideProposalDetailsPanel(true);
         }

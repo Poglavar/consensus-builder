@@ -1,10 +1,12 @@
+// The parcel anchor reader of GET /parcels/:parcelUid/history: a devnet-only, exact Parcel account check
+// (program, discriminator, parcel identity) before an anchor is reported to exist.
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it, vi } from 'vitest';
 import { PublicKey } from '@solana/web3.js';
 import { createAnchorReader } from '../routes/parcel-history.js';
 import { deriveParcelAnchor, parcelAnchorAccountMatches, PARCEL_PROGRAM_ID } from '../oracle/parcel-history.js';
-import { DEVNET_GENESIS_HASH } from '../oracle/proposal-lifecycle.js';
+import { DEVNET_GENESIS_HASH } from '../agreements/onchain.js';
 
 const UID = 'source-parcel-1';
 const discriminator = createHash('sha256').update('account:Parcel').digest().subarray(0, 8);

@@ -375,23 +375,6 @@ async function executeGameTurn() {
         }
 
         const agents = agentStorage.getAllAgents();
-        const allActiveProposals = (typeof proposalStorage !== 'undefined' && typeof proposalStorage.getAllProposals === 'function')
-            ? proposalStorage.getAllProposals()
-            : [];
-        // Restrict agent awareness to proposals in the current city — otherwise
-        // agents can accept/donate to proposals belonging to a different city,
-        // which surfaces as map bubbles/shapes outside the visible viewport.
-        const currentCityId = (typeof window !== 'undefined' && window.CityConfigManager
-                && typeof window.CityConfigManager.getCurrentCityId === 'function')
-            ? window.CityConfigManager.getCurrentCityId()
-            : null;
-        const activeProposals = (currentCityId && typeof isInCity === 'function')
-            ? allActiveProposals.filter(p => {
-                const ids = Array.isArray(p.cadastreParcelIds) ? p.cadastreParcelIds : [];
-                if (!ids.length) return true;
-                return ids.some(id => isInCity(id, currentCityId));
-            })
-            : allActiveProposals;
         const ownedParcelsByAgent = (typeof buildAgentOwnedParcelIndex === 'function')
             ? buildAgentOwnedParcelIndex()
             : null;
@@ -409,25 +392,11 @@ async function executeGameTurn() {
         }
         // Batch every proposalStorage mutation in the turn into a single
         // end-of-turn JSON.stringify + IndexedDB write. Without this, each
-        // agent create/accept/donate re-serialised the entire proposal store
+        // agent create re-serialised the entire proposal store
         // (~10ms per call with a few hundred proposals) — the main culprit
         // behind choppy flyTo / sluggish frames during agent turns.
         if (typeof proposalStorage !== 'undefined' && typeof proposalStorage.beginBatch === 'function') {
             proposalStorage.beginBatch();
-        }
-
-        // Reconcile support against lifecycle before agents act. Donations return to their donors
-        // when a proposal is Cancelled/Expired; soft pledges are voided without touching balances.
-        if (window.AgentSupportSimulation) {
-            for (const proposal of allActiveProposals) {
-                const status = typeof getLifecycleStatus === 'function' ? getLifecycleStatus(proposal) : proposal.lifecycleStatus;
-                if (status !== 'Cancelled' && status !== 'Expired') continue;
-                const outcome = window.AgentSupportSimulation.refund(proposal, id => agentStorage.getAgent(id));
-                if (!outcome.refunded && !outcome.voided) continue;
-                if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(proposal);
-                proposalStorage.save();
-                for (const participant of agents) agentStorage.updateAgent(participant.id, { ethBalance: participant.ethBalance });
-            }
         }
 
         const actionEngine = getUnifiedAgentActionEngine();
@@ -441,7 +410,6 @@ async function executeGameTurn() {
             }
 
             const turnContext = {
-                activeProposals,
                 ownedParcelsByAgent,
                 turnParcelPool,
                 neighborMap,
@@ -708,11 +676,11 @@ const scopedLiveActivity = new Map(); // server-filtered feeds keyed by query st
 const liveActivityRequests = new Map(); // one in-flight fetch per query, shared by concurrent renders
 
 // A scoped explorer asks the API to filter (it scans a wider window than the 250-event feed),
-// so an old proposal's activity is not lost behind newer events.
+// so an old agreement's activity is not lost behind newer events.
 function liveActivityQuery(filter = {}) {
     const params = new URLSearchParams({ limit: '250' });
     if (filter.actorId) params.set('actor', filter.actorId);
-    if (filter.proposalId) params.set('proposal', filter.proposalId);
+    if (filter.agreementCid) params.set('agreement', filter.agreementCid);
     if (filter.runId) params.set('run', filter.runId);
     return params.toString();
 }
@@ -759,28 +727,14 @@ function allActivityEvents() {
     return window.AgentActionEngine.mergeActivities(gameState.gameLog, liveAgentActivity || []);
 }
 
-function allKnownProposals() {
-    try {
-        return typeof proposalStorage !== 'undefined' && typeof proposalStorage.getAllProposals === 'function'
-            ? proposalStorage.getAllProposals()
-            : [];
-    } catch (error) {
-        console.warn(`[${new Date().toISOString()}] [activity] could not enumerate proposals for parcel-set filter`, error);
-        return [];
-    }
-}
-
-/** The effective filter: a parcel-set scope expands to the proposals currently known on that land. */
+/** The explorer's filter (AgentActionEngine.EMPTY_ACTIVITY_FILTER), its scope included. */
 function effectiveActivityFilter() {
-    const filter = activityExplorerState.filter || { ...window.AgentActionEngine.EMPTY_ACTIVITY_FILTER };
-    if (!filter.parcelSet) return filter;
-    return { ...filter, proposalIds: window.ParcelSetRelations.proposalIdsForParcelSet(allKnownProposals(), filter.parcelSet) };
+    return activityExplorerState.filter || { ...window.AgentActionEngine.EMPTY_ACTIVITY_FILTER };
 }
 
 function activityScopeLabel(filter) {
     if (filter.actorId) return translateGameText('gameDialogs.log.scopeActor', 'Actor: {{id}}', { id: filter.actorId });
-    if (filter.proposalId) return translateGameText('gameDialogs.log.scopeProposal', 'Proposal: {{id}}', { id: filter.proposalId });
-    if (filter.parcelSet) return translateGameText('gameDialogs.log.scopeParcelSet', 'Land: {{id}}', { id: filter.parcelSet.length > 13 ? `${filter.parcelSet.slice(0, 13)}…` : filter.parcelSet });
+    if (filter.agreementCid) return translateGameText('gameDialogs.log.scopeAgreement', 'Agreement: {{id}}', { id: `${filter.agreementCid.slice(0, 12)}…${filter.agreementCid.slice(-6)}` });
     if (filter.runId) return translateGameText('gameDialogs.log.scopeRun', 'Run: {{id}}', { id: filter.runId });
     return '';
 }
@@ -841,7 +795,7 @@ async function renderActivityExplorer() {
             actorExplorerController = window.ActorExplorer.mount(actors, {
                 events: visible,
                 showFilters: false,
-                openProposal: showProposalFromLog,
+                openEntity: openActivityEntity,
                 loadRun: async runId => {
                     const response = await fetch(`${activityApiBase()}/agent/runs/${encodeURIComponent(runId)}`);
                     if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -870,7 +824,7 @@ function setActivityFilter(field, value) {
 }
 
 function clearActivityScope() {
-    activityExplorerState.filter = { ...activityExplorerState.filter, actorId: null, proposalId: null, runId: null, parcelSet: null, proposalIds: null };
+    activityExplorerState.filter = { ...activityExplorerState.filter, actorId: null, agreementCid: null, runId: null };
     renderActivityExplorer();
 }
 
@@ -890,7 +844,7 @@ function refreshLiveActivity() {
 let gameLogDialog = null;
 
 /**
- * Open the one activity explorer, optionally scoped (actor/proposal/run/parcel set) and on a view.
+ * Open the one activity explorer, optionally scoped (actor/agreement/run) and on a view.
  * Every entry point — the Activity sheet's buttons, row drill-downs, proposal Details, ?activity= links — lands here.
  */
 function showGameLogDialog(options = {}) {
@@ -912,7 +866,7 @@ function showGameLogDialog(options = {}) {
                     <button type="button" class="cb-segmented__option" data-activity-view="actors" aria-pressed="false" onclick="setActivityView('actors')">${t('viewActors', 'Actors')}</button>
                 </div>
                 <nav class="activity-filters" aria-label="${t('filtersAria', 'Filter activity')}">
-                    <input type="search" data-activity-filter-field="query" aria-label="${t('searchAria', 'Search activity')}" placeholder="${t('searchPlaceholder', 'Actor, proposal or transaction')}" oninput="setActivityFilter('query', this.value)">
+                    <input type="search" data-activity-filter-field="query" aria-label="${t('searchAria', 'Search activity')}" placeholder="${t('searchPlaceholder', 'Actor, agreement or transaction')}" oninput="setActivityFilter('query', this.value)">
                     <select data-activity-filter-field="source" aria-label="${t('sourceAria', 'Activity source')}" onchange="setActivityFilter('source', this.value)">
                         <option value="combined">${t('sourceAll', 'All sources')}</option><option value="live">${t('sourceLive', 'Live')}</option><option value="simulation">${t('sourceSimulation', 'Simulation')}</option>
                     </select>
@@ -975,33 +929,47 @@ function onGameLogDialogClosed() {
     }
 }
 
-// Row drill-downs (data-activity-scope) work wherever a shared row is rendered — the explorer
-// itself or an agent dialog's log — and always land in the one explorer, scoped.
-function activityScopeFromButton(button) {
-    const field = button.dataset.activityScope;
-    const value = button.dataset.activityValue;
-    if (field !== 'parcelSetOf') return { [field]: value };
-    const proposal = allKnownProposals().find(item => window.ParcelSetRelations.proposalKey(item) === value);
-    const setHash = proposal?.parcelSet?.setHash;
-    // Without a canonical set the land scope would silently mean "this proposal"; say so instead.
-    if (!setHash) {
-        showGameAlert('activity_no_parcel_set', 'This proposal has no canonical parcel set loaded.');
-        return null;
+// An activity row's agreement or design (ActorExplorer: an .activity-entity-link button, or the
+// Actors view's openEntity): an agreement opens in its panel (this device's copy, else read from its
+// link's route), a design like a design from the proposal list.
+async function openActivityEntity({ type, id } = {}) {
+    if (!id) return;
+    closeGameLogDialog();
+    if (document.querySelector('.agent-dialog-modal') && typeof closeAgentDialog === 'function') closeAgentDialog();
+    try {
+        if (type === 'agreement') {
+            const local = window.AgreementSync.localCopyOf(id);
+            if (local) await window.AgreementPanel.open(local.id);
+            else await window.AgreementSync.handleAgreementRoute(id);
+        } else if (type === 'design') {
+            const local = window.DesignSync.localCopyOf(id);
+            if (local) showProposalFromLog(local.proposalId);
+            else await openServerProposalFromLog(id);
+        }
+    } catch (error) {
+        console.error(`[${new Date().toISOString()}] [activity] the ${type} ${id} could not be opened`, error);
     }
-    return { parcelSet: setHash };
 }
 
+// Works wherever a shared row is rendered (the explorer, an agent dialog's log).
+document.addEventListener('click', event => {
+    const button = event.target.closest?.('.activity-entity-link');
+    if (!button) return;
+    event.preventDefault();
+    openActivityEntity({ type: button.dataset.entityType, id: button.dataset.entityId });
+});
+
+// Row drill-downs (data-activity-scope) work wherever a shared row is rendered — the explorer
+// itself or an agent dialog's log — and always land in the one explorer, scoped.
 document.addEventListener('click', event => {
     const button = event.target.closest?.('[data-activity-scope]');
     if (!button) return;
     event.preventDefault();
-    const scope = activityScopeFromButton(button);
-    if (!scope) return;
     if (button.closest('.agent-dialog-modal') && typeof closeAgentDialog === 'function') closeAgentDialog();
-    showGameLogDialog({ filter: scope });
+    showGameLogDialog({ filter: { [button.dataset.activityScope]: button.dataset.activityValue } });
 });
 
-// `?activity=proposal:<id>` (or actor:/run:/parcelSet:) opens the explorer scoped, so the Demo
+// `?activity=agreement:<cid>` (or actor:/run:) opens the explorer scoped, so the Demo
 // Center, Details and shared links can deep-link straight into the same explorer.
 // It waits for the page and its translations: the dialog renders translated strings inline, and
 // before i18n registers its tables every lookup would return the raw key.
@@ -1385,7 +1353,6 @@ async function resetGameState(autoReinit = false) {
             walletAddresses: [],
             ownedParcels: [],
             proposalsCreated: [],
-            proposalsAccepted: [],
             proposalsExecuted: [],
             createdAt: new Date().toISOString(),
             lastActionAt: null,

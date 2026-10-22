@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Snap the UPU Borovje plan's outer boundary to the cadastre, and publish the corrected members as new records.
+// UPU Borovje version 2: snap the plan's outer boundary to the cadastre (README.md, "Cadastral boundary").
 //
 // The first reconstruction took the plan extent from the traced plan sheet and read its boundary line about
 // 3 m too wide (the traced edge runs 2.4–3.3 m outside the drawn obuhvat line, all the way round). So every
@@ -12,23 +12,20 @@
 // the southern edge of its band, is re-centred in the band as plan sheet 2a draws it, so its cross-section
 // fits between the plots and the edge; the crossings that end on it move with it.
 //
-// Named plans never changed (removed 2026-10-21; the restatement is recreated as agreements in M3), so nothing existing is edited. The corrected members are published as
-// new records `<proposal_id>-v2` (revisionOf the original) and named as new plan versions by name-plans.mjs.
+// The members it changes are written to data/cadastral-snap.json by design key; borovje-designs.mjs replays
+// them onto version 1, which it builds from the committed data (no proposal rows are read). Only the cadastre
+// (public.parcel) is read, from the local PostGIS database in backend/.env.
 //
-//   node snap-to-cadastre.mjs --compute        # local PostGIS → data/cadastral-snap.json
-//   node snap-to-cadastre.mjs --backend <api> --origin <app> [--apply]
-import os from 'node:os';
-import path from 'node:path';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+//   node snap-to-cadastre.mjs --compute        # version 1 + local cadastre → data/cadastral-snap.json
+import { writeFile } from 'node:fs/promises';
 import { parseArgs } from 'node:util';
 import { createRequire } from 'node:module';
-import { publish, request } from '../../backend/scripts/lib/candlestick-common.mjs';
-import { canonicalSeedRecord } from '../../backend/scripts/lib/canonical-seed-record.mjs';
-import { REPAIR_VERSION, revisedRecord } from '../../backend/scripts/lib/borovje-revision.mjs';
+import { borovjeState, STREET_KEYS } from './borovje-designs.mjs';
 
 const require = createRequire(new URL('../../backend/package.json', import.meta.url));
 const log = message => console.log(`[${new Date().toISOString()}] ${message}`);
 const SNAP_FILE = new URL('./data/cadastral-snap.json', import.meta.url);
+export const REPAIR_VERSION = 'borovje-cadastral-snap-v1';
 
 // The rule, in metres (EPSG:3765). INSET_M: how far the traced edge sits outside the drawn boundary
 // (measured on 22 neighbouring parcels: 2.4–3.3 m). CORE_M: a part of a parcel narrower than 2 × CORE_M
@@ -37,22 +34,14 @@ const SNAP_FILE = new URL('./data/cadastral-snap.json', import.meta.url);
 // SMOOTH_CUT_M: how far a cut through a divided parcel may straighten the traced line. MIN_REMAINDER_M2: a
 // divided parcel's remainder smaller than this is a scrap and goes to the plan.
 export const RULE = Object.freeze({ INSET_M: 3, CORE_M: 2, NARROW_KEEP_M2: 10, CLOSE_M: 0.25, MIN_PART_M2: 50, SMOOTH_CUT_M: 1, MIN_REMAINDER_M2: 100, CLEARANCE_MARGIN_M: 0.25 });
-const LAYOUTS = ['p-upu-borovje-parcelacija', 'p-upu-borovje-parcelacija-2', 'p-upu-borovje-parcelacija-3'];
-const ROADS = ['upu-borovje-ulice', 'upu-borovje-ulice-split-1'];
-const PARKS = ['upu-borovje-r2-0', ...Array.from({ length: 5 }, (_, i) => `upu-borovje-z1-${i + 1}`)];
-const BUILDINGS = Array.from({ length: 11 }, (_, i) => `upu-borovje-m1-${i + 1}`);
 const COLLECTOR = 'upu-sabirna-ulica';
 
-const { values } = parseArgs({ options: {
-    compute: { type: 'boolean' }, backend: { type: 'string' }, origin: { type: 'string' },
-    apply: { type: 'boolean' }, help: { type: 'boolean' }
-} });
-if (values.help || (!values.compute && !values.backend)) {
+const { values } = parseArgs({ options: { compute: { type: 'boolean' }, help: { type: 'boolean' } } });
+if (values.help || !values.compute) {
     console.log(`Usage:
-  node snap-to-cadastre.mjs --compute                      # from the local rows + cadastre → data/cadastral-snap.json
-  node snap-to-cadastre.mjs --backend <api> --origin <app> [--apply]
---compute reads the original rows and parcels through backend/.env (DATABASE_URL), validates the result and writes the
-file; it changes no row. The publish step is a dry run unless --apply; existing -v2 records are left alone.`);
+  node snap-to-cadastre.mjs --compute      # version 1 of the plan + the local cadastre → data/cadastral-snap.json
+Version 1 is built from the committed data (borovje-designs.mjs); the cadastre is read through backend/.env
+(DATABASE_URL, local PostGIS). It validates the result before writing the file and changes no row.`);
     process.exit(0);
 }
 
@@ -68,25 +57,25 @@ async function compute() {
     const db = await pool.connect();
     const q = (sql, params) => db.query(sql, params);
     try {
-        const { rows: [{ schema }] } = await q(`SELECT table_schema AS schema FROM information_schema.tables
-            WHERE table_name = 'proposal' AND table_schema IN ('public', 'consensus') ORDER BY table_schema = 'public' DESC LIMIT 1`);
-        const ids = [...LAYOUTS, ...ROADS, ...PARKS, ...BUILDINGS];
-        const { rows } = await q(`SELECT proposal_id, reparcellization, road_proposal, structure_proposal,
-            ST_AsGeoJSON(site, 15) AS site FROM ${schema}.proposal WHERE proposal_id = ANY($1)`, [ids]);
-        if (rows.length !== ids.length) throw new Error(`expected ${ids.length} Borovje rows, found ${rows.length}`);
-        const byId = new Map(rows.map(row => [row.proposal_id, row]));
+        const state = await borovjeState(1);
+        log(`version 1: ${state.layouts.length} parcel layouts, ${state.roads.length} streets, ${state.buildings.length} buildings, ${state.parks.length} parks`);
 
         // Pieces of ground: the 17 plots and the two street polygons. Together they are the plan's extent.
         await q('CREATE TEMP TABLE piece (key text PRIMARY KEY, member text, owner text, g geometry(Geometry, 4326), ng geometry)');
-        for (const id of LAYOUTS) {
-            for (const polygon of byId.get(id).reparcellization.polygons) {
+        for (const layout of state.layouts) {
+            for (const plot of layout.plots) {
                 await q('INSERT INTO piece (key, member, owner, g) VALUES ($1, $2, $3, ST_SetSRID(ST_GeomFromGeoJSON($4), 4326))',
-                    [`${id}#${polygon.ownerKey}`, id, polygon.ownerKey, JSON.stringify(geometryOf(polygon.geometry))]);
+                    [`${layout.key}#${plot.key}`, layout.key, plot.key, JSON.stringify(geometryOf(plot.geometry))]);
             }
         }
-        for (const id of ROADS) {
+        for (const road of state.roads) {
             await q('INSERT INTO piece (key, member, owner, g) VALUES ($1, $2, NULL, ST_SetSRID(ST_GeomFromGeoJSON($3), 4326))',
-                [id, id, JSON.stringify(geometryOf(byId.get(id).road_proposal.definition.polygon))]);
+                [road.key, road.key, JSON.stringify(geometryOf(road.definition.polygon))]);
+        }
+        // The buildings, each on the plot of its own key.
+        await q('CREATE TEMP TABLE building (key text PRIMARY KEY, g geometry(Geometry, 4326))');
+        for (const building of state.buildings) {
+            await q('INSERT INTO building (key, g) VALUES ($1, ST_SetSRID(ST_GeomFromGeoJSON($2), 4326))', [building.key, JSON.stringify(building.geometry)]);
         }
 
         // E0: the traced extent. E1: E0 moved back onto the drawn boundary. E2: the cadastral extent.
@@ -146,10 +135,10 @@ async function compute() {
             throw new Error(`fabric check failed: gap ${fabric.gap_m2} m², overlap ${fabric.overlap_m2} m², parts ${fabric.max_parts}`);
         }
         // Every official building must still stand on its plot.
-        const homeless = (await q(`SELECT b.proposal_id, ST_Area(ST_Transform(ST_Difference(b.site, p.ng), 3765)) AS outside_m2
-            FROM ${schema}.proposal b JOIN piece p ON p.owner = replace(b.proposal_id, 'upu-borovje-', '')
-            WHERE b.proposal_id = ANY($1) AND ST_Area(ST_Transform(ST_Difference(b.site, p.ng), 3765)) > 0.01`, [BUILDINGS])).rows;
-        if (homeless.length) throw new Error(`buildings leave their plots: ${homeless.map(r => `${r.proposal_id} ${Number(r.outside_m2).toFixed(2)} m²`).join(', ')}`);
+        const homeless = (await q(`SELECT b.key, ST_Area(ST_Transform(ST_Difference(b.g, p.ng), 3765)) AS outside_m2
+            FROM building b JOIN piece p ON p.owner = b.key
+            WHERE ST_Area(ST_Transform(ST_Difference(b.g, p.ng), 3765)) > 0.01`)).rows;
+        if (homeless.length) throw new Error(`buildings leave their plots: ${homeless.map(r => `${r.key} ${Number(r.outside_m2).toFixed(2)} m²`).join(', ')}`);
 
         // The collector's cross-section must lie between the plots and the corrected edge. Plan sheet 2a draws
         // the collector as a hatched band from the plots to the plan boundary, with its axis down the middle;
@@ -162,7 +151,7 @@ async function compute() {
         // the street (the plan's boundary steps in around a parcel it leaves alone), the street narrows: that
         // stretch becomes its own segment whose profile drops the verges. A junction vertex is shared with a
         // crossing, which moves with it.
-        const main = byId.get(ROADS[0]).road_proposal.definition;
+        const main = state.roads.find(road => road.key === STREET_KEYS.main).definition;
         const collectorIndex = main.segmentIds.indexOf(COLLECTOR);
         const halfOf = strips => strips.reduce((sum, strip) => sum + strip.width, 0) / 2;
         const fullStrips = main.segmentProfiles[COLLECTOR].strips;
@@ -339,28 +328,27 @@ async function compute() {
         const pieces = (await q(`SELECT key, member, owner, ST_AsGeoJSON(CASE WHEN ST_Equals(g, ng) THEN g ELSE ng END, 15) AS g,
             ST_Area(ST_Transform(ng, 3765)) AS m2, ST_Equals(g, ng) AS same FROM piece ORDER BY key`)).rows;
         const members = {};
-        for (const id of LAYOUTS) {
-            const own = pieces.filter(p => p.member === id);
+        for (const layout of state.layouts) {
+            const own = pieces.filter(p => p.member === layout.key);
             if (own.every(p => p.same)) continue;
-            const { rows: [poolRow] } = await q(`SELECT ST_AsGeoJSON(ST_Union(ng), 15) AS g FROM piece WHERE member = $1`, [id]);
-            members[id] = { pool: JSON.parse(poolRow.g), plots: Object.fromEntries(own.map(p => [p.owner, { geometry: JSON.parse(p.g), m2: Number(p.m2.toFixed(1)) }])) };
+            const { rows: [poolRow] } = await q(`SELECT ST_AsGeoJSON(ST_Union(ng), 15) AS g FROM piece WHERE member = $1`, [layout.key]);
+            members[layout.key] = { pool: JSON.parse(poolRow.g), plots: Object.fromEntries(own.map(p => [p.owner, { geometry: JSON.parse(p.g), m2: Number(p.m2.toFixed(1)) }])) };
         }
-        for (const id of ROADS) {
-            const own = pieces.find(p => p.member === id);
-            const moved = id === ROADS[0] && moves.maxShiftM > 0;
+        for (const road of state.roads) {
+            const own = pieces.find(p => p.member === road.key);
+            const moved = road.key === STREET_KEYS.main && moves.maxShiftM > 0;
             if (own.same && !moved) continue;
-            members[id] = { polygon: JSON.parse(own.g), ...(moved ? { segments, segmentIds, segmentProfiles } : {}) };
+            members[road.key] = { polygon: JSON.parse(own.g), ...(moved ? { segments, segmentIds, segmentProfiles } : {}) };
         }
-        for (const id of PARKS) {
-            const owner = id.replace('upu-borovje-', '').replace('r2-0', 'r2-1');
-            const plot = pieces.find(p => p.owner === owner);
-            if (!plot.same) members[id] = { geometry: JSON.parse(plot.g) };
+        for (const park of state.parks) {
+            const plot = pieces.find(p => p.owner === park.key);
+            if (!plot.same) members[park.key] = { geometry: JSON.parse(plot.g) };
         }
         const cut = (await q(`SELECT parcel, round(100 * traced_share) AS traced_pct,
                 CASE WHEN kept IS NULL THEN 'out' WHEN ST_Equals(kept, geom) THEN 'whole' ELSE 'cut ' || round(100 * ST_Area(kept) / ST_Area(geom)) || '%' END AS verdict
             FROM parcel_cut WHERE traced_share < 0.999 ORDER BY verdict, parcel`)).rows;
         const result = {
-            comment: 'Generated by snap-to-cadastre.mjs --compute. The corrected UPU Borovje members (geometry in EPSG:4326); replayed by its publish step.',
+            comment: 'Generated by snap-to-cadastre.mjs --compute: the UPU Borovje members the cadastral boundary changes (version 2), by design key, geometry in EPSG:4326. borovje-designs.mjs replays them onto version 1.',
             repair: REPAIR_VERSION,
             rule: RULE,
             extent: { tracedM2: Math.round(extent.traced_m2), cadastralM2: Math.round(extent.m2),
@@ -385,44 +373,4 @@ async function compute() {
     }
 }
 
-// ---------------------------------------------------------------------------------------------------------
-// publish: replay the committed geometry onto each original record and publish it as `<id>-v2`.
-// ---------------------------------------------------------------------------------------------------------
-async function publishAll() {
-    if (values.apply && !values.origin) throw new Error('--apply needs --origin (the app origin the API accepts writes from)');
-    const snap = JSON.parse(await readFile(SNAP_FILE, 'utf8'));
-    const origin = values.origin || values.backend;
-    const records = [];
-    for (const [id, change] of Object.entries(snap.members)) {
-        const { status, json } = await request(values.backend, origin, 'GET', `/proposals/${encodeURIComponent(id)}`);
-        if (status !== 200) throw new Error(`${values.backend} has no ${id} (${status})`);
-        const draft = revisedRecord(json, change);
-        const bound = await request(values.backend, origin, 'POST', '/proposals/binding', { site: draft.site, toleranceM: 0, city: 'zagreb', parcelSourceId: null });
-        if (bound.status !== 200 || bound.json?.binding?.coverage !== 'complete') {
-            throw new Error(`${draft.proposalId}: binding ${bound.status} ${bound.json?.binding?.coverage || bound.text.slice(0, 200)}`);
-        }
-        const before = new Set(json.cadastreParcelIds || []);
-        const after = bound.json.binding.parcels.map(parcel => parcel.parcelId);
-        const dropped = [...before].filter(p => !after.includes(p));
-        const gained = after.filter(p => !before.has(p));
-        log(`${draft.proposalId.padEnd(34)} parcels ${before.size} → ${after.length}${dropped.length ? ` · drops ${dropped.join(' ')}` : ''}${gained.length ? ` · adds ${gained.join(' ')}` : ''}`);
-        // validated whole before anything is written; publish() binds again when it writes
-        records.push(canonicalSeedRecord({ ...draft, cadastreParcelIds: after }));
-    }
-    if (!values.apply) { log(`DRY RUN: ${records.length} records not published (add --apply --origin <app>).`); return; }
-    const tokenFile = path.join(os.homedir(), '.config', 'ugt', 'edit-tokens', `${new URL(values.backend).host}.json`);
-    await mkdir(path.dirname(tokenFile), { recursive: true });
-    let tokens = {};
-    try { tokens = JSON.parse(await readFile(tokenFile, 'utf8')); } catch (_) { tokens = {}; }
-    for (const record of records) {
-        const result = await publish(record, { backend: values.backend, origin: values.origin, city: 'zagreb', parcelSourceId: null });
-        if (result.editToken) {
-            tokens[record.proposalId] = { id: result.id, editToken: result.editToken, createdAt: new Date().toISOString() };
-            await writeFile(tokenFile, JSON.stringify(tokens, null, 2), { mode: 0o600 });
-        }
-    }
-    log(`published ${records.length} corrected records · edit tokens in ${tokenFile}`);
-}
-
-if (values.compute) await compute();
-else await publishAll();
+await compute();

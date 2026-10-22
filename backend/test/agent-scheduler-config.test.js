@@ -3,6 +3,8 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { executionPolicy, settlementPolicy, summarizeExecutionPlan } from '../agents/run-policy.js';
+import { SIGNED_SETTLEMENT_STEPS } from '../agents/lifecycle-actions.js';
 
 const require = createRequire(import.meta.url);
 const repoRoot = path.join(os.homedir(), 'code', 'consensus-builder');
@@ -13,15 +15,28 @@ const apps = require('../agents/ecosystem.config.cjs').apps;
 const app = apps.find(item => item.name === 'consensus-builder-agents');
 
 describe('algorithmic agent schedule', () => {
-    it('provides every proposer the same public thumbnail basemap configuration as the API', () => {
-        const apiEnv = require('../ecosystem.config.cjs').apps.find(item => item.name === 'consensus-builder-api').env;
+    it('lets every proposer seed its own land and leaves its action cap room for its pick and its settlements', () => {
+        const personas = JSON.parse(fs.readFileSync(new URL('../agents/personas.json', import.meta.url), 'utf8')).personas;
         const proposers = apps.filter(item => item.script === 'agents/run.mjs');
-        expect(proposers).toHaveLength(4);
-        expect(apiEnv.MAPTILER_API_KEY).toBeTruthy();
-        expect(apiEnv.IPFS_READ_GATEWAY).toBe('https://gateway.pinata.cloud/ipfs');
+        expect(proposers.map(item => item.name).sort()).toEqual(['consensus-builder-affordabot', 'consensus-builder-agents', 'consensus-builder-builder', 'consensus-builder-gentle']);
+        // A settled agreement signs at most four transactions: attest, execute or expire, resolve, claim.
+        const perSettlement = SIGNED_SETTLEMENT_STEPS.length - 1;
         for (const proposer of proposers) {
-            expect(proposer.env.MAPTILER_API_KEY).toBe(apiEnv.MAPTILER_API_KEY);
-            expect(proposer.env.IPFS_READ_GATEWAY).toBe(apiEnv.IPFS_READ_GATEWAY);
+            expect(proposer.args).toContain('--seed-owners');
+            expect(proposer.args).toContain('--live');
+            const name = proposer.args.match(/--persona (\S+)/)[1];
+            const persona = personas.find(item => item.name === name);
+            // The runner's own caps, read the way run.mjs reads them from this env.
+            const policy = executionPolicy(proposer.env);
+            const settle = settlementPolicy(proposer.env);
+            expect(settle.maxPerRun).toBe(3);
+            const picks = summarizeExecutionPlan([{ persona, run: { summary: { picks: Array.from({ length: persona.dailyProposals }, (_, index) => ({ pickId: `p${index}` })) } } }]);
+            expect(policy.maxActions).toBeGreaterThanOrEqual(picks.actionCount + settle.maxPerRun * perSettlement);
+            expect(policy.maxUsdc).toBeGreaterThanOrEqual(picks.maxUsdc);
+            // The proposer renders no thumbnails any more: the index does.
+            expect(proposer.env).not.toHaveProperty('MAPTILER_API_KEY');
+            expect(proposer.env).not.toHaveProperty('AGENT_RETIRE_AFTER_DAYS');
+            expect(proposer.env).not.toHaveProperty('AGENT_LIFECYCLE_LENS_SERVICE_URL');
         }
     });
     it('enables bounded devnet fee funding for all configured actor and lens jobs', () => {
@@ -41,7 +56,8 @@ describe('algorithmic agent schedule', () => {
     it('checkpoints support and society runs before RPC reads and persists pre-action failures', () => {
         const supporter = fs.readFileSync(new URL('../agents/support-run.mjs', import.meta.url), 'utf8');
         const society = fs.readFileSync(new URL('../agents/society-run.mjs', import.meta.url), 'utf8');
-        expect(supporter.indexOf('await startRun')).toBeLessThan(supporter.indexOf('await discoverProposals'));
+        expect(supporter.indexOf('await discoverOpenAgreements')).toBeGreaterThan(-1);
+        expect(supporter.indexOf('await startRun')).toBeLessThan(supporter.indexOf('await discoverOpenAgreements'));
         expect(supporter.indexOf('await startRun')).toBeLessThan(supporter.indexOf('await readSupportEligibility'));
         expect(supporter).toContain('markAgentRunFailed(pool, runId, error');
         expect(society.indexOf('await startRun')).toBeLessThan(society.indexOf('await gatherInputs'));
@@ -63,7 +79,8 @@ describe('algorithmic agent schedule', () => {
         expect(app.args).toContain('--candidates 4');
         expect(app.args).toContain('--controller algorithm');
         expect(app.env).toMatchObject({
-            AGENT_DAILY_ACTION_CAP: '13',
+            AGENT_DAILY_ACTION_CAP: '15',
+            AGENT_SETTLE_MAX_PER_RUN: '3',
             AGENT_DAILY_USDC_CAP: '0.35'
         });
         expect(app.env).not.toHaveProperty('AGENT_LLM_MODEL');
@@ -128,7 +145,7 @@ describe('algorithmic agent schedule', () => {
         ]) {
             const entry = apps.find(item => item.name === name);
             expect(entry).toMatchObject({ script: 'agents/run.mjs', instances: 1, autorestart: false, cron_restart: cron,
-                env: { AGENT_DAILY_ACTION_CAP: '13', AGENT_DAILY_USDC_CAP: '0.35' } });
+                env: { AGENT_DAILY_ACTION_CAP: '15', AGENT_SETTLE_MAX_PER_RUN: '3', AGENT_DAILY_USDC_CAP: '0.35' } });
             expect(entry.args).toContain(`--persona ${persona}`);
             expect(entry.args).toContain('--controller algorithm');
             expect(entry.args).toContain('--slot auto');
@@ -150,18 +167,19 @@ describe('algorithmic agent schedule', () => {
         expect(member).not.toHaveProperty('cron_restart');
     });
 
-    it('materializes deterministic land events after the two actor runs', () => {
+    it('materializes agreement land events with one applied lifecycle pass every 15 minutes', () => {
         const oracle = apps.find(item => item.name === 'consensus-builder-land-oracle');
         expect(oracle).toMatchObject({
-            script: 'scripts/sync-land-events.mjs',
-            args: '--live',
+            script: 'oracle/agreement-lifecycle-job.mjs',
+            args: '--once --apply',
             instances: 1,
             autorestart: false,
-            cron_restart: '30 2 * * *',
+            cron_restart: '*/15 * * * *',
             merge_logs: true,
             env: { LAND_ORACLE_RUN_STATS: path.join(backendLogs, 'land-oracle-stats.json') }
         });
-        const source = fs.readFileSync(new URL('../scripts/sync-land-events.mjs', import.meta.url), 'utf8');
+        expect(fs.existsSync(new URL('../scripts/sync-land-events.mjs', import.meta.url))).toBe(false);
+        const source = fs.readFileSync(new URL('../oracle/agreement-lifecycle-job.mjs', import.meta.url), 'utf8');
         expect(source).toContain('buildLandOracleRunStats');
         expect(source).toContain('writeRunStatsAtomic');
     });

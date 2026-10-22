@@ -1,37 +1,76 @@
+// The public activity feeds, on agreements (plan-design-agreement.md, M3). GET /agent/activity is the
+// explorer's unified actor/action envelope for humans, algorithms and LLM agents; GET /activity/recent
+// the landing page's compact feed of confirmed, useful changes; GET /activity/cities the agreements each
+// city holds, for the globe; GET /agent/runs and /agent/runs/:runId the agent runs behind them. Events
+// come from the index (an agreement proposed, a design published: consensus.agreement, consensus.design),
+// from the chain (the agreement program's instructions, decoded here by their discriminators, and the
+// market and pledge instructions whose subject is an agreement account: consensus.solana_transaction)
+// and from the agent runs' recorded activities (consensus.agent_run). Every event is about an agreement
+// or a design, named by its CID: a chain account becomes its agreement's CID through the account index
+// built from consensus.agreement (the account recorded once minted, else PDA(sponsor, CID)), and a place
+// on the map comes from the site bounds of the agreement's first design, else from its city.
+
 import fs from 'node:fs';
 import path from 'node:path';
+import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
-import { PublicKey } from '@solana/web3.js';
 import { buildAddressBook } from '../solana/address-book.js';
-import { decodeParsedTransaction, loadIdls } from '../solana/tx-decoder.js';
+import { decodeBase58, decodeParsedTransaction, loadIdls } from '../solana/tx-decoder.js';
 import { formatAtomicAmount } from '../utils/x402-payment.js';
-import { normalizeCityCode } from './proposals.js';
+import { AGREEMENT_PROGRAM_ID, AgreementClient, agreementAccountOf } from '../agreements/onchain.js';
+import { normalizeCityCode } from '../utils/city-code.js';
+
+const require = createRequire(import.meta.url);
+const web3 = require('@solana/web3.js');
+// The market program's codec (proposal_market): its id and the market PDA of an agreement account. web3
+// is injected because the codec's own require would resolve from frontend/.
+const marketClient = require('../../frontend/js/solana/market-client.js').configure({ web3 });
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const CHAIN_ACTIONS = Object.freeze({
-    mint_and_fund: 'create',
-    accept_proposal: 'accept',
-    withdraw_acceptance: 'withdrawAcceptance',
-    cancel_and_refund: 'cancel',
-    create_market: 'createMarket',
-    stake: 'stake',
-    resolve: 'resolve',
-    claim: 'claim',
-    donate: 'donate',
-    refund_donation: 'refundMyDonations',
-    release_donations: 'releaseDonations',
-    set_pledge: 'pledge',
-    revoke_pledge: 'revokePledge',
-    fulfill_pledge: 'fulfillPledge',
-    void_pledge: 'voidPledge'
+const MARKET_PROGRAM_ID = marketClient.constants.PROGRAM_ID;
+const USDC_DECIMALS = 6;
+
+// The agreement program's instructions by the hex of their discriminators (the shared codec), and the
+// action each one is in the feeds. tx-decoder.js has no IDL for this program, so its instructions arrive
+// as raw data and an account list whose first account is the agreement (programs/agreement/README.md).
+const AGREEMENT_INSTRUCTIONS = new Map(Object.entries(AgreementClient.IX_DISCRIMINATORS)
+    .map(([name, bytes]) => [Buffer.from(bytes).toString('hex'), name]));
+const AGREEMENT_ACTIONS = Object.freeze({
+    create: 'mint', fund: 'fund', attest: 'attest', execute: 'execute', cancel: 'cancel', expire: 'expire'
 });
-const ACTIVITY_PROGRAMS = new Set(['proposal_nft', 'proposal_market', 'proposal_pledge']);
+// The market and pledge instructions (decoded from their IDLs by tx-decoder.js) the feeds show. Their
+// subject is the agreement account, in the role the programs still call `proposal`; a market instruction
+// without that role names the market, whose PDA the account index maps as well.
+const SUBJECT_ACTIONS = new Map([
+    ['proposal_market', new Map([
+        ['create_market', 'createMarket'], ['stake', 'stake'], ['resolve', 'resolve'], ['claim', 'claim']
+    ])],
+    ['proposal_pledge', new Map([
+        ['donate', 'donate'], ['refund_donation', 'refundMyDonations'], ['release_donations', 'releaseDonations'],
+        ['set_pledge', 'pledge'], ['revoke_pledge', 'revokePledge'], ['fulfill_pledge', 'fulfillPledge'],
+        ['void_pledge', 'voidPledge']
+    ])]
+]);
+// The chain actions the landing feed shows: outcomes, bets and support. Its agreements arrive as proposed
+// from the index; a mint, a fund or an attestation is detail for the explorer.
 const RECENT_CHAIN_ACTIONS = new Set([
-    'createMarket', 'stake', 'accept', 'cancel', 'donate', 'pledge', 'fulfillPledge', 'claim', 'resolve'
+    'execute', 'cancel', 'expire', 'createMarket', 'stake', 'resolve', 'claim', 'donate', 'pledge', 'fulfillPledge'
 ]);
 // The bet's own actions; the landing feed keeps room for them and links them to the bet.
 const BET_ACTIONS = new Set(['createMarket', 'stake', 'resolve', 'claim']);
-const MARKET_PROGRAM_ID = 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB';
+
+// Agreement rows as the feeds read them, with the goal and site bounds of the agreement's first design.
+const AGREEMENT_ROWS = `
+    SELECT a.cid, a.city, a.title, a.created_at, a.onchain, a.content->>'sponsor' AS sponsor,
+           d.goal AS design_goal, d.bounds AS design_bounds
+      FROM consensus.agreement a
+      LEFT JOIN consensus.design d ON d.cid = a.design_cids[1]`;
+// The agreements that have a chain account, or can have one: recorded once minted, derived from a sponsor.
+const WITH_ACCOUNT = `a.onchain IS NOT NULL OR a.content->>'sponsor' IS NOT NULL`;
+const DESIGN_ROWS = 'SELECT cid, city, goal, title, bounds, created_at FROM consensus.design';
+const TRANSACTION_ROWS = 'SELECT signature, slot, block_time, raw, created_at FROM consensus.solana_transaction';
+
+const iso = value => (value instanceof Date ? value.toISOString() : value ?? null);
 
 function readPersonas() {
     try {
@@ -51,94 +90,28 @@ function accountFor(instruction, role) {
     return instruction?.accounts?.find(account => account.role === role)?.address || null;
 }
 
-function validPosition(value) {
-    return Array.isArray(value) && value.length >= 2
-        && Number.isFinite(value[0]) && Number.isFinite(value[1])
-        && Number(value[0]) >= -180 && Number(value[0]) <= 180
-        && Number(value[1]) >= -90 && Number(value[1]) <= 90;
+// PDAs are pure functions of their seeds, and the feeds derive the same ones on every request.
+const derivedAccounts = new Map();
+function derived(key, derive) {
+    if (!derivedAccounts.has(key)) derivedAccounts.set(key, derive());
+    return derivedAccounts.get(key);
 }
 
-function geometryBounds(value, bounds = null) {
-    if (!value || typeof value !== 'object') return bounds;
-    if (validPosition(value)) {
-        const lon = Number(value[0]);
-        const lat = Number(value[1]);
-        if (!bounds) bounds = [lon, lat, lon, lat];
-        else {
-            bounds[0] = Math.min(bounds[0], lon);
-            bounds[1] = Math.min(bounds[1], lat);
-            bounds[2] = Math.max(bounds[2], lon);
-            bounds[3] = Math.max(bounds[3], lat);
-        }
-    } else if (Array.isArray(value)) {
-        for (const item of value) bounds = geometryBounds(item, bounds);
-    } else if (value.type === 'Feature') bounds = geometryBounds(value.geometry, bounds);
-    else if (value.type === 'FeatureCollection') bounds = geometryBounds(value.features, bounds);
-    else if (value.coordinates) bounds = geometryBounds(value.coordinates, bounds);
-    else if (value.geometry) bounds = geometryBounds(value.geometry, bounds);
-    else if (value.buildings || value.parcels || value.polygons) {
-        bounds = geometryBounds(value.buildings || value.parcels || value.polygons, bounds);
-    }
-    return bounds;
-}
-
-function locationFromProposal(row = {}) {
-    const data = row.proposal_data && typeof row.proposal_data === 'object' ? row.proposal_data : {};
-    const geometries = [
-        data.geometry,
-        data.structureProposal?.geometry,
-        data.roadProposal?.definition?.polygon,
-        data.roadProposal?.definition?.features,
-        data.reparcellization?.polygons,
-        data.site,
-        row.site_geometry
-    ];
-    for (const candidate of geometries) {
-        const bounds = geometryBounds(candidate);
-        if (bounds) {
-            const [west, south, east, north] = bounds;
-            const lat = (south + north) / 2;
-            const lon = (west + east) / 2;
-            if (Number.isFinite(lat) && Number.isFinite(lon)) return { lat, lon };
-        }
-    }
-    for (const bounds of [data.bounds, row.bounds]) {
-        let west, south, east, north;
-        if (Array.isArray(bounds) && bounds.length === 4) [west, south, east, north] = bounds;
-        else if (bounds && typeof bounds === 'object') {
-            west = bounds.west ?? bounds.minX ?? bounds.minLng;
-            south = bounds.south ?? bounds.minY ?? bounds.minLat;
-            east = bounds.east ?? bounds.maxX ?? bounds.maxLng;
-            north = bounds.north ?? bounds.maxY ?? bounds.maxLat;
-        }
-        const corners = [[west, south], [east, north]];
-        const numbers = corners.flat();
-        if (numbers.every(Number.isFinite) && validPosition(corners[0]) && validPosition(corners[1])
-            && Number(west) <= Number(east) && Number(south) <= Number(north)) {
-            return { lat: (Number(south) + Number(north)) / 2, lon: (Number(west) + Number(east)) / 2 };
-        }
-    }
-    return undefined;
-}
-
-function withProposalLocation(event, proposal) {
-    const location = locationFromProposal(proposal);
-    return location ? { ...event, location } : event;
-}
-
-export function proposalAccountIndex(rows = []) {
+/**
+ * Chain accounts to the agreements they belong to: { cid, account } by the agreement account and by the
+ * PDA of its market. The agreement account is the one the index recorded once minted, else the one the
+ * agreement's sponsor and CID derive; an agreement with neither has no account to find. Rows are
+ * consensus.agreement rows with `cid`, `onchain` and `sponsor` (content.sponsor).
+ */
+export function agreementAccountIndex(rows = []) {
     const index = new Map();
     for (const row of rows) {
-        const account = row.proposal_account;
-        if (!account || !row.proposal_id) continue;
-        index.set(account, String(row.proposal_id));
-        try {
-            const market = PublicKey.findProgramAddressSync(
-                [Buffer.from('market'), new PublicKey(account).toBuffer()],
-                new PublicKey(MARKET_PROGRAM_ID)
-            )[0].toBase58();
-            index.set(market, String(row.proposal_id));
-        } catch { /* invalid legacy account: keep the public proposal usable */ }
+        const account = row.onchain?.account
+            || derived(`agreement:${row.sponsor}:${row.cid}`, () => agreementAccountOf(row.cid, row.sponsor ?? null));
+        if (!account) continue;
+        const entry = { cid: row.cid, account };
+        index.set(account, entry);
+        index.set(derived(`market:${account}`, () => marketClient.getMarketPda(account)[0].toBase58()), entry);
     }
     return index;
 }
@@ -158,74 +131,63 @@ function activityActor(decoded, instruction, book) {
     };
 }
 
-function x402Event(decoded, row, book) {
-    if (!book?.feePayer || decoded.feePayer?.address !== book.feePayer) return null;
-    const payment = decoded.amounts?.find(amount => amount.kind === 'token'
-        && amount.from?.owner?.address && amount.to?.owner?.address === book.treasury);
-    if (!payment) return null;
-    const wallet = payment.from.owner.address;
-    const entry = book.entryFor?.(wallet);
-    const persona = entry?.persona || null;
-    const actor = {
-        id: wallet, name: persona || payment.from.owner.label || wallet,
-        kind: persona ? 'agent' : 'human', controller: persona ? 'algorithm' : 'human', wallet
-    };
-    return {
-        id: `chain:${decoded.signature}:x402`, source: 'live', actor,
-        action: { type: 'x402Payment', amount: payment.amount, asset: payment.symbol || payment.mint },
-        entity: null, ok: decoded.status !== 'failed', message: decoded.summary,
-        transaction: decoded.signature, occurredAt: decoded.time || null,
-        recordedAt: decoded.time || row.created_at || null,
-        provenance: { source: 'solana_transaction', slot: decoded.slot, program: 'spl-token', instruction: 'transfer' }
-    };
-}
-
-function chainAction(instruction, proposalId) {
-    const type = CHAIN_ACTIONS[instruction.action];
-    const action = { type };
-    if (proposalId) action.proposalId = proposalId;
-    if (instruction.action === 'stake') action.side = Number(instruction.args?.side) === 1 ? 'yes' : 'no';
-    if (instruction.args?.amount != null && ['stake', 'donate', 'set_pledge'].includes(instruction.action)) {
-        action.amount = formatAtomicAmount(String(instruction.args.amount), 6);
+// What one top-level instruction does to an agreement, or null when it is none the feeds show:
+// { instruction (its name), type (the action), subject (the agreement or market account), fields }.
+function agreementStep(instruction) {
+    if (instruction.program?.address === AGREEMENT_PROGRAM_ID) {
+        const data = typeof instruction.data === 'string' ? decodeBase58(instruction.data) : null;
+        const name = data && data.length >= 8 ? AGREEMENT_INSTRUCTIONS.get(data.subarray(0, 8).toString('hex')) : null;
+        const type = name ? AGREEMENT_ACTIONS[name] : null;
+        if (!type) return null;
+        const fields = {};
+        // fund(lamports: u64): what this instruction moved into the escrow.
+        if (name === 'fund' && data.length >= 16) fields.lamports = data.readBigUInt64LE(8).toString();
+        return { instruction: name, type, subject: instruction.accounts?.[0]?.address || null, fields };
     }
-    if (instruction.args?.parcel_id) action.parcelId = instruction.args.parcel_id;
-    return action;
+    const type = SUBJECT_ACTIONS.get(instruction.program?.name)?.get(instruction.action);
+    if (!type) return null;
+    const fields = {};
+    if (instruction.action === 'stake') fields.side = Number(instruction.args?.side) === 1 ? 'yes' : 'no';
+    if (instruction.args?.amount != null && ['stake', 'donate', 'set_pledge'].includes(instruction.action)) {
+        fields.amount = formatAtomicAmount(String(instruction.args.amount), USDC_DECIMALS);
+    }
+    return {
+        instruction: instruction.action, type,
+        subject: accountFor(instruction, 'proposal') || accountFor(instruction, 'market'), fields
+    };
 }
 
-/** Project confirmed program instructions into the same actor/action envelope as agent runs. */
+/**
+ * Project confirmed program instructions on indexed agreements into the same actor/action envelope as
+ * agent runs. An instruction on an account the index does not map (another wallet's account for a
+ * published CID, a market on something else) is not an agreement's activity and is left out.
+ */
 export function chainEvents(rows = [], {
     book,
     idls,
-    proposalIdsByAccount = new Map(),
+    agreementsByAccount = new Map(),
     decode = decodeParsedTransaction
 } = {}) {
     const events = [];
     for (const row of rows) {
         const decoded = decode(row.raw, { book, idls });
         if (!decoded?.signature) continue;
-        const relevant = (decoded.instructions || []).filter(instruction =>
-            !instruction.inner
-            && ACTIVITY_PROGRAMS.has(instruction.program?.name)
-            && CHAIN_ACTIONS[instruction.action]
-        );
-        relevant.forEach((instruction, instructionIndex) => {
-            const proposalAccount = accountFor(instruction, 'proposal');
-            const marketAccount = accountFor(instruction, 'market');
-            const proposalId = proposalIdsByAccount.get(proposalAccount)
-                || proposalIdsByAccount.get(marketAccount)
-                || proposalAccount
-                || marketAccount
-                || null;
+        (decoded.instructions || []).forEach((instruction, position) => {
+            if (instruction.inner) return;
+            const step = agreementStep(instruction);
+            const agreement = step?.subject ? agreementsByAccount.get(step.subject) : null;
+            if (!agreement) return;
             const actor = activityActor(decoded, instruction, book);
-            const action = chainAction(instruction, proposalId);
+            const action = { type: step.type, agreementCid: agreement.cid, ...step.fields };
             events.push({
-                id: `chain:${decoded.signature}:${instruction.index ?? instructionIndex}:${action.type}`,
+                id: `chain:${decoded.signature}:${instruction.index ?? position}:${action.type}`,
                 source: 'live',
                 actor,
                 action,
-                entity: proposalId ? { type: 'proposal', id: proposalId } : null,
+                entity: { type: 'agreement', id: agreement.cid },
+                agreementAccount: agreement.account,
                 ok: decoded.status === 'success',
-                message: `${actor.name} submitted ${action.type}${proposalId ? ` for proposal ${proposalId}` : ''}.`,
+                message: `${actor.name} submitted ${action.type} for agreement ${agreement.cid}.`,
                 transaction: decoded.signature,
                 occurredAt: decoded.time || null,
                 recordedAt: decoded.time || row.created_at || null,
@@ -233,14 +195,69 @@ export function chainEvents(rows = [], {
                     source: 'solana_transaction',
                     slot: decoded.slot,
                     program: instruction.program?.address || null,
-                    instruction: instruction.action
+                    instruction: step.instruction
                 }
             });
         });
-        const payment = x402Event(decoded, row, book);
-        if (payment) events.push(payment);
     }
     return events;
+}
+
+/** One `propose` event per agreement row: the agreement published to the index, when it arrived there. */
+export function agreementEvents(rows = []) {
+    return rows.map(row => ({
+        id: `agreement:${row.cid}:proposed`, source: 'live',
+        action: { type: 'propose', agreementCid: row.cid },
+        entity: { type: 'agreement', id: row.cid },
+        ok: true, transaction: null, occurredAt: iso(row.created_at), recordedAt: iso(row.created_at),
+        message: `Agreement ${row.title || row.cid} was proposed.`
+    }));
+}
+
+/** One `design` event per design row: the design published to the index, when it arrived there. */
+export function designEvents(rows = []) {
+    return rows.map(row => ({
+        id: `design:${row.cid}:published`, source: 'live',
+        action: { type: 'design', designCid: row.cid },
+        entity: { type: 'design', id: row.cid },
+        ok: true, transaction: null, occurredAt: iso(row.created_at), recordedAt: iso(row.created_at),
+        message: `Design ${row.title || row.cid} was published.`
+    }));
+}
+
+// The centre of a site's bounds ({ west, south, east, north }, consensus.design.bounds), or null.
+function centreOf(bounds) {
+    if (!bounds || typeof bounds !== 'object') return null;
+    const { west, south, east, north } = bounds;
+    if (![west, south, east, north].every(value => typeof value === 'number' && Number.isFinite(value))) return null;
+    if (west < -180 || east > 180 || south < -90 || north > 90 || west > east || south > north) return null;
+    return { lat: (south + north) / 2, lon: (west + east) / 2 };
+}
+
+const byCid = rows => new Map(rows.map(row => [row.cid, row]));
+
+// What a reader shows beside an event: the name of the agreement or design it is about, the goal (the
+// design type) of that design or of the agreement's first design, the city, and a point on the map, the
+// centre of that design's site bounds (without one the city is the place).
+function withSubject(event, { agreements = new Map(), designs = new Map() } = {}) {
+    const { type, id } = event.entity || {};
+    if (type === 'agreement' && agreements.has(id)) {
+        const row = agreements.get(id);
+        const location = centreOf(row.design_bounds);
+        return {
+            ...event, agreementName: row.title ?? null, designGoal: row.design_goal ?? null, cityId: row.city ?? null,
+            ...(location ? { location } : {})
+        };
+    }
+    if (type === 'design' && designs.has(id)) {
+        const row = designs.get(id);
+        const location = centreOf(row.bounds);
+        return {
+            ...event, designName: row.title ?? null, designGoal: row.goal ?? null, cityId: row.city ?? null,
+            ...(location ? { location } : {})
+        };
+    }
+    return event;
 }
 
 function controllerOf(summary = {}) {
@@ -273,6 +290,34 @@ function activityActorForRun(eventActor, runActor, persona) {
     return isRunPersona && !actor.wallet && runActor.wallet ? { ...actor, wallet: runActor.wallet } : actor;
 }
 
+// A proposer pick with what the run made of it (summary.designs, .agreements, .mints and .onchain are
+// keyed by the pick's candidateId): its design, its agreement and that agreement's chain account.
+function runPick(summary, pick) {
+    const id = pick.candidateId;
+    return {
+        candidateId: id || null,
+        name: pick.name || null,
+        rationale: pick.rationale || null,
+        designCid: summary.designs?.[id]?.cid || null,
+        agreementCid: summary.agreements?.[id]?.cid || null,
+        agreementAccount: summary.mints?.[id]?.account || summary.onchain?.[id]?.account || null
+    };
+}
+
+// The picks of a run by the CIDs of the design and the agreement it published for each, so an activity
+// about either finds the rationale it was chosen with.
+function picksBySubject(summary) {
+    const picks = new Map();
+    for (const pick of Array.isArray(summary.picks) ? summary.picks : []) {
+        const made = runPick(summary, pick);
+        for (const cid of [made.designCid, made.agreementCid]) if (cid) picks.set(cid, made);
+    }
+    return picks;
+}
+
+// A run's events are the activities it recorded (every runner records what it did through the shared
+// action engine); a run that recorded none (it chose nothing, replayed what was done, or stopped before
+// acting) still shows that it ran.
 function runEvents(row, book = null) {
     const summary = row.summary || {};
     const actor = runActor(row, summary, book);
@@ -284,11 +329,9 @@ function runEvents(row, book = null) {
         modelCostUsd: summary.decisionResult?.costUsd ?? summary.pickCostUsd ?? null,
         batchId: summary.decisionResult?.batchId || summary.batchId || null
     };
-    const pickForProposal = (proposalId) => (summary.picks || [])
-        .find(pick => String(pick.proposalId) === String(proposalId));
+    const picks = picksBySubject(summary);
     const withRunContext = (event) => {
-        const proposalId = event?.entity?.id || event?.action?.proposalId;
-        const pick = proposalId ? pickForProposal(proposalId) : null;
+        const pick = picks.get(event?.entity?.id) || null;
         return {
             ...event,
             // The activity envelope remains shared. These are optional evidence fields, rather than
@@ -314,97 +357,21 @@ function runEvents(row, book = null) {
             batchId: event.batchId || base.batchId
         })).map(withRunContext);
     }
-    const events = [{
+    return [withRunContext({
         ...base, id: `run:${row.run_id}:${row.stage || 'started'}`,
         action: { type: 'run_status', stage: row.stage || 'started' },
         message: `${row.persona} agent run ${row.status}: ${row.stage || 'started'}.`
-    }];
-    const picks = Array.isArray(summary.picks) ? summary.picks : [];
-    for (const pick of picks) {
-        const mint = summary.mints?.[pick.candidateId];
-        const post = summary.posts?.[pick.candidateId];
-        const stake = summary.stakes?.[pick.candidateId];
-        if (mint) events.push({
-            ...base, id: `mint:${row.run_id}:${pick.proposalId}`,
-            // The lens chosen at mint travels with the create event so the public audit can see it.
-            action: { type: 'create', proposalId: pick.proposalId, ...(summary.lensChoice?.lens?.length ? { lens: summary.lensChoice.lens } : {}) },
-            entity: { type: 'proposal', id: String(pick.proposalId) }, transaction: mint.signature || mint.transactionHash || null,
-            message: `${row.persona} created proposal ${pick.name || pick.proposalId}.`
-        });
-        if (post) events.push({
-            ...base, id: `post:${row.run_id}:${pick.proposalId}`, action: { type: 'publish', proposalId: pick.proposalId },
-            entity: { type: 'proposal', id: String(pick.proposalId) }, transaction: post.tx || null,
-            message: `${row.persona} published proposal ${pick.name || pick.proposalId} through x402.`
-        });
-        if (stake) events.push({
-            ...base, id: `stake:${row.run_id}:${pick.proposalId}`, action: { type: 'stake', proposalId: pick.proposalId },
-            entity: { type: 'proposal', id: String(pick.proposalId) }, transaction: stake.stakeSignature || null,
-            message: `${row.persona} backed proposal ${pick.name || pick.proposalId}.`
-        });
-    }
-    return events.map(withRunContext);
+    })];
 }
 
-function proposalEvents(row) {
-    const agent = row.agent || {};
-    const proposalId = String(row.proposal_id);
-    const persona = String(agent.persona || 'agent');
-    const wallet = agent.wallet || null;
-    const controller = agent.controller || 'llm';
-    return [withProposalLocation({
-        id: `proposal:${proposalId}:published`,
-        source: 'live',
-        actor: { id: wallet || persona, name: persona, kind: 'agent', controller, wallet },
-        action: { type: 'publish', proposalId },
-        entity: { type: 'proposal', id: proposalId },
-        ok: true,
-        message: `${persona} published proposal ${row.display_name || proposalId} through x402.`,
-        transaction: agent.paid?.tx || null,
-        occurredAt: row.created_at,
-        recordedAt: row.updated_at || row.created_at,
-        runId: agent.run_id || null
-    }, row)];
-}
-
-function publicProposalEvents(rows = []) {
-    return rows.filter(row => row.proposal_id).map(row => withProposalLocation({
-        id: `proposal:${row.proposal_id}:created`, source: 'live',
-        action: { type: 'create', proposalId: String(row.proposal_id) },
-        entity: { type: 'proposal', id: String(row.proposal_id) },
-        proposalType: row.proposal_data?.goal || null,
-        proposalPrimaryType: row.proposal_data?.primaryType || null,
-        proposalName: row.display_name || null, cityId: row.city || null,
-        occurredAt: row.created_at || null, transaction: null,
-        message: `Proposal ${row.display_name || row.proposal_id} was created.`
-    }, row));
-}
-
-function executedProposalEvents(rows = [], proposalIdsByAccount = new Map(), proposalsById = new Map()) {
-    return rows.flatMap(row => {
-        const proposalId = proposalIdsByAccount.get(String(row.subject_id));
-        const proposal = proposalId ? proposalsById.get(String(proposalId)) : null;
-        if (!proposalId || !proposal) return [];
-        return [withProposalLocation({
-            id: row.event_id, source: 'live', action: { type: 'execute', proposalId },
-            entity: { type: 'proposal', id: proposalId }, outcome: 'executed',
-            proposalType: proposal.proposal_data?.goal || null,
-            proposalPrimaryType: proposal.proposal_data?.primaryType || null,
-            proposalName: proposal.display_name || null, cityId: proposal.city || null,
-            occurredAt: row.source_observed_at, transaction: row.transaction_signature || null,
-            message: `Proposal ${proposal.display_name || proposalId} was executed.`,
-            provenance: { source: 'verified_proposal_lifecycle' }
-        }, proposal)];
-    });
-}
-
-// Scope filters for /agent/activity (actor, source, action, proposal, run). Chain events are decoded
+// Scope filters for /agent/activity (actor, source, action, agreement, run). Chain events are decoded
 // in JS, so filtering happens after projection; a filtered request scans a wider, still bounded,
 // window per source and reports it, so a client can tell "none in the window" from "none at all".
 export const ACTIVITY_SCAN_WINDOW = 1000;
 
 /**
  * The newest `limit` events, newest first, keeping up to half the places for bets: a burst of new
- * proposals (a whole plan imported at once) must not push every bet off the landing feed. Places
+ * agreements (a whole superblock proposed at once) must not push every bet off the landing feed. Places
  * the bets do not use go to the other events, and the other way round.
  */
 export function recentWithBets(events = [], limit = 12) {
@@ -417,7 +384,7 @@ export function recentWithBets(events = [], limit = 12) {
     const chosen = new Set([...bets.slice(0, betCount), ...rest.slice(0, limit - betCount)]);
     return sorted.filter(event => chosen.has(event));
 }
-const ACTIVITY_FILTER_FIELDS = ['actor', 'source', 'action', 'proposal', 'run'];
+const ACTIVITY_FILTER_FIELDS = ['actor', 'source', 'action', 'agreement', 'run'];
 
 export function activityFilters(query = {}) {
     const filters = {};
@@ -432,11 +399,14 @@ export function matchesActivityFilters(event, filters) {
     if (filters.actor && ![event.actor?.id, event.actor?.wallet, event.actor?.name].includes(filters.actor)) return false;
     if (filters.source && event.source !== filters.source) return false;
     if (filters.action && event.action?.type !== filters.action) return false;
-    if (filters.proposal && ![event.entity?.type === 'proposal' ? event.entity.id : null, event.action?.proposalId].includes(filters.proposal)) return false;
+    if (filters.agreement && ![event.entity?.type === 'agreement' ? event.entity.id : null, event.action?.agreementCid].includes(filters.agreement)) return false;
     if (filters.run && event.runId !== filters.run) return false;
     return true;
 }
 
+// One event per action, entity and transaction (else per id), oldest first. A later list replaces an
+// earlier one's event: a run's own record of a chain action replaces the decoded one, and a run's
+// design or propose replaces the index's.
 function mergeEvents(...lists) {
     const byAction = new Map();
     lists.flat().forEach(event => {
@@ -473,14 +443,10 @@ function runDetail(row, costs = [], book = null) {
         modelCostUsd: recordedCost || (Number.isFinite(summaryCost) ? summaryCost : 0),
         batchId: summary.decisionResult?.batchId || summary.batchId || costs[0]?.batch_id || null,
         outcome: summary.outcome || null,
-        lensChoice: summary.lensChoice || null,
+        // The lens key every agreement of the run names.
+        lens: summary.lens || null,
         support: summary.support || null,
-        picks: Array.isArray(summary.picks) ? summary.picks.map(pick => ({
-            candidateId: pick.candidateId || null,
-            proposalId: pick.proposalId || null,
-            name: pick.name || null,
-            rationale: pick.rationale || null
-        })) : [],
+        picks: Array.isArray(summary.picks) ? summary.picks.map(pick => runPick(summary, pick)) : [],
         costs: costs.map(cost => ({
             item: cost.item,
             provider: cost.provider,
@@ -496,19 +462,19 @@ function runDetail(row, costs = [], book = null) {
     };
 }
 
-// Published proposals per city, for the globe's city markers: rows of GROUP BY city folded by
-// the city's id ('zg' and 'zagreb' are one city), largest first. Rows without a city are not a
-// place on the globe and are left out.
-export function cityProposalCounts(rows = []) {
+// Agreements per city, for the globe's city markers: rows of GROUP BY city folded by the city's id
+// ('zg' and 'zagreb' are one city), largest first. Rows without a city are not a place on the globe
+// and are left out.
+export function cityAgreementCounts(rows = []) {
     const counts = new Map();
     for (const row of rows) {
         const id = normalizeCityCode(row?.city);
-        const proposals = Number(row?.proposals);
-        if (!id || !Number.isFinite(proposals) || proposals <= 0) continue;
-        counts.set(id, (counts.get(id) || 0) + Math.floor(proposals));
+        const agreements = Number(row?.agreements);
+        if (!id || !Number.isFinite(agreements) || agreements <= 0) continue;
+        counts.set(id, (counts.get(id) || 0) + Math.floor(agreements));
     }
-    return Array.from(counts, ([id, proposals]) => ({ id, proposals }))
-        .sort((a, b) => b.proposals - a.proposals || a.id.localeCompare(b.id));
+    return Array.from(counts, ([id, agreements]) => ({ id, agreements }))
+        .sort((a, b) => b.agreements - a.agreements || a.id.localeCompare(b.id));
 }
 
 export function setupAgentActivityRoute(app, pool, {
@@ -517,45 +483,19 @@ export function setupAgentActivityRoute(app, pool, {
     idls = loadIdls(path.join(__dirname, '..', '..', 'blockchain', 'solana', 'idl')),
     decode = decodeParsedTransaction
 } = {}) {
-    // A compact public feed of confirmed, useful changes. This deliberately reads public proposal
-    // rows and verified terminal oracle facts alongside successful confirmed transactions.
+    // A compact public feed of confirmed, useful changes. This deliberately reads the agreements
+    // proposed to the index alongside successful confirmed transactions on indexed agreements: their
+    // outcomes (execute, cancel, expire), bets and support.
     app.get('/activity/recent', async (req, res) => {
         res.set('Cache-Control', 'no-store');
         try {
             const requested = Number(req.query.limit);
             const limit = Number.isInteger(requested) && requested > 0 ? Math.min(requested, 30) : 12;
-            const [proposals, proposalAccounts, lifecycle, transactions, marketTransactions] = await Promise.all([
+            const [proposed, withAccount, transactions, marketTransactions] = await Promise.all([
+                pool.query(`${AGREEMENT_ROWS} ORDER BY a.created_at DESC, a.cid LIMIT $1`, [limit]),
+                pool.query(`${AGREEMENT_ROWS} WHERE ${WITH_ACCOUNT}`),
                 pool.query(
-                    `SELECT proposal_id, city, proposal_data, bounds,
-                            ST_AsGeoJSON(site)::json AS site_geometry,
-                            COALESCE(name, title, proposal_data->>'name', proposal_data->>'title') AS display_name,
-                            created_at
-                       FROM proposal
-                      ORDER BY created_at DESC
-                      LIMIT $1`, [limit]
-                ),
-                pool.query(
-                    `SELECT proposal_id, city, proposal_data, bounds,
-                            ST_AsGeoJSON(site)::json AS site_geometry,
-                            COALESCE(name, title, proposal_data->>'name', proposal_data->>'title') AS display_name,
-                            COALESCE(onchain_data->>'proposalId',
-                                     proposal_data #>> '{onchain,proposalId}',
-                                     proposal_data #>> '{onchainData,proposalId}') AS proposal_account
-                       FROM proposal
-                      WHERE COALESCE(onchain_data->>'proposalId',
-                                     proposal_data #>> '{onchain,proposalId}',
-                                     proposal_data #>> '{onchainData,proposalId}') IS NOT NULL`
-                ),
-                pool.query(
-                    `SELECT event_id, subject_id, outcome, source_observed_at, transaction_signature
-                       FROM consensus.land_event
-                      WHERE event_type = 'proposal_lifecycle' AND outcome = 'executed'
-                      ORDER BY source_observed_at DESC
-                      LIMIT $1`, [limit]
-                ),
-                pool.query(
-                    `SELECT signature, slot, block_time, raw, created_at
-                       FROM consensus.solana_transaction
+                    `${TRANSACTION_ROWS}
                       WHERE cluster = 'devnet'
                       ORDER BY block_time DESC NULLS LAST, slot DESC
                       LIMIT $1`, [limit * 4]
@@ -563,67 +503,54 @@ export function setupAgentActivityRoute(app, pool, {
                 // The market program's own recent transactions, so bets reach the feed even when
                 // a burst of mints fills the general window above.
                 pool.query(
-                    `SELECT signature, slot, block_time, raw, created_at
-                       FROM consensus.solana_transaction
+                    `${TRANSACTION_ROWS}
                       WHERE cluster = 'devnet' AND touched_addresses @> ARRAY[$1]::text[]
                       ORDER BY block_time DESC NULLS LAST, slot DESC
                       LIMIT $2`, [MARKET_PROGRAM_ID, limit * 2]
                 )
             ]);
-            const byId = new Map(proposalAccounts.rows.map(row => [String(row.proposal_id), row]));
-            const accountIds = proposalAccountIndex(proposalAccounts.rows);
-            const dbProposalEvents = publicProposalEvents(proposals.rows);
-            const executedEvents = executedProposalEvents(lifecycle.rows, accountIds, byId);
             const transactionRows = [...new Map([...transactions.rows, ...marketTransactions.rows]
                 .map(row => [row.signature, row])).values()];
             const confirmedChainEvents = chainEvents(transactionRows, {
-                book, idls, proposalIdsByAccount: accountIds, decode
-            }).filter(event => event.ok === true
-                && RECENT_CHAIN_ACTIONS.has(event.action?.type)
-                && byId.has(String(event.action?.proposalId)))
-                .map(event => {
-                    const proposal = byId.get(String(event.action.proposalId));
-                    return withProposalLocation({ ...event,
-                        proposalType: proposal.proposal_data?.goal || null,
-                        proposalPrimaryType: proposal.proposal_data?.primaryType || null,
-                        proposalName: proposal.display_name || null, cityId: proposal.city || null,
-                        ...(BET_ACTIONS.has(event.action.type) && proposal.proposal_account
-                            ? { proposalAccount: proposal.proposal_account } : {})
-                    }, proposal);
-                });
-            const events = recentWithBets(mergeEvents(dbProposalEvents, executedEvents, confirmedChainEvents), limit);
+                book, idls, agreementsByAccount: agreementAccountIndex(withAccount.rows), decode
+            }).filter(event => event.ok === true && RECENT_CHAIN_ACTIONS.has(event.action.type));
+            const agreements = byCid([...withAccount.rows, ...proposed.rows]);
+            const events = recentWithBets(mergeEvents(agreementEvents(proposed.rows), confirmedChainEvents), limit)
+                .map(event => withSubject(event, { agreements }));
             return res.json({ events, source: 'live' });
         } catch (error) {
-            console.error('GET /activity/recent failed', error);
+            console.error(`[${new Date().toISOString()}] GET /activity/recent failed:`, error);
             return res.status(500).json({ error: 'Failed to read recent activity', source: 'live' });
         }
     });
 
-    // How many published proposals each city holds — what the globe paints its city dots and
-    // label badges with. One grouped count; a minute of caching is plenty for a globe.
+    // How many agreements each city holds: what the globe paints its city dots and label badges with.
+    // One grouped count; a minute of caching is plenty for a globe.
     app.get('/activity/cities', async (req, res) => {
         res.set('Cache-Control', 'public, max-age=60');
         try {
             const { rows } = await pool.query(
-                `SELECT city, COUNT(*)::int AS proposals
-                   FROM proposal
-                  WHERE city IS NOT NULL AND LOWER(COALESCE(lifecycle_status, '')) <> 'draft'
+                `SELECT city, COUNT(*)::int AS agreements
+                   FROM consensus.agreement
+                  WHERE city IS NOT NULL
                   GROUP BY city`
             );
-            return res.json({ cities: cityProposalCounts(rows) });
+            return res.json({ cities: cityAgreementCounts(rows) });
         } catch (error) {
-            console.error('GET /activity/cities failed', error);
-            return res.status(500).json({ error: 'Failed to count proposals per city' });
+            console.error(`[${new Date().toISOString()}] GET /activity/cities failed:`, error);
+            return res.status(500).json({ error: 'Failed to count agreements per city' });
         }
     });
 
+    // The explorer's feed: agreements proposed and designs published to the index, decoded chain actions
+    // on indexed agreements and the agent runs' recorded activities, the newest `limit` of them.
     app.get('/agent/activity', async (req, res) => {
         try {
             const limit = asLimit(req.query.limit);
             const filters = activityFilters(req.query);
             const filtered = Object.keys(filters).length > 0;
             const window = filtered ? ACTIVITY_SCAN_WINDOW : limit;
-            const [runs, proposals, transactions, proposalAccounts, publicProposals, lifecycle] = await Promise.all([
+            const [runs, transactions, withAccount, proposed, designs] = await Promise.all([
                 pool.query(
                     `SELECT run_id, persona, mode, status, stage, summary, started_at, updated_at
                        FROM consensus.agent_run
@@ -632,85 +559,40 @@ export function setupAgentActivityRoute(app, pool, {
                     [window]
                 ),
                 pool.query(
-                    `SELECT proposal_id, proposal_data, bounds,
-                            ST_AsGeoJSON(site)::json AS site_geometry,
-                            COALESCE(name, title, proposal_data->>'name', proposal_data->>'title') AS display_name,
-                            proposal_data->'agent' AS agent,
-                            created_at, updated_at
-                       FROM proposal
-                      WHERE proposal_data ? 'agent'
-                        -- x402 settlement or a server-verified chain signer proves the agent.
-                        -- A metadata claim alone is never public agent provenance.
-                        AND (agent_payment_id IS NOT NULL OR (
-                            proposal_data #>> '{chainMirror,agent,wallet}' = onchain_data->>'owner'
-                            AND proposal_data #>> '{chainMirror,ref,tokenId}' = onchain_data->>'proposalId'
-                        ))
-                      ORDER BY created_at DESC
-                      LIMIT $1`,
-                    [window]
-                ),
-                pool.query(
-                    `SELECT signature, slot, block_time, raw, created_at
-                       FROM consensus.solana_transaction
+                    `${TRANSACTION_ROWS}
                       WHERE cluster = 'devnet'
                       ORDER BY block_time DESC NULLS LAST, slot DESC
                       LIMIT $1`,
                     [window]
                 ),
-                pool.query(
-                    `SELECT proposal_id, city, proposal_data, bounds,
-                            ST_AsGeoJSON(site)::json AS site_geometry,
-                            COALESCE(name, title, proposal_data->>'name', proposal_data->>'title') AS display_name,
-                            COALESCE(onchain_data->>'proposalId',
-                                     proposal_data #>> '{onchain,proposalId}',
-                                     proposal_data #>> '{onchainData,proposalId}') AS proposal_account
-                       FROM proposal
-                      WHERE COALESCE(onchain_data->>'proposalId',
-                                     proposal_data #>> '{onchain,proposalId}',
-                                     proposal_data #>> '{onchainData,proposalId}') IS NOT NULL`
-                ),
-                pool.query(
-                    `SELECT proposal_id, city, proposal_data, bounds,
-                            ST_AsGeoJSON(site)::json AS site_geometry,
-                            COALESCE(name, title, proposal_data->>'name', proposal_data->>'title') AS display_name,
-                            created_at
-                       FROM proposal
-                      ORDER BY created_at DESC
-                      LIMIT $1`, [window]
-                ),
-                pool.query(
-                    `SELECT event_id, subject_id, outcome, source_observed_at, transaction_signature
-                       FROM consensus.land_event
-                      WHERE event_type = 'proposal_lifecycle' AND outcome = 'executed'
-                      ORDER BY source_observed_at DESC
-                      LIMIT $1`, [window]
-                )
+                pool.query(`${AGREEMENT_ROWS} WHERE ${WITH_ACCOUNT}`),
+                pool.query(`${AGREEMENT_ROWS} ORDER BY a.created_at DESC, a.cid LIMIT $1`, [window]),
+                pool.query(`${DESIGN_ROWS} ORDER BY created_at DESC, cid LIMIT $1`, [window])
             ]);
             const chain = chainEvents(transactions.rows, {
-                book, idls, proposalIdsByAccount: proposalAccountIndex(proposalAccounts.rows)
+                book, idls, agreementsByAccount: agreementAccountIndex(withAccount.rows), decode
             });
-            const proposalIds = proposalAccountIndex(proposalAccounts.rows);
-            const publicById = new Map(proposalAccounts.rows.map(row => [String(row.proposal_id), row]));
+            const subjects = { agreements: byCid([...withAccount.rows, ...proposed.rows]), designs: byCid(designs.rows) };
             const events = mergeEvents(
+                agreementEvents(proposed.rows),
+                designEvents(designs.rows),
                 chain,
-                runs.rows.flatMap(row => runEvents(row, book)),
-                proposals.rows.flatMap(proposalEvents),
-                publicProposalEvents(publicProposals.rows),
-                executedProposalEvents(lifecycle.rows, proposalIds, publicById)
-            ).filter(event => matchesActivityFilters(event, filters)).slice(-limit);
+                runs.rows.flatMap(row => runEvents(row, book))
+            ).filter(event => matchesActivityFilters(event, filters)).slice(-limit)
+                .map(event => withSubject(event, subjects));
             res.json({
                 events, count: events.length, source: 'live',
                 ...(filtered ? { filters, scanWindow: ACTIVITY_SCAN_WINDOW } : {})
             });
         } catch (error) {
-            console.error('GET /agent/activity failed', error);
+            console.error(`[${new Date().toISOString()}] GET /agent/activity failed:`, error);
             res.status(500).json({ error: 'Failed to read agent activity' });
         }
     });
 
     // Bounded run index for the judge/demo surface. This is intentionally separate from the event
     // feed: a completed zero-pick run is evidence of scheduler liveness even when it produced no
-    // proposal transaction. Controller filtering is applied after legacy provenance inference.
+    // agreement transaction. Controller filtering is applied after legacy provenance inference.
     app.get('/agent/runs', async (req, res) => {
         try {
             const limit = asLimit(req.query.limit);
@@ -730,7 +612,7 @@ export function setupAgentActivityRoute(app, pool, {
                 .slice(0, limit);
             return res.json({ runs, count: runs.length });
         } catch (error) {
-            console.error('GET /agent/runs failed', error);
+            console.error(`[${new Date().toISOString()}] GET /agent/runs failed:`, error);
             return res.status(500).json({ error: 'Failed to read agent runs' });
         }
     });
@@ -760,10 +642,10 @@ export function setupAgentActivityRoute(app, pool, {
             );
             return res.json({ run: runDetail(row, costs.rows, book), events: runEvents(row, book) });
         } catch (error) {
-            console.error('GET /agent/runs/:runId failed', error);
+            console.error(`[${new Date().toISOString()}] GET /agent/runs/:runId failed:`, error);
             return res.status(500).json({ error: 'Failed to read agent run' });
         }
     });
 }
 
-export { asLimit, controllerOf, mergeEvents, proposalEvents, runDetail, runEvents };
+export { asLimit, controllerOf, mergeEvents, runDetail, runEvents };

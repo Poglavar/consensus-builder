@@ -1,13 +1,16 @@
 // agreement-store.js and the pure helpers of agreement-dialog.js (plan-design-agreement.md, M1 (b)):
 // the local agreement rows on a fake storage (save, list, get, remove, clear, the secondary-tab
-// refusal, subscribers) and the dialog's record, allocation, money, rule and section helpers, without
-// a DOM. AgreementRecord and AgreementGround are stubbed: this file tests the store and the dialog only.
+// refusal, subscribers) and the editor's record, allocation, money, rule and section helpers, without
+// a DOM; and what the editor decides before it docks (M3): "Add to agreement" choosing a new agreement
+// or one not proposed yet, and the refusal to edit a proposed one. AgreementRecord and AgreementGround
+// are stubbed: this file tests the store and the editor only.
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const Store = require('../../frontend/js/agreement-store.js');
 const Dialog = require('../../frontend/js/agreement-dialog.js');
+const Panel = require('../../frontend/js/agreement-panel.js');
 // The real money schedule the agreement ledger hands back (AgreementRecord.ledger(...).money).
 const Deal = require('../../frontend/js/reparcellization-deal.js');
 const Cid = require('../../frontend/js/cid.js');
@@ -393,6 +396,9 @@ describe('the sections as HTML (the hooks the browser spec targets)', () => {
         expect(html).not.toContain('data-agreement-empty');
         expect(Dialog.designsHtml({ designs: [] })).toContain('data-agreement-empty');
         expect(Dialog.designsHtml({ designs: [], missing: ['p9'] })).toContain('data-agreement-designs-missing');
+        // The map is the main picker: the hint says so, and the status line under it says what a click did.
+        expect(html).toContain('<p class="agreement-hint" data-agreement-map-hint>Click a design on the map to add or remove it</p>');
+        expect(html).toMatch(/<p class="agreement-hint agreement-pick-status" data-agreement-pick-status role="status" aria-live="polite"><\/p>$/);
     });
 
     it('shows the land loading, then the inputs and outputs tables, open ground and the empty case', () => {
@@ -403,7 +409,7 @@ describe('the sections as HTML (the hooks the browser spec targets)', () => {
         expect(html).toContain('data-agreement-inputs');
         expect(html).toContain('data-agreement-outputs');
         expect(html).toContain('<tr data-agreement-input="335/10">');
-        expect(html).toContain('<tr data-agreement-output="piece1-sha256:aa">');
+        expect(html).toContain('<tr data-agreement-output="piece1-sha256:aa"><th scope="row">Piece 1</th><td class="agreement-table__from" data-label="From">');
         expect(html).toContain('Ana 50%, Ben 50%');
         expect(html).toContain('No recorded owner');
         expect(html).toContain('335/10, 335/2');
@@ -445,5 +451,97 @@ describe('the sections as HTML (the hooks the browser spec targets)', () => {
         expect(html.indexOf('data-agreement-errors')).toBeLessThan(html.indexOf('data-agreement-section="designs"'));
         expect(html).toContain('<input type="text" data-agreement-title value="T" autocomplete="off">');
         expect(html).toContain('<input type="date" data-agreement-deadline value="" min="2026-10-21">');
+    });
+});
+
+// The editor docks over the map through MapPick; in node there is none, so open() stops right there
+// (after it has read the agreement it opens): the error says how far it got.
+const EDITOR_REACHED = /MapPick \(js\/map-pick\.js\) is not loaded/;
+const thrownAsync = async fn => { try { await fn(); } catch (error) { return error; } return null; };
+
+describe('Add to agreement (addDesign)', () => {
+    const DESIGN = { proposalId: 'road-1', title: 'New lane', goal: 'road' };
+    const PUBLISHED = { cid: 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq', publishedAt: '2026-10-21T12:00:00.000Z', apiBase: 'https://api.example.test', sponsor: null };
+    // The agreements this device holds, newest first as AgreementStore.list() gives them.
+    const held = () => [
+        agreement('ag-new', { title: 'Block eight', createdAt: '2026-10-22T09:00:00.000Z', designs: [{ proposalId: 'layout-2' }], published: null }),
+        agreement('ag-proposed', { title: 'Block seven', createdAt: '2026-10-21T09:00:00.000Z', designs: [{ proposalId: 'layout-1' }], published: PUBLISHED }),
+        agreement('ag-old', { title: '', createdAt: '2026-10-20T09:00:00.000Z', designs: [{ proposalId: 'road-1' }, { proposalId: 'park-1' }], published: null })
+    ];
+    function environment(rows, answer) {
+        const store = { list: vi.fn(() => rows), get: vi.fn(id => rows.find(row => row.id === id) || null) };
+        const dialog = { choice: vi.fn(async () => answer) };
+        const message = vi.fn();
+        vi.stubGlobal('AgreementStore', store);
+        vi.stubGlobal('CbDialog', dialog);
+        vi.stubGlobal('AgreementPanel', { titleOf: Panel.titleOf });
+        vi.stubGlobal('proposalStorage', { getProposal: id => (id === DESIGN.proposalId ? DESIGN : null) });
+        vi.stubGlobal('showEphemeralMessage', message);
+        return { store, dialog, message };
+    }
+
+    it('opens a new agreement straight away when none is waiting to be proposed', async () => {
+        for (const rows of [[], [held()[1]]]) {
+            const { store, dialog } = environment(rows, null);
+            expect((await thrownAsync(() => Dialog.addDesign('road-1'))).message).toMatch(EDITOR_REACHED);
+            expect(dialog.choice).not.toHaveBeenCalled();
+            expect(store.get).not.toHaveBeenCalled();
+        }
+    });
+
+    it('offers a new agreement first, then each one not proposed yet, never a proposed one', async () => {
+        const { dialog } = environment(held(), null);
+        expect(await Dialog.addDesign(' road-1 ')).toBeNull();
+        expect(dialog.choice).toHaveBeenCalledTimes(1);
+        const [message, options, settings] = dialog.choice.mock.calls[0];
+        expect(message).toBe('Add “New lane” to a new agreement, or to one not proposed yet.');
+        expect(options).toEqual([
+            { value: '__new__', label: 'New agreement', primary: true },
+            { value: 'ag-new', label: 'Block eight · 1 design' },
+            { value: 'ag-old', label: `${Panel.titleOf(held()[2])} · 2 designs` }
+        ]);
+        expect(settings).toEqual({ title: 'Add to agreement', className: 'agreement-add-to' });
+    });
+
+    it('opens nothing when the choice is dismissed', async () => {
+        const { store } = environment(held(), null);
+        expect(await Dialog.addDesign('road-1')).toBeNull();
+        expect(store.get).not.toHaveBeenCalled();
+    });
+
+    it('opens a new agreement for "New agreement", and the chosen one otherwise', async () => {
+        const fresh = environment(held(), '__new__');
+        expect((await thrownAsync(() => Dialog.addDesign('road-1'))).message).toMatch(EDITOR_REACHED);
+        expect(fresh.store.get).not.toHaveBeenCalled();
+        const chosen = environment(held(), 'ag-new');
+        expect((await thrownAsync(() => Dialog.addDesign('road-1'))).message).toMatch(EDITOR_REACHED);
+        expect(chosen.store.get).toHaveBeenCalledWith('ag-new');
+        expect(chosen.message).not.toHaveBeenCalled();
+    });
+
+    it('says so when the chosen agreement already holds the design, and opens it as it is', async () => {
+        const { store, message } = environment(held(), 'ag-old');
+        expect((await thrownAsync(() => Dialog.addDesign('road-1'))).message).toMatch(EDITOR_REACHED);
+        expect(message).toHaveBeenCalledWith('“New lane” is already in this agreement.', 4000, 'info');
+        expect(store.get).toHaveBeenCalledWith('ag-old');
+    });
+
+    it('refuses a choice that is no longer on this device, and a call without a design', async () => {
+        environment(held(), 'ag-gone');
+        expect((await thrownAsync(() => Dialog.addDesign('road-1'))).message).toBe('Agreement ag-gone is not on this device.');
+        await expect(Dialog.addDesign('  ')).rejects.toThrow(TypeError);
+    });
+});
+
+describe('editing a proposed agreement', () => {
+    it('is refused: a proposed agreement is immutable, a change is a new agreement', async () => {
+        const proposed = agreement('ag-proposed', { published: { cid: 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq' } });
+        const store = { get: vi.fn(id => (id === 'ag-proposed' ? proposed : id === 'ag-draft' ? agreement('ag-draft') : null)) };
+        vi.stubGlobal('AgreementStore', store);
+        const error = await thrownAsync(() => Dialog.open({ agreementId: 'ag-proposed', designIds: ['road-1'] }));
+        expect(error).toMatchObject({ code: 'agreement-published', message: 'A proposed agreement cannot be edited; propose a new one.' });
+        expect((await thrownAsync(() => Dialog.open({ agreementId: 'ag-gone' }))).message).toBe('Agreement ag-gone is not on this device.');
+        // A draft passes the refusal and goes on to the editor.
+        expect((await thrownAsync(() => Dialog.open({ agreementId: 'ag-draft' }))).message).toMatch(EDITOR_REACHED);
     });
 });

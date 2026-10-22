@@ -36,15 +36,15 @@ const DYNAMIC_KEY_PREFIXES = [
     'modal.corridor.laneTypes.',
     'modal.corridor.presetWidths.',
     'modal.corridorStructure.kinds.',
-    'modal.createProposal.missingParcels.',
+
     'modal.roadWidth.proposalList.filters.goals.',
     'modal.roadWidth.proposalList.goalLabels.',
     'modal.roadWidth.proposalList.sort.',
     'modal.roadWidth.proposalList.typeLabels.',
     'modal.singleBuilding.',
-    'panel.proposal.market.next.',  // market-view.js lifecycle() nextKey (proposal-market-view.test.js pins the keys)
+    'bets.dialog.next.',  // bets-dialog.js: market-view.js lifecycle() nextKey (proposal-market-view.test.js pins the keys)
     'panel.proposal.market.state.', // and stateKey
-    'panel.proposal.acceptance.', // approval-text.js: signed/local consent labels
+
     'panel.parcel.ownershipType.',
     'panel.road.',                  // corridor-import.js: the import chooser's format labels and hints (corridor-import.test.js pins the six formats)
     'proposalApproval.schemes.',        // approval-regimes.js templates: proposal-approval-regimes.test.js words every scheme
@@ -175,13 +175,6 @@ describe('i18n locale coverage', () => {
         expect(dead).toEqual([]);
     });
 
-    it('defines every dynamically selected signed and local consent label', () => {
-        const labels = ['parcelTitle', 'ownerTitle', 'accepted', 'pending', 'hint', 'parcelSummary'];
-        for (const lang of LANGS) for (const basis of ['signed', 'local']) for (const label of labels) {
-            const key = `panel.proposal.acceptance.${basis}.${label}`;
-            expect(hasKey(locales[lang], key), `${lang}: ${key}`).toBe(true);
-        }
-    });
 
     it('defines all proposal apply failure messages in every locale', () => {
         const keys = [

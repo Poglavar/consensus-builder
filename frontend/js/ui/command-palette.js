@@ -265,8 +265,8 @@
             return;
         }
         // Not over a modal, a confirm or the globe (it would open underneath and take the focus),
-        // and not in share-plan mode, where the map is pan/zoom only.
-        if (win.sharePlanMode) return;
+        // and not while a surface picks on the map (js/map-pick.js), where the map is pan/zoom only.
+        if (win.MapPick?.active()) return;
         if (win.MapShell && typeof win.MapShell.isBlockingDialogOpen === 'function' && win.MapShell.isBlockingDialogOpen(state.backdrop)) return;
         event.preventDefault();
         let query = '';

@@ -3,12 +3,15 @@
 // and reading titles, and the map itself said nothing about which designs were already published
 // and which existed only on this machine.
 //
-// Both directions are source-level wiring — a Leaflet click handler and a Leaflet style — so they
-// are read from source. What CAN be executed (the i18n, the key derivation) is executed.
+// Since M3 the panel picks on the map through js/map-pick.js (MapPick 'share'): the map's own click
+// resolution hands the design it found to MapPick.pick, which hands it to the panel. That click path
+// (parcels/ui/parcel-selection.js onParcelClick) and the panel's overlay style are executed here on
+// fakes; the panel's own wiring around them is read from source.
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import vm from 'node:vm';
 
 const read = rel => readFileSync(fileURLToPath(new URL(rel, import.meta.url)), 'utf8');
 const dialog = read('../../frontend/js/proposals/dialog-share.js');
@@ -19,50 +22,100 @@ const locales = ['en', 'hr', 'sr', 'es'];
 const planStrings = locale => dictOf(locale).modal.roadWidth.share.plan;
 const panelStrings = locale => dictOf(locale).proposals.share.panel;
 
+const between = (from, to) => {
+    const start = dialog.indexOf(from);
+    const end = dialog.indexOf(to, start);
+    expect(start, `missing marker: ${from}`).toBeGreaterThan(-1);
+    expect(end, `missing marker after it: ${to}`).toBeGreaterThan(start);
+    return dialog.slice(start, end);
+};
+
+// parcel-selection.js on a fake map, with a picking surface (MapPick) when `picking` is set. The parcel
+// clicked is HR-1; `stack` is what the drill finds under the pointer, topmost first; `onParcel` the
+// designs the storage lists for the parcel.
+function clickParcel({ picking = 'share', stack = [], onParcel = [] } = {}) {
+    const pick = vi.fn(() => true);
+    const stopPropagation = vi.fn();
+    // Without a picking surface the drill selects the topmost design (and the click ends there).
+    const handleParcelClick = vi.fn(() => ({ handled: true, selectedKind: 'proposal', selectedRef: 'p:building-1' }));
+    const showParcelInfoPanel = vi.fn();
+    const layer = { feature: { type: 'Feature', properties: { parcelId: 'HR-1' }, geometry: { type: 'Polygon', coordinates: [] } }, setStyle: vi.fn(), bringToFront: vi.fn() };
+    const context = {
+        console,
+        document: { addEventListener: vi.fn(), getElementById: vi.fn(() => null), querySelector: vi.fn(() => null) },
+        MapPick: { active: () => picking, pick },
+        __drillUi: { stackAt: vi.fn(() => stack), handleParcelClick },
+        LiveParcelFabric: { get: id => (String(id) === 'HR-1' ? layer.feature : null) },
+        ParcelPresenter: { getLayer: id => (String(id) === 'HR-1' ? layer : null), getIdForLayer: candidate => (candidate === layer ? 'HR-1' : null) },
+        ParcelsUIParcelPanel: { showParcelInfoPanel },
+        multiParcelSelection: { isActive: false, selectedParcels: new Set(), clearSelection: vi.fn(), clearSingleParcelSelection: vi.fn() },
+        proposalStorage: { getProposalsForParcel: vi.fn(() => onParcel) },
+        isProposalApplied: proposal => proposal.applied === true,
+        getProposalKey: proposal => proposal.proposalId,
+        isRoadParcel: () => false,
+        map: { hasLayer: () => false },
+        L: { DomEvent: { stopPropagation } }
+    };
+    context.window = context;
+    vm.runInNewContext(selection, context);
+    const event = { target: layer, latlng: { lat: 45.8, lng: 15.97 }, originalEvent: { shiftKey: false } };
+    context.onParcelClick(event);
+    return { pick, stopPropagation, handleParcelClick, showParcelInfoPanel, event, stackAt: context.__drillUi.stackAt };
+}
+
 describe('a click on the map finds the row', () => {
-    it('the panel answers the click instead of the click being swallowed', () => {
-        // It used to return outright: "every fabric click is inert — proposals included".
-        const branch = selection.slice(
-            selection.indexOf('if (global.sharePlanMode) {'),
-            selection.indexOf('if (global.proposalListBrowseMode) {')
-        );
-        expect(branch).toContain('global.__sharePlanPickProposal');
-        expect(branch).toContain('const picked = proposalOnThisParcel();');
-        // Still swallowed for the rest of the fabric: share-plan mode stays pan/zoom only.
-        expect(branch).toContain('L.DomEvent.stopPropagation(e)');
+    const building = { proposalId: 'building-1', applied: true };
+    const layout = { proposalId: 'layout-1', applied: true };
+
+    it('hands the topmost design at the click to the picking surface, with the parcel clicked', () => {
+        const click = clickParcel({ stack: [{ kind: 'proposal', key: 'building-1', proposal: building }, { kind: 'proposal', key: 'layout-1', proposal: layout }, { kind: 'parcel' }] });
+        expect(click.stackAt).toHaveBeenCalledWith(click.event.latlng);
+        expect(click.pick).toHaveBeenCalledTimes(1);
+        expect(click.pick).toHaveBeenCalledWith('building-1', { parcelId: 'HR-1' });
+        // Pan/zoom only: the click selects nothing and opens nothing of the fabric's own.
+        expect(click.stopPropagation).toHaveBeenCalledWith(click.event);
+        expect(click.handleParcelClick).not.toHaveBeenCalled();
+        expect(click.showParcelInfoPanel).not.toHaveBeenCalled();
     });
 
-    it('both modes resolve the proposal the SAME way, from one function', () => {
-        // Two copies of "which proposal is on this parcel" would drift, and the map would answer
-        // differently depending on which panel happened to be open.
+    it('falls back to the applied design standing on the parcel, the way browse mode finds it', () => {
+        const park = { proposalId: 'park-1', applied: true };
+        const click = clickParcel({ stack: [{ kind: 'parcel' }], onParcel: [{ proposalId: 'draft-1', applied: false }, park] });
+        expect(click.pick).toHaveBeenCalledWith('park-1', { parcelId: 'HR-1' });
+        // Two copies of "which design is on this parcel" would drift between the two modes.
         expect(selection).toContain('const proposalOnThisParcel = () => {');
         expect(selection.match(/proposalOnThisParcel\(\)/g) || []).toHaveLength(2);
-        // The old inline copy is gone rather than left behind unused.
-        expect(selection).not.toContain('let browseProposal = appliedRoadProposal;');
     });
 
-    it('the picker is released when the panel closes', () => {
-        // Left registered, it would scroll rows in a list that is no longer on screen and hold the
-        // whole closed panel alive through the closure.
-        const start = dialog.indexOf('function closeSharePlanPanel()');
-        const end = dialog.indexOf('function showSharePlanPanel(');
-        expect(start).toBeGreaterThan(-1);
-        expect(end).toBeGreaterThan(start);
-        expect(dialog.slice(start, end)).toContain('window.__sharePlanPickProposal = null;');
+    it('keeps ordinary fabric inert while a surface picks', () => {
+        const click = clickParcel({ stack: [], onParcel: [] });
+        expect(click.pick).not.toHaveBeenCalled();
+        expect(click.stopPropagation).toHaveBeenCalledWith(click.event);
+        expect(click.handleParcelClick).not.toHaveBeenCalled();
     });
 
-    it('ignores a click that arrives after the panel is gone', () => {
-        const picker = dialog.slice(dialog.indexOf('window.__sharePlanPickProposal = (proposal, parcelId) => {'));
-        expect(picker.slice(0, 400)).toContain('if (!panelStillOpen() || !proposal) return;');
+    it('leaves the click to the fabric when no surface picks', () => {
+        const click = clickParcel({ picking: null, stack: [{ kind: 'proposal', key: 'building-1', proposal: building }] });
+        expect(click.pick).not.toHaveBeenCalled();
+        expect(click.handleParcelClick).toHaveBeenCalledWith(click.event.latlng, 'HR-1');
+    });
+
+    it('the pick mode ends when the panel closes, and a late pick is ignored', () => {
+        // Left picking, the map would scroll rows in a list that is no longer on screen.
+        expect(between('function closeSharePlanPanel()', 'function showSharePlanPanel(')).toContain("window.MapPick.end('share');");
+        const picker = between('window.MapPick.begin({', '}).catch(');
+        expect(picker).toContain('pick: (id, proposal, { parcelId }) => {');
+        expect(picker).toContain('if (!panelStillOpen()) return;');
+        expect(picker).toContain('revealRow(key, parcelId);');
     });
 
     it('says so when the picked proposal is applied but not in this plan', () => {
         // Doing nothing is indistinguishable from a click that missed.
-        expect(dialog).toContain("tShare('plan.pickedNotInPlan'");
+        expect(between('window.MapPick.begin({', '}).catch(')).toContain("setStatus(tShare('plan.pickedNotInPlan'");
     });
 
     it('scrolls the row into view and marks exactly one', () => {
-        const reveal = dialog.slice(dialog.indexOf('const revealRow = (key, parcelId) => {'), dialog.indexOf('const highlightRowProposal ='));
+        const reveal = between('const revealRow = (key, parcelId) => {', 'const highlightRowProposal =');
         expect(reveal).toContain("scrollIntoView({ block: 'center'");
         expect(reveal).toContain("controls.row.classList.add('is-picked')");
         // The previous holder loses the mark, or two rows both claim to be the picked one.
@@ -79,42 +132,38 @@ describe('a click on the map finds the row', () => {
 });
 
 describe('the map shows what is already published', () => {
-    const between = (from, to) => {
-        const start = dialog.indexOf(from);
-        const end = dialog.indexOf(to, start);
-        expect(start, `missing marker: ${from}`).toBeGreaterThan(-1);
-        expect(end, `missing marker after it: ${to}`).toBeGreaterThan(start);
-        return dialog.slice(start, end);
-    };
-    const paint = between('const overlayStyleFor = (published, color)', 'const keyOfProposal =');
+    // The panel's overlay style, evaluated as written.
+    const styleSource = between('const overlayStyleFor = (published, color) =>', 'const highlightedKeys =');
+    const arrow = styleSource.slice(styleSource.indexOf('(published, color)'), styleSource.indexOf('});') + 2);
+    const overlayStyleFor = vm.runInNewContext(`(${arrow})`);
 
     it('paints published solid and not-yet-published dashed', () => {
-        expect(paint).toContain('const published = isPublished(key);');
-        expect(paint).toContain("dashArray: published ? null : '7 6'");
-        // Published means the design hashes to the CID it was published as (DesignSync.publishedCid).
+        expect(overlayStyleFor(true, '#e6194B')).toMatchObject({ dashArray: null });
+        expect(overlayStyleFor(false, '#e6194B')).toMatchObject({ dashArray: '7 6' });
+        // MapPick paints each highlighted design with the panel's style for its row: published means
+        // the design hashes to the CID it was published as (DesignSync.publishedCid).
+        expect(between('window.MapPick.begin({', '}).catch(')).toContain("style: key => overlayStyleFor(isPublished(key), colorByKey.get(key) || '#4363d8')");
         expect(dialog).toContain('const isPublished = key => !!(publishState.get(key) || {}).cid;');
     });
 
     it('distinguishes them by SHADING, not by a second colour', () => {
         // Every design already owns a colour to tell it from its neighbours; a second colour axis
         // would collide with the first. So fill opacity and dash carry the publication state instead.
-        // The COLOUR must be the design's own on both sides; how far apart the opacities are is
-        // asserted separately, so tuning the contrast does not have to touch this test.
-        expect(paint).toContain('const color = colorByKey.get(key)');
-        expect(paint).toContain('fillColor: color');
-        expect(paint).toMatch(/fillOpacity: published \? [\d.]+ : [\d.]+/);
+        for (const published of [true, false]) {
+            expect(overlayStyleFor(published, '#3cb44b')).toMatchObject({ color: '#3cb44b', fillColor: '#3cb44b' });
+        }
     });
 
     it('repaints when a row is published, so the map cannot lag the row', () => {
         const update = between('const updateRowState = (key) => {', 'const onCheckboxChange =');
         expect(update).toContain("controls.row.classList.toggle('is-published', !!state.cid);");
-        expect(update).toContain('if (overlayByKey.has(key)) syncPlanOverlay(key);');
+        expect(update).toContain('window.MapPick.refresh([key]);');
+        // A publish ends in updateRowState.
+        expect(between('const publishRow = async (key) => {', 'const attachRow =')).toMatch(/publishState\.set\(key, \{ cid, publishing: false \}\);[\s\S]*updateRowState\(key\);/);
     });
 
     it('the map opacities are far enough apart to see over imagery', () => {
-        const pair = paint.match(/fillOpacity: published \? ([\d.]+) : ([\d.]+)/);
-        expect(pair, 'fillOpacity pair not found').toBeTruthy();
-        expect(Number(pair[1]) - Number(pair[2])).toBeGreaterThanOrEqual(0.25);
+        expect(overlayStyleFor(true, '#000').fillOpacity - overlayStyleFor(false, '#000').fillOpacity).toBeGreaterThanOrEqual(0.25);
     });
 
     // The legend of two swatches is GONE, and its tests with it. It existed because the map painted

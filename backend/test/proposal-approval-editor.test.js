@@ -13,21 +13,17 @@ Object.assign(globalThis, require('../../frontend/js/corridor-profile.js'));
 const { registry } = require('../../frontend/js/proposal-editor-adapters.js');
 const { createProposalDraftStore } = require('../../frontend/js/proposal-drafts.js');
 
-// A source carrying the local consent bookkeeping a parcel panel or the agent simulation wrote on it.
+// A source carrying a local purchase simulation: browser-local state a design never passes on to a
+// fork. A design carries no approval receipts to strip: owners decide on agreements (M2).
 const source = {
     proposalId: 'proposal-source', goal: 'as-is', type: 'parcel', title: 'Source proposal',
     cadastreParcelIds: ['parcel-1'],
-    ownerApprovals: { 'owner-a': { ownerId: 'owner-a', actorId: 'actor-1', decision: 'approve' } },
-    ownerApprovalHistory: [{ ownerId: 'owner-a', decision: 'withdraw' }],
-    ownerAcceptances: { 'parcel-1': { acceptedBy: { 'owner-a': { agentId: 'actor-1' } } } },
-    ownershipApprovals: { 'parcel-1': true },
-    acceptedParcelIds: ['parcel-1'],
     localPurchaseSimulation: { buyer: 'actor-1' }
 };
-const CONSENT_KEYS = ['ownerApprovals', 'ownerApprovalHistory', 'ownerAcceptances', 'ownershipApprovals', 'acceptedParcelIds', 'localPurchaseSimulation'];
+const LOCAL_KEYS = ['localPurchaseSimulation'];
 
 describe('design editor without an approval setup', () => {
-    it('drafts a design with no approval or lens field, and forks it without the source’s consent state', () => {
+    it('drafts a design with no approval or lens field, and forks it without the source’s local state', () => {
         const adapter = registry.get('as-is');
         const seeded = adapter.draftFromProposal(source);
         expect(Object.keys(seeded.fields)).not.toContain('approvalConfig');
@@ -39,10 +35,10 @@ describe('design editor without an approval setup', () => {
         };
         const fork = adapter.serializeProposal(draft);
         expect(fork.cadastreParcelIds).toEqual(['parcel-1']);
-        CONSENT_KEYS.forEach(key => expect(fork, key).not.toHaveProperty(key));
+        LOCAL_KEYS.forEach(key => expect(fork, key).not.toHaveProperty(key));
     });
 
-    it('builds the record of a draft from a consenting source without that consent state', () => {
+    it('builds the record of a draft without the source’s local state', () => {
         const memory = new Map();
         const storage = {
             getItem: key => memory.has(key) ? memory.get(key) : null,
@@ -59,6 +55,6 @@ describe('design editor without an approval setup', () => {
         expect(registry.get('as-is').validate(draft).valid).toBe(true);
         const built = store.buildProposalFromDraft(draft.id);
         expect(built.title).toBe('Source proposal');
-        CONSENT_KEYS.forEach(key => expect(built, key).not.toHaveProperty(key));
+        LOCAL_KEYS.forEach(key => expect(built, key).not.toHaveProperty(key));
     });
 });

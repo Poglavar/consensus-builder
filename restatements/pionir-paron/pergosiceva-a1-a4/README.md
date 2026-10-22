@@ -31,11 +31,13 @@ All four GDI matches come from the 2008 survey and overlap their DGU footprints 
 
 The last two values use `DGU footprint × GDI height / 3 m`. They are diagnostics for reproducing the observed massing, not GBP from a permit. The editable buildings carry rounded display estimates of eight, seven, seven and seven storeys, while their 3D heights remain the measured GDI values.
 
-Rebuild and store all configured historical observed proposals with:
+Rebuild all configured historical observed archives with:
 
 ```sh
-node backend/scripts/seed-pionir-observed-proposals.mjs --apply --export
+node backend/scripts/seed-pionir-observed-proposals.mjs --export
 ```
+
+Publish it as designs plus the project's agreement with `backend/scripts/publish-restatement-archives.mjs` ([collection README](../README.md#publishing-designs-and-agreements)).
 
 The export performs an export/import/export identity check before writing each canonical GeoJSON.
 

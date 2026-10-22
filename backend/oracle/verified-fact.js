@@ -1,43 +1,42 @@
 // Machine-ready bundle sold by the x402 oracle endpoint. The paid response does not invent a new
-// fact: it packages one already-source-hashed land event with the exact resolution recipe an agent
-// can independently inspect and use.
+// fact: it packages one already-source-hashed land event, an agreement's terminal `agreement_lifecycle`
+// event (oracle/agreement-lifecycle.js), with the exact resolution recipe the agreement's market settles
+// by (agreement-execution-v1, oracle/market-recipe.js), which an agent can independently inspect and use.
 
-import {
-    buildProposalLifecycleRecipe,
-    EVENT_TYPE,
-    PROPOSAL_PROGRAM_ID,
-    recipeForProposalAccount,
-    sha256,
-    STATUS_CANCELLED,
-    STATUS_EXECUTED,
-    STATUS_EXPIRED
-} from './proposal-lifecycle.js';
+import { createHash } from 'node:crypto';
+import { AGREEMENT_PROGRAM_ID, AgreementClient } from '../agreements/onchain.js';
+import { AGREEMENT_LIFECYCLE_EVENT_TYPE } from './agreement-lifecycle.js';
+import { agreementEventMatches, buildAgreementExecutionRecipe } from './market-recipe.js';
 import { evaluateResolutionRecipe } from './recipe-evaluator.js';
 
+const { constants } = AgreementClient;
 const OUTCOME_STATUS = Object.freeze({
-    executed: STATUS_EXECUTED,
-    cancelled: STATUS_CANCELLED,
-    expired: STATUS_EXPIRED
+    executed: constants.STATUS_EXECUTED,
+    cancelled: constants.STATUS_CANCELLED,
+    expired: constants.STATUS_EXPIRED
 });
+
+const sha256Hex = bytes => createHash('sha256').update(bytes).digest('hex');
 
 function validIsoDate(value) {
     if (value instanceof Date) return Number.isFinite(value.getTime());
     return typeof value === 'string' && Number.isFinite(Date.parse(value));
 }
 
-export function buildVerifiedProposalFact({ event, proposalAccount, marketAccount = null } = {}) {
+/**
+ * @param {{ event: object, agreementAccount: string, marketAccount?: string|null }} input
+ *   event as routes/land-events.js eventFromRow serves it
+ */
+export function buildVerifiedAgreementFact({ event, agreementAccount, marketAccount = null } = {}) {
     if (!event || typeof event !== 'object') throw new Error('event is required');
-    if (event.eventType !== EVENT_TYPE) throw new Error(`eventType must be ${EVENT_TYPE}`);
-    if (event.subject?.type !== 'proposal' || event.subject?.id !== proposalAccount) {
-        throw new Error('event subject does not match the requested proposal');
+    if (event.eventType !== AGREEMENT_LIFECYCLE_EVENT_TYPE) throw new Error(`eventType must be ${AGREEMENT_LIFECYCLE_EVENT_TYPE}`);
+    if (event.subject?.type !== 'agreement' || event.subject?.id !== agreementAccount) {
+        throw new Error('event subject does not match the requested agreement account');
     }
     const expectedStatus = OUTCOME_STATUS[event.outcome];
-    if (!expectedStatus) throw new Error('event outcome is not a supported terminal state');
-    if (event.evidence?.proposalStatusByte !== expectedStatus) {
-        throw new Error('event outcome does not match its proposal status evidence');
-    }
-    if (event.attester?.kind !== 'solana_program' || event.attester?.address !== PROPOSAL_PROGRAM_ID) {
-        throw new Error('event was not attested by the trusted ProposalNFT program');
+    if (expectedStatus === undefined) throw new Error('event outcome is not a terminal agreement status');
+    if (event.attester?.kind !== 'solana_program' || event.attester?.address !== AGREEMENT_PROGRAM_ID) {
+        throw new Error('event was not attested by the agreement program');
     }
     if (!/^sha256:[a-f0-9]{64}$/.test(event.source?.hash || '')) {
         throw new Error('event has no canonical source hash');
@@ -46,28 +45,24 @@ export function buildVerifiedProposalFact({ event, proposalAccount, marketAccoun
         throw new Error('event has no source transaction or source timestamp');
     }
 
-    // proposal-lifecycle-v2 when the event carries the proposal account bytes and they hold a lens:
-    // the lens is read from the very bytes the event hashed, so it cannot be swapped without
-    // breaking the source hash. Events without the bytes keep the precommitted v1 recipe.
-    const encoded = event.evidence?.accountDataBase64;
-    let recipe;
-    let lensFromHashedAccount = false;
-    if (encoded) {
-        const accountData = Buffer.from(String(encoded), 'base64');
-        if (`sha256:${sha256(accountData)}` !== event.source.hash) {
-            throw new Error('event proposal account bytes do not match its source hash');
-        }
-        recipe = recipeForProposalAccount({ proposalAccount, marketAccount, accountData });
-        lensFromHashedAccount = recipe.version === 2;
-    } else {
-        recipe = buildProposalLifecycleRecipe({ proposalAccount, marketAccount });
+    // The account bytes the event hashed: their status and CID must be the event's, so neither can be
+    // swapped without breaking the source hash.
+    const accountData = Buffer.from(String(event.evidence?.accountDataBase64 || ''), 'base64');
+    if (`sha256:${sha256Hex(accountData)}` !== event.source.hash) {
+        throw new Error('event agreement account bytes do not match its source hash');
     }
+    let account = null;
+    try { account = AgreementClient.readAgreement(new Uint8Array(accountData), agreementAccount); } catch { account = null; }
+    if (!account) throw new Error('event account bytes are not an agreement account');
+    if (account.statusCode !== expectedStatus) throw new Error('event outcome does not match its agreement account status');
+    if (account.cid !== event.evidence?.agreementCid) throw new Error('event agreement CID does not match its account');
+
+    const recipe = buildAgreementExecutionRecipe({ agreementAccount, agreementCid: account.cid, marketAccount });
     const lens = evaluateResolutionRecipe({
         recipe,
         evidence: [event],
         now: event.recordedAt || event.observedAt,
-        subjectMatches: candidate => candidate.subject?.type === 'proposal'
-            && candidate.subject?.id === proposalAccount
+        subjectMatches: agreementEventMatches
     });
     if (lens.status !== 'resolved' || lens.outcome !== event.outcome) {
         throw new Error(`event does not satisfy its resolution recipe: ${lens.reason}`);
@@ -77,7 +72,7 @@ export function buildVerifiedProposalFact({ event, proposalAccount, marketAccoun
         recipe,
         verification: {
             status: 'verified',
-            method: 'source-hashed Solana program account plus terminal transaction',
+            method: 'source-hashed Solana agreement account plus its terminal transaction',
             eventId: event.id,
             recipeId: recipe.id,
             recipeHash: recipe.hash,
@@ -87,7 +82,7 @@ export function buildVerifiedProposalFact({ event, proposalAccount, marketAccoun
                 terminalStatusMatches: true,
                 trustedAttesterMatches: true,
                 sourceHashPresent: true,
-                lensFromHashedAccount,
+                accountBytesMatchSourceHash: true,
                 sourceTransactionPresent: true,
                 sourceTimestampPresent: true
             }

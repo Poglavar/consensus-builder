@@ -76,9 +76,11 @@ describe('proposal schema contract', () => {
         expect(list).not.toMatch(/routes\/proposals-ddl\.sql/);
     });
 
-    it('ships publication immutability triggers in the backend DDL list', () => {
+    it('ships publication immutability triggers in the backend DDL list, and none for the named plans M2 removed', () => {
         const publicationDdl = readFileSync(fileURLToPath(new URL('../db/publication-immutability.sql', import.meta.url)), 'utf8');
         expect(publicationDdl).toMatch(/CREATE TRIGGER proposal_publication_immutable/i);
+        // scripts/drop-proposal-era.mjs drops the function a database that applied the earlier file still holds.
+        expect(publicationDdl).not.toMatch(/named_plan|ens_plan/i);
         const deploy = readFileSync(fileURLToPath(new URL('../deploy-backend.sh', import.meta.url)), 'utf8');
         const list = deploy.match(/DDL_FILES=\(([\s\S]*?)\)/)?.[1] || '';
         expect(list).toMatch(/^\s*db\/publication-immutability\.sql\s*$/m);

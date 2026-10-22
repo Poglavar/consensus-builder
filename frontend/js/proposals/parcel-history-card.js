@@ -1,26 +1,19 @@
-// Proposal Details "Parcel history" card: per listed parcel a collapsible History showing the
-// permanent per-parcel log from GET /parcels/:parcelUid/history (proposals, lens ownership
-// attestations, acceptances, verdicts, lifecycle) as a timeline with explorer links. The pure
+// The parcel panel's "History" section: per cadastral parcel a collapsible History showing the
+// permanent per-parcel log from GET /parcels/:parcelUid/history (agreements proposed over it, lens
+// ownership attestations, executed agreements) as a timeline with explorer links. The pure
 // builders (URL, link resolution, event text, timeline HTML) take no DOM and are exported via
-// CommonJS for headless tests; mountAfter (the card) and renderSection (the parcel panel's collapsed
-// History section) are the thin DOM layer, fetching a parcel only when opened.
+// CommonJS for headless tests; renderSection (the Info tab's collapsed History section) is the thin
+// DOM layer, fetching a parcel only when opened.
 (function (root, factory) {
     const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
     if (root) root.ProposalParcelHistoryCard = api;
 })(typeof window !== 'undefined' ? window : null, function (root) {
+    // The event types the history lists (backend/oracle/parcel-history.js).
     const EVENT_LABELS = {
-        proposal_created: ['panel.proposal.parcelHistory.event.created', 'Proposal created'],
-        proposal_chain_observed: ['panel.proposal.parcelHistory.event.chainObserved', 'Proposal observed on Solana devnet'],
+        agreement_published: ['panel.proposal.parcelHistory.event.agreementPublished', 'Agreement proposed'],
         parcel_ownership: ['panel.proposal.parcelHistory.event.ownership', 'Ownership attested'],
-        proposal_acceptance: ['panel.proposal.parcelHistory.event.acceptance', 'Owner said yes'],
-        proposal_verdict: ['panel.proposal.parcelHistory.event.verdict', 'Verdict settled'],
-        proposal_lifecycle: ['panel.proposal.parcelHistory.event.lifecycle', 'Proposal reached a final state']
-    };
-    const OUTCOME_LABELS = {
-        executed: ['panel.proposal.parcelHistory.outcome.executed', 'executed'],
-        cancelled: ['panel.proposal.parcelHistory.outcome.cancelled', 'cancelled'],
-        expired: ['panel.proposal.parcelHistory.outcome.expired', 'expired']
+        agreement_executed: ['panel.proposal.parcelHistory.event.agreementExecuted', 'Agreement executed']
     };
 
     function plainT(key, fallback, params = {}) {
@@ -66,17 +59,14 @@
         const [key, fallback] = EVENT_LABELS[event.type] || ['panel.proposal.parcelHistory.event.other', event.type || 'Event'];
         const title = t(key, fallback);
         const details = [];
-        if (event.type === 'proposal_chain_observed') details.push(t('panel.proposal.parcelHistory.chainObservationHint', 'Verified mirror observation; this is not the mint time.'));
-        if (event.outcome && event.type !== 'proposal_acceptance') {
-            const label = OUTCOME_LABELS[event.outcome];
-            details.push(label ? t(label[0], label[1]) : event.outcome);
-        }
         if (event.title) details.push(event.title);
-        if (event.proposalId && event.type !== 'proposal_created') details.push(t('panel.proposal.parcelHistory.proposal', 'Proposal {{id}}', { id: event.proposalId }));
+        if (event.agreementCid) details.push(t('panel.proposal.parcelHistory.agreement', 'Agreement {{cid}}', { cid: shortKey(event.agreementCid) }));
         if (event.member) details.push(t('panel.proposal.parcelHistory.member', 'Member {{key}}', { key: shortKey(event.member) }));
         if (event.owner) details.push(t('panel.proposal.parcelHistory.owner', 'Owner {{key}}', { key: shortKey(event.owner) }));
         if (typeof event.ownerCount === 'number') details.push(t('panel.proposal.parcelHistory.ownerCount', '{{count}} attested owner(s)', { count: event.ownerCount }));
-        if (Array.isArray(event.lens) && event.lens.length) details.push(t('panel.proposal.parcelHistory.lens', 'Lens: {{keys}}', { keys: event.lens.map(shortKey).join(', ') }));
+        // An executed agreement names the one lens key that attested its decision; ownership events none.
+        const lens = Array.isArray(event.lens) ? event.lens : typeof event.lens === 'string' && event.lens ? [event.lens] : [];
+        if (lens.length) details.push(t('panel.proposal.parcelHistory.lens', 'Lens: {{keys}}', { keys: lens.map(shortKey).join(', ') }));
         return { title, details };
     }
 
@@ -120,27 +110,10 @@
         return `${anchorHtml}<ol class="parcel-history-timeline">${items}</ol>`;
     }
 
-    function buildCardHtml(parcelIds, t = plainT) {
-        const rows = parcelIds.map(parcelUid => `
-            <details class="parcel-history-parcel" data-parcel-history="${escapeText(parcelUid)}">
-                <summary title="${escapeText(parcelUid)}"><span class="parcel-id-text">${escapeText(t('panel.proposal.parcelHistory.summary', 'History: {{parcel}}', { parcel: parcelUid }))}</span></summary>
-                <div class="parcel-history-content" aria-live="polite"></div>
-            </details>`).join('');
-        return `
-            <div class="proposal-funding-head">
-                <div>
-                    <div class="proposal-funding-eyebrow">${escapeText(t('panel.proposal.parcelHistory.eyebrow', 'Permanent per-parcel log'))}</div>
-                    <h3>${escapeText(t('panel.proposal.parcelHistory.title', 'Parcel history'))}</h3>
-                </div>
-            </div>
-            <p class="lens-picker-note">${escapeText(t('panel.proposal.parcelHistory.hint', 'Every proposal, ownership attestation and consent recorded for each parcel, oldest first, at the time its source states.'))}</p>
-            ${rows}`;
-    }
-
     // The parcel panel's always-present section: one collapsed History row per cadastral parcel
     // (usually one), without the card's heading; the hint becomes the summary's tooltip.
     function buildSectionHtml(parcelIds, t = plainT) {
-        const hint = t('panel.proposal.parcelHistory.hint', 'Every proposal, ownership attestation and consent recorded for each parcel, oldest first, at the time its source states.');
+        const hint = t('panel.proposal.parcelHistory.agreementHint', 'Every agreement proposed over the parcel, ownership attestation and executed agreement, oldest first, at the time its source states.');
         return parcelIds.map(parcelUid => {
             const label = parcelIds.length === 1
                 ? t('panel.parcel.historySection', 'History')
@@ -208,21 +181,5 @@
         return host;
     }
 
-    // Inserts the card right after `anchorElement` (the lens card) and fetches each parcel's history
-    // the first time its row is opened.
-    function mountAfter(anchorElement, { parcelIds = [] } = {}) {
-        if (!anchorElement || !anchorElement.parentNode) return null;
-        const ids = Array.from(new Set((parcelIds || []).map(String).filter(Boolean)));
-        if (!ids.length) return null;
-        const next = anchorElement.nextElementSibling;
-        if (next && next.classList.contains('proposal-parcel-history-card')) next.remove();
-        const section = anchorElement.ownerDocument.createElement('section');
-        section.className = 'proposal-funding-card proposal-parcel-history-card';
-        section.innerHTML = buildCardHtml(ids, t);
-        bindLoaders(section);
-        anchorElement.parentNode.insertBefore(section, anchorElement.nextSibling);
-        return section;
-    }
-
-    return { historyUrl, resolveLink, formatAt, describeEvent, normalizeHistory, buildAnchorHtml, buildTimelineHtml, buildCardHtml, buildSectionHtml, renderSection, mountAfter };
+    return { historyUrl, resolveLink, formatAt, describeEvent, normalizeHistory, buildAnchorHtml, buildTimelineHtml, buildSectionHtml, renderSection };
 });

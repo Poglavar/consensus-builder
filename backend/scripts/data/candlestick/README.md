@@ -1,7 +1,8 @@
 # Candlestick Point (San Francisco) inputs
 
-Inputs for `backend/scripts/import-candlestick-courtyard.mjs`, which recreates the "Courtyard
-Candlestick" concept as ordinary Freeform building proposals so it can stand next to the official plan.
+Inputs for `backend/scripts/import-candlestick-courtyard.mjs` and `backend/scripts/import-candlestick-fivepoint.mjs`,
+which recreate the "Courtyard Candlestick" concept and the approved FivePoint plan as building designs, each
+published with one agreement, so the two can stand next to each other.
 
 ## candlestick-point-boundary-wgs84.geojson
 
@@ -9,7 +10,7 @@ The project-area boundary: DataSF dataset `m288-24sn` ("Former SF Redevelopment 
 Areas"), feature "Bayview Hunters Point Area B Zone 1", about 271 acres, reprojected to WGS84.
 Licence: PDDL 1.0 (City and County of San Francisco). Both the courtyard concept and the official
 FivePoint plan describe the same 271.6-acre development. This boundary is source context; each
-Freeform proposal owns its own footprint site.
+design carries its own footprints.
 
 ## The courtyard concept model (not in the repository, 37 MB)
 
@@ -45,21 +46,37 @@ Innovation District parcel heights (A–N) were read from a raster figure (A5.3N
 space come from the OCII project overview, not Addendum 7.
 
 
-## Import contract and recreation
+## Import contract and publishing
 
-Each disconnected footprint becomes one ordinary Freeform proposal (`goal` and `typologyType` are
-`single`), retaining its holes, height and source identity. Source MultiPolygons are split without
-selecting a largest piece. The Courtyard projection retains full WGS84 precision and removes
-repeated consecutive source vertices. The FivePoint reconstruction retains all pieces around
-mid-block passages and assigns overlapping tower bases to the taller volume, keeping the whole
-built footprint without overlapping independent building parcels.
+Both importers build their designs from these inputs alone and publish them through
+`backend/scripts/lib/restatement-publish.mjs`, against the city `san_francisco` and the parcel source
+`us-ca-sf-datasf-active-parcels`:
 
-Both commands default to a dry run and write `{ plan, proposals }` to `--out`. The plan manifest
-names its members as `authoredProposalIds`; publication resolves their database row IDs and uses
-the ordinary immutable named-plan API. `--apply` prepares, publishes and reads back each building,
-then publishes and verifies the plan's membership. An exact rerun skips existing records; changed
-content at an existing ID fails and requires a new `--proposal-id` prefix/version.
+```sh
+cd backend
+node scripts/import-candlestick-fivepoint.mjs --dry-run                       # design objects and CIDs, no network
+node scripts/import-candlestick-fivepoint.mjs --designs --api <api> [--origin <app>] --apply
+node scripts/import-candlestick-fivepoint.mjs --capture --app <app> --api <api>    # → ground/candlestick-fivepoint.json
+node scripts/import-candlestick-fivepoint.mjs --agreement --api <api> [--origin <app>] --app <app> --apply
+node scripts/import-candlestick-courtyard.mjs --source <Candlestick_FG3D_Editable_Design.json> <the same steps>
+```
 
-For recreating an already-published aggregate, supply `--source-proposal-id <row-id>` to preserve
-ordinary counterproposal lineage. Published source geometry and chain references remain intact.
-Rebuilt records can then be edited, moved, reshaped and saved with the standard Freeform tool.
+- **FivePoint** (`candlestick-fivepoint`, 110 designs): each connected footprint is one Freeform design
+  (`goal` and typology `single`, its footprint as its site), so applying it forms its own parcel. Pieces
+  around mid-block passages are all kept, and overlapping tower bases go to the taller volume, so the whole
+  built footprint stands without overlapping building parcels. The figures give only a month (August 2024),
+  so the designs carry the day the massing was digitized, 9 October 2026, as their `authoredAt`.
+- **Courtyard** (`candlestick-courtyard`): the 1,105 buildings are grouped into one design per block of the
+  concept (about 106), because the index links at most 200 designs to one agreement. A block design is
+  content on the ground it stands on (`goal: buildings`); each footprint keeps its holes, height, levels,
+  program and source identity (`sourceBuildingId`, `sourceBlockId`, the control properties). Source
+  MultiPolygons are split without selecting a largest piece, and the projection keeps full WGS84 precision
+  with repeated consecutive vertices removed. The floorplates the heights are read from stay in the source
+  model, identified by its SHA-256. The designs are dated 5 October 2026, the concept's publication.
+
+Each import is one agreement: a community vote with no lens, money, allocations or deadline, titled after
+the plan. `--capture` applies the designs in the running app (agent-browser) and commits the land the app
+derives to `ground/<plan>.json`; `--agreement` builds the agreement from it and refuses a stale file.
+Identifiers are design CIDs and agreement CIDs: a changed input is a new design, and rerunning an
+unchanged import publishes nothing new. Pins wait out the courier's limit of 30 per 15 minutes, so a first
+FivePoint publish takes about an hour; progress is checkpointed in `~/.config/ugt/restatements/<api host>/`.

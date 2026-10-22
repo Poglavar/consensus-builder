@@ -12,8 +12,9 @@ export const SECURITY_CONTACT = 'mailto:urbangametheory@gmail.com';
 const SECURITY_TXT_TTL_DAYS = 180;
 const SITE_URL = 'https://urbangametheory.xyz';
 const NAME = 'Urban Game Theory API';
-const DESCRIPTION = 'Cadastral parcels, 3D buildings and urban-development proposals for Zagreb and other cities. '
-    + 'Agents buy recipe-bound oracle facts over x402 (Solana devnet USDC).';
+const DESCRIPTION = 'Cadastral parcels, 3D buildings, and urban designs and the agreements over them for Zagreb and other cities. '
+    + 'Agents publish content-addressed designs and agreements, mint and bet on agreements on Solana devnet, '
+    + 'and buy recipe-bound oracle facts over x402 (Solana devnet USDC).';
 
 // The paid x402 resources this server actually offers right now: a route whose config is missing
 // answers 503, so it is not advertised (an indexer would probe it and record a broken resource).
@@ -24,7 +25,7 @@ export function paidResources(base, env) {
         out.push({
             url: `${base}/agent/oracle/facts`, method: 'GET', price: oracle.priceOracleFact,
             network: oracle.network, payTo: oracle.payTo,
-            description: 'Buy a recipe-bound, signed oracle fact about a proposal lifecycle or market.'
+            description: 'Buy a recipe-bound, source-hashed fact about an agreement account\'s terminal state (executed, cancelled or expired).'
         });
     }
     return out;
@@ -43,7 +44,7 @@ export function buildX402Manifest(base, env) {
         agents: `${base}/agents.json`,
         openapi: `${base}/openapi.json`,
         llms: `${base}/llms.txt`,
-        instructions: `Read ${base}/docs/agents for the recipe. Each paid call answers 402 with a PAYMENT-REQUIRED `
+        instructions: `Read ${base}/docs/agents for the flow. Each paid call answers 402 with a PAYMENT-REQUIRED `
             + 'header; retry with the signed x402 payment to settle and receive the result.'
     };
 }
@@ -73,19 +74,19 @@ export function buildLlmsTxt(base, env) {
         `The human app is ${SITE_URL}. This host is its JSON API.`,
         '',
         '## Agent docs',
-        `- [Agent quickstart](${base}/docs/agents): how to pay for and post a proposal over x402, plus the MCP tool surface.`,
-        `- [agents.json](${base}/agents.json): the proposal recipe as JSON Schema with live payment terms and endpoints.`,
+        `- [Agent quickstart](${base}/docs/agents): see what a site binds, publish designs, propose an agreement over them, mint and fund it on Solana devnet, bet, pledge and donate on it; plus the MCP tool surface.`,
+        `- [agents.json](${base}/agents.json): the design/v1 and agreement/v1 JSON Schemas, endpoints, program ids, the MCP tool list and the live oracle-fact payment terms.`,
         `- [OpenAPI](${base}/openapi.json): agent-facing endpoints as OpenAPI 3.1.`,
         `- [x402 manifest](${base}/.well-known/x402): paid resources for x402 indexers.`,
-        `- [Lens members](${base}/agent/lenses/members): the attester directory to pick a proposal's lens from; schemas at ${base}/lenses/schemas. Anyone can become a member: POST a signed registration to the same path.`,
-        `- [Parcel history](${base}/parcels/{parcelUid}/history): the permanent per-parcel log of proposals, lens ownership attestations and land events.`,
+        `- [Lens members](${base}/agent/lenses/members): the attester directory to pick an agreement's lens from; schemas at ${base}/lenses/schemas. Anyone can become a member: POST a signed registration to the same path.`,
+        `- [Parcel history](${base}/parcels/{parcelUid}/history): the permanent per-parcel log of agreements over the parcel, lens ownership attestations and executions.`,
         '',
         '## Paid endpoints (x402)',
         ...paidLines,
         '',
         '## Optional',
-        `- [General API docs](${base}/docs): parcels, buildings, proposals.`,
-        `- [Bazaar listing proof](${base}/agent/discovery): the hosted x402 Bazaar record for the proposal route.`,
+        `- [General API docs](${base}/docs): parcels and buildings.`,
+        `- [Bazaar listing proof](${base}/agent/discovery): the hosted x402 Bazaar record for the oracle-facts route.`,
         ''
     ].join('\n');
 }
@@ -116,7 +117,7 @@ const LENS_MEMBERS_SCHEMA = {
                 type: 'object',
                 required: ['key', 'kind', 'name', 'description', 'serviceUrl', 'coverage'],
                 properties: {
-                    key: { type: 'string', description: 'Base58 SAS authority public key; put it in a proposal\'s lens.' },
+                    key: { type: 'string', description: 'Base58 SAS authority public key; put it in an agreement\'s lens (rule.lens).' },
                     kind: { type: ['string', 'null'], enum: ['owner-consent', 'court', 'permit', 'imagery', 'osm', 'lifecycle', null], description: 'What the member attests, not who it is.' },
                     name: { type: ['string', 'null'] },
                     description: { type: ['string', 'null'] },
@@ -127,12 +128,75 @@ const LENS_MEMBERS_SCHEMA = {
                         properties: {
                             ownership: { type: 'integer', description: 'Ownership attestations issued.' },
                             parcels: { type: 'integer', description: 'Distinct parcels covered.' },
-                            executed: { type: 'integer', description: 'Proposals executed on its attestations.' }
+                            executed: { type: 'integer', description: 'Agreements executed on its attestations.' }
                         }
                     }
                 }
             }
         }
+    }
+};
+
+const CID_PROPERTY = { type: 'string', pattern: '^bafkrei[a-z2-7]{52}$', description: 'CIDv1, raw codec, sha2-256, base32 lower case: over the object\'s canonical JSON bytes (keys sorted at every depth, no whitespace, UTF-8).' };
+const GEOJSON_SITE = { type: 'object', required: ['type', 'coordinates'], properties: { type: { type: 'string', enum: ['Polygon', 'MultiPolygon'] }, coordinates: { type: 'array' } }, description: 'GeoJSON Polygon or MultiPolygon in WGS84: at most 100000 vertices and a 500 km² bounding box.' };
+
+const DESIGN_BINDING_BODY = {
+    type: 'object',
+    required: ['site'],
+    properties: {
+        site: GEOJSON_SITE,
+        toleranceM: { type: 'number', minimum: 0, maximum: 1, description: 'A parcel is bound when the site reaches into it by more than this width (metres; default 0).' },
+        city: { type: 'string' },
+        parcelSourceId: { type: 'string', description: 'The parcel source to bind with; the city\'s default when absent.' }
+    }
+};
+
+const PIN_BODY = {
+    type: 'object',
+    required: ['kind', 'cid', 'bytes'],
+    additionalProperties: false,
+    properties: {
+        kind: { type: 'string', enum: ['design', 'agreement'] },
+        cid: CID_PROPERTY,
+        bytes: { type: 'string', contentEncoding: 'base64', description: 'The object\'s canonical bytes, base64; at most 256 KiB.' }
+    }
+};
+
+const INDEX_DESIGN_BODY = {
+    type: 'object',
+    required: ['cid', 'content'],
+    additionalProperties: false,
+    properties: {
+        cid: CID_PROPERTY,
+        content: { type: 'object', description: 'The design/v1 object (agents.json: schema.$defs.design).' },
+        parcelSourceId: { type: ['string', 'null'], maxLength: 100, description: 'The parcel source to bind with; the city\'s default when null.' }
+    }
+};
+
+const INDEX_AGREEMENT_BODY = {
+    type: 'object',
+    required: ['cid', 'content'],
+    additionalProperties: false,
+    properties: {
+        cid: CID_PROPERTY,
+        content: { type: 'object', description: 'The agreement/v1 object (agents.json: schema.$defs.agreement).' },
+        designs: {
+            type: 'array',
+            description: 'Linked designs the index does not hold yet, indexed in the same transaction (a parcel layout is published only this way).',
+            items: { type: 'object', required: ['cid', 'content'], additionalProperties: false, properties: { cid: CID_PROPERTY, content: { type: 'object' } } }
+        }
+    }
+};
+
+const ONCHAIN_BODY = {
+    type: 'object',
+    required: ['chain', 'cluster', 'account'],
+    additionalProperties: false,
+    properties: {
+        chain: { type: 'string', enum: ['solana'] },
+        cluster: { type: 'string', enum: ['devnet'] },
+        account: { type: 'string', description: 'The agreement account: PDA ["agreement", sponsor, sha256(cid)] under the agreement program.' },
+        signature: { type: ['string', 'null'], description: 'The create transaction\'s signature.' }
     }
 };
 
@@ -158,7 +222,7 @@ export function buildOpenApi(base, env) {
                     summary: 'Buy a verified oracle fact (x402-paid)',
                     operationId: 'getAgentOracleFact',
                     parameters: [
-                        { name: 'subject', in: 'query', required: false, schema: { type: 'string' }, description: 'Proposal account; omit for the latest fact.' },
+                        { name: 'subject', in: 'query', required: false, schema: { type: 'string' }, description: 'Agreement account; omit for the latest fact.' },
                         { name: 'market', in: 'query', required: false, schema: { type: 'string' }, description: 'Market account.' }
                     ],
                     responses: {
@@ -171,15 +235,15 @@ export function buildOpenApi(base, env) {
             },
             '/agent/discovery': {
                 get: {
-                    summary: 'Proof that a paid resource is listed in the hosted x402 Bazaar',
+                    summary: 'Proof that the paid oracle-facts resource is listed in the hosted x402 Bazaar',
                     operationId: 'getAgentDiscovery',
-                    parameters: [{ name: 'resource', in: 'query', required: false, schema: { type: 'string', enum: ['proposals', 'oracle-facts'] } }],
+                    parameters: [{ name: 'resource', in: 'query', required: false, schema: { type: 'string', enum: ['oracle-facts'] } }],
                     responses: { 200: { description: 'Listing state.' }, 400: { description: 'Unknown resource.' } }
                 }
             },
             '/agents.json': {
                 get: {
-                    summary: 'Proposal recipe, live payment terms and endpoint map',
+                    summary: 'Design and agreement schemas, endpoint map, program ids, MCP tools and live oracle-fact payment terms',
                     operationId: 'getAgentsManifest',
                     responses: { 200: { description: 'Agent manifest.' } }
                 }
@@ -213,41 +277,175 @@ export function buildOpenApi(base, env) {
             },
             '/lenses/schemas': {
                 get: {
-                    summary: 'The lens SAS schemas (ParcelOwnership-v1, ProposalVerdict-v1, MarketEvidence-v1): layout strings and field lists. An owner\'s yes is not an attestation: the owner signs accept_with_attestations with an optional payout key',
+                    summary: 'The lens SAS schemas (ParcelOwnership-v1, AgreementDecision-v1, MarketEvidence-v1): layout strings and field lists. An owner\'s yes is not an attestation: it is a signed decision on the agreement, relayed at /agreements/{cid}/decisions',
                     operationId: 'getLensSchemas',
                     responses: { 200: { description: '{ sasProgram, schemas: [{ kind, id, name, version, layout, fields, sasLayout }] }' } }
                 }
             },
             '/parcels/{parcelUid}/history': {
                 get: {
-                    summary: 'Permanent per-parcel log: proposals listing the parcel, lens ownership attestations and land events, oldest first by each source\'s own time',
+                    summary: 'Permanent per-parcel log: agreements over the parcel, lens ownership attestations and executions, oldest first by each source\'s own time',
                     operationId: 'getParcelHistory',
                     parameters: [{ name: 'parcelUid', in: 'path', required: true, schema: { type: 'string', maxLength: 128 }, description: 'Cadastral parcel id, URL-encoded (e.g. HR-335347-1208%2F3).' }],
                     responses: {
-                        200: { description: '{ parcelUid, anchor: { account, exists (true | false | null), source (chain | unavailable | unseedable) }, events: [{ type (proposal_created | proposal_chain_observed | parcel_ownership | proposal_acceptance | proposal_verdict | proposal_lifecycle), at (source time or null), proposalId?, proposalAccount?, chainRef?, member?, owner?, transaction?, hash?, link }] }. proposal_chain_observed describes a verified Solana devnet mirror at its verification time, not a mint event. Anchor existence is a separate validated account read; unavailable evidence stays null. No anchor mint time is inferred.' },
+                        200: { description: '{ parcelUid, anchor: { account, exists (true | false | null), source (chain | unavailable | unseedable) }, events: [{ type (agreement_published | parcel_ownership | agreement_executed), at (source time or null), agreementCid?, title?, account?, lens?, attestation?, member?, owner?, ownerCount?, outcome?, transaction?, hash?, link }] }. agreement_published is the index receiving an agreement that takes the parcel; agreement_executed is its execution on chain, at the account\'s executed_at. Anchor existence is a separate validated account read; unavailable evidence stays null. No anchor mint time is inferred.' },
                         400: { description: 'Invalid parcelUid.' }
                     }
                 }
             },
             '/oracle/events': {
                 get: {
-                    summary: 'Persisted land events (proposal lifecycle, acceptances, verdicts)',
+                    summary: 'Persisted land events (agreement lifecycle, per-parcel executions)',
                     operationId: 'getOracleEvents',
                     parameters: [
-                        { name: 'type', in: 'query', required: false, schema: { type: 'string', enum: ['proposal_lifecycle', 'proposal_acceptance', 'proposal_verdict'] } },
-                        { name: 'subject', in: 'query', required: false, schema: { type: 'string' }, description: 'Proposal account.' },
-                        { name: 'parcelUid', in: 'query', required: false, schema: { type: 'string' }, description: 'Only events about this parcel: acceptances naming it, lifecycle and verdict events of proposals listing it.' },
+                        { name: 'type', in: 'query', required: false, schema: { type: 'string', enum: ['agreement_lifecycle', 'agreement_executed'] } },
+                        { name: 'subject', in: 'query', required: false, schema: { type: 'string' }, description: 'Agreement account (the subject of agreement_lifecycle events).' },
+                        { name: 'agreement', in: 'query', required: false, schema: { type: 'string' }, description: 'Agreement CID.' },
+                        { name: 'parcelUid', in: 'query', required: false, schema: { type: 'string' }, description: 'Only events about this parcel: its own agreement_executed events, and agreement_lifecycle events of agreements that take it.' },
                         { name: 'limit', in: 'query', required: false, schema: { type: 'integer', minimum: 1, maximum: 100 } }
                     ],
-                    responses: { 200: { description: '{ events, count, eventType, parcelUid? }' }, 400: { description: 'Invalid filter.' } }
+                    responses: { 200: { description: '{ events, count, eventType, agreement?, parcelUid? }' }, 400: { description: 'Invalid filter.' } }
                 }
             },
-            '/proposals/{id}': {
+            '/oracle/recipes/agreement-execution-v1': {
                 get: {
-                    summary: 'Read a proposal',
-                    operationId: 'getProposal',
-                    parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
-                    responses: { 200: { description: 'Proposal.' }, 404: { description: 'Not found.' } }
+                    summary: 'The precommitted recipe a minted agreement\'s market settles by: executed YES, cancelled or expired NO; its trusted attester is the agreement program',
+                    operationId: 'getAgreementExecutionRecipe',
+                    parameters: [
+                        { name: 'agreement', in: 'query', required: true, schema: { type: 'string' }, description: 'Agreement account.' },
+                        { name: 'market', in: 'query', required: false, schema: { type: 'string' }, description: 'The agreement\'s market account, PDA ["market", agreement].' }
+                    ],
+                    responses: { 200: { description: '{ recipe }' }, 400: { description: 'Invalid agreement or market account.' }, 404: { description: 'No minted agreement has this account.' } }
+                }
+            },
+            '/designs/binding': {
+                post: {
+                    summary: 'What a design on this site would bind: the parcels the site reaches into by more than the tolerance (an intrusion width). Read-only: nothing is stored and no Origin header is needed',
+                    operationId: 'getDesignBinding',
+                    requestBody: { required: true, content: { 'application/json': { schema: DESIGN_BINDING_BODY } } },
+                    responses: {
+                        200: { description: '{ city, parcelSourceId, binding: { parcels: [{ parcelId, overlapM2, intrusionM }], touched, unresolved?, toleranceM, coverage (complete | partial | none | unknown), unsurveyedM2, unknownM2, siteM2, source, parcelSource, computedAt } }' },
+                        400: { description: 'invalid-site or invalid-tolerance.' },
+                        409: { description: 'binding-unresolved: the site reaches into a parcel by within measurement error of the tolerance; move it a millimetre.' },
+                        413: { description: 'too-many-parcels: the site meets more than 5000 parcels.' },
+                        503: { description: 'binding-unavailable, or the parcel source is down.' }
+                    }
+                }
+            },
+            '/pins': {
+                post: {
+                    summary: 'Pin a design/v1 or agreement/v1 object on IPFS (CIDv1 raw, sha2-256) as exactly these canonical bytes; the server recomputes the CID and checks the object as the index would. Needs an Origin header of the app; 30 pins per 15 minutes per client',
+                    operationId: 'pinObject',
+                    requestBody: { required: true, content: { 'application/json': { schema: PIN_BODY } } },
+                    responses: {
+                        200: { description: '{ cid, pinnedAt }' },
+                        400: { description: 'invalid-kind, invalid-cid, invalid-bytes, cid-mismatch, not-canonical, or the object\'s own refusal (invalid-design, invalid-agreement).' },
+                        409: { description: 'cid-mismatch: the pinning service answered another CID.' },
+                        413: { description: 'too-large: over 256 KiB.' },
+                        429: { description: 'upload-rate-limited, with retryAfterSeconds.' }
+                    }
+                }
+            },
+            '/designs': {
+                get: {
+                    summary: 'Indexed designs, newest first',
+                    operationId: 'listDesigns',
+                    parameters: [
+                        { name: 'city', in: 'query', required: false, schema: { type: 'string', maxLength: 100 } },
+                        { name: 'bbox', in: 'query', required: false, schema: { type: 'string' }, description: 'minLng,minLat,maxLng,maxLat (WGS84): designs whose site meets it.' },
+                        { name: 'q', in: 'query', required: false, schema: { type: 'string', maxLength: 200 }, description: 'Matches the title or the author.' },
+                        { name: 'limit', in: 'query', required: false, schema: { type: 'integer', minimum: 1, maximum: 1000 } }
+                    ],
+                    responses: { 200: { description: '{ designs: [design row], count }' }, 400: { description: 'Invalid filter.' } }
+                },
+                post: {
+                    summary: 'Index a pinned design/v1 object: the server checks its CID and shape and derives its city and binding. A parcel layout is indexed only with its agreement. Needs an Origin header of the app',
+                    operationId: 'indexDesign',
+                    requestBody: { required: true, content: { 'application/json': { schema: INDEX_DESIGN_BODY } } },
+                    responses: {
+                        201: { description: 'The design row: { cid, city, goal, title, author, originCid, binding, content, screenshotUrl, screenshotBeforeUrl, screenshotPairUrl, createdAt }.' },
+                        409: { description: 'The CID is indexed already (the body is its row), or binding-unresolved: the site reaches into a parcel by within measurement error of the tolerance.' },
+                        400: { description: 'invalid-cid, cid-mismatch, invalid-design, invalid-site, invalid-tolerance, invalid-footprint, site-required or footprint-outside-site.' },
+                        422: { description: 'layout-needs-agreement: send a parcel layout in the designs of POST /agreements.' },
+                        503: { description: 'binding-unavailable: nothing was stored.' }
+                    }
+                }
+            },
+            '/designs/{cid}': {
+                get: {
+                    summary: 'Read one indexed design',
+                    operationId: 'getDesign',
+                    parameters: [
+                        { name: 'cid', in: 'path', required: true, schema: { type: 'string' }, description: 'Design CID (bafkrei…).' },
+                        { name: 'format', in: 'query', required: false, schema: { type: 'string', enum: ['jsonld'] } }
+                    ],
+                    responses: { 200: { description: 'The design row.' }, 400: { description: 'invalid-cid.' }, 404: { description: 'design-not-found.' } }
+                }
+            },
+            '/agreements': {
+                get: {
+                    summary: 'Indexed agreements, newest first, each with its status (from the chain once minted, else from the deadline)',
+                    operationId: 'listAgreements',
+                    parameters: [
+                        { name: 'city', in: 'query', required: false, schema: { type: 'string', maxLength: 100 } },
+                        { name: 'design', in: 'query', required: false, schema: { type: 'string' }, description: 'Only agreements linking this design CID.' },
+                        { name: 'parcel', in: 'query', required: false, schema: { type: 'string' }, description: 'Only agreements taking this input parcel id.' },
+                        { name: 'limit', in: 'query', required: false, schema: { type: 'integer', minimum: 1, maximum: 1000 } }
+                    ],
+                    responses: { 200: { description: '{ agreements: [agreement row], count }' }, 400: { description: 'Invalid filter.' } }
+                },
+                post: {
+                    summary: 'Index a pinned agreement/v1 object with the designs it links that the index does not hold yet. Its input parcels must be exactly the union of its designs\' bindings. Needs an Origin header of the app',
+                    operationId: 'indexAgreement',
+                    requestBody: { required: true, content: { 'application/json': { schema: INDEX_AGREEMENT_BODY } } },
+                    responses: {
+                        201: { description: 'The agreement row: { cid, city, title, author, designCids, inputParcelIds, parcelSourceId, deadline, status, content, onchain, screenshotUrl, screenshotBeforeUrl, screenshotPairUrl, createdAt }.' },
+                        409: { description: 'The CID is indexed already; the body is its row.' },
+                        400: { description: 'invalid-cid, cid-mismatch, invalid-agreement (with its section) or a refused carried design.' },
+                        422: { description: 'deadline-past, design-not-indexed (missing) or inputs-differ-from-binding (missing, extra).' }
+                    }
+                }
+            },
+            '/agreements/{cid}': {
+                get: {
+                    summary: 'Read one indexed agreement: its content, status and, once minted, its chain account (onchain)',
+                    operationId: 'getAgreement',
+                    parameters: [
+                        { name: 'cid', in: 'path', required: true, schema: { type: 'string' }, description: 'Agreement CID (bafkrei…).' },
+                        { name: 'format', in: 'query', required: false, schema: { type: 'string', enum: ['jsonld'] } }
+                    ],
+                    responses: { 200: { description: 'The agreement row.' }, 400: { description: 'invalid-cid.' }, 404: { description: 'agreement-not-found.' } }
+                }
+            },
+            '/agreements/{cid}/decisions': {
+                get: {
+                    summary: 'The owner decisions relayed for an agreement, each a receipt signed over its agreement-decision/v1 statement',
+                    operationId: 'getAgreementDecisions',
+                    parameters: [{ name: 'cid', in: 'path', required: true, schema: { type: 'string' } }],
+                    responses: { 200: { description: '{ agreementCid, decisions: [receipt] }' }, 404: { description: 'agreement_not_found.' } }
+                },
+                post: {
+                    summary: 'Relay one owner decision: { receipt }, re-verified before it is stored. Needs an Origin header of the app',
+                    operationId: 'postAgreementDecision',
+                    parameters: [{ name: 'cid', in: 'path', required: true, schema: { type: 'string' } }],
+                    requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', required: ['receipt'], properties: { receipt: { type: 'object' } } } } } },
+                    responses: { 201: { description: '{ stored: true, duplicate: false }' }, 200: { description: '{ stored: true, duplicate: true }' }, 400: { description: 'The receipt does not verify or is not admitted, with its code.' } }
+                }
+            },
+            '/agreements/{cid}/onchain': {
+                post: {
+                    summary: 'Record the chain account an agreement was minted as: the server reads the account (it must be the PDA of the agreement\'s sponsor and CID) and the signature on its own RPC. Needs an Origin header of the app',
+                    operationId: 'recordAgreementOnchain',
+                    parameters: [{ name: 'cid', in: 'path', required: true, schema: { type: 'string' } }],
+                    requestBody: { required: true, content: { 'application/json': { schema: ONCHAIN_BODY } } },
+                    responses: {
+                        201: { description: 'The agreement row with onchain, first record.' },
+                        200: { description: 'The agreement row with onchain refreshed.' },
+                        400: { description: 'onchain-account-mismatch, onchain-signature-mismatch, unsupported-chain or unsupported-cluster.' },
+                        404: { description: 'agreement-not-found, or onchain-account-missing (not visible yet: ask again).' },
+                        409: { description: 'onchain-signature-not-found (not visible yet), onchain-recorded-elsewhere, onchain-cid-mismatch, onchain-sponsor-mismatch or onchain-not-agreement.' },
+                        422: { description: 'not-binding: only a binding owners\' agreement is minted; no-sponsor: the agreement names no sponsor wallet.' }
+                    }
                 }
             }
         }

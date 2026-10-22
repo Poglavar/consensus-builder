@@ -20,9 +20,21 @@ describe('register-lens-schemas.mjs', () => {
         expect(out).toContain('(dry run)');
         expect(out).toContain('credential PDA:  8xXFCwX7ktNopNTi2LxNrNwAUhnpCjzU76V8KetnFAMJ');
         expect(out).toContain('Hzs9t2CcHVNSJYxrgcBY7sCpr8MoY6VM95Xm5K54m7pv');
-        expect(out).toContain('DHvDAKSvUAkPqwhgeaZ9f2KY2hFjRtzeWtGxhKcpBNMe');
+        // AgreementDecision v1 under the same credential, as sas-lib 1.0.10 deriveSchemaPda derives it.
+        expect(out).toContain('7JfxNayp1sLAWjpUvvQnbnSmiPLsKHrMv6BpPPyhjP3T');
         expect(out).toContain('string parcelUid, string owner, uint8 ownerCount, string evidenceRef, int64 sourceObservedAt');
+        expect(out).toContain('string agreementCid, string sponsor, string decision, string evidenceRef, int64 sourceObservedAt');
+        expect(out).toContain('SAS layout:    [12, 12, 12, 12, 8]');
         expect(out).toContain('nothing sent');
+    });
+
+    it('registers only the schemas asked for, and refuses one that does not exist', () => {
+        const out = execFileSync(process.execPath, [SCRIPT, '--authority', KEY, '--schemas', 'decision'], { encoding: 'utf8' });
+        expect(out).toContain('AgreementDecision-v1');
+        expect(out).not.toContain('ParcelOwnership-v1');
+        const run = spawnSync(process.execPath, [SCRIPT, '--authority', KEY, '--schemas', 'verdict'], { encoding: 'utf8' });
+        expect(run.status).toBe(1);
+        expect(run.stderr).toContain('unknown schema verdict');
     });
 
     it('refuses --live without a keypair', () => {

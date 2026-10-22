@@ -282,27 +282,6 @@
     border-left-color: var(--proposal-color, var(--cb-primary));
 }
 
-/* Unseen proposal styling */
-.proposal-item.unseen-proposal {
-    background-color: #f0f8ff;
-    border-left: 3px solid var(--cb-primary);
-    font-weight: 600;
-}
-
-.proposal-item.unseen-proposal:hover {
-    background-color: #e6f3ff;
-}
-
-.unseen-indicator {
-    color: var(--cb-primary);
-    font-weight: bold;
-    margin-right: 6px;
-    font-size: 12px;
-}
-
-
-
-
 /* Agent Log Section in Agent Details */
 .agent-log-container {
     max-height: 200px;

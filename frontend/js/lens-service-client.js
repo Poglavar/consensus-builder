@@ -1,6 +1,6 @@
 // HTTP calls of the lens model with fetch injected: the backend attester directory and one lens
-// member service (status, challenge, ownership, attestations, operator verdict). No DOM; exposed as
-// window.LensServiceClient and via CommonJS so node tests can drive it with a fake fetch.
+// member service (status, challenge, ownership, attestations, the operator's agreement decision). No
+// DOM; exposed as window.LensServiceClient and via CommonJS so node tests can drive it with a fake fetch.
 (function (root, factory) {
     const core = (root && root.LensCore) || (typeof require === 'function' ? require('./lens-core.js') : null);
     const api = factory(core);
@@ -54,9 +54,11 @@
         return request(joinUrl(serviceUrl, '/lens/status'), { fetchImpl });
     }
 
+    // GET /lens/attestations: the member's issued attestations, filtered (kind=decision with
+    // agreementCid finds an agreement's AgreementDecision-v1, agreement-bridge.js).
     async function fetchAttestations({ serviceUrl, filter = {}, fetchImpl } = {}) {
         const params = new URLSearchParams();
-        ['parcelUid', 'proposalAccount', 'owner', 'kind', 'limit'].forEach(name => {
+        ['parcelUid', 'agreementCid', 'owner', 'kind', 'limit'].forEach(name => {
             if (filter[name] !== undefined && filter[name] !== null && String(filter[name]).trim()) params.set(name, String(filter[name]).trim());
         });
         const query = params.toString();
@@ -72,10 +74,13 @@
         return request(joinUrl(serviceUrl, '/lens/ownership'), { method: 'POST', body: { parcelUid, owner, signature, challenge }, fetchImpl });
     }
 
-    // The token is passed per call and never stored by this module.
-    async function postVerdict({ serviceUrl, token, body, fetchImpl } = {}) {
-        return request(joinUrl(serviceUrl, '/lens/verdict'), {
-            method: 'POST', body, headers: { [OPERATOR_TOKEN_HEADER]: String(token || '') }, fetchImpl
+    // POST /lens/agreements/:cid/decision: operator only, with no body, since the member counts the
+    // agreement's relayed owner decisions itself (backend/lens/server.js). 201 issued, 200 already
+    // issued, each with the tally; a refusal names its code. The token is passed per call and never
+    // stored by this module.
+    async function postAgreementDecision({ serviceUrl, token, cid, fetchImpl } = {}) {
+        return request(joinUrl(serviceUrl, `/lens/agreements/${encodeURIComponent(String(cid || ''))}/decision`), {
+            method: 'POST', headers: { [OPERATOR_TOKEN_HEADER]: String(token || '') }, fetchImpl
         });
     }
 
@@ -147,7 +152,7 @@
         fetchAttestations,
         requestChallenge,
         submitOwnership,
-        postVerdict,
+        postAgreementDecision,
         requestApprovalRights,
         requestApprovalChallenge,
         submitApprovalAuthority,

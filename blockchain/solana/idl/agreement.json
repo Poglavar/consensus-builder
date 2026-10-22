@@ -10,10 +10,11 @@
     {
       "name": "attest",
       "docs": [
-        "Record the lens's decision from its AgreementDecision-v1 SAS attestation (checks in the module",
-        "docs). Permissionless: the outcome comes from the attestation, never from the caller. Only",
-        "one decision is ever recorded, while Active and before the deadline. Keeps the attestation's",
-        "key and the sha256 of its whole account bytes, so the evidence outlives the SAS account."
+        "Record the lens's satisfied decision from its AgreementDecision-v1 SAS attestation (checks in",
+        "the module docs). Permissionless: the outcome comes from the attestation, never from the",
+        "caller. Only one decision is ever recorded, while Active and before the deadline. Keeps the",
+        "attestation's key and the sha256 of its whole account bytes, so the evidence outlives the SAS",
+        "account."
       ],
       "discriminator": [
         83,
@@ -48,9 +49,9 @@
     {
       "name": "cancel",
       "docs": [
-        "The authority withdraws an Active agreement and the escrow returns to it. Refused",
-        "once a satisfied decision is recorded (the parties rely on the escrow from then on); after a",
-        "refusal it is the authority's early exit."
+        "The authority withdraws an Active agreement while no decision is recorded, and the escrow",
+        "returns to it. Once the lens's satisfied decision is recorded the parties rely on the escrow:",
+        "the agreement then executes, or expires after its deadline."
       ],
       "discriminator": [
         232,
@@ -210,8 +211,8 @@
     {
       "name": "fund",
       "docs": [
-        "The authority moves `lamports` into the escrow, while the agreement is Active, not refused",
-        "and before its deadline."
+        "The authority moves `lamports` into the escrow, while the agreement is Active and before its",
+        "deadline (also after the decision, to reach `required_lamports`)."
       ],
       "discriminator": [
         218,
@@ -360,126 +361,121 @@
     },
     {
       "code": 6002,
-      "name": "DecisionRefused",
-      "msg": "The lens attested that the agreement's decision was refused"
-    },
-    {
-      "code": 6003,
       "name": "DeadlinePassed",
       "msg": "The agreement's deadline has passed"
     },
     {
-      "code": 6004,
+      "code": 6003,
       "name": "DeadlineNotPassed",
       "msg": "The agreement's deadline has not passed, or it has none"
     },
     {
-      "code": 6005,
+      "code": 6004,
       "name": "Underfunded",
       "msg": "The escrow holds less than the agreement's required funding"
     },
     {
-      "code": 6006,
+      "code": 6005,
       "name": "WrongLens",
       "msg": "The attestation was not issued by the agreement's lens"
     },
     {
-      "code": 6007,
+      "code": 6006,
       "name": "InvalidAttestation",
       "msg": "The account is not a valid SAS attestation or credential, or the credential's authority did not sign it"
     },
     {
-      "code": 6008,
+      "code": 6007,
       "name": "Unauthorized",
       "msg": "Only the agreement's authority may do this"
     },
     {
-      "code": 6009,
+      "code": 6008,
       "name": "CidTooLong",
       "msg": "The CID is longer than 64 bytes"
     },
     {
-      "code": 6010,
+      "code": 6009,
       "name": "InvalidCid",
       "msg": "The CID must be 1-64 ASCII letters and digits"
     },
     {
-      "code": 6011,
+      "code": 6010,
       "name": "NoLens",
       "msg": "A lens key is required"
     },
     {
-      "code": 6012,
+      "code": 6011,
       "name": "InvalidPayout",
       "msg": "The payout must be a real account other than the agreement itself"
     },
     {
-      "code": 6013,
+      "code": 6012,
       "name": "ZeroAmount",
       "msg": "Amount must be greater than zero"
     },
     {
-      "code": 6014,
+      "code": 6013,
       "name": "WrongAuthority",
       "msg": "The account is not the agreement's authority"
     },
     {
-      "code": 6015,
+      "code": 6014,
       "name": "WrongPayout",
       "msg": "The account is not the agreement's payout account"
     },
     {
-      "code": 6016,
+      "code": 6015,
       "name": "AlreadyAttested",
       "msg": "A decision is already recorded for this agreement"
     },
     {
-      "code": 6017,
+      "code": 6016,
       "name": "DecisionSatisfied",
       "msg": "The lens attested the decision as satisfied: the agreement can no longer be cancelled"
     },
     {
-      "code": 6018,
+      "code": 6017,
       "name": "AttestationExpired",
       "msg": "The attestation has expired"
     },
     {
-      "code": 6019,
+      "code": 6018,
       "name": "WrongSchema",
       "msg": "The attestation is not under its credential's AgreementDecision v1 schema"
     },
     {
-      "code": 6020,
+      "code": 6019,
       "name": "InvalidAttestationPayload",
       "msg": "The attestation payload does not match the AgreementDecision-v1 layout"
     },
     {
-      "code": 6021,
+      "code": 6020,
       "name": "WrongAgreement",
       "msg": "The attestation is about a different agreement"
     },
     {
-      "code": 6022,
+      "code": 6021,
       "name": "InvalidDecision",
-      "msg": "The attested decision must be satisfied or refused"
+      "msg": "The attested decision must be satisfied"
     },
     {
-      "code": 6023,
+      "code": 6022,
       "name": "AttestationFromFuture",
       "msg": "The attestation's source time is in the future"
     },
     {
-      "code": 6024,
+      "code": 6023,
       "name": "ArithmeticOverflow",
       "msg": "Arithmetic overflow"
     },
     {
-      "code": 6025,
+      "code": 6024,
       "name": "InsufficientEscrowBalance",
       "msg": "Insufficient escrow balance"
     },
     {
-      "code": 6026,
+      "code": 6025,
       "name": "WrongSponsor",
       "msg": "The attestation names a different sponsor than the agreement's authority"
     }
@@ -631,13 +627,6 @@
           {
             "name": "cid",
             "type": "string"
-          },
-          {
-            "name": "decision",
-            "docs": [
-              "1 satisfied, 2 refused."
-            ],
-            "type": "u8"
           },
           {
             "name": "lens",
@@ -868,7 +857,8 @@
     {
       "name": "Decision",
       "docs": [
-        "The lens's recorded decision; Pending until `attest`."
+        "The lens's recorded decision; Pending until `attest`. The lens never refuses, so there is no",
+        "other value: an agreement whose rule is not satisfied by its deadline expires."
       ],
       "type": {
         "kind": "enum",
@@ -878,9 +868,6 @@
           },
           {
             "name": "Satisfied"
-          },
-          {
-            "name": "Refused"
           }
         ]
       }

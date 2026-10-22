@@ -4,9 +4,8 @@ import * as turf from '@turf/turf';
 import {planHousingCandidates,housingPick,housingOutreach,chooseHousingArea} from '../agents/housing-policy.js';
 import {housingFeatures,screenHousingParcels} from '../agents/housing-screen.js';
 import {selectAlgorithmicPicks} from '../agents/algorithmic-picker.js';
-import {buildProposalRecord} from '../agents/record-builder.js';
-import {createRequire} from 'node:module';
-const require=createRequire(import.meta.url), chainRecord=require('../../frontend/js/proposals/chain-record.js');
+import {buildDesignRecord} from '../agents/record-builder.js';
+import {designObject} from '../agents/agreement-objects.js';
 const area={city:'test',label:'Test City',medianMultiple:14.1,rankingUrl:'https://example.org/report',authority:{name:'Planning',url:'https://example.org/planning',email:'planning@example.org'}};
 const ground=turf.bboxPolygon([0,0,.001,.001]);
 const parcel={parcelId:'test-1',geometry:ground.geometry,areaM2:turf.area(ground),housingArea:area,housingScreen:{complete:true,excluded:false,transitDistanceM:300}};
@@ -58,21 +57,27 @@ describe('Affordabot housing research',()=>{
    expect(new Set(data.features.map(f=>f.id)).size).toBe(data.features.length);
    expect(data.features.map(f=>f.properties.screen)).toEqual(['corridor','transit']);
  });
- it('picks a research proposal without a fabricated land-value gain',()=>{
+ it('picks a research design without a fabricated land-value gain',()=>{
    const c=planned(), result=selectAlgorithmicPicks({day:'2026-10-20',persona,candidates:[c]});
    expect(result.picks).toHaveLength(1);expect(c.gainEur).toBe(0);
    expect(result.picks[0].rationale).toContain('not permitted zoning limits');expect(result.picks[0].rationale).toContain('No local rent');
  });
- it('persists evidence under agent metadata with neutral ownership',()=>{
-   const c=planned(),pick={...housingPick(c),proposalId:'test-proposal'};
-   const r=buildProposalRecord({candidate:c,pick,persona,runId:'test',city:'test',turf});
-   expect(r.facets.ownership).toBe('no-change');expect(r.offer).toBe(0);expect(r.agent.housing.rent).toBeNull();
-   expect(r.agent.housing.requiredZoningChanges).toBeNull();expect(r.geometry.buildings[0].geometry.coordinates).toHaveLength(2);
+ it('publishes the courtyard as a design that claims no offer, ownership or rent',()=>{
+   const c=planned(),pick=housingPick(c);
+   const {content}=designObject(buildDesignRecord({candidate:c,pick,persona,city:'test',authoredAt:'2026-10-20T00:00:00.000Z'}));
+   expect(content.geometry.buildings[0].geometry.coordinates).toHaveLength(2);
+   expect(content.description).toBe(pick.rationale);
+   // A design is its drawing: the housing evidence stays in the run's checkpoint, not in the published object.
+   expect(Object.keys(content).sort()).toEqual(['author','authoredAt','buildingProposal','city','description','geometry','goal','origin','schema','site','title','toleranceM']);
+   expect(JSON.stringify(content)).not.toMatch(/"(offer|facets|agent|housing|ownership)"/);
  });
- it('queues published proposals with official role contacts and disabled X automation',()=>{
-   const q=housingOutreach({candidate:planned(),post:{proposalId:'chain_123',id:5},publicBase:'https://example.org'});
-   expect(q.status).toBe('pending-review');expect(q.authority.email).toBe('planning@example.org');expect(q.x.status).toBe('disabled');
-   expect(q.proposalUrl).toBe('https://example.org/proposals/5?city=test');expect(q.body).toContain(q.proposalUrl);expect(()=>housingOutreach({candidate:planned(),post:{},publicBase:'http://localhost'})).toThrow();
+ it('queues published agreements with official role contacts and disabled X automation',()=>{
+   const cid=`bafkrei${'a'.repeat(52)}`;
+   const q=housingOutreach({candidate:planned(),agreementCid:cid,publicBase:'https://example.org'});
+   expect(q.id).toBe(cid);expect(q.status).toBe('pending-review');expect(q.authority.email).toBe('planning@example.org');expect(q.x.status).toBe('disabled');
+   expect(q.agreementUrl).toBe(`https://example.org/agreements/${cid}?city=test`);expect(q.body).toContain(q.agreementUrl);
+   expect(()=>housingOutreach({candidate:planned(),agreementCid:cid,publicBase:'http://localhost'})).toThrow('Explicit public HTTPS origin required');
+   expect(()=>housingOutreach({candidate:planned(),agreementCid:'agent-1',publicBase:'https://example.org'})).toThrow('A published agreement is required');
  });
  it('rotates all enabled cities deterministically with additional turns for the least affordable',()=>{
    const areas=Array.from({length:6},(_,i)=>({...area,city:String(i),medianMultiple:14-i}));

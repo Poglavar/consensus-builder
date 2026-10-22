@@ -1,12 +1,12 @@
 // Route tests for the root discovery documents: x402 manifest, security.txt, llms.txt, OpenAPI,
 // the /agents.json alias of /docs/agents.json, and robots.txt.
 
-import fs from 'node:fs';
 import express from 'express';
 import request from 'supertest';
 import { describe, expect, it } from 'vitest';
 import { setupWellKnownRoutes, SECURITY_CONTACT } from '../routes/well-known.js';
 import { setupDocsRoute } from '../routes/docs.js';
+import { AGREEMENT_PROGRAM_ID } from '../agreements/onchain.js';
 
 const env = {
     PUBLIC_API_BASE_URL: 'https://api.example.test/',
@@ -77,6 +77,11 @@ describe('GET /llms.txt', () => {
         expect(res.text).toContain('[GET https://api.example.test/agent/oracle/facts]');
         expect(res.text).not.toContain('/agent/proposals');
         expect(res.text).toContain('https://api.example.test/agent/lenses/members');
+        // It describes designs and agreements, not proposals (plan-design-agreement.md M3).
+        expect(res.text).toContain('design/v1 and agreement/v1 JSON Schemas');
+        expect(res.text).toContain("pick an agreement's lens");
+        expect(res.text).toContain("fact about an agreement account's terminal state");
+        expect(res.text).not.toMatch(/proposal/i);
     });
 });
 
@@ -93,9 +98,33 @@ describe('GET /openapi.json', () => {
         expect(item.properties.serviceUrl.type).toEqual(['string', 'null']);
         expect(item.properties.kind.enum).toEqual(['owner-consent', 'court', 'permit', 'imagery', 'osm', 'lifecycle', null]);
         expect(res.body.paths['/agent/oracle/facts']?.get).toBeDefined();
-        for (const path of ['/agent/proposals', '/agent/binding', '/proposals/{id}/binding-drift']) {
+        for (const path of ['/agent/proposals', '/agent/binding', '/proposals/{id}/binding-drift', '/proposals/{id}']) {
             expect(res.body.paths[path], path).toBeUndefined();
         }
+    });
+
+    it('lists the design and agreement publish routes, the onchain record and the market recipe', async () => {
+        const { body } = await request(appFor()).get('/openapi.json');
+        for (const [path, method] of [
+            ['/designs/binding', 'post'], ['/pins', 'post'], ['/designs', 'get'], ['/designs', 'post'], ['/designs/{cid}', 'get'],
+            ['/agreements', 'get'], ['/agreements', 'post'], ['/agreements/{cid}', 'get'], ['/agreements/{cid}/decisions', 'post'],
+            ['/agreements/{cid}/onchain', 'post'], ['/oracle/recipes/agreement-execution-v1', 'get']
+        ]) {
+            expect(body.paths[path]?.[method], `${method} ${path}`).toBeDefined();
+        }
+        const onchain = body.paths['/agreements/{cid}/onchain'].post;
+        expect(onchain.requestBody.content['application/json'].schema).toMatchObject({
+            required: ['chain', 'cluster', 'account'],
+            properties: { chain: { enum: ['solana'] }, cluster: { enum: ['devnet'] } }
+        });
+        expect(Object.keys(onchain.responses).sort()).toEqual(['200', '201', '400', '404', '409', '422']);
+        expect(onchain.responses[422].description).toMatch(/not-binding/);
+        expect(onchain.responses[422].description).toMatch(/no-sponsor/);
+        const recipe = body.paths['/oracle/recipes/agreement-execution-v1'].get;
+        expect(recipe.parameters.map(parameter => [parameter.name, parameter.required])).toEqual([['agreement', true], ['market', false]]);
+        expect(body.paths['/oracle/events'].get.parameters.find(parameter => parameter.name === 'type').schema.enum)
+            .toEqual(['agreement_lifecycle', 'agreement_executed']);
+        expect(body.paths['/agent/discovery'].get.parameters[0].schema.enum).toEqual(['oracle-facts']);
     });
 });
 
@@ -105,19 +134,20 @@ describe('GET /agents.json', () => {
         const alias = await request(app).get('/agents.json');
         const canonical = await request(app).get('/docs/agents.json');
         expect(alias.status).toBe(200);
-        expect(alias.body.schema.properties).toHaveProperty('site');
+        expect(alias.body.schema.$defs.design.properties).toHaveProperty('site');
         expect(alias.body).toEqual(canonical.body);
     });
 
-    it('names the program an agent mints its proposal with, and the body field that links to it', async () => {
-        const programs = JSON.parse(fs.readFileSync(new URL('../../frontend/contracts/addresses.json', import.meta.url), 'utf8'))['solana-devnet'];
+    it('names the program an agent mints its agreement with, and the route that records the account', async () => {
         const res = await request(appFor()).get('/agents.json');
-        expect(res.body.proposalAccount).toMatchObject({
-            programId: programs.ProposalNFT,
-            mint: { instruction: 'mint_and_fund' },
-            recordLink: { field: 'onchain', contractAddress: programs.ProposalNFT, chainId: 'solana-devnet' }
+        expect(res.body.agreementProgram).toMatchObject({
+            programId: AGREEMENT_PROGRAM_ID,
+            cluster: 'devnet',
+            instructions: { create: { args: expect.arrayContaining(['cid: string', 'lens: pubkey']) } }
         });
-        expect(res.body.parcelAccount.programId).toBe(programs.ParcelNFT);
+        expect(res.body.endpoints.agreementOnchain).toBe('https://api.example.test/agreements/{cid}/onchain');
+        expect(res.body).not.toHaveProperty('proposalAccount');
+        expect(res.body).not.toHaveProperty('parcelAccount');
     });
 });
 

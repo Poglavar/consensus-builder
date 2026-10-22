@@ -680,15 +680,6 @@ textarea.proposal-description-input {
     font-size: 18px;
 }
 
-.proposal-funding-card {
-    margin: 14px 0;
-    padding: 14px;
-    border: 1px solid #d7e1ec;
-    border-radius: 12px;
-    background: linear-gradient(145deg, #f7fbff, #ffffff);
-    box-shadow: 0 5px 18px rgba(31, 78, 121, 0.08);
-}
-
 .proposal-market-status {
     color: #66788a;
     font-size: 11px;
@@ -755,18 +746,6 @@ textarea.proposal-description-input {
     font-size: 13px;
 }
 
-.proposal-funding-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-}
-
-.proposal-funding-head h3 {
-    margin: 2px 0 0;
-    font-size: 16px;
-}
-
 .proposal-funding-eyebrow {
     color: #66788a;
     font-size: 11px;
@@ -776,15 +755,6 @@ textarea.proposal-description-input {
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-}
-
-.proposal-funding-state {
-    padding: 4px 8px;
-    border-radius: 999px;
-    background: #e6f2ff;
-    color: #0a5ea8;
-    font-size: 11px;
-    font-weight: 700;
 }
 
 .proposal-list {
@@ -1464,14 +1434,6 @@ textarea.proposal-description-input {
     border-bottom: none;
 }
 
-.proposal-parcel-item.accepted {
-    background-color: #f8fff8;
-}
-
-.proposal-parcel-item.pending {
-    background-color: #fffbf0;
-}
-
 .proposal-parcel-item .parcel-number {
     font-weight: 500;
 }
@@ -1479,82 +1441,6 @@ textarea.proposal-description-input {
 .proposal-parcel-item .parcel-details {
     font-size: 13px;
     color: var(--cb-text-muted);
-}
-
-.parcel-owner-acceptance {
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    min-width: 0;
-}
-
-.owner-acceptance-list.compact,
-.owner-acceptance-list {
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    min-width: 0;
-    border: none;
-    padding: 0;
-    margin: 0;
-}
-
-.owner-acceptance-row {
-    min-width: 0;
-    max-width: 100%;
-    width: 100%;
-    box-sizing: border-box;
-    border-top: 1px solid rgba(0, 0, 0, 0.08);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-    transition: background-color 0.2s ease;
-}
-
-.owner-acceptance-row:first-child {
-    border-top: none;
-}
-
-.owner-acceptance-row:last-child {
-    border-bottom: none;
-}
-
-.owner-acceptance-row:hover {
-    background-color: rgba(0, 123, 255, 0.05);
-}
-
-.owner-acceptance-row > * {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.owner-acceptance-row .owner-identity {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.owner-acceptance-row .owner-share {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.owner-acceptance-row .owner-actions {
-    flex-shrink: 0;
-}
-
-.status-accepted {
-    color: var(--cb-success);
-    font-weight: 500;
-    margin-left: 8px;
-}
-
-.status-pending {
-    color: #ffc107;
-    font-weight: 500;
-    margin-left: 8px;
 }
 
 /* Author with avatar styling */
@@ -1595,61 +1481,6 @@ textarea.proposal-description-input {
     margin: 0;
     color: var(--cb-text-muted);
     line-height: 1.45;
-}
-
-/* ---- Owner acceptance rows (proposals/execution.js buildOwnerAcceptanceSectionHtml) ----
-   Owner, share and the Accept / Undo action on one line; a directed recipient (City, third party)
-   has its own line above the owners. */
-.owner-acceptance-list > .owner-acceptance-row {
-    display: grid;
-    grid-template-columns: 1fr auto auto;
-    align-items: center;
-    gap: var(--cb-space-2);
-    padding: var(--cb-space-1) 0;
-}
-
-.owner-acceptance-row > .owner-identity {
-    font-size: var(--cb-text-md);
-    font-weight: var(--cb-weight-medium);
-}
-
-.owner-acceptance-row > .owner-share {
-    font-size: var(--cb-text-md);
-    color: var(--cb-text-muted);
-    text-align: right;
-}
-
-.owner-share > .owner-share {
-    font-size: 0.85em;
-}
-
-.owner-acceptance-row > .owner-actions {
-    text-align: right;
-}
-
-.owner-actions .btn {
-    min-width: 60px;
-}
-
-/* Acceptance progress (more than 65 parcels or owners): the fill's width is the accepted share. */
-.acceptance-progress-bar {
-    position: relative;
-    width: 100%;
-    height: 20px;
-    overflow: hidden;
-    border-radius: var(--cb-radius-sm);
-    background: var(--cb-surface-3);
-}
-
-.acceptance-progress-fill {
-    height: 100%;
-    background: var(--cb-success);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-    .acceptance-progress-fill {
-        transition: width 0.3s ease;
-    }
 }
 
 /* Proposal actions group - two buttons per row on narrow screens (2x2 with 4 buttons),
@@ -1970,25 +1801,39 @@ textarea.proposal-description-input {
     user-select: none;
 }
 
-/* Subset highlighting: everything that is NOT the chosen subset drops back, so "Not uploaded yet"
+/* ---- Map pick mode (js/map-pick.js): a surface picks designs on the map — the share panel, the
+   agreement editor (body.map-pick-mode[data-map-pick="share" | "agreement"]) ---- */
+
+/* While it highlights designs, everything that is NOT highlighted drops back, so "Not uploaded yet"
    shows the one proposal that is not uploaded rather than the whole city with one more shape on it.
    Selecting on Leaflet's own pane structure rather than on this app's pane NAMES, so a new fabric
    pane is dimmed automatically instead of being the one thing left bright.
    The tile pane is excluded — dimming the basemap as well removes the context you are reading the
-   subset against, and the highlight pane is excluded because it IS the subset. */
-body.share-plan-highlighting .leaflet-map-pane > .leaflet-pane:not(.leaflet-tile-pane):not(.leaflet-shareplan-highlight-pane) {
-    opacity: 0.15;
+   highlight against, and the highlight pane is excluded because it IS the highlight. A surface may
+   dim less (--map-pick-dim, css/agreement-dialog.css). */
+body.map-pick-highlighting .leaflet-map-pane > .leaflet-pane:not(.leaflet-tile-pane):not(.leaflet-pick-highlight-pane) {
+    opacity: var(--map-pick-dim, 0.15);
     transition: opacity 120ms ease-out;
 }
 
-body.share-plan-highlighting .leaflet-shareplan-highlight-pane {
+body.map-pick-highlighting .leaflet-pick-highlight-pane {
     opacity: 1;
 }
 
 /* The highlight's own Leaflet pane: above every fabric pane, below popups (700), never a click target. */
-.leaflet-shareplan-highlight-pane {
-    z-index: var(--cb-z-map-pane-share-highlight);
+.leaflet-pick-highlight-pane {
+    z-index: var(--cb-z-map-pane-pick-highlight);
     pointer-events: none;
+}
+
+/* A highlighted design without a surface style of its own (the agreement editor's designs): CSS
+   overrides the stroke and fill Leaflet writes on the path. */
+.leaflet-pick-highlight-pane .map-pick-highlight {
+    stroke: var(--cb-map-pick-highlight);
+    stroke-width: 4px;
+    stroke-opacity: 1;
+    fill: var(--cb-map-pick-highlight);
+    fill-opacity: 0.3;
 }
 
 .share-plan-share-area {
@@ -2032,26 +1877,26 @@ body.share-plan-highlighting .leaflet-shareplan-highlight-pane {
     box-sizing: border-box;
 }
 
-/* Share-plan mode lockdown: while the panel is open the map is pan/zoom ONLY. The floating shell
-   (its buttons, sheets, the search box and the selection tray) and the mode switches
+/* Map pick mode lockdown: while a surface picks on the map, the map is pan/zoom ONLY. The floating
+   shell (its buttons, sheets, the search box and the selection tray) and the mode switches
    are disabled; Leaflet controls too — except zoom, which stays. The / and Ctrl-K shortcuts check
-   window.sharePlanMode themselves (js/ui/map-search.js, js/ui/command-palette.js). */
-body.share-plan-mode .map-shell-cluster,
-body.share-plan-mode .map-shell-slot,
-body.share-plan-mode .map-sheet,
-body.share-plan-mode .map-mode-tile,
-body.share-plan-mode #mode-walk-toggle,
-body.share-plan-mode #mode-ai-toggle {
+   MapPick.active() themselves (js/ui/map-search.js, js/ui/command-palette.js). */
+body.map-pick-mode .map-shell-cluster,
+body.map-pick-mode .map-shell-slot,
+body.map-pick-mode .map-sheet,
+body.map-pick-mode .map-mode-tile,
+body.map-pick-mode #mode-walk-toggle,
+body.map-pick-mode #mode-ai-toggle {
     pointer-events: none;
     opacity: 0.35;
 }
 
-body.share-plan-mode .leaflet-control-container .leaflet-control {
+body.map-pick-mode .leaflet-control-container .leaflet-control {
     pointer-events: none;
     opacity: 0.35;
 }
 
-body.share-plan-mode .leaflet-control-container .leaflet-control-zoom {
+body.map-pick-mode .leaflet-control-container .leaflet-control-zoom {
     pointer-events: auto;
     opacity: 1;
 }

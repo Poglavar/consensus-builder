@@ -2,6 +2,9 @@
 // proposal_market): PDA derivation, byte-exact Anchor/borsh instruction encoding, account decoding
 // and the BigInt mirror of the on-chain parimutuel payout math. No DOM and no network of its own —
 // readMarket/readPosition take a connection, everything else is synchronous and side-effect free.
+// Markets are opened on agreements: the `proposal` option and argument, and the decoded `proposal`
+// field, are the agreement account (an Agreement of the agreement program). The program keeps its
+// proposal_market name and id until a deploy renames it.
 (function attachSolanaMarketClient(root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -210,11 +213,12 @@
         return true;
     }
 
+    // ["market", agreement]: `proposal` is the agreement account.
     function getMarketPda(proposal, programId) {
         const web3 = resolveWeb3();
-        const proposalKey = toPublicKey(proposal, 'proposal');
+        const subjectKey = toPublicKey(proposal, 'proposal');
         return web3.PublicKey.findProgramAddressSync(
-            [utf8(MARKET_SEED), proposalKey.toBytes()],
+            [utf8(MARKET_SEED), subjectKey.toBytes()],
             programKey(programId)
         );
     }
@@ -270,15 +274,15 @@
 
     function buildCreateMarketIx(options) {
         const opts = options || {};
-        const proposal = toPublicKey(opts.proposal, 'proposal');
+        const subject = toPublicKey(opts.proposal, 'proposal');
         const stakeMint = toPublicKey(opts.stakeMint, 'stakeMint');
         const creator = toPublicKey(opts.creator, 'creator');
-        const [market] = getMarketPda(proposal, opts.programId);
+        const [market] = getMarketPda(subject, opts.programId);
         const vault = getVaultAddress(market, stakeMint);
         const web3 = resolveWeb3();
         const keys = [
             meta(market, false, true),
-            meta(proposal, false, false),
+            meta(subject, false, false),
             meta(stakeMint, false, false),
             meta(vault, false, true),
             meta(creator, true, true),
@@ -329,7 +333,7 @@
 
     function buildStakeIx(options) {
         const opts = options || {};
-        const proposal = toPublicKey(opts.proposal, 'proposal');
+        const subject = toPublicKey(opts.proposal, 'proposal');
         const stakeMint = toPublicKey(opts.stakeMint, 'stakeMint');
         const staker = toPublicKey(opts.staker, 'staker');
         const side = normalizeSide(opts.side);
@@ -337,14 +341,14 @@
         // Mirrors MarketError::ZeroAmount — a zero stake is rejected on-chain, so never build one.
         if (amount === 0n) throw new Error('amount must be positive');
 
-        const [market] = getMarketPda(proposal, opts.programId);
+        const [market] = getMarketPda(subject, opts.programId);
         const [position] = getPositionPda(market, staker, side, opts.programId);
         const vault = getVaultAddress(market, stakeMint);
         const stakerTokenAccount = getAssociatedTokenAddress(staker, stakeMint);
         const web3 = resolveWeb3();
         const keys = [
             meta(market, false, true),
-            meta(proposal, false, false),
+            meta(subject, false, false),
             meta(position, false, true),
             meta(vault, false, true),
             meta(stakerTokenAccount, false, true),
@@ -389,11 +393,11 @@
 
     function buildResolveIx(options) {
         const opts = options || {};
-        const proposal = toPublicKey(opts.proposal, 'proposal');
-        const [market] = getMarketPda(proposal, opts.programId);
+        const subject = toPublicKey(opts.proposal, 'proposal');
+        const [market] = getMarketPda(subject, opts.programId);
         const keys = [
             meta(market, false, true),
-            meta(proposal, false, false)
+            meta(subject, false, false)
         ];
         return instruction(opts.programId, keys, discriminatorBytes(IX_DISCRIMINATORS, 'resolve'));
     }
@@ -410,11 +414,11 @@
 
     function buildClaimIx(options) {
         const opts = options || {};
-        const proposal = toPublicKey(opts.proposal, 'proposal');
+        const subject = toPublicKey(opts.proposal, 'proposal');
         const stakeMint = toPublicKey(opts.stakeMint, 'stakeMint');
         const claimer = toPublicKey(opts.claimer, 'claimer');
         const side = normalizeSide(opts.side);
-        const [market] = getMarketPda(proposal, opts.programId);
+        const [market] = getMarketPda(subject, opts.programId);
         const [position] = getPositionPda(market, claimer, side, opts.programId);
         const vault = getVaultAddress(market, stakeMint);
         const claimerTokenAccount = getAssociatedTokenAddress(claimer, stakeMint);
@@ -518,7 +522,7 @@
         if (!info || !info.data) return null;
         assertAccountOwner(info, programId);
         const value = decodeMarket(info.data);
-        if (value.proposal !== toPublicKey(proposal, 'proposal').toBase58()) throw new Error('Market account names another proposal.');
+        if (value.proposal !== toPublicKey(proposal, 'proposal').toBase58()) throw new Error('Market account names another agreement.');
         return value;
     }
 

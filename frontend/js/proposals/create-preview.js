@@ -1,7 +1,6 @@
 // proposals/create-preview.js — the create dialog's preview helpers: the goal badge on its preview
-// map, whether a goal gets a screenshot, the screenshot context of the selected parcels, and the
-// dialog that asks what to do when a minted proposal's parcels are not on the chain yet. They stayed
-// behind when the upload modal (dialog-upload.js) was removed with M2's design publishing.
+// map, whether a goal gets a screenshot and the screenshot context of the selected parcels. They
+// stayed behind when the upload modal (dialog-upload.js) was removed with M2's design publishing.
 
 function updateProposalScreenshotGoalIcon(toolKey) {
     const container = document.querySelector('#proposalScreenshotContainer .map-screenshot-container');
@@ -249,86 +248,3 @@ function buildProposalScreenshotContext(parcelLayers = [], options = {}) {
     // For road geometry we convert to [lat, lng] pairs; otherwise let downstream normalize
     return { polygon, parcelPolygons, neighbours, bounds, fitToPolygonOnly, polygonOrder, parcelPolygonOrder };
 }
-
-// options.anchors: Solana v2, where a missing parcel means a missing ownerless parcel anchor, not
-// a certificate someone owns; the wording and the action button say so.
-// The shared dialog (js/ui/dialogs.js) on the confirm rung, over the create dialog it is asked
-// from. Resolves 'memory', 'mint' or 'cancel' (the close button, Escape, the backdrop).
-async function showMissingParcelsModal(missingParcels, chainName, options = {}) {
-    const t = getProposalI18nHelper();
-    setProposalModalDimmed(true);
-
-    const message = document.createElement('div');
-    message.className = 'missing-parcels-message';
-
-    const chainDisplay = chainName || t('modal.createProposal.missingParcels.defaultChain', 'the blockchain');
-    const overflowLabel = missingParcels.length > 10
-        ? t('modal.createProposal.missingParcels.more', ', and {{count}} more...', {
-            count: missingParcels.length - 10
-        })
-        : '';
-    const parcelList = missingParcels.length > 10
-        ? `${missingParcels.slice(0, 10).join(', ')}${overflowLabel}`
-        : missingParcels.join(', ');
-    const anchors = options && options.anchors === true;
-    const single = missingParcels.length === 1;
-    const introMessage = anchors
-        ? t(
-            `modal.createProposal.missingParcels.${single ? 'anchorMessageSingle' : 'anchorMessagePlural'}`,
-            single
-                ? 'The following parcel has no parcel anchor on <strong>{{chain}}</strong> yet, so a proposal for it cannot be minted on-chain:'
-                : 'The following parcels have no parcel anchor on <strong>{{chain}}</strong> yet, so a proposal for them cannot be minted on-chain:',
-            { chain: chainDisplay }
-        )
-        : t(
-            `modal.createProposal.missingParcels.${single ? 'messageSingle' : 'messagePlural'}`,
-            single
-                ? 'The following parcel is not represented as an NFT on <strong>{{chain}}</strong>, so a proposal for it cannot be minted on-chain:'
-                : 'The following parcels are not represented as NFTs on <strong>{{chain}}</strong>, so a proposal for them cannot be minted on-chain:',
-            { chain: chainDisplay }
-        );
-    const proceedPrompt = t(
-        'modal.createProposal.missingParcels.proceedQuestion',
-        'Proceed to create an in-memory proposal?'
-    );
-    const explainerText = anchors
-        ? t(
-            'modal.createProposal.missingParcels.anchorExplainer',
-            "A parcel anchor is the parcel's on-chain identity. Nobody owns it and creating it confers no ownership; you only pay its rent. Ownership reaches the chain separately, as a lens member's attestation. You can also create anchors from the Parcel Info panel's Tools tab."
-        )
-        : t(
-            'modal.createProposal.missingParcels.explainer',
-            "You can create an in-memory proposal or proceed to mint the prerequisite parcels. Minting does not confer ownership, it only creates an on-chain representation. Anyone can mint any parcel to onboard it onto the platform. You can also mint them from the Parcel Info panel's Tools tab."
-        );
-
-    message.innerHTML = `
-        <p>${introMessage}</p>
-        <div class="missing-parcels-list">${parcelList}</div>
-        <p class="missing-parcels-explainer">${explainerText}</p>
-        <p>${proceedPrompt}</p>
-    `;
-
-    const mintLabel = anchors
-        ? (single
-            ? t('modal.createProposal.missingParcels.createAnchor', 'Create the parcel anchor')
-            : t('modal.createProposal.missingParcels.createAnchors', 'Create the parcel anchors'))
-        : t('modal.createProposal.missingParcels.mintPrerequisites', 'Mint the prerequisites');
-    const dialogApi = window.CbDialog.open({
-        title: anchors
-            ? t('modal.createProposal.missingParcels.anchorTitle', 'Parcel anchors missing')
-            : t('modal.createProposal.missingParcels.title', 'Parcels not on the chain yet'),
-        size: 'md',
-        confirm: true,
-        className: 'missing-parcels-dialog',
-        closeLabel: t('modal.createProposal.walletNotConnected.cancel', 'Cancel'),
-        body: message,
-        actions: [
-            { id: 'memory', label: t('modal.createProposal.missingParcels.createInMemory', 'Create in memory'), role: 'secondary' },
-            { id: 'mint', label: mintLabel, role: 'primary' }
-        ]
-    });
-    const result = dialogApi ? await dialogApi.closed : null;
-    setProposalModalDimmed(false);
-    return result === 'memory' || result === 'mint' ? result : 'cancel';
-}
-

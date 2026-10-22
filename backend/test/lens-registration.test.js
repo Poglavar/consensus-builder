@@ -49,7 +49,7 @@ function chain(overrides = {}) {
     const accounts = {
         [credential]: { owner: SAS_PROGRAM_ID, data: credentialBytes(KEY) },
         [schemas.ownership]: { owner: SAS_PROGRAM_ID, data: schemaBytes(credential) },
-        [schemas.verdict]: { owner: SAS_PROGRAM_ID, data: schemaBytes(credential) },
+        [schemas.decision]: { owner: SAS_PROGRAM_ID, data: schemaBytes(credential) },
         ...overrides
     };
     return vi.fn(async addresses => addresses.map(address => accounts[address] ?? null));
@@ -119,10 +119,16 @@ describe('registration message and verification', () => {
         await expect(verify(signed(), { readAccounts: chain({ [credential]: { owner: KEY, data: credentialBytes(KEY) } }) }))
             .rejects.toMatchObject({ code: 'credential_missing' });
         await expect(verify(signed(), { readAccounts: chain({ [schemas.ownership]: null }) })).rejects.toMatchObject({ code: 'schema_missing', message: /ownership/ });
-        // A court member issues verdicts, so it needs the verdict schema and not the ownership one.
-        const court = signed({ kind: 'court' });
-        await expect(verify(court, { readAccounts: chain({ [schemas.ownership]: null }), fetchStatus: async () => liveStatus({ kind: 'court' }) })).resolves.toMatchObject({ kind: 'court' });
-        await expect(verify(court, { readAccounts: chain({ [schemas.verdict]: null }), fetchStatus: async () => liveStatus({ kind: 'court' }) })).rejects.toMatchObject({ code: 'schema_missing', message: /verdict/ });
+        // A court or lifecycle member attests agreement decisions, so it needs the AgreementDecision schema
+        // and not the ownership one.
+        for (const kind of ['court', 'lifecycle']) {
+            const other = signed({ kind });
+            const readAccounts = chain({ [schemas.ownership]: null });
+            await expect(verify(other, { readAccounts, fetchStatus: async () => liveStatus({ kind }) })).resolves.toMatchObject({ kind });
+            expect(readAccounts).toHaveBeenCalledWith([credential, schemas.decision]);
+            await expect(verify(other, { readAccounts: chain({ [schemas.decision]: null }), fetchStatus: async () => liveStatus({ kind }) }))
+                .rejects.toMatchObject({ code: 'schema_missing', message: /decision/ });
+        }
     });
 
     it('needs the service to answer as this live member', async () => {
@@ -177,11 +183,14 @@ describe('file attestation store', () => {
         const store = createFileStore(file);
         expect(store.kind).toBe('file');
         await store.record({ address: 'A1', kind: 'ownership', parcelUid: 'HR-1', owner: 'W' });
-        await store.record({ address: 'A2', kind: 'verdict', proposalAccount: 'P' });
+        // An AgreementDecision names its agreement in the payload.
+        await store.record({ address: 'A2', kind: 'decision', parcelUid: null, payload: { agreementCid: 'bafkrei-a', sponsor: 'S', decision: 'satisfied' } });
         await expect(store.record({ address: 'A1', kind: 'ownership' })).rejects.toThrow(/already recorded/);
         const reloaded = createFileStore(file);
-        expect(await reloaded.get('A2')).toMatchObject({ proposalAccount: 'P' });
-        expect(await reloaded.counts()).toMatchObject({ ownership: 1, verdict: 1, parcels: 1, proposals: 1 });
+        expect(await reloaded.get('A2')).toMatchObject({ payload: { agreementCid: 'bafkrei-a' } });
+        expect(await reloaded.counts()).toEqual({ ownership: 1, decision: 1, evidence: 0, parcels: 1, agreements: 1 });
+        expect((await reloaded.list({ agreementCid: 'bafkrei-a' })).map(record => record.address)).toEqual(['A2']);
+        expect(await reloaded.list({ agreementCid: 'bafkrei-b' })).toEqual([]);
         expect(fs.readdirSync(dir)).toEqual(['attestations.json']);
         fs.rmSync(dir, { recursive: true });
     });

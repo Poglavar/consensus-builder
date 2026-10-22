@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import request from 'supertest';
 import express from 'express';
 import cors from 'cors';
@@ -20,6 +20,9 @@ function textCallData(name, key) {
     return SELECTOR.RESOLVE + abi.encode(['bytes', 'bytes'], [dnsEncode(name), inner]).slice(2);
 }
 const textUrlCallData = name => textCallData(name, 'url');
+const addrCallData = name => SELECTOR.RESOLVE + abi.encode(['bytes', 'bytes'], [dnsEncode(name), SELECTOR.ADDR + abi.encode(['bytes32'], [namehash(name)]).slice(2)]).slice(2);
+// The address an addr(bytes32) answer carries.
+const addrOf = res => abi.decode(['address'], abi.decode(['bytes', 'uint64', 'bytes'], res.body.data)[0])[0];
 // The text record a signed gateway answer carries.
 const textOf = res => abi.decode(['string'], abi.decode(['bytes', 'uint64', 'bytes'], res.body.data)[0])[0];
 const AGREEMENT_CID = 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku';
@@ -35,6 +38,7 @@ beforeEach(() => {
     process.env.ENS_PUBLIC_BASE_URL = 'https://urbangametheory.xyz';
     delete process.env.ENS_ADDR_RPC_URL;
     delete process.env.ENS_PARCEL_NFT_ADDRESS;
+    delete process.env.ENS_PROPOSAL_NFT_ADDRESS;
     pool = createMockPool();
     app = createRouteApp(setupEnsRoute, pool);
 });
@@ -131,11 +135,14 @@ describe('GET /ens/:sender/:data', () => {
         expect(pool.getCalls()).toHaveLength(2);
     });
 
-    it('fails closed when the index cannot be read', async () => {
+    it('fails closed when the index cannot be read, and logs why', async () => {
         pool.query = async () => { throw new Error('relation "consensus.agreement" does not exist'); };
+        const logged = vi.spyOn(console, 'error').mockImplementation(() => {});
         const res = await request(app).get(`/ens/${SENDER}/${textUrlCallData(`${AGREEMENT_CID}.proposals.urbangametheory.eth`)}.json`);
         expect(res.status).toBe(200);
         expect(textOf(res)).toBe('');
+        expect(logged).toHaveBeenCalledWith(expect.stringContaining(`looking up ${AGREEMENT_CID} failed`), expect.any(Error));
+        logged.mockRestore();
     });
 
     it('no longer resolves row numbers or plan slugs, and does not even look them up', async () => {
@@ -152,31 +159,28 @@ describe('GET /ens/:sender/:data', () => {
         expect(textOf(await request(app).get(`/ens/${SENDER}/${textUrlCallData('proposals.urbangametheory.eth')}.json`))).toBe('https://urbangametheory.xyz');
     });
 
-    it('resolves a chain-qualified mirror name to the chain proposal path', async () => {
-        const chainRef = { chainType: 'evm', chainId: '84532', contract: '0x1234567890123456789012345678901234567890', tokenId: '9' };
-        pool.setResult({ rows: [{
-            proposal_id: `chain_${'a'.repeat(64)}`, title: 'Riverside Lane', name: null,
-            screenshot_url: null, chain_ref: chainRef,
-        }], rowCount: 1 });
-        const callData = textUrlCallData(`chain-${'a'.repeat(48)}.proposals.urbangametheory.eth`);
-        const res = await request(app).get(`/ens/${SENDER}/${callData}.json`);
+    it('no longer resolves chain-qualified mirror names, and does not look them up (M3: agreements are named by CID)', async () => {
+        pool.setResult({ rows: [{ proposal_id: `chain_${'a'.repeat(64)}`, title: 'Riverside Lane', chain_ref: { chainType: 'evm', chainId: '84532', contract: '0x1234567890123456789012345678901234567890', tokenId: '9' } }] });
+        const res = await request(app).get(`/ens/${SENDER}/${textUrlCallData(`chain-${'a'.repeat(48)}.proposals.urbangametheory.eth`)}.json`);
         expect(res.status).toBe(200);
-        const [result] = abi.decode(['bytes', 'uint64', 'bytes'], res.body.data);
-        expect(abi.decode(['string'], result)[0]).toBe(
-            'https://urbangametheory.xyz/proposals/evm/84532/0x1234567890123456789012345678901234567890/9',
-        );
-        expect(pool.getCalls()[0].params).toEqual([`chain_${'a'.repeat(48)}`, `chain_${'a'.repeat(48)}g`]);
+        expect(textOf(res)).toBe('');
+        expect(pool.getCalls()).toEqual([]);
     });
 
-    it('refuses an ambiguous chain hash prefix', async () => {
-        pool.setResult({ rows: [
-            { proposal_id: `chain_${'a'.repeat(48)}${'1'.repeat(16)}`, chain_ref: { chainType: 'evm', chainId: '1', contract: '0x1', tokenId: '2' } },
-            { proposal_id: `chain_${'a'.repeat(48)}${'2'.repeat(16)}`, chain_ref: { chainType: 'evm', chainId: '1', contract: '0x2', tokenId: '3' } },
-        ], rowCount: 2 });
-        const callData = textUrlCallData(`chain-${'a'.repeat(48)}.proposals.urbangametheory.eth`);
-        const res = await request(app).get(`/ens/${SENDER}/${callData}.json`);
-        expect(res.status).toBe(200);
-        const [result] = abi.decode(['bytes', 'uint64', 'bytes'], res.body.data);
-        expect(abi.decode(['string'], result)[0]).toBe('');
+    it('gives the proposals namespace no apex address, while the parcels apex keeps its contract', async () => {
+        // A stale NFT address in the environment no longer names the apex: agreements and designs are not NFTs.
+        process.env.ENS_PROPOSAL_NFT_ADDRESS = '0x2222222222222222222222222222222222222222';
+        process.env.ENS_PARCEL_NFT_ADDRESS = '0x3333333333333333333333333333333333333333';
+        const configured = createRouteApp(setupEnsRoute, pool);
+        const proposalsApex = await request(configured).get(`/ens/${SENDER}/${addrCallData('proposals.urbangametheory.eth')}.json`);
+        expect(proposalsApex.status).toBe(200);
+        expect(addrOf(proposalsApex)).toBe('0x0000000000000000000000000000000000000000');
+        const parcelsApex = await request(configured).get(`/ens/${SENDER}/${addrCallData('parcels.urbangametheory.eth')}.json`);
+        expect(addrOf(parcelsApex)).toBe('0x3333333333333333333333333333333333333333');
+        // A named agreement has no owner address either.
+        pool.setResult({ rows: [{ cid: AGREEMENT_CID, title: 'Riverside deal', screenshot_url: null }] });
+        const agreement = await request(configured).get(`/ens/${SENDER}/${addrCallData(`${AGREEMENT_CID}.proposals.urbangametheory.eth`)}.json`);
+        expect(addrOf(agreement)).toBe('0x0000000000000000000000000000000000000000');
+        expect(pool.getCalls()[0].params).toEqual([AGREEMENT_CID]);
     });
 });

@@ -14,7 +14,9 @@ async function establishLocalProfile(page: import('@playwright/test').Page): Pro
   await expect(page.locator('#welcome-modal')).toBeHidden();
 }
 
-test.describe('Proposal Lens picker @features', () => {
+// The Lens settings (js/lens.js for EVM, js/lens-picker.js on the Solana path): the app's trusted
+// lens members, chosen from the directory or pasted.
+test.describe('Lens settings @features', () => {
   test('the EVM lens adds and removes trusted addresses, opens both address links, and profile language buttons change app language', async ({ mockApi: page }) => {
     await injectMockEvmWallet(page, { chainIdHex: '0xaa36a7' });
     await openCity(page);

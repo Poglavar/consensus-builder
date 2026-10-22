@@ -2,7 +2,7 @@
 // The site and authored structure stay ordinary GeoJSON features; proposal-only metadata is
 // retained in a foreign member so desktop GIS tools can still consume the archive directly.
 
-import { stripProposalArchiveState } from './serializer.js';
+import { stripProposalArchiveState } from './archive-state.js';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);

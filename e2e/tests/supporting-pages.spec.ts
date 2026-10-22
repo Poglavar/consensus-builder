@@ -1,5 +1,13 @@
+// Purpose: the supporting pages from the screen (actor explorer, transaction explorer, lens console,
+// decks, coverage report, hackathon demo): their reads, filters and actions against mocked services.
 import { selectNativeOption } from '../helpers/controls';
 import { test, expect } from '../helpers/fixtures';
+import { cidOfObject } from '../helpers/mocks/shared-server';
+
+// Agreements and designs are named by their CIDs (plan-design-agreement.md, M2/M3).
+const AGREEMENT_CID = cidOfObject({ schema: 'agreement/v1', title: 'Supporting pages agreement' });
+const OTHER_AGREEMENT_CID = cidOfObject({ schema: 'agreement/v1', title: 'An earlier agreement' });
+const DESIGN_CID = cidOfObject({ schema: 'design/v1', title: 'Supporting pages square' });
 
 const json = (route: any, body: unknown, status = 200, headers: Record<string, string> = {}) => route.fulfill({
   status,
@@ -14,29 +22,40 @@ test.describe('Supporting pages @core', () => {
       {
         id: 'activity-human', occurredAt: '2026-09-30T12:00:00Z', recordedAt: '2026-09-30T12:00:00Z',
         actor: { id: 'human-1', name: 'Ari', kind: 'human', controller: 'human' },
-        action: { type: 'publish' }, entity: { type: 'proposal', id: 'proposal-1' },
-        source: 'proposal', message: 'Published the park plan', ok: true,
+        action: { type: 'propose', agreementCid: AGREEMENT_CID }, entity: { type: 'agreement', id: AGREEMENT_CID },
+        source: 'live', message: 'Proposed the park agreement', ok: true,
       },
       {
         id: 'activity-agent', occurredAt: '2026-09-30T11:00:00Z', recordedAt: '2026-09-30T11:00:00Z',
         actor: { id: 'agent-1', name: 'Block planner', kind: 'agent', controller: 'algorithm' },
-        action: { type: 'create' }, entity: { type: 'proposal', id: 'proposal-2' },
-        source: 'agent', message: 'Created a square proposal', runId: 'run-1', rationale: 'Preserve open space', ok: true,
+        action: { type: 'design', designCid: DESIGN_CID }, entity: { type: 'design', id: DESIGN_CID },
+        source: 'live', message: 'Published a square design', runId: 'run-1', rationale: 'Preserve open space', ok: true,
       },
     ];
     await page.route('**/agent/activity**', route => json(route, { events }));
     await page.route('**/agent/runs/run-1', route => json(route, {
-      run: { id: 'run-1', persona: 'Block planner', status: 'done', stage: 'propose', model: 'test-model', costs: [{ item: 'planning', model: 'test-model', usd: 0.02 }], picks: [{ name: 'Square', proposalId: 'proposal-2', rationale: 'Preserve open space' }] },
+      run: { id: 'run-1', persona: 'Block planner', status: 'done', stage: 'propose', model: 'test-model', costs: [{ item: 'planning', model: 'test-model', usd: 0.02 }],
+        picks: [{ name: 'Square', agreementCid: AGREEMENT_CID, designCid: DESIGN_CID, rationale: 'Preserve open space' }] },
     }));
 
     await page.goto('/actor-explorer.html');
     await expect(page.locator('.ae-event')).toHaveCount(2);
+    // The standalone page has no map to open them on: each event names its agreement or design.
+    const proposed = page.locator('.ae-event').filter({ hasText: 'Proposed the park agreement' });
+    await expect(proposed.locator('strong')).toHaveText('Ari · Proposed agreement');
+    await expect(proposed.locator('.ae-meta')).toContainText(`Agreement ${AGREEMENT_CID.slice(0, 12)}…${AGREEMENT_CID.slice(-6)}`);
+    await expect(page.locator('.ae-event').filter({ hasText: 'Published a square design' }).locator('.ae-meta'))
+      .toContainText(`Design ${DESIGN_CID.slice(0, 12)}…`);
+    // Ari's card counts the one agreement Ari proposed.
+    await expect(page.locator('.ae-profile-grid .cb-option').filter({ hasText: 'Ari' })).toContainText('1 activity · 1 agreement · 0 transactions');
     await selectNativeOption(page.getByRole('combobox', { name: 'Actor controller' }), 'human');
     await expect(page.locator('.ae-event')).toHaveCount(1);
     await expect(page.locator('.ae-event')).toContainText('Ari');
     await page.getByRole('button', { name: 'Clear selection' }).click();
     await page.getByRole('button', { name: /run run-1/ }).click();
-    await expect(page.locator('.ae-run-detail')).toContainText('Preserve open space');
+    const run = page.locator('.ae-run-detail');
+    await expect(run).toContainText('Preserve open space');
+    await expect(run).toContainText(`Agreement ${AGREEMENT_CID} · design ${DESIGN_CID}`);
   });
 
   test('transaction explorer filters stored transactions and refreshes its database read', async ({ mockApi: page }) => {
@@ -71,26 +90,47 @@ test.describe('Supporting pages @core', () => {
     expect(calls.some(call => call.startsWith('POST /transactions/sync'))).toBe(false);
   });
 
-  test('Lens console reads a member service and filters its attestation list', async ({ mockApi: page }) => {
+  test('Lens console reads a member service, filters its attestations and attests the decision of an agreement', async ({ mockApi: page }) => {
     const attestationRequests: string[] = [];
     const memberKey = '11111111111111111111111111111111';
+    const sponsor = 'Cp886ML2Ja4FF3SMmyUeW16rRGsLrBcRW8kfWS1VfN7W';
+    const decisionOf = (agreementCid: string, address: string, issuedAt: string) => ({
+      address, kind: 'decision', authority: memberKey, parcelUid: null, owner: null,
+      payload: { agreementCid, sponsor, decision: 'satisfied', evidenceRef: 'sha256:fixture-receipts', sourceObservedAt: 1792500000 },
+      accountHash: `hash-${address}`, expiry: 0, issuedAt,
+    });
+    // What the member has issued: an ownership fact and the decision of an earlier agreement; the
+    // decision this test asks for joins them once the member issues it.
+    const issued: any[] = [
+      { address: 'attestation-one', kind: 'ownership', authority: memberKey, parcelUid: 'parcel-1', owner: 'owner-1', issuedAt: '2026-09-30T12:00:00Z' },
+      decisionOf(OTHER_AGREEMENT_CID, 'attestation-earlier-decision', '2026-10-20T11:00:00Z'),
+    ];
     await page.route('**/lenses/members', route => json(route, {
       members: [{ key: memberKey, name: 'Test Lens', serviceUrl: 'http://lens-member.test' }],
     }));
     await page.route('**/lens/status', route => json(route, {
-      key: memberKey, kind: 'notary', identity: 'verified', credential: 'active', counts: { ownership: 2 },
+      key: memberKey, kind: 'notary', identity: 'verified', credential: 'active', counts: { ownership: 1, decision: issued.length - 1 },
       pricing: { ownership: { enabled: true, priceUsdc: 0.05, network: 'devnet' } },
     }, 200, { 'access-control-allow-origin': '*' }));
     await page.route('**/lens/attestations**', async route => {
       const url = new URL(route.request().url());
       attestationRequests.push(url.search);
-      const all = [
-        { address: 'attestation-one', kind: 'ownership', authority: memberKey, parcelUid: 'parcel-1', owner: 'owner-1', issuedAt: '2026-09-30T12:00:00Z' },
-        { address: 'attestation-two', kind: 'verdict', authority: memberKey, proposalAccount: memberKey, payload: { verdict: 'executed' }, issuedAt: '2026-09-30T11:00:00Z' },
-      ];
       const kind = url.searchParams.get('kind');
       const parcel = url.searchParams.get('parcelUid');
-      return json(route, { attestations: all.filter(item => (!kind || item.kind === kind) && (!parcel || item.parcelUid === parcel)) }, 200, { 'access-control-allow-origin': '*' });
+      return json(route, { attestations: issued.filter(item => (!kind || item.kind === kind) && (!parcel || item.parcelUid === parcel)) }, 200, { 'access-control-allow-origin': '*' });
+    });
+    let decisionRequest: { method: string; path: string; token: string | undefined; body: string | null } | null = null;
+    await page.route('http://lens-member.test/lens/agreements/**', async route => {
+      const request = route.request();
+      if (request.method() !== 'POST') return route.fallback();
+      const url = new URL(request.url());
+      decisionRequest = { method: request.method(), path: url.pathname, token: request.headers()['x-lens-operator-token'], body: request.postData() };
+      const record = decisionOf(AGREEMENT_CID, 'attestation-new-decision', '2026-10-22T09:00:00Z');
+      issued.push(record);
+      return json(route, {
+        ...record, credential: 'credential-fixture', schema: 'schema-fixture', transactionSignature: null, payment: null, reused: false,
+        tally: { passed: true, ready: true, reason: null, acceptedOwners: 2, totalOwners: 2, acceptedAreaM2: 812.5, totalAreaM2: 812.5 }, counted: 2,
+      }, 201, { 'access-control-allow-origin': '*' });
     });
 
     await page.goto('/lens.html');
@@ -99,161 +139,61 @@ test.describe('Supporting pages @core', () => {
     await expect(page.locator('#lc-directory')).toContainText('Test Lens');
     await expect(page.locator('#lc-status')).toContainText('notary');
     await expect(page.locator('#lc-attestations .lc-item')).toHaveCount(2);
+    // The kinds a member issues: ownership, the decisions of agreements and market evidence.
+    expect(await page.locator('#lc-filter-kind option').evaluateAll(options => options.map(option => (option as HTMLOptionElement).value)))
+      .toEqual(['', 'ownership', 'decision', 'evidence']);
     await selectNativeOption(page.locator('#lc-filter-kind'), 'ownership');
     await page.locator('#lc-filter-parcel').fill('parcel-1');
     await page.locator('#lc-attestations-load').click();
     await expect(page.locator('#lc-attestations .lc-item')).toHaveCount(1);
     await expect(page.locator('#lc-attestations')).toContainText('parcel-1');
     expect(attestationRequests.some(query => query.includes('kind=ownership') && query.includes('parcelUid=parcel-1'))).toBe(true);
+    // An agreement's decision names the agreement and the decision.
+    await selectNativeOption(page.locator('#lc-filter-kind'), 'decision');
+    await page.locator('#lc-filter-parcel').fill('');
+    await page.locator('#lc-attestations-load').click();
+    const decisions = page.locator('#lc-attestations .lc-item');
+    await expect(decisions).toHaveCount(1);
+    await expect(decisions.first()).toContainText(OTHER_AGREEMENT_CID);
+    await expect(decisions.first()).toContainText('Decision');
+    await expect(decisions.first()).toContainText('satisfied');
 
     await page.locator('#lc-wallet-connect').click();
     await expect(page.locator('#lc-wallet')).toContainText('No Solana wallet found');
-    let verdictRequest: { body: unknown; token: string | undefined } | null = null;
-    await page.route('**/lens/verdict', async route => {
-      if (route.request().method() === 'OPTIONS') {
-        return route.fulfill({ status: 204, headers: {
-          'access-control-allow-origin': '*',
-          'access-control-allow-methods': 'POST, OPTIONS',
-          'access-control-allow-headers': 'content-type, x-lens-operator-token',
-        } });
-      }
-      verdictRequest = {
-        body: route.request().postDataJSON(),
-        token: route.request().headers()['x-lens-operator-token'],
-      };
-      return json(route, { address: 'verdict-account', accountHash: 'hash-1', reused: false }, 200, { 'access-control-allow-origin': '*' });
+
+    // The operator asks the member for the decision of an agreement: the CID in the path, the token in
+    // its header, no body (the member counts the relayed owner decisions itself).
+    await page.locator('#lc-decision-cid').fill(AGREEMENT_CID);
+    await page.locator('#lc-decision-token').fill('operator-token-for-test');
+    await page.locator('#lc-decision-submit').click();
+    const result = page.locator('#lc-decision-result');
+    await expect(result).toHaveAttribute('data-outcome', 'issued', { timeout: 15_000 });
+    await expect(result).toHaveAttribute('data-code', '');
+    await expect(result).toContainText('Decision attested.');
+    await expect(result.locator('a.cb-link--external')).toHaveText('attestation-new-decision');
+    await expect(result).toContainText('Decision rule');
+    await expect(result).toContainText('met');
+    await expect(result).toContainText('2 of 2 accepted');
+    await expect(result).toContainText('812.5 m² of 812.5 m²');
+    await expect(result).toContainText('Owner decisions counted');
+    expect(decisionRequest).toEqual({
+      method: 'POST', path: `/lens/agreements/${AGREEMENT_CID}/decision`, token: 'operator-token-for-test', body: null,
     });
-    await page.locator('#lc-verdict-proposal').fill(memberKey);
-    await selectNativeOption(page.locator('#lc-verdict-kind'), 'executed');
-    await page.locator('#lc-verdict-evidence').fill('https://records.example/case-1');
-    await page.locator('#lc-verdict-observed').fill('2026-09-30T12:00');
-    await page.locator('#lc-verdict-token').fill('operator-token-for-test');
-    const observedAtSeconds = await page.evaluate(() => Math.floor(new Date('2026-09-30T12:00').getTime() / 1000));
-    await page.locator('#lc-verdict-submit').click();
-    await expect(page.locator('#lc-verdict-result')).toContainText('Verdict attested');
-    expect(verdictRequest).toEqual({
-      token: 'operator-token-for-test',
-      body: {
-        proposalAccount: memberKey, verdict: 'executed',
-        evidenceRef: 'https://records.example/case-1', sourceObservedAt: observedAtSeconds,
-      },
-    });
-    await expect(page.locator('#lc-verdict-token')).toHaveValue('');
-  });
-
-  test('Canton explorer creates a demo party and moves an accepted proposal into sales', async ({ mockApi: page }) => {
-    const owner = 'Owner::participant-fingerprint';
-    let accepted = false;
-    const calls: string[] = [];
-    await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
-    await page.route('**/parcel-nyc**', route => json(route, {
-      type: 'FeatureCollection', features: [{ type: 'Feature', properties: { parcelId: 'PARCEL-NYC-1', estimatedMarketPrice: 125000 }, geometry: { type: 'Polygon', coordinates: [] } }],
-    }));
-    // canton.html resolves its API base independently from the app shell. Intercept fetch/XHR
-    // requests at the data boundary and match their actual endpoint pathname, regardless of host.
-    await page.route('**/*', async route => {
-      const request = route.request();
-      const url = new URL(request.url());
-      if (request.resourceType() !== 'fetch' && request.resourceType() !== 'xhr') return route.continue();
-      if (!url.pathname.includes('/canton/')) return route.continue();
-      calls.push(`${request.method()} ${url.pathname}${url.search}`);
-      if (url.pathname.endsWith('/canton/parties') && request.method() === 'POST') return json(route, { party: owner });
-      if (url.pathname.includes('/canton/ccview/')) return json(route, { indexed: false, explorerUrl: 'https://ccview.example/party/owner' });
-      if (url.pathname.endsWith('/canton/proposals') && request.method() === 'GET') {
-        return json(route, { proposals: accepted ? [] : [{ parcelId: 'PARCEL-NYC-1', buyer: 'Buyer::fp', owner, lens: 'Lens::fp', price: '125000', contractId: 'contract-1' }] });
-      }
-      if (url.pathname.endsWith('/canton/sales')) return json(route, { sales: accepted ? [{ parcelId: 'PARCEL-NYC-1', buyer: 'Buyer::fp', owner, lens: 'Lens::fp', price: '125000', contractId: 'contract-1' }] : [] });
-      if (url.pathname.endsWith('/canton/proposals/contract-1/accept') && request.method() === 'POST') {
-        accepted = true;
-        return json(route, { accepted: true });
-      }
-      return json(route, { error: 'Unexpected Canton API request' }, 404);
-    });
-
-    await page.goto('/canton.html');
-    const partyResponse = page.waitForResponse(response => response.request().method() === 'POST'
-      && /\/canton\/parties\/?$/.test(new URL(response.url()).pathname));
-    await page.locator('#gen-party-btn').click();
-    expect((await partyResponse).ok()).toBe(true);
-    // The party ID is intentionally abbreviated in the visible row; its full value stays in the
-    // ID span's title and the copy button's data-copy attribute.
-    const partyRow = page.locator('.canton-party-row').filter({
-      has: page.locator(`.canton-party-id[title="${owner}"]`),
-    });
-    await expect(partyRow).toHaveCount(1);
-    await partyRow.getByRole('button', { name: 'Copy', exact: true }).click();
-    await expect(page.locator('#canton-status')).toContainText('Copied party id: Owner');
-    await partyRow.getByRole('button', { name: 'CCView', exact: true }).click();
-    await expect(partyRow.locator('.canton-ccview-out')).toContainText('Not yet indexed on CCView');
-    await expect(partyRow.locator('.canton-ccview-out a')).toHaveAttribute('href', 'https://ccview.example/party/owner');
-    await partyRow.getByRole('button', { name: 'View', exact: true }).click();
-    await expect(page.locator('#canton-party')).toHaveValue(owner);
-    await expect(page.locator('.canton-card')).toHaveCount(1);
-    await partyRow.getByRole('button', { name: 'Forget', exact: true }).click();
-    await expect(page.locator('.canton-party-row')).toHaveCount(0);
-    // Entering an existing party and pressing Load remains a separate supported action.
-    await page.locator('#canton-party').fill(owner);
-    await page.locator('#canton-load').click();
-    await expect(page.locator('.canton-card')).toHaveCount(1);
-    await page.locator('.canton-accept').click();
-    await expect(page.locator('#canton-sales .canton-card')).toHaveCount(1);
-    await expect(page.locator('#canton-proposals')).toContainText('No proposals.');
-    expect(calls.some(call => call.startsWith('POST /canton/proposals/contract-1/accept'))).toBe(true);
-  });
-
-  test('Canton Create proposal and Clear parties actions update their real page state', async ({ mockApi: page }) => {
-    let created: any = null;
-    await page.route('**/*', async route => {
-      const request = route.request();
-      const url = new URL(request.url());
-      if (request.resourceType() !== 'fetch' && request.resourceType() !== 'xhr') return route.continue();
-      if (url.pathname.includes('/parcel-nyc')) {
-        return json(route, { type: 'FeatureCollection', features: [{ type: 'Feature', properties: { parcelId: 'PARCEL-NYC-1', estimatedMarketPrice: 125000 }, geometry: { type: 'Polygon', coordinates: [] } }] });
-      }
-      if (!url.pathname.includes('/canton/')) return route.continue();
-      if (url.pathname.endsWith('/canton/parties') && request.method() === 'POST') return json(route, { party: 'Stranger::fp' });
-      if (url.pathname.endsWith('/canton/proposals') && request.method() === 'POST') {
-        created = request.postDataJSON();
-        return json(route, { proposalContractId: 'created-contract', parcelId: 'PARCEL-NYC-1', buyer: 'Buyer::fp', owner: 'Owner::fp', lens: 'Lens::fp' });
-      }
-      if (url.pathname.endsWith('/canton/proposals') && request.method() === 'GET') {
-        return json(route, { proposals: [{ parcelId: 'PARCEL-NYC-1', buyer: 'Buyer::fp', owner: 'Owner::fp', lens: 'Lens::fp', price: '125000', contractId: 'created-contract' }] });
-      }
-      if (url.pathname.endsWith('/canton/sales')) return json(route, { sales: [] });
-      return json(route, { error: `Unexpected Canton request: ${request.method()} ${url.pathname}` }, 404);
-    });
-
-    await page.goto('/canton.html');
-    await expect(page.locator('#create-parcel')).toHaveValue('PARCEL-NYC-1');
-    await page.locator('#create-price').fill('125000');
-    await page.locator('#create-btn').click();
-    await expect(page.locator('#create-result')).toContainText('Created created-contract');
-    await expect(page.locator('#canton-proposals .canton-card')).toHaveCount(1);
-    expect(created).toMatchObject({ parcelId: 'PARCEL-NYC-1', price: '125000' });
-    await expect(page.locator('.canton-party-row')).toHaveCount(3);
-
-    const perspective = page.locator('#canton-perspective');
-    for (const role of ['Buyer', 'Owner', 'Lens']) {
-      const option = perspective.getByRole('button', { name: role });
-      await option.click();
-      await expect(page.locator('#canton-party')).toHaveValue(`${role}::fp`);
-      await expect(option).toHaveAttribute('aria-pressed', 'true');
-    }
-    const stranger = perspective.getByRole('button', { name: 'Stranger' });
-    await stranger.click();
-    await expect(page.locator('#canton-party')).toHaveValue('Stranger::fp');
-    await expect(stranger).toHaveAttribute('aria-pressed', 'true');
-
-    await page.locator('#clear-parties-btn').click();
-    await expect(page.locator('.canton-party-row')).toHaveCount(0);
-    await expect(page.locator('#canton-parties-list')).toContainText('No test parties yet');
+    // The token is never kept, and the issued decision is listed with the member's others.
+    await expect(page.locator('#lc-decision-token')).toHaveValue('');
+    await expect(decisions).toHaveCount(2);
+    await expect(page.locator('#lc-attestations')).toContainText(AGREEMENT_CID);
   });
 
   test('pitch deck advances through its real slide controls and roadmap links reach each horizon', async ({ mockApi: page }) => {
-    await page.route('**/docs/agents.json', route => json(route, { x402: { priceProposal: '0.05 USDC' } }));
+    await page.route('**/docs/agents.json', route => json(route, { x402: { priceOracleFact: '0.05 USDC' } }));
     await page.route('**/oracle/public-records/summary', route => json(route, { attestations: 3, v2: { attestations: 2 } }));
     await page.route('**/hackathon/proof.json', route => json(route, { hackathonPrograms: ['program-1'] }));
     await page.route('**/oracle/markets/prospective/status', route => json(route, { state: 'open', market: 'market-1' }));
+    // A smooth scroll is an animation the slide observer re-reads mid-flight (js/hackathon-deck.js), and
+    // an agent's browser may not paint its frames: with reduced motion each control jumps, and its
+    // end state is what is asserted.
+    await page.emulateMedia({ reducedMotion: 'reduce' });
 
     for (const deck of ['/deck.html', '/deck2.html', '/deck3.html']) {
       await page.goto(deck);
@@ -302,13 +242,13 @@ test.describe('Supporting pages @core', () => {
     const bodies: Record<string, unknown> = {
       '/agent/runs': { runs: [] },
       '/agent/activity': { events: [] },
-      '/docs/agents.json': { x402: { priceProposal: '0.05 USDC' }, mcp: { tools: [] } },
+      '/docs/agents.json': { x402: { priceOracleFact: '0.05 USDC' }, mcp: { tools: [] } },
       '/agent/discovery': { state: 'listed' },
       '/oracle/events': { events: [] },
       '/oracle/public-records/summary': { attestations: 0, v2: { attestations: 0 } },
       '/oracle/markets/prospective/status': { state: 'open', market: 'market-1' },
       '/hackathon/proof.json': { publicProof: { canonicalCase: 'http://localhost:3000/hackathon/cases/test-case' } },
-      '/hackathon/cases/test-case': { id: 'test-case', state: 'pending', proposal: { name: 'Evidence case' }, parcelSet: { parcelCount: 1 }, progress: { complete: 0, total: 3 }, activity: [] },
+      '/hackathon/cases/test-case': { id: AGREEMENT_CID, state: 'pending', agreement: { name: 'Evidence case', status: 'active' }, parcelSet: { parcelCount: 1 }, progress: { complete: 0, total: 3 }, activity: [] },
     };
     await page.route('**/agent/**', route => {
       const path = new URL(route.request().url()).pathname;
@@ -333,7 +273,13 @@ test.describe('Supporting pages @core', () => {
 
     await page.goto('/hackathon-demo.html');
     await expect(page.locator('#hackathon-demo')).toContainText('Running now');
-    await expect(page.locator('#hackathon-demo')).toContainText('Two proposals, followed end to end');
+    await expect(page.locator('#hackathon-demo')).toContainText('Two agreements, followed end to end');
+    // A case is an agreement: its card is named by it and every action deep-links into the explorer by its CID.
+    const evidenceCase = page.locator('.hd-case').filter({ hasText: 'Evidence case' });
+    // Its lifecycle is the agreement's status.
+    await expect(evidenceCase).toContainText('active · 1 real cadastral parcel · 0/3 independently verified stages');
+    await expect(evidenceCase.getByRole('link', { name: 'Every action in the explorer' }))
+      .toHaveAttribute('href', `/?activity=${encodeURIComponent(`agreement:${AGREEMENT_CID}`)}`);
     const beforeRetry = calls.get('/agent/activity') || 0;
     await page.getByRole('button', { name: 'Refresh live data' }).click();
     await expect.poll(() => calls.get('/agent/activity') || 0).toBeGreaterThan(beforeRetry);

@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 // Generic runner for "society" personas: any personas.json role with a pure policy module at
-// agents/policies/<role>.js (contrarian, speculator, ...). Each turn reads active proposals, their
-// markets and the persona's own history, asks the policy (or, explicitly, an LLM choosing among the
-// policy's options) for ONE action or none, and executes it through the shared action engine with the
-// same consensus.agent_run checkpoints, caps and Telegram summary as the proposer and supporter.
+// agents/policies/<role>.js (contrarian, speculator, ...). Each turn reads the agreements of the
+// persona's cities from the index with their accounts' on-chain status, their markets and the persona's
+// own history, asks the policy (or, explicitly, an LLM choosing among the policy's options) for ONE
+// action or none, and executes it through the shared action engine with the same consensus.agent_run
+// checkpoints, caps and Telegram summary as the proposer and supporter. The subject of every market,
+// pledge and claim is the agreement's chain account.
 // Before the role's policy, every turn first collects winnings: a claim on a settled market the
 // persona is owed money from (policies/collect.js). Dry run by default; --live signs on devnet.
 // --turns N plays N game days in one invocation; --slot S lets a persona run several times a day.
@@ -17,24 +19,24 @@ import { fileURLToPath } from 'node:url';
 import { createPool } from '../db/connection.cjs';
 import { Keypair, PublicKey } from '@solana/web3.js';
 import { accountsPerRequest, getMultipleAccountsBatched } from '../solana/account-batching.js';
-import { proposalAccount, proposalKey, isOthersActiveMinted, isSolanaMinted, fitsBudget } from './policies/common.js';
+import { fitsBudget, isOpen, isOthersOpen } from './policies/common.js';
 import { societyHistory } from './policies/history.js';
 import { decideTurn } from './policies/collect.js';
 import { societyPolicy, societySlot, societyTurns, societyTurnSpent, societyBudget } from './run-policy.js';
 import { ensurePledgeBookAndSet } from './pledger.js';
 import { ensureMarketAndStake, usdcToAtomic } from './bettor.js';
-import { claimProposalMarket, decodeProposalState, resolveProposalMarket, revokePledge } from './lifecycle-actions.js';
+import { claimAgreementMarket, resolveAgreementMarket, revokePledge } from './lifecycle-actions.js';
 import { assertUnderCap, dailyCapUsd, dailySpendUsd, getRun, listPersonaRuns, recordCosts, startRun, updateRun } from './ledger.js';
 import { markAgentRunFailed, safeFailureDiagnostic } from './run-failure.js';
 import { createAgentLlm, estimateBatchCostUsd, runPickBatch } from './llm-picker.js';
 import { buildChoiceRequest, optionId, parseChoice } from './society-llm.js';
 import { createRpcConnection } from '../solana/rpc.js';
 import { ensureBotSolFunding, fundBotAction } from './funding.js';
-import { createRetryingFetch } from '../utils/retrying-fetch.js';
 import { sendAndConfirmPolling } from './solana-send.js';
 import { sendTelegram } from './telegram.js';
 import { isEntrypoint } from './entrypoint.js';
-import { discoverProposalInputs, refreshProposalStatuses } from './discovery.js';
+import { discoverAgreements, isMinted, readAgreementStatuses } from './discovery.js';
+import { createIndexClient } from './publication-client.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
@@ -48,13 +50,12 @@ const USDC_DEVNET = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
 const { SIDE_NO, SIDE_YES } = marketClient.constants;
 const CORE_ROLES = new Set(['proposer', 'supporter', 'lens-member']);
 const CONTROLLERS = ['algorithm', 'llm'];
+// Agreements whose designs are read for a policy that needs them (records), per turn.
 const MAX_RECORDS = 40;
-// Proposals read per turn: summary pages (newest first) and, of those, minted ones whose market and
+// Agreements read per turn: index pages (newest first) and, of those, minted ones whose market and
 // positions are read. A cut is logged, never silent.
 const MAX_MINTED = 500;
 const PLEDGE_STATUS = ['active', 'fulfilled', 'revoked', 'voided'];
-// proposal_nft status byte → word (oracle/proposal-lifecycle.js); collect.js maps terminal ones to an outcome.
-const PROPOSAL_STATUS = ['active', 'executed', 'cancelled', 'expired'];
 
 function usage(code) {
     console.log([
@@ -129,24 +130,14 @@ function loadKeypair(persona) {
     return keypair;
 }
 
-async function fetchJson(url, options = {}) {
-    const response = await createRetryingFetch({ requestLabel: () => 'proposal-read' })(url, { headers: { accept: 'application/json' }, ...options });
-    if (!response.ok) throw new Error(`${url} returned HTTP ${response.status}`);
-    return response.json();
-}
-
 /**
- * Every proposal (any lifecycle) of the persona's cities, newest first. `policy.cities: ['*']` is every
- * city in one unfiltered summary read; an explicit list reads each city. Drafts and settled proposals
- * come along on purpose: the policies keep to Active ones, the collect step needs the settled ones.
+ * The cities whose agreements a persona reads, newest first. `policy.cities: ['*']` is every city in
+ * one unfiltered index read; an explicit list reads each city. Unminted and settled agreements come
+ * along on purpose: the policies keep to open ones, the collect step needs the settled ones.
  */
 export function discoveryCities(persona) {
     const cities = persona.policy?.cities?.length ? persona.policy.cities.map(String) : ['zagreb'];
     return cities.includes('*') ? [null] : Array.from(new Set(cities));
-}
-
-async function discoverProposals(apiBase, persona) {
-    return discoverProposalInputs({ apiBase, cities: discoveryCities(persona), fetchJson, log });
 }
 
 function decodeOrNull(info, decode) {
@@ -159,23 +150,23 @@ export function readAccounts(connection, addresses, env = process.env) {
 }
 
 // Everything a policy and the collect step read, gathered fresh for every turn so turn k sees what
-// turn k−1 signed. Markets and both of the persona's positions are read for every minted proposal
-// (any lifecycle); every policy input uses its freshly read on-chain lifecycle.
-async function gatherInputs({ apiBase, persona, needs, connection, wallet, pool }) {
-    const proposals = await refreshProposalStatuses(await discoverProposals(apiBase, persona), connection, { pool, log });
-    let minted = proposals.filter(isSolanaMinted);
+// turn k−1 signed. Every minted agreement's on-chain status, its market and both of the persona's
+// positions are read (any status); every policy input uses the freshly read chain state.
+async function gatherInputs({ index, persona, needs, connection, wallet }) {
+    const agreements = await readAgreementStatuses(await discoverAgreements({ index, cities: discoveryCities(persona), log }), connection);
+    let minted = agreements.filter(isMinted);
     if (minted.length > MAX_MINTED) {
-        log(`${persona.name}: ${minted.length} minted proposals; reading markets for the newest ${MAX_MINTED}`);
+        log(`${persona.name}: ${minted.length} minted agreements; reading markets for the newest ${MAX_MINTED}`);
         minted = minted.slice(0, MAX_MINTED);
     }
-    const accounts = minted.map(proposalAccount);
+    const accounts = minted.map(agreement => agreement.account);
+    const chainStatuses = Object.fromEntries(minted.map(agreement => [agreement.account, agreement.chainStatus]));
     const marketInfos = await readAccounts(connection, accounts.map(account => marketClient.getMarketPda(account)[0]));
     const markets = {};
-    accounts.forEach((account, index) => { markets[account] = decodeOrNull(marketInfos[index], marketClient.decodeMarket); });
+    accounts.forEach((account, position) => { markets[account] = decodeOrNull(marketInfos[position], marketClient.decodeMarket); });
 
     const positions = {};
-    const proposalStatuses = {};
-    const chain = { noPositionProposalIds: [], yesPositionProposalIds: [], pledges: {} };
+    const chain = { noPositionCids: [], yesPositionCids: [], pledges: {} };
     if (wallet) {
         const owner = new PublicKey(wallet);
         const withMarket = accounts.filter(account => markets[account]);
@@ -184,58 +175,48 @@ async function gatherInputs({ apiBase, persona, needs, connection, wallet, pool 
             return [SIDE_YES, SIDE_NO].map(side => marketClient.getPositionPda(market, owner, side)[0]);
         });
         const positionInfos = await readAccounts(connection, positionPdas);
-        withMarket.forEach((account, index) => {
-            const yes = decodeOrNull(positionInfos[index * 2], marketClient.decodePosition);
-            const no = decodeOrNull(positionInfos[index * 2 + 1], marketClient.decodePosition);
+        withMarket.forEach((account, position) => {
+            const yes = decodeOrNull(positionInfos[position * 2], marketClient.decodePosition);
+            const no = decodeOrNull(positionInfos[position * 2 + 1], marketClient.decodePosition);
             if (yes || no) positions[account] = { yes, no };
         });
-        minted.forEach(proposal => {
-            const held = positions[proposalAccount(proposal)];
-            if (needs.noPositions && held?.no?.amount > 0n) chain.noPositionProposalIds.push(proposalKey(proposal));
-            if (needs.yesPositions && held?.yes?.amount > 0n) chain.yesPositionProposalIds.push(proposalKey(proposal));
-        });
-        // Only an open market can still need `resolve`; its proposal's on-chain status says whether it may.
-        const pending = Object.keys(positions).filter(account => !markets[account].resolved
-            && ['yes', 'no'].some(side => positions[account][side]?.amount > 0n && !positions[account][side].claimed));
-        const proposalInfos = await readAccounts(connection, pending.map(account => new PublicKey(account)));
-        pending.forEach((account, index) => {
-            try {
-                const state = decodeOrNull(proposalInfos[index], decodeProposalState);
-                proposalStatuses[account] = state ? PROPOSAL_STATUS[state.status] || `status-${state.status}` : null;
-            } catch (error) {
-                log(`${persona.name}: proposal ${account} status unreadable (${error.message}); not settling its market`);
-            }
+        minted.forEach(agreement => {
+            const held = positions[agreement.account];
+            if (needs.noPositions && held?.no?.amount > 0n) chain.noPositionCids.push(agreement.cid);
+            if (needs.yesPositions && held?.yes?.amount > 0n) chain.yesPositionCids.push(agreement.cid);
         });
         if (needs.pledges) {
-            const active = minted.filter(proposal => String(proposal.lifecycleStatus || '').toLowerCase() === 'active');
-            await Promise.all(active.map(async proposal => {
-                const commitment = await supportClient.readPledgeCommitment(connection, proposalAccount(proposal), owner);
-                if (commitment) chain.pledges[proposalKey(proposal)] = { status: PLEDGE_STATUS[commitment.status] || `status-${commitment.status}` };
+            const open = minted.filter(agreement => isOpen(agreement));
+            await Promise.all(open.map(async agreement => {
+                const commitment = await supportClient.readPledgeCommitment(connection, agreement.account, owner);
+                if (commitment) chain.pledges[agreement.cid] = { status: PLEDGE_STATUS[commitment.status] || `status-${commitment.status}` };
             }));
         }
     }
     let recordFailures = 0;
     if (needs.records) {
-        const others = minted.filter(proposal => isOthersActiveMinted(proposal, { wallet, personaName: persona.name })).slice(0, MAX_RECORDS);
-        await Promise.all(others.map(async proposal => {
-            try {
-                proposal.record = await fetchJson(`${apiBase}/proposals/${encodeURIComponent(proposal.id ?? proposalKey(proposal))}`);
-            } catch (error) {
-                recordFailures += 1;
-                log(`${persona.name}: record ${proposalKey(proposal)} unavailable (${error.message}); scoring it from its summary text`);
-            }
-        }));
+        // The designs of the open agreements by others: what a density policy measures.
+        const others = minted.filter(agreement => isOthersOpen(agreement, { wallet, personaName: persona.name })).slice(0, MAX_RECORDS);
+        try {
+            const rows = await index.getDesigns(others.flatMap(agreement => agreement.designCids));
+            others.forEach(agreement => {
+                agreement.designContents = agreement.designCids.map(cid => rows.get(cid)?.content).filter(Boolean);
+                if (agreement.designContents.length < agreement.designCids.length) recordFailures += 1;
+            });
+        } catch (error) {
+            recordFailures = others.length;
+            log(`${persona.name}: designs unavailable (${error.message}); scoring agreements from their titles`);
+        }
     }
-    const terminal = Object.values(proposalStatuses).filter(status => status && status !== 'active').length;
+    const terminal = minted.filter(agreement => agreement.chainStatus !== 'active').length;
     const cities = discoveryCities(persona);
     const where = cities[0] === null ? 'every city' : cities.length > 3 ? `${cities.length} cities` : cities.join(', ');
-    log(`${persona.name}: ${proposals.length} proposal(s) in ${where}; `
-        + `${minted.length} minted on Solana, ${Object.values(markets).filter(Boolean).length} with a market; own positions on ${Object.keys(positions).length} market(s), `
-        + `${Object.keys(proposalStatuses).length} of them open with an unclaimed stake (${terminal} on a terminal proposal)`);
-    return { proposals, markets, positions, proposalStatuses, chain, recordFailures };
+    log(`${persona.name}: ${agreements.length} agreement(s) in ${where}; `
+        + `${minted.length} minted on Solana (${terminal} terminal), ${Object.values(markets).filter(Boolean).length} with a market; own positions on ${Object.keys(positions).length} market(s)`);
+    return { agreements, markets, positions, chainStatuses, chain, recordFailures };
 }
 
-const ADAPTERS = { fundBotAction, ensureMarketAndStake, ensurePledgeBookAndSet, revokePledge, resolveProposalMarket, claimProposalMarket };
+const ADAPTERS = { fundBotAction, ensureMarketAndStake, ensurePledgeBookAndSet, revokePledge, resolveAgreementMarket, claimAgreementMarket };
 
 /** Sign one society action. `adapters` replaces the chain calls in tests. */
 export async function execute({ action, connection, keypair, caps, pool, persona, runId, adapters = {} }) {
@@ -245,27 +226,27 @@ export async function execute({ action, connection, keypair, caps, pool, persona
         await act.fundBotAction({ action, connection, pool, persona, runId });
         // targetAmount makes a retried turn a replay instead of a second stake.
         return act.ensureMarketAndStake({
-            connection, ownerKeypair: keypair, proposalPda: action.proposalAccount, stakeMint: USDC_DEVNET,
+            connection, ownerKeypair: keypair, subject: action.account, stakeMint: USDC_DEVNET,
             side: action.side === 'yes' ? SIDE_YES : SIDE_NO, amountAtomic: usdcToAtomic(action.amount), targetAmount: true, sendAndConfirm: sendAndConfirmPolling
         });
     }
     if (action.type === 'pledge') {
         return act.ensurePledgeBookAndSet({
-            connection, pledgerKeypair: keypair, proposalPda: action.proposalAccount,
+            connection, pledgerKeypair: keypair, subject: action.account,
             amountAtomic: usdcToAtomic(action.amount), sendAndConfirm: sendAndConfirmPolling
         });
     }
     if (action.type === 'revokePledge') {
-        return act.revokePledge({ connection, pledgerKeypair: keypair, proposalAccount: action.proposalAccount, sendAndConfirm: sendAndConfirmPolling });
+        return act.revokePledge({ connection, pledgerKeypair: keypair, subject: action.account, sendAndConfirm: sendAndConfirmPolling });
     }
     if (action.type === 'claim' && (action.side === 'yes' || action.side === 'no')) {
         // Both steps read the chain first, so a retried turn replays whatever already landed.
         let resolution = null;
         if (action.resolveFirst) {
-            resolution = await act.resolveProposalMarket({ connection, resolverKeypair: keypair, proposalAccount: action.proposalAccount, sendAndConfirm: sendAndConfirmPolling });
+            resolution = await act.resolveAgreementMarket({ connection, resolverKeypair: keypair, subject: action.account, sendAndConfirm: sendAndConfirmPolling });
         }
-        const claim = await act.claimProposalMarket({
-            connection, claimerKeypair: keypair, proposalAccount: action.proposalAccount, side: action.side, sendAndConfirm: sendAndConfirmPolling
+        const claim = await act.claimAgreementMarket({
+            connection, claimerKeypair: keypair, subject: action.account, side: action.side, sendAndConfirm: sendAndConfirmPolling
         });
         return {
             resolveSignature: resolution?.signature || null, outcome: resolution?.outcome || null,
@@ -276,12 +257,12 @@ export async function execute({ action, connection, keypair, caps, pool, persona
 }
 
 export function activityMessage(persona, action) {
-    if (action.type === 'stake' && action.side === 'yes') return `${persona.name} bet YES ${action.amount} USDC on proposal ${action.proposalName}.`;
-    if (action.type === 'stake') return `${persona.name} bet ${String(action.side).toUpperCase()} ${action.amount} USDC against proposal ${action.proposalName}.`;
-    if (action.type === 'claim') return `${persona.name} collected ${action.payout} USDC from its ${String(action.side).toUpperCase()} bet on proposal ${action.proposalName}${action.resolveFirst ? ' after settling its market' : ''}.`;
-    if (action.type === 'pledge') return `${persona.name} pledged ${action.amount} USDC to proposal ${action.proposalName}.`;
-    if (action.type === 'revokePledge') return `${persona.name} revoked its pledge to proposal ${action.proposalName}.`;
-    return `${persona.name} ${action.type} proposal ${action.proposalName}.`;
+    if (action.type === 'stake' && action.side === 'yes') return `${persona.name} bet YES ${action.amount} USDC on agreement ${action.agreementName}.`;
+    if (action.type === 'stake') return `${persona.name} bet ${String(action.side).toUpperCase()} ${action.amount} USDC against agreement ${action.agreementName}.`;
+    if (action.type === 'claim') return `${persona.name} collected ${action.payout} USDC from its ${String(action.side).toUpperCase()} bet on agreement ${action.agreementName}${action.resolveFirst ? ' after settling its market' : ''}.`;
+    if (action.type === 'pledge') return `${persona.name} pledged ${action.amount} USDC to agreement ${action.agreementName}.`;
+    if (action.type === 'revokePledge') return `${persona.name} revoked its pledge to agreement ${action.agreementName}.`;
+    return `${persona.name} ${action.type} agreement ${action.agreementName}.`;
 }
 
 // The explicit LLM controller: the model picks one of the options that fit the budget, or none.
@@ -329,6 +310,7 @@ async function main() {
     const day = args.day || new Date().toISOString().slice(0, 10);
     const apiBase = (args.api || process.env.AGENT_API_BASE || `http://localhost:${process.env.API_PORT || 3000}`).replace(/\/$/, '');
     const connection = createRpcConnection(process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
+    const index = createIndexClient({ apiBase, log });
     const persona = loadSocietyPersona(args.persona, ...(args.personas ? [path.resolve(args.personas)] : []));
     const policy = await import(/* @vite-ignore */ new URL(`./policies/${persona.role}.js`, import.meta.url).href);
     if (typeof policy.decide !== 'function' || !policy.NEEDS) throw new Error(`agents/policies/${persona.role}.js must export decide() and NEEDS`);
@@ -375,18 +357,18 @@ async function main() {
                 let decisionResult = existing?.summary?.decisionResult || null;
                 let decision = null;
                 if (!action) {
-                    const inputs = await gatherInputs({ apiBase, persona, needs: policy.NEEDS, connection, wallet, pool: live ? pool : null });
+                    const inputs = await gatherInputs({ index, persona, needs: policy.NEEDS, connection, wallet });
                     const runs = live ? await listPersonaRuns(pool, persona.name) : [];
                     const history = societyHistory({ runs, chain: inputs.chain, simulated });
                     // A claim the persona is owed comes first; otherwise the role's own policy decides.
                     decision = decideTurn(policy.decide, {
                         persona, seed: turn.seed, now: Date.now(), wallet,
-                        proposals: inputs.proposals, markets: inputs.markets, positions: inputs.positions,
-                        proposalStatuses: inputs.proposalStatuses, history, budget
+                        agreements: inputs.agreements, markets: inputs.markets, positions: inputs.positions,
+                        chainStatuses: inputs.chainStatuses, history, budget
                     });
                     log(`${label}: ${decision.reason}`);
                     if (live) await updateRun(pool, turn.runId, { summaryPatch: {
-                        decisionInput: { controller: args.controller, seed: turn.seed, step: decision.step, budget, eligibleProposalIds: decision.eligibleProposalIds, recordFailures: inputs.recordFailures }
+                        decisionInput: { controller: args.controller, seed: turn.seed, step: decision.step, budget, eligibleCids: decision.eligibleCids, recordFailures: inputs.recordFailures }
                     } });
                     // Collecting what the persona is owed is mechanical; the model only chooses among role options.
                     if (args.controller === 'llm' && decision.step === 'role') {
@@ -408,7 +390,7 @@ async function main() {
                         console.log(JSON.stringify(action, null, 2));
                         simulated.push(action);
                         spent.actions += action.signedActions; spent.usdc += action.usdc;
-                        report.push(`${label}: would ${action.type}${action.side ? ` ${action.side.toUpperCase()}` : ''}${action.resolveFirst ? ' (resolve first)' : ''} ${action.proposalId}`);
+                        report.push(`${label}: would ${action.type}${action.side ? ` ${action.side.toUpperCase()}` : ''}${action.resolveFirst ? ' (resolve first)' : ''} ${action.agreementCid}`);
                     } else {
                         report.push(`${label}: ${decision?.capped ? 'cap reached' : 'no action'}`);
                         if (decision?.capped) break;
@@ -416,7 +398,7 @@ async function main() {
                     continue;
                 }
 
-                const options = (decision?.options || []).slice(0, 5).map(option => ({ proposalId: option.proposalId, type: option.action.type, rationale: option.action.rationale }));
+                const options = (decision?.options || []).slice(0, 5).map(option => ({ agreementCid: option.agreementCid, type: option.action.type, rationale: option.action.rationale }));
                 if (!action) {
                     const outcome = decision?.capped ? 'cap-reached' : 'no-action';
                     await updateRun(pool, turn.runId, { stage: 'selected', status: 'done', summaryPatch: {
@@ -438,18 +420,21 @@ async function main() {
                 const actor = { id: persona.name, name: persona.name, controller: args.controller, wallet };
                 const execution = await runtime.run(actor, {
                     source: 'live',
-                    action: { type: action.type, proposalId: action.proposalId, amount: action.amount, side: action.side || null },
-                    execute: async () => ({ ...(await execute({ action, connection, keypair, caps, pool, persona, runId: turn.runId })), message: activityMessage(persona, action) })
+                    action: { type: action.type, agreementCid: action.agreementCid, account: action.account, amount: action.amount, side: action.side || null },
+                    execute: async () => ({
+                        ...(await execute({ action, connection, keypair, caps, pool, persona, runId: turn.runId })),
+                        entity: { type: 'agreement', id: action.agreementCid }, message: activityMessage(persona, action)
+                    })
                 });
-                const { message: _message, ...result } = execution.outcome;
+                const { message: _message, entity: _entity, ...result } = execution.outcome;
                 const acted = Boolean(result.signature || result.stakeSignature || result.resolveSignature) && result.replayed !== true;
                 const summary = { society: { action, acted, options, execution: result }, activities: acted ? activities : [], outcome: acted ? 'completed' : 'replayed' };
                 await updateRun(pool, turn.runId, { stage: acted ? 'acted' : 'selected', status: 'done', summaryPatch: summary });
                 const used = societyTurnSpent(summary);
                 spent.actions += used.actions; spent.usdc += used.usdc;
                 report.push(acted
-                    ? `${label}: ${action.type}${action.side ? ` ${action.side.toUpperCase()}` : ''}${action.amount ? ` ${action.amount} USDC` : ''}${action.payout ? ` (${action.payout} USDC back)` : ''} on ${action.proposalId}`
-                    : `${label}: ${action.proposalId} already in that state on-chain; no new transaction`);
+                    ? `${label}: ${action.type}${action.side ? ` ${action.side.toUpperCase()}` : ''}${action.amount ? ` ${action.amount} USDC` : ''}${action.payout ? ` (${action.payout} USDC back)` : ''} on ${action.agreementCid}`
+                    : `${label}: ${action.agreementCid} already in that state on-chain; no new transaction`);
             } catch (error) {
                 if (runStarted) {
                     try {

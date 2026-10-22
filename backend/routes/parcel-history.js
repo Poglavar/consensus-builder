@@ -1,9 +1,9 @@
 // GET /parcels/:parcelUid/history: the permanent per-parcel log (backend/oracle/parcel-history.js).
-// Read-only and uncached (no-store): a new attestation or acceptance must show on the next read.
+// Read-only and uncached (no-store): a new attestation or execution must show on the next read.
 
 import { Connection, PublicKey } from '@solana/web3.js';
 import { loadParcelHistory, parcelAnchorAccountMatches, validParcelUid } from '../oracle/parcel-history.js';
-import { DEVNET_GENESIS_HASH } from '../oracle/proposal-lifecycle.js';
+import { DEVNET_GENESIS_HASH } from '../agreements/onchain.js';
 
 // A missing account is false; a failed or invalid observation throws and becomes unknown.
 export function createAnchorReader({ connection = null } = {}) {

@@ -417,7 +417,6 @@
             "acceptAsOwner": "Ja sam {{owner}} — pregledaj i prihvati"
         },
         "areaUnknown": "Površine parcela nisu razrešene.",
-        "chainUnsupported": "Trenutni adapter lanca ne podržava ovo podešavanje odobravanja.",
         "approvalUnavailable": "Izabrano sočivo nije utvrdilo ova prava ni vaše ovlašćenje da postupate u ime ovog vlasnika.",
         "status": {
             "passed": "Podešena pravila odobravanja su zadovoljena",
@@ -1028,11 +1027,11 @@
         "proposals": {
             "title": "Predlozi",
             "listButton": "Lista predloga ({{count}})",
-            "mintedButton": "Kovani predlozi",
             "shareButton": "Podeli primenjene predloge",
             "shareButtonEmpty": "Nema primenjenih predloga. Prvo primeni neke",
             "shareButtonPreparing": "Priprema predloga…",
             "agreementsButton": "Sporazumi",
+            "mintedAgreementsButton": "Iskovani sporazumi",
             "clearButton": "Resetuj predloge (ovaj pregledač)",
             "planStats": {
                 "buttonLabel": "Statistika primenjenih predloga",
@@ -1124,11 +1123,7 @@
                     "other": "Provera završena · pojedeno {{eaten}} od {{total}} parcela"
                 }
             },
-            "newGame": "Nova igra",
-            "showAgents": "Agenti",
-            "showAgentsCount": "Agenti ({{count}})",
-            "showGameLog": "Prikaži dnevnik igre",
-            "showGameLogCount": "Prikaži dnevnik igre ({{count}})"
+            "listButtonLoading": "Učitavanje predloga…"
         },
         "city": {
             "detectTooltip": "Koristi moju lokaciju da izabereš najbliži grad"
@@ -1143,31 +1138,6 @@
             "baseMapLabel": "Podloga mape:"
         },
         "game": {
-            "mintedProposals": {
-                "title": "Kovani predlozi",
-                "loading": "Učitavam kovane predloge…",
-                "loadingShort": "Učitavam…",
-                "empty": "Još nema kovanih predloga sa ovim novčanikom.",
-                "walletRequired": "Povežite novčanik da vidite kovane predloge.",
-                "error": "Ne mogu da učitam kovane predloge.",
-                "refresh": "Osveži",
-                "metadataButton": "Metapodaci",
-                "metadataTitle": "Metapodaci predloga",
-                "metadataUnavailable": "Metapodaci nisu dostupni za ovaj predlog.",
-                "ok": "U redu",
-                "proposalIdLabel": "Predlog #{{id}}",
-                "statusLabel": "Status: {{status}}",
-                "parcelsLabel": "Parcele: {{count}}",
-                "lensLabel": "Sočiva: {{count}}",
-                "createdLabel": "Kreirano: {{date}}",
-                "acceptancePossible": "Moguće prihvatanje",
-                "conditional": "Uslovno",
-                "chainLabel": "Lanac: {{chain}}",
-                "ownerLabel": "Vlasnik: {{owner}}",
-                "explorer": "Otvori u exploreru",
-                "detailsButton": "Detalji",
-                "openFailed": "Ne mogu da otvorim detalje predloga."
-            },
             "enable": "Uključi režim igre",
             "enablePaused": "Uključi režim igre (pauzirano)",
             "secondsBetween": "Sekundi između poteza:",
@@ -1192,7 +1162,6 @@
                 "ethBalance": "ETH stanje",
                 "parcelsOwned": "Parcele u vlasništvu",
                 "proposalsCreated": "Kreirani predlozi",
-                "proposalsAccepted": "Prihvaćeni predlozi",
                 "proposalsApplied": "Primenjeni predlozi",
                 "you": "(Ti)"
             }
@@ -1403,49 +1372,25 @@
         }
     },
     "agentDialog": {
-        "languageLabel": "Jezik",
-        "english": "Engleski",
-        "spanish": "Španski",
-        "serbian": "Srpski",
         "agentNotFound": "Agent nije pronađen.",
         "userLabel": "Ti",
         "ethBalance": "ETH stanje",
         "portfolioValue": "Modelovana vrednost zemljišta",
         "totalWealth": "Modelovani ukupni iznos",
         "portfolioBasis": "Model zemljišta: USD {{pricePerSqmUsd}}/m², preračunato po kursu USD {{usdPerEth}} za 1 ETH.",
-        "parcelsOwned": "Vlasničke parcele",
-        "walletAddresses": "Adrese novčanika",
-        "proposalsPending": "Predlozi na čekanju ({{count}})",
-        "noPendingProposals": "Nema predloga na čekanju",
         "ownedParcels": "Povezane parcele ({{count}})",
-        "noParcels": "Nema povezanih parcela",
         "proposalsCreated": "Kreirani predlozi ({{count}})",
-        "noProposalsCreated": "Nema kreiranih predloga",
-        "proposalsAccepted": "Zabeležene saglasnosti ({{count}})",
-        "noProposalsAccepted": "Nema zabeleženih saglasnosti",
         "localProposalUnavailable": "Lokalni zapis predloga nije dostupan",
-        "chainProposalUnloaded": "Predlog sa lanca nije učitan",
         "localProposalKey": "Lokalni ID {{id}}",
         "localParcelsBasis": "Parcele dodeljene ovom agentu u lokalnom modelu.",
         "walletParcelsBasis": "Lokalne dodele u modelu i NFT-ovi parcela zabeleženi u povezanom novčaniku; to ne potvrđuje upisano vlasništvo nad zemljištem.",
-        "acceptanceBasis": "Lokalni zapisi o saglasnosti i prihvatanja zabeležena na lancu; sami po sebi ne potvrđuju izvršenje ni plaćanje.",
         "agentLog": "Dnevnik agenta",
-        "noLogEntries": "Još nema zapisa. Pokreni igru da vidiš aktivnosti agenta.",
-        "noAgentActivities": "Još nema zabeleženih aktivnosti ovog agenta.",
         "parcelLabel": "Parcela {{number}}",
         "proposalCount": {
             "one": "{{count}} predlog",
             "other": "{{count}} predloga"
         },
-        "proposalDeleted": "(obrisano)",
-        "pendingUnseen": "Nepročitano",
-        "moreEntries": "… i {{count}} starijih zapisa",
-        "logoutButton": "Odjava",
-        "proposalStatus": {
-            "local": "Lokalno",
-            "minted": "Iskovano"
-        },
-        "croatian": "Hrvatski"
+        "logoutButton": "Odjava"
     },
     "hud": {
         "totalSpentLabel": "Ukupno potrošeno:",
@@ -1606,13 +1551,6 @@
                 "unavailable": "Objavljeni predlozi nisu mogli da se učitaju: {{reason}}",
                 "publishedHeading": "Takođe objavljeno ovde"
             },
-            "acceptance": {
-                "parcelTitle": "Prihvatanje parcele",
-                "ownerTitle": "Prihvatanje vlasnika",
-                "parcelLabel": "Parcela {{id}}",
-                "accepted": "prihvaćeno",
-                "pending": "na čekanju"
-            },
             "actions": {
                 "measureAsRoad": "Izmeri kao put",
                 "measurementsAdded": "Merenja dodata",
@@ -1681,9 +1619,7 @@
                 "relationContains": "Uključuje sve ove oznake",
                 "relationInside": "Podskup ovih oznaka",
                 "relationOverlap": "Deo oznaka je zajednički",
-                "sharedCount": "{{shared}} od {{count}} zajedničkih oznaka",
-                "activityProposal": "Aktivnost na ovom predlogu",
-                "activityLand": "Aktivnost za ovaj skup oznaka"
+                "sharedCount": "{{shared}} od {{count}} zajedničkih oznaka"
             },
             "actions": {
                 "apply": "Primeni na mapu",
@@ -1721,46 +1657,8 @@
                 "unapplyFailed": "Ovaj predlog nije moguće ukloniti sa mape: {{reason}}",
                 "unapplyFailedUnknown": "Ovaj predlog nije moguće ukloniti sa mape. Pokušajte ponovo.",
                 "unapplyUnavailable": "Ovaj predlog nije moguće ukloniti sa mape.",
-                "betOutcome": "Kladi se na ishod",
-                "createAgreement": "Napravi sporazum",
+                "addToAgreement": "Dodaj u sporazum",
                 "convertToFreeformHint": "Zadrži volumen pravila u najvećoj visini koju dozvoljava, kao jednu zgradu koju uređujete direktno. Parametri pravila posle više ne važe."
-            },
-            "acceptance": {
-                "title": "Status prihvatanja parcele:",
-                "parcelTitle": "Status prihvatanja parcele:",
-                "noRoster": "Za ovu parcelu nije dostupan spisak vlasnika.",
-                "ownerTitle": "Status prihvatanja vlasnika:",
-                "termsChanged": "Uslovi su promenjeni — pregledajte ih i ponovo prihvatite",
-                "accept": "Prihvati",
-                "undo": "Poništi",
-                "accepted": "Prihvaćeno",
-                "pending": "Na čekanju",
-                "local": {
-                    "parcelTitle": "Lokalno zabeležene saglasnosti za parcele:",
-                    "ownerTitle": "Lokalno zabeležena saglasnost za unos vlasnika:",
-                    "accepted": "Saglasnost zabeležena u ovom pregledaču",
-                    "pending": "Nema važećeg lokalnog zapisa saglasnosti",
-                    "hint": "Nepotpisani zapisi u ovom pregledaču, povezani sa trenutnim uslovima i spiskom vlasnika. Ne potvrđuju ovlašćenje za potpisivanje niti pravno vlasništvo.",
-                    "parcelSummary": "{{accepted}}/{{total}} parcela sa lokalnom saglasnošću"
-                },
-                "signed": {
-                    "parcelTitle": "Saglasnosti za parcele prema proverenim potvrdama:",
-                    "ownerTitle": "Odobrenja vlasnika prema proverenim potvrdama:",
-                    "accepted": "Provereno odobrenje za trenutne uslove",
-                    "pending": "Nema važećeg proverenog odobrenja",
-                    "hint": "Potpisane potvrde proverene prema trenutnim uslovima i prijavljenom kontekstu odobravanja. Ne dokazuju pravno vlasništvo niti uplatu.",
-                    "parcelSummary": "{{accepted}}/{{total}} parcela sa proverenim potvrdama"
-                },
-                "recipient": "primalac",
-                "solanaLensHint": "Recite da u kartici Sočivo"
-            },
-            "ownerAcceptance": {
-                "statusLabel": "Status prihvatanja vlasnika:",
-                "accept": "Prihvati",
-                "undo": "Poništi",
-                "accepted": "Prihvaćeno",
-                "pending": "Na čekanju",
-                "expiredTooltip": "Predlog je istekao"
             },
             "metrics": {
                 "id": "ID:",
@@ -1779,10 +1677,6 @@
                 "buttonLabel": "Založi USDC za ovaj predlog",
                 "copy": "Založite testni USDC u escrow. Sredstva se isplaćuju vlasniku predloga tek nakon izvršenja, ili se vraćaju vama ako se predlog otkaže ili istekne."
             },
-            "pledge": {
-                "none": "0 USDC · još nema podržavalaca",
-                "proposalExplorer": "Nalog predloga"
-            },
             "market": {
                 "yesSide": "Da · izvršeno na lancu",
                 "noSide": "Ne · otkazano ili isteklo",
@@ -1792,29 +1686,18 @@
                 "historySettled": "Namireno",
                 "poolAccount": "Račun fonda",
                 "yourBets": "Tvoje opklade: {{lines}}",
-                "noBets": "Nemaš opklada na ovaj predlog.",
                 "betLine": "{{side}} {{amount}}",
                 "collect": "Preuzmi dobitak ({{side}})",
                 "dialogTitle": "Opklada: {{side}}",
-                "dialogCopy": "Uložite devnet USDC na stanje predloga na lancu: Izvršeno znači da; Otkazano ili Isteklo znači ne. Ulozi ostaju u fondu do poravnanja.",
                 "collectedMessage": "Dobitak preuzet ({{side}}).",
-                "settledMessage": "Namireno prema statusu predloga na lancu.",
-                "rule": "Fond čita račun predloga na Solani: izvršeno namiruje da; otkazano ili isteklo namiruje ne. Svako može da namiri.",
                 "state": {
                     "open": "Otvoreno za opklade",
                     "needsPool": "Još nema fonda",
                     "settleYes": "Spremno za namirenje: da",
                     "settleNo": "Spremno za namirenje: ne",
+                    "settledYes": "Namireno: da",
+                    "settledNo": "Namireno: ne",
                     "closed": "Nije otvoreno za opklade"
-                },
-                "next": {
-                    "open": "Opklade ostaju u fondu dok je predlog aktivan; nema ranijeg izlaska.",
-                    "needsPool": "Bilo koji novčanik može da otvori jedini fond za ovaj aktivni predlog, a zatim da se kladi na da ili ne.",
-                    "settleYes": "Svako može da namiri; program čita Izvršeno direktno sa računa predloga.",
-                    "settleNo": "Svako može izvršiti poravnanje; program čita stanje Otkazano ili Isteklo sa računa predloga.",
-                    "settledSplit": "Pobednička strana deli ceo fond srazmerno ulozima. Gubitnička strana ne dobija ništa.",
-                    "settledRefund": "Niko se nije kladio na pobedničku stranu, pa se svaka opklada može preuzeti u celosti.",
-                    "closed": "Predlog mora biti aktivan na lancu pre nego što se fond može otvoriti."
                 },
                 "paidOut": "isplaćeno",
                 "placedTitle": "Opklada je položena",
@@ -1832,11 +1715,9 @@
                 "executed": "Izvršenje zabeleženo",
                 "executionUnverified": "Izvršenje prijavljeno; potvrda nije dostupna",
                 "executedHint": "Ovaj zapis navodi da je izvršeno. Sam status ne potvrđuje uplatu, pravnu registraciju niti fizičku izgradnju.",
-                "minted": "Iskovan",
                 "inMemory": "U memoriji",
                 "awaitingFunding": "Čeka finansiranje",
-                "viewOnExplorer": "Prikaži u exploreru",
-                "mintedHint": "Iskovano na blockchainu"
+                "viewOnExplorer": "Prikaži u exploreru"
             },
             "loading": "Učitavanje detalja predloga…",
             "rendering": "Prikazivanje detalja predloga…",
@@ -1851,7 +1732,6 @@
                 "label": "Parcela {{id}}",
                 "tooltip": "Klikni za detalje o parceli",
                 "tooltipReplaced": "Kliknite za prikaz položaja izvorne parcele",
-                "acceptedBadge": "Prihvaćeno",
                 "pendingBadge": "Na čekanju",
                 "replacedInModel": "Zamenjeno u modelu karte",
                 "newPlot": "Nova parcela {{n}}",
@@ -1898,75 +1778,21 @@
                 "totalAcquiringDifficulty": "Modelirana težina sticanja:"
             },
             "lens": {
-                "eyebrow": "Pouzdani potvrđivači",
-                "title": "Sočivo",
-                "loading": "Učitavanje sočiva…",
-                "empty": "Ovaj predlog ne navodi sočivo.",
-                "directoryUnavailable": "Imenik članova nije dostupan; prikazuju se samo ključevi.",
-                "unknownMember": "nije u imeniku",
-                "ownershipTitle": "Potvrda vlasništva",
-                "ownershipHint": "Ako ste vlasnik neke od ovih parcela, zatražite od člana sočiva potvrdu: vaš novčanik potpisuje jednokratni izazov, član proverava svoj registar i izdaje potvrdu.",
                 "memberSelect": "Član sočiva",
-                "requestAttestation": "Potvrdi moje vlasništvo",
-                "noServiceUrl": "Nema URL-a servisa: nijedan član ovog sočiva ne objavljuje gde da se zatraži potvrda.",
                 "noServiceUrlShort": "nema URL-a servisa",
-                "working": "Čeka se novčanik i član sočiva…",
-                "attested": "Potvrđeno.",
-                "attestedExisting": "Već potvrđeno.",
-                "attestationAddress": "Potvrda",
-                "accountHash": "Heš naloga",
                 "noWallet": "U ovom pregledaču nije pronađen Solana novčanik.",
                 "noSignMessage": "Ovaj novčanik ne može da potpisuje poruke.",
-                "paymentRequired": "Ovaj član sočiva naplaćuje {{price}} po potvrdi vlasništva, plaćeno preko x402. Plaćanje iz pregledača još nije podržano; može ga platiti agent ili x402 klijent iz komandne linije.",
-                "paymentRequiredNoPrice": "Ovaj član sočiva traži x402 plaćanje za potvrde vlasništva. Plaćanje iz pregledača još nije podržano.",
-                "badChallenge": "Servis je vratio izazov koji ne odgovara ovom novčaniku i parceli ({{reason}}); ništa nije potpisano.",
-                "notConfigured": "Ovaj član sočiva nije podešen za izdavanje potvrda: {{message}}",
-                "refused": "Član sočiva je odbio: {{message}}",
-                "noSignTransaction": "Ovaj novčanik ne može da potpisuje transakcije.",
-                "findingAttestation": "Tražim potvrdu vašeg vlasništva…",
-                "preparing": "Pripremam transakciju…",
-                "awaitingSignature": "Čekam potpis vašeg novčanika…",
-                "submitted": "Poslato; čekam potvrdu…",
-                "viewTransaction": "Prikaži transakciju",
-                "noAttestation": "Nijedan član sočiva nije potvrdio ovaj novčanik kao vlasnika ove parcele. Prvo upotrebite \"Potvrdi moje vlasništvo\".",
-                "noAttestationMember": "Nema potvrde vlasništva za ovaj novčanik od člana {{member}}, koji je otvorio zbir za ovu parcelu. Prvo ga zatražite preko \"Potvrdi moje vlasništvo\".",
-                "alreadyAccepted": "Ovaj novčanik je već rekao da za ovu parcelu.",
-                "badPayout": "Adresa za isplatu mora biti Solana adresa ili prazna.",
-                "badVerdictAddress": "Nalepite adresu potvrde presude.",
-                "precheckFailed": "Program bi ovo odbio ({{reason}}); ništa nije potpisano.",
-                "consentLoading": "Čitam saglasnosti sa lanca…",
-                "consentComplete": "Saglasnost potpuna: {{accepted}} od {{required}} potvrđenih vlasnika reklo je da.",
-                "consentCompleteLegacy": "Prihvaćeno na lancu.",
-                "consentProgress": "{{accepted}} od {{required}} potvrđenih vlasnika reklo je da (vlasnike je potvrdio {{member}}).",
-                "consentNone": "Nijedan potvrđeni vlasnik još nije rekao da.",
-                "consentYours": "Vaš novčanik je rekao da.",
-                "consentUnavailable": "Stanje saglasnosti nije dostupno: {{message}}",
-                "proposalStatus": "Stanje na lancu: {{status}}.",
-                "payoutPlaceholder": "Adresa za isplatu (neobavezno)",
-                "payoutLabel": "Adresa za isplatu vašeg udela u sredstvima predloga (neobavezno)",
-                "sayYes": "Reci da",
-                "sayYesHint": "Posle potvrde, \"Reci da\" potpisuje vašu saglasnost na lancu. Svaki vlasnik kog je član potvrdio mora da kaže da pre nego što se parcela računa; da se ne može povući.",
-                "saidYes": "Rekli ste da.",
-                "tallyAfter": "Potpisalo je {{accepted}} od {{required}} potvrđenih vlasnika.",
-                "parcelComplete": "Saglasnost za ovu parcelu je potpuna.",
-                "proposalExecuted": "Sve parcele su saglasne: predlog je izvršen.",
-                "verdictTitle": "Reši presudom",
-                "verdictHint": "Bilo ko može da preda potvrdu presude člana sočiva. \"expired\" završava predlog; \"executed\" važi samo za predloge iskovane tako da je prihvataju.",
-                "verdictPlaceholder": "Adresa potvrde presude",
-                "submitVerdict": "Predaj presudu",
-                "verdictSettled": "Presuda \"{{verdict}}\" člana {{member}} je primenjena; stanje na lancu je sada {{status}}."
+                "awaitingSignature": "Čekam potpis vašeg novčanika…"
             },
             "parcelHistory": {
-                "eyebrow": "Trajni zapis po parceli",
-                "title": "Istorija parcele",
-                "hint": "Svaki predlog, potvrda vlasništva i saglasnost zabeleženi za pojedinu parcelu, od najstarijeg, u vreme koje navodi izvor.",
+                "agreementHint": "Svaki sporazum predložen nad parcelom, svaka potvrda vlasništva i svaki izvršeni sporazum, od najstarijeg, u vreme koje navodi izvor.",
                 "summary": "Istorija: {{parcel}}",
                 "loading": "Učitavanje istorije…",
                 "unavailable": "Istorija nije dostupna: {{message}}",
                 "empty": "Za ovu parcelu još ništa nije zabeleženo.",
                 "untimed": "vreme nepoznato",
                 "view": "Prikaži",
-                "proposal": "Predlog {{id}}",
+                "agreement": "Sporazum {{cid}}",
                 "member": "Član {{key}}",
                 "owner": "Vlasnik {{key}}",
                 "ownerCount": "Potvrđenih vlasnika: {{count}}",
@@ -1976,36 +1802,11 @@
                 "anchorMissing": "Sidro parcele nije pronađeno na Solana devnetu",
                 "anchorUnknown": "Status sidra parcele nije dostupan",
                 "event": {
-                    "created": "Predlog napravljen",
-                    "chainObserved": "Predlog zabeležen na Solana devnetu",
+                    "agreementPublished": "Sporazum predložen",
                     "ownership": "Vlasništvo potvrđeno",
-                    "acceptance": "Vlasnik je rekao da",
-                    "verdict": "Presuda izmirena",
-                    "lifecycle": "Predlog je dostigao konačno stanje",
+                    "agreementExecuted": "Sporazum izvršen",
                     "other": "Događaj"
-                },
-                "chainObservationHint": "Potvrđeno opažanje zrcalnog zapisa; ovo nije vreme kovanja.",
-                "outcome": {
-                    "executed": "izvršen",
-                    "cancelled": "otkazan",
-                    "expired": "istekao"
                 }
-            },
-            "ownerOffer": {
-                "eyebrow": "Ponuda vlasnika",
-                "title": "Ponude",
-                "loading": "Učitavam ponude…",
-                "unavailable": "Ponude nisu dostupne",
-                "explainer": "Vlasnik ovog zemljišta poziva na ponude. Ponude su obećanja i donacije iznad; vlasnik izvršava ponudu tako što kaže da.",
-                "total": "Ukupno ponuđeno {{amount}} · ponuđača: {{count}}",
-                "empty": "Još nema ponuda. Daj obećanje ili doniraj iznad.",
-                "pledge": "Obećanje",
-                "pledgeFulfilled": "Obećanje · ispunjeno",
-                "donation": "Donacija",
-                "explorer": "Explorer",
-                "unknownTime": "vreme nepoznato",
-                "sayYes": "Reci da i izvrši",
-                "ownerHint": "Ovo je tvoja ponuda. Kad kažeš da na svakoj svojoj parceli u kartici sočiva, ponuda se izvršava, a donacije se isplaćuju tebi."
             },
             "detailsSections": {
                 "land": "Zemljište i vlasništvo",
@@ -2016,15 +1817,6 @@
                 "recordHint": "Datum kreiranja, lokalni ID i linkovi",
                 "actions": "Dodatne radnje",
                 "actionsHint": "Napravite svoju verziju i istražite zemljište"
-            },
-            "bet": {
-                "mintFirst": "Ovaj predlog treba mintovati na Solani pre nego što se bilo ko može kladiti na njegov ishod.",
-                "connect": "Poveži svoj Solana novčanik pre mintovanja ovog predloga.",
-                "mint": "Otvori Podeli i izaberi Mintuj. Prati uputstva novčanika i ispuni preduslove za parcele.",
-                "return": "Vrati se na ovaj predlog i izaberi Kladi se na ishod. Po potrebi otvori fond, zatim izaberi Da ili Ne i unesi ulog.",
-                "openMint": "Otvori opcije mintovanja",
-                "approval": "Klađenje još nije dostupno za predloge sa pravilima vlasništva i odobravanja. Te odluke ne određuju ishod fonda za klađenje.",
-                "chain": "Klađenje je trenutno dostupno samo za predloge mintovane na Solani. Ovaj predlog je mintovan na drugom lancu."
             },
             "forkedFrom": "Izvedeno iz {{cid}}"
         },
@@ -2776,8 +2568,7 @@
                 "resultCountWord": "prikazano",
                 "sources": {
                     "local": "Ovaj pregledač",
-                    "server": "Objavljeno",
-                    "blockchain": "Iskovano"
+                    "server": "Objavljeno"
                 },
                 "actions": {
                     "download": "Preuzmi",
@@ -2788,9 +2579,6 @@
                 "serverError": "Nije uspelo učitavanje predloga sa servera.",
                 "retry": "Pokušaj ponovo",
                 "downloadError": "Nije moguće preuzeti predlog",
-                "syncBlockchain": "Osveži sa blockchaina",
-                "syncBlockchainNoWallet": "Poveži novčanik za sinhronizaciju sa blockchaina",
-                "syncBlockchainLabel": "Sinhronizuj",
                 "downloadConfirm": "Predlog nije u lokalnom skladištu. Preuzeti?",
                 "sort": {
                     "createdDesc": "Kreirano (najnovije prvo)",
@@ -2837,8 +2625,6 @@
                 "meta": {
                     "author": "Autor:",
                     "created": "Kreirano:",
-                    "acceptance": "Prihvatanje:",
-                    "acceptedWord": "prihvaćeno",
                     "parcels": "Parcele:",
                     "area": "Površina:",
                     "applied": "Primenjeno:",
@@ -2892,125 +2678,21 @@
                 "author": "Autor",
                 "offer": "Ponuda",
                 "currency": "€",
-                "parcels": "Parcele",
-                "accepted": "Prihvaćeno"
+                "parcels": "Parcele"
             },
             "share": {
-                "sizeWarning": "Upozorenje: Ovaj link je blizu maksimalne veličine koju server prihvata. Podeli manje parcela ako dođe do greške.",
-                "defaultIntro": {
-                    "one": "Podeli ovaj link da učita {{count}} primenjeni predlog.",
-                    "few": "Podeli ovaj link da učita {{count}} primenjena predloga.",
-                    "other": "Podeli ovaj link da učita {{count}} primenjenih predloga."
-                },
-                "singleIntro": "Podeli ovaj link za predlog <strong>{{title}}</strong>.",
-                "authorLabel": "Autor:",
-                "cameraLabel": "Zum kamere:",
-                "proposalsLabel": "Predlozi:",
-                "stats": {
-                    "contentLabel": "Sadržaj:",
-                    "sizeLabel": "Veličina:",
-                    "contentSummary": "{{total}} predloga • {{roads}} puteva • {{buildings}} zgrada • {{parcels}} parcela",
-                    "sizeSummary": "~{{kb}} KB kodiranog linka (ograničenje servera ~{{maxKb}} KB)"
-                },
                 "note": "Deljenje preko servera uskoro dolazi. JSON izvoz je za arhivu/ručno deljenje; buduća kompatibilnost nije garantovana.",
                 "title": "Podeli trenutni plan",
-                "copyLink": "Kopiraj link",
-                "saveJson": "Sačuvaj kao JSON",
                 "copySuccess": "Link za deljenje je kopiran!",
-                "shareViaLabel": "Podeli putem",
-                "tweetButton": "Objavi na X.com",
-                "tweetText": "Kreirao sam novi urbani predlog!",
-                "nativeShareButton": "Podeli…",
-                "tooLargeTitle": "Set predloga je prevelik",
-                "tooLargeBody": "Linkovi su ograničeni na oko 7.5 KB na serveru, tako da se ovaj set predloga ne može ugraditi u URL. Smanji broj parcela/predloga ili koristi JSON izvoz dok završavamo deljenje preko servera.",
-                "invalidTitle": "Nevažeći link za deljenje",
-                "invalidBody": "Nismo mogli da dekodiramo ovaj podeljeni link predloga. Zamoli pošiljaoca da ga ponovo generiše.",
-                "emptyTitle": "Nije pronađen predlog",
-                "emptyBody": "Podeljeni link nije sadržao predlog za učitavanje.",
-                "unknownError": "Došlo je do nepoznate greške pri učitavanju podeljenog predloga.",
-                "failureTitle": "Nije moguće učitati podeljeni predlog",
-                "invalidBulkTitle": "Nevažeći link podeljenih predloga",
-                "invalidBulkBody": "Nismo mogli da dekodiramo link podeljenih predloga. Zamoli pošiljaoca da ga ponovo generiše.",
-                "noBulkTitle": "Nema pronađenih predloga",
-                "noBulkBody": "Podeljeni link nije sadržao nijedan predlog za primenu.",
-                "importCancelled": "Uvoz podeljenog predloga otkazan.",
                 "untitled": "(Neimenovano)",
-                "stopIntro": "Zaustavljeno pri predlogu: <strong>{{title}}</strong> · {{hash}}",
-                "stopMissingIntro": "Nedostaju pretci parcela za ovaj predlog:",
-                "stopGenericFailure": "Predlog nije mogao da se primeni. Proveri konzolu za detalje.",
-                "stopSuccessCount": {
-                    "one": "Do sada je uspešno primenjen {{count}} predlog.",
-                    "few": "Do sada su uspešno primenjena {{count}} predloga.",
-                    "other": "Do sada je uspešno primenjeno {{count}} predloga."
-                },
-                "uploadAncestorsMissing": {
-                    "one": "Prvo otpremite nadređeni predlog: {{list}}",
-                    "few": "Prvo otpremite nadređene predloge: {{list}}",
-                    "other": "Prvo otpremite nadređene predloge: {{list}}"
-                },
-                "stopTitle": "Zaustavljeno primenjivanje predloga",
-                "leaveAsIs": "Ostavi kako jeste",
-                "unapplySuccessful": "Poništi primenjene predloge",
-                "summary": {
-                    "appliedFrom": "Primenjeni predlozi od {{author}}.",
-                    "appliedCount": "{{count}} primenjeno.",
-                    "skippedCount": {
-                        "one": "Preskočen {{count}} duplirani predlog (već prisutan).",
-                        "few": "Preskočena {{count}} duplirana predloga (već prisutni).",
-                        "other": "Preskočeno {{count}} dupliranih predloga (već prisutni)."
-                    },
-                    "failedCount": "{{count}} neuspešno.",
-                    "blockedAncestors": "Blokirano — nedostaju primenjeni prethodnici:",
-                    "blockedWaitingOn": "čeka na {{titles}}",
-                    "blockedMissingFabric": "prekrojeno zemljište pod njim ovde ne postoji",
-                    "blockedMissingParcels": "nedostaju katastarske parcele: {{list}}",
-                    "title": "Primenjeni podeljeni predlozi",
-                    "unapplyApplied": "Poništi primenjeno"
-                },
-                "saveJsonError": "Čuvanje JSON-a nije uspelo.",
-                "shareExplainer": "Da sačuvate ili podelite predlog sa drugima možete:",
-                "shareOptionUpload": "da ga otpremite na server",
-                "shareOptionMint": "da ga okujete na blokčejnu",
-                "shareOptionDownload": "da ga preuzmete kao JSON",
-                "shareModalTitle": "Podeli jedan predlog",
-                "uploadExplainer": "Da biste podelili predlog sa drugima, prvo ga morate otpremiti na server",
-                "uploadSuccess": "Predlog je otpremljen! Sada ga možete podeliti sa drugima",
-                "uploadButton": "Otpremi",
-                "mintButton": "Okuj",
-                "connectWalletButton": "Poveži novčanik",
-                "mintCapturingImage": "Snimanje slike predloga…",
-                "mintPreparing": "Provera koje parcele predlog zauzima…",
-                "mintNoImage": "Nije moguće snimiti sliku predloga. Kovanje je otkazano pre potpisa novčanika.",
-                "mintStorageUnavailable": "Skladište datoteka predloga nije dostupno. Kovanje je otkazano pre potpisa novčanika.",
-                "mintMetadataMissing": "Otpremanje datoteke nije vratilo URI metapodataka. Kovanje je otkazano pre potpisa novčanika.",
-                "mintUploadingIPFS": "Otpremanje na IPFS…",
-                "mintWaitingSignature": "Čekanje potpisa novčanika…",
-                "mintingOnChain": "Kovanje na lancu…",
-                "mintSavingServer": "Čuvanje predloga na server…",
-                "downloadButton": "Preuzmi",
-                "downloadSuccess": "Predlog preuzet kao JSON",
-                "downloadError": "Neuspelo preuzimanje predloga",
-                "mintSuccess": "Predlog uspešno okovan!",
-                "mintError": "Neuspelo okivanje predloga",
-                "uploading": "Otpremanje…",
                 "uploadError": "Otpremanje predloga nije uspelo. Molimo pokušajte ponovo.",
-                "shareUrlLabel": "URL za deljenje:",
                 "copyUrlButton": "Kopiraj URL",
-                "sharePlanButton": "Podeli primenjene predloge…",
                 "plan": {
-                    "uploadAncestorsMissing": "Uključite ove nadređene predloge u plan: {{list}}",
-                    "title": "Podeli primenjene predloge",
-                    "fetching": "Preuzimanje predloga #{{id}}…",
-                    "fetchingParcels": "Preuzimanje parcela predaka za predlog #{{id}}…",
-                    "applying": "Primenjivanje predloga #{{id}}…",
                     "applyingNamed": "Primenjujem {{label}} ({{done}}/{{total}})…",
-                    "preparingNamed": "Pripremam {{label}} ({{done}}/{{total}})…",
                     "materializing": "Pokrećem primenu predloga…",
                     "applyingAllTitle": "Primenjivanje podeljenih predloga",
-                    "fetchingPlan": "Preuzimanje podeljenih predloga…",
                     "loadFailed": "Plan ili predlog sa linka nije moguće učitati. Pokušajte ponovo.",
                     "fetchingPlanTitle": "Preuzimanje podeljenih predloga",
-                    "changedSincePreview": "Imenovani plan se promenio ili nije mogao da se proveri. Ponovo ga otvorite da pregledate trenutne članove.",
                     "rebuildingStatus": "Ponovno sastavljanje primenjene kompozicije…",
                     "rebuildingStatusCount": "Ponovno sastavljanje primenjene kompozicije {{done}}/{{total}}…",
                     "progress": {
@@ -3047,97 +2729,18 @@
                         "fabricArrange": "Delim zahvaćene katastarske parcele ({{done}}/{{total}})…",
                         "mapUpdate": "Ažuriram mapu: dodato {{added}}, uklonjeno {{removed}} delova parcela…",
                         "fabricReady": "Parcelna struktura spremna na {{parcels}} katastarskih parcela.",
-                        "networkNoding": "Povezujem preseke puteva i pruga…",
                         "saving": "Čuvam primenjene predloge…",
                         "corridorReady": "Primena završena: {{corridors}}.",
                         "rollback": "Vraćam parcelnu strukturu nakon greške…",
                         "presentation": "Osvežavam mapu i spisak predloga…",
                         "corridorStrips": "Osvežavam prikaz puteva i pruga…"
                     },
-                    "applyUnknownFailure": "Nepoznata greška tokom primenjivanja.",
-                    "checking": "Provera…",
-                    "checkingHint": "Proveravamo status otpremanja…",
-                    "uploading": "Otpremanje…",
-                    "uploadHint": "Otpremi sve izabrane predloge da bi omogućio deljenje ili odčekiraj neke.",
-                    "noUploadedHint": "Otpremi makar jedan predlog da bi omogućio deljenje.",
-                    "alreadyAppliedTitle": "Plan je već primenjen",
-                    "alreadyAppliedMessage": "Ovi podeljeni predlozi već su primenjeni na karti.",
-                    "goneFromServer": "Predlog {{ids}} više nije na serveru. Ostala je samo tvoja lokalna kopija, pa se ovaj link nikome drugom neće otvoriti.",
-                    "alreadyAppliedWithOthersTitle": "Plan je već primenjen",
-                    "alreadyAppliedWithOthersMessage": {
-                        "one": "Ovaj deljeni plan je već na mapi, zajedno sa još {{count}} predlogom.",
-                        "few": "Ovaj deljeni plan je već na mapi, zajedno sa još {{count}} predloga.",
-                        "other": "Ovaj deljeni plan je već na mapi, zajedno sa još {{count}} predloga."
-                    },
-                    "otherProposalsAppliedTitle": "Drugi predlozi primenjeni",
-                    "otherProposalsAppliedMessage": {
-                        "one": "Trenutno je na mapu primenjen još {{count}} predlog.",
-                        "few": "Trenutno su na mapu primenjena još {{count}} predloga.",
-                        "other": "Trenutno je na mapu primenjeno još {{count}} predloga."
-                    },
-                    "showMe": "Prikaži",
-                    "addToThem": "Dodaj njima",
-                    "clearThenAdd": "Očisti, pa dodaj",
-                    "clearThenShow": "Očisti ostale, pa prikaži",
-                    "attemptToApply": "Pokušaj primeniti",
-                    "unapplyThenApply": "Ukloni postojeće, pa primeni",
-                    "someAlreadyAppliedTitle": "Neki predlozi već primenjeni",
-                    "someAlreadyAppliedMessage": "Neki predlozi su već primenjeni na mapi:",
-                    "whatToDo": "Šta želite da uradite?",
-                    "applyRemaining": "Primeni preostale",
-                    "replacedConflicting": "Zamenjeno {{count}} predloga na istim parcelama: {{list}}",
-                    "notFoundOnServer": "Nije pronađeno na serveru",
-                    "recordOutdated": "Ovaj predlog je napravljen u starijoj verziji sajta i više ne može da se otvori.",
-                    "partiallyAppliedTitle": "Delimično primenjeno",
-                    "partiallyAppliedMessage": "{{applied}} od {{total}} predloga u ovom planu je već primenjeno. Želite li dodati preostalih {{remaining}}?",
-                    "continueAdding": "Nastavi dodavanje",
-                    "startFresh": "Počni ispočetka",
-                    "overlappedCountDetailed": "{{count}} predlog(a) ostaje neprimenjeno — prostor je već zauzet. Pronađite ih u listi predloga za pregled ili primenu:",
-                    "overlapsWith": "preklapa se sa",
-                    "overlappedToast": "{{count}} ostaje neprimenjeno (prostor zauzet) — pogledajte listu predloga.",
-                    "appliedCountDetailed": {
-                        "one": "Primenjen {{count}} predlog:",
-                        "few": "Primenjena {{count}} predloga:",
-                        "other": "Primenjeno {{count}} predloga:"
-                    },
-                    "skippedCountDetailed": {
-                        "one": "Preskočen {{count}} duplirani predlog (već prisutan):",
-                        "few": "Preskočena {{count}} duplirana predloga (već prisutni):",
-                        "other": "Preskočeno {{count}} dupliranih predloga (već prisutni):"
-                    },
-                    "failedCountDetailed": {
-                        "one": "Nije primenjen {{count}} predlog:",
-                        "few": "Nisu primenjena {{count}} predloga:",
-                        "other": "Nije primenjeno {{count}} predloga:"
-                    },
-                    "applyBlockedByDependencies": "Blokirano: zavisnosti nisu zadovoljene nakon pokušaja.",
-                    "summary": "Rezultat podeljenih predloga",
-                    "cancelledToast": "Nije primenjeno, povučeno: {{titles}}.",
-                    "appliedToast": {
-                        "one": "Primenjen {{count}} predlog.",
-                        "few": "Primenjena {{count}} predloga.",
-                        "other": "Primenjeno {{count}} predloga."
-                    },
-                    "tour": {
-                        "title": "Sukob prostora",
-                        "body": "„{{incoming}}“ treba zemljište koje trenutno zauzima:",
-                        "replace": "Zameni postojeće",
-                        "keep": "Zadrži postojeće",
-                        "applyToAll": "Primeni na sve preostale sukobe",
-                        "keptCountDetailed": "Zadržali ste postojeće predloge — {{count}} dolazni predlog(a) ostaje neprimenjen (pronađite ih na listi predloga):"
-                    },
-                    "copyResult": "Kopiraj",
-                    "copiedResult": "Rezultat kopiran.",
                     "picked": "Izabrano: {{title}}",
                     "pickedOnMap": "Izabrano: {{title}} — {{parcel}}",
                     "pickedNotInPlan": "Taj predlog nije u ovom planu.",
                     "filterLabel": "Istakni na mapi",
                     "filterAll": "Sve"
-                },
-                "processingImageForUpload": "Obrada slike za otpremanje…",
-                "walletConnectedStatus": "Novčanik povezan. Možete nastaviti sa kovanjem predloga",
-                "rebased": "{{count}} od njih ovde zauzima drugačije zemljište nego pri objavi: {{titles}} (detalji u konzoli).",
-                "drawingProposals": "Crtanje {{done}}/{{total}} predloga na mapi…"
+                }
             },
             "sharedInspector": {
                 "author": "Autor:",
@@ -3326,31 +2929,6 @@
                 "parcelsNotContiguous": "Parcele nisu spojene",
                 "undeclaredParcels": "Geometrija ovog predloga leži na parcelama koje nisu izabrane ({{count}}): {{list}}. Izaberi i njih ili zadrži geometriju unutar izabranih parcela."
             },
-            "walletNotConnected": {
-                "message": "Niste povezani sa novčanikom, pa ne možete mintovati predloge na lancu.",
-                "proceedQuestion": "Nastaviti sa kreiranjem predloga u memoriji?",
-                "cancel": "Otkaži",
-                "confirm": "Kreiraj"
-            },
-            "missingParcels": {
-                "defaultChain": "blockchainu",
-                "messageSingle": "Sledeća parcela nije predstavljena kao NFT na <strong>{{chain}}</strong>, pa predlog za nju ne može biti mintovan na lancu.",
-                "messagePlural": "Sledeće parcele nisu predstavljene kao NFT-ovi na <strong>{{chain}}</strong>, pa predlog za njih ne može biti mintovan na lancu.",
-                "more": ", i još {{count}}…",
-                "proceedQuestion": "Nastaviti sa kreiranjem predloga u memoriji?",
-                "explainer": "Možete sami mintovati parcele. Da biste to uradili, kliknite na parcelu, idite na karticu Alati i kliknite na dugme za mintovanje.",
-                "cancel": "Otkaži",
-                "confirm": "Kreiraj",
-                "createInMemory": "Napravi u memoriji",
-                "mintPrerequisites": "Iskuj preduslove",
-                "anchorMessageSingle": "Sledeća parcela još nema sidro parcele na <strong>{{chain}}</strong>, pa predlog za nju ne može da se iskuje na lancu:",
-                "anchorMessagePlural": "Sledeće parcele još nemaju sidro parcele na <strong>{{chain}}</strong>, pa predlog za njih ne može da se iskuje na lancu:",
-                "anchorExplainer": "Sidro parcele je identitet parcele na lancu. Niko ga ne poseduje i njegovo stvaranje ne daje vlasništvo; plaćate samo njegovu zakupninu. Vlasništvo dolazi na lanac zasebno, kao potvrda člana sočiva. Sidra možete da stvorite i u kartici Alati na panelu Informacije o parceli.",
-                "createAnchor": "Stvori sidro parcele",
-                "createAnchors": "Stvori sidra parcela",
-                "title": "Parcele još nisu na lancu",
-                "anchorTitle": "Nedostaju sidra parcela"
-            },
             "optionsSectionTitle": "Opcije",
             "titleLake": "Kreiraj predlog jezera",
             "typeLake": "Jezero",
@@ -3362,33 +2940,6 @@
                 "label": "Tolerancija zadiranja u parcele (m)",
                 "help": "Parcela ulazi u predlog kad lokacija u nju zadire više od ove širine (linearno, ne površinom). U gradovima ostavite 0: ne smete uzeti ništa od susedove parcele. Koristite samo za grešku merenja; najviše 1 m."
             }
-        },
-        "mintedProposals": {
-            "acceptancePossible": "Prihvatanje moguće",
-            "chainLabel": "Lanac: {{chain}}",
-            "conditional": "Uslovno",
-            "createdLabel": "Napravljeno: {{date}}",
-            "detailsButton": "Detalji",
-            "empty": "Još nema predloga iskovanih ovim novčanikom.",
-            "error": "Nije moguće učitati iskovane predloge.",
-            "explorer": "Pogledaj na Exploreru",
-            "lensLabel": "Lens: {{count}}",
-            "loading": "Učitavanje predloga sa lanca…",
-            "loadingShort": "Učitavanje…",
-            "loadingWithCount": "Pronađeno {{count}} predloga. Učitavanje…",
-            "metadataButton": "Metapodaci",
-            "metadataTitle": "Metapodaci predloga",
-            "metadataUnavailable": "Metapodaci nisu dostupni za ovaj predlog.",
-            "ok": "U redu",
-            "openFailed": "Nije moguće otvoriti detalje predloga.",
-            "ownerLabel": "Vlasnik: {{owner}}",
-            "parcelsLabel": "Parcele: {{count}}",
-            "proposalIdLabel": "Predlog #{{id}}",
-            "refresh": "Osveži",
-            "statusLabel": "Status: {{status}}",
-            "title": "Iskovani predlozi",
-            "walletRequired": "Povežite novčanik za pregled iskovanih predloga.",
-            "authorLabel": "Autor: {{author}}"
         },
         "unapplyTour": {
             "titleUnapply": "Poništi primenu „{{title}}”",
@@ -4048,8 +3599,6 @@
             "resolving_parcel_claim_details": "Utvrđivanje detalja potraživanja parcele…",
             "review_proposal_before_applying": "Pregledaj predlog pre primene.",
             "revoked_acceptance_for_owner_on_parcel": "Poništeno prihvatanje za {{owner}} na parceli {{parcelId}}.",
-            "withdrawing_acceptance_on_chain": "Povlačenje prihvatanja na lancu…",
-            "acceptance_withdrawn_on_chain": "Prihvatanje je povučeno na lancu.",
             "analyzed_roads_summary": "Analizirano {{count}} puteva. {{summary}}",
             "road_measurements_calculated_and_added_to_panel": "Merenja puta izračunata i dodata u panel.",
             "road_proposal_created_and_applied": "Predlog puta \"{{name}}\" kreiran i primenjen.",
@@ -4082,9 +3631,6 @@
             "highlighted_neighboring_parcels_count": "Istaknuto {{count}} susednih parcela",
             "showing_all_parcels": "Prikazujem sve parcele",
             "showing_vertices_for_parcel": "Prikazujem {{count}} temena za parcelu {{parcel}}",
-            "solana_sync_incomplete": "Solana sinhronizacija nije potpuna; sinhronizovano {{count}} predloga. {{reason}}",
-            "solana_sync_complete": "Sinhronizovano {{count}} predloga sa Solane",
-            "solana_sync_no_new": "Nema novih Solana predloga",
             "single_building_design_saved_complete_the_proposal_form_to_submit": "Dizajn jedne zgrade sačuvan. Popuni formu predloga za slanje.",
             "single_building_proposal_created_use_apply_when_ready": "Predlog \"{{title}}\" kreiran. Koristi „Primeni na mapu\" kada budeš spreman.",
             "single_building_tool_is_unavailable": "Alat za jednu zgradu nije dostupan.",
@@ -6001,7 +5547,6 @@
             "failed_to_create_proposal": "Izrada predloga nije uspela.",
             "solana_lens_required": "Pre mintovanja na Solani izaberite bar jednog člana sočiva (dugme sočiva).",
             "solana_accept_in_lens_card": "Na Solani vlasnici kažu da u kartici Sočivo predloga: član sočiva potvrdi vaše vlasništvo, zatim vaš novčanik potpiše.",
-            "solana_acceptance_final": "Prihvatanja na Solani su konačna: potpisano da ne može da se povuče.",
             "owner_offer_not_attested": "Ponuda vlasnika sme da sadrži samo parcele za koje je član tvog sočiva potvrdio da ih tvoj novčanik poseduje. {{detail}}"
         }
     },
@@ -6009,7 +5554,6 @@
         "log": {
             "title": "Aktivnost",
             "closeAria": "Zatvori aktivnost",
-            "empty": "Još nema događaja u igri. Pokreni igru da vidiš aktivnosti agenata.",
             "viewsAria": "Prikaz aktivnosti",
             "viewEvents": "Događaji",
             "viewActors": "Akteri",
@@ -6025,8 +5569,7 @@
             "controllerLlm": "LLM",
             "clearScope": "Ukloni suženje",
             "scopeActor": "Akter: {{id}}",
-            "scopeProposal": "Predlog: {{id}}",
-            "scopeParcelSet": "Zemljište: {{id}}",
+            "scopeAgreement": "Sporazum: {{id}}",
             "scopeRun": "Pokretanje: {{id}}",
             "sourceFailed": "Nije moguće učitati: {{sources}}",
             "count": {
@@ -6037,25 +5580,25 @@
             "noMatch": "Još nema odgovarajućih aktivnosti.",
             "row": {
                 "turn": "Potez {{turn}}",
-                "openProposal": "Otvori predlog",
                 "transaction": "Transakcija",
                 "source": "Izvor: {{value}}",
                 "controller": "Upravljač: {{value}}",
                 "action": "Radnja: {{value}}",
                 "resultSuccess": "Ishod: uspeh",
                 "resultFailed": "Ishod: neuspeh",
-                "scopeProposal": "Sva aktivnost na ovom predlogu",
-                "scopeLand": "Sva aktivnost na ovom zemljištu",
                 "actorFallback": "Akter",
                 "details": "Detalji",
                 "actor": "Akter:",
                 "model": "Model:",
                 "run": "Pokretanje",
-                "batch": "Serija"
+                "batch": "Serija",
+                "openAgreement": "Otvori sporazum",
+                "openDesign": "Otvori dizajn",
+                "scopeAgreement": "Sva aktivnost na ovom sporazumu"
             },
             "filtersAria": "Filtriraj aktivnost",
             "searchAria": "Pretraži aktivnost",
-            "searchPlaceholder": "Akter, predlog ili transakcija",
+            "searchPlaceholder": "Akter, sporazum ili transakcija",
             "sourceAria": "Izvor aktivnosti",
             "sourceAll": "Svi izvori",
             "sourceLive": "Uživo",
@@ -6070,9 +5613,13 @@
             "refresh": "Osveži",
             "actions": {
                 "create": "Kreiran",
-                "publish": "Objavljen",
-                "accept": "Prihvaćen",
-                "withdrawAcceptance": "Povučeno prihvatanje",
+                "design": "Objavljen dizajn",
+                "propose": "Predložen sporazum",
+                "mint": "Iskovan",
+                "fund": "Uplaćen depozit",
+                "decide": "Odluka vlasnika",
+                "lens-decision": "Odluka sočiva",
+                "attest": "Zabeležena odluka",
                 "donate": "Donirano",
                 "pledge": "Obećano",
                 "stake": "Opklada / ulog",
@@ -6085,14 +5632,8 @@
                 "refundMyDonations": "Vraćena donacija",
                 "releaseDonations": "Isplaćene donacije",
                 "cancel": "Otkazan",
-                "vote": "Glasao",
-                "x402Payment": "Plaćeno (x402)",
+                "expire": "Istekao",
                 "run_status": "Stanje pokretanja",
-                "certifyParcel": "Potvrđeno vlasništvo",
-                "anchorParcel": "Usidrena parcela",
-                "attestOwnership": "Potvrđen vlasnik",
-                "acceptance": "Rekao da",
-                "verdict": "Predata presuda",
                 "execute": "Izvršen"
             }
         },
@@ -6104,7 +5645,6 @@
             "ethBalance": "ETH stanje",
             "parcelsOwned": "Parcele u vlasništvu",
             "proposalsCreated": "Kreirani predlozi",
-            "proposalsAccepted": "Prihvaćeni predlozi",
             "proposalsApplied": "Primenjeni predlozi",
             "you": "(Ti)"
         },
@@ -6163,8 +5703,6 @@
             "profile_personalized": "Odlično, {{name}}! Tvoj profil je sada personalizovan.",
             "name_to_publish": "Izaberi ime profila za objavu: objavljeni predlozi nose ime autora. Sve što ostaje na ovom uređaju radi i bez njega.",
             "name_to_share": "Izaberi ime profila za deljenje: link za deljenje nosi ime autora. Sve što ostaje na ovom uređaju radi i bez njega.",
-            "name_to_mint": "Izaberi ime profila za upis predloga na lanac: zapis nosi ime autora.",
-            "name_to_join_list": "Izaberi ime profila za pridruživanje javnoj listi.",
             "all_parcels_in_block_selected": "Sve parcele u bloku izabrane!"
         }
     },
@@ -6422,7 +5960,7 @@
     },
     "lensConsole": {
         "title": "Konzola člana sočiva",
-        "intro": "Član sočiva iznosi činjenice o parcelama kao potvrde. Usmerite ovu konzolu na svoj servis člana da vidite šta je izdao i da zabeležite presude.",
+        "introAgreements": "Član sočiva iznosi činjenice o parcelama i sporazumima kao potvrde. Usmerite ovu konzolu na svoj servis člana da vidite šta je izdao i da potvrdite odluke sporazuma.",
         "backToMap": "Nazad na mapu",
         "runOwn": "Člana sočiva može pokrenuti bilo ko: registrujte akreditiv, pokrenite referentni servis i on se sam upisuje u imenik.",
         "runOwnLink": "Kako pokrenuti sopstvenog člana",
@@ -6461,33 +5999,48 @@
             "kind": "Vrsta",
             "kindAll": "Sve",
             "kindOwnership": "Vlasništvo",
-            "kindVerdict": "Presuda",
+            "kindDecision": "Odluka sporazuma",
+            "kindEvidence": "Dokaz za tržište",
             "parcel": "Parcela",
             "owner": "Vlasnik",
+            "agreement": "Sporazum",
+            "decision": "Odluka",
             "hash": "Heš naloga",
             "issuedAt": "Izdato (vreme lanca)",
             "unknownTime": "nepoznato",
             "load": "Osveži",
             "empty": "Nijedna potvrda ne odgovara."
         },
-        "verdict": {
-            "title": "Presuda operatera",
-            "hint": "Presuda utvrđuje da je predlog izvršen (za vrste dokaza bez pristanka po parceli, npr. registar dozvola) ili da je istekao. Može je objaviti samo operater člana.",
-            "proposal": "Nalog predloga",
-            "verdict": "Presuda",
-            "executed": "izvršen",
-            "expired": "istekao",
-            "evidence": "Referenca dokaza (opciono)",
-            "observed": "Kada ga je izvor zabeležio",
+        "decision": {
+            "title": "Potvrdite odluku sporazuma",
+            "hint": "Član broji odluke vlasnika prenete za sporazum i, kada je njegovo pravilo ispunjeno pre roka, izdaje odluku koju beleži račun sporazuma. Može da je zatraži samo operater člana.",
+            "cid": "CID sporazuma",
             "token": "Token operatera (ne čuva se)",
-            "submit": "Objavi presudu",
-            "done": "Presuda potvrđena.",
-            "reused": "Već potvrđeno; vraćena je sačuvana presuda.",
+            "submit": "Potvrdi odluku",
+            "done": "Odluka potvrđena.",
+            "reused": "Već potvrđeno; vraćena je sačuvana odluka.",
+            "address": "Potvrda",
+            "counted": "Prebrojane odluke vlasnika",
+            "tally": {
+                "rule": "Pravilo odlučivanja",
+                "met": "ispunjeno",
+                "notMet": "nije ispunjeno",
+                "uncounted": "ne može da se prebroji ({{reason}})"
+            },
             "errors": {
-                "proposal": "Nalog predloga mora biti Solana javni ključ.",
-                "verdict": "Izaberite izvršen ili istekao.",
-                "time": "Unesite kada je izvor zabeležio ishod.",
-                "token": "Unesite token operatera."
+                "cid": "Unesite CID sporazuma (bafkrei…).",
+                "token": "Unesite token operatera.",
+                "answer": "Član je odgovorio nečim što nije odluka ovog sporazuma.",
+                "ruleNotMet": "Dosad prenete odluke vlasnika ne ispunjavaju pravilo odlučivanja sporazuma.",
+                "deadlinePassed": "Rok sporazuma je prošao; njegov račun može samo da istekne.",
+                "agreementClosed": "Sporazum je već izvršen ili otkazan.",
+                "notInLens": "Ovaj član nije u sočivu sporazuma.",
+                "notAgreementLens": "Račun sporazuma navodi drugog člana sočiva; samo ga njegova odluka razrešava.",
+                "decisionRecorded": "Račun sporazuma već beleži odluku.",
+                "noSponsor": "Sporazum ne navodi novčanik investitora, pa nijedan račun na lancu ne može da nosi njegovu odluku.",
+                "notFound": "Indeks sporazuma ovog člana ne sadrži taj sporazum.",
+                "operatorOnly": "Član je odbio token operatera.",
+                "notConfigured": "Ovaj član nije podešen za potvrđivanje odluka sporazuma ({{message}})."
             }
         },
         "errors": {
@@ -6507,6 +6060,11 @@
         "canvasLabel": "Globus. Prevuci za okretanje, pomeraj točkić za zumiranje i izaberi grad ili tačnu lokaciju.",
         "close": "Zatvori",
         "backToMap": "Nazad na mapu",
+        "agreementCount": {
+            "one": "{{count}} sporazum",
+            "few": "{{count}} sporazuma",
+            "other": "{{count}} sporazuma"
+        },
         "search": {
             "placeholder": "Naziv grada",
             "label": "Pretraži gradove",
@@ -6616,10 +6174,10 @@
             "empty": "Još nema nedavnih aktivnosti.",
             "error": "Aktivnosti privremeno nisu dostupne.",
             "actions": {
-                "create": "Predlog kreiran",
-                "execute": "Predlog izvršen",
-                "accept": "Predlog prihvaćen",
-                "cancel": "Predlog otkazan",
+                "propose": "Sporazum predložen",
+                "execute": "Sporazum izvršen",
+                "cancel": "Sporazum otkazan",
+                "expire": "Sporazum istekao",
                 "createMarket": "Tržište otvoreno",
                 "resolve": "Tržište razrešeno",
                 "donate": "Donacija uplaćena",
@@ -6632,6 +6190,7 @@
                 "no": "Opklada {{amount}} na ne"
             },
             "openError": "Predlog nije moguće otvoriti. Pokušajte ponovo.",
+            "openAgreementError": "Sporazum nije moguće otvoriti. Pokušajte ponovo.",
             "location": {
                 "near": "Okolina: {{place}}",
                 "country": "Približno: {{place}}",
@@ -7233,9 +6792,9 @@
     },
     "bets": {
         "tagline": "Kladi se na gradove",
-        "intro": "Ovi fondovi se poravnavaju prema stanju predloga na Solana devnetu: Izvršeno znači da; Otkazano ili Isteklo znači ne.",
+        "intro": "Ovi fondovi se namiruju prema statusu sporazuma na Solana devnetu: Izvršen znači da; Otkazan ili Istekao znači ne.",
         "loading": "Učitavanje opklada…",
-        "empty": "U ovom gradu još nema fondova. Iskuj predlog da otvoriš prvi.",
+        "emptyAgreements": "U ovom gradu još nema fondova. Iskujte sporazum da biste otvorili prvi.",
         "retry": "Pokušaj ponovo",
         "copyLink": "Kopiraj link",
         "filter": {
@@ -7244,42 +6803,54 @@
             "mine": "Moje",
             "empty": "Nijedna opklada ne odgovara ovom filteru."
         },
+        "question": {
+            "agreement": "Da li će se {{title}} izvršiti na lancu?",
+            "contest": "{{place}}: koji sporazum će se izvršiti?"
+        },
         "dialog": {
             "poolLabel": "Fond",
             "paysLabel": "Isplaćuje",
             "yesPays": "Da {{multiple}}×",
             "noPays": "Ne {{multiple}}×",
             "settlesLabel": "Poravnanje",
-            "marketDeadline": "Zatvaranje fonda",
-            "proposalDeadline": "Rok predloga",
+            "agreementDeadline": "Rok sporazuma",
             "noDeadline": "Rok nije određen; poravnanje sledi konačno stanje na lancu",
             "authorLabel": "Predlaže",
             "amount": "Iznos",
             "max": "Maks.",
             "toWin": "Dobitak oko {{amount}} ako pobedi {{side}}",
             "toWinNote": "Konačna isplata zavisi od fonda pri namirenju.",
-            "members": "Članstvo u planu: {{count}} predloga",
-            "openPlan": "Otvori plan",
             "onThisLandCount": "{{entries}} na ovom zemljištu",
-            "superseded": "Prethodna verzija: nove opklade idu na trenutnu verziju"
+            "agreementAccount": "Račun sporazuma",
+            "openAgreement": "Otvori sporazum",
+            "noBets": "Nemate opklada na ovaj sporazum.",
+            "settledMessage": "Namireno prema statusu sporazuma na lancu.",
+            "rule": "Fond čita račun sporazuma na Solani: izvršen namiruje da; otkazan ili istekao namiruje ne. Svako može da ga namiri.",
+            "next": {
+                "open": "Opklade ostaju u fondu dok je sporazum aktivan; nema ranijeg izlaska.",
+                "needsPool": "Bilo koji novčanik može da otvori jedini fond za ovaj aktivni sporazum, a zatim da se kladi na da ili ne.",
+                "settleYes": "Svako može da ga namiri; program čita Izvršen direktno sa računa sporazuma.",
+                "settleNo": "Svako može da ga namiri; program čita Otkazan ili Istekao sa računa sporazuma.",
+                "settledSplit": "Pobednička strana deli ceo fond srazmerno ulozima. Gubitnička strana ne dobija ništa.",
+                "settledRefund": "Niko se nije kladio na pobedničku stranu, pa se svaka opklada može preuzeti u celosti.",
+                "closed": "Sporazum mora biti aktivan na lancu, pre svog roka, da bi fond mogao da se otvori ili prima opklade."
+            }
         },
         "error": {
             "load": "Opklade nisu mogle da se učitaju.",
-            "open": "Predlog nije mogao da se otvori.",
             "transaction": "Transakcija nije uspela.",
-            "openPlan": "Plan nije mogao da se otvori."
+            "openAgreement": "Sporazum nije mogao da se otvori."
         },
         "contest": {
-            "title": "Koji predlozi će se izvršiti na lancu?",
-            "titleSingle": "Da li će se ovaj predlog izvršiti na lancu?",
             "land": "Parcela {{parcel}}",
             "landMore": "Parcela {{parcel}} i još {{count}}",
-            "site": "Nacrtano zemljište",
+            "openGround": "Otvoreno tlo",
             "withoutPool": "Bez fonda: {{count}}",
-            "olderVersions": "Prethodne verzije: {{count}}",
-            "titlePlans": "Koji planovi će se izvršiti na lancu?",
-            "titleSinglePlan": "Da li će se ovaj plan izvršiti na lancu?",
-            "planCount": "{{count}} plana"
+            "agreementCount": {
+                "one": "{{count}} sporazum",
+                "few": "{{count}} sporazuma",
+                "other": "{{count}} sporazuma"
+            }
         },
         "row": {
             "yesPoolShare": "Da: {{percent}} fonda",
@@ -7289,8 +6860,8 @@
             "pays": "Isplaćuje {{multiple}}×",
             "yes": "Da",
             "no": "Ne",
-            "yesTitle": "Uložite na to da predlog dostigne stanje Izvršeno na lancu.",
-            "noTitle": "Uložite na to da predlog dostigne stanje Otkazano ili Isteklo na lancu.",
+            "yesExecutes": "Uložite na to da se sporazum izvrši na lancu.",
+            "noExecutes": "Uložite na to da sporazum bude otkazan ili istekne na lancu.",
             "openMarket": "Otvori fond",
             "opened": "Fond je otvoren",
             "settle": "Namiri fond",
@@ -7300,16 +6871,15 @@
             "closed": "Ulaganje nije otvoreno",
             "resolvedYes": "Namireno: da",
             "resolvedNo": "Namireno: ne",
-            "closes": "Zatvara se {{date}}",
-            "untitled": "Predlog bez naslova",
+            "deadline": "Rok {{date}}",
+            "untitledAgreement": "Sporazum bez naslova",
             "paysTitle": "1 USDC na ovoj strani isplaćuje {{multiple}} USDC ako pobedi.",
             "onlyYes": "Zasad samo opklade na da",
-            "onlyNo": "Zasad samo opklade na ne",
-            "plan": "Plan od {{count}} predloga"
+            "onlyNo": "Zasad samo opklade na ne"
         },
         "how": {
             "title": "Kako opklade rade",
-            "pools": "Svaki predlog ima svoj fond da/ne. Grupe povezuju zajedničke reference parcela; više predloga u istoj grupi može se izvršiti.",
+            "pools": "Svaki iskovani sporazum ima svoj fond da/ne. Grupe povezuju zajedničke ulazne parcele; dva sporazuma nad istom parcelom ne mogu oba da se izvrše.",
             "settle": "Izvršenje na lancu namiruje da; otkazivanje ili istek namiruje ne. Pobednička strana deli ceo fond srazmerno ulozima.",
             "devnet": "Opklade koriste devnet USDC, koji nema vrednost. Devnet SOL i USDC uzmi sa slavina.",
             "faucetSol": "Solana slavina",
@@ -7350,7 +6920,10 @@
         "designs": {
             "hint": "Deo sporazuma mogu da budu samo dizajni primenjeni na mapu.",
             "empty": "Nema primenjenih dizajna. Najpre primenite dizajn.",
-            "onMap": "Primenjen"
+            "onMap": "Primenjen",
+            "mapHint": "Kliknite na dizajn na mapi da biste ga dodali ili uklonili",
+            "added": "Dodato: „{{title}}”.",
+            "removed": "Uklonjeno: „{{title}}”."
         },
         "land": {
             "loading": "Čitanje zemljišta ispod dizajna…",
@@ -7368,7 +6941,6 @@
         },
         "allocation": {
             "hint": "Ko dobija koji nastali deo. Sadašnji nosioci su oni koje su dizajni preneli.",
-            "to": "Pripada",
             "holders": "Sadašnji nosioci",
             "public": "Javno"
         },
@@ -7410,7 +6982,8 @@
             "ruleInvalid": "Pravilo odlučivanja nije potpuno: {{reason}}",
             "ruleCommunityBinding": "Glasanje zajednice ne može da bude obavezujuće.",
             "deadlineInvalid": "Rok mora da bude datum u budućnosti.",
-            "secondaryTab": "Podatke ovog grada drži druga kartica; sporazumi mogu da se uređuju samo tamo."
+            "secondaryTab": "Podatke ovog grada drži druga kartica; sporazumi mogu da se uređuju samo tamo.",
+            "published": "Predloženi sporazum ne može da se uređuje; predložite novi."
         },
         "warnings": {
             "ruleNotReady": "Pravilo još ne može da se proceni: {{reason}}",
@@ -7440,6 +7013,7 @@
             },
             "deadline": "Rok: {{date}}",
             "actions": {
+                "bet": "Kladi se",
                 "edit": "Uredi",
                 "delete": "Izbriši"
             },
@@ -7498,6 +7072,125 @@
                 },
                 "failed": "Sporazum nije mogao da se otvori."
             }
+        },
+        "addTo": {
+            "title": "Dodaj u sporazum",
+            "message": "Dodajte „{{title}}” u novi sporazum ili u neki koji još nije predložen.",
+            "new": "Novi sporazum",
+            "alreadyIn": "„{{title}}” je već u ovom sporazumu."
+        },
+        "chain": {
+            "heading": "Na lancu",
+            "cluster": "Solana {{cluster}}",
+            "notMinted": "Nije iskovan. Kovanjem se ovaj sporazum upisuje na Solanu na adresi njegovog investitora; njegovo sočivo zatim potvrđuje odluku, a izvršenjem se oslobađa depozit.",
+            "nonBinding": "Glasanje se ne kuje; njegove odluke se broje van lanca.",
+            "reading": "Čitanje lanca…",
+            "readFailed": "Račun na lancu nije mogao da se pročita: {{reason}}",
+            "missing": "Račun ne postoji na mreži Solana {{cluster}}.",
+            "escrowOf": "{{escrow}} od {{required}}",
+            "escrowNoneRequired": "{{escrow}} (nije potreban)",
+            "noDeadline": "Nema",
+            "status": {
+                "active": "Aktivan",
+                "executed": "Izvršen",
+                "cancelled": "Otkazan",
+                "expired": "Istekao"
+            },
+            "decision": {
+                "pending": "Na čekanju",
+                "satisfied": "Zadovoljeno"
+            },
+            "phase": {
+                "preparing": "Priprema transakcije…",
+                "awaitingSignature": "Čeka se potpis novčanika…",
+                "submitted": "Poslato; čeka se potvrda…",
+                "confirmed": "Potvrđeno.",
+                "indexing": "Beleženje kovanja na serveru…"
+            },
+            "facts": {
+                "status": "Status",
+                "decision": "Odluka",
+                "escrow": "Depozit",
+                "deadline": "Rok",
+                "lens": "Sočivo",
+                "payout": "Isplata",
+                "executedAt": "Izvršen"
+            },
+            "actions": {
+                "repropose": "Predloži ponovo sa ovim novčanikom",
+                "mint": "Iskuj",
+                "attest": "Zabeleži odluku",
+                "execute": "Izvrši",
+                "fund": "Uplati",
+                "cancel": "Otkaži",
+                "expire": "Označi kao istekao"
+            },
+            "hints": {
+                "noSponsor": "Predložen je bez novčanika investitora, pa ne može da se iskuje. Predložite ga ponovo sa povezanim Solana novčanikom: to je novi sporazum, sa sopstvenim linkom i odlukama.",
+                "connectSponsor": "Povežite Solana novčanik investitora ({{sponsor}}) da biste ga iskovali.",
+                "notSponsor": "Samo novčanik investitora ({{sponsor}}) može da ga iskuje; povezan je novčanik {{wallet}}.",
+                "noRuleLens": "Njegovo pravilo odlučivanja ne navodi nijednog člana sočiva, pa nijedno sočivo ne može da potvrdi njegovu odluku.",
+                "noConfiguredLens": "Izaberite člana sočiva u podešavanjima sočiva: on potvrđuje broj glasova.",
+                "deadlinePassed": "Njegov rok je istekao.",
+                "connectWallet": "Za radnje na ovom sporazumu povežite Solana novčanik.",
+                "awaitingLens": "Čeka se da njegovo sočivo potvrdi odluku.",
+                "attested": "Njegovo sočivo je potvrdilo odluku: zabeležite je na lancu.",
+                "awaitingFunds": "Izvršenje čeka dok depozit ne dostigne {{required}}.",
+                "expired": "Njegov rok je istekao: svako može da ga označi kao istekao, čime se depozit vraća investitoru."
+            },
+            "mint": {
+                "title": "Iskuj sporazum",
+                "intro": "Kovanjem se CID ovog sporazuma upisuje na Solanu na adresi njegovog investitora. Njegovo sočivo potvrđuje odluku; izvršenjem se zatim depozit isplaćuje na račun za isplatu.",
+                "required": "Depozit potreban za izvršenje (SOL)",
+                "requiredHint": "Izvršenje čeka dok depozit ne dostigne ovaj iznos; 0 znači da depozit nije potreban. Investitor uplaćuje depozit posle kovanja.",
+                "payout": "Račun za isplatu",
+                "payoutHint": "Prima ceo depozit kada se sporazum izvrši."
+            },
+            "minted": "Sporazum je iskovan.",
+            "mintedNotIndexed": "Sporazum je iskovan, ali ga server nije zabeležio: {{reason}}",
+            "reproposed": "Ponovo predložen kao novi sporazum. Njegov link je kopiran.",
+            "fundPrompt": "Koliko SOL-a treba uplatiti na depozit iz novčanika investitora?",
+            "funded": "Na depozit je uplaćeno {{amount}}.",
+            "attested": "Odluka je zabeležena: pravilo je zadovoljeno.",
+            "executed": "Sporazum je izvršen: depozit je isplaćen na njegov račun za isplatu.",
+            "cancelConfirm": "Otkazati ovaj sporazum na lancu? Završava se trajno, a depozit se vraća investitoru.",
+            "keep": "Zadrži ga",
+            "cancelled": "Sporazum je otkazan; depozit je vraćen investitoru.",
+            "expired": "Sporazum je istekao; depozit je vraćen investitoru.",
+            "errors": {
+                "amount": "Unesite iznos u SOL-u, npr. 0,5.",
+                "payout": "Račun za isplatu mora da bude Solana adresa.",
+                "web3Unavailable": "Solana biblioteka nije mogla da se učita.",
+                "walletRequired": "Prvo povežite Solana novčanik.",
+                "notDeployed": "Program sporazuma još nije postavljen na mreži Solana {{cluster}}.",
+                "simulationFailed": "Transakcija ne bi uspela: {{reason}}",
+                "confirmationUnknown": "Transakcija je poslata, ali je isteklo vreme čekanja na potvrdu. Proverite je u exploreru.",
+                "confirmationFailed": "Transakcija nije uspela na lancu.",
+                "notProposed": "Predložite sporazum pre nego što ga iskujete.",
+                "notMinted": "Ovaj sporazum nije iskovan.",
+                "lensUnavailable": "Nije bilo moguće pitati člana sočiva za odluku: {{reason}}",
+                "accountMissing": "Račun sporazuma ne postoji na mreži Solana {{cluster}}.",
+                "alreadyMinted": "Ovaj sporazum je već iskovan.",
+                "noSponsor": "Ovaj sporazum je predložen bez novčanika, pa ne može da se iskuje. Predložite ga ponovo dok je ovaj novčanik povezan.",
+                "notSponsor": "Samo novčanik investitora ({{sponsor}}) može da iskuje ovaj sporazum.",
+                "noLens": "Nije naveden nijedan član sočiva koji bi potvrdio odluku ovog sporazuma.",
+                "deadlinePassed": "Rok sporazuma je istekao.",
+                "notAuthority": "To može da uradi samo novčanik investitora ({{sponsor}}).",
+                "attestationMissing": "Potvrda sočiva ne postoji na mreži Solana {{cluster}}.",
+                "attestPrecheck": "Odluka sočiva ne može da se zabeleži ({{reason}}).",
+                "accountMismatch": "Server za ovaj sporazum izvodi drugi račun na lancu, pa nije zabeležio kovanje.",
+                "cidMismatch": "Račun na lancu sadrži drugi sporazum, pa server nije zabeležio kovanje.",
+                "accountNotSeen": "Server još ne vidi račun sporazuma na lancu. Kasnije ponovo otvorite sporazum da biste ga poslali.",
+                "clusterUnsupported": "Server beleži samo sporazume iskovane na Solana devnetu.",
+                "indexRefused": "Server nije zabeležio kovanje: {{reason}}"
+            }
+        },
+        "minted": {
+            "title": "Iskovani sporazumi",
+            "loading": "Čitanje iskovanih sporazuma…",
+            "failed": "Iskovani sporazumi nisu mogli da se pročitaju: {{reason}}",
+            "refresh": "Osveži",
+            "empty": "Nijedan sporazum ovog grada još nije iskovan."
         }
     },
     "planningViews": {

@@ -35,10 +35,7 @@
     function allRecords() {
         const store = storage();
         if (!store) return [];
-        const list = typeof store.peekAllProposals === 'function' ? store.peekAllProposals() : store.getAllProposals();
-        // Canton records live in their own section of the panel, as in the Proposals tab.
-        const canton = global.CantonMode && global.CantonMode.isCantonProposal;
-        return typeof canton === 'function' ? list.filter(p => !canton(p)) : list;
+        return typeof store.peekAllProposals === 'function' ? store.peekAllProposals() : store.getAllProposals();
     }
 
     // The parcel as the owner holds it: its cadastral ground (the repository's immutable geometry)

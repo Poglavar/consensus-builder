@@ -28,8 +28,8 @@
         'gameCheckbox', 'game-datetime', 'game-turns', 'turn-interval-slider', 'turn-interval-value',
         'turn-progress-fill', 'turn-progress-time', 'game-play-pause-btn',
         // Proposals sheet
-        'showProposalsButton', 'planStatsButton', 'roosterScoreButton', 'mintedProposalsButton',
-        'shareAppliedProposalsButton', 'agreementsButton',
+        'showProposalsButton', 'planStatsButton', 'roosterScoreButton',
+        'shareAppliedProposalsButton', 'agreementsButton', 'mintedAgreementsButton',
         // Layers sheet: parcels
         'parcelsCheckbox', 'showAdParcelsCheckbox', 'showParcelNumbers', 'showOwnerCounts',
         'showProposalCounts', 'markMintedCheckbox',
@@ -392,12 +392,12 @@
             labelKey: 'sidebar.proposals.planStats.buttonLabel', fallbackLabel: 'Applied proposal stats', icon: 'fas fa-chart-pie' }),
         control('roosterScoreButton', { id: 'proposals.grainScore', group: 'proposals', surfaces: ['proposals'],
             labelKey: 'sidebar.proposals.grainScore.buttonLabel', fallbackLabel: 'Summon the urbanist rooster', icon: 'fas fa-crow' }),
-        control('mintedProposalsButton', { id: 'proposals.minted', group: 'proposals', surfaces: ['proposals'],
-            labelKey: 'sidebar.proposals.mintedButton', fallbackLabel: 'Minted Proposals', icon: 'fas fa-certificate' }),
         control('shareAppliedProposalsButton', { id: 'proposals.sharePlan', group: 'proposals', surfaces: ['proposals'],
             labelKey: 'sidebar.proposals.shareButton', fallbackLabel: 'Share applied proposals', icon: 'fas fa-share-alt' }),
         control('agreementsButton', { id: 'proposals.agreements', group: 'proposals', surfaces: ['proposals'],
             labelKey: 'sidebar.proposals.agreementsButton', fallbackLabel: 'Agreements', icon: 'fas fa-handshake' }),
+        control('mintedAgreementsButton', { id: 'proposals.mintedAgreements', group: 'proposals', surfaces: ['proposals'],
+            labelKey: 'sidebar.proposals.mintedAgreementsButton', fallbackLabel: 'Minted agreements', icon: 'fas fa-certificate' }),
         { id: 'proposals.clearLocal', group: 'proposals', surfaces: ['settings'], debugOnly: true, run: callGlobal('clearLocalProposalData'),
             labelKey: 'sidebar.proposals.clearButton', fallbackLabel: 'Clear Proposals From Local Storage', icon: 'fas fa-trash' },
 

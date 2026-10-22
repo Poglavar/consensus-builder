@@ -30,14 +30,13 @@
         return error;
     }
 
-    // The agreement's Solana account, or null when it is not minted there.
-    // M2: agreements are minted in M3; until the browser flow passes the agreement-like object with
-    // `onchain: { chainId: 'solana-<cluster>', proposalId: <account> }`, nothing is anchored or read.
+    // The agreement's Solana account, or null when it is not minted there: the index's `onchain`
+    // ({ chain: 'solana', cluster, account, … }, backend/agreements/onchain.js) on the agreement-like object.
     function chainRef(agreement) {
         const onchain = agreement?.onchain || {};
-        const chainId = String(onchain.chainId || '');
-        if (onchain.proposalId == null || !String(onchain.proposalId) || !/^solana-[a-z-]+$/.test(chainId)) return null;
-        return { cluster: chainId.slice('solana-'.length), account: String(onchain.proposalId) };
+        const cluster = String(onchain.cluster || '');
+        if (onchain.chain !== 'solana' || !/^[a-z-]+$/.test(cluster) || typeof onchain.account !== 'string' || !onchain.account) return null;
+        return { cluster, account: onchain.account };
     }
 
     // The decisions that apply, in signing order, under this agreement's CID and context.

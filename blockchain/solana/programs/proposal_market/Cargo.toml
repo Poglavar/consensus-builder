@@ -22,6 +22,10 @@ anchor-lang = { version = "0.30.1", features = ["init-if-needed"] }
 anchor-spl = "0.30.1"
 # SAS account parsers shared with proposal_nft.
 sas_attestation = { path = "../../crates/sas_attestation" }
+# The agreement program's id and Agreement layout (agreement::read_agreement_view): markets are
+# opened on agreements. no-entrypoint, so its entrypoint is not linked in; build with `anchor build`
+# (one program at a time), never one cargo invocation over the whole workspace (README, Build).
+agreement = { path = "../agreement", features = ["no-entrypoint"] }
 
 # Anchor's #[program] expands cfgs that belong to the SBF toolchain and anchor-lang, not this crate;
 # declare them so rustc's check-cfg stops flagging every expansion (Anchor's recommended config).

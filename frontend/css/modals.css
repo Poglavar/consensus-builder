@@ -602,252 +602,7 @@ body.site-intro-open { overflow: hidden; }
     cursor: progress;
 }
 
-/* Minted proposals (js/minted-proposals.js): the shared dialog with `minted-proposals-modal` as its
-   identity class and Refresh in its footer; the metadata view is a second dialog over it
-   (`minted-metadata-modal`). These rules lay out what is inside them. */
-.minted-proposals-body {
-    display: flex;
-    flex-direction: column;
-    gap: var(--cb-space-3);
-    min-height: min(420px, 50dvh);
-}
-
-.minted-proposals-status {
-    font-size: 14px;
-    color: var(--cb-text-muted);
-    min-height: 32px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.minted-proposals-status.is-error {
-    color: var(--cb-danger);
-}
-
-.minted-proposals-status.is-loading {
-    justify-content: center;
-}
-
-.minted-proposals-status__text {
-    color: inherit;
-}
-
-.minted-proposals-list.is-hidden {
-    display: none;
-}
-
-.minted-proposals-body.is-loading {
-    justify-content: center;
-    align-items: center;
-}
-
-.minted-proposals-spinner {
-    width: 18px;
-    height: 18px;
-    border: 3px solid var(--cb-line);
-    border-top-color: var(--cb-primary);
-    border-radius: 50%;
-    animation: minted-proposals-spin 0.9s linear infinite;
-    flex-shrink: 0;
-}
-
-@keyframes minted-proposals-spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.minted-proposals-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.minted-proposal-card {
-    display: grid;
-    grid-template-columns: 140px 1fr;
-    gap: 14px;
-    border: 1px solid var(--cb-line);
-    border-radius: 12px;
-    padding: 12px;
-    background: var(--cb-surface);
-}
-
-.minted-proposal-thumb {
-    width: 140px;
-    height: 120px;
-    border-radius: var(--cb-radius-md);
-    overflow: hidden;
-    background: var(--cb-surface-2);
-    border: 1px solid var(--cb-line);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.minted-proposal-thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-.minted-proposal-thumb__placeholder {
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--cb-text-faint);
-}
-
-.minted-proposal-main {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.minted-proposal-title-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 8px;
-    align-items: baseline;
-}
-
-.minted-proposal-title {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--cb-text-strong);
-}
-
-.minted-proposal-status {
-    font-size: 13px;
-    color: var(--cb-primary);
-    white-space: nowrap;
-}
-
-.minted-proposal-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 12px;
-    font-size: 13px;
-    color: var(--cb-text-muted);
-}
-
-.minted-proposal-description {
-    font-size: 13px;
-    color: var(--cb-text);
-}
-
-.minted-proposal-actions {
-    display: flex;
-    gap: var(--cb-space-2);
-    flex-wrap: wrap;
-    align-items: center;
-    margin-top: var(--cb-space-1);
-}
-
-.minted-proposal-lens-btn {
-    width: 48px;
-    height: 28px;
-    border: 1px solid var(--cb-line-strong);
-    border-radius: 6px;
-    background: var(--cb-surface-2);
-    cursor: default;
-    padding: 0;
-    flex: 0 0 auto;
-}
-
-.minted-metadata-body {
-    display: flex;
-    flex-direction: column;
-    gap: var(--cb-space-2);
-}
-
-.minted-metadata-source {
-    font-size: var(--cb-text-sm);
-    color: var(--cb-text-muted);
-    word-break: break-all;
-}
-
-.minted-metadata-body pre {
-    margin: 0;
-    background: var(--cb-inverse);
-    color: var(--cb-inverse-ink);
-    padding: var(--cb-space-3);
-    border-radius: var(--cb-radius-md);
-    font-family: var(--cb-font-mono);
-    font-size: var(--cb-text-sm);
-    line-height: var(--cb-leading);
-    overflow: auto;
-}
-
-/* "Share one proposal" for a minted proposal (proposals/chain.js showMintedShareModal): the link
-   in a read-only field beside Copy URL and the explorer button. */
-.minted-share-body {
-    display: flex;
-    flex-direction: column;
-    gap: var(--cb-space-3);
-}
-
-.minted-share-body p {
-    margin: 0;
-}
-
-.minted-share-link-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--cb-space-2);
-}
-
-.minted-share-link {
-    flex: 1 1 220px;
-    min-width: 0;
-}
-
-.minted-share-link-row .btn {
-    white-space: nowrap;
-}
-
-/* The missing-parcels prompt of a mint (proposals/create-preview.js): the missing parcels set apart
-   from the message around them. */
-.missing-parcels-list {
-    margin: var(--cb-space-3) 0;
-    padding: var(--cb-space-3);
-    max-height: 200px;
-    overflow: auto;
-    border-radius: var(--cb-radius-sm);
-    font-family: var(--cb-font-mono);
-    font-size: var(--cb-text-sm);
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
-}
-
-.missing-parcels-list {
-    background: var(--cb-surface-2);
-}
-
-.missing-parcels-message p {
-    margin: 0 0 var(--cb-space-3);
-}
-
-.missing-parcels-explainer {
-    padding: var(--cb-space-3);
-    border-left: 4px solid var(--cb-info);
-    border-radius: var(--cb-radius-sm);
-    background: var(--cb-info-soft);
-    color: var(--cb-info-soft-ink);
-}
-
 @media (max-width: 767.98px) {
-    .minted-proposal-card {
-        grid-template-columns: 1fr;
-    }
-
-    .minted-proposal-thumb {
-        width: 100%;
-        height: 180px;
-    }
-
     .parcel-mint-row {
         grid-template-columns: 1fr;
     }
@@ -1072,12 +827,10 @@ body.site-intro-open { overflow: hidden; }
     font-size: var(--cb-text-md);
 }
 
-/* Solana lens picker (lens-picker.js) and the proposal Details lens card (proposals/lens-card.js) */
+/* Solana lens picker (lens-picker.js) */
 .lens-picker-members,
 .lens-picker-pasted,
-.lens-picker-parcels ul,
-.proposal-lens-members,
-.proposal-lens-parcels {
+.lens-picker-parcels ul {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -1124,8 +877,7 @@ body.site-intro-open { overflow: hidden; }
     font-size: 13px;
 }
 
-.lens-picker-key,
-.proposal-lens-key {
+.lens-picker-key {
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 12px;
     overflow-wrap: anywhere;
@@ -1153,8 +905,7 @@ body.site-intro-open { overflow: hidden; }
 }
 
 .lens-picker-pasted li,
-.lens-picker-parcels li,
-.proposal-lens-parcel {
+.lens-picker-parcels li {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -1184,84 +935,6 @@ body.site-intro-open { overflow: hidden; }
     align-items: center;
     margin-bottom: 6px;
     font-size: 13px;
-}
-
-.proposal-lens-card h4 {
-    margin: 12px 0 4px;
-    font-size: 14px;
-}
-
-.proposal-lens-members li {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 4px 8px;
-    min-width: 0;
-}
-
-.proposal-lens-members strong,
-.proposal-lens-parcel-id {
-    font-weight: 600;
-    min-width: 0;
-    overflow-wrap: anywhere;
-}
-
-.proposal-lens-parcel-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    width: 100%;
-}
-
-.proposal-lens-parcel-actions select {
-    flex: 1 1 160px;
-    min-width: 0;
-}
-
-.proposal-lens-result {
-    width: 100%;
-    font-size: 13px;
-    overflow-wrap: anywhere;
-}
-
-.proposal-lens-result:empty {
-    display: none;
-}
-
-.proposal-lens-result span {
-    display: block;
-}
-
-.proposal-lens-result.is-ok {
-    color: var(--cb-success-soft-ink);
-}
-
-.proposal-lens-result.is-warn {
-    color: var(--cb-warning-soft-ink);
-}
-
-.proposal-lens-result.is-error {
-    color: var(--cb-danger);
-}
-
-.proposal-lens-consent {
-    width: 100%;
-    font-size: 13px;
-    color: var(--cb-text-muted);
-}
-
-.proposal-lens-parcel.is-complete {
-    border-color: var(--cb-success);
-    background: var(--cb-success-soft);
-}
-
-.proposal-lens-parcel-actions .lens-input {
-    flex: 1 1 160px;
-    min-width: 0;
-}
-
-.proposal-lens-parcel-actions[hidden] {
-    display: none;
 }
 
 /* Agent dialog (js/agents.js showAgentDialog). It wears the shared dialog: cb-dialog-overlay
@@ -1513,10 +1186,6 @@ body.site-intro-open { overflow: hidden; }
     min-width: 0;
 }
 
-.agent-dialog-proposal-meta .proposal-chain-label {
-    overflow-wrap: anywhere;
-    word-break: break-word;
-}
 
 .parcel-item.has-color, .proposal-item.has-color {
     border-left: 4px solid var(--proposal-color, #a5b4fc);
@@ -2133,9 +1802,8 @@ body.site-intro-open { overflow: hidden; }
     line-height: var(--cb-leading);
 }
 
-/* Wallet dialogs (CbDialog): the connector (js/wallet-connection.js), the network choice
-   (js/user-management.js openChainSelectionModal) and the Canton identity picker and explorer
-   (js/canton/, css/canton-mode.css). The chrome is the shared dialog's; wallet-modal,
+/* Wallet dialogs (CbDialog): the connector (js/wallet-connection.js) and the network choice
+   (js/user-management.js openChainSelectionModal). The chrome is the shared dialog's; wallet-modal,
    wallet-modal-overlay and wallet-modal-close stay on it as script and test hooks and paint
    nothing. Wallets and networks are cb-option rows; a wallet that speaks both chains is one row
    with an Ethereum / Solana button pair. */
@@ -2709,7 +2377,7 @@ path.geom-handle-edge.is-dragging { stroke-opacity: 0.35; }
     color: var(--cb-text-faint);
 }
 
-/* Proposal Details "Parcel history" card (js/proposals/parcel-history-card.js). */
+/* The parcel panel's "History" section (js/proposals/parcel-history-card.js renderSection). */
 .parcel-history-parcel {
     border: 1px solid var(--cb-line);
     border-radius: 6px;
@@ -2784,78 +2452,6 @@ path.geom-handle-edge.is-dragging { stroke-opacity: 0.35; }
 }
 
 .parcel-history-hash {
-    font-size: 12px;
-    color: var(--cb-text-muted);
-}
-
-/* Owner offers: the Details bids card. */
-
-.proposal-bids-explainer {
-    margin: 8px 0;
-    font-size: 12px;
-    color: var(--cb-text-muted);
-}
-
-.proposal-bids-owner {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-    margin: 8px 0 10px;
-}
-
-.proposal-bids-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.proposal-bids-row {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 2px 10px;
-    padding: 7px 0;
-    border-top: 1px solid #e5edf5;
-    font-size: 13px;
-}
-
-.proposal-bids-row.is-mine {
-    background: var(--cb-info-soft);
-}
-
-.proposal-bids-rank {
-    grid-row: span 2;
-    align-self: center;
-    font-weight: 700;
-    color: var(--cb-text-muted);
-}
-
-.proposal-bids-main {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    align-items: baseline;
-}
-
-.proposal-bids-kind {
-    font-size: 11px;
-    color: var(--cb-text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-}
-
-.proposal-bids-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px 10px;
-    font-size: 11px;
-    color: var(--cb-text-muted);
-    min-width: 0;
-    overflow-wrap: anywhere;
-}
-
-.proposal-bids-empty {
-    padding: 6px 0;
     font-size: 12px;
     color: var(--cb-text-muted);
 }

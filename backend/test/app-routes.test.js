@@ -15,7 +15,7 @@ const DESIGN = 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq';
 const AGREEMENT = 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku';
 const appPaths = [
     '/', '/index.html', '/proposals', `/designs/${DESIGN}`, `/designs/${DESIGN},${AGREEMENT}`, `/agreements/${AGREEMENT}`,
-    '/proposals/solana/devnet/abc/7', '/parcel/HR-335533-2895',
+    '/parcel/HR-335533-2895',
     '/bets/5x8hiYo9V6kWpG8eVoyXZf4BHXnKSoCP3r7r3PyMBg4z', '/monitors/3', `/designs/${DESIGN}/monitors/12/`
 ];
 
@@ -24,9 +24,11 @@ describe('isAppPath', () => {
         expect(isAppPath(path)).toBe(true);
     });
 
-    // Row ids, named plans and their scores are gone with the server's proposal writes (M2).
+    // Row ids, named plans and their scores are gone with the server's proposal writes (M2), and the
+    // on-chain proposal location /proposals/<chain>/<id>/<contract>/<token> with the proposal mint (M3).
     it.each(['/foo', '/how-to-use', '/plans', '/plans/borovje', '/plans/borovje/score', '/proposals/879', '/proposals/12,13',
-        '/proposals/borovje-v3', '/designs', '/agreements', '/parcel', '/monitors', '/admin/login', '/proposalsx'])('%s is not', (path) => {
+        '/proposals/borovje-v3', '/proposals/solana/devnet/abc/7', '/proposals/evm/84532/0xabc/5',
+        '/designs', '/agreements', '/parcel', '/monitors', '/admin/login', '/proposalsx'])('%s is not', (path) => {
         expect(isAppPath(path)).toBe(false);
     });
 });

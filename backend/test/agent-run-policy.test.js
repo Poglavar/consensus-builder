@@ -1,192 +1,177 @@
-import { createRequire } from 'node:module';
+// agents/run-policy.js: the pure limits of a live proposer run (signed actions and USDC per run), the
+// zero-pick outcome, and the settlement phase's selection: the persona's own minted agreements from its
+// run checkpoints, what was already spent, and which inspected agreements this run settles within its caps.
 import { describe, expect, it } from 'vitest';
-import { runEvents } from '../routes/agent-activity.js';
 import {
-    ageInDays, assertExecutionPlan, createAction, dayString, decisionCompletion, executionPolicy, expiryObservedAt, lifecycleLensConfig,
-    ownedProposalsFromRuns, planRetirements, retirePolicy, retirementsSpent, summarizeExecutionPlan
+    assertExecutionPlan, dayString, decisionCompletion, executionPolicy, ownedAgreementsFromRuns, planSettlements,
+    settlementPolicy, settlementsSpent, summarizeExecutionPlan
 } from '../agents/run-policy.js';
+
+const WALLET = 'G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg';
+const OTHER = '9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin';
+const cid = seed => `bafkrei${seed.padEnd(52, 'a').slice(0, 52)}`;
 
 function entry(picks = 1, stakeUsdc = '0.25') {
     return {
         persona: { name: 'densifier-01', stakeUsdc },
-        run: { summary: { picks: Array.from({ length: picks }, (_, index) => ({ proposalId: `p-${index + 1}` })) } }
+        run: { summary: { picks: Array.from({ length: picks }, (_, index) => ({ pickId: `agent-densifier-01-2026-10-22-${index + 1}` })) } }
     };
 }
 
 describe('live agent execution policy', () => {
-    it('defaults to four signed actions and counts only the per-proposal USDC stake', () => {
+    it('defaults to four signed actions and 0.35 USDC, overridable from env', () => {
         expect(executionPolicy({})).toEqual({ maxActions: 4, maxUsdc: 0.35 });
+        expect(executionPolicy({ AGENT_DAILY_ACTION_CAP: '15', AGENT_DAILY_USDC_CAP: '0.02' })).toEqual({ maxActions: 15, maxUsdc: 0.02 });
+        expect(() => executionPolicy({ AGENT_DAILY_ACTION_CAP: 'many' })).toThrow(/AGENT_DAILY_ACTION_CAP/);
+        expect(() => executionPolicy({ AGENT_DAILY_USDC_CAP: '-1' })).toThrow(/AGENT_DAILY_USDC_CAP/);
+    });
+
+    it('plans three signed actions per pick (create+fund, market, stake) and only the stake in USDC', () => {
         const plan = assertExecutionPlan(summarizeExecutionPlan([entry()]));
-        expect(plan).toMatchObject({ proposalCount: 1, actionCount: 3, maxUsdc: 0.25 });
-        expect(plan.proposals[0]).toEqual({ persona: 'densifier-01', proposalId: 'p-1', actions: 3, usdc: 0.25 });
-        expect(plan).not.toHaveProperty('proposalFeeUsdc');
+        expect(plan).toEqual({
+            pickCount: 1, actionCount: 3, maxUsdc: 0.25,
+            picks: [{ persona: 'densifier-01', pickId: 'agent-densifier-01-2026-10-22-1', actions: 3, usdc: 0.25 }]
+        });
+        expect(summarizeExecutionPlan([entry(0)])).toMatchObject({ pickCount: 0, actionCount: 0, maxUsdc: 0 });
+        expect(summarizeExecutionPlan([{ persona: { name: 'p' }, run: null }])).toMatchObject({ pickCount: 0 });
     });
 
-    it('refuses additional signed actions even if a persona is misconfigured', () => {
-        const plan = summarizeExecutionPlan([entry(2)]);
-        expect(() => assertExecutionPlan(plan)).toThrow(/action cap reached/);
-    });
-
-    it('enforces the USDC ceiling independently of the action count', () => {
+    it('refuses more signed actions than the cap, and more USDC than the ceiling', () => {
+        expect(() => assertExecutionPlan(summarizeExecutionPlan([entry(2)]))).toThrow('agent action cap reached: 6 planned > 4');
         const policy = executionPolicy({ AGENT_DAILY_ACTION_CAP: '4', AGENT_DAILY_USDC_CAP: '0.20' });
-        expect(() => assertExecutionPlan(summarizeExecutionPlan([entry()], policy), policy)).toThrow(/USDC cap reached/);
+        expect(() => assertExecutionPlan(summarizeExecutionPlan([entry()], policy), policy)).toThrow('agent USDC cap reached: 0.25 planned > 0.20');
+        expect(() => summarizeExecutionPlan([entry(1, 'lots')])).toThrow(/persona.stakeUsdc/);
     });
 
     it('makes a valid zero-pick decision terminal instead of leaving a running row', () => {
         expect(decisionCompletion([])).toEqual({ noPicks: true, status: 'done', outcome: 'no-picks' });
-        expect(decisionCompletion([{ proposalId: 'p-1' }])).toEqual({ noPicks: false, status: 'running', outcome: null });
+        expect(decisionCompletion(undefined)).toEqual({ noPicks: true, status: 'done', outcome: 'no-picks' });
+        expect(decisionCompletion([{ pickId: 'p-1' }])).toEqual({ noPicks: false, status: 'running', outcome: null });
     });
 });
 
-function inspected(proposalId, sourceDay, { state = 'active', steps = ['cancel', 'resolve', 'claim'], acceptedParcels = [] } = {}) {
-    return { proposalId, proposalPda: `pda-${proposalId}`, sourceDay, state, steps, acceptedParcels };
+// A proposer run checkpoint whose picks reached minting (or not).
+function proposerRun({ runId, persona = 'densifier-01', day, picks, settlements = undefined }) {
+    const summary = { picks: [], agreements: {}, mints: {}, stakes: {}, ...(settlements ? { settlements } : {}) };
+    for (const pick of picks) {
+        summary.picks.push({ pickId: `pick-${pick.key}`, candidateId: pick.key });
+        if (pick.cid) {
+            summary.agreements[pick.key] = { cid: pick.cid, deadline: pick.deadline ?? '2026-10-29T09:00:00.000Z', content: pick.content ?? soleContent(WALLET) };
+        }
+        if (pick.account) summary.mints[pick.key] = { account: pick.account };
+        if (pick.staked) summary.stakes[pick.key] = { stakeSignature: 'stake-sig' };
+    }
+    return { run_id: runId, persona, day, summary };
 }
 
-describe('retire policy', () => {
-    it('defaults to seven days and three retirements per run, overridable from env', () => {
-        expect(retirePolicy({})).toEqual({ afterDays: 7, maxPerRun: 3 });
-        expect(retirePolicy({ AGENT_RETIRE_AFTER_DAYS: '10', AGENT_RETIRE_MAX_PER_RUN: '1' })).toEqual({ afterDays: 10, maxPerRun: 1 });
-        expect(() => retirePolicy({ AGENT_RETIRE_AFTER_DAYS: 'soon' })).toThrow(/AGENT_RETIRE_AFTER_DAYS/);
-    });
+function soleContent(ownerId, { binding = true, share = '1/1', extraOwner = false, lens = 'lens-key' } = {}) {
+    return {
+        rule: {
+            binding, lens: [lens],
+            approvalConfig: { rights: { parcels: [{ parcelId: 'HR-1', owners: [{ ownerId, share }, ...(extraOwner ? [{ ownerId: OTHER, share }] : [])] }] } }
+        }
+    };
+}
 
-    it('measures age in whole UTC days from the ledger run day, reading pg DATE values back correctly', () => {
-        expect(ageInDays('2026-09-24', '2026-10-01')).toBe(7);
-        expect(ageInDays(new Date(2026, 8, 24), '2026-10-01')).toBe(7);
-        expect(dayString(new Date(2026, 8, 24))).toBe('2026-09-24');
-        expect(ageInDays(null, '2026-10-01')).toBeNull();
-    });
-
-    it('lists only this persona\'s minted proposals from earlier days, oldest first', () => {
+describe('the persona\'s own agreements', () => {
+    it('lists each minted agreement of this persona once, oldest run first, with its lens and whether it owns the land alone', () => {
         const runs = [
-            { run_id: '2026-09-20-densifier-01', persona: 'densifier-01', day: '2026-09-20', summary: {
-                picks: [{ proposalId: 'agent-a', candidateId: 'c1' }, { proposalId: 'agent-unminted', candidateId: 'c2' }],
-                mints: { c1: { proposalPda: 'PdaA' } }, stakes: { c1: { stakeSignature: 's' } }
-            } },
-            { run_id: '2026-09-18-densifier-01', persona: 'densifier-01', day: new Date(2026, 8, 18), summary: {
-                picks: [{ proposalId: 'agent-b', candidateId: 'c9' }], mints: { c9: { proposalPda: 'PdaB' } }
-            } },
-            { run_id: '2026-10-01-densifier-01', persona: 'densifier-01', day: '2026-10-01', summary: {
-                picks: [{ proposalId: 'agent-today', candidateId: 'c3' }], mints: { c3: { proposalPda: 'PdaT' } }
-            } },
-            { run_id: 'case', persona: 'hackathon-case', day: '2026-09-01', summary: {
-                picks: [{ proposalId: 'x', candidateId: 'c' }], mints: { c: { proposalPda: 'PdaX' } }
-            } }
+            proposerRun({ runId: '2026-10-21-densifier-01', day: '2026-10-21', picks: [
+                { key: 'c1', cid: cid('one'), account: 'acct-1', staked: true },
+                { key: 'c2', cid: cid('unminted') },
+                { key: 'c3', cid: cid('shared'), account: 'acct-3', content: soleContent(WALLET, { share: '1/2', extraOwner: true }) }
+            ] }),
+            proposerRun({ runId: '2026-10-19-densifier-01', day: new Date(2026, 9, 19), picks: [
+                { key: 'c9', cid: cid('nine'), account: 'acct-9', content: soleContent(WALLET, { binding: false, lens: 'other-lens' }) }
+            ] }),
+            proposerRun({ runId: '2026-10-21-h02-densifier-01', day: '2026-10-21', picks: [{ key: 'c1', cid: cid('one'), account: 'acct-1' }] }),
+            proposerRun({ runId: '2026-10-21-gentle-01', persona: 'gentle-01', day: '2026-10-21', picks: [{ key: 'g', cid: cid('gentle'), account: 'acct-g' }] })
         ];
-        expect(ownedProposalsFromRuns(runs, 'densifier-01', '2026-10-01')).toEqual([
-            { proposalId: 'agent-b', proposalPda: 'PdaB', sourceRunId: '2026-09-18-densifier-01', sourceDay: '2026-09-18', staked: false },
-            { proposalId: 'agent-a', proposalPda: 'PdaA', sourceRunId: '2026-09-20-densifier-01', sourceDay: '2026-09-20', staked: true }
+        expect(ownedAgreementsFromRuns(runs, 'densifier-01', WALLET)).toEqual([
+            { pickId: 'pick-c9', cid: cid('nine'), account: 'acct-9', deadline: '2026-10-29T09:00:00.000Z', content: runs[1].summary.agreements.c9.content,
+                lens: 'other-lens', soleOwner: false, sourceRunId: '2026-10-19-densifier-01', sourceDay: '2026-10-19', staked: false },
+            { pickId: 'pick-c1', cid: cid('one'), account: 'acct-1', deadline: '2026-10-29T09:00:00.000Z', content: runs[0].summary.agreements.c1.content,
+                lens: 'lens-key', soleOwner: true, sourceRunId: '2026-10-21-densifier-01', sourceDay: '2026-10-21', staked: true },
+            { pickId: 'pick-c3', cid: cid('shared'), account: 'acct-3', deadline: '2026-10-29T09:00:00.000Z', content: runs[0].summary.agreements.c3.content,
+                lens: 'lens-key', soleOwner: false, sourceRunId: '2026-10-21-densifier-01', sourceDay: '2026-10-21', staked: false }
         ]);
+        // Without the wallet nobody is its sole owner.
+        expect(ownedAgreementsFromRuns(runs, 'densifier-01').every(item => item.soleOwner === false)).toBe(true);
+        expect(ownedAgreementsFromRuns(runs, 'gentle-01', WALLET).map(item => item.account)).toEqual(['acct-g']);
     });
 
-    it('retires only old, unaccepted Active proposals and finishes half-retired ones regardless of age', () => {
-        const plan = planRetirements([
-            inspected('young', '2026-09-28'),
-            inspected('accepted', '2026-09-01', { acceptedParcels: ['335550:1'] }),
-            inspected('old', '2026-09-10'),
-            inspected('half', '2026-09-30', { state: 'cancelled', steps: ['resolve', 'claim'] }),
-            inspected('done', '2026-09-02', { state: 'retired', steps: [] }),
-            inspected('won', '2026-09-03', { state: 'executed', steps: [] })
-        ], { runDay: '2026-10-01', actionBudget: 9 });
-        expect(plan.selected.map(item => item.proposalId)).toEqual(['old', 'half']);
-        expect(plan.selected[0].ageDays).toBe(21);
-        expect(plan.actions).toBe(5);
-        expect(Object.fromEntries(plan.skipped.map(item => [item.proposalId, item.reason]))).toEqual({
-            young: 'too-young', accepted: 'has-acceptances', done: 'already-retired', won: 'executed'
-        });
+    it('leaves out an account some run recorded as settled', () => {
+        const runs = [
+            proposerRun({ runId: 'a', day: '2026-10-20', picks: [{ key: 'c1', cid: cid('one'), account: 'acct-1' }, { key: 'c2', cid: cid('two'), account: 'acct-2' }] }),
+            proposerRun({ runId: 'b', day: '2026-10-22', picks: [], settlements: { 'acct-1': { settled: true }, 'acct-2': { settled: false, attest: { signature: 's' } } } })
+        ];
+        expect(ownedAgreementsFromRuns(runs, 'densifier-01', WALLET).map(item => item.account)).toEqual(['acct-2']);
     });
 
-    it('treats exactly the threshold as old enough', () => {
-        const plan = planRetirements([inspected('edge', '2026-09-24')], { runDay: '2026-10-01', actionBudget: 3 });
-        expect(plan.selected).toHaveLength(1);
+    it('reads pg DATE values back as their calendar day', () => {
+        expect(dayString(new Date(2026, 9, 2))).toBe('2026-10-02');
+        expect(dayString('2026-10-02T00:00:00Z')).toBe('2026-10-02');
+        expect(dayString(new Date('invalid'))).toBeNull();
+        expect(dayString(null)).toBeNull();
+    });
+});
+
+describe('settlement selection', () => {
+    const inspected = (account, sourceDay, steps, state = 'decidable') => ({ pickId: `pick-${account}`, cid: cid(account), account, sourceDay, state, steps });
+
+    it('defaults to three agreements a run, overridable from env', () => {
+        expect(settlementPolicy({})).toEqual({ maxPerRun: 3 });
+        expect(settlementPolicy({ AGENT_SETTLE_MAX_PER_RUN: '1' })).toEqual({ maxPerRun: 1 });
+        expect(() => settlementPolicy({ AGENT_SETTLE_MAX_PER_RUN: 'x' })).toThrow(/AGENT_SETTLE_MAX_PER_RUN/);
     });
 
-    it('caps retirements per run and by the signed actions the proposal leaves, deferring the rest', () => {
-        const backlog = ['a', 'b', 'c', 'd', 'e'].map((id, index) => inspected(id, `2026-09-0${index + 1}`));
-        const capped = planRetirements(backlog, { runDay: '2026-10-01', actionBudget: 100 });
-        expect(capped.selected.map(item => item.proposalId)).toEqual(['a', 'b', 'c']);
-        expect(capped.limited).toBe(2);
-        expect(capped.skipped.every(item => item.reason === 'retire-cap')).toBe(true);
+    it('settles the oldest first; decide and the lens decision cost no signed action', () => {
+        const plan = planSettlements([
+            inspected('newer', '2026-10-21', ['expire', 'resolve', 'claim'], 'due'),
+            inspected('older', '2026-10-19', ['decide', 'lens', 'attest', 'execute', 'resolve', 'claim']),
+            inspected('waiting', '2026-10-18', [], 'awaiting-owners'),
+            inspected('closed', '2026-10-17', [], 'closed')
+        ], { actionBudget: 12 });
+        expect(plan.selected.map(item => item.account)).toEqual(['older', 'newer']);
+        expect(plan.actions).toBe(7);
+        expect(plan.budget).toBe(12);
+        expect(plan.limited).toBe(0);
+        expect(Object.fromEntries(plan.skipped.map(item => [item.account, item.reason]))).toEqual({ waiting: 'awaiting-owners', closed: 'closed' });
+    });
 
-        // Daily cap 4 with one proposal (4 worst-case actions) leaves nothing to retire with.
-        const starved = planRetirements(backlog, { runDay: '2026-10-01', actionBudget: 4 - summarizeExecutionPlan([entry()]).actionCount });
+    it('defers the rest past the per-run cap and past the signed actions the picks leave', () => {
+        const backlog = ['a', 'b', 'c', 'd'].map((account, index) => inspected(account, `2026-10-1${index}`, ['expire', 'resolve', 'claim'], 'due'));
+        const capped = planSettlements(backlog, { actionBudget: 100 });
+        expect(capped.selected.map(item => item.account)).toEqual(['a', 'b', 'c']);
+        expect(capped.skipped).toEqual([expect.objectContaining({ account: 'd', reason: 'settle-cap' })]);
+        expect(capped.limited).toBe(1);
+
+        // AGENT_DAILY_ACTION_CAP 4 with one pick planned (3 actions) leaves one signature: nothing fits.
+        const starved = planSettlements(backlog, { actionBudget: 4 - summarizeExecutionPlan([entry()]).actionCount });
         expect(starved.selected).toEqual([]);
-        expect(starved.limited).toBe(5);
-        expect(starved.skipped[0].reason).toBe('action-cap');
+        expect(starved.skipped.every(item => item.reason === 'action-cap')).toBe(true);
+        expect(starved.limited).toBe(4);
 
-        const partial = planRetirements(backlog, { runDay: '2026-10-01', actionBudget: 7 });
-        expect(partial.selected.map(item => item.proposalId)).toEqual(['a', 'b']);
+        // A smaller job further back still fits what is left.
+        const mixed = planSettlements([backlog[0], inspected('small', '2026-10-15', ['resolve'], 'executed')], { actionBudget: 2 });
+        expect(mixed.selected.map(item => item.account)).toEqual(['small']);
+        expect(mixed.skipped).toEqual([expect.objectContaining({ account: 'a', reason: 'action-cap' })]);
     });
 
-    it('counts retirements already signed today against both caps on a same-day rerun', () => {
-        const spent = retirementsSpent({
-            PdaA: { cancel: { signature: 's1' }, resolution: { signature: 's2' }, claim: { signature: 's3' } },
-            PdaB: { cancel: { signature: null, replayed: true }, claim: { skipped: true, signature: null } }
+    it('counts what this run already signed against both caps on a rerun', () => {
+        const spent = settlementsSpent({
+            'acct-1': { attest: { signature: 's1' }, execution: { signature: 's2' }, resolution: { signature: 's3' }, claim: { signature: 's4' } },
+            'acct-2': { approval: { replayed: true }, lensDecision: { address: 'x' } },
+            'acct-3': { expiry: { replayed: true, signature: null }, claim: { skipped: true, signature: null } }
         });
-        expect(spent).toEqual({ actions: 3, count: 1 });
-        const plan = planRetirements([inspected('c', '2026-09-01'), inspected('d', '2026-09-02')], {
-            runDay: '2026-10-01', actionBudget: 6, spent, policy: { afterDays: 7, maxPerRun: 3 }
-        });
-        expect(plan.budget).toBe(3);
-        expect(plan.selected.map(item => item.proposalId)).toEqual(['c']);
-    });
-
-    it('produces the dry-run listing (selection with steps) from inspections alone, without signing', () => {
-        const plan = planRetirements([inspected('old', '2026-09-01', { steps: ['cancel', 'resolve'] })], { runDay: '2026-10-01', actionBudget: 3 });
-        expect(plan.selected).toEqual([expect.objectContaining({ proposalId: 'old', proposalPda: 'pda-old', steps: ['cancel', 'resolve'], ageDays: 30 })]);
-    });
-});
-
-describe('lifecycle lens member for expiry verdicts', () => {
-    it('is off without a service URL and refuses a URL without the operator token', () => {
-        expect(lifecycleLensConfig({})).toBeNull();
-        expect(() => lifecycleLensConfig({ AGENT_LIFECYCLE_LENS_SERVICE_URL: 'http://lens.test' })).toThrow(/OPERATOR_TOKEN/);
-        expect(lifecycleLensConfig({ AGENT_LIFECYCLE_LENS_SERVICE_URL: 'http://lens.test/', AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN: 't' }))
-            .toEqual({ serviceUrl: 'http://lens.test', operatorToken: 't' });
-    });
-
-    it('dates the expiry at run day + afterDays (UTC midnight), deterministically', () => {
-        expect(expiryObservedAt('2026-09-01', 7)).toBe(Date.parse('2026-09-08T00:00:00Z') / 1000);
-        expect(expiryObservedAt(new Date(2026, 8, 1), 0)).toBe(Date.parse('2026-09-01T00:00:00Z') / 1000);
-        expect(() => expiryObservedAt(null, 7)).toThrow(/run day/);
-        expect(() => expiryObservedAt('2026-09-01', -1)).toThrow(/afterDays/);
-    });
-
-    it('counts a signed expiry toward the day\'s retire budget like a cancel', () => {
-        expect(retirementsSpent({ a: { expiry: { signature: 'e' }, resolution: { signature: 'r' } }, b: { expiry: { signature: null } } }))
-            .toEqual({ actions: 2, count: 1 });
-    });
-});
-
-describe('create activity carries the lens', () => {
-    const require = createRequire(import.meta.url);
-    const actionEngineApi = require('../../frontend/js/agent-action-engine.js');
-    const LENS = ['5x8hiYo9V6kWpG8eVoyXZf4BHXnKSoCP3r7r3PyMBg4z'];
-
-    it('puts the mint lens into the activity envelope and /agent/activity keeps it', async () => {
-        const activities = [];
-        const runtime = actionEngineApi.createEngine({
-            decisionProviders: { algorithm: (_actor, context) => context.action },
-            actionHandlers: { '*': (_actor, _action, context) => context.execute() },
-            onActivity: activity => activities.push(activity)
-        });
-        const actor = { id: 'densifier-01', name: 'densifier-01', controller: 'algorithm', wallet: 'G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg' };
-        await runtime.run(actor, {
-            source: 'live', action: createAction({ proposalId: 'agent-densifier-01-2026-10-01-1', lens: LENS }),
-            execute: async () => ({ signature: 'mint-tx', proposalPda: 'pda' })
-        });
-        expect(activities).toHaveLength(1);
-        expect(activities[0].action).toEqual({ type: 'create', proposalId: 'agent-densifier-01-2026-10-01-1', lens: LENS });
-        expect(activities[0].transaction).toBe('mint-tx');
-
-        const events = runEvents({
-            run_id: '2026-10-01-densifier-01', persona: 'densifier-01', status: 'done', stage: 'staked', mode: 'live',
-            summary: { activities, lensChoice: { lens: LENS, source: 'directory' } }, started_at: '2026-10-01T00:00:00Z', updated_at: '2026-10-01T00:01:00Z'
-        });
-        expect(events.find(event => event.action.type === 'create').action.lens).toEqual(LENS);
-    });
-
-    it('refuses a create action without a lens', () => {
-        expect(() => createAction({ proposalId: 'p' })).toThrow(/lens/);
-        expect(() => createAction({ proposalId: 'p', lens: [] })).toThrow(/lens/);
+        expect(spent).toEqual({ actions: 4, count: 2 });
+        const plan = planSettlements([
+            inspected('c', '2026-10-10', ['expire', 'resolve'], 'due'),
+            inspected('d', '2026-10-11', ['expire'], 'due')
+        ], { actionBudget: 6, spent, policy: { maxPerRun: 3 } });
+        expect(plan.budget).toBe(2);
+        expect(plan.selected.map(item => item.account)).toEqual(['c']);
+        expect(plan.skipped).toEqual([expect.objectContaining({ account: 'd', reason: 'settle-cap' })]);
+        expect(() => planSettlements([], { actionBudget: Number.NaN })).toThrow(/actionBudget/);
     });
 });

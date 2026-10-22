@@ -133,7 +133,6 @@
                 'css/actor-explorer.css',
                 'css/road-analysis.css',
                 'css/utilities.css',
-                'css/canton-mode.css',
                 'css/photoreal-mode.css',
                 'css/ai-scene.css',
                 'css/map-shell.css',
@@ -1038,11 +1037,6 @@
                                     data-i18n-key="sidebar.proposals.grainScore.buttonEmpty">Apply a proposal first</small>
                             </span>
                         </button>
-                        <button id="mintedProposalsButton" class="btn btn-block minted-proposals-button"
-                            hidden onclick="openMintedProposalsModal()">
-                            <i class="fas fa-certificate" aria-hidden="true"></i>
-                            <span data-i18n-key="sidebar.proposals.mintedButton">Minted Proposals</span>
-                        </button>
                         <button id="shareAppliedProposalsButton" class="btn btn-block share-plan-button" disabled
                             onclick="shareAppliedProposals()">
                             <i class="fas fa-share-alt"></i>
@@ -1057,6 +1051,10 @@
                         <button id="agreementsButton" type="button" class="btn btn-block agreements-button" onclick="window.AgreementList.open()">
                             <i class="fas fa-handshake" aria-hidden="true"></i>
                             <span data-i18n-key="sidebar.proposals.agreementsButton">Agreements</span>
+                        </button>
+                        <button id="mintedAgreementsButton" type="button" class="btn btn-block minted-agreements-button" onclick="window.AgreementList.openMinted()">
+                            <i class="fas fa-certificate" aria-hidden="true"></i>
+                            <span data-i18n-key="sidebar.proposals.mintedAgreementsButton">Minted agreements</span>
                         </button>
                     </div>
                 </div>
@@ -1878,36 +1876,23 @@
             'js/proposals/display-state.js?v=20261020-recorded-execution',
             'js/proposals/epoch.js?v=20261020-explicit-publication',
             'js/proposals/counts.js',
-            'js/proposals/chain-status.js?v=20261019-chain-acceptance-status',
-            'js/proposals/chain-ref.js?v=20261020-verified-funding',
             'js/proposal-parcel-identity.js',
             // bundle:start chain-clients
             'js/wallet-connection.js',
             'js/solana/wallet-adapter.js',
             'js/lens-core.js',
             'js/lens-service-client.js',
-            'js/solana/chain-data-loader.js?v=20261020-verified-funding',
-            'js/solana/acceptance-client.js?v=20261020-verified-funding',
-            'js/solana/acceptance-bridge.js',
+            'js/solana/chain-data-loader.js?v=20261022-agreement-chain',
+            'js/solana/parcel-client.js?v=20261022-agreement-chain',
+            'js/solana/agreement-client.js?v=20261022-agreement-chain',
+            'js/solana/agreement-bridge.js?v=20261022-agreement-chain',
             'js/proposals/site-hash.js',
-            'js/solana/proposal-bridge.js',
-            'js/solana/pledge-client.js?v=20261020-verified-funding',
-            'js/solana/pledge-bridge.js?v=20261020-verified-funding',
             'js/solana/market-client.js?v=20261020-verified-funding',
-            'js/solana/market-bridge.js?v=20261020-verified-funding',
-            'js/solana/parcel-mint.js',
-            'js/solana/blockchain-sync.js?v=20261020-network-identity',
+            'js/solana/market-bridge.js?v=20261022-agreement-chain',
+            'js/solana/parcel-mint.js?v=20261022-agreement-chain',
             'js/asset-upload.js',
             'js/contracts-loader.js',
             'js/chain-data-loader.js',
-            'js/proposal-contracts.js',
-            'js/blockchain-sync.js?v=20261019-qualified-chain',
-            'js/blockchain-proposals.js?v=20261019-chain-acceptance-status',
-            'js/canton/canton-mode.js',
-            'js/canton/canton-counts.js',
-            'js/canton/canton-parcel.js',
-            'js/canton/canton-explorer.js',
-            'js/minted-proposals.js',
             'js/thumbnail-bbox.js',
             'js/guest-policy.js',
             'js/map-screenshot.js',
@@ -1984,7 +1969,6 @@
             'js/parcels/styles.js?v=20261020-local-estimates',
             'js/parcels/proposals.js',
             'js/parcels/selection.js?v=20260404b',
-            'js/parcels/ui/info-panel.js',
             'js/parcels/ui/parcel-selection.js?v=20261020-local-estimates',
             'js/parcels/ui/box-select.js',
             'js/parcels/share-format.js',
@@ -2028,7 +2012,6 @@
             'js/parcels/ui/claim.js',
             'js/parcels/index.js',
             'js/parcels/route.js',
-            'js/proposals/owner-acceptance.js?v=20261020-explicit-owner-roster',
             'js/proposals/selection.js',
             // bundle:end map-ui
             'js/proposals/state.js',
@@ -2049,7 +2032,6 @@
             'js/proposals/site-plots.js',
             'js/proposals/subdivision.js?v=20261019-unknown-ownership',
             'js/proposals/site-draft.js',
-            'js/proposals/chain-record.js',
             'js/proposals/origin.js?v=20261020-qualified-origin',
             'js/proposals/parcel-arrangement.js',
             'js/proposals/readjustment-contributions.js',
@@ -2060,6 +2042,7 @@
             'js/proposals/formation-edit.js',
             'js/proposals/corridor-levels.js',
             'js/map-edit-lock.js',
+            'js/map-pick.js',
             'js/single-building-geometry.js',
             'js/on-map-placement.js',
             'js/on-map-editor.js',
@@ -2104,7 +2087,6 @@
             // bundle:end proposal-geometry
             'js/proposals/area.js?v=20261020-complete-area',
             'js/proposals/geometry.js?v=20261020-consent-evidence',
-            'js/proposals/chain.js?v=20261020-mint-identifiers',
             'js/proposals/roads.js',
             'js/proposals/reparcel.js',
             'js/proposals/storage.js?v=20261020-estimated-city',
@@ -2122,15 +2104,10 @@
             'js/proposals/execution.js?v=20261020-consent-evidence',
             'js/proposals/layer-render.js',
             'js/proposals/drill-ui.js',
-            'js/proposals/support-view.js',
             'js/proposals/market-view.js?v=20261019-market-evidence',
-            'js/proposals/possibility-timeline.js',
             'js/proposals/parcel-set-relations.js?v=20261020-reference-relations',
-            'js/proposals/lens-card.js',
             'js/proposals/approval-panel.js?v=20261020-approval-rules',
             'js/proposals/parcel-history-card.js?v=20261020-anchor-observation',
-            'js/proposals/bids-card.js',
-            'js/proposals/bet-entry.js?v=20261014',
             'js/proposals/details-panel.js?v=20261020-verified-funding',
             'js/proposals/parcel-compare.js?v=20261020-comparison-status',
             'js/proposals/parcel-compare-ui.js?v=20261020-comparison-status',
@@ -2163,8 +2140,7 @@
             'js/proposals/replay-status.js',
             'js/proposals/sharing-routes.js?v=20261020-publication-copies',
             'js/proposals/grain-score-rules.js',
-            'js/proposals/chain-proposal-loader.js',
-            'js/proposals/core.js?v=20261020-explicit-owner-roster',
+            'js/proposals/core.js?v=20261022-agreement-chain',
             'js/proposals/data.js?v=20261020-chain-title',
             'js/proposals/bootstrap.js?v=20261019-local-purchase',
             'js/proposals/plan-yield.js',
@@ -2211,7 +2187,6 @@
             'js/financials.js?v=20261020-modeled-totals',
             'js/agent-action-engine.js',
             'js/actor-explorer.js',
-            'js/agent-support-simulation.js',
             'js/agent-wallet-scope.js?v=20261020-wallet-observations',
             'js/agent-proposal-links.js?v=20261020-qualified-profile-links',
             'js/agents.js?v=20261020-profile-offers',
@@ -2245,17 +2220,6 @@
                 }
                 if (typeof initializeVersionHistory === 'function') {
                     initializeVersionHistory();
-                }
-                // Initialize blockchain sync after map and wallet are ready
-                if (typeof initBlockchainSync === 'function') {
-                    // Delay init slightly to ensure wallet and providers are ready
-                    setTimeout(() => {
-                        try {
-                            initBlockchainSync();
-                        } catch (error) {
-                            console.warn('Failed to initialize blockchain sync', error);
-                        }
-                    }, 2000);
                 }
             };
 

@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 // CLI for the reference lens member (backend/lens/README.md): serves the lens API on a port.
 // --dry-run uses a fake SAS issuer, an in-memory attestation store and an ephemeral key, with x402
-// pricing off; --live signs real SAS attestations with --keypair through sas-lib. --rights adds the
-// signed rights/authority facts for abstract proposal approval (backend/lens/approval.js).
+// pricing off; --live signs real SAS attestations with --keypair through sas-lib. The signed
+// rights/authority facts of agreement approval (backend/lens/approval.js) are checked against the devnet
+// owner registry the identity adapter reads (consensus.lens_devnet_owner, or --owners), or against a
+// static --rights file instead. With Postgres (DATABASE_URL) the member reads the agreement index for its
+// AgreementDecision attestations.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -11,6 +14,8 @@ import { parseArgs } from 'node:util';
 import dotenv from 'dotenv';
 import { createPool } from '../db/connection.cjs';
 import { Keypair } from '@solana/web3.js';
+import { loadAgreement } from '../routes/agreements.js';
+import { createAgreementDecisionStore } from '../agreements/decisions.js';
 import { createLensMember, DEFAULT_CREDENTIAL_NAME, LENS_MEMBER_KINDS, systemClock } from './member.js';
 import { createDevnetRegistryIdentity } from './identity/devnet-registry.js';
 import { createCertiliaIdentity } from './identity/certilia.js';
@@ -19,7 +24,7 @@ import { createFileStore, createMemoryStore, createPgStore } from './store.js';
 import { announceLensMember } from '../oracle/lens-registration.js';
 import { createLensPricing, describePricing } from './pricing.js';
 import { createLensMemberApp } from './server.js';
-import { createApprovalAttester, normalizeRegistry } from './approval.js';
+import { createApprovalAttester, devnetOwnerRegistry, fileRegistry } from './approval.js';
 import { lensLog } from './errors.js';
 import { retryWithBackoff } from './retry.js';
 
@@ -43,28 +48,32 @@ function usage(code = 0) {
         '  --port <n>                HTTP port (default 3095); binds 127.0.0.1 unless --host is given.',
         '  --host <addr>             Bind address (default 127.0.0.1).',
         `  --credential-name <name>  SAS credential name (default ${DEFAULT_CREDENTIAL_NAME}); register it first with`,
-        '                            scripts/register-lens-schemas.mjs --schemas ownership,verdict,evidence.',
+        '                            scripts/register-lens-schemas.mjs --schemas ownership,decision,evidence.',
         `  --kind <kind>             ${LENS_MEMBER_KINDS.join(' | ')} (default owner-consent);`,
         '                            what /lens/status reports this member attests.',
         '  --identity <adapter>      devnet-registry (default) | certilia (not configured yet).',
         '  --owners <file.json>      devnet-registry rows in memory: [{parcelUid, owner, ownerCount, establishedAt}].',
         '                            Without it the registry is consensus.lens_devnet_owner (DATABASE_URL).',
-        '  --rights <file.json>      lens-rights-registry/v1 (abstract owners, exact shares, areas, signer wallets).',
-        '                            Enables POST /lens/approval/{rights,challenge,authority}; without it they answer 503.',
+        '  --rights <file.json>      Optional lens-rights-registry/v1 (abstract owners, exact shares, areas, leases,',
+        '                            authorities, signer wallets) for POST /lens/approval/{rights,challenge,authority}.',
+        '                            Without it they check the devnet owner registry, read per request (each recorded',
+        '                            wallet owns its parcel in equal shares and signs for itself).',
         '  --approval-validity-days <n>  How long signed rights/authority facts stay usable (default 7).',
         '  --cluster <name>          devnet (default) | mainnet-beta | localhost.',
         '  --rpc <url>               RPC URL override for --live.',
         '  --expiry-days <n>         Attestation expiry (default 365).',
         '  --store <file.json>       Keep issued attestations in a JSON file instead of Postgres (--live only).',
-        '                            With --owners as well, a live member needs no database at all.',
+        '                            With --owners as well, a live member needs no database at all, and then',
+        '                            answers 503 on agreement decisions (they read the agreement index).',
         '  --announce <url>          After starting, list this member in the directory at <url>',
         '                            (e.g. https://api.urbangametheory.xyz). --live only; needs --public-url and --name.',
         '  --public-url <url>        The https URL where this member is reachable (what the directory probes).',
         '  --name <text>             Directory name, e.g. "Notary office, Borovje". --description <text> is optional.',
         '  --help                    This text.',
         '',
-        'Env: DATABASE_URL (Postgres), X402_NETWORK, X402_FACILITATOR_URL, X402_PAY_TO, LENS_OWNERSHIP_PRICE_USDC (0.01),',
-        '     LENS_OPERATOR_TOKEN (enables POST /lens/verdict and POST /lens/market-evidence).'
+        'Env: DATABASE_URL (Postgres: the owner registry, the attestation store and the agreement index),',
+        '     X402_NETWORK, X402_FACILITATOR_URL, X402_PAY_TO, LENS_OWNERSHIP_PRICE_USDC (0.01),',
+        '     LENS_OPERATOR_TOKEN (enables POST /lens/agreements/:cid/decision and POST /lens/market-evidence).'
     ].join('\n'));
     process.exit(code);
 }
@@ -167,26 +176,37 @@ async function main() {
     });
     const pricing = createLensPricing({ dryRun, env: process.env });
     const operatorToken = process.env.LENS_OPERATOR_TOKEN?.trim() || null;
-    const approvalAttester = values.rights
+    // The rights registry agreement approval checks: a --rights file when given, else the devnet owner
+    // registry through the identity adapter (none for an adapter without one, such as certilia: 503).
+    const approvalRegistry = values.rights
+        ? fileRegistry(JSON.parse(fs.readFileSync(values.rights, 'utf8')))
+        : typeof identity.ownerSets === 'function' ? devnetOwnerRegistry(identity) : null;
+    const approvalAttester = approvalRegistry
         ? createApprovalAttester({
             keypair: signingKeypair,
-            registry: normalizeRegistry(JSON.parse(fs.readFileSync(values.rights, 'utf8'))),
+            registry: approvalRegistry,
             clock,
             validitySeconds: Math.round(approvalValidityDays * 86400)
         })
         : null;
-    const app = createLensMemberApp({ member, pricing, operatorToken, approvalAttester });
+    // The agreement index the decisions are counted from: the agreement row and the owner decisions its
+    // relay admitted, in the same database the API writes (routes/agreements.js, agreements/decisions.js).
+    const decisionStore = pool ? createAgreementDecisionStore(pool) : null;
+    const agreements = pool ? { load: cid => loadAgreement(pool, cid), decisions: cid => decisionStore.list(cid) } : null;
+    const app = createLensMemberApp({ member, pricing, operatorToken, approvalAttester, agreements, clock });
 
     const status = await retryWithBackoff('reading the member status failed', () => member.status(), STARTUP_RETRY);
     lensLog(`${dryRun ? 'DRY RUN' : 'LIVE'} lens member ${status.key}${status.ephemeralKey ? ' (ephemeral key)' : ''}, kind ${status.kind}`);
-    lensLog(`credential ${status.credential} (${status.credentialName}); schemas ownership ${status.schemas.ownership}, verdict ${status.schemas.verdict}`);
+    lensLog(`credential ${status.credential} (${status.credentialName}); schemas ownership ${status.schemas.ownership}, decision ${status.schemas.decision}`);
     lensLog(`identity ${identity.kind}${values.owners ? ` from ${values.owners}` : ''}; issuer ${issuer.kind}; store ${dryRun ? 'memory' : values.store ? `file ${values.store}` : 'postgres'}`);
     lensLog(`ownership pricing: ${JSON.stringify(describePricing(pricing))}`);
-    lensLog(`verdicts: ${operatorToken ? 'enabled (operator token set)' : 'disabled (LENS_OPERATOR_TOKEN unset)'}`);
-    const approval = approvalAttester?.status();
-    lensLog(`proposal approval: ${approval
-        ? `enabled from ${values.rights} (${approval.parcels} parcel(s), ${approval.owners} holder(s), ${approval.authorities} authority(ies), ${approval.signers} signer wallet(s); facts valid ${approvalValidityDays} day(s))`
-        : 'disabled (no --rights)'}`);
+    lensLog(`agreement decisions: ${!operatorToken ? 'disabled (LENS_OPERATOR_TOKEN unset)'
+        : agreements ? 'enabled (operator token set; agreement index over DATABASE_URL)' : 'disabled (no database for the agreement index)'}`);
+    const approval = approvalAttester ? await approvalAttester.status() : null;
+    lensLog(`agreement approval: ${!approval ? `disabled (identity ${identity.kind} has no owner registry and no --rights)`
+        : approval.source === 'file'
+            ? `enabled from ${values.rights} (${approval.parcels} parcel(s), ${approval.owners} holder(s), ${approval.authorities} authority(ies), ${approval.signers} signer wallet(s); facts valid ${approvalValidityDays} day(s))`
+            : `enabled from the devnet owner registry (${values.owners ? values.owners : 'consensus.lens_devnet_owner'}, read per request; facts valid ${approvalValidityDays} day(s))`}`);
     const server = app.listen(port, values.host, () => {
         lensLog(`listening on http://${values.host}:${port}/lens/status`);
         if (!values.announce) return;

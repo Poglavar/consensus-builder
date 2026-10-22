@@ -329,26 +329,20 @@ describe('atomic corridor authoring plan', () => {
         expect(result.junctionRecords).toBe(0);
     });
 
-    it('detaches only identities of copies published elsewhere', () => {
+    it('detaches only the publication mark, the one published identity a design has (M3)', () => {
+        const ORIGIN = { cid: 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq' };
         const record = corridor('local-id', [[P(0, 0), P(0, 1)]], {
-            identity: {
-                published: PUBLISHED,
-                chainProposalId: 'chain-42',
-                tokenId: 'token-42',
-                onchain: { account: 'x' },
-                hash: 'published-hash',
-                author: 'Ana'
-            }
+            identity: { published: PUBLISHED, origin: ORIGIN, author: 'Ana' }
         });
 
         const removed = authoring.detachPublishedIdentity(record);
 
-        expect(Object.keys(removed).sort()).toEqual([
-            'chainProposalId', 'hash', 'onchain', 'published', 'tokenId'
-        ]);
-        expect(removed.published).toEqual(PUBLISHED);
+        expect(authoring.PUBLISHED_IDENTITY_KEYS).toEqual(['published']);
+        expect(removed).toEqual({ published: PUBLISHED });
         expect(record.published).toBeUndefined();
         expect(record.proposalId).toBe('local-id');
+        // Its own lineage and author are content, not publication: they stay.
+        expect(record.origin).toEqual(ORIGIN);
         expect(record.author).toBe('Ana');
         expect(record.roadProposal).toBeTruthy();
     });
@@ -383,7 +377,7 @@ describe('corridor authoring commit boundary', () => {
 
     it('restores every touched road and removes the provisional proposal when derivation fails', async () => {
         const through = corridor('through', [[P(0, 0), P(0, 10)]], {
-            identity: { published: PUBLISHED, hash: 'published' }
+            identity: { published: PUBLISHED }
         });
         const original = clone(through);
         const branch = corridor(null, [[P(5, 5), P(0, 5)]]);

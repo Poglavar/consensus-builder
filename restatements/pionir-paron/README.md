@@ -1,8 +1,8 @@
-<!-- This collection tracks large Pionir/Paron projects restated using app proposals. It is the working index for project discovery, geometry, permits and import/export checks. -->
+<!-- This collection tracks large Pionir/Paron projects restated as app designs, one agreement per project. It is the working index for project discovery, geometry, permits and import/export checks. -->
 
 # Pionir / Paron
 
-This folder restates existing or published Pionir/Paron developments with more than two physical above-ground buildings or volumes. A project can therefore qualify even when its permits call several volumes one *složena građevina*. Each project should ultimately include the site and building footprints as GeoJSON, parcel and permit provenance, dates, and a reproducible proposal-import or construction path.
+This folder restates existing or published Pionir/Paron developments with more than two physical above-ground buildings or volumes. A project can therefore qualify even when its permits call several volumes one *složena građevina*. Each project should ultimately include the site and building footprints as GeoJSON, parcel and permit provenance, dates, and a reproducible export and publishing path.
 
 Site area means the cadastral or documented development-site area, not GBP. `TBD` is intentional: the source proves that the project is large enough for this inventory, but not the missing date, parcel union, or area.
 
@@ -14,17 +14,17 @@ These projects already have a parcel or permit basis strong enough to start a re
 |---|---|---|---:|---:|---|
 | [Folnegovićeva–Rapska](https://web.zagreb.hr/Sjednice/2013/Big_Attach_2013.nsf/0/4CDAF8356CA24D72C1257BE40035B06A/%24FILE/palijativna3.pdf) | Main project 2008; use permits 2010–2011 | k.č. 2708/1, k.o. Trnje | 14,198 m² | 3 current DGU polygons | PARON investor. Built geometry can come from DGU, checked against permit plans. |
 | [Lovinčićeva F1–F5](https://web.zagreb.hr/Sjednice/2013/Big_Attach_2013.nsf/0/E3D3DCECDA0D6ACEC1257E4D0046B8D7/%24FILE/Paron%20d%20o%20o%20.pdf) | Permit phases from 2013; completion date TBD | k.č. 4091/5, k.o. Peščenica | 15,255 m² | 5 buildings, F1–F5 | PARON investor. Exactly five present-day DGU footprints. |
-| [Špansko-Sjever A–F](spansko-sjever-a-f/README.md) | Permit series 2019–2024 | current k.č. 2795/3, k.o. Stenjevec Jug | 23,451 m² | 6 above-ground volumes; legally 2 complex buildings | Reconstructed from the 2022 location-permit geometry and named A–F phase acts; local unapplied proposal and canonical GeoJSON exist. |
-| [Lovinčićeva, newer complex](https://www.zagreb.hr/userdocsimages/arhiva/prostorno_uredjenje/GRA%C4%90.Dozvola-19-1939%2CParon%20d.o.o.%20%28D.Leko%29.pdf) | Initial permit 2020; later phased permits from 2022 | k.č. 4090/1, k.o. Peščenica | 31,333 m² | 12 above-ground volumes; legally 5 buildings, plus transformer | PARON investor. Local proposal exists; canonical GeoJSON export is the first round-trip test. |
-| [Savica F1–F3](savica-f1-f3/README.md) | Location permit 2018; building permits 2022–2024; built | k.č. 2716/8, k.o. Trnje | 6,667 m² | 3 principal above-ground volumes: F1/F2 residential, F3 office | Current DGU footprints are matched to explicitly labelled permit geometry. A canonical local proposal contains 140 apartments and 8 offices; PARON, TEHNIKAGRADNJA and GIP PIONIR roles remain distinct. |
-| [Selska–Drniška](selska-drniska/README.md) | Completed no later than the 2008 GDI survey; exact dates unresolved | k.č. 5652/1, MB 339270, k.o. Trešnjevka | 1,856 m² | 3 mixed-use buildings | Exact three-building site confirmed from Pionir's photographs and current cadastre. Canonical proposal uses deduplicated DGU footprints, GDI heights and Pionir's documented six above-ground storeys; company roles remain unresolved. |
+| [Špansko-Sjever A–F](spansko-sjever-a-f/README.md) | Permit series 2019–2024 | current k.č. 2795/3, k.o. Stenjevec Jug | 23,451 m² | 6 above-ground volumes; legally 2 complex buildings | Reconstructed from the 2022 location-permit geometry and named A–F phase acts; the canonical GeoJSON archive exists. |
+| [Lovinčićeva, newer complex](https://www.zagreb.hr/userdocsimages/arhiva/prostorno_uredjenje/GRA%C4%90.Dozvola-19-1939%2CParon%20d.o.o.%20%28D.Leko%29.pdf) | Initial permit 2020; later phased permits from 2022 | k.č. 4090/1, k.o. Peščenica | 31,333 m² | 12 above-ground volumes; legally 5 buildings, plus transformer | PARON investor. The canonical GeoJSON archive was the first round-trip test. |
+| [Savica F1–F3](savica-f1-f3/README.md) | Location permit 2018; building permits 2022–2024; built | k.č. 2716/8, k.o. Trnje | 6,667 m² | 3 principal above-ground volumes: F1/F2 residential, F3 office | Current DGU footprints are matched to explicitly labelled permit geometry. The canonical archive contains 140 apartments and 8 offices; PARON, TEHNIKAGRADNJA and GIP PIONIR roles remain distinct. |
+| [Selska–Drniška](selska-drniska/README.md) | Completed no later than the 2008 GDI survey; exact dates unresolved | k.č. 5652/1, MB 339270, k.o. Trešnjevka | 1,856 m² | 3 mixed-use buildings | Exact three-building site confirmed from Pionir's photographs and current cadastre. The canonical archive uses deduplicated DGU footprints, GDI heights and Pionir's documented six above-ground storeys; company roles remain unresolved. |
 | [Pergošićeva A1–A4](pergosiceva-a1-a4/README.md) | Completed no later than the 2008 GDI survey; exact dates unresolved | k.č. 2859/15, MB 340057, k.o. Stenjevec Jug | 3,236 m² | 4 mixed-use buildings | Exact four-building row confirmed from Pionir's photographs and current cadastre. Proposal preserves 189 apartments, 31 commercial units and 86 garages as site totals; A1–A4 are not assigned to footprints without evidence. |
-| [Špansko C–D](spansko-c-d/README.md) | Completed/occupiable by March 2011; broader phased development began earlier | current k.č. 2811/1 and 2811/3, MB 340057, k.o. Stenjevec Jug | 20,725 m² | 4 physical footprints / 5 DGU polygons | Pionir archive identifies projects C and D; current cadastre and OSM/GDI supply the observed geometry. Published total: 756 apartments. Canonical local proposal and GeoJSON exist. |
-| [Špansko – Stenjevečki odvojak](spansko-stenjevecki-odvojak/README.md) | N2 completed 2014; final N3 completed May 2019 | k.č. 2976/1, MB 340057, k.o. Stenjevec Jug | 13,713 m² | 7 buildings / archived phases | Pionir archive proves phases N2, E, N1, F1, F2, N4 and N3. Exact phase-to-footprint assignment remains intentionally unresolved; canonical local proposal and GeoJSON exist. |
-| [Selska–Baštijanova–Vitezićeva](selska-bastijanova-viteziceva/README.md) | Earliest archived phases by 2011; final S completed 2018 | eight current parcels 2682/89–2682/104, MB 339270, k.o. Trešnjevka | 25,206 m² | 11 current DGU footprints / 13 official S–S12 labels | Former Logor Krste Frankopana/JNA “27. juli”, not Kerestinec. Archived Pionir pages resolve every phase to a current parcel; canonical local proposal and GeoJSON exist. |
-| [Borongajska–Čavićeva](borongajska-caviceva/README.md) | Location permit 2022; building permits from 2023/2024; ongoing | k.č. 2692/7, k.o. Peščenica | 33,742 m² accepted 2022 permit area; 67,956 m² current parcel/later amendment | 9 above-ground volumes in the accepted 2022 state | Canonical proposal reconstructs all nine compatible 2022 volumes; later final 2025 expansion remains a separate unresolved design state. |
+| [Špansko C–D](spansko-c-d/README.md) | Completed/occupiable by March 2011; broader phased development began earlier | current k.č. 2811/1 and 2811/3, MB 340057, k.o. Stenjevec Jug | 20,725 m² | 4 physical footprints / 5 DGU polygons | Pionir archive identifies projects C and D; current cadastre and OSM/GDI supply the observed geometry. Published total: 756 apartments. The canonical GeoJSON archive exists. |
+| [Špansko – Stenjevečki odvojak](spansko-stenjevecki-odvojak/README.md) | N2 completed 2014; final N3 completed May 2019 | k.č. 2976/1, MB 340057, k.o. Stenjevec Jug | 13,713 m² | 7 buildings / archived phases | Pionir archive proves phases N2, E, N1, F1, F2, N4 and N3. Exact phase-to-footprint assignment remains intentionally unresolved; the canonical GeoJSON archive exists. |
+| [Selska–Baštijanova–Vitezićeva](selska-bastijanova-viteziceva/README.md) | Earliest archived phases by 2011; final S completed 2018 | eight current parcels 2682/89–2682/104, MB 339270, k.o. Trešnjevka | 25,206 m² | 11 current DGU footprints / 13 official S–S12 labels | Former Logor Krste Frankopana/JNA “27. juli”, not Kerestinec. Archived Pionir pages resolve every phase to a current parcel; the canonical GeoJSON archive exists. |
+| [Borongajska–Čavićeva](borongajska-caviceva/README.md) | Location permit 2022; building permits from 2023/2024; ongoing | k.č. 2692/7, k.o. Peščenica | 33,742 m² accepted 2022 permit area; 67,956 m² current parcel/later amendment | 9 above-ground volumes in the accepted 2022 state | The canonical archive reconstructs all nine compatible 2022 volumes; later final 2025 expansion remains a separate unresolved design state. |
 | [Jankomir–Prisavišće P1–P3](https://web.zagreb.hr/Sjednice/sjednice_skupstine_nova.nsf/Dokument_opci_sjednica_noatt_web?OpenForm=&ParentUNID=A04C845176ADA57BC125786F0045BC9F) | Planned 2011; apparently unbuilt | Parts of former k.č. 2316/1, 2316/6 and 2804/1, k.o. Podsused | TBD after historical parcel-union reconstruction | 3 planned buildings | PARON proposal under the UPU. Keep outside built-project statistics. |
-| [Zagrebačka avenija–Rudeš](zagrebacka-avenija-rudes/README.md) | Earlier permit 2022–2023; location amendment final Dec 2025; building-permit amendment requested 24 Dec 2025; not built | k.č. 799/1, MB 335614, k.o. Rudeš | 17,980.61 m² | 7 above-ground polygons in the accepted location amendment; later pending polygon may supersede part of them | PARON owns the parcel according to the cited land-register check. The accepted seven-volume state now has a canonical local proposal; the overlapping pending amendment remains a separate source layer. |
+| [Zagrebačka avenija–Rudeš](zagrebacka-avenija-rudes/README.md) | Earlier permit 2022–2023; location amendment final Dec 2025; building-permit amendment requested 24 Dec 2025; not built | k.č. 799/1, MB 335614, k.o. Rudeš | 17,980.61 m² | 7 above-ground polygons in the accepted location amendment; later pending polygon may supersede part of them | PARON owns the parcel according to the cited land-register check. The accepted seven-volume state now has a canonical archive; the overlapping pending amendment remains a separate source layer. |
 
 Špansko A–F has six physical volumes but only two legal *složene građevine*. Standalone Špansko M/N has only two volumes and K only one, so those do not independently pass the threshold.
 
@@ -36,38 +36,44 @@ Our 2026 cadastre snapshot resolves the site as parcel id `21362030`, 17,980.61 
 
 ## Internal circulation and parking
 
-Completed-site reconstructions also carry companion road proposals where the current local OSM data is defensible. These companions remain separate from the building proposal because a proposal has one formation type; each `plan.json` manifest and named `/proposals/<slug>` plan groups the compatible proposals into one project view.
+Completed-site reconstructions also carry companion road archives where the current local OSM data is defensible. These companions remain separate designs from the buildings because a design carries one drawing; each project's `plan.json` manifest lists its archives in plan order, and the project is published as those designs plus one agreement over them (see [Publishing designs and agreements](#publishing-designs-and-agreements)).
 
-Every one of the twelve canonical restatement folders has a stable named plan, including building-only projects. Circulation proposals precede the building proposal in plan order so the final building placement is evaluated on the resulting local ground fabric.
+Every one of the twelve canonical restatement folders becomes one agreement, including building-only projects. Circulation designs precede the building design in plan order so the final building placement is evaluated on the resulting local ground fabric.
 
-| Project | Surface road network | Parking represented | Named local plan |
+| Project | Surface road network | Parking represented | Plan key |
 |---|---:|---:|---|
-| Folnegovićeva–Rapska | 402 m / 1 proposal | no parking court safely mapped | `pionir-folnegoviceva-rapska` |
-| Lovinčićeva F1–F5 | 199 m / 2 connected proposals | none safely mapped | `pionir-lovinciceva-f1-f5` |
-| Savica F1–F3 | 37 m / 1 proposal | none safely mapped | `pionir-savica-f1-f3` |
-| Selska–Baštijanova–Vitezićeva | 101 m / 2 connected proposals | 1 private surface court, approximately 21 spaces | `pionir-selska-bastijanova-viteziceva` |
-| Špansko C–D | 527 m / 3 connected proposals | 2 private surface courts, approximately 39 + 41 spaces | `pionir-spansko-c-d` |
-| Špansko – Stenjevečki odvojak | 428 m / 1 proposal | none safely mapped | `pionir-spansko-stenjevecki-odvojak` |
+| Folnegovićeva–Rapska | 402 m / 1 design | no parking court safely mapped | `pionir-paron/folnegoviceva-rapska` |
+| Lovinčićeva F1–F5 | 199 m / 2 connected designs | none safely mapped | `pionir-paron/lovinciceva-f1-f5` |
+| Savica F1–F3 | 37 m / 1 design | none safely mapped | `pionir-paron/savica-f1-f3` |
+| Selska–Baštijanova–Vitezićeva | 101 m / 2 connected designs | 1 private surface court, approximately 21 spaces | `pionir-paron/selska-bastijanova-viteziceva` |
+| Špansko C–D | 527 m / 3 connected designs | 2 private surface courts, approximately 39 + 41 spaces | `pionir-paron/spansko-c-d` |
+| Špansko – Stenjevečki odvojak | 428 m / 1 design | none safely mapped | `pionir-paron/spansko-stenjevecki-odvojak` |
 
-This is an observed-state reconstruction, not a claim that OSM is a survey. Centre lines and tags come from the locally ingested OSM snapshot. Widths use explicit OSM values where present and the app's OSM road-profile defaults otherwise. Each line is clipped to the reconstructed site, buffered in EPSG:3765, and rejected when it is underground/covered, shorter than 8 m, part of a connected component shorter than 30 m, or overlaps a non-underground DGU structure by at least 1 m². Public edge streets are excluded. One road proposal always contains one connected component.
+This is an observed-state reconstruction, not a claim that OSM is a survey. Centre lines and tags come from the locally ingested OSM snapshot. Widths use explicit OSM values where present and the app's OSM road-profile defaults otherwise. Each line is clipped to the reconstructed site, buffered in EPSG:3765, and rejected when it is underground/covered, shorter than 8 m, part of a connected component shorter than 30 m, or overlaps a non-underground DGU structure by at least 1 m². Public edge streets are excluded. One road design always contains one connected component.
 
 Parking is stricter: a polygon is used only when it lies almost wholly on the site, has a matching `service=parking_aisle` centre line, does not overlap an above-ground DGU structure, and its area-to-aisle ratio supports a credible two-sided cross-section. The rendered perpendicular bays are therefore a reconstruction of the parking form, not surveyed individual stall positions. OSM's area-derived capacities remain explicitly approximate.
 
 Pergošićeva A1–A4 and Selska–Drniška remain building-only because the available mapped drives are underground, too short, or cross DGU terrace/plinth geometry. Permit-derived design states—newer Lovinčićeva, Špansko-Sjever, Borongajska–Čavićeva and Zagrebačka avenija–Rudeš—are also building-only: adding today's observed OSM circulation would mix incompatible dates and design states.
 
-[`circulation-audit.json`](circulation-audit.json) records every candidate and rejection reason. Rebuild the companion proposals, canonical exports, plan manifests and audit with:
+[`circulation-audit.json`](circulation-audit.json) records every candidate and rejection reason. Rebuild the companion archives, plan manifests and audit from the local database with:
 
 ```sh
-node backend/scripts/seed-pionir-observed-circulation.mjs --apply --export
+node backend/scripts/seed-pionir-observed-circulation.mjs --export
 ```
 
-For environment migration, build a checksum-protected bundle from the canonical archives and inspect the target before applying it. The importer resolves proposal row ids independently in every database and writes all proposals in one transaction:
+## Publishing designs and agreements
+
+The committed archives are the canonical restatement; the app holds them as content-addressed designs. `backend/scripts/publish-restatement-archives.mjs` reads each project's `plan.json`, turns every archive into a `design/v1` object (the archive's own date is the design's `authoredAt`; floor models stay in the floor-model registry and out of the design) and publishes one agreement per project: a community vote with no lens, money, allocations or deadline, titled by the manifest. Identifiers are the design CIDs and the agreement CID the script prints; the archives' internal proposal ids are archive keys only.
 
 ```sh
-node backend/scripts/migrate-pionir-reconstruction-archive.cjs --build-bundle /tmp/pionir-paron.json
-node backend/scripts/migrate-pionir-reconstruction-archive.cjs --dry-run-bundle /tmp/pionir-paron.json --target production
-node backend/scripts/migrate-pionir-reconstruction-archive.cjs --apply-bundle /tmp/pionir-paron.json --target production --confirm-production
+cd backend
+node scripts/publish-restatement-archives.mjs --dry-run --collection pionir-paron                     # design CIDs, no network
+node scripts/publish-restatement-archives.mjs --designs --collection pionir-paron --api <api> [--origin <app>] --apply
+node scripts/publish-restatement-archives.mjs --capture --collection pionir-paron --app <app> --api <api>   # → <project>/ground.json
+node scripts/publish-restatement-archives.mjs --agreement --collection pionir-paron --api <api> [--origin <app>] --app <app> --apply
 ```
+
+`--capture` opens the running app with agent-browser, applies each project's designs as an agreement link does and writes the land the app derives (input parcels, output pieces) to the committed `<project>/ground.json`; `--agreement` builds the agreement from that file and refuses when the designs changed since (recapture). `--only pionir-paron/<project>` limits any step to one project; progress is checkpointed in `~/.config/ugt/restatements/<api host>/`.
 
 ## Floor-plan source search
 
@@ -120,11 +126,11 @@ Each project folder should distinguish `observed` DGU/GDI geometry from `planned
 
 Work order:
 
-1. Export and round-trip the existing newer Lovinčićeva proposal.
+1. Export and round-trip the existing newer Lovinčićeva reconstruction.
 2. Reconstruct Folnegovićeva–Rapska and Lovinčićeva F1–F5 from current DGU footprints plus matched GDI heights.
-3. Recover permit geometry for Savica F1–F3, Špansko-Sjever, Borongajska–Čavićeva, and Zagrebačka avenija–Rudeš. **Completed as source snapshots and dated canonical proposals for built Savica, Špansko, accepted 2022 Borongaj, and accepted 2025 Rudeš. The expanded 2025 Borongaj state and Rudeš's pending superseding request remain separate because their components cannot yet be combined safely.**
-4. Resolve historical candidates one site at a time. **Selska–Drniška, Pergošićeva A1–A4, Špansko C–D, Špansko–Stenjevečki odvojak and Selska–Baštijanova–Vitezićeva now have canonical observed-state proposals. Remetinečka A–C has been located but needs a defensible volume split and whole-site parcel union.**
+3. Recover permit geometry for Savica F1–F3, Špansko-Sjever, Borongajska–Čavićeva, and Zagrebačka avenija–Rudeš. **Completed as source snapshots and dated canonical archives for built Savica, Špansko, accepted 2022 Borongaj, and accepted 2025 Rudeš. The expanded 2025 Borongaj state and Rudeš's pending superseding request remain separate because their components cannot yet be combined safely.**
+4. Resolve historical candidates one site at a time. **Selska–Drniška, Pergošićeva A1–A4, Špansko C–D, Špansko–Stenjevečki odvojak and Selska–Baštijanova–Vitezićeva now have canonical observed-state archives. Remetinečka A–C has been located but needs a defensible volume split and whole-site parcel union.**
 
-Official eDozvola source snapshots are refreshed reproducibly with `backend/scripts/fetch-pionir-edozvola-sources.mjs`. They use `consensus-builder.edozvola-source.v1`; these are evidence layers, not app proposals. Canonical building exports use `consensus-builder.reconstruction.v1`; companion road exports use `consensus-builder.corridor-reconstruction.v1`; both must pass an export/import/export identity check. Project manifests use `consensus-builder.reconstruction-plan.v1`.
+Official eDozvola source snapshots are refreshed reproducibly with `backend/scripts/fetch-pionir-edozvola-sources.mjs`. They use `consensus-builder.edozvola-source.v1`; these are evidence layers, not app designs. Canonical building exports use `consensus-builder.reconstruction.v1`; companion road exports use `consensus-builder.corridor-reconstruction.v1`; both must pass an export/import/export identity check. Project manifests use `consensus-builder.reconstruction-plan.v1`.
 
 The current authored floor corpus spans 67 floors, nine owners and four sites: Borongajska–Čavićeva 54 floors across six buildings including A1; Savica F3 levels −1 and 0–7 with its shared basement owned once under F3; Špansko-Sjever F levels 1, 7 and 8 only; and Lovinčićeva's shared C1/CG/C2 basement once under C1. Elevations are estimated, missing levels are not cloned, and native identities preserve `sourceFeatureId`, `dguBuildingId` or `sourceLayerId`.

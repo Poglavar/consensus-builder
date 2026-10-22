@@ -2,8 +2,8 @@
 // this profile created as a guest leaves the device under the name chosen since, while published
 // records, other agents' records and unclaimed records keep theirs. Also drives the real store
 // (proposals/data.js addProposal claims, setProposalAuthor), storage.js stampCurrentAuthor with the
-// real immutability rule (proposals/chain.js isProposalImmutable), and the one outgoing path that
-// pins a design (proposals/design-sync.js publishDesign and pinDesign).
+// real immutability rule (proposals/lineage.js isPublished: published under a CID), and the
+// one outgoing path that pins a design (proposals/design-sync.js publishDesign and pinDesign).
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -13,15 +13,12 @@ const proposalOrigin = require('../../frontend/js/proposals/origin.js');
 const policy = require('../../frontend/js/guest-policy.js');
 const formationDepth = require('../../frontend/js/proposals/formation-depth.js');
 const planOrder = require('../../frontend/js/proposals/plan-order.js');
-const displayState = require('../../frontend/js/proposals/display-state.js');
 const Cid = require('../../frontend/js/cid.js');
+const ProposalLineage = require('../../frontend/js/proposals/lineage.js');
 const DesignSync = require('../../frontend/js/proposals/design-sync.js');
 const PublishTerms = require('../../frontend/js/proposals/publish-terms.js');
 const dataSource = readFileSync(new URL('../../frontend/js/proposals/data.js', import.meta.url), 'utf8');
 const storageSource = readFileSync(new URL('../../frontend/js/proposals/storage.js', import.meta.url), 'utf8');
-const chainSource = readFileSync(new URL('../../frontend/js/proposals/chain.js', import.meta.url), 'utf8');
-// The production immutability rule: minted, or published under a CID.
-const immutabilitySource = chainSource.slice(chainSource.indexOf('function isProposalMinted('), chainSource.indexOf('\nfunction buildChainProposalId('));
 const read = rel => readFileSync(new URL(`../../frontend/js/${rel}`, import.meta.url), 'utf8');
 
 const GUEST = { id: 'user_agent_1', name: 'Guest 4232', isGuest: true, userControlled: true };
@@ -50,7 +47,7 @@ describe('GuestPolicy.outgoingAuthor', () => {
     it('is a no-op when the name has not changed', () => {
         expect(policy.outgoingAuthor({ ...draft, author: 'Mara' }, NAMED)).toEqual({ author: 'Mara', restamped: false, reason: null });
     });
-    it('never renames a published or minted record', () => {
+    it('never renames a published record', () => {
         expect(policy.outgoingAuthor(draft, NAMED, { immutable: true })).toMatchObject({ author: 'Guest 4232', restamped: false, reason: 'immutable' });
     });
     it('keeps the author of another profile\'s record, an unclaimed record, or with no profile', () => {
@@ -91,7 +88,6 @@ function fakeStorage() {
 function boot(profile) {
     const state = { agent: profile };
     install('window', globalThis);
-    install('__proposalDisplayState', displayState);
     install('Cid', Cid);
     install('__cbSecondaryTab', false);
     install('__formationDepth', formationDepth);
@@ -99,7 +95,6 @@ function boot(profile) {
     install('GuestPolicy', policy);
     install('getCurrentUserAgent', () => state.agent);
     install('normalizeParcelIdList', values => Array.from(new Set((values || []).map(String))));
-    install('normalizeOwnerAcceptances', value => value || {});
     install('normalizeLensEntries', value => value || []);
     install('normalizeProposalStatusAxes', proposal => proposal);
     install('normalizeProposalGoalKey', value => String(value || '').trim().toLowerCase());
@@ -108,7 +103,8 @@ function boot(profile) {
     const store = (0, eval)(dataSource + '\n;proposalStorage');
     install('proposalStorage', store);
     install('ProposalOrigin', proposalOrigin);
-    install('isProposalImmutable', new Function('window', `${immutabilitySource}\nreturn isProposalImmutable;`)(globalThis));
+    // The stamp asks the production immutability rule (ProposalLineage.isPublished).
+    install('ProposalLineage', ProposalLineage);
     const stampCurrentAuthor = (0, eval)(storageSource + '\n;stampCurrentAuthor');
     return { store, state, stampCurrentAuthor };
 }
@@ -141,13 +137,6 @@ describe('publishing a record made as a guest (the store and stampCurrentAuthor)
         state.agent = { ...NAMED };
         expect(stampCurrentAuthor(store.getProposal(id)).author).toBe('Guest 4232');
         expect(store.getProposal(id).author).toBe('Guest 4232');
-    });
-
-    it('a minted record keeps its guest author', () => {
-        const { store, state, stampCurrentAuthor } = boot({ ...GUEST });
-        const id = store.addProposal(park('Guest 4232', { isMinted: true }));
-        state.agent = { ...NAMED };
-        expect(stampCurrentAuthor(store.getProposal(id)).author).toBe('Guest 4232');
     });
 
     it('an AI agent\'s record keeps its own author', () => {

@@ -33,11 +33,6 @@
             showProposalDetails: global.showProposalDetails,
             switchParcelTab: global.switchParcelTab
         },
-        ui: {
-            buildCompactAcceptanceRow: global.buildCompactAcceptanceRow,
-            buildParcelAcceptanceIndicators: global.buildParcelAcceptanceIndicators,
-            buildOwnerAcceptanceIndicators: global.buildOwnerAcceptanceIndicators
-        },
         uiRoad: {
             measureAsRoad: global.measureAsRoad
         },

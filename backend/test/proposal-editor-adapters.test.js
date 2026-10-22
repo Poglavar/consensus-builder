@@ -27,7 +27,8 @@ const {
     buildStructureAdapter,
     freePlacementPatch,
     isFreePlacementDraft,
-    markFreePlacementBound
+    markFreePlacementBound,
+    summarizeCommonChanges
 } = require('../../frontend/js/proposal-editor-adapters.js');
 
 function loadListUiFunction(name, values) {
@@ -163,6 +164,17 @@ describe('editor cadastral scope boundary', () => {
             if (previousFabric === undefined) delete globalThis.LiveParcelFabric;
             else globalThis.LiveParcelFabric = previousFabric;
         }
+    });
+});
+
+describe('change summary source identity', () => {
+    it('names the source by its local key, never by a chain token, a row\'s authored id or a hash', () => {
+        const source = { goal: 'as-is', cadastreParcelIds: ['HR-1-100'], chainProposalId: 'solana-devnet-7', proposal_id: 'authored-7', hash: 'content-hash' };
+        const summary = summarizeCommonChanges(source, { id: 'draft-1', fields: {} });
+        expect(summary.sourceLocalProposalId).toBeNull();
+        expect(summary.sourceName).toBe('');
+        expect(summarizeCommonChanges({ ...source, proposalId: 'local-7' }, { id: 'draft-1', fields: {} }))
+            .toMatchObject({ sourceLocalProposalId: 'local-7', sourceName: 'local-7' });
     });
 });
 
@@ -1143,8 +1155,7 @@ describe('site-first drafts', () => {
             proposalId: 'park-source', goal: 'park', title: 'Old park',
             site: SITE, cadastreParcelIds: ['old-parcel'],
             published: { cid: 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq', publishedAt: '2026-10-21T10:00:00.000Z', apiBase: 'https://example.test' },
-            chainProposalId: 'solana-devnet-Acc-7', isMinted: true, lifecycleStatus: 'Active',
-            acceptedParcelIds: ['old-parcel'], ownerAcceptances: { 'old-parcel': true },
+            lifecycleStatus: 'Active',
             structureProposal: { kind: 'park', geometry: POLYGON, decorations: { trees: [{ id: 'old-tree' }] } }
         };
         const draft = draftFor(adapter, source);
@@ -1165,14 +1176,8 @@ describe('site-first drafts', () => {
         expect(moved.site).toEqual(relocated);
         expect(moved.cadastreParcelIds).toEqual(['new-parcel']);
         expect(moved.structureProposal.decorations).toEqual({ trees: [{ id: 'old-tree' }] });
-        expect(moved).not.toHaveProperty('acceptedParcelIds');
-        expect(moved).not.toHaveProperty('ownerAcceptances');
         // A moved design is a new design: it is published, when it is, under its own CID.
         expect(moved).not.toHaveProperty('published');
-        expect(moved).not.toHaveProperty('chainProposalId');
-        expect(moved).not.toHaveProperty('isMinted');
-        expect(moved).not.toHaveProperty('onchainData');
-        expect(moved).not.toHaveProperty('chainId');
         expect(moved).not.toHaveProperty('lifecycleStatus');
         expect(source.site).toEqual(SITE);
         expect(source.cadastreParcelIds).toEqual(['old-parcel']);

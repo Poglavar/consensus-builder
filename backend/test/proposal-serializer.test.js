@@ -1,14 +1,16 @@
+// The serializer of the read-only proposal rows (proposals/serializer.js) the chain readers kept until the
+// proposal table is dropped at the end of M3: row-over-JSON precedence, the lifecycle column, one chain
+// attachment, the flat-record contract and its person-facing refusal, and the local-state strip it shares
+// with the reconstruction archives (proposals/archive-state.js). A stored chain mirror is served as stored.
 import { describe, expect, it } from 'vitest';
 import {
     assertCanonicalProposalRow,
     findLegacyCadastreDeclaration,
     findNonCadastralParentDeclaration,
     isInvalidRecordError,
-    PROPOSAL_RECORD_INVALID,
-    PROPOSAL_RECORD_INVALID_MESSAGE,
-    serializeProposalRow,
-    stripLocalProposalState
+    serializeProposalRow
 } from '../proposals/serializer.js';
+import { PROPOSAL_RECORD_INVALID, PROPOSAL_RECORD_INVALID_MESSAGE, stripLocalProposalState } from '../proposals/archive-state.js';
 
 function rejectionOf(row) {
     try {
@@ -273,6 +275,23 @@ describe('proposal API serializer', () => {
         expect(isInvalidRecordError(refusal)).toBe(true);
         expect(refusal.status).toBe(422);
         expect(refusal.detail).toMatch(/proposalOrigin/);
+    });
+
+    it('serves a row carrying a chain mirror as stored, never rebuilt from the mirror\'s record', () => {
+        const chainMirror = {
+            protocol: 'proposal-chain/1',
+            ref: { chainType: 'solana', chainId: 'solana-devnet', contract: '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg', tokenId: 'Gsvt6nMhsvfrEDgvcqZDzPKZhhqACFEi3mueMxQNQ6UT' },
+            verifiedAt: '2026-09-16T10:06:00.000Z',
+            record: { proposalId: 'chain-id', title: 'Title on chain', description: 'Description on chain', cadastreParcelIds: ['HR-9'] },
+            agent: { name: 'mirror-agent' }
+        };
+        const proposal = serializeProposalRow({
+            id: 12, proposal_id: 'p-12', title: 'Stored title', cadastre_parcel_ids: ['HR-1'], created_at: '2026-09-16T10:00:00.000Z',
+            proposal_data: { cadastreParcelIds: ['HR-1'], title: 'Stored title', description: 'Stored description', chainMirror }
+        });
+        expect(proposal).toMatchObject({ proposalId: 'p-12', title: 'Stored title', description: 'Stored description', cadastreParcelIds: ['HR-1'], chainMirror });
+        expect(proposal).not.toHaveProperty('mirroredAt');
+        expect(proposal).not.toHaveProperty('agent');
     });
 
     it('never serves the archived legacy provenance of a migrated record', () => {

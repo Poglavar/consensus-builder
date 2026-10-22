@@ -1,8 +1,8 @@
-// Unit tests for agents/bettor.js — the persona's stake on its own proposal's market.
-// The connection is stubbed both ways (no market yet → create + stake; market present → stake
-// only) and every instruction the module sends is checked against blockchain/solana/idl/
-// proposal_market.json: program id, account order, and each account's signer/writable flag.
-// usdcToAtomic is pure string arithmetic and is pinned to the exact atomic values.
+// Unit tests for agents/bettor.js — a persona's stake on an agreement's market, whose subject is the
+// agreement's chain account (PDA(sponsor, CID)). The connection is stubbed both ways (no market yet →
+// create + stake; market present → stake only) and every instruction the module sends is checked
+// against blockchain/solana/idl/proposal_market.json: program id, account order, and each account's
+// signer/writable flag. usdcToAtomic is pure string arithmetic and is pinned to the exact atomic values.
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
@@ -21,7 +21,8 @@ const USDC_DEVNET = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
 const SIDE_YES = 1;
 const SIDE_NO = 0;
 
-const PROPOSAL_PDA = Keypair.generate().publicKey.toBase58();
+// The agreement account the market is keyed by.
+const AGREEMENT_ACCOUNT = Keypair.generate().publicKey.toBase58();
 
 function idlFlags(name) {
     const ix = IDL.instructions.find(entry => entry.name === name);
@@ -34,10 +35,10 @@ function actualFlags(instruction, names) {
 }
 
 // A Market account as the program lays it out: discriminator, three pubkeys, two u64 pools, flags.
-function marketAccount({ proposal, stakeMint, vault, yesPool = 0n, noPool = 0n, resolved = false, outcome = 0, bump = 255 }) {
+function marketAccount({ subject, stakeMint, vault, yesPool = 0n, noPool = 0n, resolved = false, outcome = 0, bump = 255 }) {
     const data = Buffer.alloc(marketClient.MARKET_SIZE);
     Buffer.from(marketClient.ACCOUNT_DISCRIMINATORS.Market).copy(data, 0);
-    new PublicKey(proposal).toBuffer().copy(data, 8);
+    new PublicKey(subject).toBuffer().copy(data, 8);
     new PublicKey(stakeMint).toBuffer().copy(data, 40);
     new PublicKey(vault).toBuffer().copy(data, 72);
     data.writeBigUInt64LE(yesPool, 104);
@@ -103,11 +104,11 @@ describe('ensureMarketAndStake', () => {
         const { connection, sendAndConfirm, reads, sends } = stubbedChain(() => null);
 
         const result = await ensureMarketAndStake({
-            connection, ownerKeypair: owner, proposalPda: PROPOSAL_PDA,
+            connection, ownerKeypair: owner, subject: AGREEMENT_ACCOUNT,
             stakeMint: USDC_DEVNET, side: SIDE_YES, amountAtomic: 250000n, sendAndConfirm
         });
 
-        const [marketPda] = marketClient.getMarketPda(PROPOSAL_PDA);
+        const [marketPda] = marketClient.getMarketPda(AGREEMENT_ACCOUNT);
         const [positionPda] = marketClient.getPositionPda(marketPda, owner.publicKey, SIDE_YES);
         expect(reads).toEqual([marketPda.toBase58()]);
         expect(sends).toHaveLength(2);
@@ -125,7 +126,7 @@ describe('ensureMarketAndStake', () => {
         expect(createIx.programId.toBase58()).toBe(IDL.address);
         expect(actualFlags(createIx, createNames)).toEqual(idlFlags('create_market'));
         expect(createIx.keys[0].pubkey.toBase58()).toBe(marketPda.toBase58());
-        expect(createIx.keys[1].pubkey.toBase58()).toBe(PROPOSAL_PDA);
+        expect(createIx.keys[1].pubkey.toBase58()).toBe(AGREEMENT_ACCOUNT);
         expect(createIx.keys[2].pubkey.toBase58()).toBe(USDC_DEVNET);
         expect(createIx.keys[4].pubkey.toBase58()).toBe(owner.publicKey.toBase58());
         expect(Array.from(createIx.data)).toEqual([...marketClient.IX_DISCRIMINATORS.create_market]);
@@ -135,6 +136,7 @@ describe('ensureMarketAndStake', () => {
         const stakeNames = idlFlags('stake').map(a => a.name);
         expect(stakeIx.programId.toBase58()).toBe(IDL.address);
         expect(actualFlags(stakeIx, stakeNames)).toEqual(idlFlags('stake'));
+        expect(stakeIx.keys[1].pubkey.toBase58()).toBe(AGREEMENT_ACCOUNT);
         expect(stakeIx.keys[2].pubkey.toBase58()).toBe(positionPda.toBase58());
         expect(stakeIx.keys[5].pubkey.toBase58()).toBe(owner.publicKey.toBase58());
         expect(Array.from(stakeIx.data.slice(0, 8))).toEqual([...marketClient.IX_DISCRIMINATORS.stake]);
@@ -151,13 +153,13 @@ describe('ensureMarketAndStake', () => {
 
     it('stakes only (one send) when the market already exists', async () => {
         const owner = Keypair.generate();
-        const [marketPda] = marketClient.getMarketPda(PROPOSAL_PDA);
+        const [marketPda] = marketClient.getMarketPda(AGREEMENT_ACCOUNT);
         const vault = marketClient.getVaultAddress(marketPda, USDC_DEVNET);
-        const existing = marketAccount({ proposal: PROPOSAL_PDA, stakeMint: USDC_DEVNET, vault, yesPool: 1000000n, noPool: 500000n });
+        const existing = marketAccount({ subject: AGREEMENT_ACCOUNT, stakeMint: USDC_DEVNET, vault, yesPool: 1000000n, noPool: 500000n });
         const { connection, sendAndConfirm, sends } = stubbedChain(() => existing);
 
         const result = await ensureMarketAndStake({
-            connection, ownerKeypair: owner, proposalPda: PROPOSAL_PDA,
+            connection, ownerKeypair: owner, subject: AGREEMENT_ACCOUNT,
             stakeMint: USDC_DEVNET, side: SIDE_NO, amountAtomic: 1n, sendAndConfirm
         });
 
@@ -178,15 +180,15 @@ describe('ensureMarketAndStake', () => {
 
     it('treats amount as an idempotent target when requested', async () => {
         const owner = Keypair.generate();
-        const [marketPda] = marketClient.getMarketPda(PROPOSAL_PDA);
+        const [marketPda] = marketClient.getMarketPda(AGREEMENT_ACCOUNT);
         const [positionPda] = marketClient.getPositionPda(marketPda, owner.publicKey, SIDE_YES);
         const vault = marketClient.getVaultAddress(marketPda, USDC_DEVNET);
-        const market = marketAccount({ proposal: PROPOSAL_PDA, stakeMint: USDC_DEVNET, vault, yesPool: 10000n });
+        const market = marketAccount({ subject: AGREEMENT_ACCOUNT, stakeMint: USDC_DEVNET, vault, yesPool: 10000n });
         const position = positionAccount({ market: marketPda, owner: owner.publicKey, side: SIDE_YES, amount: 10000n });
         const { connection, sendAndConfirm, sends } = stubbedChain(pubkey => pubkey.toBase58() === positionPda.toBase58() ? position : market);
 
         const result = await ensureMarketAndStake({
-            connection, ownerKeypair: owner, proposalPda: PROPOSAL_PDA,
+            connection, ownerKeypair: owner, subject: AGREEMENT_ACCOUNT,
             stakeMint: USDC_DEVNET, side: SIDE_YES, amountAtomic: 10000n,
             targetAmount: true, sendAndConfirm
         });
@@ -198,13 +200,14 @@ describe('ensureMarketAndStake', () => {
     it('refuses a stake it cannot send: bad amount, missing keypair, unknown side', async () => {
         const owner = Keypair.generate();
         const { connection, sendAndConfirm, sends } = stubbedChain(() => null);
-        const base = { connection, ownerKeypair: owner, proposalPda: PROPOSAL_PDA, stakeMint: USDC_DEVNET, side: SIDE_YES, sendAndConfirm };
+        const base = { connection, ownerKeypair: owner, subject: AGREEMENT_ACCOUNT, stakeMint: USDC_DEVNET, side: SIDE_YES, sendAndConfirm };
 
         await expect(ensureMarketAndStake({ ...base, amountAtomic: 0n })).rejects.toThrow(/positive/);
         await expect(ensureMarketAndStake({ ...base, amountAtomic: 250000 })).rejects.toThrow(/bigint/);
         await expect(ensureMarketAndStake({ ...base, ownerKeypair: null, amountAtomic: 1n })).rejects.toThrow(/ownerKeypair/);
         await expect(ensureMarketAndStake({ ...base, connection: null, amountAtomic: 1n })).rejects.toThrow(/connection/);
         await expect(ensureMarketAndStake({ ...base, side: 7, amountAtomic: 1n })).rejects.toThrow(/side must be 0 \(NO\) or 1 \(YES\)/);
+        await expect(ensureMarketAndStake({ ...base, subject: null, amountAtomic: 1n })).rejects.toThrow(/subject \(the agreement account\) is required/);
         expect(sends).toHaveLength(0);
     });
 });

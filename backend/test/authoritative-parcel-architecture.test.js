@@ -69,19 +69,22 @@ describe('authoritative parcel source contracts', () => {
     });
 
     it('keeps retired land fields inside explicit rejection boundaries', () => {
+        // The chain readers that once imported retired fields (minted-proposals.js, the chain proposal
+        // loader, the Solana sync) left with the proposal chain path in M3.
         const allowed = new Set([
-            'minted-proposals.js',
             'parcels/live-fabric.js',
             'proposals/authored-record.js',
-            'proposals/chain-proposal-loader.js',
-            'proposals/data.js',
-            'solana/blockchain-sync.js'
+            'proposals/data.js'
         ]);
         const names = [
             'ancestorParcelIds', 'ancestorProposal', 'baseParcelIds', 'originalParcelIds',
             'parentParcelId', 'parentParcelIds', 'sourceParcelId', 'sourceParcelIds'
         ].join('|');
         const retiredFieldAccess = new RegExp(`(?:\\?\\.|\\.)\\s*(?:${names})\\b|\\b(?:${names})\\s*:|['\"](?:${names})['\"]`);
+
+        // The exemptions can only shrink: each names a file that still rejects a retired field.
+        allowed.forEach(path => expect(files.map(rel), `${path} is exempt but gone`).toContain(path));
+        allowed.forEach(path => expect(read(join(frontendRoot, path)), `${path} no longer needs its exemption`).toMatch(retiredFieldAccess));
 
         files.filter(path => !allowed.has(rel(path))).forEach(path => {
             // This single output is the provider's native row key, not a parent land reference.

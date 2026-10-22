@@ -1,12 +1,10 @@
 // Stored file URLs never derive their origin from the request: the API bakes in the pinned public
 // base when there is one and the served path alone otherwise, and the client resolves a path
-// against the backend it is talking to. Both halves are covered here, plus the repair transform
-// that turns rows with a dead localhost origin back into paths.
+// against the backend it is talking to. Both halves are covered here.
 import { afterEach, describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { publicApiBaseUrl, publicFileUrl } from '../utils/public-base-url.js';
-import { relativizeStoredUrl } from '../scripts/relativize-screenshot-urls.mjs';
 
 const dataSource = readFileSync(new URL('../../frontend/js/data-source.js', import.meta.url), 'utf8');
 
@@ -74,21 +72,5 @@ describe('resolveBackendAssetUrl on the client', () => {
         expect(window.resolveBackendAssetUrl('ipfs://abc')).toBe('ipfs://abc');
         expect(window.resolveBackendAssetUrl('')).toBeNull();
         expect(window.resolveBackendAssetUrl(null)).toBeNull();
-    });
-});
-
-describe('relativizeStoredUrl', () => {
-    it('strips a localhost origin off a served path and nothing else', () => {
-        expect(relativizeStoredUrl('http://localhost:4583/uploads/images/proposal-thumb-1.png')).toBe('/uploads/images/proposal-thumb-1.png');
-        expect(relativizeStoredUrl('http://127.0.0.1:3000/images/x.png')).toBe('/images/x.png');
-        expect(relativizeStoredUrl('https://api.urbangametheory.xyz/uploads/images/a.png')).toBeNull();
-        expect(relativizeStoredUrl('http://localhost:3000/ipfs/abc')).toBeNull();
-        expect(relativizeStoredUrl('/uploads/images/already.png')).toBeNull();
-        expect(relativizeStoredUrl(null)).toBeNull();
-    });
-
-    it('strips any origin when asked, still only for served paths', () => {
-        expect(relativizeStoredUrl('https://api.urbangametheory.xyz/uploads/images/a.png', { allOrigins: true })).toBe('/uploads/images/a.png');
-        expect(relativizeStoredUrl('https://gateway.pinata.cloud/ipfs/abc', { allOrigins: true })).toBeNull();
     });
 });

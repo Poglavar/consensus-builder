@@ -2,7 +2,7 @@
 
 # Vrbani III
 
-Named local plan: `/proposals/vrbani-iii?city=zagreb`
+Published as designs plus one agreement (plan key `nova-naselja/vrbani-iii`) by `backend/scripts/publish-restatement-archives.mjs`; see [the collection README](../README.md#publishing-designs-and-agreements).
 
 This restatement follows the official 29.07 ha `UPU Vrbani III`, adopted in 2005 and amended in 2006. The City describes a programme of approximately 1,900 apartments and 5,250 residents and classifies the plan as mostly realized.
 

@@ -1,27 +1,5 @@
 // proposals/storage.js — extracted from proposals.js (behavior-preserving relocation).
 
-function resolveProposalResourceUrl(url) {
-    const value = typeof url === 'string' ? url.trim() : '';
-    if (!value) return '';
-    if (/^(https?:|data:|blob:)/i.test(value)) return value;
-    if (value.startsWith('ipfs://')) {
-        const ipfsPath = value.slice('ipfs://'.length).replace(/^ipfs\//i, '');
-        return ipfsPath ? `https://ipfs.io/ipfs/${ipfsPath}` : '';
-    }
-    if (typeof window === 'undefined' || !window.location) return value;
-    try {
-        if (value.startsWith('//')) {
-            return `${window.location.protocol}${value}`;
-        }
-        if (value.startsWith('/')) {
-            return new URL(value, window.location.origin).toString();
-        }
-        return new URL(value, window.location.href).toString();
-    } catch (_) {
-        return value;
-    }
-}
-
 // Imported providers' parcel-id spaces. Executable providers declare their prefix in city config,
 // so adding or changing a source does not require changing proposal storage. Croatia's cities
 // share one national dataset; Buenos Aires also accepts its original bare SMP identifiers.
@@ -65,16 +43,6 @@ function isInCity(parcelId, cityId) {
     return false;
 }
 
-// A minted proposal found on chain joins this city's store only when its parcels are this city's
-// (projections.md §10 M8): one contract serves every city and the chain record names no city, so the
-// syncs used to file every city's minted proposals into whichever city ran them. A record without
-// parcels cannot be placed, and stays with the city it was published in.
-function chainProposalBelongsHere(parcelIds) {
-    const manager = (typeof window !== 'undefined' && window.CityConfigManager) || null;
-    const city = manager && typeof manager.getCurrentCityId === 'function' ? manager.getCurrentCityId() : null;
-    const ids = (Array.isArray(parcelIds) ? parcelIds : []).map(id => String(id || '').trim()).filter(Boolean);
-    return !!city && ids.length > 0 && ids.every(id => isInCity(id, city));
-}
 
 function normalizeLensEntries(entries) {
     const sanitized = [];
@@ -124,16 +92,6 @@ function getProposalLensEntries(proposal, options = {}) {
     return [];
 }
 
-function getOwnerSlotsForParcel(parcelId) {
-    if (typeof getParcelOwnerSlots === 'function') {
-        try {
-            return window.ProposalOwnerAcceptance.currentOwnerSlots(getParcelOwnerSlots(parcelId));
-        } catch (error) {
-            console.warn('getOwnerSlotsForParcel: failed to read slots from parcels module', error);
-        }
-    }
-    return [];
-}
 
 function getProposalI18nHelper() {
     const api = (typeof window !== 'undefined') ? window.i18n : null;
@@ -161,7 +119,7 @@ function currentProfileIsGuest() {
     return agent ? agent.isGuest === true : true;
 }
 
-// The name gate for acts that leave the device (GuestPolicy 'name': publish, share, mint). Returns
+// The name gate for acts that leave the device (GuestPolicy 'name': publish, share). Returns
 // null when allowed, or the explanation (truthy) when the act is BLOCKED: the guest is then shown
 // the profile dialog and the explanation. Acts that stay on the device have no gate at all.
 function guestPolicyBlocks(action) {
@@ -175,9 +133,7 @@ function guestPolicyBlocks(action) {
     const t = getProposalI18nHelper();
     const messages = {
         publish: ['ephemeral.messages.name_to_publish', 'Choose a profile name to publish: published proposals carry their author. Everything kept on this device works without one.'],
-        share: ['ephemeral.messages.name_to_share', 'Choose a profile name to share: a share link carries its author. Everything kept on this device works without one.'],
-        mint: ['ephemeral.messages.name_to_mint', 'Choose a profile name to put this proposal on-chain: the record carries its author.'],
-        joinList: ['ephemeral.messages.name_to_join_list', 'Choose a profile name to join a public list.']
+        share: ['ephemeral.messages.name_to_share', 'Choose a profile name to share: a share link carries its author. Everything kept on this device works without one.']
     };
     const [key, fallback] = messages[action];
     console.info(`[${new Date().toISOString()}] [GuestPolicy] ${action} needs a profile name`);
@@ -187,18 +143,19 @@ function guestPolicyBlocks(action) {
     return message;
 }
 
-// The author a record carries when it leaves the device (publish, share link, mint): the current
+// The author a record carries when it leaves the device (publish, share link): the current
 // profile's name for this profile's own never-published record (GuestPolicy.outgoingAuthor). Such a
 // record is a draft that never left the device, so the local copy is updated too (the list then
-// shows the name it was published under). Published or minted records are never touched.
+// shows the name it was published under). Published records are never touched.
 // -> the same record object, its author restamped when it is this profile's draft.
 function stampCurrentAuthor(proposal) {
     const policy = window.GuestPolicy;
     if (!policy) throw new Error('guest-policy.js is not loaded');
     if (!proposal || typeof proposal !== 'object') return proposal;
     const agent = (typeof getCurrentUserAgent === 'function') ? getCurrentUserAgent() : null;
-    // A published or minted design keeps the author it left the device with (proposals/chain.js).
-    const verdict = policy.outgoingAuthor(proposal, agent, { immutable: isProposalImmutable(proposal) });
+    // A published design is immutable (ProposalLineage.isPublished): it keeps the author it left the
+    // device with.
+    const verdict = policy.outgoingAuthor(proposal, agent, { immutable: window.ProposalLineage.isPublished(proposal) });
     if (!verdict.restamped) return proposal;
     console.info(`[${new Date().toISOString()}] [GuestPolicy] record ${proposal.proposalId || '?'} leaves the device as "${verdict.author}" (was "${proposal.author || ''}")`);
     const stored = (typeof proposalStorage !== 'undefined' && proposal.proposalId && typeof proposalStorage.getProposal === 'function')

@@ -1,6 +1,7 @@
 // DOM wiring for lens.html, the lens member console: pick or type a member service URL, read its
-// status and issued attestations, connect the member wallet, and post operator verdicts. The
-// operator token is read from its input per request and never stored. Logic: lens-core.js.
+// status and issued attestations, connect the member wallet, and, as the operator, attest the
+// decision of an agreement. The operator token is read from its input per request and never stored.
+// Logic: lens-core.js.
 (function () {
     const root = typeof window !== 'undefined' ? window : null;
     if (!root || !root.document) return;
@@ -44,10 +45,9 @@
         return link;
     }
 
-    // An attestation's kind as a badge: the verdict kinds are lifecycle rungs and take their colour.
+    // An attestation's kind (ownership, decision, evidence) as a neutral badge.
     function kindBadge(kind) {
-        const lifecycle = kind === 'executed' || kind === 'expired' ? ` cb-badge--${kind}` : '';
-        return el('span', `cb-badge${lifecycle}`, kind || '?');
+        return el('span', 'cb-badge', kind || '?');
     }
 
     function outcomeMessage(outcome) {
@@ -123,8 +123,9 @@
             li.append(head);
             if (att.parcelUid) li.append(line(t('lensConsole.attestations.parcel', 'Parcel'), att.parcelUid));
             if (att.owner) li.append(line(t('lensConsole.attestations.owner', 'Owner'), att.owner, true));
-            if (att.proposalAccount) li.append(line(t('lensConsole.verdict.proposal', 'Proposal account'), att.proposalAccount, true));
-            if (att.payload && att.payload.verdict) li.append(line(t('lensConsole.verdict.verdict', 'Verdict'), att.payload.verdict));
+            // An AgreementDecision names its agreement and the decision in its payload.
+            if (att.payload && att.payload.agreementCid) li.append(line(t('lensConsole.attestations.agreement', 'Agreement'), att.payload.agreementCid, true));
+            if (att.payload && att.payload.decision) li.append(line(t('lensConsole.attestations.decision', 'Decision'), att.payload.decision));
             if (att.accountHash) li.append(line(t('lensConsole.attestations.hash', 'Account hash'), att.accountHash, true));
             li.append(line(t('lensConsole.attestations.issuedAt', 'Issued (chain time)'), att.issuedAt || t('lensConsole.attestations.unknownTime', 'unknown')));
             ul.append(li);
@@ -226,36 +227,102 @@
         }
     }
 
-    async function submitVerdict(event) {
-        event.preventDefault();
-        const target = doc.getElementById('lc-verdict-result');
-        if (!state.serviceUrl) return showError(target, t('lensConsole.errors.noService', 'Load a service URL first.'));
-        const tokenInput = doc.getElementById('lc-verdict-token');
-        const built = core.buildVerdictRequest({
-            proposalAccount: doc.getElementById('lc-verdict-proposal').value,
-            verdict: doc.getElementById('lc-verdict-kind').value,
-            evidenceRef: doc.getElementById('lc-verdict-evidence').value,
-            sourceObservedAt: doc.getElementById('lc-verdict-observed').value
-        });
-        if (!built.ok) {
-            const messages = {
-                proposal: t('lensConsole.verdict.errors.proposal', 'The proposal account must be a Solana public key.'),
-                verdict: t('lensConsole.verdict.errors.verdict', 'Choose executed or expired.'),
-                time: t('lensConsole.verdict.errors.time', 'Enter when the source recorded the outcome.')
-            };
-            return showError(target, messages[built.error]);
+    // Why the member would not attest, by its answer's code (backend/lens/server.js and
+    // agreement-decision.js); any other refusal shows the member's own message.
+    function decisionRefusalMessage(outcome) {
+        switch (outcome.code) {
+        case 'rule_not_met': return t('lensConsole.decision.errors.ruleNotMet', 'The owner decisions relayed so far do not meet the agreement’s decision rule.');
+        case 'deadline_passed': return t('lensConsole.decision.errors.deadlinePassed', 'The agreement’s deadline has passed; its account can only expire.');
+        case 'agreement_closed': return t('lensConsole.decision.errors.agreementClosed', 'The agreement is already executed or cancelled.');
+        case 'not_in_lens': return t('lensConsole.decision.errors.notInLens', 'This member is not in the agreement’s lens.');
+        case 'not_agreement_lens': return t('lensConsole.decision.errors.notAgreementLens', 'The agreement’s account names another lens member; only its decision settles it.');
+        case 'decision_recorded': return t('lensConsole.decision.errors.decisionRecorded', 'The agreement’s account already records a decision.');
+        case 'no_sponsor': return t('lensConsole.decision.errors.noSponsor', 'The agreement names no sponsor wallet, so no chain account can carry its decision.');
+        case 'agreement_not_found': return t('lensConsole.decision.errors.notFound', 'This member’s agreement index does not hold that agreement.');
+        case 'operator_only': return t('lensConsole.decision.errors.operatorOnly', 'The member refused the operator token.');
+        case 'operator_not_configured':
+        case 'agreements_not_configured':
+            return t('lensConsole.decision.errors.notConfigured', 'This member is not set up to attest agreement decisions ({{message}}).', { message: outcome.message || outcome.code });
+        default: return outcomeMessage(outcome);
         }
-        if (!tokenInput.value) return showError(target, t('lensConsole.verdict.errors.token', 'Enter the operator token.'));
-        target.replaceChildren(el('p', 'lc-muted', t('lensConsole.loading', 'Loading…')));
-        const result = await client.postVerdict({ serviceUrl: state.serviceUrl, token: tokenInput.value, body: built.body });
-        tokenInput.value = '';
-        if (result.outcome.kind !== 'ok') return showError(target, outcomeMessage(result.outcome));
-        const body = result.body || {};
+    }
+
+    // The tally an answer carries (LensCore.describeDecisionTally), as rows: whether the decision rule
+    // is met, then the owners and the land in favour.
+    function tallyRows(tally) {
+        if (!tally) return [];
+        const rule = !tally.ready
+            ? t('lensConsole.decision.tally.uncounted', 'cannot be counted ({{reason}})', { reason: tally.reason || '?' })
+            : tally.passed ? t('lensConsole.decision.tally.met', 'met') : t('lensConsole.decision.tally.notMet', 'not met');
+        const rows = [line(t('lensConsole.decision.tally.rule', 'Decision rule'), rule)];
+        if (tally.acceptedOwners !== null && tally.totalOwners !== null) {
+            rows.push(line(t('proposalApproval.meterOwners', 'Owners'),
+                t('proposalApproval.ownersCount', '{{accepted}} of {{total}} accepted', { accepted: tally.acceptedOwners, total: tally.totalOwners })));
+        }
+        if (tally.acceptedAreaM2 !== null && tally.totalAreaM2 !== null) {
+            const m2 = value => `${Number(value.toFixed(2))} m²`;
+            rows.push(line(t('proposalApproval.meterArea', 'Area'),
+                t('proposalApproval.amountOf', '{{amount}} of {{total}}', { amount: m2(tally.acceptedAreaM2), total: m2(tally.totalAreaM2) })));
+        }
+        return rows;
+    }
+
+    function renderDecisionAnswer(target, answer) {
+        const address = line(t('lensConsole.decision.address', 'Attestation'), '');
+        address.lastChild.replaceWith(explorerLink(answer.address));
         target.replaceChildren(
-            el('p', 'lc-ok', body.reused ? t('lensConsole.verdict.reused', 'Already attested; the stored verdict was returned.') : t('lensConsole.verdict.done', 'Verdict attested.')),
-            line(t('lensConsole.attestations.hash', 'Account hash'), body.accountHash || '—', true)
+            el('p', 'lc-ok', answer.reused
+                ? t('lensConsole.decision.reused', 'Already attested; the stored decision was returned.')
+                : t('lensConsole.decision.done', 'Decision attested.')),
+            address,
+            line(t('lensConsole.attestations.decision', 'Decision'), answer.decision || '—'),
+            ...tallyRows(answer.tally)
         );
-        if (body.address) target.prepend(explorerLink(body.address));
+        if (answer.counted !== null) target.append(line(t('lensConsole.decision.counted', 'Owner decisions counted'), answer.counted));
+    }
+
+    // The operator asks the member for the agreement's AgreementDecision-v1; the member counts the
+    // relayed owner decisions itself, so the CID is all the request names. The result's data-outcome
+    // (pending | issued | reused | refused | invalid) and data-code (the refusal's code) state the answer.
+    async function submitDecision(event) {
+        event.preventDefault();
+        const target = doc.getElementById('lc-decision-result');
+        const settle = (outcome, code = '') => {
+            target.dataset.outcome = outcome;
+            target.dataset.code = code;
+        };
+        if (!state.serviceUrl) {
+            settle('invalid', 'service');
+            return showError(target, t('lensConsole.errors.noService', 'Load a service URL first.'));
+        }
+        const cid = doc.getElementById('lc-decision-cid').value.trim();
+        if (!root.Cid.isCid(cid)) {
+            settle('invalid', 'cid');
+            return showError(target, t('lensConsole.decision.errors.cid', 'Enter the CID of an agreement (bafkrei…).'));
+        }
+        const tokenInput = doc.getElementById('lc-decision-token');
+        if (!tokenInput.value) {
+            settle('invalid', 'token');
+            return showError(target, t('lensConsole.decision.errors.token', 'Enter the operator token.'));
+        }
+        settle('pending');
+        target.replaceChildren(el('p', 'lc-muted', t('lensConsole.loading', 'Loading…')));
+        const result = await client.postAgreementDecision({ serviceUrl: state.serviceUrl, token: tokenInput.value, cid });
+        tokenInput.value = '';
+        if (result.outcome.kind !== 'ok') {
+            settle('refused', result.outcome.code || `http_${result.outcome.status}`);
+            showError(target, decisionRefusalMessage(result.outcome));
+            // A refusal of the rule, the deadline or the lens carries the tally it was judged on.
+            target.append(...tallyRows(core.describeDecisionTally(result.body && result.body.tally)));
+            return;
+        }
+        const answer = core.readDecisionAnswer(result.body, cid);
+        if (!answer.ok) {
+            settle('refused', answer.reason);
+            return showError(target, t('lensConsole.decision.errors.answer', 'The member answered something other than the decision of this agreement.'));
+        }
+        settle(answer.reused ? 'reused' : 'issued');
+        renderDecisionAnswer(target, answer);
         await Promise.all([refreshStatus(), loadAttestations()]);
     }
 
@@ -291,7 +358,7 @@
         input.addEventListener('keydown', event => { if (event.key === 'Enter') loadService(); });
         doc.getElementById('lc-attestations-load').addEventListener('click', loadAttestations);
         doc.getElementById('lc-wallet-connect').addEventListener('click', connectWallet);
-        doc.getElementById('lc-verdict-form').addEventListener('submit', submitVerdict);
+        doc.getElementById('lc-decision-form').addEventListener('submit', submitDecision);
 
         renderWallet();
         loadDirectory();

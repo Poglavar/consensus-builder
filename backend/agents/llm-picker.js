@@ -72,7 +72,7 @@ function stanceOf(persona) {
     const labels = {
         density: 'adding floor area where the plan permits it',
         openSpace: 'keeping ground open and unbuilt',
-        valueUplift: 'the € value a proposal creates',
+        valueUplift: 'the € value a design creates',
         heritage: 'the existing built fabric and its character'
     };
     const ranked = Object.keys(labels)
@@ -87,13 +87,13 @@ function systemPromptFor(persona, day) {
     const maxPicks = maxPicksOf(persona);
     return [
         `You are ${persona.name}, an autonomous participant in Urban Game Theory, a public game about what a city could build.`,
-        `You are choosing which of today's (${day}) planned building proposals to actually post, in your own voice.`,
+        `You are choosing which of today's (${day}) planned building designs to publish, in your own voice; each one becomes a binding agreement over its parcel, decided by the parcel's owners (when that is you alone, you approve and execute it on your next run).`,
         '',
         'What you care about, in order:',
         stanceOf(persona),
         '',
         'Rules:',
-        `- Choose AT MOST ${maxPicks} candidate${maxPicks === 1 ? '' : 's'}. Fewer is fine; choosing none is fine if none is worth posting.`,
+        `- Choose AT MOST ${maxPicks} candidate${maxPicks === 1 ? '' : 's'}. Fewer is fine; choosing none is fine if none is worth publishing.`,
         '- Prefer single-parcel lots with real uplift over the floor area already built there.',
         '- Write each rationale as 2-3 sentences in English, addressed to the parcel owner and to the public: what you propose, and why it is worth their while.',
         `- Write a short name, at most ${MAX_NAME_CHARS} characters.`,
@@ -115,7 +115,6 @@ function candidateDigest(candidate) {
         allowedFloors: candidate.allowedFloors ?? null,
         proposedGfaM2: round(candidate.proposedGfaM2),
         gainEur: round(candidate.gainEur),
-        offerEur: round(candidate.offerEur),
         score: round(candidate.score, 4)
     };
 }

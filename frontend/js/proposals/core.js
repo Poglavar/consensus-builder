@@ -567,13 +567,10 @@ function formatProposalTypeLabel(typeKey) {
     return getProposalTypeLabel(typeKey);
 }
 
+// A title that names no particular record: empty, or "Proposal" with at most an id after it.
 function isGenericProposalDisplayText(value) {
     const text = typeof value === 'string' ? value.trim() : '';
     if (!text) return true;
-    const lower = text.toLowerCase();
-    if (lower === 'proposal' || lower === 'minted proposal from blockchain' || lower === 'minted proposal from solana') {
-        return true;
-    }
     return /^proposal(?:\s+#?[a-z0-9._:-]+)?$/i.test(text);
 }
 
@@ -975,9 +972,8 @@ function releaseDeepLinkParcelFetch() {
 }
 
 // The app's record routes: /designs/<cid>[,<cid>…] opens shared designs (sharing-routes.js
-// handleSharedDesignRoute), /agreements/<cid> a proposed agreement (agreement-sync.js), /proposals the
-// proposal list, and /proposals/<chainType>/<chainId>/<contract>/<tokenId> a proposal read from its
-// chain. Each handler validates its own ids; js/app-routes.js lists the same paths.
+// handleSharedDesignRoute), /agreements/<cid> a proposed agreement (agreement-sync.js) and /proposals
+// the proposal list. Each handler validates its own ids; js/app-routes.js lists the same paths.
 async function handleProposalRouteFromUrl() {
     try {
         const pathname = (window.location.pathname || '').replace(/\/$/, '');
@@ -1009,38 +1005,18 @@ async function handleProposalRouteFromUrl() {
             return;
         }
 
-        // Handle bare /proposals/ route (no ids) by opening the appropriate dialog
+        // The bare /proposals/ route (no ids) opens the proposal list.
         const isBareProposalsRoute = /^\/proposals\/?$/.test(pathname);
         if (isBareProposalsRoute) {
-            const wm = typeof window !== 'undefined' ? window.walletManager : null;
-            const walletState = wm && typeof wm.getState === 'function' ? wm.getState() : null;
-            const walletConnected = Boolean(
-                walletState &&
-                walletState.status === 'connected' &&
-                Array.isArray(walletState.accounts) &&
-                walletState.accounts.length > 0
-            );
-
-            if (walletConnected && typeof window.openMintedProposalsModal === 'function') {
-                console.debug('[handleProposalRouteFromUrl] Opening minted proposals modal for /proposals/');
-                window.openMintedProposalsModal();
-            } else if (typeof showAllProposalsModal === 'function') {
+            if (typeof showAllProposalsModal === 'function') {
                 console.debug('[handleProposalRouteFromUrl] Opening local proposals list for /proposals/');
                 showAllProposalsModal();
             }
             return;
         }
 
-        // On-chain proposal location: /proposals/<chainType>/<chainId>:<contract>:<tokenId>.
-        // Only the LOCATION is in the URL — reconstruct the proposal from the NFT + its metadata.
-        const chainRef = (window.ChainProposalRef && typeof window.ChainProposalRef.parseChainProposalRef === 'function')
-            ? window.ChainProposalRef.parseChainProposalRef(pathname)
-            : null;
-        if (chainRef) {
-            await handleChainProposalRoute(chainRef);
-            return;
-        }
-        // Any other /proposals/… path is no route; js/app-routes.js marks it unknown.
+        // Any other /proposals/… path is no route; js/app-routes.js marks it unknown. (Designs are
+        // not minted: an agreement is, and its link is /agreements/<cid>.)
         console.warn(`[${new Date().toISOString()}] [handleProposalRouteFromUrl] no proposal route matches ${pathname}`);
     } catch (error) {
         console.error('handleProposalRouteFromUrl failed:', error);
@@ -1052,39 +1028,6 @@ async function handleProposalRouteFromUrl() {
     }
 }
 
-// Open a proposal from its on-chain location: reconstruct it from the NFT (wallet-gated read via the
-// connected wallet's provider), add it to local storage, and focus it. Never touches the server.
-async function handleChainProposalRoute(ref) {
-    // On-chain deep links read the chain without any gesture; the wallet
-    // vendors are injected on demand (index.html ensureWalletVendors).
-    if (typeof window.ensureWalletVendors === 'function') await window.ensureWalletVendors();
-    const loader = window.ChainProposalLoader;
-    if (!loader || typeof loader.loadChainProposalFromRef !== 'function') {
-        if (typeof updateStatus === 'function') updateStatus('On-chain proposals are unavailable.');
-        return;
-    }
-    const result = await loader.loadChainProposalFromRef(ref);
-    if (result && result.ok && result.proposal) {
-        const key = (typeof getProposalKey === 'function' && getProposalKey(result.proposal)) || result.proposal.proposalId;
-        if (key && typeof selectAndHighlightProposal === 'function') {
-            selectAndHighlightProposal(key, null, true);
-        }
-        return;
-    }
-    // Canton proposals are private to their parties: a non-party (or no identity) can't see them.
-    if (result && result.reason === 'canton-private') {
-        if (typeof updateStatus === 'function') {
-            updateStatus('This is a private Canton proposal — you can only see it if you are logged in as a party to it.');
-        }
-        return;
-    }
-    // No wallet connected → the read can't run; prompt to connect. Other failures get a generic note.
-    if (result && result.reason === 'chain-unavailable') {
-        if (typeof updateStatus === 'function') updateStatus('Connect a wallet to open this on-chain proposal.');
-    } else if (typeof updateStatus === 'function') {
-        updateStatus('Could not load the on-chain proposal.');
-    }
-}
 
 function selectProposalFromList(proposalIdOrHash, parcelId) {
     const proposal = getProposalByIdOrHash(proposalIdOrHash);

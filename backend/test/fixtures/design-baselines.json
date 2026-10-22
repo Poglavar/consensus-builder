@@ -40,16 +40,6 @@
       "zIndexLiterals": 0,
       "important": 0
     },
-    "css/canton-mode.css": {
-      "colourLiterals": 3,
-      "zIndexLiterals": 0,
-      "important": 3
-    },
-    "css/canton.css": {
-      "colourLiterals": 0,
-      "zIndexLiterals": 0,
-      "important": 0
-    },
     "css/command-palette.css": {
       "colourLiterals": 0,
       "zIndexLiterals": 0,
@@ -66,7 +56,7 @@
       "important": 0
     },
     "css/game.css": {
-      "colourLiterals": 7,
+      "colourLiterals": 5,
       "zIndexLiterals": 0,
       "important": 6
     },
@@ -126,7 +116,7 @@
       "important": 18
     },
     "css/modals.css": {
-      "colourLiterals": 34,
+      "colourLiterals": 33,
       "zIndexLiterals": 0,
       "important": 3
     },
@@ -211,7 +201,7 @@
       "important": 0
     },
     "css/proposals.css": {
-      "colourLiterals": 49,
+      "colourLiterals": 37,
       "zIndexLiterals": 0,
       "important": 6
     },
@@ -276,7 +266,7 @@
       "important": 0
     },
     "css/utilities.css": {
-      "colourLiterals": 44,
+      "colourLiterals": 38,
       "zIndexLiterals": 0,
       "important": 10
     },
@@ -307,13 +297,12 @@
     "body | css/base.css > css/layout.css | width"
   ],
   "i18n": {
-    "titleCaseLabels": 31,
-    "caseConflicts": 69,
+    "titleCaseLabels": 30,
+    "caseConflicts": 57,
     "threeDots": 0,
-    "duplicateGroups": 327
+    "duplicateGroups": 291
   },
   "js": {
-    "js/blockchain-sync.js": 2,
     "js/corridor-editor.js": 1,
     "js/data-source.js": 1,
     "js/legacy-road-centerlines.js": 1,
@@ -325,7 +314,6 @@
     "js/parcels/ui/locate.js": 1,
     "js/parcels/ui/visibility.js": 1,
     "js/proposals/apply/structures.js": 1,
-    "js/proposals/core.js": 4,
     "js/proposals/create.js": 2,
     "js/proposals/geometry.js": 2,
     "js/proposals/list-ui.js": 4,

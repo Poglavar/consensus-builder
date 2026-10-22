@@ -58,7 +58,7 @@ describe('SEO head of sitemap pages', () => {
         }
     });
 
-    it.each(['lens.html', 'tx-explorer.html', 'canton.html'])('%s is noindex and not in the sitemap', (name) => {
+    it.each(['lens.html', 'tx-explorer.html'])('%s is noindex and not in the sitemap', (name) => {
         const $ = load(read(name));
         expect($('meta[name="robots"]').attr('content')).toMatch(/noindex/);
         expect(urls).not.toContain(BASE + name);

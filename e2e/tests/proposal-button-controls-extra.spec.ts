@@ -1,14 +1,11 @@
-// Exercise proposal modal buttons through the UI, with local server and wallet boundaries: the create
-// dialog's land-use, summary and road-designation controls, the minted-proposals modal, the share
-// panel's selection, Publish and Copy URL, the epoch timeline and the design index's Retry.
+// Exercise proposal modal buttons through the UI, with a local server boundary: the create dialog's
+// land-use, summary and road-designation controls, the share panel's selection, Publish and Copy URL,
+// the epoch timeline and the design index's Retry.
 import { test, expect } from '../helpers/fixtures';
 import { openCity, openParcel, createSpace, PARCEL_ID } from '../helpers/runtime';
-import { connectWalletByConnectorId, injectMockEvmWallet, waitForBlockchainRuntime } from '../helpers/blockchain';
 import { pageIndex } from '../helpers/mocks/shared-server';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
-import { installProposalEvmBoundary } from '../helpers/proposal-chain-boundary';
 
-const WALLET = '0x1234567890abcdef1234567890abcdef12345678';
 const BLOCK_PARCEL_IDS = sampleParcels.features.slice(0, 2).map(feature => feature.properties.parcelId);
 
 async function installProposalBlockGround(page: import('@playwright/test').Page): Promise<void> {
@@ -23,9 +20,8 @@ async function installProposalBlockGround(page: import('@playwright/test').Page)
 }
 
 async function openBlockProposalDialog(page: import('@playwright/test').Page): Promise<void> {
-  // The block's Create Proposal action opens a new proposal dialog without a forked editor draft.
-  // This exercises the supported EVM-mint path and avoids pretending a fork's abstract approval
-  // setup is chain-compatible.
+  // The block's Create Proposal action opens a new proposal dialog without a forked editor draft,
+  // so its land-use choices are not locked to a source design.
   await page.evaluate(async ids => (window as any).CadastralParcelRepository.ensureIds(ids), BLOCK_PARCEL_IDS);
   await openParcel(page, 'info', BLOCK_PARCEL_IDS[1]);
   await page.locator('#layers-button').click();
@@ -55,23 +51,6 @@ async function establishLocalProfile(page: import('@playwright/test').Page): Pro
 async function openProposalList(page: import('@playwright/test').Page) {
   await page.locator('#proposals-button').click();
   return page.locator('#proposals-sheet .proposal-list-modal');
-}
-
-async function openMintedProposals(page: import('@playwright/test').Page) {
-  await openProposalList(page);
-  const actions = page.locator('#proposal-list-actions');
-  if (!(await actions.evaluate((element: HTMLDetailsElement) => element.open))) {
-    await actions.locator(':scope > summary').click();
-  }
-  await page.locator('#mintedProposalsButton').click();
-}
-
-async function prepareMintedProposalModal(page: import('@playwright/test').Page): Promise<void> {
-  await injectMockEvmWallet(page, { account: WALLET, chainIdHex: '0x14a34', walletKind: 'metamask' });
-  await openCity(page);
-  await connectWalletByConnectorId(page, 'metamask');
-  await waitForBlockchainRuntime(page, ['ChainDataLoader', 'ethers']);
-  await installProposalEvmBoundary(page, { includeMintedProposal: true });
 }
 
 test.describe('proposal button controls: modal and alternate states @features', () => {
@@ -114,44 +93,6 @@ test.describe('proposal button controls: modal and alternate states @features', 
     await expect(content.locator('.proposal-parcel-item')).toHaveCount(BLOCK_PARCEL_IDS.length);
     await toggle.click();
     await expect(content).toBeHidden();
-  });
-
-  test('minted proposal modal refreshes, exposes metadata and details, and closes both dialogs', async ({ mockApi: page }) => {
-    await prepareMintedProposalModal(page);
-    await openMintedProposals(page);
-    const modal = page.locator('.minted-proposals-overlay');
-    await expect(modal).toBeVisible();
-    const initialReads = await page.evaluate(() => (window as any).__proposalEvmBoundary.filter((method: string) => method === 'eth_call').length);
-    await modal.locator('.minted-proposals-refresh').click();
-    await expect.poll(() => page.evaluate(() => (window as any).__proposalEvmBoundary.filter((method: string) => method === 'eth_call').length)).toBeGreaterThan(initialReads);
-
-    await modal.locator('.minted-proposal-metadata-btn').click();
-    const metadata = page.locator('.minted-metadata-overlay');
-    await expect(metadata).toContainText('Saved on-chain metadata.');
-    await metadata.locator('.minted-metadata-header .close-circle-btn').click();
-    await expect(metadata).toBeHidden();
-
-    await modal.locator('.minted-proposal-metadata-btn').click();
-    await page.locator('.minted-metadata-footer').getByRole('button', { name: 'OK', exact: true }).click();
-    await expect(metadata).toBeHidden();
-
-    await modal.locator('.minted-proposal-details-btn').click();
-    await expect(modal).toBeHidden();
-    const inspector = page.locator('#planning-inspector');
-    await expect(inspector).toBeVisible();
-    await expect(inspector.getByRole('heading', { name: 'Modal garden', exact: true })).toBeVisible();
-    const selected = await page.evaluate(() => {
-      const item = (window as any).PlanningViews.getSelected();
-      return { id: item?.proposalId, title: item?.title, role: item?.role };
-    });
-    expect(selected).toMatchObject({ title: 'Modal garden', role: 'proposed' });
-    expect(await page.evaluate(id => (window as any).proposalStorage.getAllProposals()
-      .some((p: any) => (window as any).getProposalKey(p) === id && p.title === 'Modal garden'), selected.id)).toBe(true);
-
-    await openMintedProposals(page);
-    await expect(modal).toBeVisible();
-    await modal.locator('.minted-proposals-close').click();
-    await expect(modal).toBeHidden();
   });
 
   test('applied-design selection, row Publish and Copy URL all change the visible state', async ({ mockApi: page }) => {

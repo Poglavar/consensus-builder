@@ -158,11 +158,12 @@ describe('what a proposal does to this parcel', () => {
 
     it('reads the status from the record and gives a declared design without a drawing an unknown take', () => {
         const record = { proposalId: 'offer', goal: 'as-is', cadastreParcelIds: [PARCEL_ID, 'HR-1-101'], binding: { parcelSource: PARCEL_SOURCE },
-            offer: 200000, offerCurrency: 'EUR', isMinted: true, acceptedParcelIds: [PARCEL_ID],
+            offer: 200000, offerCurrency: 'EUR', acceptedParcelIds: [PARCEL_ID],
             ownerAcceptances: { [PARCEL_ID]: { ownerOrder: ['a', 'b'], acceptedOwnerKeys: ['b'] } } };
         const effect = compare.parcelEffect(record, PARCEL, { areaShare: 0.25, channel: 'offer', consent: { owners: { accepted: 1, total: 2 } } });
         expect(effect.relation).toBe('bound');
-        expect(effect.status.key).toBe('minted');
+        // The record's own state, a local draft: nothing of the offer or consent it is compared under.
+        expect(effect.status).toEqual({ key: 'local', lifecycle: 'unknown', applied: false });
         // Its site is never the union of its parcels (site-binding.js siteOf): the take is unknown.
         expect(effect.take).toEqual({ areaM2: null, share: null, intrusionM: null, extent: null });
         expect(effect.ownership).toBeNull();
@@ -190,7 +191,6 @@ describe('what a proposal does to this parcel', () => {
             if (previous === undefined) delete globalThis.DesignSync;
             else globalThis.DesignSync = previous;
         }
-        expect(status({ nft: { contract: 'program', tokenId: 'account' } }).key).toBe('minted');
         expect(status({ lifecycleStatus: 'Executed' })).toMatchObject({ key: 'execution-unverified', lifecycle: 'executed' });
         const evidence = require('../../frontend/js/proposals/lifecycle-evidence.js').projectLifecycleEvidence({
             lifecycleStatus: 'Executed',

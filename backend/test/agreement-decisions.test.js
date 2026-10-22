@@ -27,6 +27,8 @@ const anchors = require('../../frontend/js/proposals/approval-anchor.js');
 
 const OTHER_CID = COUNTER_AGREEMENT_CID;
 const ACCOUNT = web3.Keypair.generate().publicKey.toBase58();
+// The index's `onchain` once the agreement is minted (agreements/onchain.js onchainFromAccount).
+const ONCHAIN = { chain: 'solana', cluster: 'devnet', account: ACCOUNT, status: 'active', decision: 'pending' };
 const decisionsPath = (cid = AGREEMENT_CID) => `/agreements/${cid}/decisions`;
 // The agreement as GET /agreements/:cid serves it, and its row in consensus.agreement.
 const ownerDealContent = agreementContent;
@@ -40,17 +42,19 @@ afterEach(() => {
 });
 
 describe('the subject of a decision', () => {
-    it('is the indexed agreement\'s CID, input parcels and rule, closed once its deadline has passed', () => {
+    it('is the indexed agreement\'s CID, input parcels and rule, with the lifecycle of its index status', () => {
         expect(decisionSubject(indexedAgreement())).toEqual({ ...agreement(), onchain: null });
-        expect(decisionSubject(indexedAgreement(undefined, { status: 'expired' })).lifecycleStatus).toBe('Expired');
-        const onchain = { chainId: 'solana-devnet', proposalId: ACCOUNT };
-        expect(decisionSubject(indexedAgreement(undefined, { onchain })).onchain).toEqual(onchain);
+        // The index status is the chain's once minted, else expired after the deadline (routes/agreements.js).
+        for (const [status, lifecycle] of [['active', 'Active'], ['expired', 'Expired'], ['executed', 'Executed'], ['cancelled', 'Cancelled']]) {
+            expect(decisionSubject(indexedAgreement(undefined, { status })).lifecycleStatus).toBe(lifecycle);
+        }
+        expect(decisionSubject(indexedAgreement(undefined, { onchain: ONCHAIN })).onchain).toEqual(ONCHAIN);
         const community = indexedAgreement(ownerDealContent({ rule: { electorate: 'community', binding: false, lens: [] } }));
         expect(decisionSubject(community)).toMatchObject({ approvalConfig: null, lens: [] });
     });
 
-    it('signs agreement-decision/v1 naming the agreement\'s CID, with no terms hash', () => {
-        const receipt = decision(wallets.c, 'owner-c');
+    it('signs agreement-decision/v1 naming the agreement\'s CID, with no terms hash', async () => {
+        const receipt = await decision(wallets.c, 'owner-c');
         expect(approval.decisionContent(agreement(), receipt)).toEqual({
             schema: 'agreement-decision/v1', agreementCid: AGREEMENT_CID, ownerId: 'owner-c', actorId: wallets.c.address,
             contextHash: approval.contextHash(agreement()), decision: 'approve', decidedAt: receipt.decidedAt
@@ -70,7 +74,7 @@ function relayApp({ rows = [agreementRow(ownerDealContent())], store = createMem
 describe('POST and GET /agreements/:cid/decisions', () => {
     it('stores a verified decision once, serves it, and refuses forgeries without storing them', async () => {
         const { app } = relayApp();
-        const receipt = decision(wallets.c, 'owner-c');
+        const receipt = await decision(wallets.c, 'owner-c');
         const first = await request(app).post(decisionsPath()).send({ receipt: { ...receipt, note: 'not signed' } });
         expect(first.status).toBe(201);
         expect(first.body).toEqual({ stored: true, duplicate: false });
@@ -93,15 +97,19 @@ describe('POST and GET /agreements/:cid/decisions', () => {
         expect((await request(app).get(decisionsPath(OTHER_CID))).status).toBe(404);
     });
 
-    it('takes no decision on an agreement whose deadline has passed', async () => {
-        const { app } = relayApp({ rows: [agreementRow(ownerDealContent(), { status: 'expired' })] });
-        const res = await request(app).post(decisionsPath()).send({ receipt: decision(wallets.c, 'owner-c') });
-        expect([res.status, res.body.code]).toEqual([409, 'agreement_closed']);
+    it('takes no decision on an agreement that expired, was cancelled, or executed', async () => {
+        const receipt = await decision(wallets.c, 'owner-c');
+        for (const status of ['expired', 'cancelled', 'executed']) {
+            const { app, store } = relayApp({ rows: [agreementRow(ownerDealContent(), { status })] });
+            const res = await request(app).post(decisionsPath()).send({ receipt });
+            expect([status, res.status, res.body.code]).toEqual([status, 409, 'agreement_closed']);
+            expect(await store.list(AGREEMENT_CID)).toEqual([]);
+        }
     });
 
     it('admits concurrent decisions for one owner one at a time', async () => {
         const { app } = relayApp();
-        const signed = [1, 2, 3].map(offset => decision(wallets.a, 'owner-a', { offset }));
+        const signed = await Promise.all([1, 2, 3].map(offset => decision(wallets.a, 'owner-a', { offset })));
         const answers = await Promise.all([...signed].reverse().map(receipt => request(app).post(decisionsPath()).send({ receipt })));
         // The newest arrives first; the two older ones are then stale.
         expect(answers.map(answer => answer.status)).toEqual([201, 409, 409]);
@@ -112,7 +120,7 @@ describe('POST and GET /agreements/:cid/decisions', () => {
         const pool = createMockPool();
         pool.answer(/FROM consensus\.agreement WHERE cid = \$1/, { rows: [agreementRow(ownerDealContent())] });
         const app = createContentApp(pool, { thumbnailQueue: { enqueue: vi.fn() } });
-        const receipt = decision(wallets.c, 'owner-c');
+        const receipt = await decision(wallets.c, 'owner-c');
         const response = await request(app).post(decisionsPath()).send({ receipt });
         expect(response.status).toBe(201);
         const calls = pool.getCalls().slice(1);
@@ -135,14 +143,14 @@ describe('POST and GET /agreements/:cid/decisions', () => {
         pool.answer(/INSERT INTO consensus\.agreement_decision/, () => { throw new Error('disk full'); });
         const app = createContentApp(pool, { thumbnailQueue: { enqueue: vi.fn() } });
         const error = vi.spyOn(console, 'error').mockImplementation(() => {});
-        const failed = await request(app).post(decisionsPath()).send({ receipt: decision(wallets.c, 'owner-c') });
+        const failed = await request(app).post(decisionsPath()).send({ receipt: await decision(wallets.c, 'owner-c') });
         expect(error).toHaveBeenCalled();
         expect(failed.status).toBe(500);
         expect(pool.getCalls().map(call => call.sql.trim().split(/\s+/)[0]).at(-1)).toBe('ROLLBACK');
 
         pool.reset();
         pool.answer(/FROM consensus\.agreement WHERE cid = \$1/, { rows: [agreementRow(ownerDealContent())] });
-        const refused = await request(app).post(decisionsPath()).send({ receipt: { ...decision(wallets.c, 'owner-c'), ownerId: 'owner-z' } });
+        const refused = await request(app).post(decisionsPath()).send({ receipt: { ...(await decision(wallets.c, 'owner-c')), ownerId: 'owner-z' } });
         expect(refused.status).toBe(404);
         expect(pool.getCalls().some(call => /INSERT INTO/.test(call.sql))).toBe(false);
         expect(pool.getCalls().map(call => call.sql.trim().split(/\s+/)[0]).at(-1)).toBe('COMMIT');
@@ -150,8 +158,7 @@ describe('POST and GET /agreements/:cid/decisions', () => {
 });
 
 describe('POST /agreements/:cid/decisions/bundle', () => {
-    const onchain = { chainId: 'solana-devnet', proposalId: ACCOUNT };
-    const mintedRows = () => [agreementRow(ownerDealContent(), { onchain })];
+    const mintedRows = () => [agreementRow(ownerDealContent(), { onchain: ONCHAIN })];
     const pinner = () => vi.fn(async ({ cid }) => ({ cid, pinnedAt: '2026-10-21T10:00:00.000Z' }));
 
     it('pins the applying decisions of a minted agreement once, under the CID of the bundle\'s bytes', async () => {
@@ -159,7 +166,7 @@ describe('POST /agreements/:cid/decisions/bundle', () => {
         const { app } = relayApp({ rows: mintedRows(), pinBytes });
         const bundlePath = `${decisionsPath()}/bundle`;
         expect((await request(app).post(bundlePath)).body.code).toBe('nothing_to_anchor');
-        for (const receipt of [decision(wallets.a, 'owner-a', { offset: 1 }), decision(wallets.c, 'owner-c', { offset: 2 })]) {
+        for (const receipt of [await decision(wallets.a, 'owner-a', { offset: 1 }), await decision(wallets.c, 'owner-c', { offset: 2 })]) {
             expect((await request(app).post(decisionsPath()).send({ receipt })).status).toBe(201);
         }
         const first = await request(app).post(bundlePath);
@@ -195,7 +202,7 @@ describe('POST /agreements/:cid/decisions/bundle', () => {
         ]) {
             const store = createMemoryAgreementDecisionStore();
             const { app } = relayApp({ rows: mintedRows(), store, pinBytes: vi.fn(async () => { throw thrown; }) });
-            expect((await request(app).post(decisionsPath()).send({ receipt: decision(wallets.a, 'owner-a') })).status).toBe(201);
+            expect((await request(app).post(decisionsPath()).send({ receipt: await decision(wallets.a, 'owner-a') })).status).toBe(201);
             const res = await request(app).post(`${decisionsPath()}/bundle`);
             expect([res.status, res.body.code]).toEqual([status, code]);
         }
@@ -207,7 +214,7 @@ describe('POST /agreements/:cid/decisions/bundle', () => {
         const { app } = relayApp({ rows: mintedRows(), pinBytes, uploadRateLimiter: (req, res) => res.status(429).json({ error: 'Too many uploads' }) });
         expect((await request(app).post(`${decisionsPath()}/bundle`)).status).toBe(429);
         // Decisions themselves are not uploads.
-        expect((await request(app).post(decisionsPath()).send({ receipt: decision(wallets.a, 'owner-a') })).status).toBe(201);
+        expect((await request(app).post(decisionsPath()).send({ receipt: await decision(wallets.a, 'owner-a') })).status).toBe(201);
     });
 });
 
@@ -222,7 +229,7 @@ describe('createAgreementDecisionHandlers', () => {
         app.post('/agreements/:cid/decisions', handlers.post);
         // A client claiming another lens in the body changes nothing: the receipt must verify for the indexed rule.
         const copy = agreement({ lens: [outsider.publicKey.toBase58()] });
-        const receipt = decision(wallets.c, 'owner-c', { evidence: evidenceFor(wallets.c, 'owner-c', copy, attesterFor(outsider)), item: copy });
+        const receipt = await decision(wallets.c, 'owner-c', { evidence: await evidenceFor(wallets.c, 'owner-c', copy, attesterFor(outsider)), item: copy });
         const res = await request(app).post(decisionsPath()).send({ receipt, agreement: copy });
         expect([res.status, res.body.code]).toEqual([403, 'not_authorized']);
         expect(await store.list(AGREEMENT_CID)).toEqual([]);

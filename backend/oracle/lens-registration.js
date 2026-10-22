@@ -96,9 +96,9 @@ function schemaCredential(data) {
     return new PublicKey(data.subarray(1, 33)).toBase58();
 }
 
-// An owner-consent member must be able to issue ownership; every other kind issues verdicts.
+// An owner-consent member must be able to issue ownership; every other kind issues agreement decisions.
 export function requiredSchemaKinds(kind) {
-    return kind === 'owner-consent' ? ['ownership'] : ['verdict'];
+    return kind === 'owner-consent' ? ['ownership'] : ['decision'];
 }
 
 /**

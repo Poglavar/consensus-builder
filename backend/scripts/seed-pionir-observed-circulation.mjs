@@ -1,8 +1,11 @@
-// Adds defensible surface circulation to the completed Pionir/Paron reconstructions.
+// Derives defensible surface circulation for the completed Pionir/Paron reconstructions and writes it
+// as canonical archives beside each project's building archive, with the project manifests (plan.json)
+// and circulation-audit.json. It reads the local database (OSM roads and parking, DGU buildings) and
+// writes no rows; backend/scripts/publish-restatement-archives.mjs publishes the archives as designs.
 //
-// Buildings remain their own canonical proposals. Every contiguous surface-road component is a
-// companion road proposal. Planned/location-permit schemes are deliberately ignored: today's OSM
-// roads are not evidence of their accepted design state.
+// Buildings remain their own canonical archive. Every contiguous surface-road component is a companion
+// road archive. Planned/location-permit schemes are deliberately ignored: today's OSM roads are not
+// evidence of their accepted design state.
 //
 // Geometry gates are intentionally conservative:
 //   * only OSM service roads, plus unnamed residential roads predominantly inside the site;
@@ -13,8 +16,8 @@
 //     its measured cross-section supports two rows of perpendicular bays.
 //
 // Dry-run by default is not allowed: state intent explicitly.
-//   node backend/scripts/seed-pionir-observed-circulation.mjs --dry-run --export
-//   node backend/scripts/seed-pionir-observed-circulation.mjs --apply --export
+//   node backend/scripts/seed-pionir-observed-circulation.mjs --dry-run
+//   node backend/scripts/seed-pionir-observed-circulation.mjs --export
 
 import { createRequire } from 'node:module';
 import dotenv from 'dotenv';
@@ -25,7 +28,6 @@ import { createPool, describeDatabase, isLocalDatabase } from '../db/connection.
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { reconstructionGeoJSONToProposal } from '../proposals/reconstruction-geojson.js';
 import { assertCorridorReconstructionGeoJSONRoundTrip } from '../proposals/corridor-reconstruction-geojson.js';
-import { canonicalSeedRecord } from './lib/canonical-seed-record.mjs';
 
 dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet: true });
 
@@ -48,20 +50,19 @@ export const MAX_DOUBLE_SIDED_PARKING_WIDTH_M = 20;
 
 
 function usage() {
-    console.log(`Usage: node backend/scripts/seed-pionir-observed-circulation.mjs --dry-run|--apply [--export] [--only key,key]
+    console.log(`Usage: node backend/scripts/seed-pionir-observed-circulation.mjs --dry-run|--export [--only key,key]
 
-  --dry-run  Analyse and validate without writing database rows.
-  --apply    Upsert companion road proposals locally.
+  --dry-run  Analyse and validate without writing a file.
   --export   Write canonical corridor GeoJSON, plan manifests and the audit report.
-  --only     Limit the run to comma-separated reconstruction directory names.`);
+  --only     Limit the run to comma-separated reconstruction directory names.
+Both read the local database. Publish the archives with backend/scripts/publish-restatement-archives.mjs.`);
 }
 
 export function parseArgs(argv) {
-    const args = { apply: false, dryRun: false, export: false, only: null, help: false };
+    const args = { dryRun: false, export: false, only: null, help: false };
     for (let index = 0; index < argv.length; index += 1) {
         const arg = argv[index];
         if (arg === '--help' || arg === '-h') args.help = true;
-        else if (arg === '--apply') args.apply = true;
         else if (arg === '--dry-run') args.dryRun = true;
         else if (arg === '--export') args.export = true;
         else if (arg === '--only') {
@@ -69,13 +70,13 @@ export function parseArgs(argv) {
             if (!args.only.size) throw new Error('--only requires at least one project key.');
         } else throw new Error(`Unknown argument: ${arg}`);
     }
-    if (!args.help && args.apply === args.dryRun) throw new Error('Choose exactly one of --dry-run or --apply.');
+    if (!args.help && args.export === args.dryRun) throw new Error('Choose exactly one of --dry-run or --export.');
     return args;
 }
 
 function assertLocalDatabase() {
     if (!isLocalDatabase()) {
-        throw new Error(`Refusing to seed non-local database host ${describeDatabase().host || '(empty)'}.`);
+        throw new Error(`Refusing to read the reconstruction sources from non-local database host ${describeDatabase().host || '(empty)'}.`);
     }
 }
 
@@ -701,56 +702,6 @@ async function analyseProject(pool, archived) {
     };
 }
 
-async function upsertRoadProposal(pool, authored) {
-    // Same projection as the API write path; throws before writing if the row would be unreadable.
-    const proposal = canonicalSeedRecord(authored);
-    const { rows } = await pool.query(`
-        INSERT INTO public.proposal (
-            proposal_id, city, name, title, description, author, type,
-            lifecycle_status, created_at, updated_at,
-            ancestor_parcel_ids, cadastre_parcel_ids,
-            road_proposal, bounds, proposal_data, applied
-        ) VALUES (
-            $1, $2, $3, $4, $5, $6, $7,
-            $8, $9, $9,
-            $10::jsonb, $11::jsonb,
-            $12::jsonb, $13::jsonb, $14::jsonb, false
-        )
-        ON CONFLICT (proposal_id) DO UPDATE SET
-            city = EXCLUDED.city,
-            name = EXCLUDED.name,
-            title = EXCLUDED.title,
-            description = EXCLUDED.description,
-            author = EXCLUDED.author,
-            type = EXCLUDED.type,
-            lifecycle_status = EXCLUDED.lifecycle_status,
-            updated_at = NOW(),
-            ancestor_parcel_ids = EXCLUDED.ancestor_parcel_ids,
-            cadastre_parcel_ids = EXCLUDED.cadastre_parcel_ids,
-            road_proposal = EXCLUDED.road_proposal,
-            bounds = EXCLUDED.bounds,
-            proposal_data = EXCLUDED.proposal_data,
-            applied = false
-        RETURNING id, proposal_id
-    `, [
-        proposal.proposalId,
-        proposal.city,
-        proposal.name,
-        proposal.title,
-        proposal.description,
-        proposal.author,
-        proposal.type,
-        proposal.lifecycleStatus,
-        proposal.createdAt,
-        null, // ancestor_parcel_ids is retired; cadastre_parcel_ids is the declaration
-        JSON.stringify(proposal.cadastreParcelIds),
-        JSON.stringify(proposal.roadProposal),
-        JSON.stringify(proposal.bounds),
-        JSON.stringify(proposal)
-    ]);
-    return rows[0];
-}
-
 async function exportAnalysis(analysis) {
     const directory = `${ARCHIVE_ROOT}${analysis.project.key}`;
     await mkdir(directory, { recursive: true });
@@ -834,7 +785,9 @@ function compactParkingAudit(entry) {
 }
 
 async function main() {
-    const args = parseArgs(process.argv.slice(2));
+    const argv = process.argv.slice(2);
+    if (!argv.length) { usage(); return; }
+    const args = parseArgs(argv);
     if (args.help) { usage(); return; }
     assertLocalDatabase();
 
@@ -862,11 +815,6 @@ async function main() {
     try {
         for (const archivedProject of selected) {
             const analysis = await analyseProject(pool, archivedProject);
-            if (args.apply) {
-                for (const item of analysis.proposals) {
-                    await upsertRoadProposal(pool, item.proposal);
-                }
-            }
             const manifest = args.export ? await exportAnalysis(analysis) : null;
             const summary = {
                 project: analysis.project.key,
@@ -891,7 +839,7 @@ async function main() {
                 'utf8'
             );
         }
-        if (args.dryRun) console.log('Dry run complete; no database row was written.');
+        if (args.dryRun) console.log('Dry run complete; no archive was written.');
     } finally {
         await pool.end();
     }

@@ -1,7 +1,10 @@
--- Persistent, source-timestamped land-event observations used by oracle recipes. The first event
--- type is proposal_lifecycle, derived from immutable terminal Solana proposal state. Lens model v2
--- adds proposal_acceptance (one per AcceptanceRecord, many per proposal) and proposal_verdict (one
--- per VerdictSettled). event_id is deterministic per fact and is the idempotency key for all of them.
+-- Persistent, source-timestamped land-event observations used by oracle recipes and parcel history.
+-- Since M3 (plan-design-agreement.md) the agreement lifecycle oracle (oracle/agreement-lifecycle.js)
+-- writes agreement_lifecycle (one terminal outcome per agreement account: executed, cancelled or
+-- expired) and agreement_executed (one per input parcel of an executed agreement, subject the parcel).
+-- The proposal_lifecycle, proposal_acceptance and proposal_verdict rows written before stay as the
+-- record of what happened on the proposal programs; nothing writes them any more. event_id is
+-- deterministic per fact and is the idempotency key for all of them.
 
 CREATE SCHEMA IF NOT EXISTS consensus;
 
@@ -29,6 +32,10 @@ ALTER TABLE consensus.land_event DROP CONSTRAINT IF EXISTS land_event_event_type
 CREATE UNIQUE INDEX IF NOT EXISTS land_event_lifecycle_outcome_uidx
     ON consensus.land_event (event_type, subject_id, outcome)
     WHERE event_type = 'proposal_lifecycle';
+-- An agreement account reaches one terminal status, once: one agreement_lifecycle event per account.
+CREATE UNIQUE INDEX IF NOT EXISTS land_event_agreement_lifecycle_uidx
+    ON consensus.land_event (subject_id)
+    WHERE event_type = 'agreement_lifecycle';
 
 CREATE INDEX IF NOT EXISTS land_event_subject_idx
     ON consensus.land_event (subject_id, source_observed_at DESC);

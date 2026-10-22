@@ -1,11 +1,15 @@
 // agreement-list.js — the Agreements dialog (plan-design-agreement.md, "M1 (b) build contract"): the
 // agreements kept on this device for the current city, newest first, each opening its panel
-// (agreement-panel.js), and Create agreement over every applied design. window.AgreementList; the
-// row wording and the applied-design ids are pure and tested in backend/test/agreement-panel.test.js.
+// (agreement-panel.js), and Create agreement over every applied design. The Minted agreements dialog
+// (M3) lists the city's agreements the index records as minted (GET /agreements?minted=1), each
+// opening its panel, imported from its link when this device does not hold it. window.AgreementList;
+// the row wording and the applied-design ids are pure and tested in backend/test/agreement-panel.test.js.
 (function (root, factory) {
     const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
-    if (root && typeof root.document !== 'undefined') root.AgreementList = Object.freeze({ open: () => api.open(root) });
+    if (root && typeof root.document !== 'undefined') {
+        root.AgreementList = Object.freeze({ open: () => api.open(root), openMinted: () => api.openMinted(root) });
+    }
 })(typeof window !== 'undefined' ? window : globalThis, function (root) {
     'use strict';
 
@@ -55,6 +59,29 @@
         return '<ul class="agreement-list">' + agreements.map(agreement => {
             const label = rowLabel(agreement, tr);
             return `<li><button type="button" class="btn btn-quiet agreement-item" data-agreement-id="${esc(agreement.id)}">`
+                + `<span class="agreement-item__text"><span class="agreement-item__title">${esc(label.title)}</span>`
+                + `<span class="agreement-item__meta">${esc(label.meta)}</span></span></button></li>`;
+        }).join('') + '</ul>';
+    }
+
+    // A minted agreement as the index lists it: its title, its designs, its status on chain and its account.
+    function mintedRowLabel(row, tr = t) {
+        const panel = panelApi();
+        const content = (row && row.content) || {};
+        const count = Array.isArray(content.designs) ? content.designs.length : 0;
+        const designs = tr('agreement.list.designs', count === 1 ? '{{count}} design' : '{{count}} designs', { count });
+        const onchain = (row && row.onchain) || {};
+        return {
+            title: panel.titleOf({ title: (row && row.title) || content.title || null, createdAt: content.createdAt || (row && row.createdAt) || null }, tr),
+            meta: `${designs} · ${panel.chainStatusText(onchain.status, tr)} · ${panel.shortKey(onchain.account)}`
+        };
+    }
+
+    function mintedRowsHtml(rows, tr = t) {
+        if (!rows.length) return `<p class="agreement-list-empty">${esc(tr('agreement.minted.empty', 'No agreement of this city is minted yet.'))}</p>`;
+        return '<ul class="agreement-list">' + rows.map(row => {
+            const label = mintedRowLabel(row, tr);
+            return `<li><button type="button" class="btn btn-quiet agreement-item" data-agreement-cid="${esc(row.cid)}">`
                 + `<span class="agreement-item__text"><span class="agreement-item__title">${esc(label.title)}</span>`
                 + `<span class="agreement-item__meta">${esc(label.meta)}</span></span></button></li>`;
         }).join('') + '</ul>';
@@ -118,5 +145,63 @@
         return dialog;
     }
 
-    return { rowLabel, appliedDesignIds, rowsHtml, bodyHtml, open };
+    // The Minted agreements dialog: the index's minted agreements of the current city, with Refresh.
+    // A row opens the agreement's panel: this device's copy, or the agreement imported from its link.
+    function openMinted(win) {
+        const dialogs = win.CbDialog;
+        if (!win.AgreementSync || !dialogs || typeof dialogs.open !== 'function') throw new Error('The minted agreements need AgreementSync and CbDialog.');
+        const log = message => console.log(`[${new Date().toISOString()}] [AgreementList] ${message}`);
+        const report = (what, error) => {
+            console.error(`[${new Date().toISOString()}] [AgreementList] ${what}`, error);
+            if (typeof win.showEphemeralMessage === 'function') win.showEphemeralMessage((error && error.message) || String(error), 6000, 'error');
+        };
+        const body = win.document.createElement('div');
+        body.className = 'agreement-list-body';
+        body.innerHTML = '<p class="agreement-list-status" role="status" data-agreement-minted-status></p>'
+            + '<div class="agreement-list-rows" data-agreement-list-rows></div>';
+        const status = body.querySelector('[data-agreement-minted-status]');
+        const list = body.querySelector('[data-agreement-list-rows]');
+        let token = 0;
+        async function load() {
+            const mine = ++token;
+            status.hidden = false;
+            status.textContent = t('agreement.minted.loading', 'Reading the minted agreements…');
+            list.innerHTML = '';
+            const code = typeof win.resolveCurrentCityCode === 'function' ? win.resolveCurrentCityCode() : null;
+            const city = code && typeof win.normalizeCityCodeForApi === 'function' ? win.normalizeCityCodeForApi(code) : code;
+            try {
+                const rows = await win.AgreementSync.fetchMinted({ city });
+                if (mine !== token) return;
+                log(`${rows.length} minted agreement(s) in ${city || 'every city'}`);
+                status.hidden = true;
+                list.innerHTML = mintedRowsHtml(rows);
+            } catch (error) {
+                if (mine !== token) return;
+                console.error(`[${new Date().toISOString()}] [AgreementList] the minted agreements could not be read`, error);
+                status.textContent = t('agreement.minted.failed', 'The minted agreements could not be read: {{reason}}', { reason: (error && error.message) || String(error) });
+            }
+        }
+        const dialog = dialogs.open({
+            title: t('agreement.minted.title', 'Minted agreements'),
+            size: 'md',
+            className: 'agreement-list-dialog agreement-minted-dialog',
+            body,
+            actions: [{ id: 'refresh', label: t('agreement.minted.refresh', 'Refresh'), role: 'secondary', keepOpen: true, onClick: () => { load(); } }],
+            onClose: () => { token += 1; }
+        });
+        if (!dialog) return null;
+        body.addEventListener('click', event => {
+            const row = event.target.closest('[data-agreement-cid]');
+            if (!row) return;
+            const cid = row.getAttribute('data-agreement-cid');
+            dialog.close(null);
+            const local = win.AgreementSync.localCopyOf(cid);
+            Promise.resolve(local ? win.AgreementPanel.open(local.id) : win.AgreementSync.handleAgreementRoute(cid))
+                .catch(error => report(`the minted agreement ${cid} could not be opened`, error));
+        });
+        load();
+        return dialog;
+    }
+
+    return { rowLabel, appliedDesignIds, rowsHtml, bodyHtml, mintedRowLabel, mintedRowsHtml, open, openMinted };
 });

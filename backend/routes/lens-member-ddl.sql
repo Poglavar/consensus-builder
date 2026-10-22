@@ -21,15 +21,16 @@ CREATE TABLE IF NOT EXISTS consensus.lens_devnet_owner (
 );
 
 -- Attestations this member has issued. issued_at is the chain time of the issuing transaction
--- (NULL when the RPC did not report a block time), never the insert time.
+-- (NULL when the RPC did not report a block time), never the insert time. An AgreementDecision
+-- (kind 'decision') names its agreement in the payload (agreementCid, sponsor).
 CREATE TABLE IF NOT EXISTS consensus.lens_attestation (
     address            text PRIMARY KEY,         -- SAS attestation PDA
-    kind               text        NOT NULL CHECK (kind IN ('ownership', 'verdict', 'evidence')),
+    kind               text        NOT NULL CHECK (kind IN ('ownership', 'decision', 'evidence', 'verdict')),
     credential         text        NOT NULL,
     schema             text        NOT NULL,
     authority          text        NOT NULL,
     parcel_uid         text,
-    proposal_account   text,
+    proposal_account   text,                     -- ProposalVerdict rows only; unused since M3 (plan-design-agreement.md)
     owner              text,
     payload            jsonb       NOT NULL,     -- decoded schema fields
     account_hash       text        NOT NULL,     -- sha256 hex over the whole attestation account bytes
@@ -41,19 +42,22 @@ CREATE TABLE IF NOT EXISTS consensus.lens_attestation (
     updated_at         timestamptz NOT NULL DEFAULT now()
 );
 
--- MarketEvidence-v1 (kind 'evidence') joined on 2026-10-12. Tables created before then carry the
--- two-kind check; widen it once. A no-op when the check already admits 'evidence'.
+-- MarketEvidence-v1 (kind 'evidence') joined on 2026-10-12 and AgreementDecision-v1 (kind 'decision')
+-- replaced ProposalVerdict-v1 (kind 'verdict') in M3 (2026-10-22). Tables created before carry a
+-- narrower check; widen it once. 'verdict' is no longer issued, but the rows issued before M3 stay
+-- (they are attestations that exist on chain), so the check keeps admitting it until they are archived
+-- with the proposal table. A no-op when the check already admits 'decision'.
 DO $$
 BEGIN
     IF NOT EXISTS (
         SELECT 1 FROM pg_constraint
         WHERE conrelid = 'consensus.lens_attestation'::regclass
           AND conname = 'lens_attestation_kind_check'
-          AND pg_get_constraintdef(oid) LIKE '%''evidence''%'
+          AND pg_get_constraintdef(oid) LIKE '%''decision''%'
     ) THEN
         ALTER TABLE consensus.lens_attestation DROP CONSTRAINT IF EXISTS lens_attestation_kind_check;
         ALTER TABLE consensus.lens_attestation ADD CONSTRAINT lens_attestation_kind_check
-            CHECK (kind IN ('ownership', 'verdict', 'evidence'));
+            CHECK (kind IN ('ownership', 'decision', 'evidence', 'verdict'));
     END IF;
 END $$;
 

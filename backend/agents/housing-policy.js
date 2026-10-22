@@ -50,14 +50,14 @@ export function housingPick(candidate) {
     return {candidateId:candidate.candidateId,name,rationale};
 }
 
-export function housingOutreach({ candidate, post, publicBase }) {
+export function housingOutreach({ candidate, agreementCid, publicBase }) {
     const origin=new URL(publicBase);
     if(origin.protocol!=='https:' || origin.hostname==='localhost') throw new Error('Explicit public HTTPS origin required');
     const a=candidate.housing.affordability;
-    if (!Number.isInteger(post.id) || post.id<1 || !post.proposalId) throw new Error('Published mirror required for outreach');
-    const url=new URL(`/proposals/${post.id}?city=${encodeURIComponent(a.city)}`,origin).href;
-    return {id:post.proposalId,status:'pending-review',channel:a.authority.email?'email':'official-contact-form',
-        authority:a.authority,proposalUrl:url,subject:`Housing research for planning review — ${a.label}`,
+    if (typeof agreementCid !== 'string' || !/^bafkrei[a-z2-7]{52}$/.test(agreementCid)) throw new Error('A published agreement is required for outreach');
+    const url=new URL(`/agreements/${agreementCid}?city=${encodeURIComponent(a.city)}`,origin).href;
+    return {id:agreementCid,status:'pending-review',channel:a.authority.email?'email':'official-contact-form',
+        authority:a.authority,agreementUrl:url,subject:`Housing research for planning review — ${a.label}`,
         body:`Hello ${a.authority.name},\n\nAffordabot is an automated housing research project. We prepared an illustrative housing concept for parcel ${candidate.parcelId}:\n${url}\n\n${housingPick(candidate).rationale}\n\nCould your planning team confirm the current controls, identify whether amendments would be needed, and advise the appropriate public process? This is an inquiry, not a planning application or a claim of owner consent. Please let us know if this is the wrong department or you do not want further contact.`,
         x:{status:'disabled',reason:'Unsolicited automated mentions require recipient opt-in.'}};
 }

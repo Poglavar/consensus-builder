@@ -1,5 +1,5 @@
 {
-  "_comment": "Server-side agent personas (design §WS3). Keypairs live outside the repo at keypairPath. Proposer and supporter roles share the same controller, checkpoint and activity system. A lens-member persona runs the reference lens member (backend/lens/) via agents/lens-member-run.mjs; wallet null = key not generated yet. Society roles (contrarian, speculator) run through agents/society-run.mjs with a pure policy module at agents/policies/<role>.js; their `policy` block holds that module's parameters.",
+  "_comment": "Server-side agent personas (design §WS3). Keypairs live outside the repo at keypairPath. Proposer and supporter roles share the same controller, checkpoint and activity system. A proposer proposes binding owners' agreements on parcels its wallet owns alone in the lens member's devnet owner registry (consensus.lens_devnet_owner; scripts/seed-lens-owners.mjs or agents/run.mjs --seed-owners registers them): every owner approves (unanimous) through receipts the lens member the runner operates verifies (the lens-member persona whose service names an operatorTokenEnv, lifecycle-01). On its next run the proposer approves as the owner, has that member attest the decision, records it on chain and executes. Its `agreement` block sets each agreement: `deadlineDays` after it is built (unexecuted by then, it expires), and `lamports` of escrow it funds at mint and execution requires (paid back to it at execution, refunded at expiry; 0 for none); `stakeUsdc` is its YES stake on that agreement's market. A lens-member persona runs the reference lens member (backend/lens/) via agents/lens-member-run.mjs; wallet null = key not generated yet. Society roles (contrarian, speculator) run through agents/society-run.mjs with a pure policy module at agents/policies/<role>.js; their `policy` block holds that module's parameters.",
   "personas": [
     {
       "name": "densifier-01",
@@ -19,7 +19,8 @@
         { "city": "berlin", "label": "Berlin", "sourceId": "de-be-alkis-flurstuecke-wfs", "bbox": [13.397, 52.514, 13.413, 52.526] }
       ],
       "dailyProposals": 1,
-      "stakeUsdc": "0.25"
+      "stakeUsdc": "0.25",
+      "agreement": { "deadlineDays": 3, "lamports": "1000000" }
     },
     {
       "name": "supporter-01",
@@ -123,7 +124,8 @@
         { "city": "zagreb", "bbox": [15.975, 45.79, 16.06, 45.825], "windowM": 900, "floorCap": 4 }
       ],
       "dailyProposals": 1,
-      "stakeUsdc": "0.10"
+      "stakeUsdc": "0.10",
+      "agreement": { "deadlineDays": 3, "lamports": "1000000" }
     },
     {
       "name": "gentle-01",
@@ -133,7 +135,8 @@
       "weights": { "density": 0.2, "openSpace": 0.5, "valueUplift": 0.3, "heritage": 0.0 },
       "areas": [{ "mode": "contest", "floorCap": 3, "withinDays": 3 }],
       "dailyProposals": 1,
-      "stakeUsdc": "0.10"
+      "stakeUsdc": "0.10",
+      "agreement": { "deadlineDays": 3, "lamports": "1000000" }
     },
     {
       "name": "skeptic-02",
@@ -296,7 +299,8 @@
         }
       ],
       "dailyProposals": 1,
-      "stakeUsdc": "0.01"
+      "stakeUsdc": "0.01",
+      "agreement": { "deadlineDays": 3, "lamports": "1000000" }
     }
   ]
 }

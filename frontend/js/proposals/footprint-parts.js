@@ -63,8 +63,8 @@
      * `constructionFrame.kind: 'legacy-centreline'` by the legacy migration: the server buffers the
      * centreline by width/2, which is why such a footprint is `approximate`. An unflagged centre
      * line without its polygon is `invalid` with `corridorUnprepared: true`: a road whose land the
-     * browser has not built yet (road-drawing.js builds it as the road is drawn; the server no
-     * longer prepares it).
+     * browser has not built yet (road-drawing.js builds it as the road is drawn; only the browser
+     * builds corridor land).
      */
     function footprintParts(proposal) {
         const out = { polygons: [], centerline: null, sources: [], approximate: false, vertexCount: 0, invalid: null };

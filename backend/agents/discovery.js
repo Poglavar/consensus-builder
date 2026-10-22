@@ -1,108 +1,92 @@
-// Read proposal summaries for society/supporter policies, and check minted ones against their chain.
-
-import { createHash } from 'node:crypto';
-import { effectiveLifecycleStatus } from '../proposals/lifecycle.js';
-import { isSolanaMinted } from './supporter-picker.js';
+// The agreements the support and society agents act on: newest-first pages of the index (GET
+// /agreements, per city or all cities), each with its chain account (PDA(sponsor, CID), only the
+// sponsor can create it) and that account's status read from the chain in batches. The index's own
+// status lags the chain, so a policy only ever acts on the chain's word; an agreement whose account
+// does not exist yet (or that names no sponsor) is not minted and is never a target.
+import { createRequire } from 'node:module';
 import { PublicKey } from '@solana/web3.js';
 import { accountsPerRequest, getMultipleAccountsBatched } from '../solana/account-batching.js';
-import { decodeProposalState, PROPOSAL_PROGRAM_ID } from './lifecycle-actions.js';
-import { proposalAccountOf } from '../markets/contests.js';
+import { AGREEMENT_PROGRAM_ID, agreementAccountOf } from './agreement-minter.js';
 
-export const SUMMARY_PAGE = 1000;
-export const MAX_DISCOVERED = 3000;
-const CHAIN_STATUS = ['Active', 'Executed', 'Cancelled', 'Expired'];
-const PROPOSAL_DISCRIMINATOR = createHash('sha256').update('account:Proposal').digest().subarray(0, 8);
+const require = createRequire(import.meta.url);
+const agreementClient = require('../../frontend/js/solana/agreement-client.js');
 
-function key(proposal) {
-    const id = typeof proposal?.proposalId === 'string' ? proposal.proposalId.trim() : '';
-    if (!id || /^[0-9]+$/.test(id)) throw new Error('proposal summary is missing its non-numeric authored proposalId');
-    return id;
-}
+// GET /agreements answers at most this many rows per call (routes/designs.js MAX_DESIGN_LIST_LIMIT).
+export const AGREEMENT_PAGE = 1000;
 
-const proposalAccount = proposal => proposalAccountOf(proposal?.onchain);
-
-async function summaries(apiBase, city, fetchJson, log) {
-    const proposals = [];
-    let count = Infinity;
-    for (let offset = 0; offset < Math.min(count, MAX_DISCOVERED); offset += SUMMARY_PAGE) {
-        const query = `${city ? `city=${encodeURIComponent(city)}&` : ''}limit=${SUMMARY_PAGE}&offset=${offset}`;
-        const page = await fetchJson(`${apiBase}/proposals/summary?${query}`);
-        proposals.push(...(page.proposals || []));
-        count = Number(page.count) || 0;
-        if (!(page.proposals || []).length) break;
+/** One index row as the policies read it: the CID is the key, the account the chain subject. */
+export function agreementSummary(row) {
+    const content = row?.content || {};
+    if (!row?.cid) throw new Error('agreement row is missing its CID');
+    const sponsor = typeof content.sponsor === 'string' && content.sponsor ? content.sponsor : null;
+    let account = null;
+    if (sponsor) {
+        try { account = agreementAccountOf(row.cid, sponsor); } catch (_) { account = null; }
     }
-    if (count > proposals.length) log(`${city || 'all cities'}: read the newest ${proposals.length} of ${count} proposals (cap ${MAX_DISCOVERED})`);
-    return proposals;
+    return {
+        cid: row.cid,
+        name: row.title || content.title || row.cid,
+        city: row.city ?? null,
+        author: row.author ?? content.author ?? null,
+        sponsor,
+        account,
+        createdAt: row.createdAt ?? content.createdAt ?? null,
+        deadline: row.deadline ?? content.deadline ?? null,
+        designCids: Array.isArray(row.designCids) ? row.designCids : (content.designs || []).map(design => design.cid),
+        designs: content.designs || [],
+        inputParcelIds: row.inputParcelIds || [],
+        rule: content.rule || null,
+        // Filled from the chain by readAgreementStatuses: 'active' | 'executed' | 'cancelled' | 'expired',
+        // or null while the account does not exist.
+        chainStatus: null
+    };
 }
 
-export async function discoverProposalInputs({ apiBase, cities, fetchJson, log = () => {} }) {
-    const pages = await Promise.all(cities.map(city => summaries(apiBase, city, fetchJson, log)));
-    const byId = new Map();
-    pages.flat().forEach(proposal => byId.set(key(proposal), proposal));
-    return Array.from(byId.values()).sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+/**
+ * The newest agreements of each city (null = every city), de-duplicated, newest first. A page cut at
+ * AGREEMENT_PAGE is logged, never silent.
+ * @param index publication-client.js createIndexClient()
+ */
+export async function discoverAgreements({ index, cities, log = () => {} }) {
+    const byCid = new Map();
+    for (const city of cities) {
+        const page = await index.listAgreements({ city, limit: AGREEMENT_PAGE });
+        if (page.agreements.length >= AGREEMENT_PAGE) log(`${city || 'all cities'}: read the newest ${AGREEMENT_PAGE} agreements (the index answers at most that many)`);
+        for (const row of page.agreements) if (!byCid.has(row.cid)) byCid.set(row.cid, agreementSummary(row));
+    }
+    return Array.from(byCid.values()).sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
 }
 
-// API rows can lag the daily evidence materializer. Every Solana proposal, including ordinary
-// records, must be checked on chain before a policy acts on its reported lifecycle.
-export function applyProposalStatuses(proposals, infos, { decodeState = decodeProposalState, programId = PROPOSAL_PROGRAM_ID } = {}) {
-    const minted = (proposals || []).filter(isSolanaMinted);
-    if (infos.length !== minted.length) throw new Error(`received ${infos.length} chain states for ${minted.length} minted proposals`);
-    const expectedOwner = new PublicKey(programId);
-    // Validate the entire batch before changing any policy inputs or persisting a read model.
-    const statuses = minted.map((proposal, index) => {
-        const label = `proposal ${key(proposal)}`;
+/**
+ * Set chainStatus on every agreement with an account, from one batched read of the accounts. An account
+ * owned by another program, or holding another CID or sponsor, fails the whole read: nothing acts on it.
+ */
+export async function readAgreementStatuses(agreements, connection, { env = process.env, programId = AGREEMENT_PROGRAM_ID } = {}) {
+    const withAccount = (agreements || []).filter(agreement => agreement.account);
+    if (!withAccount.length) return agreements;
+    const infos = await getMultipleAccountsBatched(connection, withAccount.map(agreement => new PublicKey(agreement.account)), { batchSize: accountsPerRequest(env) });
+    const program = new PublicKey(programId);
+    const statuses = withAccount.map((agreement, index) => {
         const info = infos[index];
-        if (!info?.data) throw new Error(`${label} chain account ${proposalAccount(proposal)} is missing`);
-        if (!info.owner || !new PublicKey(info.owner).equals(expectedOwner)) {
-            throw new Error(`${label} chain account is not owned by the proposal program`);
+        if (!info?.data) return null;
+        if (!info.owner || !new PublicKey(info.owner).equals(program)) throw new Error(`agreement ${agreement.cid}: account ${agreement.account} is not owned by the agreement program`);
+        const state = agreementClient.readAgreement(Uint8Array.from(info.data), agreement.account);
+        if (!state) throw new Error(`agreement ${agreement.cid}: account ${agreement.account} is not an Agreement account`);
+        if (state.cid !== agreement.cid || state.authority !== agreement.sponsor) {
+            throw new Error(`agreement ${agreement.cid}: account ${agreement.account} holds ${state.cid} of ${state.authority}`);
         }
-        if (!Buffer.from(info.data).subarray(0, 8).equals(PROPOSAL_DISCRIMINATOR)) {
-            throw new Error(`${label} chain account is not a Proposal account`);
-        }
-        const state = decodeState(info.data);
-        if (!Number.isInteger(state?.status) || state.status < 0 || state.status >= CHAIN_STATUS.length) {
-            throw new Error(`${label} has invalid on-chain status ${state?.status}`);
-        }
-        return CHAIN_STATUS[state.status];
+        return state.status.toLowerCase();
     });
-    minted.forEach((proposal, index) => {
-        proposal.onchainLifecycleStatus = statuses[index];
-        // A local expiry still excludes support while its terminal verdict waits to be submitted.
-        proposal.lifecycleStatus = effectiveLifecycleStatus(statuses[index], proposal.expiresAt);
-    });
-    return proposals;
+    withAccount.forEach((agreement, index) => { agreement.chainStatus = statuses[index]; });
+    return agreements;
 }
 
-// This projects confirmed terminal account state into the API read model. The separate oracle
-// still records immutable transaction evidence and land events; no authored metadata is changed.
-async function reconcileTerminalStatuses(pool, proposals) {
-    const observations = proposals.filter(isSolanaMinted)
-        .filter(proposal => ['Executed', 'Cancelled', 'Expired'].includes(proposal.onchainLifecycleStatus))
-        .map(proposal => ({ account: proposalAccount(proposal), status: proposal.onchainLifecycleStatus }));
-    if (!observations.length) return 0;
-    const result = await pool.query(`
-        UPDATE proposal p
-        SET lifecycle_status = observed.status,
-            updated_at = now()
-        FROM jsonb_to_recordset($1::jsonb) AS observed(account text, status text)
-        WHERE p.onchain_data->>'proposalId' = observed.account
-          AND COALESCE(p.onchain_data->>'chainId', 'solana-devnet') = 'solana-devnet'
-          AND COALESCE(p.onchain_data->>'chainType', 'solana') = 'solana'
-          AND p.lifecycle_status IS DISTINCT FROM observed.status
-        RETURNING p.id
-    `, [JSON.stringify(observations)]);
-    return result.rowCount;
-}
+/** Minted: its account exists on chain. */
+export const isMinted = agreement => Boolean(agreement?.account && agreement.chainStatus);
 
-export async function refreshProposalStatuses(proposals, connection, { env = process.env, pool = null, log = () => {} } = {}) {
-    const minted = (proposals || []).filter(isSolanaMinted);
-    if (!minted.length) return proposals;
-    const accounts = minted.map(proposal => new PublicKey(proposalAccount(proposal)));
-    const infos = await getMultipleAccountsBatched(connection, accounts, { batchSize: accountsPerRequest(env) });
-    applyProposalStatuses(proposals, infos);
-    if (pool) {
-        const reconciled = await reconcileTerminalStatuses(pool, minted);
-        if (reconciled) log(`OK reconciled ${reconciled} proposal lifecycle(s) from confirmed on-chain state`);
-    }
-    return proposals;
+/** Open for support: Active on chain and before its deadline (a passed deadline can only expire). */
+export function isOpen(agreement, now = Date.now()) {
+    if (agreement?.chainStatus !== 'active') return false;
+    const deadline = Date.parse(agreement.deadline || '');
+    return !Number.isFinite(deadline) || deadline > now;
 }

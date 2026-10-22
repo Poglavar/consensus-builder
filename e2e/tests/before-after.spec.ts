@@ -5,8 +5,8 @@
 import { test, expect } from '../helpers/fixtures';
 import type { Page } from '@playwright/test';
 import { openCity, openParcel, createSpace, showProposal, drawCorridor, clickMapPoint, PARCEL_ID, PARCEL_GEOMETRY } from '../helpers/runtime';
-
-const PROPOSAL_ACCOUNT = 'Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR';
+import { pageIndex } from '../helpers/mocks/shared-server';
+import { fileIndexedAgreement, MINTED_ACCOUNT as AGREEMENT_ACCOUNT, OPEN_POOL } from '../helpers/agreements';
 // A 1×1 PNG stands in for a rendered picture; the dialog accepts data URLs like any other image.
 const PIXEL_PNG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
 
@@ -23,22 +23,12 @@ async function openParcelsSection(page: Page): Promise<void> {
   if (!(await summary.evaluate(el => (el.parentElement as HTMLDetailsElement).open))) await summary.click();
 }
 
-function marketsPayload(pictures: { screenshotUrl: string | null; screenshotBeforeUrl: string | null }) {
-  const market = { address: 'HQqbGtviQr5KRs4x8CWSCVhnkrLKDiYqXmVSBY8GZdfw', yesPool: '250000', noPool: '50000', poolAtomic: '300000', resolved: false, outcome: null };
-  return {
-    city: 'zagreb', generatedAt: '2026-10-12T07:00:00.000Z', cluster: 'devnet', stakeDecimals: 6,
-    marketProgram: 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB', stakeMint: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU',
-    summary: { contests: 1, proposals: 1, markets: 1, openMarkets: 1, poolAtomic: '300000' },
-    contests: [{
-      id: 'c-test', parcelIds: ['HR-335614-2311'], proposalCount: 1, mintedCount: 1, marketCount: 1, openMarketCount: 1,
-      poolAtomic: '300000', latestCreatedAt: '2026-10-02T00:00:00Z',
-      proposals: [{
-        id: 789, proposalId: 'minted-one', title: 'Plan-led infill', goal: 'single', lifecycleStatus: 'Active', createdAt: '2026-10-01T09:30:00Z',
-        expiresAt: null, author: 'densifier-01', agent: true, proposalRole: null, parcelIds: ['HR-335614-2311'],
-        proposalAccount: PROPOSAL_ACCOUNT, bettable: true, canOpenMarket: false, market, ...pictures
-      }]
-    }]
-  };
+// A minted agreement with an open pool, as the page's index lists it (GET /markets), with its rendered
+// pictures: the map with its designs (screenshotUrl) and the same ground without them
+// (screenshotBeforeUrl). An untitled agreement is named by its designs' titles.
+function fileBet(page: Page, pictures: { screenshotUrl: string | null; screenshotBeforeUrl: string | null },
+  { title = 'Plan-led infill', designTitles = ['Infill park'] }: { title?: string | null; designTitles?: string[] } = {}): void {
+  fileIndexedAgreement(pageIndex(page), { title, designTitles, minted: {}, pool: OPEN_POOL, row: pictures });
 }
 
 test.describe('Before / after on the main map @features', () => {
@@ -283,12 +273,11 @@ test.describe('Before / after on a phone @features', () => {
 });
 
 test.describe('Before / after in the bet dialog @features', () => {
-  test('the dialog puts the thumbnail and the same ground without the proposal under one divider', async ({ mockApi: page }) => {
-    await page.route('**/markets?*', route => route.fulfill({ status: 200, contentType: 'application/json',
-      body: JSON.stringify(marketsPayload({ screenshotUrl: PIXEL_PNG, screenshotBeforeUrl: PIXEL_PNG })) }));
-    await page.goto(`/?city=zg&bets=${PROPOSAL_ACCOUNT}&reduceMotion=1`);
+  test('the dialog puts the thumbnail and the same ground without the agreement under one divider', async ({ mockApi: page }) => {
+    fileBet(page, { screenshotUrl: PIXEL_PNG, screenshotBeforeUrl: PIXEL_PNG });
+    await page.goto(`/?city=zg&bets=${AGREEMENT_ACCOUNT}&reduceMotion=1`);
     const dialog = page.locator('#proposalMarketOverlay');
-    await expect(dialog).toBeVisible();
+    await expect(dialog).toBeVisible({ timeout: 30_000 });
     const compare = dialog.locator('.bets-dialog__compare');
     await expect(compare).toBeVisible();
     await expect(compare.locator('img')).toHaveCount(2);
@@ -310,20 +299,17 @@ test.describe('Before / after in the bet dialog @features', () => {
     await expect(page.locator('.bets-dialog__compare, .map-compare__handle')).toHaveCount(0);
   });
 
-  test('a direct named-plan bet uses the whole-plan before and after image pair', async ({ mockApi: page }) => {
-    const payload = marketsPayload({ screenshotUrl: PIXEL_PNG, screenshotBeforeUrl: PIXEL_PNG });
-    Object.assign(payload.contests[0].proposals[0], {
-      id: 'plan:harbor-plan', kind: 'plan', planSlug: 'harbor-plan',
-      title: 'Harbor plan', goal: 'plan', memberCount: 2,
-      members: [{ id: 701, title: 'First building' }, { id: 702, title: 'Second building' }]
-    });
-    await page.route('**/markets?*', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(payload) }));
-    await page.goto(`/bets/${PROPOSAL_ACCOUNT}?city=zg&reduceMotion=1`);
+  // An agreement of several designs is one bet: its pictures show all of them before and after, and
+  // an untitled one is named by its designs (bets-model.js labelOf).
+  test('a bet on an agreement of several designs uses its whole before and after image pair', async ({ mockApi: page }) => {
+    fileBet(page, { screenshotUrl: PIXEL_PNG, screenshotBeforeUrl: PIXEL_PNG }, { title: null, designTitles: ['North park', 'South square'] });
+    await page.goto(`/bets/${AGREEMENT_ACCOUNT}?city=zg&reduceMotion=1`);
     const dialog = page.locator('#proposalMarketOverlay');
-    await expect(dialog).toBeVisible();
+    await expect(dialog).toBeVisible({ timeout: 30_000 });
+    await expect(dialog.locator('.cb-dialog__title')).toHaveText('Will North park + South square execute on-chain?');
     const compare = dialog.locator('.bets-dialog__compare');
     await expect(compare.locator('img')).toHaveCount(2);
-    expect(await compare.locator('img').first().evaluate(el => getComputedStyle(el).objectFit)).toBe('contain');
+    // The two pictures cover the same frame, so the divider compares like with like.
     const sizes = await compare.locator('img').evaluateAll(images => images.map(image => image.getBoundingClientRect().height));
     expect(Math.abs(sizes[0] - sizes[1])).toBeLessThan(1);
     expect((await compare.boundingBox())!.height).toBeGreaterThanOrEqual(sizes[0]);
@@ -332,15 +318,13 @@ test.describe('Before / after in the bet dialog @features', () => {
     await slider.focus();
     await page.keyboard.press('Home');
     await expect(slider).toHaveAttribute('aria-valuenow', '0');
-    await expect(dialog.getByText('Harbor plan', { exact: true })).toBeVisible();
   });
 
   test('without a before picture the dialog keeps its plain thumbnail', async ({ mockApi: page }) => {
-    await page.route('**/markets?*', route => route.fulfill({ status: 200, contentType: 'application/json',
-      body: JSON.stringify(marketsPayload({ screenshotUrl: PIXEL_PNG, screenshotBeforeUrl: null })) }));
-    await page.goto(`/?city=zg&bets=${PROPOSAL_ACCOUNT}&reduceMotion=1`);
+    fileBet(page, { screenshotUrl: PIXEL_PNG, screenshotBeforeUrl: null });
+    await page.goto(`/?city=zg&bets=${AGREEMENT_ACCOUNT}&reduceMotion=1`);
     const dialog = page.locator('#proposalMarketOverlay');
-    await expect(dialog).toBeVisible();
+    await expect(dialog).toBeVisible({ timeout: 30_000 });
     await expect(dialog.locator('.bets-dialog__thumb')).toHaveCount(1);
     await expect(dialog.locator('.bets-dialog__compare')).toHaveCount(0);
   });

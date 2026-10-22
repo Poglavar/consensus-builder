@@ -127,7 +127,9 @@
             site: content.site,
             toleranceM: content.toleranceM,
             geometry: content.geometry,
-            createdAt: content.authoredAt || row.createdAt || null,
+            // The design object hashes authoredAt as the record's createdAt (DesignRecord.published),
+            // so it is taken from the object alone: never the index's arrival time, never the clock.
+            createdAt: content.authoredAt ?? null,
             cadastreParcelIds: bindingParcelIds(row.binding),
             published: { cid: row.cid, publishedAt: row.createdAt || null, apiBase: base }
         };
@@ -156,9 +158,7 @@
             createdAt: row.createdAt || null,
             updatedAt: row.createdAt || null,
             screenshotUrl: row.screenshotUrl || null,
-            cadastreParcelIds: bindingParcelIds(row.binding),
-            acceptedParcelIds: [],
-            isMinted: false
+            cadastreParcelIds: bindingParcelIds(row.binding)
         };
     }
 

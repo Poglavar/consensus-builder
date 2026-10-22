@@ -332,8 +332,6 @@ async function createProposal() {
             cadastreParcelIds: authoredCadastreParcelIds,
             primaryType: proposalMainType,
             goal: selectedTool,
-            acceptedParcelIds: [], // Derived consent tally; authoring supplies no owner decisions
-            ownerAcceptances: {},
             applied: false,
             bounds: bounds, // Store bounds for reliable positioning
             createdAt: new Date().toISOString(), // Add creation timestamp

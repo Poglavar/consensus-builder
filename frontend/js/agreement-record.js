@@ -257,15 +257,26 @@
     // The canonical record. Throws (code 'invalid-agreement') only when its shape is unusable:
     // wrong schema, missing ids, wrong types, duplicates that make a reference ambiguous, an output
     // hash that is not its geometry's. Everything the dialog can get wrong is left to validate.
-    // Where the agreement went when it was proposed (M2): its CID, when, and the index it was sent
-    // to. Absent until then; a published agreement is immutable, its CID is what decisions sign.
+    // Where the agreement went when it was proposed (M2): its CID, when, the index it was sent to and
+    // the wallet that sponsors it (the published object's `sponsor`, null when proposed without one;
+    // M3 mints at PDA(sponsor, cid), so only that wallet can mint it). Absent until then; a published
+    // agreement is immutable, its CID is what decisions sign.
     function publishedOf(raw) {
         if (raw === undefined || raw === null) return null;
         if (!isObject(raw)) fail('published must be an object.');
         if (!cid().isCid(raw.cid)) fail('published.cid must be a CID.');
         const apiBase = textOf(raw.apiBase);
         if (!apiBase) fail('published.apiBase is required.');
-        return { cid: raw.cid, publishedAt: timestampOf(raw.publishedAt, 'published.publishedAt'), apiBase };
+        return { cid: raw.cid, publishedAt: timestampOf(raw.publishedAt, 'published.publishedAt'), apiBase, sponsor: textOf(raw.sponsor) };
+    }
+
+    // Where the agreement is minted (M3): the chain account the index mirrors, kept as given
+    // ({ chain: 'solana', cluster, account, signature? }, agreement-sync.js recordOnchain). Absent
+    // until minted; the chain is the truth, so the panel reads the account itself for its state.
+    function onchainOf(raw) {
+        if (raw === undefined || raw === null) return null;
+        if (!isObject(raw)) fail('onchain must be an object.');
+        return clone(raw);
     }
 
     function normalize(raw) {
@@ -284,7 +295,8 @@
             money: moneyOf(raw.money),
             rule: ruleOf(raw.rule),
             deadline: deadlineOf(raw.deadline),
-            published: publishedOf(raw.published)
+            published: publishedOf(raw.published),
+            onchain: onchainOf(raw.onchain)
         };
     }
 

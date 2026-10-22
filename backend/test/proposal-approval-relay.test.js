@@ -29,8 +29,8 @@ const agreementDbRow = (overrides = {}) => ({
 });
 
 describe('admitting a relayed owner decision', () => {
-    it('stores only decisions whose three signatures verify for this agreement, owner and signer', () => {
-        const good = decision(wallets.c, 'owner-c');
+    it('stores only decisions whose three signatures verify for this agreement, owner and signer', async () => {
+        const good = await decision(wallets.c, 'owner-c');
         expect(admit([], good)).toEqual({ ok: true });
 
         // The signature covers every field of the statement: another time or decision is unsigned.
@@ -39,10 +39,10 @@ describe('admitting a relayed owner decision', () => {
         const forged = { ...good, decisionProof: { ...good.decisionProof, signature: wallets.d.signText('anything') } };
         expect(admit([], forged)).toMatchObject({ status: 401, code: 'bad_signature' });
         // C's wallet signs a decision for D with C's evidence: the evidence names another owner.
-        expect(admit([], decision(wallets.c, 'owner-d', { evidence: good.evidence }))).toMatchObject({ status: 403, code: 'not_authorized' });
+        expect(admit([], await decision(wallets.c, 'owner-d', { evidence: good.evidence }))).toMatchObject({ status: 403, code: 'not_authorized' });
         // A member outside the agreement's lens attests (for a copy that lists it): not this agreement's authority.
         const copy = agreement({ lens: [outsider.publicKey.toBase58()] });
-        expect(admit([], decision(wallets.c, 'owner-c', { evidence: evidenceFor(wallets.c, 'owner-c', copy, attesterFor(outsider)) })))
+        expect(admit([], await decision(wallets.c, 'owner-c', { evidence: await evidenceFor(wallets.c, 'owner-c', copy, attesterFor(outsider)) })))
             .toMatchObject({ status: 403, code: 'not_authorized' });
         expect(admit([], { ...good, ownerId: 'owner-z' })).toMatchObject({ status: 404, code: 'unknown_owner' });
         expect(admit([], good, agreement({ approvalConfig: { ...approvalConfig, rights: null } }))).toMatchObject({ status: 409, code: 'ownership_unresolved' });
@@ -53,7 +53,7 @@ describe('admitting a relayed owner decision', () => {
         // The decision signs this agreement's CID: a counter-agreement over the same land and rule
         // (another CID) does not count it.
         expect(admit([], good, agreement({ agreementCid: COUNTER_AGREEMENT_CID }))).toMatchObject({ status: 401, code: 'bad_signature' });
-        expect(admit([], decision(wallets.c, 'owner-c', { offset: 3600 }))).toMatchObject({ status: 422, code: 'future_decision' });
+        expect(admit([], await decision(wallets.c, 'owner-c', { offset: 3600 }))).toMatchObject({ status: 422, code: 'future_decision' });
         expect(admit([], { ...good, decision: 'maybe' })).toMatchObject({ status: 400, code: 'bad_request' });
         expect(admit([], { ...good, decidedAt: '2026-10-21' })).toMatchObject({ status: 400, code: 'bad_request' });
         expect(admit([], { ...good, providerId: 'test-lens-signer' })).toMatchObject({ status: 422, code: 'unsupported_provider' });
@@ -61,31 +61,31 @@ describe('admitting a relayed owner decision', () => {
         expect(admit([], null)).toMatchObject({ status: 400 });
     });
 
-    it('keeps each owner’s decisions in signing order and applies the local withdrawal rules', () => {
-        const accepted = decision(wallets.c, 'owner-c', { offset: 10 });
+    it('keeps each owner’s decisions in signing order and applies the local withdrawal rules', async () => {
+        const accepted = await decision(wallets.c, 'owner-c', { offset: 10 });
         expect(admit([accepted], accepted)).toEqual({ ok: true, duplicate: true });
-        expect(admit([accepted], decision(wallets.c, 'owner-c', { offset: 20 }))).toMatchObject({ status: 409, code: 'already_accepted' });
-        expect(admit([accepted], decision(wallets.c, 'owner-c', { offset: 5 }))).toMatchObject({ status: 409, code: 'stale_decision' });
-        expect(admit([accepted], decision(wallets.c2, 'owner-c', { decision: 'withdraw', offset: 30 }))).toMatchObject({ status: 403, code: 'not_your_acceptance' });
-        expect(admit([], decision(wallets.d, 'owner-d', { decision: 'withdraw', offset: 30 }))).toMatchObject({ status: 409, code: 'nothing_to_withdraw' });
-        const withdrawn = decision(wallets.c, 'owner-c', { decision: 'withdraw', offset: 30 });
+        expect(admit([accepted], await decision(wallets.c, 'owner-c', { offset: 20 }))).toMatchObject({ status: 409, code: 'already_accepted' });
+        expect(admit([accepted], await decision(wallets.c, 'owner-c', { offset: 5 }))).toMatchObject({ status: 409, code: 'stale_decision' });
+        expect(admit([accepted], await decision(wallets.c2, 'owner-c', { decision: 'withdraw', offset: 30 }))).toMatchObject({ status: 403, code: 'not_your_acceptance' });
+        expect(admit([], await decision(wallets.d, 'owner-d', { decision: 'withdraw', offset: 30 }))).toMatchObject({ status: 409, code: 'nothing_to_withdraw' });
+        const withdrawn = await decision(wallets.c, 'owner-c', { decision: 'withdraw', offset: 30 });
         expect(admit([accepted], withdrawn)).toEqual({ ok: true });
         // Accepting again after the withdrawal, by the other signer for C, is a new decision.
-        expect(admit([accepted, withdrawn], decision(wallets.c2, 'owner-c', { offset: 40 }))).toEqual({ ok: true });
+        expect(admit([accepted, withdrawn], await decision(wallets.c2, 'owner-c', { offset: 40 }))).toEqual({ ok: true });
         // Another owner's history does not make this one stale.
-        expect(admit([withdrawn, accepted], decision(wallets.a, 'owner-a', { offset: 1 }))).toEqual({ ok: true });
+        expect(admit([withdrawn, accepted], await decision(wallets.a, 'owner-a', { offset: 1 }))).toEqual({ ok: true });
     });
 
-    it('folds decisions in any order to the same current acceptances, dropping what does not verify or apply', () => {
+    it('folds decisions in any order to the same current acceptances, dropping what does not verify or apply', async () => {
         const rows = [
-            decision(wallets.a, 'owner-a', { offset: 1 }),
-            decision(wallets.c, 'owner-c', { offset: 2 }),
-            decision(wallets.c, 'owner-c', { decision: 'withdraw', offset: 3 }),
-            decision(wallets.c, 'owner-c', { offset: 4 }),
-            decision(wallets.d, 'owner-d', { offset: 5 }),
-            decision(wallets.c2, 'owner-c', { decision: 'withdraw', offset: 6 }), // another signer cannot withdraw C's acceptance
-            { ...decision(wallets.b, 'owner-b', { offset: 7 }), decidedAt: at(8) }, // restamped after signing
-            decision(wallets.b, 'owner-b', { offset: 9, item: agreement({ agreementCid: COUNTER_AGREEMENT_CID }) }) // the counter-agreement's
+            await decision(wallets.a, 'owner-a', { offset: 1 }),
+            await decision(wallets.c, 'owner-c', { offset: 2 }),
+            await decision(wallets.c, 'owner-c', { decision: 'withdraw', offset: 3 }),
+            await decision(wallets.c, 'owner-c', { offset: 4 }),
+            await decision(wallets.d, 'owner-d', { offset: 5 }),
+            await decision(wallets.c2, 'owner-c', { decision: 'withdraw', offset: 6 }), // another signer cannot withdraw C's acceptance
+            { ...(await decision(wallets.b, 'owner-b', { offset: 7 })), decidedAt: at(8) }, // restamped after signing
+            await decision(wallets.b, 'owner-b', { offset: 9, item: agreement({ agreementCid: COUNTER_AGREEMENT_CID }) }) // the counter-agreement's
         ];
         const forward = relay.fold(agreement(), rows);
         const backward = relay.fold(agreement(), [...rows].reverse().concat(rows));
@@ -121,8 +121,11 @@ describe('owner decision relay route', () => {
         const indexed = serializeAgreementRow(agreementDbRow());
         expect(decisionSubject(indexed)).toEqual({ ...agreement(), onchain: null });
         expect(approval.contextHash(decisionSubject(indexed))).toBe(approval.contextHash(agreement()));
-        // The index computes expiry from the deadline; the relay then refuses decisions.
+        // The index computes expiry from the deadline, and executed or cancelled from the minted account
+        // (routes/agreements.js); the relay then refuses decisions, as the browser's own rules do.
         expect(decisionSubject(serializeAgreementRow(agreementDbRow({ status: 'expired' })))).toMatchObject({ lifecycleStatus: 'Expired' });
+        expect(decisionSubject(serializeAgreementRow(agreementDbRow({ status: 'cancelled' })))).toMatchObject({ lifecycleStatus: 'Cancelled' });
+        expect(decisionSubject(serializeAgreementRow(agreementDbRow({ status: 'executed' })))).toMatchObject({ lifecycleStatus: 'Executed' });
     });
 });
 
@@ -141,14 +144,14 @@ describe('two browsers through the relay', () => {
         const first = agreement();
         const second = agreement();
         // Browser 1 holds A's and C's acceptances locally (recorded before it was online) and syncs.
-        first.ownerApprovals = { 'owner-a': decision(wallets.a, 'owner-a', { offset: 1 }), 'owner-c': decision(wallets.c, 'owner-c', { offset: 2 }) };
+        first.ownerApprovals = { 'owner-a': await decision(wallets.a, 'owner-a', { offset: 1 }), 'owner-c': await decision(wallets.c, 'owner-c', { offset: 2 }) };
         expect(await relay.sync(first, transport)).toEqual({ synced: true, changed: false, sent: 2 });
         // Browser 2 sees both and counts them only because they verify.
         expect(await relay.sync(second, transport)).toMatchObject({ synced: true, changed: true, sent: 0 });
         expect(counted(second, second.ownerApprovals)).toEqual(['owner-a', 'owner-c']);
         // Browser 2 records D's acceptance and C withdraws there; browser 1 catches up.
-        second.ownerApprovals['owner-d'] = decision(wallets.d, 'owner-d', { offset: 3 });
-        const withdrawal = decision(wallets.c, 'owner-c', { decision: 'withdraw', offset: 4 });
+        second.ownerApprovals['owner-d'] = await decision(wallets.d, 'owner-d', { offset: 3 });
+        const withdrawal = await decision(wallets.c, 'owner-c', { decision: 'withdraw', offset: 4 });
         delete second.ownerApprovals['owner-c'];
         second.ownerApprovalHistory = [...(second.ownerApprovalHistory || []), first.ownerApprovals['owner-c'], withdrawal];
         expect(await relay.sync(second, transport)).toMatchObject({ synced: true, sent: 2 });
@@ -161,9 +164,9 @@ describe('two browsers through the relay', () => {
     });
 
     it('ignores a relay that serves forged or foreign decisions', async () => {
-        const genuine = decision(wallets.a, 'owner-a', { offset: 1 });
-        const forged = { ...decision(wallets.b, 'owner-b', { offset: 2 }), decidedAt: at(3) };
-        const foreign = decision(wallets.d, 'owner-d', { offset: 3, item: agreement({ agreementCid: COUNTER_AGREEMENT_CID }) });
+        const genuine = await decision(wallets.a, 'owner-a', { offset: 1 });
+        const forged = { ...(await decision(wallets.b, 'owner-b', { offset: 2 })), decidedAt: at(3) };
+        const foreign = await decision(wallets.d, 'owner-d', { offset: 3, item: agreement({ agreementCid: COUNTER_AGREEMENT_CID }) });
         const app = express();
         app.get('/agreements/:cid/decisions', (req, res) => res.json({ decisions: [genuine, forged, foreign] }));
         app.post('/agreements/:cid/decisions', (req, res) => res.status(201).json({ stored: true }));

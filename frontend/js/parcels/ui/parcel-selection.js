@@ -55,14 +55,18 @@
             return null;
         };
 
-        // Share-plan panel open: the map is pan/zoom only, and a click on ordinary fabric stays
-        // inert. A click on an applied PROPOSAL is answered by the panel, which finds that
-        // proposal's row — the map and the list are two views of one plan, so pointing at a thing
-        // in either should say where it is in the other.
-        if (global.sharePlanMode) {
-            if (typeof global.__sharePlanPickProposal === 'function') {
-                const picked = proposalOnThisParcel();
-                if (picked) global.__sharePlanPickProposal(picked, parcelId);
+        // A surface picks designs on the map (js/map-pick.js: the share panel, the agreement editor):
+        // the map is pan/zoom only, and a click on ordinary fabric stays inert. A click on an applied
+        // DESIGN is handed to that surface. The design is the topmost one at the point, as a normal
+        // click selects it (the drill's stack: a building standing on a layout's plot is the
+        // building), else the one standing on this parcel.
+        if (global.MapPick?.active()) {
+            const top = (e && e.latlng && global.__drillUi ? global.__drillUi.stackAt(e.latlng) || [] : [])
+                .find(entry => entry.kind === 'proposal');
+            const picked = top ? top.proposal : proposalOnThisParcel();
+            if (picked) {
+                const pickedKey = (typeof global.getProposalKey === 'function' && global.getProposalKey(picked)) || picked.proposalId;
+                global.MapPick.pick(pickedKey, { parcelId });
             }
             if (e) L.DomEvent.stopPropagation(e);
             return;

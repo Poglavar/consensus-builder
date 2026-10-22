@@ -1,8 +1,8 @@
 // One derivation of a proposal's displayed state (frontend/js/proposals/display-state.js): the ladder
 // rung, Published only while a design still hashes to the CID it was published as at this index
-// (proposals/design-sync.js publishedCid), Minted from a mint record only, and no "Applied" or map
-// action for a cancelled proposal. A cancelled proposal (781 on the local stack) used to read
-// Published + Applied with an Unapply button.
+// (proposals/design-sync.js publishedCid), never Minted (designs are not minted,
+// plan-design-agreement.md M3), and no "Applied" or map action for a cancelled proposal. A cancelled
+// proposal (781 on the local stack) used to read Published + Applied with an Unapply button.
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 
@@ -16,8 +16,8 @@ const API = 'https://api.example';
 const SITE = { type: 'Polygon', coordinates: [[[15.97, 45.8], [15.971, 45.8], [15.971, 45.801], [15.97, 45.801], [15.97, 45.8]]] };
 const design = (extra = {}) => ({ proposalId: 'p-781', goal: 'park', title: 'Pocket park', site: SITE,
     createdAt: '2026-10-01T12:00:00.000Z', structureProposal: { kind: 'park', geometry: SITE }, ...extra });
-// A design published at API: it carries the CID its content hashes to. Lifecycle, application and
-// mint fields are not content, so they leave the CID as it is.
+// A design published at API: it carries the CID its content hashes to. Lifecycle and application
+// fields are not content, so they leave the CID as it is.
 const published = (extra = {}) => {
     const record = design(extra);
     return { ...record, published: { cid: DesignRecord.cidOf(record), publishedAt: '2026-10-02T08:00:00.000Z', apiBase: API } };
@@ -46,7 +46,9 @@ describe('proposal display state', () => {
             { ...record, published: { ...record.published, apiBase: 'https://elsewhere.example' } },
             { ...record, published: { ...record.published, cid: 'not-a-cid' } },
             // A server row number is no publication.
-            design({ lifecycleStatus: 'Active', serverProposalId: '781', publicationApiBase: API })
+            design({ lifecycleStatus: 'Active', serverProposalId: '781', publicationApiBase: API }),
+            // Nor is a mint record, and it is no rung of its own: designs are not minted (M3).
+            design({ lifecycleStatus: 'Active', isMinted: true, onchain: { transactionHash: '0xabc' }, nft: { contract: 'Prog', tokenId: 'Mint' } })
         ]) {
             expect(publishedCid(draft, API)).toBeNull();
             expect(displayState.of(draft, { serial: publishedCid(draft, API) })).toMatchObject({ rung: 'draft', published: false });
@@ -94,41 +96,23 @@ describe('proposal display state', () => {
             .toMatchObject({ rung: 'execution-unverified', applied: true, modifier: null });
     });
 
-    it('calls a published design Published, never Minted', () => {
-        const cidOnly = published({ lifecycleStatus: 'Active' });
-        expect(displayState.hasMintRecord(cidOnly)).toBe(false);
-        expect(stateOf(cidOnly, { applied: false, lifecycleKey: 'active' })).toMatchObject({ rung: 'published', minted: false });
-    });
-
-    it('calls a proposal Minted only from a mint record, and keeps it Minted when cancelled', () => {
-        expect(displayState.hasMintRecord(published({ isMinted: true }))).toBe(true);
-        expect(displayState.hasMintRecord(published({ onchain: { transactionHash: '0xabc' } }))).toBe(true);
-        expect(displayState.hasMintRecord(published({ nft: { contract: 'Prog', tokenId: 'Mint' } }))).toBe(true);
-        expect(displayState.hasMintRecord(published({ onchain: { contractAddress: '0xc', proposalId: '7' } }))).toBe(true);
-        expect(displayState.hasMintRecord(published({ isMinted: false, onchain: null, nft: null }))).toBe(false);
-
-        const mintedCancelled = published({ lifecycleStatus: 'Cancelled', isMinted: true, onchain: { transactionHash: '0xabc' } });
-        expect(stateOf(mintedCancelled, { applied: true, lifecycleKey: 'cancelled' }))
-            .toMatchObject({ rung: 'minted', minted: true, applied: false, mapAction: null, modifier: 'cancelled' });
-    });
-
     it('labels each rung through the translator it is given', () => {
         const seen = [];
-        const label = displayState.rungLabel('minted', (key, fallback) => { seen.push(key); return `${fallback}!`; });
-        expect(label).toBe('Minted!');
-        expect(seen).toEqual(['panel.proposal.lifecycle.minted']);
+        const label = displayState.rungLabel('published', (key, fallback) => { seen.push(key); return `${fallback}!`; });
+        expect(label).toBe('Published!');
+        expect(seen).toEqual(['common.lifecycle.published']);
         expect(displayState.rungLabel('execution-unverified', (key, fallback) => `${key}: ${fallback}`))
             .toBe('panel.proposal.lifecycle.executionUnverified: Execution reported; verification unavailable');
         expect(displayState.rungLabel('nonsense')).toBe('Draft');
     });
 
-    it('qualifies recorded execution without upgrading a mint reference to proof of realization', () => {
+    it('qualifies recorded execution without upgrading it to proof of realization', () => {
         const claimed = { lifecycleStatus: 'Executed' };
         const invalidEvidence = published({
             lifecycleStatus: 'Executed',
             lifecycleEvidence: { protocol: 'proposal-lifecycle-evidence/1', state: 'observed', status: 'Cancelled', observedAt: '2026-10-19T12:00:00.000Z' }
         });
-        for (const proposal of [claimed, invalidEvidence, published({ lifecycleStatus: 'Executed', isMinted: true })]) {
+        for (const proposal of [claimed, invalidEvidence, published({ lifecycleStatus: 'Executed' })]) {
             const { rung } = stateOf(proposal);
             expect(rung).toBe('execution-unverified');
             expect(displayState.rungLabel(rung)).toBe('Execution reported; verification unavailable');

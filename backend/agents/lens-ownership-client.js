@@ -19,14 +19,22 @@ function cleanServiceUrl(serviceUrl) {
 }
 
 /**
+ * The ed25519 signature (64 bytes) of a message's exact UTF-8 text with a 64-byte Solana secret key, as
+ * a wallet's signMessage gives it.
+ */
+export function signMessageBytes({ secretKey, message }) {
+    if (!(secretKey instanceof Uint8Array) || secretKey.length !== 64) throw new Error('secretKey must be a 64-byte Solana secret key');
+    if (typeof message !== 'string' || !message) throw new Error('message is required');
+    const privateKey = createPrivateKey({ key: Buffer.concat([ED25519_PKCS8_PREFIX, Buffer.from(secretKey.subarray(0, 32))]), format: 'der', type: 'pkcs8' });
+    return sign(null, Buffer.from(message, 'utf8'), privateKey);
+}
+
+/**
  * Sign a lens challenge message with a 64-byte Solana secret key; base64 (the member accepts base58
  * or base64). Returns the signer's base58 address too, which must be the `owner` of the request.
  */
 export function signChallengeMessage({ secretKey, message }) {
-    if (!(secretKey instanceof Uint8Array) || secretKey.length !== 64) throw new Error('secretKey must be a 64-byte Solana secret key');
-    if (typeof message !== 'string' || !message) throw new Error('message is required');
-    const privateKey = createPrivateKey({ key: Buffer.concat([ED25519_PKCS8_PREFIX, Buffer.from(secretKey.subarray(0, 32))]), format: 'der', type: 'pkcs8' });
-    const signature = sign(null, Buffer.from(message, 'utf8'), privateKey).toString('base64');
+    const signature = signMessageBytes({ secretKey, message }).toString('base64');
     return { owner: Keypair.fromSecretKey(secretKey).publicKey.toBase58(), signature };
 }
 
@@ -129,10 +137,10 @@ export async function fetchLensStatus({ serviceUrl, fetchImpl = globalThis.fetch
     return body;
 }
 
-/** GET /lens/attestations?parcelUid=&owner=&proposalAccount=&kind= → the member's issued records. */
-export async function listMemberAttestations({ serviceUrl, parcelUid, owner, proposalAccount, kind, fetchImpl = globalThis.fetch } = {}) {
+/** GET /lens/attestations?parcelUid=&owner=&agreementCid=&kind= → the member's issued records. */
+export async function listMemberAttestations({ serviceUrl, parcelUid, owner, agreementCid, kind, fetchImpl = globalThis.fetch } = {}) {
     const url = new URL(`${cleanServiceUrl(serviceUrl)}/lens/attestations`);
-    for (const [name, value] of Object.entries({ parcelUid, owner, proposalAccount, kind })) {
+    for (const [name, value] of Object.entries({ parcelUid, owner, agreementCid, kind })) {
         if (value) url.searchParams.set(name, String(value));
     }
     const { response, body } = await getJson(fetchImpl, url.toString(), { headers: { accept: 'application/json' } });
@@ -153,23 +161,4 @@ export async function findOwnershipAttestation({ serviceUrl, parcelUid, owner, m
     }
     records.sort((a, b) => String(b.issuedAt ?? '').localeCompare(String(a.issuedAt ?? '')) || String(a.address).localeCompare(String(b.address)));
     return records[0];
-}
-
-/**
- * Operator-only POST /lens/verdict: the member attests ProposalVerdict-v1. The member's nonce is
- * deterministic per (proposal, verdict, sourceObservedAt), so a retry returns the stored record.
- */
-export async function requestVerdictAttestation({
-    serviceUrl, operatorToken, proposalAccount, verdict, evidenceRef = '', sourceObservedAt, fetchImpl = globalThis.fetch
-} = {}) {
-    if (!operatorToken) throw new Error('a lens operator token is required for POST /lens/verdict');
-    if (!Number.isSafeInteger(sourceObservedAt) || sourceObservedAt <= 0) throw new Error('sourceObservedAt must be a positive Unix timestamp');
-    const url = `${cleanServiceUrl(serviceUrl)}/lens/verdict`;
-    const { response, body } = await getJson(fetchImpl, url, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json', accept: 'application/json', 'x-lens-operator-token': operatorToken },
-        body: JSON.stringify({ proposalAccount, verdict, evidenceRef, sourceObservedAt })
-    });
-    if (![200, 201].includes(response.status) || !body?.address) throw refusal(url, response, body);
-    return body;
 }

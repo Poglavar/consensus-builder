@@ -62,7 +62,7 @@ The audit fixed shared road-junction metadata and undo, colliding proposal IDs, 
 
 Remaining gaps and scope limits:
 
-- The live minted-proposal ownership test requires `E2E_DEVNET=1`. That opt-in did not run; local-chain tests and mocked wallet/service boundaries do not replace that live check.
+- No browser test sends a chain transaction. The agreement panel's chain section (`agreement-chain.spec.ts`) reads a mocked agreement account through the Solana RPC; Mint stops at the undeployed program, Fund and Cancel at their dialogs, and Record decision, Execute and Expire are asserted enabled or disabled but not clicked.
 - The source inventory excludes 64 inactive or noninteractive sites. Each exclusion has a reason and checked source conditions in [control-contract.json](control-contract.json). Enabling an excluded control requires restoring its behavior coverage.
 - Source review found that a shared-junction drag commits each affected road separately. If one road fails after another succeeds, the junction can be partially moved until undo. The successful move and undo paths are tested; an injected failure across several roads and atomic rollback are not covered by this browser audit.
 

@@ -126,7 +126,7 @@
         ? options.isApplied
         : (p => p && p.applied === true);
     const recordIdOf = record => {
-        const value = record && (record.proposalId || record.id || record.hash);
+        const value = record && (record.proposalId || record.id);
         return value === undefined || value === null ? '' : String(value);
     };
 

@@ -1,7 +1,13 @@
-// The Create agreement dialog (plan-design-agreement.md, M1 (b)): one scrolling column over the designs
-// applied to the map — which designs, the land they take and the pieces they leave, who receives each
-// piece, the cash per party with the sponsor's line, the decision rule, a title and a deadline. Save
-// validates and stores the agreement on this device (agreement-store.js); Cancel discards.
+// The agreement editor (plan-design-agreement.md, M1 (b); docked on the right of the map since the UI
+// decision of 2026-10-22, "M3 notes"): Create / Edit agreement as a panel on the right dock (a bottom
+// sheet on a phone) in place of the agreement panel, so the map stays in view. One scrolling column
+// over the designs applied to the map — which designs, the land they take and the pieces they leave,
+// who receives each piece, the cash per party with the sponsor's line, the decision rule, a title and
+// a deadline — with Cancel and Save at the bottom. The map is the main picker (js/map-pick.js): the
+// chosen designs are highlighted, and a click on an applied design adds or removes it. Save validates
+// and stores the agreement on this device (agreement-store.js) and opens its panel; Cancel discards
+// and brings back the panel the editor replaced. addDesign() is the details panel's "Add to agreement":
+// a new agreement, or one not proposed yet.
 //
 // The branching lives in the pure helpers exported below (the record built from the form, the
 // allocation options, the terms kept across a new derivation, the sponsor line, the HTML of each
@@ -373,6 +379,9 @@
             ? `<p class="agreement-notice" data-agreement-designs-missing>${esc(t('agreement.errors.designNotApplied', 'Every design must be applied to the map.'))}</p>`
             : '';
         if (!designs.length) return `${hint}${gone}<p class="agreement-hint" data-agreement-empty>${esc(t('agreement.designs.empty', 'No applied designs. Apply a design first.'))}</p>`;
+        // The map is the main picker (js/map-pick.js); the line under the hint says what a click did.
+        const mapHint = `<p class="agreement-hint" data-agreement-map-hint>${esc(t('agreement.designs.mapHint', 'Click a design on the map to add or remove it'))}</p>`
+            + '<p class="agreement-hint agreement-pick-status" data-agreement-pick-status role="status" aria-live="polite"></p>';
         const rows = designs.map(record => {
             const id = idOf(record.proposalId);
             const type = typeLabelOf(record);
@@ -381,12 +390,12 @@
                 + (type ? ` <span class="cb-badge cb-badge--neutral agreement-design-row__type">${esc(type)}</span>` : '')
                 + '</label></li>';
         }).join('');
-        return `${hint}${gone}<ul class="agreement-design-list">${rows}</ul>`;
+        return `${hint}${gone}<ul class="agreement-design-list">${rows}</ul>${mapHint}`;
     }
 
     function inputsTableHtml(parcels) {
         const rows = parcels.map(parcel => `<tr data-agreement-input="${esc(parcel.parcelId)}"><th scope="row">${esc(parcel.parcelId)}</th>`
-            + `<td class="agreement-table__number">${esc(areaText(parcel.areaM2))}</td><td>${esc(holdersText(parcel.holders))}</td></tr>`).join('');
+            + `<td class="agreement-table__number">${esc(areaText(parcel.areaM2))}</td><td class="agreement-table__holders">${esc(holdersText(parcel.holders))}</td></tr>`).join('');
         return `<div class="agreement-table-scroll"><table class="agreement-table" data-agreement-inputs>`
             + `<caption>${esc(t('agreement.land.inputsHeading', 'Input parcels'))}</caption>`
             + `<thead><tr><th scope="col">${esc(t('agreement.land.parcel', 'Parcel'))}</th><th scope="col" class="agreement-table__number">${esc(t('agreement.land.area', 'Area'))}</th>`
@@ -394,9 +403,10 @@
     }
 
     function outputsTableHtml(outputs) {
-        const rows = outputs.map((output, index) => `<tr data-agreement-output="${esc(output.hash)}"><th scope="row">${index + 1}</th>`
-            + `<td>${esc((Array.isArray(output.fromParcelIds) ? output.fromParcelIds : []).join(', '))}</td>`
-            + `<td class="agreement-table__number">${esc(areaText(output.areaM2))}</td><td>${esc(holdersText(output.holders))}</td></tr>`).join('');
+        const from = t('agreement.land.from', 'From');
+        const rows = outputs.map((output, index) => `<tr data-agreement-output="${esc(output.hash)}"><th scope="row">${esc(`${t('agreement.land.piece', 'Piece')} ${index + 1}`)}</th>`
+            + `<td class="agreement-table__from" data-label="${esc(from)}">${esc((Array.isArray(output.fromParcelIds) ? output.fromParcelIds : []).join(', '))}</td>`
+            + `<td class="agreement-table__number">${esc(areaText(output.areaM2))}</td><td class="agreement-table__holders">${esc(holdersText(output.holders))}</td></tr>`).join('');
         return `<div class="agreement-table-scroll"><table class="agreement-table" data-agreement-outputs>`
             + `<caption>${esc(t('agreement.land.outputsHeading', 'Resulting pieces'))}</caption>`
             + `<thead><tr><th scope="col">${esc(t('agreement.land.piece', 'Piece'))}</th><th scope="col">${esc(t('agreement.land.from', 'From'))}</th>`
@@ -419,7 +429,8 @@
             + (outputs.length ? outputsTableHtml(outputs) : '');
     }
 
-    // One select per resulting piece, as a list so it stays usable on a phone.
+    // One select per resulting piece, each under the piece it names (a list, so it stays usable at
+    // the dock's width and on a phone).
     function allocationHtml(land, allocations = {}) {
         const outputs = land && Array.isArray(land.outputs) ? land.outputs : [];
         if (!outputs.length) return '';
@@ -430,8 +441,7 @@
             return `<li><label class="agreement-allocation-row"><span class="agreement-allocation-row__piece">${esc(`${t('agreement.land.piece', 'Piece')} ${index + 1} · ${areaText(output.areaM2)}`)}</span>`
                 + `<select data-agreement-allocation="${esc(output.hash)}">${options.map(option => `<option value="${esc(option.value)}"${option.value === value ? ' selected' : ''}>${esc(option.label)}</option>`).join('')}</select></label></li>`;
         }).join('');
-        return `<div class="agreement-column-head agreement-column-head--allocation"><span>${esc(t('agreement.land.piece', 'Piece'))}</span><span>${esc(t('agreement.allocation.to', 'Goes to'))}</span></div>`
-            + `<ul class="agreement-allocation-list">${rows}</ul>`;
+        return `<ul class="agreement-allocation-list">${rows}</ul>`;
     }
 
     // One cash field per party, in euros.
@@ -481,21 +491,84 @@
             + sectionHtml('details', t('agreement.sections.details', 'Details'), detailsHtml({ title: values.title, deadline: values.deadline, today: view.today }));
     }
 
-    // ---- the dialog ------------------------------------------------------------------------------
+    // ---- the editor: a panel on the right dock ---------------------------------------------------
+
+    const log = message => console.log(`[${new Date().toISOString()}] [AgreementEditor] ${message}`);
+
+    // The open editor, at most one: { cancel() }.
+    let session = null;
+
+    // A proposed agreement is immutable (M2): a change is a new agreement, proposed in its turn.
+    function publishedError() {
+        const error = new Error(t('agreement.errors.published', 'A proposed agreement cannot be edited; propose a new one.'));
+        error.code = 'agreement-published';
+        return error;
+    }
+
+    // Escape cancels the editor, except while typing in a field: the key is the field's there, and
+    // a slip must not cost what was typed.
+    function typingIn(target) {
+        if (!target || !target.tagName) return false;
+        if (target.isContentEditable || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT') return true;
+        return target.tagName === 'INPUT'
+            && !['checkbox', 'radio', 'button', 'submit', 'reset', 'file', 'range', 'color'].includes(String(target.type || '').toLowerCase());
+    }
+
+    // The editor takes the right dock, as the agreement panel does: the sheets, the parcel menu, a
+    // parcel's panel and a design's panel make way.
+    function makeWay(doc) {
+        if (root.MapShell && typeof root.MapShell.closeSheets === 'function') root.MapShell.closeSheets();
+        if (root.ParcelMenu && typeof root.ParcelMenu.close === 'function') root.ParcelMenu.close();
+        if (doc.getElementById('parcel-info-panel')?.classList.contains('visible') && typeof root.hideParcelInfoPanel === 'function') root.hideParcelInfoPanel();
+        if (doc.getElementById('proposal-details-panel')?.classList.contains('visible') && typeof root.hideProposalDetailsPanel === 'function') root.hideProposalDetailsPanel(true);
+    }
+
+    // The docked section, built once and refilled per open: a header with the title and a close
+    // button, then a form whose body scrolls and whose footer (Cancel, Save) stays at the bottom. On a
+    // phone the right dock is a bottom sheet (css/panels.css, css/utilities.css), and
+    // js/mobile-dock-sheet.js puts its resize handle in front of the header.
+    function ensurePanel(doc) {
+        const existing = doc.getElementById('agreement-editor');
+        if (existing) return existing;
+        const panel = doc.createElement('section');
+        panel.id = 'agreement-editor';
+        panel.className = 'info-panel right-dock-panel agreement-editor';
+        panel.setAttribute('role', 'region');
+        panel.setAttribute('aria-labelledby', 'agreement-editor-title');
+        panel.innerHTML = '<div class="panel-header">'
+            + '<h3 id="agreement-editor-title" tabindex="-1"></h3>'
+            + '<button type="button" class="close-circle-btn close-circle-btn--lg close-button" data-agreement-action="cancel">&times;</button>'
+            + '</div>'
+            + '<form class="agreement-editor__form" novalidate>'
+            + '<div class="panel-body agreement-editor__body" data-agreement-editor-body></div>'
+            + '<div class="panel-footer agreement-editor__footer">'
+            + '<button type="button" class="btn" data-agreement-action="cancel"></button>'
+            + '<button type="submit" class="btn btn-primary" data-agreement-action="save"></button>'
+            + '</div>'
+            + '</form>';
+        (doc.getElementById('map-container') || doc.body).appendChild(panel);
+        return panel;
+    }
 
     /**
-     * Opens the dialog over the applied designs: a new agreement (preselecting `designIds`), or the
-     * stored agreement `agreementId`. Resolves with the saved record, or null when cancelled.
+     * Opens the editor on the right dock over the applied designs, in place of the agreement panel
+     * while it is open: a new agreement (preselecting `designIds`), or the stored agreement
+     * `agreementId` with `designIds` added to its designs. A proposed agreement is refused (an error
+     * with code 'agreement-published'). Resolves with the saved record, or null when cancelled.
      */
     async function open({ agreementId = null, designIds = null } = {}) {
-        const dialogs = root.CbDialog;
-        if (!dialogs || typeof dialogs.open !== 'function') throw new Error('CbDialog is unavailable.');
+        const doc = root.document;
         const existing = agreementId ? root.AgreementStore.get(agreementId) : null;
         if (agreementId && !existing) throw new Error(`Agreement ${agreementId} is not on this device.`);
+        if (existing && existing.published) throw publishedError();
+        if (!root.MapPick) throw new Error('MapPick (js/map-pick.js) is not loaded.');
+        // One editor at a time: an open one is cancelled first.
+        if (session) session.cancel();
         const order = root.__planOrder && typeof root.__planOrder.orderFormations === 'function' ? root.__planOrder.orderFormations : null;
         const available = appliedDesigns(root.proposalStorage.getAllProposals(), { isApplied: root.isApplied, orderFormations: order });
         const availableIds = new Set(available.map(record => idOf(record.proposalId)));
-        const wanted = (existing ? existing.designs.map(design => design.proposalId) : (Array.isArray(designIds) ? designIds : [])).map(idOf).filter(Boolean);
+        const wanted = Array.from(new Set((existing ? existing.designs.map(design => design.proposalId) : [])
+            .concat(Array.isArray(designIds) ? designIds : []).map(idOf).filter(Boolean)));
         const rule = existing && existing.rule ? existing.rule : null;
         const terms = termsOf(existing);
         const state = {
@@ -532,32 +605,58 @@
         const inputIds = () => state.land.inputs.parcels.map(parcel => parcel.parcelId);
         const designOf = id => root.proposalStorage.getProposal(id) || null;
 
-        const template = root.document.createElement('template');
-        template.innerHTML = bodyHtml({ ...state, designs: state.available, loading: state.selected.size > 0, today: dateFromDeadline(new Date().toISOString()) });
-        const firstDesign = template.content.querySelector('[data-agreement-design]');
-        const dialog = dialogs.open({
-            title: existing ? t('agreement.dialog.titleEdit', 'Edit agreement') : t('agreement.dialog.titleCreate', 'Create agreement'),
-            size: 'lg',
-            // The land loads and the rule form changes while it is open: one box, the body scrolls.
-            fixedHeight: true,
-            body: Array.from(template.content.childNodes),
-            initialFocus: firstDesign || undefined,
-            overlayClassName: 'agreement-dialog-overlay',
-            bodyClassName: 'agreement-dialog',
-            closeOnBackdrop: false,
-            actions: [
-                { id: 'cancel', value: null, label: t('common.cancel', 'Cancel'), role: 'secondary' },
-                { id: 'save', label: t('agreement.dialog.save', 'Save agreement'), role: 'primary', keepOpen: true, disabled: state.selected.size > 0, onClick: api => save(api) }
-            ]
-        });
-        if (!dialog) return null;
-        const body = dialog.body;
+        // The agreement panel steps aside while an agreement is edited; Cancel brings it back.
+        const panels = root.AgreementPanel;
+        const replaced = panels && typeof panels.isOpen === 'function' && panels.isOpen() ? panels.current() : null;
+        if (replaced) panels.close();
+        makeWay(doc);
+
+        const panel = ensurePanel(doc);
+        const heading = panel.querySelector('#agreement-editor-title');
+        heading.textContent = existing ? t('agreement.dialog.titleEdit', 'Edit agreement') : t('agreement.dialog.titleCreate', 'Create agreement');
+        const cancelLabel = t('common.cancel', 'Cancel');
+        const closeButton = panel.querySelector('.panel-header [data-agreement-action="cancel"]');
+        closeButton.setAttribute('aria-label', cancelLabel);
+        closeButton.title = cancelLabel;
+        panel.querySelector('.agreement-editor__footer [data-agreement-action="cancel"]').textContent = cancelLabel;
+        const saveButton = panel.querySelector('[data-agreement-action="save"]');
+        saveButton.textContent = t('agreement.dialog.save', 'Save agreement');
+        const form = panel.querySelector('.agreement-editor__form');
+        const body = panel.querySelector('[data-agreement-editor-body]');
+        body.innerHTML = bodyHtml({ ...state, designs: state.available, loading: state.selected.size > 0, today: dateFromDeadline(new Date().toISOString()) });
+        body.scrollTop = 0;
         const part = selector => body.querySelector(selector);
-        dialog.closed.then(() => { state.closed = true; });
+
+        // Every listener of this session goes with it; the next open wires its own.
+        const listeners = new AbortController();
+        const { signal } = listeners;
+        let unregisterEscape = null;
+        let resolveClosed = null;
+        const closed = new Promise(resolve => { resolveClosed = resolve; });
+        const current = { cancel: () => finish(null) };
+        session = current;
+
+        // Saved: the agreement's panel opens on it. Cancelled: the panel the editor replaced returns.
+        function finish(result) {
+            if (state.closed) return;
+            state.closed = true;
+            listeners.abort();
+            if (typeof unregisterEscape === 'function') unregisterEscape();
+            if (session === current) session = null;
+            root.MapPick.end('agreement');
+            panel.classList.remove('visible');
+            body.innerHTML = '';
+            doc.body.classList.remove('agreement-editor-open');
+            log(result ? `saved ${result.id}` : `cancelled ${state.id}`);
+            const reopen = result ? result.id : replaced;
+            if (reopen && panels && typeof panels.open === 'function') {
+                Promise.resolve(panels.open(reopen)).catch(error => console.error(`[${new Date().toISOString()}] [AgreementEditor] the agreement panel of ${reopen} could not be opened`, error));
+            }
+            resolveClosed(result || null);
+        }
 
         function setSaveEnabled(enabled) {
-            const button = dialog.getActionButton('save');
-            if (button) button.disabled = !enabled;
+            saveButton.disabled = !enabled;
         }
 
         function validation(record) {
@@ -763,9 +862,45 @@
             setSaveEnabled(true);
         }
 
+        // ---- the designs: the checklist and the map pick the same selection ---------------------
+
+        // The chosen designs are the map's highlight (js/map-pick.js); a change repaints that one.
+        function repaint(id) {
+            root.MapPick.refresh(id ? [id] : null)
+                .catch(error => console.error(`[${new Date().toISOString()}] [AgreementEditor] the map highlight failed`, error));
+        }
+
+        function setChosen(id, chosen) {
+            if (chosen) state.selected.add(id); else state.selected.delete(id);
+            body.querySelectorAll('[data-agreement-design]').forEach(input => {
+                if (input.getAttribute('data-agreement-design') === id) input.checked = chosen;
+            });
+            repaint(id);
+            deriveLand();
+        }
+
+        // A click on an applied design on the map adds it, or takes it out when it is already in;
+        // the line under the list says which, since on a phone the list may be out of view.
+        function onMapPick(id, record) {
+            if (state.closed) return;
+            if (!availableIds.has(id)) {
+                log(`${id} was not among the applied designs when the editor opened; not picked`);
+                return;
+            }
+            const chosen = !state.selected.has(id);
+            setChosen(id, chosen);
+            const line = part('[data-agreement-pick-status]');
+            if (line) {
+                line.textContent = chosen
+                    ? t('agreement.designs.added', 'Added “{{title}}”.', { title: designTitle(record) })
+                    : t('agreement.designs.removed', 'Removed “{{title}}”.', { title: designTitle(record) });
+            }
+            log(`${chosen ? 'added' : 'removed'} ${id} from the map`);
+        }
+
         // ---- save ------------------------------------------------------------------------------
 
-        function save(api) {
+        function save() {
             if (state.loading || state.closed) return;
             state.attempted = true;
             state.saveIssue = null;
@@ -792,21 +927,27 @@
                 if (!secondary) throw error;
                 return;
             }
-            api.close(saved);
-            const panel = root.AgreementPanel;
-            if (panel && typeof panel.open === 'function') panel.open(saved.id);
+            finish(saved);
         }
 
         // ---- events ----------------------------------------------------------------------------
 
+        form.addEventListener('submit', event => {
+            event.preventDefault();
+            save();
+        }, { signal });
+        panel.addEventListener('click', event => {
+            if (event.target && typeof event.target.closest === 'function' && event.target.closest('[data-agreement-action="cancel"]')) finish(null);
+        }, { signal });
         body.addEventListener('change', event => {
             const target = event.target;
             if (!target || typeof target.closest !== 'function') return;
             if (target.closest('[data-agreement-rule-form]')) { onRuleChange(target); return; }
             if (target.matches('[data-agreement-design]')) {
-                const id = target.getAttribute('data-agreement-design');
-                if (target.checked) state.selected.add(id); else state.selected.delete(id);
-                deriveLand();
+                setChosen(target.getAttribute('data-agreement-design'), target.checked);
+                // The line under the list speaks of the last map click only.
+                const line = part('[data-agreement-pick-status]');
+                if (line) line.textContent = '';
                 return;
             }
             if (target.matches('[data-agreement-allocation]')) {
@@ -832,7 +973,7 @@
                 state.values = { ...state.values, deadline: target.value };
                 refreshIssues();
             }
-        });
+        }, { signal });
         body.addEventListener('input', event => {
             const target = event.target;
             if (!target || typeof target.matches !== 'function') return;
@@ -846,21 +987,77 @@
                 state.values = { ...state.values, deadline: target.value };
                 refreshIssues();
             }
-        });
+        }, { signal });
         body.addEventListener('click', event => {
             if (event.target && typeof event.target.closest === 'function' && event.target.closest('[data-agreement-rule-form]')) onRuleClick(event);
-        });
+        }, { signal });
+        if (root.ModalEscape && typeof root.ModalEscape.register === 'function') {
+            unregisterEscape = root.ModalEscape.register(panel, event => {
+                if (typingIn(event && event.target)) return false;
+                finish(null);
+                return true;
+            });
+        }
 
+        panel.classList.add('visible');
+        doc.body.classList.add('agreement-editor-open');
+        setSaveEnabled(state.selected.size === 0);
         renderSponsor();
         renderRule();
+        // The map picks the designs as the checklist does; only applied designs stand on it.
+        root.MapPick.begin({
+            name: 'agreement',
+            pick: onMapPick,
+            highlight: () => Array.from(state.selected),
+            close: () => finish(null)
+        }).catch(error => console.error(`[${new Date().toISOString()}] [AgreementEditor] the map highlight failed`, error));
+        log(`${existing ? 'editing' : 'creating'} ${state.id} over ${state.selected.size} of ${available.length} applied design(s)${replaced ? `, in place of the panel of ${replaced}` : ''}`);
         if (state.selected.size) deriveLand();
         else refreshIssues();
-        const result = await dialog.closed;
-        return result && typeof result === 'object' ? result : null;
+        const firstDesign = part('[data-agreement-design]');
+        try { (firstDesign || heading).focus({ preventScroll: true }); } catch (_) { /* focus is a courtesy */ }
+        return closed;
+    }
+
+    /**
+     * The details panel's "Add to agreement": a design joins a new agreement, or one this device
+     * holds that is not proposed yet (newest first), then the editor opens on it. A design already in
+     * the chosen agreement is said so, and the editor opens as it is. Resolves as open() does, or with
+     * null when the choice is dismissed.
+     */
+    async function addDesign(proposalId) {
+        const id = idOf(proposalId);
+        if (!id) throw new TypeError('addDesign needs a design id.');
+        const drafts = root.AgreementStore.list().filter(agreement => agreement && !agreement.published);
+        if (!drafts.length) return open({ designIds: [id] });
+        const design = root.proposalStorage.getProposal(id);
+        const panels = root.AgreementPanel;
+        const titleOf = agreement => (panels && typeof panels.titleOf === 'function' ? panels.titleOf(agreement) : (agreement.title || t('agreement.panel.title', 'Agreement')));
+        const NEW = '__new__';
+        const choice = await root.CbDialog.choice(
+            t('agreement.addTo.message', 'Add “{{title}}” to a new agreement, or to one not proposed yet.', { title: designTitle(design) }),
+            [{ value: NEW, label: t('agreement.addTo.new', 'New agreement'), primary: true }].concat(drafts.map(agreement => {
+                const count = Array.isArray(agreement.designs) ? agreement.designs.length : 0;
+                const designs = t('agreement.list.designs', count === 1 ? '{{count}} design' : '{{count}} designs', { count });
+                return { value: agreement.id, label: `${titleOf(agreement)} · ${designs}` };
+            })),
+            { title: t('agreement.addTo.title', 'Add to agreement'), className: 'agreement-add-to' }
+        );
+        if (!choice) return null;
+        if (choice === NEW) return open({ designIds: [id] });
+        const agreement = drafts.find(entry => entry.id === choice);
+        if (!agreement) throw new Error(`Agreement ${choice} is not on this device.`);
+        if ((agreement.designs || []).some(entry => idOf(entry.proposalId) === id)) {
+            if (typeof root.showEphemeralMessage === 'function') {
+                root.showEphemeralMessage(t('agreement.addTo.alreadyIn', '“{{title}}” is already in this agreement.', { title: designTitle(design) }), 4000, 'info');
+            }
+            return open({ agreementId: agreement.id });
+        }
+        return open({ agreementId: agreement.id, designIds: [id] });
     }
 
     return {
-        open,
+        open, addDesign,
         SCHEMA, LOCAL_RIGHTS_PROVIDER,
         appliedDesigns, designTitle, inputParcelIds, originalsById, partiesOf, allocationOptions, allocationValue, allocationTo,
         cashCents, cashInputText, termsOf, keptTerms, sponsorLine, ruleConfigAfterDerive, deadlineFromDate, dateFromDeadline,

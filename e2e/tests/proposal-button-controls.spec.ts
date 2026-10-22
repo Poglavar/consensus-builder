@@ -1,5 +1,5 @@
-// Exercise proposal action buttons and assert the resulting UI and stored state: related-design and
-// activity links, the grain-score Repeat control, and Share publishing a design (POST /pins, /designs).
+// Exercise proposal action buttons and assert the resulting UI and stored state: the related-design
+// link, the grain-score Repeat control, and Share publishing a design (POST /pins, /designs).
 import { test, expect } from '../helpers/fixtures';
 import { openCity, createSpace, showProposal, PARCEL_ID } from '../helpers/runtime';
 import { pageIndex } from '../helpers/mocks/shared-server';
@@ -33,7 +33,7 @@ async function establishLocalProfile(page: import('@playwright/test').Page): Pro
 }
 
 test.describe('proposal detail button controls @features', () => {
-  test('parcel-set related proposal and activity links navigate to the selected scope', async ({ mockApi: page }) => {
+  test('a parcel-set related design link selects that design', async ({ mockApi: page }) => {
     await openCity(page);
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));
     const parcelSource = { sourceId: 'hr-cadastre', snapshotId: null };
@@ -54,23 +54,11 @@ test.describe('proposal detail button controls @features', () => {
     await expect.poll(() => page.evaluate(() => (window as any).PlanningViews.getSelected()?.proposalId)).toBe(relatedId);
     await expect(page.locator('#planning-inspector')).toContainText('Related plan');
     await showExpandedProposal(page, relatedId);
-
-    await showExpandedProposal(page, sourceId);
     await openLandSection(page);
-    const proposalActivity = page.locator('#proposal-details-content .activity-scope-link[data-activity-scope="proposalId"]');
-    await proposalActivity.click();
-    const activity = page.locator('.game-log-modal');
-    await expect(activity).toBeVisible();
-    await expect(activity.locator('[data-activity-scope-chip]')).toContainText(sourceId);
-    await activity.getByRole('button', { name: 'Clear scope' }).click();
-    await expect(activity.locator('[data-activity-scope-chip]')).toBeHidden();
-    await activity.locator('.game-log-modal-close').click();
-    await expect(activity).toBeHidden();
-
-    await showExpandedProposal(page, sourceId);
-    await openLandSection(page);
-    await page.locator('#proposal-details-content .activity-scope-link[data-activity-scope="parcelSet"]').click();
-    await expect(activity.locator('[data-activity-scope-chip]')).toContainText(/Land:/);
+    // The related design lists the source design back.
+    await expect(page.locator(`#proposal-details-content [data-related-proposal-id="${sourceId}"]`)).toBeVisible();
+    // Activity is an agreement's (M3): a design's land section offers no activity scope of its own.
+    await expect(page.locator('#proposal-details-content .proposal-parcel-set-card .activity-scope-link')).toHaveCount(0);
   });
 
   test('the grain-score Repeat control runs another inspection and returns to its result', async ({ mockApi: page }) => {

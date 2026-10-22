@@ -121,6 +121,15 @@ describe('a local record from an index row', () => {
         expect(DesignSync.localDesignFromRow(fork, { apiBase: API }).origin).toEqual({ cid: row.cid });
     });
 
+    it('takes the creation time from the design object alone, so a design authored without one still hashes to its CID', () => {
+        const row = rowOf(road({ createdAt: null }));
+        expect(row.content.authoredAt).toBeNull();
+        const record = DesignSync.localDesignFromRow(row, { apiBase: API });
+        expect(record.createdAt).toBeNull();
+        expect(DesignRecord.cidOf(record)).toBe(row.cid);
+        expect(DesignSync.publishedCid(record, API)).toBe(row.cid);
+    });
+
     it('refuses a row whose content is not the design it is filed under, or not a design', () => {
         const codeOf = row => { try { DesignSync.localDesignFromRow(row, { apiBase: API }); } catch (error) { return error.code; } return null; };
         const row = rowOf(road());
@@ -134,7 +143,7 @@ describe('a local record from an index row', () => {
     it('lists as a summary that is published by definition', () => {
         const row = rowOf(road());
         expect(DesignSync.designSummary(row)).toMatchObject({ id: row.cid, cid: row.cid, indexed: true, goal: 'road', title: 'New lane',
-            cadastreParcelIds: ['9', '12'], isMinted: false });
+            cadastreParcelIds: ['9', '12'] });
         expect(DesignSync.designSummary({ cid: 'nope' })).toBeNull();
         expect(DesignSync.bindingParcelIds(null)).toEqual([]);
     });
@@ -161,7 +170,6 @@ function realProposalStorage() {
     install('ProposalOrigin', require('../../frontend/js/proposals/origin.js'));
     install('ProposalAuthoredRecord', require('../../frontend/js/proposals/authored-record.js'));
     install('normalizeParcelIdList', values => Array.from(new Set((values || []).map(String))));
-    install('normalizeOwnerAcceptances', value => value || {});
     install('normalizeLensEntries', value => value || []);
     install('normalizeProposalStatusAxes', status.normalizeProposalStatusAxes);
     install('getLifecycleStatus', status.getLifecycleStatus);

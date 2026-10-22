@@ -609,11 +609,11 @@ function stripRoadDerivedFields(record) {
 
 function makeFreshRoadSnapshot(sourceProposal, definition, options = {}) {
     const clone = cloneRoadValue(sourceProposal);
+    // The source's identity stays with the source: its local key, its publication mark (a design's
+    // only published identity; designs are not minted, M3), its times and its lineage.
     [
-        'proposalId', 'proposal_id', 'id', 'hash', 'published',
-        'chainProposalId', 'tokenId', 'onchain', 'nft', 'isMinted',
-        'createdAt', 'updatedAt', 'proposalDraftId', 'lens',
-        'proposalOrigin', 'supersedesProposalIds'
+        'proposalId', 'id', 'published',
+        'createdAt', 'updatedAt', 'proposalDraftId', 'lens', 'proposalOrigin'
     ].forEach(key => delete clone[key]);
 
     if (options.sourceLocalProposalId) {

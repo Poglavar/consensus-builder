@@ -820,8 +820,9 @@
     function onDocumentKeyDown(event) {
         if (event.key !== '/' || event.ctrlKey || event.metaKey || event.altKey) return;
         if (isTypingTarget(event.target)) return;
-        // Not under a modal, a confirm, the globe or the palette, and not in share-plan mode.
-        if (win.sharePlanMode) return;
+        // Not under a modal, a confirm, the globe or the palette, and not while a surface picks on
+        // the map (js/map-pick.js).
+        if (win.MapPick?.active()) return;
         if (win.MapShell && typeof win.MapShell.isBlockingDialogOpen === 'function' && win.MapShell.isBlockingDialogOpen()) return;
         event.preventDefault();
         focus();

@@ -5,9 +5,10 @@
 // agreement, comes along in `designs` and is indexed in the same transaction as the agreement); its
 // input parcels are exactly the parcels its designs' sites take on the server (the former
 // "declaration equals binding" rule, now per agreement); its rights snapshot is well formed; its
-// deadline lies ahead. GET /agreements/:cid and GET /agreements?city&design&parcel read the index back
-// with the status computed from the deadline; owner decisions are relayed at /agreements/:cid/decisions
-// (agreements/decisions.js).
+// deadline lies ahead. GET /agreements/:cid and GET /agreements?city&design&parcel&minted read the index
+// back with the status from the chain once minted, else from the deadline; owner decisions are relayed at
+// /agreements/:cid/decisions (agreements/decisions.js); POST /agreements/:cid/onchain records the chain
+// account the agreement is minted as (M3, agreements/onchain.js), which the lifecycle oracle refreshes.
 
 import { createRequire } from 'node:module';
 import { canonicalBytes, cidOf, isCid } from '../cid.js';
@@ -18,9 +19,12 @@ import { publicApiBaseUrl } from '../utils/public-base-url.js';
 import { createUploadRateLimiter } from '../utils/nft-asset-upload.js';
 import { defaultThumbnailQueue } from '../thumbnails/thumbnail-queue.js';
 import { enqueueDesignThumbnail, insertDesign, loadDesigns, parseListLimit, prepareDesign } from './designs.js';
-import { normalizeCityCode } from './proposals.js';
+import { normalizeCityCode } from '../utils/city-code.js';
 import { agreementDocument, SEMANTIC_BASE_ERROR, SEMANTIC_RECORD_ERROR } from '../semantics/published-records.js';
 import { createAgreementDecisionHandlers, createAgreementDecisionStore } from '../agreements/decisions.js';
+import {
+    AGREEMENT_CLUSTERS, agreementAccountOf, createAgreementChain, isSignature, onchainFromAccount, refreshOnchain, writeOnchain
+} from '../agreements/onchain.js';
 
 const require = createRequire(import.meta.url);
 const approval = require('../../frontend/js/proposals/approval.js');
@@ -39,8 +43,11 @@ const ELECTORATES = ['owners', 'community'];
 const MAX_TEXT = { title: 500, author: 255, city: 100 };
 const MAX_ID_LENGTH = 256;
 
-// Expired once the deadline has passed, else active; executed and cancelled come from the chain (M3).
-const STATUS_SQL = `CASE WHEN deadline IS NOT NULL AND deadline <= now() THEN 'expired' ELSE 'active' END`;
+// Once minted, executed, cancelled and expired come from the account (`onchain.status`, written by
+// POST /agreements/:cid/onchain and refreshed by oracle/agreement-lifecycle.js); otherwise, and while the
+// account is active, expired once the deadline has passed, else active.
+const STATUS_SQL = `CASE WHEN onchain->>'status' IN ('executed', 'cancelled', 'expired') THEN onchain->>'status'
+    WHEN deadline IS NOT NULL AND deadline <= now() THEN 'expired' ELSE 'active' END`;
 const COLUMNS = `cid, city, title, author, design_cids, input_parcel_ids, parcel_source_id, deadline, ${STATUS_SQL} AS status,
     content, onchain, screenshot_url, screenshot_before_url, screenshot_pair_url, created_at`;
 
@@ -261,14 +268,20 @@ const send = (res, status, body) => {
 };
 
 /**
- * POST /agreements, GET /agreements/:cid, GET /agreements, and the decision relay under
- * /agreements/:cid/decisions.
- * @param deps { pool, thumbnailQueue?, baseUrl?, pinBytes?, decisionStore?, now?, uploadRateLimiter? }
- *   (routes/content-routes.js)
+ * POST /agreements, GET /agreements/:cid, GET /agreements, the decision relay under
+ * /agreements/:cid/decisions and the chain account at POST /agreements/:cid/onchain.
+ * @param deps { pool, thumbnailQueue?, baseUrl?, pinBytes?, decisionStore?, now?, uploadRateLimiter?,
+ *   agreementChain? } (routes/content-routes.js); agreementChain(cluster) gives the account reader of a
+ *   cluster (agreements/onchain.js createAgreementChain by default)
  */
 export function setupAgreementsRoute(app, deps) {
     const { pool } = deps;
     const now = deps.now || (() => Date.now());
+    const chains = new Map();
+    const agreementChain = deps.agreementChain || (cluster => {
+        if (!chains.has(cluster)) chains.set(cluster, createAgreementChain({ cluster }));
+        return chains.get(cluster);
+    });
 
     // { cid, content, designs?: [{ cid, content }] } → 201 the row; 409 the row when already indexed.
     app.post('/agreements', async (req, res) => {
@@ -393,6 +406,102 @@ export function setupAgreementsRoute(app, deps) {
     // Pinning spends the IPFS quota, so it shares the upload routes' per-client limit.
     app.post('/agreements/:cid/decisions/bundle', deps.uploadRateLimiter || createUploadRateLimiter(), decisions.bundle);
 
+    // The index learns the chain: { chain: 'solana', cluster, account, signature? } after the sponsor
+    // minted the agreement, which must be a binding owners' agreement (rule.binding: only those are
+    // minted). The account must be the one the agreement's sponsor and CID derive; it is
+    // read and decoded, its CID and authority checked, and `onchain` written. Once written only what the
+    // chain moves (status, decision, escrow, executedAt, the observation) changes; the signature, a
+    // transaction that succeeded and names the account, is kept once it verifies.
+    // → 201 the row (first record), 200 the row (refreshed).
+    app.post('/agreements/:cid/onchain', async (req, res) => {
+        const cid = String(req.params.cid || '');
+        if (!isCid(cid)) return send(res, 400, { error: 'Not an agreement CID.', code: 'invalid-cid' });
+        const body = req.body;
+        if (!isPlainObject(body) || Object.keys(body).some(key => !['chain', 'cluster', 'account', 'signature'].includes(key))
+            || typeof body.account !== 'string') {
+            return send(res, 400, { error: 'Body must be { chain, cluster, account, signature? }.', code: 'bad-request' });
+        }
+        if (body.chain !== 'solana') return send(res, 400, { error: 'chain must be solana.', code: 'unsupported-chain' });
+        if (!Object.hasOwn(AGREEMENT_CLUSTERS, body.cluster)) {
+            return send(res, 400, { error: `cluster must be one of ${Object.keys(AGREEMENT_CLUSTERS).join(', ')}.`, code: 'unsupported-cluster' });
+        }
+        // null and absent alike: no transaction reported.
+        const signature = body.signature ?? null;
+        if (signature !== null && !isSignature(signature)) {
+            return send(res, 400, { error: 'signature must be a base58 transaction signature, or null.', code: 'bad-request' });
+        }
+        try {
+            const row = await loadAgreement(pool, cid);
+            if (!row) return send(res, 404, { error: 'Agreement not found', code: 'agreement-not-found' });
+            // Only a binding owners' agreement is minted: a vote binds nobody, so it has no account.
+            if (row.content?.rule?.binding !== true) {
+                return send(res, 422, { error: 'Only a binding owners\' agreement is minted; this one does not bind.', code: 'not-binding' });
+            }
+            const sponsor = row.content?.sponsor ?? null;
+            const expected = agreementAccountOf(cid, sponsor);
+            if (!expected) {
+                return send(res, 422, { error: 'The agreement names no sponsor wallet, so it has no chain account.', code: 'no-sponsor' });
+            }
+            if (body.account !== expected) {
+                return send(res, 400, {
+                    error: `The agreement's account is ${expected} (its sponsor and CID), not ${body.account}.`,
+                    code: 'onchain-account-mismatch', expected
+                });
+            }
+            if (row.onchain && (row.onchain.cluster !== body.cluster || row.onchain.account !== expected)) {
+                return send(res, 409, { error: `The agreement is recorded on ${row.onchain.cluster} as ${row.onchain.account}.`, code: 'onchain-recorded-elsewhere' });
+            }
+
+            const chain = agreementChain(body.cluster);
+            let read;
+            let touch = null;
+            try {
+                read = await chain.readAccount(expected);
+                if (!read.problem && signature !== null && !row.onchain?.signature) {
+                    touch = await chain.transactionTouches(signature, expected);
+                }
+            } catch (error) {
+                console.error(`[${new Date().toISOString()}] POST /agreements/${cid}/onchain could not read ${body.cluster}:`, error);
+                return send(res, error?.code === 'rpc-wrong-cluster' ? 503 : 502, { error: `The ${body.cluster} RPC could not be read.`, code: 'chain-unavailable' });
+            }
+            if (read.problem === 'missing') {
+                return send(res, 404, { error: `There is no account ${expected} on ${body.cluster} (yet).`, code: 'onchain-account-missing' });
+            }
+            if (read.problem) {
+                return send(res, 409, { error: `Account ${expected} is not an agreement account (${read.problem}).`, code: 'onchain-not-agreement' });
+            }
+            if (read.account.cid !== cid) {
+                return send(res, 409, { error: `Account ${expected} stores CID ${read.account.cid}.`, code: 'onchain-cid-mismatch', storedCid: read.account.cid });
+            }
+            if (read.account.authority !== sponsor) {
+                return send(res, 409, { error: `Account ${expected} belongs to ${read.account.authority}, not the sponsor.`, code: 'onchain-sponsor-mismatch' });
+            }
+            if (touch === 'not-found') {
+                return send(res, 409, { error: `Transaction ${signature} is not visible on ${body.cluster} yet; send it again once confirmed, or leave it out.`, code: 'onchain-signature-not-found' });
+            }
+            if (touch && touch !== 'ok') {
+                return send(res, 400, { error: `Transaction ${signature} ${touch === 'failed' ? 'failed' : 'does not name the agreement account'}.`, code: 'onchain-signature-mismatch' });
+            }
+
+            const fresh = onchainFromAccount(read.account, {
+                cluster: body.cluster,
+                programId: chain.programId,
+                observedAt: new Date(now()).toISOString(),
+                observedSlot: read.slot,
+                signature: touch === 'ok' ? signature : null
+            });
+            const next = row.onchain
+                ? { ...refreshOnchain(row.onchain, fresh), ...(touch === 'ok' ? { signature } : {}) }
+                : fresh;
+            const wrote = await writeOnchain(pool, cid, next);
+            log(`${row.onchain ? 'refreshed' : 'recorded'} ${cid} on ${body.cluster} as ${expected}: ${next.status}, ${next.decision}${wrote ? '' : ' (a later observation was already stored)'}`);
+            return res.status(row.onchain ? 200 : 201).json(await loadAgreement(pool, cid));
+        } catch (error) {
+            console.error(`[${new Date().toISOString()}] Error in POST /agreements/${cid}/onchain:`, error);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
     app.get('/agreements/:cid', async (req, res) => {
         const cid = String(req.params.cid || '');
         if (!isCid(cid)) return res.status(400).json({ error: 'Not an agreement CID.', code: 'invalid-cid' });
@@ -410,9 +519,10 @@ export function setupAgreementsRoute(app, deps) {
         }
     });
 
-    // ?city=&design=<cid>&parcel=<id>&limit= → { agreements, count }, newest first.
+    // ?city=&design=<cid>&parcel=<id>&minted=1&limit= → { agreements, count }, newest first. minted=1 keeps
+    // the agreements the index has recorded a chain account for (a non-null `onchain`).
     app.get('/agreements', async (req, res) => {
-        const { city: rawCity, design, parcel, limit } = req.query;
+        const { city: rawCity, design, parcel, minted, limit } = req.query;
         if (rawCity !== undefined && !(typeof rawCity === 'string' && rawCity.length <= MAX_TEXT.city)) {
             return res.status(400).json({ error: `city must be a string of at most ${MAX_TEXT.city} characters.`, code: 'bad-request' });
         }
@@ -420,6 +530,7 @@ export function setupAgreementsRoute(app, deps) {
         if (parcel !== undefined && !isText(parcel, MAX_ID_LENGTH)) {
             return res.status(400).json({ error: 'parcel must be a parcel id.', code: 'bad-request' });
         }
+        if (minted !== undefined && minted !== '1') return res.status(400).json({ error: 'minted must be 1.', code: 'bad-request' });
         const clauses = [];
         const params = [];
         const city = normalizeCityCode(rawCity);
@@ -435,6 +546,7 @@ export function setupAgreementsRoute(app, deps) {
             params.push(parcel);
             clauses.push(`input_parcel_ids @> ARRAY[$${params.length}]::text[]`);
         }
+        if (minted === '1') clauses.push('onchain IS NOT NULL');
         params.push(parseListLimit(limit));
         try {
             const { rows } = await pool.query(`

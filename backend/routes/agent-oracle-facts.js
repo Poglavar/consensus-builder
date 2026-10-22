@@ -1,4 +1,6 @@
-// Paid, Bazaar-discoverable oracle reads for agents. Availability and structural integrity are
+// Paid, Bazaar-discoverable oracle reads for agents: the source-hashed terminal fact of an agreement's
+// chain account (its agreement_lifecycle event; ?subject= is the agreement account), bound to the
+// agreement-execution-v1 recipe its market settles by. Availability and structural integrity are
 // checked before the x402 gate, so an agent is never charged for a missing or malformed fact.
 
 import { paymentMiddleware, x402ResourceServer } from '@x402/express';
@@ -6,8 +8,9 @@ import { HTTPFacilitatorClient } from '@x402/core/server';
 import { createCdpFacilitatorClient } from '@coinbase/cdp-sdk/x402';
 import { declareDiscoveryExtension } from '@x402/extensions/bazaar';
 import { ExactSvmScheme } from '@x402/svm/exact/server';
-import { buildVerifiedProposalFact } from '../oracle/verified-fact.js';
-import { EVENT_TYPE } from '../oracle/proposal-lifecycle.js';
+import { buildVerifiedAgreementFact } from '../oracle/verified-fact.js';
+import { AGREEMENT_LIFECYCLE_EVENT_TYPE } from '../oracle/agreement-lifecycle.js';
+import { AGREEMENT_EXECUTION_RECIPE_ID } from '../oracle/market-recipe.js';
 import { readX402OracleConfig } from '../utils/x402-payment.js';
 import { eventFromRow, validAddress } from './land-events.js';
 
@@ -21,7 +24,7 @@ export const AGENT_ORACLE_FACTS_DISCOVERY = declareDiscoveryExtension({
     inputSchema: {
         type: 'object',
         properties: {
-            subject: { type: 'string', description: 'Optional Solana ProposalNFT account to verify; omit for the latest verified fact.' },
+            subject: { type: 'string', description: 'Optional Solana agreement account to verify; omit for the latest verified fact.' },
             market: { type: 'string', description: 'Optional market account to bind into the returned recipe.' }
         },
         additionalProperties: false
@@ -29,12 +32,12 @@ export const AGENT_ORACLE_FACTS_DISCOVERY = declareDiscoveryExtension({
     output: {
         example: {
             fact: {
-                eventType: EVENT_TYPE,
-                subject: { type: 'proposal', id: 'Gsvt6nMhsvfrEDgvcqZDzPKZhhqACFEi3mueMxQNQ6UT' },
-                outcome: 'cancelled',
+                eventType: AGREEMENT_LIFECYCLE_EVENT_TYPE,
+                subject: { type: 'agreement', id: 'Gsvt6nMhsvfrEDgvcqZDzPKZhhqACFEi3mueMxQNQ6UT' },
+                outcome: 'executed',
                 observedAt: '2026-09-21T16:24:07.000Z'
             },
-            recipe: { id: 'proposal-lifecycle-v1', hash: `sha256:${'0'.repeat(64)}` },
+            recipe: { id: AGREEMENT_EXECUTION_RECIPE_ID, hash: `sha256:${'0'.repeat(64)}` },
             verification: { status: 'verified', checks: { subjectMatches: true } }
         },
         schema: {
@@ -66,11 +69,11 @@ function publicResourceUrl(env) {
 }
 
 function parseFactQuery(req, res, next) {
-    const proposalAccount = req.query.subject ? validAddress(req.query.subject) : null;
+    const agreementAccount = req.query.subject ? validAddress(req.query.subject) : null;
     const marketAccount = req.query.market ? validAddress(req.query.market) : null;
-    if (req.query.subject && !proposalAccount) return res.status(400).json({ error: 'subject must be a Solana address' });
+    if (req.query.subject && !agreementAccount) return res.status(400).json({ error: 'subject must be a Solana address' });
     if (req.query.market && !marketAccount) return res.status(400).json({ error: 'market must be a Solana address' });
-    req.oracleFactQuery = { proposalAccount, marketAccount };
+    req.oracleFactQuery = { agreementAccount, marketAccount };
     next();
 }
 
@@ -86,12 +89,12 @@ function loadVerifiedFact(pool) {
                   AND ($2::text IS NULL OR subject_id = $2)
                 ORDER BY source_observed_at DESC
                 LIMIT 1
-            `, [EVENT_TYPE, req.oracleFactQuery.proposalAccount]);
-            if (!rows[0]) return res.status(404).json({ error: 'No verified terminal fact exists for this proposal.' });
-            const proposalAccount = req.oracleFactQuery.proposalAccount || rows[0].subject_id;
-            req.oracleFactBundle = buildVerifiedProposalFact({
+            `, [AGREEMENT_LIFECYCLE_EVENT_TYPE, req.oracleFactQuery.agreementAccount]);
+            if (!rows[0]) return res.status(404).json({ error: 'No verified terminal fact exists for this agreement.' });
+            const agreementAccount = req.oracleFactQuery.agreementAccount || rows[0].subject_id;
+            req.oracleFactBundle = buildVerifiedAgreementFact({
                 event: eventFromRow(rows[0]),
-                proposalAccount,
+                agreementAccount,
                 marketAccount: req.oracleFactQuery.marketAccount
             });
             next();
@@ -126,7 +129,7 @@ export function setupAgentOracleFactsRoute(app, pool, { env = process.env, facil
                 price: config.priceOracleFact,
                 extra: { paymentFlow: 'upfront' }
             },
-            description: 'Return the latest or a subject-selected recipe-bound, source-hashed proposal lifecycle fact.',
+            description: 'Return the latest or a subject-selected recipe-bound, source-hashed agreement lifecycle fact.',
             mimeType: 'application/json',
             serviceName: 'Urban Game Theory',
             tags: ['urban-planning', 'land', 'oracle', 'agents'],

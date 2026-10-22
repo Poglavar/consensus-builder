@@ -1,6 +1,7 @@
 /* ========== Agreements ==========
-   The agreement panel docked on the right of the map (js/agreement-panel.js), the Agreements list
-   dialog (js/agreement-list.js) and the Proposals sheet's Agreements button. The panel follows the
+   The agreement panel docked on the right of the map (js/agreement-panel.js) with its "On chain"
+   section and Mint dialog (M3), the Agreements and Minted agreements list dialogs
+   (js/agreement-list.js) and the Proposals sheet's Agreements button. The panel follows the
    right-dock rules of css/panels.css; on phones the shared bottom-sheet rules (css/panels.css,
    css/utilities.css) place it. Tokens only (css/tokens.css); the buttons keep the .btn look and are
    only laid out here. The Agreements button (.agreements-button) is a sheet row like its
@@ -94,8 +95,74 @@
     overflow-wrap: anywhere;
 }
 
+/* The index's status is a sentence when the server cannot be read ("Server status unavailable:
+   <reason>"), so here the badge wraps inside the panel instead of running off its edge on a phone.
+   A one-line status keeps the pill: the radius is clamped to half the badge's height. */
+.agreement-panel-published .cb-badge {
+    height: auto;
+    max-width: 100%;
+    padding-block: calc(var(--cb-space-1) / 2);
+    border-radius: var(--cb-radius-lg);
+    line-height: var(--cb-leading);
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
 .agreement-panel-section .approval-card-slot {
     margin-top: var(--cb-space-2);
+}
+
+/* ---- On chain (M3): the account link and its cluster on one wrapping row, then the facts
+   (.agreement-panel-facts), the chain actions (.agreement-panel-actions) and the hints ---- */
+.agreement-chain {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-2);
+    min-width: 0;
+}
+
+.agreement-chain-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--cb-space-1) var(--cb-space-2);
+}
+
+.agreement-chain-account {
+    font-family: var(--cb-font-mono);
+    font-size: var(--cb-text-sm);
+}
+
+.agreement-chain .agreement-panel-facts code,
+.agreement-mint .agreement-panel-facts code {
+    font-family: var(--cb-font-mono);
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-strong);
+}
+
+/* ---- The Mint dialog (a CbDialog): the facts it fixes, then one labelled input per term ---- */
+.agreement-mint {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-2);
+}
+
+.agreement-mint__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-1);
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-semibold);
+}
+
+.agreement-mint__field input {
+    width: 100%;
+    font-weight: var(--cb-weight-normal);
+}
+
+.agreement-mint__field input[data-agreement-mint-payout] {
+    font-family: var(--cb-font-mono);
+    font-size: var(--cb-text-sm);
 }
 
 .agreement-panel-actions {
@@ -303,7 +370,8 @@
     font-size: var(--cb-text-sm);
 }
 
-.agreement-list-empty {
+.agreement-list-empty,
+.agreement-list-status {
     margin: 0;
     color: var(--cb-text-muted);
     font-size: var(--cb-text-sm);

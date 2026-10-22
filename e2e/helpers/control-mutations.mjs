@@ -5,11 +5,6 @@ export const controlMutations = {
     error: /btn-edit-geometry/,
     css: '#proposal-details-panel.is-minimized #proposal-details-footer .btn-edit-geometry { display: none !important; }',
   },
-  'hide-compact-support': {
-    file: 'proposal-support-actions.spec.ts', grep: '(?:^|\\s)pledge is available in its lifecycle',
-    error: /Pledge|Support|pledge|support/i,
-    css: '#proposal-details-panel.is-minimized #proposal-details-footer .proposal-support-actions { display: none !important; }',
-  },
   'hide-actors': {
     file: 'activity-controls.spec.ts', grep: 'the Activity sheet Actors action opens',
     error: /activity-agents-button/,

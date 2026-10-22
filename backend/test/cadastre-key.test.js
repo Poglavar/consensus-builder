@@ -122,19 +122,3 @@ describe('city identity in links and storage', () => {
         expect(manager.foreignCityFor('explore')).toBe(current === 'explore' ? null : 'explore');
     });
 });
-
-describe('minted proposals found on chain', () => {
-    // one contract serves every city and the chain record names no city: a sync adds only this
-    // city's (proposals/storage.js chainProposalBelongsHere)
-    it('belong here only when every parcel is this city\'s, and never without parcels', () => {
-        (0, eval)(readFileSync(new URL('../../frontend/js/proposals/storage.js', import.meta.url), 'utf8'));
-        const belongs = globalThis.chainProposalBelongsHere;
-        const current = manager.getCurrentCityId();
-        const prefix = manager.getCityConfig(current).parcels.idPrefix || (current === 'new_york' ? 'US-NY-' : 'HR-');
-        expect(belongs([`${prefix}1`, `${prefix}2`])).toBe(true);
-        expect(belongs([`${prefix}1`, 'XX-OTHER-9'])).toBe(false);
-        expect(belongs(['XX-OTHER-9'])).toBe(false);
-        expect(belongs([])).toBe(false);
-        expect(belongs(null)).toBe(false);
-    });
-});

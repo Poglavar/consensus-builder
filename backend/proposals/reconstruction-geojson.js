@@ -2,7 +2,7 @@
 // Geometry lives once, as ordinary GeoJSON features. Proposal-only metadata is kept in a
 // foreign member, which GeoJSON explicitly permits, so GIS tools can still open the file.
 
-import { stripProposalArchiveState } from './serializer.js';
+import { stripProposalArchiveState } from './archive-state.js';
 
 export const RECONSTRUCTION_GEOJSON_SCHEMA = 'consensus-builder.reconstruction.v1';
 

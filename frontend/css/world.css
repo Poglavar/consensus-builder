@@ -850,8 +850,9 @@ body.explore-city #mode-walk-toggle.map-mode-walk-btn {
 .world-activity__event { --event-color: #6cb4ff; position: relative; padding-left: 15px; }
 .world-activity__event::before { content: ""; position: absolute; left: 0; top: 15px; width: 6px; height: 6px; border-radius: 50%; background: var(--event-color); box-shadow: 0 0 10px color-mix(in srgb, var(--event-color) 45%, transparent); }
 .world-activity__action { color: var(--event-color); }
-.world-activity__event[data-event-type="execute"], .world-activity__event[data-event-type="accept"] { --event-color: #43e6a6; }
+.world-activity__event[data-event-type="execute"] { --event-color: #43e6a6; }
 .world-activity__event[data-event-type="cancel"] { --event-color: #ff8c9d; }
+.world-activity__event[data-event-type="expire"] { --event-color: var(--world-ink-dim); }
 .world-activity__event[data-event-type="createMarket"], .world-activity__event[data-event-type="stake"] { --event-color: #c0a0ff; }
 .world-activity__event[data-event-type="resolve"], .world-activity__event[data-event-type="claim"], .world-activity__event[data-event-type="donate"] { --event-color: #ffc24b; }
 .world-activity__event[data-event-type="pledge"], .world-activity__event[data-event-type="fulfillPledge"] { --event-color: #66dce7; }

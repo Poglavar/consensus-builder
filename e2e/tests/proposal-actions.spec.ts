@@ -1,9 +1,11 @@
-// Proposal details and parcel tools actions that M2 kept: area and reference metrics, ownership
-// estimates, and claiming and minting a parcel. Consent, payout terms, owner offers, support and the
-// design's market card left the design with M2 (plan-design-agreement.md): decisions are an agreement's.
+// Proposal details and parcel tools actions that M2 and M3 kept: area and reference metrics, ownership
+// estimates, and claiming and minting a parcel anchor. Consent, payout terms, owner offers, support and
+// the design's market card left the design with M2 (plan-design-agreement.md): decisions are an
+// agreement's, and only agreements are minted besides parcel anchors (M3).
 import { test, expect } from '../helpers/fixtures';
+import { waitForMapReady } from '../helpers/app';
 import { openCity, openParcel, showProposal, PARCEL_ID } from '../helpers/runtime';
-import { connectWalletByConnectorId, injectMockSolanaWallet, stubSolanaBridgeSuccess, waitForBlockchainRuntime } from '../helpers/blockchain';
+import { connectWalletByConnectorId, injectMockSolanaWallet, stubSolanaParcelMint, waitForBlockchainRuntime } from '../helpers/blockchain';
 
 const SOLANA_WALLET = '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT';
 const PARCEL_PROGRAM = '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1';
@@ -143,8 +145,8 @@ test.describe('Proposal actions @features', () => {
     await injectMockSolanaWallet(page, { publicKey: SOLANA_WALLET, providerName: 'phantom' });
     await openCity(page);
     await connectWalletByConnectorId(page, 'solana-phantom');
-    await waitForBlockchainRuntime(page, ['SolanaChainDataLoader', 'SolanaAcceptanceClient', 'solanaWeb3']);
-    await stubSolanaBridgeSuccess(page, { parcelProgramId: PARCEL_PROGRAM, proposalId: 'parcel-token-123' });
+    await waitForBlockchainRuntime(page, ['SolanaChainDataLoader', 'SolanaParcelClient', 'solanaWeb3']);
+    await stubSolanaParcelMint(page, { parcelProgramId: PARCEL_PROGRAM });
 
     // The metadata service is the app's external asset boundary. RPC instruction creation,
     // wallet signing, sending and confirmation remain on their normal production code paths.
@@ -172,5 +174,42 @@ test.describe('Proposal actions @features', () => {
     await expect(success.locator('a[href*="explorer.solana.com/tx/"]')).toBeVisible();
     await success.getByRole('button', { name: 'OK', exact: true }).click();
     await expect(success).toBeHidden();
+  });
+
+  // The anchor mint (solana/parcel-mint.js) asks the chain first: an anchor already there is reported
+  // as minted with no transaction, and the cached status is refreshed from what the chain said.
+  test('mintParcelSolana short-circuits when the parcel anchor is already minted and caches the result', async ({ mockApi: page }) => {
+    await injectMockSolanaWallet(page, { publicKey: SOLANA_WALLET, providerName: 'phantom' });
+    await page.goto('/');
+    await waitForMapReady(page);
+    await connectWalletByConnectorId(page, 'solana-phantom');
+    await waitForBlockchainRuntime(page, ['SolanaChainDataLoader', 'SolanaParcelClient', 'solanaWeb3']);
+    await stubSolanaParcelMint(page, { alreadyMinted: true, parcelProgramId: PARCEL_PROGRAM, tokenId: PARCEL_PROGRAM });
+
+    const result = await page.evaluate(async programId => {
+      const w = window as any;
+      const sends: string[] = [];
+      const connection = w.SolanaChainDataLoader.getConnection('devnet');
+      const send = connection.sendRawTransaction;
+      connection.sendRawTransaction = async (...args: unknown[]) => { sends.push('send'); return send(...args); };
+      const setCalls: unknown[][] = [];
+      const originalSet = w.SolanaChainDataLoader.setParcelMintStatusCache;
+      w.SolanaChainDataLoader.setParcelMintStatusCache = (...args: unknown[]) => { setCalls.push(args); return args; };
+      try {
+        const minted = await w.mintParcelSolana('HR-335754-1234', 'ipfs://parcel-image', programId, 'devnet');
+        return { minted, setCalls, sends };
+      } finally {
+        w.SolanaChainDataLoader.setParcelMintStatusCache = originalSet;
+      }
+    }, PARCEL_PROGRAM);
+
+    expect(result.minted).toMatchObject({ txHash: null, alreadyMinted: true });
+    expect(typeof result.minted.tokenId).toBe('string');
+    expect(result.minted.tokenId).toBeTruthy();
+    // Nothing was sent: the anchor exists.
+    expect(result.sends).toEqual([]);
+    expect(result.setCalls).toHaveLength(1);
+    expect(result.setCalls[0].slice(0, 3)).toEqual(['HR-335754-1234', PARCEL_PROGRAM, 'devnet']);
+    expect(result.setCalls[0][3]).toMatchObject({ minted: true });
   });
 });

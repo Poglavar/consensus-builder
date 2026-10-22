@@ -1,10 +1,14 @@
 // The FivePoint plan importer's conversion: one volume per height zone of each development block
 // (parks skipped, mid-block breaks cut out, edges pulled in), one clipped tower box per encouraged
-// tower location, heights in metres with storeys derived.
-import { describe, expect, it } from 'vitest';
+// tower location, heights in metres with storeys derived; each volume is a Freeform building design,
+// and the committed layers make one plan of them (lib/restatement-publish.mjs).
+import { describe, expect, it, vi } from 'vitest';
 import { createHash } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
 import * as turf from '@turf/turf';
-import { buildRecords, convertPlan } from '../scripts/import-candlestick-fivepoint.mjs';
+import { AUTHOR, AUTHORED_AT, PLAN_KEY, PLAN_TITLE, buildDesigns, convertPlan, fivepointPlan } from '../scripts/import-candlestick-fivepoint.mjs';
+import { PARCEL_SOURCE_ID } from '../scripts/lib/candlestick-common.mjs';
+import { MAX_AGREEMENT_DESIGNS, planObjects } from '../scripts/lib/restatement-publish.mjs';
 
 // Two 100 m blocks side by side near Candlestick Point (WGS84), one of them a park.
 const block = (id, lonMin, landUse, extra = {}) => ({
@@ -62,20 +66,22 @@ describe('convertPlan', () => {
         expect(outside ? turf.area(outside) : 0).toBeLessThan(1);
     });
 
-    it('writes one ordinary Freeform proposal per plan feature, preserving its full geometry and properties', () => {
+    it('makes one Freeform building design per volume, standing on its own footprint, dated by the digitizing', () => {
         const stats = convertPlan(layers());
-        const records = buildRecords({ program: {}, stats, city: 'san_francisco', proposalId: 'plan', expiresInDays: 0 });
-        expect(records).toHaveLength(stats.features.length);
-        expect(records.map(record => record.proposalId)).toEqual(stats.features.map(feature => feature.properties.id).map(id =>
-            `plan-${id.toLowerCase()}-${createHash('sha256').update(id).digest('hex').slice(0, 8)}`));
-        records.forEach((record, index) => {
-            expect(record).toMatchObject({ goal: 'single', typologyType: 'single', primaryType: 'Urban Rule', site: stats.features[index].geometry });
-            expect(record.buildingProposal).toMatchObject({ typologyType: 'single', createdFrom: 'blockify', parameters: { typology: 'single', height: stats.features[index].properties.height, rotation: 0, footprintMode: 'polygon' } });
-            expect(record.geometry.buildings).toEqual([stats.features[index]]);
-            expect(record).not.toHaveProperty('buildingGeometry');
-            expect(record).not.toHaveProperty('buildingProperties');
-            expect(record.buildingProposal).not.toHaveProperty('buildingFeature');
-            expect(record.buildingProposal.parameters).not.toHaveProperty('mode');
+        const designs = buildDesigns({ program: {}, stats });
+        expect(designs).toHaveLength(stats.features.length);
+        expect(designs.map(design => design.key)).toEqual(stats.features.map(feature => feature.properties.id).map(id =>
+            `${id.toLowerCase()}-${createHash('sha256').update(id).digest('hex').slice(0, 8)}`));
+        designs.forEach(({ record }, index) => {
+            const feature = stats.features[index];
+            expect(record).toMatchObject({ goal: 'single', author: AUTHOR, city: 'san_francisco', createdAt: AUTHORED_AT, site: feature.geometry });
+            expect(record.title).toBe(`${PLAN_TITLE} — ${feature.properties.name}`);
+            expect(record.geometry.buildings).toEqual([feature]);
+            expect(record.buildingProposal).toMatchObject({ typologyType: 'single', createdFrom: 'blockify', parameters: {
+                typology: 'single', height: feature.properties.height, rotation: 0, footprintMode: 'polygon',
+                source: { featureId: feature.properties.id, sourceType: feature.properties.source, blockId: 'CN-1' }
+            } });
+            expect(record).not.toHaveProperty('cadastreParcelIds');
         });
     });
 });
@@ -109,5 +115,25 @@ describe('ordinary building volume partitioning', () => {
         expect(parts.map(feature => feature.properties.id)).toEqual(['parts-part-1','parts-part-2']);
         expect(parts[0].geometry.coordinates).toEqual(lower.geometry.coordinates);
         expect(parts[1].geometry.coordinates).toEqual(tower.geometry.coordinates);
+    });
+});
+
+describe('fivepointPlan', () => {
+    it('makes one plan of the committed layers, every volume a valid design the agreement can link', () => {
+        vi.spyOn(console, 'log').mockImplementation(() => {});
+        const plan = fivepointPlan();
+        vi.restoreAllMocks();
+        expect(plan).toMatchObject({ key: PLAN_KEY, title: PLAN_TITLE, author: AUTHOR, city: 'san_francisco', parcelSourceId: PARCEL_SOURCE_ID });
+        expect(plan.groundFile).toBe(fileURLToPath(new URL(`../scripts/data/candlestick/ground/${PLAN_KEY}.json`, import.meta.url)));
+        const objects = planObjects(plan);
+        expect(objects.length).toBeGreaterThan(11);
+        expect(objects.length).toBeLessThanOrEqual(MAX_AGREEMENT_DESIGNS);
+        expect(new Set(objects.map(object => object.cid)).size).toBe(objects.length);
+        // The eleven encouraged towers A–K are among them.
+        expect(plan.designs.filter(design => /^tower-[a-k]-/.test(design.key))).toHaveLength(11);
+        objects.forEach(object => {
+            expect(object.content.goal).toBe('single');
+            expect(object.content.authoredAt).toBe(AUTHORED_AT);
+        });
     });
 });

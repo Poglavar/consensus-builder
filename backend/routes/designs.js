@@ -17,7 +17,7 @@ import { INVALID_FOOTPRINT, footprintParts, hasFootprint } from '../proposals/fo
 import { isPlainObject } from '../utils/request-validation.js';
 import { publicApiBaseUrl } from '../utils/public-base-url.js';
 import { defaultThumbnailQueue } from '../thumbnails/thumbnail-queue.js';
-import { normalizeCityCode } from './proposals.js';
+import { normalizeCityCode } from '../utils/city-code.js';
 import { designDocument, SEMANTIC_BASE_ERROR, SEMANTIC_RECORD_ERROR } from '../semantics/published-records.js';
 
 const require = createRequire(import.meta.url);

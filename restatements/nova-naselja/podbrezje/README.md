@@ -2,7 +2,7 @@
 
 # Podbrežje
 
-Named local plan: `/proposals/podbrezje?city=zagreb`
+Published as designs plus one agreement (plan key `nova-naselja/podbrezje`) by `backend/scripts/publish-restatement-archives.mjs`; see [the collection README](../README.md#publishing-designs-and-agreements).
 
 This is intentionally a mixed-state restatement of the 19.43 ha `UPU Podbrežje`, adopted in 2007 and amended in 2011. The official programme describes approximately 2,000 apartments, 5,800 residents and 234,280 m² GBP. Four residential slabs are present in the current DGU snapshot; the rest of the neighbourhood remains phased, with A11 under construction in the cited 2026 City update.
 

@@ -7,18 +7,27 @@
 })(typeof window !== 'undefined' ? window : globalThis, function actorExplorerFactory(root) {
     'use strict';
 
-    // The action vocabulary: every type the simulation, the live feed (backend/routes/agent-activity.js
-    // CHAIN_ACTIONS, x402 payments, run status) and agent run summaries (AgentActionEngine) emit. The explorer's action filter is built from it, so a
-    // type missing here could never be filtered for.
+    // The action vocabulary: every type the live feed (backend/routes/agent-activity.js) emits, which is
+    // designs and agreements from the index, the agreement, market and pledge programs' instructions,
+    // the agent runs' recorded activities (run.mjs, support-run.mjs, society-run.mjs through the
+    // AgentActionEngine; the settlement phase adds decide and lens-decision) and run status, plus
+    // create, the local design a simulation agent makes. The explorer's action filter is built from it,
+    // so a type missing here could never be filtered for.
     const ACTION_LABELS = Object.freeze({
-        create: 'Created', execute: 'Executed', publish: 'Published', accept: 'Accepted', withdrawAcceptance: 'Withdrew acceptance',
-        donate: 'Donated', pledge: 'Pledged', stake: 'Bet / stake', createMarket: 'Opened market',
-        resolve: 'Resolved market', claim: 'Claimed winnings', revokePledge: 'Revoked pledge',
-        fulfillPledge: 'Fulfilled pledge', voidPledge: 'Voided pledge', refundMyDonations: 'Refunded donation',
-        releaseDonations: 'Released donations', cancel: 'Cancelled', vote: 'Voted', x402Payment: 'Paid (x402)',
-        certifyParcel: 'Certified ownership', anchorParcel: 'Anchored parcel', attestOwnership: 'Attested ownership',
-        acceptance: 'Said yes', verdict: 'Submitted verdict', run_status: 'Run status'
+        create: 'Created', design: 'Published design', propose: 'Proposed agreement', mint: 'Minted',
+        fund: 'Funded escrow', decide: 'Owner decision', 'lens-decision': 'Lens decision', attest: 'Recorded decision',
+        execute: 'Executed', cancel: 'Cancelled', expire: 'Expired',
+        createMarket: 'Opened market', stake: 'Bet / stake', resolve: 'Resolved market', claim: 'Claimed winnings',
+        donate: 'Donated', pledge: 'Pledged', revokePledge: 'Revoked pledge', fulfillPledge: 'Fulfilled pledge',
+        voidPledge: 'Voided pledge', refundMyDonations: 'Refunded donation', releaseDonations: 'Released donations',
+        run_status: 'Run status'
     });
+    // What an event can be about, by its entity type, and the words its link and scope use.
+    const ENTITY_LABELS = Object.freeze({ agreement: 'Agreement', design: 'Design' });
+    const shortCid = value => {
+        const text = string(value);
+        return text.length > 20 ? `${text.slice(0, 12)}…${text.slice(-6)}` : text;
+    };
 
     // Filter options for the action vocabulary, labelled through the host translator when it has one.
     function actionOptions(translate = (_key, fallback) => fallback) {
@@ -87,14 +96,14 @@
             let profile = profiles.get(event.actorKey);
             if (!profile) {
                 profile = {
-                    key: event.actorKey, actor: event.actor, activityCount: 0, actions: {}, proposalIds: new Set(),
+                    key: event.actorKey, actor: event.actor, activityCount: 0, actions: {}, agreementCids: new Set(),
                     runIds: new Set(), transactionCount: 0, _costKeys: new Set(), modelCostUsd: 0, latestAt: null
                 };
                 profiles.set(event.actorKey, profile);
             }
             profile.activityCount += 1;
             profile.actions[event.action.type] = (profile.actions[event.action.type] || 0) + 1;
-            if (event.entity?.type === 'proposal' && event.entity.id) profile.proposalIds.add(string(event.entity.id));
+            if (event.entity?.type === 'agreement' && event.entity.id) profile.agreementCids.add(string(event.entity.id));
             if (event.runId) profile.runIds.add(event.runId);
             if (event.transaction) profile.transactionCount += 1;
             const costKey = event.runId || `${event.model || ''}:${event.batchId || ''}:${event.id}`;
@@ -106,7 +115,7 @@
         });
         return Array.from(profiles.values()).map(profile => ({
             ...profile,
-            proposalIds: Array.from(profile.proposalIds), runIds: Array.from(profile.runIds),
+            agreementCids: Array.from(profile.agreementCids), runIds: Array.from(profile.runIds),
             modelCostUsd: Number(profile.modelCostUsd.toFixed(6))
         })).sort((left, right) => Date.parse(right.latestAt || 0) - Date.parse(left.latestAt || 0));
     }
@@ -128,7 +137,8 @@
         return {
             action: ACTION_LABELS[item.action.type] || item.action.type,
             actor: item.actor.name,
-            proposalId: item.entity?.type === 'proposal' ? string(item.entity.id) : null,
+            agreementCid: item.entity?.type === 'agreement' ? string(item.entity.id) : null,
+            designCid: item.entity?.type === 'design' ? string(item.entity.id) : null,
             rationale: item.rationale,
             runId: item.runId,
             model: item.model,
@@ -148,7 +158,7 @@
 
     // One activity row for every surface. Rows look identical for humans, algorithms and LLMs; who or
     // what acted is provenance and only appears once Details is opened. Simulation `messageHtml` is
-    // app-authored markup (agent/proposal/parcel links); every other field is escaped.
+    // app-authored markup (agent/local design/parcel links); every other field is escaped.
     // `translate(key, fallback, params)` lets the map localize labels; the standalone page has no i18n.
     function activityRowHtml(event = {}, { translate = (_key, fallback, params = {}) => fallback.replace(/\{\{(\w+)\}\}/g, (_m, name) => string(params[name])) } = {}) {
         const tr = (key, fallback, params) => translate(`gameDialogs.log.row.${key}`, fallback, params);
@@ -158,10 +168,11 @@
         const when = isoTime(event.occurredAt);
         const turn = event.source === 'simulation' && event.turn !== null && event.turn !== undefined ? `${escapeHtml(tr('turn', 'Turn {{turn}}', { turn: event.turn }))} · ` : '';
         const timestamp = when ? `<time datetime="${when}">${turn}${escapeHtml(formatWhen(when))}</time>` : '';
-        // Opening a proposal runs script (the host binds .proposal-link-clickable), so it is a button
-        // that looks like a link; the transaction leaves the app and carries the external mark.
-        const proposalLink = event.entity?.type === 'proposal' && event.entity.id
-            ? `<button type="button" data-proposal-id="${escapeHtml(event.entity.id)}" class="cb-link proposal-link-clickable">${escapeHtml(tr('openProposal', 'Open proposal'))}</button>`
+        // Opening an agreement or a design runs script (the host handles .activity-entity-link), so it
+        // is a button that looks like a link; the transaction leaves the app and carries the external mark.
+        const entityType = event.entity?.type;
+        const entityLink = ENTITY_LABELS[entityType] && event.entity.id
+            ? `<button type="button" class="cb-link activity-entity-link" data-entity-type="${escapeHtml(entityType)}" data-entity-id="${escapeHtml(event.entity.id)}">${escapeHtml(entityType === 'agreement' ? tr('openAgreement', 'Open agreement') : tr('openDesign', 'Open design'))}</button>`
             : '';
         const transactionLink = event.transaction
             ? `<a class="cb-link cb-link--external" href="https://explorer.solana.com/tx/${encodeURIComponent(event.transaction)}?cluster=devnet" target="_blank" rel="noopener noreferrer">${escapeHtml(tr('transaction', 'Transaction'))}</a>`
@@ -172,24 +183,24 @@
             tr('action', 'Action: {{value}}', { value: event.action?.type || 'unknown' }),
             event.ok === false ? tr('resultFailed', 'Result: failed') : tr('resultSuccess', 'Result: success')
         ].map(escapeHtml).join(' · ');
-        // Scope buttons drill into actor → proposal → parcel set → run; the host explorer handles them.
+        // Scope buttons drill into actor → agreement → run; the host explorer handles them.
         const scope = (field, value, label) => value
             ? `<button type="button" class="cb-link activity-scope-link" data-activity-scope="${field}" data-activity-value="${escapeHtml(value)}">${escapeHtml(label)}</button>`
             : '';
-        const proposalId = event.entity?.type === 'proposal' && event.entity.id ? event.entity.id : event.action?.proposalId;
+        const agreementCid = entityType === 'agreement' && event.entity.id ? event.entity.id : event.action?.agreementCid;
         const actorDetails = [event.actor?.wallet, event.actor?.id].filter(Boolean).map(escapeHtml).join(' · ');
         const actorScope = scope('actorId', event.actor?.id, event.actor?.name || event.actor?.id || tr('actorFallback', 'Actor'));
-        const entityDetails = event.entity?.id ? `<span>${escapeHtml(event.entity.type || 'entity')}: ${escapeHtml(event.entity.id)}</span>` : '';
-        const proposalScope = proposalId
-            ? `<span class="activity-scope-links">${scope('proposalId', proposalId, tr('scopeProposal', 'All activity on this proposal'))}${scope('parcelSetOf', proposalId, tr('scopeLand', 'All activity on this land'))}</span>`
+        const entityDetails = event.entity?.id ? `<span>${escapeHtml(entityType || 'entity')}: ${escapeHtml(event.entity.id)}</span>` : '';
+        const agreementScope = agreementCid
+            ? `<span class="activity-scope-links">${scope('agreementCid', agreementCid, tr('scopeAgreement', 'All activity on this agreement'))}</span>`
             : '';
         const modelDetails = event.model
             ? `<span>${escapeHtml(tr('model', 'Model:'))} ${escapeHtml(event.model)}${Number.isFinite(event.modelCostUsd) ? ` · ${escapeHtml(formatUsd(event.modelCostUsd, 4))}` : ''}</span>`
             : '';
         return `<article class="log-entry activity-entry${event.ok === false ? ' is-failed' : ''}" data-source="${escapeHtml(event.source)}">
         <div class="activity-entry-main">${body}</div>
-        <div class="activity-entry-links">${timestamp}${proposalLink}${transactionLink}</div>
-        <details class="activity-entry-meta"><summary>${escapeHtml(tr('details', 'Details'))}</summary><span>${details}</span><span>${escapeHtml(tr('actor', 'Actor:'))} ${actorScope}${actorDetails ? ` · ${actorDetails}` : ''}</span>${entityDetails}${proposalScope}${modelDetails}${event.runId ? `<span>${escapeHtml(tr('run', 'Run'))} ${scope('runId', event.runId, event.runId)}</span>` : ''}${event.batchId ? `<span>${escapeHtml(tr('batch', 'Batch'))} ${escapeHtml(event.batchId)}</span>` : ''}</details>
+        <div class="activity-entry-links">${timestamp}${entityLink}${transactionLink}</div>
+        <details class="activity-entry-meta"><summary>${escapeHtml(tr('details', 'Details'))}</summary><span>${details}</span><span>${escapeHtml(tr('actor', 'Actor:'))} ${actorScope}${actorDetails ? ` · ${actorDetails}` : ''}</span>${entityDetails}${agreementScope}${modelDetails}${event.runId ? `<span>${escapeHtml(tr('run', 'Run'))} ${scope('runId', event.runId, event.runId)}</span>` : ''}${event.batchId ? `<span>${escapeHtml(tr('batch', 'Batch'))} ${escapeHtml(event.batchId)}</span>` : ''}</details>
     </article>`;
     }
 
@@ -213,8 +224,8 @@
         return node;
     }
 
-    // "1 proposal" / "3 proposals". The actors view is English-only (no i18n keys yet), so a plain
-    // count-aware pair instead of "1 proposals".
+    // "1 agreement" / "3 agreements". The actors view is English-only (no i18n keys yet), so a plain
+    // count-aware pair instead of "1 agreements".
     function countText(count, one, many) {
         return `${count} ${count === 1 ? one : many}`;
     }
@@ -249,16 +260,17 @@
         return 'https://api.urbangametheory.xyz';
     }
 
-    // openProposal(id): when the host can open a proposal in place (the map), an event's proposal is a
-    // button that calls it; the standalone page has no opener, so there the proposal is a plain label.
-    function mount(element, { events = [], loadRun = null, openProposal = null, showFilters = true } = {}) {
+    // openEntity({ type, id }): when the host can open an agreement or a design in place (the map), an
+    // event's entity is a button that calls it; the standalone page has no opener, so there it is a
+    // plain label.
+    function mount(element, { events = [], loadRun = null, openEntity = null, showFilters = true } = {}) {
         if (!element || !root?.document) throw new Error('ActorExplorer.mount needs an element and a document');
         const doc = root.document;
         let allEvents = newestFirst(events);
         let state = { query: '', controller: 'all', actorKey: null };
         element.replaceChildren();
         const filters = doc.createElement('div'); filters.className = 'ae-filters';
-        const search = doc.createElement('input'); search.type = 'search'; search.placeholder = 'Search actor, proposal, run or transaction'; search.setAttribute('aria-label', search.placeholder);
+        const search = doc.createElement('input'); search.type = 'search'; search.placeholder = 'Search actor, agreement, run or transaction'; search.setAttribute('aria-label', search.placeholder);
         const controller = doc.createElement('select'); controller.setAttribute('aria-label', 'Actor controller');
         [['all', 'All actors'], ['human', 'Humans'], ['algorithm', 'Algorithms'], ['llm', 'LLM agents']].forEach(([value, label]) => {
             const option = text(doc, 'option', label); option.value = value; controller.append(option);
@@ -278,9 +290,9 @@
             detail.append(text(doc, 'p', `${run.model || 'No model recorded'} · ${formatUsd(runCostTotal(run))} exact cost`, 'ae-muted'));
             (run.picks || []).forEach(pick => {
                 const block = doc.createElement('div'); block.className = 'ae-rationale';
-                block.append(text(doc, 'strong', pick.name || pick.proposalId || 'Proposal'));
+                block.append(text(doc, 'strong', pick.name || pick.candidateId || 'Pick'));
                 if (pick.rationale) block.append(text(doc, 'p', pick.rationale));
-                block.append(text(doc, 'small', `Proposal ${pick.proposalId || 'not recorded'}`));
+                block.append(text(doc, 'small', `Agreement ${pick.agreementCid || 'not proposed'} · design ${pick.designCid || 'not published'}`));
                 detail.append(block);
             });
             (run.costs || []).forEach(cost => detail.append(text(doc, 'p', `${cost.item}: ${cost.model} · ${formatUsd(Number(cost.usd))}`, 'ae-provenance')));
@@ -307,7 +319,7 @@
                 card.setAttribute('aria-pressed', state.actorKey === profile.key ? 'true' : 'false');
                 const body = doc.createElement('span'); body.className = 'cb-option__text';
                 body.append(text(doc, 'span', profile.actor.name, 'cb-option__title'), text(doc, 'span', `${profile.actor.kind} · ${profile.actor.controller}`, 'cb-badge'));
-                body.append(text(doc, 'span', `${countText(profile.activityCount, 'activity', 'activities')} · ${countText(profile.proposalIds.length, 'proposal', 'proposals')} · ${countText(profile.transactionCount, 'transaction', 'transactions')}`, 'cb-option__desc'));
+                body.append(text(doc, 'span', `${countText(profile.activityCount, 'activity', 'activities')} · ${countText(profile.agreementCids.length, 'agreement', 'agreements')} · ${countText(profile.transactionCount, 'transaction', 'transactions')}`, 'cb-option__desc'));
                 if (profile.actor.wallet) body.append(text(doc, 'code', short(profile.actor.wallet), 'ae-wallet'));
                 if (profile.modelCostUsd) body.append(text(doc, 'span', `${formatUsd(profile.modelCostUsd)} model cost`, 'cb-option__desc'));
                 card.append(body);
@@ -326,12 +338,14 @@
                 item.append(text(doc, 'span', event.message || `${event.action.type} ${event.entity?.id || ''}`, 'ae-event-message'));
                 item.append(text(doc, 'time', formatWhen(event.recordedAt), 'ae-muted'));
                 const meta = doc.createElement('div'); meta.className = 'ae-meta';
-                if (event.entity?.id) {
-                    const label = `Proposal ${event.entity.id}`;
-                    if (typeof openProposal === 'function') {
-                        const proposal = text(doc, 'button', label, 'cb-link'); proposal.type = 'button';
-                        proposal.addEventListener('click', () => openProposal(String(event.entity.id)));
-                        meta.append(proposal);
+                if (ENTITY_LABELS[event.entity?.type] && event.entity.id) {
+                    const entity = { type: event.entity.type, id: string(event.entity.id) };
+                    const label = `${ENTITY_LABELS[entity.type]} ${shortCid(entity.id)}`;
+                    if (typeof openEntity === 'function') {
+                        const button = text(doc, 'button', label, 'cb-link'); button.type = 'button';
+                        button.title = entity.id;
+                        button.addEventListener('click', () => openEntity(entity));
+                        meta.append(button);
                     } else {
                         meta.append(text(doc, 'span', label));
                     }

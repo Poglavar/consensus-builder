@@ -1,13 +1,80 @@
-/* The Create agreement dialog (js/agreement-dialog.js): one scrolling column of sections on the
-   shared dialog (css/primitives.css) — designs, land, allocation, money, decision rule, details.
-   Layout only, on the tokens; the controls are the shared ones (base form controls, cb-badge), and
-   the approval form inside keeps its own rules (css/proposal-editor.css). On a phone the dialog is
-   the shared bottom sheet, the tables wrap within its width and the allocation rows stack. */
+/* The agreement editor (js/agreement-dialog.js): Create / Edit agreement docked on the right of the
+   map in place of the agreement panel (css/agreement.css) while it is open, at the dock's width
+   (--right-dock-width, css/panels.css); on a phone the shared bottom sheet (css/panels.css,
+   css/utilities.css) with the map above it. A header, one scrolling column of sections — designs,
+   land, allocation, money, decision rule, details — with the issues at its top, and a footer with
+   Cancel and Save that stays at the bottom. At the dock's width every row stacks: a parcel or a piece
+   is a two-line row, and each piece sits above the select that names its recipient. Layout only, on
+   the tokens; the controls are the shared ones (base form controls, cb-badge, .btn), and the approval
+   form inside keeps its own rules (css/proposal-editor.css). */
 
-.agreement-dialog {
+/* ---- The panel: under the top-right buttons, as tall as the dock runs ---- */
+#agreement-editor {
+    position: absolute;
+    top: calc(var(--map-shell-edge) + var(--map-shell-button-size) + var(--map-shell-gap));
+    right: var(--right-dock-gap);
+    bottom: var(--right-dock-bottom);
+    padding: 0;
+    overflow: hidden;
+    z-index: var(--cb-z-panel);
+}
+
+#agreement-editor.visible {
+    display: flex;
+    flex-direction: column;
+}
+
+.agreement-editor .panel-header {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: var(--cb-space-2);
+    padding: var(--cb-space-2) var(--cb-space-3);
+    border-bottom: 1px solid var(--cb-line);
+}
+
+.agreement-editor .panel-header h3 {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    font-size: var(--cb-text-xl);
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+}
+
+/* The form is the column under the header: its body scrolls, its footer stays at the bottom. */
+.agreement-editor__form {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    margin: 0;
+}
+
+.agreement-editor .panel-body {
     display: grid;
+    flex: 1 1 auto;
     align-content: start;
     gap: var(--cb-space-4);
+    min-height: 0;
+    padding: var(--cb-space-3) var(--cb-space-4);
+    overflow-y: auto;
+}
+
+.agreement-editor .panel-footer {
+    display: flex;
+    flex-shrink: 0;
+    justify-content: flex-end;
+    gap: var(--cb-space-2);
+    padding: var(--cb-space-2) var(--cb-space-4);
+    border-top: 1px solid var(--cb-line);
+}
+
+/* While the editor picks designs on the map (js/map-pick.js), the rest of the map dims less than it
+   does for a shared plan (css/proposals.css): the other applied designs are what the next click
+   adds, so they stay readable. */
+body[data-map-pick="agreement"] {
+    --map-pick-dim: 0.5;
 }
 
 .agreement-intro {
@@ -60,6 +127,11 @@
     color: var(--cb-text-muted);
     font-size: var(--cb-text-sm);
     line-height: var(--cb-leading);
+}
+
+/* What the last click on the map did: added or removed a design. */
+.agreement-pick-status {
+    color: var(--cb-text);
 }
 
 .agreement-notice,
@@ -125,7 +197,7 @@
     flex: 0 0 auto;
 }
 
-/* ---- Land: the input parcels and the resulting pieces ---- */
+/* ---- Land: the input parcels and the resulting pieces, one two-line row each ---- */
 .agreement-land {
     display: grid;
     gap: var(--cb-space-3);
@@ -134,17 +206,17 @@
 
 .agreement-table-scroll {
     max-width: 100%;
-    overflow-x: auto;
 }
 
 .agreement-table {
+    display: block;
     width: 100%;
-    border-collapse: collapse;
     font-size: var(--cb-text-sm);
     line-height: var(--cb-leading);
 }
 
 .agreement-table caption {
+    display: block;
     padding-bottom: var(--cb-space-1);
     text-align: left;
     font-size: var(--cb-text-md);
@@ -152,32 +224,76 @@
     color: var(--cb-text);
 }
 
+/* The column heads stay for screen readers only: every row names its own values. */
+.agreement-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.agreement-table tbody {
+    display: grid;
+}
+
+/* A parcel: its id and its area, then its holders. A piece: its name and its area, the parcels it
+   stands on, then its holders. */
+.agreement-table tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+        "name area"
+        "holders holders";
+    column-gap: var(--cb-space-2);
+    padding: var(--cb-space-1) 0;
+    border-bottom: 1px solid var(--cb-line);
+}
+
+.agreement-table tr[data-agreement-output] {
+    grid-template-areas:
+        "name area"
+        "from from"
+        "holders holders";
+}
+
 .agreement-table th,
 .agreement-table td {
-    padding: var(--cb-space-1) var(--cb-space-2);
-    border-bottom: 1px solid var(--cb-line);
+    display: block;
+    min-width: 0;
+    padding: 0;
     text-align: left;
-    vertical-align: top;
     overflow-wrap: anywhere;
 }
 
-.agreement-table thead th {
-    color: var(--cb-text-muted);
-    font-weight: var(--cb-weight-semibold);
-}
-
 .agreement-table tbody th {
+    grid-area: name;
     font-weight: var(--cb-weight-medium);
     color: var(--cb-text-strong);
 }
 
 .agreement-table .agreement-table__number {
+    grid-area: area;
     text-align: right;
     white-space: nowrap;
     font-variant-numeric: tabular-nums;
 }
 
-/* ---- Allocation and money: a label beside its control, two columns ---- */
+.agreement-table .agreement-table__from {
+    grid-area: from;
+    color: var(--cb-text-muted);
+}
+
+.agreement-table .agreement-table__from::before {
+    content: attr(data-label) " ";
+}
+
+.agreement-table .agreement-table__holders {
+    grid-area: holders;
+}
+
+/* ---- Allocation: each piece above its select. Money: a party beside its amount ---- */
 .agreement-allocations,
 .agreement-money {
     display: grid;
@@ -185,8 +301,13 @@
     min-width: 0;
 }
 
+.agreement-allocation-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--cb-space-1);
+}
+
 .agreement-column-head,
-.agreement-allocation-row,
 .agreement-money-row {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -247,17 +368,4 @@
 
 .agreement-rule-form {
     min-width: 0;
-}
-
-/* A phone sheet: each piece above the select that names its recipient (so the column head goes);
-   a party and its amount stay side by side. */
-@media (max-width: 767.98px) {
-    .agreement-allocation-row {
-        grid-template-columns: minmax(0, 1fr);
-        gap: var(--cb-space-1);
-    }
-
-    .agreement-column-head--allocation {
-        display: none;
-    }
 }

@@ -2,31 +2,44 @@
 
 # Plan, design, agreement
 
-**Status (2026-10-22): M1 and M2 built, tested and committed; the M3 program built.** "Lay out
-parcels" (M1 a) and the local agreement with its dialog, panel and list (M1 b) came first. M2 (the
-"M2 build contract" below) publishes designs and agreements as CIDv1 raw-leaf objects pinned
+**Status (2026-10-22): M1, M2 and M3 built and tested; M3 committed, nothing pushed or deployed.**
+"Lay out parcels" (M1 a) and the local agreement with its dialog, panel and list (M1 b) came first.
+M2 (the "M2 build contract" below) publishes designs and agreements as CIDv1 raw-leaf objects pinned
 through `POST /pins` and indexed in `consensus.design` / `consensus.agreement`; share links are
-`/designs/<cid,…>` and `/agreements/<cid>`; Propose on the agreement panel publishes designs and
-the agreement and shows the decision tally over receipts signed on the agreement CID; design
-dialogs have no terms or kind; the decide-later type, Walrus, prepare, the proposal write path, edit
-tokens, effect hashes, lineage by row id and named plans are gone. The M2 test pass (all tests in
-one pass, then fixes, per the user's rule) ended with the full headless unit suite at 893 of 897
-files passing and the full headless Playwright suite at 651 of 655 (three load flakes pass alone);
-the remaining failures (hackathon-operations, parcel-deep-link-city, qualified-city-release,
-cotonou-live-source, the "Use my location" spec) fail on the base branch too. The Solana
-`agreement` program builds (M3 notes at the end). Leftovers to flatten when touched:
-`readjustment-contributions.js` is loaded but unused; `subdivision.js planCreateVerdict` and
-`formation-edit.js clipPiecesByTaking` are used only by tests; `readjustmentPiece` keeps its name;
-the how-to guides still describe the old editor; an output piece anchored to a parcel outside the
-inputs counts with its whole area in the ledger; unowned output land is in no ledger row; the
-rights preview names local parties by agent id; hand-placed structure `decorations` are not part
-of the published design object; the bets sheet, `bet-entry.js`, `lens-card.js`, `bids-card.js`,
-`support-view.js` and `possibility-timeline.js` are loaded but unmounted and the agent simulation
-still pledges to proposals (all move to agreements in M3); the agents, MCP tools and the candlestick
-and Borovje restatement scripts still call the removed write routes (rewritten on agreements in M3);
-the `proposal` table and the `ens_plan`, `proposal_prepared`, `proposal_owner_decision` and
-`edit_token_hash` database objects are dropped at the end of M3 with a backup; the zagreb-isochrone
-walk and drive sims receive design CIDs now and must read `GET /designs/:cid`.
+`/designs/<cid,…>` and `/agreements/<cid>`; design dialogs have no terms or kind; the decide-later
+type, Walrus, prepare, the proposal write path, edit tokens, effect hashes, lineage by row id and
+named plans are gone. M3 (the "M3 notes" below) puts the agreement on chain: the Solana `agreement`
+program (create, fund, attest, execute, cancel, expire; the lens attests `AgreementDecision`
+`satisfied` only; non-binding agreements are never minted and have no markets), the agreement panel's
+Mint / Propose again / Fund / Record decision / Execute / Cancel / Expire and the Minted agreements
+list, `POST /agreements/:cid/onchain` and `GET /agreements?minted=1`, markets, bets and pledges on
+agreement accounts (`agreement-execution-v1`; LMSR cancelled settles void, parimutuel NO), the
+lifecycle oracle writing `agreement_lifecycle` / `agreement_executed` land events and the observed
+status and end time onto the index row, agents proposing binding owners' agreements as devnet owners
+of their parcels (stages planned → chosen → designed → proposed → minted → recorded → staked, then
+settlement; 26 MCP tools), the restatement scripts on designs and agreements, the agreement editor as
+a right-docked map panel with pick-on-map, and the removal of per-design owner acceptances, chain
+refs, named-plan and minted-proposal readers, Canton and the EVM proposal readers. The M3 test pass
+(all tests at the end, then three fix rounds): full headless unit suite 876 of 879 files (14,181
+tests; parcel-deep-link-city, qualified-city-release and cotonou-live-source fail on the base branch
+too), `anchor test` 223 passing, full headless Playwright 637 of 645 (3 load flakes pass alone, 4
+specs adapted to the M3 activity vocabulary, "Use my location" fails on the base branch), full headed
+Playwright 621 of 645 (26 of the 28 rerun pass alone; dynamic-factory-controls passes with one
+worker; schelling-plan.spec.ts:87 fails headed on the base branch too), control contract 862 sites,
+feature inventory 109 commands. Needs the user: deploy the `agreement` program (the id is still the
+placeholder, so nothing can mint), seed devnet owners (`scripts/seed-lens-owners.mjs`),
+`AGREEMENT_LIFECYCLE_LENS_OPERATOR_TOKEN` for live runs, `scripts/drop-proposal-era.mjs --apply`
+after a backup (dry run only so far), and the demo content recreated through the restatement scripts.
+Leftovers to flatten when touched: `readjustment-contributions.js` is loaded but unused;
+`subdivision.js planCreateVerdict` and `formation-edit.js clipPiecesByTaking` are used only by
+tests; the how-to guides still describe the old editor; an output piece anchored to a parcel outside
+the inputs counts with its whole area in the ledger; unowned output land is in no ledger row; the
+rights preview names local parties by agent id; hand-placed structure `decorations` are not part of
+the published design object; a parcel panel opened while the agreement panel is up sits under it on
+the dock; the transaction decoder gives agreement instructions only the generic summary; the actor
+explorer's own labels are English in code; the zagreb-isochrone walk and drive sims must read
+`GET /designs/:cid`; the alerts-server-telegram "UGT Land Event Oracle" check expects the old oracle
+entrypoint; the production `.env` still carries unused Canton variables.
 
 A rework of what sits above a single authored change. Started 2026-10-21 on branch
 `plan-design-agreement` (off `colosseum-worlds-fair` at 3a62b4a7e, which includes the Schelling plan
@@ -475,6 +488,33 @@ had to be made are marked **(call)**.
   sponsor wallet, and the index's `onchain` column records the account once minted.
 - **Decision:** funding is enforced on every agreement; `required_lamports: 0` means none, and
   `open_ground` is recorded for readers only.
+- **UI decision (user, 2026-10-22):** the Create/Edit agreement dialog becomes a narrower panel
+  docked on the right of the map on desktop (a bottom sheet on phones), replacing the agreement
+  details panel while it is open, so the designs in the agreement are highlighted on the map and
+  clicking an applied design on the map adds or removes it. From a design's details, "Add to
+  agreement" offers a new agreement or one of the existing unpublished ones. One pick-on-map
+  mechanism (`map-pick.js`) serves the share panel and the editor.
+- **Decision (2026-10-22):** the lens never refuses. It attests `satisfied` when the engine's tally
+  passes; after the deadline an unsatisfied agreement can only expire, which says everything a
+  refusal would, and the program's `attest` is closed after the deadline anyway. `decision` is
+  `pending` or `satisfied`.
+- **Decision (2026-10-22):** the market and pledge programs read the `agreement` program's account
+  as their subject (owner, discriminator, status byte at offset 136: 0 Active, 1 Executed,
+  2 Cancelled, 3 Expired) and no longer read `proposal_nft`; markets settle YES on Executed, NO on
+  Cancelled or Expired. The programs keep their names and ids until a deploy assigns new ones.
+- **Decisions (2026-10-22, consolidation):** LMSR markets keep settling a cancelled agreement as
+  void and parimutuel pools as NO (the 2026-10-12 rule); donations and pledges pay out to the
+  sponsor (the agreement's authority); the in-app Canton mode, the standalone Canton console and
+  the backend `/canton` routes are deleted (a third chain returns, if at all, on agreements); the
+  EVM proposal-NFT readers are deleted, the EVM wallet connection stays, and EVM support returns
+  later on agreements; the agreement editor is a right-docked map panel with pick-on-map
+  (`map-pick.js`, shared with the share panel) and "Add to agreement" on a design's details.
+- **Decision (2026-10-22):** a non-binding agreement (community vote, owner vote) is never minted
+  and has no market; it is a poll in the index whose decisions are counted off-chain. Minting,
+  escrow, attestation, execution and markets are for binding owners' agreements only. The
+  autonomous proposers therefore propose binding owners' agreements over parcels whose devnet
+  owner is the bot's own wallet (seeded in the lens owner registry), sign their approval, have
+  their lens attest, and execute.
 - Pending for M3: the lens issues the attestation (`backend/oracle/lens-schemas.js`), the browser
   mint and fund flow on the agreement panel, markets, oracle, parcel history and agents on
   agreements, the `proposal` table drop, prod demo content recreated. EVM later.

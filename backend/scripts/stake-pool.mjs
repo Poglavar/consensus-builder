@@ -1,10 +1,11 @@
 #!/usr/bin/env node
-// Open a proposal's (or named plan's) yes/no pool if it has none, then stake devnet USDC on one side,
-// from a keypair on this machine. The same instructions the Bets sheet sends (agents/bettor.js →
-// frontend/js/solana/market-client.js). Dry run by default; --run signs. With --target the amount is
-// the position the wallet should END with on that side, so a rerun tops up instead of doubling.
+// Open an agreement's yes/no pool if it has none, then stake devnet USDC on one side, from a keypair on
+// this machine. The pool's subject is the agreement's chain account (PDA(sponsor, CID)). The same
+// instructions the Bets sheet sends (agents/bettor.js → frontend/js/solana/market-client.js). Dry run by
+// default; --run signs. With --target the amount is the position the wallet should END with on that
+// side, so a rerun tops up instead of doubling.
 //
-//   node scripts/stake-pool.mjs --account <proposal or plan account> --keypair <wallet.json> --side yes|no --amount 0.25 [--target] [--run]
+//   node scripts/stake-pool.mjs --account <agreement account> --keypair <wallet.json> --side yes|no --amount 0.25 [--target] [--run]
 
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -29,7 +30,7 @@ const { values } = parseArgs({ options: {
     help: { type: 'boolean', default: false }
 } });
 if (values.help || !values.account || !values.keypair || !['yes', 'no'].includes(values.side) || !values.amount) {
-    console.log('Usage: node scripts/stake-pool.mjs --account <account> --keypair <wallet.json> --side yes|no --amount <usdc> [--target] [--run]');
+    console.log('Usage: node scripts/stake-pool.mjs --account <agreement account> --keypair <wallet.json> --side yes|no --amount <usdc> [--target] [--run]');
     process.exit(values.help ? 0 : 1);
 }
 
@@ -42,7 +43,7 @@ log(`${values.account}: pool ${before ? `yes ${usdc(before.yesPool)} / no ${usdc
 log(`${wallet.publicKey.toBase58()} → ${values.amount} USDC on ${values.side.toUpperCase()}${values.target ? ' (target position)' : ''}`);
 if (!values.run) { log('dry run: nothing signed (add --run)'); process.exit(0); }
 const result = await ensureMarketAndStake({
-    connection, ownerKeypair: wallet, proposalPda: values.account, stakeMint: DEVNET_USDC_MINT,
+    connection, ownerKeypair: wallet, subject: values.account, stakeMint: DEVNET_USDC_MINT,
     side, amountAtomic, targetAmount: values.target, sendAndConfirm: sendAndConfirmPolling
 });
 const after = await marketClient.readMarket(connection, values.account);

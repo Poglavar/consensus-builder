@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { parcelSourceCatalog, parcelSourceForCity, parcelSourceForIds } from '../parcels/sources.js';
 import { computeBinding, parcelActBinding } from '../proposals/binding.js';
 import { parseCityConfigs } from '../../scripts/build-world-coverage.mjs';
-import { stripLocalProposalState } from '../proposals/serializer.js';
+import { stripLocalProposalState } from '../proposals/archive-state.js';
 const descriptor = { id:'test-db-alternative',adapter:'wfs',endpoint:'https://example.org/wfs',featureType:'cad:parcels',idField:'native',idType:'string',idPrefix:'HR-',outFields:['native'],cityIds:['zagreb'],metricSrid:3765,defaultForCity:false,snapshotId:'test-snapshot' };
 const geometry = {type:'Polygon',coordinates:[[[15.97,45.81],[15.971,45.81],[15.971,45.811],[15.97,45.811],[15.97,45.81]]]};
 const raw = {type:'Feature',id:'row.1',properties:{native:'123456-1'},geometry};

@@ -78,9 +78,27 @@ export function createDevnetRegistryIdentity({ pool = null, rows = null, clock, 
         return result.rows.map(rowOf);
     }
 
+    // The owner sets of several parcels in one read: Map(parcelUid → rows), [] for a parcel without
+    // rows. Agreement approval reads the registry this way on every request (approval.js
+    // devnetOwnerRegistry).
+    async function ownerSets(parcelUids) {
+        const ids = [...new Set((parcelUids || []).map(String))];
+        const sets = new Map(ids.map(id => [id, []]));
+        if (!ids.length) return sets;
+        const rows = memory || (await pool.query(`
+            SELECT parcel_uid, owner_wallet, owner_count, established_at
+            FROM consensus.lens_devnet_owner
+            WHERE parcel_uid = ANY($1::text[])
+            ORDER BY parcel_uid, owner_wallet
+        `, [ids])).rows.map(rowOf);
+        for (const row of rows) sets.get(row.parcelUid)?.push(row);
+        return sets;
+    }
+
     return {
         kind: 'devnet-registry',
         ownerSet,
+        ownerSets,
 
         async issueChallenge({ parcelUid, owner }) {
             const rowsForParcel = await ownerSet(parcelUid);

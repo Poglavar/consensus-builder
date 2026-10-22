@@ -1,100 +1,120 @@
-// Source-of-truth cross-checks for the proposal_market Anchor program, which reads proposal_nft's
-// Proposal account by a hand-mirrored prefix struct instead of declare_program!. If anyone reorders
-// or retypes a field in proposal_nft::Proposal ahead of `status`, changes its discriminator, or
-// moves the program, the market would misread every proposal — so the two Rust files and the two
-// checked-in IDLs are pinned to each other here, the same way chain-status-codec.test.js pins the
-// status enum.
-import { describe, it, expect } from 'vitest';
+// Source-of-truth cross-checks of what proposal_market reads. Since M3 its subject (the IDL's
+// `proposal` account) is an Agreement account of the agreement program, read with
+// agreement::read_agreement_view: the agreement crate's own offsets, with no layout mirrored in this
+// program. The agreement struct in Rust, the reader's offsets, the agreement IDL, the JS codec
+// (frontend/js/solana/agreement-client.js) and the test encoder (fixtures/agreement-account.js) are
+// pinned to each other here, so a field moved in one of them and not the others fails. The market's
+// own IDL is pinned to its source below.
+import { afterAll, describe, it, expect } from 'vitest';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { agreementRustLayout, readSolana, rustFnBody } from './helpers/agreement-layout.js';
+import { AGREEMENT_PROGRAM_ID, agreementAccountBytes } from './fixtures/agreement-account.js';
+
+const require = createRequire(import.meta.url);
+const web3 = require('@solana/web3.js');
+const agreementClient = require('../../frontend/js/solana/agreement-client.js');
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const solanaDir = path.resolve(here, '../../blockchain/solana');
-const proposalNftRs = readFileSync(path.join(solanaDir, 'programs/proposal_nft/src/lib.rs'), 'utf8');
-const marketRs = readFileSync(path.join(solanaDir, 'programs/proposal_market/src/lib.rs'), 'utf8');
-const proposalNftIdl = JSON.parse(readFileSync(path.join(solanaDir, 'idl/proposal_nft.json'), 'utf8'));
-const marketIdl = JSON.parse(readFileSync(path.join(solanaDir, 'idl/proposal_market.json'), 'utf8'));
+const layout = agreementRustLayout();
+const agreementIdl = JSON.parse(readSolana('idl/agreement.json'));
+const marketRs = readSolana('programs/proposal_market/src/lib.rs');
+const lmsrRs = readSolana('programs/proposal_market/src/lmsr_market.rs');
+const marketCargo = readSolana('programs/proposal_market/Cargo.toml');
+const marketIdl = JSON.parse(readSolana('idl/proposal_market.json'));
 
-// `pub name: Type,` lines of one struct body, in order.
-function structFields(source, header) {
-    const start = source.indexOf(header);
-    expect(start, `struct header not found: ${header}`).toBeGreaterThan(-1);
-    const body = source.slice(start + header.length, source.indexOf('}', start));
-    return body.split('\n')
-        .map(line => line.trim())
-        .filter(line => line.startsWith('pub '))
-        .map(line => {
-            const m = line.match(/^pub (\w+): ([^,]+),?$/);
-            expect(m, `unparsed field line: ${line}`).not.toBeNull();
-            return { name: m[1], type: m[2].trim() };
-        });
-}
+// The codec resolves web3 relative to frontend/js/solana, where the package is not installed.
+agreementClient.configure({ web3 });
+afterAll(() => { agreementClient.configure({ web3: null }); });
 
 function anchorDiscriminator(prefix, name) {
     return Array.from(createHash('sha256').update(`${prefix}:${name}`).digest().subarray(0, 8));
 }
 
-describe('proposal_market reads proposal_nft::Proposal by a mirrored prefix', () => {
-    it('mirrors the exact field order and types up to and including status', () => {
-        const proposal = structFields(proposalNftRs, 'pub struct Proposal {');
-        const head = structFields(marketRs, 'struct ProposalHead {');
+const keyOf = byte => new web3.PublicKey(Uint8Array.from({ length: 32 }, () => byte)).toBase58();
+const keyAt = (bytes, offset) => new web3.PublicKey(bytes.subarray(offset, offset + 32)).toBase58();
+const CID = 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq';
+const SPONSOR = keyOf(7);
+const LENS = keyOf(11);
+const PAYOUT = keyOf(13);
 
-        expect(head.length).toBeGreaterThan(0);
-        expect(head.at(-1).name).toBe('status');
-        const prefix = proposal.slice(0, head.length);
-        // The status enum is a unit borsh enum: one byte, which the mirror reads as u8.
-        const normalised = prefix.map(f => (f.name === 'status' ? { ...f, type: 'u8' } : f));
-        expect(head).toEqual(normalised);
-        expect(proposal[head.length - 1].type).toBe('ProposalStatus');
+describe('the Agreement account the market and pledge programs read', () => {
+    it('declares its fields in the order the IDL and the JS codec decode, status at byte 136', () => {
+        const idlFields = agreementIdl.types.find(type => type.name === 'Agreement').type.fields.map(field => field.name);
+        expect(layout.fields.map(field => field.name)).toEqual(idlFields);
+        const { authority, lens, payout, deadline, status, decision, cid } = layout.offsets;
+        expect({ authority, lens, payout, deadline, status, decision, cid }).toEqual(agreementClient.AGREEMENT_OFFSETS);
+        expect(status).toBe(136);
     });
 
-    it('pins the Proposal discriminator to the checked-in proposal_nft IDL and to Anchor\'s formula', () => {
-        const constant = marketRs.match(/PROPOSAL_DISCRIMINATOR: \[u8; 8\] = \[([^\]]+)\]/);
-        expect(constant).not.toBeNull();
-        const bytes = constant[1].split(',').map(s => Number(s.trim()));
-        const idlAccount = proposalNftIdl.accounts.find(a => a.name === 'Proposal');
-        expect(bytes).toEqual(idlAccount.discriminator);
-        expect(bytes).toEqual(anchorDiscriminator('account', 'Proposal'));
+    it('reads authority, lens and status at offsets its own constants derive from the struct', () => {
+        expect(layout.offsets.authority).toBe(8);
+        expect(layout.LENS_OFFSET).toBe(layout.offsets.lens);
+        expect(layout.STATUS_OFFSET).toBe(layout.offsets.status);
+        const reader = rustFnBody(layout.source, 'read_agreement_view');
+        expect(reader).toContain('*account.owner != crate::ID');
+        expect(reader).toContain('data.len() <= STATUS_OFFSET');
+        expect(reader).toContain('data[..8] != Agreement::DISCRIMINATOR');
+        expect(reader).toContain('authority: key_at(8)?');
+        expect(reader).toContain('lens: key_at(LENS_OFFSET)?');
+        expect(reader).toContain('status: data[STATUS_OFFSET]');
     });
 
-    it('pins the proposal_nft program id to that program\'s declare_id and IDL address', () => {
-        const constant = marketRs.match(/PROPOSAL_NFT_PROGRAM_ID: Pubkey = pubkey!\("([1-9A-HJ-NP-Za-km-z]+)"\)/);
-        const declared = proposalNftRs.match(/declare_id!\("([1-9A-HJ-NP-Za-km-z]+)"\)/);
-        expect(constant).not.toBeNull();
-        expect(constant[1]).toBe(declared[1]);
-        expect(constant[1]).toBe(proposalNftIdl.address);
+    it('reads exactly what the JS encoder writes and the codec decodes, for every status', () => {
+        const discriminator = anchorDiscriminator('account', 'Agreement');
+        expect(Array.from(agreementClient.ACCOUNT_DISCRIMINATORS.Agreement)).toEqual(discriminator);
+        expect(agreementIdl.accounts.find(account => account.name === 'Agreement').discriminator).toEqual(discriminator);
+        for (const [name, code] of Object.entries(layout.statusCodes)) {
+            const bytes = agreementAccountBytes({ cid: CID, authority: SPONSOR, lens: LENS, payout: PAYOUT, status: code, deadline: 1_795_000_000 });
+            expect(bytes.length).toBeGreaterThan(layout.STATUS_OFFSET);
+            expect(Array.from(bytes.subarray(0, 8))).toEqual(discriminator);
+            expect(keyAt(bytes, layout.offsets.authority)).toBe(SPONSOR);
+            expect(keyAt(bytes, layout.LENS_OFFSET)).toBe(LENS);
+            expect(bytes[layout.STATUS_OFFSET], name).toBe(code);
+            expect(agreementClient.readAgreement(bytes)).toMatchObject({
+                authority: SPONSOR, lens: LENS, payout: PAYOUT, statusCode: code, status: name, deadline: 1_795_000_000, cid: CID
+            });
+        }
     });
 
-    it('pins the status variant indices to the proposal_nft enum order', () => {
-        const enumStart = proposalNftRs.indexOf('pub enum ProposalStatus {');
-        const enumBody = proposalNftRs.slice(enumStart, proposalNftRs.indexOf('}', enumStart));
-        const variants = [...enumBody.matchAll(/(\w+) = (\d+)/g)].map(m => [m[1], Number(m[2])]);
-        expect(Object.fromEntries(variants)).toEqual({ Active: 0, Executed: 1, Cancelled: 2, Expired: 3 });
-        expect(marketRs).toMatch(/STATUS_ACTIVE: u8 = 0;/);
-        expect(marketRs).toMatch(/STATUS_EXECUTED: u8 = 1;/);
-        expect(marketRs).toMatch(/STATUS_CANCELLED: u8 = 2;/);
+    it('codes its status as the codec and the markets name it', () => {
+        expect(layout.statusCodes).toEqual({ Active: 0, Executed: 1, Cancelled: 2, Expired: 3 });
+        expect(agreementClient.STATUS_NAMES).toEqual(Object.keys(layout.statusCodes));
+        const C = agreementClient.constants;
+        expect([C.STATUS_ACTIVE, C.STATUS_EXECUTED, C.STATUS_CANCELLED, C.STATUS_EXPIRED]).toEqual(Object.values(layout.statusCodes));
+        expect(layout.decisionCodes).toEqual({ Pending: C.DECISION_PENDING, Satisfied: C.DECISION_SATISFIED });
+    });
+
+    it('is owned by the program id the JS codec derives addresses and filters with', () => {
+        expect(agreementIdl.address).toBe(layout.programId);
+        expect(agreementClient.constants.AGREEMENT_PROGRAM_ID).toBe(layout.programId);
+        expect(AGREEMENT_PROGRAM_ID).toBe(layout.programId);
+        const tomlIds = [...readSolana('Anchor.toml').matchAll(/^agreement = "([^"]+)"/gm)].map(match => match[1]);
+        expect(tomlIds).toEqual([layout.programId, layout.programId]);
     });
 });
 
-describe('proposal_market reads the proposal lens by a mirrored ProposalLensView', () => {
-    it('mirrors proposal_nft::Proposal field by field through lens, which follows accepted_parcels', () => {
-        const proposal = structFields(proposalNftRs, 'pub struct Proposal {');
-        const view = structFields(marketRs, 'struct ProposalLensView {');
-
-        expect(view.map(f => f.name).slice(-2)).toEqual(['accepted_parcels', 'lens']);
-        const normalised = proposal.slice(0, view.length).map(f => (f.name === 'status' ? { ...f, type: 'u8' } : f));
-        expect(view).toEqual(normalised);
-        expect(view.at(-1)).toEqual({ name: 'lens', type: 'Vec<Pubkey>' });
+describe('proposal_market reads its subject only through agreement::read_agreement_view', () => {
+    it('takes its status codes from the agreement crate', () => {
+        for (const name of ['Active', 'Executed', 'Cancelled', 'Expired']) {
+            expect(marketRs).toContain(`pub const STATUS_${name.toUpperCase()}: u8 = agreement::AgreementStatus::${name} as u8;`);
+        }
     });
 
-    it('matches the IDL order the backend lens reader (readProposalLens) walks', () => {
-        const idlFields = proposalNftIdl.types.find(t => t.name === 'Proposal').type.fields.map(f => f.name);
-        const view = structFields(marketRs, 'struct ProposalLensView {').map(f => f.name);
-        expect(idlFields.slice(0, view.length)).toEqual(view);
-        // Everything after the lens is outside every mirror and may grow; nothing before it may move.
-        expect(idlFields.slice(view.length)).toEqual(['bump', 'verdict_may_execute', 'site_hash', 'open_ground', 'open_ground_cleared', 'layout_version']);
+    it('reads every subject with the shared reader and mirrors no layout of its own', () => {
+        expect(rustFnBody(marketRs, 'read_subject')).toContain('agreement::read_agreement_view(subject)');
+        expect(lmsrRs).toContain('read_subject(');
+        for (const source of [marketRs, lmsrRs]) {
+            expect(source).not.toMatch(/ProposalHead|ProposalLensView|PROPOSAL_NFT_PROGRAM_ID|PROPOSAL_DISCRIMINATOR|proposal_nft::/);
+            expect(source).not.toMatch(/read_agreement_view\(.*\)\s*\.\s*data|STATUS_OFFSET|LENS_OFFSET/);
+        }
+        expect(marketCargo).toContain('agreement = { path = "../agreement", features = ["no-entrypoint"] }');
+        expect(marketCargo).not.toMatch(/^proposal_nft\s*=/m);
+        // The source says where the status byte is; it says the reader's offset.
+        expect(Number(marketRs.match(/status\s+(?:\/\/\s+)?at offset (\d+)/)[1])).toBe(layout.STATUS_OFFSET);
     });
 });
 
@@ -102,22 +122,23 @@ describe('the checked-in proposal_market IDL matches the program source', () => 
     it('declares the same program id as lib.rs, Anchor.toml and the frontend address book', () => {
         const declared = marketRs.match(/declare_id!\("([1-9A-HJ-NP-Za-km-z]+)"\)/)[1];
         expect(marketIdl.address).toBe(declared);
-        const anchorToml = readFileSync(path.join(solanaDir, 'Anchor.toml'), 'utf8');
+        const anchorToml = readFileSync(path.join(here, '../../blockchain/solana/Anchor.toml'), 'utf8');
         const tomlIds = [...anchorToml.matchAll(/proposal_market = "([^"]+)"/g)].map(m => m[1]);
         expect(tomlIds).toEqual([declared, declared]);
         const addresses = JSON.parse(readFileSync(path.resolve(here, '../../frontend/contracts/addresses.json'), 'utf8'));
         expect(addresses['solana-devnet'].ProposalMarket).toBe(declared);
     });
 
-    it('exposes legacy and external-evidence instructions with Anchor-formula discriminators', () => {
+    it('exposes the parimutuel, external-evidence and LMSR instructions with Anchor-formula discriminators', () => {
         expect(marketIdl.instructions.map(i => i.name).sort()).toEqual([
-            'claim', 'claim_external', 'create_external_market', 'create_market',
-            'resolve', 'resolve_external', 'stake', 'stake_external'
+            'buy', 'claim', 'claim_external', 'claim_lmsr', 'create_external_market', 'create_lmsr_external_market',
+            'create_lmsr_market', 'create_market', 'reclaim_seed', 'resolve', 'resolve_external', 'resolve_lmsr',
+            'sell', 'stake', 'stake_external'
         ]);
         for (const ix of marketIdl.instructions) {
             expect(ix.discriminator).toEqual(anchorDiscriminator('global', ix.name));
         }
-        expect(marketIdl.accounts.map(a => a.name).sort()).toEqual(['ExternalMarket', 'Market', 'Position']);
+        expect(marketIdl.accounts.map(a => a.name).sort()).toEqual(['ExternalMarket', 'LmsrMarket', 'Market', 'Position']);
         for (const account of marketIdl.accounts) {
             expect(account.discriminator).toEqual(anchorDiscriminator('account', account.name));
         }

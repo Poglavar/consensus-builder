@@ -1,4 +1,6 @@
-// Exercise activity links emitted by real simulation and user proposal actions.
+// Exercise activity links emitted by real simulation and user design actions. A simulated agent only
+// creates designs (plan-design-agreement.md, M3: owners decide on agreements, so the simulation no
+// longer accepts, donates or pledges).
 import { test, expect } from '../helpers/fixtures';
 import { openCity, showProposal, PARCEL_ID } from '../helpers/runtime';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
@@ -15,7 +17,7 @@ async function openActivityExplorer(page: import('@playwright/test').Page): Prom
 }
 
 test.describe('simulation log links @features', () => {
-  test('agent, proposal, and parcel links from real simulation actions open their targets', async ({ mockApi: page }) => {
+  test('agent and design links from real simulation actions open their targets', async ({ mockApi: page }) => {
     // Every link of every logged action is opened in turn: on a loaded host that outlasts 30 s.
     test.setTimeout(120_000);
     const owners = [
@@ -91,19 +93,13 @@ test.describe('simulation log links @features', () => {
       }
       const incomplete = await dispatch({ ...createAction, title: `${createAction.title} incomplete`, geometry: null });
 
-      // These actions pass through the production simulation dispatcher and action handlers. The
-      // two-parcel proposal keeps its first acceptance local, so opening its log link does not
-      // execute or apply the proposal as a side effect.
-      const rejected = await dispatch({ type: 'accept', proposalId: 'missing-e2e-simulation-proposal', parcelId: parcelIds[0] });
-      const accepted = await dispatch({ type: 'accept', proposalId, parcelId: parcelIds[0] });
-      if (!accepted.includes('parcel-link-clickable')) throw new Error(`Accept action did not emit a parcel link: ${accepted}`);
+      // These actions pass through the production simulation dispatcher and action handlers.
       const noOp = await dispatch({ type: 'nothing' });
-      const noDonation = await dispatch({ type: 'donate', proposalId: 'missing-e2e-simulation-proposal', amount: 1 });
-      const failedDonation = await dispatch({ type: 'donate', proposalId, amount: 0, currency: 'ETH', basis: 'simulated-agent-eth-balance' });
-      const donated = await dispatch({ type: 'donate', proposalId, amount: 1, currency: 'ETH', basis: 'simulated-agent-eth-balance' });
-      const noPledge = await dispatch({ type: 'pledge', proposalId: 'missing-e2e-simulation-proposal', amount: 1 });
-      const failedPledge = await dispatch({ type: 'pledge', proposalId, amount: 0, currency: 'ETH', basis: 'simulated-agent-eth-balance' });
-      const pledged = await dispatch({ type: 'pledge', proposalId, amount: 1, currency: 'ETH', basis: 'simulated-agent-eth-balance' });
+      // Acceptance, donations and pledges belong to agreements now: the simulation has no such action.
+      const formerAccept = await dispatch({ type: 'accept', proposalId, parcelId: parcelIds[0] });
+      if (!formerAccept.includes('performed an unknown action')) throw new Error(`An accept action still has a simulation handler: ${formerAccept}`);
+      const formerPledge = await dispatch({ type: 'pledge', proposalId, amount: 1, currency: 'ETH', basis: 'simulated-agent-eth-balance' });
+      if (!formerPledge.includes('performed an unknown action')) throw new Error(`A pledge action still has a simulation handler: ${formerPledge}`);
       const unknown = await dispatch({ type: 'e2e-unknown-action' });
 
       const userAgent = w.agentStorage.getAllAgents().find((candidate: any) => candidate.userControlled);
@@ -114,7 +110,7 @@ test.describe('simulation log links @features', () => {
         userAgentName: userAgent.name,
         proposalId,
         proposalTitle: w.proposalStorage.getProposal(proposalId).title,
-        actionMessages: [created, noGround, staleGround, incomplete, rejected, accepted, noOp, noDonation, failedDonation, donated, noPledge, failedPledge, pledged, unknown],
+        actionMessages: [created, noGround, staleGround, incomplete, noOp, formerAccept, formerPledge, unknown],
       };
     }, { parcelIds: [PARCEL_ID, SECOND_PARCEL_ID] });
 
@@ -143,7 +139,7 @@ test.describe('simulation log links @features', () => {
     await expect(agentDialog).toHaveCount(0);
 
     // Every action-generated agent link lands on the actor named by that link, including the
-    // successful create/accept/donate/pledge paths and the ordinary no-op action.
+    // successful create path, its refusals and the ordinary no-op action.
     const actionAgentLinks = explorer.locator('.activity-entry-main .agent-link-clickable');
     await expect.poll(() => actionAgentLinks.count()).toBeGreaterThanOrEqual(fixture.actionMessages.length);
     const actionLinkCount = await actionAgentLinks.count();
@@ -158,10 +154,12 @@ test.describe('simulation log links @features', () => {
       await expect(agentDialog).toHaveCount(0);
     }
 
-    // Proposal buttons are the real markup returned by executeAgentAction and bound by game.js.
+    // Design buttons are the real markup returned by executeAgentAction and bound by game.js: the
+    // created design's link.
     const proposalLinks = explorer.locator('.activity-entry-main .proposal-link-clickable');
+    await expect(explorer.locator(`.activity-entry-main .proposal-link-clickable[data-proposal-id="${fixture.proposalId}"]`)).toHaveCount(1);
     const proposalLinkCount = await proposalLinks.count();
-    expect(proposalLinkCount).toBeGreaterThanOrEqual(4);
+    expect(proposalLinkCount).toBeGreaterThanOrEqual(1);
     for (let index = 0; index < proposalLinkCount; index++) {
       const link = proposalLinks.nth(index);
       const targetId = await link.getAttribute('data-proposal-id');
@@ -174,40 +172,6 @@ test.describe('simulation log links @features', () => {
       await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection?.getKey?.())).toBe(targetId);
       if (index + 1 < proposalLinkCount) await openActivityExplorer(page);
     }
-
-    // The accepted action adds its parcel control to the message body. Its handler highlights
-    // the linked parcel and centers the map while the explorer stays open.
-    await openActivityExplorer(page);
-    const acceptedRow = page.locator('.game-log-modal .activity-entry').filter({ hasText: 'accepted proposal' }).first();
-    const parcelLink = acceptedRow.locator('.activity-entry-main .parcel-link-clickable');
-    await expect(parcelLink).toHaveAttribute('data-parcel-id', PARCEL_ID);
-    await parcelLink.click();
-    await expect.poll(() => page.evaluate(() => (window as any).selectedParcelId)).toBe(PARCEL_ID);
-    await expect.poll(() => page.evaluate(parcelId => {
-      const w = window as any;
-      const layer = w.multiParcelSelection.findParcelById(parcelId);
-      const style = layer?.options;
-      const selectedStyles = [{ color: '#f57c00', fillOpacity: 0.6 }, w.selectedParcelStyle];
-      return {
-        parcelInView: Boolean(layer && w.map.getBounds().contains(layer.getBounds())),
-        centered: Boolean(layer && w.map.getCenter().distanceTo(layer.getBounds().getCenter()) < 1),
-        zoomClamped: w.map.getZoom() <= 18,
-        // Parcels use Canvas. The live layer is highlighted immediately, and the presenter may
-        // restore its single-selection style after the viewport refresh. Both must be rendered.
-        highlighted: Boolean(layer && w.map.hasLayer(layer) && selectedStyles.some(expected =>
-          style.color === expected.color && style.fillOpacity === expected.fillOpacity)),
-      };
-    }, PARCEL_ID)).toEqual({ parcelInView: true, centered: true, zoomClamped: true, highlighted: true });
-
-    // The generic footer link comes from Activity explorer's event.entity renderer rather than
-    // the action message HTML. Simulation events with a proposal action have this link as well.
-    await openActivityExplorer(page);
-    const footerProposalLink = page.locator(`.game-log-modal .activity-entry[data-source="simulation"] .activity-entry-links .proposal-link-clickable[data-proposal-id="${fixture.proposalId}"]`).first();
-    await expect(footerProposalLink).toHaveAttribute('data-proposal-id', fixture.proposalId);
-    await footerProposalLink.click();
-    const inspector = page.locator('#planning-inspector');
-    await expect(inspector.getByRole('heading', { name: fixture.proposalTitle, exact: true })).toBeVisible();
-    await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection?.getKey?.())).toBe(fixture.proposalId);
   });
 
   test('a user-created design logs a link to itself and its author', async ({ mockApi: page }) => {

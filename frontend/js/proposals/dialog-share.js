@@ -99,8 +99,7 @@ function renderProposalListModal() {
         },
         sources: {
             local: t('modal.roadWidth.proposalList.sources.local', 'Local'),
-            server: t('modal.roadWidth.proposalList.sources.server', 'Server'),
-            blockchain: t('modal.roadWidth.proposalList.sources.blockchain', 'Blockchain')
+            server: t('modal.roadWidth.proposalList.sources.server', 'Server')
         },
         loadingServer: t('modal.roadWidth.proposalList.loadingServer', 'Loading server proposals...'),
         serverError: t('modal.roadWidth.proposalList.serverError', 'Failed to load server proposals.'),
@@ -165,32 +164,8 @@ function renderProposalListModal() {
     }));
     const serverDatasets = buildDatasets(serverAugmented);
 
-    // Blockchain source: the MINTED (on-chain) proposals. Same data the wallet's Minted modal shows,
-    // just surfaced in the list. Read from local storage (own mints + anything chain-sync pulled in);
-    // activating the tab with a wallet triggers a sync to refresh (handled in the source switch).
-    // Canton proposals are EXCLUDED here — they're private to their ledger parties, live in their own
-    // purple-badge/explorer lane, and are called out with a note below rather than silently dropped.
-    const cantonModeApi = (typeof window !== 'undefined') ? window.CantonMode : null;
-    const isCantonProposal = (cantonModeApi && typeof cantonModeApi.isCantonProposal === 'function')
-        ? (p) => cantonModeApi.isCantonProposal(p)
-        : () => false;
-    const blockchainAugmented = allProposals
-        .filter(proposal => {
-            const minted = (typeof isProposalMinted === 'function') ? isProposalMinted(proposal) : !!(proposal && proposal.isMinted);
-            return minted && !isCantonProposal(proposal);
-        })
-        .map(proposal => ({ proposal, metrics: computeProposalMetrics(proposal) }));
-    const blockchainDatasets = buildDatasets(blockchainAugmented);
-    const blockchainCount = blockchainAugmented.length;
-    // When Canton mode is active, tell the user why their private proposals aren't in this list.
-    const cantonActiveNow = cantonModeApi && typeof cantonModeApi.isActive === 'function' && cantonModeApi.isActive();
-    const blockchainCantonNote = (source === 'blockchain' && cantonActiveNow)
-        ? `<p class="proposal-list-note canton-empty">${escapeHtml('On Canton, proposals are private, so they are not listed here.')}</p>`
-        : '';
-
-    const chosen = source === 'server' ? serverDatasets
-        : source === 'blockchain' ? blockchainDatasets
-        : localDatasets;
+    // Designs are local or published; none is minted (an agreement is, M3), so there is no chain source.
+    const chosen = source === 'server' ? serverDatasets : localDatasets;
 
     const selectedId = proposalListState.selectedId;
     if (selectedId) {
@@ -208,58 +183,6 @@ function renderProposalListModal() {
         ? '…'
         : (serverCount !== null ? serverCount : 0);
 
-    const runtimeGlobal = typeof globalThis !== 'undefined'
-        ? globalThis
-        : ((typeof window !== 'undefined') ? window : {});
-
-    const hasEvmBlockchainSync = runtimeGlobal.BlockchainSync &&
-        typeof runtimeGlobal.BlockchainSync.sync === 'function';
-    const hasSolanaBlockchainSync = runtimeGlobal.SolanaBlockchainSync &&
-        typeof runtimeGlobal.SolanaBlockchainSync.sync === 'function';
-    const syncBlockchainAvailable = hasEvmBlockchainSync || hasSolanaBlockchainSync;
-
-    // Check if wallet is connected (EVM or Solana)
-    const isEvmWalletConnected = runtimeGlobal.walletManager &&
-        typeof runtimeGlobal.walletManager.getProvider === 'function' &&
-        runtimeGlobal.walletManager.getProvider() !== null;
-    const isSolanaWalletConnected = hasSolanaBlockchainSync && runtimeGlobal.SolanaBlockchainSync.isWalletConnected();
-    const isWalletConnected = isEvmWalletConnected || isSolanaWalletConnected;
-
-    const syncStatus = syncBlockchainAvailable && typeof runtimeGlobal.BlockchainSync.getStatus === 'function'
-        ? runtimeGlobal.BlockchainSync.getStatus()
-        : { isSyncing: false };
-
-    console.debug('[ProposalListModal] sync controls context', {
-        source,
-        cityCode: normalizedCity,
-        localCount,
-        serverCount,
-        syncBlockchainAvailable,
-        isWalletConnected,
-        isSyncing: !!syncStatus.isSyncing
-    });
-
-    const syncDisabled = syncStatus.isSyncing || !isWalletConnected;
-    const syncTitle = !isWalletConnected
-        ? t('modal.roadWidth.proposalList.syncBlockchainNoWallet', 'Connect wallet to sync from blockchain')
-        : t('modal.roadWidth.proposalList.syncBlockchain', 'Refresh from blockchain');
-
-    // Only surface the blockchain-sync control when it can actually do something: a wallet is connected
-    // (or a sync is already running). A permanently-greyed sync button on the Local tab just reads as
-    // broken, so hide it rather than disable it when there's no wallet.
-    const syncButtonHtml = source === 'local' && syncBlockchainAvailable && (isWalletConnected || syncStatus.isSyncing) ? `
-        <button
-            id="sync-blockchain-proposals-btn"
-            class="btn btn-primary btn-block"
-            ${syncDisabled ? 'disabled' : ''}
-            data-i18n-key="${!isWalletConnected ? 'modal.roadWidth.proposalList.syncBlockchainNoWallet' : 'modal.roadWidth.proposalList.syncBlockchain'}"
-            data-i18n-attr="title"
-            title="${escapeHtml(syncTitle)}"
-            onclick="handleBlockchainSyncClick(event)">
-            <i class="fas fa-sync${syncStatus.isSyncing ? ' fa-spin' : ''}"></i>
-            <span data-i18n-key="modal.roadWidth.proposalList.syncBlockchainLabel">${t('modal.roadWidth.proposalList.syncBlockchainLabel', 'Sync')}</span>
-        </button>
-    ` : '';
 
     // Status (lifecycle) and Applied are two orthogonal dropdown filters that replaced the old
     // Active/Executed tabs. Every lifecycle status is selectable; labels reuse getProposalLifecycleLabel.
@@ -331,7 +254,6 @@ function renderProposalListModal() {
                     `).join('')}
                 </select>
             </div>
-            ${syncButtonHtml ? `<div class="proposal-filter-group proposal-sync-group">${syncButtonHtml}</div>` : ''}
         </div>
     `;
 
@@ -342,9 +264,6 @@ function renderProposalListModal() {
             </button>
             <button type="button" class="cb-segmented__option proposal-source-btn" aria-pressed="${source === 'server' ? 'true' : 'false'}" data-source="server">
                 ${escapeHtml(modalStrings.sources.server)} (${serverCountLabel !== null ? serverCountLabel : '0'})
-            </button>
-            <button type="button" class="cb-segmented__option proposal-source-btn" aria-pressed="${source === 'blockchain' ? 'true' : 'false'}" data-source="blockchain">
-                ${escapeHtml(modalStrings.sources.blockchain)} (${blockchainCount})
             </button>
         </div>
     `;
@@ -379,7 +298,6 @@ function renderProposalListModal() {
     modal.innerHTML = `
         <div class="proposal-list-modal-content">
             ${sourceToggleHtml}
-            ${blockchainCantonNote}
             ${filtersToggleHtml}
             ${controlsHtml}
             <div class="proposal-list-count">${escapeHtml(resultCountText)}</div>
@@ -434,7 +352,6 @@ function renderProposalListModal() {
         fallbackMap.set('modal.roadWidth.proposalList.filters.searchPlaceholder', modalStrings.filters.searchPlaceholder);
         fallbackMap.set('modal.roadWidth.proposalList.sources.local', modalStrings.sources.local);
         fallbackMap.set('modal.roadWidth.proposalList.sources.server', modalStrings.sources.server);
-        fallbackMap.set('modal.roadWidth.proposalList.sources.blockchain', modalStrings.sources.blockchain);
         fallbackMap.set('modal.roadWidth.proposalList.loadingServer', modalStrings.loadingServer);
         fallbackMap.set('modal.roadWidth.proposalList.serverError', modalStrings.serverError);
         fallbackMap.set('modal.roadWidth.proposalList.retry', modalStrings.retry);
@@ -524,14 +441,6 @@ function renderProposalListModal() {
             proposalListState.source = nextSource;
             if (nextSource === 'server') {
                 ensureServerProposals(resolveCurrentCityCode());
-            } else if (nextSource === 'blockchain') {
-                // Refresh on-chain proposals from the wallet (best-effort, wallet-gated). No wallet →
-                // the tab still shows locally-held minted proposals; the Sync button reflects state.
-                try {
-                    if (isWalletConnected && runtimeGlobal.BlockchainSync && typeof runtimeGlobal.BlockchainSync.sync === 'function') {
-                        runtimeGlobal.BlockchainSync.sync().then(() => renderProposalListModal()).catch(() => { });
-                    }
-                } catch (_) { /* ignore */ }
             }
             renderProposalListModal();
         });
@@ -627,11 +536,12 @@ async function showAllProposalsModal() {
 // --- Applied-composition sharing panel ----------------------------------------------------------
 // The share-plan UI is a right-docked, full-height panel (like the proposals list), NOT a modal:
 // the map stays visible so the applied composition can be read spatially while selecting proposals.
-// While the panel is open the app is in share-plan mode (window.sharePlanMode): the map is pan/zoom ONLY —
-// parcels and proposals are click/hover-inert, the sidebar and mode switches are disabled (CSS
-// lockdown via body.share-plan-mode). Every CHECKED proposal is painted on the map in its row's
-// colour so the exact content of the shared plan is visible at a glance; hovering or clicking a
-// row outlines that proposal (click also frames it). No interaction opens details.
+// While the panel is open it picks on the map (js/map-pick.js, MapPick 'share'): the map is pan/zoom
+// ONLY — parcels and proposals are click/hover-inert, the sidebar and mode switches are disabled (CSS
+// lockdown via body.map-pick-mode), and a click on an applied design finds its row. The subset
+// switch paints the CHECKED designs that are published, or not yet, in their rows' colours in
+// MapPick's highlight pane; hovering or clicking a row outlines that proposal (click also frames
+// it). No interaction opens details.
 
 const SHARE_PLAN_COLORS = [
     '#e6194B', '#3cb44b', '#4363d8', '#f58231', '#911eb4', '#42d4f4',
@@ -645,7 +555,7 @@ const SHARE_PLAN_COLORS = [
 const SHARE_PLAN_HOVER_PARCEL_COLOR = '#FFEB3B'; // parcels involved — dashed, hollow
 const SHARE_PLAN_HOVER_BODY_COLOR = '#00E5FF';   // the proposal itself — solid, lightly filled
 
-let _sharePlanPanelState = null; // { root, overlayGroups, onKeyDown }
+let _sharePlanPanelState = null; // { root, unregisterEscape, token }
 
 function sharePlanColorForIndex(index) {
     const n = SHARE_PLAN_COLORS.length;
@@ -655,44 +565,15 @@ function sharePlanColorForIndex(index) {
 function closeSharePlanPanel() {
     const state = _sharePlanPanelState;
     _sharePlanPanelState = null;
-    if (typeof window !== 'undefined') {
-        window.sharePlanMode = false;
-        // Released with the panel: a picker left behind would answer clicks by scrolling rows in a
-        // list that is no longer on screen, and would hold the whole closed panel in memory.
-        window.__sharePlanPickProposal = null;
-    }
-    try { document.body.classList.remove('share-plan-mode'); } catch (_) { }
-    // Leaving the panel with a subset chosen must not leave the map dimmed behind it.
-    try { document.body.classList.remove('share-plan-highlighting'); } catch (_) { }
+    // The pick mode ends with the panel (js/map-pick.js): the lockdown lifts, a subset's highlight
+    // and the dimming go, and a map click no longer answers into a list that is not on screen.
+    try { window.MapPick.end('share'); } catch (error) { console.error('share plan: ending the map pick failed', error); }
     if (state) {
         try { state.unregisterEscape?.(); } catch (_) { }
         try { document.removeEventListener('keydown', state.onKeyDown); } catch (_) { }
         try { if (state.root && state.root.parentNode) state.root.parentNode.removeChild(state.root); } catch (_) { }
-        try {
-            if (state.overlayGroups && typeof map !== 'undefined' && map && typeof map.removeLayer === 'function') {
-                Object.keys(state.overlayGroups).forEach(bucket => {
-                    try { map.removeLayer(state.overlayGroups[bucket]); } catch (_) { }
-                });
-            }
-        } catch (_) { }
     }
     try { if (typeof clearProposalHoverLayers === 'function') clearProposalHoverLayers(); } catch (_) { }
-}
-
-// The overlap the share panel uses to pick the parcels a proposal stands on. A clip that fails is
-// an UNKNOWN overlap, not none: it is reported and counted in clipHealth() (parcel-arrangement.js)
-// and the parcel is kept — showing a parcel too many beats silently dropping the ground it stands on.
-function shareGroundIntersectionArea(a, b) {
-    try {
-        const hit = turf.intersect(a, b);
-        return hit ? (turf.area(hit) || 0) : 0;
-    } catch (error) {
-        const clips = (typeof window !== 'undefined' && window.__parcelArrangement)
-            || (typeof require === 'function' ? require('./parcel-arrangement.js') : null);
-        if (!clips || typeof clips.reportClipFailure !== 'function') throw error;
-        clips.reportClipFailure('intersect', error, { site: 'dialog-share.groundUnderBody' }, [a, b]);
-        return Number.POSITIVE_INFINITY;
-    }
 }
 
 // Returns a promise that settles once the panel is worth LOOKING at — rows listed and the map
@@ -739,24 +620,14 @@ function showSharePlanPanel(options) {
         // Reopening replaces any previous instance (and resets a stale lockdown).
         closeSharePlanPanel();
 
-        // The coloured plan overlay is a 2D map layer — leave model/photo view before the mode
-        // switches lock, otherwise the plan would be invisible AND the way back unreachable.
-        try {
-            if (typeof window.isThreeModeActive === 'function' && window.isThreeModeActive()
-                && typeof window.exitThreeMode === 'function') {
-                window.exitThreeMode();
-            }
-        } catch (_) { }
-
         // Leave any proposal-list/browse/selection surface; the share panel owns the screen now.
         try { if (typeof closeProposalList === 'function') closeProposalList(); } catch (_) { }
         try { if (typeof resetParcelSelectionForProposalListInteraction === 'function') resetParcelSelectionForProposalListInteraction(); } catch (_) { }
         try { if (typeof clearProposalInfoHoverOverlay === 'function') clearProposalInfoHoverOverlay(); } catch (_) { }
 
-        window.sharePlanMode = true;
-        try { document.body.classList.add('share-plan-mode'); } catch (_) { }
         // Fold away an open sheet so the (locked) chrome doesn't cover the map — the same move the
-        // proposals list makes when it opens.
+        // proposals list makes when it opens. The lockdown itself starts with the pick mode below
+        // (MapPick.begin, which also leaves model/photo view: the highlight is a 2D map layer).
         if (window.MapShell) window.MapShell.closeSheets();
 
         // A parcel layout is published only with its agreement (ProposalPublishTerms.publishRefusal):
@@ -833,87 +704,13 @@ function showSharePlanPanel(options) {
         container.className = 'share-plan-panel-body';
         panelContent.appendChild(container);
 
-        // One coloured, non-interactive map sublayer per CHECKED design, keyed by design, and
-        // held in the group for its publication state. Splitting them by state at build time is what
-        // makes switching subsets free: the filter adds one group and removes the other, instead of
-        // walking three hundred layers to decide which still belong.
+        // A subset is painted by the pick mode's highlight (js/map-pick.js): the CHECKED designs of
+        // the chosen subset, each in its row's colour, in a pane above the fabric while every other
+        // pane dims — painting a subset over the base drawing answered nothing on a 298-member plan,
+        // where the whole city is already blue. "All" is the view you arrived with and paints nothing
+        // extra. A design's outline is built the first time a subset needs it and kept while the
+        // panel is open; publishing only restyles it.
         //
-        // Neither group is on the map until a subset is chosen — "All" is the base drawing alone.
-        const hasLeafletMap = (typeof L !== 'undefined' && typeof map !== 'undefined' && map);
-        const overlayGroups = hasLeafletMap
-            ? { published: L.layerGroup(), pending: L.layerGroup() }
-            : null;
-        const overlayByKey = new Map(); // key -> { layer, bucket }
-        let overlaysBuilt = false;
-
-        // Choosing a subset has to REMOVE the rest from view, not just draw on top of it. Painting
-        // the subset over the base drawing answered nothing on a 298-member plan: the whole city is
-        // already blue, so "Not published yet" looked exactly like "All" with one more shape in it.
-        //
-        // The base drawing belongs to the app, not to this panel, so it cannot be filtered
-        // layer-by-layer from here — and walking hundreds of layers to restyle them is the cost this
-        // control exists to avoid. Instead the highlight gets its own pane above everything, and a
-        // single body class drops the opacity of every other pane. One class toggle, no layer work,
-        // and it reverts exactly.
-        const HIGHLIGHT_PANE = 'shareplan-highlight';
-        // Its stacking and inertness are .leaflet-shareplan-highlight-pane's (css/proposals.css).
-        if (hasLeafletMap && typeof map.createPane === 'function' && !map.getPane(HIGHLIGHT_PANE)) {
-            map.createPane(HIGHLIGHT_PANE);
-        }
-
-        const proposalFeaturesFor = (proposal) => {
-            // Materialized output is owned by LiveParcelFabric, never copied into the proposal.
-            const ids = new Set();
-            const push = (arr) => {
-                if (!Array.isArray(arr)) return;
-                arr.forEach(id => { if (id != null && String(id)) ids.add(String(id)); });
-            };
-            if (proposal && window.__claims?.materializedParcelIdsOf) {
-                push(window.__claims.materializedParcelIdsOf(proposal));
-            }
-            const features = [];
-            ids.forEach(id => {
-                try {
-                    const feature = (typeof getParcelFeatureForHighlight === 'function')
-                        ? getParcelFeatureForHighlight(id, proposal)
-                        : null;
-                    if (feature && feature.geometry) features.push(feature);
-                } catch (_) { }
-            });
-            if (features.length) return features;
-            try {
-                if (typeof collectProposalHighlightFeatures === 'function') {
-                    return (collectProposalHighlightFeatures(proposal) || []).filter(f => f && f.geometry);
-                }
-            } catch (_) { }
-            return [];
-        };
-
-        // The proposal's OWN geometry, independent of the parcels it sits on: a building's
-        // footprints, a corridor surface, a park/square polygon, a readjustment's plots. This is
-        // the shape that names the row — without it, hovering "zgrada M1-11" outlined a plot that
-        // looked like every other plot on the block.
-        const proposalBodyFeaturesFor = (proposal) => {
-            if (typeof collectProposalFeatureSets !== 'function') return [];
-            try {
-                const sets = collectProposalFeatureSets(proposal, { includeBuildingGeometry: true }) || {};
-                return (sets.primaryFeatures || []).filter(feature => feature && feature.geometry);
-            } catch (error) {
-                console.warn('share plan: could not resolve proposal body', error);
-                return [];
-            }
-        };
-
-        // The ground the proposal STANDS ON, out of every parcel it minted — a remainder handed
-        // back to the host is not this proposal's ground, and it can be twenty times its size.
-        const groundFeaturesFor = (parcelFeatures, bodyFeatures) => {
-            const api = (typeof window !== 'undefined') ? window.__hoverGround : null;
-            if (!api || typeof api.groundUnderBody !== 'function' || typeof turf === 'undefined') return parcelFeatures;
-            return api.groundUnderBody(parcelFeatures, bodyFeatures, {
-                intersectionArea: shareGroundIntersectionArea
-            });
-        };
-
         // Already published, or still only here? Shown as SOLID versus DASHED rather than as two
         // colours: every design already owns a colour to tell it from its neighbours, so a second
         // colour axis would collide with the first. A dashed, fainter shape reads as provisional,
@@ -929,108 +726,19 @@ function showSharePlanPanel(options) {
             fillOpacity: published ? 0.40 : 0.10
         });
 
-        // Resolving a proposal's ground is the expensive half — turf work per proposal — so it
-        // happens once per key and never again while the panel is open.
-        //
-        // The ground is resolved through LOADED PARCEL LAYERS, and parcels switch off below a zoom
-        // ("Parcels disabled at this zoom"). Whole-plan highlighting is exactly the case you look at
-        // zoomed OUT, so at the zoom where this panel is most useful the ground resolves to nothing
-        // for almost every member and the highlight painted a handful of scattered shapes — the ones
-        // whose geometry happens to be self-contained, like the rail track.
-        //
-        // So paint the proposal's OWN body — its corridor, footprint or structure polygon, straight
-        // off the stored record. It needs no parcels, no map state and no zoom, which is what a
-        // plan-wide view requires.
-        //
-        // The body is preferred over the parcel ground, not the other way round. Ground is the right
-        // treatment for HOVER, where you are asking "what does this stand on"; here the question is
-        // "where is this proposal", and the two answers diverge badly. The rail track resolves to no
-        // child parcels at all — it crosses mostly unparcelled land — so its ground fell through to
-        // a fallback that produced twelve fragments measuring 0-4 px on screen, while its body is
-        // the 472x155 px corridor you actually want to see. Ground remains the fallback for anything
-        // with no body geometry of its own.
-        const buildPlanOverlay = (key) => {
-            if (!overlayGroups || overlayByKey.has(key) || !selected.has(key)) return;
-            const proposal = proposalsByHash.get(key);
-            const body = proposalBodyFeaturesFor(proposal);
-            const features = (body && body.length)
-                ? body
-                : groundFeaturesFor(proposalFeaturesFor(proposal), body);
-            if (!features.length) return;
-            try {
-                const color = colorByKey.get(key) || '#4363d8';
-                const published = isPublished(key);
-                const bucket = published ? 'published' : 'pending';
-                const layer = L.geoJSON({ type: 'FeatureCollection', features }, {
-                    style: overlayStyleFor(published, color),
-                    interactive: false,
-                    // Its own pane, so the subset stays at full strength while everything else dims.
-                    pane: map.getPane(HIGHLIGHT_PANE) ? HIGHLIGHT_PANE : undefined
-                });
-                overlayGroups[bucket].addLayer(layer);
-                overlayByKey.set(key, { layer, bucket });
-            } catch (error) {
-                console.warn('share plan: could not paint proposal', key, error);
-            }
-        };
+        // What the highlight shows: nothing extra for All, else the checked designs of the subset.
+        const highlightedKeys = () => (highlightMode === 'all'
+            ? null
+            : [...selected].filter(key => (highlightMode === 'published') === isPublished(key)));
 
-        // Bring one design's overlay back in line with its current selection and publication state.
-        // Publishing only changes the STYLE and which group it belongs to, so it restyles and moves
-        // the existing layer — the geometry it was built from has not changed.
-        const syncPlanOverlay = (key) => {
-            if (!overlayGroups) return;
-            const existing = overlayByKey.get(key);
-
-            if (!selected.has(key)) {
-                if (existing) {
-                    try { overlayGroups[existing.bucket].removeLayer(existing.layer); } catch (_) { }
-                    overlayByKey.delete(key);
-                }
-                return;
-            }
-            if (!existing) {
-                // Before the first switch away from All nothing is built, and building on selection
-                // would pay the whole cost the filter exists to defer.
-                if (overlaysBuilt) buildPlanOverlay(key);
-                return;
-            }
-            const published = isPublished(key);
-            const bucket = published ? 'published' : 'pending';
-            if (existing.bucket !== bucket) {
-                try { overlayGroups[existing.bucket].removeLayer(existing.layer); } catch (_) { }
-                try { overlayGroups[bucket].addLayer(existing.layer); } catch (_) { }
-                existing.bucket = bucket;
-            }
-            try { existing.layer.setStyle(overlayStyleFor(published, colorByKey.get(key) || '#4363d8')); } catch (_) { }
-        };
-
-        // Add one group, remove the other. Everything expensive already happened.
+        // Switching subsets repaints the highlight. The first switch builds the outlines in
+        // frame-sized slices (MapPick.refresh): three hundred overlays in one task is the freeze this
+        // panel was rebuilt to avoid.
         const applyHighlightMode = async () => {
-            if (!overlayGroups || typeof map === 'undefined' || !map) return;
-            const detach = (bucket) => {
-                try { if (map.hasLayer(overlayGroups[bucket])) map.removeLayer(overlayGroups[bucket]); } catch (_) { }
-            };
-            if (highlightMode === 'all') {
-                detach('published');
-                detach('pending');
-                try { document.body.classList.remove('share-plan-highlighting'); } catch (_) { }
-                setStatus('');
-                return;
-            }
-            if (!overlaysBuilt) {
-                modeButtons.forEach(button => { button.disabled = true; });
-                overlaysBuilt = true;
-                // In frame-sized slices, like the row build: three hundred overlays in one task is
-                // the freeze this panel was rebuilt to avoid.
-                const finished = await inChunks([...proposalsByHash.keys()], key => buildPlanOverlay(key),
-                    'proposals.share.panel.drawing', 'Drawing {{done}}/{{total}} designs on the map…');
-                modeButtons.forEach(button => { button.disabled = false; });
-                if (finished === false) return; // the panel closed mid-build
-            }
-            const show = highlightMode === 'published' ? 'published' : 'pending';
-            detach(show === 'published' ? 'pending' : 'published');
-            try { if (!map.hasLayer(overlayGroups[show])) overlayGroups[show].addTo(map); } catch (_) { }
-            try { document.body.classList.add('share-plan-highlighting'); } catch (_) { }
+            modeButtons.forEach(button => { button.disabled = true; });
+            const finished = await window.MapPick.refresh();
+            modeButtons.forEach(button => { button.disabled = false; });
+            if (finished === false) return; // the panel closed, or a newer repaint took over
             setStatus('');
         };
 
@@ -1078,9 +786,9 @@ function showSharePlanPanel(options) {
             if (!proposal) return;
             if (typeof highlightFeatureGroupsForHover !== 'function') return;
             const published = isPublished(key);
-            // Same live-children resolver as the paint, so hover outlines exactly what is painted.
-            const bodyFeatures = proposalBodyFeaturesFor(proposal);
-            const parcelFeatures = groundFeaturesFor(proposalFeaturesFor(proposal), bodyFeatures);
+            // The shapes the highlight paints (js/map-pick.js), so hover outlines exactly that.
+            const bodyFeatures = window.MapPick.bodyOf(proposal);
+            const parcelFeatures = window.MapPick.groundOf(window.MapPick.parcelsOf(proposal), bodyFeatures);
             highlightFeatureGroupsForHover([
                 {
                     features: parcelFeatures,
@@ -1119,7 +827,7 @@ function showSharePlanPanel(options) {
             } catch (_) { }
             if (!bounds) {
                 try {
-                    const features = proposalFeaturesFor(proposal);
+                    const features = window.MapPick.parcelsOf(proposal);
                     if (features.length) bounds = L.geoJSON({ type: 'FeatureCollection', features }).getBounds();
                 } catch (_) { }
             }
@@ -1230,16 +938,16 @@ function showSharePlanPanel(options) {
             controls.row.classList.toggle('is-excluded', !selected.has(key));
             controls.row.classList.toggle('is-published', !!state.cid);
             // The map says the same thing the row says.
-            if (overlayByKey.has(key)) syncPlanOverlay(key);
+            window.MapPick.refresh([key]);
         };
 
         const onCheckboxChange = (key, checked) => {
             if (checked) selected.add(key);
             else selected.delete(key);
-            // Toggling a row paints or unpaints THAT row. The map is not painted when the panel
-            // opens (see the fill below) — checked means "in the plan", not "drawn right now".
+            // Toggling a row paints or unpaints THAT row (updateRowState repaints its highlight). The
+            // map is not painted when the panel opens (see the fill below) — checked means "in the
+            // plan", not "drawn right now".
             updateRowState(key);
-            syncPlanOverlay(key);
             setStatus('');
             updateShareUrl();
         };
@@ -1385,22 +1093,30 @@ function showSharePlanPanel(options) {
 
         document.body.appendChild(panelRoot);
         const unregisterEscape = window.ModalEscape?.register(panelRoot, closeSharePlanPanel);
-        _sharePlanPanelState = { root: panelRoot, overlayGroups, unregisterEscape, token: panelToken };
+        _sharePlanPanelState = { root: panelRoot, unregisterEscape, token: panelToken };
 
-        // Clicking a design ON THE MAP finds it in the list. The resolution from a clicked parcel
-        // to its applied design already exists in onParcelClick (parcels/ui/parcel-selection.js),
-        // which is why this is a callback it can reach rather than a second map handler racing it.
-        window.__sharePlanPickProposal = (proposal, parcelId) => {
-            if (!panelStillOpen() || !proposal) return;
-            const key = keyOfProposal(proposal);
-            if (!key || !rowControls.has(key)) {
-                // Applied, but not in this plan: say so rather than silently doing nothing, which
-                // is indistinguishable from a click that missed.
-                setStatus(tShare('plan.pickedNotInPlan', 'That proposal is not in this plan.'));
-                return;
-            }
-            revealRow(key, parcelId);
-        };
+        // The panel picks on the map (js/map-pick.js): the lockdown starts, and clicking a design ON
+        // THE MAP finds it in the list. The resolution from a click to its applied design is the
+        // map's own (onParcelClick in parcels/ui/parcel-selection.js, the drill for corridors and
+        // structures), which is why this is a callback rather than a second map handler racing it.
+        window.MapPick.begin({
+            name: 'share',
+            pick: (id, proposal, { parcelId }) => {
+                if (!panelStillOpen()) return;
+                const key = keyOfProposal(proposal) || id;
+                if (!rowControls.has(key)) {
+                    // Applied, but not in this plan: say so rather than silently doing nothing, which
+                    // is indistinguishable from a click that missed.
+                    setStatus(tShare('plan.pickedNotInPlan', 'That proposal is not in this plan.'));
+                    return;
+                }
+                revealRow(key, parcelId);
+            },
+            highlight: highlightedKeys,
+            style: key => overlayStyleFor(isPublished(key), colorByKey.get(key) || '#4363d8'),
+            close: closeSharePlanPanel,
+            onProgress: (done, total) => showProgress('proposals.share.panel.drawing', 'Drawing {{done}}/{{total}} designs on the map…', done, total)
+        }).catch(error => console.error('share plan: highlighting on the map failed', error));
 
         fillStarted = true;
         (async () => {
@@ -1519,5 +1235,5 @@ function shouldAutofocusProposalListSearch(win) {
 
 // Node-only: lets backend tests exercise the pure helpers above. Inert in the browser.
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { countActiveProposalListFilters, shouldAutofocusProposalListSearch, shareGroundIntersectionArea };
+    module.exports = { countActiveProposalListFilters, shouldAutofocusProposalListSearch };
 }
