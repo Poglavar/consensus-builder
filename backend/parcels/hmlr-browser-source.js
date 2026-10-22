@@ -11,6 +11,7 @@ import { parseGmlParcels } from './gml-parcel-reader.js';
 import { createHmlrArchiveScopeBuilder, validateHmlrArchiveScope, hmlrArchiveScopeIntersects, hmlrArchiveScopesShareCell } from './hmlr-archive-scope.js';
 import { HMLR_BROWSER_GROUND_POLICY, HMLR_BROWSER_GROUND_PREFIX, HMLR_BROWSER_GROUND_SOURCE,
     createHmlrBrowserGroundEngine } from './hmlr-browser-ground.js';
+import { createHmlrTileReader } from './hmlr-tile-reader.js';
 
 const MAX_ARCHIVE_BYTES = 128 * 1024 * 1024;
 const MAX_GML_BYTES = 1024 * 1024 * 1024;
@@ -28,6 +29,10 @@ const PARSE_IDLE_MS = 60_000;
 // parcels the ones under a waiting view go to the map as a preview before the index is complete.
 const MAX_PARALLEL_DOWNLOADS = 2;
 const PREVIEW_BATCH_FEATURES = 10_000;
+// The published tile store answers first; when it cannot (unreachable, refused, a file that fails
+// its hash, a query beyond its tile limit) the per-council import answers instead. After a store
+// failure the import serves every query for this long before the store is tried again.
+const TILE_STORE_RETRY_MS = 5 * 60 * 1000;
 // A superseded view's cancellations reach the worker just before the next view's queries, which
 // then need a moment (scope reads, the per-source query queue) to claim the archives they share.
 const ORPHANED_LOAD_GRACE_MS = 2000;
@@ -389,6 +394,9 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
     if (manifestUrl.protocol !== 'https:' || manifestUrl.username || manifestUrl.password || manifestUrl.port || manifestUrl.search || manifestUrl.hash
         || !manifestUrl.pathname.endsWith('.json')) throw new Error('HMLR manifest URL must be explicit HTTPS metadata.');
     if (descriptor.snapshotId !== undefined && !/^[a-f0-9]{64}$/.test(descriptor.snapshotId)) throw new Error('Invalid HMLR browser snapshot ID.');
+    const tileReader = typeof descriptor.tileManifestUrl === 'string'
+        ? createHmlrTileReader({ manifestUrl: descriptor.tileManifestUrl, snapshotId: descriptor.snapshotId, fetchImpl }) : null;
+    let tileStoreRetryAt = 0;
     const store = featureStore || (indexedDB ? createIndexedDbFeatureStore(indexedDB) : createMemoryHmlrFeatureStore());
     const archiveCache = cachedArchiveStore(cacheStorage, manifestUrl.href);
     const authorityState = new Map(), authorityPending = new Map(), shardPending = new Map(), shardCache = new Map();
@@ -770,8 +778,55 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
             normalizationPolicy: HMLR_BROWSER_GROUND_POLICY, snapshotId: manifest.releaseId, sourceDate: manifest.sourceDate,
             returnsWGS84: true, features, suppressedIds: result.suppressedIds };
     }
+    // Tile store path: the same native inputs and the same engine, read from 1 km tiles.
+    async function resolveTileCandidates(candidates, signal) {
+        if (!candidates.length) return { features: [], suppressedIds: [] };
+        if (candidates.length > MAX_QUERY_FEATURES) throw upstreamError('HMLR browser query exceeds the parcel limit; use a smaller viewport.', 413);
+        const context = await tileReader.contextFor(candidates, signal);
+        if (context.length > maxContextFeatures) throw upstreamError('HMLR overlap context exceeds its safe feature limit.', 413);
+        signal?.throwIfAborted();
+        const targetIds = [...new Set(candidates.map(feature => feature.id))];
+        return (await getEngine()).resolve(context, { selectedIds: targetIds.map(id => `${ID_PREFIX}${id}`) });
+    }
+    async function tileQueryBounds(bounds, signal) {
+        await ensureOstn15();
+        const { manifest, features } = await tileReader.candidatesInBounds(bounds, signal);
+        if (features.length > MAX_QUERY_FEATURES) throw upstreamError('HMLR browser query exceeds the parcel limit; use a smaller viewport.', 413);
+        const meets = features.length ? await (await getEngine()).intersectsBounds(features, bounds) : [];
+        signal?.throwIfAborted();
+        const result = await resolveTileCandidates(features.filter((_, index) => meets[index]), signal);
+        return outputForQuery(result, bboxPolygon(bounds), { releaseId: manifest.sourceRelease, sourceDate: manifest.sourceDate });
+    }
+    async function tileQueryIds(requested, signal) {
+        await ensureOstn15();
+        const { features, listed } = await tileReader.featuresForIds(requested.map(item => item.nativeId), signal);
+        const manifest = await tileReader.manifest(signal);
+        const result = await resolveTileCandidates(features, signal);
+        const found = new Set(result.features.map(feature => feature.id)), suppressed = new Set(result.suppressedIds);
+        const absentIds = requested.filter(item => !listed.has(item.nativeId) || suppressed.has(item.id)).map(item => item.id);
+        for (const item of requested) if (listed.has(item.nativeId) && !found.has(item.id) && !suppressed.has(item.id)) {
+            throw upstreamError(`HMLR native parcel ${item.nativeId} was neither resolved nor suppressed.`);
+        }
+        return { ...result, complete: true, sourceId: HMLR_BROWSER_GROUND_SOURCE, normalizationPolicy: HMLR_BROWSER_GROUND_POLICY,
+            snapshotId: manifest.sourceRelease, sourceDate: manifest.sourceDate, returnsWGS84: true, absentIds };
+    }
+    // Tiles first; any failure other than the caller's own cancellation falls back to the import.
+    async function fromTilesOr(read, fallback, signal) {
+        if (tileReader && now() >= tileStoreRetryAt) {
+            try { return await read(); }
+            catch (error) {
+                if (signal?.aborted) throw signal.reason;
+                if (error?.status !== 413) tileStoreRetryAt = now() + TILE_STORE_RETRY_MS;
+                reportProgress({ phase: 'source-fallback', reason: String(error?.message || error) });
+            }
+        }
+        return fallback();
+    }
     async function queryBounds(bounds, { signal } = {}) {
         validateBounds(bounds, descriptor.maxBboxKm2 ?? 25, descriptor);
+        return fromTilesOr(() => tileQueryBounds(bounds, signal), () => councilQueryBounds(bounds, signal), signal);
+    }
+    async function councilQueryBounds(bounds, signal) {
         // The grid asset and the release manifest download together; routing the view to its
         // councils needs both, so neither waits for the other.
         const grid = ensureOstn15();
@@ -813,8 +868,11 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
             || !id.startsWith(ID_PREFIX) || decimalId(id.slice(ID_PREFIX.length), true) === null)) {
             throw new HttpError(400, 'Provide between 1 and 80 canonical HMLR browser parcel IDs.');
         }
-        const unique = [...new Set(ids)], manifest = await getManifest();
-        const requested = unique.map(id => ({ id, nativeId: id.slice(ID_PREFIX.length) }));
+        const requested = [...new Set(ids)].map(id => ({ id, nativeId: id.slice(ID_PREFIX.length) }));
+        return fromTilesOr(() => tileQueryIds(requested, signal), () => councilQueryIds(requested, signal), signal);
+    }
+    async function councilQueryIds(requested, signal) {
+        const manifest = await getManifest();
         const buckets = [...new Set(requested.map(item => item.nativeId.length < 4 ? item.nativeId : item.nativeId.slice(0, 4)))];
         if (buckets.reduce((total, bucket) => total + (manifest.directory.get(bucket)?.bytes || 0), 0) > MAX_METADATA_BYTES) {
             throw upstreamError('HMLR ID lookup metadata exceeds its safe byte limit.', 413);

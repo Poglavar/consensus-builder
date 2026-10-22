@@ -8,6 +8,10 @@ import { createHmlrBrowserParcelSource, createMemoryHmlrFeatureStore } from '../
 import { createHmlrArchiveScopeBuilder } from '../parcels/hmlr-archive-scope.js';
 import { sha256Hex } from '../parcels/portable-hash.js';
 import { projectNativeBounds } from '../scripts/build-hmlr-browser-manifest.mjs';
+import { runCouncils, assemble } from '../scripts/build-hmlr-tiles.mjs';
+import { mkdtemp, readFile, rm, writeFile, mkdir } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 const SOURCE_DATE = '2026-10-11';
 const MANIFEST_URL = 'https://metadata.example/hmlr/manifest.json';
@@ -62,9 +66,9 @@ function fixture(authorities, { archiveGate } = {}) {
         return ok(archives[index], { etag: authorityCore[index].etag });
     };
     const store = createMemoryHmlrFeatureStore();
-    const create = (options = {}) => createHmlrBrowserParcelSource({ id: 'gb-hmlr-browser-v1', adapter: 'hmlr-browser', idPrefix: HMLR_BROWSER_GROUND_PREFIX, manifestUrl: MANIFEST_URL },
+    const create = (options = {}, descriptor = {}) => createHmlrBrowserParcelSource({ id: 'gb-hmlr-browser-v1', adapter: 'hmlr-browser', idPrefix: HMLR_BROWSER_GROUND_PREFIX, manifestUrl: MANIFEST_URL, ...descriptor },
         { fetchImpl, featureStore: store, cacheStorage: null, indexedDB: null, allowSample: true, ...options });
-    return { create, archiveCalls, archiveSignals, store, releaseId };
+    return { create, archiveCalls, archiveSignals, store, releaseId, manifest, archives, fetchImpl };
 }
 
 // A gate per archive that also fails like fetch when its request is aborted.
@@ -189,5 +193,80 @@ describe('cancelled HMLR queries', () => {
         await first; await second;
         await wait();
         expect([...f.archiveCalls].sort()).toEqual([0, 1]);
+    });
+});
+
+// The tile store must answer exactly as the per-council import does, and fall back to it when it cannot.
+describe('HMLR tile store', () => {
+    // Overlapping parcels across two councils, so the answer depends on cross-council overlap context.
+    const councils = [
+        [['1001', square(530805, 180205, 10)], ['1002', ell(530790, 180150, 10, 531000, 180300)], ['1003', square(531800, 180205, 30)]],
+        [['2001', square(530990, 180145, 60)], ['2002', square(530800, 180200, 8)], ['2003', square(531790, 180200, 50)]]
+    ];
+    // Built lazily: the British National Grid definition is registered in beforeAll.
+    // The second view shows only the L's vertical leg; 2001, which outranks the L and cuts its far
+    // horizontal leg, is off screen in the other council, so only real overlap context gets it right.
+    const views = () => [around(QUERY), around([530795, 180280]), around([530995, 180160], 0.0004), around([531805, 180215], 0.0003)];
+    async function withTiles() {
+        const f = fixture(councils), out = await mkdtemp(join(tmpdir(), 'hmlr-tiles-'));
+        await mkdir(join(out, 'archives'), { recursive: true });
+        await writeFile(join(out, 'manifest.json'), JSON.stringify(f.manifest));
+        for (const [index, authority] of f.manifest.authorities.entries()) await writeFile(join(out, 'archives', `${authority.archiveSha256}.zip`), f.archives[index]);
+        await runCouncils({ manifest: join(out, 'manifest.json'), out, shard: [0, 1], only: null, keepArchives: true });
+        const { releaseId, path } = await assemble({ manifest: join(out, 'manifest.json'), out, only: null });
+        const tileRoot = `https://tiles.example/${releaseId}/`, tileCalls = [];
+        const serve = failTiles => async (url, options) => {
+            if (!String(url).startsWith(tileRoot)) return f.fetchImpl(url, options);
+            tileCalls.push(String(url));
+            if (failTiles === true) return new Response('unavailable', { status: 503 });
+            const bytes = await readFile(join(path, String(url).slice(tileRoot.length)));
+            if (failTiles === 'tamper' && String(url).includes('/tiles/')) bytes[bytes.length - 1] ^= 1;
+            return new Response(bytes, { status: 200 });
+        };
+        const tiles = (options = {}, failTiles = false) => f.create({ fetchImpl: serve(failTiles), ...options },
+            { tileManifestUrl: `${tileRoot}manifest.json`, snapshotId: f.releaseId });
+        return { f, out, tiles, tileCalls, cleanup: () => rm(out, { recursive: true, force: true }) };
+    }
+
+    it('answers views and exact IDs with the same derived ground as the per-council import, without downloading a council', async () => {
+        const t = await withTiles();
+        try {
+            const viaTiles = t.tiles(), viaCouncils = t.f.create();
+            for (const view of views()) {
+                const [a, b] = [await viaTiles.queryBounds(view), await viaCouncils.queryBounds(view)];
+                expect(a.features.length).toBeGreaterThan(0);
+                expect(a).toEqual(b);
+            }
+            const leg = await viaTiles.queryBounds(views()[1]);
+            expect(leg.features.map(item => item.id)).toEqual([id('1002')]);
+            expect(leg.features[0].properties.derivation.intersectingHigherPriorityCount).toBe(1);
+            const ids = ['1001', '1002', '2001', '2002', '9999'].map(id);
+            expect(await viaTiles.queryIds(ids)).toEqual(await viaCouncils.queryIds(ids));
+            const archivesBefore = t.f.archiveCalls.length;
+            await t.tiles().queryBounds(views()[0]);
+            expect(t.f.archiveCalls.length).toBe(archivesBefore);
+            expect(t.tileCalls.some(url => url.endsWith('/manifest.json'))).toBe(true);
+        } finally { await t.cleanup(); }
+    });
+
+    it('falls back to the per-council import when the store is unavailable, and says so', async () => {
+        const t = await withTiles();
+        try {
+            const progress = [];
+            const result = await t.tiles({ onProgress: detail => progress.push(detail) }, true).queryBounds(views()[0]);
+            expect(result).toEqual(await t.f.create().queryBounds(views()[0]));
+            expect(progress.some(detail => detail.phase === 'source-fallback' && /HTTP 503/.test(detail.reason))).toBe(true);
+            expect(t.f.archiveCalls.length).toBeGreaterThan(0);
+        } finally { await t.cleanup(); }
+    });
+
+    it('refuses a tile whose bytes do not match the release and falls back', async () => {
+        const t = await withTiles();
+        try {
+            const progress = [];
+            const result = await t.tiles({ onProgress: detail => progress.push(detail) }, 'tamper').queryBounds(views()[0]);
+            expect(result).toEqual(await t.f.create().queryBounds(views()[0]));
+            expect(progress.some(detail => detail.phase === 'source-fallback' && /hash/.test(detail.reason))).toBe(true);
+        } finally { await t.cleanup(); }
     });
 });

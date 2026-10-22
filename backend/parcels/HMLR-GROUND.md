@@ -62,6 +62,42 @@ nothing for the limit is abandoned. Birmingham (46.6 MB, 347,719 parcels) measur
 about 30 s of download and 205 s of indexing on a loaded laptop in 2026-10; its default
 view then also needs neighbouring Sandwell.
 
+## Tile store (first path)
+
+The map first reads a published tile release from the `uk-cadastre` Cloudflare R2 bucket,
+served at `https://uk-cadastre.urbangametheory.xyz/<releaseId>/` (CORS open for GET,
+`Cache-Control: immutable`). A release holds the raw INSPIRE input polygons of every
+pinned council archive, cut into 1 km EPSG:27700 tiles: each parcel is in every tile its
+native bounding box touches, in integer millimetres with per-ring deltas (`hmlr-tile-format.js`;
+the few rows finer than a millimetre stay raw, so decoding reproduces the parsed coordinates
+exactly). A view loads only its tiles, plus the tiles its candidates' padded boxes reach for
+overlap context, and resolves them with the same GEOS engine, so derived ground, IDs and
+provenance equal the per-council path. `manifest.json` lists hash-pinned 10 km index shards
+(tile hashes, sizes and row counts) and ID shards (native ID to tile range); every file is
+SHA-256 verified. The tile release must name the same routing release (`sourceRelease`) as
+the source's `snapshotId`, and must not be partial.
+
+The per-council import below stays the fallback. Any tile-store failure other than the
+caller's own cancellation (unreachable, an HTTP error, a hash mismatch, more than 400 tiles
+for one query) answers that query from the council archives and reports a `source-fallback`
+progress event; after a store failure the import serves queries for 5 minutes before the
+store is tried again.
+
+Build, assemble and upload a release from the current routing manifest (about 3 GB of tiles
+for England and Wales; the cut is restartable per council and can run as several shards):
+
+```sh
+node backend/scripts/build-hmlr-tiles.mjs --run --manifest <routing manifest URL> --out tmp/hmlr-tiles --shard 0/3   # and 1/3, 2/3
+node backend/scripts/build-hmlr-tiles.mjs --assemble --manifest <routing manifest URL> --out tmp/hmlr-tiles
+rclone copy tmp/hmlr-tiles/release/<releaseId> r2-uk-cadastre:uk-cadastre/<releaseId> --transfers 64 \
+    --header-upload "Cache-Control: public, max-age=31536000, immutable"
+```
+
+Then set `tileManifestUrl` on `gb-hmlr-browser-v1` to the release's `manifest.json` and rebuild
+the worker assets. A new routing release needs a new tile release before the catalog moves.
+The polygons are republished under the Open Government Licence with HM Land Registry's and
+Ordnance Survey's attribution statements (`attribution` on the source).
+
 Time to parcels on the ground is the metric. The councils a view needs download
 smallest first and two at a time; only indexing is serial, in download order. The
 OSTN15 grid asset downloads alongside the release metadata and archives rather
