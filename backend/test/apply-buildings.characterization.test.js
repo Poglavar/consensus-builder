@@ -206,6 +206,55 @@ describe('_applyBuildingProposal (characterization)', () => {
     });
 });
 
+// The scan region is the ground the proposal takes (demolition-prefetch.js buildingDemolitionGeometry).
+describe('_applyBuildingProposal demolition ground', () => {
+    const square = (x, y, side = 0.0001) => ({ type: 'Polygon', coordinates: [[[x, y], [x + side, y], [x + side, y + side], [x, y + side], [x, y]]] });
+    const parcels = [
+        { type: 'Feature', properties: { parcelId: 'HR-1' }, geometry: square(15.96, 45.80, 0.02) },
+        { type: 'Feature', properties: { parcelId: 'HR-2' }, geometry: square(15.98, 45.80, 0.02) }
+    ];
+    const capture = () => {
+        const regions = [];
+        const mgr = makeManager({
+            _resolveLiveFormationParents: () => ({ ok: true, ids: ['HR-1', 'HR-2'], cadastreIds: ['HR-1', 'HR-2'], features: parcels }),
+            _deriveDemolishedBuildings: async geometry => { regions.push(geometry); return []; }
+        });
+        return { mgr, regions };
+    };
+
+    it('a block scans the parcels it stands on plus its footprints, so courtyard buildings go too', async () => {
+        const { mgr, regions } = capture();
+        const data = buildingProposalData();
+        data.buildingProposal = { typologyType: 'block' };
+        data.geometry.buildings.push(JSON.parse(JSON.stringify(data.geometry.buildings[0])));
+        expect(await _applyBuildingProposal.call(mgr, 'p-b1', data, mutationOptions())).toBe(true);
+        expect(regions).toHaveLength(1);
+        expect(regions[0].type).toBe('MultiPolygon');
+        expect(regions[0].coordinates).toHaveLength(4);
+        expect(regions[0].coordinates[0]).toEqual(parcels[0].geometry.coordinates);
+        expect(regions[0].coordinates[1]).toEqual(parcels[1].geometry.coordinates);
+        expect(regions[0].coordinates[2]).toEqual(data.geometry.buildings[0].geometry.coordinates);
+    });
+
+    it('a rule that raises the existing buildings scans only its footprints', async () => {
+        const { mgr, regions } = capture();
+        const data = buildingProposalData();
+        data.buildingProposal = { typologyType: 'block', parameters: { mode: 'existing', rule: 'additional' } };
+        data.geometry.buildings.push(JSON.parse(JSON.stringify(data.geometry.buildings[0])));
+        expect(await _applyBuildingProposal.call(mgr, 'p-b1', data, mutationOptions())).toBe(true);
+        expect(regions[0].coordinates).toHaveLength(2);
+    });
+
+    it('a Freeform building that forms its own parcel scans its footprint alone', async () => {
+        const { mgr, regions } = capture();
+        const data = { ...buildingProposalData(), goal: 'single' };
+        // Formation itself is not under test here (no _formBuildingParcel stub); the scan precedes it.
+        await _applyBuildingProposal.call(mgr, 'p-s1', data, mutationOptions()).catch(() => null);
+        expect(regions).toHaveLength(1);
+        expect(regions[0]).toEqual(data.geometry.buildings[0].geometry);
+    });
+});
+
 // The demolition scan must land on the record the carve reads from storage. A shallow copy of
 // buildingProposal once swallowed it, so no building proposal ever demolished anything (2026-10-22).
 describe('_applyBuildingProposal demolition records', () => {

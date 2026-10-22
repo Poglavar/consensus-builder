@@ -1977,6 +1977,18 @@ const ProposalManager = {
             return prefetched;
         }
         const regions = prefetchApi.collectDemolitionRegions(appliedList, {
+            // A building member's region is the ground it takes: the live pieces of its cadastral
+            // scope (a superset of what Step 4 resolves) plus its footprints. No fabric or no
+            // pieces: the member is left out and fetches for itself.
+            parcelFeatures: (proposal) => {
+                try {
+                    const fabric = (typeof window !== 'undefined') ? window.LiveParcelFabric : null;
+                    if (!fabric || typeof fabric.entriesForCadastre !== 'function') return null;
+                    const ids = proposalClaims.cadastreParcelIdsOf(proposal).map(String).filter(Boolean);
+                    return ids.length ? fabric.entriesForCadastre(ids) : null;
+                } catch (_) { return null; }
+            },
+            normalizeGoalKey: (applyRoute && typeof applyRoute.normalizeGoalKey === 'function') ? applyRoute.normalizeGoalKey : undefined,
             structureGeometry: (proposal) => {
                 const sp = proposal.structureProposal || {};
                 if (sp.geometry && sp.geometry.type && Array.isArray(sp.geometry.coordinates)) return sp.geometry;

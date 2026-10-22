@@ -15,6 +15,12 @@
         return api;
     }
 
+    // The demolition ground rule lives with the replay prefetch, which must compute the same region.
+    function demolitionGroundApi() {
+        if (typeof window !== 'undefined' && window.__demolitionPrefetch) return window.__demolitionPrefetch;
+        return typeof require === 'function' ? require('../demolition-prefetch.js') : null;
+    }
+
     function openGroundApi() {
         if (typeof window !== 'undefined' && window.__openGround) return window.__openGround;
         return typeof require === 'function' ? require('../open-ground.js') : null;
@@ -114,21 +120,19 @@
             try { this._setLastApplyFailure(idLabel, { code: 'building-geometry-unusable', message: `All ${candidateFeatures.length} stored building footprint(s) were dropped while preparing geometry.` }); } catch (_) { }
             return false;
         }
-        // The authored building footprints are the scan region. Never reuse a record produced by
-        // authoring or a previous browser's fabric.
+        // The scan region is the ground this proposal takes (demolition-prefetch.js
+        // buildingDemolitionGeometry): the live parcels it stands on plus its authored footprints,
+        // or the footprints alone for a building that forms its own parcel or a rule that models
+        // the existing buildings. Never reuse a record produced by authoring or a previous
+        // browser's fabric.
         buildingProposal.demolishedBuildings = [];
         delete buildingProposal.demolitionScanned;
         try {
-            const polygons = preparedFeatures.flatMap(feature => {
-                const geometry = feature && feature.geometry;
-                if (!geometry) return [];
-                if (geometry.type === 'Polygon') return [geometry.coordinates];
-                if (geometry.type === 'MultiPolygon') return geometry.coordinates;
-                return [];
-            });
-            const demolitionRegion = polygons.length === 1
-                ? { type: 'Polygon', coordinates: polygons[0] }
-                : (polygons.length ? { type: 'MultiPolygon', coordinates: polygons } : null);
+            const ground = demolitionGroundApi();
+            if (!ground || typeof ground.buildingDemolitionGeometry !== 'function') throw new Error('demolition-prefetch.js (demolition ground) is not loaded');
+            const goalHelpers = (typeof window !== 'undefined' && window.__applyRoute && typeof window.__applyRoute.normalizeGoalKey === 'function')
+                ? { normalizeGoalKey: window.__applyRoute.normalizeGoalKey } : {};
+            const demolitionRegion = ground.buildingDemolitionGeometry(proposalData, liveParents.features, goalHelpers);
             if (demolitionRegion && typeof this._deriveDemolishedBuildings === 'function') {
                 buildingProposal.demolishedBuildings = await this._deriveDemolishedBuildings(demolitionRegion, {
                     ...options,
