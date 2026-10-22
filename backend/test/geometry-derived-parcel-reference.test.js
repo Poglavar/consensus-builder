@@ -44,8 +44,8 @@ class Element {
     querySelectorAll() { return []; }
 }
 
-function renderParcelPanel(properties, { currency = 'EUR' } = {}) {
-    const cityConfig = { parcels: { ownership: false }, currency: { code: currency } };
+function renderParcelPanel(properties, { currency = 'EUR', id = 'test-city' } = {}) {
+    const cityConfig = { id, parcels: { ownership: false }, currency: { code: currency } };
     const ids = [
         'parcel-info-panel', 'parcel-info-title', 'info-content', 'propose-content', 'proposals-content',
         'parcel-owners-count', 'tools-tab', 'measureAsRoadButton', 'roadMeasurements', 'parcel-plans-content'
@@ -240,13 +240,13 @@ describe('geometry-derived parcel references', () => {
         expect(normalized).toContain('13,300 EUR');
     });
 
-    // A UK city has no defensible land rate (city-money.js), so a parcel without a source price
-    // shows none rather than a euro model or a zero.
-    it('shows no modeled price on a UK parcel without a source price', () => {
-        const rendered = renderParcelPanel({ parcelId: 'p-1', calculatedArea: 100 }, { currency: 'GBP' });
-        expect(rendered.info).toContain('Est. Mkt. Price:');
-        expect(rendered.info).toContain('N/A');
-        expect(rendered.info).not.toMatch(/EUR|GBP/);
+    // A UK city prices land at its local authority's rate (js/uk-land-rates.js), in pounds.
+    it('labels a UK parcel without a source price as a sterling area model', () => {
+        const rendered = renderParcelPanel({ parcelId: 'p-1', calculatedArea: 100 }, { currency: 'GBP', id: 'birmingham' });
+        const normalized = rendered.info.replace(/[\u00a0\u202f]/g, ' ');
+        expect(normalized).toContain('Modeled area estimate (688 GBP/m²):');
+        expect(normalized).toContain('68,800 GBP');
+        expect(normalized).not.toContain('EUR');
     });
 
     it('shows a UK source price in sterling', () => {

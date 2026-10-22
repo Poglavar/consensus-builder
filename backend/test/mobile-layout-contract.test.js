@@ -158,6 +158,17 @@ describe('the left-edge mode strip is never covered on phones', () => {
         expect(body).toMatch(/left:\s*12px/);
         expect(body).toMatch(/right:\s*12px/);
     });
+
+    // The planning inspector docks to the same bottom edge; while it is open the panel moves up
+    // beside the mode strip and scrolls in the space left, instead of lying under the inspector.
+    it('moves the 3D parcel panel above an open planning inspector on phones', () => {
+        const [block] = mediaBlocksContaining(mapCss, '(max-width: 767.98px)', '#planning-inspector:not([hidden])');
+        const body = ruleBody(block, 'body:has\\(#planning-inspector:not\\(\\[hidden\\]\\)\\) #three-container \\.three-mode-parcel-panel');
+        expect(body).toMatch(/left:\s*var\(--three-panel-left\)/);
+        expect(body).toMatch(/bottom:\s*auto/);
+        expect(body).toMatch(/overflow-y:\s*auto/);
+        expect(body).toMatch(/max-height:\s*calc\(50dvh/);
+    });
 });
 
 describe('proposal details and compact card on phones', () => {

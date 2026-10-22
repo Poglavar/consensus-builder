@@ -8,7 +8,9 @@ const require = createRequire(import.meta.url);
 const CityMoney = require('../../frontend/js/city-money.js');
 const { buildParcelPriceEstimate } = require('../../frontend/js/financials.js');
 
-const birmingham = { currency: { locale: 'en-GB', code: 'GBP' } };
+const birmingham = { id: 'birmingham', currency: { locale: 'en-GB', code: 'GBP' } };
+const UkLandRates = require('../../frontend/js/uk-land-rates.js');
+const cityConfigSource = require('node:fs').readFileSync(new URL('../../frontend/js/city-config.js', import.meta.url), 'utf8');
 const croatian = { currency: { locale: 'hr-HR', code: 'EUR' } };
 const mumbai = { currency: { locale: 'en-IN', code: 'INR' } };
 
@@ -26,11 +28,23 @@ describe('fiat and tokens', () => {
 });
 
 describe('price assumptions follow the city currency', () => {
-    it('gives a UK city sterling assumptions without a land rate', () => {
+    // MHCLG 2023 residential land, medium density at the median house price: Birmingham £6.88m/ha.
+    it('gives a UK city its own authority land rate in pounds', () => {
         const a = CityMoney.assumptionsFor(birmingham);
-        expect(a.currency).toBe('GBP');
-        expect(a.landPerSqm).toBeNull();
-        expect(a.salesPerSqm).toBe(4000);
+        expect(a).toMatchObject({ currency: 'GBP', landPerSqm: 688, roadLandPerSqm: 688, salesPerSqm: 4000 });
+        expect(UkLandRates.cities.birmingham).toMatchObject({ authority: 'E08000025', basis: 'authority' });
+    });
+
+    it('falls back to the England median for a UK city the table does not know', () => {
+        expect(CityMoney.assumptionsFor({ id: 'not-in-table', currency: { code: 'GBP' } }).landPerSqm).toBe(UkLandRates.englandMedianPerSqm);
+    });
+
+    // The table is generated from city-config.js; a UK city added without rebuilding it would
+    // silently take the England median.
+    it('has a land rate for every UK city in the config', () => {
+        const ukCities = [...cityConfigSource.matchAll(/\n {12}id: '([^']+)'[^\n]*\n {12}label: [^\n]*\n {12}currency: \{ locale: '[^']+', code: 'GBP' \}/g)].map(m => m[1]);
+        expect(ukCities.length).toBeGreaterThan(100);
+        expect(ukCities.filter(id => !UkLandRates.cities[id])).toEqual([]);
     });
 
     // The 3D panel's two sliders start at the same figures in every city, in its own currency.
@@ -53,9 +67,9 @@ describe('price assumptions follow the city currency', () => {
 });
 
 describe('land estimates', () => {
-    it('has no modeled price for a UK parcel, never a zero one', () => {
-        const estimate = buildParcelPriceEstimate({}, 500, CityMoney.landPriceOptions(birmingham, 'land'));
-        expect(estimate).toEqual({ amount: null, currency: null, basis: 'unavailable', rate: null });
+    it('prices a UK parcel by area in pounds at its authority rate', () => {
+        expect(buildParcelPriceEstimate({}, 500, CityMoney.landPriceOptions(birmingham, 'land')))
+            .toEqual({ amount: 344000, currency: 'GBP', basis: 'area-model', rate: 688 });
     });
 
     it('prices a Croatian parcel by area in euros, and road land at its own rate', () => {

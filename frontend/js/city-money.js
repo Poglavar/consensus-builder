@@ -4,10 +4,10 @@
 // viewer's locale only decides how the amount is written, js/format.js). Pure, UMD: in the browser
 // it is window.CityMoney; backend/test/city-money.test.js runs it headlessly.
 (function (root, factory) {
-    const api = factory();
+    const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
     if (root) root.CityMoney = api;
-})(typeof window !== 'undefined' ? window : null, function () {
+})(typeof window !== 'undefined' ? window : null, function (root) {
     'use strict';
 
     // Codes that are chain tokens, not a country's money. Everything else with three letters is an
@@ -20,10 +20,10 @@
     // - landPerSqm: parcel land when the data carries no price (parcel panel, selection, readjustment).
     // - roadLandPerSqm: land taken by a drawn road (road acquisition model).
     // - salesPerSqm: the plan statistics' sales price default (the user edits it there).
-    // EUR are the figures the app has used for its Croatian cities all along. GBP has no land figure: published
-    // English land values (MHCLG "Land value estimates for policy appraisal") vary tenfold between
-    // councils and are not market values, so one UK rate would be wrong almost everywhere. Its sales
-    // default is the 3D panel's sale price (below).
+    // EUR are the figures the app has used for its Croatian cities all along. GBP land differs tenfold
+    // between councils, so it has no single figure here: each UK city takes its own local authority's
+    // rate (js/uk-land-rates.js, MHCLG appraisal values, scripts/build-uk-land-rates.py), for parcels
+    // and for road land alike. Its sales default is the 3D panel's sale price (below).
     const ASSUMPTIONS = Object.freeze({
         EUR: Object.freeze({
             landPerSqm: 133,
@@ -65,10 +65,27 @@
     }
 
     // The price assumptions for a city, with the currency they are expressed in.
+    const ukLandRates = () => (root && root.UkLandRates)
+        || (typeof require === 'function' ? require('./uk-land-rates.js') : null);
+
+    // A UK city's land rate in £/m²: its authority's, else the England median the table carries.
+    function ukLandRate(cityConfig) {
+        const table = ukLandRates();
+        if (!table) return null;
+        const own = cityConfig && table.cities[cityConfig.id];
+        return own ? own.perSqm : table.englandMedianPerSqm;
+    }
+
     function assumptionsFor(cityConfig) {
         const cityCurrency = currencyOf(cityConfig);
         const currency = cityCurrency && ASSUMPTIONS[cityCurrency] ? cityCurrency : DEFAULT_ASSUMPTION_CURRENCY;
-        return Object.assign({ currency }, ASSUMPTIONS[currency]);
+        const assumptions = Object.assign({ currency }, ASSUMPTIONS[currency]);
+        if (currency === 'GBP') {
+            const rate = ukLandRate(cityConfig);
+            assumptions.landPerSqm = rate;
+            assumptions.roadLandPerSqm = rate;
+        }
+        return assumptions;
     }
 
     // The area-model options ParcelPriceModel.buildEstimate takes (financials.js): a rate in the

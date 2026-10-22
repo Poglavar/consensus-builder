@@ -939,7 +939,7 @@
         const off = column => (m[column] ? '' : ' class="is-unavailable"');
         const cells = (render, column) => (m[column] ? render(m[column]) : '—');
         const row = (label, render) => `<tr><td>${label}</td>${columns.map(c => `<td${off(c)}>${cells(render, c)}</td>`).join('')}</tr>`;
-        const moneyRow = (label, key) => `<tr><td>${label}</td>${columns.map(c => `<td data-cell="${key}:${c}"${off(c)}>—</td>`).join('')}</tr>`;
+        const moneyRow = (label, key, hint = '') => `<tr><td${hint ? ` title="${escapeHtml(hint)}"` : ''}>${label}</td>${columns.map(c => `<td data-cell="${key}:${c}"${off(c)}>—</td>`).join('')}</tr>`;
         const slider = (role, labelRole, price) => `
             <label class="parcel-panel-slider-label" data-role="${labelRole}"></label>
             <input type="range" class="parcel-panel-price-slider" data-role="${role}"
@@ -951,12 +951,11 @@
                 ${row(L.floorArea, v => CbFormat.formatArea(Number(v.floorArea) || 0))}
                 ${moneyRow(L.value, 'value')}
                 ${moneyRow(L.constructionCost, 'constructionCost')}
-                ${moneyRow(L.profit, 'profit')}
+                ${moneyRow(L.profit, 'profit', L.profitNote)}
             </table>
             <div class="parcel-panel-note">${L.floorNote} · ${escapeHtml(threeI18n('threeMode.parcelPanel.amountsIn', 'amounts in {{currency}}', { currency: prices.currency }))}</div>
             ${slider('sale-slider', 'sale-label', prices.sale)}
-            ${slider('construction-slider', 'construction-label', prices.construction)}
-            <div class="parcel-panel-note parcel-panel-profit-note">${escapeHtml(L.profitNote)}</div>`;
+            ${slider('construction-slider', 'construction-label', prices.construction)}`;
     }
 
     function panelLabels() {
