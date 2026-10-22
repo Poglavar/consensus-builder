@@ -13,9 +13,9 @@
     let panel, inspector, lastSettings = null, lastSelectedId = null, ready = false, selectionLayer;
     let progress = null;
     let selectionPoint = null;
-    // The parcel the 3D view has isolated (focusParcel). The sheet refers to that parcel, or else
+    // The parcel the 3D view has in view (focusParcel). The sheet refers to that parcel, or else
     // to the parcel of the selected permitted massing (focusedParcel).
-    let isolatedParcelId = null;
+    let viewedParcelId = null, viewWantsMassing = false;
     let sourceOptions = [], sourceId = '', scenarioId = '', focusedRecord = null, sourceGeneration = 0, actionsOpen = false, referenceStatus = null;
     let restoreId = new URLSearchParams(location.search).get('planningSelection'), restoring = false, catalogReady = false, parcelPanel = null;
     // Per-item configuration pins chosen in the inspector; cleared with the source, housing type or city.
@@ -92,16 +92,18 @@
         if (!item || item.role !== 'permitted') return null;
         return String(item.sourceEvidence?.parcelReference?.parcelId || item.source?.parcel || '') || null;
     }
-    function focusedParcel() { return isolatedParcelId || parcelOf(selected()); }
-    // 3D parcel isolation: the panel refers to that parcel. Its cached massing (when the source
-    // records one) opens in the inspector, its saved evidence lists in the sheet, and the sheet
-    // names it. Null when the isolation ends.
-    function focusParcel(parcelId) {
+    function focusedParcel() { return viewedParcelId || parcelOf(selected()); }
+    // The 3D view's parcel in view: the panel refers to that parcel. Its saved evidence lists in
+    // the sheet and the sheet names it; with `openMassing` its cached massing (when the source
+    // records one) opens in the inspector too, otherwise whatever the click hit keeps the
+    // inspector. Null when the view ends.
+    function focusParcel(parcelId, { openMassing = true } = {}) {
         if (!ready) return;
-        isolatedParcelId = parcelId == null || parcelId === '' ? null : String(parcelId);
-        const item = core.parcelItemOf(sceneItems(), isolatedParcelId);
+        viewedParcelId = parcelId == null || parcelId === '' ? null : String(parcelId);
+        viewWantsMassing = !!viewedParcelId && openMassing;
+        const item = openMassing ? core.parcelItemOf(sceneItems(), viewedParcelId) : null;
         if (item) select(item.id);
-        else if (selected()?.role === 'permitted') select(null);
+        else if (openMassing && selected()?.role === 'permitted') select(null);
         else renderFocus();
     }
     function renderFocus() {
@@ -109,8 +111,8 @@
         if (!section) return;
         const parcel = focusedParcel();
         const item = parcel ? core.parcelItemOf(sceneItems(), parcel) : null;
-        // Massing that arrived after the isolation click still opens for that parcel.
-        if (isolatedParcelId && item && !selected()) { select(item.id); return; }
+        // Massing that arrived after the click still opens for the parcel in view.
+        if (viewWantsMassing && viewedParcelId && item && !selected()) { select(item.id); return; }
         section.hidden = !parcel || isPhoto();
         section.querySelector('.planning-focus__title').textContent = parcel ? `${t('focusParcel')} ${parcel}` : '';
         const note = section.querySelector('.planning-focus__note');
@@ -796,7 +798,7 @@
         root.addEventListener('cityChanged', () => {
             root.PlanningParcelStudy?.clear(); selectionPoint = null;
             controller?.abort(); request++; invalidate(); items = []; payload = null; status = 'loading';
-            sourceOptions = []; sourceId = ''; scenarioId = ''; pins = {}; sourcesKey = ''; focusedRecord = null; restoreId = null; catalogReady = false; parcelPanel = null; isolatedParcelId = null;
+            sourceOptions = []; sourceId = ''; scenarioId = ''; pins = {}; sourcesKey = ''; focusedRecord = null; restoreId = null; catalogReady = false; parcelPanel = null; viewedParcelId = null; viewWantsMassing = false;
             store.select(null); drawMap(); render(); notifyGeometry(); loadSources();
         });
         root.addEventListener('proposedBuildingsUpdated', render);

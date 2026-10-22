@@ -475,6 +475,9 @@
     const PRICE_MAX_EUR = 10000;
     const PRICE_STEP_EUR = 100;
     let parcelClickHandler = null;
+    // The parcel under the last click (three-click-plan.js): its panel, its massing and its outline,
+    // without dimming the city. Isolation (isolatedParcelId) is the deliberate second click.
+    let viewedParcelId = null;
     let parcelPointerDownHandler = null;
     let proposalSelectionUnsubscribe = null;
     // Pointer-down position, used to tell a short click apart from an orbit/tilt drag.
@@ -689,7 +692,8 @@
     function applyParcelEmphasis() {
         const emphasis = window.ThreeParcelEmphasis;
         if (!emphasis || !scene) return;
-        parcelEmphasisOriginals = emphasis.apply(scene, isolatedParcelId, parcelEmphasisOriginals);
+        parcelEmphasisOriginals = emphasis.apply(scene, isolatedParcelId || viewedParcelId, parcelEmphasisOriginals,
+            { dimOthers: isolatedParcelId !== null });
     }
 
     function restoreParcelEmphasis() {
@@ -1075,6 +1079,7 @@
         // If the current view is a whole-proposal isolation, restore it before changing view type.
         if (isolatedProposalId !== null) clearIsolation();
         isolatedParcelId = parcelId;
+        viewedParcelId = parcelId;
         isolatedProposalId = null;
         updateIsolationButton();
         updateParcelInfoPanel(parcelId);
@@ -1233,8 +1238,20 @@
         return true;
     }
 
+    // The parcel in view: the parcel under the click, whatever stood on it. Its panel and outline,
+    // and the Buildings and massing panel refers to it; `openMassing` lets its cached massing take
+    // the inspector when nothing the click hit already did. Null ends the view.
+    function viewParcel(parcelId, options = {}) {
+        viewedParcelId = parcelId ? String(parcelId) : null;
+        if (viewedParcelId) updateParcelInfoPanel(viewedParcelId);
+        else if (isolatedParcelId === null && isolatedProposalId === null) hideParcelInfoPanel();
+        applyParcelEmphasis();
+        try { window.PlanningViews?.focusParcel?.(viewedParcelId, { openMassing: options.openMassing !== false }); } catch (_) { }
+    }
+
     function clearIsolation() {
-        if (isolatedParcelId === null && isolatedProposalId === null) return;
+        if (isolatedParcelId === null && isolatedProposalId === null) { if (viewedParcelId !== null) viewParcel(null); return; }
+        viewedParcelId = null;
         const wasProposalIsolated = isolatedProposalId !== null;
         isolatedParcelId = null;
         isolatedProposalId = null;
@@ -8381,39 +8398,47 @@
             if (moved > 6) return;
         }
         const picked = pickMapSubjectFromEvent(evt);
-        if (picked?.planningId) {
-            window.PlanningViews.select(picked.planningId);
-            return;
-        }
-        if (picked?.builtFeature) {
-            window.PlanningViews.inspectBuilding(picked.builtFeature);
-            return;
-        }
-        window.PlanningViews?.select(null);
-        if (picked?.proposalId) {
-            const proposal = window.proposalStorage?.getProposal?.(picked.proposalId) || null;
-            const parcelId = picked.parcelId || proposal?.cadastreParcelIds?.[0] || null;
-            if (proposal) {
-                // 3D is a viewing mode (for now): no 2D details panel here. Clicking a proposal
-                // selects it silently and isolates it; clicking it again returns to full view.
-                if (isolatedProposalId === String(picked.proposalId)) {
-                    clearIsolation();
-                    try { window.ProposalSelection?.clear?.(); } catch (_) { }
-                    return;
-                }
+        const proposal = picked?.proposalId ? (window.proposalStorage?.getProposal?.(picked.proposalId) || null) : null;
+        // Every click is also a parcel click (three-click-plan.js): the parcel under the point comes
+        // into view, and what the ray hit keeps its own meaning on top.
+        const plan = window.__threeClickPlan.planThreeClick({
+            picked, groundParcelId: parcelUnderClick(evt), viewedParcelId, isolatedParcelId, isolatedProposalId, proposalKnown: !!proposal
+        });
+        if (plan.selectMassing) window.PlanningViews.select(plan.selectMassing);
+        if (plan.inspectBuilding) window.PlanningViews.inspectBuilding(plan.inspectBuilding);
+        if (plan.clearSelection) window.PlanningViews?.select(null);
+        if (plan.proposal) {
+            // 3D is a viewing mode (for now): no 2D details panel here. Clicking a proposal
+            // selects it silently and isolates it; clicking it again returns to full view.
+            if (plan.proposal.action === 'clear') {
+                clearIsolation();
+                try { window.ProposalSelection?.clear?.(); } catch (_) { }
+            } else {
+                const parcelId = picked.parcelId || proposal?.cadastreParcelIds?.[0] || null;
                 if (typeof window.selectAndHighlightProposal === 'function') {
                     // keepHighlightsWithoutUi: with no 2D panel open, the selection would
                     // otherwise be cleared by the function's no-visible-UI safety net.
-                    window.selectAndHighlightProposal(picked.proposalId, parcelId, false, false, true);
+                    window.selectAndHighlightProposal(plan.proposal.id, parcelId, false, false, true);
                 }
-                isolateProposal(picked.proposalId);
-                return;
+                isolateProposal(plan.proposal.id);
             }
         }
-        const pid = picked?.parcelId || null;
-        // Click on empty ground, or on the already-isolated parcel, returns to full view.
-        if (!pid || pid === isolatedParcelId) { clearIsolation(); return; }
-        isolateParcel(pid);
+        if (!plan.parcel) return;
+        if (plan.parcel.action === 'clear') clearIsolation();
+        else if (plan.parcel.action === 'isolate') isolateParcel(plan.parcel.id);
+        else viewParcel(plan.parcel.id, { openMassing: plan.openMassing });
+    }
+
+    // The parcel under a click, through whatever stands on it: the ray against the parcel slabs alone.
+    function parcelUnderClick(evt) {
+        if (!renderer || !camera || !flatGroup) return null;
+        const rect = renderer.domElement.getBoundingClientRect();
+        const ndc = new THREE.Vector2(((evt.clientX - rect.left) / rect.width) * 2 - 1, -((evt.clientY - rect.top) / rect.height) * 2 + 1);
+        const raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera(ndc, camera);
+        const slabs = flatGroup.children.filter(o => o && o.isMesh && o.visible && o.userData?.isParcel && o.userData.parcelId);
+        const hit = raycaster.intersectObjects(slabs, false)[0];
+        return hit ? String(hit.object.userData.parcelId) : null;
     }
 
     // Capture-phase boundary: when 3D is active, its keyboard context gets first refusal and
@@ -8429,7 +8454,7 @@
             altKey: evt.altKey,
             target: evt.target,
             walkPickActive,
-            hasIsolation: isolatedParcelId !== null || isolatedProposalId !== null,
+            hasIsolation: isolatedParcelId !== null || isolatedProposalId !== null || viewedParcelId !== null,
             overlayOpen: !!(document.body.classList.contains('map-sheet-open')
                 || (window.MapShell && typeof window.MapShell.isBlockingDialogOpen === 'function'
                     && window.MapShell.isBlockingDialogOpen()))

@@ -7,11 +7,13 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
 
-    function styleFor(userData, selectedParcelId) {
+    // `dimOthers` is the isolation look (everything else dimmed); off, only the selected parcel
+    // is coloured and the city stays as it is (the parcel in view).
+    function styleFor(userData, selectedParcelId, dimOthers = true) {
         if (selectedParcelId == null) return 'normal';
         if (userData && userData.isParcel && userData.parcelId != null
             && String(userData.parcelId) === String(selectedParcelId)) return 'selected';
-        return 'dimmed';
+        return dimOthers ? 'dimmed' : 'normal';
     }
 
     function cloneAndStyle(material, style) {
@@ -42,8 +44,9 @@
         try { material.dispose?.(); } catch (_) { }
     }
 
-    function apply(rootObject, selectedParcelId, originals = new WeakMap()) {
+    function apply(rootObject, selectedParcelId, originals = new WeakMap(), options = {}) {
         if (!rootObject || typeof rootObject.traverse !== 'function') return originals;
+        const dimOthers = !(options && options.dimOthers === false);
         rootObject.traverse((object) => {
             if (!object || !object.material) return;
             const previous = originals.get(object);
@@ -52,7 +55,7 @@
                 object.material = previous;
                 originals.delete(object);
             }
-            const style = styleFor(object.userData, selectedParcelId);
+            const style = styleFor(object.userData, selectedParcelId, dimOthers);
             if (style === 'normal') return;
             originals.set(object, object.material);
             object.material = Array.isArray(object.material)

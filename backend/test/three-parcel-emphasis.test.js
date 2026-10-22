@@ -43,6 +43,10 @@ describe('3D parcel emphasis', () => {
         expect(styleFor({ isParcel: true, parcelId: 'parcel-b' }, 'parcel-a')).toBe('dimmed');
         expect(styleFor({ isParcel: false }, 'parcel-a')).toBe('dimmed');
         expect(styleFor({ isParcel: true, parcelId: 'parcel-a' }, null)).toBe('normal');
+        // The parcel in view: coloured alone, nothing else dimmed.
+        expect(styleFor({ isParcel: true, parcelId: 'parcel-a' }, 'parcel-a', false)).toBe('selected');
+        expect(styleFor({ isParcel: true, parcelId: 'parcel-b' }, 'parcel-a', false)).toBe('normal');
+        expect(styleFor({ isParcel: false }, 'parcel-a', false)).toBe('normal');
     });
 
     it('colors one parcel, dims other objects, keeps them visible, and restores shared materials', () => {
