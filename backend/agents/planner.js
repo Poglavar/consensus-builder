@@ -1,5 +1,5 @@
 // The agent runner's planning step: turns candidate parcels into candidate proposals — permitted
-// envelope, one build-out satisfying the checked limits, its floor area and modeled € gain — and scores them against a
+// envelope, one build-out satisfying the checked limits, its floor area and modeled gain in the city's money — and scores them against a
 // persona's weights. Pure: turf is injected, nothing here touches the database or the network, and
 // the same (parcels, persona, seed) always produces the same ordered list.
 //
@@ -53,7 +53,7 @@ function ruleSourceOf(rule) {
  *
  * Scoring (all parts in 0..1 before weighting):
  *   density      (proposed − built) / max(proposed, 1)   — how much of the result is new
- *   valueUplift  gainEur / the best gain in this set     — relative, so it needs the whole set
+ *   valueUplift  gain / the best gain in this set     — relative, so it needs the whole set
  *   openSpace    1 − builtFootprint / parcelArea         — an empty lot is "open"; a densifier
  *                                                          weights this at ~0 and ignores it
  *   heritage     0                                       — PLACEHOLDER. There is no heritage
@@ -63,17 +63,22 @@ function ruleSourceOf(rule) {
  *
  * @param {Array} parcels        rows from parcel-source.js
  * @param {Object} persona       an entry from personas.json
- * @param {Object} options       { turf, floorHeightM, priceEurPerM2, offerShareOfGain, seed, limit }
+ * @param {Object} options       { turf, money, floorHeightM, offerShareOfGain, seed, limit }; `money` is
+ *                               the city's { currency, salePricePerM2 } (utils/city-money.js): gains
+ *                               and offers are in the money of the place, never assumed to be euros
  */
 export function planCandidates(parcels, persona, {
     turf,
+    money,
     floorHeightM = 3,
-    priceEurPerM2 = 4000,
     offerShareOfGain = 0.3,
     seed = 1,
     limit = 8
 } = {}) {
     if (!turf) throw new Error('planCandidates: turf must be injected.');
+    if (!money || typeof money.currency !== 'string' || !(money.salePricePerM2 > 0)) {
+        throw new Error('planCandidates: the city\'s money ({ currency, salePricePerM2 }) must be given.');
+    }
     const list = Array.isArray(parcels) ? parcels : [];
     const personaName = (persona && persona.name) ? String(persona.name) : 'agent';
     const deps = { turf };
@@ -132,11 +137,11 @@ export function planCandidates(parcels, persona, {
         // No uplift, no proposal.
         if (!(proposedGfaM2 > builtGfaM2)) return;
 
-        const gainEur = computeGain({
+        const gain = computeGain({
             builtFloorArea: builtGfaM2,
             proposedFloorArea: proposedGfaM2,
-            pricePerM2: priceEurPerM2,
-            currency: 'EUR', // the agents plan on Croatian data, priced in euros
+            pricePerM2: money.salePricePerM2,
+            currency: money.currency,
             parcelCount: 1
         }).gain;
 
@@ -166,8 +171,9 @@ export function planCandidates(parcels, persona, {
             envelope: evaluated.envelope,
             massing,
             proposedGfaM2,
-            gainEur,
-            offerEur: Math.round(gainEur * offerShareOfGain),
+            currency: money.currency,
+            gain,
+            offer: Math.round(gain * offerShareOfGain),
             score: 0,
             scoreParts: { density, valueUplift: 0, openSpace, heritage: 0 },
             // The exact rule the envelope and the build-out were derived from. record-builder.js
@@ -179,7 +185,7 @@ export function planCandidates(parcels, persona, {
 
     // valueUplift is relative to the best gain in THIS set, so it can only be filled once the set
     // is known. With no positive gain anywhere the term contributes nothing rather than dividing.
-    const maxGain = candidates.reduce((best, c) => Math.max(best, c.gainEur), 0);
+    const maxGain = candidates.reduce((best, c) => Math.max(best, c.gain), 0);
     const weights = {
         density: weightOf(persona, 'density'),
         valueUplift: weightOf(persona, 'valueUplift'),
@@ -187,7 +193,7 @@ export function planCandidates(parcels, persona, {
         heritage: weightOf(persona, 'heritage')
     };
     for (const candidate of candidates) {
-        candidate.scoreParts.valueUplift = maxGain > 0 ? candidate.gainEur / maxGain : 0;
+        candidate.scoreParts.valueUplift = maxGain > 0 ? candidate.gain / maxGain : 0;
         candidate.score = weights.density * candidate.scoreParts.density
             + weights.valueUplift * candidate.scoreParts.valueUplift
             + weights.openSpace * candidate.scoreParts.openSpace

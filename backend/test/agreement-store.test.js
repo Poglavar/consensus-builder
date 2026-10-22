@@ -264,8 +264,8 @@ describe('allocation and money', () => {
             ledger: lines.map(([ownerKey, amountCents]) => ({ ownerKey, cashCents: Math.max(0, amountCents), payCents: Math.max(0, -amountCents) })),
             terms: { currency: 'EUR' }
         });
-        expect(Dialog.sponsorLine(schedule([['a', 125050], ['b', -50]]))).toMatchObject({ kind: 'funds', cents: 125000, text: 'Sponsor funds 1250 EUR' });
-        expect(Dialog.sponsorLine(schedule([['a', -1050]]))).toMatchObject({ kind: 'receives', cents: 1050, text: 'Sponsor receives 10.50 EUR' });
+        expect(Dialog.sponsorLine(schedule([['a', 125050], ['b', -50]]), 'EUR')).toMatchObject({ kind: 'funds', cents: 125000, text: 'Sponsor funds 1250 EUR' });
+        expect(Dialog.sponsorLine(schedule([['a', -1050]]), 'EUR')).toMatchObject({ kind: 'receives', cents: 1050, text: 'Sponsor receives 10.50 EUR' });
         expect(Dialog.sponsorLine(schedule([]))).toMatchObject({ kind: 'balanced', text: 'No money moves.' });
         expect(Dialog.sponsorLine(schedule([['a', 700], ['b', -700]]))).toMatchObject({ kind: 'covered', cents: 0 });
         expect(Dialog.sponsorLine(null)).toBeNull();
@@ -319,7 +319,7 @@ describe('the record the form describes', () => {
         { proposalId: 'untitled' }
     ];
     const formState = {
-        id: 'ag-1', city: 'ny', designs, land,
+        id: 'ag-1', city: 'ny', currency: 'USD', designs, land,
         fingerprints: new Map([['layout', LAYOUT_CID], ['road', ROAD_CID]]),
         approvalConfig: { schema: 'proposal-approval/v1', rights: null, policy: { type: 'unanimous' } },
         lens: ['lens-key-1']
@@ -347,7 +347,7 @@ describe('the record the form describes', () => {
             inputs: land.inputs,
             outputs: land.outputs,
             allocations: [{ output: 'piece1-sha256:aa', to: { kind: 'party', ownerKey: 'agent-ben' } }],
-            money: { currency: 'EUR', lines: [{ ownerKey: 'agent-ana', amountCents: -1250 }, { ownerKey: 'agent-ben', amountCents: 1250 }] },
+            money: { currency: 'USD', lines: [{ ownerKey: 'agent-ana', amountCents: -1250 }, { ownerKey: 'agent-ben', amountCents: 1250 }] },
             rule: { electorate: 'owners', binding: true, approvalConfig: formState.approvalConfig, lens: ['lens-key-1'] },
             deadline: Dialog.deadlineFromDate('2026-12-31')
         });
@@ -369,7 +369,7 @@ describe('the record the form describes', () => {
 
     it('an empty form is still a record: no designs, no land, no lines', () => {
         const record = Dialog.recordFromForm({ id: 'ag-2' }, {});
-        expect(record).toMatchObject({ id: 'ag-2', designs: [], inputs: { parcels: [], openGroundM2: 0 }, outputs: [], allocations: [], money: { currency: 'EUR', lines: [] } });
+        expect(record).toMatchObject({ id: 'ag-2', designs: [], inputs: { parcels: [], openGroundM2: 0 }, outputs: [], allocations: [], money: { currency: null, lines: [] } });
         expect(record.rule.electorate).toBe('owners');
         expect(record.rule.binding).toBe(false);
     });

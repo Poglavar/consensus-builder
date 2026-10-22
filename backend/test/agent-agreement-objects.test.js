@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 import { Keypair } from '@solana/web3.js';
 import {
-    AGREEMENT_SCHEMA, DESIGN_SCHEMA, NO_MONEY, REGISTRY_RIGHTS_PROVIDER, agreementObject, boundParcelIds, cidOfObject, communityRule,
+    AGREEMENT_SCHEMA, DESIGN_SCHEMA, noMoney, REGISTRY_RIGHTS_PROVIDER, agreementObject, boundParcelIds, cidOfObject, communityRule,
     deadlineAfterDays, designObject, holdersFromRights, isParcelLayout, ownersRule, parcelOutputs, registryRights
 } from '../agents/agreement-objects.js';
 import { buildDesignRecord } from '../agents/record-builder.js';
@@ -42,6 +42,7 @@ function ownersAgreement(overrides = {}) {
         outputs: parcelOutputs([{ parcelId: 'HR-335550-1234/1', geometry: PARCEL, areaM2: 612.4 }]),
         rule: ownersRule({ lens: LENS, rights }),
         deadline: deadlineAfterDays(NOW_MS, 7),
+        money: noMoney('EUR'),
         ...overrides
     });
 }
@@ -148,7 +149,7 @@ describe('the agreement object', () => {
         expect(validateAgreementContent(content, { now: NOW_MS })).toMatchObject({ ok: true });
         expect(cid).toBe(cidOf(canonicalBytes(content)));
         expect(content).toMatchObject({
-            sponsor: owner, deadline: '2026-10-29T09:00:00.000Z', money: NO_MONEY, allocations: [],
+            sponsor: owner, deadline: '2026-10-29T09:00:00.000Z', money: noMoney('EUR'), allocations: [],
             designs: [{ cid: design.cid, goal: 'buildings', title: 'Six storeys on the corner lot' }],
             inputs: { parcels: [{ parcelId: 'HR-335550-1234/1', areaM2: 612.4, holders: [{ ownerKey: owner, displayName: 'densifier-01', share: 1 }] }], openGroundM2: 0 },
             rule: { electorate: 'owners', binding: true, lens: [LENS] }
@@ -175,7 +176,8 @@ describe('the agreement object', () => {
         expect(invalid({ outputs: [{ hash: 'piece1-sha256:' + 'a'.repeat(64), areaM2: 1, fromParcelIds: ['HR-335550-1234/1'], role: 'plot', producedBy: cidOfObject({ other: true }) }] }))
             .toMatchObject({ code: 'invalid-agreement', message: expect.stringMatching(/a design the agreement does not link/) });
         expect(invalid({ parcels: [], openGroundM2: 0 })).toMatchObject({ code: 'invalid-agreement', message: expect.stringMatching(/land/) });
-        expect(invalid({ money: { currency: 'USD', lines: [] } })).toMatchObject({ code: 'invalid-agreement', message: expect.stringMatching(/money: Cash is settled in EUR/) });
+        expect(invalid({ money: { currency: 'SOL', lines: [] } })).toMatchObject({ code: 'invalid-agreement', message: expect.stringMatching(/currency of the agreement's city/) });
+        expect(() => noMoney(undefined)).toThrow(/city's currency/);
         expect(invalid({ rule: { electorate: 'community', binding: true, approvalConfig: null, lens: [] } }))
             .toMatchObject({ code: 'invalid-agreement', message: expect.stringMatching(/cannot bind the owners/) });
     });

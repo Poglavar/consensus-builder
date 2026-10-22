@@ -6940,9 +6940,9 @@
             "public": "Público"
         },
         "money": {
-            "hint": "Dinero por parte, en euros: positivo recibe, negativo paga. El promotor cubre la diferencia.",
+            "hint": "Dinero por parte, en {{currency}}: positivo recibe, negativo paga. El promotor cubre la diferencia.",
             "party": "Parte",
-            "amount": "Importe (EUR)",
+            "amount": "Importe ({{currency}})",
             "sponsorFunds": "El promotor aporta {{amount}}",
             "sponsorReceives": "El promotor recibe {{amount}}",
             "sponsorNothing": "Los pagos de las partes se compensan; el promotor no paga nada.",
@@ -6971,7 +6971,7 @@
             "allocationUnknownOutput": "Una asignación nombra una porción que ya no existe.",
             "allocationUnknownParty": "Una asignación nombra a una parte que no tiene suelo aportado.",
             "allocationSharesInvalid": "Las cuotas conjuntas deben sumar el 100 %.",
-            "moneyCurrency": "El dinero debe estar en EUR.",
+            "moneyCurrency": "El dinero debe estar en la moneda de la ciudad del acuerdo.",
             "moneyPartyUnknown": "Una línea de dinero nombra a una parte que no tiene suelo aportado.",
             "moneyAmountInvalid": "Un importe no es válido.",
             "ruleInvalid": "La regla de decisión está incompleta: {{reason}}",

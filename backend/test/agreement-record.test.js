@@ -236,8 +236,9 @@ describe('validate', () => {
 
     it('checks the currency, the parties and the amounts of the cash lines', () => {
         const raw = fixture();
+        // A chain token is no city's money; any ISO 4217 currency (the city's) is.
         raw.money = {
-            currency: 'USD',
+            currency: 'SOL',
             lines: [{ ownerKey: 'agent-zoran', amountCents: 500 }, { ownerKey: 'agent-ana', amountCents: 12.5 }, { ownerKey: 'agent-boris', amountCents: '100' }]
         };
         const result = record.validate(raw);

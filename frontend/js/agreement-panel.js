@@ -171,14 +171,15 @@
         return (m2 > 0 ? '+' : '−') + format().formatArea(Math.abs(m2));
     }
 
-    function euroText(cents) {
+    // Amounts in the agreement's own currency (its city's money, AgreementRecord.ledger().currency).
+    function moneyText(cents, currency) {
         const digits = cents % 100 === 0 ? 0 : 2;
-        return format().formatMoney(cents / 100, 'EUR', { maxFractionDigits: digits, minFractionDigits: digits });
+        return format().formatMoney(cents / 100, currency, { maxFractionDigits: digits, minFractionDigits: digits });
     }
 
-    function signedMoney(cents) {
+    function signedMoney(cents, currency) {
         if (!finite(cents) || cents === 0) return NO_VALUE;
-        return (cents > 0 ? '+' : '−') + euroText(Math.abs(cents));
+        return (cents > 0 ? '+' : '−') + moneyText(Math.abs(cents), currency);
     }
 
     // The ledger (AgreementRecord.ledger) as table rows: what each party puts in and receives, the
@@ -192,7 +193,7 @@
             contributes: party.areaUnknown ? NO_VALUE : area(party.contributedM2),
             receives: area(party.assignedM2),
             change: party.areaUnknown ? NO_VALUE : signedArea(party.changeM2),
-            cash: signedMoney(party.cashCents)
+            cash: signedMoney(party.cashCents, ledger.currency)
         }));
         if (ledger && finite(ledger.publicM2) && ledger.publicM2 > 0) {
             rows.push({

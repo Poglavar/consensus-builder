@@ -13,7 +13,7 @@ function candidate(id, overrides = {}) {
         candidateId: `densifier-01:${id}`,
         parcelId: id,
         massing: { type: 'Feature', properties: { floors: 3, height: 9 }, geometry: FOOTPRINT },
-        offerEur: 100,
+        offer: 100,
         normalizedRule: null,
         ...overrides
     };

@@ -6955,9 +6955,9 @@
             "public": "Javno"
         },
         "money": {
-            "hint": "Novac po strani, u evrima: pozitivan iznos strana prima, negativan plaća. Razliku pokriva investitor.",
+            "hint": "Novac po strani, u valuti {{currency}}: pozitivan iznos strana prima, negativan plaća. Razliku pokriva investitor.",
             "party": "Strana",
-            "amount": "Iznos (EUR)",
+            "amount": "Iznos ({{currency}})",
             "sponsorFunds": "Investitor finansira {{amount}}",
             "sponsorReceives": "Investitor prima {{amount}}",
             "sponsorNothing": "Plaćanja strana su uravnotežena; investitor ne plaća ništa.",
@@ -6986,7 +6986,7 @@
             "allocationUnknownOutput": "Raspodela navodi deo koji više ne postoji.",
             "allocationUnknownParty": "Raspodela navodi stranu koja nema ulaznog zemljišta.",
             "allocationSharesInvalid": "Zbir zajedničkih udela mora da bude 100%.",
-            "moneyCurrency": "Novac mora da bude u EUR.",
+            "moneyCurrency": "Novac mora da bude u valuti grada sporazuma.",
             "moneyPartyUnknown": "Novčana stavka navodi stranu koja nema ulaznog zemljišta.",
             "moneyAmountInvalid": "Jedan novčani iznos nije ispravan.",
             "ruleInvalid": "Pravilo odlučivanja nije potpuno: {{reason}}",

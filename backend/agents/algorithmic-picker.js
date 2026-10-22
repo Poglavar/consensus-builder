@@ -94,7 +94,7 @@ function rationaleFor(candidate) {
 function isEligible(candidate) {
     if (candidate?.housing) return candidate.rule?.source === 'housing-research' && candidate.housing.screening?.complete === true && candidate.housing.screening?.excluded === false && candidate.housing.homes >= 10 && candidate.score > 0;
     const score = finite(candidate?.score);
-    const gain = finite(candidate?.gainEur);
+    const gain = finite(candidate?.gain);
     const built = finite(candidate?.builtGfaM2);
     const proposed = finite(candidate?.proposedGfaM2);
     const floors = finite(candidate?.allowedFloors);

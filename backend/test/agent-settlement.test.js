@@ -9,7 +9,7 @@ import { createRequire } from 'node:module';
 import { Keypair } from '@solana/web3.js';
 import { executeSettlement, inspectSettlement } from '../agents/lifecycle-actions.js';
 import { agreementAccountOf, mintAgreement } from '../agents/agreement-minter.js';
-import { agreementObject, deadlineAfterDays, designObject, holdersFromRights, ownersRule, parcelOutputs, registryRights } from '../agents/agreement-objects.js';
+import { agreementObject, deadlineAfterDays, designObject, holdersFromRights, noMoney, ownersRule, parcelOutputs, registryRights } from '../agents/agreement-objects.js';
 import { createIndexClient } from '../agents/publication-client.js';
 import { settleStage } from '../agents/run.mjs';
 import { createAgreementDecisionHandlers, createMemoryAgreementDecisionStore } from '../agreements/decisions.js';
@@ -231,7 +231,7 @@ describe('the settlement phase of a run (run.mjs settleStage)', () => {
             designs: [{ cid: design.cid, goal: design.content.goal, title: design.content.title }],
             parcels: [{ parcelId: PARCEL_ID, areaM2: 612.4, holders: holdersFromRights(rights, PARCEL_ID) }],
             outputs: parcelOutputs([{ parcelId: PARCEL_ID, geometry: PARCEL, areaM2: 612.4 }]),
-            rule: ownersRule({ lens: LENS, rights }), deadline: deadlineAfterDays(Date.now(), deadlineDays)
+            rule: ownersRule({ lens: LENS, rights }), deadline: deadlineAfterDays(Date.now(), deadlineDays), money: noMoney('EUR')
         });
         const minted = await mintAgreement({ connection: chain.connection, sponsorKeypair: owner, cid, lens: LENS, deadline: content.deadline, lamports: '1000', sendAndConfirm: chain.sendAndConfirm });
         world.rows.set(cid, { cid, content, status: 'active', deadline: content.deadline, onchain: null });

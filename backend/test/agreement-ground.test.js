@@ -118,6 +118,7 @@ describe('derive', () => {
             schema: record.SCHEMA, id: record.newId(),
             designs: designs().map(design => ({ proposalId: design.proposalId, goal: design.goal, cid: Cid.cidOfObject({ design: design.proposalId }) })),
             ...derived,
+            money: { currency: 'EUR', lines: [] },
             rule: { electorate: 'owners', binding: true, lens: ['lens-member-1'],
                 approvalConfig: { schema: 'proposal-approval/v1', rights: record.rightsFromInputs(derived.inputs), policy: { type: 'unanimous' } } }
         };

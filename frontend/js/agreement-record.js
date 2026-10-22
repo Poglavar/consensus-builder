@@ -16,6 +16,8 @@
     const ELECTORATES = ['owners', 'community'];
     const BASIS_POINTS = 10000;
     const HOLDERS = Object.freeze({ kind: 'holders' });
+    // Money is counted in the agreement's city's currency (city-money.js: London GBP, Zagreb EUR).
+    const cityMoney = () => root.CityMoney || (typeof require === 'function' ? require('./city-money.js') : null);
     const sha256 = () => root.__consentSha256
         || (typeof require === 'function' ? require('../vendor/noble-hashes-1.8.0/sha256.js') : null);
     const approval = () => root.ProposalApproval
@@ -223,7 +225,7 @@
 
     // A zero line is no line. Amounts and the currency are kept as given; validate reports them.
     function moneyOf(raw) {
-        if (raw === undefined || raw === null) return { currency: 'EUR', lines: [] };
+        if (raw === undefined || raw === null) return { currency: null, lines: [] };
         if (!isObject(raw)) fail('Money must be an object.');
         if (raw.lines != null && !Array.isArray(raw.lines)) fail('Money lines must be a list.');
         const seen = new Set();
@@ -234,7 +236,7 @@
             seen.add(ownerKey);
             return { ownerKey, amountCents: line.amountCents };
         }).filter(line => line.amountCents !== 0);
-        return { currency: raw.currency == null ? 'EUR' : String(raw.currency).trim().toUpperCase(), lines };
+        return { currency: raw.currency == null ? null : String(raw.currency).trim().toUpperCase(), lines };
     }
 
     function ruleOf(raw) {
@@ -391,7 +393,7 @@
         });
 
         const { currency, lines } = agreement.money;
-        if (currency !== 'EUR') add(errors, 'money', 'money-currency', 'Cash is settled in EUR.');
+        if (!cityMoney().isFiat(currency)) add(errors, 'money', 'money-currency', 'Money is counted in the currency of the agreement\'s city (an ISO 4217 code).');
         lines.forEach(line => {
             if (!parties.has(line.ownerKey)) add(errors, 'money', 'money-party-unknown', `${line.ownerKey || 'A cash line'} holds no land in this agreement.`, { ownerKey: line.ownerKey });
             if (!Number.isSafeInteger(line.amountCents)) add(errors, 'money', 'money-amount-invalid', `The cash of ${line.ownerKey || 'a party'} is not a whole number of cents.`, { ownerKey: line.ownerKey });
@@ -475,7 +477,7 @@
             })),
             terms: { currency: agreement.money.currency }
         });
-        return { parties: list, publicM2, money };
+        return { parties: list, publicM2, money, currency: agreement.money.currency };
     }
 
     /**

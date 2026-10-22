@@ -59,7 +59,7 @@ describe('Affordabot housing research',()=>{
  });
  it('picks a research design without a fabricated land-value gain',()=>{
    const c=planned(), result=selectAlgorithmicPicks({day:'2026-10-20',persona,candidates:[c]});
-   expect(result.picks).toHaveLength(1);expect(c.gainEur).toBe(0);
+   expect(result.picks).toHaveLength(1);expect(c.gain).toBe(0);
    expect(result.picks[0].rationale).toContain('not permitted zoning limits');expect(result.picks[0].rationale).toContain('No local rent');
  });
  it('publishes the courtyard as a design that claims no offer, ownership or rent',()=>{

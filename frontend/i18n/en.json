@@ -6913,9 +6913,9 @@
             "public": "Public"
         },
         "money": {
-            "hint": "Cash per party, in euros: positive receives, negative pays. The sponsor covers the difference.",
+            "hint": "Cash per party, in {{currency}}: positive receives, negative pays. The sponsor covers the difference.",
             "party": "Party",
-            "amount": "Amount (EUR)",
+            "amount": "Amount ({{currency}})",
             "sponsorFunds": "Sponsor funds {{amount}}",
             "sponsorReceives": "Sponsor receives {{amount}}",
             "sponsorNothing": "The parties' payments balance; the sponsor pays nothing.",
@@ -6944,7 +6944,7 @@
             "allocationUnknownOutput": "An allocation names a piece that no longer exists.",
             "allocationUnknownParty": "An allocation names a party that holds no input land.",
             "allocationSharesInvalid": "Joint shares must sum to 100 %.",
-            "moneyCurrency": "Money must be in EUR.",
+            "moneyCurrency": "Money must be in the currency of the agreement's city.",
             "moneyPartyUnknown": "A cash line names a party that holds no input land.",
             "moneyAmountInvalid": "A cash amount is not a valid amount.",
             "ruleInvalid": "The decision rule is incomplete: {{reason}}",

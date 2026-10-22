@@ -72,7 +72,7 @@ function stanceOf(persona) {
     const labels = {
         density: 'adding floor area where the plan permits it',
         openSpace: 'keeping ground open and unbuilt',
-        valueUplift: 'the € value a design creates',
+        valueUplift: 'the value a design creates',
         heritage: 'the existing built fabric and its character'
     };
     const ranked = Object.keys(labels)
@@ -114,7 +114,8 @@ function candidateDigest(candidate) {
         builtGfaM2: round(candidate.builtGfaM2),
         allowedFloors: candidate.allowedFloors ?? null,
         proposedGfaM2: round(candidate.proposedGfaM2),
-        gainEur: round(candidate.gainEur),
+        gain: round(candidate.gain),
+        currency: candidate.currency ?? null,
         score: round(candidate.score, 4)
     };
 }

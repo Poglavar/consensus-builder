@@ -23,8 +23,8 @@ const CANDIDATE = {
     allowedFloors: 4,
     massing: { type: 'Feature', properties: { floors: 3, height: 9, massing: false }, geometry: MASSING_GEOMETRY },
     proposedGfaM2: 900,
-    gainEur: 2418800,
-    offerEur: 725640,
+    gain: 2418800,
+    offer: 725640,
     normalizedRule: { typology: 'parcelBased', kind: 'max', minDistance: 3, maxFloors: 4, minFloors: 0, minFootprintAreaM2: 0, floorHeightM: 3, minPlotAreaM2: 0 }
 };
 const PICK = { name: 'Four storeys on Rudeš 2178', rationale: 'The plan permits four storeys; the lot carries two outbuildings.' };

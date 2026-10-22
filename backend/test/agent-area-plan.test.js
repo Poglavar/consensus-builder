@@ -80,7 +80,7 @@ describe('live parcel-source parcels', () => {
         expect(parcels.map(parcel => parcel.parcelId)).toEqual(['US-CA-SF-3513080']);
         expect(parcels[0]).toMatchObject({ parcelNumber: '3513080', koName: 'San Francisco', builtKnown: false, builtGfaM2: 0, rule: null });
         expect(parcels[0].areaM2).toBeGreaterThan(250);
-        const [candidate] = planCandidates(parcels, { name: 'p', weights: { density: 1 } }, { turf, limit: 1 });
+        const [candidate] = planCandidates(parcels, { name: 'p', weights: { density: 1 } }, { turf, money: { currency: 'EUR', salePricePerM2: 4000 }, limit: 1 });
         expect(candidate).toMatchObject({ rule: { source: 'default' }, builtKnown: false, parcelNumber: '3513080' });
     });
 
@@ -95,7 +95,7 @@ describe('live parcel-source parcels', () => {
             geometry: square(36.8452, -1.2662)
         }] };
         const [sourceParcel] = parcelsFromSource(fc, { turf, place: 'Nairobi' });
-        const [candidate] = planCandidates([sourceParcel], { name: 'densifier-01', weights: { density: 1 } }, { turf, limit: 1 });
+        const [candidate] = planCandidates([sourceParcel], { name: 'densifier-01', weights: { density: 1 } }, { turf, money: { currency: 'EUR', salePricePerM2: 4000 }, limit: 1 });
         const [pick] = selectAlgorithmicPicks({
             day: '2026-10-11', persona: { name: 'densifier-01' }, candidates: [candidate]
         }).picks;
@@ -139,7 +139,7 @@ describe('parcels a persona has used and rival parcels', () => {
         expect(parcels.map(parcel => parcel.parcelId)).toEqual(['US-CA-SF-1']);
         expect(parcels[0]).toMatchObject({ city: 'san_francisco', floorCap: 3, rule: null, builtKnown: false, parcelSourceId: null,
             rival: { agreementCid: cidOf('agreementUS-CA-SF-1'), persona: 'densifier-01', name: '5-storey infill on parcel US-CA-SF-1' } });
-        const [candidate] = planCandidates(parcels, { name: 'gentle-01', weights: { density: 1 } }, { turf, limit: 1 });
+        const [candidate] = planCandidates(parcels, { name: 'gentle-01', weights: { density: 1 } }, { turf, money: { currency: 'EUR', salePricePerM2: 4000 }, limit: 1 });
         expect(candidate).toMatchObject({ allowedFloors: 5, plannedFloors: 3, rival: { persona: 'densifier-01' } });
         // The persona never answers its own agreements.
         expect(contestParcels(runs, { persona: 'densifier-01', runDay: '2026-10-11' }).map(parcel => parcel.parcelId)).toEqual(['US-CA-SF-own']);
@@ -181,7 +181,7 @@ describe('parcels a persona has used and rival parcels', () => {
         const rival = run({ persona: 'densifier-01', day: '2026-10-11', city: 'new_york', parcelId: 'US-NYC-BBL-1001440001', parcelSourceId: 'us-nyc-dof-digital-tax-map' });
         const [parcel] = contestParcels([rival], { persona: 'gentle-01', runDay: '2026-10-11' });
         expect(parcel.parcelSourceId).toBe('us-nyc-dof-digital-tax-map');
-        const [planned] = planCandidates([parcel], { name: 'gentle-01', weights: { density: 1 } }, { turf, limit: 1 });
+        const [planned] = planCandidates([parcel], { name: 'gentle-01', weights: { density: 1 } }, { turf, money: { currency: 'EUR', salePricePerM2: 4000 }, limit: 1 });
         expect(planned).toMatchObject({
             parcelSourceId: 'us-nyc-dof-digital-tax-map',
             rival: { persona: 'densifier-01', agreementCid: rival.summary.agreements[rival.summary.picks[0].candidateId].cid }

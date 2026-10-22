@@ -14,7 +14,12 @@ const approval = require('../../frontend/js/proposals/approval.js');
 export const DESIGN_SCHEMA = designRecord.SCHEMA;
 export const AGREEMENT_SCHEMA = agreementRecord.PUBLISHED_SCHEMA;
 export const OUTPUT_ROLES = agreementRecord.ROLES;
-export const NO_MONEY = Object.freeze({ currency: 'EUR', lines: Object.freeze([]) });
+// An agreement that moves no money still states the money of its place (London GBP, Zagreb EUR;
+// utils/city-money.js), so any line added later is in that currency.
+export function noMoney(currency) {
+    if (typeof currency !== 'string' || !/^[A-Z]{3}$/.test(currency)) throw fail('invalid-agreement', `an agreement's money needs its city's currency, got ${JSON.stringify(currency)}`);
+    return { currency, lines: [] };
+}
 // The rights provider of a snapshot read from the lens member's devnet owner registry
 // (consensus.lens_devnet_owner, lens-owner-registry.js).
 export const REGISTRY_RIGHTS_PROVIDER = 'lens-devnet-owners';
@@ -159,12 +164,12 @@ export function parcelOutputs(parcels) {
  *   outputs   [{ hash, areaM2, fromParcelIds, role, producedBy (a linked design CID | null), geometry? }]
  *   rule      { electorate, binding, approvalConfig, lens } (ownersRule() for a binding owners' agreement, communityRule() for a poll)
  *   title, author, sponsor (base58 wallet that mints and funds it, or null), city, createdAt (ISO | null),
- *   deadline (ISO | null), openGroundM2 (default 0), allocations ([]), money (NO_MONEY)
+ *   deadline (ISO | null), openGroundM2 (default 0), allocations ([]), money (noMoney(the city's currency) when none moves)
  * @returns {{ content: object, cid: string }}
  */
 export function agreementObject({
     title = null, author = null, sponsor = null, city = null, createdAt = null,
-    designs, parcels, openGroundM2 = 0, outputs, allocations = [], money = NO_MONEY, rule, deadline = null
+    designs, parcels, openGroundM2 = 0, outputs, allocations = [], money, rule, deadline = null
 } = {}) {
     if (!Array.isArray(designs) || !designs.length) throw fail('invalid-agreement', 'an agreement links at least one design');
     const designCids = new Set();

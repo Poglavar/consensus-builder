@@ -9,7 +9,7 @@ import { Keypair } from '@solana/web3.js';
 import {
     OPERATOR_TOKEN_HEADER, currentApprovals, decisionSubject, ensureOwnerApproval, requestAgreementDecision, signOwnerApproval
 } from '../agents/lens-approval-client.js';
-import { agreementObject, deadlineAfterDays, designObject, holdersFromRights, ownersRule, parcelOutputs, registryRights } from '../agents/agreement-objects.js';
+import { agreementObject, deadlineAfterDays, designObject, holdersFromRights, noMoney, ownersRule, parcelOutputs, registryRights } from '../agents/agreement-objects.js';
 import { createIndexClient } from '../agents/publication-client.js';
 import { executeAgreement, mintAgreement, recordAgreementDecision } from '../agents/agreement-minter.js';
 import { createAgreementDecisionHandlers, createMemoryAgreementDecisionStore } from '../agreements/decisions.js';
@@ -50,7 +50,7 @@ function proposerAgreement({ lens = LENS, owners = [{ owner: OWNER, ownerCount: 
         designs: [{ cid: design.cid, goal: design.content.goal, title: design.content.title }],
         parcels: [{ parcelId: PARCEL_ID, areaM2: 612.4, holders: holdersFromRights(rights, PARCEL_ID) }],
         outputs: parcelOutputs([{ parcelId: PARCEL_ID, geometry: PARCEL, areaM2: 612.4 }]),
-        rule: ownersRule({ lens, rights }), deadline: deadlineAfterDays(Date.now(), 7)
+        rule: ownersRule({ lens, rights }), deadline: deadlineAfterDays(Date.now(), 7), money: noMoney('EUR')
     });
 }
 

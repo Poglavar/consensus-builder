@@ -73,8 +73,9 @@ function candidate(n, extra = {}) {
         envelope: { type: 'Feature', geometry: { type: 'Polygon', coordinates: [] } },
         massing: { type: 'Feature', properties: { floors: 3, height: 9 }, geometry: { type: 'Polygon', coordinates: [] } },
         proposedGfaM2: 900.12,
-        gainEur: 2418800.5,
-        offerEur: 725640,
+        currency: 'EUR',
+        gain: 2418800.5,
+        offer: 725640,
         score: 0.7123456,
         scoreParts: { density: 0.67, valueUplift: 1, openSpace: 0.75, heritage: 0 },
         ...extra
@@ -136,8 +137,8 @@ describe('buildPickRequests', () => {
     it('puts the persona\'s weights into the prompt in words, strongest first', () => {
         const system = requests[0].params.system;
         expect(system).toContain('densifier-01');
-        expect(system.indexOf('adding floor area')).toBeLessThan(system.indexOf('the € value'));
-        expect(system.indexOf('the € value')).toBeLessThan(system.indexOf('keeping ground open'));
+        expect(system.indexOf('adding floor area')).toBeLessThan(system.indexOf('the value a design'));
+        expect(system.indexOf('the value a design')).toBeLessThan(system.indexOf('keeping ground open'));
         expect(system).toMatch(/weight 0 \(you are indifferent to this\)/);
     });
 
@@ -161,10 +162,11 @@ describe('buildPickRequests', () => {
             builtGfaM2: 295,
             allowedFloors: 4,
             proposedGfaM2: 900,
-            gainEur: 2418801,
+            gain: 2418801,
+            currency: 'EUR',
             score: 0.7123
         });
-        expect(payload.candidates[0]).not.toHaveProperty('offerEur');
+        expect(payload.candidates[0]).not.toHaveProperty('offer');
         expect(requests[0].params.messages[0].content[0].text).not.toContain('coordinates');
         expect(requests[0].params.messages[0].content[0].text).not.toContain('massing');
     });

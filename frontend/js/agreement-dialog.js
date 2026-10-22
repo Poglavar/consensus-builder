@@ -23,7 +23,6 @@
     const APPROVAL_SCHEMA = 'proposal-approval/v1';
     // The provider of the default rights snapshot, built from the local owner records of the inputs.
     const LOCAL_RIGHTS_PROVIDER = 'local-owners';
-    const CURRENCY = 'EUR';
 
     const idOf = value => (value === undefined || value === null ? '' : String(value).trim());
     const isNumber = value => typeof value === 'number' && Number.isFinite(value);
@@ -64,12 +63,12 @@
         return format && typeof format.formatPercent === 'function' ? format.formatPercent(share) : `${Math.round(share * 100)}%`;
     }
 
-    function euroText(cents) {
+    function moneyText(cents, currency) {
         const fraction = cents % 100 !== 0;
         const format = root.CbFormat;
         return format && typeof format.formatMoney === 'function'
-            ? format.formatMoney(cents / 100, CURRENCY, { maxFractionDigits: 2, minFractionDigits: fraction ? 2 : 0 })
-            : `${(cents / 100).toFixed(fraction ? 2 : 0)} ${CURRENCY}`;
+            ? format.formatMoney(cents / 100, currency, { maxFractionDigits: 2, minFractionDigits: fraction ? 2 : 0 })
+            : `${(cents / 100).toFixed(fraction ? 2 : 0)} ${currency}`;
     }
 
     // "Ana 50%, Ben 50%", or that nobody is recorded.
@@ -167,7 +166,7 @@
         return null;
     }
 
-    // Typed euros → cents: empty is no line (null); anything that is not an amount is NaN, so the
+    // Typed amounts → cents: empty is no line (null); anything that is not an amount is NaN, so the
     // validation names it instead of the line vanishing.
     function cashCents(text) {
         const value = String(text ?? '').trim();
@@ -217,13 +216,13 @@
 
     // The sponsor's line of a money schedule (AgreementRecord.ledger(...).money, the schedule of
     // ReparcellizationDeal): + receives, − pays, like the parties. null when it cannot be read.
-    function sponsorLine(money) {
+    function sponsorLine(money, currency) {
         if (!money || !isNumber(money.sponsorCents)) return null;
         const lines = Array.isArray(money.lines) ? money.lines : [];
         const moving = lines.some(line => line && line.party !== 'sponsor' && isNumber(line.amountCents) && line.amountCents !== 0);
         const cents = money.sponsorCents;
-        if (cents < 0) return { kind: 'funds', cents: -cents, text: t('agreement.money.sponsorFunds', 'Sponsor funds {{amount}}', { amount: euroText(-cents) }) };
-        if (cents > 0) return { kind: 'receives', cents, text: t('agreement.money.sponsorReceives', 'Sponsor receives {{amount}}', { amount: euroText(cents) }) };
+        if (cents < 0) return { kind: 'funds', cents: -cents, text: t('agreement.money.sponsorFunds', 'Sponsor funds {{amount}}', { amount: moneyText(-cents, currency) }) };
+        if (cents > 0) return { kind: 'receives', cents, text: t('agreement.money.sponsorReceives', 'Sponsor receives {{amount}}', { amount: moneyText(cents, currency) }) };
         if (!moving) return { kind: 'balanced', cents: 0, text: t('agreement.money.balanced', 'No money moves.') };
         return { kind: 'covered', cents: 0, text: t('agreement.money.sponsorNothing', 'The parties’ payments balance; the sponsor pays nothing.') };
     }
@@ -269,8 +268,8 @@
      * The agreement the form describes (plan-design-agreement.md, M1 (b) record).
      * state: { id, createdAt?, updatedAt?, city?, designs (the chosen records, authored order),
      *   fingerprints (Map proposalId → design CID), land ({ inputs, outputs } from AgreementGround.derive),
-     *   approvalConfig, lens }
-     * values: { allocations ({ outputHash: select value }), cash ({ ownerKey: typed euros }),
+     *   approvalConfig, lens, currency (the agreement's city's money) }
+     * values: { allocations ({ outputHash: select value }), cash ({ ownerKey: typed amounts }),
      *   electorate ('owners' | 'community'), binding, title, deadline (the date field's day) }
      */
     function recordFromForm(state = {}, values = {}) {
@@ -302,7 +301,7 @@
             outputs,
             allocations: outputs.map(output => ({ output: output.hash, to: allocationTo(chosen[output.hash]) })).filter(line => line.to),
             money: {
-                currency: CURRENCY,
+                currency: state.currency || null,
                 lines: partiesOf(inputs).map(party => ({ ownerKey: party.ownerKey, amountCents: cashCents(cash[party.ownerKey]) }))
                     .filter(line => line.amountCents !== null && line.amountCents !== 0)
             },
@@ -324,7 +323,7 @@
         'allocation-unknown-output': () => t('agreement.errors.allocationUnknownOutput', 'An allocation names a piece that no longer exists.'),
         'allocation-unknown-party': () => t('agreement.errors.allocationUnknownParty', 'An allocation names a party that holds no input land.'),
         'allocation-shares-invalid': () => t('agreement.errors.allocationSharesInvalid', 'Joint shares must sum to 100 %.'),
-        'money-currency': () => t('agreement.errors.moneyCurrency', 'Money must be in EUR.'),
+        'money-currency': () => t('agreement.errors.moneyCurrency', 'Money must be in the currency of the agreement\'s city.'),
         'money-party-unknown': () => t('agreement.errors.moneyPartyUnknown', 'A cash line names a party that holds no input land.'),
         'money-amount-invalid': () => t('agreement.errors.moneyAmountInvalid', 'A cash amount is not a valid amount.'),
         'rule-invalid': reason => t('agreement.errors.ruleInvalid', 'The decision rule is incomplete: {{reason}}', { reason }),
@@ -444,12 +443,12 @@
         return `<ul class="agreement-allocation-list">${rows}</ul>`;
     }
 
-    // One cash field per party, in euros.
-    function moneyHtml(land, cash = {}) {
+    // One cash field per party, in the agreement's currency.
+    function moneyHtml(land, cash = {}, currency = '') {
         const parties = partiesOf(land && land.inputs);
         if (!parties.length) return '';
         const shown = text => (Number.isNaN(cashCents(text)) ? '' : String(text ?? ''));
-        return `<div class="agreement-column-head"><span>${esc(t('agreement.money.party', 'Party'))}</span><span>${esc(t('agreement.money.amount', 'Amount (EUR)'))}</span></div>`
+        return `<div class="agreement-column-head"><span>${esc(t('agreement.money.party', 'Party'))}</span><span>${esc(t('agreement.money.amount', 'Amount ({{currency}})', { currency }))}</span></div>`
             + parties.map(party => `<label class="agreement-money-row"><span class="agreement-money-row__name">${esc(party.displayName)}</span>`
                 + `<input type="number" step="0.01" data-agreement-cash="${esc(party.ownerKey)}" value="${esc(shown(cash[party.ownerKey]))}"></label>`).join('');
     }
@@ -484,8 +483,8 @@
                 `<p class="agreement-hint">${esc(t('agreement.allocation.hint', 'Who receives each resulting piece. The current holders are what the designs carried over.'))}</p>`
                 + `<div class="agreement-allocations" data-agreement-allocations>${allocationHtml(view.land, values.allocations)}</div>`)
             + sectionHtml('money', t('agreement.sections.money', 'Money'),
-                `<p class="agreement-hint">${esc(t('agreement.money.hint', 'Cash per party, in euros: positive receives, negative pays. The sponsor covers the difference.'))}</p>`
-                + `<div class="agreement-money" data-agreement-money>${moneyHtml(view.land, values.cash)}</div>`
+                `<p class="agreement-hint">${esc(t('agreement.money.hint', 'Cash per party, in {{currency}}: positive receives, negative pays. The sponsor covers the difference.', { currency: view.currency || '' }))}</p>`
+                + `<div class="agreement-money" data-agreement-money>${moneyHtml(view.land, values.cash, view.currency)}</div>`
                 + '<p class="agreement-sponsor" data-agreement-sponsor></p>')
             + sectionHtml('rule', t('agreement.sections.rule', 'Decision rule'), ruleHtml(values))
             + sectionHtml('details', t('agreement.sections.details', 'Details'), detailsHtml({ title: values.title, deadline: values.deadline, today: view.today }));
@@ -576,6 +575,8 @@
             createdAt: existing ? existing.createdAt : null,
             updatedAt: existing ? existing.updatedAt : null,
             city: (existing && existing.city) || (typeof root.resolveCurrentCityCode === 'function' ? root.resolveCurrentCityCode() || null : null),
+            // The money of the agreement's place: what it was saved in, else the city on screen's.
+            currency: (existing && existing.money && existing.money.currency) || root.CityMoney.currentCurrency(),
             available,
             selected: new Set(wanted.filter(id => availableIds.has(id))),
             missing: wanted.filter(id => !availableIds.has(id)),
@@ -599,7 +600,7 @@
         const formState = () => ({
             id: state.id, createdAt: state.createdAt, updatedAt: state.updatedAt, city: state.city,
             designs: selectedDesigns(), fingerprints: state.fingerprints, land: state.land,
-            approvalConfig: state.approvalConfig, lens: state.lens
+            approvalConfig: state.approvalConfig, lens: state.lens, currency: state.currency
         });
         const draft = () => recordFromForm(formState(), state.values);
         const inputIds = () => state.land.inputs.parcels.map(parcel => parcel.parcelId);
@@ -684,7 +685,7 @@
             const record = draft();
             let sponsor = null;
             if (record.money.lines.every(entry => Number.isSafeInteger(entry.amountCents))) {
-                try { sponsor = sponsorLine(root.AgreementRecord.ledger(record).money); } catch (error) {
+                try { sponsor = sponsorLine(root.AgreementRecord.ledger(record).money, record.money.currency); } catch (error) {
                     console.warn('[agreement-dialog] The money schedule could not be computed', error);
                 }
             }
@@ -855,7 +856,7 @@
             }
             part('[data-agreement-land]').innerHTML = landHtml({ land: state.land, error: state.landError, selectedCount: designs.length });
             part('[data-agreement-allocations]').innerHTML = allocationHtml(state.land, state.values.allocations);
-            part('[data-agreement-money]').innerHTML = moneyHtml(state.land, state.values.cash);
+            part('[data-agreement-money]').innerHTML = moneyHtml(state.land, state.values.cash, state.currency);
             renderSponsor();
             renderRule();
             refreshIssues();

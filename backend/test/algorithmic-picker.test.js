@@ -7,8 +7,8 @@ function candidate(id, score, overrides = {}) {
         parcelId: id,
         koName: 'RUDEŠ',
         score,
-        gainEur: 100000,
-        offerEur: 30000,
+        gain: 100000,
+        offer: 30000,
         builtGfaM2: 200,
         proposedGfaM2: 500,
         allowedFloors: 4,
@@ -106,7 +106,7 @@ describe('algorithmic design picker', () => {
 
     it('returns a valid no-pick result when every candidate fails the guardrails', () => {
         const result = selectAlgorithmicPicks({
-            day: '2026-09-20', persona, candidates: [candidate('bad', 0, { gainEur: 0 })]
+            day: '2026-09-20', persona, candidates: [candidate('bad', 0, { gain: 0 })]
         });
         expect(result.picks).toEqual([]);
         expect(result.policy.eligibleCandidateIds).toEqual([]);

@@ -26,7 +26,8 @@ import { createRequire } from 'node:module';
 import { parseArgs } from 'node:util';
 import { canonicalBytes } from '../../cid.js';
 import { MAX_PINNED_OBJECT_BYTES } from '../../storage/pinning.js';
-import { agreementObject, communityRule, designObject, isParcelLayout, NO_MONEY } from '../../agents/agreement-objects.js';
+import { agreementObject, communityRule, designObject, isParcelLayout, noMoney } from '../../agents/agreement-objects.js';
+import { cityMoney } from '../../utils/city-money.js';
 import { cleanApiBase, createIndexClient } from '../../agents/publication-client.js';
 
 const require = createRequire(import.meta.url);
@@ -146,7 +147,7 @@ export function planAgreement(plan, objects, ground) {
         openGroundM2: ground.openGroundM2,
         outputs: ground.outputs,
         allocations: [],
-        money: NO_MONEY,
+        money: noMoney(cityMoney(plan.city).currentCurrency()),
         rule: communityRule([]),
         deadline: null
     });

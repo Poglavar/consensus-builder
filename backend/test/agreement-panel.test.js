@@ -133,12 +133,14 @@ describe('ledgerRows', () => {
                 { ownerKey: 'agent-boris', displayName: 'Boris', contributedM2: 300, assignedM2: 450, changeM2: 150, cashCents: -2500 },
                 { ownerKey: 'agent-ceca', displayName: '', contributedM2: 0, assignedM2: 0, changeM2: 0, cashCents: 0, areaUnknown: true }
             ],
-            publicM2: 400
+            publicM2: 400,
+            // A London agreement: its cash is shown in its own money.
+            currency: 'GBP'
         });
         expect(rows.map(row => row.name)).toEqual(['Ana', 'Boris', 'agent-ceca', 'Public']);
         expect(rows[0]).toMatchObject({ contributes: format.formatArea(700), receives: format.formatArea(100), change: `−${format.formatArea(600)}` });
-        expect(rows[0].cash).toBe(`+${format.formatMoney(1000.5, 'EUR', { maxFractionDigits: 2, minFractionDigits: 2 })}`);
-        expect(rows[1]).toMatchObject({ change: `+${format.formatArea(150)}`, cash: `−${format.formatMoney(25, 'EUR', { maxFractionDigits: 0, minFractionDigits: 0 })}` });
+        expect(rows[0].cash).toBe(`+${format.formatMoney(1000.5, 'GBP', { maxFractionDigits: 2, minFractionDigits: 2 })}`);
+        expect(rows[1]).toMatchObject({ change: `+${format.formatArea(150)}`, cash: `−${format.formatMoney(25, 'GBP', { maxFractionDigits: 0, minFractionDigits: 0 })}` });
         // An unknown input area has no contribution or change to show; no cash is no line.
         expect(rows[2]).toMatchObject({ contributes: '—', change: '—', cash: '—' });
         expect(rows[3]).toMatchObject({ ownerKey: null, contributes: '—', receives: format.formatArea(400), cash: '—' });

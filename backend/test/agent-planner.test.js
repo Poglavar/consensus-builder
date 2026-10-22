@@ -63,7 +63,8 @@ const PERSONA = {
     dailyProposals: 3
 };
 
-const OPTS = { turf, seed: 7 };
+// A London plan: gains are in the city's money, never assumed to be euros.
+const OPTS = { turf, seed: 7, money: { currency: 'GBP', salePricePerM2: 4000 } };
 
 describe('planCandidates basics', () => {
     it('plans an empty lot: a massing, a measured uplift and an offer that is a share of the gain', () => {
@@ -77,9 +78,10 @@ describe('planCandidates basics', () => {
         expect(candidate.massing.properties.floors).toBeGreaterThanOrEqual(1);
         expect(candidate.massing.properties.height).toBeCloseTo(candidate.massing.properties.floors * 3, 6);
         expect(candidate.proposedGfaM2).toBeGreaterThan(0);
-        expect(candidate.gainEur).toBeCloseTo(candidate.proposedGfaM2 * 4000, 3);
-        expect(candidate.offerEur).toBe(Math.round(candidate.gainEur * 0.3));
-        expect(Number.isInteger(candidate.offerEur)).toBe(true);
+        expect(candidate.gain).toBeCloseTo(candidate.proposedGfaM2 * 4000, 3);
+        expect(candidate.currency).toBe('GBP');
+        expect(candidate.offer).toBe(Math.round(candidate.gain * 0.3));
+        expect(Number.isInteger(candidate.offer)).toBe(true);
     });
 
     it('carries the normalized rule the massing was derived from', () => {
@@ -91,6 +93,10 @@ describe('planCandidates basics', () => {
 
     it('refuses to run without turf rather than producing geometry-free candidates', () => {
         expect(() => planCandidates([parcel()], PERSONA, {})).toThrow(/turf/);
+    });
+
+    it('refuses to price gains without the city\'s money rather than assuming euros', () => {
+        expect(() => planCandidates([parcel()], PERSONA, { turf })).toThrow(/money/);
     });
 
     it('honours the limit', () => {
@@ -183,9 +189,9 @@ describe('rule ceilings apply to the published geometry', () => {
         expect(candidate.proposedGfaM2).toBe(measured.gfaM2);
         expect(measured.gfaM2).toBe(reference.proposedGfaM2);
         expect(measured.footprintM2).toBeLessThanOrEqual(candidate.areaM2);
-        expect(candidate.gainEur).toBeCloseTo(measured.gfaM2 * 4000, 3);
+        expect(candidate.gain).toBeCloseTo(measured.gfaM2 * 4000, 3);
         // The planner's offer stays a share of that gain; the design itself carries no money.
-        expect(candidate.offerEur).toBe(Math.round(measured.gfaM2 * 4000 * 0.3));
+        expect(candidate.offer).toBe(Math.round(measured.gfaM2 * 4000 * 0.3));
         expect(JSON.stringify(record)).not.toMatch(/offer/i);
     });
 
@@ -233,11 +239,11 @@ describe('ordering and determinism', () => {
 
     it('reproduces the same plan for the same seed, and a different massing for a different one', () => {
         const parcels = [0, 1, 2].map(index => parcel({ index }));
-        const a = planCandidates(parcels, PERSONA, { turf, seed: 7 });
-        const b = planCandidates(parcels, PERSONA, { turf, seed: 7 });
+        const a = planCandidates(parcels, PERSONA, { ...OPTS, seed: 7 });
+        const b = planCandidates(parcels, PERSONA, { ...OPTS, seed: 7 });
         expect(JSON.stringify(b)).toBe(JSON.stringify(a));
 
-        const c = planCandidates(parcels, PERSONA, { turf, seed: 99 });
+        const c = planCandidates(parcels, PERSONA, { ...OPTS, seed: 99 });
         expect(c.map(x => x.candidateId).sort()).toEqual(a.map(x => x.candidateId).sort());
         expect(JSON.stringify(c.map(x => x.massing))).not.toBe(JSON.stringify(a.map(x => x.massing)));
     });

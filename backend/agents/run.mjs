@@ -58,6 +58,7 @@ import * as turf from '@turf/turf';
 import { fetchCandidateParcels } from './parcel-source.js';
 import { chooseArea, contestParcels, parcelsFromSource, pickedParcelIds, rivalAgreementCids, runKeyFor, seedFor, slotLabel, windowIn } from './area-plan.js';
 import { planCandidates } from './planner.js';
+import { cityMoney } from '../utils/city-money.js';
 import { chooseHousingArea, planHousingCandidates, housingOutreach } from './housing-policy.js';
 import { fetchHousingScreen } from './housing-screen.js';
 import { markAgentRunFailed, safeFailureDiagnostic } from './run-failure.js';
@@ -78,7 +79,7 @@ import {
 import { inspectSettlement, executeSettlement } from './lifecycle-actions.js';
 import { buildRecipe } from './record-builder.js';
 import {
-    agreementObject, deadlineAfterDays, designObject, holdersFromRights, ownersRule, parcelOutputs, registryRights
+    agreementObject, deadlineAfterDays, designObject, holdersFromRights, noMoney, ownersRule, parcelOutputs, registryRights
 } from './agreement-objects.js';
 import { createIndexClient } from './publication-client.js';
 import { mintAgreement } from './agreement-minter.js';
@@ -490,6 +491,7 @@ export async function advancePick({
             title: terms.title, author: persona.name, sponsor: wallet, city: design.city ?? city, createdAt,
             designs: [{ cid: design.cid, goal: design.goal, title: design.title }],
             parcels: land.parcels.map(parcel => ({ ...parcel, holders })), openGroundM2: 0, outputs: land.outputs,
+            money: noMoney(cityMoney(design.city ?? city).currentCurrency()),
             rule: ownersRule({ lens: lens.key, rights }), deadline
         });
         agreements[key] = { cid, content, title: terms.title, deadline, lamports: terms.lamports, soleOwner: owners[key].soleOwner };
@@ -624,7 +626,11 @@ async function main() {
             }
             const area = persona.housingResearch ? chooseHousingArea(persona.areas, day) : chooseArea(persona.areas, runKey, persona.name);
             const { parcels, city, where } = await parcelsForArea({ pool, apiBase, index, area, persona, runKey, day, runs: allRuns, limit: args.candidates * 6 });
-            const planned = (persona.housingResearch ? planHousingCandidates : planCandidates)(parcels, persona, { turf, limit: args.candidates * 2, seed: seedFor(runKey) });
+            // Gains are in the money of the place (London in GBP, Zagreb in EUR), at the app's own
+            // floor-area sale price for that city (utils/city-money.js).
+            const prices = cityMoney(city).currentFloorAreaPrices();
+            const money = { currency: prices.currency, salePricePerM2: prices.sale.perSqm };
+            const planned = (persona.housingResearch ? planHousingCandidates : planCandidates)(parcels, persona, { turf, money, limit: args.candidates * 2, seed: seedFor(runKey) });
             // The default envelope for a parcel without a stated rule (5 floors) is taller than anything
             // the 2025 GUP actually says in this bbox (3), so rule-backed candidates come first and the
             // default-rule ones are only used when nothing else is on offer.
@@ -637,7 +643,7 @@ async function main() {
             logCandidatePreflight(persona.name, preflight);
             log(`${persona.name} ${i + 1}/${personas.length} planned in ${where}: ${parcels.length} parcels → ${candidates.length} candidates`);
             for (const c of candidates) {
-                log(`   ${c.parcelId} ${c.koName ?? ''} ${Math.round(c.areaM2)} m² · built ${c.builtKnown === false ? 'unknown' : `${Math.round(c.builtGfaM2)} m²`} → ${Math.round(c.proposedGfaM2)} m² (${c.plannedFloors ?? c.allowedFloors}/${c.allowedFloors} fl) · gain €${Math.round(c.gainEur)} · score ${c.score.toFixed(3)}`);
+                log(`   ${c.parcelId} ${c.koName ?? ''} ${Math.round(c.areaM2)} m² · built ${c.builtKnown === false ? 'unknown' : `${Math.round(c.builtGfaM2)} m²`} → ${Math.round(c.proposedGfaM2)} m² (${c.plannedFloors ?? c.allowedFloors}/${c.allowedFloors} fl) · gain ${Math.round(c.gain)} ${c.currency} · score ${c.score.toFixed(3)}`);
             }
             let run = null;
             if (args.live) {

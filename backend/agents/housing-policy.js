@@ -8,7 +8,7 @@ export function chooseHousingArea(areas, day) {
     return rotation[Math.floor(Date.parse(`${day.slice(0,10)}T00:00:00Z`)/86400000)%rotation.length];
 }
 
-export function planHousingCandidates(parcels, persona, { turf, limit = 8 } = {}) {
+export function planHousingCandidates(parcels, persona, { turf, money, limit = 8 } = {}) {
     const candidates = [];
     for (const parcel of parcels) {
         if (!parcel.housingScreen || parcel.housingScreen.excluded || !parcel.housingScreen.complete) continue;
@@ -30,7 +30,7 @@ export function planHousingCandidates(parcels, persona, { turf, limit = 8 } = {}
                 'Heritage, flood, ecology and utilities','Walking routes and transit frequency','Local construction/land/finance costs','Funded long-term affordability covenant'] };
         candidates.push({...parcel, candidateId:`${persona.name}:${parcel.parcelId}`, massing:variant.shape.massing,
             proposedGfaM2:variant.shape.gfaM2, builtGfaM2:0, builtKnown:false,
-            plannedFloors:6, allowedFloors:6, gainEur:0, offerEur:0,
+            plannedFloors:6, allowedFloors:6, currency:money?.currency ?? null, gain:0, offer:0,
             rule:{source:'housing-research'}, normalizedRule:null, housing,
             score: (1-distance/1000) + Math.min(homes/100,1) + (variant.form==='courtyard'?0.5:0)});
     }
