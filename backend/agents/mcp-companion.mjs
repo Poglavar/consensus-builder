@@ -42,6 +42,7 @@ export function registerMcpCompanion(server, { actions, handler, readOnly }) {
         z.object({ type: z.literal('set_profile'), ...profile }), z.object({ type: z.literal('shift'), metres: z.number().min(0).max(100), toward: side }),
         z.object({ type: z.literal('add_lane'), kind: z.string(), side }), z.object({ type: z.literal('remove_lane'), index: z.number().int().min(0).max(31) }),
         z.object({ type: z.literal('set_floors'), value: z.number().int().min(1).max(200) }), z.object({ type: z.literal('set_height'), value: z.number().positive().max(800) }),
+        z.object({ type: z.literal('fit_to_permitted'), planningSource: z.string().min(1).max(100) }),
         z.object({ type: z.literal('set_use'), value: z.string().min(1).max(100) }), z.object({ type: z.literal('set_kind'), value: z.enum(['park', 'square', 'lake']) })
     ]);
     add('ugt_modify_design', 'Fork a CID or canonical draft with typed changes, never coordinate edits. Compass sides are across the street; ambiguous or multi-stretch edits are refused. origin.cid records the source.',
@@ -58,8 +59,10 @@ export function registerMcpCompanion(server, { actions, handler, readOnly }) {
         ['schemas/design', 'Design JSON Schema', 'application/json', () => JSON.stringify({ ...recipe, $ref: '#/$defs/design' })],
         ['schemas/agreement', 'Agreement JSON Schema', 'application/json', () => JSON.stringify({ ...recipe, $ref: '#/$defs/agreement' })],
         ['decision-rules', 'Agreement decision rules', 'text/plain', () => 'owner-deal: binding owners, unanimous rights snapshot, one independent lens key. owner-vote: non-binding owners poll. community-vote: non-binding community poll. Only owner-deal is minted.'],
-        ['cities', 'Parcel sources and supported cities', 'application/json', async () => JSON.stringify(await actions.request('/parcel-sources'))]
+        ['cities', 'Parcel sources and supported cities', 'application/json', async () => JSON.stringify(await actions.cities())]
     ];
+    const examples = JSON.parse(readFileSync(new URL('./mcp-examples.json', import.meta.url), 'utf8'));
+    for (const [kind, artifact] of Object.entries(examples)) if (kind !== '$comment') resources.push([`examples/${kind}`, `Worked ${kind} design`, 'application/json', () => JSON.stringify(artifact)]);
     for (const [path, title, mimeType, read] of resources) {
         server.registerResource(title, `ugt://${path}`, { mimeType, description: title }, async uri => ({ contents: [{ uri: uri.href, mimeType, text: await read() }] }));
     }

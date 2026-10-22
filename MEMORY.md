@@ -856,3 +856,13 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-22: Plan/design/agreement rework, M3 (commit 8a9b09ccd): the agreement is the on-chain unit. Solana `agreement` program (create/fund/attest/execute/cancel/expire; the lens attests `AgreementDecision` satisfied only; non-binding agreements never mint and have no markets); market and pledge programs read agreement accounts (LMSR cancelled = void, parimutuel NO; pledges pay the sponsor); `POST /agreements/:cid/onchain`, `GET /agreements?minted=1`, lifecycle oracle writes `agreement_lifecycle`/`agreement_executed` land events and the observed status onto the index row; agents propose binding owners' agreements as devnet owners of their parcels; agreement editor = right-docked map panel with pick-on-map; per-design owner acceptances, chain refs, named-plan/minted-proposal readers, Canton and EVM proposal readers removed. The `proposal` table stays read-only until `scripts/drop-proposal-era.mjs --apply` (backup first); the program id is still the placeholder (deploy before anything can mint).
 - 2026-10-22: One click stack (`click-stack.md`, commit cf72195aa) replaces the parcel menu popover, ground menu and drill: a docked panel with a section per kind under the click; parcel actions live on the hosted parcel panel's tabs, the section adds only Compare and Use as site (no duplicate buttons).
 - 2026-10-23: While a design is being edited (on-map editor, road/track or site drawing), controls that start another task — Proposals, Bets, Activity, Settings, profile, city search, and their palette commands — are greyed out, never hidden; Layers, Buildings and massing and Measure stay live (`map-shell.js` paintEditLocks, view tiles via `map-mode-loader.js` paintModeLocks).
+
+
+## 2026-10-23 — MCP implementation
+
+- Hosted MCP is a public, credential-free stateless HTTP process; unsigned publication requires
+  explicit confirmation, while devnet signing stays in the local package.
+- Intent drafts share browser geometry modules; agreement ground runs existing formation handlers
+  in an isolated node host, so a second parcel-cutting implementation cannot diverge from the app.
+- Draft previews travel in compressed fragments and import as unpublished local records; current
+  app-contract gaps and live acceptance checks are recorded in `mcp.md`.

@@ -2,7 +2,73 @@
 
 # MCP: Urban Game Theory for agents
 
-**Status (2026-10-22): plan written, nothing implemented.** Branch and worktree `colosseum-worlds-fair`.
+**Status (2026-10-23): local implementation and targeted verification landed; hosted deployment and live acceptance remain pending.** Branch and worktree `colosseum-worlds-fair`.
+
+## Implementation checkpoint (2026-10-23)
+
+- P0 is present: the design/agreement merge and deployed devnet program predate this implementation.
+- P1: loopback stateless HTTP, modern and legacy protocol clients, mode isolation, public-source
+  reads, vocabulary/schema/city/example resources, prompts, actionable errors, request/publish
+  budgets, no-store, nginx/PM2 configuration and a read-only contract checker are implemented.
+  Hosted registers 25 tools; local registers 44. Production acceptance needs an explicit deploy.
+- P2: unsigned publication uses only `confirm:true` and verifies an index readback. Mint, fund,
+  acceptance, execute, cancel, expire and bet links preselect without auto-signing; bet hand-over
+  preserves amount/side. Pledge/donation approval links explicitly refuse because the current app
+  removed those wallet forms; local signing remains available. A real sponsor mint through a
+  hosted link has not been exercised in this session.
+- P3: an isolated node host runs the existing app's formation handlers, identity assignment,
+  parcel arrangement, fabric validation and `AgreementGround.derive`. Node/browser parity passes
+  for bounded road, park and layout fixtures. Complete cadastral source ground is required;
+  attached stations, open ground and freeform-building formations still need the app. Full Borovje
+  and Pionir parity against current cadastral source data remains an acceptance check.
+- P4: all five intent builders, typed modifications (including permitted-envelope fit), comparison,
+  private fragment previews and conversational prompts are implemented. CID parity passes for all
+  five kinds; an actual app route imports/applies a draft without publishing it. Comparison keeps
+  absent demolition and design-only ledger evidence null; it does not invent a before/after tally.
+- P5: a self-contained npm tarball can be staged, packed and installed. Its stdio entry was tested
+  from a fresh temporary install (44 tools). RPC-only account discovery, staking and claiming are
+  covered with the UGT API offline in a headless unit test; a funded live settlement was not run.
+  The public package name/publication remain open.
+- P6: both discovery documents and agent docs describe hosted/local operation; OpenAPI covers
+  source operations used by the tools. The experimental Server Card extension currently recommends
+  `/mcp/server-card`, not a domain-root well-known server-card path. The opt-in evaluator uses
+  resumable Anthropic batches, explicit prices/budget and artifact scores with 20 seeded tasks.
+  No paid evaluation, npm publication, registry listing, push or deploy was performed.
+
+Current implementation deliberately limits itself where the app has no corresponding contract:
+it returns explicit recoveries instead of fabricating owner decisions, app wallet forms, source
+coverage or demolition measurements. These limits mean the original end-to-end phase acceptance
+criteria above are not all satisfied yet.
+
+### Verification record for this implementation
+
+All runs below were targeted; no full unit or browser suite was started by this session.
+
+| Type and scope | Result |
+|---|---|
+| Headless unit tests: HTTP, MCP registration, shared tools (3 files, 28 tests), first run | 23 passed, 5 failed on changed expectations/fixtures and the Host test transport; corrected |
+| Headless unit tests: same 3 files, 28 tests | Passed |
+| Headless unit tests: intent builders (1 file, 10 tests) | Passed |
+| Headless unit tests: MCP, links and imports (9 files, 103 tests) | 102 passed; expanded tool-list expectation corrected |
+| Headless unit tests: MCP, sources, discovery and routes (12 files, 153 tests) | 152 passed; `/designs` route expectation corrected |
+| Headless unit tests: above plus chain-only actions (13 files, 156 tests) | Passed |
+| Headless unit tests: above plus eval scoring (14 files, 159 tests) | Passed |
+| Headless Playwright: initial artifact-spec startup | No tests ran (test-module import error); corrected |
+| Headless Playwright: invocation from repository root | Stopped before any test ran; rerun from `e2e` |
+| Headless Playwright: `mcp-artifacts.spec.ts` (6 tests) | Passed |
+| Headless Playwright: `mcp-preview.spec.ts` (1 test) | Passed |
+| Headless Playwright: artifacts plus ground parity (9 tests), first run | 6 passed, 3 failed because the isolated browser fixture omitted lifecycle evidence; corrected. A sibling run also collided with the shared trace directory; subsequent runs use separate output directories. |
+| Headless Playwright: artifacts plus ground parity (9 tests) | Passed |
+| Headed Playwright: draft preview (1 test, background Chrome) | Passed; screenshot inspected: the park is applied and selected with its details panel |
+| Packed npm artifact and fresh temporary install | No credential files; 44 stdio tools; vocabulary call passed. The first network-isolated npm startup timed out on registry DNS, left no process, and was retried successfully with network access. |
+
+Follow-up headless unit tests passed for local/offline capabilities and browser draft import
+(4 files, 43 tests) and the contract checker's missing-fixture/no-publication behavior (1 file,
+8 tests). Source context and OpenAPI follow-ups passed (2 files, 16 tests). The explicit local-draft lifecycle also passed a further headless Playwright preview
+check (1 test). An initial agreement-preview invocation recorded a startup failure without completed
+test results; the final headless Playwright run passed both design and agreement previews (2 tests),
+including canonical CID/ground equality and no publication requests. Live production contract checks, sponsor
+wallet signing and paid model evaluation were not run.
 
 ## Goal
 

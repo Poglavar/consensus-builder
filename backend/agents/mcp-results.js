@@ -10,7 +10,7 @@ export function markUntrusted(value) {
     const out = {}, untrusted = {};
     for (const [key, item] of Object.entries(value)) {
         if (PROSE.has(key)) untrusted[key] = item;
-        else if (key === 'content' && ['design/v1', 'agreement/v1'].includes(item?.schema)) untrusted[key] = item;
+        else if (['content', 'design', 'agreement'].includes(key) && ['design/v1', 'agreement/v1'].includes(item?.schema)) untrusted[key] = item;
         else out[key] = key === 'next' ? item : markUntrusted(item);
     }
     if (Object.keys(untrusted).length) out.untrusted = { ...out.untrusted, ...untrusted };

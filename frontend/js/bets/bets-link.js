@@ -47,7 +47,8 @@
         }
         const account = accountOf(raw);
         if (!account) return null;
-        const intent = typeof globalThis.ApprovalLink !== 'undefined' ? globalThis.ApprovalLink.parse(loc) : null;
+        const codec = globalThis.ApprovalLink || (typeof require === 'function' ? require('../approval-link.js') : null);
+        const intent = codec ? codec.parse(loc) : null;
         return { account, city: cityOf(params.get('city')), lang: langOf(params.get('lang')), ...(intent ? { approval: intent } : {}) };
     }
 
@@ -67,8 +68,8 @@
 
     // The app form the server sends a browser to: /?city=<id>&bets=<account>[&lang=<xx>]. Without an
     // account it is the plain city link, for an account nobody has minted.
-    function appHref({ city, account, lang } = {}) {
-        return `/${query([['city', cityOf(city)], [PARAM, accountOf(account)], ['lang', langOf(lang)]])}`;
+    function appHref({ city, account, lang, approval = null } = {}) {
+        return `/${query([['city', cityOf(city)], [PARAM, accountOf(account)], ['lang', langOf(lang)], ...(approval ? [['act', 'bet'], ['side', approval.params.side], ['amount', approval.params.amount]] : [])])}`;
     }
 
     return { PARAM, accountOf, cityOf, parse, build, appHref };

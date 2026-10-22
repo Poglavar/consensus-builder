@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { MCP_LOCAL_TOOLS, MCP_HOSTED_TOOLS } from '../agents/mcp-catalog.js';
 import path from 'path';
 import { createRequire } from 'module';
 import { fileURLToPath } from 'url';
@@ -22,14 +23,7 @@ const MarketClient = require('../../frontend/js/solana/market-client.js');
 const PledgeClient = require('../../frontend/js/solana/pledge-client.js');
 const USDC_DEVNET_MINT = PledgeClient.constants.USDC_DEVNET_MINT;
 // The tools backend/agents/mcp-server.mjs registers, in its order.
-const MCP_TOOLS = Object.freeze([
-    'ugt_capabilities', 'ugt_activity', 'ugt_list_agreements', 'ugt_get_agreement', 'ugt_list_attesters',
-    'ugt_support_status', 'ugt_oracle_events', 'ugt_inspect_verified_fact', 'ugt_publish_design',
-    'ugt_propose_agreement', 'ugt_mint_agreement', 'ugt_fund_agreement', 'ugt_bet_on_agreement',
-    'ugt_buy_verified_fact', 'ugt_request_ownership', 'ugt_pledge', 'ugt_donate', 'ugt_refund_donation',
-    'ugt_void_pledge', 'ugt_revoke_pledge', 'ugt_release_donations', 'ugt_fulfill_pledge',
-    'ugt_resolve_market', 'ugt_claim_market', 'ugt_resolve_external_market', 'ugt_claim_external_market'
-]);
+const MCP_TOOLS = MCP_LOCAL_TOOLS;
 
 // Cache for database schema to serve previous version if refresh fails
 let cachedDatabaseSchema = null;
@@ -396,11 +390,14 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                     ownerDecision: 'an owner\'s yes is not an attestation: it is a decision signed over the agreement CID and relayed at /agreements/{cid}/decisions'
                 },
                 mcp: {
-                    transport: 'stdio',
+                    transport: 'streamable-http',
+                    url: 'https://urbangametheory.xyz/mcp',
+                    hostedTools: MCP_HOSTED_TOOLS,
+                    localTransport: 'stdio',
                     source: 'backend/agents/mcp-server.mjs',
                     command: 'cd backend && npm run mcp',
                     liveActionsEnabledByDefault: false,
-                    liveGuard: 'UGT_MCP_LIVE=1 in the MCP process plus confirm=true in the call, for every index write and every paid or signed action; chain actions use Solana devnet only',
+                    liveGuard: 'Unsigned permanent publication requires confirm=true and no key. Local paid and signed actions require UGT_MCP_LIVE=1 plus confirm=true; devnet only. Hosted mode has no signing tools or credentials.',
                     env: ['UGT_API_BASE', 'UGT_APP_ORIGIN', 'UGT_AGENT_KEYPAIR', 'UGT_MCP_LIVE', 'UGT_MCP_MAX_USDC_PER_ACTION', 'SOLANA_RPC_URL'],
                     usdcCap: 'UGT_MCP_MAX_USDC_PER_ACTION (default 0.25) caps every stake, pledge and donation, and every x402 price, before anything is signed',
                     tools: MCP_TOOLS,

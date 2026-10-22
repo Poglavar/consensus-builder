@@ -3,6 +3,7 @@
 // /llms.txt, /openapi.json (agent-facing subset), /agents.json (alias of /docs/agents.json) and
 // /robots.txt. All read-only, built from the same x402 config as the paid routes themselves.
 
+import { MCP_READ_PATHS } from './mcp-openapi.js';
 import { readX402OracleConfig } from '../utils/x402-payment.js';
 import { publicBase } from './agent-discovery.js';
 
@@ -74,6 +75,7 @@ export function buildLlmsTxt(base, env) {
         `The human app is ${SITE_URL}. This host is its JSON API.`,
         '',
         '## Agent docs',
+        `- [Hosted MCP](${SITE_URL}/mcp): Streamable HTTP for public reads, private drafts, unsigned publication and wallet approval links; never signs or pays.`,
         `- [Agent quickstart](${base}/docs/agents): see what a site binds, publish designs, propose an agreement over them, mint and fund it on Solana devnet, bet, pledge and donate on it; plus the MCP tool surface.`,
         `- [agents.json](${base}/agents.json): the design/v1 and agreement/v1 JSON Schemas, endpoints, program ids, the MCP tool list and the live oracle-fact payment terms.`,
         `- [OpenAPI](${base}/openapi.json): agent-facing endpoints as OpenAPI 3.1.`,
@@ -216,6 +218,7 @@ export function buildOpenApi(base, env) {
         servers: [{ url: base }],
         tags: [{ name: 'x402', description: 'Paid over the x402 protocol.' }],
         paths: {
+            ...MCP_READ_PATHS,
             '/agent/oracle/facts': {
                 get: {
                     tags: ['x402'],

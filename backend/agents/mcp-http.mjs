@@ -42,9 +42,10 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
         const json = (status, body, headers = {}) => { res.writeHead(status, { 'Content-Type': 'application/json', ...headers }); res.end(JSON.stringify(body)); };
         if (req.url === '/healthz' && req.method === 'GET') return json(200, { service: 'ugt-mcp', status: 'ok', upstreamChecked: false });
         if (req.url === '/mcp/server-card' && req.method === 'GET') return json(200, {
-            $schema: 'https://static.modelcontextprotocol.io/schemas/server-card.json',
-            name: 'urban-game-theory', version: '0.3.0', description: 'Public urban designs, agreements and markets; unsigned publication and wallet approval links.',
-            transport: { type: 'streamable-http', url: `${origin.origin}/mcp` }, authentication: { required: false }
+            $schema: 'https://static.modelcontextprotocol.io/schemas/v1/server-card.schema.json',
+            name: 'xyz.urbangametheory/urban-game-theory', version: '0.3.0', description: 'Urban designs, agreements and markets; private drafts and wallet approval links.',
+            remotes: [{ type: 'streamable-http', url: `${origin.origin}/mcp`, supportedProtocolVersions: ['2026-07-28', '2025-11-25'] }],
+            _meta: { 'xyz.urbangametheory/discovery-status': 'experimental-server-card-extension' }
         });
         if (!['/mcp', '/mcp/'].includes(req.url)) return json(404, { code: 'not-found' });
         if (!['POST', 'GET', 'DELETE'].includes(req.method)) return json(405, { code: 'method-not-allowed' }, { Allow: 'POST, GET, DELETE' });

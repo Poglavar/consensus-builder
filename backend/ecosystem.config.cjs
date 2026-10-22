@@ -2,7 +2,7 @@ module.exports = {
   apps: [{
     name: 'consensus-builder-api',
     script: 'server.js',
-    cwd: '/root/code/consensus-builder/backend',
+    cwd: __dirname,
     // Cluster mode is required for PM2's zero-downtime reload. One steady-state
     // worker preserves the service's current memory and rate-limit behaviour;
     // PM2 only overlaps old/new workers while a release is being activated.
@@ -63,9 +63,27 @@ module.exports = {
       X402_PRICE_PROPOSAL: '$0.05',
       X402_PRICE_ORACLE_FACT: '$0.01'
     },
-    error_file: '/root/code/consensus-builder/backend/logs/err.log',
-    out_file: '/root/code/consensus-builder/backend/logs/out.log',
-    log_file: '/root/code/consensus-builder/backend/logs/combined.log',
+    error_file: `${__dirname}/logs/err.log`,
+    out_file: `${__dirname}/logs/out.log`,
+    log_file: `${__dirname}/logs/combined.log`,
+    time: true
+  }, {
+    name: 'ugt-mcp',
+    script: 'agents/mcp-launch.mjs',
+    cwd: __dirname,
+    exec_mode: 'fork',
+    instances: 1,
+    autorestart: true,
+    watch: false,
+    kill_timeout: 15000,
+    max_memory_restart: '512M',
+    env: {
+      NODE_ENV: 'production',
+      MCP_PORT: '3096',
+      MCP_PUBLIC_ORIGIN: 'https://urbangametheory.xyz',
+      UGT_APP_ORIGIN: 'https://urbangametheory.xyz',
+      UGT_API_BASE: 'https://api.urbangametheory.xyz'
+    },
     time: true
   }]
 };

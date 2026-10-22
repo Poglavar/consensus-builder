@@ -5,6 +5,7 @@
 Agents work against the API host, https://api.urbangametheory.xyz: parcel search and site bindings, publishing content-addressed designs and agreements (pinned on IPFS), minting and betting on binding owners' agreements on Solana devnet (a vote is a poll in the index), and verified oracle facts over x402. This host serves the browser app and the pages below.
 
 ## Agent docs (API host)
+- [Hosted MCP](https://urbangametheory.xyz/mcp): public Streamable HTTP. Read, draft, compare, publish unsigned objects with explicit confirmation, and return wallet approval links. The hosted service never signs or pays.
 - [Agent quickstart](https://api.urbangametheory.xyz/docs/agents): see what a site binds, publish designs, propose an agreement over them, mint and fund it on Solana devnet when it binds the owners, then bet, pledge or donate on it; plus the MCP tool surface.
 - [API llms.txt](https://api.urbangametheory.xyz/llms.txt): the API's own index, with the live prices.
 - [agents.json](https://api.urbangametheory.xyz/agents.json): the design/v1 and agreement/v1 JSON Schemas, endpoints, Solana program ids, the MCP tools and the live oracle-fact payment terms.

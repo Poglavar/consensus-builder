@@ -5,6 +5,8 @@
 // subject (bettor.js, pledger.js, donor.js, lifecycle-actions.js): the adapters the deterministic
 // runners use, never a second execution path.
 import fs from 'node:fs';
+import { createRequire } from 'node:module';
+import { MCP_LOCAL_TOOLS, MCP_HOSTED_TOOLS } from './mcp-catalog.js';
 import { createMcpAgreementTools } from './mcp-ground.js';
 import { createMcpDraftTools } from './mcp-drafts.js';
 import { createMcpReadTools } from './mcp-read-tools.js';
@@ -29,6 +31,10 @@ import {
     claimAgreementMarket, claimExternalMarket, fulfillPledge, refundDonation, releaseDonations, resolveAgreementMarket,
     resolveExternalMarket, revokePledge, voidPledge
 } from './lifecycle-actions.js';
+
+const require = createRequire(import.meta.url);
+const agreementClient = require('../../frontend/js/solana/agreement-client.js');
+agreementClient.configure({ web3: require('@solana/web3.js') });
 
 const DEFAULT_API_BASE = 'https://api.urbangametheory.xyz';
 // The API's write guard admits only the app's origins; index writes are sent as the app's.
@@ -74,7 +80,7 @@ function withQuery(base, pathname, query = {}) {
 }
 
 async function readJson(fetchImpl, url) {
-    const response = await fetchImpl(url, { headers: { accept: 'application/json' } });
+    const response = await fetchImpl(url, { signal: AbortSignal.timeout(30_000), headers: { accept: 'application/json' } });
     const text = await response.text();
     let body = text;
     if (text) {
@@ -236,6 +242,7 @@ export function createUrbanGameTheoryTools({
     let indexClient = null;
 
     function requireLive(confirm) {
+        if (mode !== 'local') throw new Error('Hosted MCP cannot sign or pay');
         if (!live) throw new Error('live actions are disabled; set UGT_MCP_LIVE=1 to enable index writes and devnet transactions');
         if (confirm !== true) throw new Error('confirm must be true for a write, a paid or a signed action');
     }
@@ -288,23 +295,52 @@ export function createUrbanGameTheoryTools({
             usdcMint: USDC_DEVNET
         },
 
-        capabilities: () => readJson(fetchImpl, `${apiBase}/docs/agents.json`),
+        capabilities: async () => {
+            let manifest;
+            try { manifest = { ...await readJson(fetchImpl, `${apiBase}/docs/agents.json`), upstream: { available: true } }; }
+            catch (error) {
+                if (mode !== 'local') throw error;
+                manifest = { upstream: { available: false, code: error.code || 'api-unavailable', next: { tool: 'ugt_chain_agreements', arguments: {} } } };
+            }
+            return { ...manifest, mode, cluster: 'solana-devnet', agreementProgram: AGREEMENT_PROGRAM_ID, tools: mode === 'hosted' ? MCP_HOSTED_TOOLS : MCP_LOCAL_TOOLS, toolPhases: { reads: 'implemented', approvalLinks: 'mint, fund, decide accept, execute, cancel, expire, bet', drafts: 'implemented with complete cadastral ground; station/freeform/open-ground agreement derivation requires the app', publication: 'implemented; permanent and public' }, hostedEndpoint: `${appOrigin}/mcp`, unsignedPublication: { confirm: true, requiresKey: false, permanent: true } };
+        },
 
         getActivity: ({ limit = 100, actor, source, action } = {}) => readJson(
             fetchImpl,
             withQuery(apiBase, '/agent/activity', { limit, actor, source, action })
         ),
 
-        listAgreements: ({ city, design, parcel, limit = 20 } = {}) => index().listAgreements({ city, design, parcel, limit }),
+        listAgreements: async ({ city, design, parcel, limit = 20 } = {}) => {
+            const result = await index().listAgreements({ city, design, parcel, limit });
+            return { ...result, agreements: result.agreements.map(row => ({ ...row, previewUrl: `${appOrigin}/agreements/${row.cid}` })) };
+        },
+        async listChainAgreements({ limit = 20 } = {}) {
+            const accounts = await chain().getProgramAccounts(new PublicKey(AGREEMENT_PROGRAM_ID), { commitment: 'confirmed', filters: [{ memcmp: { offset: 0, bytes: Buffer.from(agreementClient.ACCOUNT_DISCRIMINATORS.Agreement).toString('base64'), encoding: 'base64' } }] });
+            return { agreements: accounts.slice(0, limit).map(row => {
+                const value = agreementClient.readAgreement(row.account.data, row.pubkey.toBase58());
+                if (!value || agreementAccountOf(value.cid, value.authority) !== value.address) throw new Error('Invalid agreement program account');
+                return { ...value, previewUrl: `${appOrigin}/agreements/${value.cid}` };
+            }), count: accounts.length, truncated: accounts.length > limit };
+        },
+        getChainAgreement: ({ agreementAccount }) => impl.readAgreementAccount(chain(), { account: agreementAccount }),
+        async betOnAccount({ agreementAccount, side, amountUsdc, confirm }) {
+            requireLive(confirm);
+            if (!['yes', 'no'].includes(side)) throw new Error('side must be yes or no');
+            const amountAtomic = positiveAmount(amountUsdc, maxUsdcPerAction);
+            const { keypair, connection } = signer();
+            const state = await impl.readAgreementAccount(connection, { account: agreementAccount });
+            if (!state || state.status !== AGREEMENT_STATUS.active || state.deadline > 0 && state.deadline * 1000 <= Date.now()) throw new Error('Only an active agreement before its deadline accepts stakes');
+            return impl.ensureMarketAndStake({ connection, ownerKeypair: keypair, subject: agreementAccount, stakeMint: USDC_DEVNET, side: SIDE[side], amountAtomic, sendAndConfirm: impl.sendAndConfirmPolling });
+        },
 
         // The index row, the chain account its sponsor and CID derive, and that account as the chain
         // holds it now (null until the sponsor mints it).
         async getAgreement({ agreementCid } = {}) {
             const agreement = await indexedAgreement(agreementCid);
             const sponsor = walletOf(agreement.content?.sponsor);
-            if (!sponsor) return { agreement, sponsor: null, account: null, minted: false, accountState: null };
+            if (!sponsor || agreement.content?.rule?.binding === false) return { agreement, sponsor, account: null, minted: false, accountState: null, previewUrl: `${appOrigin}/agreements/${agreementCid}` };
             const accountState = await impl.readAgreementAccount(chain(), { cid: agreementCid, sponsor });
-            return { agreement, sponsor, account: agreementAccountOf(agreementCid, sponsor), minted: Boolean(accountState), accountState };
+            return { agreement, sponsor, account: agreementAccountOf(agreementCid, sponsor), minted: Boolean(accountState), accountState, previewUrl: `${appOrigin}/agreements/${agreementCid}` };
         },
 
         getSupport: ({ agreementAccount } = {}) => readJson(
@@ -348,7 +384,7 @@ export function createUrbanGameTheoryTools({
             const published = await index().publishDesign(content, { parcelSourceId });
             if (published.cid !== cid) throw new Error(`the index filed design ${published.cid}, not ${cid}`);
             const row = await index().getDesign(cid);
-            if (!row || row.cid !== cid) throw new Error('Published design could not be read back');
+            if (!row || row.cid !== cid || !row.content || cidOfObject(row.content) !== cid) throw new Error('Published design could not be read back with matching content');
             return { cid, created: published.created, row, previewUrl: `${appOrigin}/designs/${cid}` };
         },
 
@@ -366,6 +402,8 @@ export function createUrbanGameTheoryTools({
             for (const entry of carried) await client.pin('design', entry.content);
             const published = await client.publishAgreement(content, { designs: carried });
             if (published.cid !== cid) throw new Error(`the index filed agreement ${published.cid}, not ${cid}`);
+            const row = await client.getAgreement(cid);
+            if (!row || row.cid !== cid || !row.content || cidOfObject(row.content) !== cid) throw new Error('Published agreement could not be read back with matching content');
             const sponsor = content.sponsor ?? null;
             return {
                 cid,
@@ -373,9 +411,9 @@ export function createUrbanGameTheoryTools({
                 carried: carried.map(entry => entry.cid),
                 sponsor,
                 account: sponsor ? agreementAccountOf(cid, sponsor) : null,
-                row: await client.getAgreement(cid),
+                row,
                 previewUrl: `${appOrigin}/agreements/${cid}`,
-                approvalUrl: `${appOrigin}/agreements/${cid}?act=mint`
+                approvalUrl: content.rule.binding && sponsor ? `${appOrigin}/agreements/${cid}?act=mint` : null
             };
         },
 

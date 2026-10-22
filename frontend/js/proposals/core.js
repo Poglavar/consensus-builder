@@ -980,6 +980,10 @@ async function handleProposalRouteFromUrl() {
 
         // Design and agreement links load their own ground, so the boot's parcel fetch is given
         // back however their route ends.
+        if (pathname === '/designs' && window.location.hash.startsWith('#draft=')) {
+            try { await window.DraftPreview.open(); } finally { releaseDeepLinkParcelFetch(); }
+            return;
+        }
         const designMatch = pathname.match(/^\/designs\/([^/]+)$/);
         const agreementMatch = pathname.match(/^\/agreements\/([^/]+)$/);
         if (designMatch || agreementMatch) {

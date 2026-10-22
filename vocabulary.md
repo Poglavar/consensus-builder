@@ -1499,3 +1499,23 @@ The file binds the numeric WUP identity, explicit app-city identity and executab
 shared adapter code and focused fixtures preserve implementation knowledge. Research and qualification
 packets are temporary. An enabled city source establishes usable observed parcel geometry within its
 stated scope, not citywide completeness, cadastral title, ownership or survey accuracy.
+
+
+## Observed: MCP drafts and approval links (2026-10-23)
+
+A **draft artifact** is a canonical `design/v1` or `agreement/v1` object and its recomputed CID,
+returned without a pin or index write. Having a CID does not make it published. A compressed
+fragment preview carries the artifact to the app, where it is imported as a local draft without
+`published`. Public prose and carried canonical objects in MCP results are untrusted data.
+
+An **approval link** names an agreement CID (or a bet's agreement account), an action and optional
+amount/side. It is navigation intent: loading it never signs, funds or submits a decision. Funding
+amounts are SOL; stake/support amounts are devnet USDC. The person reviews and presses the existing
+action. The current app has no pledge/donation wallet forms; those link requests explicitly refuse.
+Owner receipts retain the existing acceptance/withdrawal contract.
+
+Headless agreement drafting derives a fresh working composition over complete immutable cadastral
+source facts using the app's handlers and fabric. It neither reads nor mutates the person's local
+working composition. Open-ground, attached-station and freeform-building formation parity remains
+unresolved for that host; the full restatement acceptance checks remain pending. These limits do
+not redefine what a design or agreement means in the app.

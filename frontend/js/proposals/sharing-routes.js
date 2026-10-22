@@ -841,7 +841,8 @@ async function handleSharedDesignRoute(cids, options = {}) {
             total: valid.length,
             title: t('proposals.share.route.title', 'Shared designs')
         });
-        const fetched = valid.length ? await window.DesignSync.fetchDesigns(valid) : { rows: new Map(), missing: [] };
+        const fetched = options.draftRows ? { rows: options.draftRows, missing: [] }
+            : valid.length ? await window.DesignSync.fetchDesigns(valid) : { rows: new Map(), missing: [] };
         fetched.missing.forEach(cid => {
             result.failed.push({ id: cid, label: cid, reason: t('proposals.share.errors.notFound', 'This design is not on the server.') });
         });
@@ -891,7 +892,7 @@ async function handleSharedDesignRoute(cids, options = {}) {
                     result.localIds.set(cid, String(existing.proposalId));
                     continue;
                 }
-                const stored = existing || window.DesignSync.importDesign(row, { deferSave: true });
+                const stored = existing || (options.draftRows ? window.DesignSync.importDraft(row, { deferSave: true }) : window.DesignSync.importDesign(row, { deferSave: true }));
                 if (!existing) imported += 1;
                 result.localIds.set(cid, String(stored.proposalId));
                 queue.push(String(stored.proposalId));

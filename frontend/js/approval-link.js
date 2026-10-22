@@ -10,9 +10,11 @@
     const ACTIONS = ['mint', 'fund', 'decide', 'execute', 'cancel', 'expire', 'bet', 'pledge', 'donate'];
     const AMOUNT = /^(?:0|[1-9]\d{0,8})(?:\.\d{1,6})?$/;
     function validate({ action, target, params = {} } = {}) {
+        if (['pledge', 'donate'].includes(action)) throw Object.assign(new Error('The app has no pledge or donation wallet form yet; use the local signing tool.'), { code: 'approval-unavailable', next: { tool: action === 'pledge' ? 'ugt_pledge' : 'ugt_donate', action: 'Use an operator-controlled local devnet wallet, or choose a supported app action.' } });
+        if (action === 'decide' && params.decision === 'reject') throw new Error('Owner decisions currently accept or withdraw acceptance; rejection is not a signed decision in the current contract');
         if (!ACTIONS.includes(action)) throw new Error('Unknown approval action');
         if (!(action === 'bet' ? ACCOUNT : CID).test(target)) throw new Error('Approval target must be an agreement CID, or a chain account for bet');
-        if (params.amount != null && (!['fund', 'bet', 'pledge', 'donate'].includes(action) || !AMOUNT.test(String(params.amount)) || Number(params.amount) <= 0)) throw new Error('Approval amount must be a positive decimal with at most six places');
+        if (params.amount != null && (!['fund', 'bet', 'pledge', 'donate'].includes(action) || !(action === 'fund' ? /^(?:0|[1-9]\d{0,8})(?:\.\d{1,9})?$/ : AMOUNT).test(String(params.amount)) || Number(params.amount) <= 0)) throw new Error('Approval amount must be a positive decimal with at most six places');
         if (params.side != null && (action !== 'bet' || !['yes', 'no'].includes(params.side))) throw new Error('Bet side must be yes or no');
         if (params.decision != null && (action !== 'decide' || !['accept', 'reject'].includes(params.decision))) throw new Error('Owner decision must be accept or reject');
         if (Object.keys(params).some(key => !['amount', 'side', 'decision', 'city'].includes(key))) throw new Error('Unknown approval parameter');
@@ -39,11 +41,11 @@
     // Presentation only: focus an existing, enabled action; no click or wallet call is made.
     function preselect(container, intent) {
         if (!container || !intent) return false;
-        const selector = intent.action === 'decide' ? `[data-decision="${intent.params.decision || 'accept'}"]` : `[data-agreement-action="${intent.action}"]`;
+        const selector = intent.action === 'decide' ? '[data-approval-action="review"]' : `[data-agreement-action="${intent.action}"]`;
         const button = container.querySelector(selector);
-        if (!button || button.disabled) return false;
+        if (!button) return false;
         button.setAttribute('data-approval-selected', 'true');
-        button.focus({ preventScroll: true });
+        if (!button.disabled) button.focus({ preventScroll: true });
         return true;
     }
     return { ACTIONS, validate, build, parse, preselect };

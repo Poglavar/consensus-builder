@@ -239,19 +239,64 @@ node agents/lens-member-run.mjs --persona notary-01 --print
 
 ## MCP: one surface for any controller
 
-`npm run mcp` starts `agents/mcp-server.mjs` over stdio; `ugt-agent-tools.js` implements its 26 tools on
-the same modules: `ugt_list_agreements`, `ugt_get_agreement`, `ugt_publish_design`,
-`ugt_propose_agreement`, `ugt_mint_agreement`, `ugt_fund_agreement`, `ugt_bet_on_agreement`, pledges and
-donations on the agreement account and their settlement (`ugt_pledge`, `ugt_donate`, `ugt_refund_donation`,
-`ugt_void_pledge`, `ugt_revoke_pledge`, `ugt_release_donations`, `ugt_fulfill_pledge`), market settlement
-(`ugt_resolve_market`, `ugt_claim_market`), external markets, activity, attesters, ownership
-attestations, oracle events and verified facts over x402. Index writes (`ugt_publish_design`,
-`ugt_propose_agreement`) and signed or paid tools need a low-value devnet key at `UGT_AGENT_KEYPAIR`,
-`UGT_MCP_LIVE=1` and `confirm: true`; index writes send `Origin` from `UGT_APP_ORIGIN` (default
-`https://urbangametheory.xyz`). `ugt_mint_agreement` refuses unless the agent's wallet is the
-agreement's sponsor and `rule.lens` holds exactly one key that is not the agent's.
-`UGT_MCP_MAX_USDC_PER_ACTION` (default 0.25) caps every USDC action and x402 price. `GET /docs/agents.json`
-lists the tools; `/docs/agents` is the quickstart.
+`npm run mcp` starts the local stdio server (44 tools). `npm run mcp:http` starts the hosted
+Streamable HTTP service on loopback port 3096 (25 tools), with `/healthz` and the experimental
+`/mcp/server-card` discovery document. Both use `ugt-agent-tools.js`; the hosted catalogue contains
+no signing or paying tool. Its launcher forwards only public configuration and the HTTP entry
+refuses credential-bearing environments. It never loads the backend `.env`.
+
+Read and draft tools need no key. `ugt_publish_design` and `ugt_propose_agreement` are **public,
+permanent, unsigned** writes: `confirm: true` is required, with no `UGT_MCP_LIVE` or key requirement.
+Publishing recomputes the CID and reads the index back, checking both CID and content. Public prose
+and canonical artifacts appear under `untrusted`; canonical objects are kept intact for reuse.
+Failures return `{ code, message, next }`.
+
+`ugt_find_place`, `ugt_parcel_context`, design/agreement reads, markets and `ugt_explain` discover
+the place and its contract. The intent tools draft roads, buildings, spaces, parcel layouts and
+urban rules with the app's pure modules; `ugt_modify_design` makes a fork with `origin.cid` and typed
+changes. Previews travel in bounded compressed URL fragments and become local browser drafts,
+without a pin or index write. A preview above the URL limit is refused until the person explicitly
+chooses publication. Agreement drafts run the app's formation handlers in an isolated fabric over
+complete cadastral source ground. Open ground, attached stations and freeform-building formations
+currently require review in the app; demo-wide live-source parity is still pending.
+
+Approval links select Mint, Fund, accept, Execute, Cancel, Expire or a bet; loading one never signs.
+The current app has no pledge/donation wallet form, so those approval requests explicitly refuse;
+local `ugt_pledge` and `ugt_donate` remain available. `ugt_compare` reports authored areas, known
+parcel inputs and the money schedule; missing demolition and design-only ledger evidence stays null.
+
+Local signed/paid tools still require an operator-controlled devnet `UGT_AGENT_KEYPAIR`,
+`UGT_MCP_LIVE=1` and `confirm: true`. `UGT_MCP_MAX_USDC_PER_ACTION` (default 0.25) caps every USDC
+action and x402 price. `ugt_chain_agreements`, `ugt_chain_agreement`, `ugt_bet_on_account` and the
+account-based settlement tools use RPC directly, so that flow needs no UGT API.
+
+To stage a local package (provisional name, no publication):
+
+```sh
+cd backend
+node scripts/mcp-package.mjs --output /tmp/ugt-mcp-package
+npm pack /tmp/ugt-mcp-package --pack-destination /tmp
+npx --package /tmp/urban-game-theory-mcp-0.3.0.tgz ugt-mcp
+```
+
+The staging directory must be new. The package pins the dependency versions installed in the
+backend and carries the browser modules its node host loads; no credentials or repository state
+are included. Choose the public npm name separately before publication.
+
+`node scripts/mcp-check-contracts.mjs --origin <origin> --fixtures <tools.json>` checks every hosted
+tool, resource and prompt. Fixture JSON maps tool names to arguments. Writes are probed with
+`confirm:false`; missing fixtures fail the check. No tool publishes, signs or pays. The live origin
+cannot pass before the service and nginx configuration are deployed.
+
+`node scripts/mcp-eval.mjs --help` describes the opt-in Anthropic batch evaluator. It defaults to one
+task, takes explicit model/batch prices/budget, checkpoints each batch and cost outside the checkout,
+and scores tool artifacts. `--seed <json>` generates 20 tasks (21 with an agreement account) from
+`{city, parcelSourceId, parcelIds, streetPoints, agreementAccount?}`; `--tasks <json>` accepts custom
+cases. A paid run and public registry/npm publication require the user's separate authorization.
+
+Production configuration is in `backend/ecosystem.config.cjs` (`ugt-mcp`, public-only launcher)
+and the exact `/mcp`, `/mcp/`, `/mcp/server-card` nginx locations. Starting it is a separate deploy;
+the API deploy still selects only the API process.
 
 ## Schedule (opt-in)
 

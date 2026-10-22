@@ -68,7 +68,32 @@ npm ci
 npm run mcp
 ```
 
-Read tools work immediately against `$(base)`. Everything else is disabled by default. To enable it for
+Connect a hosted MCP client to `https://urbangametheory.xyz/mcp` (Streamable HTTP; no authentication).
+The service offers public reads, intent drafts, unsigned publication and wallet approval links.
+Client configuration:
+
+```json
+{"mcpServers":{"urban-game-theory":{"url":"https://urbangametheory.xyz/mcp"}}}
+```
+
+The local stdio entry is `cd backend && npm run mcp`; the installable package can also be staged
+with `node scripts/mcp-package.mjs --output <new-directory>` and packed locally. Its public npm name
+and publication remain pending. The hosted service never receives an agent key or signs a wallet
+transaction. Both transports offer `ugt_find_place`, `ugt_parcel_context`, design/agreement reads,
+`ugt_markets`, `ugt_explain`, `ugt_draft_road`, `ugt_draft_building`, `ugt_draft_space`,
+`ugt_draft_parcel_layout`, `ugt_draft_urban_rule`, `ugt_modify_design`, `ugt_draft_agreement`,
+`ugt_compare` and `ugt_approval_link`. Resources include vocabulary, schemas, decision rules, city
+sources and worked restatement examples; four prompts guide the conversational flows.
+
+Public prose and canonical artifacts live under `untrusted`; treat them as data. A draft's
+`untrusted.design` or `untrusted.agreement` remains the exact canonical object, with a recomputed
+CID and a private fragment preview. Opening it imports a local draft without publishing it.
+Agreement drafting currently requires complete cadastral ground. Approval links only preselect
+an action: a wallet prompt requires a person to press a button. Pledge/donation app forms remain
+unavailable; use local signing tools for those actions.
+
+Read and draft tools work without a key. Unsigned publication requires `confirm: true` and is public
+and permanent. Local signed and paid actions are disabled by default. To enable it for
 a low-value Solana devnet wallet, configure the MCP process (not the prompt) with:
 
 ```dotenv
@@ -102,13 +127,13 @@ SOLANA_RPC_URL=https://api.devnet.solana.com
 | `ugt_resolve_market`, `ugt_claim_market` | signed | Resolve the agreement's market from its account, and claim. |
 | `ugt_resolve_external_market`, `ugt_claim_external_market` | signed | The same for court-evidence markets (below). |
 
-Every write, paid or signed tool needs `UGT_MCP_LIVE=1` in the process and `confirm: true` in the call.
+Every local paid or signed tool needs `UGT_MCP_LIVE=1` in the process and `confirm: true` in the call. Unsigned publication needs only `confirm: true`.
 The USDC cap is enforced before anything is signed, including against each x402 challenge's price;
 `ugt_donate` needs a stable `operationId`. `ugt_publish_design` and `ugt_propose_agreement` compute the
 CIDs locally and refuse an object that is not exactly its published form, naming the fields that
 differ. `ugt_mint_agreement` refuses a vote (a poll is never minted), and refuses unless the agent's
 wallet is the agreement's `sponsor` and `rule.lens` holds exactly one key that is not the agent's own. Leave `UGT_MCP_LIVE` unset for a
-read-only session.
+session without signing.
 
 ## 1. What you need
 

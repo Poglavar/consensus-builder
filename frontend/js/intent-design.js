@@ -15,7 +15,7 @@
             turf: given.turf || root.turf,
             record: given.record || load('DesignRecord', './design-record.js'),
             profile: given.profile || (typeof require === 'function' ? require('./corridor-profile.js') : root),
-            osm: given.osm || load('CorridorOsmForm', './corridor-osm-form.js'),
+            osm: given.osm || load('__corridorOsmForm', './corridor-osm-form.js'),
             footprint: given.footprint || load('__corridorFootprint', './corridor-footprint.js'),
             layouts: given.layouts || load('ParcelLayoutLayouts', './parcel-layout-layouts.js'),
             grid: given.grid || load('SchellingGrid', './parcels/schelling-grid.js'),
@@ -46,12 +46,14 @@
     function buildRoad(intent, d) {
         if (!Array.isArray(intent.points) || intent.points.length < 2 || intent.points.length > 200
             || intent.points.some(p => !Array.isArray(p) || p.length !== 2 || !p.every(finite) || Math.abs(p[0]) > 180 || Math.abs(p[1]) > 85)) fail('A road needs 2–200 WGS84 [longitude, latitude] points');
-        const profile = roadProfile(intent, d);
+        let profile = roadProfile(intent, d);
         if (intent.width != null) {
             if (!finite(intent.width) || intent.width < 1 || intent.width > 100) fail('Road width must be 1–100 metres');
             const ratio = intent.width / d.profile.corridorProfileWidth(profile);
             profile.strips = profile.strips.map(lane => ({ ...lane, width: lane.width * ratio }));
         }
+        profile = d.osm.profileAtMillimetre(profile);
+        if (d.profile.corridorProfileWidth(profile) > 100) fail('Road cross-section must be at most 100 metres');
         const points = intent.points.map(([lng, lat]) => ({ lat, lng }));
         const definition = { kind: 'road', points: [points], segments: [points], segmentIds: ['intent-street'], profile, width: d.profile.corridorProfileWidth(profile), tunnels: [] };
         const material = d.footprint.materialize(definition);

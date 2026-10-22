@@ -384,6 +384,17 @@
             return stored;
         }
 
+        // A private fragment preview becomes an ordinary local draft, with no publication mark.
+        function importDraft(row, { deferSave = false } = {}) {
+            const record = localDesignFromRow(row, { apiBase: currentApiBase(), proposalId: `draft-${row.cid}` });
+            delete record.published;
+            record.lifecycleStatus = 'draft';
+            record.applied = false;
+            const stored = storage().importProposal(record, { overwrite: true, deferSave });
+            if (!stored) throw new Error('The draft could not be imported.');
+            return stored;
+        }
+
         // The link a set of published designs opens at: /designs/<cid>,<cid> in the city they belong to,
         // in 3D, in the current language.
         function designLink(cids, { city = null } = {}) {
@@ -544,7 +555,7 @@
 
         return {
             api: {
-                publishDesign, pinDesign, pinObject, markPublished, fetchDesign, fetchDesigns, importDesign, localCopyOf,
+                publishDesign, pinDesign, pinObject, markPublished, fetchDesign, fetchDesigns, importDesign, importDraft, localCopyOf,
                 designLink, copyLink, parcelSourceIdOf, refusalMessage,
                 // A local record's exact CID at the current index, or an index summary's own.
                 publishedCid: record => (isObject(record) && record.indexed === true && cidApi().isCid(record.cid)

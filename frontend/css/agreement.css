@@ -23,6 +23,12 @@
     flex-direction: column;
 }
 
+/* Approval links select an action visually even before its wallet is connected. */
+#agreement-panel [data-approval-selected="true"] {
+    outline: 2px solid var(--cb-primary);
+    outline-offset: 2px;
+}
+
 #agreement-panel .panel-header {
     display: flex;
     flex-shrink: 0;

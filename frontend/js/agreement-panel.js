@@ -1050,6 +1050,8 @@
             const agreement = state.agreement;
             const value = state.chain && state.chain.value;
             if (!agreement || !value) return;
+            const intent = win.ApprovalLink?.parse(win.location);
+            const requestedAmount = intent?.target === agreement.published?.cid ? intent.params.amount : null;
             const lacking = value.requiredLamports > value.escrowLamports ? value.requiredLamports - value.escrowLamports : 0n;
             const readLamports = text => {
                 const typed = format().parseDecimal(text);
@@ -1057,7 +1059,7 @@
             };
             const answer = await win.CbDialog.prompt(t('agreement.chain.fundPrompt', 'How much SOL should the escrow receive from the sponsor’s wallet?'), {
                 title: t('agreement.chain.actions.fund', 'Fund'),
-                defaultValue: lacking > 0n ? format().formatNumber(bridgeApi().solOf(lacking), { maxFractionDigits: 9 }) : '',
+                defaultValue: requestedAmount || (lacking > 0n ? format().formatNumber(bridgeApi().solOf(lacking), { maxFractionDigits: 9 }) : ''),
                 placeholder: format().formatNumber(0.5, { maxFractionDigits: 1 }),
                 okText: t('agreement.chain.actions.fund', 'Fund'),
                 validate: text => readLamports(text) !== null

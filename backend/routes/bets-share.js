@@ -13,6 +13,7 @@ import { agreementByAccount, defaultMarketReader } from './markets.js';
 const require = createRequire(import.meta.url);
 // The same codecs the sheet renders with, so the preview quotes the numbers the row will show.
 const BetsLink = require('../../frontend/js/bets/bets-link.js');
+const ApprovalLink = require('../../frontend/js/approval-link.js');
 const BetsModel = require('../../frontend/js/bets/bets-model.js');
 const MarketQuestion = require('../../frontend/js/bets/market-question.js');
 
@@ -128,14 +129,14 @@ export function setupBetsShareRoute(app, pool, options = {}) {
                 // The preview shows before and after side by side when the pair has been rendered.
                 image: absoluteImage(agreement.screenshotPairUrl || agreement.screenshotUrl, publicBaseUrl, apiBaseUrl),
                 canonical: BetsLink.build({ origin: publicBaseUrl, city: linkCity, account }),
-                next: BetsLink.appHref({ city: linkCity, account, lang })
+                next: BetsLink.appHref({ city: linkCity, account, lang, approval: ApprovalLink.parse({ pathname: req.path, search: new URLSearchParams(req.query).toString() }) })
             };
             res.set('Cache-Control', `public, max-age=${CACHE_SECONDS}`);
             res.send(renderPage(page));
         } catch (error) {
             console.error(`[${new Date().toISOString()}] GET /bets/${account} failed:`, error);
             // People still get to the app; only the preview is lost.
-            res.status(502).send(renderPage({ ...generic, next: BetsLink.appHref({ city, account, lang }) }));
+            res.status(502).send(renderPage({ ...generic, next: BetsLink.appHref({ city, account, lang, approval: ApprovalLink.parse({ pathname: req.path, search: new URLSearchParams(req.query).toString() }) }) }));
         }
     });
 }

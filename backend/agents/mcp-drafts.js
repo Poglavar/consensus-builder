@@ -13,7 +13,7 @@ function union(features) {
 
 export function createMcpDraftTools({ read, appOrigin }) {
     async function result(design, parcelSourceId) {
-        const binding = await read.request('/designs/binding', {}, { site: design.site, city: design.city, toleranceM: design.toleranceM, parcelSourceId });
+        const binding = await read.request('/designs/binding', {}, { site: read.siteOfDesign(design), city: design.city, toleranceM: design.toleranceM, parcelSourceId });
         if (binding.binding?.coverage === 'unknown' || binding.binding?.unknownM2 > 0) throw fail('ground-unavailable', 'The site binding is unknown.', { action: 'Retry when parcel coverage is available.' });
         return { design, cid: cidOfObject(design), takes: (binding.binding?.parcels || []).map(p => p.parcelId), binding: binding.binding,
             warnings: [ ...(design.goal === 'buildings' ? ['An intent drawing is not a planning permission; envelope applicability remains unresolved.'] : []),
@@ -58,7 +58,7 @@ export function createMcpDraftTools({ read, appOrigin }) {
     }
     async function resolveDesign(value) {
         if (isCid(value)) return (await read.getDesign({ designCid: value })).content;
-        const content = value?.design || value;
+        const content = value?.untrusted?.design || value?.design || value;
         const rebuilt = designObject({ ...content, createdAt: content?.authoredAt });
         if (cidOfObject(content) !== rebuilt.cid) throw fail('invalid-design', 'Draft is not a canonical design/v1 object.', { action: 'Use a design returned by a draft tool.' });
         return content;
@@ -69,7 +69,17 @@ export function createMcpDraftTools({ read, appOrigin }) {
         draftSpace: args => draft('space', args), draftParcelLayout: args => draft('parcel-layout', args), draftUrbanRule: args => draft('urban-rule', args),
         async modifyDesign({ design, changes, parcelSourceId }) {
             const original = await resolveDesign(design);
-            const modified = builder.modify(original, changes, { turf });
+            let modified = original;
+            for (const change of changes) {
+                if (change.type === 'fit_to_permitted') {
+                    if (!modified.buildingProposal) throw fail('invalid-change', 'Only a building can fit a permitted envelope.', { action: 'Choose a building design.' });
+                    const answer = await read.request('/designs/binding', {}, { site: read.siteOfDesign(modified), city: modified.city, parcelSourceId });
+                    const ids = answer.binding?.parcels?.map(p => p.parcelId) || [];
+                    if (ids.length !== 1) throw fail('envelope-ambiguous', 'Choose a building on one parcel.', { action: 'Draft one parcel-bound building.' });
+                    const fitted = await draft('building', { city: modified.city, parcelSourceId, parcelIds: ids, permitted: true, planningSource: change.planningSource, title: modified.title, description: modified.description, author: modified.author, authoredAt: modified.authoredAt });
+                    modified = fitted.design;
+                } else modified = builder.modify(modified, [change], { turf });
+            }
             modified.origin = { cid: cidOfObject(original) };
             return result(modified, parcelSourceId);
         },
