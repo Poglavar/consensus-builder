@@ -56,7 +56,7 @@
           "requiresBackend": true,
           "ownership": false,
           "liveRadiusKm": 8,
-          "attribution": "<a href=\"https://use-land-property-data.service.gov.uk/datasets/inspire\">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution."
+          "attribution": "<a href=\"https://use-land-property-data.service.gov.uk/datasets/inspire\">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database rights 2026, reproduced with the permission of HM Land Registry; polygons © Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution."
         },
         "buildings": {
           "source": "overture-tiles"
@@ -98,7 +98,7 @@
       "geometryKind": "derived-ground",
       "normalizationPolicy": "hmlr-browser-v1-area-desc-id-asc-grid1mm-project-before-overlay-geos3.13.0",
       "scope": "England and Wales HM Land Registry INSPIRE freehold title-index coverage. Application ground is a deterministic derived surface, not a legal title boundary; qualification evidence is bounded at each listed WUP city locator.",
-      "attribution": "HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.",
+      "attribution": "HM Land Registry INSPIRE Index Polygons, Crown copyright and database rights 2026, reproduced with the permission of HM Land Registry; polygons © Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.",
       "maxConcurrentQueries": 2,
       "capabilities": {
         "areaEnumeration": true
