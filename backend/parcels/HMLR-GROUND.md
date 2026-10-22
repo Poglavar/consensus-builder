@@ -83,8 +83,9 @@ for one query) answers that query from the council archives and reports a `sourc
 progress event; after a store failure the import serves queries for 5 minutes before the
 store is tried again.
 
-Build, assemble and upload a release from the current routing manifest (about 3 GB of tiles
-for England and Wales; the cut is restartable per council and can run as several shards):
+Build, assemble and upload a release from the current routing manifest (about 5 GB in
+165,000 files for England and Wales; the cut is restartable per council and can run as
+several shards; a rerun of the assembly reuses a finished tile pass):
 
 ```sh
 node backend/scripts/build-hmlr-tiles.mjs --run --manifest <routing manifest URL> --out tmp/hmlr-tiles --shard 0/3   # and 1/3, 2/3
