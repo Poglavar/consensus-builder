@@ -84,26 +84,42 @@ describe('daylight at a place', () => {
         expect(day.sunset).toBeLessThanOrEqual(20 * 60 + 55);
         expect(day.solarNoon).toBeGreaterThanOrEqual(12 * 60 + 50);
         expect(day.solarNoon).toBeLessThanOrEqual(13 * 60 + 5);
-        expect([day.min, day.max]).toEqual([day.sunrise, day.sunset]);
+        expect(day.polar).toBeNull();
         // Noon altitude at the solstice is 90° − latitude + 23.44°.
         const noon = core.localToInstant('2026-06-21', day.solarNoon, ZAGREB.timeZone);
         const altitude = SunCalc.getPosition(noon, ZAGREB.lat, ZAGREB.lng).altitude / DEG;
         expect(altitude).toBeCloseTo(90 - ZAGREB.lat + 23.44, 0);
     });
 
-    it('spans the whole day where the sun does not set or rise', () => {
+    it('tells polar day from polar night where the sun does not set or rise', () => {
         const polarDay = core.daylight(SunCalc, '2026-06-21', 69.65, 18.96, 'Europe/Oslo');
-        expect(polarDay).toMatchObject({ sunrise: null, sunset: null, min: 0, max: 1439 });
+        expect(polarDay).toMatchObject({ sunrise: null, sunset: null, polar: 'day' });
         const polarNight = core.daylight(SunCalc, '2026-12-21', 69.65, 18.96, 'Europe/Oslo');
-        expect(polarNight).toMatchObject({ sunrise: null, min: 0, max: 1439 });
+        expect(polarNight).toMatchObject({ sunrise: null, sunset: null, polar: 'night' });
     });
 
-    it('opens on now while the sun is up, else on solar noon', () => {
+    it('opens on now while the sun is up; at night a playing day starts at sunrise, a paused one at noon', () => {
         const day = { sunrise: 300, sunset: 1240, solarNoon: 778 };
-        expect(core.initialMinutes(600, day)).toBe(600);
-        expect(core.initialMinutes(1300, day)).toBe(778);
-        expect(core.initialMinutes(100, day)).toBe(778);
-        expect(core.initialMinutes(100, { sunrise: null, sunset: null, solarNoon: 720 })).toBe(100);
+        expect(core.initialMinutes(600, day, true)).toBe(600);
+        expect(core.initialMinutes(1300, day, true)).toBe(300);
+        expect(core.initialMinutes(1300, day, false)).toBe(778);
+        expect(core.initialMinutes(100, day, false)).toBe(778);
+        expect(core.initialMinutes(100, { sunrise: null, sunset: null, solarNoon: 720 }, true)).toBe(100);
+    });
+
+    it('plays a full day per cycle and wraps past midnight', () => {
+        expect(core.advanceMinutes(600, 60000, 60000)).toBeCloseTo(600, 9);
+        expect(core.advanceMinutes(600, 1000, 60000)).toBeCloseTo(624, 9);
+        expect(core.advanceMinutes(1430, 1000, 60000)).toBeCloseTo(14, 9);
+        expect(core.advanceMinutes(600, 0, 60000)).toBe(600);
+        expect(core.advanceMinutes(600, -5, 60000)).toBe(600);
+    });
+
+    it('brightens the sun icon from the horizon to 45° up, and has none at night', () => {
+        expect(core.sunGlow(-0.2)).toBe(0);
+        expect(core.sunGlow(22.5 * DEG)).toBeCloseTo(0.5, 9);
+        expect(core.sunGlow(60 * DEG)).toBe(1);
+        expect(core.formatMinutes(539.9)).toBe('08:59');
     });
 });
 
@@ -164,11 +180,12 @@ describe('shadow flags', () => {
 });
 
 describe('the sun in the scene', () => {
-    let scene, light, hemi, renderer, camera, target, origin, photo, invalidations, handle;
+    let scene, light, hemi, renderer, camera, target, origin, photo, invalidations, handle, hooks;
 
     beforeEach(() => {
         threeSun.detach();
         threeSun.state.enabled = true;
+        threeSun.state.playing = false;
         threeSun.state.dateISO = '2026-06-21';
         threeSun.state.minutes = null;
         scene = { children: [mesh(lit(), 30)], add(o) { o.parent = scene; }, remove(o) { o.parent = null; } };
@@ -184,12 +201,50 @@ describe('the sun in the scene', () => {
         origin = { lat: ZAGREB.lat, lng: ZAGREB.lng };
         photo = false;
         invalidations = 0;
-        handle = threeSun.attach({
+        hooks = new Set();
+        handle = attach();
+    });
+
+    function attach() {
+        return threeSun.attach({
             THREE: { PCFShadowMap: 1 }, scene, renderer, light, hemi,
             getOrigin: () => origin, getK: () => 1 / Math.cos(ZAGREB.lat * DEG),
             getCamera: () => camera, getTarget: () => target,
-            isPhotoActive: () => photo, invalidate: () => { invalidations++; }, excludedRoots: () => []
+            isPhotoActive: () => photo, invalidate: () => { invalidations++; }, excludedRoots: () => [],
+            addFrameHook: fn => hooks.add(fn), removeFrameHook: fn => hooks.delete(fn)
         });
+    }
+
+    it('plays the day from a frame hook only while playing, one full day per cycle', () => {
+        expect(hooks.size).toBe(0);
+        threeSun.state.playing = true;
+        threeSun.state.minutes = 600;
+        handle = attach();
+        expect(hooks.size).toBe(1);
+        const lightAt = () => light.position.clone();
+        handle.beforeRender({ fullFrame: false }, new Date('2026-06-21T10:00:00Z'));
+        const before = lightAt();
+        handle.onFrame(1000);
+        handle.onFrame(1000 + 50);   // 50 ms of a 60 s day = 1.2 minutes
+        expect(threeSun.state.minutes).toBeCloseTo(600 + 50 * 1440 / threeSun.DAY_CYCLE_MS, 9);
+        renderer.shadowMap.needsUpdate = false;
+        handle.beforeRender({ fullFrame: false }, new Date('2026-06-21T10:00:00Z'));
+        expect(lightAt().x).not.toBe(before.x);
+        // A frame that only advanced the day still re-renders the shadow map: the sun moved.
+        expect(renderer.shadowMap.needsUpdate).toBe(true);
+        handle.onFrame(1000 + 50 + 5000);  // a stalled tab moves the sun by at most one frame cap
+        expect(threeSun.state.minutes).toBeCloseTo(600 + 150 * 1440 / threeSun.DAY_CYCLE_MS, 9);
+        threeSun.detach();
+        expect(hooks.size).toBe(0);
+    });
+
+    it('starts a playing night at sunrise and keeps running from there', () => {
+        threeSun.state.playing = true;
+        threeSun.state.dateISO = null;
+        handle = attach();
+        handle.beforeRender({ fullFrame: true }, new Date('2026-06-21T22:00:00Z')); // midnight in Zagreb
+        const day = core.daylight(SunCalc, '2026-06-22', ZAGREB.lat, ZAGREB.lng, ZAGREB.timeZone);
+        expect(threeSun.state.minutes).toBe(day.sunrise);
     });
 
     it('puts the light up the sun ray over the place at the chosen local time, casting shadows', () => {
@@ -212,11 +267,7 @@ describe('the sun in the scene', () => {
         threeSun.state.minutes = 23 * 60;
         threeSun.state.enabled = true;
         // The UI marks the sun dirty when the time changes; a re-attach does the same here.
-        handle = threeSun.attach({
-            THREE: { PCFShadowMap: 1 }, scene, renderer, light, hemi,
-            getOrigin: () => origin, getK: () => 1, getCamera: () => camera, getTarget: () => target,
-            isPhotoActive: () => false, invalidate() {}, excludedRoots: () => []
-        });
+        handle = attach();
         handle.beforeRender({ fullFrame: true }, new Date('2026-06-21T22:00:00Z'));
         expect(light.castShadow).toBe(false);
         expect(light.intensity).toBe(0);

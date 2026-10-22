@@ -325,7 +325,7 @@
                 </div>
                 <div id="urban-blocks-legend" class="urban-blocks-legend" hidden></div>
                 <div class="urban-block-list-status-row">
-                    <p id="urban-block-list-status" class="urban-block-info-note" role="status" aria-live="polite"></p>
+                    <p id="urban-block-list-status" class="urban-block-info-note"></p>
                     <button type="button" id="urban-block-list-refresh" class="btn-quiet" data-i18n-key="urbanBlocks.refresh" data-i18n-attr="title,aria-label" title="Refresh this area" aria-label="Refresh this area"><i class="fas fa-sync-alt" aria-hidden="true"></i></button>
                 </div>
                 <ol id="urban-block-list" class="urban-block-list"></ol>
@@ -379,7 +379,7 @@
                     </div>
                     <p id="schelling-plan-plot-size" class="schelling-plan-settings__note"></p>
                     <p id="schelling-plan-code" class="schelling-plan-settings__note schelling-plan-settings__code"></p>
-                    <p id="schelling-plan-status" class="schelling-plan-settings__note" role="status" aria-live="polite"></p>
+                    <p id="schelling-plan-status" class="schelling-plan-settings__note"></p>
                     <details class="schelling-plan-settings__why">
                         <summary data-i18n-key="schellingPlan.why">Why these numbers</summary>
                         <p id="schelling-plan-why" class="schelling-plan-settings__note"></p>
@@ -445,7 +445,7 @@
         </button>
         <button type="button" id="measurement-button" class="map-shell-button map-utility-button" data-map-modes="2d" data-sheet-target="measurement-sheet" aria-controls="measurement-sheet" aria-expanded="false" title="Measure" aria-label="Measure" data-i18n-key="sidebar.measurement.measureButton" data-i18n-attr="title,aria-label"><i class="fas fa-ruler" aria-hidden="true"></i></button>
         <!-- Sun and shadows (js/three-sun.js): the model view's occupant of the utility slot that Measure holds in 2D. -->
-        <button type="button" id="sun-button" class="map-shell-button map-utility-button" data-map-modes="3d" data-sheet-target="sun-sheet" aria-controls="sun-sheet" aria-expanded="false" data-sun="on" title="Sun and shadows" aria-label="Sun and shadows" data-i18n-key="threeMode.sun.title" data-i18n-attr="title,aria-label" hidden><i class="fas fa-sun" aria-hidden="true"></i></button>
+        <button type="button" id="sun-button" class="map-shell-button map-utility-button" data-map-modes="3d" data-sheet-target="sun-sheet" aria-controls="sun-sheet" aria-expanded="false" data-sun="day" title="Sun and shadows" aria-label="Sun and shadows" data-i18n-key="threeMode.sun.title" data-i18n-attr="title,aria-label" hidden><i class="fas fa-sun" aria-hidden="true"></i></button>
         <button id="mode-2d-toggle" class="map-mode-toggle map-mode-tile" title="2D map" aria-label="2D map" aria-pressed="true" data-i18n-key="threeMode.toggle.switchTo2d" data-i18n-attr="title,aria-label"><span aria-hidden="true">2D</span></button>
         <button id="mode-3d-toggle" class="map-mode-toggle map-mode-tile" title="3D models" aria-label="3D models" aria-pressed="false" data-i18n-key="threeMode.toggle.switchTo3d" data-i18n-attr="title,aria-label"><span aria-hidden="true">3D</span></button>
         <button id="mode-realistic-toggle" class="map-mode-realistic-btn map-mode-tile" title="3D aerial imagery (Google)" aria-label="3D aerial imagery (Google)" aria-pressed="false" data-i18n-key="threeMode.toggle.realistic" data-i18n-attr="title,aria-label">
@@ -468,7 +468,7 @@
             </div>
             <div class="map-sheet-body">
                 <div class="planning-layer-controls"></div>
-                <p class="planning-view-status" role="status" aria-live="polite"></p>
+                <p class="planning-view-status"></p>
                 <button type="button" id="planning-view-retry" class="cb-link planning-view-retry" hidden></button>
                 <p class="planning-inspect-hint"></p>
                 <section class="planning-focus" hidden><h3 class="planning-focus__title"></h3><p class="planning-focus__note" hidden></p></section>
@@ -950,7 +950,7 @@
             <div class="map-sheet-body" data-map-modes="photo" hidden>
                 <div class="checkbox-group"><label><input id="aerial-city-visible" type="checkbox" checked><span data-i18n-key="mapShell.reorg.aerialLayer">Existing city (Google imagery)</span></label></div>
                 <div class="checkbox-group"><label><input id="photo-parcels-visible" type="checkbox" checked><span data-i18n-key="threeMode.photoParcels.toggle">Cadastral parcel boundaries</span></label></div>
-                <p id="photo-parcels-status" class="photoreal-parcel-note" role="status" aria-live="polite"></p>
+                <p id="photo-parcels-status" class="photoreal-parcel-note"></p>
             </div>
         </section>
 
@@ -1008,20 +1008,21 @@
                 <div class="checkbox-group"><label><input id="sun-enabled" type="checkbox" checked><span data-i18n-key="threeMode.sun.enabled">Show sun and shadows</span></label></div>
                 <fieldset id="sun-controls" class="sun-controls" aria-label="When" data-i18n-key="threeMode.sun.when" data-i18n-attr="aria-label">
                     <div class="sun-time-heading">
-                        <label for="sun-time" class="sheet-field-label" data-i18n-key="threeMode.sun.time">Time of day</label>
-                        <output id="sun-time-value" for="sun-time" class="sun-time-value"></output>
+                        <label for="sun-time" id="sun-zone" class="sheet-field-label sun-zone">Time of day</label>
+                        <span class="sun-time-readout">
+                            <output id="sun-time-value" for="sun-time" class="sun-time-value"></output>
+                            <button type="button" id="sun-play" class="btn btn-icon btn-sm sun-play" aria-pressed="true" title="Pause the day" aria-label="Pause the day"><i class="fas fa-pause" aria-hidden="true"></i></button>
+                        </span>
                     </div>
                     <input id="sun-time" class="sun-time-slider" type="range" min="0" max="1439" step="1" value="720">
-                    <div class="sun-time-bounds"><span id="sun-sunrise"></span><span id="sun-sunset"></span></div>
+                    <div id="sun-daylight" class="sun-daylight" aria-hidden="true"></div>
+                    <div class="sun-time-bounds"><span>00:00</span><span id="sun-daylight-text"></span><span>24:00</span></div>
+                    <p id="sun-status" class="sheet-note sun-status"></p>
                     <div class="sun-date-row">
-                        <label class="sheet-field">
-                            <span class="sheet-field-label" data-i18n-key="threeMode.sun.date">Date</span>
-                            <input id="sun-date" type="date" min="1900-01-01" max="2200-12-31">
-                        </label>
-                        <button type="button" id="sun-now" class="btn" data-i18n-key="threeMode.sun.now">Now</button>
+                        <label for="sun-date" class="sheet-field-label" data-i18n-key="threeMode.sun.date">Date</label>
+                        <input id="sun-date" type="date" min="1900-01-01" max="2200-12-31">
+                        <button type="button" id="sun-now" class="btn btn-sm" data-i18n-key="threeMode.sun.now">Now</button>
                     </div>
-                    <p id="sun-zone" class="sheet-note"></p>
-                    <p id="sun-status" class="sheet-note" role="status" aria-live="polite" hidden></p>
                 </fieldset>
             </div>
         </section>

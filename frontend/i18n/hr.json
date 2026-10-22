@@ -6596,10 +6596,13 @@
             "time": "Doba dana",
             "date": "Datum",
             "now": "Sada",
-            "sunrise": "Izlazak {{time}}",
-            "sunset": "Zalazak {{time}}",
-            "zone": "Lokalno vrijeme na ovom mjestu ({{zone}})",
-            "belowHorizon": "Sunce je u to vrijeme ispod obzora."
+            "zone": "Lokalno vrijeme, {{zone}}",
+            "daylight": "Dnevno svjetlo {{rise}}–{{set}}",
+            "polarDay": "Sunce ne zalazi",
+            "polarNight": "Sunce ne izlazi",
+            "play": "Pokreni dan",
+            "pause": "Zaustavi dan",
+            "belowHorizon": "Noć: sunce je ispod obzora."
         },
         "walkPickHint": "Kliknite tlo gdje želite započeti šetnju (Esc odustaje).",
         "controls": {

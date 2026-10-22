@@ -1,8 +1,10 @@
 // Sun and shadows in the 3D model view: the scene's directional light becomes the sun over the
-// scene's own location at a chosen local date and time, and casts shadows. It is on by default; the
-// sun button (index.html #sun-button, slot 1 of the mode strip in model view) opens #sun-sheet to
-// switch it off or pick the time and date. Times are the place's wall clock (its IANA zone from
-// tz-lookup), not the viewer's. three-mode.js attaches it to each scene and calls beforeRender()
+// scene's own location at a local date and time, and casts shadows. It is on by default and plays
+// the day — a full 24 h every DAY_CYCLE_MS, round and round — so the shadows move. The sun button
+// (index.html #sun-button, slot 1 of the mode strip in model view) shows a sun whose colour follows
+// its height, or a moon at night, and opens #sun-sheet to switch it off, pause, or pick the time and
+// date. Times are the place's wall clock (its IANA zone from tz-lookup), not the viewer's.
+// three-mode.js attaches it to each scene, runs the day from a frame hook and calls beforeRender()
 // every frame; the maths lives in sun-shadows.js. Photo view keeps its own lighting.
 (function (root, factory) {
     const api = factory(root);
@@ -14,6 +16,8 @@
     const STORAGE_KEY = 'cb_3d_sun_enabled';
     const FLAG_SWEEP_MS = 1000;          // new meshes pick up shadow flags within a second
     const MIN_CASTER_HEIGHT_M = 0.3;     // flat ground receives shadows but does not cast them
+    const DAY_CYCLE_MS = 60000;          // one full day of sun per minute while playing
+    const MAX_FRAME_DT_MS = 100;         // a stalled tab never jumps the sun forward by hours
 
     // Browser globals, or the same files required in node tests.
     const core = () => (root && root.__sunShadows) || require('./sun-shadows.js');
@@ -27,9 +31,9 @@
         return fallback;
     };
 
-    // What the person chose. date/minutes null mean "today" and "now (or noon at night)" at the
-    // scene's place, resolved when the sun is computed, so they follow the scene to another city.
-    const state = { enabled: loadEnabled(), dateISO: null, minutes: null };
+    // What the person chose. date/minutes null mean "today" and "now" at the scene's place, resolved
+    // when the sun is computed, so they follow the scene to another city. Reduced motion starts paused.
+    const state = { enabled: loadEnabled(), playing: !(root && root.__reducedMotion), dateISO: null, minutes: null };
     let attached = null;
 
     function loadEnabled() {
@@ -92,56 +96,108 @@
 
     // The resolved moment: the chosen (or default) local date and time at the place, its daylight
     // window, and the sun there.
+    let dayCache = null;
     function resolveSun(place, now = new Date()) {
         const c = core();
         const today = c.localDateISO(now, place.timeZone);
         const dateISO = state.dateISO || today;
-        const day = c.daylight(sunCalc(), dateISO, place.lat, place.lng, place.timeZone);
+        const dayKey = `${place.key}|${dateISO}`;
+        if (!dayCache || dayCache.key !== dayKey) {
+            dayCache = { key: dayKey, day: c.daylight(sunCalc(), dateISO, place.lat, place.lng, place.timeZone) };
+        }
+        const day = dayCache.day;
         const minutes = state.minutes !== null ? state.minutes
-            : dateISO === today ? c.initialMinutes(c.localMinutes(now, place.timeZone), day) : day.solarNoon;
+            : dateISO === today ? c.initialMinutes(c.localMinutes(now, place.timeZone), day, state.playing) : day.solarNoon;
+        // A playing day runs on from wherever it starts.
+        if (state.playing) state.minutes = minutes;
         const instant = c.localToInstant(dateISO, minutes, place.timeZone);
         const position = sunCalc().getPosition(instant, place.lat, place.lng);
         return { dateISO, minutes, day, instant, altitude: position.altitude, azimuth: position.azimuth };
     }
 
-    // ---- The sheet ----
+    // ---- The sheet and the button ----
     const el = id => (root && root.document ? root.document.getElementById(id) : null);
+    const shown = {};   // what the DOM already says, so a playing day writes only what changed
+    const write = (key, node, apply, value) => {
+        if (!node || shown[key] === value) return;
+        shown[key] = value;
+        apply(node, value);
+    };
+    const setText = (node, value) => { node.textContent = value; };
+
+    // The button: a sun whose colour runs from dawn orange to noon yellow with its height (the
+    // --sun-glow custom property, css/three-sun.css), a moon at night, a dim sun when switched off.
+    function renderButton(sun) {
+        const button = el('sun-button');
+        if (!button) return;
+        const phase = !state.enabled ? 'off' : !sun ? 'day' : sun.altitude > 0 ? 'day' : 'night';
+        write('phase', button, (node, value) => { node.dataset.sun = value; }, phase);
+        write('icon', button.querySelector('i'), (node, value) => {
+            node.classList.toggle('fa-sun', value === 'sun');
+            node.classList.toggle('fa-moon', value === 'moon');
+        }, phase === 'night' ? 'moon' : 'sun');
+        const glow = sun ? Math.round(core().sunGlow(sun.altitude) * 20) / 20 : 1;
+        write('glow', button, (node, value) => { node.style.setProperty('--sun-glow', String(value)); }, glow);
+    }
+
+    // The parts of the sheet that move with the clock. Every row keeps its height whatever it says.
+    function renderLive() {
+        const sun = attached && attached.sun;
+        renderButton(sun);
+        if (!sun) return;
+        const c = core();
+        const clock = c.formatMinutes(sun.minutes);
+        write('clock', el('sun-time-value'), setText, clock);
+        write('slider', el('sun-time'), (node, value) => {
+            node.value = String(value);
+            node.setAttribute('aria-valuetext', clock);
+        }, Math.floor(sun.minutes));
+        const status = sun.altitude > 0 ? ''
+            : t('threeMode.sun.belowHorizon', 'Night: the sun is below the horizon.');
+        write('status', el('sun-status'), setText, status);
+    }
 
     function renderSheet() {
-        const button = el('sun-button');
-        if (button) button.dataset.sun = state.enabled ? 'on' : 'off';
-        const enabled = el('sun-enabled');
-        if (enabled) enabled.checked = state.enabled;
-        const controls = el('sun-controls');
-        if (controls) controls.disabled = !state.enabled;
+        write('enabled', el('sun-enabled'), (node, value) => { node.checked = value; }, state.enabled);
+        write('controls', el('sun-controls'), (node, value) => { node.disabled = value; }, !state.enabled);
+        write('playing', el('sun-play'), (node, playing) => {
+            node.setAttribute('aria-pressed', String(playing));
+            const label = playing ? t('threeMode.sun.pause', 'Pause the day') : t('threeMode.sun.play', 'Play the day');
+            node.title = label;
+            node.setAttribute('aria-label', label);
+            const icon = node.querySelector('i');
+            if (icon) {
+                icon.classList.toggle('fa-pause', playing);
+                icon.classList.toggle('fa-play', !playing);
+            }
+        }, state.playing);
+        renderLive();
         const place = attached && attached.place;
         const sun = attached && attached.sun;
+        // The slider's label: whose clock it is, once the scene's place is known (three-sun owns
+        // this text, so it carries no data-i18n-key for the page translator to overwrite).
+        write('zone', el('sun-zone'), setText, place
+            ? t('threeMode.sun.zone', `Local time, ${place.timeZone}`, { zone: place.timeZone })
+            : t('threeMode.sun.time', 'Time of day'));
         if (!place || !sun) return;
         const c = core();
-        const slider = el('sun-time');
-        if (slider) {
-            slider.min = String(sun.day.min);
-            slider.max = String(sun.day.max);
-            slider.value = String(Math.min(sun.day.max, Math.max(sun.day.min, sun.minutes)));
-            slider.setAttribute('aria-valuetext', c.formatMinutes(sun.minutes));
-        }
-        const value = el('sun-time-value');
-        if (value) value.textContent = c.formatMinutes(sun.minutes);
         const date = el('sun-date');
-        if (date && date !== root.document.activeElement) date.value = sun.dateISO;
-        const rise = el('sun-sunrise');
-        if (rise) rise.textContent = sun.day.sunrise === null ? '00:00'
-            : t('threeMode.sun.sunrise', `Sunrise ${c.formatMinutes(sun.day.sunrise)}`, { time: c.formatMinutes(sun.day.sunrise) });
-        const set = el('sun-sunset');
-        if (set) set.textContent = sun.day.sunset === null ? '23:59'
-            : t('threeMode.sun.sunset', `Sunset ${c.formatMinutes(sun.day.sunset)}`, { time: c.formatMinutes(sun.day.sunset) });
-        const zone = el('sun-zone');
-        if (zone) zone.textContent = t('threeMode.sun.zone', `Local time at this place (${place.timeZone})`, { zone: place.timeZone });
-        const status = el('sun-status');
-        if (status) {
-            status.textContent = sun.altitude > 0 ? '' : t('threeMode.sun.belowHorizon', 'The sun is below the horizon at this time.');
-            status.hidden = sun.altitude > 0;
-        }
+        if (date && date !== root.document.activeElement) write('date', date, (node, value) => { node.value = value; }, sun.dateISO);
+        const day = sun.day;
+        const daylightText = day.polar === 'day' ? t('threeMode.sun.polarDay', 'The sun does not set')
+            : day.polar === 'night' ? t('threeMode.sun.polarNight', 'The sun does not rise')
+                : t('threeMode.sun.daylight', `Daylight ${c.formatMinutes(day.sunrise)}–${c.formatMinutes(day.sunset)}`,
+                    { rise: c.formatMinutes(day.sunrise), set: c.formatMinutes(day.sunset) });
+        write('daylight', el('sun-daylight-text'), setText, daylightText);
+        // The daylight band under the slider: where the day starts and ends, in percent of 24 h.
+        const percent = minutes => `${(minutes / c.MINUTES_PER_DAY * 100).toFixed(2)}%`;
+        const band = day.polar === 'day' ? ['0%', '100%'] : day.polar === 'night' ? ['0%', '0%']
+            : [percent(day.sunrise), percent(day.sunset)];
+        write('band', el('sun-daylight'), (node, value) => {
+            const [rise, set] = value.split('|');
+            node.style.setProperty('--sun-rise', rise);
+            node.style.setProperty('--sun-set', set);
+        }, band.join('|'));
     }
 
     function changed() {
@@ -149,6 +205,7 @@
             // Resolve now, so the sheet's readout follows the slider without waiting for a frame.
             if (attached.place) attached.sun = resolveSun(attached.place);
             attached.sunDirty = true;
+            syncPlayback();
             attached.invalidate();
         }
         renderSheet();
@@ -161,8 +218,14 @@
             saveEnabled(state.enabled);
             changed();
         });
+        // Taking the slider stops the day where it is put.
         el('sun-time')?.addEventListener('input', event => {
+            state.playing = false;
             state.minutes = Number(event.target.value);
+            changed();
+        });
+        el('sun-play')?.addEventListener('click', () => {
+            state.playing = !state.playing;
             changed();
         });
         el('sun-date')?.addEventListener('change', event => {
@@ -180,9 +243,34 @@
         renderSheet();
     }
 
+    // ---- Playing the day ----
+    // A frame hook keeps three-mode's loop running while the day plays, and only then: a paused or
+    // switched-off sun leaves the scene to render on demand.
+    let lastTick = null;
+    function onFrame(nowMs) {
+        const a = attached;
+        if (!a || !state.playing || !state.enabled || a.isPhotoActive() || state.minutes === null) {
+            lastTick = null;
+            return;
+        }
+        const elapsed = lastTick === null ? 0 : Math.min(MAX_FRAME_DT_MS, Math.max(0, nowMs - lastTick));
+        lastTick = nowMs;
+        if (elapsed <= 0) return;
+        state.minutes = core().advanceMinutes(state.minutes, elapsed, DAY_CYCLE_MS);
+        a.sunDirty = true;
+    }
+
+    function syncPlayback() {
+        const a = attached;
+        if (!a || !a.addFrameHook) return;
+        const run = state.playing && state.enabled;
+        if (run && !a.hooked) { a.addFrameHook(onFrame); a.hooked = true; }
+        else if (!run && a.hooked) { a.removeFrameHook(onFrame); a.hooked = false; lastTick = null; }
+    }
+
     // ---- The scene ----
     // options: { THREE, scene, renderer, light, hemi, getOrigin, getK, getCamera, getTarget,
-    //            isPhotoActive, invalidate, excludedRoots }
+    //            isPhotoActive, invalidate, excludedRoots, addFrameHook, removeFrameHook }
     function attach(options) {
         detach();
         const { renderer, light, hemi } = options;
@@ -205,15 +293,18 @@
 
         attached = {
             ...options, defaults, mapSize, place: null, sun: null, sunDirty: true, frame: null,
-            showingSun: null, lastSweep: 0
+            showingSun: null, lastSweep: 0, hooked: false
         };
+        syncPlayback();
         renderSheet();
-        return { beforeRender, detach };
+        return { beforeRender, detach, onFrame };
     }
 
     function detach() {
         if (!attached) return;
         const { light, defaults, scene } = attached;
+        if (attached.hooked) attached.removeFrameHook(onFrame);
+        lastTick = null;
         restoreDefaults(attached);
         if (!defaults.targetParent && light.target.parent === scene) scene.remove(light.target);
         attached = null;
@@ -239,17 +330,18 @@
             if (a.showingSun !== false) {
                 restoreDefaults(a);
                 a.renderer.shadowMap.needsUpdate = true;
+                renderButton(null);
             }
             return;
         }
         const place = placeOf(a.getOrigin());
         if (!place) return;
-        if (place !== a.place) { a.place = place; a.sunDirty = true; }
+        if (place !== a.place) { a.place = place; a.sunDirty = true; Object.keys(shown).forEach(key => { delete shown[key]; }); }
         if (a.sunDirty || !a.sun) {
             a.sun = resolveSun(place, now);
             a.sunDirty = false;
             a.showingSun = null;
-            renderSheet();
+            renderLive();
         }
         const sun = a.sun;
         const c = core();
@@ -301,5 +393,5 @@
 
     bindSheet();
 
-    return { attach, detach, state, applyShadowFlags, resolveSun, placeOf };
+    return { attach, detach, state, applyShadowFlags, resolveSun, placeOf, DAY_CYCLE_MS };
 });

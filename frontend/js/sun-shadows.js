@@ -74,7 +74,7 @@
     }
 
     function formatMinutes(minutes) {
-        const m = ((Math.round(minutes) % MINUTES_PER_DAY) + MINUTES_PER_DAY) % MINUTES_PER_DAY;
+        const m = ((Math.floor(minutes) % MINUTES_PER_DAY) + MINUTES_PER_DAY) % MINUTES_PER_DAY;
         return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
     }
 
@@ -102,8 +102,16 @@
         return Math.min(1, Math.sin(altitude) / Math.sin(FULL_SUN_ALTITUDE));
     }
 
-    // The day at a place: sunrise and sunset as local minutes, or null for polar day and night (no
-    // sunrise that date), when the time control spans the whole day instead.
+    // How bright the sun icon burns: dim at the horizon, full from 45° up. The light itself uses
+    // sunStrength, which saturates much lower; this one keeps changing through the day.
+    const FULL_GLOW_ALTITUDE = 45 * Math.PI / 180;
+    function sunGlow(altitude) {
+        if (!isNumber(altitude) || altitude <= 0) return 0;
+        return Math.min(1, altitude / FULL_GLOW_ALTITUDE);
+    }
+
+    // The day at a place: sunrise and sunset as local minutes. Where the sun neither rises nor sets
+    // that date both are null and `polar` says whether it is polar day or polar night.
     function daylight(sunCalc, dateISO, lat, lng, timeZone) {
         // Noon local time keeps SunCalc's solar day on the chosen date across the date line and DST.
         const noon = localToInstant(dateISO, 12 * 60, timeZone);
@@ -112,18 +120,26 @@
         const sunset = isInstant(times.sunset) ? times.sunset : null;
         const solarNoon = isInstant(times.solarNoon) ? localMinutes(times.solarNoon, timeZone) : 12 * 60;
         if (!sunrise || !sunset || localDateISO(sunrise, timeZone) !== dateISO || localDateISO(sunset, timeZone) !== dateISO) {
-            return { sunrise: null, sunset: null, solarNoon, min: 0, max: MINUTES_PER_DAY - 1 };
+            const noonAltitude = sunCalc.getPosition(localToInstant(dateISO, solarNoon, timeZone), lat, lng).altitude;
+            return { sunrise: null, sunset: null, solarNoon, polar: noonAltitude > 0 ? 'day' : 'night' };
         }
-        const rise = localMinutes(sunrise, timeZone);
-        const set = localMinutes(sunset, timeZone);
-        return { sunrise: rise, sunset: set, solarNoon, min: rise, max: Math.max(rise, set) };
+        return { sunrise: localMinutes(sunrise, timeZone), sunset: localMinutes(sunset, timeZone), solarNoon, polar: null };
     }
 
-    // What the view shows when the person has not picked a time: now, if the sun is up at the place,
-    // else that day's solar noon — a model opened at night should still show its shadows.
-    function initialMinutes(nowMinutes, day) {
+    // Where the view starts when the person has not picked a time: now, if the sun is up at the
+    // place. At night a playing day starts at sunrise, so the first thing seen is the day beginning;
+    // a paused one shows solar noon, so a model opened at night still shows its shadows.
+    function initialMinutes(nowMinutes, day, playing) {
         if (day.sunrise === null) return nowMinutes;
-        return nowMinutes >= day.sunrise && nowMinutes <= day.sunset ? nowMinutes : day.solarNoon;
+        if (nowMinutes >= day.sunrise && nowMinutes <= day.sunset) return nowMinutes;
+        return playing ? day.sunrise : day.solarNoon;
+    }
+
+    // The playing day: one full 24 h turn every `cycleMs`, wrapping past midnight onto the same date.
+    function advanceMinutes(minutes, elapsedMs, cycleMs) {
+        if (![minutes, elapsedMs, cycleMs].every(isNumber) || cycleMs <= 0 || elapsedMs <= 0) return minutes;
+        const next = minutes + elapsedMs * MINUTES_PER_DAY / cycleMs;
+        return ((next % MINUTES_PER_DAY) + MINUTES_PER_DAY) % MINUTES_PER_DAY;
     }
 
     // ---- The shadow camera ----
@@ -153,6 +169,6 @@
 
     return {
         MINUTES_PER_DAY, zoneParts, zoneOffsetMs, localToInstant, localDateISO, localMinutes, formatMinutes,
-        sunDirection, sunStrength, daylight, initialMinutes, shadowFrame
+        sunDirection, sunStrength, sunGlow, daylight, initialMinutes, advanceMinutes, shadowFrame
     };
 });

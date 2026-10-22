@@ -54,6 +54,7 @@ const NOT_COMMANDS = {
     'sun-time': 'model-view lighting setting, handled by three-sun.js',
     'sun-date': 'model-view lighting setting, handled by three-sun.js',
     'sun-now': 'model-view lighting setting, handled by three-sun.js',
+    'sun-play': 'model-view lighting setting, handled by three-sun.js',
     'planning-view-retry': 'retry the current source request after an error',
     'planning-open-model': 'same model navigation as mode-3d-toggle',
     areaMonitorUploadButton: 'permanently disabled (upload not built)',

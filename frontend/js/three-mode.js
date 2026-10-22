@@ -7327,7 +7327,7 @@
         const dir = new THREE.DirectionalLight(0xffffff, 0.8 * Math.PI);
         dir.position.set(200, 200, 400);
         scene.add(dir);
-        // The same light becomes the sun over the scene's place, with shadows (three-sun.js).
+        // The same light becomes the sun over the scene's place, with moving shadows (three-sun.js).
         sunLayer = window.__threeSun.attach({
             THREE, scene, renderer, light: dir, hemi,
             getOrigin: () => xyToLatLng(0, 0),
@@ -7336,7 +7336,10 @@
             getTarget: () => controls?.target || null,
             isPhotoActive: () => !!window.PhotorealMode?.isActive?.(),
             invalidate: () => invalidateThreeView(),
-            excludedRoots: () => [lifeGroup]
+            excludedRoots: () => [lifeGroup],
+            // The playing day keeps the loop running through a frame hook, like the life layer.
+            addFrameHook: fn => window.registerThreeModeFrameHook(fn),
+            removeFrameHook: fn => window.unregisterThreeModeFrameHook(fn)
         });
 
         // Groups
