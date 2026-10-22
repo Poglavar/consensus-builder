@@ -25,8 +25,16 @@ export function getPlanningSources() {
     return planningSources ??= createPlanningSources(process.env.PLANNING_ATLAS_SOURCES);
 }
 
+const intersects = (a, b) => a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1];
+// A city-scoped provider answers its city. A bounds-scoped provider answers any city whose
+// viewport intersects its bounds, and resolves by explicit ID from any city (records, studies).
+export function providersFor(query, sources = getPlanningSources()) {
+    return sources.filter(({ descriptor }) => descriptor.city === query.city
+        || descriptor.city == null && (query.source === descriptor.id
+            || Array.isArray(query.bbox) && Array.isArray(descriptor.bbox) && intersects(descriptor.bbox, query.bbox)));
+}
 export function sourcesFor(query, sources = getPlanningSources()) {
-    const providers = sources.filter(source => source.descriptor.city === query.city);
+    const providers = providersFor(query, sources);
     if (query.source) {
         const source = providers.find(provider => provider.descriptor.id === query.source);
         if (!source) throw Object.assign(new Error('Unknown planning source for city'), { status: 400 });

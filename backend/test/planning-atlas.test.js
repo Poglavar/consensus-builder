@@ -4,7 +4,7 @@ import { createAtlasProvider } from '../planning/providers/atlas.js';
 import { planningRepresentations, planningRecord } from '../planning/sources.js';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
-const scene = require('../../frontend/js/planning/scene.js');
+const envelopes = require('../../frontend/js/planning/envelopes.js');
 const contract = require('../../frontend/js/planning/source-proposal.js');
 const metadata = { id: 'atlas-sample', city: 'sample', label: 'Source example', edition: 'sample-1', url: 'https://example.test/source' };
 const feature = id => ({ type: 'Feature', geometry: { type: 'Polygon', coordinates: [[[10,40],[10.02,40],[10.02,40.02],[10,40.02],[10,40]]] },
@@ -27,7 +27,7 @@ describe('Atlas planning adapter', () => {
         expect(item.sourceEvidence.properties.unusual_condition).toBe('Keep this source field.');
         expect(item.sourceEvidence.numericEvidence.family1_sidesetbackft.status).toBe('indeterminate');
         expect(item.assessment).toMatchObject({ status: 'hearing', constraints: 'not-evaluated', meaning: 'zoning-area' });
-        expect(scene.mapFeatures(item, 'footprint', {})).toHaveLength(1); expect(scene.volumeFeatures(item)).toEqual([]);
+        expect(envelopes.mapFeatures(item, { detail:'footprint' })).toHaveLength(1); expect(envelopes.volumeFeatures(item)).toEqual([]);
     });
     it('paginates source areas and clips their display without changing source identity or revision', async () => {
         const source = provider(), first = await planningRepresentations({}, query, [source]);

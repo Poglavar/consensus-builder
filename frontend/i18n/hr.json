@@ -6665,7 +6665,7 @@
             "representationBuildOutTooltip": "Izgradnja — jedan primjer onoga što bi se po pravilu stvarno moglo izgraditi",
             "representationBoth": "Oboje",
             "representationBothTooltip": "Oboje — primjer izgradnje unutar dopuštenog gabarita",
-            "reroll": "Nasumično promijeni svaki primjer izgradnje. Ne mijenja ništa u prijedlozima.",
+            "reroll": "Bacite kocku za drugi primjer izgradnje, tip stanovanja i uličnu stranu. Ne mijenja ništa u zapisima.",
             "ineligibleParcels": "Neizgradive čestice",
             "ineligibleParcelsTooltip": "Prikažite prozirne volumene gdje trenutačno primijenjeno pravilo ne ostavlja izgradivu česticu; to ne znači da je zemljište općenito neizgradivo.",
             "showAllParcelsTooltip": "Uklonite izdvajanje čestice i ponovno prikažite cijelu scenu",
@@ -7833,15 +7833,27 @@
     },
   "planningViews": {
     "zoningAreas": "Područja izvornog plana",
+    "envelopeTitle": "Dopuštena ovojnica",
+    "permittedForm": "Prikaz dopuštenog",
+    "bound": "Vanjska granica",
+    "configuration": "Jedna konfiguracija",
+    "configurationsTitle": "Konfiguracije zabilježene za ovu česticu",
+    "configurationShown": "Trenutno prikazana",
+    "configurationShow": "Prikaži ovu konfiguraciju",
+    "excludedConfigurations": "Ovdje nije moguće: {{list}}.",
     "envelopeCoverage": "Djelomične ovojnice izvedene su iz učitanih katastarskih i planskih zapisa. Čestice bez volumena prebrojene su prema razlogu; izostanak volumena ne dokazuje nulti kapacitet.",
     "envelopeSummary": "Pregledano {{count}} katastarskih zapisa: {{shapes}} s djelomičnim ovojnicama, {{missing}} bez volumena.",
-    "envelopeNote": "Djelomične ovojnice čestica iz izravnih vrijednosti izvora. Prednji rub nije utvrđen pa oblik uključuje alternativna tumačenja rubova. Ograničenja površine i nerazriješena pravila i dalje vrijede.",
+    "envelopeNote": "Prozirna ljuska je vanjska granica svih zabilježenih tipova stanovanja i uličnih strana. Volumen unutra je jedna konfiguracija na jednoj pretpostavljenoj uličnoj strani: bacite kocku ili odaberite dolje. Ograničenja površine i nerazriješena pravila i dalje vrijede.",
+    "assumedSide": "Pretpostavljena ulična strana: {{side}}.",
+    "lotBelowMinimum": "Parcela je manja od minimuma od {{minimum}}",
+    "sideOptions": {"one": "{{count}} upotrebljiva strana; bacite kocku za drugi tip stanovanja ili otvorite studiju za odabir ruba.", "few": "{{count}} upotrebljive strane; bacite kocku za drugu stranu i tip stanovanja ili otvorite studiju za odabir ruba.", "other": "{{count}} upotrebljivih strana; bacite kocku za drugu stranu i tip stanovanja ili otvorite studiju za odabir ruba."},
     "envelopesLoaded": {
       "one": "{{count}} djelomična ovojnica čestice · {{missing}} čestica bez volumena",
       "few": "{{count}} djelomične ovojnice čestica · {{missing}} čestica bez volumena",
       "other": "{{count}} djelomičnih ovojnica čestica · {{missing}} čestica bez volumena"
     },
     "envelopeUnavailable": {
+      "use-not-recorded": "Nijedan tip stanovanja nije zabilježen kao dopušten",
       "envelope-geometry-error": "Izvornu geometriju nije moguće procijeniti",
       "overlapping-parcel-identities": "Preklapanje identiteta čestica",
       "use-prohibited": "Stambeni tip zabilježen kao zabranjen",
@@ -7929,6 +7941,7 @@
     "solverVersion": "Verzija izračuna: {{version}}",
     "otherResult": "Drugi ishod izvora",
     "resultStatus": {
+      "unrecorded": "Nije zabilježeno",
       "condition_failed": "Uvjeti nisu ispunjeni",
       "evidence_missing": "Nedostaju dokazi",
       "existing_stock_estimate": "Procjene postojećih zgrada",
@@ -7972,6 +7985,7 @@
       "other": "{{count}} izvornih područja zoniranja u prikazu"
     },
     "scenario": {
+      "all": "Svi tipovi stanovanja (nasumično po čestici)",
       "family1": "Jednoobiteljsko",
       "family2": "Dvije obitelji",
       "family3": "Tri obitelji",

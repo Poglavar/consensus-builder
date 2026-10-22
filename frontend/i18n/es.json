@@ -6660,7 +6660,7 @@
             "representationBuildOutTooltip": "Edificación — un ejemplo de lo que realmente podría construirse bajo la norma",
             "representationBoth": "Ambos",
             "representationBothTooltip": "Ambos — el ejemplo de edificación dentro del volumen permitido",
-            "reroll": "Aleatoriza cada ejemplo de edificación. No cambia nada en las propuestas.",
+            "reroll": "Tira otro ejemplo de edificación, tipo de vivienda y lado de calle. No cambia nada en los registros.",
             "ineligibleParcels": "Parcelas no edificables",
             "ineligibleParcelsTooltip": "Muestra volúmenes transparentes donde la regla aplicada actualmente no deja una parcela edificable; esto no significa que el terreno sea siempre no edificable.",
             "showAllParcelsTooltip": "Borra el aislamiento de la parcela y vuelve a mostrar toda la escena",
@@ -7819,14 +7819,26 @@
     },
   "planningViews": {
     "zoningAreas": "Áreas de la fuente urbanística",
+    "envelopeTitle": "Envolvente permitida",
+    "permittedForm": "Representación de lo permitido",
+    "bound": "Límite exterior",
+    "configuration": "Una configuración",
+    "configurationsTitle": "Configuraciones registradas para esta parcela",
+    "configurationShown": "Mostrada ahora",
+    "configurationShow": "Mostrar esta configuración",
+    "excludedConfigurations": "No configurable aquí: {{list}}.",
     "envelopeCoverage": "Las envolventes parciales se derivan de los registros parcelarios y urbanísticos cargados. Las parcelas sin volumen se cuentan por motivo; la ausencia de volumen no demuestra una capacidad nula.",
     "envelopeSummary": "{{count}} registros parcelarios examinados: {{shapes}} con envolventes parciales, {{missing}} sin volumen.",
-    "envelopeNote": "Envolventes parciales de parcelas a partir de dimensiones directas de la fuente. Se desconoce el frente, por lo que la forma incluye interpretaciones alternativas de los bordes. Siguen aplicándose los límites de superficie y las reglas pendientes.",
+    "envelopeNote": "El casco translúcido es el límite exterior de todos los tipos de vivienda registrados y lados de calle. El volumen interior es una configuración en un lado de calle supuesto: tira el dado o elige abajo. Siguen aplicándose los límites de superficie y las reglas pendientes.",
+    "assumedSide": "Lado de calle supuesto: {{side}}.",
+    "lotBelowMinimum": "Parcela por debajo del mínimo de {{minimum}}",
+    "sideOptions": {"one": "{{count}} lado utilizable; tira el dado para otro tipo de vivienda o abre un estudio para elegir el borde.", "other": "{{count}} lados utilizables; tira el dado para otro lado y tipo de vivienda, o abre un estudio para elegir el borde."},
     "envelopesLoaded": {
       "one": "{{count}} envolvente parcial de parcela · {{missing}} parcelas sin volumen",
       "other": "{{count}} envolventes parciales de parcelas · {{missing}} parcelas sin volumen"
     },
     "envelopeUnavailable": {
+      "use-not-recorded": "Ningún tipo de vivienda registrado como permitido",
       "envelope-geometry-error": "No se pudo evaluar la geometría de la fuente",
       "overlapping-parcel-identities": "Identidades de parcelas superpuestas",
       "use-prohibited": "Tipo de vivienda registrado como prohibido",
@@ -7911,6 +7923,7 @@
     "solverVersion": "Versión del cálculo: {{version}}",
     "otherResult": "Otro resultado de la fuente",
     "resultStatus": {
+      "unrecorded": "Sin registro",
       "condition_failed": "Condiciones incumplidas",
       "evidence_missing": "Faltan pruebas",
       "existing_stock_estimate": "Estimaciones de edificación existente",
@@ -7953,6 +7966,7 @@
       "other": "{{count}} áreas de zonificación de la fuente visibles"
     },
     "scenario": {
+      "all": "Todos los tipos de vivienda (al azar por parcela)",
       "family1": "Una familia",
       "family2": "Dos familias",
       "family3": "Tres familias",

@@ -6609,7 +6609,7 @@
             "representationBuildOutTooltip": "Build-out — one example of what could actually be built under the rule",
             "representationBoth": "Both",
             "representationBothTooltip": "Both — the example build-out standing inside the permitted volume",
-            "reroll": "Randomize every example build-out. Changes nothing in the proposals.",
+            "reroll": "Roll another example build-out, housing type and street side. Changes nothing in the records.",
             "ineligibleParcels": "Non-buildable plots",
             "ineligibleParcelsTooltip": "Show transparent volumes where the current applied rule leaves no buildable plot; this does not mean the land is universally unbuildable.",
             "showAllParcelsTooltip": "Clear the parcel isolation and show the whole scene again",
@@ -7768,14 +7768,26 @@
     },
   "planningViews": {
     "zoningAreas": "Zoning source areas",
+    "envelopeTitle": "Permitted envelope",
+    "permittedForm": "Permitted representation",
+    "bound": "Outer bound",
+    "configuration": "One configuration",
+    "configurationsTitle": "Configurations recorded for this parcel",
+    "configurationShown": "Currently shown",
+    "configurationShow": "Show this configuration",
+    "excludedConfigurations": "Not configurable here: {{list}}.",
     "envelopeCoverage": "Partial envelopes are derived from the loaded parcel and zoning records. Parcels without massing are counted by reason; missing massing does not establish zero capacity.",
     "envelopeSummary": "{{count}} parcel records inspected: {{shapes}} with partial envelopes, {{missing}} without massing.",
-    "envelopeNote": "Partial parcel envelopes from direct source dimensions. The front edge is unknown, so the shape includes alternative edge interpretations. Area budgets and unresolved rules still apply.",
+    "envelopeNote": "The translucent hull is the outer bound across every recorded housing type and street side. The volume inside is one configuration on one assumed street side: roll the dice or choose below. Area budgets and unresolved rules still apply.",
+    "assumedSide": "Assumed street side: {{side}}.",
+    "lotBelowMinimum": "Lot below the {{minimum}} minimum",
+    "sideOptions": {"one": "{{count}} usable side; roll the dice for another housing type, or open a study to choose the edge.", "other": "{{count}} usable sides; roll the dice for another side and housing type, or open a study to choose the edge."},
     "envelopesLoaded": {
       "one": "{{count}} partial parcel envelope · {{missing}} parcels without massing",
       "other": "{{count}} partial parcel envelopes · {{missing}} parcels without massing"
     },
     "envelopeUnavailable": {
+      "use-not-recorded": "No housing type recorded as allowed",
       "envelope-geometry-error": "Source geometry could not be evaluated",
       "overlapping-parcel-identities": "Overlapping parcel identities",
       "use-prohibited": "Housing type recorded as prohibited",
@@ -7860,6 +7872,7 @@
     "solverVersion": "Solver version: {{version}}",
     "otherResult": "Other source outcome",
     "resultStatus": {
+      "unrecorded": "Not recorded",
       "condition_failed": "Conditions not met",
       "evidence_missing": "Evidence missing",
       "existing_stock_estimate": "Existing-stock estimates",
@@ -7902,6 +7915,7 @@
       "other": "{{count}} source zoning areas in view"
     },
     "scenario": {
+      "all": "All housing types (rolled per parcel)",
       "family1": "One-family",
       "family2": "Two-family",
       "family3": "Three-family",

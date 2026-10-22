@@ -3,7 +3,7 @@ import * as turf from '@turf/turf';
 import { createRequire } from 'node:module';
 import { sourcesFor } from './sources.js';
 import { sourceRevision } from './source-proposal.js';
-import { resolveParcelSourceDescriptor, runtimeParcelSource } from '../parcels/sources.js';
+import { resolveParcelSourceDescriptor, runtimeParcelSource, parcelSourceForCity } from '../parcels/sources.js';
 const require = createRequire(import.meta.url);
 const { reference } = require('../../frontend/js/planning/source-proposal.js');
 const assessment = require('../../frontend/js/planning/parcel-assessment.js');
@@ -14,14 +14,23 @@ export async function readStudyZoning(provider, query, bbox) {
     if (answer.nextAfter != null || answer.omitted) fail('study-zoning-incomplete');
     // Viewport clipping is a display projection, never the geometry used to prove parcel coverage.
     return (await Promise.all(answer.items.map(item => provider.record(null,
-        { recordId: item.source.recordId, scenario: query.scenario })))).flat();
+        { recordId: item.source.recordId, scenario: query.scenario, city: query.city })))).flat();
+}
+
+// The parcel provider behind a study: the source's pinned one, else the requesting city's
+// default catalogue source. A custom browser-supplied source is never used server-side.
+export function studyParcelSource(provider, city) {
+    if (provider?.descriptor.parcelStudy !== 'direct-dimensions.v1') fail('study-unavailable');
+    const descriptor = provider.descriptor.parcelSourceId ? resolveParcelSourceDescriptor(provider.descriptor.parcelSourceId)
+        : parcelSourceForCity(city)?.descriptor || null;
+    if (!descriptor || descriptor.id.startsWith('custom.')) fail('study-parcel-source-unavailable');
+    return descriptor;
 }
 
 export async function loadParcelStudy(query, { sources, parcelProvider = descriptor => runtimeParcelSource(descriptor) } = {}) {
     const provider = sourcesFor(query, sources)[0];
-    if (!query.source || !provider?.descriptor.parcelSourceId || provider.descriptor.parcelStudy !== 'direct-dimensions.v1') fail('study-unavailable');
-    const descriptor = resolveParcelSourceDescriptor(provider.descriptor.parcelSourceId);
-    if (!descriptor || descriptor.id.startsWith('custom.')) fail('study-parcel-source-unavailable');
+    if (!query.source || !provider) fail('study-unavailable');
+    const descriptor = studyParcelSource(provider, query.city);
     const adapter = parcelProvider(descriptor);
     let result;
     if (query.parcel) result = await adapter.queryIds([query.parcel]);
@@ -59,4 +68,11 @@ export function assembleParcelStudy(parcel, descriptor, records) {
     // Fail explicitly on unsupported topology rather than silently simplifying the source parcel.
     try { assessment.derive(context, 0, turf); } catch (error) { fail(error.message); }
     return context;
+}
+
+// The same parcel and zoning area read under another housing type: only the source record
+// (its constraints, treatment and reference) changes; geometry and coverage are shared.
+export function withScenarioSource(context, records) {
+    const source = records.find(item => item.source.recordId === context.source.source.recordId);
+    return source ? { ...context, source, sourceReference: reference(source.proposal) } : null;
 }

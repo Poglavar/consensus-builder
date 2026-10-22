@@ -87,6 +87,7 @@ it('resolves a caller waiting on scene readiness as false when the pending scene
         handleResize() {},
         cancelLoop() {},
         disposeLife() {},
+        disposeGround() {},
         perfReadout: null,
         disposeFloorPlans() {},
         scene: null,

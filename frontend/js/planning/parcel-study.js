@@ -71,7 +71,8 @@
         const address = new URL(location.href);
         address.searchParams.set('planningParcel', context.parcel.id);
         address.searchParams.set('planningSource', context.source.source.id);
-        address.searchParams.set('planningScenario', context.source.source.scenario);
+        // The study's housing type is its own parameter: the view's Housing type control may be "all".
+        address.searchParams.set('planningStudyScenario', context.source.source.scenario);
         history.replaceState(history.state, '', address);
         root.PlanningViews.refreshStudy();
         root.PlanningViews.select(items()[1].id);
@@ -85,7 +86,7 @@
         button.addEventListener('click', async () => {
             button.disabled = true; hint.textContent = t('loading');
             const point = root.PlanningViews.getSelectionPoint() || root.map.getCenter();
-            try { await load({ city: item.source.city, source: item.source.id, scenario: item.source.scenario,
+            try { await load({ city: item.source.city, source: item.source.id, scenario: root.PlanningViews.studyScenarioFor(item),
                 ...(parcel ? { parcel } : { point: [point.lng, point.lat] }) }); }
             catch (error) {
                 console.error('[planning-study] Source read failed', error);
@@ -207,12 +208,16 @@
         getContext: () => state?.context, getForm: () => state?.form,
         clear() {
             generation++; state = null;
-            const url = new URL(location.href); url.searchParams.delete('planningParcel'); history.replaceState(history.state, '', url);
+            const url = new URL(location.href); url.searchParams.delete('planningParcel'); url.searchParams.delete('planningStudyScenario');
+            history.replaceState(history.state, '', url);
         }, load };
     root.whenAppBooted().then(async () => {
         const params = new URLSearchParams(location.search), parcel = params.get('planningParcel'), source = params.get('planningSource');
         if (!parcel || !source) return;
-        try { await load({ city: root.CityConfigManager.getCurrentCityId(), source, scenario: params.get('planningScenario') || undefined, parcel }); }
+        // Older links carried the study's type in planningScenario; "all" is the view control, never a study type.
+        const viewScenario = params.get('planningScenario');
+        const scenario = params.get('planningStudyScenario') || (viewScenario && viewScenario !== 'all' ? viewScenario : undefined);
+        try { await load({ city: root.CityConfigManager.getCurrentCityId(), source, scenario, parcel }); }
         catch (error) { console.error('[planning-study] Study restore failed', error); root.showNotification?.(t(`errors.${error.message}`), 'error'); }
     });
 })(window);

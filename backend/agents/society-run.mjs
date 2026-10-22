@@ -475,10 +475,10 @@ async function main() {
 }
 
 if (isEntrypoint(import.meta.url)) {
-    main().catch(async error => {
+    // A failure is reported once, in bot-monitor's 06:00 UTC message, not by every run.
+    main().catch(error => {
         const diagnostic = safeFailureDiagnostic(error);
         console.error(`[${new Date().toISOString()}] SOCIETY AGENT FAILED: ${diagnostic}`);
-        if (process.argv.includes('--live')) await sendTelegram(`Society agent FAILED: ${diagnostic}`, { alert: true });
         process.exit(1);
     });
 }

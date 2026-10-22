@@ -58,7 +58,6 @@ import { mintProposal } from './minter.js';
 import { resolveLens, describeLensChoice } from './lens-directory-client.js';
 import { ensureMarketAndStake, usdcToAtomic } from './bettor.js';
 import { getRun, startRun, updateRun, recordCosts, dailySpendUsd, assertUnderCap, dailyCapUsd, listRuns } from './ledger.js';
-import { sendTelegram } from './telegram.js';
 import { createRpcConnection } from '../solana/rpc.js';
 import { ensureBotSolFunding, fundBotAction } from './funding.js';
 import { sendAndConfirmPolling } from './solana-send.js';
@@ -780,9 +779,10 @@ async function main() {
     const headline = `UGT proposing bots ${day}: ${report.join(' | ') || 'nothing to do'}`;
     log(headline);
     if (failures.length) {
+        // No Telegram here: a failed run is reported once, in bot-monitor's 06:00 UTC message
+        // (every persona has an outcome check). A per-run alert repeated every few hours.
         const text = `${headline}\n${failures.length} FAILURE(S):\n- ${failures.join('\n- ')}`;
         console.error(text);
-        await sendTelegram(text, { alert: true });
         process.exit(1);
     }
     // This exact line is the external monitor's success sentinel. It is emitted only after every
@@ -791,8 +791,7 @@ async function main() {
     // A clean run is not news: Telegram carries only failures; the outcome is on the bots dashboard.
 }
 
-main().catch(async (err) => {
+main().catch((err) => {
     console.error(`[${new Date().toISOString()}] FAILED:`, safeFailureDiagnostic(err));
-    await sendTelegram(`UGT proposing bots FAILED: ${safeFailureDiagnostic(err)}`, { alert: true });
     process.exit(1);
 });

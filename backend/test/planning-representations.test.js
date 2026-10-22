@@ -7,6 +7,7 @@ import { planningRepresentations } from '../planning/sources.js';
 import { setupPlanningRoutes } from '../routes/planning.js';
 const require = createRequire(import.meta.url);
 const scene = require('../../frontend/js/planning/scene.js');
+const envelopes = require('../../frontend/js/planning/envelopes.js');
 const feed = require('../../frontend/js/planning/feed.js');
 const turf = require('../../frontend/vendor/turf-6.5.0/turf.min.js');
 const geometry = { type: 'Polygon', coordinates: [[[10, 40], [10.001, 40], [10.001, 40.001], [10, 40.001], [10, 40]]] };
@@ -283,10 +284,10 @@ describe('shared planning scene', () => {
         const inner = turf.polygon([[[10.0002,40.0002],[10.0008,40.0002],[10.0008,40.0008],[10.0002,40.0008],[10.0002,40.0002]]]);
         const outer = turf.feature(geometry), ring = turf.difference(outer, inner);
         const item = gupRepresentation(row()); item.volumes[0].geometry = ring.geometry; item.volumes[1].geometry = inner.geometry;
-        const footprints = scene.mapFeatures(item, 'footprint', turf);
+        const footprints = envelopes.mapFeatures(item, { detail:'footprint', deps:{ geometry: turf } });
         expect(footprints).toHaveLength(1); expect(footprints[0].geometry.coordinates).toHaveLength(1);
         expect(turf.area(footprints[0])).toBeCloseTo(turf.area(outer), 3);
-        expect(scene.mapFeatures(item, 'steps', turf).map(f=>f.properties.topM)).toEqual([6,9]);
+        expect(envelopes.mapFeatures(item, { detail:'steps', deps:{ geometry: turf } }).map(f=>f.properties.topM)).toEqual([6,9]);
         expect(item.volumes[0].geometry.coordinates).toHaveLength(2);
     });
     it('selects all, surviving and removed physical geometry without mutating evidence', () => {
@@ -301,7 +302,7 @@ describe('shared planning scene', () => {
     });
     it('projects the same source geometry and stable part identity into map and model features', () => {
         const item = gupRepresentation(row()); item.volumes[1].baseM = 3;
-        const features = scene.volumeFeatures(item);
+        const features = envelopes.volumeFeatures(item);
         expect(features.map(f => f.properties.height)).toEqual([6, 6]);
         expect(features[1].properties.baseM).toBe(3); expect(features[1].properties.partId).toBe('zagreb-gup-2025:HR-1-17/2:floor:2');
         expect(features[1].geometry).toEqual(inset); expect(features[1].properties.role).toBe('permitted');
@@ -309,9 +310,9 @@ describe('shared planning scene', () => {
     });
     it('refuses an unsupported coordinate frame or invalid vertical range', () => {
         const item = gupRepresentation(row()); item.spatialReference.vertical = 'unknown-datum';
-        expect(scene.volumeFeatures(item)).toEqual([]);
+        expect(envelopes.volumeFeatures(item)).toEqual([]);
         item.spatialReference.vertical = 'relative-ground'; item.volumes[1].baseM = 9;
-        expect(scene.volumeFeatures(item)).toHaveLength(1);
+        expect(envelopes.volumeFeatures(item)).toHaveLength(1);
     });
     it('never reuses one city’s viewport key for another city', () => {
         expect(scene.queryKey('a', [10, 40, 11, 41])).not.toBe(scene.queryKey('b', [10, 40, 11, 41]));

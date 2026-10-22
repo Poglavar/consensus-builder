@@ -2,19 +2,39 @@
 // Source results are read-only overlays: viewing them never applies a parcel/fabric mutation.
 (function (root) {
     'use strict';
-    const core = root.PlanningScene;
+    const core = root.PlanningScene, envelopes = root.PlanningEnvelopes;
     const sharedLabels = { existing: 'threeMode.controls.built', proposed: 'threeMode.parcelPanel.proposed',
         solid: 'threeMode.controls.stateSolid', ghost: 'threeMode.controls.stateGhost', off: 'threeMode.controls.stateOff',
         surviving: 'threeMode.controls.stateSurviving', removed: 'threeMode.controls.stateRemoved',
         massing: 'threeMode.controls.representationMassing', buildout: 'threeMode.controls.representationBuildOut',
         both: 'threeMode.controls.representationBoth', all: 'activityFeed.all', reroll: 'threeMode.controls.reroll', retry: 'bets.retry', close: 'common.close' };
     const t = (key, params = {}) => root.i18n.t(sharedLabels[key] || `planningViews.${key}`, params);
-    let store, items = [], payload = null, status = 'loading', layer, controller, request = 0, loadedKey = '';
+    let store, items = [], payload = null, status = 'loading', layer, controller, request = 0;
     let panel, inspector, lastSettings = null, lastSelectedId = null, ready = false, selectionLayer;
     let progress = null;
     let selectionPoint = null;
     let sourceOptions = [], sourceId = '', scenarioId = '', focusedRecord = null, sourceGeneration = 0, actionsOpen = false, referenceStatus = null;
     let restoreId = new URLSearchParams(location.search).get('planningSelection'), restoring = false, catalogReady = false, parcelPanel = null;
+    // Per-item configuration pins chosen in the inspector; cleared with the source, housing type or city.
+    let pins = {}, sourcesKey = '';
+    const displaySelection = () => ({ variation: store?.get().variation || '', scenario: scenarioId || envelopes.ANY_CONFIGURATION, pins });
+    const scenarioParam = () => scenarioId && scenarioId !== envelopes.ANY_CONFIGURATION ? scenarioId : '';
+    const scenarioLabel = id => id ? t(`scenario.${id}`) : '';
+    // Geometry helpers for client-side realization: turf for clipping, the shared evaluator for setbacks.
+    const geometryDeps = () => ({ geometry: root.turf, assessment: root.PlanningParcelAssessment });
+    const realization = (item, form = store?.get().permittedForm) => ({ form, selection: displaySelection(), deps: geometryDeps() });
+    function permittedFeatures(item) { return envelopes.realize(item, realization(item)); }
+    const sideWord = (item, edge) => root.i18n.t(`modal.corridor.compass.${envelopes.edgeSide(item.derivation?.parcel, edge)}`);
+    const lotNote = configuration => configuration?.lotArea?.status === 'fail' ? t('lotBelowMinimum', { minimum: area(configuration.lotArea.minimumM2) }) : '';
+    // The housing type a study of this item should use: the shown configuration, else the pinned type, else the source default.
+    function studyScenarioFor(item) {
+        return permittedFeatures(item).configuration?.id || scenarioParam() || item.source.scenario
+            || sourceOptions.find(source => source.id === item.source.id)?.scenario || undefined;
+    }
+    function pinConfiguration(itemId, configurationId) {
+        pins = { ...pins, [itemId]: configurationId };
+        drawMap(); renderInspector(); notifyGeometry();
+    }
     const number = value => typeof value === 'number' && Number.isFinite(value)
         ? root.CbFormat.formatNumber(value, { maxFractionDigits: 0 }) : '—';
     const area = value => typeof value === 'number' && Number.isFinite(value)
@@ -83,7 +103,7 @@
     }
     function inspectorBadgeKey(item) {
         if (item.role !== 'permitted') return item.role;
-        return ['public-screen', 'zoning-area', 'partial-envelope'].includes(item.assessment?.meaning) ? 'sourceEvidenceBadge' : 'obligatory';
+        return ['public-screen', 'zoning-area', 'partial-envelope', 'outer-bound'].includes(item.assessment?.meaning) ? 'sourceEvidenceBadge' : 'obligatory';
     }
     async function parcelRecords(parcel, signal, context = {}) {
         const url = new URL(`${root.getBackendBase()}/planning/parcel`);
@@ -152,27 +172,40 @@
             const display = appearance(item);
             if (display === 'off') continue;
             let features;
-            try { features = core.mapFeatures(item, store.get().permittedMap, root.turf); }
+            try { features = envelopes.mapFeatures(item, { detail: store.get().permittedMap, ...realization(item) }); }
             catch (error) { console.error('[planning] Could not project massing', item.id, error); continue; }
+            const hasBody = features.some(feature => feature.properties.geometryRole !== 'bound');
             for (const feature of features) {
                 const active = item.id === store.get().selectedId;
-                const shape = root.L.geoJSON(feature, { pane: 'planningSources',
-                    style: { color: color(item.role), weight: active ? 3 : 1.5,
-                        fillColor: color(item.role), fillOpacity: display === 'solid' ? 1 : 0.18,
-                        opacity: 1 } });
+                // The outer bound behind a shown configuration is a hull: outline plus a faint fill.
+                const hull = feature.properties.geometryRole === 'bound' && hasBody;
+                // The hull is not a second click target: the configuration inside carries the interaction.
+                const shape = root.L.geoJSON(feature, { pane: 'planningSources', className: hull ? 'planning-bound-outline' : undefined, interactive: !hull,
+                    style: { color: color(item.role), weight: hull ? 1 : active ? 3 : 1.5, dashArray: hull ? '4 4' : null,
+                        fillColor: color(item.role), fillOpacity: hull ? 0.06 : display === 'solid' ? 1 : 0.18,
+                        opacity: hull ? 0.8 : 1 } });
                 const height = feature.properties.topM;
                 const label = item.source.parcel || item.title;
+                const shownConfiguration = feature.properties.configurationId ? item.configurations?.find(entry => entry.id === feature.properties.configurationId) : null;
+                const configuration = shownConfiguration ? scenarioLabel(shownConfiguration.id) : hull ? t('bound') : '';
                 const tooltip = item.assessment.meaning === 'existing-stock-estimate' ? `${label} · ${t('stockBadge')}`
-                    : height ? `${label} · ${root.CbFormat.formatLength(height)}` : label;
+                    : [label, configuration, height ? root.CbFormat.formatLength(height) : '', lotNote(shownConfiguration)].filter(Boolean).join(' · ');
                 shape.bindTooltip(tooltip, { sticky: true, direction: 'top' });
-                if (item.parcelEnvelope && height && root.map.getZoom() >= 18) {
+                if (item.parcelEnvelope && height && !hull && root.map.getZoom() >= 18) {
                     const center = shape.getBounds().getCenter();
                     root.L.marker(center, { pane: 'planningSources', interactive: false, keyboard: false,
                         icon: root.L.divIcon({ className: 'planning-envelope-height', html: root.CbFormat.formatLength(height), iconSize: null }) }).addTo(layer);
                 }
+                shape.addTo(layer);
+                // The assumed street side of the shown configuration, so a roll reads as a choice, not a glitch.
+                if (feature.properties.frontEdge != null && item.derivation?.parcel) {
+                    const ring = item.derivation.parcel.coordinates[0], edge = feature.properties.frontEdge;
+                    root.L.polyline([ring[edge], ring[edge + 1]].map(p => [p[1], p[0]]), { pane: 'planningSources', interactive: false,
+                        color: color(item.role), weight: 4, opacity: 0.9 }).bindTooltip(t('assumedSide', { side: sideWord(item, edge) })).addTo(layer);
+                }
+                if (hull) continue;
                 const inspect = () => { if (!root.__mapEditLock?.isHeld()) select(item.id); };
                 shape.on('click', event => { root.L.DomEvent.stopPropagation(event); selectionPoint = { id: item.id, lat: event.latlng.lat, lng: event.latlng.lng }; inspect(); });
-                shape.addTo(layer);
                 shape.eachLayer(part => {
                     const node = part.getElement?.();
                     if (!node) return;
@@ -208,7 +241,7 @@
         const header = element('header', 'planning-inspector__header');
         const heading = element('div');
         const sourceResult = item.role === 'permitted';
-        heading.append(element('p', 'planning-eyebrow', item.parcelEnvelope ? root.i18n.t('planningStudy.envelopeTitle')
+        heading.append(element('p', 'planning-eyebrow', item.parcelEnvelope ? t('envelopeTitle')
             : t(item.areas?.length ? 'zoningArea' : sourceResult ? (item.volumes.length ? 'sourceProposal' : 'savedResult') : item.role === 'existing' ? 'builtRecord' : 'proposedRecord')), element('h2', '', item.title));
         const close = element('button', 'close-circle-btn', '×');
         close.type = 'button'; close.setAttribute('aria-label', t('close'));
@@ -223,7 +256,7 @@
         const badges = element('div', 'planning-inspector__badges');
         badges.append(element('span', 'cb-badge', t(inspectorBadgeKey(item))));
         if (sourceResult && item.volumes.length) badges.append(element('span', 'cb-badge cb-badge--warning',
-            t(item.assessment.meaning === 'existing-stock-estimate' ? 'stockBadge' : 'approximate')));
+            t(item.assessment.meaning === 'existing-stock-estimate' ? 'stockBadge' : item.parcelEnvelope ? 'bound' : 'approximate')));
         if (item.assessment.refresh) badges.append(element('span', 'cb-badge cb-badge--warning', t('refreshPending')));
         inspector.append(badges, element('p', 'planning-inspector__description',
             t(item.assessment.meaning === 'existing-stock-estimate' ? 'stockEstimate'
@@ -261,12 +294,18 @@
         if (displayedMetrics.length) inspector.append(metrics);
         const heights = [...new Set(item.volumes.map(volume => volume.topM))].sort((a, b) => a - b);
         if (heights.length > 1) inspector.append(element('p', 'planning-inspector__description', t('heightParts', { heights: heights.map(height => root.CbFormat.formatLength(height)).join(' · ') })));
+        const realization = permittedFeatures(item), shown = realization.configuration;
+        if (item.configurations?.length) inspector.append(renderConfigurations(item, shown));
+        if (realization.frontEdge != null) inspector.append(element('p', 'planning-inspector__description',
+            `${t('assumedSide', { side: sideWord(item, realization.frontEdge) })} ${t('sideOptions', { count: item.derivation.frontEdges.length })}`));
         const assessment = element('div', 'planning-assessment');
         assessment.append(element('strong', '', t('conditionsTitle')), element('p', '', t('conditionsNote')));
         if (item.role === 'proposed' || (sourceResult && item.volumes.length)) inspector.append(assessment);
-        if (item.constraints?.length) {
+        const constraints = shown ? shown.constraints : item.constraints;
+        if (constraints?.length) {
             const limits = element('dl', 'planning-limits');
-            for (const constraint of item.constraints) {
+            if (shown) limits.append(element('dt', 'planning-limits__scope', scenarioLabel(shown.id)), element('dd', '', ''));
+            for (const constraint of constraints) {
                 const digits = constraint.value === 0 ? 0 : Math.min(20, Math.max(6, 2 - Math.floor(Math.log10(Math.abs(constraint.value)))));
                 const measured = root.CbFormat.formatNumber(constraint.value, { maxFractionDigits: digits });
                 const value = constraint.unit === 'm2' ? area(constraint.value)
@@ -327,6 +366,32 @@
         }
         inspector.append(footer);
     }
+    // Every configuration the source records for this parcel, with the shown one marked. Picking
+    // one pins it for this parcel only; the dice keeps rolling the others.
+    function renderConfigurations(item, shown) {
+        const section = element('section', 'planning-configurations');
+        section.append(element('h3', '', t('configurationsTitle')));
+        const list = element('ul', 'planning-configurations__list');
+        for (const configuration of item.configurations) {
+            const row = element('li'); row.dataset.configuration = configuration.id;
+            const button = element('button', 'planning-configurations__pick'); button.type = 'button';
+            button.setAttribute('aria-pressed', String(shown?.id === configuration.id));
+            button.setAttribute('aria-label', `${t('configurationShow')}: ${scenarioLabel(configuration.id)}`);
+            button.append(element('strong', '', scenarioLabel(configuration.id)), element('span', '', resultLabel(configuration.treatment)));
+            const measure = configuration.unavailableReason ? t(`envelopeUnavailable.${configuration.unavailableReason}`)
+                : `${root.CbFormat.formatLength(configuration.metrics.heightM, { maxFractionDigits: 1 })} · ${area(configuration.metrics.footprintM2)}`;
+            button.append(element('span', 'planning-configurations__measure', measure));
+            if (lotNote(configuration)) button.append(element('span', 'cb-badge cb-badge--warning', lotNote(configuration)));
+            if (shown?.id === configuration.id) button.append(element('span', 'cb-badge', t('configurationShown')));
+            button.addEventListener('click', () => pinConfiguration(item.id, configuration.id));
+            row.append(button); list.append(row);
+        }
+        section.append(list);
+        const excluded = Object.entries(item.sourceEvidence?.excludedConfigurations || {});
+        if (excluded.length) section.append(element('p', 'planning-source-note', t('excludedConfigurations', {
+            list: excluded.map(([scenario, treatment]) => `${scenarioLabel(scenario)} (${resultLabel(treatment)})`).join(', ') })));
+        return section;
+    }
     function render() {
         if (!ready) return;
         panel.querySelector('.map-sheet-title').textContent = t('title');
@@ -345,9 +410,11 @@
         panel.querySelector('.planning-scenario-label').textContent = t('scenarioLabel');
         scenario.parentElement.hidden = !(descriptor?.scenarios?.length > 1);
         for (const option of scenario.options) option.textContent = t(`scenario.${option.value}`);
+        // A change that re-reads the viewport shows its wait beside the control it came from.
+        for (const field of [scenario, sourceSelect]) field.parentElement.setAttribute('aria-busy', String(status === 'loading'));
         const reroll = panel.querySelector('.planning-reroll');
         reroll.title = t('reroll'); reroll.setAttribute('aria-label', t('reroll'));
-        reroll.disabled = policy().proposed === 'off';
+        reroll.disabled = policy().proposed === 'off' && (policy().permitted === 'off' || !descriptor?.parcelStudy);
         for (const role of core.roles) {
             panel.querySelector(`[data-role-label="${role}"]`).textContent = t(role);
             const select = panel.querySelector(`[data-planning-setting="${role}"]`);
@@ -357,11 +424,13 @@
             select.value = store.get()[select.dataset.planningSetting];
             for (const option of select.options) option.textContent = t(option.value);
         });
-        for (const key of ['existingScope', 'proposedForm', 'permittedMap', 'zoningAreas']) {
+        for (const key of ['existingScope', 'proposedForm', 'permittedForm', 'permittedMap', 'zoningAreas']) {
             panel.querySelector(`[data-planning-setting="${key}"]`).setAttribute('aria-label', t(key));
         }
+        // Configured sources choose bound / configuration / both; one-option sources choose the 2D footprint detail.
+        panel.querySelector('[data-planning-setting="permittedForm"]').hidden = !descriptor?.parcelStudy || isPhoto();
         panel.querySelector('[data-planning-setting="permittedMap"]').hidden = root.__mapModeState?.desired === 'model' || isPhoto()
-            || descriptor?.capabilities.volumes === false && !descriptor?.parcelStudy;
+            || descriptor?.capabilities.volumes === false;
         panel.querySelector('.planning-view-status').textContent = stateText();
         panel.querySelector('.planning-view-status').setAttribute('aria-busy', String(status === 'loading'));
         const retry = panel.querySelector('.planning-view-retry');
@@ -430,22 +499,42 @@
         }
         if (settingsChanged && (view.permitted !== 'off' || state.zoningAreas !== 'off')) refresh();
     }
+    // Two viewport caches: envelopes do not depend on the housing type (every configuration ships
+    // with the item), zoning areas do. A housing-type change therefore redraws the envelopes at
+    // once and re-reads only the areas, when they are shown.
+    let areaCache = { key: '', answer: null }, envelopeCache = { key: '', answer: null }, assembled = '';
+    function invalidate() { areaCache = { key: '', answer: null }; envelopeCache = { key: '', answer: null }; assembled = ''; }
     async function refresh({ force = false } = {}) {
         if (!ready || !catalogReady || policy().permitted === 'off' && store.get().zoningAreas === 'off') return;
         if (root.map.getZoom() < 16) {
-            controller?.abort(); request++; loadedKey = ''; items = []; status = 'zoom'; payload = null;
+            controller?.abort(); request++; invalidate(); items = []; status = 'zoom'; payload = null;
             if (!selected()) store.select(null);
             drawMap(); render(); notifyGeometry(); return;
         }
         const city = root.CityConfigManager.getCurrentCityId();
         const bounds = root.map.getBounds();
         const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
+        // Bounds-registered sources come and go with the viewport; re-list them when it moves.
+        if (!(await ensureSources(city, bbox))) return;
         const descriptor = sourceOptions.find(source => source.id === sourceId);
-        const massing = Boolean(descriptor?.parcelStudy && policy().permitted !== 'off');
-        const zoning = store.get().zoningAreas !== 'off';
-        const key = `${sourceId}:${scenarioId}:${massing}:${zoning}:${core.queryKey(city, bbox)}`;
-        if (!force && key === loadedKey) return;
-        loadedKey = key;
+        const viewport = core.queryKey(city, bbox);
+        const envelopeKey = descriptor?.parcelStudy && policy().permitted !== 'off' ? `${sourceId}:${viewport}` : '';
+        const areaKey = !descriptor?.capabilities.areas || store.get().zoningAreas !== 'off' ? `${sourceId}:${scenarioId}:${viewport}` : '';
+        if (force) invalidate();
+        if (!envelopeKey) envelopeCache = { key: '', answer: null };
+        if (!areaKey) areaCache = { key: '', answer: null };
+        const pending = [];
+        if (envelopeKey && envelopeKey !== envelopeCache.key) pending.push('envelopes');
+        if (areaKey && areaKey !== areaCache.key) pending.push('areas');
+        const composition = `${envelopeKey}|${areaKey}`;
+        const assemble = () => {
+            const answers = [areaCache.answer, envelopeCache.answer].filter(Boolean);
+            const answer = envelopeCache.answer || areaCache.answer || { sources: descriptor ? [descriptor] : [], summaries: [], unavailable: [], omitted: 0, items: [] };
+            payload = { ...answer, items: answers.flatMap(entry => entry.items) }; items = payload.items; status = 'ready'; assembled = composition;
+            if (!selected()) store.select(null);
+            drawMap(); render(); notifyGeometry();
+        };
+        if (!pending.length) { if (assembled !== composition) assemble(); return; }
         controller?.abort(); controller = new AbortController();
         const generation = ++request;
         status = 'loading'; progress = null; render();
@@ -453,33 +542,32 @@
             const url = new URL(`${root.getBackendBase()}/planning/representations`);
             url.searchParams.set('city', city); url.searchParams.set('bbox', bbox.join(','));
             if (sourceId) url.searchParams.set('source', sourceId);
-            if (scenarioId) url.searchParams.set('scenario', scenarioId);
             const options = { city, signal: controller.signal,
                 onProgress(value) { if (generation === request) { progress = value; render(); } } };
             const requests = [];
-            if (!descriptor?.capabilities.areas || zoning) requests.push(root.PlanningFeed.loadViewport(url, options));
-            if (massing) {
-                const envelopeUrl = new URL(url); envelopeUrl.pathname = '/planning/envelopes';
-                requests.push(root.PlanningFeed.loadViewport(envelopeUrl, options).then(answer => ({ ...answer, envelopes: true })));
+            if (pending.includes('areas')) {
+                const areaUrl = new URL(url);
+                if (scenarioParam()) areaUrl.searchParams.set('scenario', scenarioParam());
+                requests.push(root.PlanningFeed.loadViewport(areaUrl, options).then(answer => { areaCache = { key: areaKey, answer }; }));
             }
-            const answers = await Promise.all(requests);
-            const answer = answers.find(answer => answer.envelopes) || answers[0]
-                || { sources: [descriptor], summaries: [], unavailable: [], omitted: 0, items: [] };
-            answer.items = answers.flatMap(answer => answer.items);
+            if (pending.includes('envelopes')) {
+                const envelopeUrl = new URL(url); envelopeUrl.pathname = '/planning/envelopes';
+                requests.push(root.PlanningFeed.loadViewport(envelopeUrl, options)
+                    .then(answer => { envelopeCache = { key: envelopeKey, answer: { ...answer, envelopes: true } }; }));
+            }
+            await Promise.all(requests);
             if (generation !== request) return;
-            payload = answer; items = answer.items; status = 'ready';
-            if (!selected()) store.select(null);
-            drawMap(); render(); notifyGeometry();
+            assemble();
             restoreSelection();
         } catch (error) {
             if (generation !== request || error.name === 'AbortError') return;
             if (error.status === 400) {
-                items = []; payload = null; status = 'zoom';
+                invalidate(); items = []; payload = null; status = 'zoom';
                 if (!selected()) store.select(null);
                 drawMap(); render(); notifyGeometry(); return;
             }
             console.error('[planning] Could not load source representations', error);
-            loadedKey = ''; items = []; payload = null; status = 'error';
+            invalidate(); items = []; payload = null; status = 'error';
             if (!selected()) store.select(null);
             drawMap(); render(); notifyGeometry();
         }
@@ -505,26 +593,63 @@
         if (!provider) return;
         restoring = true;
         try {
-            const records = await sourceRecord({ recordId: id.slice(provider.id.length + 1), city, providerId: provider.id, scenario: scenarioId });
+            const records = await sourceRecord({ recordId: id.slice(provider.id.length + 1), city, providerId: provider.id, scenario: scenarioParam() });
             if (restoreId === id) { const record = records.find(item => item.id === id); if (record) selectRecord(record); }
         } catch (error) { console.error('[planning] Could not restore source selection', error); }
         finally { restoring = false; }
     }
+    function viewportBbox() {
+        const bounds = root.map?.getBounds?.();
+        return bounds ? [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()] : null;
+    }
+    async function listSources(city, bbox) {
+        const url = new URL(`${root.getBackendBase()}/planning/sources`);
+        url.searchParams.set('city', city);
+        if (bbox) url.searchParams.set('bbox', bbox.join(','));
+        const response = await fetch(url, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`Planning sources HTTP ${response.status}`);
+        const answer = await response.json();
+        if (answer.city !== city || !Array.isArray(answer.sources)) throw new Error('Invalid planning sources response');
+        return answer.sources;
+    }
+    function applySources(sources, requested) {
+        sourceOptions = sources;
+        const input = panel.querySelector('.planning-source-select'); input.replaceChildren();
+        for (const source of sourceOptions) input.add(new Option(source.label, source.id));
+        sourceId = sourceOptions.find(source => source.id === (requested || sourceId))?.id || sourceOptions.find(source => source.default)?.id || '';
+        populateScenarios(scenarioId || new URLSearchParams(location.search).get('planningScenario'));
+    }
+    // Re-list sources for a moved viewport (about one kilometre of movement). Returns false when a
+    // newer listing superseded this one; the listing itself is a cheap in-memory lookup server-side.
+    async function ensureSources(city, bbox) {
+        const key = core.queryKey(city, bbox.map(value => Math.round(value * 100) / 100));
+        if (key === sourcesKey) return true;
+        const generation = ++sourceGeneration;
+        try {
+            const sources = await listSources(city, bbox);
+            if (generation !== sourceGeneration) return false;
+            sourcesKey = key;
+            const previousSource = sourceId, previousScenario = scenarioId;
+            if (JSON.stringify(sources.map(source => source.id)) !== JSON.stringify(sourceOptions.map(source => source.id))) applySources(sources);
+            if (previousSource !== sourceId || previousScenario !== scenarioId) { pins = {}; invalidate(); render(); }
+            return true;
+        } catch (error) {
+            if (generation !== sourceGeneration) return false;
+            console.error('[planning] Could not read providers', error); status = 'error'; render();
+            return false;
+        }
+    }
     async function loadSources() {
         const generation = ++sourceGeneration;
         const city = root.CityConfigManager.getCurrentCityId();
+        const bbox = viewportBbox();
         try {
-            const response = await fetch(`${root.getBackendBase()}/planning/sources?city=${encodeURIComponent(city)}`, { cache: 'no-store' });
-            if (!response.ok) throw new Error(`Planning sources HTTP ${response.status}`);
-            const answer = await response.json();
+            const sources = await listSources(city, bbox);
             if (generation !== sourceGeneration) return;
-            sourceOptions = answer.sources;
+            sourcesKey = bbox ? core.queryKey(city, bbox.map(value => Math.round(value * 100) / 100)) : '';
             catalogReady = true;
-            const requested = new URLSearchParams(location.search).get('planningSource');
-            sourceId = sourceOptions.find(source => source.id === requested)?.id || sourceOptions.find(source => source.default)?.id || '';
-            const input = panel.querySelector('.planning-source-select'); input.replaceChildren();
-            for (const source of sourceOptions) input.add(new Option(source.label, source.id));
-            populateScenarios(new URLSearchParams(location.search).get('planningScenario'));
+            scenarioId = '';
+            applySources(sources, new URLSearchParams(location.search).get('planningSource'));
             render(); refresh({ force: true }); restoreSelection();
             if (parcelPanel?.container.isConnected) showParcelEvidence(parcelPanel.container, parcelPanel.parcel);
         } catch (error) {
@@ -532,10 +657,12 @@
             console.error('[planning] Could not read providers', error); status = 'error'; render();
         }
     }
+    // Configured sources offer every housing type plus "all" (rolled per parcel); other sources list their scenarios.
     function populateScenarios(requested) {
         const descriptor = sourceOptions.find(source => source.id === sourceId);
-        const choices = descriptor?.scenarios || [descriptor?.scenario].filter(Boolean);
-        scenarioId = choices.includes(requested) ? requested : descriptor?.scenario || '';
+        const scenarios = descriptor?.scenarios || [descriptor?.scenario].filter(Boolean);
+        const choices = descriptor?.parcelStudy && scenarios.length > 1 ? [envelopes.ANY_CONFIGURATION, ...scenarios] : scenarios;
+        scenarioId = choices.includes(requested) ? requested : choices[0] || '';
         const input = panel.querySelector('.planning-scenario-select'); input.replaceChildren();
         for (const scenario of choices) input.add(new Option(t(`scenario.${scenario}`), scenario));
     }
@@ -559,18 +686,21 @@
         scenarioField.append(scenarioInput); body.append(scenarioField);
         scenarioInput.addEventListener('change', () => {
             const wasStudy = selected()?.study;
-            const previousId = !wasStudy && selected()?.role === 'permitted' ? store.get().selectedId : null;
+            // Envelopes keep their selection: they carry every housing type and only redraw. A
+            // selected zoning area is re-read for the new type and re-selected when it returns.
+            const previousId = !wasStudy && selected()?.areas?.length ? store.get().selectedId : null;
             root.PlanningParcelStudy?.clear();
             if (wasStudy) store.select(null);
-            scenarioId = scenarioInput.value; controller?.abort(); request++; loadedKey = ''; items = []; payload = null;
+            scenarioId = scenarioInput.value; pins = {};
+            areaCache = { key: '', answer: null }; assembled = ''; items = items.filter(item => item.parcelEnvelope);
             if (previousId) { focusedRecord = null; store.select(null); restoreId = previousId; }
             const url = new URL(location.href); url.searchParams.set('planningScenario', scenarioId); history.replaceState(history.state, '', url);
-            drawMap(); notifyGeometry(); refresh({ force: true });
+            drawMap(); render(); notifyGeometry(); refresh();
         });
         sourceInput.addEventListener('change', () => {
             const clearSourceSelection = selected()?.role === 'permitted' || selected()?.study;
             root.PlanningParcelStudy?.clear();
-            sourceId = sourceInput.value; controller?.abort(); request++; loadedKey = ''; items = []; payload = null;
+            sourceId = sourceInput.value; pins = {}; scenarioId = ''; controller?.abort(); request++; invalidate(); items = []; payload = null;
             populateScenarios();
             if (clearSourceSelection) { focusedRecord = null; store.select(null); }
             const url = new URL(location.href); url.searchParams.set('planningSource', sourceId);
@@ -592,10 +722,23 @@
             const swatch = element('span', `planning-swatch planning-swatch--${role}`); swatch.setAttribute('aria-hidden', 'true');
             const name = element('div', 'planning-layer-name'); name.append(swatch, label);
             row.append(name, control(role), control(details[role])); controls.append(row);
+            if (role === 'permitted') row.append(control('permittedForm'));
         }
         const zoningField = element('label', 'planning-source-field planning-zoning-field');
         zoningField.append(element('span', 'planning-zoning-label'), control('zoningAreas')); body.append(zoningField);
-        panel.querySelector('.planning-reroll').addEventListener('click', () => store.reroll());
+        const reroll = panel.querySelector('.planning-reroll'), die = reroll.querySelector('i');
+        // The die turns once per roll. With reduced motion the roll is immediate; otherwise it starts
+        // on the next paint, so the synchronous re-derivation runs under the turn, not before it.
+        for (const event of ['animationend', 'animationcancel']) die.addEventListener(event, () => reroll.classList.remove('is-rolling'));
+        reroll.addEventListener('click', () => {
+            if (root.__reducedMotion) { store.reroll(); return; }
+            if (reroll.classList.contains('is-rolling')) return;
+            reroll.classList.add('is-rolling');
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+                store.reroll();
+                if (getComputedStyle(die).animationName === 'none') reroll.classList.remove('is-rolling');
+            }));
+        });
         panel.querySelector('.planning-open-model').addEventListener('click', () => root.requestMapMode('model'));
         panel.querySelector('.planning-view-retry').addEventListener('click', () => refresh({ force: true }));
         root.map.createPane('planningSources');
@@ -609,8 +752,8 @@
         root.map.on('click', () => select(null));
         root.addEventListener('cityChanged', () => {
             root.PlanningParcelStudy?.clear(); selectionPoint = null;
-            controller?.abort(); request++; loadedKey = ''; items = []; payload = null; status = 'loading';
-            sourceOptions = []; sourceId = ''; scenarioId = ''; focusedRecord = null; restoreId = null; catalogReady = false; parcelPanel = null;
+            controller?.abort(); request++; invalidate(); items = []; payload = null; status = 'loading';
+            sourceOptions = []; sourceId = ''; scenarioId = ''; pins = {}; sourcesKey = ''; focusedRecord = null; restoreId = null; catalogReady = false; parcelPanel = null;
             store.select(null); drawMap(); render(); notifyGeometry(); loadSources();
         });
         root.addEventListener('proposedBuildingsUpdated', render);
@@ -635,6 +778,7 @@
         refreshStudy({ inspector: updateInspector = true } = {}) { drawMap(); if (updateInspector) renderInspector(); notifyGeometry(); },
         getSelected: selected, isReady: () => ready, isInspecting: () => ready && !inspector.hidden,
         select, selectRecord, inspectBuilding, inspectProposal, showParcelEvidence, color, refresh,
+        permittedFeatures, studyScenarioFor, pinConfiguration, getScenario: () => scenarioId,
         configure: (key, value) => store?.configure(key, value), reroll: () => store?.reroll() };
     root.whenMapCoreReady().then(init);
 })(window);

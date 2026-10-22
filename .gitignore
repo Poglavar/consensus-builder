@@ -36,7 +36,8 @@ frontend/rpc-config.js
 /data/Metrocoalescense-SinglePages.pdf
 
 # Raw source HTML, images, PDFs and migration reports are local files, outside Git.
-/data/floor-plan-downloads/
+# No trailing slash: on prod this path is a symlink, which a directory-only rule does not match.
+/data/floor-plan-downloads
 /data/floor-plan-agencies/raw/
 /data/floor-plan-agencies/downloads/
 /data/floor-plan-agencies/**/*.pdf
