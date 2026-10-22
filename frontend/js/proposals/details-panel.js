@@ -897,10 +897,10 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             const decayedPercent = hasDecay ? (proposal.decayPercent * decayProgress) : 0;
             const remainingPercent = 100 - decayedPercent;
             const targetPercent = hasDecay ? (100 - proposal.decayPercent) : 100;
-            const currencySymbol = proposal.offerCurrency === 'EUR' ? '€' : '';
-            const currencySuffix = proposal.offerCurrency && proposal.offerCurrency !== 'EUR' ? ' ' + proposal.offerCurrency : '';
+            // Amount then code in the offer's own currency (js/format.js), else the city's.
+            const offerMoney = amount => CbFormat.formatMoney(Number(amount), proposal.offerCurrency || window.CityMoney.currentCurrency());
             const originalAmountText = tProposal('panel.proposal.metrics.offerOriginal', '(was {{amount}})', {
-                amount: `${currencySymbol}${proposal.offer.toLocaleString('hr-HR')}${currencySuffix}`
+                amount: offerMoney(proposal.offer)
             });
 
             // Deposit indicator - bars inside offer bar, warning text only if no deposit
@@ -940,7 +940,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 <div class="offer-bar-content">
                     <div class="offer-bar-main">
                         <span class="offer-label">${tProposal('panel.proposal.metrics.offer', 'Offer:')}</span>
-                        <span class="offer-amount decaying">${currencySymbol}${Math.round(currentOffer).toLocaleString('hr-HR')}${currencySuffix}</span>
+                        <span class="offer-amount decaying">${offerMoney(Math.round(currentOffer))}</span>
                         <span class="offer-original">${originalAmountText}</span>
                     </div>
                 </div>
@@ -952,7 +952,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 <div class="offer-bar-content-simple">
                     <div class="offer-bar-main">
                         <span class="offer-label">${tProposal('panel.proposal.metrics.offer', 'Offer:')}</span>
-                        <span class="offer-amount">${currencySymbol}${proposal.offer.toLocaleString('hr-HR')}${currencySuffix}</span>
+                        <span class="offer-amount">${offerMoney(proposal.offer)}</span>
                     </div>
                 </div>
                 ${hasDeposit ? `<div class="offer-bar-deposit-container">${depositBarsHtml}</div>` : ''}

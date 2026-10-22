@@ -591,46 +591,56 @@ function setupWelcomeModalLanguagePicker() {
         } catch (_) { initialLang = currentLang; }
     }
 
-    switcher.innerHTML = renderLanguageOptionsHtml(initialLang);
+    switcher.innerHTML = renderLanguageOptionsHtml(currentLocaleUM());
     modal.__welcomeLanguagePickerCleanup = bindLanguageSegmented(switcher);
 }
 
-// The one language picker, in the welcome dialog and the agent dialog: a cb-segmented row of the
-// four UI languages (flag and code; the full "Switch to …" name is the accessible label), the
-// active one aria-pressed. A press sets the language as the user's choice; i18n's change event keeps
-// every open picker in step.
+// The one locale picker ("Language and region"), in the welcome dialog and the agent dialog: a
+// cb-segmented row of the locales i18n supports (flag and language code; the full "Switch to …"
+// name is the accessible label), the active one aria-pressed. A locale is the UI language plus the
+// region numbers and dates are written for; money keeps the currency of its city (city-money.js).
+// A press sets the locale as the user's choice; i18n's change event keeps every open picker in step.
 const LANGUAGE_PICKER_CHOICES = [
-    { lang: 'en', flag: '🇬🇧', key: 'language.switcher.to_en', fallback: 'Switch to English' },
-    { lang: 'es', flag: '🇪🇸', key: 'language.switcher.to_es', fallback: 'Switch to Spanish' },
-    { lang: 'sr', flag: '🇷🇸', key: 'language.switcher.to_sr', fallback: 'Switch to Serbian' },
-    { lang: 'hr', flag: '🇭🇷', key: 'language.switcher.to_hr', fallback: 'Switch to Croatian' }
+    { locale: 'en-GB', flag: '🇬🇧', key: 'language.switcher.to_en', fallback: 'Switch to English (United Kingdom)' },
+    { locale: 'en-US', flag: '🇺🇸', key: 'language.switcher.to_en_us', fallback: 'Switch to English (United States)' },
+    { locale: 'es-ES', flag: '🇪🇸', key: 'language.switcher.to_es', fallback: 'Switch to Spanish' },
+    { locale: 'sr-Latn-RS', flag: '🇷🇸', key: 'language.switcher.to_sr', fallback: 'Switch to Serbian' },
+    { locale: 'hr-HR', flag: '🇭🇷', key: 'language.switcher.to_hr', fallback: 'Switch to Croatian' }
 ];
 
+function currentLocaleUM() {
+    const i18nApi = getI18nApiUM();
+    return i18nApi && typeof i18nApi.getLocale === 'function' ? i18nApi.getLocale() : 'en-GB';
+}
+
 // The options of a picker, for a container that already is the cb-segmented group.
-function renderLanguageOptionsHtml(activeLang) {
+function renderLanguageOptionsHtml(activeLocale) {
     return LANGUAGE_PICKER_CHOICES.map(choice => {
         const label = escapeHtml(translateUM(choice.key, choice.fallback));
-        const pressed = choice.lang === activeLang ? 'true' : 'false';
-        return `<button type="button" class="cb-segmented__option" data-language="${choice.lang}" aria-pressed="${pressed}" title="${label}" aria-label="${label}" data-i18n-key="${choice.key}" data-i18n-attr="title,aria-label"><span aria-hidden="true">${choice.flag}</span> ${choice.lang.toUpperCase()}</button>`;
+        const pressed = choice.locale === activeLocale ? 'true' : 'false';
+        const code = choice.locale.split('-')[0].toUpperCase();
+        return `<button type="button" class="cb-segmented__option" data-language="${choice.locale}" aria-pressed="${pressed}" title="${label}" aria-label="${label}" data-i18n-key="${choice.key}" data-i18n-attr="title,aria-label"><span aria-hidden="true">${choice.flag}</span> ${code}</button>`;
     }).join('');
 }
 
-// A whole picker (the group and its options), for markup built in script (the agent dialog).
-function renderLanguagePickerHtml(activeLang, className = '') {
+// A whole picker (the group and its options) on the current locale, for markup built in script
+// (the agent dialog).
+function renderLanguagePickerHtml(className = '') {
     const groupLabel = escapeHtml(translateUM('language.switcher.aria', 'Language selection'));
-    return `<div class="cb-segmented${className ? ` ${className}` : ''}" data-language-switcher role="group" aria-label="${groupLabel}" data-i18n-key="language.switcher.aria" data-i18n-attr="aria-label">${renderLanguageOptionsHtml(activeLang)}</div>`;
+    return `<div class="cb-segmented${className ? ` ${className}` : ''}" data-language-switcher role="group" aria-label="${groupLabel}" data-i18n-key="language.switcher.aria" data-i18n-attr="aria-label">${renderLanguageOptionsHtml(currentLocaleUM())}</div>`;
 }
 
 // Wires a rendered picker and returns its cleanup. onChange(lang) runs after every change (the agent
 // dialog re-labels its wallet controls with it).
 function bindLanguageSegmented(container, onChange) {
     const i18nApi = getI18nApiUM();
-    const setActive = (lang) => {
-        const targetLang = lang || (i18nApi && typeof i18nApi.getLanguage === 'function' ? i18nApi.getLanguage() : 'en');
+    // i18n announces the language; the pressed option is the full locale it now holds.
+    const setActive = () => {
+        const locale = currentLocaleUM();
         container.querySelectorAll('[data-language]').forEach(button => {
-            button.setAttribute('aria-pressed', button.getAttribute('data-language') === targetLang ? 'true' : 'false');
+            button.setAttribute('aria-pressed', button.getAttribute('data-language') === locale ? 'true' : 'false');
         });
-        if (typeof onChange === 'function') onChange(targetLang);
+        if (typeof onChange === 'function') onChange(locale.split('-')[0]);
     };
     const handleOptionClick = (event) => {
         const targetButton = event.target.closest ? event.target.closest('[data-language]') : null;
@@ -640,7 +650,7 @@ function bindLanguageSegmented(container, onChange) {
         if (i18nApi && typeof i18nApi.setLanguage === 'function') {
             i18nApi.setLanguage(selectedLang, { userChoice: true });
         }
-        setActive(selectedLang);
+        setActive();
     };
     container.addEventListener('click', handleOptionClick);
     const unsubscribe = (i18nApi && typeof i18nApi.onChange === 'function') ? i18nApi.onChange(setActive) : null;

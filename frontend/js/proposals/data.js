@@ -1968,7 +1968,7 @@ const multiParcelSelection = {
     // Show multi-parcel info panel
     showMultiParcelInfo() {
         const parcels = this.getSelectedParcels();
-        const avgSqmPrice = (typeof SQM_AVG_PRICE !== 'undefined' ? SQM_AVG_PRICE : 133);
+        const landPrice = window.CityMoney.currentLandPriceOptions('land');
         const priceModel = window.ParcelPriceModel;
 
         const parcelSummaries = parcels.map(parcel => {
@@ -1981,7 +1981,7 @@ const multiParcelSelection = {
                 || props.informationTechnical?.superficie_total;
             const area = Number.isFinite(Number(areaSource)) ? Number(areaSource) : 0;
             const estimate = priceModel
-                ? priceModel.buildEstimate(props, area, { areaPricePerSqm: avgSqmPrice, currency: 'EUR' })
+                ? priceModel.buildEstimate(props, area, landPrice)
                 : { amount: null, currency: null, basis: 'unavailable' };
             return { parcel, parcelId, feature, area, estimate };
         }).filter(summary => summary.feature);

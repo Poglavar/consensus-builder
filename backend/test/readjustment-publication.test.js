@@ -69,7 +69,7 @@ describe('LR publication commitment', () => {
         ['offer/ledger mismatch', body => { body.offer += 1; }],
         ['duplicate cash recipient', body => { body.reparcellization.ownerShares.push({ ownerKey: 'a', cashOffer: 0 }); }],
         ['missing output', body => { body.reparcellization.polygons = []; }],
-        ['unsupported currency alias', body => { delete body.offerCurrency; body.offer_currency = 'USD'; }]
+        ['chain-token cash', body => { delete body.offerCurrency; body.offer_currency = 'USDT'; }]
     ])('rejects %s before writing a row', async (_label, mutate) => {
         const { pool, app } = appFixture();
         const body = proposal();

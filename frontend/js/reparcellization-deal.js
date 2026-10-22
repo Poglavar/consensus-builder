@@ -15,6 +15,9 @@
         || (typeof require === 'function' ? require('../vendor/noble-hashes-1.8.0/sha256.js') : null);
     const approval = () => root.ProposalApproval
         || (typeof require === 'function' ? require('./proposals/approval.js') : null);
+    const cityMoney = () => root.CityMoney
+        || (typeof require === 'function' ? require('./city-money.js') : null);
+    const isFiat = code => cityMoney().isFiat(code);
 
     function stableStringify(value) {
         if (value === null || value === undefined) return 'null';
@@ -128,14 +131,19 @@
         if (moneyCents(proposal.offer ?? 0) !== totalCashCents) throw new Error('Proposal offer must equal the owner cash ledger.');
         // A deal without cash has no currency: the stored record may still carry one (a database
         // column default stamped USD on the Borovje readjustments), and it must not void the deal.
+        // Cash and land values are a country's money (ISO 4217), the city's when it was authored,
+        // never a chain token, and one deal counts both in the same one.
         const hasCash = totalCashCents > 0 || ownerPaymentsCents > 0;
         const currency = hasCash ? String(proposal.offerCurrency || '').toUpperCase() : null;
-        if (hasCash && currency !== 'EUR') throw new Error('Readjustment cash offers require an explicit EUR offerCurrency.');
+        if (hasCash && !isFiat(currency)) throw new Error('Readjustment cash offers require an explicit fiat offerCurrency (ISO 4217).');
         const contributionBasis = plan.contributionBasis ?? null;
         const valuationCurrency = plan.valuationCurrency ?? null;
-        if ((contributionBasis === 'value' && valuationCurrency !== 'EUR')
+        if ((contributionBasis === 'value' && !isFiat(valuationCurrency))
             || (contributionBasis !== 'value' && valuationCurrency !== null)) {
-            throw new Error('Readjustment value allocations require EUR valuationCurrency; other allocation bases must not declare one.');
+            throw new Error('Readjustment value allocations require a fiat valuationCurrency; other allocation bases must not declare one.');
+        }
+        if (hasCash && contributionBasis === 'value' && currency !== valuationCurrency) {
+            throw new Error('Readjustment cash and land values must be in one currency.');
         }
         return {
             schema: SCHEMA,

@@ -45,9 +45,11 @@ Every non-map page carries the same header: logo, "Back to the map", language. N
 - US spelling (analyze, center, neighbor, color), matching the majority of the existing strings.
 - No trailing colons on labels; the layout separates label and value.
 - One ellipsis character "…", never "...". Dashes: " – " (en dash) for ranges, no em-dash asides.
-- Numbers, areas, money and dates go through one formatter keyed to the UI language
-  (`js/format.js`): "3,522 m²" in English, "3.522 m²" in Croatian; money as amount then code
-  ("431,000 USDT"); dates as `Intl.DateTimeFormat(lang, { dateStyle: 'medium', timeStyle: 'short' })`.
+- Numbers, areas, money and dates go through one formatter keyed to the viewer's locale, the UI
+  language plus region (`js/format.js`): "3,522 m²" in English, "3.522 m²" in Croatian; money as
+  amount then code ("431,000 USDT", "431,000 GBP"), always in the currency of the place it belongs
+  to (`js/city-money.js`), never converted; dates as `Intl.DateTimeFormat(locale, { dateStyle:
+  'medium', timeStyle: 'short' })`, so "3 Oct 2026" in en-GB and "Oct 3, 2026" in en-US.
 - Plurals through i18n plural keys, never "1 buildings".
 - Nothing for developers in the UI: no ids, hostnames, "console", "local storage", "in-memory",
   "server ID". Ids sit behind a copy icon; developer messages are gated by debug mode.

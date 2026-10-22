@@ -387,7 +387,7 @@
                     <label class="proposal-editor-field">
                         <span>${escapeHtml(tDraft('proposalDrafts.fields.currency', 'Currency'))}</span>
                         <select data-draft-path="fields.offerCurrency">
-                            ${['EUR', 'USD', 'ETH', 'ARS', 'USDC', 'USDT'].map(currency => option(currency, currency, fields.offerCurrency || 'USDT')).join('')}
+                            ${global.CityMoney.currentOfferCurrencies(fields.offerCurrency).map(currency => option(currency, currency, fields.offerCurrency || 'USDT')).join('')}
                         </select>
                     </label>
                 </div>

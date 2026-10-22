@@ -247,7 +247,7 @@ export function makeEditor(options = {}) {
         },
         addEventListener: (type, fn) => { if (!windowListeners.has(type)) windowListeners.set(type, new Set()); windowListeners.get(type).add(fn); },
         removeEventListener: (type, fn) => { windowListeners.get(type)?.delete(fn); },
-        SQM_AVG_PRICE: 133,
+        CityMoney: require(`${FRONTEND}city-money.js`),
         ParcelPriceModel: (() => {
             const model = require(`${FRONTEND}financials.js`);
             return { buildEstimate: model.buildParcelPriceEstimate, aggregate: model.aggregateParcelPriceEstimates };

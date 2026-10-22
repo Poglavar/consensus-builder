@@ -1,8 +1,9 @@
 // format.js — the one place numbers, areas, money, percentages and dates are turned into text, keyed
-// to the UI language (docs/design-language.md). Before this file every surface called
+// to the viewer's locale: the UI language plus its region, "en-GB" or "en-US" (docs/design-language.md). Before this file every surface called
 // toLocaleString('hr-HR') or toFixed() on its own, so one offer read "431.000 USDT", "€431.000" and
 // "431,000 USDT" in one session. Pure (no DOM); UMD so backend/test/frontend-format.test.js runs it
-// headlessly. In the browser it is window.CbFormat and reads the language from window.i18n.
+// headlessly. In the browser it is window.CbFormat and reads the locale from window.i18n. The locale
+// decides how an amount is written, never its currency: money keeps the currency it was counted in.
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -10,8 +11,8 @@
 })(typeof window !== 'undefined' ? window : null, function () {
     'use strict';
 
-    // The UI language → the Intl locale that renders it. English uses day-month order and a
-    // comma thousands separator; Serbian is written in Latin script in this app.
+    // A UI language → the locale that renders it when no region was picked (an explicit `lang` option,
+    // or no i18n). English defaults to British day-month order; Serbian is written in Latin script.
     const LOCALES = Object.freeze({ en: 'en-GB', hr: 'hr-HR', es: 'es-ES', sr: 'sr-Latn-RS' });
     const FALLBACK_LANG = 'en';
     const NARROW_NBSP = ' ';
@@ -19,7 +20,7 @@
 
     // Digits a currency is shown with when the caller does not say: fiat and stablecoins whole,
     // chain gas tokens to four places.
-    const CURRENCY_DIGITS = Object.freeze({ EUR: 0, USD: 0, USDC: 2, USDT: 2, ETH: 4, SOL: 4 });
+    const CURRENCY_DIGITS = Object.freeze({ EUR: 0, GBP: 0, USD: 0, USDC: 2, USDT: 2, ETH: 4, SOL: 4 });
 
     const formatterCache = new Map();
 
@@ -33,8 +34,22 @@
         }
     }
 
+    // The viewer's locale (i18n.getLocale) when its language is the one asked for, else that
+    // language's default locale.
+    function currentLocale() {
+        try {
+            const i18n = typeof window !== 'undefined' ? window.i18n : null;
+            const locale = i18n && typeof i18n.getLocale === 'function' ? i18n.getLocale() : null;
+            return typeof locale === 'string' && locale ? locale : null;
+        } catch (_) {
+            return null;
+        }
+    }
+
     function localeFor(lang) {
-        return LOCALES[lang] || LOCALES[lang === undefined ? currentLanguage() : FALLBACK_LANG];
+        const language = lang === undefined ? currentLanguage() : (LOCALES[lang] ? lang : FALLBACK_LANG);
+        const viewer = currentLocale();
+        return viewer && viewer.split('-')[0] === language ? viewer : LOCALES[language];
     }
 
     function isFiniteNumber(value) {
@@ -61,6 +76,13 @@
             ? Math.min(0, maximumFractionDigits)
             : options.minFractionDigits;
         return numberFormatter(locale, { minimumFractionDigits, maximumFractionDigits }).format(value);
+    }
+
+    // "1.6M" (en) / "1,6 mil." (hr): a short figure for a narrow table cell, one decimal at most.
+    // The full amount goes in the cell's title.
+    function formatCompact(value, options = {}) {
+        if (!isFiniteNumber(value)) return options.missing === undefined ? '' : options.missing;
+        return numberFormatter(localeFor(options.lang), { notation: 'compact', maximumFractionDigits: 1 }).format(value);
     }
 
     function formatInteger(value, options = {}) {
@@ -185,9 +207,11 @@
         LOCALES,
         localeFor,
         currentLanguage,
+        currentLocale,
         formatNumber,
         parseDecimal,
         formatInteger,
+        formatCompact,
         formatArea,
         formatLength,
         formatMoney,

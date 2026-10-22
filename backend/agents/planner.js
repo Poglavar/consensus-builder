@@ -135,7 +135,8 @@ export function planCandidates(parcels, persona, {
         const gainEur = computeGain({
             builtFloorArea: builtGfaM2,
             proposedFloorArea: proposedGfaM2,
-            priceEurPerM2,
+            pricePerM2: priceEurPerM2,
+            currency: 'EUR', // the agents plan on Croatian data, priced in euros
             parcelCount: 1
         }).gain;
 

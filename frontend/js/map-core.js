@@ -42,8 +42,7 @@ const DEFAULT_FALLBACK_LATLNG = CURRENT_CITY_CONFIG?.projection?.fallbackLatLng 
 const DEFAULT_FALLBACK_DATASET = CURRENT_CITY_CONFIG?.projection?.fallbackDataset || [458900, 5074000];
 
 // Global constants
-const SQM_AVG_PRICE = 133; // Average price per square meter in EUR
-let TOTAL_SPENT = 0; // Total amount spent on roads in EUR
+let TOTAL_SPENT = 0; // Total amount spent on roads, in the city's currency (city-money.js)
 
 // Global map variables
 // buildingLayer draws the GDI footprints — the WORKING SET (object_id), the same objects the 3D
@@ -913,9 +912,8 @@ window.refreshBuildingOutcomesFromRecords = refreshBuildingOutcomesFromRecords;
 function updateTotalSpentDisplay() {
     const totalSpentElement = document.getElementById('total-spent-value');
     if (totalSpentElement) {
-        // Amount then code in the city's display currency, whole units.
-        const code = (MapCityConfigManager && MapCityConfigManager.getCurrentCityConfig?.()?.currency?.code) || 'EUR';
-        totalSpentElement.textContent = CbFormat.formatMoney(TOTAL_SPENT, code, { maxFractionDigits: 0 });
+        // Amount then code in the city's currency, whole units.
+        totalSpentElement.textContent = CbFormat.formatMoney(TOTAL_SPENT, window.CityMoney.currentCurrency(), { maxFractionDigits: 0 });
     }
 }
 
@@ -1154,4 +1152,3 @@ window.blockLayer = blockLayer;
 window.currentCenterline = currentCenterline;
 window.currentWidthLines = currentWidthLines;
 window.TOTAL_SPENT = TOTAL_SPENT;
-window.SQM_AVG_PRICE = SQM_AVG_PRICE;

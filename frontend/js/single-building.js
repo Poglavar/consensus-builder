@@ -1431,7 +1431,7 @@
             return;
         }
         if (!Number.isFinite(offer) || offer <= 0) {
-            showSingleBuildingAlert('please_enter_a_valid_offer_amount_eur', 'Please enter a valid offer amount (EUR).');
+            showSingleBuildingAlert('please_enter_a_valid_offer_amount', 'Please enter a valid offer amount ({{currency}}).', { currency: window.CityMoney.currentCurrency() });
             return;
         }
 
@@ -1552,7 +1552,8 @@
         };
 
         const nowIso = new Date().toISOString();
-        const offerCurrency = 'EUR';
+        // The offer is made in the city's money (city-money.js).
+        const offerCurrency = window.CityMoney.currentCurrency();
         const geometryObject = {
             superParcel: null,
             lakeGraphics: null,

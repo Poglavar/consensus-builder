@@ -382,7 +382,7 @@ async function refreshProposalBalanceDisplay() {
         return;
     }
 
-    if (['EUR', 'USD', 'ARS'].includes(currency)) {
+    if (window.CityMoney.isFiat(currency)) {
         setText(tBalance('notOnChain'));
         return;
     }
@@ -1011,17 +1011,13 @@ async function ensureProposalMetadataLoaded(proposal) {
     return proposal;
 }
 
-// Amount then code ("431,000 EUR"), in the proposal's own currency, else the city's display
-// currency (city-config.js `currency.code`): one rendering per language everywhere.
+// Amount then code ("431,000 EUR"), in the proposal's own currency, else the city's currency
+// (city-money.js): one rendering per locale everywhere.
 function formatCurrencyMetric(value, currency) {
     if (!Number.isFinite(value) || value <= 0) {
         return '—';
     }
-    let code = currency;
-    if (!code) {
-        try { code = window.CityConfigManager?.getCurrentCityConfig?.()?.currency?.code; } catch (_) { code = null; }
-    }
-    return CbFormat.formatMoney(Math.round(value), code || 'EUR');
+    return CbFormat.formatMoney(Math.round(value), currency || window.CityMoney.currentCurrency());
 }
 
 function getExplorerBaseUrlForChain(chainId) {

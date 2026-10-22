@@ -878,16 +878,21 @@
         return CbFormat.formatArea(Number.isFinite(area) ? area : 0);
     }
 
-    // Ledger values are EUR: estimatedMarketPrice, else area × SQM_AVG_PRICE (EUR), and this editor
-    // sets the proposal currency to EUR.
+    // A readjustment counts money in the city's currency (city-money.js): its cash offers, and its
+    // land values when every parcel has one in that currency (estimatedMarketPrice, else the city's
+    // land rate). The proposal's offer currency is the same.
+    function readjustmentCurrency() {
+        return window.CityMoney.currentCurrency();
+    }
+
     function formatMoney(value) {
-        return CbFormat.formatMoney(Number.isFinite(value) ? value : 0, 'EUR');
+        return CbFormat.formatMoney(Number.isFinite(value) ? value : 0, readjustmentCurrency());
     }
 
     // True when we have meaningful land value to redistribute by; otherwise the
     // ledger falls back to area (m²) as the contribution metric.
     function ledgerUsesMoney() {
-        return state.contributionBasis === 'value' && state.valuationCurrency === 'EUR'
+        return state.contributionBasis === 'value' && state.valuationCurrency === readjustmentCurrency()
             && Number.isFinite(state.poolUnitValue) && state.poolUnitValue > 0;
     }
 
@@ -1098,7 +1103,7 @@
             return;
         }
         // The balanced schedule: owners' payouts and payments, and the sponsor line that zeroes it.
-        const eur = amount => CbFormat.formatMoney(amount, 'EUR', { minFractionDigits: 2, maxFractionDigits: 2 });
+        const eur = amount => CbFormat.formatMoney(amount, readjustmentCurrency(), { minFractionDigits: 2, maxFractionDigits: 2 });
         const sponsor = Math.round((payIn - payOut) * 100) / 100;
         state.cashTotalEl.textContent = [
             t('proposalApproval.money.summary', 'Owners receive {{out}} and pay {{in}} in total.', { out: eur(payOut), in: eur(payIn) }),
@@ -1379,8 +1384,8 @@
                     ['assigned', t('reparcellization.modal.assignedLand', 'Assigned land (by share)'), formatArea(impact.assignedAreaM2)],
                     ['change', t('reparcellization.modal.landChange', 'Land change'), impact.areaChangeM2 === null ? unknown : `${impact.areaChangeM2 > 0 ? '+' : ''}${formatArea(impact.areaChangeM2)}`],
                     impact.cashPaymentCents > 0
-                        ? ['cash', t('reparcellization.modal.ownerPays', 'Cash the owner pays'), CbFormat.formatMoney(impact.cashPaymentCents / 100, 'EUR', { minFractionDigits: 2, maxFractionDigits: 2 })]
-                        : ['cash', t('reparcellization.modal.colCashOffer', 'Cash offer'), CbFormat.formatMoney(impact.cashOfferCents / 100, 'EUR', { minFractionDigits: 2, maxFractionDigits: 2 })]
+                        ? ['cash', t('reparcellization.modal.ownerPays', 'Cash the owner pays'), CbFormat.formatMoney(impact.cashPaymentCents / 100, readjustmentCurrency(), { minFractionDigits: 2, maxFractionDigits: 2 })]
+                        : ['cash', t('reparcellization.modal.colCashOffer', 'Cash offer'), CbFormat.formatMoney(impact.cashOfferCents / 100, readjustmentCurrency(), { minFractionDigits: 2, maxFractionDigits: 2 })]
                 ];
                 const details = document.createElement('dl');
                 entries.forEach(([key, title, value]) => {
@@ -4271,14 +4276,12 @@
     // so it is unit-tested headless. It fixed the bare-"50" bug (see that file).
     const { parseShareValue, normalizeOwnerSlots } = window.ReparcellizationShares;
 
-    // Readjustment currently models monetary entitlements in EUR. A source price in another
-    // currency (or without one) is unusable here; the whole pool then uses square metres.
+    // Readjustment models monetary entitlements in the city's currency. A price in another currency
+    // (or none: a city without a land rate) is unusable here; the whole pool then uses square metres.
     function getParcelLandValue(feature, area) {
-        const avg = Number.isFinite(window.SQM_AVG_PRICE) ? window.SQM_AVG_PRICE
-            : (typeof SQM_AVG_PRICE !== 'undefined' ? SQM_AVG_PRICE : 133);
         const estimate = window.ParcelPriceModel.buildEstimate(feature?.properties, area,
-            { areaPricePerSqm: avg, currency: 'EUR' });
-        return estimate.currency === 'EUR' ? estimate.amount : null;
+            window.CityMoney.currentLandPriceOptions('land'));
+        return estimate.currency === readjustmentCurrency() ? estimate.amount : null;
     }
 
     // Explicit owner IDs alone join contributions across parcels. Without one, a slot stays a
@@ -4329,8 +4332,8 @@
             state.poolUnitValue = null;
             state.valuationCurrency = null;
         }
-        if (state.contributionBasis === 'value' && state.valuationCurrency !== 'EUR') {
-            throw new Error('Saved readjustment needs an explicit EUR valuation basis; recreate this experimental record.');
+        if (state.contributionBasis === 'value' && !window.CityMoney.isFiat(state.valuationCurrency)) {
+            throw new Error('Saved readjustment needs an explicit valuation currency; recreate this experimental record.');
         }
     }
 
@@ -4443,7 +4446,7 @@
             openGroundLabel: t('reparcellization.modal.openGroundOwner', 'Open ground (ownership unknown)')
         });
         state.contributionBasis = result.basis;
-        state.valuationCurrency = result.basis === 'value' ? 'EUR' : null;
+        state.valuationCurrency = result.basis === 'value' ? readjustmentCurrency() : null;
         state.totalValue = result.totalValue;
         state.poolUnitValue = result.poolUnitValue;
         return labelAbstractOwners(result.shares.map((entry, index) => ({
@@ -4549,7 +4552,7 @@
         }
 
         // Contribution percent is by value when value data is meaningful,
-        // otherwise by area. poolUnitValue (€/m²) lets us value redrawn plots
+        // otherwise by area. poolUnitValue (money per m²) lets us value redrawn plots
         // at the pool average, so owners who pooled pricier land get more area.
         // A scheme that distributes by area (approval-regimes.js) keeps it by area. Looked up here,
         // not through a helper: readjustment-owner-identity.test.js runs this function on its own.
@@ -4559,7 +4562,7 @@
         state.totalValue = useValue ? totalValue : null;
         state.poolUnitValue = useValue && totalArea > 0 ? totalValue / totalArea : 0;
         state.contributionBasis = useValue ? 'value' : 'area';
-        state.valuationCurrency = useValue ? 'EUR' : null;
+        state.valuationCurrency = useValue ? readjustmentCurrency() : null;
 
         const entries = Array.from(result.values()).map((entry, index) => {
             const percent = useValue

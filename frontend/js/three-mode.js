@@ -457,8 +457,9 @@
     // Top-centre "Single parcel view [×]" banner: says the scene is filtered and how to leave.
     let isolationBannerEl = null;
     let parcelInfoPanelEl = null;
-    // Floor areas of the currently-shown parcel, kept so the price slider can recompute the
-    // value gain without re-running the (price-independent) volume maths on every tick.
+    // Floor areas of the currently-shown parcel or proposal ({ built, planned, proposed }, null where
+    // not available), kept so the price sliders can recompute the comparison without re-running the
+    // (price-independent) volume maths on every tick.
     let lastFloorAreas = null;
     // Parcel count behind the currently-shown panel (proposal panel only; null for single parcel),
     // so the price slider can recompute the average gain/loss per parcel live.
@@ -467,13 +468,19 @@
     // (a partly bound site), so the per-parcel average does not credit open ground to owners.
     let lastParcelFloorAreas = null;
 
-    // Assumptions for the parcel value panel. GFA (floor area) is derived from built/proposed
-    // volume by dividing out a typical storey height; value uses a €/m² rate the user can slide.
+    // Assumptions for the value panel. GFA (floor area) is derived from the built, planned and
+    // proposed volumes by dividing out a typical storey height; value and profit use two prices per
+    // m² the user slides, a sale price and a construction cost, in the city's currency, starting from
+    // city-money.js `currentFloorAreaPrices` (4,000 and 2,000).
     const FLOOR_HEIGHT_M = 3.5;        // "reasonably high" storey height for GFA estimation
-    let priceEurPerM2 = 4000;          // €/m² of floor area; adjustable via the panel slider
-    const PRICE_MIN_EUR = 2000;
-    const PRICE_MAX_EUR = 10000;
-    const PRICE_STEP_EUR = 100;
+    let panelPrices = null;            // { currency, sale, construction }; each perSqm moves with its slider
+
+    // The city's slider prices, kept while the currency stays the same (the sliders' last positions).
+    function currentPanelPrices() {
+        const fresh = window.CityMoney.currentFloorAreaPrices();
+        if (!panelPrices || panelPrices.currency !== fresh.currency) panelPrices = fresh;
+        return panelPrices;
+    }
     let parcelClickHandler = null;
     // The parcel under the last click (three-click-plan.js): its panel, its massing and its outline,
     // without dimming the city. Isolation (isolatedParcelId) is the deliberate second click.
@@ -762,9 +769,33 @@
         return CbFormat.formatNumber(Math.round(Number(n) || 0), { maxFractionDigits: 0 });
     }
 
-    // Values here are EUR (priceEurPerM2): amount then code, "+1,234 EUR".
-    function formatEur(n) {
-        return CbFormat.formatMoney(Math.round(Number(n) || 0), 'EUR');
+    // Values here are in the panel prices' currency: amount then code, "+1,234 GBP".
+    function formatPanelMoney(n) {
+        return CbFormat.formatMoney(Math.round(Number(n) || 0), currentPanelPrices().currency);
+    }
+
+    // The planned floor area over `parcelIds`: the permitted massing of each parcel (the Permitted
+    // layer's items, PlanningScene.parcelItemOf), its volume over the same storey height as Built and
+    // Proposed. Null when any parcel has no permitted massing loaded: a part sum would read as the plan.
+    function plannedMetrics(parcelIds) {
+        const items = window.PlanningViews?.getItems?.() || [];
+        const scene = window.PlanningScene;
+        if (!scene || !items.length) return null;
+        let volume = 0;
+        let counted = 0;
+        for (const id of parcelIds) {
+            const item = scene.parcelItemOf(items, id);
+            if (!item || !Array.isArray(item.volumes) || !item.volumes.length) return null;
+            for (const part of item.volumes) {
+                const height = Number(part.topM) - Number(part.baseM || 0);
+                if (!(height > 0) || !part.geometry) continue;
+                let area = 0;
+                try { area = turf.area({ type: 'Feature', properties: {}, geometry: part.geometry }); } catch (_) { area = 0; }
+                volume += area * height;
+            }
+            counted += 1;
+        }
+        return counted ? { volume, floorArea: volume / FLOOR_HEIGHT_M } : null;
     }
 
     // --- Proposal lookup helpers (for the "Proposal info" view) ---
@@ -818,64 +849,61 @@
         try { document.body.classList.remove('three-info-open'); } catch (_) { }
     }
 
-    // Refresh the price label and the value-gain line from the current slider price and the
-    // stored floor areas. Cheap — runs on every slider tick.
-    function renderValueAndGain(panel) {
-        const built = lastFloorAreas ? lastFloorAreas.built : 0;
-        const proposed = lastFloorAreas ? lastFloorAreas.proposed : 0;
-        // Money math from the shared, tested module.
-        const { gain, currentValue, hasProposed, avg } = window.ProposalGain.computeGain({
-            builtFloorArea: built,
-            proposedFloorArea: proposed,
-            priceEurPerM2,
+    // The two money rows' cells and the price labels from the current slider prices and the stored
+    // floor areas (gain.js computeValueComparison). Cheap — runs on every slider tick.
+    function renderValueComparison(panel) {
+        const prices = currentPanelPrices();
+        const comparison = window.ProposalGain.computeValueComparison({
+            floorAreas: lastFloorAreas || {},
+            salePerM2: prices.sale.perSqm,
+            constructionPerM2: prices.construction.perSqm,
+            currency: prices.currency,
             parcelCount: lastParcelCount,
             parcelFloorAreas: lastParcelFloorAreas
         });
+        const money = value => CbFormat.formatMoney(Math.round(value), prices.currency);
+        const signedClass = value => (value > 0 ? 'gain-positive' : (value < 0 ? 'gain-negative' : ''));
+        ['built', 'planned', 'proposed'].forEach(column => {
+            const figures = comparison.columns[column];
+            ['value', 'constructionCost', 'profit'].forEach(row => {
+                const cell = panel.querySelector(`[data-cell="${row}:${column}"]`);
+                if (!cell) return;
+                const amount = figures[row];
+                const shown = typeof amount === 'number';
+                cell.textContent = shown ? `${row === 'profit' && amount > 0 ? '+' : ''}${CbFormat.formatCompact(Math.round(amount))}` : '—';
+                cell.title = shown ? money(amount) : '';
+                cell.className = row === 'profit' && shown ? signedClass(amount) : '';
+                if (!figures.available) cell.classList.add('is-unavailable');
+            });
+        });
+        const saleLabel = panel.querySelector('[data-role="sale-label"]');
+        if (saleLabel) saleLabel.textContent = threeI18n('threeMode.parcelPanel.salePrice', 'Sale price {{price}}/m²', { price: money(prices.sale.perSqm) });
+        const costLabel = panel.querySelector('[data-role="construction-label"]');
+        if (costLabel) costLabel.textContent = threeI18n('threeMode.parcelPanel.constructionPrice', 'Construction cost {{price}}/m²', { price: money(prices.construction.perSqm) });
 
-        const titleEl = panel.querySelector('[data-role="value-title"]');
-        if (titleEl) titleEl.textContent = threeI18n('threeMode.parcelPanel.valueTitle', 'Floor-area model @ €{{p}}/m²', { p: formatInt(priceEurPerM2) });
-
-        const gainEl = panel.querySelector('[data-role="gain"]');
-        if (gainEl) {
-            // No proposed massing on this parcel → there's no "gain", just the current
-            // built value. Show that as a positive figure instead of a negative delta.
-            if (!hasProposed) {
-                gainEl.className = 'parcel-panel-gain' + (currentValue > 0 ? ' gain-positive' : '');
-                gainEl.textContent = `${threeI18n('threeMode.parcelPanel.currentValue', 'Modeled existing floor-area value')}: ${formatEur(currentValue)}`;
-            } else {
-                const cls = gain > 0 ? 'gain-positive' : (gain < 0 ? 'gain-negative' : '');
-                gainEl.className = 'parcel-panel-gain ' + cls;
-                const sign = gain > 0 ? '+' : '';
-                gainEl.textContent = `${threeI18n('threeMode.parcelPanel.gain', 'Modeled floor-area value change')}: ${sign}${formatEur(gain)}`;
-            }
-        }
-
-        // Proposal panel only: average gain/loss per parcel (total gain ÷ parcel count).
+        // Proposal panel only: the proposed profit per bound parcel.
         const avgEl = panel.querySelector('[data-role="avg-gain"]');
         if (avgEl) {
-            if (avg !== null) {
-                const cls = avg > 0 ? 'gain-positive' : (avg < 0 ? 'gain-negative' : '');
-                const sign = avg > 0 ? '+' : '';
-                avgEl.className = 'parcel-panel-avg ' + cls;
-                avgEl.textContent = `${threeI18n('threeMode.proposalPanel.avgPerParcel', 'Avg / parcel')}: ${sign}${formatEur(avg)}`;
-            } else {
-                avgEl.className = 'parcel-panel-avg';
-                avgEl.textContent = '';
-            }
+            const avg = comparison.avgProfitPerParcel;
+            avgEl.className = 'parcel-panel-avg' + (avg !== null ? ' ' + signedClass(avg) : '');
+            avgEl.textContent = avg !== null
+                ? `${threeI18n('threeMode.proposalPanel.avgPerParcel', 'Avg / parcel')}: ${avg > 0 ? '+' : ''}${money(avg)}`
+                : '';
         }
     }
 
-    // Shared by the parcel and proposal panels: wire the price slider and render the value/gain
-    // line from the current priceEurPerM2 and lastFloorAreas, then reveal the panel.
+    // Shared by the parcel and proposal panels: wire the two price sliders and render the comparison
+    // from the current prices and lastFloorAreas, then reveal the panel.
     function wireSliderAndGain(panel) {
-        const slider = panel.querySelector('[data-role="price-slider"]');
-        if (slider) {
+        [['sale-slider', 'sale'], ['construction-slider', 'construction']].forEach(([role, key]) => {
+            const slider = panel.querySelector(`[data-role="${role}"]`);
+            if (!slider) return;
             slider.addEventListener('input', () => {
                 const v = Number(slider.value);
-                if (Number.isFinite(v)) priceEurPerM2 = v;
-                renderValueAndGain(panel);
+                if (Number.isFinite(v)) currentPanelPrices()[key].perSqm = v;
+                renderValueComparison(panel);
             });
-        }
+        });
         const closeBtn = panel.querySelector('[data-role="close-panel"]');
         if (closeBtn) {
             closeBtn.addEventListener('click', () => {
@@ -883,7 +911,7 @@
                 else hideParcelInfoPanel();
             });
         }
-        renderValueAndGain(panel);
+        renderValueComparison(panel);
         panel.style.display = '';
         // Mark an info box as open so CSS can cover the overlapping floating status on mobile.
         try { document.body.classList.add('three-info-open'); } catch (_) { }
@@ -901,31 +929,48 @@
             </div>`;
     }
 
-    // The Built/Proposed volume + floor-area rows shared by both panels.
-    function metricsTableHtml(L, builtVolume, proposedVolume, builtFloorArea, proposedFloorArea) {
+    // The Built / Planned / Proposed comparison shared by both panels: volume and floor area, then
+    // value, construction cost and profit (filled by renderValueComparison), and the two sliders.
+    // `m` holds { built, planned, proposed } each { volume, floorArea } or null; a null column is
+    // not available and is greyed out.
+    function metricsTableHtml(L, m) {
+        const prices = currentPanelPrices();
+        const columns = ['built', 'planned', 'proposed'];
+        const off = column => (m[column] ? '' : ' class="is-unavailable"');
+        const cells = (render, column) => (m[column] ? render(m[column]) : '—');
+        const row = (label, render) => `<tr><td>${label}</td>${columns.map(c => `<td${off(c)}>${cells(render, c)}</td>`).join('')}</tr>`;
+        const moneyRow = (label, key, hint = '') => `<tr><td${hint ? ` title="${escapeHtml(hint)}"` : ''}>${label}</td>${columns.map(c => `<td data-cell="${key}:${c}"${off(c)}>—</td>`).join('')}</tr>`;
+        const slider = (role, labelRole, price) => `
+            <label class="parcel-panel-slider-label" data-role="${labelRole}"></label>
+            <input type="range" class="parcel-panel-price-slider" data-role="${role}"
+                min="${price.min}" max="${price.max}" step="${price.step}" value="${price.perSqm}">`;
         return `
             <table class="parcel-panel-table">
-                <tr><th></th><th>${L.built}</th><th>${L.proposed}</th></tr>
-                <tr><td>${L.volume}</td><td>${formatInt(builtVolume)} m³</td><td>${formatInt(proposedVolume)} m³</td></tr>
-                <tr><td>${L.floorArea}</td><td>${CbFormat.formatArea(Number(builtFloorArea) || 0)}</td><td>${CbFormat.formatArea(Number(proposedFloorArea) || 0)}</td></tr>
+                <tr><th></th>${columns.map(c => `<th${off(c)}>${L[c]}</th>`).join('')}</tr>
+                ${row(L.volume, v => `${formatInt(v.volume)} m³`)}
+                ${row(L.floorArea, v => CbFormat.formatArea(Number(v.floorArea) || 0))}
+                ${moneyRow(L.value, 'value')}
+                ${moneyRow(L.constructionCost, 'constructionCost')}
+                ${moneyRow(L.profit, 'profit', L.profitNote)}
             </table>
-            <div class="parcel-panel-note">${L.floorNote}</div>
-            <div class="parcel-panel-value-title" data-role="value-title"></div>
-            <input type="range" class="parcel-panel-price-slider" data-role="price-slider"
-                min="${PRICE_MIN_EUR}" max="${PRICE_MAX_EUR}" step="${PRICE_STEP_EUR}" value="${priceEurPerM2}"
-                aria-label="${L.priceLabel}">
-            <div class="parcel-panel-gain" data-role="gain"></div>`;
+            <div class="parcel-panel-note">${L.floorNote} · ${escapeHtml(threeI18n('threeMode.parcelPanel.amountsIn', 'amounts in {{currency}}', { currency: prices.currency }))}</div>
+            ${slider('sale-slider', 'sale-label', prices.sale)}
+            ${slider('construction-slider', 'construction-label', prices.construction)}`;
     }
 
     function panelLabels() {
         return {
             title: threeI18n('threeMode.parcelPanel.title', 'Parcel'),
             built: threeI18n('threeMode.parcelPanel.built', 'Built'),
+            planned: threeI18n('threeMode.parcelPanel.planned', 'Planned'),
             proposed: threeI18n('threeMode.parcelPanel.proposed', 'Proposed'),
             volume: threeI18n('threeMode.parcelPanel.volume', 'Volume'),
+            value: threeI18n('threeMode.parcelPanel.value', 'Value'),
+            constructionCost: threeI18n('threeMode.parcelPanel.constructionCost', 'Construction cost'),
+            profit: threeI18n('threeMode.parcelPanel.profit', 'Profit'),
+            profitNote: threeI18n('threeMode.parcelPanel.profitNote', 'Profit = value − construction cost − built value'),
             floorArea: threeI18n('threeMode.parcelPanel.floorArea', 'Floor area'),
             floorNote: threeI18n('threeMode.parcelPanel.floorNote', '@ {{h}} m/floor', { h: FLOOR_HEIGHT_M }),
-            priceLabel: threeI18n('threeMode.parcelPanel.priceLabel', 'Price per m²'),
             proposalLabel: threeI18n('threeMode.parcelPanel.proposalLabel', 'Proposal'),
             show: threeI18n('threeMode.parcelPanel.show', 'show'),
             proposalHeading: threeI18n('threeMode.proposalPanel.title', 'Proposal info'),
@@ -938,7 +983,9 @@
         if (!panel) return;
         const m = computeParcelMetrics(parcelId);
         if (!m) { panel.style.display = 'none'; try { document.body.classList.remove('three-info-open'); } catch (_) { } return; }
-        lastFloorAreas = { built: m.builtFloorArea, proposed: m.proposedFloorArea };
+        const planned = plannedMetrics([parcelId]);
+        const hasProposed = m.proposedFloorArea > 0;
+        lastFloorAreas = { built: m.builtFloorArea, planned: planned ? planned.floorArea : null, proposed: hasProposed ? m.proposedFloorArea : null };
         lastParcelCount = null; // single parcel — no per-parcel average
         lastParcelFloorAreas = null;
 
@@ -959,7 +1006,11 @@
             ${panelTitleHtml(`${L.title} <span class="parcel-id-text" title="${escapeHtml(canonicalParcelId)}">${escapeHtml(canonicalParcelId)}</span>`)}
             ${proposalRow}
             ${suggestedRow}
-            ${metricsTableHtml(L, m.builtVolume, m.proposedVolume, m.builtFloorArea, m.proposedFloorArea)}
+            ${metricsTableHtml(L, {
+                built: { volume: m.builtVolume, floorArea: m.builtFloorArea },
+                planned,
+                proposed: hasProposed ? { volume: m.proposedVolume, floorArea: m.proposedFloorArea } : null
+            })}
         `;
 
         const showBtn = panel.querySelector('[data-role="show-proposal"]');
@@ -999,7 +1050,10 @@
             : null;
         const summary = window.ProposalGain.summarizeProposalGround({ parcelMetrics, siteMetrics, ground });
         if (!summary) { hideParcelInfoPanel(); return; }
-        lastFloorAreas = { built: summary.builtFloorArea, proposed: summary.proposedFloorArea };
+        // Planned over the proposal's parcels; on open ground (no parcels) there is no plan to compare.
+        const planned = summary.parcelCount ? plannedMetrics([...idSet]) : null;
+        const hasProposed = summary.proposedFloorArea > 0;
+        lastFloorAreas = { built: summary.builtFloorArea, planned: planned ? planned.floorArea : null, proposed: hasProposed ? summary.proposedFloorArea : null };
         lastParcelCount = summary.parcelCount;
         lastParcelFloorAreas = summary.parcelFloorAreas;
 
@@ -1022,7 +1076,11 @@
             ${panelTitleHtml(L.proposalHeading)}
             <div class="parcel-panel-proposal-name">${escapeHtml(proposalDisplayTitle(proposal))}</div>
             ${lines.map(line => `<div class="parcel-panel-subnote">${escapeHtml(line)}</div>`).join('')}
-            ${metricsTableHtml(L, summary.builtVolume, summary.proposedVolume, summary.builtFloorArea, summary.proposedFloorArea)}
+            ${metricsTableHtml(L, {
+                built: { volume: summary.builtVolume, floorArea: summary.builtFloorArea },
+                planned,
+                proposed: hasProposed ? { volume: summary.proposedVolume, floorArea: summary.proposedFloorArea } : null
+            })}
             <div class="parcel-panel-avg" data-role="avg-gain"></div>
         `;
         wireSliderAndGain(panel);

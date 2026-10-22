@@ -291,10 +291,14 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
 /* Left-side parcel value panel (shown when a parcel is isolated/clicked in 3D). */
 #three-container .three-mode-parcel-panel {
     position: absolute;
-    top: 12px;
-    left: 12px;
-    width: 232px;
-    max-width: calc(100vw - 24px);
+    /* Beside the left button column (planning views at the top, the 2D / 3D / photo modes below),
+       never under it. */
+    --three-panel-left: calc(var(--map-shell-edge) + var(--map-shell-button-size) + var(--map-shell-gap));
+    top: var(--map-shell-edge);
+    left: var(--three-panel-left);
+    /* Four columns: a row label and Built / Planned / Proposed. */
+    width: 300px;
+    max-width: calc(100vw - var(--three-panel-left) - 12px);
     padding: 10px 12px;
     background: var(--cb-glass-sheet);
     backdrop-filter: blur(6px);
@@ -395,7 +399,7 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
 #three-container .three-mode-parcel-panel .parcel-panel-table th,
 #three-container .three-mode-parcel-panel .parcel-panel-table td {
     text-align: right;
-    padding: 2px 0;
+    padding: 2px 0 2px 6px;
     white-space: nowrap;
 }
 
@@ -419,32 +423,43 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
     text-align: right;
 }
 
-#three-container .three-mode-parcel-panel .parcel-panel-value-title {
+/* A column the parcel has no figures for (no permitted massing loaded, no proposed massing). */
+#three-container .three-mode-parcel-panel .parcel-panel-table .is-unavailable {
+    color: var(--cb-text-faint);
+    opacity: 0.55;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-table td.gain-positive {
+    color: var(--cb-success);
+    font-weight: 700;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-table td.gain-negative {
+    color: var(--cb-danger);
+    font-weight: 700;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-slider-label {
+    display: block;
     font-weight: 600;
     color: var(--cb-text-muted);
+    padding-top: 4px;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-slider-label:first-of-type {
     border-top: 1px solid var(--cb-line);
-    padding-top: 6px;
+}
+
+/* The Profit row label explains its formula on hover. */
+#three-container .three-mode-parcel-panel .parcel-panel-table td[title] {
+    cursor: help;
 }
 
 /* The slider takes the primary accent every native control has (css/tokens.css). */
 #three-container .three-mode-parcel-panel .parcel-panel-price-slider {
     width: 100%;
-    margin: 6px 0 2px;
+    margin: 2px 0;
     cursor: pointer;
-}
-
-#three-container .three-mode-parcel-panel .parcel-panel-gain {
-    margin-top: 4px;
-    font-weight: 700;
-    font-size: var(--cb-text-base);
-}
-
-#three-container .three-mode-parcel-panel .parcel-panel-gain.gain-positive {
-    color: var(--cb-success);
-}
-
-#three-container .three-mode-parcel-panel .parcel-panel-gain.gain-negative {
-    color: var(--cb-danger);
 }
 
 /* Top-centre banner shown while the 3D view is filtered to one parcel or one proposal.
@@ -485,6 +500,18 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
         right: 12px;
         width: auto;
         max-width: 360px;
+    }
+
+    /* The planning inspector docks to the same bottom edge on phones, so while it is open the
+       value panel moves up: beside the mode strip, under the isolation pill's row, and scrolls
+       within the space the inspector leaves (at most half the screen, css/planning-views.css). */
+    body:has(#planning-inspector:not([hidden])) #three-container .three-mode-parcel-panel {
+        top: calc(var(--map-shell-top-clearance) + var(--map-shell-button-size) + var(--map-shell-gap));
+        bottom: auto;
+        left: var(--three-panel-left);
+        box-sizing: border-box;
+        max-height: calc(50dvh - var(--map-shell-bottom-clearance) - var(--map-shell-top-clearance) - var(--map-shell-button-size) - 2 * var(--map-shell-gap));
+        overflow-y: auto;
     }
 
     /* The top edge belongs to the menu button, the Guest pill and the settings gear. The

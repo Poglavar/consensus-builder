@@ -20,6 +20,8 @@ import vm from 'node:vm';
 const require = createRequire(import.meta.url);
 const planYield = require('../../frontend/js/proposals/plan-yield.js');
 const siteStats = require('../../frontend/js/proposals/site-stats.js');
+const CbFormat = require('../../frontend/js/format.js');
+const CityMoney = require('../../frontend/js/city-money.js');
 const source = readFileSync(fileURLToPath(new URL('../../frontend/js/proposals/plan-stats.js', import.meta.url)), 'utf8');
 
 function makeNode(tag) {
@@ -67,7 +69,7 @@ function makeNode(tag) {
     return node;
 }
 
-function makeWindow(proposals, { search = '', getProposals = null, withPlanStatsButton = false, deferFrame = false } = {}) {
+function makeWindow(proposals, { search = '', getProposals = null, withPlanStatsButton = false, deferFrame = false, city = null } = {}) {
     const root = makeNode('root');
     const document = {
         body: root,
@@ -93,6 +95,8 @@ function makeWindow(proposals, { search = '', getProposals = null, withPlanStats
         console,
         __planYield: planYield,
         __siteStats: siteStats,
+        CbFormat,
+        CityMoney: CityMoney.forCity(() => city),
         requestAnimationFrame: fn => deferFrame ? (window.__frames.push(fn), window.__frames.length) : fn(),
         location: { search },
         setTimeout: fn => { timers.push(fn); return timers.length; },
@@ -122,6 +126,7 @@ function openDialog(proposals, options = {}) {
     const window = makeWindow(proposals, options);
     vm.runInNewContext(source, {
         window,
+        CbFormat,
         globalThis: window,
         document: window.document,
         proposalStorage: window.proposalStorage,
@@ -209,6 +214,22 @@ describe('opening the dialog', () => {
         ['resulting-parcels', 'buildings', 'floor-area', 'apartments', 'people', 'jobs', 'sales-value']
             .forEach(key => expect(slot(window, key), key).not.toBe('—'));
         expect(window.document.getElementById('plan-stats-modal').hidden).toBe(false);
+    });
+
+    // The sales price is the city's money: a UK plan is priced per m² in pounds from the UK default.
+    it('prices the floor area in the city currency', async () => {
+        const uk = openDialog(plan, { city: { currency: { code: 'GBP' } } });
+        await uk.showPlanStatsModal();
+        expect(slot(uk, 'sales-value')).toMatch(/GBP$/);
+        expect(uk.document.getElementById('plan-stats-price').value).toBe('4000');
+        const suffix = uk.document.querySelector('[for="plan-stats-price"]');
+        expect(suffix.textContent).toBe('GBP per m²');
+        expect(JSON.parse(suffix.attributes['data-i18n-params'])).toEqual({ currency: 'GBP' });
+
+        const hr = openDialog(plan, { city: { currency: { code: 'EUR' } } });
+        await hr.showPlanStatsModal();
+        expect(slot(hr, 'sales-value')).toMatch(/EUR$/);
+        expect(hr.document.getElementById('plan-stats-price').value).toBe('5000');
     });
 
     it('counts the applied proposals and says how many it left out', async () => {
