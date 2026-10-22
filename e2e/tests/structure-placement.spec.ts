@@ -389,12 +389,13 @@ test.describe('Whole-site placement editing @features', () => {
     expect(sheetBox).not.toBeNull();
     await layers.locator('[data-sheet-close]').click();
     await expect(layers).toBeHidden();
-    await page.locator('#settings-button').click();
-    const settings = page.locator('#settings-sheet');
-    await expect(settings).toBeVisible();
-    await settings.locator('[data-sheet-close]').click();
-    await expect(settings).toBeHidden();
+    // Settings starts another task, so it is greyed out (not hidden) until the edit is done.
+    const settingsButton = page.locator('#settings-button');
+    await expect(settingsButton).toBeVisible();
+    await expect(settingsButton).toBeDisabled();
+    await expect(settingsButton).toHaveClass(/is-edit-locked/);
     await done.click();
     await expect(editor).toHaveCount(0);
+    await expect(settingsButton).toBeEnabled();
   });
 });
