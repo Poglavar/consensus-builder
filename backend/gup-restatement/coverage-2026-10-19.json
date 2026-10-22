@@ -1,0 +1,333 @@
+{
+  "purpose": "2025 Zagreb GUP spatial proposals: same-cohort representation coverage review",
+  "baseBranch": "colosseum-worlds-fair",
+  "baseCommit": "83b1c31f",
+  "geometryCodeCommit": "9af203a58611f4271a7a5516811d1de3804b623a",
+  "sourceInputParity": true,
+  "gupTextParity": true,
+  "gupTextHash": "036646da937f920774ec45856293499369feea1bed79d1060331e25fd204fb6f",
+  "sourceFingerprints": {
+    "parcels": {
+      "count": 194676,
+      "hash": "476e1e18acbe270c87b663f74252d9b3"
+    },
+    "cache": {
+      "count": 169803,
+      "hash": "2b448484aefbf03b25af89b3f838636f"
+    },
+    "rules": {
+      "count": 956,
+      "hash": "4f78b86f0dc29c836ff3aac717db63e3"
+    },
+    "variables": {
+      "count": 119,
+      "hash": "8f45d899cd818c78543256c24dd650f8"
+    }
+  },
+  "scope": {
+    "areaM2": 217687059.03229392,
+    "definition": "2025 Zagreb GUP urban-rule union; excludes separate Sesvete GUP",
+    "parcelUniverse": "all current cadastral parcels intersecting the mapped scope, including uncached parcels",
+    "limitation": "Parcel area totals are not a non-overlapping ground tessellation; scope.geojson retains uncadastrated ground as unresolved."
+  },
+  "summary": {
+    "parcels": 194676,
+    "represented": 10622,
+    "skipped": 184054,
+    "proven_zero": 0,
+    "knownAreaM2": 217687062.6822498,
+    "representedAreaM2": 9768190.050942758,
+    "missingAreaParcels": 0,
+    "numericNewBuildParcels": 12894,
+    "cachedNewBuildGbpM2": 11567756.779999984,
+    "reasons": {
+      "missing_cache": 24873,
+      "source_not_new_build": 110057,
+      "source_no_candidate": 156909,
+      "source_unknown": 146984,
+      "source_geometry": 146984,
+      "source_quantity_mismatch": 1396,
+      "unsupported_floor_profile": 367,
+      "unsupported_mandatory_form": 51744,
+      "unsupported_footprint_topology": 10
+    },
+    "flags": {
+      "source_applicability_unresolved": 169803,
+      "native_adjoining_volumes": 10505,
+      "scalar_limits_retained_as_source_notes": 10630,
+      "source_exception_requires_review": 9575,
+      "source_proxy_applicability": 3100
+    },
+    "zones": {
+      "unknown": {
+        "parcels": 67852,
+        "represented": 0,
+        "skipped": 67852,
+        "proven_zero": 0
+      },
+      "2.4": {
+        "parcels": 16641,
+        "represented": 3487,
+        "skipped": 13154,
+        "proven_zero": 0
+      },
+      "1.10": {
+        "parcels": 9355,
+        "represented": 0,
+        "skipped": 9355,
+        "proven_zero": 0
+      },
+      "2.1": {
+        "parcels": 8502,
+        "represented": 630,
+        "skipped": 7872,
+        "proven_zero": 0
+      },
+      "1.9": {
+        "parcels": 5943,
+        "represented": 0,
+        "skipped": 5943,
+        "proven_zero": 0
+      },
+      "1.4": {
+        "parcels": 4095,
+        "represented": 0,
+        "skipped": 4095,
+        "proven_zero": 0
+      },
+      "2.7": {
+        "parcels": 5408,
+        "represented": 637,
+        "skipped": 4771,
+        "proven_zero": 0
+      },
+      "2.9": {
+        "parcels": 1630,
+        "represented": 236,
+        "skipped": 1394,
+        "proven_zero": 0
+      },
+      "1.8": {
+        "parcels": 566,
+        "represented": 0,
+        "skipped": 566,
+        "proven_zero": 0
+      },
+      "2.2": {
+        "parcels": 23269,
+        "represented": 2361,
+        "skipped": 20908,
+        "proven_zero": 0
+      },
+      "2.8": {
+        "parcels": 3925,
+        "represented": 826,
+        "skipped": 3099,
+        "proven_zero": 0
+      },
+      "2.12": {
+        "parcels": 2261,
+        "represented": 0,
+        "skipped": 2261,
+        "proven_zero": 0
+      },
+      "1.3": {
+        "parcels": 3010,
+        "represented": 0,
+        "skipped": 3010,
+        "proven_zero": 0
+      },
+      "3.1": {
+        "parcels": 6026,
+        "represented": 0,
+        "skipped": 6026,
+        "proven_zero": 0
+      },
+      "1.6": {
+        "parcels": 7448,
+        "represented": 0,
+        "skipped": 7448,
+        "proven_zero": 0
+      },
+      "2.10": {
+        "parcels": 3628,
+        "represented": 479,
+        "skipped": 3149,
+        "proven_zero": 0
+      },
+      "2.11": {
+        "parcels": 1281,
+        "represented": 0,
+        "skipped": 1281,
+        "proven_zero": 0
+      },
+      "1.7": {
+        "parcels": 233,
+        "represented": 0,
+        "skipped": 233,
+        "proven_zero": 0
+      },
+      "3.2": {
+        "parcels": 6857,
+        "represented": 0,
+        "skipped": 6857,
+        "proven_zero": 0
+      },
+      "1.5": {
+        "parcels": 793,
+        "represented": 0,
+        "skipped": 793,
+        "proven_zero": 0
+      },
+      "2.3": {
+        "parcels": 3121,
+        "represented": 0,
+        "skipped": 3121,
+        "proven_zero": 0
+      },
+      "1.2": {
+        "parcels": 3048,
+        "represented": 0,
+        "skipped": 3048,
+        "proven_zero": 0
+      },
+      "2.14": {
+        "parcels": 193,
+        "represented": 0,
+        "skipped": 193,
+        "proven_zero": 0
+      },
+      "2.6": {
+        "parcels": 3397,
+        "represented": 765,
+        "skipped": 2632,
+        "proven_zero": 0
+      },
+      "2.13": {
+        "parcels": 160,
+        "represented": 0,
+        "skipped": 160,
+        "proven_zero": 0
+      },
+      "2.5": {
+        "parcels": 4785,
+        "represented": 1201,
+        "skipped": 3584,
+        "proven_zero": 0
+      },
+      "2.9.1": {
+        "parcels": 910,
+        "represented": 0,
+        "skipped": 910,
+        "proven_zero": 0
+      },
+      "1.1": {
+        "parcels": 339,
+        "represented": 0,
+        "skipped": 339,
+        "proven_zero": 0
+      }
+    }
+  },
+  "geometryQa": {
+    "proposals": 10622,
+    "nativeVolumes": 21127,
+    "steppedProposals": 10505,
+    "maximumRelativeAreaError": 0.000916244917985694,
+    "maximumRelativeVolumeError": 0.009664965500137016,
+    "failures": []
+  },
+  "representationComparison": {
+    "prismOnlyParcels": 117,
+    "nativeVolumeParcels": 10622,
+    "newlyRepresented": 10505,
+    "lostRepresentation": []
+  },
+  "limitations": [
+    "Uses the local v44 geometry cache; unresolved source applicability remains flagged.",
+    "This is one above-ground massing option per represented current parcel, not all possible designs or legal permission.",
+    "Unit caps and other non-geometric conditions are retained as source notes. CB apartment estimates are not GUP regulatory caps.",
+    "Adjoining volumes are components of one mass; the native component count is not a building count.",
+    "Refusal counts overlap. Missing source results and unsupported mandates are counted separately; skipped parcels are not zero capacity.",
+    "The full parcel audit and generated records are ignored local artifacts under tmp/gup-2025-restatement-v2."
+  ],
+  "headlessUnitRuns": [
+    {
+      "files": 1,
+      "tests": 17,
+      "passed": true,
+      "stopped": false
+    },
+    {
+      "files": 1,
+      "tests": 17,
+      "passed": true,
+      "stopped": false
+    },
+    {
+      "files": 2,
+      "tests": 21,
+      "passed": true,
+      "stopped": false
+    },
+    {
+      "files": 2,
+      "tests": 22,
+      "passed": true,
+      "stopped": false
+    },
+    {
+      "files": 2,
+      "tests": 23,
+      "passed": true,
+      "stopped": false
+    },
+    {
+      "files": 2,
+      "tests": 24,
+      "passed": false,
+      "failures": 2,
+      "stopped": false,
+      "resolution": "Corrected quantity-failure classification and made the hole test source internally coherent."
+    },
+    {
+      "files": 2,
+      "tests": 24,
+      "passed": true,
+      "stopped": false
+    },
+    {
+      "files": 1,
+      "tests": 20,
+      "passed": true,
+      "stopped": false
+    }
+  ],
+  "testFiles": [
+    "backend/test/gup-restatement.test.js",
+    "backend/test/seed-canonical-record.test.js"
+  ],
+  "fullTestSuitesRun": false,
+  "localImport": {
+    "draftProposals": 10622,
+    "nativePlans": 71,
+    "readBackVerified": 10622,
+    "repeatApply": {
+      "completed": true,
+      "inserted": 0,
+      "verifiedExisting": 10622,
+      "nativePlans": 71
+    }
+  },
+  "userDecision": "Approximate massing accepted; retain non-spatial limits as source notes and list model gaps, explicitly maximum dwelling counts.",
+  "gapRegister": "README.md#Gaps-uncovered",
+  "manualBrowserReview": {
+    "type": "dedicated headed Chrome via agent-browser; no browser test suite",
+    "plan": "gup25-8f31347e0cbb-1",
+    "planPreview": "loaded 150 members, parcel count, skip notice and hatched footprints in Zagreb",
+    "proposal": "gup25-56bb29c85cf5bd323aa520eb",
+    "individualProposal": "native apply succeeded; native 3D view rendered the stepped massing among existing buildings",
+    "browserErrors": [],
+    "reviewBrowserClosed": true
+  }
+}
