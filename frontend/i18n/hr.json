@@ -7933,6 +7933,7 @@
     "coverageTitle": "Što obuhvaća ovaj izvor?",
     "coverageNote": "Prikazuju se spremljeni izračuni izvora. Neki sadrže građevnu masu, a drugi navode nedostatak dokaza, neispunjene uvjete ili drugi planski postupak. Rezultat bez geometrije nije dokaz nultog kapaciteta. Visinski dijelovi prikazuju dijelove na različitim visinama.",
     "inspectHint": "Odaberite zgradu ili izvornu geometriju za pregled.",
+    "focusNoMassing": "Ovaj izvor ne bilježi volumen za odabranu česticu.",
     "inspectMassing": "Pregledaj dopušteni volumen na čestici {{parcel}}",
     "heightParts": "Visinski dijelovi: {{heights}}",
     "cacheSummary": "{{count}} spremljenih rezultata u ovom području: {{shapes}} s geometrijom, {{missing}} bez geometrije.",

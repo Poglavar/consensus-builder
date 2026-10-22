@@ -7864,6 +7864,7 @@
     "coverageTitle": "What does this source cover?",
     "coverageNote": "Showing the provider’s saved calculations. Some results contain massing; others report missing evidence, unmet conditions or another planning procedure. A result without geometry is not proof of zero capacity. Height steps shows the parts at different elevations.",
     "inspectHint": "Select a building or source geometry to inspect it.",
+    "focusNoMassing": "This source records no massing for the selected parcel.",
     "inspectMassing": "Inspect permitted massing on {{parcel}}",
     "heightParts": "Height parts: {{heights}}",
     "cacheSummary": "{{count}} saved results in this area: {{shapes}} with geometry, {{missing}} without geometry.",

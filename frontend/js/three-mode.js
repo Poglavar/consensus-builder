@@ -1078,6 +1078,8 @@
         isolatedProposalId = null;
         updateIsolationButton();
         updateParcelInfoPanel(parcelId);
+        // The Buildings and massing panel refers to the isolated parcel.
+        try { window.PlanningViews?.focusParcel?.(parcelId); } catch (_) { }
         applyParcelEmphasis();
         // A parcel selection does not isolate photoreal proposal cuts either: all city surfaces
         // remain present while the selected parcel receives the bright outline/fill.
@@ -1120,6 +1122,7 @@
         // figures to show, so the scene stays as it is and only the panel and camera follow it.
         const siteFeature = idSet.size ? null : proposalSiteFeature(proposal);
         if (!idSet.size && !siteFeature) return;
+        try { window.PlanningViews?.focusParcel?.(null); } catch (_) { }
         if (isolatedParcelId !== null) clearIsolation();
         isolatedProposalId = String(proposalId);
         isolatedParcelId = null;
@@ -1237,6 +1240,7 @@
         isolatedProposalId = null;
         updateIsolationButton();
         hideParcelInfoPanel();
+        try { window.PlanningViews?.focusParcel?.(null); } catch (_) { }
         restoreParcelEmphasis();
         if (!wasProposalIsolated) {
             notifyIsolationChanged();

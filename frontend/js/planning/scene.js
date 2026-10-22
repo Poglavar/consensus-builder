@@ -56,5 +56,14 @@
         return geometry;
     }
     function queryKey(city, bbox) { return `${city}:${bbox.map(value => Number(value).toFixed(5)).join(',')}`; }
-    return { roles, displayStates, choices, defaults, settings, displayPolicy, itemAppearance, createStore, builtGeometry, queryKey };
+    // The item that IS a parcel's permitted massing: its envelope when the source records one,
+    // else the source's cached result for that parcel (`source.parcel`).
+    function parcelItemOf(items, parcelId) {
+        const id = parcelId == null ? '' : String(parcelId);
+        if (!id) return null;
+        const ofParcel = (Array.isArray(items) ? items : []).filter(item => item && item.role === 'permitted'
+            && (String(item.sourceEvidence?.parcelReference?.parcelId ?? '') === id || String(item.source?.parcel ?? '') === id));
+        return ofParcel.find(item => item.parcelEnvelope) || ofParcel[0] || null;
+    }
+    return { roles, displayStates, choices, defaults, settings, displayPolicy, itemAppearance, createStore, builtGeometry, queryKey, parcelItemOf };
 });

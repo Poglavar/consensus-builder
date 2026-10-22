@@ -3,7 +3,7 @@
 (function (root) {
     'use strict';
     const core = root.PlanningScene, envelopes = root.PlanningEnvelopes;
-    const sharedLabels = { existing: 'threeMode.controls.built', proposed: 'threeMode.parcelPanel.proposed',
+    const sharedLabels = { focusParcel: 'threeMode.isolation.singleParcel', existing: 'threeMode.controls.built', proposed: 'threeMode.parcelPanel.proposed',
         solid: 'threeMode.controls.stateSolid', ghost: 'threeMode.controls.stateGhost', off: 'threeMode.controls.stateOff',
         surviving: 'threeMode.controls.stateSurviving', removed: 'threeMode.controls.stateRemoved',
         massing: 'threeMode.controls.representationMassing', buildout: 'threeMode.controls.representationBuildOut',
@@ -13,6 +13,9 @@
     let panel, inspector, lastSettings = null, lastSelectedId = null, ready = false, selectionLayer;
     let progress = null;
     let selectionPoint = null;
+    // The parcel the 3D view has isolated (focusParcel). The sheet refers to that parcel, or else
+    // to the parcel of the selected permitted massing (focusedParcel).
+    let isolatedParcelId = null;
     let sourceOptions = [], sourceId = '', scenarioId = '', focusedRecord = null, sourceGeneration = 0, actionsOpen = false, referenceStatus = null;
     let restoreId = new URLSearchParams(location.search).get('planningSelection'), restoring = false, catalogReady = false, parcelPanel = null;
     // Per-item configuration pins chosen in the inspector; cleared with the source, housing type or city.
@@ -80,8 +83,44 @@
         restoreId = null;
         store.select(id);
         renderInspector();
+        renderFocus();
     }
     function selectRecord(record) { focusedRecord = record; referenceStatus = null; select(record?.id || null); }
+    // The parcel the sheet refers to: the one the 3D view isolated, else the parcel of the
+    // selected permitted massing.
+    function parcelOf(item) {
+        if (!item || item.role !== 'permitted') return null;
+        return String(item.sourceEvidence?.parcelReference?.parcelId || item.source?.parcel || '') || null;
+    }
+    function focusedParcel() { return isolatedParcelId || parcelOf(selected()); }
+    // 3D parcel isolation: the panel refers to that parcel. Its cached massing (when the source
+    // records one) opens in the inspector, its saved evidence lists in the sheet, and the sheet
+    // names it. Null when the isolation ends.
+    function focusParcel(parcelId) {
+        if (!ready) return;
+        isolatedParcelId = parcelId == null || parcelId === '' ? null : String(parcelId);
+        const item = core.parcelItemOf(sceneItems(), isolatedParcelId);
+        if (item) select(item.id);
+        else if (selected()?.role === 'permitted') select(null);
+        else renderFocus();
+    }
+    function renderFocus() {
+        const section = panel?.querySelector('.planning-focus');
+        if (!section) return;
+        const parcel = focusedParcel();
+        const item = parcel ? core.parcelItemOf(sceneItems(), parcel) : null;
+        // Massing that arrived after the isolation click still opens for that parcel.
+        if (isolatedParcelId && item && !selected()) { select(item.id); return; }
+        section.hidden = !parcel || isPhoto();
+        section.querySelector('.planning-focus__title').textContent = parcel ? `${t('focusParcel')} ${parcel}` : '';
+        const note = section.querySelector('.planning-focus__note');
+        note.textContent = parcel && !item && status === 'ready' && policy().permitted !== 'off' ? t('focusNoMassing') : '';
+        note.hidden = !note.textContent;
+        if (!parcel) {
+            section.querySelector('.planning-parcel-evidence')?.remove();
+            if (parcelPanel?.container === section) parcelPanel = null;
+        } else if (parcelPanel?.container !== section || parcelPanel.parcel !== parcel) showParcelEvidence(section, parcel);
+    }
     function inspectBuilding(feature, key) {
         const record = root.PlanningRepresentations.built(feature, { key: key || root.buildingPoolFeatureKey?.(feature),
             city: root.CityConfigManager.getCurrentCityId(), footprintM2: feature.geometry ? root.turf.area(feature) : null });
@@ -243,6 +282,9 @@
         const sourceResult = item.role === 'permitted';
         heading.append(element('p', 'planning-eyebrow', item.parcelEnvelope ? t('envelopeTitle')
             : t(item.areas?.length ? 'zoningArea' : sourceResult ? (item.volumes.length ? 'sourceProposal' : 'savedResult') : item.role === 'existing' ? 'builtRecord' : 'proposedRecord')), element('h2', '', item.title));
+        // A parcel's massing names its parcel; the title alone is the source edition and ratio.
+        const parcelLabel = parcelOf(item);
+        if (parcelLabel) heading.append(element('p', 'planning-inspector__parcel', `${t('focusParcel')} ${parcelLabel}`));
         const close = element('button', 'close-circle-btn', '×');
         close.type = 'button'; close.setAttribute('aria-label', t('close'));
         close.addEventListener('click', () => { select(null); document.getElementById('planning-views-button').focus(); });
@@ -459,6 +501,7 @@
         panel.querySelector('.planning-inspect-hint').hidden = policy().permitted === 'off' || !items.length || isPhoto();
         const model = panel.querySelector('.planning-open-model');
         model.hidden = !isPhoto(); model.textContent = t('openModel');
+        renderFocus();
         renderInspector();
     }
     function syncView() {
@@ -753,7 +796,7 @@
         root.addEventListener('cityChanged', () => {
             root.PlanningParcelStudy?.clear(); selectionPoint = null;
             controller?.abort(); request++; invalidate(); items = []; payload = null; status = 'loading';
-            sourceOptions = []; sourceId = ''; scenarioId = ''; pins = {}; sourcesKey = ''; focusedRecord = null; restoreId = null; catalogReady = false; parcelPanel = null;
+            sourceOptions = []; sourceId = ''; scenarioId = ''; pins = {}; sourcesKey = ''; focusedRecord = null; restoreId = null; catalogReady = false; parcelPanel = null; isolatedParcelId = null;
             store.select(null); drawMap(); render(); notifyGeometry(); loadSources();
         });
         root.addEventListener('proposedBuildingsUpdated', render);
@@ -777,7 +820,7 @@
         getSelectionPoint: () => selectionPoint?.id === selected()?.id ? selectionPoint : null, getAppearance: appearance,
         refreshStudy({ inspector: updateInspector = true } = {}) { drawMap(); if (updateInspector) renderInspector(); notifyGeometry(); },
         getSelected: selected, isReady: () => ready, isInspecting: () => ready && !inspector.hidden,
-        select, selectRecord, inspectBuilding, inspectProposal, showParcelEvidence, color, refresh,
+        select, selectRecord, inspectBuilding, inspectProposal, showParcelEvidence, focusParcel, color, refresh,
         permittedFeatures, studyScenarioFor, pinConfiguration, getScenario: () => scenarioId,
         configure: (key, value) => store?.configure(key, value), reroll: () => store?.reroll() };
     root.whenMapCoreReady().then(init);

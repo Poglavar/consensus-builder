@@ -34,6 +34,12 @@
 .planning-source-note { font-size: var(--cb-text-xs); color: var(--cb-text-muted); margin: var(--cb-space-1) 0 0; }
 .planning-source-note:empty { display: none; }
 .planning-parcel-evidence { border-top: 1px solid var(--cb-line); padding-top: var(--cb-space-3); margin-top: var(--cb-space-3); font-size: var(--cb-text-sm); }
+/* The parcel the 3D view has isolated: the sheet names it and lists its saved evidence. */
+.planning-focus { border-top: 1px solid var(--cb-line); padding-top: var(--cb-space-3); margin-top: var(--cb-space-3); }
+.planning-focus__title { font-size: var(--cb-text-base); margin: 0; overflow-wrap: anywhere; }
+.planning-focus__note { font-size: var(--cb-text-xs); color: var(--cb-text-muted); margin: var(--cb-space-1) 0 0; }
+.planning-focus .planning-parcel-evidence { border-top: 0; padding-top: 0; margin-top: var(--cb-space-2); }
+.planning-inspector__parcel { margin: var(--cb-space-1) 0 0; font-size: var(--cb-text-sm); color: var(--cb-text-muted); overflow-wrap: anywhere; }
 .planning-parcel-evidence h3 { font-size: var(--cb-text-base); margin: 0; }
 .planning-cache-reason { white-space: pre-wrap; overflow-wrap: anywhere; font-size: var(--cb-text-sm); color: var(--cb-text-muted); }
 .planning-sources-pane { z-index: var(--cb-z-map-pane-site); }
