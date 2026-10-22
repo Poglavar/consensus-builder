@@ -116,8 +116,15 @@
         throw new Error('Cannot project authored proposal: the corridor record form is unavailable.');
     }
 
-    function stripDerivedRecordData(record) {
+    // `options.keepDemolition` keeps the apply-time demolition results (`demolishedBuildings`,
+    // `demolitionScanned`) on the sub-records: the proposal store's in-memory canonical form needs
+    // them, because the carve, the 2D building outcomes and the server carve read them from the
+    // applied record there. The authored projections (local rows, publish, share, chain) never
+    // carry them; a replay re-derives them (2026-10-22: stripping them at index time had silently
+    // emptied every demolition since 2026-09-03).
+    function stripDerivedRecordData(record, options = {}) {
         if (!record || typeof record !== 'object') return record;
+        const keepDemolition = !!(options && options.keepDemolition);
         const out = { ...record };
         delete out.status;
         delete out.childParcelIds;
@@ -139,15 +146,17 @@
             delete clean.parentsToRemove;
             delete clean.formation;
             // Demolition results are apply-time scans for every formation.
-            if (key === 'structureProposal' || key === 'buildingProposal') {
+            if ((key === 'structureProposal' || key === 'buildingProposal') && !keepDemolition) {
                 delete clean.demolishedBuildings;
                 delete clean.demolitionScanned;
             }
             if (key === 'roadProposal' && clean.definition && typeof clean.definition === 'object') {
                 clean.definition = { ...clean.definition };
                 delete clean.definition.surfaceFootprint;
-                delete clean.definition.demolishedBuildings;
-                delete clean.definition.demolitionScanned;
+                if (!keepDemolition) {
+                    delete clean.definition.demolishedBuildings;
+                    delete clean.definition.demolitionScanned;
+                }
                 // The road keeps its VIEW here (stretch fields): this projection runs in memory,
                 // between the draft and the store, where every reader expects the view. Only the
                 // two storage boundaries encode the record (encodeRoadRecord: the local store's

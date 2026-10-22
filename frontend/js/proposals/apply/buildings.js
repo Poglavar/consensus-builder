@@ -45,7 +45,12 @@
         }
 
         const step1Time = performance.now();
-        const buildingProposal = proposalData.buildingProposal ? { ...proposalData.buildingProposal } : {};
+        // The record's OWN sub-object, never a copy: Step 4 writes the demolition scan onto it and
+        // persistAppliedProposal stores proposalData itself, so a copy silently dropped every
+        // building demolition (2026-10-22) and the Surviving views had nothing to hide. Structures
+        // write to proposalData.structureProposal the same way.
+        if (!proposalData.buildingProposal || typeof proposalData.buildingProposal !== 'object') proposalData.buildingProposal = {};
+        const buildingProposal = proposalData.buildingProposal;
         // Every building proves its live host ground, including any overlap inherited from
         // distinct cadastral source outlines.
         const liveParents = this._resolveLiveFormationParents(proposalData, idLabel, 'building', options);

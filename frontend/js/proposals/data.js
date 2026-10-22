@@ -1362,7 +1362,11 @@ const proposalStorage = {
             throw new Error(`Cannot load proposal: ${conflict?.field || conflict?.code || 'cadastral declaration'} conflicts with cadastreParcelIds.`);
         }
         proposal = canonicalizeProposalCadastreAnchors(candidate);
-        proposal = depthApi.stripDerivedRecordData(proposal);
+        // The store's record keeps its apply-time demolition results: the carve (corridor-carve.js),
+        // the 2D building outcomes and the server carve all read them from the applied record here.
+        // The rows (proposalRecordForPersistence) and every publish/share projection still drop
+        // them, and a replay re-derives them.
+        proposal = depthApi.stripDerivedRecordData(proposal, { keepDemolition: true });
         // Authored records contain definitions and authored geometry only. Runtime materialized
         // features live exclusively in LiveParcelFabric and are looked up by proposal id.
         delete proposal.parentFeatures;

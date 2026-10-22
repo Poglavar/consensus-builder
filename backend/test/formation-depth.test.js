@@ -222,6 +222,30 @@ describe('stripDerivedRecordData', () => {
         expect(record.structureProposal.formation).toBeTruthy();
     });
 
+    it('keeps apply-time demolition results for the store when asked, stripping everything else as usual', () => {
+        const record = {
+            proposalId: 'c-y', goal: 'park', cadastreParcelIds: ['HR-1'],
+            structureProposal: { kind: 'park', formation: { mode: 'merge' }, demolishedBuildings: [{ id: '1' }], demolitionScanned: true },
+            buildingProposal: { typologyType: 'block', childParcelIds: ['opaque'], demolishedBuildings: [{ id: '2' }] },
+            roadProposal: { definition: { width: 10, surfaceFootprint: { type: 'Polygon', coordinates: [] }, demolishedBuildings: [{ id: '3' }], demolitionScanned: true }, childFeatures: [{}] }
+        };
+        const kept = records.stripDerivedRecordData(record, { keepDemolition: true });
+        expect(kept.structureProposal.demolishedBuildings).toEqual([{ id: '1' }]);
+        expect(kept.structureProposal.demolitionScanned).toBe(true);
+        expect(kept.buildingProposal.demolishedBuildings).toEqual([{ id: '2' }]);
+        expect(kept.roadProposal.definition.demolishedBuildings).toEqual([{ id: '3' }]);
+        expect(kept.roadProposal.definition.demolitionScanned).toBe(true);
+        expect(kept.structureProposal.formation).toBeUndefined();
+        expect(kept.buildingProposal.childParcelIds).toBeUndefined();
+        expect(kept.roadProposal.childFeatures).toBeUndefined();
+        expect(kept.roadProposal.definition.surfaceFootprint).toBeUndefined();
+        // The authored projections (rows, publish, share) still drop them.
+        const authored = records.stripDerivedRecordData(record);
+        expect(authored.structureProposal.demolishedBuildings).toBeUndefined();
+        expect(authored.buildingProposal.demolishedBuildings).toBeUndefined();
+        expect(authored.roadProposal.definition.demolishedBuildings).toBeUndefined();
+    });
+
     it('removes government-plan child pieces; authored geometry belongs in definition.features', () => {
         const out = records.stripDerivedRecordData({
             cadastreParcelIds: [BASE],

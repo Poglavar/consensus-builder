@@ -302,6 +302,31 @@ describe('proposal rows: load', () => {
     });
 });
 
+// Demolition results are apply-time derivations: the store's record keeps them (the carve and the
+// 2D outcomes read them there), its row does not (a replay re-derives them).
+describe('proposal rows: demolition results', () => {
+    it('keeps them on the indexed record and leaves them out of the written row', () => {
+        const storage = fakeStorage();
+        const store = bootStore(storage);
+        const demolished = [{ id: '62722', geometry: { type: 'Polygon', coordinates: [[[15.97, 45.8], [15.971, 45.8], [15.971, 45.801], [15.97, 45.8]]] } }];
+        store._indexProposal(record('applied', { applied: true, buildingProposal: { typologyType: 'block', demolishedBuildings: demolished } }));
+        store._indexProposal(record('park', { applied: true, goal: 'park', structureProposal: { kind: 'park', geometry: { type: 'Polygon', coordinates: [] }, demolishedBuildings: demolished, demolitionScanned: true } }));
+        expect(store.getProposal('applied').buildingProposal.demolishedBuildings).toEqual(demolished);
+        expect(store.getProposal('park').structureProposal.demolishedBuildings).toEqual(demolished);
+        expect(store.getProposal('park').structureProposal.demolitionScanned).toBe(true);
+        store._persist();
+        const row = JSON.parse(storage.values.get('proposal:applied'));
+        expect(row.buildingProposal.typologyType).toBe('block');
+        expect(row.buildingProposal).not.toHaveProperty('demolishedBuildings');
+        expect(JSON.parse(storage.values.get('proposal:park')).structureProposal).not.toHaveProperty('demolishedBuildings');
+        // Still there in memory after the save, and a reload starts without them.
+        expect(store.getProposal('applied').buildingProposal.demolishedBuildings).toEqual(demolished);
+        const reloaded = bootStore(storage);
+        reloaded.load();
+        expect(reloaded.getProposal('applied').buildingProposal).not.toHaveProperty('demolishedBuildings');
+    });
+});
+
 describe('proposal rows: whole-store save and clear', () => {
     it('_persist writes only rows whose projection changed, deletes orphan rows, and the manifest', () => {
         // Rows written by the store itself, so a reload followed by a save sees them as unchanged.
