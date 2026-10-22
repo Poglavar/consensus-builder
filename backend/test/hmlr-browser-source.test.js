@@ -59,7 +59,7 @@ function fixture({ corruptArchiveSha = false, corruptZip = false, badShardHash =
         nativeBounds: index === 2 && authorityCount <= 3 ? [699900, 599900, 700100, 600100]
             : index === 1 && irrelevantNeighbor ? [530700, 180100, 535900, 180300]
             : contextAcrossBoundary ? [530700, 180100, 531500, 180700]
-            : index === 0 && bulkFeatureCount ? [530600, 180000, 533800, 180500]
+            : index === 0 && bulkFeatureCount ? [530600, 180000, 533800, 181000]
             : index === 0 && outOfManifestBounds ? [530700, 180100, 530810, 180300] : [530700, 180100, 530900, 180300],
         bounds: index === 2 && authorityCount <= 3 ? [2, 55, 4, 57]
             : index === 1 && irrelevantNeighbor ? [-0.3, 51.3, 0.1, 51.7]
@@ -203,29 +203,66 @@ test('cancels an oversized headerless manifest while reading its decoded stream'
     assert.equal(f.archiveCalls.length, 0);
 });
 
-test('a completed archive download timeout cannot abort local authority parsing', async () => {
-    const f = fixture({ bulkFeatureCount: 600 }), downloadSignals = [];
-    const timeout = AbortSignal.timeout.bind(AbortSignal);
-    vi.spyOn(AbortSignal, 'timeout').mockImplementation(ms => {
-        if (ms !== 180_000) return timeout(ms);
-        const controller = new AbortController();
-        downloadSignals.push(controller);
-        return controller.signal;
-    });
+test('a slow import that keeps indexing parcels is never cut by a total clock', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    const f = fixture({ bulkFeatureCount: 1800 });
+    let elapsed = 0;
     const storage = {
         ...f.storage,
         async putBatch(...args) {
-            // Model the network timer expiring after bytes arrived, during indexing.
-            for (const controller of downloadSignals) controller.abort();
+            // Each batch of 250 parcels takes 45 s: well over any total budget, under the silence limit.
+            vi.advanceTimersByTime(45_000); elapsed += 45_000;
             return f.storage.putBatch(...args);
         }
     };
     const result = await f.create({}, { featureStore: storage }).queryIds([`${HMLR_BROWSER_GROUND_PREFIX}10000`]);
     assert.equal(result.complete, true);
     assert.equal(result.features[0].id, `${HMLR_BROWSER_GROUND_PREFIX}10000`);
+    // Longer than the 300 s total parse budget this adapter used to have.
+    assert.ok(elapsed > 300_000);
     assert.equal((await storage.getAuthority(f.releaseId, 0)).ready, true);
-    assert.equal((await storage.getIndex(f.releaseId, 0)).length, 600);
-    assert.ok(downloadSignals.length > 0 && downloadSignals.every(controller => controller.signal.aborted));
+    assert.equal((await storage.getIndex(f.releaseId, 0)).length, 1800);
+    vi.useRealTimers();
+});
+
+test('an import that indexes nothing for the silence limit is abandoned and left not ready', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    const f = fixture({ bulkFeatureCount: 600 });
+    let reached, release;
+    const stalled = new Promise(resolve => { reached = resolve; });
+    const storage = { ...f.storage, putBatch(...args) {
+        reached();
+        return new Promise(resolve => { release = () => resolve(f.storage.putBatch(...args)); });
+    } };
+    const pending = f.create({}, { featureStore: storage }).queryIds([`${HMLR_BROWSER_GROUND_PREFIX}10000`]);
+    const rejection = assert.rejects(pending, error => { assert.match(error.message, /processing stalled/); assert.equal(error.status, 504); return true; });
+    await stalled;
+    await vi.advanceTimersByTimeAsync(60_001);
+    release();
+    await rejection;
+    assert.equal((await storage.getAuthority(f.releaseId, 0)).ready, false);
+    vi.useRealTimers();
+});
+
+test('a download that stops delivering bytes is abandoned after the silence limit', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    const f = fixture();
+    const fetchImpl = async (url, options) => {
+        if (!f.endpoints.includes(url)) return f.fetchImpl(url, options);
+        const index = f.endpoints.indexOf(url);
+        return new Response(new ReadableStream({
+            start(controller) {
+                controller.enqueue(f.archives[index].subarray(0, 8));
+                options.signal.addEventListener('abort', () => controller.error(options.signal.reason), { once: true });
+            }
+        }), { status: 200, headers: { etag: f.authorityData[index].etag } });
+    };
+    const pending = f.create({}, { fetchImpl }).queryIds([`${HMLR_BROWSER_GROUND_PREFIX}1002`]);
+    const rejection = assert.rejects(pending, error => { assert.match(error.message, /download stalled/); assert.equal(error.status, 504); return true; });
+    await vi.advanceTimersByTimeAsync(60_001);
+    await rejection;
+    assert.equal((await f.storage.getAuthority(f.releaseId, 1)).ready, false);
+    vi.useRealTimers();
 });
 
 test('archive request-budget exhaustion remains actionable instead of becoming provider unavailable', async () => {

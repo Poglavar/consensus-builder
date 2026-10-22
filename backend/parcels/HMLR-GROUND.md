@@ -54,6 +54,14 @@ viewport or across a council boundary, while a long parcel's rectangle cannot pu
 in a neighbouring ZIP. Results keep full parcel footprints; the viewport never
 clips them.
 
+No clock bounds a council load as a whole. The map's load deadline, the worker client's
+request limit and the adapter's own download and parsing budgets are all limits on
+silence: every progress report (bytes received, parcels indexed) restarts them, so a
+350,000-parcel council imports for as long as it takes, and only a load that reports
+nothing for the limit is abandoned. Birmingham (46.6 MB, 347,719 parcels) measured
+about 30 s of download and 205 s of indexing on a loaded laptop in 2026-10; its default
+view then also needs neighbouring Sandwell.
+
 The map requests 0.001-degree grid cells, but HMLR cities fetch the cells a view
 needs in aligned 5x5 blocks: one adapter query per block, answered to each cell by
 parcel extent (`frontend/js/parcels/fetch.js`, `CELL_BLOCK_SIDE_BY_SOURCE`). Per cell,
@@ -194,9 +202,9 @@ in-memory bounds/offsets, shared across adapters for the same immutable release.
 This mirrors the browser's IndexedDB reuse; it does not import geometry into
 Postgres or change the browser storage path. Concurrent loads of one authority
 coalesce, and incomplete partitions are cleared before they can be reused.
-Archive download and local parsing have separate bounded timeouts (180 seconds
-and 300 seconds). HMLR probes allow 300 transport requests because one city can
-require several council archives and their anonymous-session redirects.
+Archive download and local parsing have separate silence limits (60 seconds each
+without a byte or a parcel). HMLR probes allow 300 transport requests because one
+city can require several council archives and their anonymous-session redirects.
 
 An isolated runner must include the canonical shared `site-binding.js` module
 used by `source-binding.js`, and preflight both geometry and parcel-act binding

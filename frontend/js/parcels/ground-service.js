@@ -365,14 +365,18 @@
                 if (typeof fetchByIds !== 'function') throw new Error('Cadastral id transport is unavailable.');
                 emit(options.onProgress, { phase: 'ground-load-ids', done: 0, total: requestedIds.length });
                 ownRequest = Promise.resolve()
-                    .then(() => timedTransport(signal => fetchByIds(requestedIds, {
+                    .then(() => timedTransport((signal, activity) => fetchByIds(requestedIds, {
                         city,
                         signal,
-                        onProgress: progress => emit(options.onProgress, {
-                            phase: 'ground-load-ids-progress',
-                            done: typeof progress === 'number' ? progress : progress && progress.done,
-                            total: requestedIds.length
-                        })
+                        onProgress: progress => {
+                            // A source still reporting work (a council download or import) is alive.
+                            activity?.touch?.();
+                            emit(options.onProgress, progress && progress.phase ? progress : {
+                                phase: 'ground-load-ids-progress',
+                                done: typeof progress === 'number' ? progress : progress && progress.done,
+                                total: requestedIds.length
+                            });
+                        }
                     })))
                     .then(result => acceptTransportResult(result, {
                         city,
@@ -541,10 +545,11 @@
                     if (typeof fetchUnderGeometry !== 'function') {
                         throw new Error('Cadastral footprint transport is unavailable.');
                     }
-                    return timedTransport(signal => fetchUnderGeometry(geom, {
+                    return timedTransport((signal, activity) => fetchUnderGeometry(geom, {
                         city,
                         signal,
-                        parcelsOnly: options.parcelsOnly !== false
+                        parcelsOnly: options.parcelsOnly !== false,
+                        onProgress: detail => { activity?.touch?.(); emit(options.onProgress, detail); }
                     }));
                 })
                 .then(async outcome => {

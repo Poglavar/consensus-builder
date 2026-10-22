@@ -56,6 +56,50 @@ describe('parcel load deadlines', () => {
         expect(observedSignal.aborted).toBe(true);
     });
 
+    it('progress restarts the deadline: a load that keeps reporting outlives the limit, silence still fails', async () => {
+        vi.useFakeTimers();
+        let touch;
+        const alive = SourceHealth.withDeadline(async (_signal, activity) => {
+            touch = activity.touch;
+            await new Promise(resolve => setTimeout(resolve, 25));
+            return 'ready';
+        }, { timeoutMs: 10 });
+        await Promise.resolve();
+        await vi.advanceTimersByTimeAsync(8); touch();
+        await vi.advanceTimersByTimeAsync(8); touch();
+        await vi.advanceTimersByTimeAsync(8); touch();
+        await vi.advanceTimersByTimeAsync(1);
+        await expect(alive).resolves.toBe('ready');
+
+        const silent = SourceHealth.withDeadline(async (_signal, activity) => {
+            setTimeout(() => activity.touch(), 8);
+            await new Promise(() => {});
+        }, { timeoutMs: 10 });
+        const rejected = expect(silent).rejects.toMatchObject({ name: 'TimeoutError', status: 504 });
+        await vi.advanceTimersByTimeAsync(17);
+        expect(vi.getTimerCount()).toBeGreaterThan(0);
+        await vi.advanceTimersByTimeAsync(2);
+        await rejected;
+    });
+
+    it('a viewport load that reports council progress is not timed out while it keeps reporting', async () => {
+        vi.useFakeTimers();
+        const fallback = vi.fn();
+        const window = loadApp({ fallback, ensureBounds: (_bounds, { onProgress }) => new Promise(resolve => {
+            let parcels = 0;
+            const tick = () => {
+                parcels += 250;
+                onProgress({ phase: 'source-process', authority: 'Birmingham City Council', processedFeatures: parcels, totalFeatures: 1000 });
+                if (parcels < 1000) setTimeout(tick, 8); else resolve({ features: [] });
+            };
+            setTimeout(tick, 8);
+        }) });
+        const pending = window.fetchParcelData({});
+        await vi.advanceTimersByTimeAsync(40);
+        await expect(pending).resolves.toMatchObject({ features: [] });
+        expect(fallback).not.toHaveBeenCalled();
+    });
+
     it('propagates an external abort promptly without offering an outage fallback', async () => {
         vi.useFakeTimers();
         const controller = new AbortController();

@@ -18,8 +18,10 @@ const MAX_QUERY_FEATURES = 5000;
 const MAX_CONTEXT_FEATURES = 250_000;
 const MAX_METADATA_BYTES = 16 * 1024 * 1024;
 const MAX_QUERY_AUTHORITIES = 32;
-const ARCHIVE_TIMEOUT_MS = 180_000;
-const PARSE_TIMEOUT_MS = 300_000;
+// A council load has no total clock: a 350,000-parcel archive takes minutes on a laptop and
+// longer on a phone. Download and local indexing each fail only after this much silence.
+const ARCHIVE_IDLE_MS = 60_000;
+const PARSE_IDLE_MS = 60_000;
 // A superseded view's cancellations reach the worker just before the next view's queries, which
 // then need a moment (scope reads, the per-source query queue) to claim the archives they share.
 const ORPHANED_LOAD_GRACE_MS = 2000;
@@ -325,6 +327,20 @@ async function responseBytes(response, expectedBytes, limit, label, onBytes) {
     return bytes;
 }
 
+// Aborts after `idleMs` without a touch(); work that keeps producing bytes or features never times out.
+function idleWatchdog(idleMs, message) {
+    const controller = new AbortController();
+    let timer;
+    const arm = () => {
+        timer = setTimeout(() => controller.abort(upstreamError(message, 504)), idleMs);
+        timer.unref?.();
+    };
+    arm();
+    return Object.freeze({ signal: controller.signal,
+        touch() { if (controller.signal.aborted) return; clearTimeout(timer); arm(); },
+        clear() { clearTimeout(timer); } });
+}
+
 // Lets one cancelled query stop waiting without cancelling the shared work it was waiting for.
 function untilCancelled(promise, signal) {
     if (!signal) return promise;
@@ -432,7 +448,7 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
         return (await scopesNear(manifest, candidates.map(item => item.bboxWgs)))
             .filter(({ scope }) => hmlrArchiveScopesShareCell(scope, occupied)).map(({ index }) => index);
     }
-    async function getArchiveBytes(manifest, authority, signal, cancelSignal) {
+    async function getArchiveBytes(manifest, authority, signal, cancelSignal, touch) {
         let bytes = await archiveCache.get(manifest.releaseId, authority.archiveSha256, authority.bytes);
         if (bytes && (bytes.byteLength !== authority.bytes || sha256Hex(bytes) !== authority.archiveSha256)) {
             await archiveCache.delete(manifest.releaseId, authority.archiveSha256);
@@ -448,7 +464,7 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
             catch (error) {
                 if (cancelSignal?.aborted) throw cancelSignal.reason;
                 if (error.status || error.code === 'provider-probe-request-budget' || error.code === 'qualification-request-budget') throw error;
-                const failure = upstreamError(signal.aborted ? 'HMLR authority archive download timed out.' : 'HMLR authority archive is unavailable.', signal.aborted ? 504 : 502);
+                const failure = upstreamError(signal.aborted ? 'HMLR authority archive download stalled.' : 'HMLR authority archive is unavailable.', signal.aborted ? 504 : 502);
                 failure.cause = error;
                 throw failure;
             }
@@ -463,7 +479,7 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
             if (response.headers?.get?.('etag') !== authority.etag) throw upstreamError('HMLR authority archive ETag changed.');
             try {
                 bytes = await responseBytes(response, authority.bytes, MAX_ARCHIVE_BYTES, 'HMLR authority archive',
-                    loadedBytes => reportProgress({ ...progress, loadedBytes }));
+                    loadedBytes => { touch?.(); reportProgress({ ...progress, loadedBytes }); });
             } catch (error) { throw cancelSignal?.aborted ? cancelSignal.reason : error; }
             if (sha256Hex(bytes) !== authority.archiveSha256) throw upstreamError('HMLR authority archive SHA-256 does not match its release manifest.');
             await archiveCache.put(manifest.releaseId, authority.archiveSha256, bytes);
@@ -541,12 +557,16 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
             }
             await store.clearAuthority(manifest.releaseId, index);
             await store.setAuthority(manifest.releaseId, index, { ready: false, archiveSha256: authority.archiveSha256, featureCount: authority.featureCount });
-            // Download and local parsing have separate budgets. A completed download's
-            // timer must not abort a large council while it is being indexed locally.
-            const bytes = await getArchiveBytes(manifest, authority,
-                AbortSignal.any([AbortSignal.timeout(ARCHIVE_TIMEOUT_MS), cancelSignal]), cancelSignal);
+            // Download and local parsing have separate silence budgets, never a total clock. A
+            // completed download's watchdog is cleared before indexing starts.
+            const download = idleWatchdog(ARCHIVE_IDLE_MS, 'HMLR authority archive download stalled.');
+            let bytes;
+            try {
+                bytes = await getArchiveBytes(manifest, authority, AbortSignal.any([download.signal, cancelSignal]), cancelSignal, download.touch);
+            } finally { download.clear(); }
             reportProgress({ phase: 'source-decompress', authority: authority.name });
-            const signal = AbortSignal.any([AbortSignal.timeout(PARSE_TIMEOUT_MS), cancelSignal]);
+            const parse = idleWatchdog(PARSE_IDLE_MS, 'HMLR authority archive processing stalled.');
+            const signal = AbortSignal.any([parse.signal, cancelSignal]);
             const project = hmlrRoutingProjection;
             const seen = new Set(), rows = [], pendingWrites = []; let batch = [], writeFailure = null;
             const drainWrites = async () => {
@@ -564,6 +584,7 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
                     readGmlZipMember(bytes, MAX_GML_BYTES, signal), drainWrites), {
                     coordinateMode: 'native', maxBytes: MAX_GML_BYTES, maxFeatures: authority.featureCount, signal,
                     onFeature: feature => {
+                        parse.touch();
                         const nativeId = decimalId(feature.properties?.INSPIREID);
                         if (nativeId === null || seen.has(nativeId)) throw upstreamError('HMLR authority archive has invalid or repeated INSPIREIDs.');
                         seen.add(nativeId);
@@ -600,8 +621,9 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
                 await store.clearAuthority(manifest.releaseId, index);
                 await store.setAuthority(manifest.releaseId, index, { ready: false, archiveSha256: authority.archiveSha256, featureCount: authority.featureCount });
                 if (cancelSignal.aborted) throw cancelSignal.reason;
+                if (parse.signal.aborted) throw parse.signal.reason;
                 throw error.status ? error : upstreamError('HMLR authority archive is malformed or incomplete.');
-            }
+            } finally { parse.clear(); }
         };
         const built = typeof store.withAuthorityLoad === 'function'
             ? await store.withAuthorityLoad(manifest.releaseId, index, load) : await load();

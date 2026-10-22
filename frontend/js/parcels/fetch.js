@@ -322,7 +322,9 @@
             ids.forEach(id => { const sourceId = sourceFor(id); if (!groups.has(sourceId)) groups.set(sourceId, []); groups.get(sourceId).push(id); });
             for (const [sourceId, batch] of [...groups].flatMap(([sourceId, group]) => chunks(group, batchSize).map(part => [sourceId, part]))) {
                 if (!global.BrowserParcelSources) throw new Error('Browser parcel adapters are unavailable.');
-                const payload = await global.BrowserParcelSources.queryIds(sourceId, batch, { city });
+                const payload = await global.BrowserParcelSources.queryIds(sourceId, batch, { city,
+                    ...(options.signal ? { signal: options.signal } : {}),
+                    ...(typeof options.onProgress === 'function' ? { onProgress: options.onProgress } : {}) });
                 if (payload.complete !== true || !Array.isArray(payload.features) || !Array.isArray(payload.absentIds)) {
                     throw new Error('Parcel source returned an incomplete ID response.');
                 }
@@ -719,9 +721,12 @@
         try {
             // ensureBounds joins in-flight cells before its first await, so the older view is
             // cancelled only after this one has claimed the cells they share.
-            const load = signal => repository.ensureBounds(requestedBounds, {
+            const load = (signal, activity) => repository.ensureBounds(requestedBounds, {
                 signal,
                 onProgress: detail => {
+                    // Progress proves the load is alive: it restarts the silence deadline below, so
+                    // a council import runs as long as it keeps reporting.
+                    activity?.touch?.();
                     if (currentViewFetch !== view) return;
                     const message = global.ParcelSourceProgress?.format(detail, {
                         language: global.i18n?.getLanguage?.() || 'en',

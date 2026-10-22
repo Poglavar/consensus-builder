@@ -57,8 +57,8 @@ describe('browser parcel worker client', () => {
         expect(worker.url).toBe('https://app.example.test/assets/parcel-adapters/worker.js');
         expect(worker.options).toEqual({ type: 'module' });
         expect(worker.messages).toEqual([
-            { id: 1, sourceId: 'source-a', method: 'queryBounds', args: [[-79.4, 43.6, -79.3, 43.7]], customDescriptor: undefined, relayBase: 'https://api.example.test' },
-            { id: 2, sourceId: 'source-a', method: 'queryIds', args: [['A-1']], customDescriptor: undefined, relayBase: 'https://api.example.test' }
+            { id: 1, sourceId: 'source-a', method: 'queryBounds', args: [[-79.4, 43.6, -79.3, 43.7]], customDescriptor: undefined, relayBase: 'https://api.example.test', trackProgress: true },
+            { id: 2, sourceId: 'source-a', method: 'queryIds', args: [['A-1']], customDescriptor: undefined, relayBase: 'https://api.example.test', trackProgress: true }
         ]);
 
         worker.emit('message', { data: { id: 2, result: { complete: true, absentIds: [] } } });
@@ -109,7 +109,7 @@ describe('browser parcel worker client', () => {
         expect(worker.terminated).toBe(false);
     });
 
-    it('opts into progress only when an observer is provided and keeps progress separate from settlement', async () => {
+    it('always asks the worker for progress, hands it only to an observer, and keeps it separate from settlement', async () => {
         const { client } = boot();
         const onProgress = vi.fn();
         const observed = client.queryBounds('source-a', [0, 0, 1, 1], { city: 'city-a', onProgress });
@@ -117,7 +117,7 @@ describe('browser parcel worker client', () => {
         const worker = FakeWorker.instances[0];
 
         expect(worker.messages[0].trackProgress).toBe(true);
-        expect(worker.messages[1]).not.toHaveProperty('trackProgress');
+        expect(worker.messages[1].trackProgress).toBe(true);
 
         worker.emit('message', { data: { id: 1, progress: { phase: 'downloading', loadedBytes: 2, totalBytes: 4 } } });
         worker.emit('message', { data: { id: 2, progress: { phase: 'ignored' } } });
@@ -144,6 +144,26 @@ describe('browser parcel worker client', () => {
         expect(onProgress).toHaveBeenCalledTimes(1);
         expect(worker.terminated).toBe(false);
         await vi.advanceTimersByTimeAsync(10 * 60 * 1000);
+        await rejection;
+    });
+
+    it('progress restarts the ten-minute silence limit, so a long import is never cut short', async () => {
+        vi.useFakeTimers();
+        const { client } = boot();
+        const pending = client.queryBounds('source-a', [0, 0, 1, 1], { city: 'city-a' });
+        const worker = FakeWorker.instances[0];
+        const rejection = expect(pending).rejects.toMatchObject({ code: 'parcel-source-unavailable', status: 504 });
+
+        await vi.advanceTimersByTimeAsync(9 * 60 * 1000);
+        worker.emit('message', { data: { id: 1, progress: { phase: 'source-process', processedFeatures: 1000, totalFeatures: 347719 } } });
+        await vi.advanceTimersByTimeAsync(9 * 60 * 1000);
+        expect(worker.terminated).toBe(false);
+        worker.emit('message', { data: { id: 1, progress: { phase: 'source-process', processedFeatures: 2000, totalFeatures: 347719 } } });
+        await vi.advanceTimersByTimeAsync(9 * 60 * 1000);
+        expect(worker.terminated).toBe(false);
+
+        await vi.advanceTimersByTimeAsync(60 * 1000 + 1);
+        expect(worker.terminated).toBe(true);
         await rejection;
     });
 

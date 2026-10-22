@@ -104,10 +104,14 @@
 
     // A logical load deadline also bounds transports that ignore AbortSignal, response bodies,
     // and repository consumers sharing in-flight work. Cancellation remains distinct from outage.
+    // The limit is on silence, not on total time: the operation receives `touch`, and every call
+    // restarts the timer. A council import that reports progress for five minutes is alive; a
+    // request that says nothing for the whole limit is hung, however long it has already run.
     function withDeadline(operation, { timeoutMs = 30000, signal, code = 'parcel-source-unavailable' } = {}) {
         const controller = new AbortController();
         let timer;
         let cancel;
+        let expire;
         const stopped = new Promise((_, reject) => {
             cancel = () => {
                 const error = signal.reason || Object.assign(new Error('Load cancelled.'), { name: 'AbortError' });
@@ -116,18 +120,24 @@
             };
             if (signal?.aborted) { cancel(); return; }
             signal?.addEventListener('abort', cancel, { once: true });
-            timer = setTimeout(() => {
+            expire = () => {
                 const error = Object.assign(new Error('The data source did not finish loading in time.'), {
                     name: 'TimeoutError', status: 504, code
                 });
                 controller.abort(error);
                 reject(error);
-            }, timeoutMs);
+            };
+            timer = setTimeout(expire, timeoutMs);
         });
+        const touch = () => {
+            if (timer === undefined || controller.signal.aborted) return;
+            clearTimeout(timer);
+            timer = setTimeout(expire, timeoutMs);
+        };
         let work;
         try {
             controller.signal.throwIfAborted();
-            work = Promise.resolve(operation(controller.signal));
+            work = Promise.resolve(operation(controller.signal, { touch }));
         } catch (error) {
             work = Promise.reject(error);
         }

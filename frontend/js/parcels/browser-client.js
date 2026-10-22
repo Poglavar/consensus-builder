@@ -4,6 +4,9 @@
     const version = global.document.currentScript ? new URL(global.document.currentScript.src, global.document.baseURI).search : '';
     let worker, sequence = 0;
     const pending = new Map();
+    // A request is alive while the worker reports progress on it; this much silence means the
+    // worker is stuck, and the whole worker is reset. A council import is never cut short by it.
+    const REQUEST_SILENCE_MS = 10 * 60 * 1000;
     function reset(error) {
         worker?.terminate(); worker = null;
         for (const request of pending.values()) { clearTimeout(request.timer); request.reject(error); }
@@ -17,6 +20,8 @@
             const request = pending.get(data?.id);
             if (!request) return;
             if (data.progress) {
+                clearTimeout(request.timer);
+                request.timer = setTimeout(request.expire, REQUEST_SILENCE_MS);
                 try { request.onProgress?.(data.progress); } catch (_) { /* Keep the worker request alive. */ }
                 return;
             }
@@ -35,22 +40,25 @@
         const customDescriptor = sourceId.startsWith('custom.')
             ? global.ParcelSourceSettings?.choiceForCity?.(city || global.CityConfigManager?.getCurrentCityId?.(), global) : undefined;
         return new Promise((resolve, reject) => {
-            const timer = setTimeout(() => {
+            const expire = () => {
                 reset(Object.assign(new Error('Parcel provider processing timed out.'), { code: 'parcel-source-unavailable', status: 504 }));
-            }, 10 * 60 * 1000);
+            };
+            const request = { expire, timer: setTimeout(expire, REQUEST_SILENCE_MS) };
             const cancel = () => {
                 if (!pending.has(id)) return;
-                pending.delete(id); clearTimeout(timer);
+                pending.delete(id); clearTimeout(request.timer);
                 try { active.postMessage({ cancel: id }); } catch (_) { /* A failed worker has already dropped the request. */ }
                 reject(signal.reason);
             };
             const settle = done => value => { signal?.removeEventListener('abort', cancel); done(value); };
             const trackProgress = typeof onProgress === 'function';
-            pending.set(id, { resolve: settle(resolve), reject: settle(reject), timer, onProgress: trackProgress ? onProgress : undefined });
+            Object.assign(request, { resolve: settle(resolve), reject: settle(reject), onProgress: trackProgress ? onProgress : undefined });
+            pending.set(id, request);
             signal?.addEventListener('abort', cancel, { once: true });
+            // Progress is only requested when someone listens; the silence limit needs it too.
             try { active.postMessage({ id, sourceId, method, args, customDescriptor,
-                relayBase: global.getBackendBase?.(), ...(trackProgress ? { trackProgress: true } : {}) }); }
-            catch (error) { clearTimeout(timer); pending.delete(id); signal?.removeEventListener('abort', cancel); reject(error); }
+                relayBase: global.getBackendBase?.(), trackProgress: true }); }
+            catch (error) { clearTimeout(request.timer); pending.delete(id); signal?.removeEventListener('abort', cancel); reject(error); }
         });
     }
     global.BrowserParcelSources = Object.freeze({ query,
