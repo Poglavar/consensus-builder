@@ -77,6 +77,8 @@ export async function serveAgreementAccounts(page: Page, accounts: Map<string, B
       case 'getProgramAccounts': return { result: [] };
       case 'getSignaturesForAddress': return { result: [] };
       case 'getBalance': return { result: { context, value: 0 } };
+      // Market and funding reads first check they are on devnet (chain-data-loader.js getVerifiedConnection).
+      case 'getGenesisHash': return { result: 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG' };
       case 'getLatestBlockhash': return { result: { context, value: { blockhash: 'EETubP5AKHgjPAhzPAFcb8BAY1hMH639CWCFTqi3hq1k', lastValidBlockHeight: 1 } } };
       default: return { error: { code: -32602, message: `Invalid param: could not find account (${request.method})` } };
     }

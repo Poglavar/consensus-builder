@@ -89,10 +89,12 @@
             // its full card): the section hosts the new panel.
             const own = (HOSTS[expanded] || []).map(id => doc.getElementById(id)).find(isShown);
             if (own && own !== state.hosted?.el) { host(bodyOf(expanded), own.id); return; }
-            if (state.hosted && !isShown(state.hosted.el)) { collapse(); return; }
+            // An outsider is checked before a closed hosted panel: opening one often closes ours,
+            // and collapsing then would run our panel's cleanup over the panel that just opened.
             const outsider = [...HOSTABLE, ...DOCKED_ELSEWHERE].map(id => doc.getElementById(id))
                 .find(el => el && isShown(el) && !el.classList.contains('is-hosted'));
-            if (outsider) close({ keepPanels: true });
+            if (outsider) { close({ keepPanels: true }); return; }
+            if (state.hosted && !isShown(state.hosted.el)) collapse();
         });
         [...HOSTABLE, ...DOCKED_ELSEWHERE, 'agreement-panel'].forEach(id => {
             const el = doc.getElementById(id);

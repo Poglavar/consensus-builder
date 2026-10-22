@@ -41,7 +41,7 @@ async function captureClipboard(page: Page): Promise<void> {
 const addressWithoutView = (page: Page) => page.evaluate(() => {
   const params = new URLSearchParams(location.search);
   params.delete('at');
-  for (const key of ['existing', 'permitted', 'proposed', 'existingScope', 'proposedForm', 'permittedMap', 'zoningAreas']) params.delete(key);
+  for (const key of ['existing', 'permitted', 'proposed', 'existingScope', 'proposedForm', 'permittedForm', 'permittedMap', 'zoningAreas']) params.delete(key);
   return `${location.pathname}?${params}`;
 });
 

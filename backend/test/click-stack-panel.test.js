@@ -241,6 +241,20 @@ describe('click stack panel: other surfaces and the dock', () => {
         expect(h.context.hideProposalDetailsPanel).not.toHaveBeenCalled();
     });
 
+    it('steps aside, without closing it, when the panel another surface opens has closed ours', () => {
+        const h = loadPanel({ memory: 'parcels' });
+        h.click(SPOT_A);
+        expect(h.api.current().expanded).toBe('parcels');
+        // Showing a design from elsewhere hides the hosted parcel panel and opens the inspector.
+        h.parcelPanel.classList.remove('visible');
+        h.inspector.hidden = false;
+        h.observe();
+        expect(h.api.isOpen()).toBe(false);
+        expect(h.inspector.hidden).toBe(false);
+        expect(h.parcelPanel.parentNode).toBe(h.dock);
+        expect(h.context.hideParcelInfoPanel).not.toHaveBeenCalled();
+    });
+
     it('steps aside when the agreement panel takes the dock', () => {
         const h = loadPanel();
         h.click(SPOT_A);

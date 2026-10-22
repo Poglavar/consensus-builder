@@ -156,14 +156,14 @@ function savedStructureForTranslation(structure: any, kind: 'park' | 'square'): 
     geometry: structure.geometry,
     decorations: kind === 'park'
       ? {
-        trees: decorations.trees || [],
+        trees: (decorations.trees || []).map((tree: any) => tree.coordinate || tree),
         benches: (decorations.benches || []).map((bench: any) => bench.coordinate || bench),
         flowerbeds: decorations.flowerbeds || [],
         ponds: decorations.ponds || [],
         paths: decorations.paths || []
       }
       : {
-        trees: decorations.trees || [],
+        trees: (decorations.trees || []).map((tree: any) => tree.coordinate || tree),
         benches: (decorations.benches || []).map((bench: any) => bench.coordinate || bench),
         fountains: decorations.fountains || []
       }
@@ -209,10 +209,11 @@ test.describe('Whole-site placement editing @features', () => {
       await expect(editor).toHaveCount(0);
       // The unpublished record is saved in place (c7ef3630): its own tree moves.
       await expect.poll(() => page.evaluate(id => (window as any).proposalStorage.getProposal(id)
-        ?.structureProposal?.decorations?.trees?.[0]?.[0] ?? null, id)).toBeGreaterThan(before.decorations.trees[0][0]);
+        ?.structureProposal?.decorations?.trees?.[0]?.coordinate?.[0] ?? null, id)).toBeGreaterThan(before.decorations.trees[0][0]);
       const fork = await page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.structureProposal, id);
       expect(fork).toBeTruthy();
-      const movedTree = fork.decorations.trees[0];
+      // A saved tree is a record: its point, kind and height (park-planting.js).
+      const movedTree = fork.decorations.trees[0].coordinate;
       expect(movedTree[0]).toBeGreaterThan(before.decorations.trees[0][0]);
       expect(movedTree[1]).toBeGreaterThan(before.decorations.trees[0][1]);
       const delta = [movedTree[0] - before.decorations.trees[0][0], movedTree[1] - before.decorations.trees[0][1]];

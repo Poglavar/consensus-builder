@@ -26,10 +26,11 @@ test.describe('Lens settings @features', () => {
     const profile = page.locator('.agent-dialog-modal');
     await expect(profile).toBeVisible();
     // The profile's language row is one cb-segmented picker (no toggle): exactly the chosen one is pressed.
-    for (const language of ['es', 'sr', 'hr', 'en']) {
-      await profile.locator(`[data-language="${language}"]`).click();
-      await expect.poll(() => page.evaluate(() => (window as any).i18n.getLanguage())).toBe(language);
-      await expect(profile.locator('[data-language][aria-pressed="true"]')).toHaveAttribute('data-language', language);
+    // Options carry the full locale; the app language is its language part.
+    for (const locale of ['es-ES', 'sr-Latn-RS', 'hr-HR', 'en-GB']) {
+      await profile.locator(`[data-language="${locale}"]`).click();
+      await expect.poll(() => page.evaluate(() => (window as any).i18n.getLanguage())).toBe(locale.split('-')[0]);
+      await expect(profile.locator('[data-language][aria-pressed="true"]')).toHaveAttribute('data-language', locale);
     }
     await profile.locator('[data-lens-pattern]').click();
     const lens = page.locator('.lens-modal-overlay');

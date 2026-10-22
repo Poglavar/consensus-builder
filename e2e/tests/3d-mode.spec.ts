@@ -168,14 +168,19 @@ test.describe('3D rendering and controls @features', () => {
     await page.mouse.click(point.x, point.y);
     await expect(page.locator('.three-mode-parcel-panel')).toBeVisible();
     const parcelPanel = page.locator('.three-mode-parcel-panel');
-    const priceSlider = parcelPanel.locator('[data-role="price-slider"]');
-    const valueReadout = parcelPanel.locator('[data-role="value-title"]');
+    // The sale price slider reprices the Built / Planned / Proposed comparison; the built value follows it.
+    const priceSlider = parcelPanel.locator('[data-role="sale-slider"]');
+    const valueReadout = parcelPanel.locator('[data-cell="value:built"]');
     const initialPrice = Number(await priceSlider.inputValue());
     const initialValueReadout = await valueReadout.textContent();
     await priceSlider.focus();
     await page.keyboard.press(initialPrice < Number(await priceSlider.getAttribute('max')) ? 'End' : 'Home');
     await expect.poll(async () => Number(await priceSlider.inputValue())).not.toBe(initialPrice);
     await expect.poll(async () => await valueReadout.textContent()).not.toBe(initialValueReadout);
+    expect(await camera()).toEqual(before);
+    // The first click puts the parcel in view; a second click on it isolates it and dims the rest.
+    await page.mouse.click(point.x, point.y);
+    await expect(page.locator('.three-mode-isolation-banner')).toBeVisible();
     expect(await camera()).toEqual(before);
     const buildings = await sceneBuildings(page);
     expect(buildings).toHaveLength(2);

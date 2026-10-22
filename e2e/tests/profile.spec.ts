@@ -42,10 +42,11 @@ test('welcome links navigate and its language picker changes the active language
 
   // The picker is one cb-segmented row (no toggle): exactly the chosen language is pressed.
   const languagePicker = welcome.locator('.welcome-language-picker');
-  for (const language of ['es', 'sr', 'hr', 'en']) {
-    const option = languagePicker.locator(`[data-language="${language}"]`);
+  // Options carry the full locale; the app language is its language part.
+  for (const locale of ['es-ES', 'sr-Latn-RS', 'hr-HR', 'en-GB']) {
+    const option = languagePicker.locator(`[data-language="${locale}"]`);
     await option.click();
-    await expect.poll(() => page.evaluate(() => (window as any).i18n.getLanguage())).toBe(language);
+    await expect.poll(() => page.evaluate(() => (window as any).i18n.getLanguage())).toBe(locale.split('-')[0]);
     await expect(option).toHaveAttribute('aria-pressed', 'true');
     await expect(languagePicker.locator('[data-language][aria-pressed="true"]')).toHaveCount(1);
   }

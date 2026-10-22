@@ -50,13 +50,15 @@ for (const viewport of VIEWPORTS) {
     await panel.locator('.parcel-title-id').click();
     await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(PARCEL_ID);
     if (viewport.width < 768) {
-      const resize = panel.locator('.mobile-dock-sheet-handle');
-      const originalHeight = await panel.evaluate(element => element.getBoundingClientRect().height);
+      // The parcel panel is hosted in the click stack's parcel section; the stack is the sheet that resizes.
+      const sheet = page.locator('#click-stack');
+      const resize = sheet.locator(':scope > .mobile-dock-sheet-handle');
+      const originalHeight = await sheet.evaluate(element => element.getBoundingClientRect().height);
       await resize.click();
       await resize.press('ArrowUp');
-      await expect.poll(() => panel.evaluate(element => element.getBoundingClientRect().height)).toBeGreaterThan(originalHeight);
+      await expect.poll(() => sheet.evaluate(element => element.getBoundingClientRect().height)).toBeGreaterThan(originalHeight);
       await resize.press('ArrowDown');
-      await expect.poll(() => panel.evaluate(element => Math.round(element.getBoundingClientRect().height))).toBe(Math.round(originalHeight));
+      await expect.poll(() => sheet.evaluate(element => Math.round(element.getBoundingClientRect().height))).toBe(Math.round(originalHeight));
     }
     await toggle.click();
     await expect(panel).toHaveClass(/is-minimized/);
