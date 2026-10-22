@@ -1398,14 +1398,12 @@
         const modalText = {
             title: translateSingleBuildingText('modal.singleBuilding.title', 'Freeform'),
             closeLabel: translateSingleBuildingText('modal.singleBuilding.closeLabel', 'Close buildings modal'),
-            cancel: translateSingleBuildingText('modal.singleBuilding.cancel', 'Cancel'),
             more: translateSingleBuildingText('modal.singleBuilding.more', 'Site & details'),
             confirm: translateSingleBuildingText('modal.singleBuilding.confirm', 'Done'),
             buildingsTitle: translateSingleBuildingText('modal.singleBuilding.buildingsTitle', 'Buildings'),
             addLabel: translateSingleBuildingText('modal.singleBuilding.addLabel', 'Duplicate building'),
             deleteLabel: translateSingleBuildingText('modal.singleBuilding.deleteLabel', 'Delete'),
             renameLabel: translateSingleBuildingText('modal.singleBuilding.renameLabel', 'Rename'),
-            parametersTitle: translateSingleBuildingText('modal.singleBuilding.parametersTitle', 'Parameters'),
             densityTitle: translateSingleBuildingText('densityStats.title', 'Geometry statistics'),
             densityParcelArea: translateSingleBuildingText('densityStats.parcelArea', 'Parcel area'),
             densityFootprint: translateSingleBuildingText('densityStats.footprint', 'Building footprint'),
@@ -1454,8 +1452,7 @@
                 onModeChange: syncSingleBuildingView,
                 placement: { site: singleBlockFeature, onLockChange: () => { renderSharedPolygonEditor(); syncRotationButtons(); } },
                 hints: {
-                    '2d': translateSingleBuildingText('modal.singleBuilding.mapHint', 'Drag the building or its corners. Tap an edge to add a corner.'),
-                    model: translateSingleBuildingText('modal.singleBuilding.modelHint', 'Adjust the height and orbit to see the fit. Use 2D to reshape the footprint.')
+                    '2d': translateSingleBuildingText('modal.singleBuilding.mapHint', 'Drag the building or its corners. Tap an edge to add a corner.')
                 },
                 tools: `
                     <button id="single-rotate-counterclockwise" class="btn" type="button" title="${modalText.rotateCounterclockwiseLabel}" aria-label="${modalText.rotateCounterclockwiseLabel}"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> 5°</button>
@@ -1505,7 +1502,6 @@
 `,
                 footer: `
                         <button id="single-building-undo" type="button" class="btn btn-quiet" disabled>${translateSingleBuildingText('onMapEditor.undo', 'Undo')}</button>
-                        <button id="single-building-cancel" type="button" class="btn btn-quiet">${modalText.cancel}</button>
                         <button id="single-building-confirm" type="button" class="btn btn-primary">${modalText.confirm}</button>
                     `
             });
@@ -1514,7 +1510,6 @@
             singleSession.tools.setAttribute('role', 'toolbar');
             singleSession.tools.setAttribute('aria-label', modalText.rotationLabel);
             singleEditor.querySelector('details').addEventListener('toggle', positionSingleBuildingToolbar);
-            document.getElementById('single-building-cancel').addEventListener('click', requestCloseSingleBuildingMapEditor);
             singleBuildingDesignChanges().start(document);
             document.getElementById('single-building-confirm').addEventListener('click', confirmSingleBuilding);
 

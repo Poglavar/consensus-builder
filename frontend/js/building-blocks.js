@@ -523,6 +523,11 @@ function describeParcelSelection(ids) {
 }
 
 const BLOCKIFY_ALGORITHMS = {
+    'semi-open': {
+        key: 'semi_open',
+        nameFallback: '80s European, semi-open blocks',
+        descriptionFallback: 'Perimeter blocks following the parcel shapes, opened by gaps between the buildings, courtyards in the middle, like European urban blocks of the 1980s.'
+    },
     'fully-closed': {
         key: 'fully_closed', // do we need separate types for park inside vs garage inside?
         nameFallback: 'Central European fully closed',
@@ -1451,7 +1456,6 @@ function showBlockifyModal() {
                     </dl>
                     <p id="blockify-density-hint" class="building-density-hint"></p>
                 </section>
-                <h3 class="cb-kicker" data-i18n-key="blockify.modal.parametersTitle">Parameters</h3>
                 <div class="parameter-group">
                     <label class="blockify-existing-toggle" for="blockify-existing-toggle">
                         <input type="checkbox" id="blockify-existing-toggle">
@@ -1579,16 +1583,12 @@ function showBlockifyModal() {
                     <input type="file" id="blockify-geojson-input" accept=".geojson,.json,application/geo+json,application/json" hidden>
                 </div>
                 <div class="parameter-info">
-                    <p class="blockify-freeform-only" data-i18n-key="blockify.modal.helper.adjust">Adjust parameters using the sliders to modify the building shape.</p>
-                    <p class="blockify-freeform-only" data-i18n-key="blockify.modal.helper.setback">Setback is the distance from the parcel boundary to the outer building edge.</p>
-                    <p class="blockify-freeform-only" data-i18n-key="blockify.modal.helper.width">Building width is the thickness of the building from outer to inner edge.</p>
                     <p class="blockify-existing-only" style="display:none" data-i18n-key="blockify.modal.existing.helper">Each existing building is raised by the additional floors, up to the maximum height. Buildings already at or above the maximum stay unchanged.</p>
                 </div>
             </div>
         <div id="blockify-controls" class="cb-dialog__footer">
             <div id="blockify-info" data-i18n-attr="text" role="status" aria-live="polite"></div>
             <div id="blockify-buttons">
-                <button type="button" class="btn" id="btn-blockify-cancel" data-i18n-key="onMapEditor.cancel" data-i18n-attr="text">Cancel</button>
                 <button type="button" class="btn" id="btn-blockify-regenerate" hidden data-i18n-key="blockify.modal.regenerate" data-i18n-attr="text">Regenerate</button>
                 <button type="button" class="btn" id="btn-blockify-freeform" data-i18n-key="proposalDrafts.freeform.title" data-i18n-attr="text">Convert to freeform building</button>
                 <button type="button" class="btn btn-primary" id="btn-blockify-done" data-i18n-key="blockify.modal.done" data-i18n-attr="text">Done</button>
@@ -1635,10 +1635,6 @@ function showBlockifyModal() {
             content,
             footer,
             modes: ['2d', 'model'],
-            hints: {
-                '2d': translateBuildingText('blockify.modal.helper.adjust', 'Adjust parameters using the sliders to modify the building shape.'),
-                model: translateBuildingText('blockify.modal.helper.width', 'Building width is the thickness of the building from outer to inner edge.')
-            },
             onCancel: requestCloseBlockifyModal,
             onModeChange: mode => { if (mode === '2d' && blockifyMode === 'manual') renderManualPolygonEditor(); }
         });
@@ -1663,8 +1659,6 @@ function showBlockifyModal() {
             doneButton.addEventListener('click', saveBlockifyDesignForProposal);
             doneButton.disabled = true;
         }
-        const cancelButton = document.getElementById('btn-blockify-cancel');
-        if (cancelButton) cancelButton.addEventListener('click', requestCloseBlockifyModal);
 
         // Add slider event listeners
         document.getElementById('setback-slider').addEventListener('input', function (e) {
@@ -2878,10 +2872,10 @@ function generateBuildingInModal() {
             }
         }
 
-        // Update the info text — but never over the block-rule summary.
+        // Update the info text — but never over the left-out notice.
         //
-        // displayBuildingInModal has just run reportBlockRuleRange, which says what this block
-        // delivers and how many parcels it leaves out. Echoing the slider values on top of that
+        // displayBuildingInModal has just run reportBlockLeftOut, which says how many parcels the
+        // block leaves out. Echoing the slider values on top of that
         // threw the left-out count away every time, which is a large part of why a block could apply
         // to four of its seven parcels with nothing on screen saying so.
         if (!blockMassingPieces.length) {
@@ -3142,54 +3136,22 @@ function displayBuildingInModal(buildingFeature) {
             envelopes: blockMassingPieces,
             excluded: blockExcludedParcels.map(entry => entry?.feature).filter(feature => feature?.geometry)
         });
-        reportBlockRuleRange();
+        reportBlockLeftOut();
         refreshBlockifyDensityStats(blockMassingPieces.length ? blockMassingPieces : [buildingFeature]);
         autosaveBlockifyDraft(blockMassingPieces.length ? blockMassingPieces : buildingFeature);
     }
 
-// The rule type made legible in the one number people vote on: what it permits, and what — if
-// anything — it guarantees. "At most" guarantees nothing; "exactly" delivers what it permits.
-function reportBlockRuleRange() {
-    if (!blockMassingPieces.length) {
-        // Every plot left out: the rule permits nothing here. Saying nothing leaves the previous
-        // summary on screen, which then claims buildings that no longer exist.
-        if (blockExcludedParcels.length) {
-            setBlockifyInfo('blockify.modal.messages.rangeNoneExcluded',
-                'No buildings · {{excluded}}', { excluded: blockParcelsLeftOutPhrase(blockExcludedParcels.length) });
-        }
-        return;
-    }
-    const range = window.UrbanRuleVariation.summariseBlockRule(blockMassingPieces, currentBlockRule(), { turf });
-    const permitted = CbFormat.formatNumber(range.permittedFloorAreaM2, { maxFractionDigits: 0 });
-    const guaranteed = CbFormat.formatNumber(range.guaranteedFloorAreaM2, { maxFractionDigits: 0 });
-    // Every parcel the rule leaves out counts, 'no-massing-here' included. That one used to be
-    // filtered out here AND skipped on the map, so a block authored on seven parcels could apply to
-    // four with nothing anywhere saying which three got nothing, or why.
+// The footer says only what needs attention: the plots the rule leaves out (hatched on the map),
+// never a running total of buildings and floor area. Empty when every plot builds. A block applied
+// to four of its seven parcels must still say which three got nothing.
+function reportBlockLeftOut() {
     const excluded = blockExcludedParcels.length;
-    // The counts are plural phrases of their own ("1 building", "3 buildings"), passed as i18n
-    // references so the line follows a language change.
-    const params = {
-        buildings: { key: 'blockify.modal.messages.buildingCount', count: blockMassingPieces.length },
-        permitted,
-        guaranteed,
-        excluded: blockParcelsLeftOutPhrase(excluded)
-    };
-
-    if (range.kind === 'exact') {
-        setBlockifyInfo(excluded ? 'blockify.modal.messages.rangeExactExcluded' : 'blockify.modal.messages.rangeExact',
-            excluded
-                ? '{{buildings}} · delivers {{permitted}} m² of floor area · {{excluded}}'
-                : '{{buildings}} · delivers {{permitted}} m² of floor area', params);
-    } else if (range.kind === 'range') {
-        setBlockifyInfo(excluded ? 'blockify.modal.messages.rangeBetweenExcluded' : 'blockify.modal.messages.rangeBetween',
-            excluded
-                ? '{{buildings}} · guarantees {{guaranteed}} – {{permitted}} m² of floor area · {{excluded}}'
-                : '{{buildings}} · guarantees {{guaranteed}} – {{permitted}} m² of floor area', params);
+    if (!blockMassingPieces.length && excluded) {
+        setBlockifyInfo('blockify.modal.messages.rangeNoneExcluded', 'No buildings · {{excluded}}', { excluded: blockParcelsLeftOutPhrase(excluded) });
+    } else if (excluded) {
+        setBlockifyInfo('blockify.modal.messages.parcelsLeftOut', '{{count}} parcels left out', { count: excluded });
     } else {
-        setBlockifyInfo(excluded ? 'blockify.modal.messages.rangeMaxExcluded' : 'blockify.modal.messages.rangeMax',
-            excluded
-                ? '{{buildings}} · permits 0 – {{permitted}} m² of floor area · {{excluded}}'
-                : '{{buildings}} · permits 0 – {{permitted}} m² of floor area', params);
+        setBlockifyInfo(null, '');
     }
 }
 }

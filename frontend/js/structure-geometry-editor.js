@@ -778,7 +778,7 @@
             ? `<button type="button" class="btn btn-sm" data-action="finish-path" hidden>${t('finishPath', 'Finish path')}</button>`
             : '';
         return `${error}<div class="structure-geometry-footer-tools">${undo}${finish}</div>
-            <div class="structure-geometry-footer-actions"><button type="button" class="btn" data-action="cancel">${t('cancel', 'Cancel')}</button><button type="button" class="btn btn-primary" data-action="save">${t('save', 'Save design')}</button></div>`;
+            <div class="structure-geometry-footer-actions"><button type="button" class="btn btn-primary" data-action="save">${t('save', 'Save design')}</button></div>`;
     }
 
     function updatePanelState() {
@@ -835,7 +835,6 @@
         if (tool) return setTool(tool);
         const action = event.target?.closest?.('[data-action]')?.dataset.action;
         if (action === 'finish-path') finishPath();
-        else if (action === 'cancel') closeEditor(false);
         else if (action === 'save') saveEditor();
     }
 

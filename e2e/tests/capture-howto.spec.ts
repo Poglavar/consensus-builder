@@ -156,7 +156,7 @@ test.describe('Capture how-to screenshots', () => {
           if (el && el.offsetParent !== null) { el.click(); return true; }
           return false;
         };
-        click('.corridor-editor-cancel');
+        click('#corridor-editor-overlay .on-map-editor__header .close-circle-btn');
         click('#blockify-close');
         click('#rowhouse-close');
         click('#single-building-close');
@@ -483,7 +483,7 @@ test.describe('Capture how-to screenshots', () => {
     });
     // Leave the cross-section editor but KEEP the drawing — cesta-04 finishes it.
     await page.evaluate(() => {
-      (document.querySelector('.corridor-editor-cancel') as HTMLElement | null)?.click();
+      (document.querySelector('#corridor-editor-overlay .on-map-editor__header .close-circle-btn') as HTMLElement | null)?.click();
     });
     await page.waitForTimeout(1000);
     await acceptConfirm();

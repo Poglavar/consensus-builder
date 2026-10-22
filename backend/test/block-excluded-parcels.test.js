@@ -77,7 +77,7 @@ describe('what the split engine reports', () => {
 
 describe('what the editor says about it', () => {
     const report = buildingBlocks.slice(
-        buildingBlocks.indexOf('function reportBlockRuleRange()'),
+        buildingBlocks.indexOf('function reportBlockLeftOut()'),
         buildingBlocks.indexOf('function syncBlockMinHeightSlider()')
     );
 
@@ -88,7 +88,8 @@ describe('what the editor says about it', () => {
     });
 
     it('actually shows the count — the parameter used to be computed and then ignored', () => {
-        ['rangeExactExcluded', 'rangeBetweenExcluded', 'rangeMaxExcluded'].forEach(key => {
+        // The footer carries only this notice (no building or floor-area total).
+        ['parcelsLeftOut', 'rangeNoneExcluded'].forEach(key => {
             expect(report).toContain(key);
         });
         // The count is a plural phrase of its own (i18n `blockify.modal.messages.parcelsLeftOut`),
@@ -293,8 +294,8 @@ describe('carried into the applied plan', () => {
 describe('every locale can say it', () => {
     it.each(locales)('%s has the excluded-parcel strings', locale => {
         const messages = dictOf(locale).blockify.modal.messages;
-        ['rangeExactExcluded', 'rangeBetweenExcluded', 'rangeMaxExcluded', 'excludedNoMassing']
+        ['rangeNoneExcluded', 'parcelsLeftOut', 'excludedNoMassing']
             .forEach(key => expect(messages[key], `${locale} missing ${key}`).toBeTruthy());
-        expect(messages.rangeExactExcluded).toContain('{{excluded}}');
+        expect(messages.rangeNoneExcluded).toContain('{{excluded}}');
     });
 });

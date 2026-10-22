@@ -68,7 +68,6 @@
         "missingSite": "Este edificio guardado no tiene un límite de terreno válido, por lo que su geometría no se puede editar de forma segura.",
         "cancel": "Cancelar",
         "editing": "Editando",
-        "controls": "Controles",
         "showControls": "Mostrar controles",
         "hideControls": "Ocultar controles",
         "moreOptions": "Más opciones",
@@ -2124,13 +2123,10 @@
             "deleteLabel": "Eliminar edificio",
             "renameLabel": "Renombrar edificio",
             "closeLabel": "Cerrar modal de edificio único",
-            "cancel": "Cancelar",
             "more": "Parcela y detalles",
             "mapHint": "Arrastra el edificio o sus esquinas. Toca un borde para añadir una esquina.",
-            "modelHint": "Ajusta la altura y gira la vista para comprobar el encaje. Usa 2D para cambiar la huella.",
             "previewLabel": "Vista 3D",
             "confirm": "Listo",
-            "parametersTitle": "Parámetros",
             "heightLabel": "Altura (m):",
             "rotationLabel": "Girar huella",
             "rotateCounterclockwiseLabel": "Girar 5 grados en sentido antihorario",
@@ -2251,7 +2247,6 @@
             "hitsBuildings": "Esta huella intersecta edificios; la repetición deriva el impacto resultante",
             "extendsCut": "Corta más profundo en un edificio ya recortado (ámbar en el mapa)",
             "cutsStructures": "Corta parques/plazas/lagos aplicados",
-            "cancel": "Cancelar",
             "applyDrawing": "Aplicar al dibujo",
             "addLane": "Añadir carril",
             "addLaneOfType": "Añadir: {{lane}} ({{width}} m)",
@@ -2979,6 +2974,10 @@
             "done": "Listo",
             "algorithmLabel": "Algoritmo:",
             "algorithms": {
+                "semi_open": {
+                    "name": "Europeo de los 80, manzanas semiabiertas",
+                    "description": "Manzanas perimetrales que siguen la forma de las parcelas, abiertas por huecos entre los edificios, con patios en el centro, como las manzanas urbanas europeas de los años 80."
+                },
                 "fully_closed": {
                     "name": "Centroeuropeo completamente cerrado",
                     "description": "Bloques completamente cerrados, siguiendo de cerca las formas de las parcelas, sin huecos, patios interiores, como en las ciudades de Europa Central."
@@ -2996,7 +2995,6 @@
                     "description": "Bloques que no tienen lados uniformes, pero permiten construir hacia el centro del patio con formas salientes, cuando las distancias de los otros lados son suficientes. Inspirado en Buenos Aires."
                 }
             },
-            "parametersTitle": "Parámetros",
             "labels": {
                 "setback": "Retiro (m):",
                 "chamfer": "Chaflán (m):",
@@ -3015,11 +3013,6 @@
                 "minPlotArea": "Superficie mínima de parcela (m²):",
                 "minDepth": "Profundidad obligatoria desde la calle (m):"
             },
-            "helper": {
-                "adjust": "Ajusta los parámetros con los deslizadores para modificar la forma del edificio.",
-                "setback": "El retiro es la distancia desde el límite de la parcela hasta el borde exterior del edificio.",
-                "width": "El ancho del edificio es el grosor desde el borde exterior hasta el interior."
-            },
             "messages": {
                 "generatedSummary": "Edificio generado (ancho: {{width}} m, altura: {{height}} m, retiro: {{setback}} m)",
                 "generatedSolidNoCourtyard": "Edificio generado (sólido; retiro: {{setback}} m). El patio se omitió porque el desplazamiento interior se dividió o generó bordes < 2.0 m. Intenta reducir el ancho.",
@@ -3036,12 +3029,6 @@
                 "multiParcelLabel": "{{count}} parcelas",
                 "excludedBelowMinPlot": "Menor que la superficie mínima de parcela — hay que fusionarla con una vecina antes de poder construir aquí.",
                 "excludedSliver": "Solo cae una astilla de la manzana en esta parcela — demasiado pequeña para ser un edificio.",
-                "rangeExact": "{{buildings}} · aporta {{permitted}} m² de superficie construida",
-                "rangeBetween": "{{buildings}} · garantiza {{guaranteed}} – {{permitted}} m² de superficie construida",
-                "rangeMax": "{{buildings}} · permite 0 – {{permitted}} m² de superficie construida",
-                "rangeExactExcluded": "{{buildings}} · aporta {{permitted}} m² de superficie construida · {{excluded}}",
-                "rangeBetweenExcluded": "{{buildings}} · garantiza {{guaranteed}} – {{permitted}} m² de superficie construida · {{excluded}}",
-                "rangeMaxExcluded": "{{buildings}} · permite 0 – {{permitted}} m² de superficie construida · {{excluded}}",
                 "excludedNoMassing": "El edificio no llega a esta parcela — el retranqueo, o la forma de la manzana, la deja fuera. Aquí no se construye nada.",
                 "rangeNoneExcluded": "Sin edificios · {{excluded}}",
                 "buildingCount": {
@@ -3106,7 +3093,6 @@
             "closeAria": "Cerrar modal de viviendas en hilera",
             "generating": "Generando viviendas en hilera…",
             "done": "Listo",
-            "parametersTitle": "Parámetros",
             "labels": {
                 "length": "Largo (m):",
                 "width": "Ancho (m):",
@@ -3124,9 +3110,7 @@
                 "minPlotArea": "Superficie mínima de parcela (m²):"
             },
             "helper": {
-                "adjust": "Arrastra la huella para moverla. Arrastra los vértices para cambiar la forma, haz clic en un borde para añadir uno o selecciona un vértice para eliminarlo.",
-                "dimensions": "El largo es paralelo al lado más largo de la parcela. El ancho es perpendicular.",
-                "chamfer": "El chaflán corta las esquinas en ángulos de 45°."
+                "adjust": "Arrastra la huella para moverla. Arrastra los vértices para cambiar la forma, haz clic en un borde para añadir uno o selecciona un vértice para eliminarlo."
             },
             "rotateCounterclockwise": "Girar 5 grados en sentido antihorario",
             "rotateClockwise": "Girar 5 grados en sentido horario",
@@ -3165,10 +3149,8 @@
             "title": "Viviendas aisladas",
             "closeAria": "Cerrar modal de reglas por parcela",
             "generating": "Generando edificios…",
-            "generatedSummary": "Generado: {{buildings}}",
             "done": "Listo",
             "regenerate": "Regenerar",
-            "parametersTitle": "Parámetros",
             "labels": {
                 "maxFloors": "Máximo de plantas según la regla:",
                 "minDistance": "Distancia mín. de los bordes (m):",
@@ -3185,9 +3167,6 @@
                 "minPlotArea": "Superficie mínima de parcela (m²):"
             },
             "helper": {
-                "maxFloors": "Número máximo de plantas definido en esta propuesta. El ejemplo varía dentro de esos límites.",
-                "minDistance": "Distancia mínima: los edificios mantienen al menos esta distancia de los bordes de la parcela.",
-                "regenerate": "Regenerar muestra otro ejemplo dentro de la regla propuesta. La huella y el volumen que establece la regla no cambian.",
                 "ruleType": "Estas son reglas de edificación propuestas; no se ha verificado su cumplimiento con la normativa urbanística vigente. Elige un máximo, un rango o una forma exacta.",
                 "minPlotArea": "Las parcelas menores que el mínimo propuesto se muestran rayadas. Fusiónalas o cambia la regla."
             },
@@ -3204,8 +3183,7 @@
                 "excludedBelowMinPlot": "Menor que la superficie mínima de esta regla propuesta; fusiónala con una parcela vecina o cambia la regla.",
                 "excludedNoRoom": "Este retiro propuesto no deja espacio para un edificio.",
                 "excludedCannotMeet": "La parcela no puede cumplir el mínimo de esta regla propuesta."
-            },
-            "generatedSummaryExcluded": "Generado: {{buildings}} · {{excluded}}"
+            }
         }
     },
     "parcelLayout": {
@@ -5930,7 +5908,6 @@
         },
         "finishPath": "Terminar sendero",
         "undo": "Deshacer",
-        "cancel": "Cancelar",
         "save": "Guardar diseño",
         "hintErase": "Haz clic en un elemento para eliminarlo.",
         "hintPlace": "Haz clic en el mapa para colocar el elemento seleccionado.",
@@ -5949,7 +5926,6 @@
         "rotation": "Rotación",
         "platformHeight": "Altura del andén sobre el suelo",
         "hint": "La vista previa del mapa se actualiza mientras editas.",
-        "cancel": "Cancelar",
         "save": "Listo",
         "saved": "Geometría de estación guardada.",
         "moveHint": "Arrastra la huella de la estación o el marcador central para cambiarla de lugar. El tipo, tamaño, rotación y altura del andén se mantienen.",

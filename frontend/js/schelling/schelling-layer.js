@@ -191,7 +191,11 @@
             win.MapShell?.closeSheet?.({ restoreFocus: false });
             el('schelling-panel-title').focus({ preventScroll: true });
         });
-        el('schelling-panel-collapse').addEventListener('click', () => setCollapsed(!el('schelling-panel-body').hidden));
+        // The whole header folds the panel, as an editor's does; the chevron is its keyboard handle.
+        el('schelling-panel').querySelector('.on-map-editor__header').addEventListener('click', event => {
+            if (event.target.closest('#schelling-panel-close')) return;
+            setCollapsed(!el('schelling-panel-body').hidden);
+        });
         el('schelling-panel-close').addEventListener('click', () => setEnabled(false));
         el('schelling-plan-block').addEventListener('input', event => setSettings({ ...state.settings, targetBlockM: Number(event.target.value) }));
         el('schelling-plan-street').addEventListener('input', event => setSettings({ ...state.settings, streetWidthM: Number(event.target.value) }));

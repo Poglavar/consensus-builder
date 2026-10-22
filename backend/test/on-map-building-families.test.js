@@ -104,10 +104,11 @@ describe('floating building-family editors', () => {
         expect(rowHouse).toContain("const rotationTools = container.querySelector('.single-building-rotation-buttons')");
         expect(rowHouse).toContain('tools: rotationTools');
         expect(rowHouse).toContain("setAttribute('role', 'toolbar')");
-        expect(rowHouse).toContain('btn-rowhouse-cancel');
-        expect(rowHouse).toContain("addEventListener('click', requestCloseRowHouseModal)");
-        expect(parcelBased).toContain('btn-parcelbased-cancel');
-        expect(parcelBased).toContain("addEventListener('click', requestCloseParcelBasedModal)");
+        // The header's × is the only cancel: no footer Cancel repeats it.
+        expect(rowHouse).toContain('onCancel: requestCloseRowHouseModal');
+        expect(rowHouse).not.toContain('btn-rowhouse-cancel');
+        expect(parcelBased).toContain('onCancel: requestCloseParcelBasedModal');
+        expect(parcelBased).not.toContain('btn-parcelbased-cancel');
     });
 
     it('saves the canonical full row bar and block massing on their own site, never as a free placement', () => {

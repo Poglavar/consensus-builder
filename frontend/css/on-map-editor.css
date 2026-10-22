@@ -33,6 +33,7 @@
 .on-map-editor__panel--layer { z-index: var(--cb-z-panel); color: var(--cb-text); font-family: var(--cb-font-sans); }
 .on-map-editor__header, .on-map-editor__footer { flex: 0 0 auto; }
 .on-map-editor__header {
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: space-between;

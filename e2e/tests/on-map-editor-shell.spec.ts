@@ -34,20 +34,20 @@ async function openEditor(page: Page, kind: 'block' | 'single' | 'detached' | 'r
     await page.locator('#parcel-info-panel .close-button').click();
     await page.locator('#selection-tray [data-command="selection.propose"]').click();
     await page.locator('.parcel-build-btn--row').click();
-    return { root: '#rowhouse', done: '#btn-rowhouse-done', cancel: '#btn-rowhouse-cancel' };
+    return { root: '#rowhouse', done: '#btn-rowhouse-done', cancel: '#rowhouse .on-map-editor__header .close-circle-btn' };
   }
 
   await openParcel(page, 'proposals');
   if (kind === 'block') {
     await page.locator('.parcel-build-btn--buildings').click();
-    return { root: '#blockify-modal', done: '#btn-blockify-done', cancel: '#btn-blockify-cancel' };
+    return { root: '#blockify-modal', done: '#btn-blockify-done', cancel: '#blockify-modal .on-map-editor__header .close-circle-btn' };
   }
   if (kind === 'single') {
     await page.locator('.parcel-build-btn--single').click();
-    return { root: '#single-building-editor', done: '#single-building-confirm', cancel: '#single-building-cancel' };
+    return { root: '#single-building-editor', done: '#single-building-confirm', cancel: '#single-building-editor .on-map-editor__header .close-circle-btn' };
   }
   await page.locator('.parcel-build-btn--parcelBased').click();
-  return { root: '#parcelbased', done: '#btn-parcelbased-done', cancel: '#btn-parcelbased-cancel' };
+  return { root: '#parcelbased', done: '#btn-parcelbased-done', cancel: '#parcelbased .on-map-editor__header .close-circle-btn' };
 }
 
 async function nearbyBuildingMeshCount(page: Page) {
@@ -249,7 +249,7 @@ test.describe('Shared on-map editor shell @features', () => {
     });
     expect(after.center).toEqual(before.center);
     expect(after.zoom).toBe(before.zoom);
-    for (const selector of ['#btn-blockify-done', '#btn-blockify-cancel']) {
+    for (const selector of ['#btn-blockify-done', '#btn-blockify-freeform']) {
       const box = await page.locator(selector).boundingBox();
       expect(box, `${selector} should remain visible after folding controls`).not.toBeNull();
       expect(box!.x).toBeGreaterThanOrEqual(0);
@@ -257,6 +257,13 @@ test.describe('Shared on-map editor shell @features', () => {
       expect(box!.x + box!.width).toBeLessThanOrEqual(320);
       expect(box!.y + box!.height).toBeLessThanOrEqual(780);
     }
+    // The header itself folds and unfolds the controls, as the chevron does.
+    await root.locator('.on-map-editor__heading').click();
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    await expect(root.locator('.on-map-editor__body')).toBeVisible();
+    await expect(toggle).toHaveText('');
+    await root.locator('.on-map-editor__heading').click();
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
     await toggle.click();
     await expect(toggle).toHaveAttribute('aria-expanded', 'true');
     await expect(root.locator('.on-map-editor__body')).toBeVisible();
@@ -267,6 +274,6 @@ test.describe('Shared on-map editor shell @features', () => {
     });
     expect(expanded.center).toEqual(before.center);
     expect(expanded.zoom).toBe(before.zoom);
-    await closeDesignEditor(page, '#blockify-modal', '#btn-blockify-cancel');
+    await closeDesignEditor(page, '#blockify-modal', '#blockify-modal .on-map-editor__header .close-circle-btn');
   });
 });

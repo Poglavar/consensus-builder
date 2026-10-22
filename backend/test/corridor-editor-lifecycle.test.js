@@ -128,7 +128,6 @@ describe('placed corridor stretch replacement in the shared editor', () => {
             }
         };
         const footerControls = {
-            '.corridor-editor-cancel': { addEventListener: (type, handler) => { eventHandlers[`cancel:${type}`] = handler; } },
             '.corridor-editor-save': { addEventListener: (type, handler) => { eventHandlers[`save:${type}`] = handler; } }
         };
         const root = { querySelectorAll: () => [], querySelector: selector => footerControls[selector] || null };
@@ -215,7 +214,6 @@ describe('placed corridor stretch replacement in the shared editor', () => {
         expect(host.innerHTML).toContain('Also replace the 1 stretches');
         expect(mountedInput.checked).toBe(false);
         expect(preview).toHaveBeenLastCalledWith('road-1', profile, null, { keepOverrides: true });
-        expect(eventHandlers['cancel:click']).toBe(cancel);
 
         mountedInput.checked = true;
         mountedInput.handlers.change();

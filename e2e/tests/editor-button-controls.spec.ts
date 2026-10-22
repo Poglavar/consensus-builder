@@ -482,7 +482,7 @@ test.describe('Editor button effects @features', () => {
 
     await showProposal(page, stationId);
     editor = await openEditor();
-    await editor.locator('footer [data-station-editor-action="cancel"]').click();
+    await editor.locator('.on-map-editor__header .close-circle-btn').click();
     await acceptDiscard();
     await expect(editor).toBeHidden();
 
@@ -543,7 +543,7 @@ test.describe('Editor button effects @features', () => {
     const oldLimit = await parcelLimit.getAttribute('aria-pressed');
     await parcelLimit.click();
     await expect(parcelLimit).toHaveAttribute('aria-pressed', oldLimit === 'true' ? 'false' : 'true');
-    await editor.locator('.corridor-editor-cancel').click();
+    await editor.locator('.on-map-editor__header .close-circle-btn').click();
     await expect(editor).toHaveCount(0);
     expect((await proposalState(page, id)).roadProposal.definition.profile.strips.length).toBe(before);
   });
@@ -601,7 +601,7 @@ test.describe('Editor button effects @features', () => {
     await expect.poll(async () => JSON.stringify((await proposalState(page, id)).roadProposal.definition.segments)).not.toBe(JSON.stringify(beforeSide.roadProposal.definition.segments));
     expect((await proposalState(page, id)).roadProposal.definition.profile.strips.length).toBe(beforeSide.roadProposal.definition.profile.strips.length + 1);
     await expect(editor.locator('.corridor-editor-save')).toBeDisabled();
-    await editor.locator('.corridor-editor-cancel').click();
+    await editor.locator('.on-map-editor__header .close-circle-btn').click();
     await expect(editor).toHaveCount(0);
 
     await showProposal(page, id);
@@ -630,7 +630,7 @@ test.describe('Editor button effects @features', () => {
     const moved = await proposalState(page, id);
     expect(moved.roadProposal.definition.profile.strips.length).toBe(beforeMove.roadProposal.definition.profile.strips.length + 1);
     await expect(editor.locator('.corridor-editor-save')).toBeDisabled();
-    await editor.locator('.corridor-editor-cancel').click();
+    await editor.locator('.on-map-editor__header .close-circle-btn').click();
     await page.reload();
     await waitForMapReady(page);
     await expect.poll(async () => (await proposalState(page, id)).roadProposal.definition.segments).toEqual(moved.roadProposal.definition.segments);
@@ -647,7 +647,7 @@ test.describe('Editor button effects @features', () => {
     await editor.locator('.cb-lane-dropdown-toggle').click();
     await editor.locator('[data-lane-type="sidewalk"]').click();
     await expect(editor.locator('.corridor-lane-row')).toHaveCount(before + 1);
-    await editor.locator('.corridor-editor-cancel').click();
+    await editor.locator('.on-map-editor__header .close-circle-btn').click();
     await expect(editor).toHaveCount(0);
     await expect(page.locator('#road-drawing-controls')).toBeVisible();
     await page.locator('#editRoadCrossSectionButton').click();
@@ -692,7 +692,7 @@ test.describe('Editor button effects @features', () => {
       await expect(schematic).toHaveAttribute('aria-label', new RegExp(`${variant.label}, ${width} metres`));
       await expect(schematic).toHaveClass(/corridor-section-lane--selected/);
     }
-    await editor.locator('.corridor-editor-cancel').click();
+    await editor.locator('.on-map-editor__header .close-circle-btn').click();
     await expect(editor).toHaveCount(0);
     await page.locator('#road-drawing-controls').getByRole('button', { name: 'Cancel', exact: true }).click();
     await expect(page.locator('#road-drawing-controls')).toBeHidden();

@@ -543,18 +543,10 @@
             const doneButton = document.getElementById('btn-parcelbased-done');
             if (doneButton) doneButton.disabled = false;
 
-            // The counts are plural phrases of their own ("1 building", "3 buildings"; the Urban rule
-            // editor's keys), passed as i18n references so the line follows a language change.
-            const buildingsPhrase = { key: 'blockify.modal.messages.buildingCount', count: buildings.length };
-            if (excluded.length) {
-                setParcelBasedInfo('parcelBased.modal.generatedSummaryExcluded',
-                    'Generated {{buildings}} · {{excluded}}',
-                    { buildings: buildingsPhrase, excluded: { key: 'blockify.modal.messages.parcelsLeftOut', count: excluded.length } });
-            } else {
-                setParcelBasedInfo('parcelBased.modal.generatedSummary',
-                    'Generated {{buildings}}',
-                    { buildings: buildingsPhrase });
-            }
+            // The footer says only what needs attention: the parcels left out (hatched on the map),
+            // not a count of what was built. Empty when every parcel builds.
+            if (excluded.length) setParcelBasedInfo('blockify.modal.messages.parcelsLeftOut', '{{count}} parcels left out', { count: excluded.length });
+            else setParcelBasedInfo('', '');
 
         } catch (error) {
             console.error('[ParcelBased] Generation error:', error);
@@ -727,7 +719,6 @@
             const container = document.createElement('div');
             container.innerHTML = `
                 <div id="parcelbased-sidebar">
-                    <h3 class="cb-kicker" data-i18n-key="parcelBased.modal.parametersTitle">Parameters</h3>
                     <div class="parameter-group">
                         <label for="parcelbased-ruletype-select" data-i18n-key="parcelBased.modal.labels.ruleType" data-i18n-attr="text">What the rule compels:</label>
                         <select id="parcelbased-ruletype-select">
@@ -796,10 +787,7 @@
                         <div class="parameter-info">
                             <p>
                                 <span data-i18n-key="parcelBased.modal.helper.ruleType">What the rule compels: at most this (nobody has to build), between a minimum and this, or exactly this (everyone builds the full envelope).</span>
-                                <span data-i18n-key="parcelBased.modal.helper.maxFloors">Max Floors: the permitted ceiling. The example build-out varies from 1 floor up to it.</span>
-                                <span data-i18n-key="parcelBased.modal.helper.minDistance">Min Distance: buildings are set back this distance from parcel borders.</span>
                                 <span data-i18n-key="parcelBased.modal.helper.minPlotArea">Min Plot Size: plots smaller than this cannot be built on under this rule, and are shown hatched. They have to be merged first.</span>
-                                <span data-i18n-key="parcelBased.modal.helper.regenerate">Click Regenerate for another example build-out. The permitted figures above never change.</span>
                             </p>
                         </div>
                     </details>
@@ -807,7 +795,6 @@
                 <div id="parcelbased-controls" class="cb-dialog__footer">
                     <div id="parcelbased-info" data-i18n-attr="text" role="status" aria-live="polite"></div>
                     <div id="parcelbased-buttons">
-                        <button type="button" class="btn btn-quiet" id="btn-parcelbased-cancel" data-i18n-key="cancel" data-i18n-attr="text">Cancel</button>
                         <button type="button" class="btn" id="btn-parcelbased-regenerate" data-i18n-key="parcelBased.modal.regenerate" data-i18n-attr="text">Regenerate</button>
                         <button type="button" class="btn" id="btn-parcelbased-freeform" hidden data-i18n-key="proposalDrafts.freeform.title" data-i18n-attr="text">Convert to freeform building</button>
                         <button type="button" class="btn btn-primary" id="btn-parcelbased-done" data-i18n-key="parcelBased.modal.done" data-i18n-attr="text">Done</button>
@@ -826,10 +813,6 @@
                 footer,
                 modes: ['2d', 'model'],
                 wide: false,
-                hints: {
-                    '2d': translateParcelBasedText('parcelBased.modal.helper.minDistance', 'Buildings stay this distance from parcel borders.'),
-                    model: translateParcelBasedText('parcelBased.modal.helper.regenerate', 'Regenerate an example build-out; permitted figures stay the same.')
-                },
                 onCancel: requestCloseParcelBasedModal
             });
             if (!parcelBasedModal) return false;
@@ -854,8 +837,6 @@
                 doneButton.disabled = true;
             }
 
-            const cancelButton = document.getElementById('btn-parcelbased-cancel');
-            if (cancelButton) cancelButton.addEventListener('click', requestCloseParcelBasedModal);
 
             const regenerateButton = document.getElementById('btn-parcelbased-regenerate');
             if (regenerateButton) {

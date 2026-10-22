@@ -157,9 +157,15 @@ describe('OnMapEditor shared floating-panel lifecycle', () => {
         const preview = { draftPreview: { kind: 'buildings', features: [] } };
         session.setPreview(preview);
         session.setAnchor({ lat: 1, lng: 2 });
-        const toggle = session.panel.children[0].children.find(child => child.attributes['aria-controls'] === session.body.id);
+        const header = session.panel.children[0];
+        const toggle = header.children.find(child => child.attributes['aria-controls'] === session.body.id);
         expect(toggle.attributes['aria-expanded']).toBe('true');
-        toggle.addEventListener.mock.calls.find(([name]) => name === 'click')[1]();
+        // The whole header folds the controls (the chevron is its keyboard handle, with no label);
+        // its × does not.
+        const headerClick = header.addEventListener.mock.calls.find(([name]) => name === 'click')[1];
+        headerClick({ target: { closest: selector => (selector === '.close-circle-btn' ? {} : null) } });
+        expect(session.collapsed).toBe(false);
+        headerClick({ target: { closest: () => null } });
         expect(session.collapsed).toBe(true);
         expect(session.body.hidden).toBe(true);
         expect(session.content.hidden).toBe(false);

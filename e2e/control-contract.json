@@ -645,9 +645,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-971b98034ee734-1",
+      "id": "control-55f35ea621c6f7-1",
       "source": "index.html",
-      "markup": "<button type=\"button\" id=\"schelling-panel-collapse\" class=\"btn btn-sm on-map-editor__toggle\" aria-controls=\"schelling-panel-body\" aria-expanded=\"true\">",
+      "markup": "<button type=\"button\" id=\"schelling-panel-collapse\" class=\"btn btn-sm on-map-editor__toggle\" aria-controls=\"schelling-panel-body\" aria-expanded=\"true\" data-i18n-key=\"onMapEditor.hideControls\" data-i18n-attr=\"title,aria-label\" title=\"Hide controls\" aria-label=\"Hide controls\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -725,6 +725,11 @@
       "markup": "<button type=\"button\" id=\"measurement-button\" class=\"map-shell-button map-utility-button\" data-map-modes=\"2d\" data-sheet-target=\"measurement-sheet\" aria-controls=\"measurement-sheet\" aria-expanded=\"false\" title=\"Measure\" aria-label=\"Measure\" data-i18n-key=\"sidebar.measurement.measureButton\" data-i18n-attr=\"title,aria-label\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-e3e58e81182c5d-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"sun-button\" class=\"map-shell-button map-utility-button\" data-map-modes=\"3d\" data-sheet-target=\"sun-sheet\" aria-controls=\"sun-sheet\" aria-expanded=\"false\" data-sun=\"day\" title=\"Sun and shadows\" aria-label=\"Sun and shadows\" data-i18n-key=\"threeMode.sun.title\" data-i18n-attr=\"title,aria-label\" hidden>"
     },
     {
       "id": "control-3bd1d514227f92-1",
@@ -1327,6 +1332,38 @@
       "controlType": "button"
     },
     {
+      "id": "control-ca1d6921e69f08-1",
+      "source": "index.html",
+      "markup": "<input id=\"sun-enabled\" type=\"checkbox\" checked>"
+    },
+    {
+      "id": "control-897f60999bd86f-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"sun-play\" class=\"btn btn-icon btn-sm sun-play\" aria-pressed=\"true\" title=\"Pause the day\" aria-label=\"Pause the day\">"
+    },
+    {
+      "id": "control-9f52fdff8c28d3-1",
+      "source": "index.html",
+      "markup": "<input id=\"sun-time\" class=\"sun-time-slider\" type=\"range\" min=\"0\" max=\"1439\" step=\"1\" value=\"720\">"
+    },
+    {
+      "id": "control-e22cb3c4526685-1",
+      "source": "index.html",
+      "markup": "<input id=\"sun-date\" type=\"date\" min=\"1900-01-01\" max=\"2200-12-31\">"
+    },
+    {
+      "id": "control-39cdb3e226986d-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"sun-now\" class=\"btn btn-sm\" data-i18n-key=\"threeMode.sun.now\">"
+    },
+    {
+      "id": "control-dc7af30c67cb8d-5",
+      "source": "index.html",
+      "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-5594b773f51c35-1",
       "source": "index.html",
       "markup": "<button id=\"showProposalsButton\" hidden class=\"btn btn-block btn-primary\" onclick=\"showAllProposalsModal()\" data-i18n-key=\"sidebar.proposals.listButton\" data-i18n-params='{\"count\":0}'>",
@@ -1376,18 +1413,16 @@
       "markup": "<button id=\"mintedAgreementsButton\" type=\"button\" class=\"btn btn-block minted-agreements-button\" onclick=\"window.AgreementList.openMinted()\">"
     },
     {
-      "id": "control-dc7af30c67cb8d-5",
+      "id": "control-dc7af30c67cb8d-6",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-dc7af30c67cb8d-6",
+      "id": "control-dc7af30c67cb8d-7",
       "source": "index.html",
-      "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
-      "interaction": "click",
-      "controlType": "button"
+      "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">"
     },
     {
       "id": "control-23315372b8fd5d-1",
@@ -1446,7 +1481,7 @@
       "controlType": "button"
     },
     {
-      "id": "control-dc7af30c67cb8d-7",
+      "id": "control-dc7af30c67cb8d-8",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">"
     },
@@ -3172,13 +3207,6 @@
       "controlType": "file"
     },
     {
-      "id": "control-d209bdb0867854-1",
-      "source": "js/building-blocks.js",
-      "markup": "<button type=\"button\" class=\"btn\" id=\"btn-blockify-cancel\" data-i18n-key=\"onMapEditor.cancel\" data-i18n-attr=\"text\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-553d785a73a743-1",
       "source": "js/building-blocks.js",
       "markup": "<button type=\"button\" class=\"btn\" id=\"btn-blockify-regenerate\" hidden data-i18n-key=\"blockify.modal.regenerate\" data-i18n-attr=\"text\">",
@@ -3677,13 +3705,6 @@
       "controlType": "button"
     },
     {
-      "id": "control-75939ceadb90d4-1",
-      "source": "js/corridor-editor.js",
-      "markup": "<button type=\"button\" class=\"btn corridor-editor-cancel\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-5037d73f4b5942-1",
       "source": "js/corridor-editor.js",
       "markup": "<button type=\"button\" class=\"btn btn-primary corridor-editor-save\"${drawing ? '' : ' disabled'}>",
@@ -4069,13 +4090,6 @@
       "markup": "<input type=\"range\" id=\"parcelbased-minplot-slider\" min=\"0\" max=\"10000\" value=\"${DEFAULT_MIN_PLOT_AREA_M2}\" step=\"10\">",
       "interaction": "change",
       "controlType": "range"
-    },
-    {
-      "id": "control-a3b66acd4aead1-1",
-      "source": "js/parcel-based.js",
-      "markup": "<button type=\"button\" class=\"btn btn-quiet\" id=\"btn-parcelbased-cancel\" data-i18n-key=\"cancel\" data-i18n-attr=\"text\">",
-      "interaction": "click",
-      "controlType": "button"
     },
     {
       "id": "control-be28836e667d47-1",
@@ -6894,13 +6908,6 @@
       "controlType": "file"
     },
     {
-      "id": "control-abbaa3c9d6914a-1",
-      "source": "js/row-house.js",
-      "markup": "<button type=\"button\" class=\"btn btn-quiet\" id=\"btn-rowhouse-cancel\" data-i18n-key=\"cancel\" data-i18n-attr=\"text\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-9cbb6e212d7622-1",
       "source": "js/row-house.js",
       "markup": "<button type=\"button\" class=\"btn\" id=\"btn-rowhouse-regenerate\" hidden data-i18n-key=\"rowHouses.modal.regenerate\" data-i18n-attr=\"text\">",
@@ -7044,13 +7051,6 @@
       "id": "control-6331b4e0789208-1",
       "source": "js/single-building.js",
       "markup": "<button id=\"single-building-undo\" type=\"button\" class=\"btn btn-quiet\" disabled>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-e75e04d735588f-1",
-      "source": "js/single-building.js",
-      "markup": "<button id=\"single-building-cancel\" type=\"button\" class=\"btn btn-quiet\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -7265,13 +7265,6 @@
       "controlType": "button"
     },
     {
-      "id": "control-62db972ab4c361-1",
-      "source": "js/structure-geometry-editor.js",
-      "markup": "<button type=\"button\" class=\"btn\" data-action=\"cancel\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-134839decde8fd-1",
       "source": "js/structure-geometry-editor.js",
       "markup": "<button type=\"button\" class=\"btn btn-primary\" data-action=\"save\">",
@@ -7293,11 +7286,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-aae4ed2e26e4be-1",
+      "id": "control-48a3d8be2e79e3-1",
       "source": "js/three-mode.js",
-      "markup": "<input type=\"range\" class=\"parcel-panel-price-slider\" data-role=\"price-slider\" min=\"${PRICE_MIN_EUR}\" max=\"${PRICE_MAX_EUR}\" step=\"${PRICE_STEP_EUR}\" value=\"${priceEurPerM2}\" aria-label=\"${L.priceLabel}\">",
-      "interaction": "change",
-      "controlType": "range"
+      "markup": "<input type=\"range\" class=\"parcel-panel-price-slider\" data-role=\"${role}\" min=\"${price.min}\" max=\"${price.max}\" step=\"${price.step}\" value=\"${price.perSqm}\">"
     },
     {
       "id": "control-ecbae0905e542d-1",
@@ -7394,6 +7385,11 @@
       "controlType": "input"
     },
     {
+      "id": "control-46b5da01d9d0cc-7",
+      "source": "js/three-mode.js",
+      "markup": "document.createElement('input')"
+    },
+    {
       "id": "control-d1342cf843b1ad-1",
       "source": "js/transit-stations.js",
       "markup": "<input type=\"number\" data-station-editor-height min=\"${bounds.min}\" max=\"${bounds.max}\" step=\"0.5\" value=\"${stationEditor.platformHeightM}\">",
@@ -7418,13 +7414,6 @@
       "id": "control-9b6001cbb9f11b-1",
       "source": "js/transit-stations.js",
       "markup": "<button type=\"button\" class=\"btn btn-sm\" data-station-editor-action=\"undo\" disabled aria-disabled=\"true\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-1e5bf3c32366cf-1",
-      "source": "js/transit-stations.js",
-      "markup": "<button type=\"button\" class=\"btn\" data-station-editor-action=\"cancel\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -7898,9 +7887,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-cb67ca8dfa0d33-1",
+      "id": "control-0179dfb0cd4d69-1",
       "source": "js/user-management.js",
-      "markup": "<button type=\"button\" class=\"cb-segmented__option\" data-language=\"${choice.lang}\" aria-pressed=\"${pressed}\" title=\"${label}\" aria-label=\"${label}\" data-i18n-key=\"${choice.key}\" data-i18n-attr=\"title,aria-label\">",
+      "markup": "<button type=\"button\" class=\"cb-segmented__option\" data-language=\"${choice.locale}\" aria-pressed=\"${pressed}\" title=\"${label}\" aria-label=\"${label}\" data-i18n-key=\"${choice.key}\" data-i18n-attr=\"title,aria-label\">",
       "interaction": "click",
       "controlType": "button"
     },

@@ -1978,13 +1978,27 @@ body.site-intro-open { overflow: hidden; }
     color: var(--cb-text-muted);
 }
 
+/* Nothing to report is no line: the buttons then have the whole footer row. */
+#blockify-info:empty,
+#rowhouse-info:empty,
+#parcelbased-info:empty {
+    display: none;
+}
+
+/* Convert to freeform and Done stay on one row; a long label wraps inside its button. */
 #blockify-buttons,
 #rowhouse-buttons,
 #parcelbased-buttons {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: flex-end;
     gap: var(--cb-space-2);
+}
+
+#blockify-buttons .btn,
+#rowhouse-buttons .btn,
+#parcelbased-buttons .btn {
+    white-space: normal;
 }
 
 @media (max-width: 767.98px) {

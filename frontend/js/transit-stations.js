@@ -775,7 +775,7 @@
     }
 
     function stationEditorFooter() {
-        return `<button type="button" class="btn btn-sm" data-station-editor-action="undo" disabled aria-disabled="true">${stationEditorText('undo', 'Undo')}</button><button type="button" class="btn" data-station-editor-action="cancel">${stationEditorText('cancel', 'Cancel')}</button><button type="button" class="btn btn-primary" data-station-editor-action="save">${stationEditorText('save', 'Done')}</button>`;
+        return `<button type="button" class="btn btn-sm" data-station-editor-action="undo" disabled aria-disabled="true">${stationEditorText('undo', 'Undo')}</button><button type="button" class="btn btn-primary" data-station-editor-action="save">${stationEditorText('save', 'Done')}</button>`;
     }
 
     function ensureStationEditorHistory() {
@@ -1119,7 +1119,6 @@
         stationEditor.onClick = event => {
             const action = event.target?.closest?.('[data-station-editor-action]')?.dataset.stationEditorAction;
             if (action === 'undo') return;
-            if (action === 'cancel') void cancelStationGeometryEditor();
             else if (action === 'save') saveStationGeometryEditor();
         };
         panel.addEventListener('input', stationEditor.onInput);

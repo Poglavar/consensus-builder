@@ -68,7 +68,6 @@
         "missingSite": "This saved building has no valid authored site boundary, so its geometry cannot be edited safely.",
         "cancel": "Cancel",
         "editing": "Editing",
-        "controls": "Controls",
         "showControls": "Show controls",
         "hideControls": "Hide controls",
         "moreOptions": "More options",
@@ -2097,13 +2096,10 @@
             "deleteLabel": "Delete building",
             "renameLabel": "Rename building",
             "closeLabel": "Close single building modal",
-            "cancel": "Cancel",
             "more": "Site & details",
             "mapHint": "Drag the building or its corners. Tap an edge to add a corner.",
-            "modelHint": "Adjust the height and orbit to see the fit. Use 2D to reshape the footprint.",
             "previewLabel": "3D preview",
             "confirm": "Done",
-            "parametersTitle": "Parameters",
             "heightLabel": "Height (m):",
             "rotationLabel": "Rotate footprint",
             "rotateCounterclockwiseLabel": "Rotate counterclockwise 5 degrees",
@@ -2224,7 +2220,6 @@
             "hitsBuildings": "This footprint intersects buildings; replay derives the resulting impact",
             "extendsCut": "Cuts deeper into an already-cut building (amber on the map)",
             "cutsStructures": "Cuts applied parks/squares/lakes",
-            "cancel": "Cancel",
             "applyDrawing": "Apply to drawing",
             "addLane": "Add lane",
             "addLaneOfType": "Add: {{lane}} ({{width}} m)",
@@ -2952,6 +2947,10 @@
             "done": "Done",
             "algorithmLabel": "Algorithm:",
             "algorithms": {
+                "semi_open": {
+                    "name": "80s European, semi-open blocks",
+                    "description": "Perimeter blocks following the parcel shapes, opened by gaps between the buildings, courtyards in the middle, like European urban blocks of the 1980s."
+                },
                 "fully_closed": {
                     "name": "Central European fully closed",
                     "description": "Fully enclosed blocks, closely following parcel shapes, no gaps, courtyards in the middle, like in Central European cities."
@@ -2969,7 +2968,6 @@
                     "description": "Blocks that do not have uniform sides, but allow building towards the center of the courtyard with protruding shapes, when distances from other sides are enough. Inspired by Buenos Aires."
                 }
             },
-            "parametersTitle": "Parameters",
             "labels": {
                 "setback": "Setback (m):",
                 "chamfer": "Chamfer (m):",
@@ -2988,11 +2986,6 @@
                 "minPlotArea": "Min plot size (m²):",
                 "minDepth": "Must build from street (m):"
             },
-            "helper": {
-                "adjust": "Adjust parameters using the sliders to modify the building shape.",
-                "setback": "Setback is the distance from the parcel boundary to the outer building edge.",
-                "width": "Building width is the thickness of the building from outer to inner edge."
-            },
             "messages": {
                 "generatedSummary": "Building generated (width: {{width}}m, height: {{height}}m, setback: {{setback}}m)",
                 "generatedSolidNoCourtyard": "Building generated (solid; setback: {{setback}}m). Courtyard omitted because inner offset split or produced edges < 2.0 m. Try decreasing width.",
@@ -3009,12 +3002,6 @@
                 "multiParcelLabel": "{{count}} parcels",
                 "excludedBelowMinPlot": "Smaller than the minimum plot size — it has to be merged with a neighbour before anything can be built here.",
                 "excludedSliver": "Only a splinter of the block falls on this plot — too small to be a building.",
-                "rangeExact": "{{buildings}} · delivers {{permitted}} m² of floor area",
-                "rangeBetween": "{{buildings}} · guarantees {{guaranteed}} – {{permitted}} m² of floor area",
-                "rangeMax": "{{buildings}} · permits 0 – {{permitted}} m² of floor area",
-                "rangeExactExcluded": "{{buildings}} · delivers {{permitted}} m² of floor area · {{excluded}}",
-                "rangeBetweenExcluded": "{{buildings}} · guarantees {{guaranteed}} – {{permitted}} m² of floor area · {{excluded}}",
-                "rangeMaxExcluded": "{{buildings}} · permits 0 – {{permitted}} m² of floor area · {{excluded}}",
                 "excludedNoMassing": "The building does not reach this plot — the setback, or the shape of the block, leaves it outside. Nothing is built here.",
                 "rangeNoneExcluded": "No buildings · {{excluded}}",
                 "buildingCount": {
@@ -3079,7 +3066,6 @@
             "closeAria": "Close row houses modal",
             "generating": "Generating row houses…",
             "done": "Done",
-            "parametersTitle": "Parameters",
             "labels": {
                 "length": "Length (m):",
                 "width": "Width (m):",
@@ -3097,9 +3083,7 @@
                 "minPlotArea": "Min plot size (m²):"
             },
             "helper": {
-                "adjust": "Drag the footprint to move it. Drag vertices to reshape it, click an edge to add a vertex, or select a vertex to remove it.",
-                "dimensions": "Length is parallel to the longest parcel side. Width is perpendicular.",
-                "chamfer": "Chamfer cuts the corners at 45° angles."
+                "adjust": "Drag the footprint to move it. Drag vertices to reshape it, click an edge to add a vertex, or select a vertex to remove it."
             },
             "rotateCounterclockwise": "Rotate counterclockwise 5 degrees",
             "rotateClockwise": "Rotate clockwise 5 degrees",
@@ -3138,10 +3122,8 @@
             "title": "Detached houses",
             "closeAria": "Close parcel-based modal",
             "generating": "Generating buildings…",
-            "generatedSummary": "Generated {{buildings}}",
             "done": "Done",
             "regenerate": "Regenerate",
-            "parametersTitle": "Parameters",
             "labels": {
                 "maxFloors": "Rule max floors:",
                 "minDistance": "Min distance from borders (m):",
@@ -3158,9 +3140,6 @@
                 "minPlotArea": "Min plot size (m²):"
             },
             "helper": {
-                "maxFloors": "Maximum floors under the rule authored in this proposal. The example varies within its limits.",
-                "minDistance": "Min Distance: buildings keep at least this distance from parcel borders.",
-                "regenerate": "Regenerate shows another example within the authored rule. The rule footprint and volume stay the same.",
                 "ruleType": "These are proposed building rules; compliance with current planning rules has not been verified. Choose a maximum, a range, or an exact form.",
                 "minPlotArea": "Plots smaller than the proposed minimum are hatched. Merge them or change the rule."
             },
@@ -3177,8 +3156,7 @@
                 "excludedBelowMinPlot": "Smaller than this proposed rule’s minimum plot size; merge it or change the rule.",
                 "excludedNoRoom": "This proposed setback leaves no room for a building.",
                 "excludedCannotMeet": "The plot cannot meet this proposed rule’s minimum."
-            },
-            "generatedSummaryExcluded": "Generated {{buildings}} · {{excluded}}"
+            }
         }
     },
     "parcelLayout": {
@@ -5903,7 +5881,6 @@
         },
         "finishPath": "Finish path",
         "undo": "Undo",
-        "cancel": "Cancel",
         "save": "Save design",
         "hintErase": "Click an item to remove it.",
         "hintPlace": "Click the map to place the selected item.",
@@ -5922,7 +5899,6 @@
         "rotation": "Rotation",
         "platformHeight": "Platform height above ground",
         "hint": "The map preview updates while you edit.",
-        "cancel": "Cancel",
         "save": "Done",
         "saved": "Station geometry saved.",
         "moveHint": "Drag the station footprint or centre marker to reposition it. Its type, size, rotation and platform height stay the same.",

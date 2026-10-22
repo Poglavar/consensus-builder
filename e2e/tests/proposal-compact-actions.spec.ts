@@ -93,7 +93,7 @@ test.describe('compact proposal card actions @features', () => {
     await footer.locator('.btn-edit-geometry').click();
     const editor = page.locator('#structure-geometry-editor');
     await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
-    await editor.locator('button[data-action="cancel"]').click();
+    await editor.locator('.on-map-editor__header .close-circle-btn').click();
     await expect(editor).toHaveCount(0);
     expect((await proposalState(page, proposalId)).title).toBe(sourceBefore.title);
 

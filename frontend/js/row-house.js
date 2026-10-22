@@ -1672,7 +1672,6 @@
             container.className = 'cb-dialog cb-dialog--xl';
             container.innerHTML = `
                 <div id="rowhouse-sidebar">
-                    <h3 class="cb-kicker" data-i18n-key="rowHouses.modal.parametersTitle">Parameters</h3>
                     <div class="parameter-group">
                         <label for="rowhouse-ruletype-select" data-i18n-key="rowHouses.modal.labels.ruleType" data-i18n-attr="text">What the rule compels:</label>
                         <select id="rowhouse-ruletype-select">
@@ -1753,17 +1752,11 @@
                                 <span id="rowhouse-volume-value">0</span>
                             </div>
                         </div>
-                        <div class="parameter-info">
-                            <p data-i18n-key="rowHouses.modal.helper.adjust">Drag the footprint to move it. Drag vertices to reshape it, click an edge to add a vertex, or select a vertex to remove it.</p>
-                            <p data-i18n-key="rowHouses.modal.helper.dimensions">Length is parallel to the longest parcel side. Width is perpendicular.</p>
-                            <p data-i18n-key="rowHouses.modal.helper.chamfer">Chamfer cuts the corners at 45° angles.</p>
-                        </div>
                     </details>
                 </div>
                 <div id="rowhouse-controls" class="cb-dialog__footer">
                     <div id="rowhouse-info" data-i18n-attr="text" role="status" aria-live="polite"></div>
                     <div id="rowhouse-buttons">
-                        <button type="button" class="btn btn-quiet" id="btn-rowhouse-cancel" data-i18n-key="cancel" data-i18n-attr="text">Cancel</button>
                         <button type="button" class="btn" id="btn-rowhouse-regenerate" hidden data-i18n-key="rowHouses.modal.regenerate" data-i18n-attr="text">Regenerate</button>
                         <button type="button" class="btn" id="btn-rowhouse-freeform" data-i18n-key="proposalDrafts.freeform.title" data-i18n-attr="text">Convert to freeform building</button>
                         <button type="button" class="btn btn-primary" id="btn-rowhouse-done" data-i18n-key="rowHouses.modal.done" data-i18n-attr="text">Done</button>
@@ -1785,8 +1778,7 @@
                 wide: false,
                 tools: rotationTools,
                 hints: {
-                    '2d': translateRowHouseText('rowHouses.modal.helper.adjust', 'Drag the footprint to move it. Drag vertices to reshape it, click an edge to add a vertex, or select a vertex to remove it.'),
-                    model: translateRowHouseText('rowHouses.modal.helper.dimensions', 'Length follows the longest parcel side; width is perpendicular.')
+                    '2d': translateRowHouseText('rowHouses.modal.helper.adjust', 'Drag the footprint to move it. Drag vertices to reshape it, click an edge to add a vertex, or select a vertex to remove it.')
                 },
                 onCancel: requestCloseRowHouseModal,
                 onModeChange: mode => { if (mode === '2d') renderRowHousePolygonEditor(); }
@@ -1817,8 +1809,6 @@
                 doneButton.disabled = true;
             }
 
-            const cancelButton = document.getElementById('btn-rowhouse-cancel');
-            if (cancelButton) cancelButton.addEventListener('click', requestCloseRowHouseModal);
             document.getElementById('rowhouse-manual-toggle')?.addEventListener('click', toggleRowHouseManualMode);
 
             // Slider event listeners with boundary checking

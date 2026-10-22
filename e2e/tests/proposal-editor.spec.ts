@@ -362,7 +362,7 @@ test('structure furniture can be dragged, erased and restored with Undo; cancell
   expect(after!.x - before!.x).toBeGreaterThan(10);
   await page.keyboard.press('Meta+z');
   await expect.poll(async () => (await trees.last().boundingBox())!.x).toBeCloseTo(before!.x, 0);
-  await editor.locator('[data-action="cancel"]').last().click();
+  await editor.locator('.on-map-editor__header .close-circle-btn').click();
   await expect(editor).toHaveCount(0);
   expect(await page.evaluate(id => JSON.stringify((window as any).getProposalByIdOrHash(id)), source.proposalId)).toBe(original);
   expect(await page.evaluate(() => (window as any).proposalStorage.getAllProposals().length)).toBe(1);

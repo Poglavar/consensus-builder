@@ -70,7 +70,7 @@ test.describe('Dynamic editor control effects @features', () => {
     await parcels.click();
     await expect(parcels).toHaveAttribute('aria-pressed', 'true');
     await expect(editor.locator('.corridor-limit-option[data-survey="gdi"]')).toHaveCount(0);
-    await editor.locator('.corridor-editor-cancel').click();
+    await editor.locator('.on-map-editor__header .close-circle-btn').click();
     await expect(editor).toHaveCount(0);
   });
 });

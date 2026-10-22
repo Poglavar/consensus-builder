@@ -181,7 +181,11 @@ describe('Urban rule shared-map editor behavior', () => {
         for (const id of [
             'algorithm-select', 'proposed-height-slider', 'setback-slider', 'chamfer-slider',
             'blockify-ruletype-select', 'blockify-minplot-slider', 'gaps-slider', 'wings-slider',
-            'btn-blockify-cancel', 'btn-blockify-regenerate', 'btn-blockify-done'
+            'btn-blockify-regenerate', 'btn-blockify-freeform', 'btn-blockify-done'
         ]) expect(source).toContain(id);
+        // The header's × cancels; no footer Cancel repeats it.
+        expect(source).not.toContain('btn-blockify-cancel');
+        // The default block type is the semi-open one: gaps can be cut into its blocks.
+        expect(source.slice(source.indexOf('const BLOCKIFY_ALGORITHMS = {'))).toMatch(/^const BLOCKIFY_ALGORITHMS = \{\s*'semi-open':/);
     });
 });

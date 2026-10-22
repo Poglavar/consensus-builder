@@ -2631,7 +2631,6 @@ function corridorEditorOpenOverlayBody() {
             <div class="corridor-editor-body"></div>
 `,
         footer: `
-                <button type="button" class="btn corridor-editor-cancel">${corridorEditorI18n('modal.corridor.cancel', 'Cancel')}</button>
                 <button type="button" class="btn btn-primary corridor-editor-save"${drawing ? '' : ' disabled'}>${drawing
                     ? corridorEditorI18n('modal.corridor.applyDrawing', 'Apply to drawing')
                     // A placed road saves directly: in place, or as a counterproposal of a published one.
@@ -2700,7 +2699,6 @@ function corridorEditorOpenOverlayBody() {
             }).catch(error => console.warn('[corridorEditor] before/after failed', error));
         });
     }
-    overlay.querySelector('.corridor-editor-cancel').addEventListener('click', corridorEditorCancel);
     overlay.querySelector('.corridor-editor-save').addEventListener('click', corridorEditorSave);
     // No backdrop and no click-outside-to-cancel: the overlay is click-transparent, so a click
     // beside the panel pans the map instead. Escape and the two buttons close the editor.

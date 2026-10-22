@@ -46,11 +46,14 @@
             heading.id = `${root.id}-title`;
             heading.title = options.title || '';
             panel.setAttribute('aria-labelledby', heading.id);
+            // The whole header folds the controls away and back; the chevron is its keyboard handle.
             const toggle = node('button', 'btn btn-sm on-map-editor__toggle', header);
             toggle.type = 'button';
-            node('span', '', toggle, text('controls', 'Controls'));
             node('i', 'fas fa-chevron-up', toggle).setAttribute('aria-hidden', 'true');
-            toggle.addEventListener('click', () => setCollapsed(!collapsed));
+            header.addEventListener('click', event => {
+                if (event.target.closest('.close-circle-btn')) return;
+                setCollapsed(!collapsed);
+            });
             const cancel = node('button', 'close-circle-btn', header, '×');
             cancel.type = 'button';
             cancel.setAttribute('aria-label', text('cancel', 'Cancel'));

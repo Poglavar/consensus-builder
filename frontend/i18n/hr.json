@@ -68,7 +68,6 @@
         "missingSite": "Ova spremljena zgrada nema valjanu granicu izvorne lokacije pa nije moguće sigurno uređivati njezinu geometriju.",
         "cancel": "Odustani",
         "editing": "Uređivanje",
-        "controls": "Postavke",
         "showControls": "Prikaži postavke",
         "hideControls": "Sakrij postavke",
         "moreOptions": "Više opcija",
@@ -2119,13 +2118,10 @@
             "deleteLabel": "Obriši zgradu",
             "renameLabel": "Preimenuj zgradu",
             "closeLabel": "Zatvori prozor jedne zgrade",
-            "cancel": "Odustani",
             "more": "Čestica i detalji",
             "mapHint": "Povuci zgradu ili njezine vrhove. Dodirni brid za dodavanje vrha.",
-            "modelHint": "Podesi visinu i okreni prikaz za provjeru uklapanja. Koristi 2D za promjenu tlocrta.",
             "previewLabel": "3D pregled",
             "confirm": "Gotovo",
-            "parametersTitle": "Parametri",
             "heightLabel": "Visina (m):",
             "rotationLabel": "Zakreni tlocrt",
             "rotateCounterclockwiseLabel": "Zakreni 5 stupnjeva suprotno od kazaljke na satu",
@@ -2247,7 +2243,6 @@
             "hitsBuildings": "Ovaj obuhvat presijeca zgrade; ponovna izvedba određuje posljedice",
             "extendsCut": "Dodatno zasijeca već presječenu zgradu (žuto na karti)",
             "cutsStructures": "Presijeca postavljene parkove/trgove/jezera",
-            "cancel": "Odustani",
             "applyDrawing": "Primijeni na crtež",
             "addLane": "Dodaj traku",
             "addLaneOfType": "Dodaj: {{lane}} ({{width}} m)",
@@ -2980,6 +2975,10 @@
             "done": "Gotovo",
             "algorithmLabel": "Algoritam:",
             "algorithms": {
+                "semi_open": {
+                    "name": "Europski 80-ih, poluotvoreni blokovi",
+                    "description": "Rubni blokovi koji prate oblik čestica, otvoreni prolazima između zgrada, s dvorištima u sredini, poput europskih gradskih blokova iz 1980-ih."
+                },
                 "fully_closed": {
                     "name": "Srednjoeuropski potpuno zatvoreni",
                     "description": "Potpuno zatvoreni blokovi koji prate oblik čestica, bez praznina, dvorišta u sredini, poput srednjoeuropskih gradova."
@@ -2997,7 +2996,6 @@
                     "description": "Blokovi koji nemaju jednake strane, već dopuštaju gradnju prema sredini dvorišta s isturačenim oblicima, kada su udaljenosti od drugih strana dovoljne. Inspirirano Buenos Airesom."
                 }
             },
-            "parametersTitle": "Parametri",
             "labels": {
                 "setback": "Povlačenje (m):",
                 "chamfer": "Skošenje (m):",
@@ -3016,11 +3014,6 @@
                 "minPlotArea": "Najmanja površina čestice (m²):",
                 "minDepth": "Obvezna dubina od ulice (m):"
             },
-            "helper": {
-                "adjust": "Podesi parametre klizačima kako bi promijenio oblik zgrade.",
-                "setback": "Povlačenje je udaljenost od granice čestice do vanjskog ruba zgrade.",
-                "width": "Širina zgrade je debljina zgrade od vanjskog do unutarnjeg ruba."
-            },
             "messages": {
                 "generatedSummary": "Zgrada generirana (širina: {{width}}m, visina: {{height}}m, povlačenje: {{setback}}m)",
                 "generatedSolidNoCourtyard": "Zgrada generirana (puna; povlačenje: {{setback}}m). Dvorište je izostavljeno jer je unutarnje pomicanje podijelilo ili stvorilo rubove < 2.0 m. Pokušaj smanjiti širinu.",
@@ -3037,12 +3030,6 @@
                 "multiParcelLabel": "{{count}} čestica",
                 "excludedBelowMinPlot": "Manja od najmanje površine čestice — treba je spojiti sa susjednom prije nego se ovdje išta može graditi.",
                 "excludedSliver": "Na ovu česticu pada samo krhotina bloka — premala da bude zgrada.",
-                "rangeExact": "{{buildings}} · donosi {{permitted}} m² GBP-a",
-                "rangeBetween": "{{buildings}} · jamči {{guaranteed}} – {{permitted}} m² GBP-a",
-                "rangeMax": "{{buildings}} · dopušta 0 – {{permitted}} m² GBP-a",
-                "rangeExactExcluded": "{{buildings}} · daje {{permitted}} m² GBP-a · {{excluded}}",
-                "rangeBetweenExcluded": "{{buildings}} · jamči {{guaranteed}} – {{permitted}} m² GBP-a · {{excluded}}",
-                "rangeMaxExcluded": "{{buildings}} · dopušta 0 – {{permitted}} m² GBP-a · {{excluded}}",
                 "excludedNoMassing": "Zgrada ne doseže ovu česticu — udaljenost od granice ili oblik bloka ostavljaju je izvan. Ovdje se ne gradi ništa.",
                 "rangeNoneExcluded": "Nema zgrada · {{excluded}}",
                 "buildingCount": {
@@ -3111,7 +3098,6 @@
             "closeAria": "Zatvori prozor niza kuća",
             "generating": "Generiram niz kuća…",
             "done": "Gotovo",
-            "parametersTitle": "Parametri",
             "labels": {
                 "length": "Duljina (m):",
                 "width": "Širina (m):",
@@ -3129,9 +3115,7 @@
                 "minPlotArea": "Najmanja površina čestice (m²):"
             },
             "helper": {
-                "adjust": "Povuci tlocrt za promjenu položaja. Povuci vrhove za promjenu oblika, klikni brid za dodavanje vrha ili odaberi vrh da ga ukloniš.",
-                "dimensions": "Duljina je paralelna s najdužom stranicom čestice. Širina je okomita.",
-                "chamfer": "Skošenje reže kutove pod kutom od 45°."
+                "adjust": "Povuci tlocrt za promjenu položaja. Povuci vrhove za promjenu oblika, klikni brid za dodavanje vrha ili odaberi vrh da ga ukloniš."
             },
             "rotateCounterclockwise": "Zakreni 5 stupnjeva suprotno od kazaljke na satu",
             "rotateClockwise": "Zakreni 5 stupnjeva u smjeru kazaljke na satu",
@@ -3170,10 +3154,8 @@
             "title": "Slobodnostojeće kuće",
             "closeAria": "Zatvori prozor pravila po čestici",
             "generating": "Generiram zgrade…",
-            "generatedSummary": "Generirano: {{buildings}}",
             "done": "Gotovo",
             "regenerate": "Regeneriraj",
-            "parametersTitle": "Parametri",
             "labels": {
                 "maxFloors": "Maks. katova prema pravilu:",
                 "minDistance": "Min. udaljenost od granica (m):",
@@ -3190,9 +3172,6 @@
                 "minPlotArea": "Najmanja površina čestice (m²):"
             },
             "helper": {
-                "maxFloors": "Najveći broj katova zadan ovim prijedlogom. Primjer varira unutar tih granica.",
-                "minDistance": "Min. udaljenost: zgrade drže barem ovu udaljenost od granica čestice.",
-                "regenerate": "Regeneriraj za još jedan primjer unutar predloženog pravila. Tlocrt i volumen prema pravilu ostaju isti.",
                 "ruleType": "Ovo su predložena pravila gradnje; usklađenost s važećim prostornim pravilima nije provjerena. Odaberite maksimum, raspon ili točan oblik.",
                 "minPlotArea": "Čestice manje od predloženog minimuma prikazane su šrafirano. Spojite ih ili promijenite pravilo."
             },
@@ -3209,8 +3188,7 @@
                 "excludedBelowMinPlot": "Manja od najmanje površine čestice prema ovom predloženom pravilu; spojite je sa susjednom ili promijenite pravilo.",
                 "excludedNoRoom": "Ovaj odmak iz predloženog pravila ne ostavlja prostor za zgradu.",
                 "excludedCannotMeet": "Čestica ne može zadovoljiti minimum iz ovog predloženog pravila."
-            },
-            "generatedSummaryExcluded": "Generirano: {{buildings}} · {{excluded}}"
+            }
         }
     },
     "parcelLayout": {
@@ -5937,7 +5915,6 @@
         },
         "finishPath": "Završi stazu",
         "undo": "Poništi",
-        "cancel": "Odustani",
         "save": "Spremi dizajn",
         "hintErase": "Klikni element da ga ukloniš.",
         "hintPlace": "Klikni na kartu da postaviš odabrani element.",
@@ -5956,7 +5933,6 @@
         "rotation": "Zakretanje",
         "platformHeight": "Visina perona iznad tla",
         "hint": "Pregled na karti ažurira se tijekom uređivanja.",
-        "cancel": "Odustani",
         "save": "Gotovo",
         "saved": "Geometrija postaje je spremljena.",
         "moveHint": "Povucite tlocrt postaje ili središnju oznaku da biste je premjestili. Vrsta, veličina, zakretanje i visina perona ostaju isti.",
