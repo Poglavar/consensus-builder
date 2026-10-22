@@ -183,8 +183,14 @@ export async function assemble({ manifest: source, out, only }) {
     if (missing.length) throw new Error(`Not every council is cut yet (${missing.length} missing, e.g. ${missing.slice(0, 3).join(', ')}).`);
     const partial = !!only;
     const stage = join(out, 'release-staging');
-    await rm(stage, { recursive: true, force: true });
-    await mkdir(join(stage, 'tiles'), { recursive: true });
+    const tilePass = join(stage, 'tile-pass.json');
+    const resumable = await exists(tilePass) && JSON.parse(await readFile(tilePass, 'utf8')).councils === wanted.map(({ authority }) => authority.archiveSha256).join(',');
+    if (!resumable) {
+        await rm(stage, { recursive: true, force: true });
+        await mkdir(join(stage, 'tiles'), { recursive: true });
+    }
+    await rm(join(stage, 'index'), { recursive: true, force: true });
+    await rm(join(stage, 'ids'), { recursive: true, force: true });
     await mkdir(join(stage, 'index'), { recursive: true });
     await mkdir(join(stage, 'ids'), { recursive: true });
 
@@ -197,14 +203,23 @@ export async function assemble({ manifest: source, out, only }) {
     log(`assembling ${keys.length} tiles from ${wanted.length} councils`);
     const shards = new Map(); let rows = 0, bytes = 0, written = 0;
     const started = Date.now();
-    for (const key of keys) {
+    if (resumable) {
+        const pass = JSON.parse(await readFile(tilePass, 'utf8'));
+        for (const [shard, tiles] of Object.entries(pass.shards)) shards.set(shard, tiles);
+        ({ rows, bytes } = pass);
+        log(`reusing the finished tile pass: ${keys.length} tiles, ${(bytes / 1e9).toFixed(2)} GB`);
+    }
+    // Rows stay as the JSON text the council pass wrote: identical lines (a parcel in two councils'
+    // archives) collapse, and the rest sort by native id then text without being parsed again.
+    const idOf = line => line.slice(2, line.indexOf('"', 2));
+    for (const key of resumable ? [] : keys) {
         const lines = new Set();
         for (const index of byTile.get(key)) {
             for (const line of gunzipSync(await readFile(join(out, 'fragments', String(index), `${key}.ndjson.gz`))).toString('utf8').split('\n')) lines.add(line);
         }
-        const tileRows = [...lines].map(line => JSON.parse(line)).sort((a, b) => numericCmp(a[0], b[0]) || (JSON.stringify(a) < JSON.stringify(b) ? -1 : 1));
+        const tileRows = [...lines].sort((a, b) => numericCmp(idOf(a), idOf(b)) || (a < b ? -1 : a > b ? 1 : 0));
         const [e, n] = key.split('_').map(Number);
-        const body = gzipSync(JSON.stringify({ format: HMLR_TILE_FORMAT, tile: [e, n], rows: tileRows }), { level: 9 });
+        const body = gzipSync(`{"format":${HMLR_TILE_FORMAT},"tile":[${e},${n}],"rows":[${tileRows.join(',')}]}`, { level: 6 });
         await writeFile(join(stage, 'tiles', `${key}.json.gz`), body);
         const shard = indexShardKey(e, n);
         if (!shards.has(shard)) shards.set(shard, {});
@@ -212,16 +227,37 @@ export async function assemble({ manifest: source, out, only }) {
         rows += tileRows.length; bytes += body.byteLength; written++;
         if (written % 5000 === 0) log(`  ${written}/${keys.length} tiles, ${(bytes / 1e9).toFixed(2)} GB; ETA ${Math.round((Date.now() - started) / written * (keys.length - written) / 1000)} s`);
     }
+    if (!resumable) await atomic(tilePass, JSON.stringify({ councils: wanted.map(({ authority }) => authority.archiveSha256).join(','),
+        rows, bytes, shards: Object.fromEntries(shards) }));
     const indexes = {};
     for (const [shard, tiles] of [...shards].sort(([a], [b]) => a < b ? -1 : 1)) {
         const body = gzipSync(JSON.stringify({ format: HMLR_TILE_FORMAT, shard, tiles }), { level: 9 });
         await writeFile(join(stage, 'index', `${shard}.json.gz`), body);
         indexes[shard] = { sha256: sha(body), bytes: body.byteLength };
     }
-    // ID shards: native ID -> the 1 km tile range its bounding box covers.
-    const buckets = new Map();
-    for (const { index } of wanted) {
+    // ID shards: native ID -> the 1 km tile ranges its bounding box covers. 24 million ids do not
+    // fit one map: they are first spread over 100 two-digit groups on disk, then each group is
+    // shaped into its four-digit shards on its own.
+    const groupsDir = join(out, 'id-groups');
+    await rm(groupsDir, { recursive: true, force: true });
+    await mkdir(groupsDir, { recursive: true });
+    const groupOf = id => id.slice(0, 2);
+    for (const [position, { index }] of wanted.entries()) {
+        const groups = new Map();
         for (const line of gunzipSync(await readFile(join(out, 'idstage', `${index}.tsv.gz`))).toString('utf8').split('\n')) {
+            if (!line) continue;
+            const group = groupOf(line.slice(0, line.indexOf('\t')));
+            if (!groups.has(group)) groups.set(group, []);
+            groups.get(group).push(line);
+        }
+        for (const [group, lines] of groups) await appendFile(join(groupsDir, `${group}.tsv`), `${lines.join('\n')}\n`);
+        if ((position + 1) % 50 === 0) log(`  ids grouped for ${position + 1}/${wanted.length} councils`);
+    }
+    const ids = {};
+    for (const file of (await readdir(groupsDir)).sort()) {
+        const buckets = new Map();
+        for (const line of (await readFile(join(groupsDir, file), 'utf8')).split('\n')) {
+            if (!line) continue;
             const [id, ...range] = line.split('\t');
             const bucket = idBucket(id);
             if (!buckets.has(bucket)) buckets.set(bucket, new Map());
@@ -230,14 +266,15 @@ export async function assemble({ manifest: source, out, only }) {
             const value = range.map(Number);
             if (!ranges.get(id).some(existing => existing.join() === value.join())) ranges.get(id).push(value);
         }
+        for (const [bucket, ranges] of [...buckets].sort(([a], [b]) => a < b ? -1 : 1)) {
+            const content = Object.fromEntries([...ranges].sort(([a], [b]) => numericCmp(a, b)));
+            const body = gzipSync(JSON.stringify({ format: HMLR_TILE_FORMAT, bucket, ids: content }), { level: 6 });
+            await writeFile(join(stage, 'ids', `${bucket}.json.gz`), body);
+            ids[bucket] = { sha256: sha(body), bytes: body.byteLength };
+        }
     }
-    const ids = {};
-    for (const [bucket, ranges] of [...buckets].sort(([a], [b]) => a < b ? -1 : 1)) {
-        const content = Object.fromEntries([...ranges].sort(([a], [b]) => numericCmp(a, b)));
-        const body = gzipSync(JSON.stringify({ format: HMLR_TILE_FORMAT, bucket, ids: content }), { level: 9 });
-        await writeFile(join(stage, 'ids', `${bucket}.json.gz`), body);
-        ids[bucket] = { sha256: sha(body), bytes: body.byteLength };
-    }
+    await rm(groupsDir, { recursive: true, force: true });
+    log(`ID shards: ${Object.keys(ids).length}`);
     const core = { schemaVersion: 1, kind: 'hmlr-tiles', format: HMLR_TILE_FORMAT, policy: HMLR_BROWSER_GROUND_POLICY,
         sourceRelease: manifest.releaseId, sourceDate: manifest.sourceDate, crs: 'EPSG:27700', tileSizeM: HMLR_TILE_SIZE_M,
         indexShardTiles: HMLR_INDEX_SHARD_TILES, partial, councils: wanted.length, featureCount: wanted.reduce((sum, { authority }) => sum + authority.featureCount, 0),
@@ -246,6 +283,7 @@ export async function assemble({ manifest: source, out, only }) {
     const release = join(out, 'release', releaseId);
     await rm(release, { recursive: true, force: true });
     await mkdir(join(out, 'release'), { recursive: true });
+    await rm(tilePass, { force: true });
     await rename(stage, release);
     await atomic(join(release, 'manifest.json'), JSON.stringify({ ...core, releaseId }));
     log(`release ${releaseId}: ${keys.length} tiles, ${rows} tile rows, ${(bytes / 1e9).toFixed(2)} GB of tiles, ${Object.keys(indexes).length} index shards, ${Object.keys(ids).length} ID shards${partial ? ' (PARTIAL: --only)' : ''}`);
