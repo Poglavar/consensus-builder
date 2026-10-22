@@ -62,6 +62,7 @@ function render(proposal, { applied = false, connected = false, road = false, su
         createElement: () => ({ ...htmlContainer(), get childNodes() { return [{ innerHTML: this.innerHTML }]; }, get firstChild() { return null; } })
     };
     const window = {
+        CityMoney: require('../../frontend/js/city-money.js'),
         i18n: null,
         ChainProposalRef: chainRef,
         SolanaAcceptanceClient: acceptanceClient,
@@ -101,6 +102,7 @@ function render(proposal, { applied = false, connected = false, road = false, su
         __claims: { materializedParcelIdsOf: () => [] }
     };
     const globals = {
+        CbFormat: require('../../frontend/js/format.js'),
         window, document, console, Date, Math, Number, String, Array, Object, Set, Map, Promise, JSON,
         escapeHtml: require('../../frontend/js/shared-utils.js').escapeHtml,
         performance: { now: () => 1 }, requestAnimationFrame: callback => callback(),
@@ -289,7 +291,7 @@ describe('proposal details action footer', () => {
         const proposal = { proposalId: 'seller-1', title: 'Seller offer', cadastreParcelIds: [], offer: 100, offerCurrency: 'EUR', ...terms };
         const $ = parse(render(proposal).content.innerHTML);
         expect($('.proposal-offer-funding-note').text()).toBe('Funding this offer is not available here.');
-        expect($('.offer-amount').text()).toBe('€100');
+        expect($('.offer-amount').text()).toBe('100\u00a0EUR');
         expect($('.proposal-no-deposit-warning').text().trim()).toBe('⚠️ No deposit specified');
         expect($('.proposal-offer-bar button').length).toBe(0);
         expect($.text()).not.toContain('Amount still needed');

@@ -199,7 +199,7 @@ describe('gain over the site', () => {
         const money = gain.computeGain({
             builtFloorArea: summary.builtFloorArea,
             proposedFloorArea: summary.proposedFloorArea,
-            priceEurPerM2: 1000,
+            pricePerM2: 1000, currency: 'EUR',
             parcelCount: summary.parcelCount,
             parcelFloorAreas: summary.parcelFloorAreas
         });
@@ -222,7 +222,7 @@ describe('gain over the site', () => {
         expect(summary.proposedFloorArea).toBe(400);
         expect(summary.parcelCount).toBe(2);
         expect(summary.openGroundM2).toBe(300);
-        const money = gain.computeGain({ ...summary, priceEurPerM2: 10 });
+        const money = gain.computeGain({ ...summary, pricePerM2: 10, currency: 'EUR' });
         expect(money.gain).toBe(4000);
         expect(money.avg).toBe(1000);           // (200 m² over the parcels × 10) / 2, not 4000 / 2
     });
@@ -236,7 +236,7 @@ describe('gain over the site', () => {
         expect(gain.needsSiteMetrics(ground)).toBe(false);
         const summary = gain.summarizeProposalGround({ parcelMetrics, siteMetrics: null, ground });
         expect(summary).toMatchObject({ source: 'parcels', builtFloorArea: 30, proposedFloorArea: 50, parcelCount: 2, parcelFloorAreas: null });
-        expect(gain.computeGain({ ...summary, priceEurPerM2: 100 }).avg).toBe(1000);
+        expect(gain.computeGain({ ...summary, pricePerM2: 100, currency: 'EUR' }).avg).toBe(1000);
         // Unknown ground (no site-stats loaded): the old behaviour, a count even when 0.
         expect(gain.summarizeProposalGround({ parcelMetrics: [], siteMetrics: null, ground: null }).parcelCount).toBe(0);
     });

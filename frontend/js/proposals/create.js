@@ -743,7 +743,8 @@ async function createProposal() {
         ? window.ReparcellizationAgreements.cashOfferTotal(pendingReparcelPlan)
         : window.parseProposalOfferValue(document.getElementById('proposalOffer').value) || 0);
     const offerCurrencySelect = document.getElementById('proposalCurrency');
-    const offerCurrency = proposalMainType === 'Reparcellization' ? 'EUR'
+    // A readjustment's cash is the city's money (city-money.js); other offers name their currency.
+    const offerCurrency = proposalMainType === 'Reparcellization' ? window.CityMoney.currentCurrency()
         : (offerCurrencySelect && offerCurrencySelect.value ? offerCurrencySelect.value : 'USDT');
     const acquisitionInput = document.getElementById('proposalAcquisitionMode');
     const acquisitionMode = acquisitionInput && acquisitionInput.value ? acquisitionInput.value : null;

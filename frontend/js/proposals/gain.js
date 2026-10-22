@@ -1,4 +1,4 @@
-// The € value-gain math for the 3D view: built vs proposed floor area per parcel, and the gain a
+// The value-gain math for the 3D view, in the city's currency: built vs proposed floor area per parcel, and the gain a
 // proposal creates. This is the money number the panel shows, so it lives in its own module with
 // unit tests — the arithmetic used to be welded into DOM writes in three-mode.js with no coverage.
 //
@@ -126,29 +126,30 @@
         return { builtVolume, proposedVolume, builtFloorArea, proposedFloorArea };
     }
 
-    // The modeled EUR figures for the panel apply a user-selected EUR/m² gross-floor-area rate to
-    // measured built and proposed GFA. They are not parcel appraisals or cash consideration. When
+    // The modeled figures for the panel apply a user-selected rate per m² of gross floor area, in
+    // `currency` (the city's, city-money.js), to measured built and proposed GFA. They are not parcel appraisals or cash consideration. When
     // there is no proposed massing (proposed <= 0) there is no "gain" to show — the panel shows the
     // current modeled built value instead of a negative delta. avg is
     // the per-parcel gain for the whole-proposal panel (null unless there is proposed massing, and
     // null with no parcels: a proposal on open ground has no per-parcel figure). When the totals
     // cover open ground beside the parcels, `parcelFloorAreas` ({ built, proposed } over the bound
     // parcels only) is what the per-parcel average divides, so open ground is not credited to owners.
-    function computeGain({ builtFloorArea = 0, proposedFloorArea = 0, priceEurPerM2 = 0, parcelCount = null, parcelFloorAreas = null } = {}) {
-        const gain = (proposedFloorArea - builtFloorArea) * priceEurPerM2;
-        const currentValue = builtFloorArea * priceEurPerM2;
+    function computeGain({ builtFloorArea = 0, proposedFloorArea = 0, pricePerM2 = 0, currency = null, parcelCount = null, parcelFloorAreas = null } = {}) {
+        if (typeof currency !== 'string' || !currency) throw new Error('computeGain needs the currency its price per m² is in.');
+        const gain = (proposedFloorArea - builtFloorArea) * pricePerM2;
+        const currentValue = builtFloorArea * pricePerM2;
         const hasProposed = proposedFloorArea > 0;
         const parcelGain = parcelFloorAreas
-            ? ((Number(parcelFloorAreas.proposed) || 0) - (Number(parcelFloorAreas.built) || 0)) * priceEurPerM2
+            ? ((Number(parcelFloorAreas.proposed) || 0) - (Number(parcelFloorAreas.built) || 0)) * pricePerM2
             : gain;
         const avg = (typeof parcelCount === 'number' && parcelCount > 0 && hasProposed) ? parcelGain / parcelCount : null;
         const model = {
             kind: 'modeled-floor-area-value',
             quantity: 'gross-floor-area',
             areaUnit: 'm²',
-            currency: 'EUR',
-            amountUnit: 'EUR',
-            rateEurPerM2GrossFloorArea: priceEurPerM2
+            currency,
+            amountUnit: currency,
+            ratePerM2GrossFloorArea: pricePerM2
         };
         return { gain, currentValue, hasProposed, avg, model };
     }
@@ -199,7 +200,51 @@
         };
     }
 
-    const api = { dedupeCoincidentBuildings, computeParcelMetrics, computeGain, needsSiteMetrics, summarizeProposalGround };
+    // The 3D panel's value comparison, one column per layer: Built (what stands), Planned (the
+    // permitted massing) and Proposed. A column whose floor area is not a number is not available
+    // and stays empty (the panel greys it). Every figure is a model at the two prices the user
+    // slides, in `currency`, not an appraisal:
+    // - value = floor area × sale price per m²;
+    // - Planned and Proposed are new construction: construction cost = their whole floor area ×
+    //   construction cost per m², and profit = value − construction cost − the built value they
+    //   replace (unknown while the built value is). Proposed with no massing is not available.
+    // `avgProfitPerParcel` divides the proposed profit over the bound parcels (`parcelFloorAreas`
+    // when the totals also cover open ground), null without parcels or proposed massing.
+    const finite = value => typeof value === 'number' && Number.isFinite(value);
+
+    function computeValueComparison({ floorAreas = {}, salePerM2, constructionPerM2, currency, parcelCount = null, parcelFloorAreas = null } = {}) {
+        if (typeof currency !== 'string' || !currency) throw new Error('computeValueComparison needs the currency its prices are in.');
+        if (!finite(salePerM2) || !finite(constructionPerM2)) throw new Error('computeValueComparison needs a sale price and a construction cost per m².');
+        const area = value => (finite(value) && value >= 0 ? value : null);
+        const builtArea = area(floorAreas.built);
+        const builtValue = builtArea === null ? null : builtArea * salePerM2;
+        const newBuild = (floorArea, available) => {
+            if (!available) return { available: false, floorArea: null, value: null, constructionCost: null, profit: null };
+            const value = floorArea * salePerM2;
+            const constructionCost = floorArea * constructionPerM2;
+            return { available: true, floorArea, value, constructionCost, profit: builtValue === null ? null : value - constructionCost - builtValue };
+        };
+        const plannedArea = area(floorAreas.planned);
+        const proposedArea = area(floorAreas.proposed);
+        const columns = {
+            built: builtArea === null
+                ? { available: false, floorArea: null, value: null, constructionCost: null, profit: null }
+                : { available: true, floorArea: builtArea, value: builtValue, constructionCost: null, profit: null },
+            planned: newBuild(plannedArea, plannedArea !== null),
+            proposed: newBuild(proposedArea, proposedArea !== null && proposedArea > 0)
+        };
+        let avgProfitPerParcel = null;
+        if (columns.proposed.available && columns.proposed.profit !== null && typeof parcelCount === 'number' && parcelCount > 0) {
+            const proposedOnParcels = parcelFloorAreas ? area(parcelFloorAreas.proposed) : proposedArea;
+            const builtOnParcels = parcelFloorAreas ? area(parcelFloorAreas.built) : builtArea;
+            if (proposedOnParcels !== null && builtOnParcels !== null) {
+                avgProfitPerParcel = (proposedOnParcels * (salePerM2 - constructionPerM2) - builtOnParcels * salePerM2) / parcelCount;
+            }
+        }
+        return { currency, salePerM2, constructionPerM2, columns, avgProfitPerParcel };
+    }
+
+    const api = { dedupeCoincidentBuildings, computeParcelMetrics, computeGain, computeValueComparison, needsSiteMetrics, summarizeProposalGround };
 
     if (typeof window !== 'undefined') {
         window.ProposalGain = api;

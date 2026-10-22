@@ -138,3 +138,46 @@ describe('CbFormat.parseDecimal (typed amounts)', () => {
         expect(parseProposalOfferValue(formatProposalOfferValue(0.125))).toBe(0.125);
     });
 });
+
+// The viewer's locale (i18n.getLocale) decides how a number or date is written; the currency of an
+// amount is never changed by it.
+describe('the viewer locale', () => {
+    const when = new Date(Date.UTC(2026, 9, 3, 22, 26));
+    function withLocale(lang, locale, run) {
+        const had = Object.prototype.hasOwnProperty.call(globalThis, 'window');
+        const previous = globalThis.window;
+        globalThis.window = { i18n: { getLanguage: () => lang, getLocale: () => locale } };
+        try { return run(); } finally {
+            if (had) globalThis.window = previous; else delete globalThis.window;
+        }
+    }
+
+    it('writes US English dates month first with a 12-hour clock', () => {
+        withLocale('en', 'en-US', () => {
+            expect(CbFormat.localeFor()).toBe('en-US');
+            expect(CbFormat.formatDate(when, { timeZone: 'UTC' })).toBe('Oct 3, 2026');
+            expect(CbFormat.formatDateTime(when, { timeZone: 'UTC' })).toMatch(/^Oct 3, 2026, 10:26\s?PM$/);
+        });
+    });
+
+    it('keeps British English day first', () => {
+        withLocale('en', 'en-GB', () => {
+            expect(CbFormat.formatDate(when, { timeZone: 'UTC' })).toBe('3 Oct 2026');
+        });
+    });
+
+    it('uses a language default when the asked language is not the viewer one', () => {
+        withLocale('en', 'en-US', () => {
+            expect(CbFormat.localeFor('hr')).toBe('hr-HR');
+        });
+    });
+
+    it('writes sterling as amount then code, whole pounds, in any locale', () => {
+        withLocale('en', 'en-US', () => {
+            expect(CbFormat.formatMoney(431000.4, 'GBP')).toBe('431,000 GBP');
+        });
+        withLocale('hr', 'hr-HR', () => {
+            expect(CbFormat.formatMoney(431000.4, 'GBP')).toBe('431.000 GBP');
+        });
+    });
+});

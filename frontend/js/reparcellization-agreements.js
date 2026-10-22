@@ -66,7 +66,7 @@
         return offers;
     }
 
-    // Total EUR paid out to owners (the proposal's offer), rounding each owner's amount to cents
+    // Total cash paid out to owners (the proposal's offer, in its currency), rounding each owner's amount to cents
     // first. Owner payments are not part of it; the deal's money schedule carries them.
     function cashOfferTotal(plan) {
         const cents = [...cashOffersInCents(plan).values()].reduce((sum, value) => sum + value, 0);
@@ -74,7 +74,7 @@
         return cents / 100;
     }
 
-    // Allocate each owner's declared EUR offer by their contribution to each input parcel.
+    // Allocate each owner's declared cash offer by their contribution to each input parcel.
     // Largest remainder makes every owner's per-parcel cents sum back to the declared amount.
     function offersByPart(plan, parts, proposalOffer) {
         // A payment by one owner funds others across the whole pool; split agreements cannot carry it.
@@ -84,7 +84,7 @@
         const declaredTotal = moneyCents(cashOfferTotal(plan), 'Owner cash-offer ledger total');
         const proposalCents = moneyCents(proposalOffer ?? 0, 'Proposal offer');
         if (proposalCents !== declaredTotal) {
-            throw new Error(`Proposal offer (${(proposalCents / 100).toFixed(2)} EUR) must equal the owner cash-offer ledger total (${(declaredTotal / 100).toFixed(2)} EUR).`);
+            throw new Error(`Proposal offer (${(proposalCents / 100).toFixed(2)}) must equal the owner cash-offer ledger total (${(declaredTotal / 100).toFixed(2)}).`);
         }
 
         const allocations = parts.map(() => new Map());

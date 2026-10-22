@@ -10,7 +10,8 @@
 // parcels. The current count reads the authoritative LiveParcelFabric over the plan's complete
 // cadastral scope. Proposal records supply that scope; they never store generated parcel ids.
 (function () {
-    const DEFAULT_PRICE_PER_SQM = 5000;
+    // The sales price is in the city's currency and starts at the city's default (city-money.js).
+    const salesPrice = () => window.CityMoney.currentAssumptions();
 
     let latestStats = null;
     let epochView = 'added';
@@ -85,11 +86,10 @@
         return `${formatNumber(num)} m²`;
     }
 
-    // The sales price input is EUR per m² (salesSuffix), so the value is EUR: amount then code.
+    // The sales price input is per m² in the city's currency (salesSuffix), so the value is in it
+    // too: amount then code.
     function formatSalesValue(value) {
-        const num = Number(value);
-        if (typeof CbFormat !== 'undefined' && Number.isFinite(num)) return CbFormat.formatMoney(num, 'EUR');
-        return `${formatNumber(num)} ${tPlanStats('sidebar.proposals.planStats.currency', 'EUR')}`;
+        return CbFormat.formatMoney(Number(value), salesPrice().currency, { missing: '—' });
     }
 
     // Current output comes from the live fabric; an untouched cadastral result comes from the
@@ -213,7 +213,7 @@
     ];
 
     const ASSUMPTION_INPUTS = [
-        { id: 'plan-stats-price', i18nKey: 'sidebar.proposals.planStats.salesSuffix', label: 'EUR per m²', min: 0, step: 100, value: () => DEFAULT_PRICE_PER_SQM },
+        { id: 'plan-stats-price', i18nKey: 'sidebar.proposals.planStats.salesSuffix', label: '{{currency}} per m²', min: 0, step: 100, value: () => salesPrice().salesPerSqm, params: () => ({ currency: salesPrice().currency }) },
         { id: 'plan-stats-housing-share', i18nKey: 'sidebar.proposals.planStats.housingShareSuffix', label: '% housing share', min: 0, max: 100, step: 5, value: d => Math.round((d.housingShare ?? 0.75) * 100) },
         { id: 'plan-stats-efficiency', i18nKey: 'sidebar.proposals.planStats.efficiencySuffix', label: '% net of gross', min: 1, max: 100, step: 5, value: d => Math.round((d.efficiency ?? 0.8) * 100) },
         { id: 'plan-stats-apartment-size', i18nKey: 'sidebar.proposals.planStats.apartmentSizeSuffix', label: 'm² per apartment', min: 1, step: 5, value: d => d.avgApartmentM2 ?? 65 },
@@ -293,9 +293,11 @@
             if (spec.max !== undefined) input.max = String(spec.max);
             if (spec.step !== undefined) input.step = String(spec.step);
             input.value = String(typeof spec.value === 'function' ? spec.value(defaults) : spec.value);
-            const suffix = el('label', 'plan-stats-suffix', tPlanStats(spec.i18nKey, spec.label));
+            const params = typeof spec.params === 'function' ? spec.params() : {};
+            const suffix = el('label', 'plan-stats-suffix', tPlanStats(spec.i18nKey, spec.label, params));
             suffix.setAttribute('for', spec.id);
             suffix.setAttribute('data-i18n-key', spec.i18nKey);
+            suffix.setAttribute('data-i18n-params', JSON.stringify(params));
             grid.appendChild(input);
             grid.appendChild(suffix);
         });

@@ -110,8 +110,8 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
     const parcelAreaShare = totalArea > 0 ? parcelArea / totalArea : 0;
     const parcelPayout = offerAmount * parcelAreaShare;
 
-    // Amount then code in the offer's currency, else the city's display currency.
-    const payoutCurrency = offerCurrency || window.CityConfigManager?.getCurrentCityConfig?.()?.currency?.code || 'EUR';
+    // Amount then code in the offer's currency, else the city's currency.
+    const payoutCurrency = offerCurrency || window.CityMoney.currentCurrency();
     const formatPayout = (value) => {
         if (!Number.isFinite(value) || value <= 0) return '';
         return CbFormat.formatMoney(value, payoutCurrency);
@@ -245,9 +245,11 @@ function buildReadjustmentCashReviewHtml(proposal) {
         : rights.ownerIds.includes(id) ? window.ProposalApprovalRuntime.label(id, rights.ownerIds)
             : t('proposalApproval.outsideSnapshot', 'Recipient outside the ownership snapshot'));
     const labels = new Map(ids.map(id => [id, label(id)]));
-    const money = cents => CbFormat.formatMoney(cents / 100, 'EUR', { minFractionDigits: 2, maxFractionDigits: 2 });
-    // One balanced schedule: every owner's payout or payment and the sponsor's line, summing to zero.
+    // One balanced schedule: every owner's payout or payment and the sponsor's line, summing to zero,
+    // in the deal's currency.
     const schedule = window.ReparcellizationDeal.schedule(deal);
+    const cashCurrency = schedule.currency || proposal.offerCurrency || window.CityMoney.currentCurrency();
+    const money = cents => CbFormat.formatMoney(cents / 100, cashCurrency, { minFractionDigits: 2, maxFractionDigits: 2 });
     const amountText = cents => (cents < 0
         ? t('panel.proposal.acceptance.moneyPays', 'pays in {{amount}}', { amount: money(-cents) })
         : t('panel.proposal.acceptance.moneyReceives', 'receives {{amount}}', { amount: money(cents) }));

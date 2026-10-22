@@ -9,6 +9,8 @@
         || (typeof require === 'function' ? require('./reparcellization-ownership.js') : null);
     const deal = () => root.ReparcellizationDeal
         || (typeof require === 'function' ? require('./reparcellization-deal.js') : null);
+    const cityMoney = () => root.CityMoney
+        || (typeof require === 'function' ? require('./city-money.js') : null);
     const approval = () => root.ProposalApproval
         || (typeof require === 'function' ? require('./proposals/approval.js') : null);
     const regimes = () => root.ProposalApprovalRegimes
@@ -182,7 +184,9 @@
         let offer = 0;
         try { offer = (plan?.ownerShares || []).reduce((sum, owner) => sum + deal().moneyCents(owner.cashOffer ?? 0), 0) / 100; }
         catch (_) { /* validate reports the malformed ledger itself below. */ }
-        return validate({ ...fields, goal: 'reparcellization', reparcellization: plan, offer, offerCurrency: 'EUR' }, options);
+        // The cash is in the city's currency, as publication sets it (create.js).
+        const offerCurrency = fields.offerCurrency || plan?.valuationCurrency || cityMoney().currentCurrency();
+        return validate({ ...fields, goal: 'reparcellization', reparcellization: plan, offer, offerCurrency }, options);
     }
     return { validate, validatePlan, polygon, coverageTolerance, overlapTolerance };
 });

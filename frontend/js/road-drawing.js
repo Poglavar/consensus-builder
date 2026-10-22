@@ -1957,9 +1957,10 @@ function roadOwnershipSummary(parcels) {
         typeof getOwnershipType === 'function' ? getOwnershipType : undefined);
 }
 
+// The city's road-land rate (city-money.js); a city without one has no modeled price, only source ones.
 function roadPriceEstimate(parcel) {
     return window.ParcelPriceModel.buildEstimate(getRoadDrawingParcelProperties(parcel), Number(parcel?.area),
-        { areaPricePerSqm: 100, currency: 'EUR' });
+        window.CityMoney.currentLandPriceOptions('road'));
 }
 
 function getMarketPrice(parcelId, currency) {
@@ -1974,6 +1975,7 @@ function roadAcquisitionModel(parcels) {
     const ownership = roadOwnershipSummary(list);
     const estimates = list.map(roadPriceEstimate);
     const total = window.ParcelPriceModel.aggregate(estimates, list.length);
+    const fallback = window.CityMoney.currentLandPriceOptions('road');
     const coefficients = { government: 0, institution: 0, company: 1, individual: 2, mixed: 2 };
     const score = total.amount !== null && !ownership.unknownParcelCount
         ? list.reduce((sum, parcel, index) => sum + estimates[index].amount * coefficients[getOwnershipTypeFromParcel(parcel)], 0)
@@ -1987,7 +1989,7 @@ function roadAcquisitionModel(parcels) {
         totalMarketPrice: total.amount,
         totalAcquiringDifficulty: score,
         currency: total.currency,
-        priceBasis: { kind: total.basis, fallbackRatePerM2: 100, fallbackCurrency: 'EUR' },
+        priceBasis: { kind: total.basis, fallbackRatePerM2: fallback.areaPricePerSqm ?? null, fallbackCurrency: fallback.currency },
         difficultyBasis: 'category-weighted value model',
         source: 'browser-model'
     };
@@ -3809,9 +3811,9 @@ function lockParcelsFromSegment(segmentPolygon) {
     updateRoadAcquiringDifficulty(roadAffectedParcels);
 }
 
-// The city's display currency (city-config.js `currency.code`), EUR when there is none.
+// The city's currency (city-money.js), EUR when it declares none.
 function roadDrawingCurrencyCode() {
-    return (typeof window !== 'undefined' && window.CityConfigManager?.getCurrentCityConfig?.()?.currency?.code) || 'EUR';
+    return window.CityMoney.currentCurrency();
 }
 
 // Helper to format currency: amount then code ("431,000 EUR"), in whole units, because
@@ -4723,7 +4725,12 @@ function showAcquiringDifficultyDialog() {
 
     const t = translateRoadText;
     const title = t('panel.road.acquiringDifficultyTitle', 'Modeled acquisition score');
-    const explanation = t('panel.road.acquiringDifficultyTooltip', 'An illustrative score: each parcel value is multiplied by a category weight. It does not estimate legal rights, acquisition cost or consent.\nGovernment: 0\nInstitution: 0\nCompany: 1\nIndividual or mixed: 2\nMissing ownership categories, unusable prices or mixed currencies leave the score unknown. Area estimates use a fixed EUR 100/m² model.');
+    // The area-model sentence names the city's road-land rate; a city without one has none to name.
+    const roadRate = window.CityMoney.currentLandPriceOptions('road');
+    const explanation = t('panel.road.acquiringDifficultyTooltip', 'An illustrative score: each parcel value is multiplied by a category weight. It does not estimate legal rights, acquisition cost or consent.\nGovernment: 0\nInstitution: 0\nCompany: 1\nIndividual or mixed: 2\nMissing ownership categories, unusable prices or mixed currencies leave the score unknown.')
+        + (typeof roadRate.areaPricePerSqm === 'number'
+            ? '\n' + t('panel.road.acquiringDifficultyAreaModel', 'Area estimates use a {{rate}}/m² model.', { rate: CbFormat.formatMoney(roadRate.areaPricePerSqm, roadRate.currency) })
+            : '');
     const closeLabel = t('modal.common.close', 'Close');
     const okLabel = t('panel.road.acquiringDifficultyDialogOk', 'OK');
 

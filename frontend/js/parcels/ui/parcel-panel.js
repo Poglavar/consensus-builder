@@ -243,7 +243,7 @@
         const formattedArea = area ? CbFormat.formatArea(area) : 'N/A';
 
         const estimate = global.ParcelPriceModel
-            ? global.ParcelPriceModel.buildEstimate(props, area, { areaPricePerSqm: SQM_AVG_PRICE, currency: 'EUR' })
+            ? global.ParcelPriceModel.buildEstimate(props, area, global.CityMoney.currentLandPriceOptions('land'))
             : { amount: null, currency: null, basis: 'unavailable' };
         const formattedPrice = estimate.amount === null
             ? 'N/A'

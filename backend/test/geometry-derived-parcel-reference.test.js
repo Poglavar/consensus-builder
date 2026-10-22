@@ -10,6 +10,7 @@ const parcelMenu = require('../../frontend/js/ui/parcel-menu-model.js');
 const openGround = require('../../frontend/js/proposals/open-ground.js');
 const format = require('../../frontend/js/format.js');
 const financials = require('../../frontend/js/financials.js');
+const CityMoney = require('../../frontend/js/city-money.js');
 const ParcelPriceModel = {
     buildEstimate: financials.buildParcelPriceEstimate,
     aggregate: financials.aggregateParcelPriceEstimates
@@ -43,7 +44,8 @@ class Element {
     querySelectorAll() { return []; }
 }
 
-function renderParcelPanel(properties, { sqmAvgPrice = 0 } = {}) {
+function renderParcelPanel(properties, { currency = 'EUR' } = {}) {
+    const cityConfig = { parcels: { ownership: false }, currency: { code: currency } };
     const ids = [
         'parcel-info-panel', 'parcel-info-title', 'info-content', 'propose-content', 'proposals-content',
         'parcel-owners-count', 'tools-tab', 'measureAsRoadButton', 'roadMeasurements', 'parcel-plans-content'
@@ -63,7 +65,7 @@ function renderParcelPanel(properties, { sqmAvgPrice = 0 } = {}) {
         CbFormat: format,
         ParcelMenuModel: parcelMenu,
         __openGround: openGround,
-        SQM_AVG_PRICE: sqmAvgPrice,
+        CityMoney: { currentLandPriceOptions: kind => CityMoney.landPriceOptions(cityConfig, kind) },
         ParcelPriceModel,
         getParcelId: parcelIds.getParcelIdFromFeature,
         getParcelDisplayNumberFromProperties: parcelIds.getParcelDisplayNumberFromProperties,
@@ -72,7 +74,7 @@ function renderParcelPanel(properties, { sqmAvgPrice = 0 } = {}) {
         tParcel: (_key, _params, fallback) => fallback,
         i18n: { applyTranslations() {} },
         CityConfigManager: {
-            getCurrentCityConfig: () => ({ parcels: { ownership: false } }),
+            getCurrentCityConfig: () => cityConfig,
             applyFeatureVisibility() {}
         },
         requestAnimationFrame: callback => callback(),
@@ -232,9 +234,23 @@ describe('geometry-derived parcel references', () => {
     });
 
     it('labels the known area-price fallback as a EUR model', () => {
-        const rendered = renderParcelPanel({ parcelId: 'p-1', calculatedArea: 100 }, { sqmAvgPrice: 133 });
+        const rendered = renderParcelPanel({ parcelId: 'p-1', calculatedArea: 100 }, { currency: 'EUR' });
         const normalized = rendered.info.replace(/[\u00a0\u202f]/g, ' ');
         expect(normalized).toContain('Modeled area estimate (133 EUR/m²):');
         expect(normalized).toContain('13,300 EUR');
+    });
+
+    // A UK city has no defensible land rate (city-money.js), so a parcel without a source price
+    // shows none rather than a euro model or a zero.
+    it('shows no modeled price on a UK parcel without a source price', () => {
+        const rendered = renderParcelPanel({ parcelId: 'p-1', calculatedArea: 100 }, { currency: 'GBP' });
+        expect(rendered.info).toContain('Est. Mkt. Price:');
+        expect(rendered.info).toContain('N/A');
+        expect(rendered.info).not.toMatch(/EUR|GBP/);
+    });
+
+    it('shows a UK source price in sterling', () => {
+        const rendered = renderParcelPanel({ parcelId: 'p-1', calculatedArea: 100, estimatedMarketPrice: 250000, estimatedMarketPriceCurrency: 'GBP' }, { currency: 'GBP' });
+        expect(rendered.info.replace(/[\u00a0\u202f]/g, ' ')).toContain('250,000 GBP');
     });
 });

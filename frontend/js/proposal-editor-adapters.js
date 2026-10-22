@@ -1410,7 +1410,11 @@
             const agreements = global.ReparcellizationAgreements
                 || (typeof require === 'function' ? require('./reparcellization-agreements.js') : null);
             output.offer = output.budget = agreements.cashOfferTotal(plan);
-            output.offerCurrency = output.budgetCurrency = 'EUR';
+            // The cash is in its valuation's currency, else the city's (city-money.js): a readjustment
+            // is edited in its own city. Not the stored offerCurrency, which a column default stamped
+            // USD on cash-free records.
+            const cityMoney = global.CityMoney || (typeof require === 'function' ? require('./city-money.js') : null);
+            output.offerCurrency = output.budgetCurrency = plan.valuationCurrency || cityMoney.currentCurrency();
             return finalizeAuthoredProposal(output);
         },
         summarizeChanges(source, draft) {

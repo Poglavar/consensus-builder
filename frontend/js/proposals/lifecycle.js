@@ -237,10 +237,8 @@ function initializeDecayCountdown() {
     const remainingBar = offerBar.querySelector('.offer-bar-remaining');
     const decayedBar = offerBar.querySelector('.offer-bar-decayed');
     const amountEl = offerBar.querySelector('.offer-amount');
-    // Amount then code ("431,000 USDT") in the offer's own currency, else the city's display currency.
-    const offerCurrency = proposal.offerCurrency
-        || window.CityConfigManager?.getCurrentCityConfig?.()?.currency?.code
-        || 'EUR';
+    // Amount then code ("431,000 USDT") in the offer's own currency, else the city's currency.
+    const offerCurrency = proposal.offerCurrency || window.CityMoney.currentCurrency();
 
     function updateDecay() {
         const now = Date.now();

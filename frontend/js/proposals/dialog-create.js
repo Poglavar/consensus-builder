@@ -479,7 +479,7 @@ function refreshReparcellizationCashTerms(modal) {
     const total = window.ReparcellizationAgreements.cashOfferTotal(plan);
     input.value = CbFormat.formatNumber(total, { minFractionDigits: 2, maxFractionDigits: 2 });
     input.readOnly = true;
-    if (currency) { currency.value = 'EUR'; currency.disabled = true; }
+    if (currency) { currency.value = window.CityMoney.currentCurrency(); currency.disabled = true; }
     if (!modal.querySelector('[data-reparcel-cash-terms]')) {
         const hint = document.createElement('p');
         hint.className = 'reparcel-agreement-hint';
@@ -1038,12 +1038,7 @@ function showProposalDialog(overrides = null) {
                             <div class="proposal-offer-row">
                                 <input type="text" id="proposalOffer" placeholder="${offerPlaceholder}" inputmode="decimal" oninput="handleProposalOfferInput(this)" onchange="formatProposalOfferInput(this)">
                                 <select id="proposalCurrency">
-                                    <option value="EUR">EUR</option>
-                                    <option value="USD">USD</option>
-                                    <option value="ETH">ETH</option>
-                                    <option value="ARS">ARS</option>
-                                    <option value="USDC">USDC</option>
-                                    <option value="USDT" selected>USDT</option>
+                                    ${window.CityMoney.currentOfferCurrencies().map(code => `<option value="${code}"${code === 'USDT' ? ' selected' : ''}>${code}</option>`).join('')}
                                 </select>
                             </div>
                         </div>
@@ -1490,8 +1485,8 @@ function showProposalDialog(overrides = null) {
                 const num = Number(value);
                 return Number.isFinite(num) ? CbFormat.formatNumber(num, { maxFractionDigits: 0 }) : value;
             };
-            // The road tool's market price is in the city's display currency (road-drawing.js).
-            const marketCurrency = window.CityConfigManager?.getCurrentCityConfig?.()?.currency?.code || 'EUR';
+            // The road tool's market price is in the city's currency (road-drawing.js, city-money.js).
+            const marketCurrency = window.CityMoney.currentCurrency();
 
             const lines = [];
             if (overrideSummaryStats.ownerEntryCount !== null && overrideSummaryStats.ownerEntryCount !== undefined) {

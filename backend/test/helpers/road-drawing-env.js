@@ -302,6 +302,7 @@ export function loadRoadDrawing(options = {}) {
     const installs = {
         window: g,
         ParcelPriceModel: { buildEstimate: priceModel.buildParcelPriceEstimate, aggregate: priceModel.aggregateParcelPriceEstimates },
+        CityMoney: require(`${FRONTEND}city-money.js`),
         document,
         map,
         L: makeLeaflet(),

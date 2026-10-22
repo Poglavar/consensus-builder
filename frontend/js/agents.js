@@ -1279,14 +1279,10 @@ function translateText(key, fallback, params = {}) {
     return formatString(fallback, params);
 }
 
-// The agent dialog's language row: the one language picker the welcome dialog uses too
-// (renderLanguagePickerHtml / bindLanguageSegmented, js/user-management.js), on the current language.
+// The agent dialog's language row: the one locale picker the welcome dialog uses too
+// (renderLanguagePickerHtml / bindLanguageSegmented, js/user-management.js), on the current locale.
 function renderAgentLanguageSwitcher() {
-    const i18nApi = getI18nApi();
-    const currentLang = i18nApi && typeof i18nApi.getLanguage === 'function'
-        ? i18nApi.getLanguage()
-        : 'en';
-    return window.renderLanguagePickerHtml(currentLang, 'agent-language-switcher');
+    return window.renderLanguagePickerHtml('agent-language-switcher');
 }
 
 /**

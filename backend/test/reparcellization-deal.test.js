@@ -64,7 +64,8 @@ function approvalSetup() {
 }
 
 function browserDeal() {
-    const context = { TextEncoder };
+    // city-money.js attaches to `window` only; the page loads it before the deal module.
+    const context = { TextEncoder, CityMoney: require('../../frontend/js/city-money.js') };
     vm.runInNewContext(ownershipSource, context);
     vm.runInNewContext(cryptoSource, context);
     vm.runInNewContext(approvalSource, context);
@@ -215,7 +216,7 @@ describe('ReparcellizationDeal shared fingerprint', () => {
             ['duplicate ledger identities', record => { record.reparcellization.ownerShares[1].ownerKey = record.reparcellization.ownerShares[0].ownerKey; }],
             ['a non-finite ledger number', record => { record.reparcellization.ownerShares[0].assignedValue = NaN; }],
             ['a mismatched proposal total', record => { record.offer = 101; }],
-            ['non-EUR cash', record => { record.offerCurrency = 'USD'; }]
+            ['chain-token cash', record => { record.offerCurrency = 'USDT'; }]
         ];
         for (const [label, mutate] of cases) {
             const invalid = proposal();
@@ -287,7 +288,7 @@ describe('ReparcellizationDeal shared fingerprint', () => {
         expect(() => deal.content(wrongPlotOwner)).toThrow(/cannot also name a represented owner/);
     });
 
-    it('commits the valuation currency and requires explicit EUR when value is the contribution basis', () => {
+    it('commits the valuation currency and requires an explicit fiat one when value is the contribution basis', () => {
         const record = proposal();
         record.offer = 0;
         record.offerCurrency = undefined;
@@ -296,15 +297,30 @@ describe('ReparcellizationDeal shared fingerprint', () => {
         record.reparcellization.valuationCurrency = 'EUR';
         expect(deal.content(record).valuation).toMatchObject({ contributionBasis: 'value', currency: 'EUR' });
 
+        record.reparcellization.valuationCurrency = 'GBP';
+        expect(deal.content(record).valuation.currency).toBe('GBP');
+
         record.reparcellization.valuationCurrency = null;
-        expect(() => deal.content(record)).toThrow(/require EUR valuationCurrency/);
+        expect(() => deal.content(record)).toThrow(/require a fiat valuationCurrency/);
+        record.reparcellization.valuationCurrency = 'USDC';
+        expect(() => deal.content(record)).toThrow(/require a fiat valuationCurrency/);
+    });
+
+    it('counts cash and land values in one currency', () => {
+        const record = proposal();
+        record.offerCurrency = 'GBP';
+        record.reparcellization.contributionBasis = 'value';
+        record.reparcellization.valuationCurrency = 'EUR';
+        expect(() => deal.content(record)).toThrow(/one currency/);
+        record.reparcellization.valuationCurrency = 'GBP';
+        expect(deal.content(record).terms.currency).toBe('GBP');
     });
 
     it('requires an explicit offerCurrency for nonzero cash and never borrows a currency alias', () => {
         const record = proposal();
         record.offerCurrency = undefined;
         record.currency = 'EUR';
-        expect(() => deal.content(record)).toThrow(/explicit EUR offerCurrency/);
+        expect(() => deal.content(record)).toThrow(/explicit fiat offerCurrency/);
     });
 });
 
@@ -328,9 +344,18 @@ describe('ReparcellizationDeal without cash', () => {
         expect(deal.content(usd).terms.currency).toBeNull();
     });
 
-    it('still refuses non-EUR cash', () => {
+    it('still refuses cash in a chain token', () => {
         const paid = proposal();
-        paid.offerCurrency = 'USD';
-        expect(() => deal.fingerprint(paid)).toThrow(/EUR/);
+        paid.offerCurrency = 'USDC';
+        expect(() => deal.fingerprint(paid)).toThrow(/fiat/);
+    });
+
+    // A UK readjustment pays owners in pounds: cash is the city's money, whichever country.
+    it('accepts cash in sterling and commits it', () => {
+        const paid = proposal();
+        paid.offerCurrency = 'GBP';
+        expect(deal.content(paid).terms.currency).toBe('GBP');
+        const eur = proposal();
+        expect(deal.fingerprint(paid)).not.toBe(deal.fingerprint(eur));
     });
 });

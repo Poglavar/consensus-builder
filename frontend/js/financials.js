@@ -140,10 +140,11 @@ function buildParcelPriceEstimate(properties, areaM2, options = {}) {
         return { amount, currency, basis: 'source-estimate', rate: null };
     }
 
+    // A missing rate is no model, not a free one: Number(null) would price the land at 0.
     const area = Number(areaM2);
-    const rate = Number(options.areaPricePerSqm);
+    const rate = options.areaPricePerSqm;
     const currency = normalizeEstimateCurrency(options.currency);
-    if (!Number.isFinite(area) || area <= 0 || !Number.isFinite(rate) || rate < 0 || !currency) {
+    if (!Number.isFinite(area) || area <= 0 || typeof rate !== 'number' || !Number.isFinite(rate) || rate < 0 || !currency) {
         return { amount: null, currency: null, basis: 'unavailable', rate: null };
     }
     return { amount: area * rate, currency, basis: 'area-model', rate };

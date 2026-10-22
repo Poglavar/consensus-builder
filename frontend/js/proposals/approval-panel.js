@@ -16,7 +16,9 @@
     const esc = value => escapeHtml(String(value === undefined || value === null ? '' : value));
     const format = () => root.CbFormat;
     const area = value => format().formatArea(value, { missing: '—' });
-    const money = cents => format().formatMoney(cents / 100, 'EUR', { minFractionDigits: 2, maxFractionDigits: 2 });
+    const money = (cents, currency) => format().formatMoney(cents / 100, currency, { minFractionDigits: 2, maxFractionDigits: 2 });
+    // A readjustment's cash is in its deal's currency (the city's money when it was authored).
+    const cashCurrency = review => review.conditions?.money?.currency || review.proposal?.offerCurrency || root.CityMoney.currentCurrency();
     const runtime = () => root.ProposalApprovalRuntime;
     const actor = () => (typeof getCurrentUserAgent === 'function' ? getCurrentUserAgent() : null) || null;
     const wallet = () => root.ProposalApprovalLensAuthority.browserWallet();
@@ -640,18 +642,18 @@
                 <div><dt>${esc(voice.landAfter)}</dt><dd>${esc(area(receives.assignedAreaM2))}</dd></div>
                 <div><dt>${esc(t('proposalApproval.review.landChange', 'Change in land'))}</dt><dd>${esc(change)}</dd></div>
                 ${receives.payCents > 0
-                    ? `<div data-approval-cash="pays"><dt>${esc(voice.cashPay)}</dt><dd>${esc(money(receives.payCents))}</dd></div>`
-                    : `<div data-approval-cash="receives"><dt>${esc(voice.cash)}</dt><dd>${esc(money(receives.cashCents))}</dd></div>`}
+                    ? `<div data-approval-cash="pays"><dt>${esc(voice.cashPay)}</dt><dd>${esc(money(receives.payCents, cashCurrency(review)))}</dd></div>`
+                    : `<div data-approval-cash="receives"><dt>${esc(voice.cash)}</dt><dd>${esc(money(receives.cashCents, cashCurrency(review)))}</dd></div>`}
             </dl>`;
     }
 
     // The whole money schedule, so an owner sees who else pays and who covers the rest.
-    function moneyLines(schedule) {
+    function moneyLines(schedule, currency) {
         if (!schedule || (!schedule.payOutCents && !schedule.payInCents)) return [];
         const lines = [t('proposalApproval.money.summary', 'Proposed owner cash: {{out}} to receive and {{in}} to pay.', {
-            out: money(schedule.payOutCents), in: money(schedule.payInCents) })];
-        if (schedule.sponsorCents < 0) lines.push(t('proposalApproval.money.sponsorPays', 'The sponsor would pay {{amount}}.', { amount: money(-schedule.sponsorCents) }));
-        else if (schedule.sponsorCents > 0) lines.push(t('proposalApproval.money.sponsorReceives', 'The sponsor would receive {{amount}}.', { amount: money(schedule.sponsorCents) }));
+            out: money(schedule.payOutCents, currency), in: money(schedule.payInCents, currency) })];
+        if (schedule.sponsorCents < 0) lines.push(t('proposalApproval.money.sponsorPays', 'The sponsor would pay {{amount}}.', { amount: money(-schedule.sponsorCents, currency) }));
+        else if (schedule.sponsorCents > 0) lines.push(t('proposalApproval.money.sponsorReceives', 'The sponsor would receive {{amount}}.', { amount: money(schedule.sponsorCents, currency) }));
         else lines.push(t('proposalApproval.money.sponsorNothing', 'Proposed owner payments cover all payouts; no sponsor payment is specified.'));
         return lines;
     }
@@ -671,7 +673,7 @@
                 ? t('panel.proposal.disbursement.conditionalHint', 'Authored terms require every owner to accept before payout. This does not confirm funding or payment.')
                 : t('panel.proposal.disbursement.partialHint', 'Authored terms allow partial payouts. Acceptance alone does not confirm payment.'));
         }
-        lines.push(...moneyLines(c.money));
+        lines.push(...moneyLines(c.money, cashCurrency(review)));
         lines.push(c.expiresAt
             ? t('proposalApproval.review.openUntil', 'Open until {{date}}', { date: format().formatDateTime(c.expiresAt) })
             : t('proposalApproval.review.noDeadline', 'No deadline'));

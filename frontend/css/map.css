@@ -293,7 +293,8 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
     position: absolute;
     top: 12px;
     left: 12px;
-    width: 232px;
+    /* Four columns: a row label and Built / Planned / Proposed. */
+    width: 280px;
     max-width: calc(100vw - 24px);
     padding: 10px 12px;
     background: var(--cb-glass-sheet);
@@ -419,11 +420,35 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
     text-align: right;
 }
 
-#three-container .three-mode-parcel-panel .parcel-panel-value-title {
+/* A column the parcel has no figures for (no permitted massing loaded, no proposed massing). */
+#three-container .three-mode-parcel-panel .parcel-panel-table .is-unavailable {
+    color: var(--cb-text-faint);
+    opacity: 0.55;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-table td.gain-positive {
+    color: var(--cb-success);
+    font-weight: 700;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-table td.gain-negative {
+    color: var(--cb-danger);
+    font-weight: 700;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-slider-label {
+    display: block;
     font-weight: 600;
     color: var(--cb-text-muted);
-    border-top: 1px solid var(--cb-line);
     padding-top: 6px;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-slider-label:first-of-type {
+    border-top: 1px solid var(--cb-line);
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-profit-note {
+    text-align: left;
 }
 
 /* The slider takes the primary accent every native control has (css/tokens.css). */
@@ -431,20 +456,6 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
     width: 100%;
     margin: 6px 0 2px;
     cursor: pointer;
-}
-
-#three-container .three-mode-parcel-panel .parcel-panel-gain {
-    margin-top: 4px;
-    font-weight: 700;
-    font-size: var(--cb-text-base);
-}
-
-#three-container .three-mode-parcel-panel .parcel-panel-gain.gain-positive {
-    color: var(--cb-success);
-}
-
-#three-container .three-mode-parcel-panel .parcel-panel-gain.gain-negative {
-    color: var(--cb-danger);
 }
 
 /* Top-centre banner shown while the 3D view is filtered to one parcel or one proposal.
