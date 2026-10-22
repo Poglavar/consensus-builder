@@ -82,11 +82,9 @@ describe('start and stop guards', () => {
         expect(can()).toBe(true);
     });
 
-    it('opening the tool takes the map: mode flag, announcement, handlers, held dblclick zoom, mode buttons, panel', async () => {
+    it('opening the tool takes the map: mode flag, announcement, handlers, held dblclick zoom, panel', async () => {
         const world = open();
         globalThis.PersistentStorage.setItem('lastRoadWidth', '12');
-        world.element('mode-3d-toggle').disabled = false;
-        world.element('mode-ai-toggle').disabled = true;
         await openTool(world);
 
         expect(globalThis.roadDrawingMode).toBe(true);
@@ -94,7 +92,6 @@ describe('start and stop guards', () => {
         expect(announced.at(-1).detail).toEqual({ road: true, kind: 'road' });
         ['click', 'dblclick', 'mousemove', 'mouseout', 'moveend'].forEach(type => expect(world.map.listens(type), type).toBe(true));
         expect(world.map.doubleClickZoom.enabled()).toBe(false);
-        expect(world.element('mode-3d-toggle').disabled).toBe(true);
         expect(world.element('road-info-panel').classList.contains('visible')).toBe(true);
         expect(world.element('road-drawing-controls').hidden).toBe(false);
         expect(world.element('roadDrawButton').getAttribute('aria-pressed')).toBe('true');
@@ -110,8 +107,6 @@ describe('start and stop guards', () => {
         expect(globalThis.roadDrawingMode).toBe(false);
         ['click', 'dblclick', 'mousemove', 'mouseout', 'moveend'].forEach(type => expect(world.map.listens(type), type).toBe(false));
         expect(world.map.doubleClickZoom.enabled()).toBe(true);
-        expect(world.element('mode-3d-toggle').disabled).toBe(false);
-        expect(world.element('mode-ai-toggle').disabled).toBe(true);
         expect(world.element('road-info-panel').classList.contains('visible')).toBe(false);
         expect(world.element('roadDrawButton').getAttribute('aria-pressed')).toBe('false');
         expect(world.document.listeners('keydown')).toEqual([world.api.handleRoadDrawHotkey]);

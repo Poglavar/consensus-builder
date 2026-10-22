@@ -18,14 +18,20 @@ afterEach(() => {
     env = null;
 });
 
-const VIEW_BUTTONS = ['mode-3d-toggle', 'mode-realistic-toggle', 'mode-ai-toggle'];
+const VIEW_BUTTONS = ['mode-2d-toggle', 'mode-3d-toggle', 'mode-realistic-toggle', 'mode-ai-toggle'];
 
-// The drawing tool with the three view buttons as the page left them: 3D and AI on, photo off.
-function roadLifecycle(options) {
-    env = loadRoadDrawing(options);
-    const buttons = new Map(VIEW_BUTTONS.map(id => [id, env.element(id)]));
-    [false, true, false].forEach((disabled, index) => { env.element(VIEW_BUTTONS[index]).disabled = disabled; });
-    return { api: env.api, buttons, window: globalThis };
+// A view tile as the page has it: a disabled flag, a tooltip, a class list and a dataset.
+function tile(disabled, title) {
+    const classes = new Set();
+    return {
+        disabled, title, dataset: {},
+        classList: {
+            add: name => classes.add(name), remove: name => classes.delete(name),
+            toggle: (name, on) => (on ? classes.add(name) : classes.delete(name)),
+            contains: name => classes.has(name)
+        },
+        setAttribute: vi.fn(), addEventListener: vi.fn(), removeEventListener: vi.fn(), click: vi.fn()
+    };
 }
 
 function mapModeGuard(root) {
@@ -37,22 +43,22 @@ function mapModeGuard(root) {
     return new Function('root', `${helper}; return canRequestMapMode;`)(root);
 }
 
-function loadMapModeLoader({ roadDrawingMode }) {
-    const buttons = new Map(['mode-2d-toggle', 'mode-3d-toggle', 'mode-realistic-toggle', 'mode-ai-toggle']
-        .map(id => [id, {
-            disabled: false,
-            classList: { toggle: vi.fn() },
-            setAttribute: vi.fn(),
-            addEventListener: vi.fn(),
-            removeEventListener: vi.fn(),
-            click: vi.fn()
-        }]));
+// The real map-mode-loader.js over fake tiles. The page left 2D, 3D and AI enabled, photo disabled
+// (its tiles were composing), so a restore has something to get wrong.
+function loadMapModeLoader({ roadDrawingMode, OnMapEditor } = {}) {
+    const buttons = new Map([
+        ['mode-2d-toggle', tile(false, '2D map')],
+        ['mode-3d-toggle', tile(false, '3D models')],
+        ['mode-realistic-toggle', tile(true, 'Photo')],
+        ['mode-ai-toggle', tile(false, 'AI render')]
+    ]);
     const controller = {
         request: vi.fn(() => Promise.resolve(true)),
         getState: () => ({ desired: '2d', pending: false })
     };
     const root = {
         roadDrawingMode,
+        OnMapEditor,
         location: { search: '' },
         appendBuildToken: path => path,
         dispatchEvent: vi.fn(),
@@ -61,16 +67,37 @@ function loadMapModeLoader({ roadDrawingMode }) {
         __threeModeDriver: { enter: vi.fn(), exit: vi.fn() },
         PhotorealMode: { activate: vi.fn(), deactivate: vi.fn() }
     };
+    const documentListeners = new Map();
+    const observers = [];
     const document = {
+        body: {},
         head: { appendChild: vi.fn() },
         getElementById: id => buttons.get(id) || null,
-        createElement: () => ({ remove: vi.fn() })
+        createElement: () => ({ remove: vi.fn() }),
+        addEventListener: (name, listener) => documentListeners.set(name, listener)
     };
-    new Function('window', 'document', 'CustomEvent', 'URLSearchParams', modeSource)(
-        root, document, class CustomEvent { constructor(type, options) { this.type = type; Object.assign(this, options); } }, URLSearchParams
+    class MutationObserver {
+        constructor(callback) { this.callback = callback; observers.push(this); }
+        observe(target, options) { this.target = target; this.options = options; }
+    }
+    new Function('window', 'document', 'CustomEvent', 'URLSearchParams', 'MutationObserver', modeSource)(
+        root, document, class CustomEvent { constructor(type, options) { this.type = type; Object.assign(this, options); } },
+        URLSearchParams, MutationObserver
     );
-    return { root, controller, buttons };
+    const state = () => VIEW_BUTTONS.map(id => {
+        const button = buttons.get(id);
+        return { disabled: button.disabled, locked: button.classList.contains('map-mode-btn--locked'), title: button.title };
+    });
+    return { root, controller, buttons, document, documentListeners, observers, state };
 }
+
+const LOCKED = 'Not available while you are editing — finish or cancel first';
+const AS_LEFT = [
+    { disabled: false, locked: false, title: '2D map' },
+    { disabled: false, locked: false, title: '3D models' },
+    { disabled: true, locked: false, title: 'Photo' },
+    { disabled: false, locked: false, title: 'AI render' }
+];
 
 function sharedEditorForButtons(buttons, extras = {}) {
     const listeners = new Map();
@@ -155,25 +182,54 @@ describe('road and track drawing mode guard', () => {
         expect(guard('photo')).toBe(false);
     });
 
-    it('disables incompatible view buttons while drawing and restores their original states on exit', () => {
-        const h = roadLifecycle();
-        h.api.updateGlobalRoadDrawingMode(true);
-        expect(h.window.roadDrawingMode).toBe(true);
-        expect([...h.buttons.values()].map(button => button.disabled)).toEqual([true, true, true]);
-        h.api.updateGlobalRoadDrawingMode(false);
-        expect(h.window.roadDrawingMode).toBe(false);
-        expect([...h.buttons.values()].map(button => button.disabled)).toEqual([false, true, false]);
+    it('greys out the views road drawing refuses and gives the tiles back as they were', () => {
+        const h = loadMapModeLoader({ roadDrawingMode: false });
+        expect(h.state()).toEqual(AS_LEFT);
+        h.root.roadDrawingMode = true;
+        h.documentListeners.get('corridor-drawing-mode-changed')();
+        expect(h.state()).toEqual([
+            AS_LEFT[0],
+            { disabled: true, locked: true, title: LOCKED },
+            { disabled: true, locked: true, title: LOCKED },
+            { disabled: true, locked: true, title: LOCKED }
+        ]);
+        h.root.roadDrawingMode = false;
+        h.documentListeners.get('corridor-drawing-mode-changed')();
+        expect(h.state()).toEqual(AS_LEFT);
     });
 
-    it('restores the same view-button state when the user cancels the drawing', async () => {
-        const h = roadLifecycle();
-        await h.api.requestCorridorDrawingTool('road');
+    it('follows the on-map editor through <body> class changes and reasserts over a view repaint', () => {
+        let modes = null;
+        const h = loadMapModeLoader({ OnMapEditor: { allowsMode: mode => !modes || modes.includes(mode) } });
+        const [observer] = h.observers;
+        expect(observer.target).toBe(h.document.body);
+        expect(observer.options).toEqual({ attributes: true, attributeFilter: ['class'] });
+        modes = ['2d', 'model'];
+        observer.callback();
+        expect(h.state().map(tile => tile.locked)).toEqual([false, false, true, true]);
+        // three-mode's updateModeButtonStates rewrites the AI tile on every view change.
+        h.buttons.get('mode-ai-toggle').disabled = false;
+        h.buttons.get('mode-ai-toggle').title = 'AI render';
+        h.root.updateModeButtonStates.mockClear();
+        h.controller.getState = () => ({ desired: 'model', pending: false });
+        h.root.__mapModeTransition.createController.mock.calls[0][0].onChange({ desired: 'model', pending: false });
+        expect(h.root.updateModeButtonStates).toHaveBeenCalledOnce();
+        expect(h.state()[3]).toEqual({ disabled: true, locked: true, title: LOCKED });
+        modes = null;
+        observer.callback();
+        expect(h.state()).toEqual(AS_LEFT);
+    });
+
+    it('drops the drawing mode and announces it when the user cancels the drawing', async () => {
+        env = loadRoadDrawing();
+        await env.api.requestCorridorDrawingTool('road');
         await env.click(at(0, 0));
         await env.click(at(100, 0));
-        expect([...h.buttons.values()].map(button => button.disabled)).toEqual([true, true, true]);
-        h.api.discardRoadDrawing();
-        expect(h.window.roadDrawingMode).toBe(false);
-        expect([...h.buttons.values()].map(button => button.disabled)).toEqual([false, true, false]);
+        expect(globalThis.roadDrawingMode).toBe(true);
+        env.api.discardRoadDrawing();
+        expect(globalThis.roadDrawingMode).toBe(false);
+        const announced = env.document.events.filter(event => event.type === 'corridor-drawing-mode-changed');
+        expect(announced.at(-1).detail).toEqual({ road: false, kind: 'road' });
         // The tool is gone with the drawing: the panel, the handlers and the road.
         expect(env.session.roadDrawingMode).toBe(false);
         expect(env.element('road-info-panel').classList.contains('visible')).toBe(false);
@@ -181,16 +237,21 @@ describe('road and track drawing mode guard', () => {
         expect(env.session.roadSegments).toEqual([]);
     });
 
-    it('keeps mode buttons disabled across the nested cross-section editor, then restores them on road exit', () => {
-        const h = roadLifecycle();
-        h.api.updateGlobalRoadDrawingMode(true);
-        const { editor } = sharedEditorForButtons(h.buttons, { roadDrawingMode: true });
-        const child = editor.open({ owner: 'corridor-editor', modes: ['2d'] });
-        expect(child).not.toBeNull();
-        child.close();
-        expect([...h.buttons.values()].map(button => button.disabled)).toEqual([true, true, true]);
-        h.api.updateGlobalRoadDrawingMode(false);
-        expect([...h.buttons.values()].map(button => button.disabled)).toEqual([false, true, false]);
+    it('keeps the tiles locked when the nested cross-section editor closes, until the road ends', () => {
+        let editorModes = null;
+        const h = loadMapModeLoader({
+            roadDrawingMode: true,
+            OnMapEditor: { allowsMode: mode => !editorModes || editorModes.includes(mode) }
+        });
+        h.root.syncMapModeLocks();
+        editorModes = ['2d'];
+        h.observers[0].callback();
+        editorModes = null;
+        h.observers[0].callback();
+        expect(h.state().map(tile => tile.locked)).toEqual([false, true, true, true]);
+        h.root.roadDrawingMode = false;
+        h.documentListeners.get('corridor-drawing-mode-changed')();
+        expect(h.state()).toEqual(AS_LEFT);
     });
 
     it('prevents other map editors from opening during road drawing while allowing its cross-section editor', () => {

@@ -132,9 +132,7 @@ describe('OnMapEditor shared floating-panel lifecycle', () => {
         expect(session.content.children.map(child => child.className)).toEqual([
             'on-map-editor__hint', 'on-map-editor__body'
         ]);
-        expect(buttons['mode-2d-toggle'].disabled).toBe(false);
-        expect(buttons['mode-3d-toggle'].disabled).toBe(false);
-        expect(buttons['mode-realistic-toggle'].disabled).toBe(true);
+        expect(editor.allowsMode('2d')).toBe(true);
         expect(editor.allowsMode('model')).toBe(true);
         expect(editor.allowsMode('photo')).toBe(false);
         expect(session.content.children[0].textContent).toBe('Edit the footprint on the map.');
@@ -399,7 +397,9 @@ describe('OnMapEditor shared floating-panel lifecycle', () => {
         expect(session.pane).toBe('onMapEditorPane');
         expect(session.handlePane).toBe('onMapEditorHandles');
         expect(suspendedPanels.map(panel => panel.style.display)).toEqual(['none', 'none']);
-        expect(buttons['mode-realistic-toggle'].disabled).toBe(true);
+        // The view tiles are map-mode-loader's to lock (paintModeLocks reads allowsMode); the
+        // editor leaves them as they were.
+        expect(buttons['mode-realistic-toggle'].disabled).toBe(false);
         expect(buttons['mode-ai-toggle'].disabled).toBe(true);
         expect(editor.allowsMode('model')).toBe(true);
         expect(editor.allowsMode('photo')).toBe(false);

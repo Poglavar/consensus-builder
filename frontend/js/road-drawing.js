@@ -18,22 +18,6 @@ function hideRoadInfoPanel() {
 // ---------------------------------------------------------------------------
 let roadDrawingMode = false;
 let corridorDrawKind = 'road';
-let roadDrawingModeButtonState = null;
-
-function setRoadDrawingModeButtonsDisabled(disabled) {
-    const buttons = ['mode-3d-toggle', 'mode-realistic-toggle', 'mode-ai-toggle']
-        .map(id => document.getElementById(id)).filter(Boolean);
-    if (disabled) {
-        if (!roadDrawingModeButtonState) {
-            roadDrawingModeButtonState = buttons.map(button => ({ button, disabled: button.disabled }));
-        }
-        buttons.forEach(button => { button.disabled = true; });
-        return;
-    }
-    if (!roadDrawingModeButtonState) return;
-    roadDrawingModeButtonState.forEach(({ button, disabled: previous }) => { button.disabled = previous; });
-    roadDrawingModeButtonState = null;
-}
 
 function canStartRoadDrawingInCurrentMode() {
     const state = typeof window !== 'undefined' ? window.__mapModeState : null;
@@ -73,7 +57,6 @@ function updateGlobalRoadDrawingMode(value) {
     if (typeof window !== 'undefined') {
         window.roadDrawingMode = value;
     }
-    setRoadDrawingModeButtonsDisabled(value);
     announceCorridorDrawingModeChange();
 }
 
@@ -4775,7 +4758,6 @@ if (typeof window !== 'undefined') {
     const bind = (name, get, set) => Object.defineProperty(session, name, { get, set, enumerable: true });
     bind('roadDrawingMode', () => roadDrawingMode, value => { roadDrawingMode = value; });
     bind('corridorDrawKind', () => corridorDrawKind, value => { corridorDrawKind = value; });
-    bind('roadDrawingModeButtonState', () => roadDrawingModeButtonState, value => { roadDrawingModeButtonState = value; });
     bind('roadSegments', () => roadSegments, value => { roadSegments = value; });
     bind('roadPoints', () => roadPoints, value => { roadPoints = value; });
     bind('roadSegmentIds', () => roadSegmentIds, value => { roadSegmentIds = value; });
@@ -4838,7 +4820,7 @@ if (typeof window !== 'undefined') {
     bind('roadOwnershipTypeCache', () => roadOwnershipTypeCache);
     const api = {
         session,
-        hideRoadInfoPanel, setRoadDrawingModeButtonsDisabled, canStartRoadDrawingInCurrentMode,
+        hideRoadInfoPanel, canStartRoadDrawingInCurrentMode,
         corridorDrawingIsTrack, corridorDrawingKind, announceCorridorDrawingModeChange,
         updateGlobalRoadDrawingMode, newRoadSegmentId, pushRoadSegment, roadDrawingSegmentOverride,
         roadDrawingWidthForSegmentIndex, buildDrawingTunnelLayer, refreshRoadBuildingTunnelLayer,

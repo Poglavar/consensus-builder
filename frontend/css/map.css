@@ -912,8 +912,9 @@ body.three-mode-active #agent-bubbles-container {
     white-space: nowrap;
 }
 
-/* Locked while the cross-section editor is docked: the map is a viewport there, not a control
-   surface, so changing what it shows is off the table (see corridorEditorLockMap). Greyed rather
+/* Locked while an editor holds the map: road drawing or an on-map editor refuses the views it
+   cannot run in (paintModeLocks in map-mode-loader.js), and the cross-section editor locks the walk
+   button (corridorEditorLockMap). Greyed rather
    than hidden so the buttons do not jump around, and NOT `pointer-events: none` — that would
    suppress the tooltip explaining why they are inert.
    Each selector carries the button's ID *and* its canonical class, because the rules it has to beat

@@ -7019,6 +7019,7 @@
     },
     "mapShell": {
         "viewFailed": "This view could not start. You are back on the 2D map.",
+        "modeLocked": "Not available while you are editing — finish or cancel first",
         "layers": "Layers",
         "settings": "Settings",
         "proposals": "Proposals",

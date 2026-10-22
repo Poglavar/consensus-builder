@@ -7075,6 +7075,7 @@
     },
     "mapShell": {
         "viewFailed": "Ovaj prikaz se nije mogao pokrenuti. Vraćeni ste na 2D kartu.",
+        "modeLocked": "Nedostupno dok uređujete — prvo završite ili odustanite",
         "layers": "Slojevi",
         "settings": "Postavke",
         "proposals": "Prijedlozi",

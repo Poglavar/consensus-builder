@@ -7,7 +7,6 @@
         let active = null;
         const pane = 'onMapEditorPane';
         const handlePane = 'onMapEditorHandles';
-        const modeButtons = { '2d': 'mode-2d-toggle', model: 'mode-3d-toggle', photo: 'mode-realistic-toggle', ai: 'mode-ai-toggle' };
 
         function text(key, fallback) {
             const translated = env.i18n?.t?.(`onMapEditor.${key}`);
@@ -77,9 +76,6 @@
                 left: popupPane.style.left,
                 top: popupPane.style.top
             } : null;
-            const disabledButtons = Object.entries(modeButtons).filter(([mode]) => !modes.includes(mode))
-                .map(([, id]) => doc.getElementById(id)).filter(Boolean)
-                .map(button => ({ button, disabled: button.disabled }));
             const suspended = [...doc.querySelectorAll('.create-proposal-modal, #proposal-editor-shell.is-open')]
                 .map(element => ({ element, display: element.style.display }));
             const focusReturn = doc.activeElement;
@@ -157,7 +153,7 @@
                 const rect = panel.getBoundingClientRect();
                 const mobile = env.innerWidth < 640;
                 const panelIsLeft = !mobile && rect.left < env.innerWidth / 2;
-                const modeStripRight = doc.getElementById(modeButtons['2d'])?.getBoundingClientRect().right || 0;
+                const modeStripRight = doc.getElementById('mode-2d-toggle')?.getBoundingClientRect().right || 0;
                 const left = panelIsLeft ? rect.right + 12 : Math.max(12, modeStripRight + 8);
                 const right = mobile ? env.innerWidth - 12 : panelIsLeft ? env.innerWidth - 12 : rect.left - 12;
                 const bottom = mobile ? rect.top - 12 : env.innerHeight - 100;
@@ -193,7 +189,6 @@
             function syncMode(notify = true) {
                 const mode = env.__mapModeState?.desired || (env.isThreeModeActive?.() ? 'model' : '2d');
                 updateHint();
-                disabledButtons.forEach(({ button }) => { button.disabled = true; });
                 const nextControls = env.getThreeModeInternals?.()?.controls || null;
                 if (nextControls !== controls) {
                     controls?.removeEventListener('change', positionTools);
@@ -249,7 +244,6 @@
                 controls?.removeEventListener('change', positionTools);
                 panelResize?.disconnect();
                 session.placement?.destroy();
-                disabledButtons.forEach(({ button, disabled }) => { button.disabled = disabled; });
                 suspended.forEach(({ element, display }) => { if (element.isConnected) element.style.display = display; });
                 root.remove();
                 if (active === session) active = null;

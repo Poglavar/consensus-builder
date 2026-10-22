@@ -7070,6 +7070,7 @@
     },
     "mapShell": {
         "viewFailed": "Esta vista no se pudo iniciar. Has vuelto al mapa 2D.",
+        "modeLocked": "No disponible mientras editas — termina o cancela primero",
         "layers": "Capas",
         "settings": "Ajustes",
         "proposals": "Propuestas",
