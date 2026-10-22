@@ -93,6 +93,23 @@ describe('left-edge map mode strip', () => {
         for (const { id } of STACK) expect(indexHtml).toContain(`id="${id}"`);
     });
 
+    it('lets buttons share the utility slot only when they never show in the same view', () => {
+        // Measure (2D) and Sun and shadows (model view) both take .map-utility-button's slot.
+        const buttons = [...indexHtml.matchAll(/<button[^>]*class="[^"]*\bmap-utility-button\b[^"]*"[^>]*>/g)].map(([tag]) => ({
+            id: tag.match(/id="([^"]+)"/)?.[1],
+            modes: (tag.match(/data-map-modes="([^"]+)"/)?.[1] || '').split(/\s+/).filter(Boolean)
+        }));
+        expect(buttons.map(b => b.id)).toEqual(expect.arrayContaining(['measurement-button', 'sun-button']));
+        const seen = new Map();
+        for (const { id, modes } of buttons) {
+            expect(modes.length, `${id} must name the views it shows in`).toBeGreaterThan(0);
+            for (const mode of modes) {
+                expect(seen.get(mode), `${id} and ${seen.get(mode)} would both show in ${mode}`).toBeUndefined();
+                seen.set(mode, id);
+            }
+        }
+    });
+
     it('keeps the original cadastre control in the 2D Layers sheet', () => {
         const layers = indexHtml.slice(indexHtml.indexOf('id="layers-sheet"'), indexHtml.indexOf('id="measurement-sheet"'));
         expect(layers).toContain('id="cadastre-view-toggle"');

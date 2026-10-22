@@ -10,7 +10,9 @@
             'js/three-snapshot-navigation.js', 'js/three-keyboard-context.js', 'js/three-parcel-emphasis.js',
             'js/elevated-rail-3d.js', 'js/three-focus-plan.js', 'js/three-click-plan.js',
             'js/life/life-graph.js', 'js/life/life-surface.js', 'js/life/life-agents.js', 'js/three-life.js',
-            'js/life/ground-geometry.js', 'js/three-ground.js', 'js/three-mode.js'
+            'js/life/ground-geometry.js', 'js/three-ground.js',
+            'vendor/suncalc-1.9.0/suncalc.js', 'vendor/tz-lookup-11.7.0/tz.js', 'js/sun-shadows.js', 'js/three-sun.js',
+            'js/three-mode.js'
         ],
         photo: ['js/photoreal-frame.js', 'js/photoreal-ground.js', 'js/photoreal-seam.js',
             'js/photoreal-protect.js', 'js/photoreal-attribution.js', 'js/photoreal-parcels.js', 'js/photoreal-mode.js'],

@@ -6584,6 +6584,21 @@
         }
     },
     "threeMode": {
+        "sun": {
+            "title": "Sol y sombras",
+            "enabled": "Mostrar sol y sombras",
+            "when": "Cuándo",
+            "time": "Hora del día",
+            "date": "Fecha",
+            "now": "Ahora",
+            "zone": "Hora local, {{zone}}",
+            "daylight": "Luz del día {{rise}}–{{set}}",
+            "polarDay": "El sol no se pone",
+            "polarNight": "El sol no sale",
+            "play": "Reproducir el día",
+            "pause": "Pausar el día",
+            "belowHorizon": "Noche: el sol está bajo el horizonte."
+        },
         "walkPickHint": "Haz clic en el suelo donde quieras empezar a caminar (Esc cancela).",
         "controls": {
             "buildingRenderingAria": "Representación de edificios",

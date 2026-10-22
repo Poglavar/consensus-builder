@@ -6589,6 +6589,21 @@
         }
     },
     "threeMode": {
+        "sun": {
+            "title": "Sunce i sjene",
+            "enabled": "Prikaži sunce i sjene",
+            "when": "Kada",
+            "time": "Doba dana",
+            "date": "Datum",
+            "now": "Sada",
+            "zone": "Lokalno vrijeme, {{zone}}",
+            "daylight": "Dnevno svjetlo {{rise}}–{{set}}",
+            "polarDay": "Sunce ne zalazi",
+            "polarNight": "Sunce ne izlazi",
+            "play": "Pokreni dan",
+            "pause": "Zaustavi dan",
+            "belowHorizon": "Noć: sunce je ispod obzora."
+        },
         "walkPickHint": "Kliknite tlo gdje želite započeti šetnju (Esc odustaje).",
         "controls": {
             "buildingRenderingAria": "Prikaz zgrada",

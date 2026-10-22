@@ -1,0 +1,112 @@
+/* Sun and shadows sheet and button in the 3D model view (js/three-sun.js, #sun-sheet in index.html).
+   The button takes the mode strip's utility slot through .map-utility-button (css/map-shell.css).
+   Colours are theme tokens (css/tokens.css, --cb-sun-*); JS supplies only --sun-glow (0…1, the
+   sun's height) and the daylight band's --sun-rise / --sun-set (percent of 24 h). */
+
+.sun-controls {
+    margin: var(--cb-space-2) 0 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+}
+
+.sun-controls:disabled {
+    opacity: 0.5;
+}
+
+.sun-time-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--cb-space-2);
+}
+
+.sun-time-readout {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--cb-space-2);
+}
+
+.sun-time-value {
+    min-width: 5ch;
+    text-align: right;
+    font-size: var(--cb-text-lg);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.sun-time-slider {
+    display: block;
+    width: 100%;
+    margin: var(--cb-space-2) 0 0;
+}
+
+/* Day against night under the slider, inset by about the thumb's radius so it lines up with it. */
+.sun-daylight {
+    height: 4px;
+    margin: 2px 8px 0;
+    border-radius: var(--cb-radius-pill);
+    background: linear-gradient(to right,
+        var(--cb-sun-night-band) var(--sun-rise, 0%),
+        var(--cb-sun-day-band) var(--sun-rise, 0%),
+        var(--cb-sun-day-band) var(--sun-set, 0%),
+        var(--cb-sun-night-band) var(--sun-set, 0%));
+}
+
+.sun-time-bounds {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--cb-space-2);
+    margin-top: var(--cb-space-1);
+    color: var(--sheet-muted);
+    font-size: var(--cb-text-xs);
+    font-variant-numeric: tabular-nums;
+}
+
+/* The night notice always holds its one line, so the sheet never changes height as the day plays. */
+.sheet-note.sun-status {
+    min-height: 1.4em;
+    margin: var(--cb-space-2) 0 0;
+    line-height: 1.4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sun-date-row {
+    display: flex;
+    align-items: center;
+    gap: var(--cb-space-2);
+    margin-top: var(--cb-space-2);
+}
+
+.sun-date-row input[type="date"] {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+/* The slider's label names whose clock it is; a long zone name ends in an ellipsis, not a new line. */
+.sun-zone {
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* The button: the sun's colour follows its height; a moon at night; dimmed when switched off. */
+#sun-button {
+    --sun-glow: 1;
+}
+
+#sun-button[data-sun="day"] i {
+    color: color-mix(in srgb, var(--cb-sun-noon) calc(var(--sun-glow) * 100%), var(--cb-sun-dawn));
+    opacity: calc(0.6 + 0.4 * var(--sun-glow));
+}
+
+#sun-button[data-sun="night"] i {
+    color: var(--cb-moon);
+}
+
+#sun-button[data-sun="off"] i {
+    opacity: 0.45;
+}

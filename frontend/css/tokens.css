@@ -59,6 +59,14 @@
     --cb-warning-soft: #fffbeb;
     --cb-warning-soft-ink: #92400e;
 
+    /* Sun and shadows (css/three-sun.css): the icon runs from dawn to noon colour with the sun's
+       height; the slider's band shows day against night. */
+    --cb-sun-noon: #f59e0b;
+    --cb-sun-dawn: #c2410c;
+    --cb-moon: #64748b;
+    --cb-sun-day-band: #fcd34d;
+    --cb-sun-night-band: #cbd5e1;
+
     --cb-danger: #b91c1c;
     --cb-danger-hover: #991b1b;
     --cb-danger-ink: #ffffff;
@@ -239,6 +247,11 @@
     --cb-glass: rgba(23, 28, 34, 0.96);
     --cb-glass-veil: rgba(23, 28, 34, 0.74);
     --cb-glass-sheet: rgba(23, 28, 34, 0.8);
+    --cb-sun-noon: #facc15;
+    --cb-sun-dawn: #fb923c;
+    --cb-moon: #c7d2fe;
+    --cb-sun-day-band: #ca8a04;
+    --cb-sun-night-band: #334155;
     --cb-text: #e6e9ee;
     --cb-text-strong: #f5f7fa;
     --cb-text-muted: #9aa4b2;
