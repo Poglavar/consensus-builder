@@ -876,7 +876,7 @@ body.three-mode-active #agent-bubbles-container {
 }
 
 #click-stack.is-folded .click-stack__body,
-#click-stack.is-folded .click-stack__picker {
+#click-stack.is-folded .click-stack__choices {
     display: none;
 }
 
@@ -887,10 +887,26 @@ body.three-mode-active #agent-bubbles-container {
 
 
 .click-stack__sections {
+    isolation: isolate;
     display: flex;
     flex-direction: column;
     min-height: 0;
     flex: 1 1 auto;
+}
+
+@keyframes click-stack-focus-pulse {
+    0%, 100% { stroke-opacity: 1; stroke-width: 5; }
+    50% { stroke-opacity: .55; stroke-width: 3; }
+}
+
+.click-stack-map-focus {
+    animation: click-stack-focus-pulse 1.4s ease-in-out infinite;
+    filter: drop-shadow(0 0 1px #fff);
+    pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .click-stack-map-focus { animation: none; }
 }
 
 /* A section pairs a selector with the separate card for its selected item. */
@@ -921,17 +937,19 @@ body.three-mode-active #agent-bubbles-container {
     margin-top: var(--cb-space-3);
 }
 
-/* The connector: a short line from the card above into this one, under its icon column. */
+/* The connector stays behind the cards, centred between successive sections. */
 .click-stack__section + .click-stack__section::before {
     content: '';
     position: absolute;
-    left: calc(var(--cb-space-3) + 7px);
+    left: calc(50% - 2px);
     top: calc(-1 * var(--cb-space-3) - 2px);
     height: var(--cb-space-3);
-    border-left: 2px solid var(--cb-text-muted);
+    border-left: 4px solid #000;
+    z-index: -1;
+    pointer-events: none;
 }
 
-.click-stack__section.is-expanded > .click-stack__card {
+.click-stack__section.is-selected > .click-stack__card {
     border-color: var(--cb-primary);
 }
 
@@ -995,27 +1013,18 @@ body.three-mode-active #agent-bubbles-container {
 }
 
 .click-stack__row-title {
-    flex: 1 1 auto;
-    min-width: 0;
-    overflow-wrap: anywhere;
+    flex: 0 0 auto;
+    white-space: nowrap;
     font-weight: var(--cb-weight-semibold);
 }
 
 .click-stack__row-detail {
-    flex: 1 1 auto;
+    flex: 1 1 0;
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     color: var(--cb-text-muted);
-}
-
-/* Short section nouns stay whole beside a long selected-item summary. */
-.click-stack__section[data-kind="agreements"] .click-stack__row-title,
-.click-stack__section[data-kind="designs"] .click-stack__row-title,
-.click-stack__section[data-kind="built"] .click-stack__row-title,
-.click-stack__section[data-kind="permitted"] .click-stack__row-title {
-    flex: 0 0 auto;
 }
 
 .click-stack__chevron {
@@ -1028,9 +1037,11 @@ body.three-mode-active #agent-bubbles-container {
     transform: rotate(180deg);
 }
 
-/* Several instances at the spot (agreements, designs, cadastral parcels): one scrolling strip,
-   the same component everywhere; the chosen one is aria-pressed. */
-.click-stack__picker {
+/* Related objects flank the selected card; the count stays fixed while its choices scroll. */
+.click-stack__choices {
+    display: flex;
+    align-items: center;
+    gap: var(--cb-space-2);
     flex: 0 0 auto;
     min-width: 0;
     padding: var(--cb-space-2);
@@ -1042,14 +1053,20 @@ body.three-mode-active #agent-bubbles-container {
     pointer-events: auto;
 }
 
-.click-stack__picker-label {
-    margin-bottom: var(--cb-space-1);
-    font-size: var(--cb-text-xs);
+.click-stack__choice-count {
+    flex: 0 0 auto;
+    font-size: var(--cb-text-sm);
     font-weight: var(--cb-weight-semibold);
     color: var(--cb-text-muted);
 }
 
+.click-stack__section.is-selected:not(.is-expanded) .click-stack__heading {
+    background: var(--cb-primary-soft);
+    border-radius: var(--cb-radius-lg);
+}
+
 .click-stack__strip {
+    flex: 1 1 auto;
     display: flex;
     align-items: center;
     gap: var(--cb-space-1);
@@ -1057,16 +1074,6 @@ body.three-mode-active #agent-bubbles-container {
     padding: 2px;
     overflow-x: auto;
     scrollbar-width: thin;
-}
-
-.click-stack__strip--inline {
-    margin-top: var(--cb-space-1);
-}
-
-.click-stack__related {
-    flex: 0 0 auto;
-    padding-top: var(--cb-space-2);
-    border-top: 1px solid var(--cb-line);
 }
 
 /* The expanded card already names its item in the hosted details or agreement summary. */
@@ -1088,13 +1095,6 @@ body.three-mode-active #agent-bubbles-container {
     overflow-wrap: anywhere;
     color: var(--cb-text);
     font-weight: var(--cb-weight-semibold);
-}
-
-.click-stack__strip-label {
-    flex: 0 0 auto;
-    font-size: var(--cb-text-xs);
-    color: var(--cb-text-muted);
-    margin-right: var(--cb-space-1);
 }
 
 .click-stack__chip {
@@ -1519,4 +1519,3 @@ body.three-mode-active #agent-bubbles-container {
 
 .click-stack__heading { display: flex; align-items: center; }
 .click-stack__heading > .click-stack__row { flex: 1; min-width: 0; width: auto; }
-.click-stack__copy-reference { flex: 0 0 auto; margin-right: var(--cb-space-2); }

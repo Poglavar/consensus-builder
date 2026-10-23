@@ -120,6 +120,7 @@
     }
 
     function clearHoverOutline() {
+        if (global.ClickStack?.holdsHighlight?.()) return;
         if (lastHoverRef === null) return;
         lastHoverRef = null;
         if (typeof global.highlightFeaturesForHover === 'function') global.highlightFeaturesForHover([]);

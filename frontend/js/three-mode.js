@@ -1300,10 +1300,56 @@
         body.appendChild(el);
     }
 
+    let stackFocusGroup = null;
+    function pulseStackFocus(now) {
+        const opacity = 0.55 + 0.45 * (1 + Math.cos(now * Math.PI * 2 / 1400)) / 2;
+        stackFocusGroup?.traverse(object => { if (object.material) object.material.opacity = opacity; });
+    }
+    function clearStackFocus() {
+        const index = frameHooks.indexOf(pulseStackFocus);
+        if (index >= 0) frameHooks.splice(index, 1);
+        if (!stackFocusGroup) return;
+        clearGroupChildren(stackFocusGroup);
+        stackFocusGroup.removeFromParent();
+        stackFocusGroup = null;
+        invalidateThreeView();
+    }
+    function highlightStackObject(kind, instance) {
+        clearStackFocus();
+        const features = window.ClickStackHits.featuresFor(kind, instance);
+        if (!scene || !features.length) return;
+        stackFocusGroup = new THREE.Group();
+        stackFocusGroup.name = 'click-stack-focus';
+        stackFocusGroup.userData = { kind, id: instance.id };
+        const material = new THREE.LineBasicMaterial({ color: 0x0284c7, linewidth: 3,
+            transparent: true, opacity: 1, depthTest: false, depthWrite: false });
+        for (const feature of features) {
+            const objects = ['Polygon', 'MultiPolygon'].includes(feature.geometry.type)
+                ? polygonFeatureToBorderLines(feature, material, 0.6) : [lineFeatureToLine(feature, material, 0.6)].filter(Boolean);
+            for (const object of objects) {
+                object.traverse(child => {
+                    if (child.material) markOwnedMaterial(child, material);
+                    child.renderOrder = 9999;
+                    child.raycast = () => {};
+                });
+                stackFocusGroup.add(object);
+            }
+        }
+        if (!stackFocusGroup.children.length) { material.dispose(); stackFocusGroup = null; return; }
+        scene.add(stackFocusGroup);
+        if (!window.__reducedMotion) frameHooks.push(pulseStackFocus);
+        invalidateThreeView();
+    }
+
     // What each section means in the scene, and what fills its body.
     const clickStackAdapter = {
         activate(kind, instance, body) {
             if (!instance || !body) return;
+            if (kind !== 'designs') withStackDriving(() => {
+                clearIsolation();
+                window.clearProposalHighlights?.();
+                window.ProposalSelection?.clear?.();
+            });
             if (kind === 'designs') {
                 body.replaceChildren();
                 if (isolatedProposalId !== instance.id) {
@@ -1317,7 +1363,7 @@
                 const actions = document.createElement('button');
                 actions.type = 'button';
                 actions.className = 'btn btn-sm';
-                actions.textContent = threeI18n('planningViews.proposalActions', 'Proposal actions');
+                actions.textContent = threeI18n('planningViews.proposalActions', 'Design actions');
                 actions.addEventListener('click', async () => {
                     await window.requestMapMode('2d');
                     window.ClickStack.showDesign(instance.id);
@@ -1333,17 +1379,21 @@
                 withStackDriving(() => window.PlanningViews.select(instance.id));
                 hostInspector(body);
             }
+            highlightStackObject(kind, instance);
         },
         // The section closes: its figures leave, and the inspector goes home, deselected only when
         // it still shows what the stack chose (a selection made elsewhere is that surface's).
-        release() {
+        focus(kind, instance) { highlightStackObject(kind, instance); },
+        release({ keepSelection = false } = {}) {
+            clearStackFocus();
             parcelInfoPanelEl?.remove();
             const hosted = stackInspector;
             if (!hosted) return;
             stackInspector = null;
             hosted.el.classList.remove('is-hosted');
             hosted.parent?.insertBefore(hosted.el, hosted.next && hosted.next.parentNode === hosted.parent ? hosted.next : null);
-            if (hosted.selectedId && window.PlanningViews?.getSelected()?.id === hosted.selectedId) {
+            if (keepSelection) hosted.el.hidden = true;
+            else if (hosted.selectedId && window.PlanningViews?.getSelected()?.id === hosted.selectedId) {
                 withStackDriving(() => window.PlanningViews.select(null));
             }
         },
@@ -1402,9 +1452,11 @@
         const builtList = [...(built ? [{ id: builtId, feature: built }] : []), ...buildingsOnParcel(parcelId)];
         const input = {
             built: builtList.map(builtInstance),
-            designs: designs.map(p => ({ id: String(proposalIdOf(p)), label: proposalDisplayTitle(p) })),
+            designs: designs.map(p => ({ id: String(proposalIdOf(p)), label: proposalDisplayTitle(p), proposal: p })),
+            agreements: (window.AgreementStore?.list() || []).filter(agreement => agreement.designs.some(design => designs.some(proposal => String(proposalIdOf(proposal)) === String(design.proposalId))))
+                .map(agreement => ({ id: agreement.id, label: agreement.title || agreement.id, agreement })),
             permitted: massingIds.map(id => ({ id, label: items.find(item => item.id === id)?.title || '' })),
-            parcels: parcelId ? [{ id: parcelId, label: stackApi.parcelLabel(parcelId) }] : []
+            parcels: parcelId ? [{ id: parcelId, label: stackApi.parcelLabel(parcelId), feature: getParcelFeatureById(parcelId) }] : []
         };
         const focus = plan.proposal ? 'designs' : stackApi.focusOf(picked && picked.proposalId ? null : picked);
         const selected = { ...(plan.proposal ? { designs: plan.proposal.id } : {}), ...(builtId ? { built: builtId } : {}) };
@@ -1469,7 +1521,7 @@
                 const label = banner.querySelector('.isolation-banner-label');
                 if (label) {
                     label.textContent = isolatedProposalId !== null
-                        ? threeI18n('threeMode.isolation.proposalView', 'Proposal view')
+                        ? threeI18n('threeMode.isolation.proposalView', 'Design view')
                         : threeI18n('threeMode.isolation.singleParcel', 'Single parcel view');
                 }
             }
@@ -8747,30 +8799,19 @@
         const plan = window.__threeClickPlan.planThreeClick({
             picked, groundParcelId: parcelUnderClick(evt), viewedParcelId, isolatedParcelId, isolatedProposalId, proposalKnown: !!proposal
         });
+        if (plan.proposal?.action === 'retain' || plan.parcel?.action === 'retain') return;
         if (plan.selectMassing) window.PlanningViews.select(plan.selectMassing);
         if (plan.inspectBuilding) window.PlanningViews.inspectBuilding(plan.inspectBuilding);
         if (plan.clearSelection) window.PlanningViews?.select(null);
         if (plan.proposal) {
-            // 3D is a viewing mode (for now): no 2D details panel here. Clicking a proposal
-            // selects it silently and isolates it; clicking it again returns to full view.
-            if (plan.proposal.action === 'clear') {
-                endSelectionView();
-                try { window.ProposalSelection?.clear?.(); } catch (_) { }
-                return;
-            } else {
-                const parcelId = picked.parcelId || proposal?.cadastreParcelIds?.[0] || null;
-                if (typeof window.selectAndHighlightProposal === 'function') {
-                    // keepHighlightsWithoutUi: with no 2D panel open, the selection would
-                    // otherwise be cleared by the function's no-visible-UI safety net.
-                    window.selectAndHighlightProposal(plan.proposal.id, parcelId, false, false, true);
-                }
-                isolateProposal(plan.proposal.id);
-            }
+            const parcelId = picked.parcelId || proposal?.cadastreParcelIds?.[0] || null;
+            // The scene presents this selection; no separate 2D details panel is opened.
+            window.selectAndHighlightProposal?.(plan.proposal.id, parcelId, false, false, true);
+            isolateProposal(plan.proposal.id);
         }
         if (plan.parcel?.action === 'clear') { endSelectionView(); return; }
-        if (plan.parcel?.action === 'isolate') isolateParcel(plan.parcel.id);
-        // A parcel's massing is a section of the stack, opened from there, not on every click.
-        else if (plan.parcel) viewParcel(plan.parcel.id);
+        // A parcel's massing is opened from its section, not on every click.
+        if (plan.parcel) viewParcel(plan.parcel.id);
         // A click on nothing closes the stack, as in 2D (it has no close button of its own).
         if (!plan.parcel && !plan.proposal && !plan.selectMassing && !plan.inspectBuilding) {
             if (window.ThreeClickStack?.isOpen?.()) endSelectionView();

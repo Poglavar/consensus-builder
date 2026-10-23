@@ -1,7 +1,7 @@
 // The 3D model view's click stack (click-stack.md, "3D model view"): what one click in the scene
 // stands on, as section cards floating over the scene down the right side, top to bottom Built →
 // Design → Permitted → Parcel; no panel or header around them. It closes the way the 2D stack does:
-// Escape, a click on nothing, a repeat click, the isolation banner's ×. The 2D stack's look (its
+// Escape, a click on nothing, the isolation banner's ×. The 2D stack's look (its
 // frame and .click-stack__* classes) with the 3D view's own contents: the
 // Design section holds the whole proposal's figures across all its parcels, the Parcel section the
 // one parcel's. Expanding a section collapses the others. The scene (three-mode.js) supplies an
@@ -54,11 +54,11 @@
             sections.push({ kind, instances, count: instances.length, multi: instances.length > 1, selectedIndex: Math.max(0, wanted) });
         }
         const expanded = (sections.find(section => section.kind === focus) || sections[sections.length - 1] || null);
-        return { sections, expanded: expanded ? expanded.kind : null };
+        return { sections, expanded: expanded ? expanded.kind : null, selectedKind: expanded ? expanded.kind : null };
     }
 
     function expand(stack, kind) {
-        return stack.sections.some(section => section.kind === kind) ? { ...stack, expanded: kind } : stack;
+        return stack.sections.some(section => section.kind === kind) ? { ...stack, expanded: kind, selectedKind: kind } : stack;
     }
 
     function selectInstance(stack, kind, id) {
@@ -83,7 +83,7 @@
     // ── the panel ─────────────────────────────────────────────────────────────────────────────
 
     const doc = global.document;
-    const state = { el: null, stack: null, adapter: null };
+    const state = { el: null, stack: null, adapter: null, input: null };
 
     function t(key, fallback, params = {}) {
         const value = global.i18n?.t?.(key, params);
@@ -96,7 +96,13 @@
             case 'built': return section.multi ? t('clickStack.builtMany', 'Built ({{count}})', { count: section.count }) : t('threeMode.controls.built', 'Built');
             case 'designs': return section.multi ? t('clickStack.designs', 'Designs ({{count}})', { count: section.count }) : t('proposalDrafts.tabs.design', 'Design');
             case 'permitted': return section.multi ? t('clickStack.permittedMany', 'Permitted ({{count}})', { count: section.count }) : t('planningViews.permitted', 'Permitted');
-            default: return section.multi ? t('clickStack.parcels', 'Parcels ({{count}})', { count: section.count }) : t('threeMode.parcelPanel.title', 'Parcel');
+            default: {
+                if (section.multi) return t('clickStack.parcels', 'Parcels ({{count}})', { count: section.count });
+                const parcel = section.instances[section.selectedIndex];
+                const identity = global.ParcelMenuModel?.parcelIdentityKind(parcel?.feature?.properties, parcel?.id);
+                return ['formed', 'plotPiece', 'remainder'].includes(identity)
+                    ? t('clickStack.formed', 'Formed parcel') : t('clickStack.parcel', 'Cadastral parcel');
+            }
         }
     }
 
@@ -122,11 +128,27 @@
         return el;
     }
 
+    function renderChoices(group) {
+        const choices = doc.createElement('div');
+        choices.className = 'click-stack__choices';
+        choices.dataset.kind = group.kind;
+        choices.setAttribute('role', 'group');
+        choices.setAttribute('aria-label', rowTitle({ ...group, multi: group.count > 1 }));
+        const count = doc.createElement('span');
+        count.className = 'click-stack__choice-count';
+        count.textContent = `(${group.count})`;
+        const strip = doc.createElement('div');
+        strip.className = 'click-stack__strip';
+        group.instances.forEach(item => strip.appendChild(button('click-stack__chip', item.label || item.id, { action: 'related', kind: group.kind, id: item.id })));
+        choices.append(count, strip);
+        return choices;
+    }
+
     function render() {
         const el = state.el;
         const { stack } = state;
         // Whatever the old body hosted goes home first; the expanded section hosts it again.
-        state.adapter?.release?.();
+        state.adapter?.release?.({ keepSelection: !stack.expanded });
         el.textContent = '';
         el.setAttribute('aria-label', t('clickStack.title', 'At this spot'));
         const list = doc.createElement('div');
@@ -138,6 +160,9 @@
             wrap.className = 'click-stack__section';
             wrap.dataset.kind = section.kind;
             wrap.classList.toggle('is-expanded', expanded);
+            wrap.classList.toggle('is-selected', stack.selectedKind === section.kind);
+            const context = expanded ? global.__clickStackModel?.contextFor(section.kind, instance, state.input) || [] : [];
+            context.filter(group => group.position === 'above').forEach(group => wrap.appendChild(renderChoices(group)));
             const card = doc.createElement('div');
             card.className = 'click-stack__card';
             card.id = `three-click-stack-${section.kind}-card`;
@@ -160,40 +185,22 @@
             heading.className = 'click-stack__heading';
             heading.appendChild(row);
             card.appendChild(heading);
-            if (section.multi) {
-                const picker = doc.createElement('div');
-                picker.className = 'click-stack__picker';
-                const label = doc.createElement('div');
-                label.className = 'click-stack__picker-label';
-                label.textContent = rowTitle(section);
-                const strip = doc.createElement('div');
-                strip.className = 'click-stack__strip';
-                strip.setAttribute('role', 'group');
-                strip.setAttribute('aria-label', rowTitle(section));
-                section.instances.forEach((item, index) => {
-                    const chip = button('click-stack__chip', item.label || item.id, { action: 'instance', kind: section.kind, id: item.id });
-                    chip.setAttribute('aria-pressed', String(index === section.selectedIndex));
-                    chip.setAttribute('aria-controls', card.id);
-                    chip.title = item.label || item.id;
-                    strip.appendChild(chip);
-                });
-                picker.append(label, strip);
-                wrap.appendChild(picker);
-            }
             if (expanded) {
                 const body = doc.createElement('div');
                 body.className = 'click-stack__body';
                 card.appendChild(body);
             }
             wrap.appendChild(card);
+            context.filter(group => group.position === 'below').forEach(group => wrap.appendChild(renderChoices(group)));
             list.appendChild(wrap);
         });
         el.appendChild(list);
     }
 
     function activate() {
-        const kind = state.stack.expanded;
+        const kind = state.stack.selectedKind;
         if (!kind) return;
+        if (!state.stack.expanded) { state.adapter.focus?.(kind, selectedInstance(state.stack, kind)); return; }
         const body = state.el.querySelector(`.click-stack__section[data-kind="${kind}"] .click-stack__body`);
         try {
             state.adapter.activate(kind, selectedInstance(state.stack, kind), body);
@@ -209,6 +216,7 @@
         ensureElement(container);
         state.adapter?.release?.();
         state.adapter = adapter;
+        state.input = input;
         state.stack = buildThreeStack(input, options);
         if (!state.stack.sections.length) { close({ silent: true }); return false; }
         render();
@@ -251,18 +259,20 @@
             if (state.stack.expanded === kind) {
                 state.stack = { ...state.stack, expanded: null };
                 render();
+                activate();
             } else {
                 state.stack = expand(state.stack, kind);
                 render();
                 activate();
             }
-        } else if (action === 'instance') {
+        } else if (action === 'related') {
+            if (kind === 'agreements') {
+                Promise.resolve(global.requestMapMode('2d')).then(() => global.ClickStack.showAgreement(id));
+                return;
+            }
             state.stack = expand(selectInstance(state.stack, kind, id), kind);
             render();
             activate();
-            const chosen = state.el.querySelector(`.click-stack__section[data-kind="${kind}"] .click-stack__picker [aria-pressed="true"]`);
-            chosen?.focus?.({ preventScroll: true });
-            chosen?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
         }
     }
 

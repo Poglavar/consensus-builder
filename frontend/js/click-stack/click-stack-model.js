@@ -91,7 +91,7 @@
         const candidates = pointSections(sections).filter(section => section.expandable);
         const expandedSection = candidates.find(section => section.kind === remembered) || candidates[0]
             || sections.find(section => section.expandable) || null;
-        return { sections, expanded: expandedSection ? expandedSection.kind : null, topRef: topRefOf(sections) };
+        return { sections, expanded: expandedSection ? expandedSection.kind : null, selectedKind: expandedSection ? expandedSection.kind : null, topRef: topRefOf(sections) };
     }
 
     // Selection is a map mode, not a hit at a point. Its section exists with zero members too.
@@ -99,14 +99,13 @@
         const instance = { ...summary, id: 'current', ref: 'selection:current' };
         return { sections: [{ kind: 'selection', instances: [instance], count: summary.count,
             multi: false, expandable: true, selectedIndex: 0, atPoint: false }],
-            expanded: expanded ? 'selection' : null, topRef: instance.ref };
+            expanded: expanded ? 'selection' : null, selectedKind: 'selection', topRef: instance.ref };
     }
 
-    // A click on the same topmost object, or on a spot with nothing on it, closes an open panel;
-    // any other click shows the new spot.
+    // A repeat click retains selection. Empty ground deselects; another object replaces it.
     function clickAction(openTopRef, next) {
         if (!next || !next.topRef) return openTopRef ? 'close' : 'none';
-        if (openTopRef && openTopRef === next.topRef) return 'close';
+        if (openTopRef && openTopRef === next.topRef) return 'retain';
         return 'open';
     }
 
@@ -114,7 +113,7 @@
     function expand(stack, kind) {
         const section = stack.sections.find(item => item.kind === kind);
         if (!section || !section.expandable) return stack;
-        return { ...stack, expanded: kind };
+        return { ...stack, expanded: kind, selectedKind: kind };
     }
 
     function selectInstance(stack, kind, id) {
@@ -131,5 +130,40 @@
         return section ? section.instances[section.selectedIndex] : null;
     }
 
-    return Object.freeze({ ORDER, summarizeSelection, buildSelectionStack, buildClickStack, clickAction, expand, selectInstance, selectedInstance });
+    // Context strips navigate relationships, never siblings of the selected object.
+    function contextFor(kind, instance, hits = {}) {
+        if (!instance) return [];
+        const groups = [];
+        const add = (position, target, items) => {
+            const seen = new Set();
+            const instances = items.filter(item => item?.id != null && !seen.has(String(item.id)) && seen.add(String(item.id))).map(item => ({ ...item, id: String(item.id) }));
+            if (instances.length) groups.push({ position, kind: target, instances, count: instances.length });
+        };
+        const id = String(instance.id);
+        const designs = hits.designs || [], formed = hits.formed || [], parcels = hits.parcels || [];
+        const sourceIds = item => (item.feature?.properties?.cadastreParcelIds || []).map(String);
+        const designUsesParcel = (design, parcel) => {
+            const ids = (design.proposal?.cadastreParcelIds || []).map(String);
+            return ids.includes(String(parcel.id)) || sourceIds(parcel).some(id => ids.includes(id));
+        };
+        if (kind === 'agreements') {
+            add('below', 'designs', (instance.agreement?.designs || []).map(design => designs.find(item => item.id === String(design.proposalId))
+                || { id: String(design.proposalId), label: design.title || String(design.proposalId) }));
+        } else if (kind === 'designs') {
+            add('above', 'agreements', (hits.agreements || []).filter(item => (item.designIds || item.agreement?.designs?.map(design => String(design.proposalId)) || []).includes(id)));
+            const pieces = formed.filter(item => String(item.designId) === id);
+            if (pieces.length) add('below', 'formed', pieces);
+            else add('below', 'parcels', parcels.filter(item => designUsesParcel(instance, item)));
+        } else if (kind === 'formed') {
+            if (instance.designId) add('above', 'designs', [designs.find(item => String(item.id) === String(instance.designId)) || { id: String(instance.designId), label: instance.designLabel || String(instance.designId) }]);
+            add('below', 'parcels', parcels.filter(item => sourceIds(instance).includes(String(item.id))));
+        } else if (kind === 'parcels') {
+            const parents = formed.filter(item => sourceIds(item).includes(id));
+            if (parents.length) add('above', 'formed', parents);
+            else add('above', 'designs', designs.filter(item => designUsesParcel(item, instance)));
+        }
+        return groups;
+    }
+
+    return Object.freeze({ ORDER, summarizeSelection, buildSelectionStack, buildClickStack, clickAction, expand, selectInstance, selectedInstance, contextFor });
 });

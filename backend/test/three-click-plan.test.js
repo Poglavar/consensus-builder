@@ -19,11 +19,11 @@ describe('planThreeClick', () => {
         expect(planThreeClick({ ...idle, picked: { builtFeature: feature }, groundParcelId: null }).parcel).toBeNull();
     });
 
-    it('selects and isolates a proposal, viewing the parcel under the click; a second click clears it', () => {
+    it('selects and isolates a proposal, viewing the parcel under the click; a second click retains it', () => {
         const first = planThreeClick({ ...idle, picked: { proposalId: 'p-1', parcelId: 'HR-3' }, groundParcelId: 'HR-3', proposalKnown: true });
         expect(first).toMatchObject({ clearSelection: true, proposal: { id: 'p-1', action: 'isolate' }, parcel: { id: 'HR-3', action: 'view' } });
         const again = planThreeClick({ ...idle, isolatedProposalId: 'p-1', viewedParcelId: 'HR-3', picked: { proposalId: 'p-1', parcelId: 'HR-3' }, groundParcelId: 'HR-3', proposalKnown: true });
-        expect(again).toMatchObject({ proposal: { id: 'p-1', action: 'clear' }, parcel: null });
+        expect(again).toMatchObject({ clearSelection: false, proposal: { id: 'p-1', action: 'retain' }, parcel: null });
         // Through a design the ray can reach the neighbour's slab: the design's own slice is the parcel in view.
         expect(planThreeClick({ ...idle, picked: { proposalId: 'p-1', parcelId: 'HR-3' }, groundParcelId: 'HR-2', proposalKnown: true }).parcel)
             .toEqual({ id: 'HR-3', action: 'view' });
@@ -31,13 +31,13 @@ describe('planThreeClick', () => {
         expect(planThreeClick({ ...idle, picked: { proposalId: 'gone', parcelId: 'HR-3' }, groundParcelId: 'HR-3', proposalKnown: false }).parcel).toEqual({ id: 'HR-3', action: 'view' });
     });
 
-    it('steps a ground click through view, isolate and clear on the same parcel', () => {
+    it('retains selection on repeated ground clicks on the same parcel', () => {
         const first = planThreeClick({ ...idle, picked: { parcelId: 'HR-4' }, groundParcelId: 'HR-4' });
         expect(first).toMatchObject({ clearSelection: true, parcel: { id: 'HR-4', action: 'view' } });
         const second = planThreeClick({ ...idle, viewedParcelId: 'HR-4', picked: { parcelId: 'HR-4' }, groundParcelId: 'HR-4' });
-        expect(second.parcel).toEqual({ id: 'HR-4', action: 'isolate' });
+        expect(second).toMatchObject({ clearSelection: false, parcel: { id: 'HR-4', action: 'retain' } });
         const third = planThreeClick({ ...idle, viewedParcelId: 'HR-4', isolatedParcelId: 'HR-4', picked: { parcelId: 'HR-4' }, groundParcelId: 'HR-4' });
-        expect(third.parcel).toEqual({ id: 'HR-4', action: 'clear' });
+        expect(third.parcel).toEqual({ id: 'HR-4', action: 'retain' });
         // Another parcel while one is isolated: view it (the isolation gives way in the executor).
         const other = planThreeClick({ ...idle, viewedParcelId: 'HR-4', isolatedParcelId: 'HR-4', picked: { parcelId: 'HR-5' }, groundParcelId: 'HR-5' });
         expect(other.parcel).toEqual({ id: 'HR-5', action: 'view' });

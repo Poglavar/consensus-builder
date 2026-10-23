@@ -12,26 +12,26 @@ const stack = require('../../frontend/js/three-click-stack.js');
 
 const feature = { type: 'Feature', properties: {}, geometry: null };
 
-describe('3D click stack item selectors', () => {
-    it.each(['built', 'designs', 'parcels'])('keeps the %s selector immediately above its selected-item card', kind => {
+describe('3D click stack contextual selection', () => {
+    it('navigates between design and parcel, keeping collapsed selection focused', () => {
         const document = makeDocument();
-        const context = { document, console };
+        const context = { document, console, __clickStackModel: require('../../frontend/js/click-stack/click-stack-model.js') };
         context.window = context;
         vm.createContext(context);
         vm.runInContext(readFileSync(new URL('../../frontend/js/three-click-stack.js', import.meta.url), 'utf8'), context);
-        const api = context.ThreeClickStack;
-        const adapter = { activate: (_kind, item, body) => { body.textContent = item.label; } };
-        api.show({ [kind]: [{ id: 'a', label: 'First item' }, { id: 'b', label: 'Second item' }] }, { focus: kind }, adapter);
-        const section = () => document.querySelector(`.click-stack__section[data-kind="${kind}"]`);
-        const picker = section().querySelector('.click-stack__picker');
-        const card = section().querySelector('.click-stack__card');
-        expect(picker.nextSibling).toBe(card);
-        expect(card.querySelector('.click-stack__strip')).toBeNull();
-        expect(card.querySelector('.click-stack__body').textContent).toBe('First item');
-        picker.querySelector('[data-id="b"]').click();
-        expect(section().querySelector('.click-stack__body').textContent).toBe('Second item');
-        expect(section().querySelector('[aria-pressed="true"]').dataset.id).toBe('b');
-        expect(section().querySelector('[aria-pressed="true"]').getAttribute('aria-controls')).toBe(`three-click-stack-${kind}-card`);
+        const api = context.ThreeClickStack, focused = [];
+        const adapter = { activate: (_kind, item, body) => { body.textContent = item.label; }, focus: (kind, item) => focused.push([kind, item.id]) };
+        api.show({ designs: [{ id: 'a', label: 'Garden', proposal: { cadastreParcelIds: ['p'] } }], parcels: [{ id: 'p', label: '12' }] }, { focus: 'designs' }, adapter);
+        const section = kind => document.querySelector(`.click-stack__section[data-kind="${kind}"]`);
+        expect(section('designs').querySelector('.click-stack__choices').dataset.kind).toBe('parcels');
+        section('designs').querySelector('[data-id="p"]').click();
+        expect(api.current()).toMatchObject({ selectedKind: 'parcels', expanded: 'parcels' });
+        expect(section('parcels').querySelector('.click-stack__choices').dataset.kind).toBe('designs');
+        section('parcels').querySelector('.click-stack__row').click();
+        expect(api.current()).toMatchObject({ selectedKind: 'parcels', expanded: null });
+        expect(section('parcels').classList.contains('is-selected')).toBe(true);
+        expect(document.querySelector('.click-stack__choices')).toBeNull();
+        expect(focused).toEqual([['parcels', 'p']]);
     });
 });
 

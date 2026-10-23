@@ -296,7 +296,7 @@
         dialog.textContent = '';
 
         const header = el('div', 'cb-dialog__header parcel-compare__head');
-        const title = el('h2', 'cb-dialog__title parcel-compare__title', t('parcelCompare.title', 'Compare proposals on parcel {{number}}', { number: parcel.displayId }));
+        const title = el('h2', 'cb-dialog__title parcel-compare__title', t('parcelCompare.title', 'Compare designs on parcel {{number}}', { number: parcel.displayId }));
         title.id = `${DIALOG_ID}-title`;
         const close = el('button', 'close-circle-btn parcel-compare__close', '×');
         close.type = 'button';

@@ -67,7 +67,7 @@ function loadPanel({ memory = null, withEditLock = false } = {}) {
         addEventListener: vi.fn(),
         navigator: {},
         __clickStackModel: model,
-        ClickStackHits: { hitsAt: vi.fn(latlng => hitsBySpot.get(latlng.lat) || {}) },
+        ClickStackHits: { hitsAt: vi.fn(latlng => hitsBySpot.get(latlng.lat) || {}), featuresFor: vi.fn((_kind, item) => item.feature ? [item.feature] : []) },
         __drillUi: { stackAt: vi.fn(() => [{ kind: 'parcel', id: 'p1', depth: 0 }, { kind: 'proposal', key: 'd1' }]) },
         MapPick: { active: () => false, pick: vi.fn() },
         highlightFeaturesForHover: vi.fn(),
@@ -101,86 +101,44 @@ function loadPanel({ memory = null, withEditLock = false } = {}) {
     };
 }
 
-describe('click stack panel: section nouns and counts', () => {
-    it.each([
-        ['built', 'Building', 'Buildings'],
-        ['permitted', 'Permitted', 'Permitted'],
-        ['formed', 'Formed parcel', 'Formed parcels'],
-        ['parcels', 'Cadastral parcel first', 'Parcels'],
-        ['designs', 'Proposal', 'Proposals']
-    ])('labels the %s section by its unique hit count and keeps object references', (kind, singular, plural) => {
+describe('click stack selected objects and contextual navigation', () => {
+    it.each([['built', 'Building'], ['permitted', 'Permitted'], ['formed', 'Formed parcel'], ['parcels', 'Cadastral parcel'], ['designs', 'Design']])('keeps the selected %s header and focus when collapsed', (kind, noun) => {
         const h = loadPanel();
-        const first = { id: 'first', label: 'Object first', feature: parcelFeature };
-        const second = { id: 'second', label: 'Object second', feature: parcelFeature };
-        const title = () => h.section(kind).querySelector('.click-stack__row-title').textContent;
-        h.context.ClickStackHits.hitsAt.mockReturnValue({ [kind]: [first, first] });
+        h.context.ClickStackHits.hitsAt.mockReturnValue({ [kind]: [{ id: 'first', label: 'Long object name', feature: parcelFeature }] });
+        h.context.ClickStackHits.featuresFor.mockReturnValue([parcelFeature]);
         h.click(SPOT_A);
-        expect(title()).toBe(singular);
-        expect(h.section(kind).querySelector('.click-stack__strip')).toBeNull();
-        if (kind === 'parcels') {
-            expect(h.section(kind).querySelector('.click-stack__copy-reference').dataset.reference).toBe('first');
-        }
-
+        h.api.collapse();
+        expect(h.api.current()).toMatchObject({ expanded: null, selectedKind: kind });
+        expect(h.section(kind).classList.contains('is-selected')).toBe(true);
+        expect(h.section(kind).querySelector('.click-stack__row-title').textContent).toBe(noun);
+        expect(h.section(kind).querySelector('.click-stack__body')).toBeNull();
+        expect(h.stackEl().querySelector('.click-stack__choices')).toBeNull();
+        expect(h.stackEl().querySelector('.click-stack__copy-reference')).toBeNull();
+        expect(h.api.holdsHighlight()).toBe(true);
+        expect(h.context.highlightFeaturesForHover).toHaveBeenLastCalledWith([parcelFeature], expect.objectContaining({ className: 'click-stack-map-focus' }));
         h.api.close();
-        h.context.ClickStackHits.hitsAt.mockReturnValue({ [kind]: [first, second, first] });
-        h.click(SPOT_B);
-        expect(title()).toBe(singular);
-        expect(h.section(kind).querySelector('.click-stack__picker-label').textContent).toBe(`${plural} (2)`);
-        const picker = h.section(kind).querySelector('.click-stack__picker');
-        const card = h.section(kind).querySelector('.click-stack__card');
-        expect(picker.nextSibling).toBe(card);
-        expect(card.querySelector('.click-stack__strip')).toBeNull();
-        expect(h.section(kind).querySelectorAll('.click-stack__chip').map(chip => chip.textContent))
-            .toEqual(['Object first', 'Object second']);
-        h.section(kind).querySelector('.click-stack__chip[data-id="second"]').click();
-        expect(title()).toBe(kind === 'parcels' ? 'Cadastral parcel second' : singular);
-        expect(h.api.current().sections[0].instances[h.api.current().sections[0].selectedIndex].id).toBe('second');
-        if (kind === 'parcels') {
-            expect(h.section(kind).querySelector('.click-stack__copy-reference').dataset.reference).toBe('second');
-        }
+        expect(h.api.isOpen()).toBe(false);
+        expect(h.context.highlightFeaturesForHover).toHaveBeenLastCalledWith([]);
     });
 
-    it('uses the section-specific translation keys for single and multiple hits', () => {
+    it("moves from agreement designs to the selected design's agreement links", () => {
         const h = loadPanel();
-        h.context.i18n = { t: vi.fn((key, params) => `translated:${key}:${params.count ?? params.reference ?? ''}`) };
-        h.context.ClickStackHits.hitsAt.mockReturnValue({
-            built: [{ id: 'b1' }], parcels: [{ id: 'p1', feature: parcelFeature }], designs: [{ id: 'd1' }]
-        });
+        const agreement = { id: 'a1', title: 'Neighbourhood', designs: [{ proposalId: 'd1', title: 'Park' }, { proposalId: 'd2', title: 'School' }] };
+        h.context.ClickStackHits.hitsAt.mockReturnValue({ ...HITS_A, agreements: [{ id: 'a1', label: agreement.title, agreement, designIds: ['d1', 'd2'] }] });
         h.click(SPOT_A);
-        const title = kind => h.section(kind).querySelector('.click-stack__row-title').textContent;
-        expect(title('built')).toBe('translated:clickStack.building:');
-        expect(title('parcels')).toBe('translated:clickStack.parcelReference:p1');
-        expect(title('designs')).toBe('translated:clickStack.proposal:');
-        h.api.close();
-        h.context.ClickStackHits.hitsAt.mockReturnValue({
-            built: [{ id: 'b1' }, { id: 'b2' }],
-            parcels: [{ id: 'p1', feature: parcelFeature }, { id: 'p2', feature: parcelFeature }],
-            designs: [{ id: 'd1' }, { id: 'd2' }]
-        });
-        h.click(SPOT_B);
-        expect(title('built')).toBe('translated:clickStack.building:');
-        expect(title('parcels')).toBe('translated:clickStack.parcelReference:p1');
-        expect(title('designs')).toBe('translated:clickStack.proposal:');
-        expect(h.section('built').querySelector('.click-stack__picker-label').textContent).toBe('translated:clickStack.buildings:2');
-        expect(h.section('parcels').querySelector('.click-stack__picker-label').textContent).toBe('translated:clickStack.parcels:2');
-        expect(h.section('designs').querySelector('.click-stack__picker-label').textContent).toBe('translated:clickStack.proposals:2');
-    });
-
-    it('puts related agreements after the selected design, separate from its item selector', () => {
-        const h = loadPanel();
-        h.context.ClickStackHits.hitsAt.mockReturnValue({ ...HITS_A, agreements: [
-            { id: 'a1', label: 'Neighbourhood agreement', designIds: ['d1'], agreement: { id: 'a1', title: 'Neighbourhood agreement', designs: [{ proposalId: 'd1' }] } }
-        ] });
-        h.click(SPOT_A);
-        h.api.expand('designs');
-        const body = h.section('designs').querySelector('.click-stack__body');
-        const related = body.querySelector('.click-stack__related');
-        expect(body.children).toEqual([h.proposalPanel, related]);
-        expect(related.textContent).toContain('Agreements including this design (1)');
-        expect(h.section('designs').querySelector('.click-stack__picker .click-stack__chip').textContent).toBe('Park');
-        related.querySelector('.click-stack__chip').click();
-        expect(h.api.current().expanded).toBe('agreements');
-        expect(h.section('agreements').querySelector('.click-stack__summary strong').textContent).toBe('Neighbourhood agreement');
+        const child = h.section('agreements').querySelector('.click-stack__choices');
+        expect(child.dataset.kind).toBe('designs');
+        expect(child.querySelector('.click-stack__choice-count').textContent).toBe('(2)');
+        child.querySelector('[data-id="d2"]').click();
+        expect(h.api.current()).toMatchObject({ selectedKind: 'designs', expanded: 'designs' });
+        expect(h.context.selectAndHighlightProposal).toHaveBeenLastCalledWith('d2', null, false, true, false, DESIGN_PANEL);
+        expect(h.section('agreements').querySelector('.click-stack__choices')).toBeNull();
+        const parent = h.section('designs').querySelector('.click-stack__choices');
+        expect(parent.dataset.kind).toBe('agreements');
+        expect(parent.nextSibling).toBe(h.section('designs').querySelector('.click-stack__card'));
+        expect(h.section('designs').querySelector('.click-stack__choices[data-kind="designs"]')).toBeNull();
+        parent.querySelector('[data-id="a1"]').click();
+        expect(h.api.current().selectedKind).toBe('agreements');
     });
 });
 
@@ -251,8 +209,7 @@ describe('click stack panel: a click opens, the same click closes', () => {
         expect(h.proposalPanel.parentNode).toBe(h.section('designs').querySelector('.click-stack__body'));
         expect(h.proposalPanel.classList.contains('is-hosted')).toBe(true);
         // Two designs: a strip with the selected one pressed.
-        const chips = h.section('designs').querySelectorAll('.click-stack__chip');
-        expect(chips.map(chip => [chip.dataset.id, chip.getAttribute('aria-pressed')])).toEqual([['d1', 'true'], ['d2', 'false']]);
+        expect(h.section('designs').querySelector('.click-stack__choices')).toBeNull();
     });
 
     it('shows the parcel\'s published proposals when they arrive, keeping the parcel open', () => {
@@ -350,17 +307,14 @@ describe('click stack panel: a click opens, the same click closes', () => {
         expect(h.stackEl().classList.contains('is-folded')).toBe(false);
     });
 
-    it('closes on a second click on the same topmost object and puts the hosted panel back', () => {
+    it('retains the selected object when it is clicked again, including while collapsed', () => {
         const h = loadPanel();
         h.click(SPOT_A);
+        h.api.collapse();
         h.click(SPOT_A);
-        expect(h.api.isOpen()).toBe(false);
-        expect(h.stackEl().classList.contains('visible')).toBe(false);
-        expect(h.doc.body.classList.contains('click-stack-open')).toBe(false);
-        expect(h.proposalPanel.parentNode).toBe(h.dock);
-        expect(h.proposalPanel.classList.contains('is-hosted')).toBe(false);
-        expect(h.proposalPanel.classList.contains('visible')).toBe(false);
-        expect(h.context.ProposalSelection.clear).toHaveBeenCalled();
+        expect(h.api.isOpen()).toBe(true);
+        expect(h.api.current()).toMatchObject({ selectedKind: 'designs', expanded: null });
+        expect(h.context.ProposalSelection.clear).not.toHaveBeenCalled();
     });
 
     it('treats one physical click reaching two layers as one click', () => {
@@ -443,22 +397,11 @@ describe('click stack panel: the remembered section', () => {
         h.section('parcels').querySelector('.click-stack__row').click();
         expect(h.api.current().expanded).toBeNull();
         expect(h.parcelPanel.parentNode).toBe(h.dock);
-        expect(h.context.hideParcelInfoPanel).toHaveBeenCalled();
+        expect(h.context.hideParcelInfoPanel).not.toHaveBeenCalled();
+        expect(h.api.current().selectedKind).toBe('parcels');
     });
 
-    // KNOWN BUG (reported, not fixed here): expand() re-renders the sections while the design's card
-    // is still inside the old section body, so the card is detached from the document before the
-    // newly chosen design is shown and hosted. getElementById then finds no card, the section ends
-    // with nothing hosted and the card is closed. Flip to it() once click-stack-panel.js expand()
-    // releases the hosted panel before render().
-    it('keeps the design card hosted when another design is chosen in the strip', () => {
-        const h = loadPanel();
-        h.click(SPOT_A);
-        h.section('designs').querySelector('.click-stack__chip[data-id="d2"]').click();
-        expect(h.context.selectAndHighlightProposal).toHaveBeenLastCalledWith('d2', null, false, true, false, DESIGN_PANEL);
-        expect(h.proposalPanel.parentNode).toBe(h.section('designs').querySelector('.click-stack__body'));
-        expect(h.proposalPanel.classList.contains('visible')).toBe(true);
-    });
+
 });
 
 describe('click stack panel: other surfaces and the dock', () => {

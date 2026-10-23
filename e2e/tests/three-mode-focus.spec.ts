@@ -50,6 +50,30 @@ const cameraTarget = (page: Page) => page.evaluate(() => {
 const chooseProposal = (page: Page, id: string) => page.evaluate(id => (window as any).selectAndHighlightProposal(id, null, true, true), id);
 
 test.describe('Opening a proposal while 3D is up @features', () => {
+  test('section changes move the model outline and collapsing retains the selected object', async ({ mockApi: page }) => {
+    await mockBuildingScene(page);
+    await openCity(page);
+    const design = await addProposal(page, 'Garden design', PARCEL_ID, PARCEL_GEOMETRY);
+    await enter3DOnTheSampleParcel(page);
+    await chooseProposal(page, design);
+    const focus = () => page.evaluate(() => {
+      const group = (window as any).getThreeModeInternals()?.scene.getObjectByName('click-stack-focus');
+      return group ? { ...group.userData, count: group.children.length } : null;
+    });
+    await expect.poll(focus).toMatchObject({ kind: 'designs', id: design });
+    const stack = page.locator('#three-click-stack');
+    await stack.locator('.click-stack__section[data-kind="parcels"] .click-stack__row').click();
+    await expect.poll(focus).toMatchObject({ kind: 'parcels', id: PARCEL_ID });
+    expect(await page.evaluate(() => (window as any).ProposalSelection.getKey())).toBeNull();
+    await stack.locator('.click-stack__section[data-kind="parcels"] .click-stack__row').click();
+    await expect(stack.locator('.click-stack__section[data-kind="parcels"]')).toHaveClass(/is-selected/);
+    await expect(stack.locator('.click-stack__body')).toHaveCount(0);
+    await expect.poll(focus).toMatchObject({ kind: 'parcels', id: PARCEL_ID });
+    await page.keyboard.press('Escape');
+    await expect(stack).toBeHidden();
+    await expect.poll(focus).toBeNull();
+  });
+
   test('frames the camera on a proposal whose ground the scene has, keeps it selected and opens no parcel row', async ({ mockApi: page }) => {
     await mockBuildingScene(page);
     await openCity(page);

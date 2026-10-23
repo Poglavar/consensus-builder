@@ -142,5 +142,29 @@
         return hits;
     }
 
-    global.ClickStackHits = Object.freeze({ hitsAt, parcelLabel });
+    // The selected object's own geometry, shared by the 2D and model-view focus outlines.
+    // A design's source parcels are provenance; its authored/result geometry is the selection.
+    function featuresFor(kind, instance) {
+        if (!instance) return [];
+        const designFeatures = key => {
+            const proposal = global.proposalStorage?.getProposal?.(String(key));
+            if (!proposal) return [];
+            if (global.collectProposalFeatureSets) return global.collectProposalFeatureSets(proposal, { includeBuildingGeometry: true }).primaryFeatures;
+            const footprint = global.__planOrder?.footprintOf?.(proposal);
+            return footprint ? [footprint] : [];
+        };
+        let features = [];
+        if (kind === 'agreements') features = (instance.agreement?.designs || []).flatMap(design => designFeatures(design.proposalId));
+        else if (kind === 'designs') features = designFeatures(instance.id);
+        else if (kind === 'permitted') {
+            const item = instance.item || global.PlanningViews?.getItems?.().find(item => item.id === instance.id);
+            const shapes = item && global.PlanningViews?.permittedFeatures?.(item);
+            features = shapes ? [...shapes.body, ...shapes.bound] : [];
+            if (!features.length && item?.site) features = [item.site];
+        } else if (kind === 'selection') features = [...(global.multiParcelSelection?.selectedParcels || [])].map(id => global.LiveParcelFabric?.get?.(String(id)));
+        else features = [instance.feature || global.LiveParcelFabric?.get?.(String(instance.id)) || baseFeature(instance.id)];
+        return features.filter(feature => feature?.geometry && ['Polygon', 'MultiPolygon', 'LineString', 'MultiLineString'].includes(feature.geometry.type));
+    }
+
+    global.ClickStackHits = Object.freeze({ hitsAt, parcelLabel, featuresFor });
 })(window);

@@ -1,6 +1,6 @@
 // The click stack (click-stack.md): a 2D map click shows everything under the point in one
 // right-docked panel of sections, agreements above designs above formed and cadastral parcels.
-// Clicking the same spot again closes it, another spot switches it, Escape closes it, and the kind
+// Clicking the same spot again retains it, another spot switches it, Escape closes it, and the kind
 // of the expanded section is remembered for the next click. Several agreements (or designs, or
 // cadastral parcels) at one spot share one row with a strip of chips.
 import { Page } from '@playwright/test';
@@ -41,7 +41,56 @@ async function twoAgreementsOnPark(page: Page, titles = ['First agreement', 'Sec
 const remembered = (page: Page) => page.evaluate(() => localStorage.getItem('cb.clickStack.expanded'));
 
 test.describe('Click stack @core', () => {
-  test('a parcel click opens the stack on the parcel section, a second click closes it, another parcel switches it', async ({ mockApi: page, context }) => {
+  test('expanding sections focuses their object, survives mouseout, and collapsed headers stay on one line', async ({ mockApi: page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await openCity(page);
+    await createSpace(page, 'park');
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    const focus = page.locator('path.click-stack-map-focus');
+    for (const kind of ['designs', 'formed', 'parcels']) {
+      await expandStackSection(page, kind);
+      await expect(focus.first()).toBeVisible();
+      const selected = await page.evaluate(() => (window as any).currentlyHighlightedProposalId);
+      if (kind === 'designs') {
+        expect(selected).toBeTruthy();
+        await stackSection(page, kind).locator('.click-stack__row').click();
+        expect(await page.evaluate(() => (window as any).isProposalUIActive())).toBe(true);
+        await expect(focus.first()).toBeVisible();
+        await expandStackSection(page, kind);
+      }
+      else expect(selected).toBeNull();
+      const paths = await focus.evaluateAll(paths => paths.map(path => path.getAttribute('d')));
+      await page.evaluate(() => (window as any).map.fire('mouseout'));
+      expect(await focus.evaluateAll(paths => paths.map(path => path.getAttribute('d')))).toEqual(paths);
+    }
+    const connector = await stackSection(page, 'formed').evaluate(el => {
+      const style = getComputedStyle(el, '::before');
+      return { left: parseFloat(style.left) + parseFloat(style.borderLeftWidth) / 2, center: el.getBoundingClientRect().width / 2, width: style.borderLeftWidth, color: style.borderLeftColor, z: style.zIndex };
+    });
+    expect(connector.left).toBeCloseTo(connector.center, 0);
+    expect(connector).toMatchObject({ width: '4px', color: 'rgb(0, 0, 0)', z: '-1' });
+    await expect(focus.first()).toHaveCSS('animation-name', 'click-stack-focus-pulse');
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await expect(focus.first()).toHaveCSS('animation-name', 'none');
+    await expect(focus.first()).toBeVisible();
+    await stackSection(page, 'parcels').locator('.click-stack__row').click();
+    await expect(focus.first()).toBeVisible();
+    await expect(stackSection(page, 'parcels')).toHaveClass(/is-selected/);
+    const stack = clickStack(page);
+    await expect(stack.locator('.click-stack__choices')).toHaveCount(0);
+    await expect(stack.locator('.click-stack__copy-reference')).toHaveCount(0);
+    for (const kind of ['designs', 'formed', 'parcels']) {
+      const row = stackSection(page, kind).locator('.click-stack__row');
+      expect((await row.boundingBox())!.height).toBeLessThanOrEqual(48);
+      await expect(row.locator('.click-stack__row-title')).toHaveCSS('white-space', 'nowrap');
+      await expect(row.locator('.click-stack__row-detail')).toHaveCSS('text-overflow', 'ellipsis');
+    }
+    await page.keyboard.press('Escape');
+    await expect(stack).toBeHidden();
+    await expect(focus).toHaveCount(0);
+  });
+
+  test('a parcel click opens the stack on the parcel section, a repeat click retains it, another parcel switches it', async ({ mockApi: page, context }) => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);
     await openCity(page);
     await loadSecondParcel(page);
@@ -58,8 +107,9 @@ test.describe('Click stack @core', () => {
     const panel = parcels.locator('.click-stack__body #parcel-info-panel');
     await expect(panel).toBeVisible();
     await expect(panel).toHaveClass(/is-hosted/);
-    await expect(parcels.locator('.click-stack__row-title')).toHaveText(`Cadastral parcel ${PARCEL_ID}`);
-    await expect(parcels.locator('.click-stack__row-detail')).toBeEmpty();
+    await expect(parcels.locator('.click-stack__row-title')).toHaveText('Cadastral parcel');
+    await expect(parcels.locator('.click-stack__row-detail')).toHaveText(PARCEL_ID);
+    await expect(parcels.locator('.click-stack__copy-reference')).toHaveCount(0);
     await expect(stack.locator('.click-stack__head')).toHaveCount(0);
     await expect(panel.locator('.panel-header')).toBeHidden();
     const designTab = panel.getByRole('tab', { name: 'Design', exact: true });
@@ -89,10 +139,10 @@ test.describe('Click stack @core', () => {
     await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(await coords.textContent());
     expect(await page.evaluate(() => (window as any).currentParcel?.id)).toBe(PARCEL_ID);
 
-    // The same parcel again (elsewhere on it): the stack closes, and the panel with it.
+    // A repeat click retains the selection.
     await clickMapPoint(page, 15.9821, 45.8002);
-    await expect(stack).toBeHidden();
-    await expect(page.locator('#parcel-info-panel')).toBeHidden();
+    await expect(stack).toBeVisible();
+    await expect(page.locator('#parcel-info-panel')).toBeVisible();
 
     // Another parcel while the stack is open: it shows that parcel instead.
     await clickMapPoint(page, 15.9822, 45.80025);
@@ -145,7 +195,7 @@ test.describe('Click stack @core', () => {
     // The formed parcel is live ground the design made: it opens like a parcel, and a new design
     // can start on it.
     const formed = stackSection(page, 'formed');
-    await expect(formed.locator('.click-stack__row')).toContainText('Formed by');
+    await expect(formed.locator('.click-stack__row')).toContainText('Formed parcel');
     await expandStackSection(page, 'formed');
     await expect(formed.locator('#parcel-info-panel')).toBeVisible();
     await expect(formed.locator('[data-command="parcel.useAsSite"]')).toBeVisible();
@@ -173,85 +223,38 @@ test.describe('Click stack @core', () => {
     await expect(stackSection(page, 'parcels').locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'true');
   });
 
-  test('two agreements holding the design show as one row with a strip of chips that switch the agreement', async ({ mockApi: page }) => {
-    await twoAgreementsOnPark(page);
-    const kinds = await sectionKinds(page);
-    expect(kinds.slice(0, 2)).toEqual(['agreements', 'designs']);
-    const agreements = stackSection(page, 'agreements');
-    await expect(agreements.locator('.click-stack__picker-label')).toHaveText('Agreements (2)');
-    await expect(agreements.locator('.click-stack__row-title')).toHaveText('Agreement');
-    const chips = agreements.locator('.click-stack__strip .click-stack__chip');
-    await expect(chips).toHaveText(['Second agreement', 'First agreement']);
-    await expect(chips.nth(0)).toHaveAttribute('aria-pressed', 'true');
-    await expect(agreements.locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'true');
-    await expect(agreements.locator('.click-stack__summary strong')).toHaveText('Second agreement');
-
-    await chips.nth(1).click();
-    await expect(chips.nth(1)).toHaveAttribute('aria-pressed', 'true');
-    await expect(chips.nth(0)).toHaveAttribute('aria-pressed', 'false');
-    await expect(agreements.locator('.click-stack__summary strong')).toHaveText('First agreement');
-    expect(await page.evaluate(() => (window as any).ClickStack.current().sections[0].selectedIndex)).toBe(1);
-
-    // Show its designs outlines them on the map; Details hands the dock to the agreement panel.
-    await agreements.getByRole('button', { name: 'Show its designs', exact: true }).click();
-    await expect.poll(() => page.locator('path.proposal-hover-outline').count()).toBeGreaterThan(0);
-    await agreements.getByRole('button', { name: 'Details', exact: true }).click();
-    await expect(agreementPanel(page)).toBeVisible();
-    await expect(agreementPanel(page)).toContainText('First agreement');
-    await expect(clickStack(page)).toBeHidden();
-  });
-
-  test('mobile item selectors sit above separate cards and related agreements follow the design details', async ({ mockApi: page }) => {
+  test('contextual choices navigate agreement to design and back with a fixed count on mobile', async ({ mockApi: page }) => {
     const titles = ['Garden neighbourhood — shared streets and public gardens', 'Garden neighbourhood — alternative housing and open spaces'];
     await twoAgreementsOnPark(page, titles);
     await page.setViewportSize({ width: 390, height: 844 });
-    const stack = clickStack(page);
-    const halfHeight = (await stack.boundingBox())!.height;
-    await stack.locator(':scope > .mobile-dock-sheet-handle').click();
-    await expect.poll(async () => (await stack.boundingBox())!.height).toBeGreaterThan(halfHeight + 100);
     const agreements = stackSection(page, 'agreements');
-    const picker = agreements.locator('.click-stack__picker');
-    const card = agreements.locator('.click-stack__card');
-    const pickerBox = await picker.boundingBox();
-    const cardBox = await card.boundingBox();
-    expect(pickerBox!.y + pickerBox!.height).toBeLessThanOrEqual(cardBox!.y);
-    expect(cardBox!.y - pickerBox!.y - pickerBox!.height).toBeLessThanOrEqual(8);
-    await expect(card.locator('.click-stack__picker')).toHaveCount(0);
-    await expect(picker.locator('.click-stack__picker-label')).toHaveText('Agreements (2)');
-    await expect(card.locator('.click-stack__row-title')).toHaveText('Agreement');
-    const choices = picker.locator('.click-stack__chip');
-    await expect(choices).toHaveText([titles[1], titles[0]]);
-    await choices.nth(1).click();
-    await expect(card.locator('.click-stack__summary strong')).toHaveText(titles[0]);
-    await expect(choices.nth(1)).toHaveAttribute('aria-pressed', 'true');
-    const stripBox = await picker.locator('.click-stack__strip').boundingBox();
-    const chosenBox = await choices.nth(1).boundingBox();
-    expect(chosenBox!.x).toBeGreaterThanOrEqual(stripBox!.x - 1);
-    expect(chosenBox!.x + chosenBox!.width).toBeLessThanOrEqual(stripBox!.x + stripBox!.width + 1);
-    await expandStackSection(page, 'designs');
-    const design = stackSection(page, 'designs');
-    await expect(design.locator('.click-stack__row-detail')).toBeHidden();
-    const related = design.locator('.click-stack__related');
-    await expect(related.locator('.click-stack__strip-label')).toHaveText('Agreements including this design (2)');
-    expect(await related.evaluate(el => !!(document.getElementById('proposal-details-panel')!.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
-    await related.getByRole('button', { name: titles[1], exact: true }).click();
-    await expect(agreements.locator('.click-stack__summary strong')).toHaveText(titles[1]);
+    const child = agreements.locator('.click-stack__choices[data-kind="designs"]');
+    await expect(child.locator('.click-stack__choice-count')).toHaveText('(1)');
+    expect(await child.evaluate(el => !!(el.previousElementSibling?.classList.contains('click-stack__card')))).toBe(true);
+    await child.locator('.click-stack__chip').click();
+    const designs = stackSection(page, 'designs');
+    await expect(designs).toHaveClass(/is-selected/);
+    await expect(designs.locator('.click-stack__row-title')).toHaveText('Design');
+    await expect(agreements.locator('.click-stack__choices')).toHaveCount(0);
+    await expect(designs.locator('.click-stack__choices[data-kind="designs"]')).toHaveCount(0);
+    const parents = designs.locator('.click-stack__choices[data-kind="agreements"]');
+    await expect(parents.locator('.click-stack__choice-count')).toHaveText('(2)');
+    expect(await parents.evaluate(el => el.nextElementSibling?.classList.contains('click-stack__card'))).toBe(true);
+    const count = parents.locator('.click-stack__choice-count');
+    const countX = (await count.boundingBox())!.x;
+    await parents.locator('.click-stack__strip').evaluate(el => { el.scrollLeft = el.scrollWidth; });
+    expect((await count.boundingBox())!.x).toBe(countX);
+    await parents.getByRole('button', { name: titles[0], exact: true }).click();
+    await expect(agreements).toHaveClass(/is-selected/);
+    await expect(agreements.locator('.click-stack__summary strong')).toHaveText(titles[0]);
+    await expect(agreements.locator('.click-stack__choices[data-kind="agreements"]')).toHaveCount(0);
+    await agreements.locator('.click-stack__row').click();
+    await expect(agreements).toHaveClass(/is-selected/);
+    await expect(agreements.locator('.click-stack__body')).toHaveCount(0);
+    await expect(page.locator('path.click-stack-map-focus').first()).toBeVisible();
+    await expect(clickStack(page).locator('.click-stack__choices')).toHaveCount(0);
   });
 
-  test('a design\'s In agreements chip opens that agreement in its section', async ({ mockApi: page }) => {
-    await twoAgreementsOnPark(page);
-    const agreements = stackSection(page, 'agreements');
-    const chips = agreements.locator('.click-stack__strip .click-stack__chip');
-    // The design's section lists the agreements it belongs to; one of them opens in its section.
-    await expandStackSection(page, 'designs');
-    const inAgreements = stackSection(page, 'designs').locator('.click-stack__strip--inline .click-stack__chip');
-    await expect(inAgreements).toHaveText(['Second agreement', 'First agreement']);
-    await inAgreements.filter({ hasText: 'First agreement' }).click();
-    await expect(clickStack(page)).toBeVisible();
-    await expect(agreements.locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'true');
-    await expect(chips.nth(1)).toHaveAttribute('aria-pressed', 'true');
-    await expect(agreements.locator('.click-stack__summary strong')).toHaveText('First agreement');
-  });
   test('the pieces a road leaves of a parcel open as formed ground that a new design can start on', async ({ mockApi: page }) => {
     await openCity(page);
     const roadId = await drawCorridor(page, 'road');

@@ -38,6 +38,22 @@ const formedEntry = (id, producerId, props = {}) => ({ kind: 'parcel', id, depth
 const bareEntry = (id, props = {}) => ({ kind: 'parcel', id, depth: 0, feature: parcelFeature(props) });
 
 describe('click stack hits', () => {
+    it('focuses the selected design geometry, its agreement designs, and the exact selected parcel', () => {
+        const source = parcelFeature({ parcelId: 'source' });
+        const shapeA = parcelFeature({ design: 'a' }), shapeB = parcelFeature({ design: 'b' });
+        const { context } = loadHits({ registry: { source }, proposals: { a: { proposalId: 'a' }, b: { proposalId: 'b' } } });
+        context.collectProposalFeatureSets = proposal => ({ primaryFeatures: [proposal.proposalId === 'a' ? shapeA : shapeB] });
+        const focus = context.ClickStackHits.featuresFor;
+        expect(focus('designs', { id: 'a' })).toEqual([shapeA]);
+        expect(focus('agreements', { agreement: { designs: [{ proposalId: 'a' }, { proposalId: 'b' }] } })).toEqual([shapeA, shapeB]);
+        expect(focus('parcels', { id: 'source' })).toEqual([source]);
+        expect(focus('formed', { id: 'piece', feature: shapeB })).toEqual([shapeB]);
+        expect(focus('built', { id: 'house', feature: shapeA })).toEqual([shapeA]);
+        context.PlanningViews = { permittedFeatures: () => ({ body: [shapeA], bound: [shapeB] }) };
+        expect(focus('permitted', { item: { id: 'permit', site: source } })).toEqual([shapeA, shapeB]);
+        expect(focus('designs', { id: 'missing' })).toEqual([]);
+    });
+
     it('adds the buildings and proposals of the parcel under the point when no design is there', () => {
         const house = { id: 'b1', feature: { type: 'Feature', properties: { name: 'House' }, geometry: null } };
         const shed = { id: 'b2', feature: { type: 'Feature', properties: { name: 'Shed' }, geometry: null } };

@@ -2,8 +2,8 @@
 // a parcel click: the parcel under the click point, through whatever stands on it, becomes the
 // parcel in view (its figures and outline), while the thing the ray hit first keeps its
 // own meaning on top (a massing opens its inspector, an existing building its record, a proposal
-// building selects and isolates the proposal, and its own parcel slice is the parcel in view). Isolation of a parcel, which dims the rest of the
-// city, is a deliberate second click on the same parcel; a third click clears it. Pure: the caller
+// building selects and isolates the design, and its own parcel slice is the parcel in view).
+// Repeating a click retains the selection. Pure: the caller
 // resolves the pick and the ground parcel and passes what it found.
 //
 //   planThreeClick({ picked, groundParcelId, viewedParcelId, isolatedParcelId, isolatedProposalId, proposalKnown })
@@ -12,8 +12,8 @@
 //     groundParcelId    the parcel slab under the click point, or null off the loaded ground
 //     proposalKnown     whether picked.proposalId resolves to a stored proposal
 //   -> { selectMassing, inspectBuilding, clearSelection, proposal, parcel }
-//     proposal          null | { id, action: 'isolate' | 'clear' }
-//     parcel            null | { id, action: 'view' | 'isolate' | 'clear' }   (id null for 'clear')
+//     proposal          null | { id, action: 'isolate' | 'retain' }
+//     parcel            null | { id, action: 'view' | 'retain' | 'clear' }   (id null for 'clear')
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -43,7 +43,7 @@
         plan.clearSelection = true;
         if (picked && picked.proposalId && input.proposalKnown) {
             const id = String(picked.proposalId);
-            if (isolatedProposal === id) { plan.proposal = { id, action: 'clear' }; return plan; }
+            if (isolatedProposal === id) { plan.clearSelection = false; plan.proposal = { id, action: 'retain' }; return plan; }
             plan.proposal = { id, action: 'isolate' };
             // The proposal's own parcel slice under the point: the slab the ray reaches through a
             // tall or leaning design can be the neighbour's.
@@ -55,8 +55,7 @@
             if (viewed || isolated || isolatedProposal) plan.parcel = { id: null, action: 'clear' };
             return plan;
         }
-        if (pid === isolated) { plan.parcel = { id: pid, action: 'clear' }; return plan; }
-        if (pid === viewed && !isolatedProposal) { plan.parcel = { id: pid, action: 'isolate' }; return plan; }
+        if (pid === isolated || pid === viewed && !isolatedProposal) { plan.clearSelection = false; plan.parcel = { id: pid, action: 'retain' }; return plan; }
         plan.parcel = { id: pid, action: 'view' };
         return plan;
     }

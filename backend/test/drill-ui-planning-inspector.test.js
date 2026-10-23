@@ -32,6 +32,24 @@ function loadDrill({ blocked = false } = {}) {
 }
 
 describe('drill entry points hand map clicks to the click stack', () => {
+    it('does not erase an expanded section focus when the mouse leaves the map', () => {
+        const h = loadDrill();
+        const pending = [];
+        h.context.requestAnimationFrame = callback => { pending.push(callback); return pending.length; };
+        h.context.highlightFeaturesForHover = vi.fn();
+        h.context.__drillStack.buildDrillStack.mockReturnValue([h.parcel]);
+        h.api.notifyHover({ latlng: { lat: 2, lng: 1 } });
+        pending.shift()();
+        expect(h.context.highlightFeaturesForHover).toHaveBeenCalledWith([h.parcel.feature], { showLabels: true });
+        h.context.ClickStack.holdsHighlight = () => true;
+        h.context.highlightFeaturesForHover.mockClear();
+        h.mapHandlers.mouseout();
+        expect(h.context.highlightFeaturesForHover).not.toHaveBeenCalled();
+        h.context.ClickStack.holdsHighlight = () => false;
+        h.mapHandlers.mouseout();
+        expect(h.context.highlightFeaturesForHover).toHaveBeenCalledWith([]);
+    });
+
     it('exposes stackAt and hover only, without the old panel functions', () => {
         const { api } = loadDrill();
         expect(Object.keys(api).sort()).toEqual(['handleParcelClick', 'handleSurfaceClick', 'notifyHover', 'ownsHover', 'stackAt']);

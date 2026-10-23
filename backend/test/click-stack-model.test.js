@@ -5,6 +5,20 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const model = require('../../frontend/js/click-stack/click-stack-model.js');
 
+it('navigates agreement → design → formed parcel → source parcel without offering selected peers', () => {
+    const parcel = { id: 'p1' };
+    const formed = { id: 'piece', designId: 'd1', designLabel: 'Street', feature: { properties: { cadastreParcelIds: ['p1'] } } };
+    const designs = [{ id: 'd1', label: 'Street', proposal: { cadastreParcelIds: ['p1'] }, createdAt: 1 }, { id: 'd2', label: 'Park', createdAt: 2 }];
+    const agreement = { id: 'a1', agreement: { designs: [{ proposalId: 'd1' }, { proposalId: 'd2' }] } };
+    const hits = { agreements: [agreement], designs, formed: [formed], parcels: [parcel] };
+    const links = (kind, item) => model.contextFor(kind, item, hits).map(group => [group.position, group.kind, group.instances.map(item => item.id)]);
+    expect(links('agreements', agreement)).toEqual([['below', 'designs', ['d1', 'd2']]]);
+    expect(links('designs', designs[0])).toEqual([['above', 'agreements', ['a1']], ['below', 'formed', ['piece']]]);
+    expect(links('formed', formed)).toEqual([['above', 'designs', ['d1']], ['below', 'parcels', ['p1']]]);
+    expect(links('parcels', parcel)).toEqual([['above', 'formed', ['piece']]]);
+    expect(model.contextFor('formed', formed, { ...hits, designs: [] })[0].instances).toEqual([{ id: 'd1', label: 'Street' }]);
+});
+
 const kinds = stack => stack.sections.map(section => section.kind);
 
 describe('click stack model', () => {
@@ -66,7 +80,7 @@ describe('click stack model', () => {
         // Open ground: the parcel opens; a second click on the same parcel closes.
         const ground = model.buildClickStack({ designs: [{ id: 'd', onParcel: true }], parcels: [{ id: 'p' }] });
         expect(ground.expanded).toBe('parcels');
-        expect(model.clickAction(ground.topRef, model.buildClickStack({ designs: [{ id: 'd', onParcel: true }], parcels: [{ id: 'p' }] }))).toBe('close');
+        expect(model.clickAction(ground.topRef, model.buildClickStack({ designs: [{ id: 'd', onParcel: true }], parcels: [{ id: 'p' }] }))).toBe('retain');
         expect(model.selectInstance(ground, 'designs', 'd').topRef).toBe('parcels:p');
     });
 
@@ -83,7 +97,7 @@ describe('click stack model', () => {
         const there = model.buildClickStack({ built: [{ id: 'b2' }], parcels: [{ id: 'p' }] });
         const empty = model.buildClickStack({});
         expect(model.clickAction(null, here)).toBe('open');
-        expect(model.clickAction(here.topRef, here)).toBe('close');
+        expect(model.clickAction(here.topRef, here)).toBe('retain');
         expect(model.clickAction(here.topRef, there)).toBe('open');
         expect(model.clickAction(here.topRef, empty)).toBe('close');
         expect(model.clickAction(null, empty)).toBe('none');

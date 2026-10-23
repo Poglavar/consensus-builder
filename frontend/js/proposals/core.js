@@ -591,6 +591,7 @@ function showProposalDownloadConfirm() {
 
 function isProposalUIActive() {
     try {
+        if (window.ClickStack?.isOpen() && window.ClickStack.current()?.selectedKind === 'designs') return true;
         const inspector = document.getElementById('planning-inspector');
         if (inspector && !inspector.hidden && window.PlanningViews?.getSelected()?.role === 'proposed') return true;
         const list = document.querySelector('.proposal-list-modal');
