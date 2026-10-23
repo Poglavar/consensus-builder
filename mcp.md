@@ -474,6 +474,8 @@ files and two headless Playwright cases, accumulated across the scoped runs belo
 | Newly completed parcel/preview work | Headless unit, six explicit files | 74 passed |
 | Current menu regression file | Headless Node unit, `menu-audit-regressions.node.test.js` | 16 passed |
 | Current-parcel recovery action | Headless Playwright, one selected `context-actions.spec.ts` case | 1 passed |
+| Completed evaluator descriptor correction, sandbox attempt | Headless unit, `mcp-eval.test.js` | 3 passed, 4 local HTTP fixtures blocked by sandbox `listen EPERM` |
+| Evaluator descriptor correction with loopback access | Headless unit, same file | 7 passed; repeats seven of the final affected-scope cases |
 
 The six-file run covers `frontend-parcel-menu`, `parcel-build-block-suggestion`, `mcp-http`,
 `mcp-preview-links`, `mcp-eval` and `mcp-deployment-config`, all under `backend/test/` with
