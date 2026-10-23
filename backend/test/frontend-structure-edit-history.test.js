@@ -383,7 +383,8 @@ function makeEditorHarness(decorations, options = {}) {
                 ? savedPayload
                 : (savedPayload?.structureProposal?.decorations || savedDecorations);
         },
-        cancel() { panel.fireClick({ action: 'cancel' }); },
+        // The header × is the editor's only way out without saving (the shell's onCancel).
+        cancel() { mapEditorOptions.at(-1).onCancel(); },
         undo() { document.fireKey({ key: 'z', ctrlKey: true, preventDefault() {} }); }
     };
 }
