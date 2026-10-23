@@ -337,7 +337,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             .find(candidate => typeof candidate === 'string' && candidate.trim());
         const headerTitle = proposalOwnName
             ? displayText(proposalOwnName.trim())
-            : tProposal('panel.proposal.title', 'Proposal Details');
+            : tProposal('panel.proposal.title', 'Design details');
         proposalPanelTitle.textContent = headerTitle;
         proposalPanelTitle.title = headerTitle; // tooltip while paused or when the marquee is off
     }
@@ -801,7 +801,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             </div>
             <div class="proposal-overview-facts">
             <div class="metric-group">
-                <span class="metric-label">${tProposal('panel.proposal.metrics.parcels', 'Parcels in Proposal:')}</span> <span class="metric-value">${parcelIds.length}</span>
+                <span class="metric-label">${tProposal('panel.proposal.metrics.parcels', 'Parcels in design:')}</span> <span class="metric-value">${parcelIds.length}</span>
             </div>
             ${areaSummary.hasSite ? `<div class="metric-group" data-proposal-area-basis="site">
                 <span class="metric-label">${tProposal('panel.proposal.metrics.siteArea', 'Site area:')}</span>
