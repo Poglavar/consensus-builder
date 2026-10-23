@@ -489,7 +489,7 @@
             "days": "hace {{count}} d"
         },
         "sections": {
-            "detailsTitle": "Detalles de la propuesta",
+            "detailsTitle": "Detalles del diseño",
             "parcelsTitle": "Parcelas afectadas",
             "parcelsCopy": "Usa la selección actual del mapa o edita directamente los ID de parcela.",
             "designTitle": "Detalles del diseño",
@@ -1205,7 +1205,7 @@
                 "unavailable": "Las estadísticas no están disponibles. Recarga la página e inténtalo de nuevo."
             },
             "grainScore": {
-                "buttonLabel": "Crítica",
+                "buttonLabel": "Gallo urbano",
                 "buttonHint": "Que pruebe cada parcela resultante",
                 "buttonEmpty": "Aplica primero al menos una propuesta",
                 "institute": "Institut za zrnatost",
@@ -1383,6 +1383,7 @@
             "idLabel": "ID:",
             "geometryReferenceNote": "Referencia de la aplicación derivada de la geometría. No hay número registral de origen; un cambio en el límite genera una nueva referencia.",
             "identity": {
+                "originalBoundary": "Esta es la parcela catastral original. Los diseños aplicados la han sustituido en el mapa de trabajo. Su límite original está resaltado.",
                 "estimated": "Parcela estimada {{number}}",
                 "plotPiece": "Porción de parcela diseñada {{number}}",
                 "remainder": "Terreno remanente {{number}}",
@@ -1424,7 +1425,7 @@
                 "undergroundStation": "Estación de metro",
                 "elevatedStation": "Estación elevada",
                 "selectParcelFirst": "Selecciona una parcela primero.",
-                "replaced": "Los límites de las parcelas en el mapa han cambiado. Selecciona las parcelas actuales para continuar.",
+                "replaced": "Esta es la parcela catastral original. Los diseños aplicados la han sustituido en el mapa de trabajo. Selecciona las parcelas actuales para añadir un diseño.",
                 "unavailable": "Los datos actuales de esta parcela no están cargados en el mapa. Vuelve a cargar las parcelas para continuar.",
                 "selectCurrent": "Seleccionar parcelas actuales",
                 "reload": "Volver a cargar parcelas",
@@ -1559,7 +1560,7 @@
         },
         "proposal": {
             "copyId": "Copiar ID local",
-            "title": "Detalles de la propuesta",
+            "title": "Detalles del diseño",
             "roadSuffix": " (Carretera)",
             "mapStatus": {
                 "applied": "Aplicada",
@@ -1598,7 +1599,7 @@
                 "deleteHint": "Elimina el objeto y su idea por completo.",
                 "editGeometry": "Editar geometría",
                 "editGeometryUnavailable": "Este tipo de propuesta no se puede remodelar (o está minteada y es inmutable).",
-                "details": "Detalles de la propuesta",
+                "details": "Detalles del diseño",
                 "propose": "Proponer",
                 "editDetails": "Detalles",
                 "duplicateDesign": "Duplicar",
@@ -1620,7 +1621,7 @@
                 "id": "ID:",
                 "author": "Autor:",
                 "description": "Descripción:",
-                "parcels": "Parcelas en la propuesta:",
+                "parcels": "Parcelas del diseño:",
                 "area": "Superficie:",
                 "siteArea": "Superficie del ámbito:",
                 "sourceArea": "Suma de superficies de parcelas de origen:",
@@ -2087,8 +2088,7 @@
             "vertexLabel": "Vértice de la huella",
             "surroundingsLabel": "Entorno",
             "editSurroundings": "Editar el entorno",
-            "surroundingsNone": "Dejar como está",
-            "surroundingsPaved": "Pavimentado",
+            "surroundingsPaved": "Pavimento",
             "surroundingsGreen": "Verde",
             "surroundingsInfo": "El tratamiento de la superficie se aplica al terreno alrededor de los edificios propuestos. Las demoliciones siguen la ocupación del terreno del diseño.",
             "uploadGeojsonLabel": "Subir GeoJSON",
@@ -5843,7 +5843,7 @@
         },
         "isolation": {
             "singleParcel": "Parcela seleccionada",
-            "proposalView": "Vista de la propuesta",
+            "proposalView": "Vista del diseño",
             "exitAria": "Salir de esta vista"
         },
         "ai": {
@@ -6223,6 +6223,7 @@
         }
     },
     "mapShell": {
+        "settingsSections": { "navigation": "Navegación" },
         "viewFailed": "Esta vista no se pudo iniciar. Has vuelto al mapa 2D.",
         "modeLocked": "No disponible mientras editas — termina o cancela primero",
         "layers": "Capas",
@@ -6258,9 +6259,7 @@
             "openBets": "Abrir apuestas"
         },
         "maintenance": {
-            "title": "Datos y mantenimiento",
-            "storedTitle": "Guardado en este navegador",
-            "resetSummary": "Restablecer los datos guardados en este navegador…"
+            "localData": "Datos locales (navegador)"
         },
         "bets": "Apuestas",
         "betsNew": "Nuevo",
@@ -6295,7 +6294,7 @@
             "selectMore": "Seleccionar más",
             "details": "Detalles",
             "history": "Historial",
-            "compare": "Comparar propuestas aquí",
+            "compare": "Comparar diseños",
             "tools": "Herramientas",
             "view3d": "Ver en 3D",
             "detectBlock": "Detectar bloque",
@@ -6508,7 +6507,7 @@
         "grainNoParcels": "Aquí no hay parcelas: estas propuestas están en terreno abierto, así que no hay parcelas resultantes que puntuar."
     },
     "parcelCompare": {
-        "title": "Comparar propuestas en la parcela {{number}}",
+        "title": "Comparar diseños en la parcela {{number}}",
         "needTwo": "Al menos dos propuestas deben tocar esta parcela para compararlas.",
         "pick": "Propuesta {{side}}",
         "openDetails": "Detalles",
@@ -7037,7 +7036,7 @@
             "statusUnavailable": "Estado en el servidor no disponible: {{reason}}",
             "statusExpired": "Expirado",
             "statusActive": "Activo",
-            "communityNote": "Con una regla vecinal, los votos se cuentan fuera de la cadena en M3.",
+            "communityNote": "Los votos de la comunidad se cuentan sin una transacción en la cadena de bloques.",
             "copyLink": "Copiar enlace",
             "rederive": "Aquí sus porciones solo se conocen por sus hashes: aplica sus diseños sobre el mismo terreno para volver a derivarlas y comparar.",
             "readOnly": "Acuerdo publicado de solo lectura",
@@ -7338,7 +7337,7 @@
         "savedNoShape": "Este resultado guardado no contiene un volumen visible.",
         "builtRecord": "Edificio observado",
         "observedNote": "Datos del edificio de la fuente. Las medidas que faltan siguen siendo desconocidas.",
-        "proposalActions": "Acciones de la propuesta",
+        "proposalActions": "Acciones del diseño",
         "footprintArea": "Superficie de huella",
         "referenceChanged": "La fuente cambió desde la versión citada por el diseño. Se muestra el registro guardado actual; la revisión citada no se ha reconstruido.",
         "referencedSource": "Fuente: {{source}} · {{revision}}",
@@ -7370,6 +7369,12 @@
         "noPermittedSource": "No hay fuente de edificación permitida aquí"
     },
     "clickStack": {
+        "formedMany": "Parcelas resultantes ({{count}})",
+        "permittedMany": "Permitido ({{count}})",
+        "building": "Edificio",
+        "buildings": "Edificios ({{count}})",
+        "proposal": "Propuesta",
+        "proposals": "Propuestas ({{count}})",
         "parcelReference": "Parcela catastral {{reference}}",
         "title": "En este punto",
         "agreements": "Acuerdos ({{count}})",
@@ -7382,7 +7387,7 @@
         "demolished": "Demolido",
         "demolishedBy": "Demolido por {{design}}",
         "showDesigns": "Mostrar sus diseños",
-        "inAgreements": "En acuerdos ({{count}})",
+        "inAgreements": "Acuerdos que incluyen este diseño ({{count}})",
         "copyCoordinates": "Copiar coordenadas",
         "copied": "Coordenadas copiadas"
     },

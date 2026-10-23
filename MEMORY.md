@@ -1,5 +1,7 @@
 # Memory
 
+- 2026-10-24: MCP authoring should expose every human-editable authored field through granular inspection, patches and geometry operations; compose unforeseen requests from those primitives instead of adding a high-level tool for each sentence. Plan changes create private revisions with rederived ground, preserving immutable publication identities.
+
 - 2026-10-24: Use one mobile top-handle pattern across sheets, panels and long forms: drag to resize, drag below the compact limit to close through existing cleanup. Map context opens half-height, lists/forms expanded; short confirmations keep direct actions. Avoid a second visible X when the shared handle dismisses.
 
 - 2026-10-23: Default to official live cadastral sources for Belgrade and Buenos Aires; outside Serbia, RGZ failure uses the no-parcels flow. Cities without a dedicated building source use backend OSM. Parcel recovery uses one dialog with diagnostics and an in-place retry spinner.
@@ -895,3 +897,11 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - Source configuration belongs to the frontend for every pluggable dataset; backend services accept explicit source IDs and do not select sources from app city configuration.
 
 - 2026-10-23: The user requested Telegram notifications for incoming feedback; reuse the configured private activity destination and retain delivery state in the private inbox so API restarts do not lose pending reports.
+
+- 2026-10-24: Buildings and massing settings apply across the whole view, independently of selection; parcel-specific evidence belongs in object inspectors rather than the display-settings panel.
+
+- 2026-10-24: Permitted and Proposed each have their own dice control and independent example roll in Buildings and massing.
+
+- 2026-10-24: Designs and map sharing use one Designs button and one right-side panel, with Designs and Share tabs; phones retain one resizable sheet.
+
+- 2026-10-24: Settings has one level of sections, closed whenever opened; data providers are chosen per dataset, with no global source selector or source-switch data wipe. The 2D click stack names Building(s), Proposal(s) and Parcel(s), retaining cadastral references.

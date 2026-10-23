@@ -146,7 +146,8 @@
 
     function corridorNodeKey(point) {
         if (!point || !Number.isFinite(point.lat) || !Number.isFinite(point.lng)) return '';
-        return `${Math.round(point.lat / CORRIDOR_NODE_EPS)},${Math.round(point.lng / CORRIDOR_NODE_EPS)}`;
+        const level = typeof point.level === 'number' && Number.isFinite(point.level) ? point.level : 0;
+        return `${Math.round(point.lat / CORRIDOR_NODE_EPS)},${Math.round(point.lng / CORRIDOR_NODE_EPS)},${level}`;
     }
 
     function corridorPointsNear(a, b) {

@@ -51,7 +51,7 @@ function scheduleDebouncedProposalListModalRender() {
 }
 
 function renderProposalListModal() {
-    // A full render supersedes any pending debounced re-render from search/author typing.
+    // A full render supersedes any pending debounced re-render from search typing.
     clearProposalListFilterInputDebounce();
     // If i18n is present but not yet ready, wait for it before rendering to avoid key flicker
     try {
@@ -89,10 +89,8 @@ function renderProposalListModal() {
         },
         filters: {
             goal: t('modal.roadWidth.proposalList.filters.goal', 'Goal'),
-            author: t('modal.roadWidth.proposalList.filters.author', 'Author'),
             search: t('modal.roadWidth.proposalList.filters.search', 'Search'),
             sort: t('modal.roadWidth.proposalList.filters.sort', 'Sort by'),
-            authorPlaceholder: t('modal.roadWidth.proposalList.filters.authorPlaceholder', 'All authors'),
             searchPlaceholder: t('modal.roadWidth.proposalList.filters.searchPlaceholder', 'Search title or author'),
             reset: t('modal.roadWidth.proposalList.filters.reset', 'Reset'),
             resetTooltip: t('modal.roadWidth.proposalList.filters.resetTooltip', 'Reset filters')
@@ -193,20 +191,10 @@ function renderProposalListModal() {
         { value: 'draft', label: t('common.lifecycle.draft', 'Draft') },
         { value: 'published', label: t('common.lifecycle.published', 'Published') }
     ];
-    const appliedFilterOptions = [
-        { value: 'all', label: t('modal.roadWidth.proposalList.filters.appliedAll', 'On map & off map') },
-        { value: 'applied', label: t('modal.roadWidth.proposalList.filters.appliedYes', 'On this map') },
-        { value: 'not-applied', label: t('modal.roadWidth.proposalList.filters.appliedNo', 'Off this map') }
-    ];
     const statusFilterLabel = t('modal.roadWidth.proposalList.filters.publication', 'Publication');
-    const appliedFilterLabel = t('modal.roadWidth.proposalList.filters.applied', 'Applied');
 
-    // Phones: the list is a half-height bottom sheet, and seven filter fields left the list itself
-    // ~30-60px. There the filters fold behind a toggle (collapsed by default, showing how many are
-    // active); the CSS honours the collapse at the phone breakpoint and on short desktop windows,
-    // where the capped 340px sheet otherwise left the list no height; tall desktops show them.
-    const resultCountText = `${chosen.sorted.length} ${t('modal.roadWidth.proposalList.resultCountWord', 'shown')}`;
-
+    // Fold filters on phones and short desktop windows to leave space for the list. The toggle's
+    // badge counts active filters; tall desktops show the fields directly.
     const activeFilterCount = countActiveProposalListFilters(proposalListState);
     const filtersOpen = proposalListState.filtersOpen === true;
     const filtersToggleLabel = t('modal.roadWidth.proposalList.filters.toggle', 'Filters');
@@ -218,7 +206,6 @@ function renderProposalListModal() {
                 ${activeFilterCount ? `<span class="cb-badge cb-badge--count proposal-filters-badge">${activeFilterCount}</span>` : ''}
                 <i class="fas fa-chevron-down proposal-filters-chevron" aria-hidden="true"></i>
             </button>
-            <span class="proposal-filters-toggle-count">${escapeHtml(resultCountText)}</span>
         </div>
     `;
 
@@ -235,14 +222,6 @@ function renderProposalListModal() {
                 <select id="proposal-filter-publication" aria-label="${escapeHtml(statusFilterLabel)}">
                     ${publicationFilterOptions.map(o => `<option value="${o.value}" ${o.value === (proposalListState.publicationFilter || 'all') ? 'selected' : ''}>${escapeHtml(o.label)}</option>`).join('')}
                 </select>
-            </div>
-            <div class="proposal-filter-group">
-                <select id="proposal-filter-applied" aria-label="${escapeHtml(appliedFilterLabel)}">
-                    ${appliedFilterOptions.map(o => `<option value="${o.value}" ${o.value === (proposalListState.appliedFilter || 'all') ? 'selected' : ''}>${escapeHtml(o.label)}</option>`).join('')}
-                </select>
-            </div>
-            <div class="proposal-filter-group">
-                <input type="text" id="proposal-filter-author" placeholder="${escapeHtml(modalStrings.filters.authorPlaceholder)}" data-i18n-key="modal.roadWidth.proposalList.filters.authorPlaceholder" data-i18n-attr="placeholder" value="${escapeHtml(proposalListState.authorFilter)}">
             </div>
             <div class="proposal-filter-group">
                 <label for="proposal-filter-search" data-i18n-key="modal.roadWidth.proposalList.filters.search">${escapeHtml(modalStrings.filters.search)}</label>
@@ -302,7 +281,6 @@ function renderProposalListModal() {
             ${sourceToggleHtml}
             ${filtersToggleHtml}
             ${controlsHtml}
-            <div class="proposal-list-count">${escapeHtml(resultCountText)}</div>
             <div class="proposal-list-modal-body">
                 <div id="proposals-list" class="proposal-tab-content">
                     ${buildTabContent(chosen.sorted)}
@@ -344,10 +322,8 @@ function renderProposalListModal() {
         fallbackMap.set('modal.roadWidth.proposalList.tabs.active', modalStrings.tabs.active);
         fallbackMap.set('modal.roadWidth.proposalList.tabs.executed', modalStrings.tabs.executed);
         fallbackMap.set('modal.roadWidth.proposalList.filters.goal', modalStrings.filters.goal);
-        fallbackMap.set('modal.roadWidth.proposalList.filters.author', modalStrings.filters.author);
         fallbackMap.set('modal.roadWidth.proposalList.filters.search', modalStrings.filters.search);
         fallbackMap.set('modal.roadWidth.proposalList.filters.sort', modalStrings.filters.sort);
-        fallbackMap.set('modal.roadWidth.proposalList.filters.authorPlaceholder', modalStrings.filters.authorPlaceholder);
         fallbackMap.set('modal.roadWidth.proposalList.filters.searchPlaceholder', modalStrings.filters.searchPlaceholder);
         fallbackMap.set('modal.roadWidth.proposalList.sources.local', modalStrings.sources.local);
         fallbackMap.set('modal.roadWidth.proposalList.sources.server', modalStrings.sources.server);
@@ -397,14 +373,6 @@ function renderProposalListModal() {
 
     // Debounce filter typing: full re-render replaces innerHTML and would drop input focus
     // mid-keystroke. 280ms is below "feels laggy" but coalesces typing bursts comfortably.
-    const authorInput = modal.querySelector('#proposal-filter-author');
-    if (authorInput) {
-        authorInput.addEventListener('input', event => {
-            proposalListState.authorFilter = event.target.value;
-            scheduleDebouncedProposalListModalRender();
-        });
-    }
-
     const searchInput = modal.querySelector('#proposal-filter-search');
     if (searchInput) {
         searchInput.addEventListener('input', event => {
@@ -463,14 +431,6 @@ function renderProposalListModal() {
         });
     }
 
-    const appliedSelect = modal.querySelector('#proposal-filter-applied');
-    if (appliedSelect) {
-        appliedSelect.addEventListener('change', event => {
-            proposalListState.appliedFilter = event.target.value;
-            renderProposalListModal();
-        });
-    }
-
     modal.querySelectorAll('.proposal-list-item').forEach(item => {
         item.addEventListener('click', handleProposalListItemClick);
     });
@@ -505,19 +465,12 @@ function renderProposalListModal() {
 }
 
 async function showAllProposalsModal() {
-    const shell = window.MapShell;
-    const alreadyOpen = !!(shell && shell.isOpen && shell.isOpen('proposals-sheet'));
-    if (shell && !alreadyOpen && typeof shell.openSheet === 'function') {
-        shell.openSheet('proposals-sheet');
-        await mountProposalList();
-        return;
-    }
-    await mountProposalList();
+    return openDesignsTab('browse');
 }
 
 // --- Applied-composition sharing panel ----------------------------------------------------------
-// The share-plan UI is a right-docked, full-height panel (like the proposals list), NOT a modal:
-// the map stays visible so the applied composition can be read spatially while selecting proposals.
+// Sharing lives in the Designs panel alongside the design list. The map stays visible so the
+// applied composition can be read spatially while selecting designs.
 // While the panel is open it picks on the map (js/map-pick.js, MapPick 'share'): the map is pan/zoom
 // ONLY — parcels and proposals are click/hover-inert, the sidebar and mode switches are disabled (CSS
 // lockdown via body.map-pick-mode), and a click on an applied design finds its row. The subset
@@ -537,24 +490,22 @@ const SHARE_PLAN_COLORS = [
 const SHARE_PLAN_HOVER_PARCEL_COLOR = '#FFEB3B'; // parcels involved — dashed, hollow
 const SHARE_PLAN_HOVER_BODY_COLOR = '#00E5FF';   // the proposal itself — solid, lightly filled
 
-let _sharePlanPanelState = null; // { root, unregisterEscape, token }
+let _sharePlanPanelState = null; // { root, token }
 
 function sharePlanColorForIndex(index) {
     const n = SHARE_PLAN_COLORS.length;
     return SHARE_PLAN_COLORS[((index % n) + n) % n];
 }
 
-function closeSharePlanPanel() {
+function closeSharePlanPanel(options = {}) {
     const state = _sharePlanPanelState;
     _sharePlanPanelState = null;
     // The pick mode ends with the panel (js/map-pick.js): the lockdown lifts, a subset's highlight
     // and the dimming go, and a map click no longer answers into a list that is not on screen.
     try { window.MapPick.end('share'); } catch (error) { console.error('share plan: ending the map pick failed', error); }
     if (state) {
-        try { state.unregisterEscape?.(); } catch (_) { }
-        try { document.removeEventListener('keydown', state.onKeyDown); } catch (_) { }
         try { if (state.root && state.root.parentNode) state.root.parentNode.removeChild(state.root); } catch (_) { }
-        if (state.returnFocus?.isConnected) state.returnFocus.focus({ preventScroll: true });
+        if (!options.fromPanel && window.MapShell?.isOpen('proposals-sheet')) window.MapShell.closeSheet({ restoreFocus: true });
     }
     try { if (typeof clearProposalHoverLayers === 'function') clearProposalHoverLayers(); } catch (_) { }
 }
@@ -581,44 +532,25 @@ function showSharePlanPanel(options) {
         if (typeof proposalStorage === 'undefined') return;
         const shareView = window.MapShare.capture(window);
         const applied = proposalStorage.getAllProposals().filter(isProposalCurrentlyApplied);
-        if (applied.length === 0) {
-            const url = window.MapShare.link(window.resolveFrontendBaseUrl(), shareView);
-            return showSimpleShareModal({
-                title: t('mapShell.shareMap', 'Share this map'),
-                body: `<label class="share-plan-link"><input class="share-plan-link__input" readonly aria-label="${escapeHtml(t('mapShell.shareMap', 'Share this map'))}" value="${escapeHtml(url)}"></label>`,
-                actions: [{ label: tShare('copyUrlButton', 'Copy URL'), primary: true, keepOpen: true,
-                    onClick: async () => {
-                        if (await window.DesignSync.copyLink(url)) showEphemeralMessage(tShare('copySuccess', 'Share link copied to clipboard!'));
-                    } }]
-            });
-        }
-
         const proposalsByHash = new Map();
         applied.forEach(proposal => {
             const key = proposal.proposalId || getProposalKey(proposal);
             if (!key) return;
             proposalsByHash.set(String(key), proposal);
         });
-        if (proposalsByHash.size === 0) {
+        if (applied.length > 0 && proposalsByHash.size === 0) {
             if (typeof showEphemeralMessage === 'function') {
                 showEphemeralMessage(t('ephemeral.messages.unable_to_prepare_proposals_for_sharing', 'Unable to prepare proposals for sharing.'), 5000, 'error');
             }
             return;
         }
 
-        const returnFocus = document.activeElement;
-        // Reopening replaces any previous instance (and resets a stale lockdown).
-        closeSharePlanPanel();
-
-        // Leave any proposal-list/browse/selection surface; the share panel owns the screen now.
-        try { if (typeof closeProposalList === 'function') closeProposalList(); } catch (_) { }
-        try { if (typeof resetParcelSelectionForProposalListInteraction === 'function') resetParcelSelectionForProposalListInteraction(); } catch (_) { }
-        try { if (typeof clearProposalInfoHoverOverlay === 'function') clearProposalInfoHoverOverlay(); } catch (_) { }
-
-        // Fold away an open sheet so the (locked) chrome doesn't cover the map — the same move the
-        // proposals list makes when it opens. The lockdown itself starts with the pick mode below
-        // (MapPick.begin is used only for the 2D map; model/photo sharing keeps its view).
-        if (window.MapShell) window.MapShell.closeSheets();
+        closeSharePlanPanel({ fromPanel: true });
+        if (!window.MapShell.isOpen('proposals-sheet')) window.MapShell.openSheet('proposals-sheet');
+        closeProposalList({ fromSheet: true });
+        setDesignsPanelTab('share');
+        resetParcelSelectionForProposalListInteraction();
+        clearProposalInfoHoverOverlay();
 
         // An unpublished parcel layout needs an agreement; an existing publication can be linked.
         const publishRefusals = new Map();
@@ -634,29 +566,15 @@ function showSharePlanPanel(options) {
             colorByKey.set(key, sharePlanColorForIndex(index));
         });
 
-        // Panel skeleton: header + body; the body holds count/status, the row list (stretches),
-        // and the share-link area pinned at the bottom.
+        // Sharing controls stay in the header; only the design list scrolls.
         const panelRoot = document.createElement('div');
-        panelRoot.className = 'share-plan-panel';
-        panelRoot.setAttribute('role', 'dialog');
-        panelRoot.setAttribute('aria-labelledby', 'share-map-title');
+        panelRoot.className = 'share-plan-panel share-plan-panel--embedded';
         const panelContent = document.createElement('div');
         panelContent.className = 'share-plan-panel-content';
         panelRoot.appendChild(panelContent);
-
-        const panelHeader = document.createElement('div');
-        panelHeader.className = 'share-plan-panel-header';
-        const panelTitle = document.createElement('h2');
-        panelTitle.id = 'share-map-title';
-        panelTitle.textContent = t('mapShell.shareMap', 'Share this map');
-        const panelCloseBtn = document.createElement('button');
-        panelCloseBtn.type = 'button';
-        panelCloseBtn.className = 'close-circle-btn close-circle-btn--lg';
-        panelCloseBtn.setAttribute('aria-label', t('modal.common.close', 'Close'));
-        panelCloseBtn.innerHTML = '&times;';
-        panelCloseBtn.addEventListener('click', () => closeSharePlanPanel());
-        panelHeader.append(panelTitle, panelCloseBtn);
-        panelContent.appendChild(panelHeader);
+        const toolbar = document.createElement('div');
+        toolbar.className = 'share-plan-toolbar';
+        panelContent.appendChild(toolbar);
 
         // Which subset to highlight on the map. The map ALREADY draws every applied design, so "All"
         // is the view you arrived with and paints nothing extra; the other two highlight the
@@ -687,8 +605,8 @@ function showSharePlanPanel(options) {
             modeWrap.appendChild(button);
         });
         filterRow.appendChild(modeWrap);
-        filterRow.hidden = shareView.mode !== '2d';
-        panelContent.appendChild(filterRow);
+        filterRow.hidden = shareView.mode !== '2d' || !applied.length;
+        toolbar.appendChild(filterRow);
 
         const container = document.createElement('div');
         container.className = 'share-plan-panel-body';
@@ -717,7 +635,7 @@ function showSharePlanPanel(options) {
         });
 
         // What the highlight shows: nothing extra for All, else the checked designs of the subset.
-        const highlightedKeys = () => (highlightMode === 'all'
+        const highlightedKeys = () => (!highlightMode || highlightMode === 'all'
             ? null
             : [...selected].filter(key => (highlightMode === 'published') === isPublished(key)));
 
@@ -729,12 +647,16 @@ function showSharePlanPanel(options) {
             const finished = await window.MapPick.refresh();
             modeButtons.forEach(button => { button.disabled = false; });
             if (finished === false) return; // the panel closed, or a newer repaint took over
-            setStatus('');
+            if (highlightMode) setStatus('');
         };
 
         const setHighlightMode = (mode) => {
             if (highlightMode === mode) return;
             highlightMode = mode;
+            if (mode) {
+                clearPickedRow();
+                clearProposalHoverLayers();
+            }
             modeButtons.forEach((button, value) => button.setAttribute('aria-pressed', String(value === mode)));
             applyHighlightMode();
         };
@@ -752,15 +674,29 @@ function showSharePlanPanel(options) {
         // outlined on the map. The mark is removed from whatever held it last so two rows are never
         // both claiming to be the picked one.
         let pickedRowKey = null;
+        const clearPickedRow = () => {
+            const controls = rowControls.get(pickedRowKey);
+            if (controls) {
+                controls.row.classList.remove('is-picked');
+                controls.focusButton.setAttribute('aria-pressed', 'false');
+            }
+            pickedRowKey = null;
+        };
         const revealRow = (key, parcelId) => {
             const controls = rowControls.get(key);
             if (!controls || !controls.row) return;
+            // A single focus replaces the group overlay without changing share inclusion.
+            setHighlightMode(null);
             if (pickedRowKey && pickedRowKey !== key) {
                 const previous = rowControls.get(pickedRowKey);
-                if (previous && previous.row) previous.row.classList.remove('is-picked');
+                if (previous && previous.row) {
+                    previous.row.classList.remove('is-picked');
+                    previous.focusButton.setAttribute('aria-pressed', 'false');
+                }
             }
             pickedRowKey = key;
             controls.row.classList.add('is-picked');
+            controls.focusButton.setAttribute('aria-pressed', 'true');
             try { controls.row.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (_) {
                 try { controls.row.scrollIntoView(); } catch (_) { }
             }
@@ -825,6 +761,12 @@ function showSharePlanPanel(options) {
             const padding = (typeof getProposalPanelFitPadding === 'function')
                 ? getProposalPanelFitPadding(40)
                 : { paddingTopLeft: [40, 40], paddingBottomRight: [40, 40] };
+            if (window.matchMedia?.('(max-width: 767.98px)').matches) {
+                if (document.getElementById('proposals-sheet').getBoundingClientRect().top < 24) document.getElementById('proposals-sheet').querySelector(':scope > .mobile-dock-sheet-handle')?.click();
+                const mapBox = map.getContainer().getBoundingClientRect();
+                padding.paddingTopLeft = [40, Math.max(padding.paddingTopLeft?.[1] || 0, 72)];
+                padding.paddingBottomRight = [40, Math.max(padding.paddingBottomRight?.[1] || 0, mapBox.bottom - document.getElementById('proposals-sheet').getBoundingClientRect().top + 24)];
+            }
             // animate:false — deterministic, and immune to background-tab rAF throttling.
             try { map.fitBounds(bounds, { ...padding, maxZoom: 18, animate: false }); } catch (_) { }
         };
@@ -833,13 +775,13 @@ function showSharePlanPanel(options) {
         const countLine = document.createElement('p');
         countLine.className = 'share-plan-count';
         countLine.textContent = t('proposals.share.panel.count', '{{count}} designs applied on this map', { count: proposalsByHash.size });
-        container.appendChild(countLine);
+        toolbar.appendChild(countLine);
 
         const statusLine = document.createElement('p');
         statusLine.className = 'share-plan-status';
         statusLine.setAttribute('role', 'status');
         statusLine.setAttribute('aria-live', 'polite');
-        container.appendChild(statusLine);
+        toolbar.appendChild(statusLine);
 
         // The panel opens before its rows know anything; listing and checking a large plan counts
         // itself out loud instead of leaving rows to flicker.
@@ -847,10 +789,11 @@ function showSharePlanPanel(options) {
         progressRow.className = 'share-plan-progress';
         progressRow.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i><span></span>';
         const progressText = progressRow.querySelector('span');
-        container.appendChild(progressRow);
+        toolbar.appendChild(progressRow);
 
         const listWrap = document.createElement('div');
         listWrap.className = 'share-plan-list';
+        listWrap.hidden = !applied.length;
         container.appendChild(listWrap);
 
         // The link to the selection, shown once every selected design is published.
@@ -863,7 +806,7 @@ function showSharePlanPanel(options) {
         linkInput.type = 'text';
         linkInput.readOnly = true;
         linkInput.className = 'share-plan-link__input';
-        linkInput.setAttribute('aria-label', t('proposals.share.panel.linkLabel', 'Link to the selected designs'));
+        linkInput.setAttribute('aria-label', applied.length ? t('proposals.share.panel.linkLabel', 'Link to the selected designs') : t('mapShell.shareMap', 'Share this map'));
         const copyBtn = document.createElement('button');
         copyBtn.type = 'button';
         copyBtn.className = 'btn';
@@ -899,7 +842,7 @@ function showSharePlanPanel(options) {
             });
         });
         shareArea.appendChild(agreementAction);
-        container.appendChild(shareArea);
+        toolbar.prepend(shareArea);
 
         const setStatus = (message) => {
             statusLine.textContent = message || '';
@@ -908,7 +851,7 @@ function showSharePlanPanel(options) {
         // The link names the selected designs by CID: /designs/<cid>,<cid>, sorted.
         const updateShareUrl = () => {
             const selectedKeys = Array.from(selected);
-            countLine.textContent = t('proposals.share.panel.selectionCount', '{{selected}} of {{total}} designs included · {{excluded}} excluded', {
+            countLine.textContent = !proposalsByHash.size ? t('proposals.share.panel.count', '{{count}} designs applied on this map', { count: 0 }) : t('proposals.share.panel.selectionCount', '{{selected}} of {{total}} designs included · {{excluded}} excluded', {
                 selected: selectedKeys.length, total: proposalsByHash.size, excluded: proposalsByHash.size - selectedKeys.length
             });
             const pendingKeys = selectedKeys.filter(key => !isPublished(key));
@@ -921,8 +864,8 @@ function showSharePlanPanel(options) {
                 linkRow.hidden = !url;
             };
             if (!selectedKeys.length) {
-                showLink(null);
-                setStatus(t('proposals.share.panel.selectHint', 'Select at least one design to share.'));
+                showLink(proposalsByHash.size ? null : window.MapShare.link(window.resolveFrontendBaseUrl(), shareView));
+                setStatus(proposalsByHash.size ? t('proposals.share.panel.selectHint', 'Select at least one design to share.') : '');
                 return;
             }
             if (selectedKeys.some(key => (publishState.get(key) || {}).publishing)) {
@@ -1014,14 +957,20 @@ function showSharePlanPanel(options) {
             const row = document.createElement('div');
             row.className = 'share-plan-row';
 
-            const main = document.createElement('label');
-            main.className = 'share-plan-row__main';
+            const main = document.createElement('button');
+            main.type = 'button';
+            main.className = 'btn btn-quiet share-plan-row__main';
+            main.setAttribute('aria-pressed', 'false');
 
             const refusal = publishRefusals.get(key) || null;
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
             checkbox.checked = selected.has(key);
+            checkbox.setAttribute('aria-label', proposal.title || proposal.name || tShare('untitled', '(Untitled)'));
             checkbox.addEventListener('change', () => onCheckboxChange(key, checkbox.checked));
+            const selection = document.createElement('label');
+            selection.className = 'share-plan-row__selection';
+            selection.appendChild(checkbox);
 
             // The chip (a cb-badge) carries the exact colour this design is painted with on the map:
             // data, so it is a custom property the stylesheet reads.
@@ -1045,7 +994,7 @@ function showSharePlanPanel(options) {
                 note.textContent = refusal.message;
                 text.appendChild(note);
             }
-            main.append(checkbox, chip, text);
+            main.append(chip, text);
 
             const actions = document.createElement('div');
             actions.className = 'share-plan-row__actions';
@@ -1064,22 +1013,16 @@ function showSharePlanPanel(options) {
             publishedLabel.hidden = true;
             actions.append(publishBtn, publishedLabel);
 
-            row.append(main, actions);
+            row.append(selection, main, actions);
 
-            // Rows are the ONLY design interaction in share-plan mode: hovering outlines the design
-            // on the map, clicking also frames it. Nothing opens details.
-            row.addEventListener('mouseenter', () => highlightRowProposal(key));
-            row.addEventListener('mouseleave', () => {
-                try { if (typeof clearProposalHoverLayers === 'function') clearProposalHoverLayers(); } catch (_) { }
-            });
-            row.addEventListener('click', (event) => {
-                if (event.target && event.target.closest && event.target.closest('input, button, label')) return;
-                highlightRowProposal(key);
+            // Focus belongs to the design button; inclusion belongs only to its checkbox.
+            main.addEventListener('click', () => {
+                revealRow(key);
                 frameRowProposal(key);
             });
 
             listWrap.appendChild(row);
-            rowControls.set(key, { row, checkbox, chip, publishBtn, publishedLabel, meta });
+            rowControls.set(key, { row, checkbox, chip, publishBtn, publishedLabel, meta, focusButton: main });
         };
 
         const showProgress = (phraseKey, fallback, done, total) => {
@@ -1126,16 +1069,14 @@ function showSharePlanPanel(options) {
         };
 
 
-        document.body.appendChild(panelRoot);
-        const unregisterEscape = window.ModalEscape?.register(panelRoot, closeSharePlanPanel);
-        _sharePlanPanelState = { root: panelRoot, unregisterEscape, token: panelToken, returnFocus };
-        panelCloseBtn.focus({ preventScroll: true });
+        document.getElementById('designs-share').replaceChildren(panelRoot);
+        _sharePlanPanelState = { root: panelRoot, token: panelToken };
 
         // The panel picks on the map (js/map-pick.js): the lockdown starts, and clicking a design ON
         // THE MAP finds it in the list. The resolution from a click to its applied design is the
         // map's own (onParcelClick in parcels/ui/parcel-selection.js, the drill for corridors and
         // structures), which is why this is a callback rather than a second map handler racing it.
-        if (shareView.mode === '2d') window.MapPick.begin({
+        if (shareView.mode === '2d' && applied.length) window.MapPick.begin({
             name: 'share',
             pick: (id, proposal, { parcelId }) => {
                 if (!panelStillOpen()) return;
@@ -1257,8 +1198,6 @@ function countActiveProposalListFilters(listState) {
     let count = 0;
     if (st.filterType && st.filterType !== 'all') count++;
     if (st.publicationFilter && st.publicationFilter !== 'all') count++;
-    if (st.appliedFilter && st.appliedFilter !== 'all') count++;
-    if (String(st.authorFilter || '').trim()) count++;
     if (String(st.searchText || '').trim()) count++;
     return count;
 }

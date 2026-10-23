@@ -33,15 +33,16 @@ function sourceSection(source, startMarker, endMarker) {
 
 describe('share plan panel contract', () => {
     const panelFn = sourceSection(dialogShare, 'function showSharePlanPanel(', 'function showSimpleShareModal(');
-    const closeFn = sourceSection(dialogShare, 'function closeSharePlanPanel()', 'function showSharePlanPanel');
+    const closeFn = sourceSection(dialogShare, 'function closeSharePlanPanel(', 'function showSharePlanPanel');
     const begin = sourceSection(panelFn, 'window.MapPick.begin({', '}).catch(');
     const fill = sourceSection(panelFn, '(async () => {', "console.error('share plan: filling the panel failed'");
 
     it('opens as a right-docked panel, never through the share modal', () => {
-        expect(panelFn).toContain("panelRoot.className = 'share-plan-panel'");
+        expect(panelFn).toContain("panelRoot.className = 'share-plan-panel share-plan-panel--embedded'");
         expect(panelFn).toContain("panelContent.className = 'share-plan-panel-content'");
-        // An empty map shares its location through the small link dialog.
-        expect(panelFn).toContain('if (applied.length === 0)');
+        // Empty maps share their location in the same panel.
+        expect(panelFn).not.toContain('showSimpleShareModal(');
+        expect(panelFn).toContain("document.getElementById('designs-share').replaceChildren(panelRoot)");
         // The panel replaced the modal entirely — no share-plan modal entry point remains.
         expect(dialogShare).not.toContain('function showSharePlanModal');
         expect(sharingRoutes).toContain('showSharePlanPanel(');
@@ -144,8 +145,11 @@ describe('share plan panel contract', () => {
         expect(sourceSection(proposalsCss, '\n.leaflet-pick-highlight-pane {', '}')).toContain('pointer-events: none');
     });
 
-    it('rows highlight on hover/click and never open details', () => {
-        expect(panelFn).toContain("row.addEventListener('mouseenter', () => highlightRowProposal(key));");
+    it('design buttons focus the map independently of the checkbox and never open details', () => {
+        expect(panelFn).toContain("main.addEventListener('click', () => {");
+        expect(panelFn).toContain('main.append(chip, text);');
+        expect(panelFn).toContain('row.append(selection, main, actions);');
+        expect(panelFn).not.toContain("row.addEventListener('mouseenter'");
         expect(panelFn).toContain('frameRowProposal(key);');
         expect(panelFn).not.toContain('selectAndHighlightProposal(');
         expect(panelFn).not.toContain('showProposalDetails(');

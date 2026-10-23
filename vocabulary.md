@@ -178,6 +178,10 @@ The part of parent land left after subtracting a design's land take. A remainder
 
 An authored output polygon or multipolygon in a parcel layout or readjustment. It is a proposed land unit with allocation information, not a registered parcel. One record can contain several connected pieces.
 
+### Vacant layout plot
+
+A current plot produced by an applied parcel layout with no standing building or applied physical design occupying it. Its default display is uncultivated yellow-green ground with a boundary fence. This scenery is derived from the current composition; it is not an authored park, a recorded existing surface, a legal enclosure or a change of ownership.
+
 ### Parcel layout
 
 A design specifying new parcel borders over its site. Applying it carries modeled rights from the input ground; the agreement specifies any proposed changes to those rights.
@@ -201,6 +205,12 @@ The `unrepresentedGround` marker for open ground excluded from represented owner
 ### Working composition
 
 The set of designs currently applied in one browser and the land fabric they produce. This local composition is separate from an agreement, a publication selection and a statutory plan.
+
+### Road junction
+
+A shared same-level centerline node and its incident street arms, with the cross-sections and corner land needed to connect them. Each participating road design records its split stretches and the neighbouring arms needed to rebuild its own footprint. A crossing at different levels or through a protected bridge/tunnel span is not a road junction.
+
+MCP plan drafting and revision author the included roads as a complete network before parcel binding and agreement output calculation. Changed junctions produce revised road designs and CIDs. Reading, applying or comparing published records does not rewrite their topology.
 
 ### Map share
 
@@ -232,7 +242,7 @@ The modeled full building removals and partial cuts caused by a land take. Accep
 
 ### Ground surface
 
-An authored treatment of the land around proposed buildings, represented by `geometry.groundSurface`. Its area excludes the stored building footprints; a surface treatment does not independently determine demolition or transfer rights.
+An authored paving or green treatment of the land around proposed buildings, represented by `geometry.groundSurface`. Paving is the default for new and edited building designs and uses ordinary sidewalk slabs, distinct from square paving. Its area excludes the stored building footprints and stays within the design’s ground boundary; a surface treatment does not independently determine land take, demolition or transfer rights.
 
 ### Corridor
 
@@ -356,7 +366,7 @@ A footprint with vertical extent, represented as volumes or extrudable geometry.
 
 ### Built / Permitted / Proposed
 
-The three planning display roles: observed buildings; source-derived permitted massing; and the browser's applied building designs. These roles classify represented content, independently of its display appearance.
+The three planning display roles: observed buildings; source-derived permitted massing; and the browser's applied building designs. These roles classify represented content, independently of its display appearance. Buildings and massing settings apply to every represented object in each role across the view; selecting or inspecting a parcel, building or design does not create a separate display configuration. Permitted and Proposed have independent display-only example rolls; rolling either role changes no authored design or source record and leaves the other role's example unchanged.
 
 ### Reconstructed building envelope
 
@@ -691,6 +701,14 @@ Canonical design or agreement content returned with its recomputed CID without a
 ### Private preview
 
 A temporary means of inspecting a draft artifact. Its bearer link or compressed fragment conveys access to the draft, independently of permanent publication and wallet approval.
+
+### Agent editing reference
+
+A design or building reference scoped to one inspected immutable revision. A building reference includes its design CID and feature index; a JSON Pointer addresses authored fields within that design. These are selection addresses, not new persistent object identities. A derived land piece is inspected by its piece hash and changed through the designs that produce it.
+
+### Agent plan revision
+
+A private revision of an agreement's ordered design composition and terms. It rederives input land and output pieces from the revised designs. It has a new CID and carries no prior decisions or execution state; retained rights and holders remain explicitly unverified snapshots. A map share and a person's unsaved working composition remain separate from an agreement plan.
 
 ### Approval link
 

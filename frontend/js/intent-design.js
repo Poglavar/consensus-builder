@@ -115,6 +115,25 @@
         const frame = d.frame.frameFor(points), radians = angle * Math.PI / 180;
         return points.map(p => { const xy = frame.toMetric(p); return frame.toLngLat([xy[0] + Math.sin(radians) * metres, xy[1] + Math.cos(radians) * metres]); });
     }
+    // A junction splits one authored street into stretches. Whole-street conveniences still act
+    // on that continuous line; genuinely separate strokes or differing profiles need granular edits.
+    function streetPoints(entries, d) {
+        if (!entries.length) fail('The road has no street stretches');
+        const base = d.footprint.baseStretchId(entries[0].segmentId);
+        const profile = JSON.stringify(entries[0].profile);
+        const points = [];
+        for (const entry of entries) {
+            if (entries.length > 1 && (!base || d.footprint.baseStretchId(entry.segmentId) !== base || JSON.stringify(entry.profile) !== profile)) {
+                fail('Whole-street modifications require one continuous street with one cross-section; use granular road edits for this network');
+            }
+            if (points.length) {
+                const last = points.at(-1), first = entry.points[0];
+                if (Math.abs(last.lat - first.lat) > 1e-7 || Math.abs(last.lng - first.lng) > 1e-7) fail('The street stretches are not continuous; use granular road edits');
+            }
+            points.push(...entry.points.slice(points.length ? 1 : 0));
+        }
+        return points.map(p => [p.lng, p.lat]);
+    }
     function modify(design, changes, given) {
         const d = deps(given), record = copy(design);
         for (const change of changes) {
@@ -123,8 +142,7 @@
             else if (record.roadProposal) {
                 const view = d.osm.toView(record.roadProposal.definition);
                 const entries = d.profile.corridorSegmentEntries(view);
-                if (entries.length !== 1) fail('Road modifications currently require one street stretch');
-                let points = entries[0].points.map(p => [p.lng, p.lat]);
+                let points = streetPoints(entries, d);
                 let lanes = copy(view.profile.strips);
                 const oldWidth = d.profile.corridorProfileWidth(view.profile);
                 if (change.type === 'set_profile') lanes = roadProfile(change, d).strips;

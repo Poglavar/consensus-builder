@@ -88,6 +88,20 @@ degrees. These are the same records read by the site's map and model renderer.
 
 ## Site editor parity and coupled fields
 
+`ugt_draft_road` creates an independent street. When those designs are assembled with
+`ugt_draft_agreement`, their same-level crossings are authored as shared junctions using the map
+editor's geometry engine. Every participating street stores its split stretches, neighbouring arms
+and rebuilt footprint, including corner land. Bridges, tunnels and unsnapped near-misses remain
+separate. `roadChanges` maps original to revised design CIDs; publish the **returned designs** with
+the returned agreement. The original designs are unchanged.
+
+`ugt_edit_plan` performs the same step after its edits, so a moved, removed or resized road also
+updates the neighbouring junction records and land. Those additional revisions appear in `changes`.
+The composition supplies the complete authored road network; references to foreign arms are rebuilt
+from its included roads. Inspection and comparison replay the exact supplied records without
+authoring junctions or changing a published commitment. An existing unconnected road plan therefore
+needs a new draft/revision and separate publication; merely opening its old link does not repair it.
+
 | Human editor | Editable canonical fields | Required consistency |
 | --- | --- | --- |
 | Building form, facade/material/model, use and dimensions | `/geometry/buildings/*/geometry`, `/geometry/buildings/*/properties`, `/buildingProposal/parameters` | Height/floors are kept consistent when only one changes. A geometry-affecting parameter edit must include its actual geometry change. Model/material fields retain the site's own schema; a new property name does not create a renderer feature. |

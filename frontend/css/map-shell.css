@@ -487,6 +487,9 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     #proposals-sheet {
         top: var(--map-shell-top-clearance);
         bottom: var(--map-shell-bottom-clearance);
+        left: auto;
+        right: var(--map-shell-edge);
+        width: clamp(360px, 36vw, 560px);
         height: auto;
         max-height: none;
     }
@@ -569,15 +572,6 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     margin-top: 8px;
     border: 1px solid var(--cb-line);
     box-shadow: none;
-}
-
-/* Settings → Appearance: the theme choice under the shortcuts. */
-.settings-appearance {
-    margin: var(--cb-space-3) 0 var(--cb-space-4);
-}
-
-.settings-appearance .cb-kicker {
-    margin-bottom: var(--cb-space-2);
 }
 
 /* ---- Controls inside the sheets ----
@@ -801,27 +795,6 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     }
 }
 
-/* Settings: the destructive upkeep folded under one row (index.html .sheet-reset). */
-.sheet-reset {
-    margin-top: var(--cb-space-2);
-}
-
-.sheet-reset > summary {
-    cursor: pointer;
-    padding: var(--cb-space-2) 0;
-    color: var(--cb-text-muted);
-    font-size: var(--cb-text-md);
-    font-weight: var(--cb-weight-medium);
-}
-
-.sheet-reset > summary:hover {
-    color: var(--cb-text);
-}
-
-.sheet-reset[open] > summary {
-    margin-bottom: var(--cb-space-2);
-}
-
 /* Keyboard shortcut hints mean nothing on a touch screen. */
 @media (pointer: coarse) {
     .settings-palette-shortcut,
@@ -846,15 +819,6 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     margin: 0;
 }
 
-.activity-simulation .sheet-section-title {
-    margin-bottom: 6px;
-    color: var(--cb-text-muted);
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-}
-
 .activity-simulation-row {
     display: flex;
     align-items: center;
@@ -862,11 +826,6 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
 }
 
 /* Play / pause is a btn btn-icon btn-sm toggle (css/primitives.css): running is aria-pressed. */
-.activity-simulation-settings > summary:focus-visible {
-    outline: 2px solid var(--cb-focus);
-    outline-offset: 2px;
-}
-
 .activity-simulation-metrics {
     display: inline-flex;
     gap: 4px;
@@ -881,14 +840,6 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
 
 .activity-simulation-settings {
     margin-top: 6px;
-}
-
-.activity-simulation-settings > summary {
-    width: fit-content;
-    padding: 2px 0;
-    color: var(--cb-text-muted);
-    font-size: 12.5px;
-    cursor: pointer;
 }
 
 .activity-simulation-settings > .sheet-section-body {
@@ -918,9 +869,6 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
         min-height: var(--cb-control-height);
     }
 
-    .activity-simulation-settings > summary {
-        padding: 8px 0;
-    }
 }
 
 /* Settings sheet: brand, debug badges, the city row */
@@ -1122,3 +1070,11 @@ body.app-loading .map-shell-cluster {
 
 /* First visible labels use the selected locale; the map can load in parallel. */
 body.i18n-loading [data-i18n-key] { visibility: hidden; }
+
+/* Designs and sharing share one dock, one header and one phone resize handle. */
+.designs-panel-tabs { margin: 8px 12px; flex-shrink: 0; }
+#designs-browse:not([hidden]), #designs-share:not([hidden]) { display: flex; flex-direction: column; flex: 1 1 0; min-height: 0; overflow: hidden; }
+#proposals-sheet .share-plan-panel--embedded { display: flex; flex-direction: column; overflow: hidden; position: relative; inset: auto; width: 100%; height: 100%; min-height: 0; z-index: auto; padding: 0; }
+#proposals-sheet .share-plan-panel-content { position: relative; flex: 1; min-height: 0; box-shadow: none; background: transparent; backdrop-filter: none; }
+body.map-pick-mode #proposals-sheet { pointer-events: auto; opacity: 1; }
+#proposals-sheet .share-plan-link > .btn { width: auto; flex: 0 0 auto; white-space: nowrap; }

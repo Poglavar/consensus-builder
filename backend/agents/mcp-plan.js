@@ -79,10 +79,9 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
         if (!['design','building'].includes(filter.kind) || filter.relativeTo?.ref.startsWith('piece:')) {
             // Published outputs commit hashes, not another copy of geometry. Recover exact pieces
             // from the shared formation host and require that they still match the commitment.
-            const derived = await agreements.draftAgreement({ designs: plan.designs, parcelSourceId: plan.parcelSourceId,
-                currency: plan.agreement.money.currency, includeGround: true });
-            if (derived.ground.outputs.length !== plan.agreement.outputs.length || derived.ground.outputs.some(p => !plan.agreement.outputs.some(old => old.hash === p.hash))) fail('plan-ground-changed', 'Current source ground no longer matches this plan. Review a newly derived revision before selecting its land pieces.');
-            plan.ground = derived.ground;
+            const ground = await agreements.inspectGround({ designs: plan.designs, parcelSourceId: plan.parcelSourceId });
+            if (ground.outputs.length !== plan.agreement.outputs.length || ground.outputs.some(p => !plan.agreement.outputs.some(old => old.hash === p.hash))) fail('plan-ground-changed', 'Current source ground no longer matches this plan. Review a newly derived revision before selecting its land pieces.');
+            plan.ground = ground;
         }
         const all = inventory(plan);
         let anchor;
@@ -178,6 +177,13 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
         const derived = await agreements.draftAgreement({ designs: [...working.values()], parcelSourceId: original.parcelSourceId,
             currency: previous.money.currency, rights: suppliedRights ?? previous.rule.approvalConfig?.rights,
             title: previous.title, author: previous.author, createdAt: new Date().toISOString() });
+        // A road edit can revise its neighbours as well. Report the final identity of every edit
+        // and every additional junction change, rather than leaving intermediate CIDs in the diff.
+        for (const roadChange of derived.roadChanges || []) {
+            const edited = changes.filter(change => change.afterCid === roadChange.beforeCid);
+            edited.forEach(change => { change.afterCid = roadChange.afterCid; });
+            if (!edited.length) changes.push(roadChange);
+        }
         const oldInputs = previous.inputs.parcels.map(p => p.parcelId).sort(), newInputs = derived.agreement.inputs.parcels.map(p => p.parcelId).sort();
         const inputChanged = JSON.stringify(oldInputs) !== JSON.stringify(newInputs);
         if (inputChanged && !suppliedRights && (previous.rule.electorate === 'owners' || previous.inputs.parcels.some(p => p.holders.length) || previous.money.lines.length)) fail('rights-review-required', 'The input land changed. Supply a reviewed complete rights snapshot before carrying ownership or money into this revision.');

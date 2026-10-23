@@ -489,7 +489,7 @@
             "days": "{{count}} d ago"
         },
         "sections": {
-            "detailsTitle": "Proposal details",
+            "detailsTitle": "Design details",
             "parcelsTitle": "Affected parcels",
             "parcelsCopy": "Use the current map selection, or edit the parcel IDs directly.",
             "designTitle": "Design details",
@@ -1025,7 +1025,7 @@
                 "unavailable": "Statistics are unavailable. Reload and try again."
             },
             "grainScore": {
-                "buttonLabel": "Critique",
+                "buttonLabel": "Urban rooster",
                 "buttonHint": "Let him inspect every resulting parcel",
                 "buttonEmpty": "Apply a proposal first",
                 "institute": "Institut za zrnatost",
@@ -1360,6 +1360,7 @@
             "idLabel": "ID:",
             "geometryReferenceNote": "Application reference derived from geometry. Source registry number unavailable; boundary changes create a new reference.",
             "identity": {
+                "originalBoundary": "This is the original cadastral parcel. Applied designs have replaced it in the working map. Its original boundary is highlighted.",
                 "estimated": "Estimated parcel {{number}}",
                 "plotPiece": "Plot piece {{number}}",
                 "remainder": "Ground remainder {{number}}",
@@ -1401,7 +1402,7 @@
                 "undergroundStation": "Metro station",
                 "elevatedStation": "Elevated station",
                 "selectParcelFirst": "Select a parcel first.",
-                "replaced": "The parcel boundaries on the map have changed. Select the current parcels to continue.",
+                "replaced": "This is the original cadastral parcel. Applied designs have replaced it in the working map. Select the current parcels to add a design.",
                 "unavailable": "This parcel’s current map data is not loaded. Reload parcels to continue.",
                 "selectCurrent": "Select current parcels",
                 "reload": "Reload parcels",
@@ -1536,7 +1537,7 @@
         },
         "proposal": {
             "copyId": "Copy local ID",
-            "title": "Proposal details",
+            "title": "Design details",
             "roadSuffix": " (Road)",
             "mapStatus": {
                 "applied": "Applied",
@@ -1575,7 +1576,7 @@
                 "deleteHint": "Deletes the object and its idea entirely.",
                 "editGeometry": "Edit geometry",
                 "editGeometryUnavailable": "This proposal type cannot be reshaped (or it is minted and immutable).",
-                "details": "Proposal details",
+                "details": "Design details",
                 "propose": "Propose",
                 "editDetails": "Details",
                 "duplicateDesign": "Duplicate",
@@ -1597,7 +1598,7 @@
                 "id": "ID:",
                 "author": "Author:",
                 "description": "Description:",
-                "parcels": "Parcels in proposal:",
+                "parcels": "Parcels in design:",
                 "area": "Area:",
                 "siteArea": "Site area:",
                 "sourceArea": "Source parcel area sum:",
@@ -2060,8 +2061,7 @@
             "vertexLabel": "Footprint vertex",
             "surroundingsLabel": "Surroundings",
             "editSurroundings": "Edit surroundings",
-            "surroundingsNone": "Leave as they are",
-            "surroundingsPaved": "Paved",
+            "surroundingsPaved": "Paving",
             "surroundingsGreen": "Green",
             "surroundingsInfo": "Surface treatment applies to the land around the proposed buildings. Demolition follows the design’s land take.",
             "uploadGeojsonLabel": "Upload GeoJSON",
@@ -5816,7 +5816,7 @@
         },
         "isolation": {
             "singleParcel": "Selected parcel",
-            "proposalView": "Proposal view",
+            "proposalView": "Design view",
             "exitAria": "Exit this view"
         },
         "ai": {
@@ -6196,6 +6196,7 @@
         }
     },
     "mapShell": {
+        "settingsSections": { "navigation": "Navigation" },
         "viewFailed": "This view could not start. You are back on the 2D map.",
         "modeLocked": "Not available while you are editing — finish or cancel first",
         "layers": "Layers",
@@ -6231,9 +6232,7 @@
             "openBets": "Open bets"
         },
         "maintenance": {
-            "title": "Data & maintenance",
-            "storedTitle": "Stored in this browser",
-            "resetSummary": "Reset data stored in this browser…"
+            "localData": "Local (browser) data"
         },
         "bets": "Bets",
         "betsNew": "New",
@@ -6268,7 +6267,7 @@
             "selectMore": "Select more",
             "details": "Details",
             "history": "History",
-            "compare": "Compare proposals here",
+            "compare": "Compare designs",
             "tools": "Tools",
             "view3d": "View in 3D",
             "detectBlock": "Detect block",
@@ -6481,7 +6480,7 @@
         "grainNoParcels": "No parcels here: these proposals stand on open ground, so there are no resulting parcels to score."
     },
     "parcelCompare": {
-        "title": "Compare proposals on parcel {{number}}",
+        "title": "Compare designs on parcel {{number}}",
         "needTwo": "At least two proposals must touch this parcel to compare them.",
         "pick": "Proposal {{side}}",
         "openDetails": "Details",
@@ -7010,7 +7009,7 @@
             "statusUnavailable": "Server status unavailable: {{reason}}",
             "statusExpired": "Expired",
             "statusActive": "Active",
-            "communityNote": "Votes on a community rule are counted off-chain in M3.",
+            "communityNote": "Community votes are counted without a blockchain transaction.",
             "copyLink": "Copy link",
             "rederive": "Its pieces are known here by their hashes only: apply its designs on the same ground to re-derive them and compare.",
             "readOnly": "Read-only published agreement",
@@ -7310,7 +7309,7 @@
         "savedNoShape": "This saved result contains no displayed massing.",
         "builtRecord": "Observed building",
         "observedNote": "Source building data. Missing measurements remain unknown.",
-        "proposalActions": "Proposal actions",
+        "proposalActions": "Design actions",
         "footprintArea": "Footprint area",
         "referenceChanged": "This source has changed since the design referenced it. Showing the currently saved record; the referenced revision is not reconstructed.",
         "referencedSource": "Source: {{source}} · {{revision}}",
@@ -7342,6 +7341,12 @@
         "noPermittedSource": "No permitted source here"
     },
     "clickStack": {
+        "formedMany": "Formed parcels ({{count}})",
+        "permittedMany": "Permitted ({{count}})",
+        "building": "Building",
+        "buildings": "Buildings ({{count}})",
+        "proposal": "Proposal",
+        "proposals": "Proposals ({{count}})",
         "parcelReference": "Cadastral parcel {{reference}}",
         "title": "At this spot",
         "agreements": "Agreements ({{count}})",
@@ -7354,7 +7359,7 @@
         "demolished": "Demolished",
         "demolishedBy": "Demolished by {{design}}",
         "showDesigns": "Show its designs",
-        "inAgreements": "In agreements ({{count}})",
+        "inAgreements": "Agreements including this design ({{count}})",
         "copyCoordinates": "Copy coordinates",
         "copied": "Coordinates copied"
     },

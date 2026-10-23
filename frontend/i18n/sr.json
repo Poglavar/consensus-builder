@@ -489,7 +489,7 @@
             "days": "pre {{count}} d"
         },
         "sections": {
-            "detailsTitle": "Detalji predloga",
+            "detailsTitle": "Detalji dizajna",
             "parcelsTitle": "Obuhvaćene parcele",
             "parcelsCopy": "Koristite trenutni izbor na mapi ili direktno uredite ID oznake parcela.",
             "designTitle": "Detalji nacrta",
@@ -1009,7 +1009,7 @@
                 "unavailable": "Statistika nije dostupna. Ponovo učitaj stranicu i pokušaj opet."
             },
             "grainScore": {
-                "buttonLabel": "Kritika",
+                "buttonLabel": "Urbani petao",
                 "buttonHint": "Neka isproba svaku nastalu parcelu",
                 "buttonEmpty": "Prvo primeni barem jedan predlog",
                 "institute": "Institut za zrnatost",
@@ -1397,7 +1397,7 @@
                 "undergroundStation": "Metro stanica",
                 "elevatedStation": "Nadzemna stanica",
                 "selectParcelFirst": "Prvo izaberi parcelu.",
-                "replaced": "Granice parcela na mapi su promenjene. Za nastavak izaberite trenutne parcele.",
+                "replaced": "Ovo je izvorna katastarska parcela. Primenjeni dizajni zamenili su je na radnoj mapi. Za dodavanje dizajna izaberite sadašnje parcele.",
                 "unavailable": "Podaci o trenutnom stanju ove parcele nisu učitani. Za nastavak ponovo učitajte parcele.",
                 "selectCurrent": "Izaberi trenutne parcele",
                 "reload": "Ponovo učitaj parcele",
@@ -1420,6 +1420,7 @@
             "idLabel": "ID:",
             "geometryReferenceNote": "Aplikativna oznaka izvedena iz geometrije. Izvorni registarski broj nije dostupan; promena granice stvara novu oznaku.",
             "identity": {
+                "originalBoundary": "Ovo je izvorna katastarska parcela. Primenjeni dizajni zamenili su je na radnoj mapi. Njena izvorna granica je istaknuta.",
                 "estimated": "Procenjena parcela {{number}}",
                 "plotPiece": "Deo projektovane parcele {{number}}",
                 "remainder": "Preostali deo tla {{number}}",
@@ -1549,7 +1550,7 @@
         },
         "proposal": {
             "copyId": "Kopiraj lokalni ID",
-            "title": "Detalji predloga",
+            "title": "Detalji dizajna",
             "roadSuffix": " (Put)",
             "mapStatus": {
                 "applied": "Primenjeno",
@@ -1588,7 +1589,7 @@
                 "deleteHint": "Briše objekat i njegovu ideju u potpunosti.",
                 "editGeometry": "Uredi geometriju",
                 "editGeometryUnavailable": "Ovaj tip predloga ne može se preoblikovati (ili je mintovan i nepromenljiv).",
-                "details": "Detalji predloga",
+                "details": "Detalji dizajna",
                 "propose": "Predloži",
                 "editDetails": "Detalji",
                 "duplicateDesign": "Dupliciraj",
@@ -1610,7 +1611,7 @@
                 "id": "ID:",
                 "author": "Autor:",
                 "description": "Opis:",
-                "parcels": "Parcele u predlogu:",
+                "parcels": "Parcele u dizajnu:",
                 "area": "Površina:",
                 "siteArea": "Površina obuhvata:",
                 "sourceArea": "Zbir površina izvornih parcela:",
@@ -2082,8 +2083,7 @@
             "vertexLabel": "Teme osnove",
             "surroundingsLabel": "Okruženje",
             "editSurroundings": "Uredi okolinu",
-            "surroundingsNone": "Ostavi kako jeste",
-            "surroundingsPaved": "Popločano",
+            "surroundingsPaved": "Popločanje",
             "surroundingsGreen": "Zelenilo",
             "surroundingsInfo": "Obrada površine odnosi se na zemljište oko predloženih zgrada. Uklanjanje zgrada prati zauzimanje zemljišta projekta.",
             "uploadGeojsonLabel": "Učitaj GeoJSON",
@@ -5850,7 +5850,7 @@
         },
         "isolation": {
             "singleParcel": "Izabrana parcela",
-            "proposalView": "Prikaz predloga",
+            "proposalView": "Prikaz dizajna",
             "exitAria": "Izađi iz ovog prikaza"
         },
         "ai": {
@@ -6231,6 +6231,7 @@
         }
     },
     "mapShell": {
+        "settingsSections": { "navigation": "Navigacija" },
         "viewFailed": "Ovaj prikaz nije mogao da se pokrene. Vraćeni ste na 2D mapu.",
         "modeLocked": "Nedostupno dok uređujete — prvo završite ili odustanite",
         "layers": "Slojevi",
@@ -6266,9 +6267,7 @@
             "openBets": "Otvori opklade"
         },
         "maintenance": {
-            "title": "Podaci i održavanje",
-            "storedTitle": "Sačuvano u ovom pregledaču",
-            "resetSummary": "Resetuj podatke sačuvane u ovom pregledaču…"
+            "localData": "Lokalni podaci (pregledač)"
         },
         "bets": "Opklade",
         "betsNew": "Novo",
@@ -6304,7 +6303,7 @@
             "selectMore": "Izaberi više",
             "details": "Detalji",
             "history": "Istorija",
-            "compare": "Uporedi predloge ovde",
+            "compare": "Uporedi dizajne",
             "tools": "Alati",
             "view3d": "Prikaži u 3D-u",
             "detectBlock": "Detektuj blok",
@@ -6518,7 +6517,7 @@
         "grainNoParcels": "Ovde nema parcela: ovi predlozi stoje na otvorenom tlu, pa nema nastalih parcela za ocenu."
     },
     "parcelCompare": {
-        "title": "Poređenje predloga na parceli {{number}}",
+        "title": "Uporedi dizajne na parceli {{number}}",
         "needTwo": "Za poređenje ovu parcelu moraju da dodiruju bar dva predloga.",
         "pick": "Predlog {{side}}",
         "openDetails": "Detalji",
@@ -7052,7 +7051,7 @@
             "statusUnavailable": "Status na serveru nije dostupan: {{reason}}",
             "statusExpired": "Istekao",
             "statusActive": "Aktivan",
-            "communityNote": "Glasovi po pravilu zajednice broje se van lanca u M3.",
+            "communityNote": "Glasovi zajednice broje se bez transakcije na blokčejnu.",
             "copyLink": "Kopiraj link",
             "rederive": "Ovde su njegovi delovi poznati samo po heševima: primenite njegove dizajne na istom tlu da biste ih ponovo izveli i uporedili.",
             "readOnly": "Objavljeni sporazum samo za čitanje",
@@ -7361,7 +7360,7 @@
         "savedNoShape": "Ovaj sačuvani rezultat nema prikazani volumen.",
         "builtRecord": "Postojeća zgrada",
         "observedNote": "Izvorni podaci o zgradi. Nedostajuće mere ostaju nepoznate.",
-        "proposalActions": "Radnje predloga",
+        "proposalActions": "Radnje dizajna",
         "footprintArea": "Površina osnove",
         "referenceChanged": "Izvor se promenio od verzije navedene u projektu. Prikazuje se trenutno sačuvani zapis; navedena verzija nije rekonstruisana.",
         "referencedSource": "Izvor: {{source}} · {{revision}}",
@@ -7394,6 +7393,12 @@
         "noPermittedSource": "Nema izvora dozvoljene izgradnje za ovo područje"
     },
     "clickStack": {
+        "formedMany": "Nastale parcele ({{count}})",
+        "permittedMany": "Dozvoljeno ({{count}})",
+        "building": "Zgrada",
+        "buildings": "Zgrade ({{count}})",
+        "proposal": "Predlog",
+        "proposals": "Predlozi ({{count}})",
         "parcelReference": "Katastarska parcela {{reference}}",
         "title": "Na ovom mestu",
         "agreements": "Sporazumi ({{count}})",
@@ -7406,7 +7411,7 @@
         "demolished": "Srušeno",
         "demolishedBy": "Srušeno dizajnom {{design}}",
         "showDesigns": "Prikaži njegove dizajne",
-        "inAgreements": "U sporazumima ({{count}})",
+        "inAgreements": "Sporazumi koji uključuju ovaj dizajn ({{count}})",
         "copyCoordinates": "Kopiraj koordinate",
         "copied": "Koordinate su kopirane"
     },

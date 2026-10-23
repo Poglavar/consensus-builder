@@ -194,6 +194,9 @@
         return !!a && !!b && Math.abs(a.lat - b.lat) < JUNCTION_NODE_EPS && Math.abs(a.lng - b.lng) < JUNCTION_NODE_EPS;
     }
 
+    const pointLevel = point => typeof point?.level === 'number' && Number.isFinite(point.level) ? point.level : 0;
+    const sameNode = (a, b) => samePoint(a, b) && pointLevel(a) === pointLevel(b);
+
     // The stretch's cross-section: its own override, the road's profile, or what the app derives
     // for a record that only knows its width (corridorProfileOf); null when nothing says.
     function segmentProfileOf(entry, index) {
@@ -214,7 +217,7 @@
         const arms = [];
         entry.segments.forEach((segment, index) => {
             segment.forEach((point, vertex) => {
-                if (!samePoint(point, node)) return;
+                if (!sameNode(point, node)) return;
                 [segment[vertex - 1], segment[vertex + 1]].forEach(neighbour => {
                     if (!neighbour || samePoint(neighbour, node)) return;
                     if (arms.some(arm => samePoint(arm.toward, neighbour))) return;
@@ -234,8 +237,10 @@
     function sharedNodes(a, b) {
         const nodes = [];
         a.segments.forEach(segment => segment.forEach(point => {
-            if (nodes.some(node => samePoint(node, point))) return;
-            if (b.segments.some(other => other.some(candidate => samePoint(candidate, point)))) nodes.push({ lat: point.lat, lng: point.lng });
+            if (nodes.some(node => sameNode(node, point))) return;
+            if (b.segments.some(other => other.some(candidate => sameNode(candidate, point)))) {
+                nodes.push({ lat: point.lat, lng: point.lng, ...(pointLevel(point) ? { level: pointLevel(point) } : {}) });
+            }
         }));
         return nodes;
     }
@@ -244,10 +249,10 @@
     function recordJunction(entry, node, arms) {
         if (!arms.length) return false;
         const junctions = Array.isArray(entry.definition.junctions) ? entry.definition.junctions : [];
-        let junction = junctions.find(candidate => samePoint(candidate, node));
+        let junction = junctions.find(candidate => sameNode(candidate, node));
         let changed = false;
         if (!junction) {
-            junction = { lat: node.lat, lng: node.lng, arms: [] };
+            junction = { ...node, arms: [] };
             junctions.push(junction);
             changed = true;
         }
@@ -347,6 +352,26 @@
         };
     }
 
+    // Author a complete isolated composition (MCP plans). Solve every crossing before recording
+    // foreign arms: a later street can split an earlier arm, changing its available corner length.
+    // Rebuild those references from the final graph so edits/removals cannot leave stale arms.
+    function planCorridorComposition(records, options = {}) {
+        const geometry = options.geometry || (global && global.CorridorGeometry);
+        if (!geometry || typeof geometry.normalizeCorridorNetwork !== 'function') {
+            throw new Error('Corridor topology engine is unavailable.');
+        }
+        const proposals = cloneValue(records);
+        const entries = proposals.map(record => entryFor(record, options));
+        if (entries.some(entry => !entry)) throw new Error('A corridor has no valid centerline.');
+        entries.forEach(entry => { delete entry.definition.junctions; });
+        geometry.normalizeCorridorNetwork(entries, { toleranceMeters: 0 });
+        entries.forEach((entry, index) => {
+            entries.slice(index + 1).forEach(other => recordSharedJunctions(entry, other));
+        });
+        entries.forEach(entry => writeDefinition(entry.record, definitionFromEntry(entry)));
+        return proposals;
+    }
+
     return {
         PUBLISHED_IDENTITY_KEYS: PUBLISHED_IDENTITY_KEYS.slice(),
         cloneValue,
@@ -354,6 +379,7 @@
         centerlineOf,
         isTrackDefinition,
         planCorridorAuthoring,
+        planCorridorComposition,
         writeDefinition,
         detachPublishedIdentity
     };

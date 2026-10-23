@@ -485,8 +485,7 @@
             </div>
         </div>
 
-        <!-- Bottom navigation: Proposals, Bets, Activity. Their sheets anchor to the whole row, so all three
-             open in the same place (js/ui/map-shell.js positionSheet). -->
+        <!-- Bottom navigation: Designs opens the right panel; Bets and Activity anchor above the row. -->
         <div id="map-shell-bottom-right" class="map-shell-cluster map-shell-cluster--bottom-right" data-sheet-anchor>
             <button type="button" id="proposals-button" class="map-shell-button map-shell-button--labelled"
                 data-sheet-target="proposals-sheet" aria-controls="proposals-sheet" aria-expanded="false"
@@ -494,14 +493,6 @@
                 <i class="fas fa-pencil-ruler" aria-hidden="true"></i>
                 <span class="map-shell-button-label" data-i18n-key="mapShell.proposals">Designs</span>
                 <span id="proposals-button-count" class="map-shell-badge" aria-hidden="true">0</span>
-            </button>
-            <button type="button" id="bets-button" class="map-shell-button map-shell-button--labelled"
-                data-sheet-target="bets-sheet" aria-controls="bets-sheet" aria-expanded="false"
-                title="Bets" data-i18n-key="mapShell.bets" data-i18n-attr="title">
-                <i class="fas fa-coins" aria-hidden="true"></i>
-                <span class="map-shell-button-label" data-i18n-key="mapShell.bets">Bets</span>
-                <!-- "New" until the sheet has been opened once on this device (js/bets/bets-sheet.js) -->
-                <span id="bets-button-new" class="map-shell-badge map-shell-badge--text cb-shimmer" data-i18n-key="mapShell.betsNew">New</span>
             </button>
             <button type="button" id="activity-button" class="map-shell-button map-shell-button--labelled"
                 data-sheet-target="activity-sheet" aria-controls="activity-sheet" aria-expanded="false"
@@ -513,11 +504,13 @@
                     aria-label="Simulation running" title="Simulation running"
                     data-i18n-key="mapShell.simulation.running" data-i18n-attr="aria-label,title" hidden></span>
             </button>
-            <button id="shareAppliedProposalsButton" type="button" class="map-shell-button map-shell-button--labelled share-map-button"
-                onclick="shareAppliedProposals()" title="Share this map" data-i18n-key="mapShell.shareMap" data-i18n-attr="title">
-                <i class="fas fa-share-alt" aria-hidden="true"></i>
-                <span class="share-plan-label map-shell-button-label" data-i18n-key="mapShell.share">Share</span>
-                <span class="share-plan-spinner" aria-live="polite" hidden><i class="fas fa-spinner fa-spin" aria-hidden="true"></i></span>
+            <button type="button" id="bets-button" class="map-shell-button map-shell-button--labelled"
+                data-sheet-target="bets-sheet" aria-controls="bets-sheet" aria-expanded="false"
+                title="Bets" data-i18n-key="mapShell.bets" data-i18n-attr="title">
+                <i class="fas fa-coins" aria-hidden="true"></i>
+                <span class="map-shell-button-label" data-i18n-key="mapShell.bets">Bets</span>
+                <!-- "New" until the sheet has been opened once on this device (js/bets/bets-sheet.js) -->
+                <span id="bets-button-new" class="map-shell-badge map-shell-badge--text cb-shimmer" data-i18n-key="mapShell.betsNew">New</span>
             </button>
         </div>
 
@@ -1032,7 +1025,18 @@
                 <button type="button" class="map-sheet-close close-circle-btn close-circle-btn--lg" data-sheet-close
                     aria-label="Close" title="Close" data-i18n-key="common.close" data-i18n-attr="aria-label,title">×</button>
             </div>
+            <div class="designs-panel-tabs cb-segmented" role="tablist" aria-label="Designs" data-i18n-key="mapShell.proposals" data-i18n-attr="aria-label">
+                <button type="button" id="designs-browse-tab" class="cb-segmented__option" role="tab" aria-selected="true" aria-controls="designs-browse" onclick="openDesignsTab('browse')">
+                    <span data-i18n-key="mapShell.proposals">Designs</span>
+                </button>
+                <button type="button" id="shareAppliedProposalsButton" class="cb-segmented__option" role="tab" tabindex="-1" aria-selected="false" aria-controls="designs-share" onclick="openDesignsTab('share')">
+                    <i class="fas fa-share-alt" aria-hidden="true"></i>
+                    <span class="share-plan-label" data-i18n-key="mapShell.share">Share</span>
+                    <span class="share-plan-spinner" aria-live="polite" hidden><i class="fas fa-spinner fa-spin" aria-hidden="true"></i></span>
+                </button>
+            </div>
             <div class="map-sheet-body sheet-section-body">
+                <div id="designs-browse" role="tabpanel" aria-labelledby="designs-browse-tab">
                 <div id="proposal-list-host"></div>
                 <nav id="proposal-list-actions" aria-label="Design actions" data-i18n-key="mapShell.designActions" data-i18n-attr="aria-label">
                 <div class="control-group">
@@ -1067,6 +1071,8 @@
                     </div>
                 </div>
             </nav>
+                </div>
+                <div id="designs-share" role="tabpanel" aria-labelledby="shareAppliedProposalsButton" hidden></div>
             </div>
         </section>
 
@@ -1182,83 +1188,58 @@
                         <span data-i18n-key="sidebar.header.aiBadge">AI-friendly</span>
                     </span>
                 </div>
-                <!-- The environment badges (cb-badge tones), shown in debug mode by environment.js
-                     updateBadgeVisibility through the hidden attribute. -->
-                <div class="settings-badge-bar" hidden>
-                    <span id="dev-badge" class="cb-badge cb-badge--warning" hidden
-                        data-i18n-key="sidebar.header.devBadge">Development</span>
-                    <span id="debug-badge" class="cb-badge cb-badge--warning" hidden
-                        data-i18n-key="sidebar.header.debugBadge">Debug</span>
-                    <span id="version-badge" class="cb-badge cb-badge--neutral" aria-label="Version" hidden></span>
-                </div>
-
-                <!-- Every capability by name (js/ui/command-palette.js); also Ctrl/Cmd-K anywhere -->
-                <!-- The globe: choose a city or explore anywhere (js/ui/world-entry.js) -->
-                <div class="btn-group sheet-shortcuts">
-                    <button type="button" id="world-view-button" class="btn settings-palette-button">
-                        <i class="fas fa-earth-europe" aria-hidden="true"></i>
-                        <span data-i18n-key="mapShell.commands.worldView">World view</span>
-                    </button>
-                    <button type="button" id="command-palette-button" class="btn settings-palette-button">
-                        <i class="fas fa-terminal" aria-hidden="true"></i>
-                        <span data-i18n-key="commandPalette.open">Command palette</span>
-                        <kbd class="settings-palette-shortcut" data-command-palette-shortcut>Ctrl K</kbd>
-                    </button>
-                </div>
-
-                <!-- Appearance: the theme tokens (css/tokens.css) through js/ui/theme.js -->
-                <div class="settings-appearance">
-                    <p class="cb-kicker" id="settings-appearance-label" data-i18n-key="mapShell.appearance.label">Appearance</p>
-                    <div class="cb-segmented cb-segmented--fill" role="group" aria-labelledby="settings-appearance-label">
-                        <button type="button" id="theme-choice-system" class="cb-segmented__option" data-theme-choice="system" aria-pressed="true"
-                            data-i18n-key="mapShell.appearance.system">System</button>
-                        <button type="button" id="theme-choice-light" class="cb-segmented__option" data-theme-choice="light" aria-pressed="false"
-                            data-i18n-key="mapShell.appearance.light">Light</button>
-                        <button type="button" id="theme-choice-dark" class="cb-segmented__option" data-theme-choice="dark" aria-pressed="false"
-                            data-i18n-key="mapShell.appearance.dark">Dark</button>
-                    </div>
-                </div>
-
-                <!-- Data & maintenance: where the data comes from, then upkeep of what this browser has
-                     stored. Each dataset's upkeep keeps its own section wrapper, so a city that hides
-                     the section (sidebar.disabledSections; the explore city) hides its upkeep too. The
-                     per-dataset clears are developer controls (debug-only-control, css/utilities.css), shown only in debug mode. -->
-                <div class="accordion-section" data-section="data">
-                    <h3 class="sheet-section-title">
-                        <i class="fas fa-database" aria-hidden="true"></i>
-                        <span class="accordion-title-text" data-section-title="data"
-                            data-i18n-key="mapShell.maintenance.title">Data &amp; maintenance</span>
-                    </h3>
+                <details class="accordion-section" data-section="navigation">
+                    <summary class="sheet-section-title">
+                        <i class="fas fa-compass" aria-hidden="true"></i>
+                        <span data-i18n-key="mapShell.settingsSections.navigation">Navigation</span>
+                    </summary>
                     <div class="sheet-section-body">
-                        <label class="sheet-field" data-map-modes="2d">
-                            <span class="sheet-field-label" data-i18n-key="sidebar.data.sourceLabel">Data Source:</span>
-                            <select id="data-source-select" data-map-modes="2d">
-                                <option value="oss.uredjenazemlja.hr" data-i18n-key="sidebar.data.sourceOptions.oss">Croatian cadastre (live)</option>
-                                <option value="localhost" data-i18n-key="sidebar.data.sourceOptions.localhost">Local backend</option>
-                                <option value="api.urbangametheory.xyz" data-i18n-key="sidebar.data.sourceOptions.api">Consensus Builder API</option>
-                            </select>
-                        </label>
-
-
-                        <div class="control-group-title" data-i18n-key="mapShell.maintenance.storedTitle">Stored in this browser</div>
-                        <!-- Parcel upkeep keeps its data-section wrapper: a city without parcels hides it. -->
-                        <div class="accordion-section sheet-subsection" data-section="parcels">
-                        <div class="btn-group">
-                                <button type="button" id="showParcelCoverageButton" data-map-modes="2d" class="btn"
-                                    title="Visualize which grid cells are cached locally and how they compare to the current view."
-                                    data-i18n-key="sidebar.parcels.coverageTooltip" data-i18n-attr="title">
-                                    <i class="fas fa-table-cells" aria-hidden="true"></i>
-                                    <span data-i18n-key="sidebar.parcels.coverageButton">Show loaded parcels cover</span>
-                                </button>
-
+                        <div class="btn-group sheet-shortcuts">
+                            <button type="button" id="world-view-button" class="btn settings-palette-button">
+                                <i class="fas fa-earth-europe" aria-hidden="true"></i>
+                                <span data-i18n-key="mapShell.commands.worldView">World view</span>
+                            </button>
+                            <button type="button" id="command-palette-button" class="btn settings-palette-button">
+                                <i class="fas fa-terminal" aria-hidden="true"></i>
+                                <span data-i18n-key="commandPalette.open">Command palette</span>
+                                <kbd class="settings-palette-shortcut" data-command-palette-shortcut>Ctrl K</kbd>
+                            </button>
                         </div>
+                    </div>
+                </details>
+                <details class="accordion-section" data-section="appearance">
+                    <summary class="sheet-section-title">
+                        <i class="fas fa-palette" aria-hidden="true"></i>
+                        <span data-i18n-key="mapShell.appearance.label">Appearance</span>
+                    </summary>
+                    <div class="sheet-section-body">
+                        <div class="settings-appearance">
+                            <div class="cb-segmented cb-segmented--fill" role="group" aria-label="Appearance" data-i18n-key="mapShell.appearance.label" data-i18n-attr="aria-label">
+                                <button type="button" id="theme-choice-system" class="cb-segmented__option" data-theme-choice="system" aria-pressed="true"
+                                    data-i18n-key="mapShell.appearance.system">System</button>
+                                <button type="button" id="theme-choice-light" class="cb-segmented__option" data-theme-choice="light" aria-pressed="false"
+                                    data-i18n-key="mapShell.appearance.light">Light</button>
+                                <button type="button" id="theme-choice-dark" class="cb-segmented__option" data-theme-choice="dark" aria-pressed="false"
+                                    data-i18n-key="mapShell.appearance.dark">Dark</button>
+                            </div>
                         </div>
-                        <!-- Destructive upkeep folds away under one row (docs/design-language.md: Reset at the
-                             bottom). The per-dataset resets keep their data-section wrappers (city configs
-                             hide them) and stay debug-only; "Reset everything" is always offered. -->
-                        <details class="sheet-reset">
-                            <summary data-i18n-key="mapShell.maintenance.resetSummary">Reset data stored in this browser…</summary>
-                        <div class="accordion-section sheet-subsection" data-section="parcels">
+                    </div>
+                </details>
+                <details class="accordion-section" data-section="data">
+                    <summary class="sheet-section-title">
+                        <i class="fas fa-database" aria-hidden="true"></i>
+                        <span data-i18n-key="mapShell.maintenance.localData">Local (browser) data</span>
+                    </summary>
+                    <div class="sheet-section-body">
+                        <div class="btn-group" data-section="parcels">
+                            <button type="button" id="showParcelCoverageButton" data-map-modes="2d" class="btn"
+                                title="Visualize which grid cells are cached locally and how they compare to the current view."
+                                data-i18n-key="sidebar.parcels.coverageTooltip" data-i18n-attr="title">
+                                <i class="fas fa-table-cells" aria-hidden="true"></i>
+                                <span data-i18n-key="sidebar.parcels.coverageButton">Show loaded parcels cover</span>
+                            </button>
+                        </div>
+                        <div class="control-group" data-section="parcels">
                             <div class="btn-group">
                                 <button type="button" class="btn btn-danger debug-only-control"
                                     onclick="(window.Parcels?.fetch?.clearLocalParcelData || window.clearLocalParcelData || function(){})()"
@@ -1268,7 +1249,7 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="accordion-section sheet-subsection" data-section="blocks">
+                        <div class="control-group" data-section="blocks">
                             <div class="btn-group">
                                 <button type="button" class="btn btn-danger debug-only-control" onclick="clearBlocks()"
                                     data-i18n-key="sidebar.blocks.clearTooltip" data-i18n-attr="title">
@@ -1277,7 +1258,7 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="accordion-section sheet-subsection" data-section="roads">
+                        <div class="control-group" data-section="roads">
                             <div class="btn-group">
                                 <button type="button" class="btn btn-danger debug-only-control" onclick="clearDetectedRoads()"
                                     data-i18n-key="sidebar.roads.clearTooltip" data-i18n-attr="title">
@@ -1286,7 +1267,7 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="accordion-section sheet-subsection" data-section="proposals">
+                        <div class="control-group" data-section="proposals">
                             <div class="btn-group">
                                 <button type="button" class="btn btn-danger debug-only-control" onclick="clearLocalProposalData()">
                                     <i class="fas fa-trash" aria-hidden="true"></i>
@@ -1302,17 +1283,13 @@
                                 <span data-i18n-key="sidebar.info.wipeDataButton">Reset everything (this browser)</span>
                             </button>
                         </div>
-                        </details>
                     </div>
-                </div>
-
-                <!-- Information, intro and debug mode -->
-                <div class="accordion-section" data-section="info">
-                    <h3 class="sheet-section-title">
+                </details>
+                <details class="accordion-section" data-section="info">
+                    <summary class="sheet-section-title">
                         <i class="fas fa-info-circle" aria-hidden="true"></i>
-                        <span class="accordion-title-text" data-section-title="info"
-                            data-i18n-key="sidebar.info.title">Information</span>
-                    </h3>
+                        <span data-i18n-key="sidebar.info.title">Information</span>
+                    </summary>
                     <div class="sheet-section-body">
                         <div class="info-subsection">
                             <h4 id="map-credits-title" tabindex="-1" data-i18n-key="mapCredits.title">Sources &amp; software</h4>
@@ -1324,9 +1301,9 @@
                             <h4 data-i18n-key="sidebar.info.contactTitle">Contact</h4>
                             <p>
                                 <span data-i18n-key="sidebar.info.telegramLabel">Telegram</span>: <a class="cb-link cb-link--external"
-                                    href="https://t.me/urbangametheory" target="_blank" rel="noopener noreferrer">https://t.me/urbangametheory</a><br>
+                                href="https://t.me/urbangametheory" target="_blank" rel="noopener noreferrer">https://t.me/urbangametheory</a><br>
                                 <span data-i18n-key="sidebar.info.xLabel">X</span>: <a class="cb-link cb-link--external"
-                                    href="https://x.com/UrbanGameTheory" target="_blank" rel="me noopener noreferrer">@UrbanGameTheory</a><br>
+                                href="https://x.com/UrbanGameTheory" target="_blank" rel="me noopener noreferrer">@UrbanGameTheory</a><br>
                             </p>
                         </div>
                         <hr>
@@ -1355,78 +1332,81 @@
                                 and what comes next on the <a class="cb-link" href="roadmap.html" target="_blank" rel="noopener noreferrer">roadmap</a>.
                             </p>
                         </div>
-                        <hr>
-                        <div class="info-subsection">
-                            <h4 data-i18n-key="sidebar.info.advancedTitle">Advanced Options</h4>
-                            <div class="checkbox-group">
-                                <label>
-                                    <input type="checkbox" id="debugModeCheckbox" onchange="toggleDebugMode()">
-                                    <span data-i18n-key="sidebar.info.debugToggle">Enable debug mode</span>
-                                </label>
+                    </div>
+                </details>
+                <details class="accordion-section activity-simulation" data-section="game">
+                    <summary class="sheet-section-title">
+                        <i class="fas fa-play" aria-hidden="true"></i>
+                            <span data-section-title="game" data-i18n-key="mapShell.simulation.title">Simulation</span>
+                    </summary>
+                    <div class="sheet-section-body">
+                        <label class="checkbox-group activity-simulation-switch">
+                            <input type="checkbox" id="gameCheckbox" data-layer="game" onchange="toggleAccordion(this)">
+                            <span data-i18n-key="sidebar.game.enable">Enable game mode</span>
+                        </label>
+                        <div class="activity-simulation-row">
+                            <button type="button" id="game-play-pause-btn" class="btn btn-icon btn-sm activity-simulation-play"
+                                aria-pressed="false" onclick="toggleGamePlayPause()">
+                                <i class="fas fa-play" aria-hidden="true"></i>
+                                <span class="map-shell-sr-only" data-i18n-key="sidebar.game.play">Play</span>
+                            </button>
+                            <span class="activity-simulation-metrics">
+                                <span id="game-datetime">2024-01-01</span>
+                                <span aria-hidden="true">·</span>
+                                <span data-i18n-key="mapShell.simulation.turn">Turn</span>
+                                <span id="game-turns">0</span>
+                            </span>
+                        </div>
+                        <div class="activity-simulation-settings">
+                            <div class="sheet-section-body">
+                                <div class="slider-group">
+                                    <label for="turn-interval-slider">
+                                        <span data-i18n-key="sidebar.game.secondsBetween">Seconds between turns:</span>
+                                        <span id="turn-interval-value">30</span>
+                                    </label>
+                                    <input type="range" id="turn-interval-slider" min="1" max="60" value="10"
+                                    onchange="updateTurnInterval(this.value)" oninput="updateTurnIntervalDisplay(this.value)">
+                                </div>
+                                <div class="turn-progress">
+                                    <div class="turn-progress-label" data-i18n-key="sidebar.game.nextTurn">Next turn in:</div>
+                                    <div class="turn-progress-bar">
+                                        <div id="turn-progress-fill" class="turn-progress-fill"></div>
+                                    </div>
+                                    <div class="turn-progress-time" id="turn-progress-time">--</div>
+                                </div>
+                                <div class="btn-group">
+                                    <button class="btn btn-danger" onclick="resetGameState(true)">
+                                        <i class="fas fa-rotate-left" aria-hidden="true"></i>
+                                        <span data-i18n-key="sidebar.game.newGame">New Game</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <details class="activity-diagnostics">
-                    <summary class="sheet-section-title" data-i18n-key="activityPanel.diagnostics">Diagnostics</summary>
+                </details>
+                <details class="accordion-section activity-diagnostics" data-section="diagnostics">
+                    <summary class="sheet-section-title">
+                        <i class="fas fa-stethoscope" aria-hidden="true"></i>
+                        <span data-i18n-key="activityPanel.diagnostics">Diagnostics</span>
+                    </summary>
                     <div class="sheet-section-body">
-                        <!-- Simulation remains a city-configurable game section, now grouped under Settings diagnostics. -->
-                        <details class="accordion-section activity-simulation" data-section="game">
-                            <summary class="sheet-section-title">
-                                <span class="accordion-title-text" data-section-title="game"
-                                    data-i18n-key="mapShell.simulation.title">Simulation</span>
-                            </summary>
-                            <label class="checkbox-group activity-simulation-switch">
-                                <input type="checkbox" id="gameCheckbox" data-layer="game" onchange="toggleAccordion(this)">
-                                <span data-i18n-key="sidebar.game.enable">Enable game mode</span>
+                        <div class="settings-badge-bar" hidden>
+                            <span id="dev-badge" class="cb-badge cb-badge--warning" hidden
+                                data-i18n-key="sidebar.header.devBadge">Development</span>
+                            <span id="debug-badge" class="cb-badge cb-badge--warning" hidden
+                                data-i18n-key="sidebar.header.debugBadge">Debug</span>
+                            <span id="version-badge" class="cb-badge cb-badge--neutral" aria-label="Version" hidden></span>
+                        </div>
+                        <div class="checkbox-group">
+                            <label>
+                                <input type="checkbox" id="debugModeCheckbox" onchange="toggleDebugMode()">
+                                <span data-i18n-key="sidebar.info.debugToggle">Enable debug mode</span>
                             </label>
-                            <div class="activity-simulation-row">
-                                <button type="button" id="game-play-pause-btn" class="btn btn-icon btn-sm activity-simulation-play"
-                                    aria-pressed="false" onclick="toggleGamePlayPause()">
-                                    <i class="fas fa-play" aria-hidden="true"></i>
-                                    <span class="map-shell-sr-only" data-i18n-key="sidebar.game.play">Play</span>
-                                </button>
-                                <span class="activity-simulation-metrics">
-                                    <span id="game-datetime">2024-01-01</span>
-                                    <span aria-hidden="true">·</span>
-                                    <span data-i18n-key="mapShell.simulation.turn">Turn</span>
-                                    <span id="game-turns">0</span>
-                                </span>
-                            </div>
-                            <details class="activity-simulation-settings">
-                                <summary data-i18n-key="mapShell.simulation.settings">Simulation settings</summary>
-                                <div class="sheet-section-body">
-                                    <div class="slider-group">
-                                        <label for="turn-interval-slider">
-                                            <span data-i18n-key="sidebar.game.secondsBetween">Seconds between turns:</span>
-                                            <span id="turn-interval-value">30</span>
-                                        </label>
-                                        <input type="range" id="turn-interval-slider" min="1" max="60" value="10"
-                                            onchange="updateTurnInterval(this.value)" oninput="updateTurnIntervalDisplay(this.value)">
-                                    </div>
-                                    <div class="turn-progress">
-                                        <div class="turn-progress-label" data-i18n-key="sidebar.game.nextTurn">Next turn in:</div>
-                                        <div class="turn-progress-bar">
-                                            <div id="turn-progress-fill" class="turn-progress-fill"></div>
-                                        </div>
-                                        <div class="turn-progress-time" id="turn-progress-time">--</div>
-                                    </div>
-                                    <div class="btn-group">
-                                        <button class="btn btn-danger" onclick="resetGameState(true)">
-                                            <i class="fas fa-rotate-left" aria-hidden="true"></i>
-                                            <span data-i18n-key="sidebar.game.newGame">New Game</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </details>
-                        </details>
-                        <details class="layer-actions activity-technical-status">
-                            <summary data-i18n-key="mapShell.reorg.statusLog">Technical status</summary>
-                            <div class="status-bar">
-                                <span id="status" data-i18n-key="hud.statusReady">App initialized, loading parcels...</span>
-                                <div id="status-log-expanded" class="status-log-expanded" style="display: none;"></div>
-                            </div>
-                        </details>
+                        </div>
+                        <div class="status-bar">
+                            <span id="status" data-i18n-key="hud.statusReady">App initialized, loading parcels...</span>
+                            <div id="status-log-expanded" class="status-log-expanded" style="display: none;"></div>
+                        </div>
                     </div>
                 </details>
             </div>

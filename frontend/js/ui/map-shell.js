@@ -135,7 +135,7 @@
 
     function positionSheet(sheet, trigger) {
         const props = ['--sheet-top', '--sheet-bottom', '--sheet-left', '--sheet-right', '--sheet-max-height'];
-        if (!trigger || isMobile()) {
+        if (!trigger || isMobile() || sheet.id === 'proposals-sheet') {
             props.forEach(prop => sheet.style.removeProperty(prop));
             return;
         }
@@ -166,7 +166,7 @@
         const trigger = options.trigger || triggersFor(sheet)[0] || null;
         state.openSheet = sheet;
         state.trigger = trigger;
-        if (sheet.id === 'layers-sheet') {
+        if (sheet.id === 'layers-sheet' || sheet.id === 'settings-sheet') {
             sheet.querySelectorAll('details.accordion-section').forEach(section => { section.open = false; });
         }
         sheet.hidden = false;
@@ -244,7 +244,7 @@
 
     // Open the sheet holding a section (e.g. 'areaMonitor') and scroll the section into view.
     function revealSection(sectionName) {
-        const section = Array.from(doc.querySelectorAll(`.accordion-section[data-section="${sectionName}"]`))
+        const section = Array.from(doc.querySelectorAll(`[data-section="${sectionName}"]`))
             .find(candidate => candidate.style.display !== 'none');
         if (!section) return null;
         const sheet = section.classList.contains('map-sheet') ? section : section.closest('.map-sheet');
@@ -257,7 +257,7 @@
     // A long-running action locks the section(s) it belongs to (not the whole UI, as the sidebar
     // overlay did): every control in them is disabled and a spinner line says why.
     function setSectionBusy(sectionName, busy, message) {
-        doc.querySelectorAll(`.accordion-section[data-section="${sectionName}"]`).forEach(section => {
+        doc.querySelectorAll(`[data-section="${sectionName}"]`).forEach(section => {
             const body = section.querySelector('.sheet-section-body') || section;
             let notice = section.querySelector(':scope .sheet-section-busy');
             if (busy) {
@@ -445,6 +445,8 @@
     function onDocumentPointerDown(event) {
         const sheet = state.openSheet;
         if (!sheet) return;
+        // The Designs side panel stays available while the map is explored or picks a share row.
+        if (sheet.id === 'proposals-sheet') return;
         if (!pointerDownClosesSheet({ sheet, trigger: state.trigger, target: event.target, blockingDialogOpen: isBlockingDialogOpen() })) return;
         closeSheet({ restoreFocus: false });
     }

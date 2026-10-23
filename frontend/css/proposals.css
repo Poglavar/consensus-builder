@@ -288,8 +288,6 @@
 #proposal-list-actions .grain-score-button__empty { display: none; }
 #proposal-list-actions .grain-score-button { padding: 6px 10px; }
 #proposal-list-actions .grain-score-button__copy { text-align: center; }
-#proposal-list-actions #agreementsButton { grid-column: 1; grid-row: 1; }
-#proposal-list-actions #mintedAgreementsButton { grid-column: 2; grid-row: 1; }
 
 .proposal-list-modal-content > .proposal-list-controls {
     flex-shrink: 1;
@@ -365,15 +363,6 @@
     background-color: var(--cb-surface-2);
 }
 
-/* Filtered-result count line that replaced the per-tab counts. */
-.proposal-list-count {
-    padding: 6px 20px;
-    font-size: var(--cb-text-sm);
-    color: var(--cb-text-muted);
-    background-color: var(--cb-surface-2);
-    border-bottom: 1px solid var(--cb-line);
-}
-
 .proposal-filter-group {
     display: flex;
     flex-direction: column;
@@ -382,7 +371,7 @@
     flex: 1 1 calc(50% - 12px);
 }
 
-/* "Filters" toggle row (button + result count). Hidden on tall desktop windows, where the filters
+/* "Filters" toggle row. Hidden on tall desktop windows, where the filters
    are always shown; on the phone bottom sheet and on short windows the filters fold behind it so the
    list keeps the height. */
 .proposal-filters-toggle-row {
@@ -401,11 +390,6 @@
     transform: rotate(180deg);
 }
 
-.proposal-filters-toggle-count {
-    font-size: var(--cb-text-sm);
-    color: var(--cb-text-muted);
-}
-
 @media (max-width: 767.98px) {
     .proposal-filters-toggle-row {
         display: flex;
@@ -416,11 +400,6 @@
         background-color: var(--cb-surface-2);
         border-bottom: 1px solid var(--cb-line);
         flex-shrink: 0;
-    }
-
-    /* The count lives in the toggle row here. */
-    .proposal-list-count {
-        display: none;
     }
 
     .proposal-list-controls {
@@ -472,10 +451,6 @@
         background-color: var(--cb-surface-2);
         border-bottom: 1px solid var(--cb-line);
         flex-shrink: 0;
-    }
-
-    .proposal-list-count {
-        display: none;
     }
 
     .proposal-list-controls {
@@ -1625,6 +1600,18 @@ textarea.proposal-description-input {
     line-height: 1.3;
 }
 
+.share-plan-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 0 0 auto;
+    padding: 12px 14px 0;
+}
+
+.share-plan-toolbar .share-plan-filter { padding: 0; }
+.share-plan-toolbar .share-plan-share-area { border: 0; padding: 0; }
+.share-plan-toolbar .share-plan-status:empty { display: none; }
+
 .share-plan-panel-body {
     display: flex;
     flex-direction: column;
@@ -1632,6 +1619,7 @@ textarea.proposal-description-input {
     padding: 12px 14px;
     flex: 1;
     min-height: 0; /* lets the row list shrink and scroll instead of overflowing the panel */
+    overflow: hidden;
 }
 
 /* How many designs the panel lists, and what the link is waiting for. */
@@ -1694,12 +1682,24 @@ textarea.proposal-description-input {
     text-align: center;
 }
 
-/* Checkbox, colour chip and the design's name and type: one label, so the whole of it toggles. */
-.share-plan-row__main {
+/* Inclusion and map focus are separate targets: a checkbox beside the design button. */
+.share-plan-row .share-plan-row__main {
     display: flex;
     align-items: center;
     gap: var(--cb-space-2);
     min-width: 0;
+    cursor: pointer;
+    flex: 1;
+    text-align: left;
+    justify-content: flex-start;
+}
+
+.share-plan-row__selection {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 44px;
+    min-height: 44px;
     cursor: pointer;
 }
 
@@ -1785,12 +1785,13 @@ textarea.proposal-description-input {
     display: flex;
     align-items: center;
     padding: 0 14px 10px;
+    justify-content: center;
 }
 
 /* A segmented control rather than a dropdown: three options that are switched between constantly
    should cost one click, not two. */
 .share-plan-mode-switch {
-    margin-left: auto;
+    margin-inline: auto;
     user-select: none;
 }
 
