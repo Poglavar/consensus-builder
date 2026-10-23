@@ -39,12 +39,7 @@
     gap: var(--map-shell-gap);
 }
 
-.map-shell-slot--tray {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: var(--cb-z-map-chrome);
-}
+
 
 /* ---- Floating buttons ---- */
 .map-shell-cluster {

@@ -21,6 +21,9 @@
 
     // Modal state
     let parcelBasedModal = null;
+    let parcelBasedSurroundings = null;
+    let parcelBasedInitialGroundTreatment = null;
+    let parcelBasedInitialDecorationDesign = null;
     let parcelBasedMap = null;
     let parcelBasedGenerationTimer = null;
     let parcelBasedBoundary = null;
@@ -416,6 +419,7 @@
         updateBuildingMetrics(envelopes, houses);
 
         parcelBasedModal?.setPreview({
+            groundSurface: parcelBasedSurroundings?.refresh() || null,
             draftPreview: { kind: 'buildings', features: houses },
             boundary: parcelBasedBoundary,
             envelopes: currentRuleKind === 'exact' ? [] : envelopes,
@@ -493,6 +497,7 @@
             parentDetails,
             blockName: getParcelBasedDisplayName(),
             parameters: parcelBasedDesignParameters(),
+            groundSurface: parcelBasedSurroundings?.surface() || null,
             buildings,
             buildingFeature: buildings[0] || null
         }, { coalesceKey: 'parcel-based-live' });
@@ -817,6 +822,12 @@
             });
             if (!parcelBasedModal) return false;
             parcelBasedMap = parcelBasedModal.map;
+            parcelBasedSurroundings = window.BuildingSurroundingsEditor.mount({
+                session: parcelBasedModal, id: 'parcelbased-ground-treatment', initialTreatment: parcelBasedInitialGroundTreatment, initialDecorationDesign: parcelBasedInitialDecorationDesign,
+                boundary: () => parcelBasedBoundary,
+                buildings: () => generatedParcelBasedFeatures,
+                onChange: () => autosaveParcelBasedDraft()
+            });
             setParcelBasedInfo('parcelBased.modal.generating', 'Generating buildings...');
 
             // Apply translations
@@ -1001,7 +1012,7 @@
     function parcelBasedDesignChanges() {
         if (!parcelBasedDesignChangeTracker) {
             parcelBasedDesignChangeTracker = window.DesignChangeTracker.createDesignChangeTracker({
-                signature: () => window.DesignChangeTracker.featuresSignature(generatedParcelBasedFeatures || [])
+                signature: () => JSON.stringify([parcelBasedSurroundings?.signature, window.DesignChangeTracker.featuresSignature(generatedParcelBasedFeatures || [])])
             });
         }
         return parcelBasedDesignChangeTracker;
@@ -1020,6 +1031,10 @@
 
     function closeParcelBasedModal(options = {}) {
         const { preservePending = false } = options;
+        parcelBasedSurroundings?.destroy();
+        parcelBasedSurroundings = null;
+        parcelBasedInitialGroundTreatment = null;
+        parcelBasedInitialDecorationDesign = null;
         if (parcelBasedGenerationTimer !== null) {
             clearTimeout(parcelBasedGenerationTimer);
             parcelBasedGenerationTimer = null;
@@ -1133,6 +1148,7 @@
             parentDetails: parentDetails.slice(),
             blockName: getParcelBasedDisplayName(),
             parameters: parcelBasedDesignParameters(),
+            groundSurface: parcelBasedSurroundings?.surface() || null,
             buildings: clonedFeatures,
             buildingFeature: clonedFeatures[0] || null
         };
@@ -1169,8 +1185,10 @@
 
     // Entry point for opening parcel-based modal from parcels. `initialParameters` (optional)
     // reopens the editor on a previously-saved design — used by "Copy into new proposal".
-    function openParcelBasedForParcels({ blockName, parcelIds, initialParameters = null, site = null }) {
+    function openParcelBasedForParcels({ blockName, parcelIds, initialParameters = null, site = null, initialGroundTreatment = null, initialDecorationDesign = null }) {
         parcelBasedSeedParameters = initialParameters || null;
+        parcelBasedInitialGroundTreatment = initialGroundTreatment;
+        parcelBasedInitialDecorationDesign = initialDecorationDesign;
         const ids = Array.from(new Set((Array.isArray(parcelIds) ? parcelIds : []).map(String).filter(Boolean)));
         if (!ids.length) {
             if (typeof updateStatus === 'function') {

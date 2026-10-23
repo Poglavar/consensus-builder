@@ -1,6 +1,6 @@
 // Behavioral coverage for building-rule sliders, boundary handles and the existing-footprint rule.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, closeParcel } from '../helpers/runtime';
+import { openCity, openParcel, closeParcel, showSelectionDesignTab } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { selectNativeOption } from '../helpers/controls';
 
@@ -186,7 +186,7 @@ test.describe('Building editor complete form controls @features', () => {
     await page.locator('.multi-select-detect-btn').click();
     await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.selectedParcels.size)).toBeGreaterThan(1);
     await closeParcel(page);
-    await page.locator('#selection-tray [data-command="selection.propose"]').click();
+    await showSelectionDesignTab(page);
     await page.locator('.parcel-build-btn--row').click();
     const prompt = page.getByRole('alertdialog');
     if (await prompt.isVisible().catch(() => false)) {

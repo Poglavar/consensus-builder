@@ -141,7 +141,6 @@
                 'css/map-credits.css',
                 'css/bets-sheet.css',
                 'css/site-tool.css',
-                'css/selection-tray.css',
                 'css/map-search.css',
                 'css/command-palette.css',
                 'css/world.css',
@@ -422,7 +421,6 @@
         </div>
 
         <!-- Phase 3 hook: the selection tray mounts here, bottom-centre, while parcels are selected. -->
-        <div id="selection-tray-slot" class="map-shell-slot map-shell-slot--tray"></div>
 
         <!-- Top-right, beside the user bubble: Layers and Settings -->
         <div id="map-shell-top-right" class="map-shell-cluster map-shell-cluster--top-right">
@@ -1452,15 +1450,13 @@
             </div>
 
             <div class="cb-actions parcel-context-actions">
-                <div class="checkbox-group multi-select-group">
+                <div class="multi-select-group">
                     <span class="multi-select-title" data-i18n-key="panel.parcel.selectMultiple">Select multiple
                         parcels</span>
                     <div class="multi-select-options">
-                        <label>
-                            <input type="checkbox" id="multiSelectCheckboxInfo"
-                                onchange="multiParcelSelection.toggle({ preserveSelectedParcel: true })">
-                            <span data-i18n-key="panel.parcel.selectManually">Manually</span>
-                        </label>
+                        <button type="button" id="parcel-manual-selection" class="btn btn-sm" aria-pressed="false"
+                            onclick="multiParcelSelection.toggle({ preserveSelectedParcel: true })"
+                            data-i18n-key="panel.parcel.selectManually">Manual</button>
                         <button type="button" class="btn btn-primary btn-sm multi-select-detect-btn"
                             data-i18n-key="panel.parcel.detectBlock"
                             onclick="(window.animateFloodfillFromSelected || function(){})();">Detect block</button>
@@ -1989,7 +1985,6 @@
             'js/ui/parcel-menu.js?v=20261019-plot-provenance',
             'js/ui/ground-menu-model.js',
             'js/ui/ground-menu.js',
-            'js/ui/selection-tray.js',
             'js/ui/search-model.js?v=20261008-point-parcels',
             'js/world/globe-math.js',
             'js/world/globe-city-display.js?v=20261012-city-counts',
@@ -2120,6 +2115,7 @@
             'js/proposals/claims-ui.js',
             'js/footprint-geometry.js',
             'js/building-ground.js',
+            'js/building-surroundings-editor.js',
             'js/proposal-own-parcel.js',
             // bundle:end proposal-geometry
             'js/proposals/area.js?v=20261020-complete-area',

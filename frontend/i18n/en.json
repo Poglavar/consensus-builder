@@ -2111,6 +2111,7 @@
             "deleteVertexLabel": "Delete selected vertex",
             "vertexLabel": "Footprint vertex",
             "surroundingsLabel": "Surroundings",
+            "editSurroundings": "Edit surroundings",
             "surroundingsNone": "Leave as they are",
             "surroundingsPaved": "Paved",
             "surroundingsGreen": "Green",
@@ -5861,6 +5862,8 @@
         }
     },
     "structureEditor": {
+        "done": "Done",
+        "hintSurroundings": "Edit the surroundings, then return to the building with Done. Save the building to keep all changes.",
         "titleLake": "Lake boundary editor",
         "instructionsLake": "Drag boundary points to reshape the lake. Tap an edge to add a point.",
         "lakeBoundaryHint": "The shore and water update with the outline.",
@@ -6239,22 +6242,13 @@
         "groundTitle": "Open ground",
         "groundNote": "no cadastral parcel"
     },
-    "selectionTray": {
+    "selectedParcels": {
         "label": "Selected parcels",
-        "count": {
-            "one": "{{count}} parcel",
-            "other": "{{count}} parcels"
-        },
+        "count": "Selected parcels ({{count}})",
         "empty": "Click parcels to select them",
         "actions": {
-            "propose": "Propose",
             "clear": "Clear selection",
-            "done": "Done selecting",
-            "detectBlock": "Detect block",
-            "clearShort": "Clear",
-            "doneShort": "Done",
-            "useAsSite": "Use the selection as a site",
-            "useAsSiteShort": "Site"
+            "done": "Done selecting"
         }
     },
     "mapSearch": {

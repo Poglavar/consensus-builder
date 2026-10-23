@@ -1,4 +1,4 @@
-// Ground treatment for freeform building proposals: the parcel area left over AROUND the placed
+// Ground treatment for building proposals: the site area left over AROUND the placed
 // buildings, rendered either as paving (like a square) or as grass (like a park). One setting per
 // proposal covers the whole merged parcel area, whatever the building count. Pure turf read from
 // the runtime global — plain GeoJSON in and out, no DOM and no map, so it is unit-testable
@@ -18,7 +18,7 @@
     const MIN_SURFACE_AREA_M2 = 2;
 
     // The 2D fill of each treatment, matching the square paving and park grass in structures.js —
-    // one definition for the map layer and for the freeform editor's live preview.
+    // one definition for the map layer and for the building editors' live previews.
     const SURFACE_STYLE_2D = {
         paved: { color: '#666666', fillColor: '#bdbdbd', fillOpacity: 0.7 },
         green: { color: '#0d3b1f', fillColor: '#1b5e20', fillOpacity: 0.65 }
@@ -74,12 +74,12 @@
 
     // { treatment, polygon } as it is persisted on the proposal, or null when the proposal leaves
     // its surroundings unchanged (the default, and every proposal made before this feature).
-    function buildSurface(treatment, blockFeature, buildingFeatures) {
+    function buildSurface(treatment, blockFeature, buildingFeatures, decorationDesign = null) {
         const normalized = normalizeTreatment(treatment);
         if (normalized === 'none') return null;
         const polygon = computeSurfacePolygon(blockFeature, buildingFeatures);
         if (!polygon) return null;
-        return { treatment: normalized, polygon: polygon };
+        return { treatment: normalized, polygon, ...(decorationDesign ? { decorationDesign: JSON.parse(JSON.stringify(decorationDesign)) } : {}) };
     }
 
     function surfaceOf(proposal) {
@@ -89,12 +89,25 @@
         if (treatment === 'none') return null;
         const feature = asFeature(raw.polygon);
         if (!feature) return null;
-        return { treatment: treatment, polygon: feature.geometry };
+        return { treatment, polygon: feature.geometry, ...(raw.decorationDesign ? { decorationDesign: JSON.parse(JSON.stringify(raw.decorationDesign)) } : {}) };
     }
 
     function treatmentOf(proposal) {
         const surface = surfaceOf(proposal);
         return surface ? surface.treatment : 'none';
+    }
+
+    // Whole-design movement keeps authored furniture tied to the moving ground in WGS84.
+    function moveDecorationDesign(design, from, to, moveCoordinates) {
+        if (!design) return null;
+        const moved = JSON.parse(JSON.stringify(design));
+        Object.keys(moved).forEach(key => {
+            if (!Array.isArray(moved[key])) return;
+            moved[key] = moved[key].map(item => item?.coordinate
+                ? { ...item, coordinate: moveCoordinates(item.coordinate, from, to) }
+                : moveCoordinates(item, from, to));
+        });
+        return moved;
     }
 
     // Every applied proposal that paves or greens its surroundings, as
@@ -113,6 +126,7 @@
             out.push({
                 proposalId: proposal.proposalId != null ? String(proposal.proposalId) : null,
                 treatment: surface.treatment,
+                ...(surface.decorationDesign ? { decorationDesign: surface.decorationDesign } : {}),
                 geometry: surface.polygon
             });
         });
@@ -128,6 +142,7 @@
         buildSurface: buildSurface,
         surfaceOf: surfaceOf,
         treatmentOf: treatmentOf,
+        moveDecorationDesign,
         appliedSurfaces: appliedSurfaces
     };
 });

@@ -53,14 +53,8 @@ async function ensureProposalListTranslations(lang) {
     return false;
 }
 
-function syncMultiSelectCheckboxes(isChecked) {
-    const checkboxIds = ['multiSelectCheckbox', 'multiSelectCheckboxInfo'];
-    checkboxIds.forEach(id => {
-        const checkbox = document.getElementById(id);
-        if (checkbox) {
-            checkbox.checked = !!isChecked;
-        }
-    });
+function syncMultiSelectControls(isActive) {
+    document.getElementById('parcel-manual-selection')?.setAttribute('aria-pressed', String(!!isActive));
 }
 
 function handleDescendantItemHover(element) {
@@ -250,7 +244,7 @@ async function launchSingleBuildingToolForSelection() {
         blockName: formatParcelSelectionLabel(selection.ids),
         parcelIds: selection.ids,
         initialBuildings: seed ? pendingBuildingSeedFeatures(seed) : null,
-        initialGroundTreatment: seed?.groundSurface?.treatment || null
+        initialGroundTreatment: seed?.groundSurface?.treatment || null, initialDecorationDesign: seed?.groundSurface?.decorationDesign || null
     });
     return opened !== false;
 }
@@ -270,7 +264,8 @@ async function launchRowHouseToolForSelection() {
     const opened = await openRowHouseForParcels({
         blockName: formatParcelSelectionLabel(selection.ids),
         parcelIds: selection.ids,
-        initialParameters: seed ? seed.parameters : null
+        initialParameters: seed ? seed.parameters : null,
+        initialGroundTreatment: seed?.groundSurface?.treatment || null, initialDecorationDesign: seed?.groundSurface?.decorationDesign || null
     });
     return opened !== false;
 }
@@ -292,7 +287,8 @@ async function launchParcelBasedToolForSelection() {
     const opened = await openParcelBasedForParcels({
         blockName: formatParcelSelectionLabel(selection.ids),
         parcelIds: selection.ids,
-        initialParameters: seed ? seed.parameters : null
+        initialParameters: seed ? seed.parameters : null,
+        initialGroundTreatment: seed?.groundSurface?.treatment || null, initialDecorationDesign: seed?.groundSurface?.decorationDesign || null
     });
     return opened !== false;
 }
@@ -1274,9 +1270,9 @@ function watchProposalsSectionVisibility() {
 function handleMultiSelectChange(checked, source) {
     const desiredState = typeof checked === 'boolean'
         ? checked
-        : !!(document.getElementById('multiSelectCheckbox') && document.getElementById('multiSelectCheckbox').checked);
+        : !!multiParcelSelection.isActive;
 
-    syncMultiSelectCheckboxes(desiredState);
+    syncMultiSelectControls(desiredState);
 
     const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
     if (desiredState && showProposalsCheckbox && showProposalsCheckbox.checked) {
@@ -1304,7 +1300,7 @@ function cancelMultiParcelSelection() {
     }
 
     // Update checkboxes to reflect that multi-select is off
-    syncMultiSelectCheckboxes(false);
+    syncMultiSelectControls(false);
 
     const t = getProposalI18nHelper();
     updateStatus(t('status.messages.multi_parcel_selection_cleared', 'Multi-parcel selection cleared'));

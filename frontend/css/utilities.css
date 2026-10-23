@@ -311,11 +311,6 @@ button.status-log-message {
     display: none;
 }
 
-/* The selection tray occupies the toast's usual row, so raise the whole stack above it. */
-body:has(#selection-tray) .map-feedback-stack {
-    bottom: calc(var(--map-shell-bottom-clearance) + var(--map-shell-button-size) + var(--map-shell-gap));
-}
-
 /* Status line (ephemerals.md): what the app is doing now, replaced never stacked, gone when idle.
    Its visual treatment is .cb-toast--status (css/primitives.css); Activity holds the full log. */
 .floating-status {

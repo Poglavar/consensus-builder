@@ -1,8 +1,8 @@
-// The multi-parcel inspector must let users abandon their selection through its own button.
+// The selection section's Done command exits selection from any parcel panel tab.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, clickMapPoint, PARCEL_ID, closeParcel } from '../helpers/runtime';
+import { openCity, openParcel, clickMapPoint, PARCEL_ID, closeParcel, showSelectionDesignTab, selectionSection, stackCommand, runSelectionCommand } from '../helpers/runtime';
 
-test('multi-parcel inspector Cancel selection clears the selected land and exits selection mode', async ({ mockApi: page }) => {
+test('section Done exits selection after switching parcel panel tabs', async ({ mockApi: page }) => {
   await openCity(page);
   const second = 'HR-335754-1235';
   await page.evaluate(async id => (window as any).CadastralParcelRepository.ensureIds([id]), second);
@@ -12,13 +12,14 @@ test('multi-parcel inspector Cancel selection clears the selected land and exits
   await clickMapPoint(page, 15.9829, 45.80025);
   await expect.poll(() => page.evaluate(() => [...(window as any).multiParcelSelection.selectedParcels].sort()))
     .toEqual([PARCEL_ID, second].sort());
-  await page.locator('#selection-tray [data-command="selection.propose"]').click();
+  await showSelectionDesignTab(page);
   await page.locator('#parcel-info-panel [data-i18n-key="panel.parcel.tabInfo"]').click();
-  await page.locator('#parcel-info-panel button[onclick="cancelMultiParcelSelection()"]').click();
+  await expect(stackCommand(page, 'selection.done')).toBeVisible();
+  await runSelectionCommand(page, 'selection.done');
   await expect.poll(() => page.evaluate(() => ({
     selected: (window as any).multiParcelSelection.selectedParcels.size,
     active: (window as any).multiParcelSelection.isActive,
   }))).toEqual({ selected: 0, active: false });
-  await expect(page.locator('#selection-tray')).toBeHidden();
+  await expect(selectionSection(page)).toHaveCount(0);
   await expect(page.locator('#parcel-manual-selection')).toHaveAttribute('aria-pressed', 'false');
 });

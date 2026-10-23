@@ -40,6 +40,8 @@
     // Surroundings: one treatment per proposal for the whole merged parcel area around the
     // buildings — left as it is, paved like a square, or grassed like a park. See building-ground.js.
     let currentGroundTreatment = 'none';
+    let currentGroundDecorationDesign = null;
+    let singleBuildingSeedDecorationDesign = null;
     // §15a: how the freeform building forms its parcel — footprint parcel (default) or taking
     // the whole host parcels. Carried on the draft context into buildingProposal.takeWholeParcels.
     let currentTakeWholeParcels = false;
@@ -60,7 +62,7 @@
         const api = buildingGroundApi();
         if (!api) return null;
         const buildings = buildingEntries.filter(entry => entry?.feature).map(entry => entry.feature);
-        return api.buildSurface(currentGroundTreatment, singleGroundBoundary || singleBlockFeature, buildings);
+        return api.buildSurface(currentGroundTreatment, singleGroundBoundary || singleBlockFeature, buildings, currentGroundDecorationDesign);
     }
 
     function currentPlacementSite(buildings = null) {
@@ -77,7 +79,7 @@
 
     function captureSingleBuildingDesign() {
         return cloneSingleFeature({ buildings: buildingEntries, activeId: activeBuildingId,
-            groundBoundary: singleGroundBoundary, groundTreatment: currentGroundTreatment,
+            groundBoundary: singleGroundBoundary, groundTreatment: currentGroundTreatment, groundDecorationDesign: currentGroundDecorationDesign,
             takeWholeParcels: currentTakeWholeParcels });
     }
 
@@ -89,6 +91,7 @@
                     buildingEntries = cloneSingleFeature(snapshot.buildings);
                     singleGroundBoundary = cloneSingleFeature(snapshot.groundBoundary);
                     currentGroundTreatment = snapshot.groundTreatment;
+                    currentGroundDecorationDesign = snapshot.groundDecorationDesign || null;
                     currentTakeWholeParcels = snapshot.takeWholeParcels;
                     refreshBuildingSelector();
                     setActiveBuilding(snapshot.activeId, { refreshUI: true });
@@ -98,7 +101,7 @@
                     if (mode) mode.value = currentTakeWholeParcels ? 'whole' : 'footprint';
                 }
             });
-            singleHistory.bindKeyboard(document, { enabled: () => !!singleEditor && !rectDragActive });
+            singleHistory.bindKeyboard(document, { enabled: () => singleSession?.active === true && !rectDragActive });
             singleHistory.bindButton(document.getElementById('single-building-undo'));
         }
         return singleHistory;
@@ -568,6 +571,7 @@
     }
 
     function tryStartDragFromMap(event) {
+        if (!singleSession?.active) return;
         if (event?.latlng && pointInsideRect(event.latlng)) handleRectDragStart(event);
     }
 
@@ -748,14 +752,13 @@
             (window.__parcelArrangement || null)?.reportClipFailure('difference', error, { site: 'single-building.groundPreview' }, []);
             return;
         }
+        const edit = document.getElementById('single-ground-treatment-edit');
+        if (edit) edit.disabled = !surface;
         const style = surface ? buildingGroundApi()?.SURFACE_STYLE_2D[surface.treatment] : null;
         if (!surface || !style) return;
         try {
-            singleGroundPreviewLayer = L.geoJSON({ type: 'Feature', properties: {}, geometry: surface.polygon }, {
-                pane: EDIT_PANE,
-                style: { ...style, weight: 1, opacity: 1 },
-                interactive: false
-            }).addTo(singleMap);
+            singleGroundPreviewLayer = L.featureGroup().addTo(singleMap);
+            window.drawBuildingGroundSurface(singleGroundPreviewLayer, surface, EDIT_PANE);
             singleGroundPreviewLayer.bringToBack();
         } catch (error) {
             console.warn('[single-building] ground preview failed', error);
@@ -981,6 +984,10 @@
         }
         buildingEntries = movedEntries;
         singleGroundBoundary = movedGround;
+        currentGroundDecorationDesign = singleMoveTogether
+            ? buildingGroundApi().moveDecorationDesign(rectDragStartDesign.groundDecorationDesign, startCenter, target,
+                window.SingleBuildingGeometry.moveCoordinateCollection)
+            : cloneSingleFeature(rectDragStartDesign.groundDecorationDesign);
         rectDragLastValidFeature = candidate;
         setActiveFeature(candidate);
         buildingEntries.forEach(entry => {
@@ -1096,7 +1103,7 @@
         if (!singleBuildingDesignChangeTracker) {
             singleBuildingDesignChangeTracker = window.DesignChangeTracker.createDesignChangeTracker({
                 signature: () => window.DesignChangeTracker.featuresSignature(
-                    buildingEntries.map(entry => entry && entry.feature)) + '|' + currentGroundTreatment + '|' + currentTakeWholeParcels
+                    buildingEntries.map(entry => entry && entry.feature)) + '|' + currentGroundTreatment + '|' + currentTakeWholeParcels + '|' + JSON.stringify(currentGroundDecorationDesign)
             });
         }
         return singleBuildingDesignChangeTracker;
@@ -1144,6 +1151,7 @@
         singleRectFeature = null;
         currentRotationDeg = 0;
         currentGroundTreatment = 'none';
+        currentGroundDecorationDesign = null;
         currentTakeWholeParcels = false;
         if (!preservePending) {
             clearSingleBuildingPendingState();
@@ -1407,6 +1415,7 @@
                             <div class="parameter-group">
                                 <label for="single-ground-treatment">${modalText.surroundingsLabel}</label>
                                 <select id="single-ground-treatment"><option value="none">${modalText.surroundingsNone}</option><option value="paved">${modalText.surroundingsPaved}</option><option value="green">${modalText.surroundingsGreen}</option></select>
+                                <button id="single-ground-treatment-edit" class="btn btn-sm" type="button" disabled>${translateSingleBuildingText('modal.singleBuilding.editSurroundings', 'Edit surroundings')}</button>
                                 <p class="parameter-info-text">${modalText.surroundingsInfo}</p>
                             </div>
                             <div class="parameter-group">
@@ -1470,11 +1479,20 @@
                 groundSelect.addEventListener('change', (e) => {
                     ensureSingleBuildingHistory().record();
                     currentGroundTreatment = normalizeGroundTreatment(e.target.value);
+                    currentGroundDecorationDesign = null;
                     updateGroundPreview();
                     updateSingleBuildingPreview();
                     autosaveSingleBuildingDraft();
                 });
             }
+            document.getElementById('single-ground-treatment-edit').addEventListener('click', () => {
+                window.BuildingSurroundingsEditor.edit({ session: singleSession, surface: currentGroundSurface(),
+                    onOpen: () => singleGroundPreviewLayer?.clearLayers(), onClose: updateGroundPreview, onSave: design => {
+                    ensureSingleBuildingHistory()?.record();
+                    currentGroundDecorationDesign = design;
+                    updateRectangleLayers();
+                } });
+            });
 
             const parcelModeSelect = document.getElementById('single-parcel-mode');
             if (parcelModeSelect) {
@@ -1583,6 +1601,8 @@
         nextBuildingId = 1;
 
         currentGroundTreatment = normalizeGroundTreatment(singleBuildingSeedGroundTreatment);
+        currentGroundDecorationDesign = cloneSingleFeature(singleBuildingSeedDecorationDesign);
+        singleBuildingSeedDecorationDesign = null;
         singleBuildingSeedGroundTreatment = null;
         currentTakeWholeParcels = singleBuildingSeedTakeWholeParcels === true;
         singleBuildingSeedTakeWholeParcels = null;
@@ -1659,12 +1679,13 @@
     // `initialBuildings` (optional) reopens the editor on previously-saved building features
     // instead of one default building — used by "Copy into new proposal".
     // `initialGroundTreatment` restores the proposal's surroundings choice the same way.
-    function openSingleBuildingForParcels({ blockName, parcelIds, initialBuildings = null, site = null, initialGroundTreatment = null, initialTakeWholeParcels = null, initialGroundBoundary = null }) {
+    function openSingleBuildingForParcels({ blockName, parcelIds, initialBuildings = null, site = null, initialGroundTreatment = null, initialDecorationDesign = null, initialTakeWholeParcels = null, initialGroundBoundary = null }) {
         if (singleEditor) return false;
         const context = singleBuildingPlacementContext({ blockName, parcelIds, site });
         if (!context) return false;
         singleBuildingSeedBuildings = (Array.isArray(initialBuildings) && initialBuildings.length) ? initialBuildings : null;
         singleBuildingSeedGroundTreatment = initialGroundTreatment;
+        singleBuildingSeedDecorationDesign = initialDecorationDesign;
         singleBuildingSeedGroundBoundary = initialGroundBoundary;
         singleBuildingSeedTakeWholeParcels = initialTakeWholeParcels;
         singleBuildingOverrideContext = context;

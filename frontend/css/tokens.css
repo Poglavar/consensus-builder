@@ -1,6 +1,6 @@
 /* ========== Design tokens ==========
    The one place the app takes its colours, type, radii, shadows, spacing and stacking from. The
-   values are the map shell's (css/map-shell.css, selection-tray.css), the dialect
+   values are the map shell's (css/map-shell.css), the dialect
    every other surface migrates to; the rules are in docs/design-language.md. Loaded first by
    index.html's CSS loader and by index.css. New CSS takes its values from here, never a literal;
    a surface that needs a value this file lacks adds the token here first

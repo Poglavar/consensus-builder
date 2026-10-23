@@ -75,8 +75,11 @@ right-side panels that clicks used to open one at a time.
   layers (drill stack for designs and parcels, building layers, planning items, agreements).
 - `frontend/js/click-stack/click-stack-panel.js`: the panel; hosts the existing panels
   (planning inspector, proposal card, parcel info panel) inside the expanded section.
-- The parcel menu popover is removed. Shift multi-selection and its tray stay; "use as site"
-  lives in the parcel section as Custom site and in the selection tray.
+- In Manual or Shift multi-selection, **Selected parcels (N)** replaces the point-specific
+  sections. It shows measured total area and hosts the parcel Design / Info / Tools tabs for the
+  whole selection. Clear keeps selection mode active, including an empty selection; Done exits
+  and clears it. The header can fold while map clicks keep changing the selection. There is no
+  bottom selection tray. Detect block and Custom site remain in the section, before the tabs.
 
 ## 3D model view
 

@@ -2138,6 +2138,7 @@
             "deleteVertexLabel": "Eliminar el vértice seleccionado",
             "vertexLabel": "Vértice de la huella",
             "surroundingsLabel": "Entorno",
+            "editSurroundings": "Editar el entorno",
             "surroundingsNone": "Dejar como está",
             "surroundingsPaved": "Pavimentado",
             "surroundingsGreen": "Verde",
@@ -5888,6 +5889,8 @@
         }
     },
     "structureEditor": {
+        "done": "Listo",
+        "hintSurroundings": "Edita el entorno y vuelve al edificio con Listo. Guarda el edificio para conservar todos los cambios.",
         "titleLake": "Editor del límite del lago",
         "instructionsLake": "Arrastra los puntos del límite para cambiar la forma del lago. Toca un borde para añadir un punto.",
         "lakeBoundaryHint": "La orilla y el agua se actualizan con el contorno.",
@@ -6266,22 +6269,13 @@
         "groundTitle": "Terreno sin parcela",
         "groundNote": "sin parcela catastral"
     },
-    "selectionTray": {
+    "selectedParcels": {
         "label": "Parcelas seleccionadas",
-        "count": {
-            "one": "{{count}} parcela",
-            "other": "{{count}} parcelas"
-        },
+        "count": "Parcelas seleccionadas ({{count}})",
         "empty": "Haz clic en las parcelas para seleccionarlas",
         "actions": {
-            "propose": "Proponer",
             "clear": "Borrar selección",
-            "done": "Terminar selección",
-            "detectBlock": "Detectar bloque",
-            "clearShort": "Borrar",
-            "doneShort": "Listo",
-            "useAsSite": "Usar la selección como sitio",
-            "useAsSiteShort": "Sitio"
+            "done": "Terminar selección"
         }
     },
     "mapSearch": {

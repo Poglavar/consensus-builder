@@ -169,7 +169,7 @@ describe('parcel identity presentation', () => {
     });
 });
 
-describe('parcel menu and selection tray commands', () => {
+describe('parcel menu and parcel selection commands', () => {
     const ctx = (extra = {}) => ({ global: {}, isControlAvailable: () => true, ...extra });
 
     it('are unavailable without a parcel or a selection (e.g. in the palette)', () => {
@@ -197,39 +197,43 @@ describe('parcel menu and selection tray commands', () => {
         expect(() => UiCommands.runCommand('parcel.details', { global: {}, parcel: facts })).toThrow(/ParcelMenu/);
     });
 
-    it('shows Done alone on an empty selection and every tray action once parcels are picked', () => {
-        expect(UiCommands.commandsFor('selection-tray', ctx({ selection: { active: true, count: 0 } })).map(c => c.id))
+    it('shows only Done for an empty selection and selection commands for picked parcels', () => {
+        const selectionContext = ctx({ global: { SiteTool: { isActive: () => false } } });
+        expect(UiCommands.findCommand('selection.useAsSite')).toMatchObject({ labelKey: 'parcelMenu.actions.useAsSite', fallbackLabel: 'Custom site' });
+        expect(UiCommands.commandsFor('parcel-selection', { ...selectionContext, selection: { active: true, count: 0 } }).map(c => c.id))
             .toEqual(['selection.done']);
-        expect(UiCommands.commandsFor('selection-tray', ctx({ selection: { active: true, count: 2 } })).map(c => c.id))
-            .toEqual(['blocks.fromSelected', 'selection.propose', 'selection.clear', 'selection.done']);
-        expect(UiCommands.commandsFor('selection-tray', ctx({ selection: { active: false, count: 0 } })).map(c => c.id))
-            .toEqual(['blocks.fromSelected']);
+        expect(UiCommands.commandsFor('parcel-selection', { ...selectionContext, selection: { active: true, count: 2 } }).map(c => c.id))
+            .toEqual(['selection.useAsSite', 'selection.clear', 'selection.done']);
+        expect(UiCommands.commandsFor('parcel-selection', { ...selectionContext, selection: { active: false, count: 0 } }).map(c => c.id))
+            .toEqual([]);
+        expect(UiCommands.commandsFor('layers', { ...selectionContext, selection: { active: true, count: 2 } }).map(c => c.id))
+            .toContain('blocks.fromSelected');
     });
 
-    it('runs the tray actions on the existing selection functions', () => {
+    it('runs selection commands on the existing selection functions', () => {
         const selectedParcels = new Set(['parcel-1']);
         const clearSelection = vi.fn(() => selectedParcels.clear());
         const cancelMultiParcelSelection = vi.fn();
-        const propose = vi.fn();
+        const startFromSelection = vi.fn();
         const global = {
             document: { body: { classList: { contains: () => false } }, getElementById: () => null, querySelectorAll: () => [] },
             multiParcelSelection: { isActive: true, selectedParcels, clearSelection },
             cancelMultiParcelSelection,
-            SelectionTray: { propose }
+            SiteTool: { isActive: () => false, startFromSelection }
         };
         const context = UiCommands.createBrowserContext(global, { mode: '2d' });
 
-        UiCommands.runCommand('selection.propose', context);
+        UiCommands.runCommand('selection.useAsSite', context);
         UiCommands.runCommand('selection.clear', context);
         UiCommands.runCommand('selection.done', context);
         expect(clearSelection).toHaveBeenCalledOnce();
         expect(cancelMultiParcelSelection).toHaveBeenCalledOnce();
-        expect(propose).toHaveBeenCalledOnce();
+        expect(startFromSelection).toHaveBeenCalledOnce();
 
         expect(UiCommands.runCommand('selection.clear', context)).toBe(false);
-        expect(UiCommands.runCommand('selection.propose', context)).toBe(false);
+        expect(UiCommands.runCommand('selection.useAsSite', context)).toBe(false);
         expect(clearSelection).toHaveBeenCalledOnce();
-        expect(propose).toHaveBeenCalledOnce();
+        expect(startFromSelection).toHaveBeenCalledOnce();
     });
 });
 
@@ -306,20 +310,20 @@ describe('the parcel click chain ends in the click stack', () => {
         expect(h.context.selectAndHighlightProposal).not.toHaveBeenCalled();
     });
 
-    it('toggles the parcel in multi-select without the click stack', () => {
+    it('delegates a multi-select click to the selection section', () => {
         const h = loadClickChain({ multiActive: true });
         h.click();
-        expect(h.multi.toggleParcel).toHaveBeenCalledWith(h.layer);
-        expect(h.handleClick).not.toHaveBeenCalled();
+        expect(h.multi.toggleParcel).not.toHaveBeenCalled();
+        expect(h.handleClick).toHaveBeenCalledWith({ lat: 45.8, lng: 15.97 });
         expect(h.context.selectedParcelId).toBeUndefined();
     });
 
-    it('enters multi-select on Shift+click, seeded with the current parcel, without the click stack', () => {
+    it('enters multi-select on Shift+click and delegates the added parcel to the selection section', () => {
         const h = loadClickChain();
         h.click(true);
         expect(h.multi.toggle).toHaveBeenCalledWith({ preserveSelectedParcel: true });
-        expect(h.multi.toggleParcel).toHaveBeenCalledWith(h.layer);
-        expect(h.handleClick).not.toHaveBeenCalled();
+        expect(h.multi.toggleParcel).not.toHaveBeenCalled();
+        expect(h.handleClick).toHaveBeenCalledWith({ lat: 45.8, lng: 15.97 });
     });
 
     it('stays out of a tool that owns map clicks', () => {

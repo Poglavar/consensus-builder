@@ -113,6 +113,9 @@ let manualBuildSucceeded = false; // has any manual build produced a shape? gate
 // openUrbanRuleForParcels({ initialState }) — used by "Copy into new proposal" so a fork reopens
 // the editor showing the original design, with every control live. Consumed once, then cleared.
 let blockifySeedState = null;
+let blockifySurroundings = null;
+let blockifyInitialGroundTreatment = null;
+let blockifyInitialDecorationDesign = null;
 // "Based on existing buildings" mode: the proposal is derived from the existing building
 // footprints on the selected parcels instead of a freeform slider shape. Two independent rules,
 // picked by radio (moving a slider also activates its rule): "proposed height" extrudes EVERY
@@ -320,7 +323,7 @@ function ensureBlockifyHistory() {
         capture: blockifyGeometrySnapshot,
         restore: restoreBlockifyGeometrySnapshot
     });
-    blockifyHistoryKeydown = blockifyHistory.bindKeyboard(document, { enabled: () => !!blockifyModal });
+    blockifyHistoryKeydown = blockifyHistory.bindKeyboard(document, { enabled: () => blockifyModal?.active === true });
     try {
         blockifyUndoButton = document.createElement('button');
         blockifyUndoButton.type = 'button';
@@ -586,6 +589,11 @@ function setBlockifyInfo(key, fallback, params = {}) {
         infoElement.removeAttribute('data-i18n-params');
     }
     infoElement.textContent = translateBuildingText(key, fallback, params);
+}
+
+function setBlockifyFitWarning(visible) {
+    const warning = document.getElementById('blockify-fit-warning');
+    if (warning) warning.hidden = !visible;
 }
 
 // --- Geometry utilities to improve robustness ---
@@ -1587,6 +1595,8 @@ function showBlockifyModal() {
                 </div>
             </div>
         <div id="blockify-controls" class="cb-dialog__footer">
+            <p id="blockify-fit-warning" class="cb-banner cb-banner--warning" role="status" hidden
+                data-i18n-key="blockify.modal.messages.siteTooSmall">${translateBuildingText('blockify.modal.messages.siteTooSmall', 'This land is too small for the requested block settings. Detect the whole block or add parcels, or reduce the setback, building depth or minimum plot size.')}</p>
             <div id="blockify-info" data-i18n-attr="text" role="status" aria-live="polite"></div>
             <div id="blockify-buttons">
                 <button type="button" class="btn" id="btn-blockify-regenerate" hidden data-i18n-key="blockify.modal.regenerate" data-i18n-attr="text">Regenerate</button>
@@ -1640,6 +1650,12 @@ function showBlockifyModal() {
         });
         if (!blockifyModal) return false;
         blockifyMap = blockifyModal.map;
+        blockifySurroundings = window.BuildingSurroundingsEditor.mount({
+            session: blockifyModal, id: 'blockify-ground-treatment', initialTreatment: blockifyInitialGroundTreatment, initialDecorationDesign: blockifyInitialDecorationDesign,
+            boundary: blockifyDesignBoundary,
+            buildings: () => blockifyMode === 'existing' ? (generatedBuildingFeatures || []) : [generatedBuildingFeature].filter(Boolean),
+            onChange: () => autosaveBlockifyDraft()
+        });
         ensureBlockifyHistory();
         setBlockifyInfo('blockify.modal.generating', 'Generating building...');
         try {
@@ -2034,8 +2050,8 @@ let blockifyDesignChangeTracker = null;
 function blockifyDesignChanges() {
     if (!blockifyDesignChangeTracker) {
         blockifyDesignChangeTracker = window.DesignChangeTracker.createDesignChangeTracker({
-            signature: () => window.DesignChangeTracker.featuresSignature(
-                [generatedBuildingFeature].concat(Array.isArray(generatedBuildingFeatures) ? generatedBuildingFeatures : []))
+            signature: () => JSON.stringify([blockifySurroundings?.signature, window.DesignChangeTracker.featuresSignature(
+                [generatedBuildingFeature].concat(Array.isArray(generatedBuildingFeatures) ? generatedBuildingFeatures : []))])
         });
     }
     return blockifyDesignChangeTracker;
@@ -2065,6 +2081,10 @@ async function requestCloseBlockifyModal() {
 function closeBlockifyModal(options = {}) {
     const { preservePending = false, continueDesignSession = false } = options;
     const hadModal = !!blockifyModal;
+    blockifySurroundings?.destroy();
+    blockifySurroundings = null;
+    blockifyInitialGroundTreatment = null;
+    blockifyInitialDecorationDesign = null;
     if (blockifyDesignChangeTracker) blockifyDesignChangeTracker.stop();
     blockifyHistoryKeydown?.();
     blockifyHistoryKeydown = null;
@@ -2426,6 +2446,7 @@ function addWingsToBuilding(buildingFeature, { outerCoords, superparcel, wingWid
 }
 
 function generateBuildingInModal() {
+    setBlockifyFitWarning(false);
     // Existing-buildings mode derives geometry from fetched footprints, not the sliders.
     if (blockifyMode === 'existing') { generateExistingBuildingsInModal(); return; }
     // In manual mode the outline is user-edited, not slider-derived — route to the manual builder.
@@ -2476,6 +2497,7 @@ function generateBuildingInModal() {
         // Validate and adjust setback if needed
         let SETBACK = currentSetback;
         if (SETBACK > maxSetback) {
+            setBlockifyFitWarning(true);
             SETBACK = maxSetback;
             // Update the slider and display value
             const setbackSlider = document.getElementById('setback-slider');
@@ -2507,12 +2529,15 @@ function generateBuildingInModal() {
             }
         });
         if (!ring) {
-            throw new Error('Failed to create outer building polygon');
+            const error = new Error('Failed to create outer building polygon');
+            error.code = 'block-site-too-small';
+            throw error;
         }
         const outerBuilding = ring.outer;
         const innerBuilding = ring.inner;
         const currentWidth = ring.widthAchieved;
         const minSideLength = ring.minSideLength;
+        if (!innerBuilding || currentWidth < currentBuildingWidth - 0.01) setBlockifyFitWarning(true);
 
         if (!innerBuilding) {
             // Fallback: produce a solid building (no courtyard) rather than failing
@@ -2893,7 +2918,7 @@ function generateBuildingInModal() {
         // Enable the Done button
         const doneButton = document.getElementById('btn-blockify-done');
         if (doneButton) {
-            doneButton.disabled = false;
+            doneButton.disabled = blockMassingPieces.length === 0;
         }
 
     } catch (error) {
@@ -2904,9 +2929,10 @@ function generateBuildingInModal() {
 // Initial site construction and later regeneration share the same visible, recoverable failure.
 function reportBlockifyGenerationError(error) {
     console.error(`[${new Date().toISOString()}] Error creating building block:`, error);
+    if (error.code === 'block-site-too-small') setBlockifyFitWarning(true);
     setBlockifyInfo(
-        'blockify.modal.messages.errorWithMessage',
-        'Error: {{message}}',
+        error.code === 'block-site-too-small' ? null : 'blockify.modal.messages.errorWithMessage',
+        error.code === 'block-site-too-small' ? '' : 'Error: {{message}}',
         { message: error && error.message ? error.message : '' }
     );
 
@@ -2980,6 +3006,7 @@ function autosaveBlockifyDraft(featuresOverride = null) {
         parameters,
         buildingFeature: buildings[0] || null,
         buildings,
+        groundSurface: blockifySurroundings?.surface() || null,
         // A Block stays on its parcels (proposals/freeform-conversion.js): never a free placement.
         placement: { free: false, site: blockifyClone(blockifyDesignBoundary()) }
     }, { coalesceKey: 'blockify-live' });
@@ -3046,6 +3073,7 @@ function refreshBlockPieceHeights() {
 function publishBlockifyPreview({ exampleBuildings = [], envelopes = [], excluded = [] } = {}) {
     if (!blockifyModal) return;
     blockifyModal.setPreview({
+        groundSurface: blockifySurroundings?.refresh() || null,
         draftPreview: {
             kind: 'buildings',
             features: (Array.isArray(exampleBuildings) ? exampleBuildings : []).filter(feature => feature?.geometry)
@@ -3147,6 +3175,7 @@ function displayBuildingInModal(buildingFeature) {
 function reportBlockLeftOut() {
     const excluded = blockExcludedParcels.length;
     if (!blockMassingPieces.length && excluded) {
+        setBlockifyFitWarning(true);
         setBlockifyInfo('blockify.modal.messages.rangeNoneExcluded', 'No buildings · {{excluded}}', { excluded: blockParcelsLeftOutPhrase(excluded) });
     } else if (excluded) {
         setBlockifyInfo('blockify.modal.messages.parcelsLeftOut', '{{count}} parcels left out', { count: excluded });
@@ -3758,7 +3787,7 @@ function generateBuilding() {
 
 // `initialState` (optional) restores a previously-saved design instead of the defaults — see
 // applyBlockifySeedState. Used by "Copy into new proposal" to reopen a fork's original building.
-function openUrbanRuleForParcels({ blockName, parcelIds, initialState = null, site = null }) {
+function openUrbanRuleForParcels({ blockName, parcelIds, initialState = null, site = null, initialGroundTreatment = null, initialDecorationDesign = null }) {
     const ids = Array.from(new Set((Array.isArray(parcelIds) ? parcelIds : []).map(String).filter(Boolean)));
     const normalizedSite = normalizeBlockifySite(site);
     if (!ids.length && !normalizedSite?.geometry) {
@@ -3766,6 +3795,8 @@ function openUrbanRuleForParcels({ blockName, parcelIds, initialState = null, si
         return false;
     }
     blockifySeedState = initialState || null;
+    blockifyInitialGroundTreatment = initialGroundTreatment;
+    blockifyInitialDecorationDesign = initialDecorationDesign;
     blockifyAuthoredSite = normalizedSite;
     const resolve = typeof window.resolveDesignParcelFeature === 'function'
         ? window.resolveDesignParcelFeature
@@ -3952,6 +3983,7 @@ async function saveBlockifyDesignForProposal() {
         parentDetails: parentDetails.slice(),
         blockName: getBlockifyDisplayName(),
         parameters,
+        groundSurface: blockifySurroundings?.surface() || null,
         ineligibleParcels,
         buildingFeature: clonedFeature,
         ...(blockMassing ? { blockMassing } : {}),

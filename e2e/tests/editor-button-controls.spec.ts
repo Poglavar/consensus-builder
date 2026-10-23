@@ -2,7 +2,7 @@ import { selectNativeOption } from '../helpers/controls';
 // Purpose: cover real editor buttons whose effects are not asserted by the broad workflow specs.
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
-import { openCity, openParcel, drawCorridor, showProposal, proposalState, clickMapPoint, createSpace, runParcelCommand, openParcelTabAt, closeParcel } from '../helpers/runtime';
+import { openCity, openParcel, drawCorridor, showProposal, proposalState, clickMapPoint, createSpace, runParcelCommand, openParcelTabAt, closeParcel, showSelectionDesignTab } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { surveyResponse } from '../helpers/mocks/survey-data';
 
@@ -16,7 +16,7 @@ async function openRowHouseEditor(page: any) {
   await page.locator('.multi-select-detect-btn').click();
   await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.selectedParcels.size)).toBeGreaterThan(1);
   await closeParcel(page);
-  await page.locator('#selection-tray [data-command="selection.propose"]').click();
+  await showSelectionDesignTab(page);
   await page.locator('.parcel-build-btn--row').click();
   await expect(page.locator('#rowhouse').locator('.on-map-editor__panel')).toBeVisible();
   await expect(page.locator('#btn-rowhouse-done')).toBeEnabled({ timeout: 20_000 });

@@ -76,6 +76,8 @@ function loadPanel({ memory = null, withEditLock = false } = {}) {
         hideParcelInfoPanel: vi.fn(() => byId('parcel-info-panel')?.classList.remove('visible')),
         ProposalSelection: { clear: vi.fn() },
         LiveParcelFabric: { get: id => (String(id).startsWith('p') ? parcelFeature : null) },
+        turf: { area: () => 120 },
+        CbFormat: { formatArea: area => `${area} m²` },
         ParcelsUISelection: { selectParcelFromStack: vi.fn(() => byId('parcel-info-panel')?.classList.add('visible')) },
         ParcelMenu: { factsFor: vi.fn(() => ({ parcelId: 'p1' })), factsLine: () => '120 m²' },
         UiCommands: { commandsFor: () => [], createBrowserContext: () => ({}), labelOf: entry => entry.id, runCommand: vi.fn() },
@@ -100,6 +102,35 @@ function loadPanel({ memory = null, withEditLock = false } = {}) {
 }
 
 describe('click stack panel: a click opens, the same click closes', () => {
+    it('hosts selected land, retains a collapsed selection while it changes, and keeps an empty mode reachable', () => {
+        const h = loadPanel();
+        const multi = { isActive: true, selectedParcels: new Set(['p1']),
+            showSelectionInPanel: vi.fn(() => h.parcelPanel.classList.add('visible')) };
+        h.context.multiParcelSelection = multi;
+        const change = () => h.doc.dispatchEvent({ type: 'multi-parcel-selection-change' });
+        change();
+        expect(h.kinds()).toEqual(['selection']);
+        expect(h.section('selection').querySelector('.click-stack__row-title').textContent).toBe('Selected parcels (1)');
+        expect(h.section('selection').querySelector('.click-stack__row-detail').textContent).toBe('120 m²');
+        expect(h.parcelPanel.parentNode).toBe(h.section('selection').querySelector('.click-stack__body'));
+        h.api.collapse();
+        multi.selectedParcels.add('p2');
+        change();
+        expect(h.api.current().expanded).toBeNull();
+        expect(h.section('selection').querySelector('.click-stack__row-title').textContent).toBe('Selected parcels (2)');
+        h.api.expand('selection');
+        multi.selectedParcels.clear();
+        change();
+        h.observe();
+        expect(h.api.isOpen()).toBe(true);
+        expect(h.api.current().expanded).toBe('selection');
+        expect(h.section('selection').textContent).toContain('Click parcels to select them');
+        expect(h.parcelPanel.classList.contains('visible')).toBe(false);
+        expect(h.storage.has('cb.clickStack.expanded')).toBe(false);
+        multi.isActive = false;
+        change();
+        expect(h.api.isOpen()).toBe(false);
+    });
     it('manual selection toggles live ground through a design once without opening content', () => {
         const h = loadPanel({ withEditLock: true });
         const layer = { id: 'p1' };

@@ -40,7 +40,7 @@ body {
        backend/test/map-mode-stack.test.js fails on a duplicate.
 
        Declared on body, not :root: a custom property is resolved where it is declared, so the
-       phone selection tray (css/selection-tray.css) can lift the whole ladder by overriding
+       map mode controls can lift the whole ladder by overriding
        --map-mode-stack-bottom on body only if the slots are computed there too. */
     --map-mode-stack-bottom: calc(100dvh - var(--app-safe-area-bottom, 0px) - var(--map-shell-bottom-clearance));
     --map-mode-slot-1: calc(var(--map-mode-stack-bottom) - 276px);

@@ -256,6 +256,26 @@ function fakeWindow({ records = [], server = fakeServer(), blocked = null, confi
 }
 
 describe('publishDesign', () => {
+    it.each(['block', 'row', 'parcelBased', 'single', 'park', 'square'])('pins and imports the exact authored %s furniture', async kind => {
+        const geometry = square(10, 45);
+        const design = { version: 3, trees: [{ coordinate: [10.0001, 45.0001], kind: 'conifer', heightM: 12 }], paths: [[[10.0001, 45.0002], [10.0002, 45.0003]]], benches: [] };
+        const structure = ['park', 'square'].includes(kind);
+        const record = {
+            proposalId: `furniture-${kind}`, title: 'Authored layout', goal: structure ? kind : (kind === 'single' ? 'single' : 'buildings'),
+            site: geometry, createdAt: '2026-10-23T10:00:00.000Z', author: 'Test guest', city: 'example',
+            ...(structure ? { structureProposal: { kind, geometry, decorationDesign: design, decorations: { trees: [] } } }
+                : { buildingProposal: { typologyType: kind }, geometry: { buildings: [], groundSurface: { treatment: 'green', polygon: geometry, decorationDesign: design } } })
+        };
+        const { sync, server } = fakeWindow({ records: [record] });
+        const result = await sync.publishDesign(record);
+        const pinned = JSON.parse(Buffer.from(server.calls.find(call => call.pathname === '/pins').body.bytes, 'base64').toString('utf8'));
+        expect(structure ? pinned.structureProposal.decorationDesign : pinned.geometry.groundSurface.decorationDesign).toEqual(design);
+        const indexRow = server.designs.get(result.cid);
+        const receiver = fakeWindow().sync.importDesign(indexRow);
+        expect(structure ? receiver.structureProposal.decorationDesign : receiver.geometry.groundSurface.decorationDesign).toEqual(design);
+        expect(DesignRecord.cidOf(receiver)).toBe(result.cid);
+    });
+
     it('pins the exact canonical bytes, indexes them and marks the record published here', async () => {
         const record = road({ author: '' });
         const { sync, server, stored, saves } = fakeWindow({ records: [record], configs: { zagreb: { parcels: { sourceId: 'zagreb-dgu' } } } });

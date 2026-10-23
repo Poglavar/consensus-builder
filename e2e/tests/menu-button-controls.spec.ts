@@ -1,6 +1,6 @@
 // Check contextual parcel and ground actions through the map's visible menus.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, clickMapPoint, PARCEL_ID, PARCEL_GEOMETRY, runParcelCommand, openParcelAt } from '../helpers/runtime';
+import { openCity, clickMapPoint, PARCEL_ID, PARCEL_GEOMETRY, runParcelCommand, openParcelAt, runSelectionCommand, selectionSection } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
 
@@ -26,7 +26,7 @@ test('parcel panel Select multiple starts a selection containing the clicked par
   await openCity(page);
   await openParcelAt(page, 15.9822, 45.80025);
   await page.locator('#parcel-manual-selection').click();
-  await expect(page.locator('#selection-tray')).toBeVisible();
+  await expect(selectionSection(page)).toBeVisible();
   await expect.poll(() => page.evaluate(() => [...(window as any).multiParcelSelection.selectedParcels])).toEqual([PARCEL_ID]);
 });
 
@@ -37,17 +37,17 @@ test('parcel panel Detect block selects the connected cadastral block', async ({
   await openParcelAt(page, 15.9821, 45.800225);
   await page.locator('#parcel-info-panel .multi-select-detect-btn').click();
   await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.selectedParcels.size)).toBe(5);
-  await expect(page.locator('#selection-tray')).toBeVisible();
+  await expect(selectionSection(page)).toBeVisible();
 });
 
-test('selection tray Detect block expands its selected seed to the cadastral block', async ({ mockApi: page }) => {
+test('selection section Detect block expands its selected seed to the cadastral block', async ({ mockApi: page }) => {
   await installLayerDatasets(page);
   await openCity(page);
   await page.evaluate(async () => (window as any).CadastralParcelRepository.ensureIds(['HR-335754-1235', 'HR-335754-1236', 'HR-335754-1237', 'HR-335754-1238']));
   await openParcelAt(page, 15.9821, 45.800225);
   await page.locator('#parcel-manual-selection').click();
   await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.selectedParcels.size)).toBe(1);
-  await page.locator('#selection-tray [data-command="blocks.fromSelected"]').click();
+  await runSelectionCommand(page, 'blocks.fromSelected');
   await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.selectedParcels.size)).toBe(5);
 });
 

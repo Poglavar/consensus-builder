@@ -415,6 +415,7 @@ describe('building proposal adapters', () => {
         const source = {
             ...proposal,
             proposalId: `building-open-${typology}`,
+            geometry: { ...proposal.geometry, groundSurface: { treatment: 'green', polygon: feature.geometry } },
             goal: typology === 'single' ? 'single' : 'buildings',
             typologyType: typology,
             site: {
@@ -457,6 +458,7 @@ describe('building proposal adapters', () => {
             await Promise.resolve();
             expect(settled).toBe(false);
             expect(openOptions.site).toEqual(source.site);
+            expect(openOptions.initialGroundTreatment).toBe('green');
 
             resolveOpen(false);
             await expect(opening).resolves.toBe(false);
@@ -542,7 +544,7 @@ describe('building proposal adapters', () => {
 
     // The paved/green surround of a freeform proposal (building-ground.js) has to survive an edit
     // that never reopens the design editor, and must not follow the design into another typology.
-    describe('freeform surroundings', () => {
+    describe('building surroundings', () => {
         const groundSurface = {
             treatment: 'paved',
             polygon: { type: 'Polygon', coordinates: [manualRing] }
@@ -567,11 +569,13 @@ describe('building proposal adapters', () => {
             expect(adapter.serializeProposal(draft).geometry.groundSurface).toEqual(groundSurface);
         });
 
-        it('drops the surround when the design moves to another typology', () => {
+        it.each(['single', 'block', 'row', 'parcelBased'])('round-trips surroundings for %s designs', typology => {
             const adapter = buildBuildingAdapter('single');
             const draft = draftFor(adapter, freeform);
-            draft.editorPayload = { ...draft.editorPayload, typology: 'row' };
-            expect(adapter.serializeProposal(draft).geometry.groundSurface).toBeUndefined();
+            draft.editorPayload = { ...draft.editorPayload, typology };
+            const saved = adapter.serializeProposal(draft);
+            expect(saved.geometry.groundSurface).toEqual(groundSurface);
+            expect(adapter.draftFromProposal(saved).editorPayload.context.groundSurface).toEqual(groundSurface);
         });
 
         it('leaves a proposal without a surround alone', () => {

@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { clickMapPoint, createSpace, openCity, openParcel, proposalState, showProposal, PARCEL_ID, closeParcel } from '../helpers/runtime';
+import { clickMapPoint, createSpace, openCity, openParcel, proposalState, showProposal, PARCEL_ID, closeParcel, runSelectionCommand } from '../helpers/runtime';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 
 const SECOND_PARCEL_ID = 'HR-335754-1235';
@@ -39,7 +39,7 @@ test.describe('Map context actions @features', () => {
     await expect.poll(() => page.evaluate(() => [...(window as any).multiParcelSelection.selectedParcels].sort()))
       .toEqual([PARCEL_ID, SECOND_PARCEL_ID].sort());
 
-    await page.locator('#selection-tray [data-command="selection.useAsSite"]').click();
+    await runSelectionCommand(page, 'selection.useAsSite');
     await expect(page.locator('#site-panel')).toBeVisible();
     await page.locator('[data-site-action="propose"]').click();
     await page.locator('#site-info-panel .parcel-build-btn--park').click();

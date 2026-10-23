@@ -14,6 +14,7 @@
         designs: ['proposal-details-panel', 'planning-inspector'],
         built: ['planning-inspector'],
         permitted: ['planning-inspector'],
+        selection: ['parcel-info-panel'],
         formed: ['parcel-info-panel'],
         parcels: ['parcel-info-panel']
     });
@@ -21,7 +22,7 @@
     // Right-dock panels the stack never hosts: when one opens, the stack steps aside.
     const DOCKED_ELSEWHERE = ['block-info-panel', 'road-info-panel', 'road-analysis-panel'];
     const ICONS = Object.freeze({ agreements: 'fas fa-file-signature', designs: 'fas fa-drafting-compass', built: 'fas fa-building',
-        permitted: 'fas fa-cube', formed: 'fas fa-vector-square', parcels: 'fas fa-border-all', ground: 'fas fa-seedling' });
+        permitted: 'fas fa-cube', formed: 'fas fa-vector-square', parcels: 'fas fa-border-all', selection: 'fas fa-object-group', ground: 'fas fa-seedling' });
 
     const state = { el: null, stack: null, latlng: null, hits: null, hosted: null, expanding: false, lastClick: null, observing: false };
 
@@ -112,9 +113,10 @@
         });
         // The 3D view and the map's own sheets (tools, layers) take the screen: the 2D stack closes.
         new global.MutationObserver(() => {
-            if (!isOpen()) return;
             const body = doc.body.classList;
-            if (body.contains('three-mode-active') || body.contains('map-sheet-open')) close({ keepSelection: true });
+            if (body.contains('three-mode-active') || body.contains('map-sheet-open') || body.contains('on-map-editing')) {
+                if (isOpen()) close({ keepSelection: true });
+            } else if (global.multiParcelSelection?.isActive && !isOpen()) syncSelection();
         }).observe(doc.body, { attributes: true, attributeFilter: ['class'] });
     }
 
@@ -127,7 +129,12 @@
         el.className = 'click-stack right-dock-panel';
         el.hidden = true;
         el.addEventListener('click', onPanelClick);
-        el.addEventListener('keydown', event => { if (event.key === 'Escape') { event.preventDefault(); close(); } });
+        el.addEventListener('keydown', event => {
+            if (event.key !== 'Escape') return;
+            event.preventDefault();
+            if (state.stack?.topRef === 'selection:current') global.cancelMultiParcelSelection();
+            else close();
+        });
         (doc.getElementById('map-container') || doc.body).appendChild(el);
         state.el = el;
         return el;
@@ -149,6 +156,7 @@
     function rowTitle(section) {
         const instance = section.instances[section.selectedIndex];
         switch (section.kind) {
+            case 'selection': return t('selectedParcels.count', 'Selected parcels ({{count}})', { count: section.count });
             case 'agreements': return section.multi ? t('agreements', 'Agreements ({{count}})', { count: section.count }) : t('agreement.panel.title', 'Agreement');
             case 'designs': return section.multi ? t('designs', 'Designs ({{count}})', { count: section.count }) : t('proposalDrafts.tabs.design', 'Design');
             case 'built': return section.count > 1 ? t('builtMany', 'Built ({{count}})', { count: section.count }) : t('threeMode.controls.built', 'Built');
@@ -169,6 +177,7 @@
     function rowDetail(section) {
         const instance = section.instances[section.selectedIndex];
         if (!instance) return '';
+        if (section.kind === 'selection') return instance.area === null ? '' : global.CbFormat.formatArea(instance.area);
         if (section.kind === 'built' && instance.demolition) {
             const by = instance.demolition.proposalKey || instance.demolition.proposalId;
             const design = by ? global.proposalStorage?.getProposal?.(by) : null;
@@ -365,6 +374,17 @@
                 global.PlanningViews.inspectBuilding(instance.feature, instance.id);
             } else if (kind === 'permitted') {
                 global.PlanningViews.selectAt(instance.id, state.latlng);
+            } else if (kind === 'selection') {
+                renderCommands(body, 'parcel-selection', global.UiCommands.createBrowserContext(global));
+                if (section.count) global.multiParcelSelection.showSelectionInPanel();
+                else {
+                    unhost();
+                    global.hideParcelInfoPanel?.();
+                    const hint = doc.createElement('p');
+                    hint.className = 'click-stack__facts';
+                    hint.textContent = t('selectedParcels.empty', 'Click parcels to select them');
+                    body.appendChild(hint);
+                }
             } else if (kind === 'parcels' || kind === 'formed') {
                 selectParcel(instance);
                 // Only live ground takes new designs: an original a design has consumed is shown
@@ -388,6 +408,13 @@
                 const toolbar = doc.getElementById(target)?.querySelector('.parcel-context-actions');
                 const actions = body.querySelector('.click-stack__actions--parcel');
                 if (toolbar && actions) toolbar.appendChild(actions);
+                const customSite = body.querySelector('[data-command="selection.useAsSite"]');
+                if (toolbar && customSite) {
+                    const wrap = doc.createElement('div');
+                    wrap.className = 'cb-actions click-stack__actions--parcel';
+                    wrap.appendChild(customSite);
+                    toolbar.appendChild(wrap);
+                }
             }
         } catch (error) {
             console.error(`[ClickStack] the ${kind} section could not open`, error);
@@ -451,6 +478,30 @@
         }
     }
 
+    // Multi-selection has no single click point. Its section replaces the point's parcel view
+    // for the duration of the mode, and remains reachable even with no parcels selected.
+    function syncSelection() {
+        const multi = global.multiParcelSelection;
+        const wasSelection = state.stack?.topRef === 'selection:current';
+        if (!multi?.isActive) {
+            if (wasSelection) close({ keepSelection: true });
+            return;
+        }
+        const body = doc.body.classList;
+        if (body.contains('three-mode-active') || body.contains('map-sheet-open') || body.contains('on-map-editing')) return;
+        const summary = model.summarizeSelection(Array.from(multi.selectedParcels), {
+            featureFor: id => global.LiveParcelFabric?.get(String(id)),
+            areaOf: feature => global.turf.area(feature)
+        });
+        const stack = model.buildSelectionStack(summary, { expanded: !wasSelection || state.stack.expanded === 'selection' });
+        if (!wasSelection) show(stack, null, {});
+        else {
+            state.stack = stack;
+            render();
+            if (stack.expanded) activate('selection');
+        }
+    }
+
     // ── state changes ─────────────────────────────────────────────────────────────────────────
 
     function expand(kind) {
@@ -459,7 +510,7 @@
         // choice) the panel stays open and is hosted again for the new instance.
         if (state.hosted && state.stack.expanded !== kind) unhost();
         state.stack = model.expand(state.stack, kind);
-        remember(state.stack.expanded);
+        if (kind !== 'selection') remember(state.stack.expanded);
         render();
         activate(state.stack.expanded);
     }
@@ -518,7 +569,9 @@
         global.highlightFeaturesForHover?.([]);
         state.stack = null;
         state.hits = null;
+        state.latlng = null;
         state.el.hidden = true;
+        state.el.textContent = '';
         state.el.classList.remove('is-folded');
         state.el.classList.remove('visible');
         doc.body.classList.remove('click-stack-open');
@@ -650,14 +703,16 @@
         if (event.key !== 'Escape' || event.defaultPrevented || !isOpen()) return;
         if (global.isEditableTarget?.(event.target) || global.isAnyModalOpen?.()) return;
         event.preventDefault();
-        close();
+        if (state.stack?.topRef === 'selection:current') global.cancelMultiParcelSelection();
+        else close();
     });
+    doc.addEventListener('multi-parcel-selection-change', syncSelection);
     global.addEventListener('cityChanged', () => close());
     const relabel = () => { if (isOpen()) { const expanded = state.stack.expanded; render(); if (expanded) activate(expanded); } };
     global.addEventListener('i18n:translationsLoaded', relabel);
 
     // The agreement section outlines all its designs; map hover leaves that outline alone.
     const holdsHighlight = () => isOpen() && state.stack?.expanded === 'agreements';
-    global.ClickStack = Object.freeze({ handleClick, showDesign, fold, close, isOpen, expand, collapse, holdsHighlight,
+    global.ClickStack = Object.freeze({ handleClick, showDesign, syncSelection, fold, close, isOpen, expand, collapse, holdsHighlight,
         current: () => state.stack, point: () => state.latlng });
 })(window);

@@ -49,6 +49,37 @@ function applied(record) {
 }
 
 describe('published', () => {
+    it.each(['block', 'row', 'parcelBased', 'single'])('publishes the authored surroundings of a %s building with its CID', typologyType => {
+        const record = {
+            goal: 'buildings', site: SITE,
+            geometry: { buildings: [], groundSurface: { treatment: 'green', polygon: SITE, decorationDesign: { version: 3, trees: [{ coordinate: [15.9602, 45.8002], kind: 'broadleaf', heightM: 10 }] } } },
+            buildingProposal: { typologyType }
+        };
+        const published = DesignRecord.published(record);
+        expect(published.geometry.groundSurface).toEqual(record.geometry.groundSurface);
+        expect(DesignRecord.validate(published).valid).toBe(true);
+        const before = DesignRecord.cidOf(record);
+        record.geometry.groundSurface.treatment = 'paved';
+        expect(DesignRecord.cidOf(record)).not.toBe(before);
+        expect(published.geometry.groundSurface.treatment).toBe('green');
+    });
+
+    it.each(['park', 'square'])('publishes authored %s furniture while keeping generated furniture out of its CID', kind => {
+        const record = park();
+        record.goal = kind;
+        record.structureProposal.kind = kind;
+        const design = { version: kind === 'park' ? 3 : 2, benches: [{ coordinate: [15.9602, 45.8002], bearing: 30 }] };
+        record.structureProposal.decorationDesign = design;
+        const before = DesignRecord.cidOf(record);
+        const afterApply = applied(record);
+        expect(DesignRecord.cidOf(afterApply)).toBe(before);
+        const published = DesignRecord.published(afterApply);
+        expect(published.structureProposal.decorationDesign).toEqual(design);
+        expect(published.structureProposal.decorations).toBeUndefined();
+        record.structureProposal.decorationDesign.benches[0].bearing = 60;
+        expect(DesignRecord.cidOf(record)).not.toBe(before);
+    });
+
     it('keeps exactly the authored fields and the one payload', () => {
         const design = DesignRecord.published(park());
         expect(Object.keys(design).sort()).toEqual([...FIELDS, 'structureProposal'].sort());

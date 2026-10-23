@@ -2133,6 +2133,7 @@
             "deleteVertexLabel": "Obriši izabrani vrh",
             "vertexLabel": "Teme osnove",
             "surroundingsLabel": "Okruženje",
+            "editSurroundings": "Uredi okolinu",
             "surroundingsNone": "Ostavi kako jeste",
             "surroundingsPaved": "Popločano",
             "surroundingsGreen": "Zelenilo",
@@ -5895,6 +5896,8 @@
         }
     },
     "structureEditor": {
+        "done": "Gotovo",
+        "hintSurroundings": "Uredi okolinu pa se vrati na zgradu dugmetom Gotovo. Sačuvaj zgradu da zadržiš sve izmene.",
         "titleLake": "Uređivanje granice jezera",
         "instructionsLake": "Prevucite tačke granice da promenite oblik jezera. Dodirnite ivicu da dodate tačku.",
         "lakeBoundaryHint": "Obala i voda prate promene obrisa.",
@@ -6275,23 +6278,13 @@
         "groundTitle": "Tlo bez parcele",
         "groundNote": "nije katastarska parcela"
     },
-    "selectionTray": {
+    "selectedParcels": {
         "label": "Izabrane parcele",
-        "count": {
-            "one": "{{count}} parcela",
-            "few": "{{count}} parcele",
-            "other": "{{count}} parcela"
-        },
+        "count": "Izabrane parcele ({{count}})",
         "empty": "Kliknite na parcele da ih izaberete",
         "actions": {
-            "propose": "Predloži",
             "clear": "Poništi izbor",
-            "done": "Završi izbor",
-            "detectBlock": "Detektuj blok",
-            "clearShort": "Poništi",
-            "doneShort": "Gotovo",
-            "useAsSite": "Koristi izbor kao lokaciju",
-            "useAsSiteShort": "Lokacija"
+            "done": "Završi izbor"
         }
     },
     "mapSearch": {

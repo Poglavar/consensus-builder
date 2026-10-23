@@ -687,9 +687,8 @@ async function createProposal() {
                 : null;
             if (blockMassing?.geometry) proposal.geometry.blockMassing = blockMassing;
             else delete proposal.geometry.blockMassing;
-            // Freeform proposals may pave or green the parcel area around their buildings; no other
-            // typology offers the choice, so its surround never travels with them.
-            const groundSurface = selectedTool === 'single' ? safeClone(pendingBuildingContext.groundSurface) : null;
+            // Building surroundings belong to the same authored design for every typology.
+            const groundSurface = safeClone(pendingBuildingContext.groundSurface);
             if (groundSurface) proposal.geometry.groundSurface = groundSurface;
             else delete proposal.geometry.groundSurface;
 

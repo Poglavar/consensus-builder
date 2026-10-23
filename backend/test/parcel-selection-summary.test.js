@@ -1,10 +1,10 @@
-// The selection tray's count and total area (frontend/js/ui/selection-tray.js summarizeSelection):
+// The selection section's count and total area (frontend/js/click-stack/click-stack-model.js summarizeSelection):
 // every selected parcel counts, only measurable ones add area, and an unknown total is null, not 0.
 import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { summarizeSelection } = require('../../frontend/js/ui/selection-tray.js');
+const { summarizeSelection } = require('../../frontend/js/click-stack/click-stack-model.js');
 
 const features = {
     a: { geometry: { type: 'Polygon' }, area: 400 },
@@ -20,7 +20,7 @@ const areaOf = feature => {
     return feature.area;
 };
 
-describe('selection tray summary', () => {
+describe('selection section summary', () => {
     it('counts the parcels and sums their measured area', () => {
         expect(summarizeSelection(['a', 'b'], { featureFor, areaOf })).toEqual({ count: 2, area: 650.5, unmeasured: 0 });
     });

@@ -151,7 +151,7 @@ function coordinateBounds(value: any): [number, number, number, number] {
 }
 
 function savedStructureForTranslation(structure: any, kind: 'park' | 'square'): any {
-  const decorations = structure.decorations || {};
+  const decorations = structure.decorationDesign || structure.decorations || {};
   return {
     geometry: structure.geometry,
     decorations: kind === 'park'
@@ -197,7 +197,7 @@ test.describe('Whole-site placement editing @features', () => {
     await editor.locator('[data-action="save"]').click();
     await expect(editor).toHaveCount(0);
     const saved = await page.evaluate(id => (window as any).proposalStorage.getAllProposals()
-      .find((p: any) => p.proposalId === id)?.structureProposal.decorations.trees[0], proposalId);
+      .find((p: any) => p.proposalId === id)?.structureProposal.decorationDesign.trees[0], proposalId);
     expect(saved.heightM).toBe(9);
     await showProposal(page, proposalId);
     await page.locator('#proposal-details-footer .btn-edit-geometry').click();
@@ -243,11 +243,11 @@ test.describe('Whole-site placement editing @features', () => {
       await expect(editor).toHaveCount(0);
       // The unpublished record is saved in place (c7ef3630): its own tree moves.
       await expect.poll(() => page.evaluate(id => (window as any).proposalStorage.getProposal(id)
-        ?.structureProposal?.decorations?.trees?.[0]?.coordinate?.[0] ?? null, id)).toBeGreaterThan(before.decorations.trees[0][0]);
+        ?.structureProposal?.decorationDesign?.trees?.[0]?.coordinate?.[0] ?? null, id)).toBeGreaterThan(before.decorations.trees[0][0]);
       const fork = await page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.structureProposal, id);
       expect(fork).toBeTruthy();
       // A saved tree is a record: its point, kind and height (park-planting.js).
-      const movedTree = fork.decorations.trees[0].coordinate;
+      const movedTree = fork.decorationDesign.trees[0].coordinate;
       expect(movedTree[0]).toBeGreaterThan(before.decorations.trees[0][0]);
       expect(movedTree[1]).toBeGreaterThan(before.decorations.trees[0][1]);
       const delta = [movedTree[0] - before.decorations.trees[0][0], movedTree[1] - before.decorations.trees[0][1]];
@@ -255,7 +255,7 @@ test.describe('Whole-site placement editing @features', () => {
       // boundary vertices and furniture, rather than one representative marker.
       expectTranslatedCoordinates(before, savedStructureForTranslation(fork, kind), delta as [number, number]);
       expect(fork.kind).toBe(kind);
-      expect(fork.decorations.benches[0].bearing).toBe(35);
+      expect(fork.decorationDesign.benches[0].bearing).toBe(35);
     }
   });
 

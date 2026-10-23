@@ -272,7 +272,7 @@
         return pts;
     }
 
-    function drawParkDecorations(group, parkFeature) {
+    function drawParkDecorations(group, parkFeature, pane = PARKS_PANE) {
         if (!parkFeature || !parkFeature.geometry) return;
         // While the geometry editor is editing THIS structure, it renders the live editable
         // copy — the static one would duplicate every object underneath it.
@@ -296,7 +296,7 @@
             try {
                 const latlngs = coords.map(c => [c[1], c[0]]);
                 if (latlngs.length > 1) {
-                    const pl = L.polyline(latlngs, { color: '#dfe8d6', weight: 2, opacity: 0.85, dashArray: '6,6', interactive: false, pane: PARKS_PANE }).addTo(group);
+                    const pl = L.polyline(latlngs, { color: '#dfe8d6', weight: 2, opacity: 0.85, dashArray: '6,6', interactive: false, pane }).addTo(group);
                     try { pl.bringToFront && pl.bringToFront(); } catch (_) { }
                 }
             } catch (_) { }
@@ -308,7 +308,7 @@
                 const latlngs = ringCoords.map(p => [p[1], p[0]]);
                 L.polygon(latlngs, {
                     color: '#1e63b0', weight: 1.5, opacity: 0.95,
-                    fillColor: '#2b6cb0', fillOpacity: 0.88, interactive: false, pane: PARKS_PANE
+                    fillColor: '#2b6cb0', fillOpacity: 0.88, interactive: false, pane
                 }).addTo(group);
             } catch (_) { }
         });
@@ -318,7 +318,7 @@
                 const latlngs = ringCoords.map(point => [point[1], point[0]]);
                 L.polygon(latlngs, {
                     color: '#be185d', weight: 1.5, opacity: 0.95,
-                    fillColor: '#f472b6', fillOpacity: 0.82, interactive: false, pane: PARKS_PANE
+                    fillColor: '#f472b6', fillOpacity: 0.82, interactive: false, pane
                 }).addTo(group);
             } catch (_) { }
         });
@@ -338,7 +338,7 @@
                         className: 'park-tree-emoji',
                         ...window.__parkPlanting.treeIcon(tree)
                     }),
-                    pane: PARKS_PANE,
+                    pane,
                     interactive: false
                 }).addTo(group);
             });
@@ -359,7 +359,7 @@
                         iconSize: [14, 14],
                         iconAnchor: [7, 7]
                     }),
-                    pane: PARKS_PANE,
+                    pane,
                     interactive: false
                 }).addTo(group);
             });
@@ -370,6 +370,10 @@
         try {
             if (!parkFeature || !parkFeature.geometry) return;
             const props = parkFeature.properties = parkFeature.properties || {};
+            if (props.decorationDesign) {
+                props.decorations = window.ProposalApplyStructures.decorationsOnGround(JSON.parse(JSON.stringify(props.decorationDesign)), parkFeature.geometry, turf);
+                return;
+            }
             // If decorations exist, verify and upgrade if needed (e.g., ensure paths avoid ponds)
             if (props.decorations && typeof props.decorations === 'object') {
                 const dec = props.decorations;
@@ -812,7 +816,7 @@
         } catch (_) { }
     }
 
-    function drawSquareDecorations(group, squareFeature) {
+    function drawSquareDecorations(group, squareFeature, pane = SQUARES_ICON_PANE) {
         if (!squareFeature || !squareFeature.geometry) return;
         // While the geometry editor is editing THIS structure, it renders the live editable
         // copy — the static one would duplicate every object underneath it.
@@ -837,7 +841,7 @@
                     iconSize: [28, 28],
                     iconAnchor: [14, 14]
                 }),
-                pane: SQUARES_ICON_PANE,
+                pane,
                 zIndexOffset: 1000,
                 interactive: false
             }).addTo(group);
@@ -849,7 +853,7 @@
                 const [lng, lat] = tree.coordinate;
                 L.marker([lat, lng], {
                     icon: L.divIcon({ className: 'square-tree-emoji', ...window.__parkPlanting.treeIcon(tree) }),
-                    pane: SQUARES_ICON_PANE,
+                    pane,
                     zIndexOffset: 1000,
                     interactive: false
                 }).addTo(group);
@@ -866,7 +870,7 @@
                     iconSize: [22, 22],
                     iconAnchor: [11, 11]
                 }),
-                pane: SQUARES_ICON_PANE,
+                pane,
                 zIndexOffset: 1000,
                 interactive: false
             }).addTo(group);
@@ -882,7 +886,7 @@
                     iconSize: [18, 18],
                     iconAnchor: [9, 9]
                 }),
-                pane: SQUARES_ICON_PANE,
+                pane,
                 zIndexOffset: 1000,
                 interactive: false
             }).addTo(group);
@@ -898,7 +902,7 @@
                         iconSize: [20, 20],
                         iconAnchor: [10, 10]
                     }),
-                    pane: SQUARES_ICON_PANE,
+                    pane,
                     zIndexOffset: 1000,
                     interactive: false
                 }).addTo(group);
@@ -937,6 +941,10 @@
         try {
             if (!squareFeature || !squareFeature.geometry) return;
             const props = squareFeature.properties = squareFeature.properties || {};
+            if (props.decorationDesign) {
+                props.decorations = window.ProposalApplyStructures.decorationsOnGround(JSON.parse(JSON.stringify(props.decorationDesign)), squareFeature.geometry, turf);
+                return;
+            }
             if (props.decorations && typeof props.decorations === 'object') {
                 // Upgrade: squares predating statues get their one auto-placed statue.
                 if (!Array.isArray(props.decorations.statues)) {
@@ -1301,12 +1309,14 @@
     // A freeform building proposal can pave or green the parcel area around its buildings. That
     // surround is not a structure — it belongs to the building proposal — but it is the same two
     // surfaces, so it draws with the square/park styles into its own layer. See building-ground.js.
+    let editingGroundProposalId = null;
     function appliedBuildingGroundSurfaces() {
         const api = window.BuildingGround;
         const storage = window.proposalStorage;
         if (!api || !storage || typeof storage.getAllProposals !== 'function') return [];
         try {
-            return api.appliedSurfaces(storage.getAllProposals(), isApplied);
+            return api.appliedSurfaces(storage.getAllProposals(), isApplied)
+                .filter(surface => surface.proposalId !== editingGroundProposalId);
         } catch (error) {
             console.error('[structures] building ground surfaces could not be collected', error);
             return [];
@@ -1328,6 +1338,23 @@
     // refresh — broadcasting unconditionally would rebuild the 3D scene for no reason at all.
     let buildingGroundSignature = null;
 
+    // Authored surroundings use the ordinary park/square furniture renderers, without generating a layout.
+    function drawBuildingGroundSurface(group, surface, pane) {
+        const feature = {
+            type: 'Feature', geometry: surface.polygon,
+            properties: surface.decorationDesign ? { decorationDesign: surface.decorationDesign } : {}
+        };
+        L.geoJSON(feature, {
+            pane, style: { ...window.BuildingGround.SURFACE_STYLE_2D[surface.treatment], weight: 1, opacity: 1 },
+            interactive: false
+        }).addTo(group);
+        if (surface.decorationDesign) {
+            if (surface.treatment === 'green') drawParkDecorations(group, feature, pane);
+            else drawSquareDecorations(group, feature, pane);
+        } else if (surface.treatment === 'paved') drawSquareTexture(group, feature);
+    }
+    window.drawBuildingGroundSurface = drawBuildingGroundSurface;
+
     function updateBuildingGroundLayer() {
         if (typeof map === 'undefined') return;
         const group = ensureBuildingGroundLayer();
@@ -1336,21 +1363,15 @@
         const cutters = appliedCorridorCutters();
         const surfaces = appliedBuildingGroundSurfaces();
         let signature = '';
-        try { signature = JSON.stringify(surfaces.map(s => [s.proposalId, s.treatment, s.geometry])); } catch (_) { signature = String(surfaces.length); }
+        try { signature = JSON.stringify(surfaces.map(s => [s.proposalId, s.treatment, s.geometry, s.decorationDesign])); } catch (_) { signature = String(surfaces.length); }
         surfaces.forEach(surface => {
             try {
                 const geometry = subtractCorridorsFromGeometry(surface.geometry, cutters);
                 if (!geometry) return; // fully paved over by applied roads
                 const paved = surface.treatment === 'paved';
                 const pane = paved ? SQUARES_PANE : PARKS_PANE;
-                const feature = { type: 'Feature', properties: { proposalId: surface.proposalId }, geometry };
-                L.geoJSON(feature, {
-                    style: { ...window.BuildingGround.SURFACE_STYLE_2D[surface.treatment], weight: 2, opacity: 1, pane },
-                    // Ground is an overlay on top of parcels; keep parcel clicks working.
-                    interactive: false,
-                    pane
-                }).addTo(group);
-                if (paved) drawSquareTexture(group, feature);
+                // Ground is an overlay on top of parcels; keep parcel clicks working.
+                drawBuildingGroundSurface(group, { ...surface, polygon: geometry }, pane);
             } catch (error) {
                 console.error('[structures] failed to render a building ground surface', surface.proposalId, error);
             }
@@ -1422,6 +1443,15 @@
     window.updateLakesLayer = updateLakesLayer;
     window.withStructureLayersRefreshHeld = withStructureLayersRefreshHeld;
     window.updateBuildingGroundLayer = updateBuildingGroundLayer;
+    // The building editor paints its working copy. Keep the saved furniture out of that view so
+    // removed items cannot remain visible behind the editable copy. Redraw only on ownership changes.
+    document.addEventListener('on-map-editor-preview-change', () => {
+        const next = window.OnMapEditor?.isActive()
+            ? window.getActiveProposalDesignDraft?.()?.sourceLocalProposalId || null : null;
+        if (next === editingGroundProposalId) return;
+        editingGroundProposalId = next;
+        updateBuildingGroundLayer();
+    });
     window.ensureLakeGraphics = ensureLakeGraphics;
     window.lakesLayerRef = () => lakesLayer;
     // Expose decoration helpers for ProposalManager

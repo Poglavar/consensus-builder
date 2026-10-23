@@ -11,7 +11,7 @@
     'use strict';
 
     const SURFACES = Object.freeze([
-        'layers', 'measurement', 'proposals', 'activity', 'settings', 'parcel-menu', 'selection-tray', 'palette', 'ground-menu'
+        'layers', 'measurement', 'proposals', 'activity', 'settings', 'parcel-menu', 'parcel-selection', 'palette', 'ground-menu'
     ]);
 
     // Every control id the old sidebar held that still exists (rehoused into a sheet). Existing code finds these by id, so the test fails if index.html loses one.
@@ -338,7 +338,7 @@
         // cadastral half (and its checkbox) is hidden by the parcelBlocks feature flag otherwise.
         { id: 'blocks.reform', group: 'blocks', surfaces: ['layers'], modes: ['2d'], when: controlAvailable('parcelBlocksCheckbox'), run: callGlobal('countBlocks'),
             labelKey: 'sidebar.blocks.reformButton', fallbackLabel: '(Re)form Blocks', icon: 'fas fa-shapes' },
-        { id: 'blocks.fromSelected', group: 'blocks', surfaces: ['layers', 'selection-tray'], modes: ['2d'],
+        { id: 'blocks.fromSelected', group: 'blocks', surfaces: ['layers'], modes: ['2d'],
             // An empty multi-selection has no parcel to grow a block from.
             when: ctx => controlAvailable('parcelBlocksCheckbox')(ctx) && !(ctx && ctx.selection && ctx.selection.active && ctx.selection.count === 0),
             run: callGlobal('animateFloodfillFromSelected'),
@@ -455,22 +455,17 @@
             run: ctx => ctx.global.SiteTool.start(),
             labelKey: 'siteTool.commands.draw', fallbackLabel: 'Draw site', icon: 'fas fa-draw-polygon' },
 
-        // ---- Selection tray (ui/selection-tray.js); Detect block is blocks.fromSelected above ----
-        { id: 'selection.propose', group: 'selection', surfaces: ['selection-tray'], modes: ['2d'], when: selectionNonEmpty,
-            run: ctx => ctx.global.SelectionTray.propose(),
-            labelKey: 'selectionTray.actions.propose', fallbackLabel: 'Propose', icon: 'fas fa-pen-ruler' },
-        // The selection's union as an editable site (the site tool), for designs that should not
-        // follow the parcel edges exactly.
-        { id: 'selection.useAsSite', group: 'selection', surfaces: ['selection-tray'], modes: ['2d'],
+        // ---- Selected parcels section in the click panel ----
+        { id: 'selection.useAsSite', group: 'selection', surfaces: ['parcel-selection'], modes: ['2d'],
             when: ctx => selectionNonEmpty(ctx) && siteToolIdle(ctx),
             run: ctx => ctx.global.SiteTool.startFromSelection(),
-            labelKey: 'selectionTray.actions.useAsSite', fallbackLabel: 'Use as site', icon: 'fas fa-draw-polygon' },
-        { id: 'selection.clear', group: 'selection', surfaces: ['selection-tray'], when: selectionNonEmpty,
+            labelKey: 'parcelMenu.actions.useAsSite', fallbackLabel: 'Custom site', icon: 'fas fa-draw-polygon' },
+        { id: 'selection.clear', group: 'selection', surfaces: ['parcel-selection'], when: selectionNonEmpty,
             run: ctx => ctx.global.multiParcelSelection.clearSelection(),
-            labelKey: 'selectionTray.actions.clear', fallbackLabel: 'Clear selection', icon: 'fas fa-eraser' },
-        { id: 'selection.done', group: 'selection', surfaces: ['selection-tray'], when: selectionActive,
+            labelKey: 'selectedParcels.actions.clear', fallbackLabel: 'Clear selection', icon: 'fas fa-eraser' },
+        { id: 'selection.done', group: 'selection', surfaces: ['parcel-selection'], when: selectionActive,
             run: callGlobal('cancelMultiParcelSelection'),
-            labelKey: 'selectionTray.actions.done', fallbackLabel: 'Done selecting', icon: 'fas fa-check' },
+            labelKey: 'selectedParcels.actions.done', fallbackLabel: 'Done selecting', icon: 'fas fa-check' },
 
         // ---- Settings sheet ----
         control('parcel-source-notice-button', { id: 'settings.parcelSourceNotice', group: 'settings', surfaces: ['settings'],
