@@ -49,6 +49,7 @@ test('missing stock blocks acceptance and keeps the unsaved editor open',async({
   await page.route('**/buildings/under',route=>route.fulfill({contentType:'application/json',body:JSON.stringify({supported:true,truncated:true,regions:{}})}));
   await page.locator('#single-building-confirm').click();
   await expect(page.locator('[data-land-status]')).toContainText('Could not verify');
+  await expect(page.locator('#single-land-take-error')).toBeVisible();
   await expect(page.locator('[data-land-accept]')).toBeDisabled();
   await expect(page.locator('[data-land-accept]')).not.toBeChecked();
   await expect(page.locator(`${editor} .on-map-editor__panel`)).toBeVisible();
@@ -85,6 +86,7 @@ test('a changed demolition answer requires a fresh acceptance before saving',asy
   });
   await page.locator('#single-building-confirm').click();
   await expect(page.locator('[data-land-status]')).toContainText('1 buildings removed');
+  await expect(page.locator('#single-land-take-error')).toContainText('changed');
   await expect(page.locator('[data-land-accept]')).not.toBeChecked();
   await expect(page.locator(`${editor} .on-map-editor__panel`)).toBeVisible();
 });
@@ -104,4 +106,23 @@ test('loading an untouched land review does not create discardable edits',async(
  await page.locator(`${editor} .on-map-editor__header .close-circle-btn`).click();
  await expect(page.locator(editor)).toHaveCount(0);
  await expect(page.getByRole('alertdialog')).toHaveCount(0);
+});
+
+test('Done explains the required land review and saves the imported GLB after acceptance', async ({ mockApi: page }) => {
+  await page.route('**/models', route => route.fulfill({ json: { modelUrl: '/uploads/models/test-building.glb' } }));
+  await open(page);
+  await page.locator('#single-building-glb-upload').click();
+  await page.locator('#building-upload-file').setInputFiles('../test-assets/test-building.glb');
+  await expect(page.locator('#building-upload-confirm')).toBeEnabled({ timeout: 20000 });
+  await page.locator('#building-upload-confirm').click();
+  await expect(page.locator('#building-upload-modal')).toHaveCount(0);
+  await expect(page.locator('[data-land-accept]')).toBeEnabled();
+  await page.locator('#single-building-confirm').click();
+  await expect(page.locator('#single-land-take-error')).toHaveText('Review the land take and accept its effects before saving.');
+  await expect(page.locator('#single-land-take-error')).toBeInViewport();
+  expect(await page.evaluate(() => (window as any).proposalStorage.getAllProposals().filter((p:any) => p.goal === 'single').length)).toBe(0);
+  await finish(page);
+  await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().filter((p:any) => p.goal === 'single' && p.applied).length), {timeout:20000}).toBe(1);
+  const saved = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((p:any) => p.goal === 'single' && p.applied));
+  expect(JSON.stringify(saved.geometry)).toContain('/uploads/models/test-building.glb');
 });

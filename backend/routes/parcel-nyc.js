@@ -5,6 +5,7 @@ import { getPilotEvidence } from '../zoning/pilot.js';
 import { MAX_CELL_BBOX_KM2, wgs84BboxAreaKm2 } from '../utils/helpers.js';
 import { buildOwnershipSummary } from './parcels.js';
 import { isPlaceholderOwner, isCondoBillingLot } from './nyc-condo-owners.js';
+import { NYC_GEOMETRY_COLUMN, nycParcelId as buildParcelId, nycParcelIds as extractParcelIds } from '../parcels/nyc-database-source.js';
 
 const MAX_LIMIT = 5000;
 const SRID_WGS84 = 4326;
@@ -15,12 +16,7 @@ const UNIT_TABLE = 'parcel_nyc_unit';
 const GEOMETRY_TABLE_ALIAS = 'g';
 const UNIT_TABLE_ALIAS = 'u';
 
-const ALLOWED_GEOMETRY_COLUMNS = new Set(['geom', 'geometry']);
-const GEOMETRY_COLUMN = (() => {
-    const raw = (process.env.PARCEL_NYC_GEOMETRY_COLUMN || '').toString().trim().toLowerCase();
-    return ALLOWED_GEOMETRY_COLUMNS.has(raw) ? raw : 'geom';
-})();
-const GEOMETRY_REF = `${GEOMETRY_TABLE_ALIAS}.${GEOMETRY_COLUMN}`;
+const GEOMETRY_REF = `${GEOMETRY_TABLE_ALIAS}.${NYC_GEOMETRY_COLUMN}`;
 
 function parseLimit(rawValue) {
     if (!rawValue) {
@@ -102,15 +98,6 @@ function aggregateOwners(ownerPrimary, ownerSecondary) {
     return unique;
 }
 
-function buildParcelId(rawParcel) {
-    const parcel = (rawParcel ?? '').toString().trim();
-    if (!parcel) return null;
-    if (parcel.toUpperCase().startsWith(`${PARCEL_ID_PREFIX}-`)) {
-        return parcel;
-    }
-    return `${PARCEL_ID_PREFIX}-${parcel}`;
-}
-
 function normalizeParcelValue(rawParcelId) {
     const value = (rawParcelId ?? '').toString().trim();
     if (!value) return '';
@@ -159,14 +146,6 @@ function buildOwnershipSummaryFromOwners(parcelValue, owners) {
     const payload = buildOwnershipPayload(parcelValue, owners);
     const summary = buildOwnershipSummary(payload);
     return { payload, summary };
-}
-
-function extractParcelIds(row) {
-    if (Array.isArray(row?.swis_sbl_ids)) {
-        return row.swis_sbl_ids.map(value => (value || '').toString().trim()).filter(Boolean);
-    }
-    const fallback = (row?.swis_sbl_id || '').toString().trim();
-    return fallback ? [fallback] : [];
 }
 
 function buildFeature(row) {
@@ -250,7 +229,7 @@ export function setupParcelNycRoute(app, pool) {
                 g.shape_length,
                 g.shape_area,
                 ST_AsGeoJSON(${GEOMETRY_REF})::json AS geom,
-                array_remove(array_agg(DISTINCT u.swis_sbl_id), NULL) AS swis_sbl_ids,
+                array_remove(array_agg(DISTINCT u.swis_sbl_id ORDER BY u.swis_sbl_id), NULL) AS swis_sbl_ids,
                 array_remove(array_agg(DISTINCT u.primary_owner), NULL) AS primary_owner
             FROM ${GEOM_TABLE} ${GEOMETRY_TABLE_ALIAS}
             LEFT JOIN ${UNIT_TABLE} ${UNIT_TABLE_ALIAS}

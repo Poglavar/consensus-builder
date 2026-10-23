@@ -512,6 +512,10 @@ For geometric binding, an intersection binds when it survives an inward buffer o
 
 Coverage values are `complete`, `partial`, `none`, `unknown`. `none` and `unknown` are distinct: confirmed lack of supported coverage does not mean the same thing as an unavailable or unrecognized source. A later cadastre can produce binding drift without rewriting the original publication. [Shared rule](frontend/js/proposals/site-binding.js), [server implementation](backend/proposals/binding.js), drift.
 
+New York's default imported source (`parcel-nyc`) binds against the same NYS footprint and unit tables used by the map. Each footprint uses its first sorted SWIS ID (`US-NY-…`); binding records `server:parcel-nyc` and refuses incomplete source queries. The optional live DOF source uses separate `US-NYC-BBL-…` identities and is never substituted for the imported source. [Imported source](backend/parcels/nyc-database-source.js).
+
+Observed unresolved audit (2026-10-23): Belgrade and Buenos Aires still display imported database parcels without a matching server binding adapter. Their default `/designs/binding` requests return `unknown`, which blocks the Freeform Done flow, including imported GLBs. This is not a GLB parsing restriction.
+
 ### Owner / party / actor — `RightsParty`, `DecisionActor`
 
 Ownership display types (`private individual`, `company`, `government`, `institution`) are

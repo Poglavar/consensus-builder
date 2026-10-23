@@ -7,6 +7,17 @@
         const rows = panel.querySelector('[data-land-rows]');
         const status = panel.querySelector('[data-land-status]');
         const accept = panel.querySelector('[data-land-accept]');
+        const error = document.createElement('p');
+        error.id = 'single-land-take-error';
+        error.className = 'land-take-error';
+        error.setAttribute('role', 'alert');
+        error.hidden = true;
+        const confirmation = document.createElement('div');
+        confirmation.className = 'land-take-confirmation';
+        const acceptLabel = accept.closest('label');
+        acceptLabel.before(confirmation);
+        confirmation.append(error, acceptLabel);
+        accept.setAttribute('aria-describedby', error.id);
         const layers = env.L.featureGroup().addTo(session.map);
         let whole = new Set(), parcels = [], current = null, savedTake = initialTake;
         let sequence = 0, timer = null, closed = false, signature = null, reviewed = null;
@@ -139,7 +150,11 @@
             }
         }
         panel.querySelector('[data-land-retry]').addEventListener('click', refresh);
-        accept.addEventListener('change', () => { reviewed = accept.checked ? panel.dataset.review : null; });
+        accept.addEventListener('change', () => {
+            reviewed = accept.checked ? panel.dataset.review : null;
+            error.hidden = true;
+            accept.removeAttribute('aria-invalid');
+        });
         for (const mode of ['footprint', 'whole']) panel.querySelector(`[data-land-${mode}]`).addEventListener('click', () => {
             onHistory();
             savedTake = null;
@@ -171,12 +186,18 @@
             restore(take) { savedTake = take; whole.clear(); geometryKey = null; invalidate(); schedule(); },
             async prepare() {
                 clearTimeout(timer);
+                const wasAccepted = accept.checked;
                 const ready = await refresh();
                 if (!ready || !accept.checked || !reviewed) {
-                    accept.closest('label').scrollIntoView({ block: 'nearest' });
-                    accept.focus({ preventScroll: true });
+                    error.textContent = text(!ready ? 'unavailable' : wasAccepted ? 'reviewChanged' : 'acceptRequired');
+                    error.hidden = false;
+                    accept.setAttribute('aria-invalid', 'true');
+                    confirmation.scrollIntoView({ block: 'nearest' });
+                    (accept.disabled ? panel.querySelector('[data-land-retry]') : accept).focus({ preventScroll: true });
                     return false;
                 }
+                error.hidden = true;
+                accept.removeAttribute('aria-invalid');
                 return true;
             },
             destroy() { closed = true; sequence++; clearTimeout(timer); layers.remove(); }

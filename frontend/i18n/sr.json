@@ -7330,6 +7330,8 @@
         "copied": "Koordinate su kopirane"
     },
     "landTake": {
+    "acceptRequired": "Pregledajte zauzeće zemljišta i prihvatite njegove efekte pre čuvanja.",
+    "reviewChanged": "Zauzeće zemljišta ili efekti rušenja su se promenili. Pregledajte ih i ponovo prihvatite pre čuvanja.",
         "invalid": "Provereno zauzimanje zemljišta mora sadržati zgradu i biti unutar obuhvata.",
         "title": "Zauzimanje zemljišta",
         "intro": "Izaberite zemljište koje se uzima od svake dodirnute parcele. Zgrada zadržava svoj oblik.",

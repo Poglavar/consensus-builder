@@ -2495,4 +2495,6 @@ path.geom-handle-edge.is-dragging { stroke-opacity: 0.35; }
 .land-take-row span { overflow-wrap: anywhere; }
 .land-take-accept { display: flex; align-items: start; gap: var(--cb-space-2); }
 .land-take-accept input { flex: 0 0 auto; }
+.land-take-confirmation { display: grid; gap: var(--cb-space-2); }
+.land-take-error { color: var(--cb-danger); font-weight: 600; }
 .land-take-legend { color: var(--cb-text-muted); }

@@ -7278,6 +7278,8 @@
         "copied": "Coordinates copied"
     },
     "landTake": {
+    "acceptRequired": "Review the land take and accept its effects before saving.",
+    "reviewChanged": "The land take or demolition effects changed. Review and accept them again before saving.",
         "invalid": "The reviewed land take must contain the building and fit within the site.",
         "title": "Land take",
         "intro": "Choose the land taken from each touched parcel. The building keeps its shape.",

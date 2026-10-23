@@ -7306,6 +7306,8 @@
         "copied": "Coordenadas copiadas"
     },
     "landTake": {
+    "acceptRequired": "Revisa la ocupación del suelo y acepta sus efectos antes de guardar.",
+    "reviewChanged": "La ocupación del suelo o los efectos de demolición han cambiado. Revísalos y acéptalos de nuevo antes de guardar.",
         "invalid": "El terreno revisado debe contener el edificio y quedar dentro del ámbito.",
         "title": "Ocupación del terreno",
         "intro": "Elige el terreno que se toma de cada parcela tocada. El edificio conserva su forma.",

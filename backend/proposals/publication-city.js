@@ -22,9 +22,12 @@ export const NO_CADASTRE_CITIES = Object.freeze(['explore']);
 export const isHrDatabaseSource = (city, sourceId) => sourceId === 'oss-wfs'
     && parcelSourceCatalog.databaseSources.find(source => source.id === sourceId)?.cityIds.includes(city);
 
+export const isNycDatabaseSource = (city, sourceId) => city === 'new_york'
+    && (sourceId == null || sourceId === 'parcel-nyc');
+
 // Whether the catalogued source `sourceId` serves `city`.
 export function sourceServes(sourceId, city) {
-    if (isHrDatabaseSource(city, sourceId)) return true;
+    if (isHrDatabaseSource(city, sourceId) || (sourceId === 'parcel-nyc' && isNycDatabaseSource(city, sourceId))) return true;
     let descriptor = null;
     try { descriptor = resolveParcelSourceDescriptor(sourceId); } catch (_) { descriptor = null; }
     return !!descriptor && descriptor.cityIds.includes(city);
