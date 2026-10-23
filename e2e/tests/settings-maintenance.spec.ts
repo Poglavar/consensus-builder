@@ -21,9 +21,9 @@ async function openLayers(page: import('@playwright/test').Page) {
   await openLayerSection(page, 'base-map');
 }
 
-// The resets sit folded under one "Reset data stored in this browser…" row (docs/design-language.md).
+// Coverage and reset controls share the Local (browser) data section.
 async function openResets(page: import('@playwright/test').Page) {
-  await openSettingsSection(page, 'reset');
+  await openSettingsSection(page, 'data');
   await expect(page.locator('#wipeLocalDataButton')).toBeVisible();
 }
 
