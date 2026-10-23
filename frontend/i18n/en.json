@@ -84,7 +84,6 @@
         "loadFailed": "Could not load this tool. Please try again."
     },
     "urbanBlocks": {
-        "title": "Urban blocks · OSM",
         "toggle": "Detect and analyse blocks",
         "hint": "Load OSM roads, then colour the enclosed blocks. Parcel data is optional.",
         "starting": "Preparing block view…",
@@ -1193,7 +1192,9 @@
         },
         "blocks": {
             "title": "Parcel blocks",
-            "showBlocks": "Show parcel blocks",
+            "showBlocks": "Show formed blocks",
+            "fromRoadsTitle": "From map roads (OSM)",
+            "fromParcelsTitle": "From cadastral parcels",
             "operationsTitle": "Block operations",
             "reformButton": "(Re)form blocks",
             "reformTooltip": "Scan visible parcels and rebuild blocks",

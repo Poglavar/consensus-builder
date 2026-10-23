@@ -617,13 +617,18 @@
 </div>
                 </details>
 
-                <!-- OSM blocks remain available in every city, including those without parcels. -->
-                <details data-map-modes="2d" class="accordion-section" data-section="urban-blocks" open>
+                <!-- Parcel blocks: the ground enclosed by roads. Blocks found from OSM roads work in every
+                     city, with or without parcels; blocks formed from cadastral parcels only where the
+                     city's cadastre has road parcels (feature parcelBlocks, city-config.js). -->
+                <details data-map-modes="2d" class="accordion-section" data-section="blocks" open>
                     <summary class="sheet-section-title">
-                        <i class="fas fa-shapes" aria-hidden="true"></i>
-                        <span data-i18n-key="urbanBlocks.title">Urban blocks · OSM</span>
+                        <i class="fas fa-th-large" aria-hidden="true"></i>
+                        <span class="accordion-title-text" data-section-title="blocks"
+                            data-i18n-key="sidebar.blocks.title">Parcel blocks</span>
                     </summary>
                     <div class="sheet-section-body">
+                        <div class="control-group">
+                            <div class="control-group-title" data-i18n-key="sidebar.blocks.fromRoadsTitle">From map roads (OSM)</div>
                         <div class="checkbox-group">
                             <label><input type="checkbox" id="showUrbanBlocks">
                                 <span data-i18n-key="urbanBlocks.toggle">Detect and analyse blocks</span></label>
@@ -631,6 +636,49 @@
                         <p id="urban-blocks-status" class="sheet-note" role="status" aria-live="polite">Load OSM roads, then colour the enclosed blocks. Parcel data is optional.</p>
                         <button type="button" id="urban-blocks-refresh" class="btn" disabled>Refresh this area</button>
                         <button type="button" id="urban-blocks-browse" class="btn" data-i18n-key="urbanBlocks.browse" disabled>Browse blocks</button>
+                        </div>
+                        <div class="control-group" data-feature="parcelBlocks">
+                            <div class="control-group-title" data-i18n-key="sidebar.blocks.fromParcelsTitle">From cadastral parcels</div>
+                            <div class="checkbox-group block-toggles">
+                                <label>
+                                    <input type="checkbox" id="parcelBlocksCheckbox" data-layer="blocks"
+                                        onchange="toggleBlocksVisibility()">
+                                    <span data-i18n-key="sidebar.blocks.showBlocks">Show formed blocks</span>
+                                </label>
+                                <label>
+                                    <input type="checkbox" id="showBlockNames" checked onchange="toggleBlockNameLabels()">
+                                    <span data-i18n-key="sidebar.blocks.showNames">Block names</span>
+                                </label>
+                            </div>
+                            <div class="btn-group">
+                                <button class="btn btn-primary btn-block" onclick="countBlocks()"
+                                    data-i18n-key="sidebar.blocks.reformTooltip" data-i18n-attr="title">
+                                    <i class="fas fa-shapes" aria-hidden="true"></i>
+                                    <span data-i18n-key="sidebar.blocks.reformButton">(Re)form Blocks</span>
+                                </button>
+                                <button class="btn btn-primary btn-block" onclick="animateFloodfillFromSelected()"
+                                    data-i18n-key="sidebar.blocks.fromSelectedTooltip" data-i18n-attr="title">
+                                    <i class="fas fa-fill-drip" aria-hidden="true"></i>
+                                    <span data-i18n-key="sidebar.blocks.fromSelectedButton">From Selected Parcel</span>
+                                </button>
+                                <button id="showBlockListButton" class="btn btn-block" onclick="showBlocksList()" disabled>
+                                    <i class="fas fa-list" aria-hidden="true"></i>
+                                    <span data-i18n-key="sidebar.blocks.showListButton">Show Block List</span>
+                                </button>
+                            </div>
+                            <div id="blocks-list-container">
+                            <div class="blocks-list-header">
+                                <span data-i18n-key="sidebar.blocks.listHeader">Blocks List</span>
+                                <button type="button" onclick="hideBlocksList()"
+                                    class="blocks-list-close close-circle-btn close-circle-btn--lg"
+                                    aria-label="Close blocks list" data-i18n-key="sidebar.blocks.closeList"
+                                    data-i18n-attr="aria-label,title">×</button>
+                            </div>
+                            <div id="blocks-content"></div>
+                        </div>
+                            <div id="parcels-counted" class="sheet-note" data-i18n-key="sidebar.blocks.countedDefault">Parcels
+                            counted: 0</div>
+                        </div>
                     </div>
                 </details>
 
@@ -649,62 +697,6 @@
                     </div>
                 </details>
 
-                <!-- Parcel blocks: the layer toggles (block actions are in the Tools sheet) -->
-                <details data-map-modes="2d" class="accordion-section" data-section="blocks" open>
-                    <summary class="sheet-section-title">
-                        <i class="fas fa-th-large" aria-hidden="true"></i>
-                        <span class="accordion-title-text" data-section-title="blocks"
-                            data-i18n-key="sidebar.blocks.title">Parcel Blocks</span>
-                    </summary>
-                    <div class="sheet-section-body">
-                        <div class="control-group">
-                            <div class="checkbox-group block-toggles">
-                                <label>
-                                    <input type="checkbox" id="parcelBlocksCheckbox" data-layer="blocks"
-                                        onchange="toggleBlocksVisibility()">
-                                    <span data-i18n-key="sidebar.blocks.showBlocks">Show parcel blocks</span>
-                                </label>
-                                <label>
-                                    <input type="checkbox" id="showBlockNames" checked onchange="toggleBlockNameLabels()">
-                                    <span data-i18n-key="sidebar.blocks.showNames">Block names</span>
-                                </label>
-                            </div>
-                        </div>
-
-
-                        <div class="control-group">
-                            <div class="btn-group">
-                                <button class="btn btn-primary btn-block" onclick="countBlocks()"
-                                    data-i18n-key="sidebar.blocks.reformTooltip" data-i18n-attr="title">
-                                    <i class="fas fa-shapes" aria-hidden="true"></i>
-                                    <span data-i18n-key="sidebar.blocks.reformButton">(Re)form Blocks</span>
-                                </button>
-                                <button class="btn btn-primary btn-block" onclick="animateFloodfillFromSelected()"
-                                    data-i18n-key="sidebar.blocks.fromSelectedTooltip" data-i18n-attr="title">
-                                    <i class="fas fa-fill-drip" aria-hidden="true"></i>
-                                    <span data-i18n-key="sidebar.blocks.fromSelectedButton">From Selected Parcel</span>
-                                </button>
-                                <button id="showBlockListButton" class="btn btn-block" onclick="showBlocksList()" disabled>
-                                    <i class="fas fa-list" aria-hidden="true"></i>
-                                    <span data-i18n-key="sidebar.blocks.showListButton">Show Block List</span>
-                                </button>
-                            </div>
-                        </div>
-                        <div id="blocks-list-container">
-                            <div class="blocks-list-header">
-                                <span data-i18n-key="sidebar.blocks.listHeader">Blocks List</span>
-                                <button type="button" onclick="hideBlocksList()"
-                                    class="blocks-list-close close-circle-btn close-circle-btn--lg"
-                                    aria-label="Close blocks list" data-i18n-key="sidebar.blocks.closeList"
-                                    data-i18n-attr="aria-label,title">×</button>
-                            </div>
-                            <div id="blocks-content"></div>
-                        </div>
-
-                        <div id="parcels-counted" class="sheet-note" data-i18n-key="sidebar.blocks.countedDefault">Parcels
-                            counted: 0</div>
-</div>
-                </details>
 
                 <!-- Parks and squares proposed on the map -->
                 <details data-map-modes="2d" class="accordion-section" data-section="parks-squares" open>

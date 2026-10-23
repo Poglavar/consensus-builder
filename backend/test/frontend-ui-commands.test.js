@@ -223,6 +223,17 @@ describe('availability and search', () => {
         expect(withoutGame.filter(id => id.startsWith('game.'))).toEqual([]);
     });
 
+    // One Parcel blocks section: blocks from OSM roads in every city, blocks formed from cadastral
+    // parcels only where the city has them (their checkbox is hidden by the parcelBlocks feature).
+    it('keeps OSM blocks in a city without cadastral blocks and drops the cadastral block commands', () => {
+        const cadastral = ['blocks.reform', 'blocks.fromSelected', 'blocks.list'];
+        const withCadastre = { ...fakeCtx(), mode: '2d' };
+        const noCadastre = { ...withCadastre, isControlAvailable: id => id !== 'parcelBlocksCheckbox' && id !== 'showBlockListButton' };
+        for (const id of ['blocks.reform', 'blocks.fromSelected']) expect(UiCommands.isAvailable(id, withCadastre), id).toBe(true);
+        for (const id of cadastral) expect(UiCommands.isAvailable(id, noCadastre), id).toBe(false);
+        expect(UiCommands.isAvailable('urbanBlocks.refresh', noCadastre)).toBe(true);
+    });
+
     it('dispatches the Actors command across all map modes, including cities that hide simulation', () => {
         const command = UiCommands.findCommand('activity.agents');
         expect(command.surfaces).toContain('activity');

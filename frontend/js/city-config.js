@@ -21492,10 +21492,10 @@
         const sectionToCheckboxId = {
             'parcelBlocks': 'parcelBlocksCheckbox'
         };
-        // Config names that differ from the markup's data-section
-        const sectionToDataSection = {
-            'parcelBlocks': 'blocks'
-        };
+        // Config names that differ from the markup's data-section. parcelBlocks is not a section:
+        // it hides the cadastral half of the Parcel blocks section (data-feature="parcelBlocks",
+        // applyFeatureVisibility), while blocks from OSM roads stay available in every city.
+        const sectionToDataSection = {};
 
         // Disable sections that are in the disabled list. A section can appear in more than one
         // sheet (Blocks and Roads have their layer toggles in Layers and their actions in Tools),
