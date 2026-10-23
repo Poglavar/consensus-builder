@@ -1,11 +1,9 @@
-// The staged OSM reference layer: Overture rows out of shared geodata, shaped so the frontend
-// cannot tell them from the live Overpass path. Only the pure row→Feature mapping is covered here;
-// the query itself is exercised against the real table.
+// The staged OSM reference layer: geographic Overture matches shaped like the live Overpass path.
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { stagedRowToFeature } = require('../buildings/osm-staged.js');
+const { fetchStagedOsmBuildings, stagedRowToFeature } = require('../buildings/osm-staged.js');
 
 const row = (extra = {}) => ({
     osm_id: 'w195184497',
@@ -40,5 +38,40 @@ describe('stagedRowToFeature', () => {
         expect(stagedRowToFeature(row({ names: { primary: 'Zagrepčanka' } })).properties.name).toBe('Zagrepčanka');
         expect(stagedRowToFeature(row({ names: {} })).properties.name).toBeNull();
         expect(stagedRowToFeature(row()).properties.name).toBeNull();
+    });
+});
+
+describe('fetchStagedOsmBuildings', () => {
+    const bbox = [15.978, 45.797, 15.988, 45.803];
+
+    it('queries by geography across city labels and prefers the requested city for duplicate OSM ids', async () => {
+        let call;
+        const pool = {
+            async query(sql, params) {
+                call = { sql, params };
+                return { rows: [row()] };
+            }
+        };
+
+        const result = await fetchStagedOsmBuildings(pool, bbox, 'fixture-city');
+
+        expect(call.params).toEqual([...bbox, 'fixture-city']);
+        expect(call.sql).toMatch(/geom\s*&&\s*ST_MakeEnvelope/);
+        expect(call.sql).toMatch(/ST_Intersects\(geom,\s*ST_MakeEnvelope/);
+        expect(call.sql).toMatch(/DISTINCT ON \(osm_id\)/);
+        expect(call.sql).toMatch(/ORDER BY osm_id,\s*\(city = \$5\) DESC NULLS LAST/);
+        expect(call.sql).not.toMatch(/WHERE\s+city\s*=\s*\$5/i);
+        expect(result).toMatchObject({
+            type: 'FeatureCollection',
+            source: 'staged',
+            truncated: false,
+            features: [{ type: 'Feature', id: 'w195184497' }]
+        });
+    });
+
+    it('returns null when no staged geometry matches the bbox', async () => {
+        const pool = { query: async () => ({ rows: [] }) };
+
+        await expect(fetchStagedOsmBuildings(pool, bbox, 'fixture-city')).resolves.toBeNull();
     });
 });
