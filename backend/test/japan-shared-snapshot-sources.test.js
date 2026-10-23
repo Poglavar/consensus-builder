@@ -1,6 +1,8 @@
+import { consumerParcelSourceId } from './helpers/frontend-source-selection.js';
 // Shared 2026 Japan editions keep published composite IDs, selective resource reads and per-city binding.
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { parcelSourceCatalog, parcelSourceForCity, parcelSourceForIds } from '../parcels/sources.js';
+import { parcelSourceCatalog } from '../parcels/sources.js';
+import { parcelSourceForCity, parcelSourceForIds } from './helpers/frontend-source-selection.js';
 import { encodeSnapshotNativeId } from '../parcels/geojson-snapshot-source.js';
 import { computeBinding } from '../proposals/binding.js';
 const cases = [
@@ -33,7 +35,7 @@ describe.each(cases)('$city configured shared 2026 snapshot', sample => {
         const visible = await provider.adapter.queryBounds(bounds);
         expect(visible.features.map(feature => feature.id)).toEqual([id]);
         const db = { query: vi.fn(() => { throw Error('Unexpected parcel-table read'); }) };
-        const { binding } = await computeBinding(db, { city: sample.city, site: geometry });
+        const { binding } = await computeBinding(db, { parcelSourceId: consumerParcelSourceId(sample.city), city: sample.city, site: geometry });
         expect(binding).toMatchObject({ source: 'server:jp-moj-geospatial-2026', coverage: 'complete' });
         expect(binding.parcels.map(parcel => parcel.parcelId)).toEqual([id]);
         expect(db.query).not.toHaveBeenCalled();

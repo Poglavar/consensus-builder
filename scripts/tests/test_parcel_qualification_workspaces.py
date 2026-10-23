@@ -42,7 +42,8 @@ class ParcelQualificationWorkspaceTests(unittest.TestCase):
                      self.parent / "scripts/lib/parcel-qualification-policy.json")
         (self.parent / "backend/parcels").mkdir(parents=True)
         (self.parent / "backend/parcels/adapter.js").write_text("export const baseline = true;\n")
-        (self.parent / "backend/parcels/source-catalog.json").write_text('{"sources":[]}\n')
+        (self.parent / "frontend/data/source-catalog.json").parent.mkdir(parents=True, exist_ok=True)
+        (self.parent / "frontend/data/source-catalog.json").write_text('{"sources":[]}\n')
         (self.parent / "backend/test").mkdir(parents=True)
         (self.parent / "backend/test/base.test.cjs").write_text("// tracked test\n")
         (self.parent / "backend/node_modules").mkdir(parents=True)
@@ -193,7 +194,7 @@ class ParcelQualificationWorkspaceTests(unittest.TestCase):
     def test_divergent_selected_base_preserves_parent_head_and_is_not_rearchived(self):
         old_head = run_git(self.parent, "rev-parse", "HEAD")
         big = self.parent / "frontend/runtime-bundle.js"
-        big.parent.mkdir()
+        big.parent.mkdir(parents=True, exist_ok=True)
         payload = "export const runtime = 'canonical';\n" * 2000
         big.write_text(payload)
         run_git(self.parent, "add", "frontend/runtime-bundle.js")

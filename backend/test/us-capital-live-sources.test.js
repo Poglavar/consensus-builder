@@ -1,3 +1,4 @@
+import { consumerParcelSourceId } from './helpers/frontend-source-selection.js';
 // Headless contracts for the first five US capital parcel sources: native identity, display labels,
 // complete object-ID manifests, city filters, projections and live-source binding without parcel DB reads.
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -97,7 +98,7 @@ describe('configured capital source identities and geometry reads', () => {
         const s=samples[2], d=descriptor(s), row=geoFeature(s,71), fetchImpl=manifestFetch(s,[row]);
         vi.stubGlobal('fetch',fetchImpl); clearParcelSourceRuntimeCache();
         const db={query:vi.fn(async()=>{throw new Error('configured source binding must not read parcel tables');})};
-        const {binding}=await computeBinding(db,{city:s.city,site:rect(s.center),toleranceM:0});
+        const {binding}=await computeBinding(db,{ parcelSourceId: consumerParcelSourceId(s.city),city:s.city,site:rect(s.center),toleranceM:0});
         expect(db.query).not.toHaveBeenCalled();
         expect(binding).toMatchObject({coverage:'complete',source:`server:${d.id}`});
         expect(binding.parcels.map(x=>x.parcelId)).toEqual([d.idPrefix+s.native]);

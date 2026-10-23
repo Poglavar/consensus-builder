@@ -4,7 +4,8 @@ import request from 'supertest';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { zipSync, strToU8 } from 'fflate';
 import { parseGmlParcels } from '../parcels/gml-parcel-reader.js';
-import { createParcelSource, parcelSourceForCity, parcelSourceForIds, clearParcelSourceRuntimeCache } from '../parcels/sources.js';
+import { createParcelSource, clearParcelSourceRuntimeCache } from '../parcels/sources.js';
+import { parcelSourceForCity, parcelSourceForIds } from './helpers/frontend-source-selection.js';
 import { setupParcelSourcesRoute } from '../routes/parcel-sources.js';
 import { computeBinding } from '../proposals/binding.js';
 

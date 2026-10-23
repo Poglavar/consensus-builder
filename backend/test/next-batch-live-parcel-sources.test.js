@@ -1,3 +1,4 @@
+import { consumerParcelSourceId } from './helpers/frontend-source-selection.js';
 // Verifies the next OGC API and Socrata sources through the configured factories,
 // the read-only parcel HTTP gateway, exact native identity and metric binding.
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -160,7 +161,7 @@ describe.each(cases)('$city live parcel source', sample => {
         const db = { query: vi.fn(async () => ({ rows: [{ geometry: JSON.stringify(sample.geometry) }] })) };
         const parts = { polygons: [sample.geometry], centerline: null };
 
-        const { binding } = await computeBinding(db, { city: sample.city, parts });
+        const { binding } = await computeBinding(db, { parcelSourceId: consumerParcelSourceId(sample.city), city: sample.city, parts });
 
         expect(db.query).toHaveBeenCalledTimes(1);
         const [sql, params] = db.query.mock.calls[0];

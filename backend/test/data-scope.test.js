@@ -11,7 +11,7 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import { scopeLadder, queryDownScopeLadder, createScopeMemo } from '../data-scope.js';
-import { OVERTURE_CITIES } from '../buildings/overture-cities.js';
+import OVERTURE_CITIES from '../../frontend/data/overture-source-presets.json' with { type: 'json' };
 
 describe('the ladder', () => {
     it('runs narrowest first and always ends on the planet', () => {

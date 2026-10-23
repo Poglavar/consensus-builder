@@ -14,9 +14,9 @@ describe('MCP public source reads', () => {
     it('resolves the configured database source and canonical parcel identity', async () => {
         const fetchImpl = vi.fn(async url => new URL(url).pathname === '/parcel-sources' ? json({ sources: [] }) : json({ features: [sourceFeature('HR-335550-1')] }));
         const reads = createMcpReadTools({ apiBase: 'https://api.example', appOrigin: 'https://app.example', fetchImpl });
-        const found = await reads.findPlace({ query: 'HR-335550-1', city: 'zagreb' });
+        const found = await reads.findPlace({ query: 'HR-335550-1', city: 'zagreb', parcelSourceId: 'oss-wfs' });
         expect(found.candidates[0]).toMatchObject({ parcelSourceId: 'oss-wfs', parcelIds: ['HR-335550-1'], previewUrl: expect.stringContaining('city=zagreb') });
-        expect(fetchImpl.mock.calls[1][0]).toBe('https://api.example/parcels?parcel_id=HR-335550-1');
+        expect(fetchImpl.mock.calls[0][0]).toBe('https://api.example/parcels?parcel_id=HR-335550-1');
     });
     it('assembles actual parcel bindings and city rules rather than treating every bbox hit as a design on the parcel', async () => {
         const fetchImpl = vi.fn(async url => {

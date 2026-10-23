@@ -59,7 +59,7 @@ describe('the server refuses to publish an unresolved binding', () => {
 
     it('answers 409 binding-unresolved naming the parcel, whatever the declaration says', async () => {
         for (const declared of [['HR-1-1'], ['HR-1-1', 'HR-1-2']]) {
-            const result = await checkProposalBinding(db, { type: 'building', goal: 'buildings' }, declared, { site: SITE, toleranceM: 0.3 });
+            const result = await checkProposalBinding(db, { type: 'building', goal: 'buildings' }, declared, { parcelSourceId: 'oss-wfs', site: SITE, toleranceM: 0.3 });
             expect(result.ok).toBe(false);
             expect(result.status).toBe(409);
             expect(result.code).toBe(BINDING_CODES.unresolved);

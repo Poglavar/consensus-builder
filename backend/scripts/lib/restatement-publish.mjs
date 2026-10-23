@@ -27,7 +27,7 @@ import { parseArgs } from 'node:util';
 import { canonicalBytes } from '../../cid.js';
 import { MAX_PINNED_OBJECT_BYTES } from '../../storage/pinning.js';
 import { agreementObject, communityRule, designObject, isParcelLayout, noMoney } from '../../agents/agreement-objects.js';
-import { cityMoney } from '../../utils/city-money.js';
+import { cityMoney } from './frontend-city-money.mjs';
 import { cleanApiBase, createIndexClient } from '../../agents/publication-client.js';
 
 const require = createRequire(import.meta.url);

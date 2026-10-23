@@ -1,6 +1,8 @@
+import { consumerParcelSourceId } from './helpers/frontend-source-selection.js';
 // A shared provider keeps one adapter identity while authoritative binding uses each city's metric projection.
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createParcelSource, parcelSourceCatalog, parcelSourceForCity } from '../parcels/sources.js';
+import { createParcelSource, parcelSourceCatalog } from '../parcels/sources.js';
+import { parcelSourceForCity } from './helpers/frontend-source-selection.js';
 import { computeBinding, bindingFrame, FOOTPRINT_SITE_SQL } from '../proposals/binding.js';
 import { encodeSnapshotNativeId } from '../parcels/geojson-snapshot-source.js';
 const descriptor = { id: 'test-metric-shared', adapter: 'geojson-snapshot', endpoint: 'https://example.org/shared.geojson',
@@ -31,7 +33,7 @@ describe('shared source metric projection by city', () => {
         await tokyo.adapter.queryIds(ids);
         await osaka.adapter.queryIds(ids);
         const db = { query: vi.fn(() => { throw Error('Unexpected imported parcel read'); }) };
-        const { binding } = await computeBinding(db, { city: 'metric_tokyo', site: geometry });
+        const { binding } = await computeBinding(db, { parcelSourceId: consumerParcelSourceId('metric_tokyo'), city: 'metric_tokyo', site: geometry });
         expect(binding.coverage).toBe('complete');
         expect(binding.parcels.map(parcel => parcel.parcelId)).toEqual(ids);
         expect(db.query).not.toHaveBeenCalled();
@@ -39,21 +41,15 @@ describe('shared source metric projection by city', () => {
         const unionDb = { query: vi.fn(async () => ({ rows: [{ geometry: JSON.stringify(geometry) }] })) };
         const parts = { polygons: [{ type: 'MultiPolygon', coordinates: [geometry.coordinates] }], centerline: null };
         // The source's per-city metric SRID describes its data; a footprint is widened in its own frame.
-        await computeBinding(unionDb, { city: 'metric_tokyo', parts });
+        await computeBinding(unionDb, { parcelSourceId: consumerParcelSourceId('metric_tokyo'), city: 'metric_tokyo', parts });
         expect(unionDb.query.mock.calls[0][0]).toBe(FOOTPRINT_SITE_SQL);
         expect(unionDb.query.mock.calls[0][0]).not.toMatch(/32654|32653|3765/);
         expect(unionDb.query.mock.calls[0][1].at(-1)).toBe(bindingFrame({ parts }).proj);
-        await computeBinding(unionDb, { city: 'metric_osaka', parts });
+        await computeBinding(unionDb, { parcelSourceId: consumerParcelSourceId('metric_osaka'), city: 'metric_osaka', parts });
         expect(unionDb.query.mock.calls[1][1].at(-1)).toBe(bindingFrame({ parts }).proj);
         expect(fetchImpl).toHaveBeenCalledOnce();
     });
-    it('rejects missing, extra, noninteger and nonpositive metric mappings', () => {
-        for (const metricSridByCity of [{ metric_tokyo: 32654 },
-            { ...descriptor.metricSridByCity, extra: 32653 },
-            { ...descriptor.metricSridByCity, metric_tokyo: 0 },
-            { ...descriptor.metricSridByCity, metric_tokyo: 32654.5 },
-            { ...descriptor.metricSridByCity, metric_tokyo: '32654' }]) {
-            expect(() => createParcelSource({ ...descriptor, metricSridByCity })).toThrow(/metric/);
-        }
+    it('ignores consumer city metric mappings on the backend; operation frames depend on geometry', () => {
+        expect(() => createParcelSource({ ...descriptor, metricSridByCity: { unrelated: 'ignored' } })).not.toThrow();
     });
 });

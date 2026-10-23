@@ -24,7 +24,7 @@
             if (!checked.valid) throw new Error(checked.errors[0].message);
             const response = await root.fetch(`${apiBase}/designs/binding`, { method: 'POST',
                 headers: { 'content-type': 'application/json' }, body: JSON.stringify({ site: root.__siteBinding.siteOf(content, { turf: root.turf }), city: content.city,
-                    toleranceM: content.toleranceM, parcelSourceId: artifact.parcelSourceId }) });
+                    toleranceM: content.toleranceM, parcelSourceId: artifact.parcelSourceId || root.DesignSync.parcelSourceIdOf(content.city) }) });
             const binding = await response.json();
             if (!response.ok) throw new Error(binding.error || binding.code || 'Draft ground is unavailable');
             const cid = root.Cid.cidOfObject(content);

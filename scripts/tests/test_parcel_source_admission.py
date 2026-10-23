@@ -77,7 +77,8 @@ class AdmissionBridgeTests(unittest.TestCase):
                                        stderr="")
             release = command[command.index("--release") + 1]
             (self.root / "backend/parcels").mkdir(parents=True, exist_ok=True)
-            (self.root / "backend/parcels/source-catalog.json").write_text(json.dumps({"sources": [
+            (self.root / "frontend/data/source-catalog.json").parent.mkdir(parents=True, exist_ok=True)
+            (self.root / "frontend/data/source-catalog.json").write_text(json.dumps({"sources": [
                 {"id": "test-source", "cityIds": ["testville"]}]}))
             (self.root / "frontend/js").mkdir(parents=True, exist_ok=True)
             (self.root / "frontend/js/city-config.js").write_text("// configured")
@@ -212,7 +213,7 @@ class AdmissionBridgeTests(unittest.TestCase):
         self.assertTrue(any("--apply" in command for command in calls))
 
     def test_existing_binding_with_corrupt_qualification_cache_is_not_integrated(self):
-        catalog = self.root / "backend/parcels/source-catalog.json"
+        catalog = self.root / "frontend/data/source-catalog.json"
         catalog.parent.mkdir(parents=True)
         catalog.write_text(json.dumps({"sources": [{"id": "test-source", "cityIds": ["testville"]}]}))
         (self.artifacts / "evidence/full-safe.geojson").write_text("corrupted cache")
@@ -231,7 +232,8 @@ class AdmissionBridgeTests(unittest.TestCase):
 
     def test_existing_integration_prefers_matching_source_binding(self):
         (self.root / "backend/parcels").mkdir(parents=True)
-        (self.root / "backend/parcels/source-catalog.json").write_text(
+        (self.root / "frontend/data/source-catalog.json").parent.mkdir(parents=True, exist_ok=True)
+        (self.root / "frontend/data/source-catalog.json").write_text(
             json.dumps({"sources": [{"id": "test-source", "cityIds": ["testville"]}]})
         )
         (self.root / "world-parcels").mkdir(exist_ok=True)
@@ -239,7 +241,7 @@ class AdmissionBridgeTests(unittest.TestCase):
             "cities": [{"wupCityCode": 1, "appCityId": "testville", "sourceIds": ["test-source"]}],
             "sources": [{"sourceId": "test-source", "liveIntegration": {"status": "enabled", "cityIds": ["testville"]}}],
         }))
-        (self.root / "frontend/data").mkdir(parents=True)
+        (self.root / "frontend/data").mkdir(parents=True, exist_ok=True)
         (self.root / "frontend/data/parcel-coverage-report.json").write_text(json.dumps({
             "cities": [{"wupCityCode": 1, "appCityIds": ["testville"], "sourceIds": ["test-source"]}]
         }))

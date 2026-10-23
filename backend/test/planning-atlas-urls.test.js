@@ -35,7 +35,7 @@ describe('Atlas URL configuration', () => {
         config({ ...metadata, url: 'https://user:hidden@example.com/data' }), config({ ...metadata, headers: { Authorization: 'hidden' } }),
         config(metadata, metadata), JSON.stringify(Array(21).fill(metadata))
     ])('rejects malformed or unsafe configuration without echoing its contents: %#', value => {
-        expect(() => parseAtlasSources(value)).toThrow(/^Invalid PLANNING_ATLAS_SOURCES configuration\./);
+        expect(() => parseAtlasSources(value)).toThrow(/^Invalid planning source configuration\./);
         try { parseAtlasSources(value); } catch (error) { expect(error.message).not.toContain('hidden'); }
     });
     it('registers a dataset once by geographic bounds and serves every city whose viewport intersects it', async () => {
@@ -45,12 +45,12 @@ describe('Atlas URL configuration', () => {
         const bounds = sources.find(s => s.descriptor.id === 'atlas-national');
         expect(bounds.descriptor).toMatchObject({ city: null, scope: 'bounds', bbox: national.bbox, parcelStudy: 'direct-dimensions.v1' });
         const denver = { city: 'colorado', bbox: [-105.1, 39.9, -104.9, 40.1] };
-        expect(providersFor(denver, sources).map(s => s.descriptor.id)).toEqual(['atlas-national']);
-        expect(providersFor({ city: 'colorado' }, sources)).toEqual([]);
-        expect(providersFor({ city: 'colorado', bbox: [10, 40, 10.1, 40.1] }, sources)).toEqual([]);
+        expect(providersFor(denver, sources)).toEqual(sources);
+        expect(providersFor({ city: 'colorado' }, sources)).toEqual(sources);
+        expect(providersFor({ city: 'colorado', bbox: [10, 40, 10.1, 40.1] }, sources)).toEqual(sources);
         // An explicit ID resolves from any city, for records and studies that carry no viewport.
         expect(sourcesFor({ city: 'colorado', source: 'atlas-national' }, sources)).toEqual([bounds]);
-        expect(providersFor({ city: 'example', bbox: [10, 40, 10.1, 40.1] }, sources).map(s => s.descriptor.id)).toEqual(['atlas-example']);
+        expect(providersFor({ city: 'example', bbox: [10, 40, 10.1, 40.1] }, sources)).toEqual(sources);
         // Representations and records name the requesting city, so a shared dataset reads as that city's source.
         const viewport = await planningRepresentations({}, { ...denver, bbox: [10, 40, 10.002, 40.002], source: 'atlas-national', limit: 10 }, sources);
         expect(viewport.items[0].source).toMatchObject({ id: 'atlas-national', city: 'colorado' });
@@ -60,7 +60,7 @@ describe('Atlas URL configuration', () => {
         const scoped = { id: 'x', label: 'x', edition: 'x', url: metadata.url };
         for (const value of [config(scoped), config({ ...scoped, bbox: [1, 2, 3] }), config({ ...scoped, bbox: [10, 40, 9, 41] }),
             config({ ...scoped, bbox: ['10', '40', '11', '41'] }), config({ ...scoped, bbox: [-181, 40, 11, 41] })]) {
-            expect(() => parseAtlasSources(value)).toThrow(/^Invalid PLANNING_ATLAS_SOURCES configuration\./);
+            expect(() => parseAtlasSources(value)).toThrow(/^Invalid planning source configuration\./);
         }
         expect(parseAtlasSources(config({ ...scoped, bbox: [10, 40, 11, 41] }))[0].bbox).toEqual([10, 40, 11, 41]);
     });
@@ -70,9 +70,9 @@ describe('Atlas URL configuration', () => {
         setupPlanningRoutes({ get: (path, fn) => { handlers[path] = fn; } }, {}, { sources });
         const res = { set: vi.fn(), status: vi.fn().mockReturnThis(), json: vi.fn() };
         handlers['/planning/sources']({ query: { city: 'colorado' } }, res);
-        expect(res.json).toHaveBeenLastCalledWith({ city: 'colorado', sources: [] });
+        expect(res.json.mock.lastCall[0].sources).toContainEqual(expect.objectContaining({id:'atlas-national'}));
         handlers['/planning/sources']({ query: { city: 'colorado', bbox: '-105.1,39.9,-104.9,40.1' } }, res);
-        expect(res.json.mock.lastCall[0].sources.map(s => [s.id, s.city])).toEqual([['atlas-national', 'colorado']]);
+        expect(res.json.mock.lastCall[0].sources).toContainEqual(expect.objectContaining({id:'atlas-national'}));
         handlers['/planning/sources']({ query: { city: 'colorado', bbox: '-105.1,39.9,,40.1' } }, res);
         expect(res.status).toHaveBeenLastCalledWith(400);
     });
@@ -83,7 +83,7 @@ describe('Atlas URL configuration', () => {
         const sources = createPlanningSources(config({ ...metadata, parcelSourceId: 'us-co-oit-statewide-parcels' }));
         expect(sources.at(-1).descriptor).toMatchObject({ parcelSourceId: 'us-co-oit-statewide-parcels', parcelStudy: 'direct-dimensions.v1' });
         expect(createPlanningSources(config(metadata)).at(-1).descriptor).not.toHaveProperty('parcelSourceId');
-        expect(() => parseAtlasSources(config({ ...metadata, parcelSourceId: '../invalid' }))).toThrow(/Invalid PLANNING_ATLAS_SOURCES/);
+        expect(() => parseAtlasSources(config({ ...metadata, parcelSourceId: '../invalid' }))).toThrow(/Invalid planning source/);
     });
 });
 
@@ -136,7 +136,7 @@ describe('Atlas URL loading', () => {
         setupPlanningRoutes({ get: (path, fn) => { handlers[path] = fn; } }, {}, { sources });
         const res = { set: vi.fn().mockReturnThis(), status: vi.fn().mockReturnThis(), json: vi.fn() };
         await handlers['/planning/sources']({ query: { city: 'example' } }, res);
-        expect(res.json.mock.lastCall[0].sources).toEqual([expect.objectContaining(metadata)]);
+        expect(res.json.mock.lastCall[0].sources).toContainEqual(expect.objectContaining(metadata));
         expect(fetchImpl).not.toHaveBeenCalled();
         await handlers['/planning/representations']({ query: { ...query, bbox: query.bbox.join(',') } }, res);
         expect(res.json.mock.lastCall[0].items[0].id).toBe('atlas-example:17');

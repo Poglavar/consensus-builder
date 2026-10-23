@@ -3,7 +3,6 @@ import { createBuildingProviders } from '../buildings/index.js';
 import { fetchOsmBuildings } from '../buildings/osm-reference.js';
 import { fetchStagedOsmBuildings } from '../buildings/osm-staged.js';
 import { attachNearbyFloorModels, nativeFloorModelSource } from '../buildings/floor-models.js';
-import { jurisdictionOf, jurisdictionAt } from '../jurisdiction.js';
 import {
     fetchProposalsForCarve,
     carveRecordsFor,
@@ -61,7 +60,7 @@ export const PARCEL_BUILDINGS_SQL = `
 `;
 
 export function setupBuildingsRoute(app, pool) {
-    // Per-city 3D building source registry (Zagreb mesh table, NYC live footprints, …).
+    // Named dataset services, selected explicitly by the caller.
     const buildingProviders = createBuildingProviders(pool);
 
     // GET /buildings?bbox=minX,minY,maxX,maxY[&source=gdi|dgu]  (HTRS96/TM EPSG:3765)
@@ -191,10 +190,9 @@ export function setupBuildingsRoute(app, pool) {
     // Body: { geometry: <GeoJSON Geometry in EPSG:4326>, buffer_meters?: number,
     //         proposals?: string[] | string }
     //
-    // The source follows the geometry via the building-provider registry (see backend/buildings/):
-    // in Zagreb the pre-built LOD2 meshes from `gdi_building_3d`, in New York the live footprint
-    // sources, etc. Whatever the source, every provider yields the same flat-face shape in EPSG:4326
-    // with Z in metres. A `city` in the body is ignored (location-first.md).
+    // `source` explicitly names gdi-3d, nyc-arcgis, nyc-socrata, osm or a portable building descriptor.
+    // `floorModelNamespace` optionally selects stored floor evidence. No city or location selects
+    // a provider or evidence namespace on the server.
     //
     // `proposals` (OPTIONAL) is an explicit list of proposal definitions whose demolitions to apply
     // to the meshes that come back — see backend/buildings/carve.js. With it:
@@ -231,13 +229,16 @@ export function setupBuildingsRoute(app, pool) {
                 return res.status(400).json({ error: 'Invalid `buffer_meters` (0..1000).' });
             }
 
-            // A user-chosen building source (`source`) wins over the one where the geometry lies.
+            // The caller selects the building dataset explicitly.
             const provider = buildingProviders.forRequest({ source: body.source, geometry });
             if (!provider) {
                 return res.status(400).json({ error: 'No 3D building source here.' });
             }
-            // Floor models are filed under the city whose data applies there.
-            const floorModelCity = jurisdictionOf(geometry) || 'explore';
+            // Floor evidence uses an explicit registry namespace supplied by the caller.
+            const floorModelCity = body.floorModelNamespace;
+            if (floorModelCity !== undefined && (typeof floorModelCity !== 'string' || !floorModelCity.trim() || floorModelCity.length > 100)) {
+                return res.status(400).json({ error: 'Invalid floorModelNamespace.' });
+            }
 
             const result = await provider.near(geometry, bufferMeters);
             const floorModelSource = nativeFloorModelSource(body.source, result.source);
@@ -327,7 +328,7 @@ export function setupBuildingsRoute(app, pool) {
                 return res.json({ carves: [], count: 0, source: null });
             }
 
-            // A user-chosen building source (`source`) wins over the one where the area lies.
+            // The caller selects the building dataset explicitly.
             const provider = buildingProviders.forRequest({ source: body.source, geometry: area });
             if (!provider) {
                 return res.status(400).json({ error: 'No 3D building source here.' });
@@ -428,7 +429,7 @@ export function setupBuildingsRoute(app, pool) {
                 return res.status(400).json({ error: 'Missing or invalid `geometry` (expected GeoJSON Geometry in EPSG:4326).' });
             }
 
-            // A user-chosen building source (`source`) wins over the one where the geometry lies.
+            // The caller selects the building dataset explicitly.
             const provider = buildingProviders.forRequest({ source: body.source, geometry });
             if (!provider || typeof provider.footprints !== 'function') {
                 return res.json({ supported: false, footprints: [], count: 0, source: null });
@@ -472,12 +473,10 @@ export function setupBuildingsRoute(app, pool) {
         if (bbox.length !== 4 || bbox.some(v => !Number.isFinite(v))) {
             return res.status(400).json({ error: 'Invalid bbox. Expected minLon,minLat,maxLon,maxLat in EPSG:4326.' });
         }
-        // The staged label is that of the city whose data applies at the box's centre.
-        const city = jurisdictionAt((bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2) || 'explore';
         try {
             // Staged first: the same OSM footprints out of shared geodata, with no rate limit and no
             // outage. Overpass answers only for cities nobody has ingested yet.
-            const staged = await fetchStagedOsmBuildings(pool, bbox, city).catch(err => {
+            const staged = await fetchStagedOsmBuildings(pool, bbox).catch(err => {
                 console.warn('[buildings/osm] staged lookup failed, falling back to Overpass:', err.message);
                 return null;
             });

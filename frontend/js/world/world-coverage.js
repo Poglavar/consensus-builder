@@ -277,7 +277,7 @@
         // the city's liveRadiusKm, at most LIVE_RADIUS_KM; via 'radius'), then, inside a countrywide
         // live country (Croatia), each of that country's cities (via 'country'). Nearest first within
         // each group, ties by id. [] = no app cadastre covers the point. A publication's city is
-        // decided from this (backend/proposals/publication-city.js), never from the view it was
+        // resolved by the frontend consumer from this, never from the view it was
         // drawn in, and so is the city a view boots in (jurisdictionAt). The circles ignore borders:
         // the country outlines here are too coarse to clip them (Geneva's centre falls in France),
         // see location-first.md phase 3.

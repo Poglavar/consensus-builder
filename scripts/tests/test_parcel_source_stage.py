@@ -184,9 +184,10 @@ class ParcelSourceStageTests(unittest.TestCase):
         (self.cohort / "city-sample.geojson").write_text('{"type":"FeatureCollection","features":[]}\n')
         (self.cohort / "review-sample.geojson").write_text('{"type":"FeatureCollection","features":[]}\n')
         (self.root / "packet.json").write_text("original\n")
-        context_file = self.root / "backend/parcels/source-catalog.json"
+        context_file = self.root / "frontend/data/source-catalog.json"
         context_file.parent.mkdir(parents=True, exist_ok=True)
         context_file.write_text('{"sources":[]}\n')
+        (self.root / "backend/parcels").mkdir(parents=True, exist_ok=True)
         (self.root / "backend/parcels/arcgis-source.js").write_text(
             "import { stable } from './shared.js';\nexport const adapter = stable;\n")
         (self.root / "backend/parcels/shared.js").write_text("export const stable = true;\n")
@@ -204,7 +205,7 @@ class ParcelSourceStageTests(unittest.TestCase):
                           "endpoint": "https://example.test/source"},
                         "coverage": {"scope": "substantial-city", "probes": probes},
                         "evidenceFiles": ["cohort/city.json", "cohort/review.json", "cohort/city-sample.geojson",
-                                          "cohort/review-sample.geojson", "backend/parcels/source-catalog.json",
+                                          "cohort/review-sample.geojson", "frontend/data/source-catalog.json",
                                           *(probe["evidenceFile"] for probe in probes)]}
         self.packet = {"valid": True, "cityPath": str(self.cohort / "city.json"),
                        "reviewPath": str(self.cohort / "review.json"),
@@ -423,16 +424,16 @@ class ParcelSourceStageTests(unittest.TestCase):
         harness = Harness(self.root, self.attempt_dir)
         result = self.call_stage(harness)
         self.assertEqual(result["status"], "adapter-ready")
-        context_file = self.root / "backend/parcels/source-catalog.json"
+        context_file = self.root / "frontend/data/source-catalog.json"
         context_file.write_text('{"sources":[{"id":"newly-admitted"}]}\n')
         valid, reason = stage.revalidate_stage(harness, self.city, self.receipt, self.packet, result)
         self.assertTrue(valid, reason)
-        self.assertNotIn("backend/parcels/source-catalog.json", result["inputHashes"]["receiptEvidenceFiles"])
+        self.assertNotIn("frontend/data/source-catalog.json", result["inputHashes"]["receiptEvidenceFiles"])
 
     def test_app_context_probe_path_remains_hash_bound_as_coverage_evidence(self):
         receipt = json.loads(json.dumps(self.receipt))
         probe = receipt["coverage"]["probes"][0]
-        probe["evidenceFile"] = "backend/parcels/source-catalog.json"
+        probe["evidenceFile"] = "frontend/data/source-catalog.json"
         context_file = self.root / probe["evidenceFile"]
         probe["evidenceSha256"] = hashlib.sha256(context_file.read_bytes()).hexdigest()
         hashes = stage._input_hashes(self.root, self.city, receipt, self.packet)

@@ -34,7 +34,7 @@ export function authoredAreas(designs) {
 }
 
 export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDraftReference }) {
-    return async function compare({ targets, parcelSourceId }) {
+    return async function compare({ targets, parcelSourceId, buildingSourceId }) {
         const alternatives = [], warnings = [];
         for (const target of targets) {
             const reference = typeof target === 'string' && !isCid(target) ? target : target?.draftRef;
@@ -103,7 +103,8 @@ export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDra
                     }).filter(Boolean);
                     if (!regions.length) { buildingsRemoved = 0; buildingsCut = 0; removedFootprintM2 = 0; }
                     else {
-                        const stock = await read.request('/buildings/under', {}, { regions });
+                        if (!buildingSourceId) throw fail('building-source-required', 'Select a building source to measure demolition.');
+                        const stock = await read.request('/buildings/under', {}, { source: buildingSourceId, regions });
                         if (stock.supported !== true || stock.truncated || stock.unavailable || regions.some(r => !Array.isArray(stock.regions?.[r.key]))) throw fail('building-coverage-incomplete', 'Building stock is unsupported, truncated or unavailable; demolitions are unknown.');
                         const region = union(regions.map(r => turf.feature(r.geometry)));
                         const hits = findBuildingTunnelIntersections(region, regions.flatMap(r => stock.regions[r.key]), turf);

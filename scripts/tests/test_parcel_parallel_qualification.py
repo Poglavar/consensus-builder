@@ -365,7 +365,8 @@ class ParallelTests(unittest.TestCase):
 
     def test_post_admission_failure_uses_shared_rollback_without_permanent_block(self):
         _ws, isolation, document = self.isolated()
-        managed = self.root / "backend/parcels/source-catalog.json"
+        managed = self.root / "frontend/data/source-catalog.json"
+        managed.parent.mkdir(parents=True, exist_ok=True)
         managed.write_text("before\n")
         @contextmanager
         def shared_write():

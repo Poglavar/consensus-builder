@@ -1,6 +1,9 @@
 // Existing imported city identities and live published keys must not be guessed or replaced with WFS row IDs.
 import { describe, expect, it, vi } from 'vitest';
-import { createLegacyCityWfsSource, legacyCityWfsDescriptors } from '../parcels/legacy-wfs-sources.js';
+import { createWfsParcelSource } from '../parcels/wfs-source.js';
+import { parcelSourceCatalog } from '../parcels/sources.js';
+const legacyCityWfsDescriptors = parcelSourceCatalog.sources;
+const createLegacyCityWfsSource = (city, options) => createWfsParcelSource(legacyCityWfsDescriptors.find(s => s.cityIds.includes(city)), options);
 import { createWfsParcelSource } from '../parcels/wfs-source.js';
 import { computeSourceBinding } from '../parcels/source-binding.js';
 const cases = [

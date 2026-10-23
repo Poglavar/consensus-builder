@@ -24,7 +24,7 @@ describe('building source client', () => {
         expect(await client.request(path, { geometry, city: 'wrong', source: 'stale-source' }, { global })).toEqual(answer);
         expect(calls[0]).toMatchObject({ url: 'http://backend.test'+path, body: { geometry } });
         expect(calls[0].body).not.toHaveProperty('city');
-        expect(calls[0].body).not.toHaveProperty('source');
+        expect(calls[0].body.source).toBe('osm');
     });
     it('uses the request location to select a dedicated source', async () => {
         const { global, calls } = page({ source: 'osm' }, [{ count: 1 }], (lat, lon) => {
@@ -59,4 +59,12 @@ describe('building source client', () => {
         await expect(client.request('/buildings/near', { geometry }, { global:b.global })).rejects.toThrow('offline');
         expect(b.calls).toHaveLength(1);
     });
+});
+
+it('sends an explicit evidence namespace only when frontend settings select it', async () => {
+    const { global, calls } = page({ source: 'osm' }, [{ buildings: [] }], () => ({
+        buildings: { source: 'gdi', sourceId: 'gdi-3d' }, floorModels: { namespace: 'evidence-collection' }
+    }));
+    await client.request('/buildings/near', { geometry, city: 'ignored', floorModelNamespace: 'stale' }, { global });
+    expect(calls[0].body).toEqual({geometry, source:'gdi-3d', floorModelNamespace:'evidence-collection'});
 });

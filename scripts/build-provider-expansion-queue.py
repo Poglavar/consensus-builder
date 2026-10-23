@@ -148,7 +148,7 @@ def main():
  p=argparse.ArgumentParser(description=__doc__,formatter_class=argparse.RawDescriptionHelpFormatter)
  p.add_argument('--source',required=True,help='UN WUP 2025 cities CSV (.csv.gz)')
  p.add_argument('--output',required=True)
- p.add_argument('--catalog',default=str(REPO/'backend/parcels/source-catalog.json'),help='providers with discovery.jurisdiction')
+ p.add_argument('--catalog',default=str(REPO/'frontend/data/source-catalog.json'),help='providers with discovery.jurisdiction')
  p.add_argument('--seeds',help='explicit provider records with authority-derived candidateCityCodes (e.g. HMLR)')
  p.add_argument('--no-catalog',action='store_true',help='queue only --seeds providers')
  p.add_argument('--providers',help='comma-separated catalog source ids to queue (default: all with a jurisdiction)')

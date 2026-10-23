@@ -227,7 +227,7 @@ export function buildCitySettings({ configs, catalog, demographics, codes }) {
 
 export function exportCitySettings(root = DEFAULT_ROOT, options = {}) {
     const configs = parseCityConfigs(fs.readFileSync(path.join(root, 'frontend/js/city-config.js'), 'utf8'));
-    const catalog = JSON.parse(fs.readFileSync(path.join(root, 'backend/parcels/source-catalog.json'), 'utf8'));
+    const catalog = JSON.parse(fs.readFileSync(path.join(root, 'frontend/data/source-catalog.json'), 'utf8'));
     const demographics = JSON.parse(fs.readFileSync(path.join(root, 'world-parcels/report/city-demographics.json'), 'utf8'));
     const rows = buildCitySettings({ configs, catalog, demographics, codes: options.codes });
     for (const row of rows) {
@@ -331,7 +331,7 @@ export function applyCitySettings(root = DEFAULT_ROOT, options = {}) {
             && fs.existsSync(path.join(dir, item.name, 'settings.json'))).map(item => item.name);
     const rows = codes.map(code => JSON.parse(fs.readFileSync(path.join(dir, code, 'settings.json'), 'utf8'), jsonReviver));
     const configFile = path.join(root, 'frontend/js/city-config.js');
-    const catalogFile = path.join(root, 'backend/parcels/source-catalog.json');
+    const catalogFile = path.join(root, 'frontend/data/source-catalog.json');
     const catalog = JSON.parse(fs.readFileSync(catalogFile, 'utf8'));
     const { appIds, descriptors, databaseDescriptors } = validateSettings(rows, catalog);
     let configSource = fs.readFileSync(configFile, 'utf8');

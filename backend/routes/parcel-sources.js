@@ -32,7 +32,7 @@ export function setupParcelSourcesRoute(app, { sources = catalog.sources, fetchI
             const url = validatePublicSourceUrl(req.body?.url);
             if (url.href.length > 2000) throw Object.assign(new HttpError(400, 'Source URL is too long.'), { code: 'invalid-source-url' });
             const city = req.body?.city;
-            if (typeof city !== 'string' || !/^[a-z][a-z0-9_]{0,79}$/.test(city)) throw new HttpError(400, 'Choose a city before adding a source.');
+            if (city !== undefined && (typeof city !== 'string' || !/^[a-z][a-z0-9_]{0,79}$/.test(city))) throw new HttpError(400, 'Invalid source label.');
             const bbox = validateBounds(req.body?.bbox, 1);
             const lon = (bbox[0] + bbox[2]) / 2, lat = (bbox[1] + bbox[3]) / 2;
             const metricSrid = (lat >= 0 ? 32600 : 32700) + Math.max(1, Math.min(60, Math.floor((lon + 180) / 6) + 1));

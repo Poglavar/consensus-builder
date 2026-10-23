@@ -14,7 +14,7 @@ const noStaged = async () => null;
 
 describe('OSM 3D provider', () => {
     it('extrudes every footprint and records where each height came from', async () => {
-        const provider = createOsmProvider(null, 'lima', { fetchStaged: noStaged, fetchLive: live([
+        const provider = createOsmProvider(null, { fetchStaged: noStaged, fetchLive: live([
             building('w1', 10, 10, { measured_height_m: 30 }),
             building('w2', 10.0002, 10, { levels: 4 }),
             building('w3', 10.0004, 10, { building: 'house' })
@@ -31,14 +31,14 @@ describe('OSM 3D provider', () => {
     });
 
     it('answers truncated when the polygon is wider than one query, so its area is not claimed as covered', async () => {
-        const provider = createOsmProvider(null, 'lima', { fetchStaged: noStaged, fetchLive: live([building('w1', 10, 10)]) });
+        const provider = createOsmProvider(null, { fetchStaged: noStaged, fetchLive: live([building('w1', 10, 10)]) });
         expect((await provider.footprints(box(9.99, 9.99, 0.05))).truncated).toBe(false);
         expect((await provider.footprints(box(9.95, 9.95, 0.1))).truncated).toBe(true);
     });
 
     it('prefers the staged copy over live Overpass', async () => {
         let liveCalls = 0;
-        const provider = createOsmProvider({}, 'split', {
+        const provider = createOsmProvider({}, {
             fetchStaged: async () => ({ type: 'FeatureCollection', features: [building('w7', 16.44, 43.5)], truncated: false }),
             fetchLive: async () => { liveCalls++; return { features: [] }; }
         });
@@ -48,7 +48,7 @@ describe('OSM 3D provider', () => {
     });
 
     it('answers an empty, partial scene when Overpass is throttling', async () => {
-        const provider = createOsmProvider(null, 'explore', { fetchStaged: noStaged, fetchLive: async () => {
+        const provider = createOsmProvider(null, { fetchStaged: noStaged, fetchLive: async () => {
             const error = new Error('Overpass is rate-limiting us'); error.status = 503; throw error;
         } });
         expect(await provider.near(box(0, 0), 300)).toMatchObject({ buildings: [], count: 0, partial: true });
@@ -56,14 +56,14 @@ describe('OSM 3D provider', () => {
     });
 
     it('says the upstream is unavailable, and for how long, instead of answering an empty city', async () => {
-        const provider = createOsmProvider(null, 'explore', { fetchStaged: noStaged, fetchLive: async () => {
+        const provider = createOsmProvider(null, { fetchStaged: noStaged, fetchLive: async () => {
             const error = new Error('Overpass is rate-limiting us'); error.status = 503; error.retryAfter = 42.2; throw error;
         } });
         expect(await provider.near(box(0, 0), 300)).toMatchObject({ unavailable: true, retryAfter: 43 });
         expect(await provider.footprints(box(0, 0, 0.01))).toMatchObject({ unavailable: true, retryAfter: 43 });
         expect(await provider.footprintsUnder([{ key: 'a', geometry: box(0, 0, 0.001) }])).toMatchObject({ unavailable: true, retryAfter: 43 });
         // A partial answer (some cells served) is not "unavailable".
-        const served = createOsmProvider(null, 'explore', { fetchStaged: noStaged,
+        const served = createOsmProvider(null, { fetchStaged: noStaged,
             fetchLive: async () => ({ type: 'FeatureCollection', features: [building('w1', 0, 0)], partial: true }) });
         const result = await served.near(box(0, 0), 300);
         expect(result.unavailable).toBeUndefined();
@@ -71,7 +71,7 @@ describe('OSM 3D provider', () => {
     });
 
     it('serves footprints with measured heights only, and buildings touching each region', async () => {
-        const provider = createOsmProvider(null, 'lima', { fetchStaged: noStaged, fetchLive: live([
+        const provider = createOsmProvider(null, { fetchStaged: noStaged, fetchLive: live([
             building('w1', 10.001, 10.001, { levels: 3 }),
             building('w2', 10.02, 10.02, { measured_height_m: 9 })
         ]) });
@@ -93,27 +93,13 @@ describe('OSM 3D provider', () => {
 describe('building provider registry', () => {
     const registry = createBuildingProviders({ query: async () => ({ rows: [] }) }, {});
 
-    it('gives any named city without its own source the OSM provider, explore included', () => {
-        for (const city of ['explore', 'lima', 'ljubljana']) {
-            const provider = registry.resolve(city);
-            expect(provider).toBeTruthy();
-            expect(typeof provider.footprintsUnder).toBe('function');
+    it('serves only the explicit source, independent of geometry and consumer city', () => {
+        const osm = registry.resolveSource('osm');
+        for (const coordinates of [[15.9706, 45.81305], [-73.9857, 40.7484], [90.4074, 23.7104]]) {
+            expect(registry.forRequest({ source: 'osm', city: 'arbitrary-consumer', geometry: { type: 'Point', coordinates } })).toBe(osm);
+            expect(registry.forRequest({ source: 'gdi-3d', geometry: { type: 'Point', coordinates } })).toBe(registry.resolveSource('gdi-3d'));
         }
-        expect(registry.resolve('lima')).not.toBe(registry.resolve('zagreb'));
-    });
-
-    it('gives no city the explore provider, not Zagreb, and refuses a malformed id', () => {
-        expect(registry.resolve(undefined)).toBe(registry.resolve('explore'));
-        expect(registry.resolve(undefined)).not.toBe(registry.resolve('zagreb'));
-        expect(registry.resolve('../etc')).toBeNull();
-    });
-
-    it('picks the provider from where the request lies, never from a city it names', () => {
-        const at = (lon, lat) => ({ type: 'Point', coordinates: [lon, lat] });
-        expect(registry.forRequest({ geometry: at(15.9706, 45.81305) })).toBe(registry.resolve('zagreb'));
-        expect(registry.forRequest({ geometry: at(-73.9857, 40.7484) })).toBe(registry.resolve('new_york'));
-        expect(registry.forRequest({ geometry: at(-73.9857, 40.7484), city: 'zagreb' })).toBe(registry.resolve('new_york'));
-        expect(registry.forRequest({ geometry: at(90.4074, 23.7104) })).toBe(registry.resolve('explore'));
-        expect(registry.forRequest({})).toBe(registry.resolve('explore'));
+        expect(() => registry.forRequest({ geometry: box(15.97,45.81) })).toThrow('explicit building source');
+        expect(() => registry.resolveSource('zagreb')).toThrow('explicit building source');
     });
 });

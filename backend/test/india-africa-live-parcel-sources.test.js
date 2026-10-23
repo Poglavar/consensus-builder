@@ -1,8 +1,10 @@
+import { consumerParcelSourceId } from './helpers/frontend-source-selection.js';
 // Keep Johannesburg's registered-stand source bound to the configured city and complete native parts.
 import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { parcelSourceCatalog, parcelSourceForCity, parcelSourceForIds, clearParcelSourceRuntimeCache, createParcelSource } from '../parcels/sources.js';
+import { parcelSourceCatalog, clearParcelSourceRuntimeCache, createParcelSource } from '../parcels/sources.js';
+import { parcelSourceForCity, parcelSourceForIds } from './helpers/frontend-source-selection.js';
 import { computeBinding } from '../proposals/binding.js';
 import proj4 from 'proj4';
 globalThis.proj4 ||= proj4;
@@ -142,7 +144,7 @@ describe('configured India/Africa live parcel cities', () => {
 
         const db = { query: vi.fn(async () => { throw new Error('Live source binding must not read imported parcel tables.'); }) };
         vi.stubGlobal('fetch', fetchImpl);
-        const { binding } = await computeBinding(db, { city: cityId, site: sampleFeature.geometry, toleranceM: 0 });
+        const { binding } = await computeBinding(db, { parcelSourceId: consumerParcelSourceId(cityId), city: cityId, site: sampleFeature.geometry, toleranceM: 0 });
         expect(db.query).not.toHaveBeenCalled();
         expect(binding).toMatchObject({ coverage: 'complete', source: `server:${sourceId}` });
         expect(binding.parcels.map(parcel => parcel.parcelId)).toContain(parcelId);
@@ -199,7 +201,7 @@ describe('configured India/Africa live parcel cities', () => {
         expect(exact.features[0].geometry.type).toMatch(/Polygon/);
 
         const db = { query: vi.fn(async () => { throw new Error('Live source binding must not read imported parcel tables.'); }) };
-        const { binding } = await computeBinding(db, { city: 'accra', site: firstGroup[0].geometry, toleranceM: 0 });
+        const { binding } = await computeBinding(db, { parcelSourceId: consumerParcelSourceId('accra'), city: 'accra', site: firstGroup[0].geometry, toleranceM: 0 });
         expect(db.query).not.toHaveBeenCalled();
         expect(binding).toMatchObject({ coverage: 'complete', source: `server:${accraSourceId}` });
         expect(binding.parcels.map(parcel => parcel.parcelId)).toContain(accraParcelId);

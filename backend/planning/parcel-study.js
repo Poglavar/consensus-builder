@@ -3,7 +3,7 @@ import * as turf from '@turf/turf';
 import { createRequire } from 'node:module';
 import { sourcesFor } from './sources.js';
 import { sourceRevision } from './source-proposal.js';
-import { resolveParcelSourceDescriptor, runtimeParcelSource, parcelSourceForCity } from '../parcels/sources.js';
+import { resolveParcelSourceDescriptor, runtimeParcelSource } from '../parcels/sources.js';
 const require = createRequire(import.meta.url);
 const { reference } = require('../../frontend/js/planning/source-proposal.js');
 const assessment = require('../../frontend/js/planning/parcel-assessment.js');
@@ -17,12 +17,11 @@ export async function readStudyZoning(provider, query, bbox) {
         { recordId: item.source.recordId, scenario: query.scenario, city: query.city })))).flat();
 }
 
-// The parcel provider behind a study: the source's pinned one, else the requesting city's
-// default catalogue source. A custom browser-supplied source is never used server-side.
+// A study uses only its explicitly pinned parcel provider. No city default is inferred.
 export function studyParcelSource(provider, city) {
     if (provider?.descriptor.parcelStudy !== 'direct-dimensions.v1') fail('study-unavailable');
     const descriptor = provider.descriptor.parcelSourceId ? resolveParcelSourceDescriptor(provider.descriptor.parcelSourceId)
-        : parcelSourceForCity(city)?.descriptor || null;
+        : null;
     if (!descriptor || descriptor.id.startsWith('custom.')) fail('study-parcel-source-unavailable');
     return descriptor;
 }

@@ -1701,3 +1701,13 @@ A per-region stock answer names every requested key; an empty list means the sou
 scan and found nothing. Source failure, invalid returned geometry, a source cap or a clipped query
 must remain unavailable/truncated and cannot authorize an empty demolition review. Configured
 Overture fallbacks may answer incomplete server reads, but their own coverage flags still apply.
+
+### Frontend source ownership (2026-10-23)
+
+The user explicitly chose frontend ownership of all city source settings. Runtime building, parcel
+binding and planning reads now use the source selected by the consumer. The backend no longer
+uses city coverage, parcel-ID prefixes or city defaults to select a dataset. Prior statements in
+this audit about backend publication-city placement and default provider selection are historical.
+The current contract and intentional request breaks are documented in
+[frontend-source-configuration.md](frontend-source-configuration.md). Existing source identity and
+completeness findings remain separate; this refactor does not prove a provider's availability.

@@ -20,13 +20,13 @@ export const { expandBbox, footprintFeatureToBuilding, unavailableFrom } = core;
 
 const log = (...args) => console.log(`[${new Date().toISOString()}] [osm-3d]`, ...args);
 
-export function createOsmProvider(pool, cityId, {
+export function createOsmProvider(pool, {
     fetchLive = fetchOsmBuildings,
     fetchStaged = fetchStagedOsmBuildings
 } = {}) {
     async function featuresIn(bbox) {
-        const staged = await fetchStaged(pool, bbox, cityId).catch(error => {
-            log(`staged lookup failed for ${cityId}, using Overpass:`, error.message);
+        const staged = await fetchStaged(pool, bbox).catch(error => {
+            log('staged lookup failed, using Overpass:', error.message);
             return null;
         });
         return staged || await fetchLive(bbox);
@@ -35,7 +35,7 @@ export function createOsmProvider(pool, cityId, {
     return core.createFootprintProvider({
         turf,
         featuresIn,
-        label: cityId,
+        label: 'osm',
         log,
         sources: { near: 'osm-3d', footprints: 'osm-footprints' }
     });

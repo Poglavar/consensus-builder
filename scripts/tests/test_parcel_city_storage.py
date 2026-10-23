@@ -93,7 +93,8 @@ class CityStorageTests(unittest.TestCase):
             (self.root / directory).mkdir(parents=True, exist_ok=True)
         shutil.copy2(LIB / "parcel-city-settings.mjs", self.root / "scripts/lib/parcel-city-settings.mjs")
         (self.root / "frontend/js/city-config.js").write_text("const CITY_CONFIGS = {\n        test: {id:'test',wupCityCode:'123',parcels:{source:'parcel-source',sourceId:'official'}}\n    };")
-        (self.root / "backend/parcels/source-catalog.json").write_text(json.dumps({"sources": [{"id": "official", "adapter": "arcgis", "endpoint": "https://official.test/parcels", "cityIds": ["test"], "evidenceFile": "research/retired.json"}]}))
+        (self.root / "frontend/data/source-catalog.json").parent.mkdir(parents=True, exist_ok=True)
+        (self.root / "frontend/data/source-catalog.json").write_text(json.dumps({"sources": [{"id": "official", "adapter": "arcgis", "endpoint": "https://official.test/parcels", "cityIds": ["test"], "evidenceFile": "research/retired.json"}]}))
         (self.root / "world-parcels/report/city-demographics.json").write_text('{"cities": []}')
         self.row.update(discoveryDecision="candidate", qualification={"status": "integrated"}, admission={"status": "integrated"})
         self.assertTrue(storage.finish_city(self.runner, self.city, self.cohort))
@@ -101,7 +102,7 @@ class CityStorageTests(unittest.TestCase):
         self.assertEqual(json.loads(setting.read_text())["sources"][0]["endpoint"], "https://official.test/parcels")
         self.assertNotIn("retired.json", setting.read_text())
         self.assertFalse(self.packet.exists())
-        catalog = json.loads((self.root / "backend/parcels/source-catalog.json").read_text())
+        catalog = json.loads((self.root / "frontend/data/source-catalog.json").read_text())
         self.assertNotIn("evidenceFile", catalog["sources"][0])
 
     def test_interrupted_qualification_does_not_mark_the_reviewed_url_failed(self):

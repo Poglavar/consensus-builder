@@ -19,14 +19,14 @@ function canonicalConfig(input) {
     const url = new URL(validatePublicSourceUrl(config.endpoint));
     if ([...url.searchParams.keys()].some(key => /^(token|access_token|api[_-]?key|key|password|signature)$/i.test(key))) throw invalid();
     config.endpoint = url.href;
+    if (config.cityIds !== undefined && (!Array.isArray(config.cityIds) || config.cityIds.length !== 1 || config.cityIds.some(id => typeof id !== 'string' || !/^[a-z][a-z0-9_]{0,79}$/.test(id)))) throw invalid();
     if (config.adapter === 'overpass') {
         // An OpenStreetMap mirror: the endpoint and the city are its whole configuration.
         if (config.kind !== 'building' || Object.keys(config).some(key => !['adapter', 'endpoint', 'cityIds', 'kind'].includes(key))
-            || !Array.isArray(config.cityIds) || config.cityIds.length !== 1 || !/^[a-z][a-z0-9_]{0,79}$/.test(config.cityIds[0])) throw invalid();
+            ) throw invalid();
         return config;
     }
-    if (!Array.isArray(config.cityIds) || config.cityIds.length !== 1 || !/^[a-z][a-z0-9_]{0,79}$/.test(config.cityIds[0])
-        || !Number.isInteger(config.metricSrid) || config.metricSrid < 2000 || config.metricSrid > 99999
+    if (!Number.isInteger(config.metricSrid) || config.metricSrid < 2000 || config.metricSrid > 99999
         || !Array.isArray(config.outFields) || !config.outFields.length || config.outFields.length > 40
         || config.outFields.some(value => typeof value !== 'string' || !/^:?[A-Za-z_][A-Za-z0-9_:.-]{0,79}$/.test(value))) throw invalid();
     if (config.kind !== undefined && config.kind !== 'building') throw invalid();

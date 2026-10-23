@@ -8,7 +8,7 @@ const require = createRequire(import.meta.url);
 const approvalLink = require('../../frontend/js/approval-link.js');
 const footprintParts = require('../../frontend/js/proposals/footprint-parts.js');
 const search = require('../../frontend/js/ui/search-model.js');
-const databaseSources = JSON.parse(readFileSync(new URL('../parcels/source-catalog.json', import.meta.url), 'utf8')).databaseSources;
+const databaseSources = JSON.parse(readFileSync(new URL('../../frontend/data/source-catalog.json', import.meta.url), 'utf8')).databaseSources;
 const vocabulary = () => readFileSync(new URL('../../vocabulary.md', import.meta.url), 'utf8');
 const failure = (code, message, next) => Object.assign(new Error(message), { code, next });
 // Indexed designs retain the source on their binding. The Croatian PostGIS binding names its
@@ -40,12 +40,7 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
     async function parcels({ city, parcelSourceId, parcelIds, point, geometry }) {
         if (!geometry && (Boolean(parcelIds) === Boolean(point))) throw failure('invalid-parcel-query', 'Provide exactly one of parcel ids or point.', { action: 'Supply parcelId or point.' });
         let source = parcelSourceId;
-        if (!source) {
-            const catalogue = await request('/parcel-sources');
-            const sources = [...databaseSources, ...catalogue.sources];
-            source = sources.find(item => item.defaultForCity !== false && (item.cityIds?.includes(city) || item.city === city))?.id;
-            if (!source) throw failure('parcel-source-required', 'Choose a parcel source from ugt://cities or /parcel-sources.', { action: 'Supply parcelSourceId from /parcel-sources.' });
-        }
+        if (!source) throw failure('parcel-source-required', 'Supply an explicit parcelSourceId.', { action: 'Select a dataset from /parcel-sources.' });
         let result;
         if (databaseSources.some(item => item.id === source)) {
             const path = source === 'oss-wfs' ? '/parcels' : `/${source}`;
@@ -133,13 +128,14 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
             const parcel = result.features[0], id = String(parcel.id ?? parcel.properties.parcelId), bbox = turf.bbox(parcel);
             const [designs, agreements, markets, buildings, history, planning] = await Promise.all([
                 listDesigns({ city: args.city, bbox, limit: 100 }), request('/agreements', { parcel: id, limit: 100 }), request('/markets', { city: args.city }),
-                request('/buildings/under', {}, { regions: [{ key: id, geometry: parcel.geometry }] }),
+                args.buildingSourceId ? request('/buildings/under', {}, { source: args.buildingSourceId, regions: [{ key: id, geometry: parcel.geometry }] })
+                    : { supported: false, unavailable: true, reason: 'building-source-required' },
                 request(`/parcels/${encodeURIComponent(id)}/history`), request('/planning/sources', { city: args.city, bbox: bbox.join(',') })
             ]);
             const urbanRules = result.parcelSourceId === 'oss-wfs'
                 ? await request('/urban-rules', { coordinates: turf.pointOnFeature(parcel).geometry.coordinates.join(',') }) : null;
             designs.designs = (designs.designs || []).filter(d => d.binding?.parcels?.some(p => String(p.parcelId) === id));
-            const studies = await Promise.all((planning.sources || []).filter(s => s.parcelStudy).map(async source => ({ source: source.id,
+            const studies = await Promise.all((planning.sources || []).filter(s => s.parcelStudy && args.planningSourceIds?.includes(s.id)).map(async source => ({ source: source.id,
                 study: await request('/planning/study', { city: args.city, source: source.id, parcel: id }) })));
             return { parcel, parcelSourceId: result.parcelSourceId, areaM2: turf.area(parcel), designs, agreements, markets, buildings, history, planning, studies, urbanRules,
                 previewUrl: mapUrl(args.city, bbox) };

@@ -25,7 +25,7 @@ export function looksLikeOverpass(url) {
 // portable `building.` id plus how many buildings it found there.
 export async function discoverOverpassSource({ url, city, bbox }, { fetchImpl = createOverpassFetch(), fetchBuildings = fetchOsmBuildings } = {}) {
     const endpoint = new URL(url).href;
-    const source = decodeCustomBuildingSource(encodeCustomSource({ adapter: 'overpass', endpoint, cityIds: [city], kind: 'building' }));
+    const source = decodeCustomBuildingSource(encodeCustomSource({ adapter: 'overpass', endpoint, ...(city ? { cityIds: [city] } : {}), kind: 'building' }));
     let found;
     try {
         found = await fetchBuildings(bbox, { overpassUrl: endpoint, fetchImpl });
@@ -45,8 +45,7 @@ export async function discoverOverpassSource({ url, city, bbox }, { fetchImpl = 
 
 // The provider for a decoded overpass descriptor: the default OSM provider reading the mirror.
 export function createOverpassBuildingProvider(descriptor, { fetchImpl = createOverpassFetch() } = {}) {
-    const cityId = descriptor.cityIds[0];
-    return createOsmProvider(null, cityId, {
+    return createOsmProvider(null, {
         fetchLive: bbox => fetchOsmBuildings(bbox, { overpassUrl: descriptor.endpoint, fetchImpl }),
         fetchStaged: async () => null
     });

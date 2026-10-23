@@ -61,7 +61,7 @@ class RunnerNoveltyReceiptTests(unittest.TestCase):
         self.runner = runner_module.Runner(args)
         self.runner.state = {"queuePath": str(self.queue)}
         self.runner.known_sources_doc = {"sources": [{"id": "base-source", "endpoint": "https://base.example.test/parcel"}]}
-        self.catalog_path = self.root / "backend/parcels/source-catalog.json"
+        self.catalog_path = self.root / "frontend/data/source-catalog.json"
         self.catalog_path.parent.mkdir(parents=True)
         self.write_catalog([])
 

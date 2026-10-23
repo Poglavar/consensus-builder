@@ -217,7 +217,7 @@ def simplify(shared, jobs, retired, *, apply=False):
                     "latitude": point[0], "longitude": point[1], "wupLatitude": point[0], "wupLongitude": point[1],
                     "registryCityIds": [], "appCityIds": [], "population2015": None,
                     "population2025": row["pop2025k"] * 1000 if isinstance(row.get("pop2025k"), (int, float)) else None}
-    sources = {row["id"]: row["endpoint"] for row in read(shared / "backend/parcels/source-catalog.json")["sources"]}
+    sources = {row["id"]: row["endpoint"] for row in read(shared / "frontend/data/source-catalog.json")["sources"]}
     scan_roots = set()
     code_paths = {}
     for root, _, _, _, _ in states:

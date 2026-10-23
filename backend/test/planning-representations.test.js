@@ -132,14 +132,15 @@ describe('planning source adapters', () => {
     });
     it('supports a different city through a provider without changing the shared contract', async () => {
         const query = vi.fn().mockResolvedValue({ items: [{ id: 'a' }], omitted: 0, truncated: false });
-        const result = await planningRepresentations({}, { city: 'sample' }, [{ descriptor: { city: 'sample', id: 'custom' }, query }]);
+        const result = await planningRepresentations({}, { city: 'sample', source: 'custom' }, [{ descriptor: { city: 'sample', id: 'custom' }, query }]);
         expect(result.schemaVersion).toBe('planning-representations.v1'); expect(result.items).toEqual([{ id: 'a' }]);
         expect(result.sources[0].id).toBe('custom'); expect(query).toHaveBeenCalledTimes(1);
     });
     it('reports an unconnected city as unavailable without querying another city', async () => {
         const query = vi.fn();
-        const result = await planningRepresentations({}, { city: 'elsewhere' }, [{ descriptor: { city: 'sample' }, query }]);
-        expect(query).not.toHaveBeenCalled(); expect(result.coverage).toBe('unavailable'); expect(result.items).toEqual([]);
+        await expect(planningRepresentations({}, { city: 'elsewhere' }, [{ descriptor: { city: 'sample', id: 'custom' }, query }]))
+            .rejects.toMatchObject({status:400});
+        expect(query).not.toHaveBeenCalled();
     });
 });
 
@@ -180,7 +181,7 @@ describe('bounded planning route', () => {
 });
 
 describe('complete viewport loading', () => {
-    const query = { city: 'sample', bbox: [10,40,10.01,40.01], limit: 200 };
+    const query = { city: 'sample', source: 'source', bbox: [10,40,10.01,40.01], limit: 200 };
     const url = 'https://example.test/planning/representations?city=sample&bbox=10,40,10.01,40.01';
     const page = (items, nextCursor = null, extra = {}) => ({ schemaVersion: 'planning-representations.v1', city: 'sample',
         items, sources: [{ id: 'source' }], summaries: [{ sourceId: 'source', withGeometry: 450, cachedResults: 900, withoutGeometry: 450 }],
@@ -198,7 +199,7 @@ describe('complete viewport loading', () => {
         const fetchPage = vi.fn(async (address, options) => {
             expect(options.cache).toBe('no-store');
             const cursor = new URL(address).searchParams.get('cursor');
-            return ok(await planningRepresentations({}, { ...query, ...(cursor ? { cursor } : {}) }, providers));
+            return ok(await planningRepresentations({}, { ...query, sources: ['source-0','source-1'], ...(cursor ? { cursor } : {}) }, providers));
         });
         const onProgress = vi.fn();
         const result = await feed.loadViewport(url, { city: 'sample', fetchPage, onProgress });

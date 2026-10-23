@@ -17,7 +17,7 @@ export const BUILTIN_OWNERSHIP_ADAPTERS = Object.freeze(Object.fromEntries(
 const DECLARATION_KEYS = ['adapter', 'http', 'attribution', 'licence'];
 let defaultCatalog;
 function loadCatalog() {
-    defaultCatalog ||= JSON.parse(readFileSync(new URL('../parcels/source-catalog.json', import.meta.url), 'utf8'));
+    defaultCatalog ||= JSON.parse(readFileSync(new URL('../../frontend/data/source-catalog.json', import.meta.url), 'utf8'));
     return defaultCatalog;
 }
 

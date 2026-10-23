@@ -114,8 +114,8 @@ export function agreementContent(designs, overrides = {}) {
         designs: designs.map((design, index) => ({ cid: cids[index], goal: design.goal, title: design.title })),
         inputs: {
             parcels: [
-                { parcelId: 'HR-335649-100', areaM2: 600, holders: [{ ownerKey: 'owner-a', displayName: 'Ana', share: 1 }] },
-                { parcelId: 'HR-335649-101', areaM2: 400, holders: [{ ownerKey: 'owner-b', displayName: 'Boris', share: 0.5 }, { ownerKey: 'owner-c', displayName: 'Cvita', share: 0.5 }] }
+                { parcelId: 'HR-335649-100', parcelSourceId: 'oss-wfs', areaM2: 600, holders: [{ ownerKey: 'owner-a', displayName: 'Ana', share: 1 }] },
+                { parcelId: 'HR-335649-101', parcelSourceId: 'oss-wfs', areaM2: 400, holders: [{ ownerKey: 'owner-b', displayName: 'Boris', share: 0.5 }, { ownerKey: 'owner-c', displayName: 'Cvita', share: 0.5 }] }
             ],
             openGroundM2: 0
         },

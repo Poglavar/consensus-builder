@@ -631,7 +631,7 @@ class Runner:
     def _source_novelty_prompt(self) -> str:
         if not getattr(self.args, "new_sources_only", False):
             return ""
-        catalog_path = self.root / "backend/parcels/source-catalog.json"
+        catalog_path = self.root / "frontend/data/source-catalog.json"
         catalog = json_read(catalog_path)
         known = source_novelty.known_source_rows(self.known_sources_doc) + source_novelty.known_source_rows(catalog)
         entries, seen = [], set()
@@ -659,7 +659,7 @@ class Runner:
 NEW-SOURCE-ONLY POLICY (mandatory for this run): a candidate must use a source ID and service endpoint that are absent from both the frozen known-source snapshot and the current live catalog. Query-string, fragment, trailing-slash, or HTTP-to-HTTPS changes do not make an endpoint new; compare host, pathname and normalized port. Explicit known provider hosts are excluded too. Do not retry or repackage a known provider as a new source. Search this city's municipal/local registry, regional/state/provincial agencies, national cadastre or geodata alternatives, and English plus local-language web sources for a genuinely different cadastral dataset and public service. Probe for first-party parcel purpose and an observed positive polygon within this city's actual coverage. If the bounded search finds only known services, record a completed rejection; a known service with a concrete temporary access blocker may be recorded as blocked, never candidate. Use already-supported only for a verified existing city binding.
 Before probing a proposed endpoint, check its source ID, endpoint and host against both complete files:
 """ + json.dumps({"knownSnapshot": self.known_sources_rel,
-                  "liveCatalog": "backend/parcels/source-catalog.json",
+                  "liveCatalog": "frontend/data/source-catalog.json",
                   "knownSourceCount": len(entries), "knownProviderHosts": hosts}, ensure_ascii=False)
 
     def request_stop(self, _signum: int | None = None, _frame: Any = None) -> None:
@@ -942,7 +942,7 @@ For candidate/blocked/already-supported include source {{"sourceId":"stable-sour
 For candidate include nextAction and coverage {{"scope":"bounded-sample, partial-city, substantial-city or citywide","basis":"first-party evidence of systematic cadastral parcel purpose, with observed limits","evidenceUrls":["https://..."],"distributedAcrossCity":false,"distributionBasis":"where the bounded probe was taken and what geographic coverage remains unknown","probes":[{{"bbox":[minLon,minLat,maxLon,maxLat],"featureCount":1,"geometryType":"Polygon or MultiPolygon","sampleIds":["safe-ID"],"evidenceFile":"repository-relative saved request/response evidence","evidenceSha256":"actual SHA256"}}],"qualificationFollowUp":["repeatable exact-ID reads","CRS alignment","geometry quality","completeness","source binding"]}}. At least one probe must have a positive feature count, polygon type and safe sample ID within this city's actual geographic coverage. Counts and IDs must come from actual responses; preserve raw proof safely in ignored scratch. Include all probe evidence files in evidenceFiles. Do not claim wider scope than the evidence supports.
 For blocked include blocker and concrete nextAction. For rejected include rejectionReason and nextAction:null. For already-supported include appCityIds.
 Only blocked decisions belong in heldIds; all completed valid decisions belong in reviewedIds. Return only the supplied JSON schema fields reviewedIds, heldIds, summary and systemicFailure. Never mark an unread task reviewed."""
-        return f"""You are the one serial root reviewer for the persistent WUP parcel-research job. You own root review decisions and are the ONLY agent authorized in this job to edit `world-parcels/registry.json`, `backend/parcels/source-catalog.json`, `frontend/js/city-config.js`, and generated coverage/report artifacts. Research workers own only their named city packet/review/sample files. Provider-expansion paired city/review/sample files are immutable discovery evidence; put review decisions in separate receipts without rewriting those files. Do not commit, push, deploy, or contact anyone. Preserve the user's paused local-research goal and remote-job authorization; do not start any separate investigation outside these named tasks.
+        return f"""You are the one serial root reviewer for the persistent WUP parcel-research job. You own root review decisions and are the ONLY agent authorized in this job to edit `world-parcels/registry.json`, `frontend/data/source-catalog.json`, `frontend/js/city-config.js`, and generated coverage/report artifacts. Research workers own only their named city packet/review/sample files. Provider-expansion paired city/review/sample files are immutable discovery evidence; put review decisions in separate receipts without rewriting those files. Do not commit, push, deploy, or contact anyone. Preserve the user's paused local-research goal and remote-job authorization; do not start any separate investigation outside these named tasks.
 
 Review at most three pending legacy/root items listed below in this turn, plus the new city batch. For each task, inspect the paired evidence and add only its exact ID to `reviewedIds` after a completed review; a hold is a completed review but must remain visibly held. Do not mark unreviewed tasks done. Use the handoff file when present: `{handoff}`.
 
@@ -1392,7 +1392,7 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
             errors = discovery_outcomes.validate_receipt(self.root, receipt)
             if not errors and getattr(self.args, "new_sources_only", False) and receipt.get("decision") == "candidate":
                 try:
-                    catalog = json_read(self.root / "backend/parcels/source-catalog.json")
+                    catalog = json_read(self.root / "frontend/data/source-catalog.json")
                     snapshot_error = source_novelty.novelty_error(receipt.get("source"), self.known_sources_doc, None)
                     current_error = source_novelty.novelty_error(receipt.get("source"), None, catalog)
                     if snapshot_error:

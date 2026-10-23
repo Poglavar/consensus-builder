@@ -196,7 +196,7 @@ export async function discoverImagerySource({ url, city, bbox, layers }, { fetch
     const attempts = [];
     if (['{z}', '{x}', '{y}'].every(token => template.includes(token))) {
         const source = canonicalImageryConfig({ kind: 'imagery', adapter: 'xyz', endpoint: template,
-            cityIds: [city], name: input.hostname });
+            ...(city ? { cityIds: [city] } : {}), name: input.hostname });
         const tile = xyzTileAt(bbox);
         await readImageryImage(fetchImpl, xyzTileUrl(source, tile.z, tile.x, tile.y), { requireVisible: true });
         attempts.push({ adapter: 'xyz', status: 'verified' });
@@ -238,7 +238,7 @@ export async function discoverImagerySource({ url, city, bbox, layers }, { fetch
     capabilitiesUrl.searchParams.delete('REQUEST');
     const credits = [...new Set(selected.map(layer => layer.attribution).filter(Boolean))].join(' · ');
     const source = canonicalImageryConfig({ kind: 'imagery', adapter: 'wms', endpoint: capabilitiesUrl.href,
-        cityIds: [city], name: capabilities.title || input.hostname, layers: selected.map(layer => layer.name),
+        ...(city ? { cityIds: [city] } : {}), name: capabilities.title || input.hostname, layers: selected.map(layer => layer.name),
         version: capabilities.version, crs, format: capabilities.format,
         ...(bounds ? { bounds } : {}), ...(credits && credits.length <= 300 ? { attribution: credits } : {}) });
     await readImageryImage(fetchImpl, wmsMapUrl(source, bbox), { width: 256, height: 256, requireVisible: true });

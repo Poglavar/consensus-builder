@@ -125,7 +125,7 @@ class DiscoveryOutcomeTests(unittest.TestCase):
             self.assertTrue(outcomes.validate_receipt(self.root, rec), level)
 
     def test_existing_app_identity_uses_canonical_wup_demographic_mapping(self):
-        catalog = self.root / "backend/parcels/source-catalog.json"
+        catalog = self.root / "frontend/data/source-catalog.json"
         demographics = self.root / "world-parcels/report/city-demographics.json"
         catalog.parent.mkdir(parents=True)
         demographics.parent.mkdir(parents=True)
@@ -205,7 +205,7 @@ class DiscoveryPipelineTests(unittest.TestCase):
         self.assertEqual(self.instance.state["cities"]["42"]["qualification"]["status"], "integrated")
 
     def test_admission_context_updates_do_not_restart_review_but_source_packet_changes_do(self):
-        catalog = self.root / "backend/parcels/source-catalog.json"
+        catalog = self.root / "frontend/data/source-catalog.json"
         catalog.parent.mkdir(parents=True)
         catalog.write_text('{"sources": []}')
         self.receipt["evidenceFiles"].append(catalog.relative_to(self.root).as_posix())

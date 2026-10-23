@@ -1512,7 +1512,7 @@ describe('free-placement binding handoff', () => {
             },
             resolveBackendBaseUrl: () => 'https://example.test/api/',
             fetch,
-            CityConfigManager: { getCurrentCityId: () => 'zagreb' }
+            CityConfigManager: { getCurrentCityId: () => 'zagreb', getParcelContext: (_site, city) => ({city, parcelSourceId:'hr-katastar'}) }
         };
         const fetchSource = shellFunctionSource('fetchPlacementBinding');
         const prefix = `const placementBindingInFlight = new Map(); function currentCityId(){ return 'zagreb'; } function tDraft(_key, fallback){ return fallback; }\n${fetchSource}`;

@@ -1,7 +1,8 @@
-// Planning source registry: a city selects providers; consumers receive one representation schema.
+// Planning dataset services selected explicitly by consumers; one representation schema.
 import { queryZagrebGup, readZagrebParcel, zagrebGupSource, zagrebGup2016Source } from './providers/zagreb-gup.js';
 import { queryNycPilot, readNycPilotParcel, nycPilotSource } from './providers/nyc-pilot.js';
 import { createHash } from 'node:crypto';
+import configuredSources from '../../frontend/data/planning-sources.json' with { type: 'json' };
 import { parseAtlasSources, createAtlasUrlProvider } from './atlas-url-sources.js';
 
 const builtInSources = [zagrebGupSource, zagrebGup2016Source].map(descriptor => ({
@@ -12,7 +13,7 @@ const builtInSources = [zagrebGupSource, zagrebGup2016Source].map(descriptor => 
 }));
 builtInSources.push({ descriptor: nycPilotSource, query: queryNycPilot, parcel: readNycPilotParcel,
     record: (pool, query) => readNycPilotParcel(pool, { ...query, parcel: `US-NY-${query.recordId}` }) });
-// Explicit operator configuration only. Read after dotenv initialization, not at import time.
+// Public provider definitions are owned by frontend/data/planning-sources.json.
 export function createPlanningSources(config, options) {
     const configured = parseAtlasSources(config);
     if (configured.some(entry => builtInSources.some(source => source.descriptor.id === entry.id))) {
@@ -22,32 +23,24 @@ export function createPlanningSources(config, options) {
 }
 let planningSources;
 export function getPlanningSources() {
-    return planningSources ??= createPlanningSources(process.env.PLANNING_ATLAS_SOURCES);
+    return planningSources ??= createPlanningSources(JSON.stringify(configuredSources.sources));
 }
 
-const intersects = (a, b) => a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1];
-// A city-scoped provider answers its city. A bounds-scoped provider answers any city whose
-// viewport intersects its bounds, and resolves by explicit ID from any city (records, studies).
-export function providersFor(query, sources = getPlanningSources()) {
-    return sources.filter(({ descriptor }) => descriptor.city === query.city
-        || descriptor.city == null && (query.source === descriptor.id
-            || Array.isArray(query.bbox) && Array.isArray(descriptor.bbox) && intersects(descriptor.bbox, query.bbox)));
-}
+// Catalogue listing is consumer-neutral. Data reads require an explicitly named source.
+export function providersFor(_query, sources = getPlanningSources()) { return sources; }
 export function sourcesFor(query, sources = getPlanningSources()) {
-    const providers = providersFor(query, sources);
-    if (query.source) {
-        const source = providers.find(provider => provider.descriptor.id === query.source);
-        if (!source) throw Object.assign(new Error('Unknown planning source for city'), { status: 400 });
+    const ids = query.sources || (query.source ? [query.source] : []);
+    if (!Array.isArray(ids) || !ids.length || ids.length > 20 || new Set(ids).size !== ids.length) {
+        throw Object.assign(new Error('Choose explicit planning sources.'), { status: 400 });
+    }
+    return ids.map(id => {
+        const source = sources.find(provider => provider.descriptor.id === id);
+        if (!source) throw Object.assign(new Error('Unknown planning source.'), { status: 400 });
         if (query.scenario && !(source.descriptor.scenarios || [source.descriptor.scenario]).includes(query.scenario)) {
             throw Object.assign(new Error('Unsupported source scenario'), { status: 400 });
         }
-        return [source];
-    }
-    const defaults = providers.filter(provider => provider.descriptor.default !== false);
-    if (query.scenario && defaults.some(source => !(source.descriptor.scenarios || [source.descriptor.scenario]).includes(query.scenario))) {
-        throw Object.assign(new Error('Unsupported source scenario'), { status: 400 });
-    }
-    return defaults;
+        return source;
+    });
 }
 
 export async function planningParcel(pool, query, sources = getPlanningSources()) {

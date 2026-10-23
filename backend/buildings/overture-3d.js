@@ -6,20 +6,19 @@
 // cities without a bespoke local 3D source.
 
 import { extrudeFootprint } from './extrude.js';
-import { OVERTURE_CITIES, effectiveHeight } from './overture-cities.js';
+import { effectiveHeight } from './overture-height.js';
 import { scopeLadder, queryDownScopeLadder, createScopeMemo } from '../data-scope.js';
 
 // Sized above the densest 500m-radius query so the radius, not the cap, is the real limiter (it
 // only binds on pathological inputs). Mirrors the Zagreb/NYC providers.
 const MAX_BUILDINGS = 4000;
 
-export function createOvertureProvider(pool, cityKey) {
-    const cfg = OVERTURE_CITIES[cityKey];
-    if (!cfg) throw new Error(`createOvertureProvider: unknown Overture city '${cityKey}'`);
+export function createOvertureProvider(pool, cfg) {
+    if (!cfg || typeof cfg !== 'object') throw new Error('Explicit footprint source configuration is required.');
     // city → region → country → planet. Which ingest actually holds this ground is a property of
     // how cadastre-data happened to pull it, not of the city, so it is discovered rather than
     // declared: the first rung that answers wins, and the winner is remembered.
-    const ladder = scopeLadder({ city: cfg.city || cityKey, region: cfg.region, country: cfg.country });
+    const ladder = scopeLadder({ city: cfg.city, region: cfg.region, country: cfg.country });
     const scopeMemo = createScopeMemo();
 
     async function near(geometry, bufferMeters) {
@@ -62,7 +61,7 @@ export function createOvertureProvider(pool, cityKey) {
             ladder,
             async (label) => (await pool.query(sql, [JSON.stringify(geometry), label, bufferMeters])).rows,
             scopeMemo,
-            `near:${cityKey}`
+            `near:${cfg.city || cfg.region || 'dataset'}`
         );
 
         const buildings = [];
@@ -110,7 +109,7 @@ export function createOvertureProvider(pool, cityKey) {
             ladder,
             async (label) => (await pool.query(sql, [JSON.stringify(geometry), label])).rows,
             scopeMemo,
-            `footprints:${cityKey}`
+            `footprints:${cfg.city || cfg.region || 'dataset'}`
         );
         const list = rows.map(row => {
             const measured = Number(row.height_m);
@@ -180,7 +179,7 @@ export function createOvertureProvider(pool, cityKey) {
             ladder,
             async (label) => (await pool.query(sql, [payload, label])).rows,
             scopeMemo,
-            `footprintsUnder:${cityKey}`
+            `footprintsUnder:${cfg.city || cfg.region || 'dataset'}`
         );
         // Over the cap, the response cannot say WHICH region is short, so the whole answer is
         // unusable for demolition — truncated means "fall back to per-proposal", never "use most

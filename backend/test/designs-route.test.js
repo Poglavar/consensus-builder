@@ -42,7 +42,7 @@ function appFor(pool, overrides = {}) {
 }
 
 const inserts = pool => pool.getCalls().filter(call => INSERT.test(call.sql));
-const body = content => ({ cid: cidOf(content), content });
+const body = content => ({ cid: cidOf(content), content, parcelSourceId: 'oss-wfs' });
 
 beforeEach(() => {
     vi.spyOn(console, 'log').mockImplementation(() => {});
@@ -56,12 +56,12 @@ describe('POST /designs', () => {
     it('indexes a design under its CID with the city and binding the server derives, and queues its thumbnail', async () => {
         const pool = indexPool();
         const { app, thumbnailQueue } = appFor(pool);
-        // The author named another city; where the site lies decides.
+        // Metadata and source choice are both supplied explicitly by the consumer.
         const content = designContent({ city: 'new_york', origin: { cid: cidOf(designContent({ title: 'Original' })) } });
         const res = await request(app).post('/designs').send(body(content));
 
         expect(res.status).toBe(201);
-        expect(res.body).toMatchObject({ cid: cidOf(content), city: 'zagreb', goal: 'park', title: 'Riverside park',
+        expect(res.body).toMatchObject({ cid: cidOf(content), city: 'new_york', goal: 'park', title: 'Riverside park',
             author: 'Studio North', originCid: content.origin.cid, content, createdAt: '2026-10-21T08:05:00.000Z' });
         // The binding is derived from the site: the footprint inside it, then the parcels it takes.
         expect(pool.getBindingCalls().map(call => call.sql)).toEqual([FOOTPRINT_OUTSIDE_SITE_SQL, BINDING_COUNT_SQL, BINDING_SQL]);
@@ -72,7 +72,7 @@ describe('POST /designs', () => {
         const [insert] = inserts(pool);
         const params = insert.params;
         expect(params[0]).toBe(cidOf(content));
-        expect(params[1]).toBe('zagreb');
+        expect(params[1]).toBe('new_york');
         expect(params.slice(2, 5)).toEqual(['park', 'Riverside park', 'Studio North']);
         expect(JSON.parse(params[5])).toEqual(SITE_MULTI);
         expect(JSON.parse(params[6])).toEqual({ west: 15.969, south: 45.799, east: 15.972, north: 45.802 });
@@ -83,7 +83,7 @@ describe('POST /designs', () => {
         const job = thumbnailQueue.enqueue.mock.calls[0][0];
         expect(job.pool).toBe(pool);
         expect(job.baseUrl).toBe('https://api.example');
-        expect(job.design).toEqual({ cid: cidOf(content), city: 'zagreb', content, binding: res.body.binding });
+        expect(job.design).toEqual({ cid: cidOf(content), city: 'new_york', content, binding: res.body.binding });
     });
 
     it('binds a road designation by its own polygon: a design is never an act on parcels', async () => {
@@ -293,7 +293,7 @@ describe('GET /designs', () => {
     });
 
     it('filters by city, text and box, in that parameter order', async () => {
-        const { call } = await listed('?city=ZG&q=park&bbox=15.9,45.7,16.1,45.9&limit=5');
+        const { call } = await listed('?city=ZAGREB&q=park&bbox=15.9,45.7,16.1,45.9&limit=5');
         expect(call.sql).toMatch(/WHERE city = \$1 AND \(title ILIKE \$2 OR author ILIKE \$2\) AND site && ST_MakeEnvelope\(\$3, \$4, \$5, \$6, 4326\) AND ST_Intersects\(site, ST_MakeEnvelope\(\$3, \$4, \$5, \$6, 4326\)\)/);
         expect(call.params).toEqual(['zagreb', '%park%', 15.9, 45.7, 16.1, 45.9, 5]);
     });
@@ -362,9 +362,9 @@ describe('POST /designs/binding', () => {
     });
     it('answers the binding a design on that site would get, storing nothing', async () => {
         const pool = indexPool({ cadastre: { unsurveyedM2: 4 } });
-        const res = await request(appFor(pool).app).post('/designs/binding').send({ site: SITE, toleranceM: 0.01 });
+        const res = await request(appFor(pool).app).post('/designs/binding').send({ site: SITE, toleranceM: 0.01, city: 'client-label', parcelSourceId: 'oss-wfs' });
         expect(res.status).toBe(200);
-        expect(res.body).toMatchObject({ city: 'zagreb', parcelSourceId: null });
+        expect(res.body).toMatchObject({ city: 'client-label', parcelSourceId: 'oss-wfs' });
         expect(res.body.binding).toMatchObject({ coverage: 'partial', toleranceM: 0.01, unsurveyedM2: 4 });
         expect(res.body.binding.parcels.map(hit => hit.parcelId)).toEqual(['HR-335649-100', 'HR-335649-101']);
         expect(pool.getBindingCalls().map(call => call.sql)).toEqual([BINDING_COUNT_SQL, BINDING_SQL]);
@@ -390,13 +390,13 @@ describe('POST /designs/binding', () => {
 
     it('keeps a binding refusal\'s own status, and answers 503 binding-unavailable when the cadastre fails', async () => {
         const big = await request(appFor(indexPool({ cadastre: { count: MAX_BINDING_PARCELS + 1 } })).app)
-            .post('/designs/binding').send({ site: SITE });
+            .post('/designs/binding').send({ site: SITE, parcelSourceId: 'oss-wfs' });
         expect([big.status, big.body.code]).toEqual([413, 'too-many-parcels']);
 
         const pool = indexPool();
         pool.bindingAnswer = () => { throw new Error('db down'); };
         const error = vi.spyOn(console, 'error').mockImplementation(() => {});
-        const down = await request(appFor(pool).app).post('/designs/binding').send({ site: SITE });
+        const down = await request(appFor(pool).app).post('/designs/binding').send({ site: SITE, parcelSourceId: 'oss-wfs' });
         expect(error).toHaveBeenCalled();
         expect([down.status, down.body.code]).toEqual([503, 'binding-unavailable']);
         expect(down.body.binding).toBeUndefined();

@@ -33,7 +33,7 @@ function descriptorFor(adapter, { city, metricSrid, ...specific }) {
     const base = {
         adapter,
         ...specific,
-        cityIds: [city],
+        ...(city ? { cityIds: [city] } : {}),
         defaultForCity: false,
         metricSrid,
         pageSize: PAGE_SIZE,
@@ -44,7 +44,7 @@ function descriptorFor(adapter, { city, metricSrid, ...specific }) {
 }
 
 function validCityMetric(city, metricSrid) {
-    return typeof city === 'string' && /^[A-Za-z0-9_-]{1,80}$/.test(city)
+    return (city === undefined || typeof city === 'string' && /^[A-Za-z0-9_-]{1,80}$/.test(city))
         && Number.isSafeInteger(metricSrid) && metricSrid > 0;
 }
 
@@ -355,7 +355,7 @@ async function discoverCustomSource({ url: rawUrl, city, metricSrid, bbox, kind 
 } = {}) {
     const profile = PROFILES[kind];
     if (!profile) throw inputError('Unknown source kind.');
-    if (!validCityMetric(city, metricSrid)) throw inputError('Provide a city ID and a positive metric SRID.');
+    if (!validCityMetric(city, metricSrid)) throw inputError('Provide a positive metric SRID.');
     if (typeof fetchImpl !== 'function' || typeof createSource !== 'function') throw inputError('A public source fetcher is required.');
     const inputUrl = normalizedInputUrl(rawUrl);
     try { validateBounds(bbox, MAX_BBOX_KM2); } catch (error) { throw Object.assign(error, { code: 'invalid-custom-source' }); }

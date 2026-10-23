@@ -2,7 +2,7 @@
 // object the browser addressed itself, { cid, content }, refuses it unless its canonical bytes hash to
 // that CID and it has the design/v1 shape (frontend/js/design-record.js validate, the check the browser
 // makes), and stores it with what the server derives from it: the city its site lies in
-// (proposals/publication-city.js) and its binding, the parcels its site takes, derived as
+// supplied by the consumer, and its binding, the parcels its site takes, derived as
 // checkProposalBinding derives them for a new proposal, with nothing declared to compare. GET
 // /designs/:cid, GET /designs?city&bbox and POST /designs/batch read the index back. The content is
 // stored exactly as addressed; the other columns index it and never stand in for it. A parcel layout is
@@ -30,7 +30,7 @@ export const DEFAULT_DESIGN_LIST_LIMIT = 100;
 export const MAX_DESIGN_LIST_LIMIT = 1000;
 export const MAX_DESIGN_BATCH = 1000;
 const MAX_CITY_LENGTH = 100;
-const MAX_SOURCE_ID_LENGTH = 100;
+const MAX_SOURCE_ID_LENGTH = 3507;
 
 const COLUMNS = `cid, city, goal, title, author, origin_cid, binding, content,
     screenshot_url, screenshot_before_url, screenshot_pair_url, created_at`;

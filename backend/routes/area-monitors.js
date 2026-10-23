@@ -5,7 +5,6 @@
 // HEAD /area-monitors/:id - Check area monitor existence
 
 import { POSTGIS_SRID } from '../utils/helpers.js';
-import { isConfiguredCity, jurisdictionOf } from '../jurisdiction.js';
 import { createJsonBodyValidator, isPlainObject, validators } from '../utils/request-validation.js';
 import {
     buildOwnershipDetailBatchQuery,
@@ -85,13 +84,12 @@ function normalizeParcelId(parcelId) {
 function normalizeAreaMonitorCityId(cityId) {
     if (typeof cityId !== 'string') return null;
     const normalized = cityId.trim().toLowerCase();
-    return isConfiguredCity(normalized) ? normalized : null;
+    return /^[a-z][a-z0-9_]{0,31}$/.test(normalized) ? normalized : null;
 }
 
-// A monitor's city is the one whose parcels apply where its polygon lies (location-first.md phase 4,
-// jurisdiction.js); the requested one only for a polygon no city covers.
+// The caller supplies record metadata; the service does not resolve app city configuration.
 function areaMonitorCityAt(polygon, requestedCityId = null) {
-    return (polygon && jurisdictionOf(polygon)) || requestedCityId || 'explore';
+    return requestedCityId || 'global';
 }
 
 function resolveAreaMonitorCityId(monitor) {
@@ -167,7 +165,7 @@ const areaMonitorCreateBodyValidator = createJsonBodyValidator({
             validate: validators.optional(validators.custom((value) => {
                 const normalized = normalizeAreaMonitorCityId(value);
                 if (!normalized) {
-                    return validators.fail('cityId must be a configured city id.');
+                    return validators.fail('cityId must be a valid namespace label.');
                 }
                 return validators.ok(normalized);
             }))

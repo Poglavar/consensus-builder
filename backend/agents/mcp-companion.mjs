@@ -16,16 +16,16 @@ export function registerMcpCompanion(server, { actions, handler, readOnly }) {
     add('ugt_approval_link', 'Build a wallet approval link. The person reviews and presses the action; links never open a wallet prompt on load. Amount is SOL for fund, USDC for bet, pledge or donate.',
         { action: z.enum(['mint', 'fund', 'decide', 'execute', 'cancel', 'expire', 'bet', 'pledge', 'donate']), target: z.string().max(100), params: z.object({ amount: z.string().optional(), side: z.enum(['yes', 'no']).optional(), decision: z.enum(['accept', 'reject']).optional(), city: city.optional() }).default({}) }, 'approvalLink');
     add('ugt_find_place', 'Find a place, address, parcel id or design title using the app search sources. Candidates include map links. Choose a candidate before drafting.',
-        { query: z.string().min(1).max(200), city: city.optional(), parcelSourceId: z.string().max(100).optional(), bbox: bbox.optional(), limit: z.number().int().min(1).max(20).default(5) }, 'findPlace');
+        { query: z.string().min(1).max(200), city: city.optional(), parcelSourceId: z.string().max(3507).optional(), bbox: bbox.optional(), limit: z.number().int().min(1).max(20).default(5) }, 'findPlace');
     add('ugt_parcel_context', 'Read one parcel or WGS84 point: source ground, area, planning sources and studies, buildings, nearby designs, agreements, markets and history. Provide parcelId or point.',
-        { city, parcelSourceId: z.string().max(100).optional(), parcelId: z.string().min(1).max(250).optional(), point: point.optional() }, 'parcelContext');
+        { city, parcelSourceId: z.string().max(3507).optional(), parcelId: z.string().min(1).max(250).optional(), point: point.optional(), buildingSourceId: z.string().max(3507).optional(), planningSourceIds: z.array(z.string().max(100)).max(20).optional() }, 'parcelContext');
     add('ugt_list_designs', 'List designs by city, WGS84 bbox or text.',
         { city: city.optional(), bbox: bbox.optional(), q: z.string().max(200).optional(), limit: z.number().int().min(1).max(100).default(20) }, 'listDesigns');
     add('ugt_get_design', 'Read a design by CID and return its map link.', { designCid: cid }, 'getDesign');
     add('ugt_markets', 'Read city contests, pools and devnet USDC stakes.', { city }, 'markets');
     add('ugt_explain', 'Look up a term in the maintained domain vocabulary.', { term: z.string().min(1).max(100) }, 'explain');
 
-    const site = { city, parcelSourceId: z.string().max(100).optional(), parcelIds: z.array(z.string().min(1).max(250)).min(1).max(100).optional(), outline: z.record(z.string(), z.unknown()).optional(),
+    const site = { city, parcelSourceId: z.string().max(3507).optional(), parcelIds: z.array(z.string().min(1).max(250)).min(1).max(100).optional(), outline: z.record(z.string(), z.unknown()).optional(),
         title: z.string().max(200).optional(), description: z.string().max(2000).optional(), author: z.string().max(100).optional(), authoredAt: z.iso.datetime().optional() };
     const lane = z.object({ type: z.string(), width: z.number().min(0.25).max(20), direction: z.enum(['forward', 'backward', 'both']).optional(), landscape: z.enum(['trees', 'grass']).optional() });
     const profile = { preset: z.enum(['2+2', '1+1', '1+1 with cycle lanes']).optional(), lanes: z.array(lane).min(1).max(32).optional() };
@@ -47,12 +47,12 @@ export function registerMcpCompanion(server, { actions, handler, readOnly }) {
         z.object({ type: z.literal('set_use'), value: z.string().min(1).max(100) }), z.object({ type: z.literal('set_kind'), value: z.enum(['park', 'square', 'lake']) })
     ]);
     add('ugt_modify_design', 'Fork a published CID, hosted draftRef or canonical draft with typed changes. For private drafts use draftRef; never retype geometry or pass an unpublished CID. Compass sides are across the street; ambiguous or multi-stretch edits are refused. origin.cid records the source.',
-        { design: designInput, changes: z.array(changes).min(1).max(20), parcelSourceId: z.string().max(100).optional() }, 'modifyDesign');
+        { design: designInput, changes: z.array(changes).min(1).max(20), parcelSourceId: z.string().max(3507).optional() }, 'modifyDesign');
     add('ugt_compare', 'Compare canonical drafts, hosted draftRef references or indexed design/agreement CIDs. Use draftRef for private drafts instead of copying geometry. Areas are square metres; absent measurements remain null.',
-        { targets: z.array(designInput).min(2).max(10), parcelSourceId: z.string().max(100).optional() }, 'compare');
+        { targets: z.array(designInput).min(2).max(10), buildingSourceId: z.string().max(3507).optional(), parcelSourceId: z.string().max(3507).optional() }, 'compare');
 
-    add('ugt_draft_agreement', 'Derive an agreement on isolated complete cadastral ground using the app formation handlers. For unpublished designs pass their hosted draftRef values, not CIDs; local clients may pass canonical objects. Owner rules require a rights snapshot; binding owner-deal requires one independent lens. No pin, index write or signature.',
-        { designs: z.array(designInput).min(1).max(100), rulePreset: z.enum(['owner-deal', 'owner-vote', 'community-vote']).default('community-vote'), rights: z.record(z.string(), z.unknown()).optional(), lens: z.string().optional(), allocations: z.array(z.record(z.string(), z.unknown())).default([]), money: z.record(z.string(), z.unknown()).optional(), deadline: z.iso.datetime().nullable().optional(), sponsor: z.string().nullable().optional(), title: z.string().max(200).optional(), author: z.string().max(100).optional(), createdAt: z.iso.datetime().optional(), parcelSourceId: z.string().max(100).optional() }, 'draftAgreement');
+    add('ugt_draft_agreement', 'Derive an agreement on isolated complete cadastral ground using the app formation handlers. For unpublished designs pass their hosted draftRef values, not CIDs; local clients may pass canonical objects. Supply money or an explicit ISO currency. Owner rules require a rights snapshot; binding owner-deal requires one independent lens. No pin, index write or signature.',
+        { designs: z.array(designInput).min(1).max(100), rulePreset: z.enum(['owner-deal', 'owner-vote', 'community-vote']).default('community-vote'), rights: z.record(z.string(), z.unknown()).optional(), lens: z.string().optional(), allocations: z.array(z.record(z.string(), z.unknown())).default([]), money: z.record(z.string(), z.unknown()).optional(), currency: z.string().regex(/^[A-Z]{3}$/).optional(), deadline: z.iso.datetime().nullable().optional(), sponsor: z.string().nullable().optional(), title: z.string().max(200).optional(), author: z.string().max(100).optional(), createdAt: z.iso.datetime().optional(), parcelSourceId: z.string().max(3507).optional() }, 'draftAgreement');
 
     const recipe = JSON.parse(readFileSync(new URL('../routes/agent-recipe-schema.json', import.meta.url), 'utf8'));
     const resources = [

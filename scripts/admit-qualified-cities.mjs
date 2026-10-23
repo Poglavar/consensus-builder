@@ -417,7 +417,7 @@ function cityConfigEntry(item) {
 async function main() {
     const args = parseArgs(process.argv.slice(2));
     const { parseCityConfigs } = await import(pathToFileURL(path.join(REPO, 'scripts/build-world-coverage.mjs')));
-    const catalogDoc = readJson('backend/parcels/source-catalog.json');
+    const catalogDoc = readJson('frontend/data/source-catalog.json');
     const registry = readJson('world-parcels/registry.json');
     const demographics = readJson('world-parcels/report/city-demographics.json');
     const i18n = Object.fromEntries(LOCALES.map(l => [l, readJson(`frontend/i18n/${l}.json`)]));
@@ -630,7 +630,7 @@ async function main() {
     }
 
     // Catalog, registry, demographics, labels, city config.
-    writeJson('backend/parcels/source-catalog.json', nextCatalog);
+    writeJson('frontend/data/source-catalog.json', nextCatalog);
     for (const item of plan) {
         const qualificationFile = `${evidenceRoot}/${item.code}/qualification.json`;
         const metricFile = `${evidenceRoot}/${item.code}/metric-report.json`;

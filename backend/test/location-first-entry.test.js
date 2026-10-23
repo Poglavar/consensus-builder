@@ -7,8 +7,6 @@ import { readFileSync } from 'node:fs';
 import { createContext, runInContext } from 'node:vm';
 import { bootCoverage, bootCoverageScript } from '../../scripts/build-boot-coverage.mjs';
 import { coverageRadiusKm, MIN_CITY_RADIUS_KM } from '../../scripts/build-world-coverage.mjs';
-import { resolvePublicationCity } from '../proposals/publication-city.js';
-import { cityNameAt, isConfiguredCity } from '../jurisdiction.js';
 
 const require = createRequire(import.meta.url);
 const WorldEntryModel = require('../../frontend/js/world/world-entry-model.js');
@@ -144,17 +142,6 @@ describe('jurisdictionAt over the configured cities', () => {
     });
 });
 
-describe('server labels by place (phase 4)', () => {
-    it('names the city whose data applies at a point, and knows the configured ids', () => {
-        expect(cityNameAt(16.4402, 43.5081)).toBe('Split');
-        expect(cityNameAt(15.9775, 45.8131)).toBe('Zagreb');
-        expect(cityNameAt(-30, 30)).toBeNull();
-        expect(isConfiguredCity('split')).toBe(true);
-        expect(isConfiguredCity('atlantis')).toBe(false);
-        expect(isConfiguredCity(null)).toBe(false);
-    });
-});
-
 describe('boot coverage subset', () => {
     it('is the generated file for the current world-coverage.json', () => {
         expect(read('../../frontend/data/boot-coverage.js')).toBe(bootCoverageScript(fullJson));
@@ -173,23 +160,6 @@ describe('boot coverage subset', () => {
         const mismatches = points.filter(p => JSON.stringify(boot.liveCitiesAt(p.lat, p.lon)) !== JSON.stringify(full.liveCitiesAt(p.lat, p.lon)));
         expect(points.length).toBeGreaterThan(3000);
         expect(mismatches).toEqual([]);
-    });
-});
-
-describe('the server files a city-less publication where the boot opens', () => {
-    it('agrees with jurisdictionAt for points across the configured cities and beyond', () => {
-        const random = mulberry32(3);
-        const points = [ZAGREB, MANHATTAN, MID_ATLANTIC, OSIJEK];
-        for (let i = 0; i < 300; i++) {
-            const city = fullJson.liveCities[Math.floor(random() * fullJson.liveCities.length)];
-            points.push({ lat: city.lat + (random() - 0.5) * 0.4, lon: city.lon + (random() - 0.5) * 0.4 });
-        }
-        for (const p of points) {
-            expect(resolvePublicationCity({ city: null, lon: p.lon, lat: p.lat }).city).toBe(full.jurisdictionAt(p.lat, p.lon) || 'explore');
-            // a requested city decides nothing where some city covers the site (phase 4)
-            const covered = full.jurisdictionAt(p.lat, p.lon);
-            if (covered) expect(resolvePublicationCity({ city: 'new_york', lon: p.lon, lat: p.lat }).city).toBe(covered);
-        }
     });
 });
 

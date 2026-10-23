@@ -1,7 +1,9 @@
+import { consumerParcelSourceId } from './helpers/frontend-source-selection.js';
 // Verifies shared provider selection, stable IDs and metric binding for additional city entries.
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { parcelSourceCatalog, parcelSourceForCity } from '../parcels/sources.js';
+import { parcelSourceCatalog } from '../parcels/sources.js';
+import { parcelSourceForCity } from './helpers/frontend-source-selection.js';
 import { computeBinding } from '../proposals/binding.js';
 import proj4 from 'proj4';
 globalThis.proj4 ||= proj4;
@@ -28,7 +30,7 @@ describe.each(samples)('$city shared-provider city', sample => {
             type: 'FeatureCollection', features: [raw], numberMatched: 1, numberReturned: 1, links: []
         }) })));
         const db = { query: vi.fn(async () => { throw new Error('unexpected imported parcel SQL'); }) };
-        const { binding } = await computeBinding(db, { city: sample.city, site: canonical.geometry });
+        const { binding } = await computeBinding(db, { parcelSourceId: consumerParcelSourceId(sample.city), city: sample.city, site: canonical.geometry });
         expect(db.query).not.toHaveBeenCalled();
         expect(binding).toMatchObject({ coverage: 'complete', source: `server:${descriptor.id}` });
         expect(binding.parcels.map(p => p.parcelId)).toContain(canonical.id);

@@ -1,6 +1,7 @@
 // Checks new city sources through their configured adapter, exact identity and native provenance.
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createParcelSource, parcelSourceForCity } from '../parcels/sources.js';
+import { createParcelSource } from '../parcels/sources.js';
+import { parcelSourceForCity } from './helpers/frontend-source-selection.js';
 import { computeBinding } from '../proposals/binding.js';
 import { encodeSnapshotNativeId } from '../parcels/geojson-snapshot-source.js';
 afterEach(() => vi.unstubAllGlobals());

@@ -64,7 +64,7 @@ function ruleSourceOf(rule) {
  * @param {Array} parcels        rows from parcel-source.js
  * @param {Object} persona       an entry from personas.json
  * @param {Object} options       { turf, money, floorHeightM, offerShareOfGain, seed, limit }; `money` is
- *                               the city's { currency, salePricePerM2 } (utils/city-money.js): gains
+ *                               the city's { currency, salePricePerM2 } (consumer-supplied money settings): gains
  *                               and offers are in the money of the place, never assumed to be euros
  */
 export function planCandidates(parcels, persona, {

@@ -1,7 +1,7 @@
 // Verifies Sydney's cadastral native identity, canonical reads and rejection of conflicting source geometry.
 import { describe, expect, it, vi } from 'vitest';
 import { createArcgisParcelSource } from '../parcels/arcgis-source.js';
-import { parcelSourceForCity } from '../parcels/sources.js';
+import { parcelSourceForCity } from './helpers/frontend-source-selection.js';
 
 const square = west => ({ type: 'Polygon', coordinates: [[[west, -33.859], [west + .0001, -33.859],
     [west + .0001, -33.8589], [west, -33.8589], [west, -33.859]]] });

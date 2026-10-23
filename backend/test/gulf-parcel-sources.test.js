@@ -1,3 +1,4 @@
+import { consumerParcelSourceId } from './helpers/frontend-source-selection.js';
 // Exercises Gulf and Jordan gateways and binding without imported parcel tables.
 import express from 'express';
 import request from 'supertest';
@@ -5,7 +6,8 @@ import { readFileSync } from 'node:fs';
 import { createContext, runInContext } from 'node:vm';
 import { createRequire } from 'node:module';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { parcelSourceForCity, parcelSourceForIds, clearParcelSourceRuntimeCache } from '../parcels/sources.js';
+import { clearParcelSourceRuntimeCache } from '../parcels/sources.js';
+import { parcelSourceForCity, parcelSourceForIds } from './helpers/frontend-source-selection.js';
 import { setupParcelSourcesRoute } from '../routes/parcel-sources.js';
 import { computeBinding } from '../proposals/binding.js';
 const samples = [
@@ -141,7 +143,7 @@ describe.each(samples)('$city Gulf and Jordan runtime',s=>{
     it('binds to its source without a parcel-table query and routes the identity to its city',async()=>{
         const {descriptor:d}=parcelSourceForCity(s.city);const f=fixture(s,d);vi.stubGlobal('fetch',f.fetchImpl);
         const db={query:vi.fn(async()=>{throw Error('Unexpected imported parcel read');})};
-        const {binding}=await computeBinding(db,{city:s.city,site:f.geometry});
+        const {binding}=await computeBinding(db,{ parcelSourceId: consumerParcelSourceId(s.city),city:s.city,site:f.geometry});
         expect(db.query).not.toHaveBeenCalled();expect(binding).toMatchObject({coverage:'complete',source:'server:'+s.sourceId});
         expect(binding.parcels.map(row=>row.parcelId)).toEqual([f.id]);
         const previous=globalThis.CityConfigManager;globalThis.CityConfigManager=cities;

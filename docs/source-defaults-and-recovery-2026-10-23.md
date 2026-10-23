@@ -1,5 +1,8 @@
 # Parcel sources, building defaults and recovery
 
+Source routing was subsequently changed to [frontend-owned explicit selection](frontend-source-configuration.md).
+The checks below describe this earlier change; the backend no longer chooses providers by city.
+
 The map and site-to-parcel calculation now select the same official WFS adapters for Buenos Aires
 and Belgrade. Buenos Aires uses IDECABA `nam` identities (`AR-CABA-WFS-NAM-…`); Belgrade uses
 RGZ `source_parcel_id` identities (`SR-RGZ-DKP-…`) through RGZ's public WFS proxy. These replace the

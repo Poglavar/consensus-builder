@@ -1,5 +1,5 @@
 // Runs the existing complete-source adapters in a worker, preferring provider fetch over a byte relay.
-import catalog from './source-catalog.json' with { type: 'json' };
+import catalog from '../../frontend/data/source-catalog.json' with { type: 'json' };
 import { createArcgisParcelSource } from './arcgis-source.js';
 import { createWfsParcelSource } from './wfs-source.js';
 import { createOgcApiParcelSource } from './ogc-api-source.js';

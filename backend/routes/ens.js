@@ -6,7 +6,6 @@
 import { JsonRpcProvider, Contract } from 'ethers';
 import { resolveQuery, buildTextValue } from '../ens/gateway.js';
 import { parcelIdToCity } from '../ens/slug.js';
-import { cityNameAt } from '../jurisdiction.js';
 import { isCid } from '../cid.js';
 
 const DEFAULT_PUBLIC_BASE_URL = 'https://urbangametheory.xyz';
@@ -87,11 +86,9 @@ export function setupEnsRoute(app, pool) {
         );
         if (!rows.length) return null;
         const row = rows[0];
-        // where the parcel lies when it is known (location-first.md phase 4), else its id's city
-        const hasPoint = row.lon !== null && row.lat !== null && Number.isFinite(Number(row.lon)) && Number.isFinite(Number(row.lat));
-        const placed = hasPoint ? cityNameAt(Number(row.lon), Number(row.lat)) : null;
-        const city = placed ? null : parcelIdToCity(row.parcel_id);
-        return { ...row, city_name: placed || (city ? city.cityName : null) };
+        // The source namespace supplies its native label; no app city coverage selects it.
+        const city = parcelIdToCity(row.parcel_id);
+        return { ...row, city_name: city ? city.cityName : null };
     }
 
     // Resolve a proposals label to the record it names: a CID (bafkrei…) is the published agreement

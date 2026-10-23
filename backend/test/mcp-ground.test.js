@@ -60,7 +60,7 @@ describe('headless app formation host', () => {
                 ? { parcelSourceId: 'selected-source', binding: { coverage: 'complete', parcels: [{ parcelId: 'A' }], unsurveyedM2: 0, unknownM2: 0 } }
                 : { complete: true, features: parcels }));
         } });
-        const result = await tools.draftAgreement({ designs: [design.content], title: 'A park' });
+        const result = await tools.draftAgreement({ currency: 'GBP', designs: [design.content], title: 'A park' });
         expect(paths).toContain('/parcel-sources/selected-source');
         expect(result.agreement.inputs.parcels[0].parcelSourceId).toBe('selected-source');
         expect(result.cid).toBe(cidOfObject(result.agreement));

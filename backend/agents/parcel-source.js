@@ -156,6 +156,7 @@ function rowToParcel(row) {
     const koCode = num(row.maticni_broj_ko);
     const brojCestice = row.broj_cestice === null || row.broj_cestice === undefined ? '' : String(row.broj_cestice);
     return {
+        parcelSourceId: 'oss-wfs',
         parcelId: `${PARCEL_ID_PREFIX}-${koCode === null ? '' : koCode}-${brojCestice}`,
         cesticaId,
         koCode,

@@ -83,7 +83,7 @@ describe('registry dispatch by parcel source', () => {
     });
 
     it('binds the five database-backed cities to the five built-in adapters, and Denver to none', async () => {
-        const catalog = JSON.parse(readFileSync(new URL('../parcels/source-catalog.json', import.meta.url), 'utf8'));
+        const catalog = JSON.parse(readFileSync(new URL('../../frontend/data/source-catalog.json', import.meta.url), 'utf8'));
         const bound = Object.fromEntries(catalog.databaseSources.map(source => [source.id, source.ownership.adapter]));
         expect(bound).toEqual({ 'oss-wfs': 'hr-oss', 'parcel-ba': 'ar-caba', 'parcel-bg': 'rs-bg', 'parcel-lj': 'si-gurs', 'parcel-nyc': 'us-nyc' });
         const registry = createOwnershipRegistry({ catalog });

@@ -5,13 +5,13 @@ import { selectNativeOption } from '../helpers/controls';
 import { openLayerSection } from '../helpers/layers';
 
 const sources = ['a', 'b'].map((suffix, index) => ({
-  id: `planning-controls-${suffix}`, city: 'zagreb', label: `Planning edition ${suffix.toUpperCase()}`,
+  id: suffix === 'a' ? 'zagreb-gup-2025' : 'zagreb-gup-2016', city: 'zagreb', label: `Planning edition ${suffix.toUpperCase()}`,
   edition: 'test', recordId: 'record-1', version: 'revision-1', url: 'https://example.test/planning',
   scenario: 'family1', scenarios: ['family1', 'family2'], default: index === 0,
   capabilities: { areas: true, volumes: true },
 }));
 const reference = {
-  proposalId: 'source:planning-controls-a:record-1', providerId: sources[0].id, recordId: 'record-1',
+  proposalId: 'source:zagreb-gup-2025:record-1', providerId: sources[0].id, recordId: 'record-1',
   edition: 'test', revision: 'revision-1', city: 'zagreb', parcelId: null, scenario: 'family1',
 };
 function massing(source = sources[0]) {
@@ -88,7 +88,7 @@ for (const blocksEnabled of [false, true]) test(`planning source, scenario, disp
   await expect(clickStack.locator('.click-stack__section[data-kind="permitted"]')).toBeVisible();
   const inspector = page.locator('#planning-inspector');
   await expect(inspector.getByRole('heading', { name: 'Planning edition B massing', exact: true })).toBeVisible();
-  expect(new URL(page.url()).searchParams.get('planningSelection')).toBe('planning-controls-b:massing');
+  expect(new URL(page.url()).searchParams.get('planningSelection')).toBe('zagreb-gup-2016:massing');
   await page.keyboard.press('Escape');
   await expect(clickStack).toBeHidden();
   await shape.focus();
@@ -102,7 +102,7 @@ for (const blocksEnabled of [false, true]) test(`planning source, scenario, disp
 test('saved parcel evidence opens its pinned source without creating a proposal @features', async ({ mockApi: page }) => {
   const result = { ...massing(), id: 'saved-result', title: 'Saved source result', volumes: [],
     sourceEvidence: { sourceReferences: [reference] }, assessment: { meaning: 'public-screen', status: 'unresolved' } };
-  const sourceRecord = { ...massing(), id: 'planning-controls-a:record-1', title: 'Pinned planning source',
+  const sourceRecord = { ...massing(), id: 'zagreb-gup-2025:record-1', title: 'Pinned planning source',
     proposalId: reference.proposalId, volumes: [], proposal: {
       schemaVersion: 'source-proposal.v1', proposalId: reference.proposalId,
       source: { providerId: reference.providerId, recordId: reference.recordId, edition: reference.edition,
@@ -129,7 +129,7 @@ test('saved parcel evidence opens its pinned source without creating a proposal 
   await page.locator('#parcel-info-panel').getByRole('button', { name: 'Inspect result', exact: true }).click();
   const inspector = page.locator('#planning-inspector');
   await expect(inspector.getByRole('heading', { name: 'Saved source result', exact: true })).toBeVisible();
-  await inspector.getByRole('button', { name: /^Source: planning-controls-a/ }).click();
+  await inspector.getByRole('button', { name: /^Source: zagreb-gup-2025/ }).click();
   await expect(inspector.getByRole('heading', { name: 'Pinned planning source', exact: true })).toBeVisible();
   expect(requestedRecord).toBe(reference.recordId);
   expect(await page.evaluate(() => (window as any).PlanningViews.getSelected().proposalId)).toBe(reference.proposalId);

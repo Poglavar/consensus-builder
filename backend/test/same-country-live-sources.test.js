@@ -1,3 +1,4 @@
+import { consumerParcelSourceId } from './helpers/frontend-source-selection.js';
 // Route, identity, binding and locale contracts for four newly configured city parcel sources.
 import express from 'express';
 import request from 'supertest';
@@ -7,7 +8,8 @@ import { createContext, runInContext } from 'node:vm';
 import { createRequire } from 'node:module';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import * as parcelSources from '../parcels/sources.js';
-import { clearParcelSourceRuntimeCache, createParcelSource, parcelSourceCatalog, parcelSourceForIds } from '../parcels/sources.js';
+import { clearParcelSourceRuntimeCache, createParcelSource, parcelSourceCatalog } from '../parcels/sources.js';
+import { parcelSourceForIds } from './helpers/frontend-source-selection.js';
 import { setupParcelSourcesRoute } from '../routes/parcel-sources.js';
 import { computeBinding } from '../proposals/binding.js';
 
@@ -138,12 +140,12 @@ describe.each(samples)('$city live parcel source contract', sample => {
     it('binds from the configured source without parcel-table reads and preserves city routing, metric projection and translations', async () => {
         const descriptor = descriptorFor(sample);
         const f = fixture(sample, descriptor);
-        expect(parcelSources.parcelSourceForCity(sample.city).descriptor.id).toBe(sample.sourceId);
+        expect(parcelSources.parcelSourceById(sample.sourceId).descriptor.id).toBe(sample.sourceId);
         const adapter = createParcelSource(descriptor, { fetchImpl: f.fetchImpl });
-        const lookup = vi.spyOn(parcelSources, 'parcelSourceForCity').mockReturnValue({ descriptor, adapter });
+        const lookup = vi.spyOn(parcelSources, 'parcelSourceById').mockReturnValue({ descriptor, adapter });
         const db = { query: vi.fn(async () => { throw new Error('Live parcel source binding must not read parcel tables.'); }) };
-        const { binding } = await computeBinding(db, { city: sample.city, site: f.site, toleranceM: 0 });
-        expect(lookup).toHaveBeenCalledWith(sample.city, null);
+        const { binding } = await computeBinding(db, { parcelSourceId: consumerParcelSourceId(sample.city), city: sample.city, site: f.site, toleranceM: 0 });
+        expect(lookup).toHaveBeenCalledWith(sample.sourceId);
         expect(db.query).not.toHaveBeenCalled();
         expect(binding).toMatchObject({ coverage: 'complete', source: `server:${descriptor.id}` });
         expect(binding.parcels.map(parcel => parcel.parcelId)).toEqual([f.id]);

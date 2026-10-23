@@ -29,9 +29,9 @@ describe('intent design artifacts', () => {
         expect(fork.parcelSourceId).toBe('private-test');
         await expect(tools.modifyDesign({ design: { draftRef: first.draftRef, cid: fork.cid }, changes: [{ type: 'retitle', value: 'Wrong identity' }] })).rejects.toMatchObject({ code: 'cid-mismatch' });
         await expect(tools.modifyDesign({ design: { design: first.design, cid: fork.cid }, changes: [{ type: 'retitle', value: 'Wrong copied identity' }] })).rejects.toMatchObject({ code: 'cid-mismatch' });
-        const agreement = store.decorate(await tools.draftAgreement({ designs: [first.draftRef] }));
+        const agreement = store.decorate(await tools.draftAgreement({ currency: 'EUR', designs: [first.draftRef] }));
         expect(agreement.agreement.designs[0].cid).toBe(first.cid);
-        const compared = await tools.compare({ targets: [fork.draftRef, agreement.draftRef] });
+        const compared = await tools.compare({ buildingSourceId:'osm', targets: [fork.draftRef, agreement.draftRef] });
         expect(compared.alternatives.every(alternative => alternative.measurementErrors.length === 0)).toBe(true);
         expect(paths.some(path => /^\/designs\//.test(path) && path !== '/designs/binding')).toBe(false);
         await expect(store.resolve(first.draftRef.replace('mcp.example', 'other.example'))).rejects.toThrow(/this server/);
@@ -93,8 +93,8 @@ describe('intent design artifacts', () => {
             throw new Error(`Unexpected source route ${path}`);
         } });
         expect((await tools.modifyDesign({ design: cid, changes: [{ type: 'retitle', value: 'A fork' }] })).parcelSourceId).toBe('non-default');
-        expect((await tools.draftAgreement({ designs: [cid] })).parcelSourceId).toBe('non-default');
-        const compared = await tools.compare({ targets: [cid, cid] });
+        expect((await tools.draftAgreement({ currency: 'EUR', designs: [cid] })).parcelSourceId).toBe('non-default');
+        const compared = await tools.compare({ buildingSourceId:'osm', targets: [cid, cid] });
         expect(compared.alternatives.every(a => a.measurementErrors.length === 0)).toBe(true);
         expect(bindings).toEqual(['non-default', 'non-default', 'non-default', 'non-default']);
     });

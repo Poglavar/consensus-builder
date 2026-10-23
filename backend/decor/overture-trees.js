@@ -19,7 +19,6 @@
 // Returns [lng, lat] pairs; the frontend renders each as an instanced trunk+crown with a
 // deterministic per-tree height (neither source carries one).
 
-import { OVERTURE_CITIES } from '../buildings/overture-cities.js';
 import { scopeLadder, queryDownScopeLadder, createScopeMemo } from '../data-scope.js';
 
 // Trees are dense (a few thousand within 300 m in a leafy centre). Instanced rendering handles that
@@ -35,15 +34,9 @@ const GREENERY_ACCEPTANCE = 0.72;
 // A planted tree this close to a mapped one is the same tree twice — drop it.
 const PLANTED_MIN_DISTANCE_TO_MAPPED_M = 5;
 
-// `cityKey` names an Overture city (overture-cities.js) whose labelled ingests are read first; any
-// other place (null) reads the geometry alone, the ladder's last rung.
-export function createOvertureTreesProvider(pool, cityKey = null) {
-    const known = cityKey ? OVERTURE_CITIES[cityKey] : null;
-    if (cityKey && !known) throw new Error(`createOvertureTreesProvider: unknown Overture city '${cityKey}'`);
-    const cfg = known || {};
-    // city → region → country → planet, exactly as the buildings read (data-scope.js). Decor is
-    // ingested by area too, so the same city can find its trees under a broader label than its own.
-    const ladder = scopeLadder(known ? { city: cfg.city || cityKey, region: cfg.region, country: cfg.country } : {});
+// Optional ingest labels and planting policy are supplied explicitly by the consumer.
+export function createOvertureTreesProvider(pool, cfg = {}) {
+    const ladder = scopeLadder(cfg);
     const scopeMemo = createScopeMemo();
     const spacingM = Number.isFinite(cfg.greeneryTreeSpacingM) && cfg.greeneryTreeSpacingM > 0
         ? cfg.greeneryTreeSpacingM
@@ -138,7 +131,7 @@ export function createOvertureTreesProvider(pool, cityKey = null) {
                 spacingM, GREENERY_ACCEPTANCE, PLANTED_MIN_DISTANCE_TO_MAPPED_M
             ])).rows,
             scopeMemo,
-            `trees:${cityKey || 'planet'}`
+            'trees'
         );
         const trees = rows.map(r => [Number(r.lng), Number(r.lat)]);
         return { trees, count: trees.length, scope, source: 'overture-trees' };

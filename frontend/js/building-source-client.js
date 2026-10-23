@@ -1,7 +1,7 @@
 // All building reads use our backend. Dedicated city/user sources retain their own
 // identities; a configured OSM fallback also runs through the backend.
 (function () {
-    const PATHS = ['/buildings/near', '/buildings/footprints', '/buildings/under'];
+    const PATHS = ['/buildings/near', '/buildings/footprints', '/buildings/under', '/buildings/carve'];
     // The centre of the request's area ({ lat, lon }): its geometry, or its first region's (one
     // request covers one scene). null when it has no coordinates.
     function requestPoint(body) {
@@ -23,13 +23,13 @@
     }
 
     // The buildings config of the city whose data applies where the request lies.
-    function buildingsConfigFor(global, body) {
+    function configFor(global, body) {
         const manager = global.CityConfigManager;
         const point = requestPoint(body);
         const config = point && typeof manager?.getCityConfigAt === 'function'
             ? manager.getCityConfigAt(point.lat, point.lon)
             : manager?.getCurrentCityConfig?.();
-        return (config && config.buildings) || null;
+        return config || {};
     }
 
     async function askServer(global, path, body, signal) {
@@ -54,9 +54,11 @@
 
     async function request(path, body, { signal, global = window } = {}) {
         if (!PATHS.includes(path)) throw new Error(`Not a building endpoint: ${path}`);
-        const buildings = buildingsConfigFor(global, body);
-        const { city, source, ...rest } = body || {};
-        const serverBody = { ...rest, source: buildings?.sourceId || undefined };
+        const config = configFor(global, body);
+        const buildings = config.buildings;
+        const { city, source, floorModelNamespace, ...rest } = body || {};
+        const serverBody = { ...rest, source: buildings?.sourceId || (buildings?.source === 'osm' ? 'osm' : undefined),
+            floorModelNamespace: config.floorModels?.namespace };
         if (buildings?.fallback !== 'osm') return askServer(global, path, serverBody, signal);
         let payload;
         try {

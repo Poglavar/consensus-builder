@@ -2,7 +2,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createWfsParcelSource } from '../parcels/wfs-source.js';
 import { computeSourceBinding } from '../parcels/source-binding.js';
-import { parcelSourceForCity } from '../parcels/sources.js';
+import { parcelSourceForCity } from './helpers/frontend-source-selection.js';
 const descriptor = { id: 'bj-andf-efoncier-geoserver', adapter: 'wfs', endpoint: 'https://geoserver.andf.bj/geoserver/efb/wfs',
     featureType: 'efb:efb_parcel', idField: 'nup', idType: 'string', idPrefix: 'BJ-ANDF-', idPattern: '^[0-9]+$',
     parcelNumberField: 'local_parcel_identification', outFields: ['nup', 'local_parcel_identification', 'commune_name'],

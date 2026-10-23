@@ -75,7 +75,7 @@ describe('POST /agreements', () => {
         expect(res.body).toMatchObject({
             cid: cidOf(content), city: 'zagreb', title: 'Riverside deal', author: 'Studio North',
             designCids: [cidOf(park), cidOf(layout)], inputParcelIds: ['HR-335649-100', 'HR-335649-101'],
-            parcelSourceId: null, deadline: '2099-01-01T00:00:00.000Z', status: 'active', content, onchain: null
+            parcelSourceId: 'oss-wfs', deadline: '2099-01-01T00:00:00.000Z', status: 'active', content, onchain: null
         });
         // The layout was bound now, and written with the agreement or not at all.
         expect(pool.getBindingCalls().length).toBeGreaterThan(0);
@@ -86,7 +86,7 @@ describe('POST /agreements', () => {
         expect(JSON.parse(designInsert.params[7]).parcels.map(hit => hit.parcelId)).toEqual(['HR-335649-100', 'HR-335649-101']);
         const agreementInsert = pool.getCalls().find(call => INSERT_AGREEMENT.test(call.sql));
         expect(agreementInsert.params.slice(0, 8)).toEqual([cidOf(content), 'zagreb', 'Riverside deal', 'Studio North',
-            [cidOf(park), cidOf(layout)], ['HR-335649-100', 'HR-335649-101'], null, '2099-01-01T00:00:00.000Z']);
+            [cidOf(park), cidOf(layout)], ['HR-335649-100', 'HR-335649-101'], 'oss-wfs', '2099-01-01T00:00:00.000Z']);
         expect(JSON.parse(agreementInsert.params[8])).toEqual(content);
 
         expect(thumbnailQueue.enqueue).toHaveBeenCalledTimes(2);
@@ -123,8 +123,8 @@ describe('POST /agreements', () => {
         const { app, thumbnailQueue } = appFor(pool);
         const content = agreementContent([park, layout], { inputs: {
             parcels: [
-                { parcelId: 'HR-335649-100', areaM2: 600, holders: [{ ownerKey: 'owner-a', share: 1 }] },
-                { parcelId: 'HR-335649-999', areaM2: 10, holders: [{ ownerKey: 'owner-z', share: 1 }] }
+                { parcelId: 'HR-335649-100', parcelSourceId: 'oss-wfs', areaM2: 600, holders: [{ ownerKey: 'owner-a', share: 1 }] },
+                { parcelId: 'HR-335649-999', parcelSourceId: 'oss-wfs', areaM2: 10, holders: [{ ownerKey: 'owner-z', share: 1 }] }
             ],
             openGroundM2: 0
         } });
@@ -145,7 +145,7 @@ describe('POST /agreements', () => {
         pool.answer(DESIGN_MANY, (sql, params) => ({ rows: params[0].map(cid => rows[cid]).filter(Boolean) }));
         pool.answer(INSERT_AGREEMENT, (sql, params) => ({ rows: [insertedAgreement(params)] }));
         const inputs = { parcels: [
-            { parcelId: 'HR-335649-100', areaM2: 600, holders: [{ ownerKey: 'owner-a', share: 1 }] },
+            { parcelId: 'HR-335649-100', parcelSourceId: 'oss-wfs', areaM2: 600, holders: [{ ownerKey: 'owner-a', share: 1 }] },
             { parcelId: 'HR-335649-101', areaM2: 400, holders: [{ ownerKey: 'owner-b', share: 1 }] },
             { parcelId: 'BG-77-1', areaM2: 80, holders: [{ ownerKey: 'owner-d', share: 1 }] }
         ], openGroundM2: 0 };
@@ -255,7 +255,7 @@ describe('validateAgreementContent', () => {
     it('accepts the fixture and copies out what the index looks things up by', () => {
         expect(validateAgreementContent(valid, { now: NOW })).toEqual({
             ok: true, designCids: [cidOf(park), cidOf(layout)], inputParcelIds: ['HR-335649-100', 'HR-335649-101'],
-            parcelSourceId: null, deadline: '2099-01-01T00:00:00.000Z'
+            parcelSourceId: 'oss-wfs', deadline: '2099-01-01T00:00:00.000Z'
         });
         const sourced = withInputs([{ parcelId: 'US-NY-1', parcelSourceId: 'nyc-mappluto', areaM2: 10, holders: [holder('a')] }]);
         expect(sourced).toMatchObject({ ok: true, parcelSourceId: 'nyc-mappluto', inputParcelIds: ['US-NY-1'] });
@@ -365,7 +365,7 @@ describe('GET /agreements', () => {
     };
 
     it('filters by city, design and parcel, newest first', async () => {
-        const { res, call } = await listed(`?city=zg&design=${cidOf(park)}&parcel=HR-335649-100&limit=20`);
+        const { res, call } = await listed(`?city=zagreb&design=${cidOf(park)}&parcel=HR-335649-100&limit=20`);
         expect(res.status).toBe(200);
         expect(res.body.count).toBe(1);
         expect(res.body.agreements[0]).toMatchObject({ designCids: [cidOf(park)], status: 'active' });

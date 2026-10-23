@@ -42,9 +42,9 @@ assert.throws(() => buildCitySettings({ configs, catalog, codes: ['999'] }), /No
 
 const root = fs.mkdtempSync(path.join(os.tmpdir(), 'parcel-city-settings-'));
 try {
-    for (const dir of ['frontend/js', 'backend/parcels', 'world-parcels/report']) fs.mkdirSync(path.join(root, dir), { recursive: true });
+    for (const dir of ['frontend/js', 'frontend/data', 'backend/parcels', 'world-parcels/report']) fs.mkdirSync(path.join(root, dir), { recursive: true });
     fs.writeFileSync(path.join(root, 'frontend/js/city-config.js'), `${configSource}\n// retained outside config`);
-    fs.writeFileSync(path.join(root, 'backend/parcels/source-catalog.json'), JSON.stringify(catalog));
+    fs.writeFileSync(path.join(root, 'frontend/data/source-catalog.json'), JSON.stringify(catalog));
     fs.writeFileSync(path.join(root, 'world-parcels/report/city-demographics.json'), JSON.stringify({ cities: [] }));
     const cli = spawnSync(process.execPath, [fileURLToPath(new URL('../lib/parcel-city-settings.mjs', import.meta.url)), '--root', root, '123'], { encoding: 'utf8' });
     assert.equal(cli.status, 0, cli.stderr);
@@ -59,7 +59,7 @@ try {
     fs.writeFileSync(path.join(root, 'world-parcels/cities/9999/failed-urls.json'), '[]');
     assert.deepEqual(applyCitySettings(root), { citySettings: 1, appCities: 1, sources: 1, databaseSources: 0 });
     const appliedConfigs = parseCityConfigs(fs.readFileSync(path.join(root, 'frontend/js/city-config.js'), 'utf8'));
-    const appliedCatalog = JSON.parse(fs.readFileSync(path.join(root, 'backend/parcels/source-catalog.json'), 'utf8'));
+    const appliedCatalog = JSON.parse(fs.readFileSync(path.join(root, 'frontend/data/source-catalog.json'), 'utf8'));
     assert.equal(appliedConfigs.test_city.parcels.gridSize, 77);
     assert.equal(appliedConfigs.test_city.map.parcelZoomRange.max, Infinity);
     assert.equal(appliedCatalog.sources[0].endpoint, 'https://example.test/updated');
@@ -85,7 +85,7 @@ try {
 
 const sharedRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'parcel-city-shared-source-'));
 try {
-    for (const dir of ['frontend/js', 'backend/parcels', 'world-parcels/report']) fs.mkdirSync(path.join(sharedRoot, dir), { recursive: true });
+    for (const dir of ['frontend/js', 'frontend/data', 'backend/parcels', 'world-parcels/report']) fs.mkdirSync(path.join(sharedRoot, dir), { recursive: true });
     const sharedConfigs = {
         city_a: { id: 'city_a', wupCityCode: '11', label: 'City A', map: { defaultCenter: [1, 1] }, parcels: { source: 'parcel-source', sourceId: 'shared-source' } },
         city_b: { id: 'city_b', wupCityCode: '12', label: 'City B', map: { defaultCenter: [2, 2] }, parcels: { source: 'parcel-source', sourceId: 'shared-source' } }
@@ -94,7 +94,7 @@ try {
         cityIds: ['city_a', 'city_b', 'city_c'], metricSridByCity: { city_a: 26910, city_b: 26911, city_c: 26912 }, evidenceFile: 'research/archive.json' }] };
     const sharedConfigSource = `const CITY_CONFIGS = {\n        city_a: { id: 'city_a', wupCityCode: '11', label: 'City A', map: { defaultCenter: [1, 1] }, parcels: { source: 'parcel-source', sourceId: 'shared-source' } },\n        city_b: { id: 'city_b', wupCityCode: '12', label: 'City B', map: { defaultCenter: [2, 2] }, parcels: { source: 'parcel-source', sourceId: 'shared-source' } }\n};`;
     fs.writeFileSync(path.join(sharedRoot, 'frontend/js/city-config.js'), sharedConfigSource);
-    fs.writeFileSync(path.join(sharedRoot, 'backend/parcels/source-catalog.json'), JSON.stringify(sharedCatalog));
+    fs.writeFileSync(path.join(sharedRoot, 'frontend/data/source-catalog.json'), JSON.stringify(sharedCatalog));
     fs.writeFileSync(path.join(sharedRoot, 'world-parcels/report/city-demographics.json'), JSON.stringify({ cities: [] }));
     exportCitySettings(sharedRoot);
     const cityAFile = path.join(sharedRoot, 'world-parcels/cities/11/settings.json');
@@ -106,7 +106,7 @@ try {
     const reducedCatalog = structuredClone(sharedCatalog);
     reducedCatalog.sources[0].cityIds = ['city_c'];
     reducedCatalog.sources[0].metricSridByCity = { city_c: 26912 };
-    fs.writeFileSync(path.join(sharedRoot, 'backend/parcels/source-catalog.json'), JSON.stringify(reducedCatalog));
+    fs.writeFileSync(path.join(sharedRoot, 'frontend/data/source-catalog.json'), JSON.stringify(reducedCatalog));
     cityB.sources[0].endpoint = 'https://example.test/conflicting';
     fs.writeFileSync(cityBFile, JSON.stringify(cityB));
     assert.throws(() => applyCitySettings(sharedRoot), /Conflicting source descriptor/);
@@ -114,14 +114,14 @@ try {
     cityB.sources[0].endpoint = 'https://example.test/shared';
     fs.writeFileSync(cityBFile, JSON.stringify(cityB));
     applyCitySettings(sharedRoot);
-    let merged = JSON.parse(fs.readFileSync(path.join(sharedRoot, 'backend/parcels/source-catalog.json'), 'utf8')).sources[0];
+    let merged = JSON.parse(fs.readFileSync(path.join(sharedRoot, 'frontend/data/source-catalog.json'), 'utf8')).sources[0];
     assert.deepEqual(new Set(merged.cityIds), new Set(['city_a', 'city_b', 'city_c']));
     assert.deepEqual(merged.metricSridByCity, { city_c: 26912, city_a: 26910, city_b: 26911 });
 
     cityA.sources[0].endpoint = 'https://example.test/updated-shared';
     fs.writeFileSync(cityAFile, JSON.stringify(cityA));
     applyCitySettings(sharedRoot, { codes: ['11'] });
-    merged = JSON.parse(fs.readFileSync(path.join(sharedRoot, 'backend/parcels/source-catalog.json'), 'utf8')).sources[0];
+    merged = JSON.parse(fs.readFileSync(path.join(sharedRoot, 'frontend/data/source-catalog.json'), 'utf8')).sources[0];
     assert.equal(merged.endpoint, 'https://example.test/updated-shared');
     assert.deepEqual(new Set(merged.cityIds), new Set(['city_a', 'city_b', 'city_c']));
     assert.deepEqual(merged.metricSridByCity, { city_a: 26910, city_b: 26911, city_c: 26912 });

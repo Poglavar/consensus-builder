@@ -81,7 +81,7 @@ describe('POST /area-monitors', () => {
         expect(accepted.body).toEqual({
             id: 1,
             name: 'Zapadni Jarunski Most',
-            cityId: 'zagreb',
+            cityId: 'global',
             createdAt: '2026-03-27T00:10:40.993Z'
         });
 
@@ -126,7 +126,7 @@ describe('POST /area-monitors', () => {
         expect(res.body).toEqual({
             id: 7,
             name: 'Jarun Corridor',
-            cityId: 'zagreb',
+            cityId: 'global',
             createdAt: '2026-03-28T12:00:00.000Z'
         });
 
@@ -142,7 +142,7 @@ describe('POST /area-monitors', () => {
         expect(calls[1].params[5]).toBe('https://example.com/forum/jarun');
         expect(calls[1].params[6]).toBeTruthy();
         expect(calls[1].params[7]).toBe('device_123');
-        expect(calls[1].params[8]).toBe('zagreb');
+        expect(calls[1].params[8]).toBe('global');
     });
 
     it('creates a monitor without a polygon (paint-mode creation)', async () => {
@@ -215,7 +215,7 @@ describe('POST /area-monitors', () => {
         expect(unsupportedField.body).toEqual({ error: 'Request body contains unsupported fields.' });
     });
 
-    it('files a monitor under the city its polygon lies in, and rejects an unknown cityId', async () => {
+    it('retains the caller namespace independently of geometry, and rejects malformed labels', async () => {
         const created = { rows: [{ id: 8, name: 'Test Monitor', created_at: '2026-03-28T13:00:00.000Z' }], rowCount: 1 };
         pool.setResults([{ rows: [{ cnt: 0 }], rowCount: 1 }, created, { rows: [{ cnt: 0 }], rowCount: 1 }, created]);
 
@@ -224,8 +224,8 @@ describe('POST /area-monitors', () => {
             .post('/area-monitors')
             .send({ name: 'Test Monitor', cityId: 'belgrade', polygon: buildPolygon(), parcelIds: ['HR-339318-1'] });
         expect(fromBelgrade.status).toBe(201);
-        expect(fromBelgrade.body.cityId).toBe('zagreb');
-        expect(pool.getCalls()[1].params[8]).toBe('zagreb');
+        expect(fromBelgrade.body.cityId).toBe('belgrade');
+        expect(pool.getCalls()[1].params[8]).toBe('belgrade');
 
         // a polygon in Belgrade is Belgrade's, whatever the request says
         const belgrade = { type: 'Polygon', coordinates: [[[20.46, 44.81], [20.47, 44.81], [20.47, 44.82], [20.46, 44.81]]] };
@@ -233,13 +233,13 @@ describe('POST /area-monitors', () => {
             .post('/area-monitors')
             .send({ name: 'Test Monitor', cityId: 'zagreb', polygon: belgrade, parcelIds: ['HR-339318-1'] });
         expect(inBelgrade.status).toBe(201);
-        expect(inBelgrade.body.cityId).toBe('belgrade');
+        expect(inBelgrade.body.cityId).toBe('zagreb');
 
         const rejected = await request(app)
             .post('/area-monitors')
-            .send({ name: 'Test Monitor', cityId: 'atlantis', polygon: buildPolygon(), parcelIds: ['HR-339318-1'] });
+            .send({ name: 'Test Monitor', cityId: '../invalid', polygon: buildPolygon(), parcelIds: ['HR-339318-1'] });
         expect(rejected.status).toBe(400);
-        expect(rejected.body).toEqual({ error: 'cityId must be a configured city id.' });
+        expect(rejected.body).toEqual({ error: 'cityId must be a valid namespace label.' });
     });
 
     it('rejects invalid polygon coordinate payloads', async () => {
@@ -647,7 +647,7 @@ describe('GET /area-monitors/:id', () => {
         expect(res.body.summary).toEqual({ total: 0, cityOwned: 0, governmentOwned: 0, remaining: 0 });
     });
 
-    it('falls back to inferred zagreb cityId for legacy monitors without a stored city_id', async () => {
+    it('does not infer an app city for records without a stored namespace', async () => {
         pool.setResult({
             rows: [buildMonitorRow({ city_id: null })],
             rowCount: 1
@@ -656,7 +656,7 @@ describe('GET /area-monitors/:id', () => {
         const res = await request(app).get('/area-monitors/1');
 
         expect(res.status).toBe(200);
-        expect(res.body.monitor.cityId).toBe('zagreb');
+        expect(res.body.monitor.cityId).toBe('global');
     });
 });
 

@@ -14,8 +14,7 @@ const validBounds = b => Array.isArray(b) && b.length === 4 && b.every(Number.is
 export function canonicalImageryConfig(input) {
     if (!input || input.kind !== 'imagery' || !['xyz', 'wms'].includes(input.adapter)) throw invalid();
     const config = Object.fromEntries(FIELDS.filter(key => input[key] !== undefined).map(key => [key, input[key]]));
-    if (!Array.isArray(config.cityIds) || config.cityIds.length !== 1
-        || !/^[a-z][a-z0-9_]{0,79}$/.test(config.cityIds[0]) || !label(config.name)
+    if (config.cityIds !== undefined && (!Array.isArray(config.cityIds) || config.cityIds.length !== 1 || config.cityIds.some(id => typeof id !== 'string' || !/^[a-z][a-z0-9_]{0,79}$/.test(id))) || !label(config.name)
         || (config.attribution !== undefined && !label(config.attribution))
         || (config.bounds !== undefined && !validBounds(config.bounds))) throw invalid();
     let url;

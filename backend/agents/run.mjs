@@ -58,7 +58,7 @@ import * as turf from '@turf/turf';
 import { fetchCandidateParcels } from './parcel-source.js';
 import { chooseArea, contestParcels, parcelsFromSource, pickedParcelIds, rivalAgreementCids, runKeyFor, seedFor, slotLabel, windowIn } from './area-plan.js';
 import { planCandidates } from './planner.js';
-import { cityMoney } from '../utils/city-money.js';
+import { cityMoney } from '../scripts/lib/frontend-city-money.mjs';
 import { chooseHousingArea, planHousingCandidates, housingOutreach } from './housing-policy.js';
 import { fetchHousingScreen } from './housing-screen.js';
 import { markAgentRunFailed, safeFailureDiagnostic } from './run-failure.js';
@@ -627,7 +627,7 @@ async function main() {
             const area = persona.housingResearch ? chooseHousingArea(persona.areas, day) : chooseArea(persona.areas, runKey, persona.name);
             const { parcels, city, where } = await parcelsForArea({ pool, apiBase, index, area, persona, runKey, day, runs: allRuns, limit: args.candidates * 6 });
             // Gains are in the money of the place (London in GBP, Zagreb in EUR), at the app's own
-            // floor-area sale price for that city (utils/city-money.js).
+            // floor-area sale price for that city (frontend-owned money settings).
             const prices = cityMoney(city).currentFloorAreaPrices();
             const money = { currency: prices.currency, salePricePerM2: prices.sale.perSqm };
             const planned = (persona.housingResearch ? planHousingCandidates : planCandidates)(parcels, persona, { turf, money, limit: args.candidates * 2, seed: seedFor(runKey) });

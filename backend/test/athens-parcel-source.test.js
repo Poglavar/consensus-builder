@@ -2,7 +2,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { createContext, runInContext } from 'node:vm';
-import { createParcelSource, parcelSourceCatalog, parcelSourceForCity, parcelSourceForIds } from '../parcels/sources.js';
+import { createParcelSource, parcelSourceCatalog } from '../parcels/sources.js';
+import { parcelSourceForCity, parcelSourceForIds } from './helpers/frontend-source-selection.js';
 
 const read = path => readFileSync(new URL(path, import.meta.url), 'utf8');
 const cityContext = { URLSearchParams, console };

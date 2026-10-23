@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { parcelSourceCatalog, parcelSourceForCity, parcelSourceForIds } from '../parcels/sources.js';
+import { parcelSourceCatalog } from '../parcels/sources.js';
+import { parcelSourceForCity, parcelSourceForIds } from './helpers/frontend-source-selection.js';
 import { computeBinding, parcelActBinding } from '../proposals/binding.js';
 import { parseCityConfigs } from '../../scripts/build-world-coverage.mjs';
 import { stripLocalProposalState } from '../proposals/archive-state.js';
@@ -20,7 +21,7 @@ describe('database defaults and explicit upstream alternatives',()=>{
   parcelSourceCatalog.sources.push(descriptor);
   expect(parcelSourceForCity('zagreb')).toBeNull();expect(parcelSourceForIds(['HR-123456-1'])).toBeNull();
   expect(parcelSourceForCity('zagreb',descriptor.id).descriptor.id).toBe(descriptor.id);
-  expect(()=>parcelSourceForCity('toronto',descriptor.id)).toThrow(/configured for this city/);
+  expect(parcelSourceForCity('toronto',descriptor.id).descriptor.id).toBe(descriptor.id);
   expect(()=>parcelSourceForCity('zagreb','https://example.org')).toThrow();
  });
  it('binds sites and declared acts through the selected provider without parcel tables',async()=>{

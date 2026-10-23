@@ -2,7 +2,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createBrowserProviderFetch } from '../parcels/browser-source-runtime.js';
 import { createBrowserParcelRuntime } from '../parcels/browser-source-runtime.js';
-import catalog from '../parcels/source-catalog.json' with { type: 'json' };
+import catalog from '../../frontend/data/source-catalog.json' with { type: 'json' };
 import { knownLimitFor, providerHttpError, upstreamError } from '../parcels/source-contract.js';
 
 const response = (status = 200, headers = {}) => new Response('data', { status, headers });

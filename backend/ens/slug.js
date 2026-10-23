@@ -9,7 +9,7 @@
 // patterns. Buenos Aires uses a bare SMP (e.g. 001-005-027A) with no prefix.
 // Croatia's ids (HR-<ko>-<number>) come from one countrywide cadastre and name
 // no city (Zagreb, Split and Šibenik share it): their city is where the parcel
-// lies (routes/ens.js, jurisdiction.js), not a prefix.
+// lies; a source prefix alone cannot supply that record metadata.
 const CITIES = [
     { cityId: 'new_york', cityCode: 'ny', test: (id) => id.startsWith('US-NY-') },
     { cityId: 'colorado', cityCode: 'co', test: (id) => id.startsWith('US-CO-') },

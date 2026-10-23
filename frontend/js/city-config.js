@@ -277,6 +277,9 @@
                 liveSource: { sourceId: 'hr-dgu-oss-dkp-cestice', idPrefix: 'HR-', gridSize: 100 },
                 requiresBackend: true
             },
+            buildings: { source: 'gdi', sourceId: 'gdi-3d' },
+            floorModels: { namespace: 'zagreb' },
+            planning: { sourceIds: ['zagreb-gup-2025', 'zagreb-gup-2016'] },
             sidebar: {
                 // No disabled sections for Zagreb - all sections enabled
                 // All features (including roadTools) are automatically enabled
@@ -3566,10 +3569,12 @@
                 liveSource: { sourceId: 'us-nyc-dof-digital-tax-map', idPrefix: 'US-NYC-BBL-' },
                 requiresBackend: true
             },
+            floorModels: { namespace: 'new_york' },
+            planning: { sourceIds: ['nyc-r6a-pilot-2026-10-19'] },
             buildings: {
-                // NYCMaps/ArcGIS (or the configured Socrata feed) supplies 3D meshes,
+                // The explicitly selected NYCMaps/ArcGIS feed supplies 3D meshes,
                 // map footprints and demolition stock from the same building identities.
-                source: 'nyc'
+                source: 'nyc', sourceId: 'nyc-arcgis'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -21112,6 +21117,38 @@
         return id === currentCityId ? getCurrentCityConfig() : getCityConfig(id);
     }
 
+    // Consumer-side source selection for a geometry, independent of the current map view.
+    function getDataContext(geometry, cityId = currentCityId) {
+        let minLon = Infinity, minLat = Infinity, maxLon = -Infinity, maxLat = -Infinity;
+        function walk(node) {
+            if (!Array.isArray(node)) return;
+            if (typeof node[0] === 'number') {
+                if (Number.isFinite(node[0]) && Number.isFinite(node[1])) {
+                    minLon = Math.min(minLon, node[0]); maxLon = Math.max(maxLon, node[0]);
+                    minLat = Math.min(minLat, node[1]); maxLat = Math.max(maxLat, node[1]);
+                }
+            } else node.forEach(walk);
+        }
+        function visit(value) {
+            if (value?.type === 'Feature') return visit(value.geometry);
+            if (value?.type === 'GeometryCollection') return value.geometries.forEach(visit);
+            walk(value?.coordinates);
+        }
+        visit(geometry);
+        const config = Number.isFinite(minLon)
+            ? getCityConfigAt((minLat + maxLat) / 2, (minLon + maxLon) / 2)
+            : getCityConfig(resolveCityId(cityId) || cityId);
+        const parcels = config?.parcels;
+        return { city: config?.id || cityId, parcelSourceId: parcels?.sourceId || parcels?.source || null,
+            buildingSourceId: config?.buildings?.sourceId || (config?.buildings?.source === 'osm' ? 'osm' : null),
+            floorModelNamespace: config?.floorModels?.namespace };
+    }
+
+    function getParcelContext(geometry, cityId) {
+        const { city, parcelSourceId } = getDataContext(geometry, cityId);
+        return { city, parcelSourceId };
+    }
+
     // How this boot chose its city (WorldEntryModel.resolveEntry, location-first.md "URL rules").
     function resolveBootEntry() {
         const model = typeof window !== 'undefined' ? window.WorldEntryModel : null;
@@ -21249,7 +21286,7 @@
     }
 
     function getBuildingSourceId() {
-        return getCurrentCityConfig()?.buildings?.sourceId || undefined;
+        return getDataContext(null).buildingSourceId || undefined;
     }
 
     // Live alternatives are opt-in for this boot. A reload switches providers without changing
@@ -21858,6 +21895,8 @@
         cityAt,
         resolveCityParam,
         getCityConfigAt,
+        getDataContext,
+        getParcelContext,
         // Keep a city the visitor picked on the globe without a reload (the default city it booted on).
         // Writes only the pointer: the city is unchanged, so no cityChanged event.
         rememberCurrentCity: () => {

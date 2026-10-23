@@ -1,7 +1,9 @@
+import { consumerParcelSourceId } from './helpers/frontend-source-selection.js';
 import { describe, it, expect, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
-import { parcelSourceCatalog, parcelSourceForCity, clearParcelSourceRuntimeCache } from '../parcels/sources.js';
+import { parcelSourceCatalog, clearParcelSourceRuntimeCache } from '../parcels/sources.js';
+import { parcelSourceForCity } from './helpers/frontend-source-selection.js';
 import { computeBinding } from '../proposals/binding.js';
 const context = { URLSearchParams, console }; context.window = context;
 runInNewContext(readFileSync(new URL('../../frontend/js/city-config.js', import.meta.url),'utf8'),context);
@@ -39,7 +41,7 @@ describe('official defaults for formerly imported cities',()=>{
             const result=await provider.adapter.queryIds([prefix+native]);
             expect(result.features[0].properties.sourceProperties).not.toHaveProperty('owner');
             const db={query:vi.fn(()=>{throw Error('Imported table must not be queried');})};
-            const {binding}=await computeBinding(db,{city,site:geometry});
+            const {binding}=await computeBinding(db,{ parcelSourceId: consumerParcelSourceId(city),city,site:geometry});
             expect(binding).toMatchObject({coverage:'complete',source:'server:'+sourceId,parcels:[{parcelId:prefix+native}]});
             expect(db.query).not.toHaveBeenCalled();
             if(city==='belgrade') {

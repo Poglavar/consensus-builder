@@ -34,30 +34,17 @@ import { withSourceCooldown, withSourceConcurrency, withSourceControls } from '.
 
 export { withSourceCooldown, withSourceConcurrency } from './source-controls.js';
 
-export const parcelSourceCatalog = JSON.parse(readFileSync(new URL('./source-catalog.json', import.meta.url), 'utf8'));
+export const parcelSourceCatalog = JSON.parse(readFileSync(new URL('../../frontend/data/source-catalog.json', import.meta.url), 'utf8'));
 const certificateFetches = new Map();
 const customFetch = createPublicSourceFetch();
 const runtimeSources = new Map();
 export function clearParcelSourceRuntimeCache() { runtimeSources.clear(); }
-
-function validateCityMetrics(descriptor) {
-    const metrics = descriptor.metricSridByCity;
-    if (metrics === undefined) return;
-    if (!metrics || typeof metrics !== 'object' || Array.isArray(metrics)
-        || !Array.isArray(descriptor.cityIds)
-        || Object.keys(metrics).length !== descriptor.cityIds.length
-        || descriptor.cityIds.some(city => !Object.hasOwn(metrics, city))
-        || Object.values(metrics).some(srid => !Number.isSafeInteger(srid) || srid <= 0)) {
-        throw new Error('Invalid parcel source city metric projections.');
-    }
-}
 
 export function createParcelSource(descriptor, options = {}) {
     if (descriptor.id?.startsWith('custom.')) {
         descriptor = decodeCustomSource(descriptor.id);
         options = { ...options, fetchImpl: options.fetchImpl || customFetch };
     }
-    validateCityMetrics(descriptor);
     const factory = { 'dda-public-plots': createDdaParcelSource, 'shenzhen-land-certain': (_descriptor, opts) => createShenzhenLandCertainSource(opts), 'dgu-wfs': createDguParcelSource, arcgis: createArcgisParcelSource, wfs: createWfsParcelSource, 'ogc-api': createOgcApiParcelSource,
         'geojson-snapshot': (source, opts) => source.snapshotFormat === 'shapefile-zip'
             ? createShapefileSnapshotParcelSource(source, opts) : createGeojsonSnapshotParcelSource(source, opts),
@@ -117,26 +104,9 @@ export function runtimeParcelSource(descriptor) {
     return runtimeSources.get(descriptor.id);
 }
 
-export function parcelSourceForCity(city, sourceId = null) {
-    const descriptor = sourceId === null || sourceId === undefined
-        ? parcelSourceCatalog.sources.find(source => source.defaultForCity !== false && source.cityIds.includes(city))
-        : resolveParcelSourceDescriptor(sourceId);
-    if (sourceId !== null && sourceId !== undefined && (!descriptor || !descriptor.cityIds.includes(city))) {
-        throw Object.assign(new HttpError(400, 'Parcel source is not configured for this city.'), { code: 'invalid-parcel-source' });
-    }
-    if (!descriptor) return null;
-    const adapter = runtimeParcelSource(descriptor);
-    // Keep adapter/cache identity tied to the original shared provider; only binding's projection varies.
-    return { descriptor: descriptor.metricSridByCity ? { ...descriptor, metricSrid: descriptor.metricSridByCity[city] } : descriptor, adapter };
-}
-
-export function parcelSourceForIds(ids) {
-    // Retired city defaults can still resolve immutable proposal references in their
-    // original namespace; opt-in/unqualified sources need an explicit historical grant.
-    // Resolve the most specific namespace before checking eligibility. An unavailable
-    // GB-HMLR-BROWSER-v1 ID must not be interpreted through the older GB-HMLR prefix.
-    const descriptor = parcelSourceCatalog.sources.filter(source => ids.some(id => String(id).startsWith(source.idPrefix)))
-        .sort((a, b) => b.idPrefix.length - a.idPrefix.length)[0];
-    return descriptor && (descriptor.defaultForCity !== false || descriptor.historicalForIds === true)
-        ? { descriptor, adapter: runtimeParcelSource(descriptor) } : null;
+// Explicit dataset selection. City defaults and namespace inference belong to the consumer.
+export function parcelSourceById(sourceId) {
+    const descriptor = resolveParcelSourceDescriptor(sourceId);
+    if (!descriptor) throw Object.assign(new HttpError(400, 'Choose an explicit parcel source.'), { code: 'invalid-parcel-source' });
+    return { descriptor, adapter: runtimeParcelSource(descriptor) };
 }

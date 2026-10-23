@@ -382,7 +382,7 @@
     async function fetchDesignBinding({ site, toleranceM, city }) {
         const response = await win.fetch(`${backendBase()}/designs/binding`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ site, toleranceM, city })
+            body: JSON.stringify({ site, toleranceM, ...win.CityConfigManager.getParcelContext(site, city) })
         });
         const payload = await response.json().catch(() => null);
         if (!response.ok) {

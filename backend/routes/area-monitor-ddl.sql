@@ -5,7 +5,7 @@
 CREATE TABLE IF NOT EXISTS area_monitor (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    city_id VARCHAR(32) NOT NULL DEFAULT 'zagreb',
+    city_id VARCHAR(32) NOT NULL DEFAULT 'global',
     polygon JSONB NOT NULL,               -- GeoJSON Polygon or MultiPolygon geometry
     parcel_ids JSONB NOT NULL,           -- ["HR-335-1234", "HR-335-1235", ...]
     parcel_count INTEGER NOT NULL,
@@ -26,11 +26,11 @@ ALTER TABLE area_monitor
     ADD COLUMN IF NOT EXISTS city_id VARCHAR(32);
 
 UPDATE area_monitor
-SET city_id = 'zagreb'
+SET city_id = 'global'
 WHERE city_id IS NULL;
 
 ALTER TABLE area_monitor
-    ALTER COLUMN city_id SET DEFAULT 'zagreb';
+    ALTER COLUMN city_id SET DEFAULT 'global';
 
 ALTER TABLE area_monitor
     ALTER COLUMN city_id SET NOT NULL;
@@ -44,7 +44,7 @@ CREATE INDEX IF NOT EXISTS idx_area_monitor_city_id ON area_monitor(city_id);
 -- Comments for documentation
 COMMENT ON TABLE area_monitor IS 'User-defined monitoring areas for tracking parcel acquisition progress';
 COMMENT ON COLUMN area_monitor.polygon IS 'GeoJSON Polygon geometry defining the monitored area';
-COMMENT ON COLUMN area_monitor.city_id IS 'Canonical city identifier for the monitor (for example zagreb or belgrade)';
+COMMENT ON COLUMN area_monitor.city_id IS 'Caller-supplied monitor namespace; global when omitted';
 COMMENT ON COLUMN area_monitor.parcel_ids IS 'Array of parcel IDs (HR-<maticni_broj_ko>-<broj_cestice> format) within the area';
 COMMENT ON COLUMN area_monitor.parcel_count IS 'Cached count of parcel_ids array length';
 COMMENT ON COLUMN area_monitor.eojn_url IS 'Link to public procurement notice on EOJN (elektronički oglasnik javne nabave)';

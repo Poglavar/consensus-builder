@@ -96,7 +96,7 @@ describe('buildCoverage', () => {
         countries: JSON.parse(read('world-parcels/countries.geojson')),
         regions: JSON.parse(read('world-parcels/regions.geojson')),
         regionReviews: JSON.parse(read('world-parcels/region-coverage-reviews.json')).reviews,
-        catalog: JSON.parse(read('backend/parcels/source-catalog.json')).sources,
+        catalog: JSON.parse(read('frontend/data/source-catalog.json')).sources,
         cityConfigSource: read('frontend/js/city-config.js'),
         demographics: JSON.parse(read('world-parcels/report/city-demographics.json')),
         // Historical task ledgers are deliberately absent from the current contract.

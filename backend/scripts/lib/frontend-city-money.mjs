@@ -6,14 +6,14 @@ import { createRequire } from 'node:module';
 import { runInNewContext } from 'node:vm';
 
 const require = createRequire(import.meta.url);
-const CityMoney = require('../../frontend/js/city-money.js');
+const CityMoney = require('../../../frontend/js/city-money.js');
 
 let manager = null;
 function cityConfigs() {
     if (!manager) {
         const context = { console, URL, URLSearchParams };
         context.window = context;
-        runInNewContext(readFileSync(new URL('../../frontend/js/city-config.js', import.meta.url), 'utf8'), context);
+        runInNewContext(readFileSync(new URL('../../../frontend/js/city-config.js', import.meta.url), 'utf8'), context);
         manager = context.CityConfigManager;
     }
     return manager;

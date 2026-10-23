@@ -11,7 +11,7 @@ const directory = new URL('world-parcels/cities/', root);
 const settings = readdirSync(directory).filter(code => /^\d+$/.test(code)
     && existsSync(new URL(`${code}/settings.json`, directory)))
     .map(code => ({ code, ...json(`world-parcels/cities/${code}/settings.json`) }));
-const catalog = json('backend/parcels/source-catalog.json');
+const catalog = json('frontend/data/source-catalog.json');
 const context = { console, URL, URLSearchParams }; context.window = context;
 runInNewContext(read('frontend/js/city-config.js'), context);
 const queryFields = ['adapter', 'endpoint', 'idPrefix', 'idField', 'idFields', 'identityKind',

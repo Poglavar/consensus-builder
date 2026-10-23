@@ -69,7 +69,7 @@ const DEFAULTS = {
     countries: path.join(REPO, 'world-parcels/countries.geojson'),
     regions: path.join(REPO, 'world-parcels/regions.geojson'),
     regionReviews: path.join(REPO, 'world-parcels/region-coverage-reviews.json'),
-    catalog: path.join(REPO, 'backend/parcels/source-catalog.json'),
+    catalog: path.join(REPO, 'frontend/data/source-catalog.json'),
     demographics: path.join(REPO, 'world-parcels/report/city-demographics.json'),
     cityConfig: path.join(REPO, 'frontend/js/city-config.js'),
     out: path.join(REPO, 'frontend/data/world-coverage.json'),
@@ -244,7 +244,8 @@ export function parseCityConfigs(source) {
             || new RegExp(`fallbackLatLng:\\s*\\[\\s*${num}\\s*,\\s*${num}\\s*\\]`).exec(text);
         if (!id || !center) throw new Error(`city-config entry without id or centre: ${text.slice(0, 60)}`);
         // Alternatives are opt-in; the globe describes the default source.
-        const defaultText = text.replace(/\bliveSource:\s*\{[^}]*\}/g, '');
+        const withoutAlternatives = text.replace(/\bliveSource:\s*\{[^}]*\}/g, '');
+        const defaultText = /\bparcels:\s*\{([^}]*)\}/.exec(withoutAlternatives)?.[1] || '';
         const sourceId = /\bsourceId:\s*'([^']+)'/.exec(defaultText)?.[1];
         const queryMode = /\bstrategy:\s*'point'/.test(defaultText) ? 'point' : undefined;
         const dataVersion = /\bdataVersion:\s*'([^']+)'/.exec(text)?.[1];
@@ -644,7 +645,7 @@ function usage() {
 Builds frontend/data/world-coverage.json from world-parcels/registry.json,
 world-parcels/country-coverage-reviews.json, world-parcels/countries.geojson,
 world-parcels/regions.geojson, world-parcels/region-coverage-reviews.json,
-world-parcels/research/qualification-outcomes/*.json, backend/parcels/source-catalog.json, world-parcels/report/city-demographics.json
+world-parcels/research/qualification-outcomes/*.json, frontend/data/source-catalog.json, world-parcels/report/city-demographics.json
 and frontend/js/city-config.js.
 
 Options:

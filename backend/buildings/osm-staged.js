@@ -31,11 +31,11 @@ function stagedRowToFeature(row) {
     };
 }
 
-// Building footprints inside a WGS84 bbox from the staged table. City is only a duplicate-row
-// preference; the bbox is the geographic scope. Returns null when no staged geometry matches, so
+// Building footprints inside a WGS84 bbox from the staged table. The bbox alone scopes the data;
+// duplicate imports are ordered deterministically by geometry and recorded attributes. Returns null when no staged geometry matches, so
 // the caller can fall back to Overpass.
-async function fetchStagedOsmBuildings(pool, bbox, city) {
-    if (!pool || !city) return null;
+async function fetchStagedOsmBuildings(pool, bbox) {
+    if (!pool) return null;
 
     const [w, s, e, n] = bbox;
     const { rows } = await pool.query(
@@ -47,9 +47,9 @@ async function fetchStagedOsmBuildings(pool, bbox, city) {
             AND geom IS NOT NULL
             AND geom && ST_MakeEnvelope($1, $2, $3, $4, 4326)
             AND ST_Intersects(geom, ST_MakeEnvelope($1, $2, $3, $4, 4326))
-          ORDER BY osm_id, (city = $5) DESC NULLS LAST
+          ORDER BY osm_id, height DESC NULLS LAST, num_floors DESC NULLS LAST, id
           LIMIT ${STAGED_FEATURE_CAP + 1}`,
-        [w, s, e, n, String(city)]
+        [w, s, e, n]
     );
     if (!rows.length) return null;
     const truncated = rows.length > STAGED_FEATURE_CAP;

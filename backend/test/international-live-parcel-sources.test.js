@@ -1,3 +1,4 @@
+import { consumerParcelSourceId } from './helpers/frontend-source-selection.js';
 // Checks native identity, status and metric binding across provider protocols through one parcel gateway.
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import express from 'express';
@@ -53,7 +54,7 @@ for (const sample of samples) describe(`${sample.city} source contract`, () => {
     it('binds a real coordinate footprint with the provider metric CRS and no parcel database', async () => {
         vi.stubGlobal('fetch', vi.fn(async () => response([parcel])));
         const db = { query: vi.fn(async () => { throw new Error('Live source must not read imported parcels'); }) };
-        const { binding } = await computeBinding(db, { city: sample.city, site: parcel.geometry });
+        const { binding } = await computeBinding(db, { parcelSourceId: consumerParcelSourceId(sample.city), city: sample.city, site: parcel.geometry });
         expect(db.query).not.toHaveBeenCalled();
         expect(binding).toMatchObject({ coverage: 'complete', source: `server:${descriptor.id}` });
         expect(binding.parcels.map(p => p.parcelId)).toEqual([id]);

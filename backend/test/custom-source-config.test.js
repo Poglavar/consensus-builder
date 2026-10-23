@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { encodeCustomSource, decodeCustomSource } from '../parcels/custom-source-config.js';
-import { createParcelSource, parcelSourceForCity, resolveParcelSourceDescriptor } from '../parcels/sources.js';
+import { createParcelSource, resolveParcelSourceDescriptor } from '../parcels/sources.js';
+import { parcelSourceForCity } from './helpers/frontend-source-selection.js';
 
 const input = { adapter: 'arcgis', endpoint: 'https://public.example/FeatureServer/0', cityIds: ['test_city'],
     metricSrid: 32633, idField: 'parcelid', objectIdField: 'OBJECTID', idType: 'string', outFields: ['parcelid', 'OBJECTID'] };
@@ -9,6 +10,12 @@ const pack = data => 'custom.' + Buffer.from(JSON.stringify(data)).toString('bas
 const polygon = { type: 'Polygon', coordinates: [[[15,45],[15.0001,45],[15.0001,45.0001],[15,45.0001],[15,45]]] };
 
 describe('portable custom source configurations', () => {
+    it('accepts a source from an independent consumer without any app city label', () => {
+        const { cityIds, ...unscoped } = input;
+        const source = decodeCustomSource(encodeCustomSource(unscoped));
+        expect(source.endpoint).toBe(input.endpoint);
+        expect(source).not.toHaveProperty('cityIds');
+    });
     it('reconstructs a source without stored configuration and preserves native IDs under a deterministic namespace', async () => {
         const id = encodeCustomSource(input), decoded = decodeCustomSource(id);
         expect(decoded).toMatchObject({ ...input, id, defaultForCity: false, name: 'public.example (arcgis)',
@@ -52,7 +59,7 @@ describe('portable custom source configurations', () => {
         const id = encodeCustomSource(input), selected = parcelSourceForCity('test_city', id);
         expect(selected.descriptor.id).toBe(id); expect(selected.descriptor.cityIds).toEqual(['test_city']);
         expect(parcelSourceForCity('test_city')).toBeNull();
-        expect(() => parcelSourceForCity('other_city', id)).toThrow(expect.objectContaining({ status: 400, code: 'invalid-parcel-source' }));
+        expect(parcelSourceForCity('other_city', id).descriptor.id).toBe(id);
         expect(() => createParcelSource({ id: pack({ ...payload(id), cityIds: ['other_city'] }) })).toThrow();
     });
     it.each(['http://public.example/0', 'https://public.example:8443/0', 'https://user:secret@public.example/0',

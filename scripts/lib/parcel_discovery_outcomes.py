@@ -18,7 +18,7 @@ SEARCH_LEVELS = {"municipal", "regional", "national", "web"}
 # Admission updates these shared application references. They provide current app
 # context, not immutable first-party evidence for a source-discovery decision.
 APP_CONTEXT_FILES = {
-    "backend/parcels/source-catalog.json", "frontend/js/city-config.js", "world-parcels/registry.json",
+    "frontend/data/source-catalog.json", "frontend/js/city-config.js", "world-parcels/registry.json",
     "world-parcels/report/city-demographics.json", "frontend/data/parcel-coverage-report.json",
     "frontend/data/world-coverage.json", "frontend/i18n/en.json", "frontend/i18n/es.json",
     "frontend/i18n/hr.json", "frontend/i18n/sr.json",
@@ -46,7 +46,7 @@ def evidence_file(root: Path, value: str) -> Path:
 
 def supported_binding_errors(root: Path, receipt: dict, bindings: list[dict], city_code: str) -> list[str]:
     """Check live source bindings against the app's canonical WUP demographic mapping."""
-    catalog = json.loads((root / "backend/parcels/source-catalog.json").read_text())
+    catalog = json.loads((root / "frontend/data/source-catalog.json").read_text())
     source = next((row for row in catalog["sources"] if row["id"] == receipt["source"]["sourceId"]), None)
     if source is None or source.get("endpoint") != receipt["source"]["endpoint"]:
         return ["already-supported source ID and endpoint must match the current catalog"]

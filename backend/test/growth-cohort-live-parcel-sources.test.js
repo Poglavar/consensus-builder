@@ -1,9 +1,11 @@
+import { consumerParcelSourceId } from './helpers/frontend-source-selection.js';
 // Keep the two new growth-cohort city bindings tied to their configured live sources.
 import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import proj4 from 'proj4';
-import { parcelSourceForCity, parcelSourceForIds, clearParcelSourceRuntimeCache } from '../parcels/sources.js';
+import { clearParcelSourceRuntimeCache } from '../parcels/sources.js';
+import { parcelSourceForCity, parcelSourceForIds } from './helpers/frontend-source-selection.js';
 import { computeBinding } from '../proposals/binding.js';
 globalThis.proj4 ||= proj4;
 
@@ -75,7 +77,7 @@ describe('growth-cohort live parcel source contracts', () => {
         }));
 
         const db = { query: vi.fn(async () => { throw new Error('Live source binding must not query imported parcel tables.'); }) };
-        const { binding } = await computeBinding(db, { city: 'venjaramoodu', site: feature.geometry, toleranceM: 0 });
+        const { binding } = await computeBinding(db, { parcelSourceId: consumerParcelSourceId('venjaramoodu'), city: 'venjaramoodu', site: feature.geometry, toleranceM: 0 });
         expect(db.query).not.toHaveBeenCalled();
         expect(binding).toMatchObject({ coverage: 'complete', source: `server:${descriptor.id}` });
         expect(binding.parcels.map(parcel => parcel.parcelId)).toContain(parcelId);

@@ -30,7 +30,7 @@ export function setupBuildingSourcesRoute(app, { discover = discoverCustomBuildi
             const url = validatePublicSourceUrl(req.body?.url);
             if (url.href.length > 2000) throw Object.assign(new HttpError(400, 'Source URL is too long.'), { code: 'invalid-source-url' });
             const city = req.body?.city;
-            if (typeof city !== 'string' || !/^[a-z][a-z0-9_]{0,79}$/.test(city)) throw new HttpError(400, 'Choose a city before adding a source.');
+            if (city !== undefined && (typeof city !== 'string' || !/^[a-z][a-z0-9_]{0,79}$/.test(city))) throw new HttpError(400, 'Invalid source label.');
             const bbox = validateBounds(req.body?.bbox, 1);
             // An OpenStreetMap (Overpass) mirror reads OSM's own tags, so there is nothing to discover.
             if (looksLikeOverpass(url.href)) {

@@ -15,7 +15,7 @@ test('a city without its own survey fills its footprints through backend OSM',as
  expect(await page.evaluate(()=>(window as any).CityConfigManager.getCurrentCityConfig().buildings.source)).toBe('osm');
  await page.evaluate(()=>(window as any).ensureBuildingFootprintsForBounds((window as any).map.getBounds()));
  await expect.poll(()=>page.evaluate(()=>((window as any).buildingFeaturePool||[]).map((f:any)=>f.properties.id))).toContain('w24518461');
- expect(asked.length).toBeGreaterThan(0);expect(asked[0].city).toBeUndefined();expect(tiles).toEqual([]);
+ expect(asked.length).toBeGreaterThan(0);expect(asked[0].city).toBeUndefined();expect(asked[0].source).toBe('osm');expect(tiles).toEqual([]);
 });
 
 test('a dedicated cadastral building source falls back to backend OSM',async({mockApi:page})=>{
@@ -28,4 +28,20 @@ test('a dedicated cadastral building source falls back to backend OSM',async({mo
  await page.goto('/?city=bogota&at=4.6105,-74.0822,18&lang=en&reduceMotion=1',{waitUntil:'domcontentloaded'});await waitForMapReady(page);
  const result=await page.evaluate(()=>(window as any).BuildingSourceClient.request('/buildings/footprints',{geometry:{type:'Point',coordinates:[-74.0822,4.6105]}}));
  expect(result.source).toBe('osm-footprints');expect(asked.some(b=>b.source?.startsWith('building.'))).toBe(true);expect(asked.some(b=>b.source==='osm')).toBe(true);
+});
+
+test('frontend sends the selected NYC or Zagreb dataset independently of the current view',async({mockApi:page})=>{
+ await stubBasemapTiles(page);
+ const asked:any[]=[];
+ await page.route('**/buildings/near',route=>{
+  asked.push(route.request().postDataJSON());return route.fulfill({json:{buildings:[],count:0,source:'fixture'}});
+ });
+ await page.goto('/?at=45.81305,15.9706,18&lang=en&reduceMotion=1',{waitUntil:'domcontentloaded'});await waitForMapReady(page);
+ await page.evaluate(async()=>{
+  const client=(window as any).BuildingSourceClient;
+  await client.request('/buildings/near',{geometry:{type:'Point',coordinates:[-74.006,40.7128]}});
+  await client.request('/buildings/near',{geometry:{type:'Point',coordinates:[15.9706,45.81305]}});
+ });
+ expect(asked.map(b=>[b.source,b.floorModelNamespace])).toEqual([['nyc-arcgis','new_york'],['gdi-3d','zagreb']]);
+ expect(asked.every(b=>b.city===undefined)).toBe(true);
 });

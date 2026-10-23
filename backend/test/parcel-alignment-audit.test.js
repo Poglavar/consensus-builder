@@ -12,7 +12,7 @@ const read = relative => readFileSync(path.join(ROOT, relative), 'utf8');
 
 describe('parcel alignment audit inventory and safe observations', () => {
     it('accounts for every catalog source, city binding and opt-in marker without network access', () => {
-        const catalog = JSON.parse(read('backend/parcels/source-catalog.json'));
+        const catalog = JSON.parse(read('frontend/data/source-catalog.json'));
         const cities = parseCityConfigs(read('frontend/js/city-config.js'));
         const inventory = centerInventory(cities, catalog.sources);
         expect(new Set(catalog.sources.map(source => source.id)).size).toBe(catalog.sources.length);

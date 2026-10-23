@@ -42,7 +42,7 @@ export function setupImagerySourcesRoute(app, { publicFetch = createPublicSource
             const url = validatePublicSourceUrl(req.body?.url);
             if (url.href.length > 2000) throw invalid('Imagery URL is too long.');
             const city = req.body?.city;
-            if (typeof city !== 'string' || !/^[a-z][a-z0-9_]{0,79}$/.test(city)) throw invalid('Choose a city before adding imagery.');
+            if (city !== undefined && (typeof city !== 'string' || !/^[a-z][a-z0-9_]{0,79}$/.test(city))) throw invalid('Invalid source label.');
             const bbox = validateBounds(req.body?.bbox, 25);
             const layers = req.body?.layers;
             if (layers !== undefined && (!Array.isArray(layers) || !layers.length || layers.length > 8

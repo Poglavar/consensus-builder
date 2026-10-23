@@ -1,3 +1,4 @@
+import { consumerParcelSourceId } from './helpers/frontend-source-selection.js';
 // Checks that proposal binding selects live sources and their metric CRS without another cadastre.
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { computeBinding, parcelActBinding, bindingFrame, FOOTPRINT_SITE_SQL } from '../proposals/binding.js';
@@ -31,7 +32,7 @@ describe('live source proposal binding wiring', () => {
         vi.stubGlobal('fetch', fetch);
         const db = { query: vi.fn(async () => { throw new Error('authored source binding must not query HR SQL'); }) };
 
-        const { site, binding } = await computeBinding(db, {
+        const { site, binding } = await computeBinding(db, { parcelSourceId: consumerParcelSourceId('toronto'),
             site: SITE, toleranceM: 0.2, city: 'toronto',
             now: () => new Date('2026-10-02T14:00:00.000Z')
         });
@@ -51,7 +52,7 @@ describe('live source proposal binding wiring', () => {
         vi.stubGlobal('fetch', fetch);
         const db = { query: vi.fn(async () => { throw new Error('unexpected HR SQL fallback'); }) };
 
-        await expect(computeBinding(db, { site: SITE, city: 'toronto' }))
+        await expect(computeBinding(db, { parcelSourceId: consumerParcelSourceId('toronto'), site: SITE, city: 'toronto' }))
             .rejects.toMatchObject({ status: 502, code: 'parcel-source-unavailable' });
         expect(db.query).not.toHaveBeenCalled();
     });
@@ -63,7 +64,7 @@ describe('live source proposal binding wiring', () => {
         vi.stubGlobal('fetch', fetch);
         const db = { query: vi.fn(async () => { throw new Error('parcel act source binding must not query HR SQL'); }) };
 
-        const result = await parcelActBinding(db, [declared, absent]);
+        const result = await parcelActBinding(db, [declared, absent], { parcelSourceId: SOURCE_ID });
 
         expect(db.query).not.toHaveBeenCalled();
         expect(result.site.type).toBe('MultiPolygon');
@@ -91,7 +92,7 @@ describe('live source proposal binding wiring', () => {
         };
         const parts = { polygons: [SITE_MULTI], centerline: null };
 
-        const { site, binding } = await computeBinding(db, { parts, toleranceM: 0.1, city: 'toronto' });
+        const { site, binding } = await computeBinding(db, { parcelSourceId: consumerParcelSourceId('toronto'), parts, toleranceM: 0.1, city: 'toronto' });
 
         // projections.md §2: never the source's (or Croatia's) CRS, always the local frame of the footprint
         expect(calls).toHaveLength(1);

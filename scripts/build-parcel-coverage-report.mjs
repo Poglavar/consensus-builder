@@ -231,7 +231,7 @@ export function buildParcelReport({ registry, evidence, enrichment, countryData,
         },
         sources: [
             { name: 'Project parcel research registry and linked investigation records', url: `${GITHUB}world-parcels/registry.json` },
-            { name: 'Configured parcel sources and adapter evidence', url: `${GITHUB}backend/parcels/source-catalog.json` },
+            { name: 'Configured parcel sources and adapter evidence', url: `${GITHUB}frontend/data/source-catalog.json` },
             { name: 'UN DESA, World Urbanization Prospects 2025 — city population estimates', url: 'https://population.un.org/wup/downloads?tab=Cities', accessedAt: enrichment.asOf },
             { name: 'UN DESA, average annual population growth definition', url: 'https://population.un.org/wup/glossary-demographic-terms', accessedAt: enrichment.asOf },
             ...countryData.sources.map(source => ({ name: source.title || source.name, url: source.url, accessedAt: source.accessed || source.downloaded || null })),
@@ -244,7 +244,7 @@ export function buildParcelReport({ registry, evidence, enrichment, countryData,
 export function runBuild(repoRoot = REPO) {
     const registry = readJson(path.join(repoRoot, 'world-parcels/registry.json'));
     const coverage = readJson(path.join(repoRoot, 'frontend/data/world-coverage.json'));
-    const sourceCatalog = readJson(path.join(repoRoot, 'backend/parcels/source-catalog.json'));
+    const sourceCatalog = readJson(path.join(repoRoot, 'frontend/data/source-catalog.json'));
     const report = buildParcelReport({
         registry, evidence: collectReportEvidence({ registry, repoRoot, appCities: coverage.liveCities, sourceCatalog }),
         // City settings and failed URLs replace permanent qualification histories.

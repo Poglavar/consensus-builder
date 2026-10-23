@@ -1,0 +1,22 @@
+{
+  "belgrade": {
+    "region": "belgrade",
+    "country": "serbia",
+    "floorHeightM": 3.2,
+    "defaultHeightM": 9
+  },
+  "split": {
+    "city": "split",
+    "region": "split",
+    "country": "croatia",
+    "floorHeightM": 3.0,
+    "defaultHeightM": 8
+  },
+  "sibenik": {
+    "city": "sibenik",
+    "region": "sjeverna-dalmacija",
+    "country": "croatia",
+    "floorHeightM": 3.0,
+    "defaultHeightM": 8
+  }
+}

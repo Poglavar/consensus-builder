@@ -10,9 +10,7 @@
 // toggle only for available layers — data-driven from what's ingested, not a hardcoded per-city list.
 
 import { createOvertureTreesProvider } from '../decor/overture-trees.js';
-import { OVERTURE_CITIES } from '../buildings/overture-cities.js';
 import { createWaterProvider } from '../decor/openfreemap-water.js';
-import { jurisdictionOf } from '../jurisdiction.js';
 
 // Which osm_decor kinds are renderable scenery toggles in the 3D view. Buildings are not scenery —
 // they render via the Built/Both/Planned controls. Extend as new kinds get a renderer.
@@ -21,15 +19,8 @@ const SCENERY_LAYERS = ['trees'];
 const WORLDWIDE_LAYERS = ['water'];
 
 export function setupDecorRoute(app, pool, { waterProvider = createWaterProvider() } = {}) {
-    // Trees where the geometry lies: an Overture city reads its labelled ingests first, anywhere else
-    // the geometry alone (both end on the unlabelled rung, data-scope.js). Made on first use.
-    const treeProviders = new Map();
-    function treesProviderFor(geometry) {
-        const city = jurisdictionOf(geometry);
-        const key = city && OVERTURE_CITIES[city] ? city : null;
-        if (!treeProviders.has(key)) treeProviders.set(key, createOvertureTreesProvider(pool, key));
-        return treeProviders.get(key);
-    }
+    // Worldwide scenery is scoped by geometry, without city-specific provider selection.
+    const treesProvider = createOvertureTreesProvider(pool);
 
     // GET /decor/layers?bbox=minLon,minLat,maxLon,maxLat → { layers: ['trees', ...] } — the scenery
     // layers with rows in that box (the 3D scene's area), whatever ingest they came from.
@@ -78,7 +69,7 @@ export function setupDecorRoute(app, pool, { waterProvider = createWaterProvider
             const out = { trees: [], count: 0, source: 'overture-trees' };
 
             if (kinds.includes('trees')) {
-                const result = await treesProviderFor(geometry).near(geometry, bufferMeters);
+                const result = await treesProvider.near(geometry, bufferMeters);
                 out.trees = result.trees;
                 out.source = result.source;
             }

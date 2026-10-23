@@ -29,7 +29,7 @@ it('every configured city has the complete building provider contract', () => {
     const cities = context.CityConfigManager.getAvailableCities();
     expect(cities.length).toBeGreaterThan(500);
     for (const city of cities) for (const method of ['near', 'footprints', 'footprintsUnder']) {
-        const provider = city.buildings?.sourceId ? registry.resolveSource(city.buildings.sourceId) : registry.resolve(city.id);
+        const provider = registry.resolveSource(city.buildings?.sourceId || city.buildings?.source);
         expect(typeof provider[method], `${city.id}.${method}`).toBe('function');
     }
 });
@@ -124,10 +124,10 @@ it('NYC HTTP endpoints support footprint and demolition reads with the source ID
     vi.stubGlobal('fetch', vi.fn(async value => response(new URL(value).searchParams.has('returnCountOnly')
         ? { count: 1 } : fc([feature()]))));
     const app = createRouteApp(setupBuildingsRoute, { query: async () => ({ rows: [] }) });
-    const under = await request(app).post('/buildings/under').send({ regions: [region] });
+    const under = await request(app).post('/buildings/under').send({ source: 'nyc-arcgis', regions: [region] });
     expect(under.status).toBe(200);
     expect(under.body).toMatchObject({ supported: true, truncated: false, source: 'nyc-arcgis' });
     expect(under.body.regions.take[0].id).toBe('123');
-    const footprints = await request(app).post('/buildings/footprints').send({ geometry: box(-74.0061, 40.7127, .0005) });
+    const footprints = await request(app).post('/buildings/footprints').send({ source: 'nyc-arcgis', geometry: box(-74.0061, 40.7127, .0005) });
     expect(footprints.body).toMatchObject({ supported: true, truncated: false, count: 1 });
 });

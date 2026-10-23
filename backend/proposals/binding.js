@@ -18,7 +18,7 @@
 // footprints and executable live sources resolve their own parcels and use the shared binding rule. A site
 // outside every cadastral municipality (`cadastral_municipality`) gets coverage 'unknown' — the
 // server cannot see that region's cadastre, which is not the same as there being none — except for
-// a city configured with no cadastre at all (explore), which gets 'none'.
+// an explicit 'none' source selection, which gets 'none'.
 //
 // Used by the design index (the parcels a published design's site takes), the agents' candidate
 // preflight and the site migration.
@@ -26,13 +26,14 @@
 import { createRequire } from 'node:module';
 import { INVALID_FOOTPRINT, footprintParts, footprintQueryParams, hasFootprint } from './footprint.js';
 import { wgs84BboxAreaKm2 } from '../utils/helpers.js';
-import { parcelSourceForCity, parcelSourceForIds } from '../parcels/sources.js';
+import { parcelSourceById } from '../parcels/sources.js';
 import { computeSourceBinding, computeSourceParcelActBinding } from '../parcels/source-binding.js';
-import { NO_CADASTRE_CITIES, resolvePublicationCity, isHrDatabaseSource, isNycDatabaseSource } from './publication-city.js';
+
 import { nycDatabaseSource, NYC_DATABASE_SOURCE_ID } from '../parcels/nyc-database-source.js';
 
 const requireCjs = createRequire(import.meta.url);
 const siteBindingApi = requireCjs('../../frontend/js/proposals/site-binding.js');
+const turf = requireCjs('@turf/turf');
 const metricFrame = requireCjs('../../frontend/js/metric-frame.js');
 
 // The HR cadastre's storage CRS: candidate search and the dataset side of transforms only.
@@ -64,7 +65,7 @@ export const MAX_SITE_VERTICES = 100000;
 export const MAX_SITE_EXTENT_KM2 = 500;
 // More bound or touched parcels than this is not a proposal (same cap as /parcels/under).
 export const MAX_BINDING_PARCELS = 5000;
-export { NO_CADASTRE_CITIES };
+
 
 // Stable error codes. Routes put them in `code`; agent docs list them.
 export const BINDING_CODES = Object.freeze({
@@ -155,15 +156,11 @@ export function bindingFrame({ site = null, parts = null } = {}) {
     }
 }
 
-// Where a NEW publication of this site is filed and which source binds it (publication-city.js):
-// { city, parcelSourceId } from the site's anchor, never from the view it was drawn in. Throws
-// `invalid-site` when the site cannot be measured.
+// A publication keeps the consumer's metadata and explicit source. Validate the geometry,
+// but never substitute another source because the site lies in a configured city.
 export function publicationCityOf({ site = null, parts = null, city = null, parcelSourceId = null } = {}) {
-    // A source the requested city does not have is a malformed request (400 invalid-parcel-source),
-    // whatever the site: refused before anything is placed.
-    if (city && parcelSourceId && !isHrDatabaseSource(city, parcelSourceId) && !isNycDatabaseSource(city, parcelSourceId)) parcelSourceForCity(city, parcelSourceId);
-    const [lon, lat] = bindingFrame({ site, parts }).anchor;
-    return resolvePublicationCity({ city, parcelSourceId, lon, lat });
+    bindingFrame({ site, parts });
+    return { city, parcelSourceId };
 }
 
 // The site in the operation frame (SRID 0, metres), valid and unioned, and — for statements that
@@ -373,11 +370,12 @@ function unboundBinding({ coverage, toleranceM, siteM2, reason, parcels = [], co
     };
 }
 
-function bindingSource(db, city, sourceId) {
-    if (isNycDatabaseSource(city, sourceId)) return {
+function bindingSource(db, sourceId) {
+    if (sourceId === NYC_DATABASE_SOURCE_ID) return {
         descriptor: { id: NYC_DATABASE_SOURCE_ID }, adapter: nycDatabaseSource(db)
     };
-    return isHrDatabaseSource(city, sourceId) ? null : parcelSourceForCity(city, sourceId);
+    if (sourceId === 'oss-wfs' || sourceId === 'none') return null;
+    return parcelSourceById(sourceId);
 }
 
 /**
@@ -393,7 +391,7 @@ function bindingSource(db, city, sourceId) {
 export async function computeBinding(db, { site = null, parts = null, toleranceM = DEFAULT_INTRUSION_TOLERANCE_M, city = null, parcelSourceId = null, now = () => new Date() } = {}) {
     const params = siteQueryParams({ site, parts });
     const frame = bindingFrame({ site, parts });
-    const provider = bindingSource(db, city, parcelSourceId);
+    const provider = bindingSource(db, parcelSourceId);
     if (provider) {
         const footprint = site || JSON.parse((await db.query(FOOTPRINT_SITE_SQL, [...params, frame.proj])).rows[0]?.geometry || 'null');
         if (!footprint) throw bindingError(BINDING_CODES.invalidSite, 'The site has no area after validation.');
@@ -401,6 +399,13 @@ export async function computeBinding(db, { site = null, parts = null, toleranceM
             site: footprint, toleranceM, sourceId: provider.descriptor.id,
             snapshotId: provider.descriptor.snapshotId || null, now
         });
+    }
+    if (parcelSourceId === 'none') {
+        const footprint = site || JSON.parse((await db.query(FOOTPRINT_SITE_SQL, [...params, frame.proj])).rows[0]?.geometry || 'null');
+        if (!footprint) throw bindingError(BINDING_CODES.invalidSite, 'The site has no area after validation.');
+        const siteM2 = turf.area(turf.feature(footprint));
+        return { site: footprint, binding: unboundBinding({ coverage: COVERAGE.none, toleranceM,
+            siteM2, computedAt: now().toISOString(), reason: 'The consumer explicitly selected no cadastral source.' }) };
     }
     const floorM = Math.max(toleranceM, INTRUSION_NOISE_M);
     const counted = Number((await db.query(BINDING_COUNT_SQL, [...params, frame.proj])).rows[0]?.parcels || 0);
@@ -416,17 +421,14 @@ export async function computeBinding(db, { site = null, parts = null, toleranceM
     }
     const siteM2 = Number(row.site_m2) || 0;
     if (!row.in_region) {
-        const none = city && NO_CADASTRE_CITIES.includes(String(city));
         return {
             site: siteGeometry,
             binding: unboundBinding({
-                coverage: none ? COVERAGE.none : COVERAGE.unknown,
+                coverage: COVERAGE.unknown,
                 toleranceM,
                 siteM2,
                 computedAt,
-                reason: none
-                    ? 'This city has no cadastre: the whole site is open ground.'
-                    : 'The site is outside every cadastral municipality the server holds; its cadastre cannot be bound here.'
+                reason: 'The site is outside every cadastral municipality in the selected dataset; its cadastre cannot be bound here.'
             })
         };
     }
@@ -464,12 +466,14 @@ export async function computeBinding(db, { site = null, parts = null, toleranceM
  * Other declarations remain unverified: coverage 'unknown', declaration kept as sent.
  */
 export async function parcelActBinding(db, declaredIds, { toleranceM = DEFAULT_INTRUSION_TOLERANCE_M, city = null, parcelSourceId = null, now = () => new Date() } = {}) {
-    const inferredCity = !city && !parcelSourceId && declaredIds.length && declaredIds.every(id => /^US-NY-.+/.test(id)) ? 'new_york' : city;
-    const provider = bindingSource(db, inferredCity, parcelSourceId) || (!isHrDatabaseSource(city, parcelSourceId) && parcelSourceForIds(declaredIds));
+    const provider = bindingSource(db, parcelSourceId);
     if (provider) return computeSourceParcelActBinding(provider.adapter, declaredIds, {
         toleranceM, sourceId: provider.descriptor.id, snapshotId: provider.descriptor.snapshotId || null, now
     });
     const computedAt = now().toISOString();
+    if (parcelSourceId === 'none') return { site: null, extra: declaredIds.map(String), binding: unboundBinding({
+        coverage: COVERAGE.none, toleranceM, siteM2: 0, computedAt,
+        reason: 'No cadastral source was selected for these declared parcels.' }) };
     const parsed = declaredIds.map(parseHrParcelId);
     if (parsed.some(value => !value)) {
         return {
@@ -543,8 +547,7 @@ export async function checkProposalBinding(db, proposal, declaredIds, { site = n
         };
     }
 
-    // A new publication's city follows its site, not the view it was drawn in (publication-city.js);
-    // the binding is computed against that city's cadastre. Parcel acts are placed by their parcels.
+    // The consumer supplies record metadata and source selection. The backend never replaces either.
     let publicationCity = city || null;
     if (site || hasFootprint(parts)) {
         ({ city: publicationCity, parcelSourceId } = publicationCityOf({ site, parts: site ? null : parts, city, parcelSourceId }));

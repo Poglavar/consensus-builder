@@ -49,7 +49,7 @@ def verify_baseline(root, shared_root):
 
 def rebuild_browser_adapters(root):
     for command in (["node", "backend/scripts/build-browser-parcels.mjs"],
-                    ["node", "--input-type=module", "-e", """import catalog from './backend/parcels/source-catalog.json' with {type:'json'};
+                    ["node", "--input-type=module", "-e", """import catalog from './frontend/data/source-catalog.json' with {type:'json'};
 import {browserParcelFactories as factories} from './backend/parcels/browser-source-runtime.js';
 const missing=[...new Set(catalog.sources.map(row=>row.adapter))].filter(adapter=>!factories[adapter]);
 if(missing.length){console.error(missing.join(','));process.exit(1)}"""]):

@@ -6,7 +6,7 @@ import { createPublicSourceFetch, validatePublicSourceUrl } from '../parcels/pub
 import { atlasSourceDescriptor, createAtlasProvider } from './providers/atlas.js';
 
 const publicFetch = createPublicSourceFetch({ maxBytes: 64 * 1024 * 1024, timeoutMs: 45000 });
-const invalid = () => { throw new Error('Invalid PLANNING_ATLAS_SOURCES configuration. Expected unique source IDs, a city or bbox scope, label, edition and public HTTPS URL.'); };
+const invalid = () => { throw new Error('Invalid planning source configuration. Expected unique source IDs, a city or bbox scope, label, edition and public HTTPS URL.'); };
 const finite = value => typeof value === 'number' && Number.isFinite(value);
 const validBbox = value => Array.isArray(value) && value.length === 4 && value.every(finite)
     && value[0] >= -180 && value[2] <= 180 && value[1] >= -90 && value[3] <= 90 && value[0] < value[2] && value[1] < value[3];

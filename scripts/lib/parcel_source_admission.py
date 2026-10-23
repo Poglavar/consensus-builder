@@ -34,7 +34,7 @@ GATES = REQUIRED_CHECKS
 OPTIONAL = ("evidence/initial-review.json", "evidence/alignment-report.json", "evidence/independent-alignment-report.json",
             "evidence/alignment-evidence.json", "evidence/alignment-metadata.json", "evidence/alignment-native.json")
 ADMISSION_FILES = (
-    "backend/parcels/source-catalog.json", "frontend/js/city-config.js", "world-parcels/registry.json",
+    "frontend/data/source-catalog.json", "frontend/js/city-config.js", "world-parcels/registry.json",
     "world-parcels/report/city-demographics.json", "frontend/data/parcel-coverage-report.json",
     "frontend/data/world-coverage.json", "frontend/data/boot-coverage.js", "frontend/i18n/en.json", "frontend/i18n/es.json",
     "frontend/i18n/hr.json", "frontend/i18n/sr.json",
@@ -120,7 +120,7 @@ def _verify_published_evidence(root: Path, artifact_root: Path, source_id: str) 
     script = """import fs from 'node:fs';
 import { verifyAdmissionEvidence } from './scripts/admit-qualified-cities.mjs';
 const base=process.argv[1], id=process.argv[2];
-const catalog=JSON.parse(fs.readFileSync('backend/parcels/source-catalog.json','utf8'));
+const catalog=JSON.parse(fs.readFileSync('frontend/data/source-catalog.json','utf8'));
 const source=catalog.sources.find(row=>row.id===id);
 const evidence={candidate:`${base}/candidate.json`,qualification:`${base}/evidence/qualification.json`,
  metric:`${base}/evidence/metric-report.json`,independent:`${base}/evidence/independent-metric-report.json`,
@@ -158,7 +158,7 @@ def _existing_integration(root: Path, code: str, name: str, source_id: str,
         first_source = bindings[0].get("sourceId")
         return _block(f"{name} is already configured with a different parcel source ({first_source}); source switching needs separate review")
     app_city_id = binding.get("id")
-    catalog_doc = _json(root / "backend/parcels/source-catalog.json")
+    catalog_doc = _json(root / "frontend/data/source-catalog.json")
     catalog_source = next((row for row in catalog_doc.get("sources", []) if row.get("id") == source_id), None)
     if not catalog_source or app_city_id not in catalog_source.get("cityIds", []):
         return _block(f"{name} config and source catalog disagree; admission needs manual review")
@@ -414,7 +414,7 @@ def admit_candidate(runner: Any, city: dict[str, Any], receipt: dict[str, Any], 
             return _fail("admission command returned success but did not create its manifest", manifest_rel, changed)
         manifest = _json(manifest_path)
         manifest_city = next((row for row in manifest.get("cities", []) if str(row.get("cityCode")) == code), None)
-        catalog = _json(root / "backend/parcels/source-catalog.json")
+        catalog = _json(root / "frontend/data/source-catalog.json")
         source_after = next((row for row in catalog.get("sources", []) if row.get("id") == descriptor["id"]), None)
         if (manifest_city is None or manifest_city.get("sourceId") != descriptor["id"]
                 or manifest_city.get("candidate", {}).get("qualificationRecordedSha256") != q.get("candidateSha256")

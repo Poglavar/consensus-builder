@@ -11,7 +11,7 @@ import { zipSync, strToU8 } from 'fflate';
 import { buildBrowserParcels } from '../scripts/build-browser-parcels.mjs';
 import { OSTN15_GRID_SHA256 } from '../parcels/osgb36-projection.js';
 import { browserParcelFactories } from '../parcels/browser-source-runtime.js';
-import catalog from '../parcels/source-catalog.json' with { type: 'json' };
+import catalog from '../../frontend/data/source-catalog.json' with { type: 'json' };
 
 const deployed = fileURLToPath(new URL('../../frontend/assets/parcel-adapters/', import.meta.url));
 const projectRoot = fileURLToPath(new URL('../../', import.meta.url));

@@ -1,10 +1,12 @@
+import { consumerParcelSourceId } from './helpers/frontend-source-selection.js';
 // The Bogotá source keeps LotCodigo's leading zeroes in the canonical parcel ID; OBJECTID is only
 // the ArcGIS pagination key. These tests exercise the executable catalog entry without network I/O.
 import { afterEach, describe, expect, it, vi } from 'vitest';
 vi.mock('../parcels/https-json-fetch.js', () => ({
     createHttpsJsonFetch: () => (...args) => globalThis.fetch(...args)
 }));
-import { clearParcelSourceRuntimeCache, createParcelSource, parcelSourceCatalog, parcelSourceForCity } from '../parcels/sources.js';
+import { clearParcelSourceRuntimeCache, createParcelSource, parcelSourceCatalog } from '../parcels/sources.js';
+import { parcelSourceForCity } from './helpers/frontend-source-selection.js';
 import { computeBinding } from '../proposals/binding.js';
 
 const descriptor = parcelSourceCatalog.sources.find(source => source.cityIds.includes('bogota'));
@@ -131,7 +133,7 @@ describe('Bogotá live parcel source', () => {
         fetchPages([page([feature(10, '006106001009', SITE)])]);
         const db = { query: vi.fn(async () => { throw new Error('Bogotá binding must not query the HR parcel database'); }) };
 
-        const { binding } = await computeBinding(db, {
+        const { binding } = await computeBinding(db, { parcelSourceId: consumerParcelSourceId('bogota'),
             site: SITE, city: 'bogota', toleranceM: 0.15,
             now: () => new Date('2026-10-02T15:00:00.000Z')
         });

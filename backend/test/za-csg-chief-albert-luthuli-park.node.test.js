@@ -2,7 +2,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { createParcelSource, parcelSourceForCity } from '../parcels/sources.js';
+import { createParcelSource } from '../parcels/sources.js';
+import { parcelSourceForCity } from './helpers/frontend-source-selection.js';
 
 const fixture = JSON.parse(readFileSync(new URL('./fixtures/za-csg-chief-albert-luthuli-park.json', import.meta.url)));
 // The receipt retains its historical descriptor; live reads use the one canonical provider.

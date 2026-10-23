@@ -1,14 +1,14 @@
 import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 import { describe, expect, it } from 'vitest';
-import { parcelSourceForCity } from '../parcels/sources.js';
+import { parcelSourceForCity } from './helpers/frontend-source-selection.js';
 import { browserParcelFactories } from '../parcels/browser-source-runtime.js';
 
 const root = new URL('../../', import.meta.url);
 const read = file => readFileSync(new URL(file, root), 'utf8');
 const revive = (_key, value) => value?.$number === 'Infinity' ? Infinity : value;
 const json = file => JSON.parse(read(file), revive);
-const catalog = json('backend/parcels/source-catalog.json');
+const catalog = json('frontend/data/source-catalog.json');
 const registry = json('world-parcels/registry.json');
 const report = json('frontend/data/parcel-coverage-report.json');
 const coverage = json('frontend/data/world-coverage.json');

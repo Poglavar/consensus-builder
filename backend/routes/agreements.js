@@ -122,7 +122,7 @@ export function validateAgreementContent(content, { now = Date.now() } = {}) {
         if (parcelIds.has(parcel.parcelId)) return invalid('land', `Input parcel ${parcel.parcelId} is listed twice.`);
         parcelIds.add(parcel.parcelId);
         if (parcel.parcelSourceId != null) {
-            if (!isText(parcel.parcelSourceId, MAX_ID_LENGTH)) return invalid('land', `Input parcel ${parcel.parcelId} has an invalid parcel source.`);
+            if (!isText(parcel.parcelSourceId, 3507)) return invalid('land', `Input parcel ${parcel.parcelId} has an invalid parcel source.`);
             sources.add(parcel.parcelSourceId);
         }
         if (parcel.areaM2 != null && !isArea(parcel.areaM2)) return invalid('land', `Input parcel ${parcel.parcelId} needs an area of at least 0, or null.`);

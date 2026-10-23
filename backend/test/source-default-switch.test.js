@@ -1,6 +1,7 @@
 // A city provider upgrade preserves saved IDs through explicitly retained historical sources.
 import { afterEach, describe, expect, it } from 'vitest';
-import { clearParcelSourceRuntimeCache, parcelSourceCatalog, parcelSourceForCity, parcelSourceForIds } from '../parcels/sources.js';
+import { clearParcelSourceRuntimeCache, parcelSourceCatalog, parcelSourceById } from '../parcels/sources.js';
+import { parcelSourceForCity, parcelSourceForIds } from './helpers/frontend-source-selection.js';
 
 const originalSources = [...parcelSourceCatalog.sources];
 afterEach(() => {
@@ -23,13 +24,14 @@ describe('city default provider upgrades', () => {
         expect(parcelSourceForIds(['GB-HMLR-BROWSER-v1-50654735']).descriptor.id).toBe('gb-hmlr-browser-v1');
     });
 
-    it('uses the new city default while retaining the exact old saved-reference namespace', () => {
+    it('requires an explicit source switch when catalogue metadata changes', () => {
         const old = originalSources.find(source => source.id === 'gb-hmlr-city-of-london');
         const historical = { ...old, defaultForCity: false, historicalForIds: true };
         const upgraded = { ...old, id: 'test-shared-provider', idPrefix: 'TEST-SHARED-', defaultForCity: true };
         parcelSourceCatalog.sources.splice(0, parcelSourceCatalog.sources.length, historical, upgraded);
 
-        expect(parcelSourceForCity('london').descriptor.id).toBe(upgraded.id);
+        expect(() => parcelSourceForCity('london')).toThrow(/explicit parcel source/);
+        expect(parcelSourceById(upgraded.id).descriptor.id).toBe(upgraded.id);
         const saved = 'GB-HMLR-LONDON-50654735';
         const resolved = parcelSourceForIds([saved]);
         expect(resolved.descriptor.id).toBe(old.id);

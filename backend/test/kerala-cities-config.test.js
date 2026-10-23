@@ -6,7 +6,7 @@ const read = path => readFileSync(new URL(path, import.meta.url), 'utf8');
 const cityContext = { URLSearchParams, console };
 cityContext.window = cityContext;
 runInContext(read('../../frontend/js/city-config.js'), createContext(cityContext));
-const parcelSources = JSON.parse(read('../parcels/source-catalog.json')).sources;
+const parcelSources = JSON.parse(read('../../frontend/data/source-catalog.json')).sources;
 
 const citySamples = [
     {

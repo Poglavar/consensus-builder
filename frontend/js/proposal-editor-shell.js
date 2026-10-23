@@ -56,7 +56,7 @@
             response = await global.fetch(`${String(backendBase).replace(/\/$/, '')}/designs/binding`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ site, toleranceM, city, parcelSourceId: global.DesignSync.parcelSourceIdOf(city) })
+                body: JSON.stringify({ site, toleranceM, ...global.CityConfigManager.getParcelContext(site, city) })
             });
         } catch (error) {
             throw Object.assign(new Error(unavailable()), { code: 'binding-unavailable', cause: error });

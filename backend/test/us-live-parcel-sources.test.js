@@ -1,9 +1,11 @@
+import { consumerParcelSourceId } from './helpers/frontend-source-selection.js';
 // Verifies executable US source contracts, complete paging and durable row identity separately
 // from display numbers; real parcel services can return different polygons with the same label.
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import express from 'express';
 import request from 'supertest';
-import { createParcelSource, parcelSourceCatalog, parcelSourceForCity } from '../parcels/sources.js';
+import { createParcelSource, parcelSourceCatalog } from '../parcels/sources.js';
+import { parcelSourceForCity } from './helpers/frontend-source-selection.js';
 import { setupParcelSourcesRoute } from '../routes/parcel-sources.js';
 import { computeBinding } from '../proposals/binding.js';
 
@@ -61,7 +63,7 @@ for (const sample of samples) describe(`${sample.city} live source`, () => {
     it('uses the configured source for authoritative proposal binding', async () => {
         vi.stubGlobal('fetch', vi.fn(async () => response([parcel])));
         const db = { query: vi.fn(async () => { throw new Error('Live source binding must not query imported parcel tables'); }) };
-        const { binding } = await computeBinding(db, { city: sample.city, site: geometry });
+        const { binding } = await computeBinding(db, { parcelSourceId: consumerParcelSourceId(sample.city), city: sample.city, site: geometry });
         expect(db.query).not.toHaveBeenCalled();
         expect(binding).toMatchObject({ coverage: 'complete', source: `server:${descriptor.id}` });
         expect(binding.parcels.map(item => item.parcelId)).toEqual([canonicalId]);

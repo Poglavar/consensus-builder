@@ -44,7 +44,7 @@ describe('stagedRowToFeature', () => {
 describe('fetchStagedOsmBuildings', () => {
     const bbox = [15.978, 45.797, 15.988, 45.803];
 
-    it('queries by geography across city labels and prefers the requested city for duplicate OSM ids', async () => {
+    it('queries by geography and deduplicates OSM ids without consumer city labels', async () => {
         let call;
         const pool = {
             async query(sql, params) {
@@ -53,13 +53,13 @@ describe('fetchStagedOsmBuildings', () => {
             }
         };
 
-        const result = await fetchStagedOsmBuildings(pool, bbox, 'fixture-city');
+        const result = await fetchStagedOsmBuildings(pool, bbox);
 
-        expect(call.params).toEqual([...bbox, 'fixture-city']);
+        expect(call.params).toEqual(bbox);
         expect(call.sql).toMatch(/geom\s*&&\s*ST_MakeEnvelope/);
         expect(call.sql).toMatch(/ST_Intersects\(geom,\s*ST_MakeEnvelope/);
         expect(call.sql).toMatch(/DISTINCT ON \(osm_id\)/);
-        expect(call.sql).toMatch(/ORDER BY osm_id,\s*\(city = \$5\) DESC NULLS LAST/);
+        expect(call.sql).toMatch(/ORDER BY osm_id, height DESC NULLS LAST, num_floors DESC NULLS LAST, id/);
         expect(call.sql).not.toMatch(/WHERE\s+city\s*=\s*\$5/i);
         expect(result).toMatchObject({
             type: 'FeatureCollection',
@@ -72,6 +72,6 @@ describe('fetchStagedOsmBuildings', () => {
     it('returns null when no staged geometry matches the bbox', async () => {
         const pool = { query: async () => ({ rows: [] }) };
 
-        await expect(fetchStagedOsmBuildings(pool, bbox, 'fixture-city')).resolves.toBeNull();
+        await expect(fetchStagedOsmBuildings(pool, bbox)).resolves.toBeNull();
     });
 });

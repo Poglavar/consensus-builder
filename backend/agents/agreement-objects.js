@@ -15,7 +15,7 @@ export const DESIGN_SCHEMA = designRecord.SCHEMA;
 export const AGREEMENT_SCHEMA = agreementRecord.PUBLISHED_SCHEMA;
 export const OUTPUT_ROLES = agreementRecord.ROLES;
 // An agreement that moves no money still states the money of its place (London GBP, Zagreb EUR;
-// utils/city-money.js), so any line added later is in that currency.
+// consumer-supplied money settings), so any line added later is in that currency.
 export function noMoney(currency) {
     if (typeof currency !== 'string' || !/^[A-Z]{3}$/.test(currency)) throw fail('invalid-agreement', `an agreement's money needs its city's currency, got ${JSON.stringify(currency)}`);
     return { currency, lines: [] };

@@ -1,8 +1,9 @@
+import { consumerParcelSourceId } from './helpers/frontend-source-selection.js';
 // Tests passthrough providers and proves source conditions never gate canonical reads or binding.
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import express from 'express';
 import request from 'supertest';
-import { parcelSourceForCity } from '../parcels/sources.js';
+import { parcelSourceForCity } from './helpers/frontend-source-selection.js';
 import { setupParcelSourcesRoute } from '../routes/parcel-sources.js';
 import { computeBinding } from '../proposals/binding.js';
 
@@ -48,7 +49,7 @@ describe.each(samples)('$city passthrough provider', sample => {
             return response(raw);
         }));
         const db = { query: vi.fn(async () => { throw new Error('unexpected parcel database read'); }) };
-        const { binding } = await computeBinding(db, { city: sample.city, site: raw.geometry });
+        const { binding } = await computeBinding(db, { parcelSourceId: consumerParcelSourceId(sample.city), city: sample.city, site: raw.geometry });
         expect(db.query).not.toHaveBeenCalled();
         expect(binding).toMatchObject({ coverage: 'complete', source: `server:${descriptor.id}` });
         expect(binding.parcels.map(p => p.parcelId)).toContain(descriptor.idPrefix + sample.id);

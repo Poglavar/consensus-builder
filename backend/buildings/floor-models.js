@@ -18,7 +18,7 @@ export const fingerprint = value => createHash('sha256').update(canonicalJson(va
 // Two custom feeds may both call a building "123". Bind to the selected feed's portable
 // descriptor, not its generic adapter label, and expose this key in /buildings/near.
 export function nativeFloorModelSource(requestSource, providerSource) {
-    return requestSource ? `custom:${fingerprint(requestSource)}` : providerSource;
+    return requestSource?.startsWith('building.') ? `custom:${fingerprint(requestSource)}` : providerSource;
 }
 
 export function validateModelIdentity({ city, source, ownerId = '', buildingId }) {
@@ -140,7 +140,7 @@ export async function attachProposalFloorModels(pool, proposals) {
 }
 
 export async function attachNearbyFloorModels(pool, city, source, buildings) {
-    if (!buildings.length) return buildings;
+    if (!buildings.length || !city) return buildings;
     const identities = buildings.map(building => ({ city, source, ownerId: '', buildingId: String(building.object_id) }));
     const models = await fetchFloorModels(pool, identities);
     return buildings.map((building, index) => {

@@ -9,7 +9,8 @@ import { createNycProvider } from '../buildings/nyc-footprints.js';
 import { createNycArcgisProvider } from '../buildings/nyc-arcgis.js';
 import { createOvertureProvider } from '../buildings/overture-3d.js';
 import { createOvertureTreesProvider } from '../decor/overture-trees.js';
-import { effectiveHeight, OVERTURE_CITIES } from '../buildings/overture-cities.js';
+import { effectiveHeight } from '../buildings/overture-height.js';
+import OVERTURE_CITIES from '../../frontend/data/overture-source-presets.json' with { type: 'json' };
 import { createMockPool } from './helpers/mock-pool.js';
 
 describe('Zagreb 3D provider — near()', () => {
@@ -141,8 +142,8 @@ describe('Building provider registry', () => {
         }));
 
         const pool = createMockPool();
-        await createBuildingProviders(pool, {}).resolve('new_york').near({ type: 'Point', coordinates: [-74.01, 40.71] }, 310);
-        await createBuildingProviders(pool, { NYC_BUILDINGS_SOURCE: 'socrata' }).resolve('new_york').near({ type: 'Point', coordinates: [-74.02, 40.72] }, 320);
+        await createBuildingProviders(pool, {}).resolveSource('nyc-arcgis').near({ type: 'Point', coordinates: [-74.01, 40.71] }, 310);
+        await createBuildingProviders(pool, {}).resolveSource('nyc-socrata').near({ type: 'Point', coordinates: [-74.02, 40.72] }, 320);
 
         expect(urls[0]).toContain('services6.arcgis.com');
         expect(urls[1]).toContain('data.cityofnewyork.us/resource/5zhs-2jue.geojson');
@@ -152,7 +153,7 @@ describe('Building provider registry', () => {
 describe('Overture 3D provider — near()', () => {
     it('queries a geography-radius circle, filters by city, and caps after a distance order', async () => {
         const pool = createMockPool();
-        const provider = createOvertureProvider(pool, 'belgrade');
+        const provider = createOvertureProvider(pool, OVERTURE_CITIES.belgrade);
 
         await provider.near({ type: 'Point', coordinates: [20.4589, 44.8125] }, 300);
 
@@ -180,7 +181,7 @@ describe('Overture 3D provider — near()', () => {
         // the railway reconstructions — or, on a machine that pulled the whole country, the Croatian
         // ones. Naming a single label is what let it query an empty row set and render a city with
         // no buildings at all, so it walks the ladder instead.
-        const provider = createOvertureProvider(pool, 'sibenik');
+        const provider = createOvertureProvider(pool, OVERTURE_CITIES.sibenik);
 
         await provider.near({ type: 'Point', coordinates: [15.8896, 43.7350] }, 300);
 
@@ -203,7 +204,7 @@ describe('Overture 3D provider — near()', () => {
                 { overture_id: 'c', height_m: null, num_floors: null, geometry: square } // default
             ]
         });
-        const provider = createOvertureProvider(pool, 'belgrade');
+        const provider = createOvertureProvider(pool, OVERTURE_CITIES.belgrade);
 
         const { buildings, count, source } = await provider.near({ type: 'Point', coordinates: [20.45, 44.81] }, 200);
         const cfg = OVERTURE_CITIES.belgrade;
@@ -226,7 +227,7 @@ describe('Overture 3D provider — near()', () => {
 describe('Overture trees provider — near()', () => {
     it('queries a geography-radius circle, filters by city, caps after a distance order', async () => {
         const pool = createMockPool();
-        const provider = createOvertureTreesProvider(pool, 'belgrade');
+        const provider = createOvertureTreesProvider(pool, OVERTURE_CITIES.belgrade);
 
         await provider.near({ type: 'Point', coordinates: [20.4612, 44.8125] }, 300);
 
@@ -249,7 +250,7 @@ describe('Overture trees provider — near()', () => {
 
     it('walks the same city → region → country → planet ladder as the buildings', async () => {
         const pool = createMockPool();
-        const provider = createOvertureTreesProvider(pool, 'sibenik');
+        const provider = createOvertureTreesProvider(pool, OVERTURE_CITIES.sibenik);
 
         await provider.near({ type: 'Point', coordinates: [15.8896, 43.7350] }, 300);
 
@@ -260,7 +261,7 @@ describe('Overture trees provider — near()', () => {
     it('returns trees as [lng, lat] pairs', async () => {
         const pool = createMockPool();
         pool.setResult({ rows: [{ lng: 20.46, lat: 44.81 }, { lng: 20.47, lat: 44.82 }] });
-        const provider = createOvertureTreesProvider(pool, 'belgrade');
+        const provider = createOvertureTreesProvider(pool, OVERTURE_CITIES.belgrade);
 
         const { trees, count, source } = await provider.near({ type: 'Point', coordinates: [20.46, 44.81] }, 200);
         expect(source).toBe('overture-trees');
@@ -270,7 +271,7 @@ describe('Overture trees provider — near()', () => {
 
     it('also scatters trees through mapped greenery, since mapped tree POINTS are far too sparse', async () => {
         const pool = createMockPool();
-        const provider = createOvertureTreesProvider(pool, 'sibenik');
+        const provider = createOvertureTreesProvider(pool, OVERTURE_CITIES.sibenik);
 
         await provider.near({ type: 'Point', coordinates: [15.8896, 43.7350] }, 300);
 
@@ -287,7 +288,7 @@ describe('Overture trees provider — near()', () => {
 
     it('anchors the scatter lattice to absolute coordinates, not to the query point', async () => {
         const pool = createMockPool();
-        const provider = createOvertureTreesProvider(pool, 'sibenik');
+        const provider = createOvertureTreesProvider(pool, OVERTURE_CITIES.sibenik);
 
         await provider.near({ type: 'Point', coordinates: [15.8896, 43.7350] }, 300);
         const { sql } = pool.getCalls()[0];
@@ -313,13 +314,13 @@ describe('Overture trees provider — near()', () => {
         // trees 2,654 ms -> 309 ms, buildings 3,185 ms -> 75 ms. The buffer envelope is an exact
         // superset of the circle, so this narrows the scan without changing the result.
         const buildingsPool = createMockPool();
-        await createOvertureProvider(buildingsPool, 'sibenik').near({ type: 'Point', coordinates: [15.8896, 43.7350] }, 300);
+        await createOvertureProvider(buildingsPool, OVERTURE_CITIES.sibenik).near({ type: 'Point', coordinates: [15.8896, 43.7350] }, 300);
         const buildingsSql = buildingsPool.getCalls()[0].sql;
         expect(buildingsSql).toContain('ST_Envelope(ST_Buffer(q.g::geography, $3)::geometry)');
         expect(buildingsSql.indexOf('b.geom && box.b')).toBeLessThan(buildingsSql.indexOf('ST_DWithin(b.geom::geography'));
 
         const treesPool = createMockPool();
-        await createOvertureTreesProvider(treesPool, 'sibenik').near({ type: 'Point', coordinates: [15.8896, 43.7350] }, 300);
+        await createOvertureTreesProvider(treesPool, OVERTURE_CITIES.sibenik).near({ type: 'Point', coordinates: [15.8896, 43.7350] }, 300);
         const treesSql = treesPool.getCalls()[0].sql;
         expect(treesSql).toContain('ST_Envelope(ST_Buffer(q.g::geography, $3)::geometry)');
         expect(treesSql.indexOf('t.geom && box.b')).toBeLessThan(treesSql.indexOf('ST_DWithin(t.geom::geography'));
@@ -343,12 +344,12 @@ describe('Overture provider — footprints()', () => {
     };
 
     it('exists at all — a city with Overture stock can serve its footprints', () => {
-        expect(typeof createOvertureProvider(createMockPool(), 'sibenik').footprints).toBe('function');
+        expect(typeof createOvertureProvider(createMockPool(), OVERTURE_CITIES.sibenik).footprints).toBe('function');
     });
 
     it('asks by region, and only for buildings mostly inside the query area', async () => {
         const pool = createMockPool();
-        await createOvertureProvider(pool, 'sibenik').footprints(bbox);
+        await createOvertureProvider(pool, OVERTURE_CITIES.sibenik).footprints(bbox);
 
         const { sql } = pool.getCalls()[0];
         // Narrowest rung first; the mock answers nothing, so it widens all the way to the planet.
@@ -369,7 +370,7 @@ describe('Overture provider — footprints()', () => {
                 { id: 'c', height_m: null, num_floors: null, geometry: square }
             ]
         });
-        const { footprints, count, source } = await createOvertureProvider(pool, 'sibenik').footprints(bbox);
+        const { footprints, count, source } = await createOvertureProvider(pool, OVERTURE_CITIES.sibenik).footprints(bbox);
 
         expect(source).toBe('overture-footprints');
         expect(count).toBe(3);
@@ -384,7 +385,7 @@ describe('Overture provider — footprints()', () => {
     it('says when the cap bound before the area did', async () => {
         const pool = createMockPool();
         pool.setResult({ rows: [{ id: 'x', height_m: null, num_floors: null, geometry: square }] });
-        const small = await createOvertureProvider(pool, 'sibenik').footprints(bbox);
+        const small = await createOvertureProvider(pool, OVERTURE_CITIES.sibenik).footprints(bbox);
         expect(small.truncated).toBe(false);
 
         const capped = createMockPool();
@@ -393,6 +394,6 @@ describe('Overture provider — footprints()', () => {
         });
         // A caller that believed a capped answer covered its area would stop fetching ground it
         // never loaded, and the buildings in the hole would never be detected.
-        expect((await createOvertureProvider(capped, 'sibenik').footprints(bbox)).truncated).toBe(true);
+        expect((await createOvertureProvider(capped, OVERTURE_CITIES.sibenik).footprints(bbox)).truncated).toBe(true);
     });
 });
