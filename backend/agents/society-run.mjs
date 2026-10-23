@@ -26,7 +26,7 @@ import { societyPolicy, societySlot, societyTurns, societyTurnSpent, societyBudg
 import { ensurePledgeBookAndSet } from './pledger.js';
 import { ensureMarketAndStake, usdcToAtomic } from './bettor.js';
 import { claimAgreementMarket, resolveAgreementMarket, revokePledge } from './lifecycle-actions.js';
-import { assertUnderCap, dailyCapUsd, dailySpendUsd, getRun, listPersonaRuns, recordCosts, startRun, updateRun } from './ledger.js';
+import { assertUnderCap, dailyCapUsd, dailySpendUsd, failStaleRuns, getRun, listPersonaRuns, recordCosts, STALE_RUN_HOURS, startRun, updateRun } from './ledger.js';
 import { markAgentRunFailed, safeFailureDiagnostic } from './run-failure.js';
 import { createAgentLlm, estimateBatchCostUsd, runPickBatch } from './llm-picker.js';
 import { buildChoiceRequest, optionId, parseChoice } from './society-llm.js';
@@ -325,6 +325,10 @@ async function main() {
     const simulated = [];
     const report = [];
     try {
+        if (pool) {
+            const abandoned = await failStaleRuns(pool);
+            if (abandoned.length) log(`failed ${abandoned.length} abandoned run(s) with no checkpoint for ${STALE_RUN_HOURS} h: ${abandoned.join(', ')}`);
+        }
         for (const turn of turns) {
             const label = `${persona.name}${turn.turn ? ` t${turn.turn}` : ''}`;
             const existing = live ? await getRun(pool, turn.runId) : null;

@@ -6,7 +6,7 @@ import { describe, it, expect } from 'vitest';
 import { createMockPool } from './helpers/mock-pool.js';
 import {
     getRun, startRun, updateRun, recordCosts, dailySpendUsd, listRuns,
-    assertUnderCap, dailyCapUsd
+    assertUnderCap, dailyCapUsd, failStaleRuns, STALE_RUN_HOURS
 } from '../agents/ledger.js';
 
 const RUN_ID = '2026-09-17-densifier-01';
@@ -60,6 +60,27 @@ describe('startRun', () => {
         await expect(startRun(pool, { runId: RUN_ID, day: 'd', mode: 'live' })).rejects.toThrow(/persona/);
         await expect(startRun(pool, { runId: RUN_ID, persona: 'p', mode: 'live' })).rejects.toThrow(/day/);
         await expect(startRun(pool, { runId: RUN_ID, persona: 'p', day: 'd' })).rejects.toThrow(/mode/);
+    });
+});
+
+describe('failStaleRuns', () => {
+    it('fails only running rows with no checkpoint for the stale window, and names them', async () => {
+        const pool = createMockPool();
+        pool.setResult({ rows: [{ run_id: '2026-10-22-h20-gentle-01' }], rowCount: 1 });
+        expect(await failStaleRuns(pool)).toEqual(['2026-10-22-h20-gentle-01']);
+        const { sql, params } = lastCall(pool);
+        const text = normalize(sql);
+        expect(text).toContain("SET status = 'failed'");
+        expect(text).toContain("WHERE status = 'running' AND updated_at < now() - make_interval(hours => $1::int)");
+        expect(text).toContain('finished_at = now()');
+        expect(text).toContain("'outcome', 'failed'");
+        expect(params).toEqual([STALE_RUN_HOURS]);
+        expect(STALE_RUN_HOURS).toBeGreaterThanOrEqual(1);
+    });
+
+    it('refuses a missing pool or a non-positive window', async () => {
+        await expect(failStaleRuns(null)).rejects.toThrow(/pg pool/);
+        await expect(failStaleRuns(createMockPool(), { staleHours: 0 })).rejects.toThrow(/positive/);
     });
 });
 

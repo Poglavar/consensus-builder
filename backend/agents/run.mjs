@@ -68,7 +68,7 @@ import { checkProposalBinding } from '../proposals/binding.js';
 import { hash32, selectAlgorithmicPicks } from './algorithmic-picker.js';
 import { buildPickRequests, parsePicks, estimateBatchCostUsd, runPickBatch, pickCustomId, createAgentLlm } from './llm-picker.js';
 import { ensureMarketAndStake, usdcToAtomic } from './bettor.js';
-import { getRun, startRun, updateRun, recordCosts, dailySpendUsd, assertUnderCap, dailyCapUsd, listRuns } from './ledger.js';
+import { getRun, startRun, updateRun, recordCosts, dailySpendUsd, assertUnderCap, dailyCapUsd, listRuns, failStaleRuns, STALE_RUN_HOURS } from './ledger.js';
 import { createRpcConnection } from '../solana/rpc.js';
 import { ensureBotSolFunding, fundBotAction } from './funding.js';
 import { sendAndConfirmPolling } from './solana-send.js';
@@ -595,6 +595,10 @@ async function main() {
             housingLock = await pool.connect();
             const { rows } = await housingLock.query('SELECT pg_try_advisory_lock(57401, hashtext($1)) AS locked', ['affordabot']);
             if (!rows[0]?.locked) throw new Error('Affordabot is already running; refusing concurrent publication');
+        }
+        if (args.live) {
+            const abandoned = await failStaleRuns(pool);
+            if (abandoned.length) log(`failed ${abandoned.length} abandoned run(s) with no checkpoint for ${STALE_RUN_HOURS} h: ${abandoned.join(', ')}`);
         }
         const allRuns = await listRuns(pool);
         for (const [i, persona] of personas.entries()) {

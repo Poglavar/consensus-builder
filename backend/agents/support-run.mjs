@@ -19,7 +19,7 @@ import { assertSupportEligibility, readSupportEligibility } from './supporter-st
 import { ensurePledgeBookAndSet } from './pledger.js';
 import { ensureDonationEscrowAndDonate } from './donor.js';
 import { ensureMarketAndStake, usdcToAtomic } from './bettor.js';
-import { getRun, startRun, updateRun } from './ledger.js';
+import { failStaleRuns, getRun, startRun, updateRun, STALE_RUN_HOURS } from './ledger.js';
 import { markAgentRunFailed, safeFailureDiagnostic } from './run-failure.js';
 import { createRpcConnection } from '../solana/rpc.js';
 import { ensureBotSolFunding, fundBotAction } from './funding.js';
@@ -136,6 +136,10 @@ async function main() {
     const connection = createRpcConnection(rpcUrl, 'confirmed');
     const report = [];
     try {
+        if (pool) {
+            const abandoned = await failStaleRuns(pool);
+            if (abandoned.length) log(`failed ${abandoned.length} abandoned run(s) with no checkpoint for ${STALE_RUN_HOURS} h: ${abandoned.join(', ')}`);
+        }
         for (const persona of personas) {
             const runId = `${runKey}-${persona.name}`;
             const existing = args.live ? await getRun(pool, runId) : null;

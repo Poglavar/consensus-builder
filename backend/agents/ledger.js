@@ -59,6 +59,33 @@ export async function startRun(pool, { runId, persona, day, mode } = {}) {
     return rows[0];
 }
 
+// A live run checkpoints within minutes (an LLM batch waits at most 10 minutes, then checkpoints),
+// so a row that has not moved for this long has lost its process.
+export const STALE_RUN_HOURS = 6;
+
+/**
+ * Fail every 'running' run whose row has not been updated for `staleHours`: a deploy, an OOM or a
+ * kill stopped its process between checkpoints, and nothing else would ever end it (2026-10-22
+ * 20:25, gentle-01, started a minute after a deploy and stayed running). A rerun of the same
+ * run_id resumes it as usual. Returns the run ids it failed.
+ */
+export async function failStaleRuns(pool, { staleHours = STALE_RUN_HOURS } = {}) {
+    requirePool(pool);
+    if (typeof staleHours !== 'number' || !(staleHours > 0)) throw new Error('staleHours must be a positive number');
+    const { rows } = await pool.query(
+        `UPDATE consensus.agent_run
+            SET status      = 'failed',
+                summary     = summary || jsonb_build_object('outcome', 'failed',
+                                  'error', 'abandoned: no checkpoint for ' || $1::text || ' h, its process is gone'),
+                finished_at = now(),
+                updated_at  = now()
+          WHERE status = 'running' AND updated_at < now() - make_interval(hours => $1::int)
+          RETURNING run_id`,
+        [staleHours]
+    );
+    return rows.map(row => row.run_id);
+}
+
 /**
  * Advance a run's checkpoint. `summaryPatch` is merged into `summary` with jsonb `||` — a SHALLOW
  * merge, so a patch key replaces that whole key's value (the caller passes the complete object for
