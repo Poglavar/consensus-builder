@@ -6547,6 +6547,7 @@
         }
     },
     "parcelSources": {
+        "unavailableTitle": "Parcelas no disponibles",
         "recent": "Comprobaciones recientes de fuentes",
         "attribution": "Fuente de parcelas elegida por el usuario",
         "title": "Elegir fuente de parcelas",
@@ -6572,6 +6573,7 @@
         "dismiss": "Ocultar aviso de la fuente"
     },
     "imagerySources": {
+        "unavailableTitle": "Imágenes no disponibles",
         "title": "Elegir una fuente de imágenes",
         "intro": "Añade una URL pública HTTPS de teselas XYZ (con {z}, {x}, {y}) o un servicio WMS para esta zona. Las imágenes son un fondo visual; no modifican parcelas ni edificios.",
         "url": "URL de la fuente de imágenes",
@@ -6608,6 +6610,7 @@
         "title": "Fuentes de datos"
     },
     "buildingSources": {
+        "unavailableTitle": "Edificios no disponibles",
         "title": "Elegir una fuente de edificios",
         "intro": "Añade una URL pública HTTPS de huellas de edificios para esta ciudad, o de un espejo de OpenStreetMap (una dirección de la API de Overpass que termina en /interpreter). Probamos cada formato compatible y leemos un campo de altura o de plantas si lo tiene; las demás alturas se estiman.",
         "url": "URL de la fuente de edificios",

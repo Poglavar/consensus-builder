@@ -15,10 +15,10 @@ The source and its agreements stay unchanged. Imported mesh references and local
 remain intact. Geographic geometry and decorations move; model-local coordinate arrays do not.
 Site-bound rules, layouts, corridors, attached stations and rights acts have no free-copy action.
 
-The old Fork entry point is removed from the editor shell. This deletion, the matching
-vocabulary section, four translation files and control inventory share files with another
-session's changes and are intentionally left uncommitted until those files can be committed by
-their owners. No push or deployment occurred.
+The old Fork entry point is removed from the editor shell. Mixed editor, vocabulary and
+translation edits were initially left uncommitted for their owners, then completed in the
+subsequent save-preview and menu commits. The generated control inventory was checkpointed as
+`700dc72ae`. No push or deployment occurred.
 
 ## Verification log
 
@@ -63,5 +63,6 @@ diff whitespace are checked separately. Dedicated headed Chrome was used for vis
 at 390 × 844; actual placement and binding are covered by the mocked headless browser cases.
 An unmocked local preview cannot prove production model-upload or cadastre availability.
 
-The earlier menu integration remains separately recorded at `84e302d91` on
-`integrate/menu-user-flows-20261023`; concurrent overlapping target edits prevented its merge.
+The earlier menu integration starts at `84e302d91` on `integrate/menu-user-flows-20261023`.
+Its later reconciliation with the completed target work, fresh baseline and verification are
+recorded in [the menu integration report](menu-fix-integration-2026-10-23.md).

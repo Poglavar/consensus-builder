@@ -193,12 +193,20 @@ describe('building failure banner', () => {
     function fakeDocument() {
         const byId = new Map();
         const make = tag => {
-            const node = { tag, children: [], listeners: {}, attributes: {}, textContent: '', parent: null,
+            const node = { tag, children: [], listeners: {}, attributes: {}, _textContent: '', parent: null,
+                set textContent(value) { this._textContent = String(value); },
+                get textContent() { return this._textContent + this.children.map(child => child.textContent).join(''); },
                 set id(value) { this._id = value; byId.set(value, this); }, get id() { return this._id; },
                 setAttribute(name, value) { this.attributes[name] = value; },
                 append(...nodes) { for (const child of nodes) { child.parent = this; this.children.push(child); } },
+                replaceChildren(...nodes) { for (const child of this.children) child.parent = null; this.children = []; this.append(...nodes); },
                 addEventListener(type, fn) { this.listeners[type] = fn; },
-                querySelector(selector) { return selector === 'p' ? this.children.find(child => child.tag === 'p') : null; },
+                querySelector(selector) { return this.querySelectorAll(selector)[0] || null; },
+                querySelectorAll(selector) {
+                    const found = [];
+                    const visit = parent => parent.children.forEach(child => { if (selector === child.tag) found.push(child); visit(child); });
+                    visit(this); return found;
+                },
                 remove() { if (this.parent) this.parent.children.splice(this.parent.children.indexOf(this), 1); if (this._id) byId.delete(this._id); } };
             return node;
         };
@@ -218,25 +226,72 @@ describe('building failure banner', () => {
     it('keeps one building banner in the corner stack, updates it in place, and retries with the latest callback', () => {
         const document = fakeDocument();
         const global = { document };
-        settings.reportFailure(global, 'parcels failed');
         const firstRetry = vi.fn(), latestRetry = vi.fn();
         settings.reportFailure(global, 'buildings failed', 'building', firstRetry);
         settings.reportFailure(global, 'buildings still failing', 'building', latestRetry);
-        // Both warnings stay compact in the corner; parcel recovery owns the detailed choices.
         const stack = document.getElementById('cb-banner-stack');
-        expect(document.getElementById('parcel-source-status').parent).toBe(stack);
-        expect(stack.children.map(node => node.id)).toEqual(['parcel-source-status', 'building-source-status']);
+        expect(stack.children.map(node => node.id)).toEqual(['building-source-status']);
         const banner = document.getElementById('building-source-status');
         expect(banner.querySelector('p').textContent).toBe('buildings still failing');
-        const [retry, choose] = banner.children.filter(node => node.tag === 'button');
-        expect([retry.textContent, choose.textContent]).toEqual(['Retry buildings', 'Choose a building source']);
+        expect(banner.querySelector('h3').textContent).toBe('Buildings unavailable');
+        const [retry, choose, dismiss] = banner.querySelectorAll('button');
+        expect([retry.textContent, choose.textContent, dismiss.textContent]).toEqual([
+            'Retry buildings', 'Choose a building source', 'Dismiss source warning'
+        ]);
         retry.listeners.click();
         expect(latestRetry).toHaveBeenCalledTimes(1);
         expect(firstRetry).not.toHaveBeenCalled();
+        expect(document.getElementById('building-source-status')).toBe(banner);
+        settings.clearFailure(global, 'building');
         expect(document.getElementById('building-source-status')).toBeNull();
-        settings.clearFailure(global);
-        expect(document.getElementById('parcel-source-status')).toBeNull();
         expect(stack.children).toEqual([]);
+    });
+
+    it('clears each source warning independently in either direction', () => {
+        const document = fakeDocument();
+        const global = { document };
+        settings.reportFailure(global, 'parcels failed');
+        settings.reportFailure(global, 'buildings failed', 'building');
+        expect(document.getElementById('cb-banner-stack').children.map(node => node.id))
+            .toEqual(['parcel-source-status', 'building-source-status']);
+        settings.clearFailure(global, 'building');
+        expect(document.getElementById('building-source-status')).toBeNull();
+        expect(document.getElementById('parcel-source-status')).not.toBeNull();
+        settings.reportFailure(global, 'buildings recovered then failed', 'building');
+        settings.clearFailure(global, 'parcel');
+        expect(document.getElementById('parcel-source-status')).toBeNull();
+        expect(document.getElementById('building-source-status')).not.toBeNull();
+    });
+
+    it('dismisses only the source warning whose dismiss control was used', () => {
+        const document = fakeDocument();
+        const global = { document };
+        settings.reportFailure(global, 'parcels failed');
+        settings.reportFailure(global, 'buildings failed', 'building');
+        const parcelBanner = document.getElementById('parcel-source-status');
+        parcelBanner.querySelectorAll('button').find(node => node.textContent === 'Dismiss source warning').listeners.click();
+        expect(document.getElementById('parcel-source-status')).toBeNull();
+        expect(document.getElementById('building-source-status')).not.toBeNull();
+    });
+
+    it('labels parcel, building, and imagery warnings with distinct hidden icons', () => {
+        const document = fakeDocument();
+        const global = { document };
+        settings.reportFailure(global, 'parcel unavailable');
+        settings.reportFailure(global, 'building unavailable', 'building');
+        settings.reportFailure(global, 'imagery unavailable', 'imagery');
+        const expectations = [
+            ['parcel-source-status', 'Parcels unavailable', 'fa-draw-polygon'],
+            ['building-source-status', 'Buildings unavailable', 'fa-building'],
+            ['imagery-source-status', 'Imagery unavailable', 'fa-satellite']
+        ];
+        for (const [id, heading, iconClass] of expectations) {
+            const banner = document.getElementById(id);
+            expect(banner.querySelector('h3').textContent).toBe(heading);
+            const icon = banner.querySelector('i');
+            expect(icon.attributes['aria-hidden']).toBe('true');
+            expect(icon.className).toContain(iconClass);
+        }
     });
 
     it('reopens the wider parcel recovery choices from the compact warning', () => {
@@ -245,7 +300,7 @@ describe('building failure banner', () => {
         const global = { document, ParcelGroundFallback: { openOptions } };
         settings.reportFailure(global, 'source unavailable');
         const banner = document.getElementById('parcel-source-status');
-        const buttons = banner.children.filter(node => node.tag === 'button');
+        const buttons = banner.querySelectorAll('button');
         expect(buttons.map(node => node.textContent)).toEqual(['Choose how to continue', 'Dismiss source warning']);
         buttons[0].listeners.click();
         expect(openOptions).toHaveBeenCalledOnce();

@@ -68,3 +68,56 @@ history and the accessible close label changed in place. At 390 × 844, both pro
 groups remained expanded while the card list retained 149 px and Details scrolled into view.
 Manual examples were browser-local; no wallet, publication, production mutation or deployment
 was performed. Provider warnings in the unmocked local preview were dismissed for inspection.
+
+
+## Revisit against the completed concurrent work
+
+Rechecked the current target after its design, selection, MCP and menu work. The target advanced
+through `6386f0a6e`, `7433152ef` and `69c17ce4d` during this review. The generated inventory was
+checkpointed separately as `700dc72ae`. Only reproduced defects are retained in the integration.
+
+The old selection fix is already implemented in the target. Conflict resolution preserves its
+Manual/Done contract, existing selected land, plain Detect block action and current click-stack
+tests. The final patch has no change to `frontend/index.html`,
+`frontend/js/proposals/list-ui.js` or `backend/test/frontend-parcel-menu.test.js` relative to the
+latest target. The current Schelling icon, collapsed Layers sections, profile-first welcome
+layout, save/apply preview handoff and explicit Duplicate behavior are retained.
+
+A fresh baseline read the current target's actual source rather than assuming the older failures
+still applied. Twelve of fourteen headless Node regressions and sixteen of twenty-two targeted
+headless Playwright cases failed before integration. Passing selection, lifecycle-filter,
+permitted-inspection and adjacent navigation cases remain regression coverage, without restoring
+obsolete selection code. The source-gate DOM unit case passes already; the actual NYC browser
+case still fails because the city source gate does not mark the hidden row for the palette.
+
+| Revisit run | Type and scope | Result |
+| --- | --- | --- |
+| Current target baseline | Headless Node unit, 14 cases in one imported regression file | 12 failed, 2 passed; original source was read through a temporary test wrapper |
+| Resolved integration | Headless Node unit, same 14 cases | 14 passed |
+| Resolved integration | Headless Vitest unit, the 11 explicit files listed above | 265 passed |
+| Current target baseline | Headless Playwright, 22 selected cases in 9 files | 16 failed, 6 passed |
+| Resolved integration | Headless Playwright, same 22 selected cases | 21 passed, 1 failed: the permitted-massing fixture tried to check a control in the newly collapsed Layers section |
+| Premature fixture rerun | Headless Playwright, 2 permitted-massing cases | 1 passed, 1 failed; its preceding edit used the wrong working directory, so the fixture had not changed. A stop attempt found the run had already finished |
+| Corrected fixture and recent authoring flows | Headless Playwright, 6 cases in 2 files | 6 passed; uses the current Layers helper and covers the four GLB/Duplicate cases |
+| Latest completed source-warning work | Headless Vitest unit, `parcel-source-settings.test.js` | 35 passed |
+| Latest welcome/source-warning work | Headless Playwright, 4 cases in `profile.spec.ts` and `data-sources.spec.ts` | 4 passed |
+
+Final affected-scope passing coverage is **314 headless unit tests in 13 files and 30 headless
+Playwright cases in 12 files**, accumulated across the final scoped runs. No full suite ran.
+No automated run was stopped. The browser baseline used the current target preview while the
+independent source-warning commit completed; final verification includes that completed commit.
+
+The 22-case browser selection covers the earlier eight files plus
+`multi-parcel-selection.spec.ts`; the final checks add `freeform-upload-duplicate.spec.ts`,
+`profile.spec.ts` and `data-sources.spec.ts`. The only browser fixture adjustment needed for the
+new menu contract opens the collapsed Blocks section with the existing `openLayerSection` helper.
+The localized profile-close markup remaps one generated inventory entry; all 857 source sites
+match after regeneration. JavaScript syntax, all four translation dictionaries and diff whitespace
+are checked. An initial inventory write outside the writable root was blocked by the filesystem
+sandbox; rerunning it with the authorized worktree access completed normally.
+
+A dedicated headed background Chrome was used for a fresh mobile visual check, then closed.
+Collapsed Layers order and the current icon are intact. At 390 × 844, expanded Filters and
+Proposal tools leave 149 px of card-list space. Browser examples were local and disposable;
+there was no wallet action, production write, push or deployment. The target's unrelated dirty
+`MEMORY.md` and `mcp.md` edits are outside this merge and remain untouched.

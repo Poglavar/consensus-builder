@@ -824,6 +824,18 @@
       "controlType": "button"
     },
     {
+      "id": "control-0debdec749fb22-1",
+      "source": "index.html",
+      "markup": "<select id=\"tile-source-select\" aria-labelledby=\"base-map-title\">",
+      "interaction": "change",
+      "controlType": "select"
+    },
+    {
+      "id": "control-06eaf89958427f-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"imagery-source-settings-button\" class=\"btn\" onclick=\"openImagerySourceSettings()\" data-i18n-key=\"imagerySources.title\">"
+    },
+    {
       "id": "control-099139c894b134-1",
       "source": "index.html",
       "markup": "<input type=\"checkbox\" id=\"parcelsCheckbox\" data-layer=\"parcels\" onchange=\"toggleAccordion(this)\" checked>",
@@ -936,13 +948,6 @@
       "controlType": "button"
     },
     {
-      "id": "control-55e900d0385e1e-1",
-      "source": "index.html",
-      "markup": "<input type=\"checkbox\" id=\"showSchellingPlan\">",
-      "interaction": "change",
-      "controlType": "checkbox"
-    },
-    {
       "id": "control-65ee6d5005126f-1",
       "source": "index.html",
       "markup": "<input type=\"checkbox\" id=\"parcelBlocksCheckbox\" data-layer=\"blocks\" onchange=\"toggleBlocksVisibility()\">",
@@ -953,20 +958,6 @@
       "id": "control-062d87a1ae301f-1",
       "source": "index.html",
       "markup": "<input type=\"checkbox\" id=\"showBlockNames\" checked onchange=\"toggleBlockNameLabels()\">",
-      "interaction": "change",
-      "controlType": "checkbox"
-    },
-    {
-      "id": "control-0d6c7eceef8e35-1",
-      "source": "index.html",
-      "markup": "<input type=\"checkbox\" id=\"showParksCheckbox\" checked onchange=\"toggleParksVisibility()\">",
-      "interaction": "change",
-      "controlType": "checkbox"
-    },
-    {
-      "id": "control-d5d4ba12aa9d58-1",
-      "source": "index.html",
-      "markup": "<input type=\"checkbox\" id=\"showSquaresCheckbox\" checked onchange=\"toggleSquaresVisibility()\">",
       "interaction": "change",
       "controlType": "checkbox"
     },
@@ -1045,6 +1036,20 @@
       "markup": "<button type=\"button\" id=\"building-source-settings-button\" class=\"btn\" data-section-independent=\"true\" onclick=\"openBuildingSourceSettings()\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-0d6c7eceef8e35-1",
+      "source": "index.html",
+      "markup": "<input type=\"checkbox\" id=\"showParksCheckbox\" checked onchange=\"toggleParksVisibility()\">",
+      "interaction": "change",
+      "controlType": "checkbox"
+    },
+    {
+      "id": "control-d5d4ba12aa9d58-1",
+      "source": "index.html",
+      "markup": "<input type=\"checkbox\" id=\"showSquaresCheckbox\" checked onchange=\"toggleSquaresVisibility()\">",
+      "interaction": "change",
+      "controlType": "checkbox"
     },
     {
       "id": "control-53d02aedbd60e4-1",
@@ -1261,16 +1266,11 @@
       "controlType": "number"
     },
     {
-      "id": "control-495db559ee259f-1",
+      "id": "control-55e900d0385e1e-1",
       "source": "index.html",
-      "markup": "<select id=\"tile-source-select\">",
+      "markup": "<input type=\"checkbox\" id=\"showSchellingPlan\">",
       "interaction": "change",
-      "controlType": "select"
-    },
-    {
-      "id": "control-06eaf89958427f-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"imagery-source-settings-button\" class=\"btn\" onclick=\"openImagerySourceSettings()\" data-i18n-key=\"imagerySources.title\">"
+      "controlType": "checkbox"
     },
     {
       "id": "control-29ba361064b04a-1",
@@ -1605,16 +1605,30 @@
       "controlType": "button"
     },
     {
-      "id": "control-933be8acd6b0c5-1",
+      "id": "control-a0de29e6745122-1",
       "source": "index.html",
-      "markup": "<button type=\"button\" class=\"cb-tab parcel-tab-btn\" role=\"tab\" aria-selected=\"true\" aria-controls=\"info-tab\" data-parcel-tab-id=\"info-tab\" onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'info-tab')\">",
+      "markup": "<button type=\"button\" id=\"parcel-manual-selection\" class=\"btn btn-sm\" aria-pressed=\"false\" onclick=\"multiParcelSelection.toggle()\" data-i18n-key=\"panel.parcel.selectManually\">",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-b558c87beb55bf-1",
+      "id": "control-54bc94246e2fdf-1",
       "source": "index.html",
-      "markup": "<button type=\"button\" class=\"cb-tab parcel-tab-btn\" role=\"tab\" aria-selected=\"false\" aria-controls=\"propose-tab\" data-parcel-tab-id=\"propose-tab\" onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'propose-tab')\">",
+      "markup": "<button type=\"button\" class=\"btn btn-sm multi-select-detect-btn\" data-i18n-key=\"panel.parcel.detectBlock\" onclick=\"(window.animateFloodfillFromSelected || function(){})();\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-d4561e660a22f2-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" class=\"cb-tab parcel-tab-btn\" role=\"tab\" aria-selected=\"true\" aria-controls=\"propose-tab\" data-parcel-tab-id=\"propose-tab\" onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'propose-tab')\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-302bcfc52ca851-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" class=\"cb-tab parcel-tab-btn\" role=\"tab\" aria-selected=\"false\" aria-controls=\"info-tab\" data-parcel-tab-id=\"info-tab\" onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'info-tab')\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -1629,20 +1643,6 @@
       "id": "control-cc55ab4397e863-1",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"cb-tab parcel-tab-btn parcel-tab-btn--icon\" role=\"tab\" aria-selected=\"false\" aria-controls=\"tools-tab\" data-parcel-tab-id=\"tools-tab\" onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'tools-tab')\" aria-label=\"Tools\" title=\"Tools\" data-i18n-key=\"panel.parcel.tabTools\" data-i18n-attr=\"aria-label,title\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-99f8c6a795847c-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"parcel-manual-selection\" class=\"btn btn-sm\" aria-pressed=\"false\" onclick=\"multiParcelSelection.toggle({ preserveSelectedParcel: true })\" data-i18n-key=\"panel.parcel.selectManually\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-22ef66b70477a1-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" class=\"btn btn-primary btn-sm multi-select-detect-btn\" data-i18n-key=\"panel.parcel.detectBlock\" onclick=\"(window.animateFloodfillFromSelected || function(){})();\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -2333,9 +2333,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-f56349fbace9c9-1",
+      "id": "control-149703a0e2b332-1",
       "source": "js/agents.js",
-      "markup": "<button type=\"button\" class=\"close-circle-btn agent-dialog-modal-close\" aria-label=\"Close agent dialog\" onclick=\"closeAgentDialog()\" data-readonly-allow=\"true\">",
+      "markup": "<button type=\"button\" class=\"close-circle-btn agent-dialog-modal-close\" aria-label=\"${escapeHtml(translateText('agentDialog.close', 'Close agent dialog'))}\" data-i18n-key=\"agentDialog.close\" data-i18n-attr=\"aria-label\" onclick=\"closeAgentDialog()\" data-readonly-allow=\"true\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -3244,6 +3244,16 @@
         }
       ],
       "exhaustiveVariants": true
+    },
+    {
+      "id": "control-ff274afced601a-1",
+      "source": "js/building-surroundings-editor.js",
+      "markup": "document.createElement('select')"
+    },
+    {
+      "id": "control-347f3fc96bcfa7-1",
+      "source": "js/building-surroundings-editor.js",
+      "markup": "document.createElement('button')"
     },
     {
       "id": "control-6e0bedd84abc99-1",
@@ -5957,9 +5967,9 @@
       "markup": "<button type=\"button\" class=\"btn ${publishRefusal ? 'btn-primary ' : ''}btn-create-agreement\" onclick=\"window.AgreementDialog.addDesign(${inlineJsArg(proposalKey)})\">"
     },
     {
-      "id": "control-62640b5f07c483-1",
+      "id": "control-08edf049b57aee-1",
       "source": "js/proposals/details-panel.js",
-      "markup": "<button class=\"btn btn-counterpropose-proposal\" onclick=\"proposeExistingProposal(${inlineJsArg(proposalKey)})\" title=\"${tProposal('panel.proposal.actions.forkDesignHint', 'Create an editable copy. The design you are viewing stays unchanged.')}\" aria-label=\"${tProposal('panel.proposal.actions.forkDesignHint', 'Create an editable copy. The design you are viewing stays unchanged.')}\">",
+      "markup": "<button type=\"button\" class=\"btn btn-duplicate-design\" onclick=\"startDesignDuplication(${inlineJsArg(proposalKey)})\" title=\"${tProposal('panel.proposal.actions.duplicateDesignHint', 'Move a copy with the pointer and click to place a new design.')}\" aria-label=\"${tProposal('panel.proposal.actions.duplicateDesign', 'Duplicate')}\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -6016,6 +6026,11 @@
       "markup": "<button type=\"button\" class=\"cb-option proposal-parcel-set-relation\" data-related-proposal-id=\"${candidateId}\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-a21fdb6a111f5f-1",
+      "source": "js/proposals/details-panel.js",
+      "markup": "<button type=\"button\" class=\"cb-tab proposal-details-tab\" role=\"tab\" data-proposal-tab=\"${id}\" aria-selected=\"${proposalDetailsTab === id}\">"
     },
     {
       "id": "control-1780954d86d286-1",
@@ -7031,6 +7046,11 @@
       "controlType": "select"
     },
     {
+      "id": "control-9448ffc7cffa2e-1",
+      "source": "js/single-building.js",
+      "markup": "<button id=\"single-ground-treatment-edit\" class=\"btn btn-sm\" type=\"button\" disabled>"
+    },
+    {
       "id": "control-a094560ffac271-1",
       "source": "js/single-building.js",
       "markup": "<select id=\"single-parcel-mode\">",
@@ -7038,9 +7058,16 @@
       "controlType": "select"
     },
     {
-      "id": "control-0bf291b03e526d-1",
+      "id": "control-ab4f0dbf4e35d6-1",
       "source": "js/single-building.js",
-      "markup": "<button id=\"single-building-geojson-upload\" class=\"btn btn-block\" type=\"button\">",
+      "markup": "<button id=\"single-building-geojson-upload\" class=\"btn\" type=\"button\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-71aa198815cbd3-1",
+      "source": "js/single-building.js",
+      "markup": "<button id=\"single-building-glb-upload\" class=\"btn\" type=\"button\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -7283,23 +7310,14 @@
       "controlType": "input"
     },
     {
-      "id": "control-1774ca350fe7b9-1",
-      "source": "js/three-mode.js",
-      "markup": "<button type=\"button\" class=\"close-circle-btn parcel-panel-close\" data-role=\"close-panel\" aria-label=\"${aria}\" title=\"${aria}\">",
-      "interaction": "click",
-      "controlType": "button"
+      "id": "control-6c4be3813e11eb-1",
+      "source": "js/three-click-stack.js",
+      "markup": "doc.createElement('button')"
     },
     {
       "id": "control-48a3d8be2e79e3-1",
       "source": "js/three-mode.js",
       "markup": "<input type=\"range\" class=\"parcel-panel-price-slider\" data-role=\"${role}\" min=\"${price.min}\" max=\"${price.max}\" step=\"${price.step}\" value=\"${price.perSqm}\">"
-    },
-    {
-      "id": "control-ecbae0905e542d-1",
-      "source": "js/three-mode.js",
-      "markup": "<button type=\"button\" class=\"cb-link parcel-panel-proposal-show\" data-role=\"show-proposal\">",
-      "interaction": "click",
-      "controlType": "button"
     },
     {
       "id": "control-0f72c2ba2aa79f-1",
