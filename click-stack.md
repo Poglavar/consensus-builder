@@ -69,7 +69,11 @@ right-side panels that clicks used to open one at a time.
     **Custom site**. Custom site starts an editable working boundary; it does not change the
     parcel layout and remains available for drawing a design over that boundary.
     **Design · Info · Tools** are the tabs. Design opens first; a selected tab stays selected
-    on subsequent parcel clicks. The panel's Proposals tab is hidden inside the stack because
+    on subsequent parcel clicks. A source parcel replaced by applied designs opens on Info,
+    explaining that its original cadastral boundary is retained and highlighted. Its Design tab
+    offers selection of the current parcels for further design work. Source selection always
+    outlines the immutable repository geometry, including while collapsed.
+    The panel's Proposals tab is hidden inside the stack because
     Designs already lists those records. The selected-set section retains Proposals for the whole
     set. Parcel information and proposal actions open only inside the click panel; there is no
     automatic companion parcel panel beside a selected proposal. Hosted Built/Permitted inspectors have no close

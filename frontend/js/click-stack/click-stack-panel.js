@@ -65,7 +65,9 @@
             // (css/map.css) and it is never left minimized. Point-specific proposals have their
             // own Designs section; a selected set keeps Proposals to list designs on all its land.
             global.ParcelsUIParcelPanel?.setParcelInfoPanelMinimized?.(el, false);
-            if (state.stack?.expanded !== 'selection' && el.querySelector('[data-parcel-tab-id="proposals-tab"][aria-selected="true"]')) global.switchParcelTab?.(null, 'propose-tab');
+            const selected = model.selectedInstance(state.stack, state.stack.selectedKind);
+            if (state.stack.selectedKind === 'parcels' && selected?.live === false) global.switchParcelTab?.(null, 'info-tab');
+            else if (state.stack?.expanded !== 'selection' && el.querySelector('[data-parcel-tab-id="proposals-tab"][aria-selected="true"]')) global.switchParcelTab?.(null, 'propose-tab');
         }
         // A design's panel has no − in the stack either: it is never left minimized there.
         if (id === 'proposal-details-panel' && el.classList.contains('is-minimized')) global.toggleProposalDetailsPanelMinimized?.();

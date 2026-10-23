@@ -196,7 +196,7 @@ test.describe('Map context actions @features', () => {
     expect(result.saved.title).toBe(sourceBefore.title);
   });
 
-  test('a consumed cadastral source selects its current parcels from the Propose recovery action', async ({ mockApi: page }) => {
+  test('a replaced cadastral source shows its original outline and offers current parcels for designing', async ({ mockApi: page }) => {
     await openCity(page);
     await createSpace(page, 'park');
     await expect.poll(() => page.evaluate(id => !!(window as any).LiveParcelFabric.get(id), PARCEL_ID)).toBe(false);
@@ -210,11 +210,26 @@ test.describe('Map context actions @features', () => {
     await page.evaluate(id => {
       const w = window as any;
       w.__claimsUi.openBaseParcel(id);
-      w.switchParcelTab(null, 'propose-tab');
     }, PARCEL_ID);
     const panel = page.locator('#parcel-info-panel');
+    await expect(panel.locator('[data-parcel-tab-id="info-tab"]')).toHaveAttribute('aria-selected', 'true');
+    await expect(panel.locator('[data-original-parcel-boundary]')).toContainText('Its original boundary is highlighted.');
+    expect(await panel.locator('#info-content').evaluate(el => el.firstElementChild?.hasAttribute('data-original-parcel-boundary'))).toBe(true);
+    const originalOutline = await page.evaluate(id => {
+      const w = window as any;
+      return {
+        actual: w.proposalHoverGroup.toGeoJSON().features.map((feature: any) => feature.geometry),
+        original: w.CadastralParcelRepository.get(id).geometry,
+      };
+    }, PARCEL_ID);
+    expect(originalOutline.actual).toEqual([originalOutline.original]);
+    await page.evaluate(() => (window as any).ClickStack.collapse());
+    await expect(page.locator('path.click-stack-map-focus').first()).toBeVisible();
+    await expect(page.locator('#click-stack .click-stack__section[data-kind="parcels"]')).toHaveClass(/is-selected/);
+    await page.locator('#click-stack .click-stack__section[data-kind="parcels"] .click-stack__row').click();
+    await panel.locator('[data-parcel-tab-id="propose-tab"]').click();
     const recovery = panel.locator('[data-parcel-build-state="replaced"]');
-    await expect(recovery).toContainText('The parcel boundaries on the map have changed. Select the current parcels to continue.');
+    await expect(recovery).toContainText('This is the original cadastral parcel. Applied designs have replaced it in the working map. Select the current parcels to add a design.');
     expect(await page.evaluate(() => (window as any).proposalStorage.getAllProposals().length)).toBe(before);
     await panel.locator('[data-parcel-build-recovery="select-current"]').click();
     await expect.poll(() => page.evaluate(() => [...(window as any).multiParcelSelection.selectedParcels].sort()))

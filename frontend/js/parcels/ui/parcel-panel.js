@@ -253,6 +253,12 @@
         const identityNoteHtml = identityNoteKey
             ? `<div class="parcel-identity-note" role="note" data-i18n-key="${identityNoteKey}">${tParcel(identityNoteKey, {}, identityNoteFallback)}</div>`
             : '';
+        const sourceReplaced = !global.LiveParcelFabric?.get?.(parcelKey)
+            && (global.LiveParcelFabric?.entriesForCadastre?.([parcelKey]) || []).length > 0;
+        const sourceNoteKey = 'panel.parcel.identity.originalBoundary';
+        const sourceNoteHtml = sourceReplaced
+            ? `<div class="parcel-identity-note" role="note" data-original-parcel-boundary data-i18n-key="${sourceNoteKey}">${tParcel(sourceNoteKey, {}, 'This is the original cadastral parcel. Applied designs have replaced it in the working map. Its original boundary is highlighted.')}</div>`
+            : '';
 
         // Check if ownership data is already in feature properties (from backend)
         const simulatedOwnershipMode = !!global.gameState?.isRunning;
@@ -629,6 +635,7 @@
         const ownershipTypeLabel = '<span class="parcel-ownership-type-label" style="display: none;"></span>';
 
         const infoContent = `
+        ${sourceNoteHtml}
         <div class="parcel-owner-section">
             <div class="parcel-owner-header">
                 <div class="parcel-owner-header-label" data-i18n-key="panel.parcel.metrics.owner">${ownerLabel}</div>

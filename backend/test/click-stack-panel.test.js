@@ -102,6 +102,17 @@ function loadPanel({ memory = null, withEditLock = false } = {}) {
 }
 
 describe('click stack selected objects and contextual navigation', () => {
+    it('opens a replaced cadastral source on Info rather than its unavailable design palette', () => {
+        const h = loadPanel();
+        h.context.ClickStackHits.hitsAt.mockReturnValue({ parcels: [{ id: 'source', feature: parcelFeature, live: false }] });
+        h.context.__claimsUi = { openBaseParcel: vi.fn(() => h.parcelPanel.classList.add('visible')) };
+        h.context.switchParcelTab = vi.fn();
+        h.click(SPOT_A);
+        expect(h.context.__claimsUi.openBaseParcel).toHaveBeenCalledWith('source');
+        expect(h.context.switchParcelTab).toHaveBeenCalledWith(null, 'info-tab');
+        expect(h.parcelPanel.parentNode).toBe(h.section('parcels').querySelector('.click-stack__body'));
+    });
+
     it.each([['built', 'Building'], ['permitted', 'Permitted'], ['formed', 'Formed parcel'], ['parcels', 'Cadastral parcel'], ['designs', 'Design']])('keeps the selected %s header and focus when collapsed', (kind, noun) => {
         const h = loadPanel();
         h.context.ClickStackHits.hitsAt.mockReturnValue({ [kind]: [{ id: 'first', label: 'Long object name', feature: parcelFeature }] });

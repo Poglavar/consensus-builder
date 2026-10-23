@@ -162,6 +162,7 @@
             features = shapes ? [...shapes.body, ...shapes.bound] : [];
             if (!features.length && item?.site) features = [item.site];
         } else if (kind === 'selection') features = [...(global.multiParcelSelection?.selectedParcels || [])].map(id => global.LiveParcelFabric?.get?.(String(id)));
+        else if (kind === 'parcels' && instance.live === false) features = [global.CadastralParcelRepository?.get?.(String(instance.id)) || instance.feature];
         else features = [instance.feature || global.LiveParcelFabric?.get?.(String(instance.id)) || baseFeature(instance.id)];
         return features.filter(feature => feature?.geometry && ['Polygon', 'MultiPolygon', 'LineString', 'MultiLineString'].includes(feature.geometry.type));
     }

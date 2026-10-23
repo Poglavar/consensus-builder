@@ -47,6 +47,8 @@ describe('click stack hits', () => {
         expect(focus('designs', { id: 'a' })).toEqual([shapeA]);
         expect(focus('agreements', { agreement: { designs: [{ proposalId: 'a' }, { proposalId: 'b' }] } })).toEqual([shapeA, shapeB]);
         expect(focus('parcels', { id: 'source' })).toEqual([source]);
+        // A replaced source keeps its immutable original outline, even if the hit held a fragment.
+        expect(focus('parcels', { id: 'source', live: false, feature: shapeB })).toEqual([source]);
         expect(focus('formed', { id: 'piece', feature: shapeB })).toEqual([shapeB]);
         expect(focus('built', { id: 'house', feature: shapeA })).toEqual([shapeA]);
         context.PlanningViews = { permittedFeatures: () => ({ body: [shapeA], bound: [shapeB] }) };

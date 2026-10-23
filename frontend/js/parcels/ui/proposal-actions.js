@@ -266,7 +266,7 @@
         note.dataset.parcelBuildState = state;
         const key = 'panel.parcel.build.' + state;
         const message = state === 'replaced'
-            ? 'The parcel boundaries on the map have changed. Select the current parcels to continue.'
+            ? 'This is the original cadastral parcel. Applied designs have replaced it in the working map. Select the current parcels to add a design.'
             : 'This parcel’s current map data is not loaded. Reload parcels to continue.';
         note.setAttribute('data-i18n-key', key);
         note.textContent = tParcel(key, {}, message);
