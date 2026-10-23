@@ -658,7 +658,7 @@
         return '2d';
     }
 
-    function renderProposalDraftComparison(draftId, mode = 'overlay') {
+    function renderProposalDraftComparison(draftId, mode = 'overlay', { saving = false } = {}) {
         const draft = global.proposalDraftStore?.getDraft(draftId);
         if (!draft) return null;
         const adapter = global.proposalEditorAdapterRegistry?.get(draft.adapterKey || draft.goal);
@@ -668,12 +668,17 @@
         const detail = {
             draftId,
             mode,
+            saving,
             viewMode: detectViewMode(),
             sourceProposal: mode === 'draft-only' ? null : draft.sourceSnapshot,
             draftPreview: mode === 'source-only' ? null : descriptor,
             sourceStyle: { opacity: 0.28, color: '#64748b' },
             draftStyle: { opacity: 0.92, color: '#2563eb', dashArray: '7 5' }
         };
+        return paintProposalDraftComparison(detail);
+    }
+
+    function paintProposalDraftComparison(detail) {
         global.activeProposalDraftComparison = detail;
         try {
             global.document?.dispatchEvent(new global.CustomEvent('proposal-draft-preview-change', { detail }));
@@ -685,11 +690,10 @@
     }
 
     function clearProposalDraftComparison() {
-        global.activeProposalDraftComparison = null;
-        try {
-            global.document?.dispatchEvent(new global.CustomEvent('proposal-draft-preview-change', { detail: null }));
-            if (typeof global.updateProposalDraftMapPreview === 'function') global.updateProposalDraftMapPreview(null);
-        } catch (_) { }
+        // Consuming the draft clears ordinary comparison layers before application. A saving
+        // snapshot owns the handoff until that application settles, even after its draft is gone.
+        if (global.activeProposalDraftComparison?.saving) return;
+        paintProposalDraftComparison(null);
     }
 
     function openProposalEditorShell(draftId, options = {}) {
@@ -749,19 +753,8 @@
         return openProposalEditorShell(draft.id, { tab: options.tab || null });
     }
 
-    // "Fork proposal" on an existing map object: skip the editor entirely and go straight to the
-    // create dialog, prefilled from the object. A fork is always a new record that links back
-    // through sourceLocalProposalId; the object it was made from stays as it is.
-    async function proposeExistingProposal(proposalIdOrHash, options = {}) {
-        // No guest gate: creating stays on this device (GuestPolicy 'create' is 'none').
-        const proposal = proposalById(proposalIdOrHash);
-        if (!proposal) return null;
-        const draft = global.proposalDraftStore.createDraftFromProposal(proposal, { activate: true });
-        if (!draft) return null;
-        try { if (typeof global.hideProposalDetailsPanel === 'function') global.hideProposalDetailsPanel(); } catch (_) { }
-        closeProposalEditorShell();
-        return stageProposalDraftForPublishing(draft.id, { ...options, fork: true });
-    }
+    // Explicit copying is pointer placement (design-duplication.js). There is no guest gate for
+    // local creation. Geometry editing below preserves the immutable published-source boundary.
 
     function createNewProposalDraft(options = {}) {
         const context = typeof global.getCurrentParcelSelectionContext === 'function'
@@ -1860,8 +1853,13 @@
         // is the same ref-counted one the drawing tool uses, so a corridor create that raises it
         // twice still shows one indicator.
         const profile = createPhaseReporter(draft.proposalType || draft.adapterKey || draft.goal || 'proposal');
+        let savingPreview = null;
         try { global.beginApplyIndicator?.(); } catch (_) { }
         try {
+            // The map editor has closed, but the applied layers may take seconds to appear.
+            // Reuse the shared 2D outline / 3D preview with a snapshot taken before consumption.
+            try { savingPreview = renderProposalDraftComparison(draftId, 'draft-only', { saving: true }); }
+            catch (error) { console.warn('[ProposalEditor] Saving preview could not be drawn', error); }
             return await instantCreateProposalFromDraftInner(draftId, store, draft, profile, options);
         } catch (error) {
             console.warn('[ProposalEditor] Unexpected instant-create failure; checking for a retained draft', error);
@@ -1869,6 +1867,8 @@
             reopenFailedProposalDraftOnce(draftId, store, { commitOnFinish: true });
             return null;
         } finally {
+            // A new editor/comparison may have taken over while application was pending.
+            if (savingPreview && global.activeProposalDraftComparison === savingPreview) paintProposalDraftComparison(null);
             try { global.endApplyIndicator?.(); } catch (_) { }
             profile.report();
         }
@@ -2297,7 +2297,6 @@
     global.closeProposalEditorShell = closeProposalEditorShell;
     global.editProposal = editProposal;
     global.editProposalAsReplacement = editProposal;
-    global.proposeExistingProposal = proposeExistingProposal;
     global.confirmProposalEditDependents = confirmEditDependents;
     global.editProposalGeometry = editProposalGeometry;
     global.convertProposalToFreeform = convertProposalToFreeform;
