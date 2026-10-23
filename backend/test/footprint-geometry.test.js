@@ -31,10 +31,13 @@ function square(west, south, side) {
     ]]);
 }
 const S = () => square(15.97, 45.80, 0.0018); // ~200 m box
-const coordinateCount = feature => JSON.stringify(feature.geometry.coordinates).match(/\[/g)?.length || 0;
+const coordinateCount = feature => turf.coordAll(feature).length;
 const expectSameBufferedShape = (actual, expected) => {
     expect(actual.geometry.type).toBe(expected.geometry.type);
     expect(turf.area(actual)).toBeCloseTo(turf.area(expected), 5);
+    const missing = turf.difference(expected, actual);
+    const extra = turf.difference(actual, expected);
+    expect((missing ? turf.area(missing) : 0) + (extra ? turf.area(extra) : 0)).toBeLessThan(1e-5);
     expect(coordinateCount(actual)).toBeLessThanOrEqual(coordinateCount(expected) + 4);
 };
 
@@ -81,10 +84,11 @@ describe('robustNegativeBuffer', () => {
             ring([[50, 10], [50, 25], [70, 25], [70, 10]])
         ]);
         const original = JSON.stringify(source);
-        const expected = turf.buffer(source, -8, { units: 'meters', steps: 16 });
-        const actual = robustNegativeBuffer(source, 8);
+        const expected = turf.buffer(source, -4, { units: 'meters', steps: 16 });
+        const actual = robustNegativeBuffer(source, 4);
 
         expect(actual).toBeTruthy();
+        expect(actual.geometry.coordinates).toHaveLength(2);
         expectSameBufferedShape(actual, expected);
         expect(JSON.stringify(source)).toBe(original);
     });
