@@ -295,10 +295,6 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
     color: var(--cb-text);
 }
 
-/* The panel's way out is a close-circle-btn, tucked into the corner. */
-/* "Proposal: <name> [show]" row in the parcel panel (the name is a .cb-link), and the proposal
-   name in the aggregate proposal panel. */
-/* The [show] tag inside the proposal's cb-link button reads as a hint, not part of the title. */
 /* Proposal panel: "Parcels: N" subnote and the average-gain-per-parcel line. */
 .three-mode-parcel-panel .parcel-panel-subnote {
     font-size: var(--cb-text-xs);
