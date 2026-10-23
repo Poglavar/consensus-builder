@@ -126,8 +126,11 @@ describe('optional tools loader', () => {
         expect(h.window.BuildingUpload.close()).toBeUndefined();
         h.succeed(h.scripts[0], win => { win.createSingleBuildingFromUpload = () => created; });
         await flushMicrotasks();
-        expect(h.scripts[1].src).toBe('js/building-upload.js?build=test-token');
-        h.succeed(h.scripts[1], win => { win.BuildingUpload = {
+        expect(h.scripts[1].src).toBe('js/building-model-geometry.js?build=test-token');
+        h.succeed(h.scripts[1]);
+        await flushMicrotasks();
+        expect(h.scripts[2].src).toBe('js/building-upload.js?build=test-token');
+        h.succeed(h.scripts[2], win => { win.BuildingUpload = {
             open: () => win.createSingleBuildingFromUpload(), close: () => 'closed'
         }; });
         await expect(open).resolves.toBe(created);
@@ -196,7 +199,9 @@ describe('optional tools loader', () => {
         const open = h.window.BuildingUpload.open({ file: 'x' });
         h.succeed(h.scripts[0], win => { win.createSingleBuildingFromUpload = () => ({ id: 'created' }); });
         await flushMicrotasks();
-        h.fail(h.scripts[1]);
+        h.succeed(h.scripts[1]);
+        await flushMicrotasks();
+        h.fail(h.scripts[2]);
         await flushMicrotasks();
         expect(h.errors).toHaveLength(1);
         expect(h.statuses).toEqual(['Localized load failure']);
@@ -212,7 +217,9 @@ describe('optional tools loader', () => {
 
         h.succeed(h.scripts[0], win => { win.createSingleBuildingFromUpload = () => ({ id: 'created' }); });
         await flushMicrotasks();
-        h.succeed(h.scripts[1], win => {
+        h.succeed(h.scripts[1]);
+        await flushMicrotasks();
+        h.succeed(h.scripts[2], win => {
             win.BuildingUpload = {
                 open: () => { calls.push('open'); return 'opened'; },
                 close: () => 'closed'

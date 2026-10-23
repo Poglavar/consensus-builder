@@ -9,7 +9,7 @@
         singleBuilding: ['js/single-building.js'],
         rowHouse: ['js/row-house.js'],
         parcelBased: ['js/parcel-based.js'],
-        buildingUpload: ['js/single-building.js', 'js/building-upload.js']
+        buildingUpload: ['js/single-building.js', 'js/building-model-geometry.js', 'js/building-upload.js']
     };
     const loaded = new Set();
     const inFlight = new Map();

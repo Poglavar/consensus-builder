@@ -2162,6 +2162,8 @@
             "dimensions": "Osnova {{width}} m × {{length}} m, visina {{height}} m",
             "errorParse": "Datoteku nije moguće pročitati kao glTF/GLB. Proveri da li je to ispravan, samostalni .glb ili .gltf izvoz.",
             "errorEmpty": "Model ne sadrži vidljivu geometriju.",
+            "previewUnavailable": "3D pregled nije dostupan. I dalje možeš da upotrebiš ovu zgradu.",
+            "errorEngine": "Nije moguće učitati čitač modela.",
             "uploading": "Učitavanje modela…",
             "uploadFailed": "Učitavanje modela nije uspelo; zgrada će koristiti običnu kutiju.",
             "cancel": "Otkaži",

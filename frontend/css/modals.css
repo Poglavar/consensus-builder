@@ -1377,6 +1377,15 @@ body.site-intro-open { overflow: hidden; }
     background: var(--cb-surface-2);
 }
 
+.building-upload-preview[data-state="unavailable"] {
+    box-sizing: border-box;
+    display: grid;
+    place-items: center;
+    padding: var(--cb-space-3);
+    text-align: center;
+    color: var(--cb-text-muted);
+}
+
 .building-upload-status {
     min-height: 18px;
     margin-top: var(--cb-space-2);

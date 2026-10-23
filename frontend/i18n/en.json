@@ -2140,6 +2140,8 @@
             "dimensions": "Footprint {{width}}m × {{length}}m, height {{height}}m",
             "errorParse": "Could not read this file as glTF/GLB. Make sure it is a valid, self-contained .glb or .gltf export.",
             "errorEmpty": "The model contains no visible geometry.",
+            "previewUnavailable": "3D preview unavailable. You can still use this building.",
+            "errorEngine": "Could not load the model parser.",
             "uploading": "Uploading model…",
             "uploadFailed": "Model upload failed; the building will use a plain box.",
             "cancel": "Cancel",

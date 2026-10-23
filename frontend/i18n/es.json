@@ -2167,6 +2167,8 @@
             "dimensions": "Huella {{width}} m × {{length}} m, altura {{height}} m",
             "errorParse": "No se pudo leer este archivo como glTF/GLB. Asegúrate de que sea una exportación .glb o .gltf válida y autónoma.",
             "errorEmpty": "El modelo no contiene geometría visible.",
+            "previewUnavailable": "La vista previa 3D no está disponible. Puedes seguir usando este edificio.",
+            "errorEngine": "No se pudo cargar el lector de modelos.",
             "uploading": "Subiendo modelo…",
             "uploadFailed": "Error al subir el modelo; el edificio usará una caja simple.",
             "cancel": "Cancelar",

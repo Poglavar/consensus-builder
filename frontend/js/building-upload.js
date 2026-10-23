@@ -17,13 +17,15 @@
         modelGroup: null,
         frameId: null,
         container: null,
-        resizeHandler: null
+        resizeHandler: null,
+        animate: null
     };
 
     // Dimensions (meters) derived from the loaded model's bounding box; null until a valid load.
     let loadedDims = null;
     let loadedName = null;
     let loadedFile = null;
+    let loadVersion = 0;
 
     function t(key, fallback, params = {}) {
         const api = (typeof window !== 'undefined' && window.i18n) ? window.i18n : null;
@@ -41,7 +43,7 @@
             await window.whenThreeReady();
         }
         const ok = typeof window.THREE !== 'undefined' && typeof window.THREE.GLTFLoader !== 'undefined';
-        if (!ok) console.warn('[building-upload] THREE bootstrap missing — 3D preview unavailable');
+        if (!ok) console.warn('[building-upload] THREE bootstrap missing — model parser unavailable');
         return ok;
     }
 
@@ -88,7 +90,7 @@
                     </label>
                     <p class="building-upload-hint">${text.hint}</p>
                     <div class="cb-kicker">${text.previewLabel}</div>
-                    <div id="building-upload-3d" class="building-upload-preview"></div>
+                    <div id="building-upload-3d" class="building-upload-preview" role="status" aria-live="polite"></div>
                     <div id="building-upload-status" class="building-upload-status" role="status" aria-live="polite">${text.noFile}</div>
                 </div>
                 <div class="cb-dialog__footer">
@@ -116,15 +118,19 @@
         const h = preview.container.clientHeight || 300;
 
         const scene = new THREE.Scene();
+        preview.scene = scene;
         scene.background = new THREE.Color(0xeef2f7);
 
         const camera = new THREE.PerspectiveCamera(50, w / h, 0.1, 5000);
+        preview.camera = camera;
         camera.position.set(30, 24, 30);
 
         const renderer = new THREE.WebGLRenderer({ antialias: true });
+        preview.renderer = renderer;
         renderer.setPixelRatio(window.devicePixelRatio || 1);
         renderer.setSize(w, h);
         preview.container.appendChild(renderer.domElement);
+        renderer.domElement.addEventListener('webglcontextlost', showPreviewUnavailable);
 
         // ×π: three r155+ dropped the implicit π factor legacy lighting applied.
         scene.add(new THREE.AmbientLight(0xffffff, 0.7 * Math.PI));
@@ -142,9 +148,6 @@
         const modelGroup = new THREE.Group();
         scene.add(modelGroup);
 
-        preview.scene = scene;
-        preview.camera = camera;
-        preview.renderer = renderer;
         preview.controls = controls;
         preview.modelGroup = modelGroup;
 
@@ -159,11 +162,15 @@
         window.addEventListener('resize', preview.resizeHandler);
 
         const animate = () => {
-            preview.frameId = requestAnimationFrame(animate);
-            if (preview.controls && preview.controls.update) preview.controls.update();
-            preview.renderer.render(preview.scene, preview.camera);
+            try {
+                if (preview.controls && preview.controls.update) preview.controls.update();
+                preview.renderer.render(preview.scene, preview.camera);
+                preview.frameId = requestAnimationFrame(animate);
+            } catch (error) {
+                showPreviewUnavailable(error);
+            }
         };
-        animate();
+        preview.animate = animate;
     }
 
     function clearModelGroup() {
@@ -171,25 +178,36 @@
         for (let i = preview.modelGroup.children.length - 1; i >= 0; i--) {
             const child = preview.modelGroup.children[i];
             preview.modelGroup.remove(child);
-            child.traverse && child.traverse((node) => {
-                if (node.geometry && node.geometry.dispose) node.geometry.dispose();
-                if (node.material) {
-                    const mats = Array.isArray(node.material) ? node.material : [node.material];
-                    mats.forEach((m) => m && m.dispose && m.dispose());
-                }
-            });
+            disposeModel(child);
         }
     }
 
-    // Center the model on the ground plane and frame the camera to it.
-    function placeAndFrame(object) {
+    function disposeModel(object) {
+        object && object.traverse && object.traverse((node) => {
+            if (node.geometry && node.geometry.dispose) node.geometry.dispose();
+            if (node.material) {
+                const mats = Array.isArray(node.material) ? node.material : [node.material];
+                mats.forEach((m) => m && m.dispose && m.dispose());
+            }
+        });
+    }
+
+    // CPU-only bounds: parsing and import readiness never depend on a renderer or camera.
+    function measureModel(object) {
         const box = new THREE.Box3().setFromObject(object);
         if (box.isEmpty()) return null;
+        const dimensions = window.BuildingModelGeometry.dimensionsFromBounds(box);
+        if (!dimensions) return null;
         const size = new THREE.Vector3();
         const center = new THREE.Vector3();
         box.getSize(size);
         box.getCenter(center);
+        // glTF is Y-up with units in meters: footprint is X by Z, height is Y.
+        return { box, size, center, dimensions };
+    }
 
+    // Center the model on the ground plane and frame the optional preview camera to it.
+    function placeAndFrame(object, { box, size, center }) {
         // Recenter horizontally at origin, sit the base on y = 0.
         object.position.x -= center.x;
         object.position.z -= center.z;
@@ -206,59 +224,91 @@
         }
         preview.camera.far = dist * 10;
         preview.camera.updateProjectionMatrix();
+    }
 
-        // glTF is Y-up with units in meters: footprint is X by Z, height is Y.
-        return {
-            width: Math.max(1, +size.x.toFixed(1)),
-            length: Math.max(1, +size.z.toFixed(1)),
-            height: Math.max(1, +size.y.toFixed(1))
-        };
+    function showPreviewUnavailable(error) {
+        console.warn('[building-upload] 3D preview unavailable; model import remains available', error);
+        disposeScene();
+        if (!preview.container) return;
+        preview.container.dataset.state = 'unavailable';
+        preview.container.textContent = t('modal.buildingUpload.previewUnavailable',
+            '3D preview unavailable. You can still use this building.');
     }
 
     async function onFileChosen(event) {
         const file = event.target && event.target.files && event.target.files[0];
         if (!file) return;
+        const version = ++loadVersion;
+        const isCurrent = () => version === loadVersion && !!modalEl;
+        disposeScene();
+        preview.container.textContent = '';
+        delete preview.container.dataset.state;
         loadedDims = null;
         loadedName = file.name;
         loadedFile = file;
         setConfirmEnabled(false);
         setStatus(t('modal.buildingUpload.loading', 'Loading model…'));
 
-        const ok = await ensureThree();
-        if (!ok) {
-            setStatus(t('modal.buildingUpload.errorParse', 'Could not load the 3D engine.'), true);
+        let ok;
+        try {
+            ok = await ensureThree();
+        } catch (error) {
+            if (isCurrent()) setStatus(t('modal.buildingUpload.errorEngine', 'Could not load the model parser.'), true);
             return;
         }
-        initScene();
+        if (!isCurrent()) return;
+        if (!ok) {
+            setStatus(t('modal.buildingUpload.errorEngine', 'Could not load the model parser.'), true);
+            return;
+        }
 
         const isText = /\.gltf$/i.test(file.name);
         const reader = new FileReader();
-        reader.onerror = () => setStatus(t('modal.buildingUpload.errorParse',
-            'Could not read this file as glTF/GLB.'), true);
+        reader.onerror = () => {
+            if (isCurrent()) setStatus(t('modal.buildingUpload.errorParse',
+                'Could not read this file as glTF/GLB.'), true);
+        };
         reader.onload = () => {
+            if (!isCurrent()) return;
             const loader = new THREE.GLTFLoader();
             const onParsed = (gltf) => {
-                clearModelGroup();
                 const root = gltf.scene || (gltf.scenes && gltf.scenes[0]);
+                if (!isCurrent()) { disposeModel(root); return; }
                 if (!root) {
                     setStatus(t('modal.buildingUpload.errorEmpty', 'The model contains no visible geometry.'), true);
                     return;
                 }
-                preview.modelGroup.add(root);
-                const dims = placeAndFrame(root);
-                if (!dims) {
+                const measurement = measureModel(root);
+                if (!measurement) {
+                    disposeModel(root);
                     setStatus(t('modal.buildingUpload.errorEmpty', 'The model contains no visible geometry.'), true);
                     return;
                 }
+                const dims = measurement.dimensions;
                 loadedDims = dims;
                 setStatus(t('modal.buildingUpload.loaded', 'Loaded: {{name}}', { name: file.name })
                     + ' — ' + t('modal.buildingUpload.dimensions',
                         'Footprint {{width}}m × {{length}}m, height {{height}}m',
                         { width: dims.width, length: dims.length, height: dims.height }));
                 setConfirmEnabled(true);
+                try {
+                    initScene();
+                    preview.modelGroup.add(root);
+                    placeAndFrame(root, measurement);
+                    preview.animate();
+                } catch (error) {
+                    if (!root.parent) disposeModel(root);
+                    showPreviewUnavailable(error);
+                }
             };
-            const onErr = () => setStatus(t('modal.buildingUpload.errorParse',
-                'Could not read this file as glTF/GLB. Make sure it is a valid, self-contained .glb or .gltf export.'), true);
+            const onErr = () => {
+                if (isCurrent()) {
+                    loadedDims = null;
+                    setConfirmEnabled(false);
+                    setStatus(t('modal.buildingUpload.errorParse',
+                        'Could not read this file as glTF/GLB. Make sure it is a valid, self-contained .glb or .gltf export.'), true);
+                }
+            };
             try {
                 loader.parse(reader.result, '', onParsed, onErr);
             } catch (_) {
@@ -336,17 +386,20 @@
         clearModelGroup();
         if (preview.controls && preview.controls.dispose) preview.controls.dispose();
         if (preview.renderer) {
+            preview.renderer.domElement.removeEventListener('webglcontextlost', showPreviewUnavailable);
             preview.renderer.dispose();
             if (preview.renderer.domElement && preview.renderer.domElement.parentNode) {
                 preview.renderer.domElement.parentNode.removeChild(preview.renderer.domElement);
             }
         }
         preview.renderer = preview.scene = preview.camera = preview.controls = null;
-        preview.modelGroup = preview.frameId = preview.resizeHandler = preview.container = null;
+        preview.modelGroup = preview.frameId = preview.resizeHandler = preview.animate = null;
     }
 
     function close() {
+        loadVersion++;
         disposeScene();
+        preview.container = null;
         if (modalEl && modalEl.parentNode) modalEl.parentNode.removeChild(modalEl);
         modalEl = null;
         onConfirmCb = null;
