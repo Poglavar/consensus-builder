@@ -190,8 +190,8 @@ describe('the map shows what is already published', () => {
             const parts = padding.trim().split(/\s+/);
             return parts.length >= 2 ? parts[1] : parts[0];
         };
-        expect(gutter('.share-plan-filter {')).toBe(gutter('.share-plan-panel-body {'));
-        expect(gutter('.share-plan-filter {')).toBe(gutter('.share-plan-panel-header {'));
+        expect(gutter('.share-plan-toolbar {')).toBe(gutter('.share-plan-panel-body {'));
+        expect(gutter('.share-plan-toolbar .share-plan-filter {')).toBe('0');
     });
 });
 

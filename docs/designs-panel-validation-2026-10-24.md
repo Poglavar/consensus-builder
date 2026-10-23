@@ -35,3 +35,20 @@ The shared working files `frontend/index.html`, `frontend/css/map-shell.css`,
 `backend/test/share-plan-panel-contract.test.js` also contain another session's edits. Their
 combined-panel changes remain in the worktree rather than sweeping that session's work into this
 commit. Ground-treatment locale and vocabulary changes likewise remain in shared working files.
+
+## Share scrolling and focus follow-up
+
+The Share tab constrains its nested flex containers so the design list scrolls independently.
+The link and Copy URL button now lead a fixed toolbar above the group controls and list. Focusing
+a row (or picking it on the map) clears All/Published/Not published yet and their overlays, then
+outlines that design. Choosing a group clears individual focus. Share checkboxes remain independent.
+
+| Run | Type and scope | Result |
+| --- | --- | --- |
+| 1 | Headless unit: share-plan-panel-contract, share-plan-map-link, share-plan-spinner; 3 files | 67 passed, 1 failed: gutter assertion still assigned padding to the filter instead of its new toolbar |
+| 2 | Headed Playwright: share-panel-scrolling; 3 scenarios | 3 passed: 24-design list scrolling and fixed link at desktop and phone sizes; group-to-individual highlighting and map picking |
+| 3 | Headless unit: share-plan-map-link after updating the layout assertion; 1 file | 22 passed |
+
+Both scroll screenshots were inspected. No full suite ran and no run was stopped. Implementation
+files still overlap concurrent work and remain uncommitted; these focused checks are committed
+separately under the workspace's shared-file rule.

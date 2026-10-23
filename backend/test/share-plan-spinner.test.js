@@ -184,7 +184,7 @@ describe('napredak u panelu', () => {
     it('redak postoji prije liste, pa ga se vidi čim se panel otvori', () => {
         const build = sliceBetween(dialog, "progressRow.className = 'share-plan-progress';", "listWrap.className = 'share-plan-list';");
         expect(build).toContain('fa-spinner fa-spin');
-        expect(build).toContain('container.appendChild(progressRow);');
+        expect(build).toContain('toolbar.appendChild(progressRow);');
         expect(read('../../frontend/css/proposals.css')).toContain('.share-plan-progress {');
     });
 });
