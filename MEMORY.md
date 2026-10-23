@@ -870,3 +870,7 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-23: UI themes use one token palette and shared translucent surface/blur; click selection shows independent connected cards, with Design first, parcel tab retention, and selection controls before Custom site.
 - 2026-10-23: The 3D model view gets its own click stack (`three-click-stack.js`, click-stack.md "3D model view"): Built → Design (whole proposal, figures + authored record) → Permitted → Parcel in the right dock, replacing the floating top-left panel.
 - 2026-10-23: Surroundings belong to their building design; the park/square sub-editor returns an authored decorationDesign that publishes with it, while generated decorations remain runtime-only so applying a design cannot change its CID.
+
+
+- 2026-10-23: Replace Fork design with click-to-place Duplicate for movable material designs; copying geometry must not copy agreement state or source binding.
+- 2026-10-23: Expose Upload .glb beside Upload GeoJSON in Freeform and import into the existing editor session.

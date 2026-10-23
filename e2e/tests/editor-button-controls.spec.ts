@@ -1,3 +1,4 @@
+import { openDesignReview } from '../helpers/design-review';
 import { selectNativeOption } from '../helpers/controls';
 // Purpose: cover real editor buttons whose effects are not asserted by the broad workflow specs.
 import { test, expect } from '../helpers/fixtures';
@@ -70,7 +71,7 @@ test.describe('Editor button effects @features', () => {
     await page.evaluate(async () => { await (window as any).CadastralParcelRepository.ensureIds(['HR-335754-1235']); });
     await openParcel(page, 'info', 'HR-335754-1235');
     await showProposal(page, savedId);
-    await page.locator('#proposal-details-panel .btn-counterpropose-proposal').click();
+    await openDesignReview(page, savedId);
     const proposal = page.locator('.create-proposal-modal:visible');
     await expect(proposal).toBeVisible();
     const upload = proposal.locator('[data-geometry-action="upload"]');

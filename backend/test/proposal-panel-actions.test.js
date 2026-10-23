@@ -57,6 +57,7 @@ function render(proposal, { applied = false, road = false, lifecycle = 'Active',
     };
     const window = {
         CityMoney: require('../../frontend/js/city-money.js'),
+        ProposalDesignGoals: require('../../frontend/js/proposals/design-goals.js'),
         i18n: null,
         __proposalMapActionFailures: actionError ? { [String(proposal.proposalId)]: actionError } : {},
         __proposalGroundForkOffers: forkOffer ? { [String(proposal.proposalId)]: true } : {},
@@ -109,7 +110,7 @@ function render(proposal, { applied = false, road = false, lifecycle = 'Active',
         CityConfigManager: { getDriveConfig: () => ({ url: 'https://example.test' }) },
         corridorIsTrack: () => road,
         toggleProposalDetailsPanelMinimized() {}, shareProposalFromDetails() {},
-        applyProposalToMap() {}, removeProposalFromMap() {}, proposeExistingProposal() {},
+        applyProposalToMap() {}, removeProposalFromMap() {}, startDesignDuplication() {},
         setupLazyList() {}, restoreProposalDetailsScroll() {},
         ensureProposalOverlayGroups: () => ({ buildingPreview: { clearLayers() {} } }),
         clearProposalInfoHoverOverlay() {}, clearProposalHoverLayers() {},
@@ -256,7 +257,7 @@ describe('proposal details action footer', () => {
     });
 
     it.each([
-        { proposalId: 'local-1', cadastreParcelIds: [] },
+        { proposalId: 'local-1', goal: 'park', cadastreParcelIds: [] },
         published({ proposalId: 'published-1', goal: 'park', title: 'Park', cadastreParcelIds: [] })
     ])('offers no bet, support or approval action on a design: those are its agreement\'s (%j)', proposal => {
         const result = render(proposal, { applied: true });
@@ -266,12 +267,12 @@ describe('proposal details action footer', () => {
         expect(content('.btn-bet-proposal, .btn-edit-approval, .proposal-lens-card, .approval-card-slot').length).toBe(0);
         expect(content('.proposal-pledge-summary, .proposal-market-summary, [data-proposal-payout-terms], .proposal-expiry-countdown').length).toBe(0);
         expect(content('#proposal-parcel-acceptance-section, #proposal-owner-acceptance-section').length).toBe(0);
-        // The share and fork actions stay.
+        // The Share and Duplicate actions stay.
         expect(footer('.btn-share-proposal').length).toBe(1);
-        expect(footer('.btn-counterpropose-proposal').length).toBe(1);
+        expect(footer('.btn-duplicate-design').length).toBe(1);
     });
 
-    it('keeps a parcel layout local: Share disabled with its reason, no Fork, Bet or approval action', () => {
+    it('keeps a parcel layout local: Share disabled with its reason, no Duplicate, Bet or approval action', () => {
         const proposal = { proposalId: 'layout-1', goal: 'parcel-layout', title: 'Layout', cadastreParcelIds: ['source-1'], parcelLayout: { plots: [] } };
         const result = render(proposal, { applied: true });
         const footer = parse(result.footer.innerHTML);
@@ -280,7 +281,7 @@ describe('proposal details action footer', () => {
         expect(share.attr('disabled')).toBeDefined();
         expect(share.attr('onclick')).toBeUndefined();
         expect(footer('.proposal-publish-later').text()).toBe('A parcel layout is published with its agreement. Propose an agreement that includes it.');
-        expect(footer('.btn-counterpropose-proposal').length).toBe(0);
+        expect(footer('.btn-duplicate-design').length).toBe(0);
         expect(footer('.btn-bet-proposal').length).toBe(0);
         expect(parse(result.content.innerHTML)('.btn-edit-approval').length).toBe(0);
 
@@ -322,16 +323,16 @@ describe('proposal details action footer', () => {
         }
     });
 
-    it('renders the primary and contextual actions once, Fork named for the design', () => {
-        const proposal = { proposalId: 'proposal-1', title: 'Garden', cadastreParcelIds: [] };
+    it('renders the primary and contextual actions once, Duplicate named for the design', () => {
+        const proposal = { proposalId: 'proposal-1', goal: 'park', title: 'Garden', cadastreParcelIds: [] };
         const result = render(proposal);
         const $ = parse(result.footer.innerHTML);
         expect($('.proposal-action-default').length + $('[onclick^="removeProposalFromMap"]').length).toBe(1);
         expect($('[onclick*="shareProposalFromDetails"]').length).toBe(1);
         expect($('.btn-share-proposal').attr('title')).toBe('Publish this design and copy its link');
-        expect($('[onclick^="proposeExistingProposal"]').length).toBe(1);
-        expect($('.btn-counterpropose-proposal').text().trim()).toBe('Fork design');
-        expect($('.btn-counterpropose-proposal').attr('title')).toBe('Create an editable copy. The design you are viewing stays unchanged.');
+        expect($('[onclick^="startDesignDuplication"]').length).toBe(1);
+        expect($('.btn-duplicate-design').text().trim()).toBe('Duplicate');
+        expect($('.btn-duplicate-design').attr('title')).toBe('Move a copy with the pointer and click to place a new design.');
         expect($('.btn-proposal-details').length).toBe(1);
         expect($.text()).not.toContain('changed land');
     });

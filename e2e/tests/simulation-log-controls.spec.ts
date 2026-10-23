@@ -1,3 +1,4 @@
+import { openDesignReview } from '../helpers/design-review';
 // Exercise activity links emitted by real simulation and user design actions. A simulated agent only
 // creates designs (plan-design-agreement.md, M3: owners decide on agreements, so the simulation no
 // longer accepts, donates or pledges).
@@ -181,7 +182,7 @@ test.describe('simulation log links @features', () => {
     await page.locator('#username-input').fill('Simulation log user');
     await page.locator('#welcome-submit-btn').click();
 
-    // Fork design opens the regular proposal form on a copy of a stable source; saving it is the
+    // The draft review opens the regular proposal form from a stable design fixture; saving it is the
     // user-created action the log records, through production code.
     const sourceId = await page.evaluate(({ parcelId, suffix }) => {
       const w = window as any;
@@ -205,7 +206,7 @@ test.describe('simulation log links @features', () => {
       return proposalId;
     }, { parcelId: PARCEL_ID, suffix: Date.now() });
     await showProposal(page, sourceId);
-    await page.locator('.btn-counterpropose-proposal').click();
+    await openDesignReview(page, sourceId);
     const dialog = page.locator('.create-proposal-modal:visible');
     await expect(dialog).toBeVisible();
     const title = `Simulation log user action ${Date.now()}`;

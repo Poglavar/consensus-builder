@@ -27,7 +27,7 @@ async function addEditableSquare(page: Page, suffix: string): Promise<{ proposal
       description: 'A stable immutable source.',
       offer: 100,
       offerCurrency: 'EUR',
-      city: 'zg',
+      city: w.CityConfigManager.getCurrentCityId(),
       goal: 'square',
       lifecycleStatus: 'Active',
       applied: false,
@@ -177,16 +177,16 @@ test.describe('SimCity proposal lifecycle @core', () => {
     expect(created.applied).toBe(true);
   });
 
-  test('Fork design on an object opens its prefilled design dialog', async ({ mockApi: page }) => {
+  test('Duplicate on an object opens click-to-place geometry instead of a form', async ({ mockApi: page }) => {
     await page.goto('/?city=zg');
     await waitForMapReady(page);
     const source = await addEditableSquare(page, 'propose');
 
-    await page.evaluate((proposalId) => (window as any).proposeExistingProposal(proposalId), source.proposalId);
+    await page.evaluate((proposalId) => (window as any).startDesignDuplication(proposalId), source.proposalId);
 
-    const modal = page.locator('.create-proposal-modal');
-    await expect(modal).toBeVisible();
-    await expect(modal.locator('#proposalName')).toHaveValue('Source square propose');
+    await expect(page.locator('#design-duplicate-editor .on-map-editor__panel')).toBeVisible();
+    await expect(page.locator('.create-proposal-modal')).toHaveCount(0);
+    await page.keyboard.press('Escape');
   });
 
   test('proposal lookup follows live parcel provenance and ignores fabricated descendant IDs', async ({ mockApi: page }) => {

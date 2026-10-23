@@ -1,3 +1,4 @@
+import { openDesignReview } from '../helpers/design-review';
 // Additional proposal-control coverage for editor and sharing actions uses local external boundaries:
 // the design index's Download, the create dialog's and details' geometry tools, the lens editor and
 // the copy-by-hand link of a published design.
@@ -142,7 +143,7 @@ test.describe('proposal button controls sixth pass @features', () => {
     await openCity(page);
     const proposalId = await createSpace(page, 'park');
     await showProposal(page, proposalId);
-    await page.locator('#proposal-details-footer .btn-counterpropose-proposal').click();
+    await openDesignReview(page, proposalId);
     const create = page.locator('.create-proposal-modal:visible');
     await expect(create).toBeVisible();
     await create.locator('[data-lens-pattern]').click();

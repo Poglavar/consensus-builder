@@ -792,6 +792,36 @@
         });
     }
 
+    // Import into the selected footprint without ending the current design or dropping its siblings.
+    function useUploadedBuildingModel({ width, length, height, modelName, modelUrl }) {
+        const active = getActiveBuilding();
+        if (!singleEditor || !active || ![width, length, height].every(value => typeof value === 'number' && Number.isFinite(value) && value > 0)) return false;
+        const center = featureCenterLatLng(active.feature);
+        const feature = buildInitialBuildingFeature(center, width, length, height, active.rotation);
+        if (!editableFootprintValid(feature)) {
+            showSingleBuildingEditorAlert('uploadInvalid', 'The uploaded geometry is invalid or outside the locked site.');
+            return false;
+        }
+        feature.properties.source = 'upload';
+        if (modelName) feature.properties.modelName = String(modelName).slice(0, 120);
+        if (modelUrl) feature.properties.modelUrl = String(modelUrl);
+        ensureSingleBuildingHistory().record();
+        active.feature = feature;
+        active.height = feature.properties.height;
+        active.lastValidCenter = center;
+        setActiveBuilding(active.id);
+        autosaveSingleBuildingDraft();
+        return true;
+    }
+
+    async function openSingleBuildingModelUpload() {
+        const session = singleSession;
+        if (!session || !window.BuildingUpload) return;
+        await window.BuildingUpload.open({}, {
+            onUse: model => singleSession === session && useUploadedBuildingModel(model)
+        });
+    }
+
     function loadSingleBuildingGeoJSON(file) {
         if (!file || !window.PolygonGeometryEditor) return;
         const reader = new FileReader();
@@ -1355,6 +1385,7 @@
             rotateCounterclockwiseLabel: translateSingleBuildingText('modal.singleBuilding.rotateCounterclockwiseLabel', 'Rotate counterclockwise 5 degrees'),
             rotateClockwiseLabel: translateSingleBuildingText('modal.singleBuilding.rotateClockwiseLabel', 'Rotate clockwise 5 degrees'),
             uploadGeojsonLabel: translateSingleBuildingText('modal.singleBuilding.uploadGeojsonLabel', 'Upload GeoJSON'),
+            uploadGlbLabel: translateSingleBuildingText('modal.singleBuilding.uploadGlbLabel', 'Upload .glb'),
             surroundingsLabel: translateSingleBuildingText('modal.singleBuilding.surroundingsLabel', 'Surroundings'),
             surroundingsNone: translateSingleBuildingText('modal.singleBuilding.surroundingsNone', 'Leave as they are'),
             surroundingsPaved: translateSingleBuildingText('modal.singleBuilding.surroundingsPaved', 'Paved'),
@@ -1434,7 +1465,10 @@
                                 </dl>
                                 <p id="single-building-density-hint" class="building-density-hint"></p>
                             </section>
-                            <button id="single-building-geojson-upload" class="btn btn-block" type="button">${modalText.uploadGeojsonLabel}</button>
+                            <div class="cb-actions on-map-building__imports">
+                                <button id="single-building-geojson-upload" class="btn" type="button">${modalText.uploadGeojsonLabel}</button>
+                                <button id="single-building-glb-upload" class="btn" type="button">${modalText.uploadGlbLabel}</button>
+                            </div>
                             <input id="single-building-geojson-input" type="file" accept=".geojson,.json,application/geo+json,application/json" hidden>
                         </div>
 `,
@@ -1504,6 +1538,9 @@
             }
 
             const geojsonButton = document.getElementById('single-building-geojson-upload');
+            document.getElementById('single-building-glb-upload')?.addEventListener('click', () => {
+                window.BusyControl.track(document.getElementById('single-building-glb-upload'), openSingleBuildingModelUpload);
+            });
             const geojsonInput = document.getElementById('single-building-geojson-input');
             if (geojsonButton && geojsonInput) {
                 geojsonButton.addEventListener('click', () => geojsonInput.click());

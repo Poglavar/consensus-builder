@@ -1,5 +1,5 @@
-// The proposal details panel's authoring contract (frontend/js/proposals/details-panel.js): Fork
-// design and the contextual geometry actions, wired through inlineJsArg, in every language.
+// The proposal details panel's authoring contract (frontend/js/proposals/details-panel.js): Duplicate
+// placement and the contextual geometry actions, wired through inlineJsArg, in every language.
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -8,10 +8,10 @@ const read = relative => readFileSync(fileURLToPath(new URL(relative, import.met
 const detailsSource = read('../../frontend/js/proposals/details-panel.js');
 
 describe('proposal details authoring contract', () => {
-    it('labels cloning as Fork design instead of presenting it as Details', () => {
-        expect(detailsSource).toContain("panel.proposal.actions.forkDesign'");
-        expect(detailsSource).toContain("panel.proposal.actions.forkDesignHint'");
-        expect(detailsSource).toContain('onclick="proposeExistingProposal(${inlineJsArg(proposalKey)})"');
+    it('labels fresh pointer placement as Duplicate', () => {
+        expect(detailsSource).toContain("panel.proposal.actions.duplicateDesign'");
+        expect(detailsSource).toContain("panel.proposal.actions.duplicateDesignHint'");
+        expect(detailsSource).toContain('onclick="startDesignDuplication(${inlineJsArg(proposalKey)})"');
         // No proposal id may be pasted raw into an inline handler; see inlineJsArg in shared-utils.js.
         expect(detailsSource).not.toMatch(/on(click|change|input)="[^"]*'\$\{/);
         expect(detailsSource).not.toContain('class="btn btn-primary btn-propose-proposal"');
@@ -36,11 +36,11 @@ describe('proposal details authoring contract', () => {
         expect(detailsSource).toContain("onclick=\"RoadActions.runAction('crossSection', RoadActions.factsFor(${inlineJsArg(proposalKey)}))\"");
     });
 
-    it.each(['en', 'hr', 'sr', 'es'])('%s explains that the fork leaves its source unchanged', locale => {
+    it.each(['en', 'hr', 'sr', 'es'])('%s describes click-to-place duplication', locale => {
         const dictionary = JSON.parse(read(`../../frontend/i18n/${locale}.json`));
-        expect(dictionary.panel.proposal.actions.forkDesign).toEqual(expect.any(String));
-        expect(dictionary.panel.proposal.actions.forkDesign.trim().length).toBeGreaterThan(3);
-        expect(dictionary.panel.proposal.actions.forkDesignHint).toEqual(expect.any(String));
-        expect(dictionary.panel.proposal.actions.forkDesignHint.length).toBeGreaterThan(20);
+        expect(dictionary.panel.proposal.actions.duplicateDesign).toEqual(expect.any(String));
+        expect(dictionary.panel.proposal.actions.duplicateDesign.trim().length).toBeGreaterThan(3);
+        expect(dictionary.panel.proposal.actions.duplicateDesignHint).toEqual(expect.any(String));
+        expect(dictionary.panel.proposal.actions.duplicateDesignHint.length).toBeGreaterThan(20);
     });
 });

@@ -47,6 +47,20 @@
     padding: 0;
 }
 
+.on-map-building__imports > .btn {
+    flex: 1;
+    min-width: 0;
+}
+
+.design-duplicate-preview {
+    stroke: var(--cb-primary);
+    fill: var(--cb-primary);
+    fill-opacity: 0.3;
+    stroke-width: 2;
+    stroke-dasharray: 6 4;
+    pointer-events: none;
+}
+
 .on-map-building__fields .parameter-group {
     margin-bottom: var(--cb-space-3);
 }

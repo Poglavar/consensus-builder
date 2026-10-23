@@ -7,6 +7,7 @@
         roadAnalysis: ['js/road-analysis.js'],
         roadDetection: ['js/osm-roads-source.js', 'js/road-detection.js'],
         singleBuilding: ['js/single-building.js'],
+        designDuplication: ['js/design-duplication.js'],
         rowHouse: ['js/row-house.js'],
         parcelBased: ['js/parcel-based.js'],
         buildingUpload: ['js/single-building.js', 'js/building-model-geometry.js', 'js/building-upload.js']
@@ -99,6 +100,7 @@
     }
 
     global.ensureOptionalTool = ensure;
+    forward('designDuplication', 'startDesignDuplication', { guardMapMode: true });
 
     // Opening a panel or running an analysis is the explicit entry point. Close/cleanup calls
     // from mode switches remain no-ops until that panel has ever been opened.
