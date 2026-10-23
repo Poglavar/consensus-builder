@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, createSpace, showProposal, clickMapPoint, PARCEL_ID, proposalState } from '../helpers/runtime';
+import { openCity, createSpace, showProposal, clickMapPoint, PARCEL_ID, proposalState, closeParcel } from '../helpers/runtime';
 import { Page } from '@playwright/test';
 
 // The original-cadastre toggle moved from the lower-left mode strip into the 2D Layers sheet
@@ -33,7 +33,7 @@ test('consumed ground remains reachable through proposal breadcrumbs and the cad
   await expect(page.locator('#proposal-details-panel')).toBeHidden();
   await page.locator('#parcel-info-panel [data-parcel-tab-id="proposals-tab"]').click();
   await expect(page.locator('#proposals-content')).toContainText(/park/i);
-  await page.locator('#parcel-info-panel .close-button').click();
+  await closeParcel(page);
   await toggleCadastreView(page, true);
   await expect(page.locator('body')).toHaveClass(/cadastre-view/);
   const paths = () => page.evaluate(() => (window as any).map.getPane('cadastreViewPane').querySelectorAll('path').length);
@@ -41,7 +41,7 @@ test('consumed ground remains reachable through proposal breadcrumbs and the cad
   await clickMapPoint(page, 15.9822, 45.80025);
   await expect(page.locator('#parcel-info-panel')).toBeVisible();
   await expect(page.locator('#parcel-info-title')).toContainText('1234');
-  await page.locator('#parcel-info-panel .close-button').click();
+  await closeParcel(page);
   await toggleCadastreView(page, false);
   await expect(page.locator('body')).not.toHaveClass(/cadastre-view/);
   await expect.poll(paths).toBe(0);

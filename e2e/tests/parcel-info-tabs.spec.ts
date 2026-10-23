@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, createSpace, publishOn, clickMapPoint, stackSection, parcelTab, PARCEL_ID } from '../helpers/runtime';
+import { openCity, openParcel, createSpace, publishOn, stackSection, PARCEL_ID } from '../helpers/runtime';
 
 async function openDetails(page: any) {
   await openCity(page);
@@ -9,7 +9,8 @@ async function openDetails(page: any) {
 
 const tab = (page: any, id: string) => page.locator(`#parcel-info-panel .parcel-tab-btn[data-parcel-tab-id="${id}"]`);
 
-// Info · Propose (the build palette) · Proposals (what already stands here, with a count) · Tools (an icon).
+// In the click stack the parcel panel shows Info · Propose (the build palette) · Tools (an icon);
+// the parcel's proposals are the stack's Designs section, so its Proposals tab, − and × are hidden.
 test.describe('Parcel info panel tabs @core', () => {
   test('Info tab is active by default and ends with the collapsed History section', async ({ mockApi: page }) => {
     await openDetails(page);
@@ -20,28 +21,37 @@ test.describe('Parcel info panel tabs @core', () => {
     await expect(history).not.toHaveAttribute('open', '');
   });
 
-  test('Propose holds the palette and Proposals the list, never both', async ({ mockApi: page }) => {
+  test('in the stack the panel has no Proposals tab, − or ×; the stack folds and closes it', async ({ mockApi: page }) => {
+    await openDetails(page);
+    const panel = page.locator('#parcel-info-panel');
+    await expect(tab(page, 'info-tab')).toBeVisible();
+    await expect(tab(page, 'propose-tab')).toBeVisible();
+    await expect(tab(page, 'tools-tab')).toBeVisible();
+    await expect(tab(page, 'proposals-tab')).toBeHidden();
+    await expect(panel.locator('#parcel-info-minimize')).toBeHidden();
+    await expect(panel.locator('.panel-header .close-button')).toBeHidden();
+    // The section's row folds the parcel; the stack's × closes the spot.
+    await stackSection(page, 'parcels').locator('.click-stack__row').click();
+    await expect(panel).toBeHidden();
+    await expect(page.locator('#click-stack')).toBeVisible();
+    await page.locator('#click-stack .click-stack__close').click();
+    await expect(page.locator('#click-stack')).toBeHidden();
+  });
+
+  test('Propose holds the palette', async ({ mockApi: page }) => {
     await openDetails(page);
     await tab(page, 'propose-tab').click();
     await expect(page.locator('#propose-tab')).toBeVisible();
     // 14 tools: the Ownership group's Offer went with owner offers (M2).
     await expect(page.locator('#propose-content .parcel-build-btn')).toHaveCount(14);
-    await tab(page, 'proposals-tab').click();
-    await expect(page.locator('#proposals-tab')).toBeVisible();
-    await expect(page.locator('#proposals-content .parcel-build-btn')).toHaveCount(0);
   });
 
-  test('an empty Proposals tab says so and its Propose here opens the palette', async ({ mockApi: page }) => {
+  test('a parcel with no proposals has no Designs section', async ({ mockApi: page }) => {
     await openDetails(page);
-    await tab(page, 'proposals-tab').click();
-    await expect(page.locator('#proposals-content .parcel-proposals-empty')).toContainText('No proposals on this parcel yet.');
-    await expect(tab(page, 'proposals-tab').locator('.parcel-tab-count')).toBeHidden();
-    await page.locator('#proposals-content .parcel-proposals-empty-btn').click();
-    await expect(page.locator('#propose-tab')).toBeVisible();
-    await expect(page.locator('#propose-content .parcel-build-palette')).toBeVisible();
+    await expect(stackSection(page, 'designs')).toHaveCount(0);
   });
 
-  test('the Proposals tab counts and lists the proposals on the parcel', async ({ mockApi: page }) => {
+  test('the Designs section lists the proposals on the parcel when the click is on its open ground', async ({ mockApi: page }) => {
     await openCity(page);
     const parkId = await createSpace(page, 'park');
     // Off the map the park stays stored and declared on the parcel, whose own layer returns.
@@ -50,19 +60,25 @@ test.describe('Parcel info panel tabs @core', () => {
     await expect.poll(() => page.evaluate(id => !(window as any).isProposalApplied((window as any).getProposalByIdOrHash(id)), parkId)).toBe(true);
     await page.evaluate(() => (window as any).hideProposalDetailsPanel?.(true));
     await openParcel(page);
-    await expect(tab(page, 'proposals-tab').locator('.parcel-tab-count')).toHaveText('1');
-    await tab(page, 'proposals-tab').click();
-    await expect(page.locator('#proposals-content .proposal-item')).toHaveCount(1);
-    await expect(page.locator('#proposals-content .parcel-proposals-empty')).toHaveCount(0);
+    // The parcel stays the open section; its proposal waits in the Designs row above it.
+    const designs = stackSection(page, 'designs');
+    await expect(designs.locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'false');
+    await expect(designs.locator('.click-stack__row-title')).toHaveText('Design');
+    await designs.locator('.click-stack__row').click();
+    await expect(page.locator('#planning-inspector')).toBeVisible();
+    await expect(designs.locator('#planning-inspector')).toBeVisible();
   });
 
-  test('proposals published on the parcel are counted and listed without being in this browser', async ({ mockApi: page }) => {
+  test('a published proposal on the parcel is listed without being in this browser, and opening it imports it', async ({ mockApi: page }) => {
     const publishedCid = await publishOn(page, PARCEL_ID);
     await openDetails(page);
-    await expect(tab(page, 'proposals-tab').locator('.parcel-tab-count')).toHaveText('1');
-    await tab(page, 'proposals-tab').click();
-    await expect(page.locator(`#proposals-content [data-server-id="${publishedCid}"]`)).toContainText('Published park');
-    await expect(page.locator('#proposals-content .parcel-proposals-empty')).toBeHidden();
+    const designs = stackSection(page, 'designs');
+    await expect(designs.locator('.click-stack__row-detail')).toHaveText('Published park');
+    expect(await page.evaluate(() => (window as any).proposalStorage.getAllProposals().length)).toBe(0);
+    await designs.locator('.click-stack__row').click();
+    await expect(designs.locator('#planning-inspector')).toContainText('Published park');
+    await expect.poll(() => page.evaluate(cid => (window as any).proposalStorage.getAllProposals()
+      .some((p: any) => p.published?.cid === cid), publishedCid)).toBe(true);
   });
 
   test('the Tools icon tab shows claim controls', async ({ mockApi: page }) => {
@@ -75,8 +91,8 @@ test.describe('Parcel info panel tabs @core', () => {
 
   test('switching back restores Info content', async ({ mockApi: page }) => {
     await openDetails(page);
-    await tab(page, 'proposals-tab').click();
-    await expect(page.locator('#proposals-tab')).toBeVisible();
+    await tab(page, 'propose-tab').click();
+    await expect(page.locator('#propose-tab')).toBeVisible();
     await tab(page, 'info-tab').click();
     await expect(page.locator('#info-tab')).toBeVisible();
     await expect(page.locator('#info-content')).toBeVisible();
@@ -85,28 +101,5 @@ test.describe('Parcel info panel tabs @core', () => {
   test('multi-select checkbox is available in Info content', async ({ mockApi: page }) => {
     await openDetails(page);
     await expect(page.locator('#multiSelectCheckboxInfo')).toHaveAttribute('type', 'checkbox');
-  });
-});
-
-// The click stack's parcel section carries the Proposals action: it counts what stands on the
-// parcel, the designs index's published ones included, and opens the panel's Proposals tab on them.
-test.describe('Parcel section proposals @features', () => {
-  test('the parcel section counts the proposals here, published ones included, and opens the Proposals tab', async ({ mockApi: page }) => {
-    const cid = await publishOn(page, PARCEL_ID);
-    await openCity(page);
-    const center = await page.evaluate((id: string) => {
-      const w = window as any;
-      const c = w.ParcelPresenter.getLayer(id).getBounds().getCenter();
-      w.map.panTo(c, { animate: false });
-      return { lng: c.lng, lat: c.lat };
-    }, PARCEL_ID);
-    await clickMapPoint(page, center.lng, center.lat);
-    await expect(stackSection(page, 'parcels').locator('#parcel-info-panel')).toBeVisible();
-    const item = parcelTab(page, 'proposals-tab');
-    await expect(item.locator('.parcel-tab-count')).toHaveText('1');
-    await item.click();
-    await expect(page.locator('#proposals-tab')).toBeVisible();
-    await expect(page.locator('#proposals-content .parcel-set-proposal')).toHaveCount(1);
-    await expect(page.locator(`#proposals-content [data-server-id="${cid}"]`)).toContainText('Published park');
   });
 });

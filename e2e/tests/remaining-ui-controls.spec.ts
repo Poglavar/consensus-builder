@@ -1,6 +1,6 @@
 // Cover reachable controls left outside the focused feature suites.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, clickMapPoint, showProposal, PARCEL_ID, PARCEL_GEOMETRY, runParcelCommand } from '../helpers/runtime';
+import { openCity, openParcel, clickMapPoint, showProposal, PARCEL_ID, PARCEL_GEOMETRY, runParcelCommand, closeParcel } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { installAreaMonitorSpaFallback } from '../helpers/mocks/area-monitor-server';
 import { selectNativeOption } from '../helpers/controls';
@@ -31,7 +31,7 @@ async function openRowHouseEditor(page: Page): Promise<void> {
   await openParcel(page, 'info', BLOCK_PARCEL_IDS[0]);
   await page.locator('.multi-select-detect-btn').click();
   await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.selectedParcels.size)).toBeGreaterThan(1);
-  await page.locator('#parcel-info-panel .close-button').click();
+  await closeParcel(page);
   await page.locator('#selection-tray [data-command="selection.propose"]').click();
   await page.locator('.parcel-build-btn--row').click();
   await expect(page.locator('#rowhouse').locator('.on-map-editor__panel')).toBeVisible();

@@ -1,6 +1,7 @@
 // Everything under one map point, by geometry rather than by which layer is drawn on top
 // (click-stack.md): designs and parcels from the drill stack, buildings from the drawn building
-// layers, permitted massing from the planning views, agreements from the agreement store.
+// layers, permitted massing from the planning views, agreements from the agreement store. With
+// no design under the point, the parcel there adds its buildings and proposals.
 // Returns the hits object the pure click-stack model orders.
 (function (global) {
     'use strict';
@@ -64,7 +65,28 @@
                 designIds: agreement.designs.map(design => String(design.proposalId)) }));
     }
 
-    function hitsAt(latlng) {
+    // What stands on the parcel under the point when no design is there (click-stack.md): its
+    // buildings and its proposals, this browser's and the published ones it holds no copy of
+    // (ParcelSetProposals). They are marked onParcel, so the point's own hits keep the first place.
+    // onPublished runs once the published proposals arrive, when they were not known yet.
+    function onParcel(parcel, onPublished) {
+        const designs = [], built = [];
+        try {
+            const { entries } = global.ParcelSetProposals.lookup([parcel.id], { onPublished });
+            entries.forEach(entry => {
+                const key = entry.serverId || global.getProposalKey?.(entry.proposal) || entry.proposal.proposalId;
+                designs.push({ id: String(key), label: designLabel(entry.proposal, key), createdAt: entry.proposal.createdAt,
+                    proposal: entry.proposal, goal: entry.proposal.goal || '', serverId: entry.serverId || null, onParcel: true });
+            });
+        } catch (error) { console.error('[ClickStack] the parcel\'s proposals could not be listed', error); }
+        try {
+            (global.buildingsOn?.(parcel.feature) || []).forEach(hit => built.push({ id: hit.id, feature: hit.feature,
+                demolition: hit.demolition, tunnelled: hit.tunnelled, label: buildingLabel(hit.feature), onParcel: true }));
+        } catch (error) { console.error('[ClickStack] the parcel\'s buildings could not be listed', error); }
+        return { designs, built };
+    }
+
+    function hitsAt(latlng, { onPublished } = {}) {
         const stack = global.__drillUi?.stackAt(latlng) || [];
         const designs = [], formed = [], parcels = [];
         for (const entry of stack) {
@@ -104,7 +126,15 @@
                 .filter(item => item.role === 'permitted')
                 .map(item => ({ id: item.id, label: item.source?.parcel || item.title || item.id, item }));
         } catch (error) { console.error('[ClickStack] massing could not be hit-tested', error); }
-        const hits = { agreements: agreementsWith(designs), designs, built, permitted, formed, parcels, ground: [] };
+        const agreements = agreementsWith(designs);
+        const ground = designs.length ? null : [...formed, ...parcels].find(parcel => parcel.live !== false && parcel.feature);
+        if (ground) {
+            const extra = onParcel(ground, onPublished);
+            const has = (list, id) => list.some(item => String(item.id) === String(id));
+            designs.push(...extra.designs.filter(item => !has(designs, item.id)));
+            built.push(...extra.built.filter(item => !has(built, item.id)));
+        }
+        const hits = { agreements, designs, built, permitted, formed, parcels, ground: [] };
         // Nothing at all here: bare ground offers what can be drawn on it, when the place has no
         // register to wait for (ui/ground-menu-model.js decides).
         if (!designs.length && !built.length && !permitted.length && !formed.length && !parcels.length

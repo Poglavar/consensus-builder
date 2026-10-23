@@ -220,10 +220,11 @@ test.describe('Click stack @core', () => {
     await clickMapPoint(page, piece!.lng, piece!.lat);
     await expect(clickStack(page)).toBeVisible();
     const kinds = await sectionKinds(page);
-    expect(kinds).not.toContain('designs');
-    expect(kinds[0]).toBe('formed');
+    // No design is under the point: the road is listed above as a proposal on this ground, folded,
+    // and the formed piece is what opens.
+    expect(kinds).toEqual(['designs', 'formed', 'parcels']);
+    await expect(stackSection(page, 'designs').locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'false');
     // The cadastral parcel it was cut from is listed below it, as a record.
-    expect(kinds).toContain('parcels');
     const formed = stackSection(page, 'formed');
     await expect(formed.locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'true');
     await expect(formed.locator('#parcel-info-panel')).toBeVisible();

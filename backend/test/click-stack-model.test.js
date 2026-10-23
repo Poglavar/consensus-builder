@@ -46,6 +46,30 @@ describe('click stack model', () => {
         expect(model.expand(stack, 'built').expanded).toBe('built');
     });
 
+    it('puts the point\'s own hits before what only stands on its parcel, and opens and closes on the point', () => {
+        const hits = {
+            designs: [{ id: 'newest', createdAt: 3, onParcel: true }, { id: 'older', createdAt: 1, onParcel: true }],
+            built: [{ id: 'shed', onParcel: true }, { id: 'house' }],
+            parcels: [{ id: 'p' }]
+        };
+        const stack = model.buildClickStack(hits);
+        expect(kinds(stack)).toEqual(['designs', 'built', 'parcels']);
+        expect(stack.sections.map(section => section.atPoint)).toEqual([false, true, true]);
+        expect(stack.sections[1].instances.map(item => item.id)).toEqual(['house', 'shed']);
+        expect(stack.sections[1].multi).toBe(true);
+        expect(stack.sections[0].instances.map(item => item.id)).toEqual(['newest', 'older']);
+        // The building under the point opens and is the top; the parcel's proposals wait for their row.
+        expect(stack.expanded).toBe('built');
+        expect(stack.topRef).toBe('built:house');
+        expect(model.buildClickStack(hits, { remembered: 'designs' }).expanded).toBe('built');
+        expect(model.buildClickStack(hits, { remembered: 'parcels' }).expanded).toBe('parcels');
+        // Open ground: the parcel opens; a second click on the same parcel closes.
+        const ground = model.buildClickStack({ designs: [{ id: 'd', onParcel: true }], parcels: [{ id: 'p' }] });
+        expect(ground.expanded).toBe('parcels');
+        expect(model.clickAction(ground.topRef, model.buildClickStack({ designs: [{ id: 'd', onParcel: true }], parcels: [{ id: 'p' }] }))).toBe('close');
+        expect(model.selectInstance(ground, 'designs', 'd').topRef).toBe('parcels:p');
+    });
+
     it('keeps a chosen instance, and the top reference follows it', () => {
         const hits = { designs: [{ id: 'a', createdAt: 2 }, { id: 'b', createdAt: 1 }] };
         const stack = model.selectInstance(model.buildClickStack(hits), 'designs', 'b');

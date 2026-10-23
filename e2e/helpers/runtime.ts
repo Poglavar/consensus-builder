@@ -106,9 +106,23 @@ export async function expandStackSection(page: Page, kind: string): Promise<void
   await expect(row).toHaveAttribute('aria-expanded', 'true');
 }
 
-// The hosted parcel panel's tab buttons (Info, Propose, Proposals, Tools). The parcel section shows
-// only the actions the panel does not offer (Compare, Use as site) as [data-command] buttons.
+// The parcel panel's tab buttons (Info, Propose, Proposals, Tools). Hosted in the stack it shows
+// Info, Propose and Tools: the Designs section lists the parcel's proposals. The parcel section
+// shows only the actions the panel does not offer (Compare, Use as site) as [data-command] buttons.
 export const parcelTab = (page: Page, tabId: string) => page.locator(`#parcel-info-panel [data-parcel-tab-id="${tabId}"]`);
+
+// Closes the parcel panel wherever it is: in the stack its own × is hidden and the stack's × closes
+// it; a panel outside the stack (a multi-parcel selection) closes with its own ×.
+export async function closeParcel(page: Page): Promise<void> {
+  const panel = page.locator('#parcel-info-panel');
+  if (await panel.evaluate(element => element.classList.contains('is-hosted'))) {
+    await clickStack(page).locator('.click-stack__close').click();
+    await expect(clickStack(page)).toBeHidden();
+  } else {
+    await panel.locator('.panel-header .close-button').click();
+  }
+  await expect(panel).toBeHidden();
+}
 
 // A map click at a point whose stack holds a parcel, with the parcel section expanded.
 export async function openParcelAt(page: Page, lng: number, lat: number): Promise<void> {

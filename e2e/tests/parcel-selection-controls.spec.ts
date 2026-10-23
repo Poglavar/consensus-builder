@@ -1,6 +1,6 @@
 // The multi-parcel inspector must let users abandon their selection through its own button.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, clickMapPoint, PARCEL_ID } from '../helpers/runtime';
+import { openCity, openParcel, clickMapPoint, PARCEL_ID, closeParcel } from '../helpers/runtime';
 
 test('multi-parcel inspector Cancel selection clears the selected land and exits selection mode', async ({ mockApi: page }) => {
   await openCity(page);
@@ -8,7 +8,7 @@ test('multi-parcel inspector Cancel selection clears the selected land and exits
   await page.evaluate(async id => (window as any).CadastralParcelRepository.ensureIds([id]), second);
   await openParcel(page);
   await page.locator('#multiSelectCheckboxInfo').check();
-  await page.locator('#parcel-info-panel .close-button').click();
+  await closeParcel(page);
   await clickMapPoint(page, 15.9829, 45.80025);
   await expect.poll(() => page.evaluate(() => [...(window as any).multiParcelSelection.selectedParcels].sort()))
     .toEqual([PARCEL_ID, second].sort());

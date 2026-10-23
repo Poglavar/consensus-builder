@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, createSpace, proposalState, showProposal, clickMapPoint, drawCorridor, PARCEL_ID, openParcelTabAt } from '../helpers/runtime';
+import { openCity, openParcel, createSpace, proposalState, showProposal, clickMapPoint, drawCorridor, PARCEL_ID, openParcelTabAt, closeParcel } from '../helpers/runtime';
 
 test.describe('Proposal creation and map lifecycle @features', () => {
   for (const kind of ['park', 'square', 'lake'] as const) {
@@ -47,7 +47,7 @@ test.describe('Proposal creation and map lifecycle @features', () => {
       await openParcel(page, type === 'row' ? 'info' : 'proposals');
       if (type === 'row') {
         await page.locator('#multiSelectCheckboxInfo').check();
-        await page.locator('#parcel-info-panel .close-button').click();
+        await closeParcel(page);
         await clickMapPoint(page, 15.9829, 45.80025);
         await page.locator('#selection-tray [data-command="selection.propose"]').click();
       }

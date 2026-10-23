@@ -293,5 +293,5 @@
         return { count: entries.length, loading: published.loading, error: published.error };
     }
 
-    return { collect, withPublished, listHtml, view, bindRows, render, renderPublishedOnly, count };
+    return { collect, withPublished, listHtml, lookup, view, bindRows, render, renderPublishedOnly, count };
 });

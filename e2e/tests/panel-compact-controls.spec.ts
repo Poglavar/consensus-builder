@@ -35,17 +35,16 @@ async function openProposalFromList(page: import('@playwright/test').Page, propo
 }
 
 for (const viewport of VIEWPORTS) {
-  test(`parcel info panel minimizes, restores and closes on ${viewport.name} @features`, async ({ mockApi: page }) => {
+  test(`parcel info panel in the stack copies its id, resizes on phones and closes with the stack on ${viewport.name} @features`, async ({ mockApi: page }) => {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await openCity(page);
     await openParcel(page);
 
     const panel = page.locator('#parcel-info-panel');
-    const toggle = panel.locator('#parcel-info-minimize');
-    const body = panel.locator('.panel-body');
-    const tabs = panel.locator('.parcel-tabs');
     await expect(panel).toBeVisible();
-    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    // In the stack the section row folds and the stack's × closes: the panel's own − and × are hidden.
+    await expect(panel.locator('#parcel-info-minimize')).toBeHidden();
+    await expect(panel.locator('.panel-header .close-button')).toBeHidden();
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
     await panel.locator('.parcel-title-id').click();
     await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(PARCEL_ID);
@@ -60,19 +59,8 @@ for (const viewport of VIEWPORTS) {
       await resize.press('ArrowDown');
       await expect.poll(() => sheet.evaluate(element => Math.round(element.getBoundingClientRect().height))).toBe(Math.round(originalHeight));
     }
-    await toggle.click();
-    await expect(panel).toHaveClass(/is-minimized/);
-    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
-    await expect(body).toBeHidden();
-    await expect(tabs).toBeHidden();
-
-    await toggle.click();
-    await expect(panel).not.toHaveClass(/is-minimized/);
-    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
-    await expect(body).toBeVisible();
-    await expect(tabs).toBeVisible();
-
-    await panel.locator('.close-button').click();
+    await page.locator('#click-stack .click-stack__close').click();
+    await expect(page.locator('#click-stack')).toBeHidden();
     await expect(panel).toBeHidden();
   });
 
