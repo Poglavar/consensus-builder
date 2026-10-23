@@ -1,6 +1,6 @@
 // What one click in the 3D model view does (three-mode.js handleParcelClick). Every click is also
 // a parcel click: the parcel under the click point, through whatever stands on it, becomes the
-// parcel in view (its panel, its massing, its outline), while the thing the ray hit first keeps its
+// parcel in view (its figures and outline), while the thing the ray hit first keeps its
 // own meaning on top (a massing opens its inspector, an existing building its record, a proposal
 // building selects and isolates the proposal, and its own parcel slice is the parcel in view). Isolation of a parcel, which dims the rest of the
 // city, is a deliberate second click on the same parcel; a third click clears it. Pure: the caller
@@ -11,11 +11,9 @@
 //                       | { proposalId, parcelId } | null
 //     groundParcelId    the parcel slab under the click point, or null off the loaded ground
 //     proposalKnown     whether picked.proposalId resolves to a stored proposal
-//   -> { selectMassing, inspectBuilding, clearSelection, proposal, parcel, openMassing }
+//   -> { selectMassing, inspectBuilding, clearSelection, proposal, parcel }
 //     proposal          null | { id, action: 'isolate' | 'clear' }
 //     parcel            null | { id, action: 'view' | 'isolate' | 'clear' }   (id null for 'clear')
-//     openMassing       whether a viewed parcel's cached massing should open in the inspector
-//                       (only when nothing the click hit already claimed the inspector)
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -29,7 +27,7 @@
         const viewed = input && input.viewedParcelId != null ? String(input.viewedParcelId) : null;
         const isolated = input && input.isolatedParcelId != null ? String(input.isolatedParcelId) : null;
         const isolatedProposal = input && input.isolatedProposalId != null ? String(input.isolatedProposalId) : null;
-        const plan = { selectMassing: null, inspectBuilding: null, clearSelection: false, proposal: null, parcel: null, openMassing: false };
+        const plan = { selectMassing: null, inspectBuilding: null, clearSelection: false, proposal: null, parcel: null };
         const view = id => (id ? { id, action: 'view' } : null);
 
         if (picked && picked.planningId) {
@@ -60,7 +58,6 @@
         if (pid === isolated) { plan.parcel = { id: pid, action: 'clear' }; return plan; }
         if (pid === viewed && !isolatedProposal) { plan.parcel = { id: pid, action: 'isolate' }; return plan; }
         plan.parcel = { id: pid, action: 'view' };
-        plan.openMassing = true;
         return plan;
     }
 

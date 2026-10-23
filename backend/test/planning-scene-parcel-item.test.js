@@ -1,5 +1,4 @@
-// PlanningScene.parcelItemOf: the item that IS a parcel's massing, for the 3D view's parcel
-// isolation (the Buildings and massing panel refers to the isolated parcel).
+// PlanningScene.parcelItemOf: the permitted massing item associated with a parcel reference.
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 

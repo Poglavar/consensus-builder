@@ -27,7 +27,7 @@ function harness() {
         root, window: root, ready: true, focusedRecord: null, actionsOpen: false, restoreId: null,
         currentProposalDetailsContext: null,
         document: { getElementById: () => null, body: { classList: { remove() {} } } },
-        teardownProposalDetailsEscapeHandler() {}, renderInspector() {}, renderFocus() {},
+        teardownProposalDetailsEscapeHandler() {}, renderInspector() {},
         sceneItems: () => items,
         selected: () => items.find(item => item.id === selectedId),
         store: { select: id => { selectedId = id; } }

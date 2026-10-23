@@ -20,7 +20,11 @@ async function openPlanningViews(page: Page) {
   await expect(page.locator('#planning-views')).toBeVisible();
 }
 async function closeSheets(page: Page) {
-  for (const close of await page.locator('.map-sheet:visible [data-sheet-close]').all()) await close.click();
+  for (const close of await page.locator('.map-sheet:visible [data-sheet-close]').all()) {
+    // Phone sheets keep Close in keyboard navigation while pointer dismissal uses the handle.
+    await close.focus();
+    await close.press('Enter');
+  }
   await expect(page.locator('.map-sheet:visible')).toHaveCount(0);
 }
 // Built-context rendering and its load radius are both discoverable in the 3D Layers sheet.
@@ -140,6 +144,44 @@ async function rayVerifiedPickPoint(page: Page, target: 'parcel' | 'proposal', i
 }
 
 test.describe('3D rendering and controls @features', () => {
+  for (const width of [1280, 390]) {
+    test(`building display settings remain global across parcel selections at ${width}px`, async ({ mockApi: page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await mockBuildingScene(page);
+      await openCity(page);
+      await enter3D(page);
+      await openPlanningViews(page);
+      const panel = page.locator('#planning-views');
+      const display = panel.locator('[data-planning-setting="existing"]');
+      await selectNativeOption(display, 'solid');
+      await expect.poll(async () => (await sceneBuildings(page)).length).toBe(2);
+
+      for (const parcelId of ['HR-335754-1234', 'HR-335754-1235']) {
+        await closeSheets(page);
+        await page.evaluate(id => (window as any).showThreeModeParcel(id), parcelId);
+        await expect(page.locator('#three-click-stack .click-stack__section[data-kind="parcels"].is-expanded')).toBeVisible();
+        await openPlanningViews(page);
+        await expect(display).toHaveValue('solid');
+        await expect(panel).not.toContainText(parcelId);
+        await expect(panel.locator('.planning-focus, .planning-parcel-evidence')).toHaveCount(0);
+        await selectNativeOption(display, 'ghost');
+        await expect.poll(async () => {
+          const buildings = await sceneBuildings(page);
+          return buildings.length === 2 && buildings.every(building => building.opacity < 1);
+        }).toBe(true);
+        await selectNativeOption(display, 'off');
+        await expect.poll(async () => (await sceneBuildings(page)).length).toBe(0);
+        await selectNativeOption(display, 'solid');
+        await expect.poll(async () => (await sceneBuildings(page)).length).toBe(2);
+      }
+      await closeSheets(page);
+      await page.keyboard.press('Escape');
+      await openPlanningViews(page);
+      await expect(display).toHaveValue('solid');
+      await expect(panel.locator('.planning-focus, .planning-parcel-evidence')).toHaveCount(0);
+    });
+  }
+
   test('mode buttons stay lower left and parcel clicks preserve the camera while dimming context', async ({ mockApi: page }) => {
     await mockBuildingScene(page); await openCity(page);
     // The strip sits in the same lower-left place in 2D and 3D; nothing moves when the view changes.

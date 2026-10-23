@@ -266,6 +266,26 @@ describe('shared planning scene', () => {
         expect(store.get()).toMatchObject({ selectedId: 'a', revision: 2 }); expect(listener).toHaveBeenCalledTimes(2);
         off(); store.select(null); expect(listener).toHaveBeenCalledTimes(2);
     });
+    it('applies global role settings to every record regardless of selection', () => {
+        const store = scene.createStore();
+        const records = [
+            { id: 'built-1', role: 'existing' },
+            { id: 'parcel-a', role: 'permitted' },
+            { id: 'parcel-b', role: 'permitted' },
+            { id: 'proposal-1', role: 'proposed' }
+        ];
+        store.select('parcel-a');
+        store.configure('existing', 'ghost');
+        store.configure('permitted', 'off');
+        store.configure('proposed', 'ghost');
+        expect(records.map(item => scene.itemAppearance(item, store.get()))).toEqual(['ghost', 'off', 'off', 'ghost']);
+        const globalSettings = scene.settings(store.get());
+
+        store.select('parcel-b');
+        expect(scene.settings(store.get())).toEqual(globalSettings);
+        store.select(null);
+        expect(scene.settings(store.get())).toEqual(globalSettings);
+    });
     it('allows every combination of three independent display states', () => {
         const store = scene.createStore();
         for (const existing of scene.displayStates) for (const permitted of scene.displayStates) for (const proposed of scene.displayStates) {

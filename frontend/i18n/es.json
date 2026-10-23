@@ -7298,7 +7298,6 @@
         "coverageTitle": "¿Qué cubre esta fuente?",
         "coverageNote": "Se muestran los cálculos guardados por la fuente. Algunos contienen volúmenes; otros indican falta de pruebas, condiciones incumplidas u otro procedimiento urbanístico. Un resultado sin geometría no demuestra capacidad nula. Los niveles muestran las partes a distintas alturas.",
         "inspectHint": "Seleccione un edificio o geometría de la fuente para inspeccionarlo.",
-        "focusNoMassing": "Esta fuente no registra volumetría para la parcela seleccionada.",
         "inspectMassing": "Inspeccionar el volumen permitido en {{parcel}}",
         "heightParts": "Alturas de las partes: {{heights}}",
         "cacheSummary": "{{count}} resultados guardados en esta área: {{shapes}} con geometría, {{missing}} sin geometría.",

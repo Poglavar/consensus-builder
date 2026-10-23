@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { parse } from '@babel/parser';
 import { gupRecord, readZagrebParcel } from '../planning/providers/zagreb-gup.js';
-import { readNycPilotParcel } from '../planning/providers/nyc-pilot.js';
+import { nycPilotSource, readNycPilotParcel } from '../planning/providers/nyc-pilot.js';
 import { planningParcel, sourcesFor } from '../planning/sources.js';
 import { setupPlanningRoutes } from '../routes/planning.js';
 const require = createRequire(import.meta.url);
@@ -41,14 +41,18 @@ describe('cache-only parcel inspection', () => {
         expect(item.volumes).toEqual([]); expect(item.metrics.floorAreaM2).toBe(50);
         expect(item.source.edition).toBe('2016');
     });
-    it('selects only the requested edition and refuses a source from another city', () => {
-        expect(sourcesFor({ city: 'zagreb' }).map(p => p.descriptor.edition)).toEqual(['2025']);
-        expect(sourcesFor({ city: 'zagreb', source: 'zagreb-gup-2016' })[0].descriptor.edition).toBe('2016');
-        expect(() => sourcesFor({ city: 'new_york', source: 'zagreb-gup-2016' })).toThrow();
+    it('requires explicit source descriptors and rejects unknown source IDs', () => {
+        expect(() => sourcesFor({ city: 'sample' })).toThrow(/explicit planning sources/i);
+        const sources = [
+            { descriptor: { city: 'sample', id: 'edition-a', edition: 'a', revision: 'rev-a' } },
+            { descriptor: { city: 'sample', id: 'edition-b', edition: 'b', revision: 'rev-b' } }
+        ];
+        expect(sourcesFor({ city: 'sample', source: 'edition-b' }, sources).map(p => p.descriptor.id)).toEqual(['edition-b']);
+        expect(() => sourcesFor({ city: 'sample', source: 'unknown' }, sources)).toThrow(/unknown planning source/i);
     });
     it('routes the exact parcel to a provider without requiring a viewport or computing geometry', async () => {
         const parcel = vi.fn().mockResolvedValue([{ id: 'saved', volumes: [] }]);
-        const answer = await planningParcel({}, { city: 'sample', parcel: 'a' }, [{ descriptor: { city: 'sample', id: 'one' }, parcel }]);
+        const answer = await planningParcel({}, { city: 'sample', parcel: 'a', source: 'one' }, [{ descriptor: { city: 'sample', id: 'one' }, parcel }]);
         expect(answer.items).toEqual([{ id: 'saved', volumes: [] }]); expect(parcel).toHaveBeenCalledTimes(1);
     });
     it('exposes the existing NYC pilot flags without claiming that a clear screen is an accepted envelope', async () => {
@@ -70,8 +74,9 @@ describe('cache-only parcel inspection', () => {
         expect(res.status).toHaveBeenCalledWith(400); expect(parcelQuery).not.toHaveBeenCalled();
         await handlers['/planning/parcel']({ query: { city: 'zagreb', parcel: 'HR-1-1', source: 'zagreb-gup-2016' } }, res);
         expect(parcelQuery).toHaveBeenCalledWith({}, { city: 'zagreb', parcel: 'HR-1-1', source: 'zagreb-gup-2016' });
-        handlers['/planning/sources']({ query: { city: 'new_york' } }, res);
-        expect(res.json.mock.calls.at(-1)[0].sources[0].capabilities).toMatchObject({ volumes: false, parcelEvidence: true });
+        handlers['/planning/sources']({ query: {} }, res);
+        const catalog = res.json.mock.calls.at(-1)[0].sources;
+        expect(catalog.find(source => source.id === nycPilotSource.id).capabilities).toMatchObject({ volumes: false, parcelEvidence: true });
     });
 });
 

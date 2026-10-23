@@ -12,9 +12,6 @@
     let store, items = [], payload = null, status = 'loading', layer, controller, request = 0;
     let panel, inspector, lastSettings = null, lastSelectedId = null, ready = false, selectionLayer;
     let progress = null;
-    // The parcel the 3D view has in view (focusParcel). The sheet refers to that parcel, or else
-    // to the parcel of the selected permitted massing (focusedParcel).
-    let viewedParcelId = null, viewWantsMassing = false;
     // The massing shapes drawn on the map, for "what is under this point" (click-stack.md).
     let hitShapes = [];
     let sourceOptions = [], sourceId = '', scenarioId = '', focusedRecord = null, sourceGeneration = 0, referenceStatus = null;
@@ -73,45 +70,12 @@
         restoreId = null;
         store.select(id);
         renderInspector();
-        renderFocus();
     }
     function selectRecord(record) { focusedRecord = record; referenceStatus = null; select(record?.id || null); }
-    // The parcel the sheet refers to: the one the 3D view isolated, else the parcel of the
-    // selected permitted massing.
+    // Parcel provenance belongs to the inspected source record, not the global display settings.
     function parcelOf(item) {
         if (!item || item.role !== 'permitted') return null;
         return String(item.sourceEvidence?.parcelReference?.parcelId || item.source?.parcel || '') || null;
-    }
-    function focusedParcel() { return viewedParcelId || parcelOf(selected()); }
-    // The 3D view's parcel in view: the panel refers to that parcel. Its saved evidence lists in
-    // the sheet and the sheet names it; with `openMassing` its cached massing (when the source
-    // records one) opens in the inspector too, otherwise whatever the click hit keeps the
-    // inspector. Null when the view ends.
-    function focusParcel(parcelId, { openMassing = true } = {}) {
-        if (!ready) return;
-        viewedParcelId = parcelId == null || parcelId === '' ? null : String(parcelId);
-        viewWantsMassing = !!viewedParcelId && openMassing;
-        const item = openMassing ? core.parcelItemOf(sceneItems(), viewedParcelId) : null;
-        if (item) select(item.id);
-        else if (openMassing && selected()?.role === 'permitted') select(null);
-        else renderFocus();
-    }
-    function renderFocus() {
-        const section = panel?.querySelector('.planning-focus');
-        if (!section) return;
-        const parcel = focusedParcel();
-        const item = parcel ? core.parcelItemOf(sceneItems(), parcel) : null;
-        // Massing that arrived after the click still opens for the parcel in view.
-        if (viewWantsMassing && viewedParcelId && item && !selected()) { select(item.id); return; }
-        section.hidden = !parcel || isPhoto();
-        section.querySelector('.planning-focus__title').textContent = parcel ? `${t('focusParcel')} ${parcel}` : '';
-        const note = section.querySelector('.planning-focus__note');
-        note.textContent = parcel && !item && status === 'ready' && policy().permitted !== 'off' ? t('focusNoMassing') : '';
-        note.hidden = !note.textContent;
-        if (!parcel) {
-            section.querySelector('.planning-parcel-evidence')?.remove();
-            if (parcelPanel?.container === section) parcelPanel = null;
-        } else if (parcelPanel?.container !== section || parcelPanel.parcel !== parcel) showParcelEvidence(section, parcel);
     }
     function inspectBuilding(feature, key) {
         const record = root.PlanningRepresentations.built(feature, { key: key || root.buildingPoolFeatureKey?.(feature),
@@ -484,7 +448,6 @@
         panel.querySelector('.planning-inspect-hint').hidden = policy().permitted === 'off' || !items.length || isPhoto();
         const model = panel.querySelector('.planning-open-model');
         model.hidden = !isPhoto(); model.textContent = t('openModel');
-        renderFocus();
         renderInspector();
     }
     function syncView() {
@@ -777,7 +740,7 @@
         root.map.on('click', () => select(null));
         root.addEventListener('cityChanged', () => {
             controller?.abort(); request++; invalidate(); items = []; payload = null; status = 'loading';
-            sourceOptions = []; sourceId = ''; scenarioId = ''; pins = {}; sourcesKey = ''; focusedRecord = null; restoreId = null; catalogReady = false; parcelPanel = null; viewedParcelId = null; viewWantsMassing = false;
+            sourceOptions = []; sourceId = ''; scenarioId = ''; pins = {}; sourcesKey = ''; focusedRecord = null; restoreId = null; catalogReady = false; parcelPanel = null;
             store.select(null); drawMap(); render(); notifyGeometry(); loadSources();
         });
         root.addEventListener('proposedBuildingsUpdated', render);
@@ -800,7 +763,7 @@
     root.PlanningViews = { getState: () => store?.get() || { ...core.defaults, variation: '' }, getPolicy: policy, getItems: sceneItems,
         getAppearance: appearance,
         getSelected: selected, isReady: () => ready, isInspecting: () => ready && !inspector.hidden,
-        select, selectRecord, inspectBuilding, inspectProposal, showParcelEvidence, focusParcel, color, refresh,
+        select, selectRecord, inspectBuilding, inspectProposal, showParcelEvidence, color, refresh,
         permittedFeatures, pinConfiguration, getScenario: () => scenarioId,
         // Drawn records covering a point, each once, in drawing order.
         itemsAt(latlng) {

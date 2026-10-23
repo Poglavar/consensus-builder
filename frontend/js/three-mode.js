@@ -1092,8 +1092,6 @@
         viewedParcelId = parcelId;
         isolatedProposalId = null;
         updateIsolationButton();
-        // The Buildings and massing panel refers to the isolated parcel.
-        try { window.PlanningViews?.focusParcel?.(parcelId); } catch (_) { }
         applyParcelEmphasis();
         // A parcel selection does not isolate photoreal proposal cuts either: all city surfaces
         // remain present while the selected parcel receives the bright outline/fill.
@@ -1136,7 +1134,6 @@
         // figures to show, so the scene stays as it is and only the panel and camera follow it.
         const siteFeature = idSet.size ? null : proposalSiteFeature(proposal);
         if (!idSet.size && !siteFeature) return;
-        try { window.PlanningViews?.focusParcel?.(null); } catch (_) { }
         if (isolatedParcelId !== null) clearIsolation();
         isolatedProposalId = String(proposalId);
         isolatedParcelId = null;
@@ -1249,13 +1246,11 @@
         return true;
     }
 
-    // The parcel in view: the parcel under the click, whatever stood on it. Its panel and outline,
-    // and the Buildings and massing panel refers to it; `openMassing` lets its cached massing take
-    // the inspector when nothing the click hit already did. Null ends the view.
-    function viewParcel(parcelId, options = {}) {
+    // The parcel under the click owns its figures and outline. Display settings remain global.
+    // Null ends the parcel view.
+    function viewParcel(parcelId) {
         viewedParcelId = parcelId ? String(parcelId) : null;
         applyParcelEmphasis();
-        try { window.PlanningViews?.focusParcel?.(viewedParcelId, { openMassing: options.openMassing !== false }); } catch (_) { }
     }
 
     function clearIsolation() {
@@ -1265,7 +1260,6 @@
         isolatedParcelId = null;
         isolatedProposalId = null;
         updateIsolationButton();
-        try { window.PlanningViews?.focusParcel?.(null); } catch (_) { }
         restoreParcelEmphasis();
         if (!wasProposalIsolated) {
             notifyIsolationChanged();
@@ -1288,8 +1282,7 @@
         clearIsolation();
     }
 
-    // While the stack switches sections it selects and deselects in the Buildings and massing panel
-    // itself; those selection changes must not end the view the way an outside selection does.
+    // Inspector selection follows stack sections; those changes must not end the scene selection.
     let stackDriving = false;
     let stackInspector = null;   // { el, parent, next, selectedId } while the stack hosts the inspector
     function withStackDriving(run) {
@@ -1331,7 +1324,7 @@
                 });
                 body.appendChild(actions);
             } else if (kind === 'parcels') {
-                if (viewedParcelId !== instance.id) viewParcel(instance.id, { openMassing: false });
+                if (viewedParcelId !== instance.id) viewParcel(instance.id);
                 if (updateParcelInfoPanel(instance.id)) body.appendChild(parcelInfoPanelEl);
             } else if (kind === 'built') {
                 withStackDriving(() => window.PlanningViews.inspectBuilding(instance.feature));
@@ -8535,8 +8528,8 @@
 
     window.addEventListener('planninggeometrychange', rebuildPlanningSources3D);
     window.addEventListener('planningselectionchange', () => {
-        // A massing chosen elsewhere (the Buildings and massing sheet) ends the click's view; the
-        // stack's own section switches select there too and are not an outside choice.
+        // An outside inspector selection ends the click's view; the stack's own section switches
+        // select there too and are not an outside choice.
         if (isActive && !stackDriving) endSelectionView();
         rebuildPlanningSources3D();
     });
@@ -8764,7 +8757,7 @@
         if (plan.parcel?.action === 'clear') { endSelectionView(); return; }
         if (plan.parcel?.action === 'isolate') isolateParcel(plan.parcel.id);
         // A parcel's massing is a section of the stack, opened from there, not on every click.
-        else if (plan.parcel) viewParcel(plan.parcel.id, { openMassing: false });
+        else if (plan.parcel) viewParcel(plan.parcel.id);
         // A click on nothing closes the stack, as in 2D (it has no close button of its own).
         if (!plan.parcel && !plan.proposal && !plan.selectMassing && !plan.inspectBuilding) {
             if (window.ThreeClickStack?.isOpen?.()) endSelectionView();

@@ -11,17 +11,17 @@ const idle = { viewedParcelId: null, isolatedParcelId: null, isolatedProposalId:
 describe('planThreeClick', () => {
     it('views the parcel under a massing or building click without stealing the inspector', () => {
         const massing = planThreeClick({ ...idle, picked: { planningId: 'gup:HR-1' }, groundParcelId: 'HR-1' });
-        expect(massing).toMatchObject({ selectMassing: 'gup:HR-1', clearSelection: false, parcel: { id: 'HR-1', action: 'view' }, openMassing: false });
+        expect(massing).toMatchObject({ selectMassing: 'gup:HR-1', clearSelection: false, parcel: { id: 'HR-1', action: 'view' } });
         const feature = { type: 'Feature' };
         const built = planThreeClick({ ...idle, picked: { builtFeature: feature, parcelId: 'HR-1' }, groundParcelId: 'HR-2' });
-        expect(built).toMatchObject({ inspectBuilding: feature, parcel: { id: 'HR-2', action: 'view' }, openMassing: false, clearSelection: false });
+        expect(built).toMatchObject({ inspectBuilding: feature, parcel: { id: 'HR-2', action: 'view' }, clearSelection: false });
         // Off the loaded ground there is no parcel to view.
         expect(planThreeClick({ ...idle, picked: { builtFeature: feature }, groundParcelId: null }).parcel).toBeNull();
     });
 
     it('selects and isolates a proposal, viewing the parcel under the click; a second click clears it', () => {
         const first = planThreeClick({ ...idle, picked: { proposalId: 'p-1', parcelId: 'HR-3' }, groundParcelId: 'HR-3', proposalKnown: true });
-        expect(first).toMatchObject({ clearSelection: true, proposal: { id: 'p-1', action: 'isolate' }, parcel: { id: 'HR-3', action: 'view' }, openMassing: false });
+        expect(first).toMatchObject({ clearSelection: true, proposal: { id: 'p-1', action: 'isolate' }, parcel: { id: 'HR-3', action: 'view' } });
         const again = planThreeClick({ ...idle, isolatedProposalId: 'p-1', viewedParcelId: 'HR-3', picked: { proposalId: 'p-1', parcelId: 'HR-3' }, groundParcelId: 'HR-3', proposalKnown: true });
         expect(again).toMatchObject({ proposal: { id: 'p-1', action: 'clear' }, parcel: null });
         // Through a design the ray can reach the neighbour's slab: the design's own slice is the parcel in view.
@@ -33,7 +33,7 @@ describe('planThreeClick', () => {
 
     it('steps a ground click through view, isolate and clear on the same parcel', () => {
         const first = planThreeClick({ ...idle, picked: { parcelId: 'HR-4' }, groundParcelId: 'HR-4' });
-        expect(first).toMatchObject({ clearSelection: true, parcel: { id: 'HR-4', action: 'view' }, openMassing: true });
+        expect(first).toMatchObject({ clearSelection: true, parcel: { id: 'HR-4', action: 'view' } });
         const second = planThreeClick({ ...idle, viewedParcelId: 'HR-4', picked: { parcelId: 'HR-4' }, groundParcelId: 'HR-4' });
         expect(second.parcel).toEqual({ id: 'HR-4', action: 'isolate' });
         const third = planThreeClick({ ...idle, viewedParcelId: 'HR-4', isolatedParcelId: 'HR-4', picked: { parcelId: 'HR-4' }, groundParcelId: 'HR-4' });
