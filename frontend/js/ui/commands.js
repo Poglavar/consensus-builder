@@ -243,7 +243,7 @@
 
     // ctx.selection = { active, count } of the multi-parcel selection.
     const selectionActive = ctx => !!(ctx && ctx.selection && ctx.selection.active);
-    const selectionNonEmpty = ctx => selectionActive(ctx) && ctx.selection.count > 0;
+    const selectionNonEmpty = ctx => ctx.selection.count > 0;
 
     function stationContextAvailable(type, ctx) {
         if (!ctx || !ctx.global || typeof ctx.global.startTransitStationPlacement !== 'function') return false;
@@ -464,7 +464,7 @@
             run: ctx => ctx.global.multiParcelSelection.clearSelection(),
             labelKey: 'selectedParcels.actions.clear', fallbackLabel: 'Clear selection', icon: 'fas fa-eraser' },
         { id: 'selection.done', group: 'selection', surfaces: ['parcel-selection'], when: selectionActive,
-            run: callGlobal('cancelMultiParcelSelection'),
+            run: ctx => ctx.global.multiParcelSelection.finish(),
             labelKey: 'selectedParcels.actions.done', fallbackLabel: 'Done selecting', icon: 'fas fa-check' },
 
         // ---- Settings sheet ----

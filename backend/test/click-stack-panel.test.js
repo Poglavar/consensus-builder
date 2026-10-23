@@ -113,6 +113,11 @@ describe('click stack panel: a click opens, the same click closes', () => {
         expect(h.section('selection').querySelector('.click-stack__row-title').textContent).toBe('Selected parcels (1)');
         expect(h.section('selection').querySelector('.click-stack__row-detail').textContent).toBe('120 m²');
         expect(h.parcelPanel.parentNode).toBe(h.section('selection').querySelector('.click-stack__body'));
+        multi.isActive = false;
+        change();
+        expect(h.api.isOpen()).toBe(true);
+        expect(h.parcelPanel.parentNode).toBe(h.section('selection').querySelector('.click-stack__body'));
+        multi.isActive = true;
         h.api.collapse();
         multi.selectedParcels.add('p2');
         change();

@@ -296,7 +296,7 @@
         const mapBounds = (global.map && typeof global.map.getBounds === 'function') ? global.map.getBounds() : null;
 
         const selectedId = global.selectedParcelId ? global.selectedParcelId.toString() : null;
-        const hasMultiSelection = typeof global.multiParcelSelection !== 'undefined' && global.multiParcelSelection && global.multiParcelSelection.isActive;
+        const hasMultiSelection = typeof global.multiParcelSelection !== 'undefined' && global.multiParcelSelection && (global.multiParcelSelection.isActive || global.multiParcelSelection.selectedParcels?.size > 0);
 
         // Check if we need ownership highlighting (expensive operation)
         const ownershipHighlight = global.ParcelsOwnershipHighlight;

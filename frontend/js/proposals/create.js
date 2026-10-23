@@ -265,7 +265,7 @@ async function createProposal() {
         console.debug('[createProposal] Collecting parcel IDs');
         let finalParcelIds = [];
 
-        const createdFromMultiSelect = multiParcelSelection.isActive && multiParcelSelection.selectedParcels.size > 1;
+        const createdFromMultiSelect = multiParcelSelection.selectedParcels.size > 1;
 
         if (multiParcelSelection.selectedParcels.size > 0) {
             finalParcelIds = Array.from(multiParcelSelection.selectedParcels);
@@ -815,7 +815,7 @@ async function createProposal() {
 
         if (typeof multiParcelSelection !== 'undefined') {
             if (createdFromMultiSelect && multiParcelSelection.isActive) {
-                multiParcelSelection.toggle({ restoreSingleSelection: false });
+                cancelMultiParcelSelection();
             } else if (multiParcelSelection.selectedParcels) {
                 multiParcelSelection.selectedParcels.clear();
                 multiParcelSelection.lastSelectedParcelId = null;

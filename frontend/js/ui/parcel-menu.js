@@ -81,7 +81,7 @@
     // selects it; the command palette offers the same commands). Null without one.
     function contextFacts() {
         const multi = win.multiParcelSelection;
-        if (multi && multi.isActive) return null;
+        if (multi && (multi.isActive || multi.selectedParcels?.size > 0)) return null;
         const current = win.currentParcel;
         if (!current || current.id === undefined || current.id === null) return null;
         const feature = win.LiveParcelFabric && win.LiveParcelFabric.get ? win.LiveParcelFabric.get(String(current.id)) : null;
@@ -135,7 +135,7 @@
         history: showHistory,
         compare: facts => win.ParcelCompare.open(facts.parcelId),
         // Same seed as Shift+click: the selected parcel starts the multi-selection.
-        selectMore: () => win.multiParcelSelection.toggle({ preserveSelectedParcel: true }),
+        selectMore: () => win.multiParcelSelection.toggle(),
         detectBlock: () => win.animateFloodfillFromSelected(),
         // This parcel as the starting outline of an editable site (js/site-drawing.js).
         useAsSite: facts => win.SiteTool.startFromParcels([facts.parcelId])

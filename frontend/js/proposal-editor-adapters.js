@@ -717,17 +717,8 @@
         const selection = global.multiParcelSelection;
         if (!selection || !selection.isActive || !selection.__seededByEditor) return;
         selection.__seededByEditor = false;
-        try {
-            if (typeof selection.toggle === 'function') {
-                selection.toggle({ restoreSingleSelection: false });
-                return;
-            }
-        } catch (_) { }
-        try {
-            selection.clearSelection?.();
-            selection.isActive = false;
-            selection.updateUI?.();
-        } catch (_) { }
+        selection.isActive = false;
+        selection.clearSelection();
     }
 
     async function prepareProposalDraftParcelSelection(draftOrParcelIds) {

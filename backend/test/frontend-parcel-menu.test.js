@@ -99,6 +99,8 @@ describe('parcel menu actions', () => {
         const multi = render({ multiParcelSelection: { isActive: true, selectedParcels: new Set(['a', 'b']) } });
         expect(multi).toContain('parcel-build-btn--park');
         expect(multi).not.toContain('parcel-build-btn--offer');
+        expect(render({ multiParcelSelection: { isActive: false, selectedParcels: new Set(['a', 'b']) } }))
+            .toContain('parcel-build-btn--park');
     });
 });
 
@@ -204,6 +206,8 @@ describe('parcel menu and parcel selection commands', () => {
             .toEqual(['selection.done']);
         expect(UiCommands.commandsFor('parcel-selection', { ...selectionContext, selection: { active: true, count: 2 } }).map(c => c.id))
             .toEqual(['selection.useAsSite', 'selection.clear', 'selection.done']);
+        expect(UiCommands.commandsFor('parcel-selection', { ...selectionContext, selection: { active: false, count: 2 } }).map(c => c.id))
+            .toEqual(['selection.useAsSite', 'selection.clear']);
         expect(UiCommands.commandsFor('parcel-selection', { ...selectionContext, selection: { active: false, count: 0 } }).map(c => c.id))
             .toEqual([]);
         expect(UiCommands.commandsFor('layers', { ...selectionContext, selection: { active: true, count: 2 } }).map(c => c.id))
@@ -213,12 +217,11 @@ describe('parcel menu and parcel selection commands', () => {
     it('runs selection commands on the existing selection functions', () => {
         const selectedParcels = new Set(['parcel-1']);
         const clearSelection = vi.fn(() => selectedParcels.clear());
-        const cancelMultiParcelSelection = vi.fn();
+        const finish = vi.fn();
         const startFromSelection = vi.fn();
         const global = {
             document: { body: { classList: { contains: () => false } }, getElementById: () => null, querySelectorAll: () => [] },
-            multiParcelSelection: { isActive: true, selectedParcels, clearSelection },
-            cancelMultiParcelSelection,
+            multiParcelSelection: { isActive: true, selectedParcels, clearSelection, finish },
             SiteTool: { isActive: () => false, startFromSelection }
         };
         const context = UiCommands.createBrowserContext(global, { mode: '2d' });
@@ -227,7 +230,7 @@ describe('parcel menu and parcel selection commands', () => {
         UiCommands.runCommand('selection.clear', context);
         UiCommands.runCommand('selection.done', context);
         expect(clearSelection).toHaveBeenCalledOnce();
-        expect(cancelMultiParcelSelection).toHaveBeenCalledOnce();
+        expect(finish).toHaveBeenCalledOnce();
         expect(startFromSelection).toHaveBeenCalledOnce();
 
         expect(UiCommands.runCommand('selection.clear', context)).toBe(false);
@@ -305,7 +308,7 @@ describe('the parcel click chain ends in the click stack', () => {
         expect(h.showParcelInfoPanel).not.toHaveBeenCalled();
         expect(h.context.selectedParcelId).toBeUndefined();
         expect(h.layer.setStyle).not.toHaveBeenCalled();
-        expect(h.multi.clearSelection).toHaveBeenCalledOnce();
+        expect(h.multi.clearSelection).not.toHaveBeenCalled();
         // An applied proposal on the parcel is the stack's Designs section now, not a second selection.
         expect(h.context.selectAndHighlightProposal).not.toHaveBeenCalled();
     });
@@ -321,7 +324,7 @@ describe('the parcel click chain ends in the click stack', () => {
     it('enters multi-select on Shift+click and delegates the added parcel to the selection section', () => {
         const h = loadClickChain();
         h.click(true);
-        expect(h.multi.toggle).toHaveBeenCalledWith({ preserveSelectedParcel: true });
+        expect(h.multi.toggle).toHaveBeenCalledWith();
         expect(h.multi.toggleParcel).not.toHaveBeenCalled();
         expect(h.handleClick).toHaveBeenCalledWith({ lat: 45.8, lng: 15.97 });
     });

@@ -1233,73 +1233,29 @@ const multiParcelSelection = {
     selectedParcels: new Set(),
     lastSelectedParcelId: null,
 
-    // Toggle multi-selection mode
-    toggle(options = {}) {
-        const preserveSelectedParcel = !!options.preserveSelectedParcel;
-        const restoreSingleSelection = options.restoreSingleSelection !== false;
-        const wasActive = this.isActive;
-        this.isActive = !this.isActive;
-
-        if (wasActive && !this.isActive) {
-            const fallbackParcelId = this.lastSelectedParcelId ||
-                (this.selectedParcels.size > 0 ? Array.from(this.selectedParcels).slice(-1)[0] : null) ||
-                (typeof selectedParcelId !== 'undefined' && selectedParcelId ? selectedParcelId.toString() : null);
-
-            this.clearSelection();
-            if (restoreSingleSelection) {
-
-                if (fallbackParcelId && typeof selectParcel === 'function') {
-                    try {
-                        selectParcel(fallbackParcelId, true);
-                    } catch (error) {
-                        console.warn('multiParcelSelection.toggle: failed to reselect fallback parcel', error);
-                        this.hideParcelInfo();
-                    }
-                } else {
-                    this.hideParcelInfo();
-                }
-            }
-        } else if (!wasActive && this.isActive) {
-            const hasCurrentParcel = typeof currentParcel !== 'undefined' && currentParcel && currentParcel.id;
-            const fallbackParcelId = !hasCurrentParcel && typeof selectedParcelId !== 'undefined' && selectedParcelId
-                ? selectedParcelId.toString()
-                : null;
-            const preservedParcelInfo = (preserveSelectedParcel && (hasCurrentParcel || fallbackParcelId))
-                ? {
-                    id: hasCurrentParcel ? currentParcel.id.toString() : fallbackParcelId,
-                    layer: this.findParcelById(hasCurrentParcel ? currentParcel.id : fallbackParcelId)
-                }
-                : null;
-
-            // Always seed multi-select with the currently viewed parcel (or the last single selection)
-            let seedInfo = preservedParcelInfo;
-            if (!seedInfo) {
-                const seedId = hasCurrentParcel
-                    ? currentParcel.id.toString()
-                    : (fallbackParcelId || null);
-                if (seedId) {
-                    const seedLayer = this.findParcelById(seedId);
-                    if (seedLayer) {
-                        seedInfo = { id: seedId, layer: seedLayer };
-                    }
-                }
-            }
-
-            this.selectedParcels.clear();
-
-            if (seedInfo && seedInfo.id) {
-                this.clearSingleParcelSelection({ preservePanel: true });
-                this.selectedParcels.add(seedInfo.id);
-                this.lastSelectedParcelId = seedInfo.id;
-                const targetLayer = seedInfo.layer || this.findParcelById(seedInfo.id);
-                if (targetLayer) {
-                    this.addParcelHighlight(targetLayer);
-                }
-            } else {
-                this.clearSingleParcelSelection();
+    // Manual controls map picking; the selected land survives leaving the mode.
+    toggle() {
+        if (this.isActive) {
+            this.finish();
+            return;
+        }
+        this.isActive = true;
+        if (this.selectedParcels.size === 0) {
+            const seedId = (typeof currentParcel !== 'undefined' && currentParcel?.id)
+                || (typeof selectedParcelId !== 'undefined' && selectedParcelId);
+            const layer = seedId && this.findParcelById(seedId);
+            this.clearSingleParcelSelection({ preservePanel: true });
+            if (layer) {
+                this.selectedParcels.add(String(seedId));
+                this.lastSelectedParcelId = String(seedId);
+                this.addParcelHighlight(layer);
             }
         }
+        this.updateUI();
+    },
 
+    finish() {
+        this.isActive = false;
         this.updateUI();
     },
 
@@ -1494,7 +1450,7 @@ const multiParcelSelection = {
             }));
         } catch (_) { }
 
-        if (this.isActive) {
+        if (this.isActive || this.selectedParcels.size > 0) {
             const panel = document.getElementById('parcel-info-panel');
             if (panel && panel.classList.contains('visible')) {
                 setParcelInfoPanelTitle(
@@ -1733,7 +1689,7 @@ const multiParcelSelection = {
 
     // Reapply highlights to all currently selected parcels
     reapplyMultiParcelHighlights() {
-        if (!this.isActive || !this.selectedParcels || this.selectedParcels.size === 0) return;
+        if (!this.selectedParcels || this.selectedParcels.size === 0) return;
         if (typeof window.ParcelPresenter?.restoreSelectionStyles === 'function') {
             window.ParcelPresenter.restoreSelectionStyles();
             return;
@@ -1774,7 +1730,7 @@ const multiParcelSelection = {
 
         // Enable multi-selection mode if not already active
         if (!this.isActive) {
-            this.toggle({ preserveSelectedParcel: false });
+            this.toggle();
         }
 
         // Clear existing selection

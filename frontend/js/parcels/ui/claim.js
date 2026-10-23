@@ -186,7 +186,7 @@
         const claimButton = global.document ? global.document.getElementById('claimButton') : null;
 
         const multi = global.multiParcelSelection;
-        const hasMultiMode = Boolean(multi && multi.isActive);
+        const hasMultiMode = Boolean(multi && (multi.isActive || multi.selectedParcels?.size > 0));
         const multiCount = hasMultiMode && multi && multi.selectedParcels ? multi.selectedParcels.size : 0;
         const walletConnected = isWalletConnected();
 
@@ -452,7 +452,7 @@
         const indicator = getParcelMintStatusElement();
         if (!indicator) return null;
 
-        const isMultiActive = global.multiParcelSelection && global.multiParcelSelection.isActive;
+        const isMultiActive = global.multiParcelSelection && (global.multiParcelSelection.isActive || global.multiParcelSelection.selectedParcels?.size > 0);
         if (isMultiActive) {
             setParcelMintStatusIndicator(
                 tParcel('panel.parcel.nft.multiReady', {}, 'Ready to mint selected parcels. Mint will check on press.'),
@@ -2025,7 +2025,7 @@
     async function openParcelMintModal(options = {}) {
         try {
             const providedParcels = Array.isArray(options.parcels) ? options.parcels.filter(Boolean) : null;
-            const isMultiActive = !providedParcels && global.multiParcelSelection && global.multiParcelSelection.isActive;
+            const isMultiActive = !providedParcels && global.multiParcelSelection && (global.multiParcelSelection.isActive || global.multiParcelSelection.selectedParcels?.size > 0);
             const parcels = providedParcels && providedParcels.length
                 ? providedParcels
                 : (isMultiActive ? collectMultiSelectedParcelsForMint() : collectCurrentParcelForMint());

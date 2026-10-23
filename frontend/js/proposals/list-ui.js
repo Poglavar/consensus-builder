@@ -1281,25 +1281,15 @@ function handleMultiSelectChange(checked, source) {
     }
 
     if (!!multiParcelSelection.isActive !== desiredState) {
-        if (desiredState) {
-            const preserveSelected = source === 'tools' || source === 'info';
-            multiParcelSelection.toggle({ preserveSelectedParcel: preserveSelected });
-        } else {
-            multiParcelSelection.toggle();
-        }
+        multiParcelSelection.toggle();
     }
 }
 
 function cancelMultiParcelSelection() {
-    // Clear selection first
+    multiParcelSelection.isActive = false;
     multiParcelSelection.clearSelection();
 
-    // Exit multi-select mode if it's active
-    if (multiParcelSelection.isActive) {
-        multiParcelSelection.toggle({ restoreSingleSelection: false });
-    }
-
-    // Update checkboxes to reflect that multi-select is off
+    // Manual reflects the map mode, independently of the selected land.
     syncMultiSelectControls(false);
 
     const t = getProposalI18nHelper();

@@ -1,10 +1,57 @@
 // The selection section's count and total area (frontend/js/click-stack/click-stack-model.js summarizeSelection):
 // every selected parcel counts, only measurable ones add area, and an unknown total is null, not 0.
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const { summarizeSelection } = require('../../frontend/js/click-stack/click-stack-model.js');
+
+// Real controller, with UI effects stubbed so selection lifetime is checked without a map.
+function selectionController() {
+    const source = readFileSync(new URL('../../frontend/js/proposals/data.js', import.meta.url), 'utf8');
+    const context = { currentParcel: null, selectedParcelId: null };
+    vm.runInNewContext(source.slice(source.indexOf('const multiParcelSelection = {'),
+        source.indexOf('const PROPOSAL_COLORS = [')) + '\nthis.selection = multiParcelSelection;', context);
+    const multi = context.selection;
+    multi.updateUI = vi.fn();
+    multi.findParcelById = vi.fn();
+    multi.clearSingleParcelSelection = vi.fn();
+    multi.removeParcelHighlight = vi.fn();
+    return multi;
+}
+
+describe('Manual selection lifetime', () => {
+    it('finishes and resumes without dropping selected land or its highlights', () => {
+        const multi = selectionController();
+        multi.isActive = true;
+        multi.selectedParcels.add('a');
+        multi.selectedParcels.add('b');
+        multi.lastSelectedParcelId = 'b';
+        multi.toggle();
+        expect(multi.isActive).toBe(false);
+        expect([...multi.selectedParcels]).toEqual(['a', 'b']);
+        expect(multi.lastSelectedParcelId).toBe('b');
+        expect(multi.removeParcelHighlight).not.toHaveBeenCalled();
+        multi.toggle();
+        expect(multi.isActive).toBe(true);
+        expect([...multi.selectedParcels]).toEqual(['a', 'b']);
+        expect(multi.clearSingleParcelSelection).not.toHaveBeenCalled();
+        expect(multi.updateUI).toHaveBeenCalledTimes(2);
+    });
+    it('Clear removes selected land while keeping Manual active', () => {
+        const multi = selectionController();
+        multi.isActive = true;
+        multi.selectedParcels.add('a');
+        const layer = {};
+        multi.findParcelById.mockReturnValue(layer);
+        multi.clearSelection();
+        expect(multi.isActive).toBe(true);
+        expect(multi.selectedParcels.size).toBe(0);
+        expect(multi.removeParcelHighlight).toHaveBeenCalledWith(layer);
+    });
+});
 
 const features = {
     a: { geometry: { type: 'Polygon' }, area: 400 },

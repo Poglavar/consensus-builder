@@ -116,7 +116,7 @@
             const body = doc.body.classList;
             if (body.contains('three-mode-active') || body.contains('map-sheet-open') || body.contains('on-map-editing')) {
                 if (isOpen()) close({ keepSelection: true });
-            } else if (global.multiParcelSelection?.isActive && !isOpen()) syncSelection();
+            } else if ((global.multiParcelSelection?.isActive || global.multiParcelSelection?.selectedParcels?.size) && !isOpen()) syncSelection();
         }).observe(doc.body, { attributes: true, attributeFilter: ['class'] });
     }
 
@@ -132,7 +132,7 @@
         el.addEventListener('keydown', event => {
             if (event.key !== 'Escape') return;
             event.preventDefault();
-            if (state.stack?.topRef === 'selection:current') global.cancelMultiParcelSelection();
+            if (state.stack?.topRef === 'selection:current') dismissSelection();
             else close();
         });
         (doc.getElementById('map-container') || doc.body).appendChild(el);
@@ -480,11 +480,17 @@
     }
 
     // Multi-selection has no single click point. Its section replaces the point's parcel view
-    // for the duration of the mode, and remains reachable even with no parcels selected.
+    // while picking or retaining selected land. The active mode also has an empty state.
+    function dismissSelection() {
+        const multi = global.multiParcelSelection;
+        if (multi?.isActive) multi.finish();
+        else global.cancelMultiParcelSelection();
+    }
+
     function syncSelection() {
         const multi = global.multiParcelSelection;
         const wasSelection = state.stack?.topRef === 'selection:current';
-        if (!multi?.isActive) {
+        if (!multi?.isActive && !multi?.selectedParcels?.size) {
             if (wasSelection) close({ keepSelection: true });
             return;
         }
@@ -688,6 +694,8 @@
             if (layer) global.multiParcelSelection.toggleParcel(layer);
             return true;
         }
+        // An ordinary map click replaces the retained selection with the new point context.
+        if (global.multiParcelSelection?.selectedParcels?.size) global.multiParcelSelection.clearSelection();
         const hits = global.ClickStackHits.hitsAt(latlng, { onPublished: () => refreshSpot(latlng) });
         const stack = model.buildClickStack(hits, { remembered: remembered() });
         const action = model.clickAction(isOpen() ? state.stack?.topRef || null : null, stack);
@@ -704,7 +712,7 @@
         if (event.key !== 'Escape' || event.defaultPrevented || !isOpen()) return;
         if (global.isEditableTarget?.(event.target) || global.isAnyModalOpen?.()) return;
         event.preventDefault();
-        if (state.stack?.topRef === 'selection:current') global.cancelMultiParcelSelection();
+        if (state.stack?.topRef === 'selection:current') dismissSelection();
         else close();
     });
     doc.addEventListener('multi-parcel-selection-change', syncSelection);

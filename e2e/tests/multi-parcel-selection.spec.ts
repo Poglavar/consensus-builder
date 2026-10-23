@@ -34,8 +34,24 @@ test.describe('Multi-parcel selection @core', () => {
     await expect.poll(selected).toEqual(['HR-335754-1235']);
     await expect(section.locator('.click-stack__row-title')).toHaveText('Selected parcels (1)');
     await runSelectionCommand(page, 'selection.done');
-    await expect(section).toHaveCount(0);
-    expect(await page.evaluate(() => (window as any).multiParcelSelection.isActive)).toBe(false);
+    await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.isActive)).toBe(false);
+    await expect.poll(selected).toEqual(['HR-335754-1235']);
+    await expect(section).toBeVisible();
+    await expect(section.locator('.click-stack__row-title')).toHaveText('Selected parcels (1)');
+    await expect(section.locator('.click-stack__body #parcel-info-panel')).toBeVisible();
+    const highlightStyles = await page.evaluate(id => {
+      const layer = (window as any).ParcelPresenter.getLayer(id);
+      return { color: layer.options.color, fillColor: layer.options.fillColor };
+    }, 'HR-335754-1235');
+    expect(highlightStyles).toMatchObject({ color: '#f57c00', fillColor: '#ff9800' });
+
+    // An ordinary parcel click after Done replaces the retained selection context.
+    await clickMapPoint(page, 15.9822, 45.80025);
+    await expect.poll(selected).toEqual([]);
+    await expect.poll(() => page.evaluate(() => (window as any).selectedParcelId)).toBe(PARCEL_ID);
+    await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.isActive)).toBe(false);
+    await expect(selectionSection(page)).toHaveCount(0);
+    await expect(page.locator('#parcel-info-panel')).toBeVisible();
   });
   test('Design tab opens the build palette for the selection', async ({ mockApi: page }) => {
     await openCity(page);

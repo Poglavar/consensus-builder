@@ -355,7 +355,7 @@
             const multi = (typeof window !== 'undefined' && window.multiParcelSelection)
                 ? window.multiParcelSelection
                 : (typeof multiParcelSelection !== 'undefined' ? multiParcelSelection : null);
-            if (multi && multi.isActive && multi.selectedParcels && multi.selectedParcels.size) {
+            if (multi && multi.selectedParcels && multi.selectedParcels.size) {
                 multi.selectedParcels.forEach(id => {
                     if (id !== undefined && id !== null) {
                         ids.add(id.toString());

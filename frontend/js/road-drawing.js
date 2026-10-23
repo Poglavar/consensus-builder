@@ -2050,19 +2050,8 @@ function clearMapSelectionsForDrawing() {
 
 // Ensure multi-parcel selection is turned off when starting road/track drawing
 function disableMultiSelectForDrawing() {
-    if (typeof multiParcelSelection === 'undefined' || !multiParcelSelection || !multiParcelSelection.isActive) {
-        return;
-    }
-    try {
-        if (typeof multiParcelSelection.toggle === 'function') {
-            multiParcelSelection.toggle({ preserveSelectedParcel: false, restoreSingleSelection: false });
-        } else {
-            if (multiParcelSelection.selectedParcels?.clear) multiParcelSelection.selectedParcels.clear();
-            multiParcelSelection.isActive = false;
-            if (typeof multiParcelSelection.updateUI === 'function') multiParcelSelection.updateUI();
-            if (typeof syncMultiSelectControls === 'function') syncMultiSelectControls(false);
-        }
-    } catch (_) { /* ignore */ }
+    if (typeof multiParcelSelection === 'undefined' || !multiParcelSelection?.isActive) return;
+    multiParcelSelection.finish();
 }
 
 // One panel serves both road and track drawing, so switching mode swaps the i18n KEY on each label —

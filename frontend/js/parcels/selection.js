@@ -119,7 +119,6 @@
         }
         // Do not highlight over multi-selected parcels
         const isMultiSelected = typeof global.multiParcelSelection !== 'undefined' &&
-            global.multiParcelSelection.isActive &&
             global.multiParcelSelection.selectedParcels.has(parcelId);
         if (isMultiSelected) {
             return;
@@ -222,7 +221,6 @@
         // Otherwise, reset to its original style (road or normal)
         // But check if this parcel is part of multi-selection first
         const isMultiSelected = typeof global.multiParcelSelection !== 'undefined' &&
-            global.multiParcelSelection.isActive &&
             global.multiParcelSelection.selectedParcels.has(parcelId);
 
         if (isMultiSelected) {
@@ -391,7 +389,6 @@
                         if (layerParcelId !== parcelId.toString()) {
                             // Check if this parcel is part of multi-selection before resetting style
                             const isMultiSelected = typeof global.multiParcelSelection !== 'undefined' &&
-                                global.multiParcelSelection.isActive &&
                                 global.multiParcelSelection.selectedParcels.has(layerParcelId);
                             if (!isMultiSelected) {
                                 // Use getParcelStyle to preserve ownership highlighting

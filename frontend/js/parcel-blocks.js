@@ -2013,7 +2013,7 @@ function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
 
         if (!multiParcelSelection.isActive) {
             if (typeof multiParcelSelection.toggle === 'function') {
-                multiParcelSelection.toggle({ preserveSelectedParcel: true, restoreSingleSelection: false });
+                multiParcelSelection.toggle();
             } else if (typeof multiParcelSelection.activate === 'function') {
                 multiParcelSelection.activate();
             } else {
@@ -2226,7 +2226,7 @@ function animateFloodfillFromSelected(options = {}) {
     const hasMultiSelect = typeof multiParcelSelection !== 'undefined' && !!multiParcelSelection;
     if (hasMultiSelect && !multiParcelSelection.isActive) {
         if (typeof multiParcelSelection.toggle === 'function') {
-            multiParcelSelection.toggle({ preserveSelectedParcel: true, restoreSingleSelection: false });
+            multiParcelSelection.toggle();
         } else if (typeof multiParcelSelection.activate === 'function') {
             multiParcelSelection.activate();
         } else {

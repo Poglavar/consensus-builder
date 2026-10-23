@@ -47,7 +47,7 @@
         const ids = parcelsInBox(candidates, box, (feature, polygon) => root.turf.booleanIntersects(feature, polygon));
         const multi = root.multiParcelSelection;
         // Like Shift+click: the box enters multi-select on the fly, keeping the viewed parcel as the seed.
-        if (!multi.isActive) multi.toggle({ preserveSelectedParcel: true });
+        if (!multi.isActive) multi.toggle();
         const added = multi.addLayers(ids.map(id => layers.get(id)));
         console.log(`[${new Date().toISOString()}] [BoxSelect] ${ids.length} parcel(s) in the box, ${added} added; ${multi.selectedParcels.size} selected`);
         return added;

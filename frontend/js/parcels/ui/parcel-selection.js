@@ -99,7 +99,7 @@
         if (shiftHeld && typeof global.multiParcelSelection !== 'undefined'
             && !global.multiParcelSelection.isActive
             && typeof global.multiParcelSelection.toggle === 'function') {
-            global.multiParcelSelection.toggle({ preserveSelectedParcel: true });
+            global.multiParcelSelection.toggle();
             if (global.multiParcelSelection.selectedParcels
                 && global.multiParcelSelection.selectedParcels.has(parcelId)) {
                 // Shift+click on the already-selected parcel: it is the seed — keep it selected
@@ -113,10 +113,6 @@
             L.DomEvent.stopPropagation(e);
             if (e?.latlng) global.ClickStack.handleClick(e.latlng);
             return;
-        }
-
-        if (typeof global.multiParcelSelection !== 'undefined' && !global.multiParcelSelection.isActive) {
-            global.multiParcelSelection.clearSelection();
         }
 
         // An ordinary click: the click stack shows everything under the point (click-stack.md).
@@ -164,7 +160,7 @@
         const previousSelectedId = global.selectedParcelId ? global.selectedParcelId.toString() : null;
         const previousLayer = global.currentParcel && global.currentParcel.layer ? global.currentParcel.layer : null;
         if (previousLayer && previousSelectedId && previousSelectedId !== parcelId.toString()) {
-            const keepHighlighted = typeof global.multiParcelSelection !== 'undefined' && global.multiParcelSelection.isActive &&
+            const keepHighlighted = typeof global.multiParcelSelection !== 'undefined' &&
                 global.multiParcelSelection.selectedParcels && global.multiParcelSelection.selectedParcels.has(previousSelectedId);
             if (!keepHighlighted) {
                 try {
@@ -234,8 +230,7 @@
         return true;
     }
 
-    // Escape exits multi-select mode (same as turning Manual off: the last parcel is
-    // restored as a single selection). Heavily guarded because many tools bind Escape for their
+    // Escape stops Manual picking and keeps the selected land. Guard tools that bind their
     // own cancel action — never hijack it while typing, inside a modal, or while the road/measure
     // tools (which drive multi-select programmatically) are active.
     function handleMultiSelectEscape(event) {
@@ -244,8 +239,9 @@
         if (typeof global.isEditableTarget === 'function' && global.isEditableTarget(event.target)) return;
         if (typeof global.isAnyModalOpen === 'function' && global.isAnyModalOpen()) return;
         if (global.roadDrawingMode || global.measureMode) return;
-        if (typeof global.multiParcelSelection.toggle !== 'function') return;
-        global.multiParcelSelection.toggle();
+        if (typeof global.multiParcelSelection.finish !== 'function') return;
+        event.preventDefault();
+        global.multiParcelSelection.finish();
     }
     global.document.addEventListener('keydown', handleMultiSelectEscape);
 
