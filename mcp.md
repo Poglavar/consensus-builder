@@ -2,16 +2,17 @@
 
 # MCP: Urban Game Theory for agents
 
-**Status (2026-10-23): local functionality, public-source contract checks and the first paid pilot pass. The authorized remaining 20 paid cases are running under an additional US$3 cap; production activation and live wallet acceptance remain pending.** Branch and worktree `colosseum-worlds-fair`.
+**Status (2026-10-23): local functionality, public-source contract checks and the first paid pilot pass. Production transport is active and checked with a stock MCP client. The authorized remaining 20 paid cases are running under an additional US$3 cap; complete production tool-contract and live wallet acceptance remain pending.** Branch and worktree `colosseum-worlds-fair`.
 
 ## Implementation checkpoint (2026-10-23)
 
 - P0: the design/agreement merge and deployed devnet program predate this implementation.
 - P1: the stateless loopback HTTP service registers 25 tools; the local stdio package registers
   44. All 25 hosted tools, 11 resources and four prompts passed against current public API data.
-  Both publication tools were checked with `confirm:false`. Production still serves SPA HTML on
-  GET `/mcp` and nginx 405 on POST initialization: PM2 has no `ugt-mcp` process and the live vhost
-  has no MCP route. Reviewed nginx/PM2 configuration is present locally; deployment is not authorized.
+  Both publication tools were checked with `confirm:false`. Production now runs `ugt-mcp` and
+  routes `/mcp` to it. A stock public client connected, listed the exact 25-tool catalogue and read
+  an explanation and design schema. This transport smoke check does not certify every production
+  tool or authorize signing, funding or permanent publication.
 - P2: unsigned publication requires `confirm:true` and verifies index readback. Mint, fund,
   acceptance, execute, cancel, expire and bet links preselect without auto-signing. Bet hand-over
   retains amount/side. The app removed pledge/donation wallet forms; those approval links refuse
@@ -443,3 +444,53 @@ direct fragments. The reviewed nginx config includes the preview route; producti
   GET returned 302/no-store and decoded to the exact canonical design CID.
 
 - Headless unit tests: configured preview-host routing (1 file, 9 tests): passed after review identified that an explicitly configured preview hostname also needs admission by the host/origin guard.
+
+
+## Production activation verification (2026-10-23)
+
+The user authorized committing the remaining work and deploying the colosseum branch. The
+initial two uncommitted notes were included, followed by the completed GLB retry fix, parcel
+Design recovery and private preview-link work. The worktree CARTO key is in its ignored `.env`;
+no key was committed or printed.
+
+Production checks exposed two deployment defects: port 3096 already belongs to the lifecycle
+lens, and PM2's module loader does not satisfy the launcher's direct-CLI entry guard. MCP now
+uses free loopback port 3097 and PM2 executes Node directly with the launcher as its argument.
+A real subprocess test exercises that exact command. Existing lens and custom nginx routing
+remain intact. The production API uses the ecosystem configuration and public release identity.
+
+Every automated test run in this rollout was targeted and headless; none was stopped and no full
+suite ran. The final passing affected scope contains 111 distinct headless unit cases in ten
+files and two headless Playwright cases, accumulated across the scoped runs below.
+
+| Run | Type and scope | Result |
+| --- | --- | --- |
+| Release/build checks | Headless unit, `release-artifacts.test.js` and `frontend-static-build.test.js` | 14 passed |
+| Completed upload retry | Headless unit, `building-upload-callback.test.js` | 7 passed |
+| Upload retry in browser | Headless Playwright, one selected `building-upload.spec.ts` case | 1 passed |
+| Live-port regression baseline | Headless unit, `mcp-deployment-config.test.js` | 1 failed, 1 passed; reproduced the lens/MCP port collision |
+| Corrected port and transport | Headless unit, deployment config and `mcp-http.test.js` | 10 passed |
+| Actual CLI launch command | Headless unit, the same two files from the clean integration checkout | 11 passed, including a real isolated subprocess |
+| Newly completed parcel/preview work | Headless unit, six explicit files | 74 passed |
+| Current menu regression file | Headless Node unit, `menu-audit-regressions.node.test.js` | 16 passed |
+| Current-parcel recovery action | Headless Playwright, one selected `context-actions.spec.ts` case | 1 passed |
+
+The six-file run covers `frontend-parcel-menu`, `parcel-build-block-suggestion`, `mcp-http`,
+`mcp-preview-links`, `mcp-eval` and `mcp-deployment-config`, all under `backend/test/` with
+`.test.js` suffixes. The control inventory matches 858 source sites after adding the recovery
+button. Whitespace and private-identity checks were run before each rollout commit.
+
+The API's standard production parcel smoke checks passed on the rollout revisions, with 223
+features returned per request. The public frontend manifest and three selected asset bodies
+were checked against the exact release Git tree, rather than the concurrently edited checkout.
+A first comparison against that moving checkout was discarded. Public API health, vocabulary
+JSON-LD content type, MCP initialization/catalogue, explanation/schema reads and server-card
+version 0.3.0 were checked. One initial client import probe used an invalid package path and
+never connected; importing through the package export completed normally.
+
+Frontend attempts missing the ignored CARTO configuration stopped before publication; the
+configured retry completed, including Cloudflare purge. The first public Chrome navigation had
+cold-load network failures fetching its dictionaries. Reload completed with translated controls;
+the Freeform editor opened with both upload buttons present. That dedicated headed background
+Chrome was closed afterward. No design was saved, model uploaded, agreement published, wallet
+signed, paid provider invoked or autonomous schedule activated by these release checks.

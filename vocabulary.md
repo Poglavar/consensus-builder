@@ -621,6 +621,12 @@ Overpass fallback if the backend request fails. Staged OSM building lookup follo
 geographic bounds across dataset labels and deduplicates OSM identities; a city label does not
 prove geographic coverage.
 
+Design tools use the explicitly inspected parcel, or the current selection when no specific
+parcel is being inspected. A stale single-parcel context does not override selected current ground.
+A missing exact runtime identity is not proof of a read-only or replaced source. Known replacement
+pieces offer an explicit **Select current parcels** action; missing map data offers **Reload parcels**.
+Cadastral source records remain immutable in every case.
+
 Manual multiple-parcel selection is a map mode. Its Selected parcels section replaces the
 point-specific parcel view in the click panel and stays available with zero selected parcels.
 The section owns the selection count, measured total area, Clear and Done actions; the bottom
@@ -1543,7 +1549,10 @@ stated scope, not citywide completeness, cadastral title, ownership or survey ac
 
 A **draft artifact** is a canonical `design/v1` or `agreement/v1` object and its recomputed CID,
 returned without a pin or index write. Having a CID does not make it published. A compressed
-fragment preview carries the artifact to the app, where it is imported as a local draft without
+fragment preview carries the artifact to the app. Hosted HTTP returns a short unguessable bearer
+link to that fragment, retained only in bounded process memory (256 entries, at most 24 hours);
+expiry, eviction or restart requires regeneration. Knowing this link grants access to its draft.
+No pin or index record is created. In the app, the artifact is imported as a local draft without
 `published`. New draft designs and typed modifications carry a fresh authoring time; app import
 retains the canonical time. Agreement records retain author, sponsor and source-qualified input
 parcel identity, so opening a private preview does not silently change its CID. Public prose and

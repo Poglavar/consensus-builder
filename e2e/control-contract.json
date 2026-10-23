@@ -5179,6 +5179,11 @@
       "controlType": "button"
     },
     {
+      "id": "control-d1208daa7a9022-1",
+      "source": "js/parcels/ui/proposal-actions.js",
+      "markup": "document.createElement('button')"
+    },
+    {
       "id": "control-4b5316733a58cb-1",
       "source": "js/photoreal-mode.js",
       "markup": "seatDebugEl.setAttribute('role', 'button')",
