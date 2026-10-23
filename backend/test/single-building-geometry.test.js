@@ -19,7 +19,8 @@ const {
     importedHeight,
     moveGeometry,
     moveGeometryCenter,
-    rotateGeometry
+    rotateGeometry,
+    placeModelFootprint
 } = require('../../frontend/js/single-building-geometry.js');
 
 const ZAGREB = { lat: 45.81, lng: 15.98 };
@@ -43,6 +44,44 @@ describe('buildRectangleRing', () => {
         expect(ring[0]).toEqual(ring[ring.length - 1]);
         expect(buildRectangleRing(ZAGREB, { widthM: NaN, lengthM: 10 })).toBeNull();
         expect(buildRectangleRing(null, { widthM: 10, lengthM: 10 })).toBeNull();
+    });
+});
+
+describe('placeModelFootprint', () => {
+    const MODEL_CENTER = { lat: 45, lng: 10 };
+    const lShape = {
+        type: 'Polygon',
+        coordinates: [
+            [[-5,-5],[5,-5],[5,0],[0,0],[0,5],[-5,5],[-5,-5]],
+            [[-4,-4],[-4,-2],[-2,-2],[-2,-4],[-4,-4]]
+        ]
+    };
+
+    it('preserves a concave outline and hole at native metric scale', () => {
+        const placed = placeModelFootprint(lShape, MODEL_CENTER);
+        expect(placed.type).toBe('Feature');
+        expect(placed.geometry.type).toBe('Polygon');
+        expect(placed.geometry.coordinates.map(ring => ring.length)).toEqual([7, 5]);
+        expect(placed.geometry.coordinates[0][3]).not.toEqual(placed.geometry.coordinates[0][1]);
+        sides(placed.geometry.coordinates[1]).slice(0, 4).forEach(length => expect(length).toBeCloseTo(2, 3));
+    });
+
+    it('places the origin at the requested centre and rotates counterclockwise in metres', () => {
+        const footprint = { type: 'Polygon', coordinates: [[[-2,-1],[2,-1],[2,1],[-2,1],[-2,-1]]] };
+        const placed = placeModelFootprint(footprint, MODEL_CENTER, 90);
+        const ring = placed.geometry.coordinates[0];
+        // (-2,-1) rotated +90° is (1,-2): east and south from the placement centre.
+        expect(inverse([MODEL_CENTER.lng, MODEL_CENTER.lat], ring[0])).toBeCloseTo(Math.sqrt(5), 0);
+        expect(ring[0][0]).toBeGreaterThan(MODEL_CENTER.lng);
+        expect(ring[0][1]).toBeLessThan(MODEL_CENTER.lat);
+        sides(ring).forEach((length, index) => expect(length).toBeCloseTo([4, 2, 4, 2][index], 3));
+    });
+
+    it('rejects missing, non-Polygon, and non-finite outlines', () => {
+        expect(placeModelFootprint(null, MODEL_CENTER)).toBeNull();
+        expect(placeModelFootprint(lShape, MODEL_CENTER, null)).toBeNull();
+        expect(placeModelFootprint({ type: 'MultiPolygon', coordinates: [] }, MODEL_CENTER)).toBeNull();
+        expect(placeModelFootprint({ type: 'Polygon', coordinates: [[[0,0],[1,0],[NaN,1],[0,0]]] }, MODEL_CENTER)).toBeNull();
     });
 });
 

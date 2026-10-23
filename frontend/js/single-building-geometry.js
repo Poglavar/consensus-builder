@@ -321,6 +321,26 @@
         return ensureClosedRing(ring);
     }
 
+    // Place a model's local metre-space Polygon at a geographic centre. Model coordinates use
+    // east/north axes; positive rotations follow the editor's counterclockwise convention.
+    function placeModelFootprint(footprint, center, rotationDeg = 0) {
+        if (footprint?.type !== 'Polygon' || !Array.isArray(footprint.coordinates)
+            || footprint.coordinates.length === 0 || !center
+            || !Number.isFinite(center.lat) || !Number.isFinite(center.lng)
+            || !Number.isFinite(rotationDeg)) return null;
+        const rings = footprint.coordinates;
+        if (rings.some(ring => !Array.isArray(ring) || ring.length < 4
+            || ring.some(point => !Array.isArray(point) || point.length < 2
+                || !Number.isFinite(point[0]) || !Number.isFinite(point[1])))) return null;
+        const frame = pointFrame(center);
+        const angle = rotationDeg * Math.PI / 180;
+        const cos = Math.cos(angle);
+        const sin = Math.sin(angle);
+        const coordinates = rings.map(ring => ensureClosedRing(ring.map(([x, y]) =>
+            frame.toLngLat([x * cos - y * sin, x * sin + y * cos]))));
+        return { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates } };
+    }
+
     function siteClipApi() {
         if (global && global.__siteClip) return global.__siteClip;
         try { return typeof require === 'function' ? require('./proposals/site-clip.js') : null; } catch (_) { return null; }
@@ -341,6 +361,7 @@
     const api = {
         GROUND_AREA_EPSILON_M2,
         buildRectangleRing,
+        placeModelFootprint,
         clipFootprintToBoundary,
         ensureClosedRing,
         footprintWithinBoundary,

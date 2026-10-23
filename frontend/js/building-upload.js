@@ -23,7 +23,12 @@
         animate: null
     };
 
-    // Dimensions (meters) derived from the loaded model's bounding box; null until a valid load.
+    const importerUrl = new URL(document.currentScript.src);
+    const footprintWorkerUrl = new URL('building-model-footprint-worker.js', importerUrl);
+    footprintWorkerUrl.search = importerUrl.search;
+    let footprintJob = null;
+
+    // Bounds and the projected mesh outline in metres; null until both have been validated.
     let loadedDims = null;
     let loadedName = null;
     let loadedFile = null;
@@ -209,6 +214,75 @@
         return { box, size, center, dimensions };
     }
 
+    // Read the same visible triangles that Three renders, including node and instance transforms.
+    // The map is east/north (X, -Z); the source model is Y-up. Boolean union runs off the UI thread.
+    function modelTriangles(object, center) {
+        const triangles = [];
+        const vertex = new THREE.Vector3();
+        const instanceMatrix = new THREE.Matrix4();
+        const transform = new THREE.Matrix4();
+        object.updateMatrixWorld(true);
+        object.traverseVisible(node => {
+            const geometry = node.isMesh && node.geometry;
+            const position = geometry && geometry.attributes.position;
+            if (!position) return;
+            const index = geometry.index;
+            const count = index ? index.count : position.count;
+            const drawStart = geometry.drawRange.start;
+            const drawEnd = Math.min(count, drawStart + geometry.drawRange.count);
+            const materials = Array.isArray(node.material) ? node.material : [node.material];
+            const groups = Array.isArray(node.material) ? geometry.groups : [{ start: 0, count, materialIndex: 0 }];
+            for (let instance = 0; instance < (node.isInstancedMesh ? node.count : 1); instance++) {
+                transform.copy(node.matrixWorld);
+                if (node.isInstancedMesh) {
+                    node.getMatrixAt(instance, instanceMatrix);
+                    transform.multiply(instanceMatrix);
+                }
+                for (const group of groups) {
+                    if (!materials[group.materialIndex] || materials[group.materialIndex].visible === false) continue;
+                    const start = Math.max(drawStart, group.start);
+                    const end = Math.min(drawEnd, group.start + group.count);
+                    for (let offset = start; offset + 2 < end; offset += 3) {
+                        if (triangles.length >= window.BuildingModelGeometry.MAX_FOOTPRINT_TRIANGLES * 6) throw Object.assign(new Error('Model triangle limit'), { code: 'complex' });
+                        for (let corner = 0; corner < 3; corner++) {
+                            const vertexIndex = index ? index.getX(offset + corner) : offset + corner;
+                            node.getVertexPosition(vertexIndex, vertex).applyMatrix4(transform);
+                            triangles.push(vertex.x - center.x, -(vertex.z - center.z));
+                        }
+                    }
+                }
+            }
+        });
+        return new Float64Array(triangles);
+    }
+
+    function cancelFootprintJob() {
+        if (footprintJob) footprintJob.cancel();
+    }
+
+    function extractFootprint(object, center) {
+        const triangles = modelTriangles(object, center);
+        return new Promise((resolve, reject) => {
+            const worker = new Worker(footprintWorkerUrl);
+            let timer;
+            const finish = (error, footprint) => {
+                clearTimeout(timer);
+                worker.terminate();
+                if (footprintJob === job) footprintJob = null;
+                if (error) reject(error);
+                else resolve(footprint);
+            };
+            const job = { cancel: () => finish(Object.assign(new Error('Cancelled'), { code: 'cancelled' })) };
+            footprintJob = job;
+            worker.onmessage = ({ data }) => data.error
+                ? finish(Object.assign(new Error('Model footprint unavailable'), { code: data.error }))
+                : finish(null, data.footprint);
+            worker.onerror = () => finish(new Error('Model footprint worker failed'));
+            timer = setTimeout(() => finish(Object.assign(new Error('Model footprint timed out'), { code: 'complex' })), 30000);
+            worker.postMessage({ triangles }, [triangles.buffer]);
+        });
+    }
+
     // Center the model on the ground plane and frame the optional preview camera to it.
     function placeAndFrame(object, { box, size, center }) {
         // Recenter horizontally at origin, sit the base on y = 0.
@@ -242,6 +316,7 @@
         const file = event.target && event.target.files && event.target.files[0];
         if (!file) return;
         const version = ++loadVersion;
+        cancelFootprintJob();
         const isCurrent = () => version === loadVersion && !!modalEl;
         disposeScene();
         preview.container.textContent = '';
@@ -274,7 +349,7 @@
         reader.onload = () => {
             if (!isCurrent()) return;
             const loader = new THREE.GLTFLoader();
-            const onParsed = (gltf) => {
+            const onParsed = async (gltf) => {
                 const root = gltf.scene || (gltf.scenes && gltf.scenes[0]);
                 if (!isCurrent()) { disposeModel(root); return; }
                 if (!root) {
@@ -287,8 +362,25 @@
                     setStatus(t('modal.buildingUpload.errorEmpty', 'The model contains no visible geometry.'), true);
                     return;
                 }
+                let footprint;
+                setStatus(t('modal.buildingUpload.outlining', 'Calculating building outline…'));
+                try {
+                    footprint = await extractFootprint(root, measurement.center);
+                } catch (error) {
+                    disposeModel(root);
+                    if (!isCurrent()) return;
+                    const messages = {
+                        disconnected: ['modal.buildingUpload.errorDisconnected', 'This model contains separate parts. Import one connected building at a time.'],
+                        complex: ['modal.buildingUpload.errorComplex', 'This model is too detailed to calculate its outline. Export a simpler building mesh and try again.'],
+                        empty: ['modal.buildingUpload.errorEmpty', 'The model contains no visible geometry.']
+                    };
+                    const [key, message] = messages[error.code] || ['modal.buildingUpload.errorOutline', 'Could not calculate this building’s outline. Check the model geometry and try again.'];
+                    setStatus(t(key, message), true);
+                    return;
+                }
+                if (!isCurrent()) { disposeModel(root); return; }
                 const dims = measurement.dimensions;
-                loadedDims = dims;
+                loadedDims = { ...dims, footprint };
                 setStatus(t('modal.buildingUpload.loaded', 'Loaded: {{name}}', { name: file.name })
                     + ' — ' + t('modal.buildingUpload.dimensions',
                         'Footprint {{width}}m × {{length}}m, height {{height}}m',
@@ -409,6 +501,7 @@
 
     function close() {
         loadVersion++;
+        cancelFootprintJob();
         unregisterEscape?.();
         unregisterEscape = null;
         disposeScene();

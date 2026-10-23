@@ -77,7 +77,11 @@ function movementHarness({ moveTogether = true, takeWhole = true, treatment = 'n
         addEventListener: vi.fn(),
         getElementById: () => null
     };
-    const window = { GeometryEditHistory: History, SingleBuildingGeometry: geometry };
+    const window = {
+        GeometryEditHistory: History,
+        SingleBuildingGeometry: geometry,
+        BuildingGround: { moveDecorationDesign: vi.fn(design => clone(design)) }
+    };
     const setActiveFeature = candidate => {
         singleRectFeature = clone(candidate);
         const active = buildingEntries.find(entry => entry.id === activeBuildingId);
@@ -92,6 +96,7 @@ function movementHarness({ moveTogether = true, takeWhole = true, treatment = 'n
         singleBuildingLayers: layers,
         singleDragMarker: null,
         currentGroundTreatment: treatment,
+        currentGroundDecorationDesign: null,
         currentTakeWholeParcels: takeWhole,
         singleGroundBoundary: groundBoundary,
         singleBlockFeature: clone(groundBoundary),
@@ -132,7 +137,7 @@ function movementHarness({ moveTogether = true, takeWhole = true, treatment = 'n
     };
     const declared = new Set([
         'singleMap', 'singleEditor', 'singleSession', 'buildingEntries', 'singleBuildingLayers',
-        'singleDragMarker', 'currentGroundTreatment', 'currentTakeWholeParcels', 'singleGroundBoundary',
+        'singleDragMarker', 'currentGroundTreatment', 'currentGroundDecorationDesign', 'currentTakeWholeParcels', 'singleGroundBoundary',
         'singleBlockFeature', 'singleRectFeature', 'activeBuildingId', 'singleMoveTogether',
         'singleHistory', 'rectDragActive', 'rectDragHistoryRecorded', 'rectDragStartDesign',
         'rectDragStartFeature', 'rectDragLastValidFeature', 'rectDragStartPointerPt',
@@ -143,9 +148,10 @@ function movementHarness({ moveTogether = true, takeWhole = true, treatment = 'n
         && !['sourceSnapshot', 'placementUpdates', 'renderEvents', 'ensureSingleBuildingHistory'].includes(key))
         .map(key => `const ${key}=this.${key};`).join('\n');
     const variables = `
-        let singleMap=this.singleMap, singleEditor=this.singleEditor, singleSession=this.singleSession;
+        let singleMap=this.singleMap, singleEditor=this.singleEditor, singleSession=this.singleSession, singleLandTakeReview=null;
         let buildingEntries=this.buildingEntries, singleBuildingLayers=this.singleBuildingLayers;
         let singleDragMarker=this.singleDragMarker, currentGroundTreatment=this.currentGroundTreatment;
+        let currentGroundDecorationDesign=this.currentGroundDecorationDesign;
         let currentTakeWholeParcels=this.currentTakeWholeParcels, singleGroundBoundary=this.singleGroundBoundary;
         let singleBlockFeature=this.singleBlockFeature, singleRectFeature=this.singleRectFeature;
         let activeBuildingId=this.activeBuildingId, singleMoveTogether=this.singleMoveTogether;
@@ -158,13 +164,14 @@ function movementHarness({ moveTogether = true, takeWhole = true, treatment = 'n
         const EDIT_PANE='test-pane';
         function point(x,y) { return { x,y, add(other) { return point(x+other.x,y+other.y); }, subtract(other) { return point(x-other.x,y-other.y); } }; }
         function getActiveBuilding() { return buildingEntries.find(entry => entry.id === activeBuildingId) || null; }
+        function buildingGroundApi() { return window.BuildingGround; }
         function setActiveFeature(candidate) {
             singleRectFeature=cloneSingleFeature(candidate);
             const active=getActiveBuilding();
             if (active) active.feature=cloneSingleFeature(candidate);
         }
         this.state=()=>({ buildingEntries, singleGroundBoundary, singleRectFeature, activeBuildingId,
-            currentGroundTreatment, currentTakeWholeParcels, rectDragActive, rectDragHistoryRecorded,
+            currentGroundTreatment, currentGroundDecorationDesign, currentTakeWholeParcels, rectDragActive, rectDragHistoryRecorded,
             rectDragStartDesign, rectDragStartPointerPt, rectDragStartCenterPt, sourceSnapshot });
         this.getHistory=()=>singleHistory;
         this.prepareDrag=()=>{ const [lng,lat]=turf.centroid(buildingEntries[0].feature).geometry.coordinates;
@@ -191,13 +198,69 @@ function center(featureValue) {
 }
 
 describe('single-building whole-proposal placement', () => {
+    it('passes the placed L-shaped courtyard outline and model metadata into a new upload entry', () => {
+        const placedAt = { lat: 45.81, lng: 15.98 };
+        const localFootprint = {
+            type: 'Polygon',
+            coordinates: [
+                [[-5,-5],[5,-5],[5,0],[0,0],[0,5],[-5,5],[-5,-5]],
+                [[-4,-4],[-4,-2],[-2,-2],[-2,-4],[-4,-4]]
+            ]
+        };
+        const addEntry = vi.fn((centerLatLng, options) => ({
+            id: 1, name: 'Uploaded', feature: options.feature, height: options.height
+        }));
+        const context = {
+            window: { OnMapEditor: null, SingleBuildingGeometry: geometry },
+            turf,
+            singleBuildingPlacementContext: () => ({}),
+            getSelectedBlockFeature: () => feature('block', 15.97, 45.8, 16, 45.82),
+            computeInitialPlacement: () => ({ center: placedAt, width: 10, length: 10 }),
+            addNewBuildingEntry: addEntry,
+            setSingleBuildingStatus: vi.fn(),
+            showSingleBuildingMapEditor: () => 'opened'
+        };
+        const script = `
+            const window=this.window, turf=this.turf, DEFAULT_HEIGHT_M=15;
+            let singleEditor=null, singleSession=null, singleBuildingOverrideContext=null;
+            let singleBlockFeature=null, buildingEntries=[], activeBuildingId=null, nextBuildingId=0;
+            let singleBuildingSeedBuildings=null, singleUploadOnConfirm=null;
+            const singleBuildingPlacementContext=this.singleBuildingPlacementContext;
+            const getSelectedBlockFeature=this.getSelectedBlockFeature;
+            const computeInitialPlacement=this.computeInitialPlacement;
+            const addNewBuildingEntry=this.addNewBuildingEntry;
+            const setSingleBuildingStatus=this.setSingleBuildingStatus;
+            const showSingleBuildingMapEditor=this.showSingleBuildingMapEditor;
+            ${functions.get('cloneSingleFeature')}
+            ${functions.get('markAsEditablePolygon')}
+            ${functions.get('editableFootprintValid')}
+            ${functions.get('createSingleBuildingFromUpload')}
+            this.invoke=createSingleBuildingFromUpload;
+        `;
+        vm.runInNewContext(script, context);
+        const result = context.invoke({
+            blockName: 'Test block', parcelIds: ['p1'], width: 10, length: 10, height: 18,
+            footprint: localFootprint, modelName: 'L model', modelUrl: '/model.glb'
+        });
+        const passedFeature = addEntry.mock.calls[0][1].feature;
+        expect(result).toBe('opened');
+        expect(addEntry.mock.calls[0][0]).toEqual(placedAt);
+        expect(passedFeature.geometry.type).toBe('Polygon');
+        expect(passedFeature.geometry.coordinates.map(ring => ring.length)).toEqual([7, 5]);
+        expect(passedFeature.geometry.coordinates[0][3][0]).toBeCloseTo(placedAt.lng, 8);
+        expect(passedFeature.geometry.coordinates[0][3][1]).toBeCloseTo(placedAt.lat, 8);
+        expect(passedFeature.properties).toMatchObject({
+            type: 'proposedBuildingSingle', footprintMode: 'polygon', height: 18,
+            source: 'upload', modelName: 'L model', modelUrl: '/model.glb'
+        });
+    });
+
     it('moves both buildings and the take-whole boundary freely, records one undo step, and restores all geometry', () => {
         const h = movementHarness({ moveTogether: true, takeWhole: true, treatment: 'none' });
         const start = h.context.prepareDrag();
         const original = clone(h.context.state());
 
         h.context.move({ latlng: { lat: start.lat, lng: start.lng + 0.006 } });
-        console.log('DEBUG-move', h.context.state().rectDragHistoryRecorded, h.context.getHistory());
         h.context.move({ latlng: { lat: start.lat, lng: start.lng + 0.012 } });
         h.context.move({ latlng: { lat: start.lat + 0.004, lng: start.lng + 0.012 } });
         h.context.end();

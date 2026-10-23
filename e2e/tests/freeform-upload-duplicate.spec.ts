@@ -1,9 +1,9 @@
 // Real UI coverage for direct GLB import and fresh, click-to-place design copies.
-import { readFileSync } from 'node:fs';
 import { test, expect } from '../helpers/fixtures';
 import { openCity, openParcel, stubBasemapTiles, createSpace, showProposal, proposalState, clickMapPoint } from '../helpers/runtime';
+import { createBuildingGlb } from '../helpers/model-fixture';
 
-const model = readFileSync('../test-assets/test-building.glb');
+const model = createBuildingGlb('l');
 const editor = '#single-building-editor';
 async function openFreeform(page: any) {
   await stubBasemapTiles(page);
@@ -13,9 +13,43 @@ async function openFreeform(page: any) {
   await expect(page.locator(`${editor} .on-map-editor__panel`)).toBeVisible();
 }
 const features = (page: any) => page.evaluate(() => (window as any).OnMapEditor.getPreview().draftPreview.features);
+const footprintMeasures = (page: any, feature: any) => page.evaluate((f: any) => {
+  const center = (window as any).SingleBuildingGeometry.geometryCenter(f.geometry);
+  const frame = (window as any).__metricFrame.frameAt([+center.lng.toFixed(6), +center.lat.toFixed(6)]);
+  const origin = frame.toMetric([center.lng, center.lat]);
+  const ring = f.geometry.coordinates[0].map((point: number[]) => {
+    const local = frame.toMetric(point); return [local[0] - origin[0], local[1] - origin[1]];
+  });
+  const area = Math.abs(ring.reduce((sum: number, point: number[], i: number) => {
+    const next = ring[(i + 1) % ring.length];
+    return sum + point[0] * next[1] - next[0] * point[1];
+  }, 0)) / 2;
+  const xs = ring.map((p: number[]) => p[0]), ys = ring.map((p: number[]) => p[1]);
+  const inside = (x: number, y: number) => {
+    let value = false;
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+      const [xi, yi] = ring[i], [xj, yj] = ring[j];
+      if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) value = !value;
+    }
+    return value;
+  };
+  return { area, width: Math.max(...xs) - Math.min(...xs), length: Math.max(...ys) - Math.min(...ys),
+    notch: inside((Math.max(...xs) + Math.min(...xs)) / 2 + 4, (Math.max(...ys) + Math.min(...ys)) / 2 - 4),
+    occupied: inside((Math.max(...xs) + Math.min(...xs)) / 2 - 4, (Math.max(...ys) + Math.min(...ys)) / 2 - 4) };
+}, feature);
+function expectLFootprint(measure: any, dimensions = true) {
+  expect(Math.abs(measure.area - 240)).toBeLessThan(1);
+  if (dimensions) {
+    expect(Math.abs(measure.width - 16)).toBeLessThan(0.1);
+    expect(Math.abs(measure.length - 20)).toBeLessThan(0.1);
+  }
+  expect(measure.notch).toBe(false);
+  expect(measure.occupied).toBe(true);
+}
 
 test('Upload .glb imports into the current Freeform session and Done saves its model', async ({ mockApi: page }) => {
   let uploads = 0;
+  await page.route('**/buildings/under', route => route.fulfill({ json: { supported: true, truncated: false, source: 'gdi', regions: { 'land-take': [] } } }));
   await page.route('**/models', route => { uploads++; return route.fulfill({ json: { modelUrl: '/uploads/models/direct.glb' } }); });
   await page.route('**/uploads/models/direct.glb', route => route.fulfill({ contentType: 'model/gltf-binary', body: model }));
   await openFreeform(page);
@@ -34,6 +68,7 @@ test('Upload .glb imports into the current Freeform session and Done saves its m
   expect(after).toHaveLength(2);
   expect(after[0]).toEqual(before[0]);
   expect(after[1].properties).toMatchObject({ modelName: 'direct.glb', modelUrl: '/uploads/models/direct.glb', height: 16 });
+  expectLFootprint(await footprintMeasures(page, after[1]));
   await page.locator('#single-building-undo').click();
   expect(await features(page)).toEqual(before);
   await page.locator('#single-building-glb-upload').click();
@@ -43,6 +78,10 @@ test('Upload .glb imports into the current Freeform session and Done saves its m
   await expect(upload).toHaveCount(0);
   after = await features(page);
   expect(after[1].properties.modelUrl).toBe('/uploads/models/direct.glb');
+  expectLFootprint(await footprintMeasures(page, after[1]), false);
+  const acceptance = page.locator('#single-land-take [data-land-accept]');
+  await expect(acceptance).toBeEnabled();
+  await acceptance.check();
   await page.locator('#single-building-confirm').click();
   await expect(page.locator(editor)).toHaveCount(0);
   await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().filter((p: any) =>
@@ -62,6 +101,7 @@ test('Upload .glb imports into the current Freeform session and Done saves its m
   expect(copy.geometry.buildings[0].properties.modelUrl).toBe('/uploads/models/direct.glb');
   expect(copy.geometry.buildings[0].properties.height).toBe(16);
   expect(copy.geometry.buildings[0].geometry).not.toEqual(saved.geometry.buildings[0].geometry);
+  expectLFootprint(await footprintMeasures(page, copy.geometry.buildings[0]));
   expect(await proposalState(page, saved.proposalId)).toEqual(saved);
 
 });

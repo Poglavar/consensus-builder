@@ -1229,7 +1229,10 @@
     function focusThreeModeOnProposals(ids) {
         const list = (Array.isArray(ids) ? ids : [ids]).filter(id => id != null).map(String);
         if (!isActive || !list.length) return false;
-        if (frameProposalsInScene(list) !== 'relocate') return true;
+        if (frameProposalsInScene(list) !== 'relocate') {
+            if (!stackDriving) showThreeModeDesign(list[0]);
+            return true;
+        }
         const key = list.join(',');
         if (relocatingFocusKey === key) return true;
         if (typeof window.requestMapMode !== 'function') return false;
@@ -1315,9 +1318,17 @@
                 }
                 const proposal = window.proposalStorage?.getProposal?.(instance.id);
                 if (proposal && updateProposalInfoPanel(proposal, getProposalParcelIdSet(proposal))) body.appendChild(parcelInfoPanelEl);
-                // Selecting a proposal opens its authored record in the inspector: it is the
-                // design's own information, so it goes under the figures.
-                if (window.PlanningViews?.getSelected()?.role === 'proposed') hostInspector(body);
+                // Editing actions use the same Design section in the map view, never a second
+                // inspector floating beside this scene's figures.
+                const actions = document.createElement('button');
+                actions.type = 'button';
+                actions.className = 'btn btn-sm';
+                actions.textContent = threeI18n('planningViews.proposalActions', 'Proposal actions');
+                actions.addEventListener('click', async () => {
+                    await window.requestMapMode('2d');
+                    window.ClickStack.showDesign(instance.id);
+                });
+                body.appendChild(actions);
             } else if (kind === 'parcels') {
                 if (viewedParcelId !== instance.id) viewParcel(instance.id, { openMassing: false });
                 if (updateParcelInfoPanel(instance.id)) body.appendChild(parcelInfoPanelEl);
@@ -1404,6 +1415,24 @@
         const focus = plan.proposal ? 'designs' : stackApi.focusOf(picked && picked.proposalId ? null : picked);
         const selected = { ...(plan.proposal ? { designs: plan.proposal.id } : {}), ...(builtId ? { built: builtId } : {}) };
         stackApi.show(input, { focus, selected, container: document.getElementById('map-container') || document.body }, clickStackAdapter);
+    }
+
+    function showThreeModeDesign(key, parcelId = null) {
+        if (!isActive) return false;
+        const proposal = window.proposalStorage?.getProposal?.(key);
+        if (!proposal) return false;
+        const id = String(proposalIdOf(proposal));
+        const parcel = parcelId || [...getProposalParcelIdSet(proposal)][0] || null;
+        withStackDriving(() => showClickStack({ proposalId: id }, {
+            proposal: { id }, parcel: parcel ? { id: String(parcel) } : null
+        }));
+        return true;
+    }
+
+    function showThreeModeParcel(parcelId) {
+        if (!isActive || !parcelId) return false;
+        withStackDriving(() => showClickStack(null, { parcel: { id: String(parcelId) } }));
+        return true;
     }
 
     // The scene rebuilt under an open Design or Parcel section: its figures may have changed.
@@ -6274,9 +6303,11 @@
         const requestedHeight = Number(properties.heightMeters ?? properties.height);
         if (!(width > 0) || !(depth > 0) || !(modelWidth > 0) || !(modelDepth > 0) || !(modelHeight > 0)) return null;
         const height = requestedHeight > 0 ? requestedHeight : null;
+        const midX = (minX + maxX) / 2, midY = (minY + maxY) / 2;
         return {
             scale: [width / modelWidth, depth / modelDepth, height ? height / modelHeight : 1],
-            rotation: radians
+            rotation: radians,
+            offset: [midX * cos - midY * sin, midX * sin + midY * cos]
         };
     }
 
@@ -6337,6 +6368,7 @@
             const wrapper = new THREE.Group();
             wrapper.add(inner);
             let fit = null;
+            let placementX = cx, placementY = cy;
             if (options.fitToFootprint !== false) {
                 const nativeSize = { x: size.x, y: size.y, z: size.z };
                 const xyFit = uploadedModelFit(feat, [cx, cy], nativeSize);
@@ -6345,11 +6377,13 @@
             if (fit) {
                 wrapper.scale.set(...fit.scale);
                 wrapper.rotation.z = fit.rotation;
+                placementX += fit.offset[0];
+                placementY += fit.offset[1];
             } else {
                 const horizScale = 1 / Math.max(0.1, Math.cos(lat * Math.PI / 180));
                 wrapper.scale.set(horizScale, horizScale, 1);
             }
-            wrapper.position.set(cx, cy, 0);
+            wrapper.position.set(placementX, placementY, 0);
 
             // Collect before attaching depth children: mutating an Object3D hierarchy during
             // traverse would make the newly-added prepass meshes participate in this same walk.
@@ -8395,6 +8429,9 @@
                 window.activeProposalDraftComparison.mode || 'overlay'
             );
         }
+        const selectedDesign = window.ProposalSelection?.getKey?.();
+        const focusedDesign = focusProposalIds?.size ? [...focusProposalIds][0] : null;
+        if (selectedDesign || focusedDesign) showThreeModeDesign(selectedDesign || focusedDesign);
         return true;
     }
 
@@ -9152,6 +9189,8 @@
     window.scheduleViewAngleHint = scheduleViewAngleHint;
     window.isThreeModeActive = function () { return isActive; };
     window.focusThreeModeOnProposals = focusThreeModeOnProposals;
+    window.showThreeModeDesign = showThreeModeDesign;
+    window.showThreeModeParcel = showThreeModeParcel;
     window.getThree3DGeoView = getGeoCameraView;
     window.setThreeXrayEnabled = setXrayEnabled;
     window.setThreeFloorCutaway = setFloorCutaway;

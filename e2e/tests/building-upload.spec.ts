@@ -1,11 +1,14 @@
 // Exercise real glTF parsing and upload independently of the optional WebGL preview.
 import { readFileSync } from 'node:fs';
 import { test, expect } from '../helpers/fixtures';
+import { createBuildingGlb } from '../helpers/model-fixture';
 
 const index = readFileSync('../frontend/index.html', 'utf8');
 const bootstrap = index.slice(index.indexOf('<script type="importmap">'), index.indexOf('// 2D-coupled files'));
 const scripts = bootstrap.slice(0, bootstrap.lastIndexOf('<script>'));
 const building = readFileSync('../test-assets/test-building.glb');
+const lBuilding = createBuildingGlb('l');
+const courtyardBuilding = createBuildingGlb('courtyard');
 
 async function openImporter(page: any, failure = 'none') {
   await page.route('**/upload-test', route => route.fulfill({ contentType: 'text/html', body:
@@ -136,4 +139,51 @@ test('late parse callbacks cannot replace a newer file or reopen a closed dialog
   await page.locator('#building-upload-close').click();
   await page.evaluate(() => (window as any).finishParsing[2]());
   await expect(page.locator('#building-upload-modal')).toHaveCount(0);
+});
+
+function ringArea(ring: number[][]) {
+  return Math.abs(ring.reduce((sum, point, i) => {
+    const next = ring[(i + 1) % ring.length];
+    return sum + point[0] * next[1] - next[0] * point[1];
+  }, 0)) / 2;
+}
+
+test('worker derives a concave L footprint and preserves a courtyard ring', async ({ page }) => {
+  let imported: any;
+  await page.route('**/models', route => route.fulfill({ json: { modelUrl: '/uploads/models/outline.glb' } }));
+  await openImporter(page, 'constructor');
+  await page.locator('#building-upload-file').setInputFiles({ name: 'l.glb', mimeType: 'model/gltf-binary', buffer: lBuilding });
+  await expect(page.locator('#building-upload-confirm')).toBeEnabled({ timeout: 20_000 });
+  await page.locator('#building-upload-confirm').click();
+  await expect(page.locator('#building-upload-modal')).toHaveCount(0);
+  imported = await page.evaluate(() => (window as any).importedBuilding.footprint);
+  expect(imported.type).toBe('Polygon');
+  expect(imported.coordinates).toHaveLength(1);
+  const ring = imported.coordinates[0] as number[][];
+  expect(ringArea(ring)).toBeCloseTo(240, 3);
+  const xs = ring.map(p => p[0]), ys = ring.map(p => p[1]);
+  expect(Math.max(...xs) - Math.min(...xs)).toBeCloseTo(16, 3);
+  expect(Math.max(...ys) - Math.min(...ys)).toBeCloseTo(20, 3);
+  expect(ring.some(p => Math.abs(p[0]) < 0.01 && Math.abs(p[1]) < 0.01)).toBe(true);
+  expect(ring.some(p => Math.abs(p[0] - 4) < 0.01 && Math.abs(p[1] + 4) < 0.01)).toBe(false);
+
+  await page.evaluate(() => (window as any).BuildingUpload.open({ parcelIds: ['test-parcel'] }));
+  await page.locator('#building-upload-file').setInputFiles({ name: 'courtyard.glb', mimeType: 'model/gltf-binary', buffer: courtyardBuilding });
+  await expect(page.locator('#building-upload-confirm')).toBeEnabled({ timeout: 20_000 });
+  await page.locator('#building-upload-confirm').click();
+  await expect(page.locator('#building-upload-modal')).toHaveCount(0);
+  const courtyard = await page.evaluate(() => (window as any).importedBuilding.footprint);
+  expect(courtyard.type).toBe('Polygon');
+  expect(courtyard.coordinates).toHaveLength(2);
+  expect(ringArea(courtyard.coordinates[0])).toBeCloseTo(320, 3);
+  expect(ringArea(courtyard.coordinates[1])).toBeCloseTo(56, 3);
+});
+
+test('disconnected projected model explains the failure and blocks confirmation', async ({ page }) => {
+  await openImporter(page, 'constructor');
+  await page.locator('#building-upload-file').setInputFiles({ name: 'separate.glb', mimeType: 'model/gltf-binary',
+    buffer: createBuildingGlb('disconnected') });
+  await expect(page.locator('#building-upload-status')).toContainText('This model contains separate parts', { timeout: 20_000 });
+  await expect(page.locator('#building-upload-confirm')).toBeDisabled();
+  await expect(page.locator('#building-upload-modal')).toBeVisible();
 });
