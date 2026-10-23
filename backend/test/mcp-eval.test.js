@@ -24,6 +24,7 @@ describe('MCP agent evaluation artifacts', () => {
         const artifact = { untrusted: { design }, cid: cidOfObject(design), takes: ['A'], previewUrl: 'https://app.example/designs#draft=fixture' };
         const task = { expected: { goal: 'road-track', drivingLanes: 2, cycleLanes: 0 } };
         expect(scoreArtifact(task, [artifact]).passed).toBe(true);
+        expect(scoreArtifact(task, [{ untrusted: { design: { schema: 'design/v1', description: 'Schema descriptor' } } }, artifact]).passed).toBe(true);
         expect(scoreArtifact(task, [{ ...artifact, previewUrl: `https://app.example/mcp/previews/${'a'.repeat(32)}`, previewStatus: 'private-link' }]).passed).toBe(true);
         expect(scoreArtifact({ expected: { ...task.expected, drivingLanes: 4 } }, [artifact]).passed).toBe(false);
         expect(scoreArtifact(task, [{ ...artifact, cid: 'invented' }])).toEqual({ passed: false, reason: 'cid-mismatch' });

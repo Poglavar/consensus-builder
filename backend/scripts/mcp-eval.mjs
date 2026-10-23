@@ -17,7 +17,9 @@ const privatePreview = result => { try { const url = new URL(result.previewUrl);
 
 export function scoreArtifact(task, artifacts) {
     for (const result of artifacts) {
-        const value = result.untrusted?.design || result.untrusted?.agreement || result.design || result.agreement;
+        // Capabilities also contain descriptors named design/agreement with these schema labels;
+        // only a result carrying its own CID claims to be an addressed artifact.
+        const value = result.cid == null ? null : result.untrusted?.design || result.untrusted?.agreement || result.design || result.agreement;
         if (value && result.cid !== cidOfObject(value)) return { passed: false, reason: 'cid-mismatch' };
         if (task.expected.goal && value?.goal === task.expected.goal
             && (!task.expected.floors || value.buildingProposal?.parameters?.floors === task.expected.floors)

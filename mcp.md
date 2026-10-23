@@ -494,3 +494,5 @@ cold-load network failures fetching its dictionaries. Reload completed with tran
 the Freeform editor opened with both upload buttons present. That dedicated headed background
 Chrome was closed afterward. No design was saved, model uploaded, agreement published, wallet
 signed, paid provider invoked or autonomous schedule activated by these release checks.
+
+- Headless unit tests: evaluator descriptor discrimination (1 file, 7 tests): passed. Capability schema descriptors without a result CID are not artifacts and cannot poison later artifact scoring.
