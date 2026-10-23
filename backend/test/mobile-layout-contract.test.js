@@ -152,22 +152,14 @@ describe('the left-edge mode strip is never covered on phones', () => {
         expect(ruleBody(block, '#map-container #username-text')).toMatch(/clip-path/);
     });
 
-    it('runs the 3D parcel panel edge to edge on phones', () => {
-        const [block] = mediaBlocksContaining(mapCss, '(max-width: 767.98px)', '.three-mode-parcel-panel');
-        const body = ruleBody(block, '#three-container \\.three-mode-parcel-panel');
-        expect(body).toMatch(/left:\s*12px/);
-        expect(body).toMatch(/right:\s*12px/);
-    });
-
-    // The planning inspector docks to the same bottom edge; while it is open the panel moves up
-    // beside the mode strip and scrolls in the space left, instead of lying under the inspector.
-    it('moves the 3D parcel panel above an open planning inspector on phones', () => {
-        const [block] = mediaBlocksContaining(mapCss, '(max-width: 767.98px)', '#planning-inspector:not([hidden])');
-        const body = ruleBody(block, 'body:has\\(#planning-inspector:not\\(\\[hidden\\]\\)\\) #three-container \\.three-mode-parcel-panel');
-        expect(body).toMatch(/left:\s*var\(--three-panel-left\)/);
-        expect(body).toMatch(/bottom:\s*auto/);
-        expect(body).toMatch(/overflow-y:\s*auto/);
-        expect(body).toMatch(/max-height:\s*calc\(50dvh/);
+    // The 3D view's figures live in its click stack, which docks like the 2D one: the right dock on
+    // a desktop, the bottom sheet (.info-panel) on a phone; nothing floats top-left any more.
+    it('docks the 3D click stack like the 2D one instead of a floating 3D parcel panel', () => {
+        const stackCss = read('css/three-click-stack.css');
+        expect(stackCss).toMatch(/#three-click-stack\s*\{[^}]*position:\s*fixed[^}]*right:\s*var\(--right-dock-gap\)/);
+        const stackJs = read('js/three-click-stack.js');
+        expect(stackJs).toContain("el.className = 'click-stack info-panel right-dock-panel'");
+        expect(mapCss).not.toMatch(/\.three-mode-parcel-panel\s*\{[^}]*position:\s*absolute/);
     });
 });
 
@@ -210,10 +202,12 @@ describe('proposal details and compact card on phones', () => {
 });
 
 describe('3D and photo view', () => {
-    it('gives the 3D info panel its own close button, which leaves the isolated view', () => {
-        expect(threeMode).toContain('data-role="close-panel"');
-        const wiring = threeMode.slice(threeMode.indexOf("querySelector('[data-role=\"close-panel\"]')"));
-        expect(wiring.slice(0, 400)).toContain('clearIsolation()');
+    it('closes the isolated view with the 3D click stack, and the stack with the view', () => {
+        const end = threeMode.slice(threeMode.indexOf('function endSelectionView('), threeMode.indexOf('let stackDriving'));
+        expect(end).toContain('ThreeClickStack?.close({ silent: true })');
+        expect(end).toContain('clearIsolation()');
+        const closed = threeMode.slice(threeMode.indexOf('        closed() {'), threeMode.indexOf('        closed() {') + 160);
+        expect(closed).toContain('endSelectionView()');
     });
 
     it('keeps parcel selection in place while explicit proposal isolation frames its ground', () => {

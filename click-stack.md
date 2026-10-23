@@ -56,3 +56,26 @@ right-side panels that clicks used to open one at a time.
   (planning inspector, proposal card, parcel info panel) inside the expanded section.
 - The parcel menu popover is removed. Shift multi-selection and its tray stay; "use as site"
   lives in the parcel section and the selection tray.
+
+## 3D model view
+
+The 3D model view has its own click stack (`frontend/js/three-click-stack.js`, user decisions
+2026-10-23): the same right-docked column and row/strip look, with what a click in the scene stands
+on. It replaced the floating top-left parcel / "Proposal info" panel.
+
+- Sections, top to bottom: **Built** (the clicked building, and the existing buildings standing on
+  the parcel, as a strip), **Design** (the clicked proposal, or the proposals on the parcel),
+  **Permitted** (the clicked massing, or the parcel's cached massing), **Parcel** (the one parcel).
+- The clicked thing's section opens; one section is open at a time.
+- Design open: the proposal is isolated (as before) and the section shows the whole proposal's info
+  and Built / Planned / Proposed figures with the price sliders, then its authored record from the
+  Buildings and massing inspector. Parcel open: the same figures for the one parcel.
+- Built and Permitted host the Buildings and massing inspector.
+- A proposal click's parcel is the proposal's own parcel slice under the point, not the slab the ray
+  reaches beside a tall design (`three-click-plan.js`).
+- The click rules stay those of `three-click-plan.js`: a second click on the viewed parcel isolates it,
+  a third clears; a second click on the isolated proposal clears. Clearing, Escape, the isolation
+  banner's ×, a massing chosen in the Buildings and massing sheet, and leaving 3D close the stack.
+- The pure rules (order, focus, strips, labels) are in the module's first half and unit tested
+  (`backend/test/three-click-stack.test.js`); the 2D model (`click-stack-model.js`) is not shared,
+  because its order puts Design above Built.

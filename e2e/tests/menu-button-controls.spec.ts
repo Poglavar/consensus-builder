@@ -79,8 +79,11 @@ test('global 3D mode opens from a selected parcel and retains parcel picking and
     return { x: box.left + (point.x + 1) * box.width / 2, y: box.top + (1 - point.y) * box.height / 2 };
   }, PARCEL_ID);
   await page.mouse.click(point.x, point.y);
-  await page.locator('.three-mode-parcel-panel [data-role="show-proposal"]').click();
-  await expect(page.locator('.three-mode-parcel-panel .parcel-panel-proposal-name')).toHaveText('3D parcel proposal');
+  // The click stack lists the parcel's proposal in its Design section; opening it isolates the proposal.
+  const design = page.locator('#three-click-stack .click-stack__section[data-kind="designs"]');
+  await expect(design.locator('.click-stack__row-detail')).toHaveText('3D parcel proposal');
+  await design.locator('[data-action="row"]').click();
+  await expect(design.locator('.three-mode-parcel-panel')).toBeVisible();
   await expect(page.locator('.three-mode-isolation-banner')).toContainText('Proposal view');
   await expect.poll(() => page.evaluate(() => (window as any).getThreeSceneSummary().isolatedProposal)).toBe(true);
 });

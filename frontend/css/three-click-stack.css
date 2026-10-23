@@ -1,0 +1,54 @@
+/* The 3D model view's click stack (js/three-click-stack.js, click-stack.md): the 2D stack's column
+   in the right dock, with the same .click-stack__* sections, rows and strips (css/map.css). This
+   file gives the 3D panel the frame the 2D one gets by its id, and lets the panels it hosts (the
+   value figures, the Buildings and massing inspector) drop their own docking inside a section. On
+   phones .info-panel makes it the bottom sheet, as in 2D. */
+#three-click-stack {
+    position: fixed;
+    right: var(--right-dock-gap);
+    top: calc(var(--map-shell-top-clearance) + var(--cb-space-2));
+    bottom: var(--right-dock-bottom);
+    max-height: none;
+    padding: var(--cb-space-2) var(--cb-space-3) var(--cb-space-3);
+    gap: 0;
+    z-index: var(--cb-z-panel);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+#three-click-stack.visible {
+    display: flex;
+    flex-direction: column;
+}
+
+/* The column ends where its content does unless a hosted inspector runs it to the dock's bottom. */
+#three-click-stack:not(:has(.is-hosted)) {
+    bottom: auto;
+}
+
+#three-click-stack .three-mode-parcel-panel {
+    padding: var(--cb-space-1) var(--cb-space-3) var(--cb-space-3);
+}
+
+#three-click-stack .three-mode-parcel-panel .parcel-id-text {
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+}
+
+/* The hosted inspector is part of the card: no docking, size, frame or scroll of its own. */
+#three-click-stack #planning-inspector.is-hosted {
+    position: static;
+    inset: auto;
+    width: auto;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+    z-index: auto;
+    overflow: visible;
+}

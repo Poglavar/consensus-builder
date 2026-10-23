@@ -799,17 +799,15 @@
         return counted ? { volume, floorArea: volume / FLOOR_HEIGHT_M } : null;
     }
 
-    // --- Proposal lookup helpers (for the "Proposal info" view) ---
-    function getProposalForParcel(parcelId) {
+    // --- Proposal lookup helpers (for the click stack's Design section) ---
+    // The proposals on a parcel, applied ones first (those are the ones the scene draws).
+    function getProposalsForParcel(parcelId) {
         try {
             const store = (typeof window !== 'undefined') ? window.proposalStorage : null;
-            if (!store || typeof store.getProposalsForParcel !== 'function') return null;
+            if (!store || typeof store.getProposalsForParcel !== 'function') return [];
             const list = store.getProposalsForParcel(parcelId) || [];
-            if (!list.length) return null;
-            // Prefer an applied proposal; else the first match.
-            const applied = list.find(p => isApplied(p));
-            return applied || list[0];
-        } catch (_) { return null; }
+            return [...list.filter(p => isApplied(p)), ...list.filter(p => !isApplied(p))];
+        } catch (_) { return []; }
     }
 
     function proposalDisplayTitle(p) {
@@ -834,20 +832,14 @@
         return ids;
     }
 
+    // The figures of the Design and Parcel sections of the click stack (three-click-stack.js): one
+    // element, filled for whichever of the two is expanded and moved into its body.
     function ensureParcelInfoPanel() {
-        if (!threeContainer) return null;
-        if (parcelInfoPanelEl && parcelInfoPanelEl.parentElement === threeContainer) return parcelInfoPanelEl;
-        parcelInfoPanelEl = document.createElement('div');
-        parcelInfoPanelEl.className = 'three-mode-parcel-panel';
-        parcelInfoPanelEl.style.display = 'none';
-        threeContainer.appendChild(parcelInfoPanelEl);
+        if (!parcelInfoPanelEl) {
+            parcelInfoPanelEl = document.createElement('div');
+            parcelInfoPanelEl.className = 'three-mode-parcel-panel';
+        }
         return parcelInfoPanelEl;
-    }
-
-    function hideParcelInfoPanel() {
-        if (parcelInfoPanelEl) parcelInfoPanelEl.style.display = 'none';
-        // The open info box covers the floating status message (mobile); clear that when it closes.
-        try { document.body.classList.remove('three-info-open'); } catch (_) { }
     }
 
     // The two money rows' cells and the price labels from the current slider prices and the stored
@@ -894,7 +886,7 @@
     }
 
     // Shared by the parcel and proposal panels: wire the two price sliders and render the comparison
-    // from the current prices and lastFloorAreas, then reveal the panel.
+    // from the current prices and lastFloorAreas.
     function wireSliderAndGain(panel) {
         [['sale-slider', 'sale'], ['construction-slider', 'construction']].forEach(([role, key]) => {
             const slider = panel.querySelector(`[data-role="${role}"]`);
@@ -905,29 +897,7 @@
                 renderValueComparison(panel);
             });
         });
-        const closeBtn = panel.querySelector('[data-role="close-panel"]');
-        if (closeBtn) {
-            closeBtn.addEventListener('click', () => {
-                if (isolatedParcelId !== null || isolatedProposalId !== null) clearIsolation();
-                else hideParcelInfoPanel();
-            });
-        }
         renderValueComparison(panel);
-        panel.style.display = '';
-        // Mark an info box as open so CSS can cover the overlapping floating status on mobile.
-        try { document.body.classList.add('three-info-open'); } catch (_) { }
-    }
-
-    // Title row with the panel's own way out. On a phone the isolation pill is out of reach of the
-    // thumb and the panel is the thing in front of you; closing it leaves the isolated view, which
-    // is what the panel describes.
-    function panelTitleHtml(titleHtml) {
-        const aria = escapeHtml(threeI18n('threeMode.isolation.exitAria', 'Exit this view'));
-        return `
-            <div class="parcel-panel-title-row">
-                <div class="parcel-panel-title">${titleHtml}</div>
-                <button type="button" class="close-circle-btn parcel-panel-close" data-role="close-panel" aria-label="${aria}" title="${aria}">&times;</button>
-            </div>`;
     }
 
     // The Built / Planned / Proposed comparison shared by both panels: volume and floor area, then
@@ -961,7 +931,6 @@
 
     function panelLabels() {
         return {
-            title: threeI18n('threeMode.parcelPanel.title', 'Parcel'),
             built: threeI18n('threeMode.parcelPanel.built', 'Built'),
             planned: threeI18n('threeMode.parcelPanel.planned', 'Planned'),
             proposed: threeI18n('threeMode.parcelPanel.proposed', 'Proposed'),
@@ -972,18 +941,15 @@
             profitNote: threeI18n('threeMode.parcelPanel.profitNote', 'Profit = value − construction cost − built value'),
             floorArea: threeI18n('threeMode.parcelPanel.floorArea', 'Floor area'),
             floorNote: threeI18n('threeMode.parcelPanel.floorNote', '@ {{h}} m/floor', { h: FLOOR_HEIGHT_M }),
-            proposalLabel: threeI18n('threeMode.parcelPanel.proposalLabel', 'Proposal'),
-            show: threeI18n('threeMode.parcelPanel.show', 'show'),
-            proposalHeading: threeI18n('threeMode.proposalPanel.title', 'Proposal info'),
             parcelsLabel: threeI18n('threeMode.proposalPanel.parcelsLabel', 'Parcels')
         };
     }
 
+    // The Parcel section's figures for one parcel; false when the parcel cannot be measured.
     function updateParcelInfoPanel(parcelId) {
         const panel = ensureParcelInfoPanel();
-        if (!panel) return;
         const m = computeParcelMetrics(parcelId);
-        if (!m) { panel.style.display = 'none'; try { document.body.classList.remove('three-info-open'); } catch (_) { } return; }
+        if (!m) return false;
         const planned = plannedMetrics([parcelId]);
         const hasProposed = m.proposedFloorArea > 0;
         lastFloorAreas = { built: m.builtFloorArea, planned: planned ? planned.floorArea : null, proposed: hasProposed ? m.proposedFloorArea : null };
@@ -991,21 +957,12 @@
         lastParcelFloorAreas = null;
 
         const L = panelLabels();
-        // If the parcel belongs to a proposal, offer a [show] button that opens the proposal view.
-        const proposal = getProposalForParcel(parcelId);
-        const proposalRow = proposal ? `
-            <div class="parcel-panel-proposal">
-                <span class="parcel-panel-proposal-label">${L.proposalLabel}:</span>
-                <button type="button" class="cb-link parcel-panel-proposal-show" data-role="show-proposal">${escapeHtml(proposalDisplayTitle(proposal))} <span class="show-tag">[${L.show}]</span></button>
-            </div>` : '';
-
         const suggestedText = suggestedParcelPanelText(parcelId);
         const suggestedRow = suggestedText ? `
             <div class="parcel-panel-subnote parcel-panel-suggested">${escapeHtml(threeI18n('threeMode.parcelPanel.suggestedLayout', 'Suggested layout'))}: ${escapeHtml(suggestedText)}</div>` : '';
-        const canonicalParcelId = String(parcelId);
+        // The full cadastral id: the stack's row shows the short number.
         panel.innerHTML = `
-            ${panelTitleHtml(`${L.title} <span class="parcel-id-text" title="${escapeHtml(canonicalParcelId)}">${escapeHtml(canonicalParcelId)}</span>`)}
-            ${proposalRow}
+            <div class="parcel-panel-subnote parcel-id-text">${escapeHtml(String(parcelId))}</div>
             ${suggestedRow}
             ${metricsTableHtml(L, {
                 built: { volume: m.builtVolume, floorArea: m.builtFloorArea },
@@ -1014,12 +971,8 @@
             })}
         `;
 
-        const showBtn = panel.querySelector('[data-role="show-proposal"]');
-        if (showBtn && proposal) {
-            const pid = proposalIdOf(proposal);
-            showBtn.addEventListener('click', () => { if (pid != null) isolateProposal(pid); });
-        }
         wireSliderAndGain(panel);
+        return true;
     }
 
     // A proposal's site as a feature (site-binding.js: authored site, else its own footprint).
@@ -1030,13 +983,12 @@
         } catch (_) { return null; }
     }
 
-    // Aggregate panel for a whole proposal: totals across all its parcels, total gain/loss. The
-    // ground rule (which figures are site metrics, which need a binding) is in gain.js
+    // The Design section's figures for a whole proposal: totals across all its parcels, total
+    // gain/loss. The ground rule (which figures are site metrics, which need a binding) is in gain.js
     // summarizeProposalGround: on open ground the totals are the site's and there is no parcel count.
+    // False when there is nothing to measure.
     function updateProposalInfoPanel(proposal, idSet) {
-        if (window.PlanningViews?.getSelected()?.role === 'proposed') { hideParcelInfoPanel(); return; }
         const panel = ensureParcelInfoPanel();
-        if (!panel) return;
         const siteStats = window.__siteStats || null;
         const ground = siteStats ? siteStats.groundOf(proposal) : null;
         const parcelMetrics = [];
@@ -1050,7 +1002,7 @@
             ? computeGroundMetrics(proposalSiteFeature(proposal))
             : null;
         const summary = window.ProposalGain.summarizeProposalGround({ parcelMetrics, siteMetrics, ground });
-        if (!summary) { hideParcelInfoPanel(); return; }
+        if (!summary) return false;
         // Planned over the proposal's parcels; on open ground (no parcels) there is no plan to compare.
         const planned = summary.parcelCount ? plannedMetrics([...idSet]) : null;
         const hasProposed = summary.proposedFloorArea > 0;
@@ -1074,8 +1026,6 @@
         const suggestedLine = suggestedProposalPanelText(proposal);
         if (suggestedLine) lines.push(suggestedLine);
         panel.innerHTML = `
-            ${panelTitleHtml(L.proposalHeading)}
-            <div class="parcel-panel-proposal-name">${escapeHtml(proposalDisplayTitle(proposal))}</div>
             ${lines.map(line => `<div class="parcel-panel-subnote">${escapeHtml(line)}</div>`).join('')}
             ${metricsTableHtml(L, {
                 built: { volume: summary.builtVolume, floorArea: summary.builtFloorArea },
@@ -1085,6 +1035,7 @@
             <div class="parcel-panel-avg" data-role="avg-gain"></div>
         `;
         wireSliderAndGain(panel);
+        return true;
     }
 
     // Show only the given set of parcels (and the buildings on them). Used for whole-proposal
@@ -1141,7 +1092,6 @@
         viewedParcelId = parcelId;
         isolatedProposalId = null;
         updateIsolationButton();
-        updateParcelInfoPanel(parcelId);
         // The Buildings and massing panel refers to the isolated parcel.
         try { window.PlanningViews?.focusParcel?.(parcelId); } catch (_) { }
         applyParcelEmphasis();
@@ -1191,7 +1141,6 @@
         isolatedProposalId = String(proposalId);
         isolatedParcelId = null;
         updateIsolationButton();
-        updateProposalInfoPanel(proposal, idSet);
         if (siteFeature) {
             frameIsolatedFeatures([siteFeature]);
             notifyIsolationChanged();
@@ -1302,8 +1251,6 @@
     // the inspector when nothing the click hit already did. Null ends the view.
     function viewParcel(parcelId, options = {}) {
         viewedParcelId = parcelId ? String(parcelId) : null;
-        if (viewedParcelId) updateParcelInfoPanel(viewedParcelId);
-        else if (isolatedParcelId === null && isolatedProposalId === null) hideParcelInfoPanel();
         applyParcelEmphasis();
         try { window.PlanningViews?.focusParcel?.(viewedParcelId, { openMassing: options.openMassing !== false }); } catch (_) { }
     }
@@ -1315,7 +1262,6 @@
         isolatedParcelId = null;
         isolatedProposalId = null;
         updateIsolationButton();
-        hideParcelInfoPanel();
         try { window.PlanningViews?.focusParcel?.(null); } catch (_) { }
         restoreParcelEmphasis();
         if (!wasProposalIsolated) {
@@ -1329,6 +1275,141 @@
         rebuild3DBuildingsOnly();
         applyModeVisibility();
         notifyIsolationChanged();
+    }
+
+    // ── The click stack (three-click-stack.js) ──
+    // Ends what a click opened: the stack and the isolation or parcel view under it. clearIsolation
+    // alone is the scene half, which isolating another proposal or parcel also runs on its way.
+    function endSelectionView() {
+        window.ThreeClickStack?.close({ silent: true });
+        clearIsolation();
+    }
+
+    // While the stack switches sections it selects and deselects in the Buildings and massing panel
+    // itself; those selection changes must not end the view the way an outside selection does.
+    let stackDriving = false;
+    let stackInspector = null;   // { el, parent, next, selectedId } while the stack hosts the inspector
+    function withStackDriving(run) {
+        const previous = stackDriving;
+        stackDriving = true;
+        try { return run(); } finally { stackDriving = previous; }
+    }
+
+    function hostInspector(body) {
+        const el = document.getElementById('planning-inspector');
+        if (!el || el.hidden || !body) return;
+        if (stackInspector?.el !== el) stackInspector = { el, parent: el.parentNode, next: el.nextSibling };
+        stackInspector.selectedId = window.PlanningViews?.getSelected()?.id || null;
+        el.classList.add('is-hosted');
+        body.appendChild(el);
+    }
+
+    // What each section means in the scene, and what fills its body.
+    const clickStackAdapter = {
+        activate(kind, instance, body) {
+            if (!instance || !body) return;
+            if (kind === 'designs') {
+                if (isolatedProposalId !== instance.id) {
+                    withStackDriving(() => window.selectAndHighlightProposal?.(instance.id, null, false, false, true));
+                    isolateProposal(instance.id);
+                }
+                const proposal = window.proposalStorage?.getProposal?.(instance.id);
+                if (proposal && updateProposalInfoPanel(proposal, getProposalParcelIdSet(proposal))) body.appendChild(parcelInfoPanelEl);
+                // Selecting a proposal opens its authored record in the inspector: it is the
+                // design's own information, so it goes under the figures.
+                if (window.PlanningViews?.getSelected()?.role === 'proposed') hostInspector(body);
+            } else if (kind === 'parcels') {
+                if (viewedParcelId !== instance.id) viewParcel(instance.id, { openMassing: false });
+                if (updateParcelInfoPanel(instance.id)) body.appendChild(parcelInfoPanelEl);
+            } else if (kind === 'built') {
+                withStackDriving(() => window.PlanningViews.inspectBuilding(instance.feature));
+                hostInspector(body);
+            } else if (kind === 'permitted') {
+                withStackDriving(() => window.PlanningViews.select(instance.id));
+                hostInspector(body);
+            }
+        },
+        // The section closes: its figures leave, and the inspector goes home, deselected only when
+        // it still shows what the stack chose (a selection made elsewhere is that surface's).
+        release() {
+            parcelInfoPanelEl?.remove();
+            const hosted = stackInspector;
+            if (!hosted) return;
+            stackInspector = null;
+            hosted.el.classList.remove('is-hosted');
+            hosted.parent?.insertBefore(hosted.el, hosted.next && hosted.next.parentNode === hosted.parent ? hosted.next : null);
+            if (hosted.selectedId && window.PlanningViews?.getSelected()?.id === hosted.selectedId) {
+                withStackDriving(() => window.PlanningViews.select(null));
+            }
+        },
+        closed() {
+            endSelectionView();
+            try { window.ProposalSelection?.clear?.(); } catch (_) { }
+        }
+    };
+
+    // The permitted massing a parcel's source records for it (planning/views.js parcelOf).
+    function parcelMassingItem(parcelId) {
+        try {
+            return (window.PlanningViews?.getItems?.() || []).find(item => item.role === 'permitted'
+                && String(item.sourceEvidence?.parcelReference?.parcelId || item.source?.parcel || '') === String(parcelId)) || null;
+        } catch (_) { return null; }
+    }
+
+    // The existing buildings standing on a parcel, by footprint centre (as isolation decides what
+    // stays visible), each once: the Built section of a click on the parcel or a design on it.
+    function buildingsOnParcel(parcelId) {
+        const parcel = parcelId ? getParcelFeatureById(parcelId) : null;
+        if (!parcel || !existingBuildingsGroup || typeof turf === 'undefined') return [];
+        const found = new Map();
+        existingBuildingsGroup.traverse(object => {
+            const data = object.userData || {};
+            if (!data.planningBuiltFeature || !data.footprintLatLng) return;
+            const feature = data.planningBuiltFeature;
+            const key = (typeof buildingPoolFeatureKey === 'function' && buildingPoolFeatureKey(feature)) || feature.id;
+            if (!key || found.has(String(key))) return;
+            try { if (turf.booleanPointInPolygon(turf.point(data.footprintLatLng), parcel)) found.set(String(key), feature); } catch (_) { }
+        });
+        return [...found].map(([id, feature]) => ({ id, feature }));
+    }
+
+    // A building's row label: its name or address, else its footprint area, so a strip of several
+    // buildings on one parcel can tell them apart.
+    function builtInstance({ id, feature }) {
+        let label = window.ThreeClickStack.buildingLabel(feature);
+        if (!label) { try { label = CbFormat.formatArea(turf.area(feature), { maxFractionDigits: 0 }); } catch (_) { label = ''; } }
+        return { id, label, feature };
+    }
+
+    // After a click has done its scene work: the stack for what it stood on, the clicked thing open.
+    function showClickStack(picked, plan) {
+        const stackApi = window.ThreeClickStack;
+        if (!stackApi) return;
+        const store = window.proposalStorage;
+        const parcelId = plan.parcel?.id || null;
+        const designs = [];
+        if (plan.proposal) { const clicked = store?.getProposal?.(plan.proposal.id); if (clicked) designs.push(clicked); }
+        if (parcelId) designs.push(...getProposalsForParcel(parcelId));
+        const massingIds = [picked?.planningId, parcelId ? parcelMassingItem(parcelId)?.id : null].filter(Boolean);
+        const items = window.PlanningViews?.getItems?.() || [];
+        const built = picked?.builtFeature || null;
+        const builtId = built ? String((typeof buildingPoolFeatureKey === 'function' && buildingPoolFeatureKey(built)) || built.id || 'built') : null;
+        const builtList = [...(built ? [{ id: builtId, feature: built }] : []), ...buildingsOnParcel(parcelId)];
+        const input = {
+            built: builtList.map(builtInstance),
+            designs: designs.map(p => ({ id: String(proposalIdOf(p)), label: proposalDisplayTitle(p) })),
+            permitted: massingIds.map(id => ({ id, label: items.find(item => item.id === id)?.title || '' })),
+            parcels: parcelId ? [{ id: parcelId, label: stackApi.parcelLabel(parcelId) }] : []
+        };
+        const focus = plan.proposal ? 'designs' : stackApi.focusOf(picked && picked.proposalId ? null : picked);
+        const selected = { ...(plan.proposal ? { designs: plan.proposal.id } : {}), ...(builtId ? { built: builtId } : {}) };
+        stackApi.show(input, { focus, selected, container: document.getElementById('map-container') || document.body }, clickStackAdapter);
+    }
+
+    // The scene rebuilt under an open Design or Parcel section: its figures may have changed.
+    function refreshClickStackFigures() {
+        const expanded = window.ThreeClickStack?.expanded?.();
+        if (expanded === 'designs' || expanded === 'parcels') window.ThreeClickStack.refresh();
     }
 
     // Isolation is entered by a click, but exited by clicking "somewhere else" — which nothing on
@@ -1347,7 +1428,7 @@
         close.className = 'close-circle-btn isolation-banner-close';
         close.innerHTML = '&times;';
         close.setAttribute('aria-label', threeI18n('threeMode.isolation.exitAria', 'Exit this view'));
-        close.addEventListener('click', () => clearIsolation());
+        close.addEventListener('click', () => endSelectionView());
         isolationBannerEl.appendChild(close);
         threeContainer.appendChild(isolationBannerEl);
         return isolationBannerEl;
@@ -7276,6 +7357,7 @@
         if (proposedVisible) update(proposedBuildingsGroup, plannedDisplay === 'solid' ? 1 : 0.5, false);
         if (existingTransitAlignmentGroup) existingTransitAlignmentGroup.visible = builtPolicy.showExistingRail && !realisticLayerActive;
         if (isolatedProposalId !== null) isolateProposal(isolatedProposalId);
+        refreshClickStackFigures();
         invalidateThreeView();
         return true;
     }
@@ -7330,6 +7412,7 @@
             ensureNearbyWater();
             if (isolatedParcelId !== null) applyParcelEmphasis();
             else if (isolatedProposalId !== null) isolateProposal(isolatedProposalId);
+            refreshClickStackFigures();
             updateXrayControls();
             invalidateThreeView();
         } finally {
@@ -8041,6 +8124,8 @@
             proposalSelectionUnsubscribe = null;
         }
         clickDownXY = null;
+        // The stack closes with the scene and sends a hosted Buildings and massing panel home.
+        try { window.ThreeClickStack?.close({ silent: true }); } catch (_) { }
         isolatedParcelId = null;
         isolatedProposalId = null;
         isolationResetEl = null;
@@ -8127,9 +8212,8 @@
     }
 
     function closeAllPanelsAndModalsFor3D() {
-        // `hideParcelInfoPanel` in this module belongs to the Three.js overlay. Explicitly call the
-        // 2D parcel-panel owner as well; otherwise its identically named local function shadows the
-        // global closer and the Leaflet Parcel Info panel remains visible over 3D.
+        // The 2D parcel panel's owner closes it (the Leaflet Parcel Info panel would otherwise stay
+        // visible over 3D); the 3D view's own click stack starts closed.
         try {
             const hideLeafletParcelInfo = window.Parcels?.uiParcelPanel?.hideParcelInfoPanel
                 || window.hideParcelInfoPanel;
@@ -8137,7 +8221,7 @@
                 preserveProposalSelection: window.PlanningViews?.getSelected()?.role === 'proposed'
             });
         } catch (_) { }
-        try { hideParcelInfoPanel(); } catch (_) { }
+        try { window.ThreeClickStack?.close({ silent: true }); } catch (_) { }
         try { typeof hideProposalDetailsPanel === 'function' && hideProposalDetailsPanel(); } catch (_) { }
         try { typeof hideBlockInfo === 'function' && hideBlockInfo(); } catch (_) { }
         try { typeof hideRoadInfoPanel === 'function' && hideRoadInfoPanel(); } catch (_) { }
@@ -8315,6 +8399,8 @@
             xyToLatLng
         );
         isActive = false;
+        // The click stack is the 3D view's; the 2D map has its own.
+        try { window.ThreeClickStack?.close({ silent: true }); } catch (_) { }
         focusProposalIds = null; // reset shared-link focus; a manual re-entry frames all proposals
         stopIntroAutoRotate();
         cancelWalkPick();
@@ -8373,7 +8459,9 @@
 
     window.addEventListener('planninggeometrychange', rebuildPlanningSources3D);
     window.addEventListener('planningselectionchange', () => {
-        if (isActive) { clearIsolation(); hideParcelInfoPanel(); }
+        // A massing chosen elsewhere (the Buildings and massing sheet) ends the click's view; the
+        // stack's own section switches select there too and are not an outside choice.
+        if (isActive && !stackDriving) endSelectionView();
         rebuildPlanningSources3D();
     });
     window.addEventListener('planningviewchange', syncPlanningView3D);
@@ -8578,8 +8666,9 @@
             // 3D is a viewing mode (for now): no 2D details panel here. Clicking a proposal
             // selects it silently and isolates it; clicking it again returns to full view.
             if (plan.proposal.action === 'clear') {
-                clearIsolation();
+                endSelectionView();
                 try { window.ProposalSelection?.clear?.(); } catch (_) { }
+                return;
             } else {
                 const parcelId = picked.parcelId || proposal?.cadastreParcelIds?.[0] || null;
                 if (typeof window.selectAndHighlightProposal === 'function') {
@@ -8590,10 +8679,12 @@
                 isolateProposal(plan.proposal.id);
             }
         }
-        if (!plan.parcel) return;
-        if (plan.parcel.action === 'clear') clearIsolation();
-        else if (plan.parcel.action === 'isolate') isolateParcel(plan.parcel.id);
-        else viewParcel(plan.parcel.id, { openMassing: plan.openMassing });
+        if (plan.parcel?.action === 'clear') { endSelectionView(); return; }
+        if (plan.parcel?.action === 'isolate') isolateParcel(plan.parcel.id);
+        // A parcel's massing is a section of the stack, opened from there, not on every click.
+        else if (plan.parcel) viewParcel(plan.parcel.id, { openMassing: false });
+        if (!plan.parcel && !plan.proposal && !plan.selectMassing && !plan.inspectBuilding) return;
+        showClickStack(picked, plan);
     }
 
     // The parcel under a click, through whatever stands on it: the ray against the parcel slabs alone.
@@ -8621,14 +8712,15 @@
             altKey: evt.altKey,
             target: evt.target,
             walkPickActive,
-            hasIsolation: isolatedParcelId !== null || isolatedProposalId !== null || viewedParcelId !== null,
+            hasIsolation: isolatedParcelId !== null || isolatedProposalId !== null || viewedParcelId !== null
+                || !!window.ThreeClickStack?.isOpen?.(),
             overlayOpen: !!(document.body.classList.contains('map-sheet-open')
                 || (window.MapShell && typeof window.MapShell.isBlockingDialogOpen === 'function'
                     && window.MapShell.isBlockingDialogOpen()))
         });
         if (action === 'pass') return;
         if (action === 'cancel-walk') cancelWalkPick();
-        else if (action === 'clear-isolation') clearIsolation();
+        else if (action === 'clear-isolation') endSelectionView();
         if (action !== 'block-2d-native') evt.preventDefault();
         evt.stopImmediatePropagation();
     }
@@ -8934,7 +9026,7 @@
             isolatedParcelId = null;
             isolatedProposalId = null;
             try { updateIsolationButton(); } catch (_) { }
-            try { hideParcelInfoPanel(); } catch (_) { }
+            try { window.ThreeClickStack?.close({ silent: true }); } catch (_) { }
         }
         if (options.exiting) buildingViewDirty = true;
         else if (isActive && !applyRetainedBuildingDisplay()) rebuild3DBuildingsOnly();

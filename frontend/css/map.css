@@ -288,135 +288,68 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
     max-width: 145px;
 }
 
-/* Left-side parcel value panel (shown when a parcel is isolated/clicked in 3D). */
-#three-container .three-mode-parcel-panel {
-    position: absolute;
-    /* Beside the left button column (planning views at the top, the 2D / 3D / photo modes below),
-       never under it. */
-    --three-panel-left: calc(var(--map-shell-edge) + var(--map-shell-button-size) + var(--map-shell-gap));
-    top: var(--map-shell-edge);
-    left: var(--three-panel-left);
-    /* Four columns: a row label and Built / Planned / Proposed. */
-    width: 300px;
-    max-width: calc(100vw - var(--three-panel-left) - 12px);
-    padding: 10px 12px;
-    background: var(--cb-glass-sheet);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    border: 1px solid var(--cb-line-glass);
-    border-radius: var(--cb-radius-md);
-    box-shadow: var(--cb-shadow-md);
-    pointer-events: auto;
-    z-index: var(--cb-z-local-10);
+/* The 3D view's value figures (Built / Planned / Proposed), shown inside the Design and Parcel
+   sections of its click stack (js/three-click-stack.js, css/three-click-stack.css). */
+.three-mode-parcel-panel {
     font-size: var(--cb-text-sm);
     color: var(--cb-text);
 }
 
-#three-container .three-mode-parcel-panel .parcel-panel-title-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    margin-bottom: 8px;
-}
-
-#three-container .three-mode-parcel-panel .parcel-panel-title {
-    flex: 1;
-    min-width: 0;
-    font-weight: var(--cb-weight-bold);
-    font-size: var(--cb-text-md);
-    color: var(--cb-text-strong);
-    word-break: break-word;
-}
-
 /* The panel's way out is a close-circle-btn, tucked into the corner. */
-#three-container .three-mode-parcel-panel .parcel-panel-close {
-    margin: -4px -4px 0 0;
-}
-
 /* "Proposal: <name> [show]" row in the parcel panel (the name is a .cb-link), and the proposal
    name in the aggregate proposal panel. */
-#three-container .three-mode-parcel-panel .parcel-panel-proposal {
-    display: flex;
-    align-items: baseline;
-    gap: 6px;
-    margin: -2px 0 8px;
-    font-size: var(--cb-text-sm);
-}
-
-#three-container .three-mode-parcel-panel .parcel-panel-proposal-label {
-    color: var(--cb-text-muted);
-    flex: none;
-}
-
-#three-container .three-mode-parcel-panel .parcel-panel-proposal-show {
-    word-break: break-word;
-}
-
 /* The [show] tag inside the proposal's cb-link button reads as a hint, not part of the title. */
-#three-container .three-mode-parcel-panel .show-tag {
-    color: var(--cb-text-faint);
-    white-space: nowrap;
-}
-
-#three-container .three-mode-parcel-panel .parcel-panel-proposal-name {
-    font-weight: 700;
-    font-size: 13px;
-    margin-bottom: 4px;
-    color: var(--cb-primary);
-    word-break: break-word;
-}
-
 /* Proposal panel: "Parcels: N" subnote and the average-gain-per-parcel line. */
-#three-container .three-mode-parcel-panel .parcel-panel-subnote {
+.three-mode-parcel-panel .parcel-panel-subnote {
     font-size: var(--cb-text-xs);
     color: var(--cb-text-faint);
     margin: 0 0 8px;
 }
 
-#three-container .three-mode-parcel-panel .parcel-panel-avg {
+.three-mode-parcel-panel .parcel-panel-avg {
     margin-top: 2px;
     font-weight: 600;
     font-size: var(--cb-text-sm);
 }
 
-#three-container .three-mode-parcel-panel .parcel-panel-avg:empty {
+.three-mode-parcel-panel .parcel-panel-avg:empty {
     display: none;
 }
 
-#three-container .three-mode-parcel-panel .parcel-panel-avg.gain-positive {
+.three-mode-parcel-panel .parcel-panel-avg.gain-positive {
     color: var(--cb-success);
 }
 
-#three-container .three-mode-parcel-panel .parcel-panel-avg.gain-negative {
+.three-mode-parcel-panel .parcel-panel-avg.gain-negative {
     color: var(--cb-danger);
 }
 
-#three-container .three-mode-parcel-panel .parcel-panel-table {
+.three-mode-parcel-panel .parcel-panel-table {
     width: 100%;
     border-collapse: collapse;
 }
 
-#three-container .three-mode-parcel-panel .parcel-panel-table th,
-#three-container .three-mode-parcel-panel .parcel-panel-table td {
+.three-mode-parcel-panel .parcel-panel-table th,
+.three-mode-parcel-panel .parcel-panel-table td {
     text-align: right;
     padding: 2px 0 2px 6px;
     white-space: nowrap;
 }
 
-#three-container .three-mode-parcel-panel .parcel-panel-table th:first-child,
-#three-container .three-mode-parcel-panel .parcel-panel-table td:first-child {
+.three-mode-parcel-panel .parcel-panel-table th:first-child,
+.three-mode-parcel-panel .parcel-panel-table td:first-child {
     text-align: left;
     color: var(--cb-text-muted);
     padding-right: 8px;
 }
 
-#three-container .three-mode-parcel-panel .parcel-panel-table th {
+.three-mode-parcel-panel .parcel-panel-table th {
     font-weight: 600;
     color: var(--cb-text-muted);
     border-bottom: 1px solid var(--cb-line);
 }
 
-#three-container .three-mode-parcel-panel .parcel-panel-note {
+.three-mode-parcel-panel .parcel-panel-note {
     font-size: var(--cb-text-xs);
     color: var(--cb-text-faint);
     margin: 4px 0 8px;
@@ -424,39 +357,39 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
 }
 
 /* A column the parcel has no figures for (no permitted massing loaded, no proposed massing). */
-#three-container .three-mode-parcel-panel .parcel-panel-table .is-unavailable {
+.three-mode-parcel-panel .parcel-panel-table .is-unavailable {
     color: var(--cb-text-faint);
     opacity: 0.55;
 }
 
-#three-container .three-mode-parcel-panel .parcel-panel-table td.gain-positive {
+.three-mode-parcel-panel .parcel-panel-table td.gain-positive {
     color: var(--cb-success);
     font-weight: 700;
 }
 
-#three-container .three-mode-parcel-panel .parcel-panel-table td.gain-negative {
+.three-mode-parcel-panel .parcel-panel-table td.gain-negative {
     color: var(--cb-danger);
     font-weight: 700;
 }
 
-#three-container .three-mode-parcel-panel .parcel-panel-slider-label {
+.three-mode-parcel-panel .parcel-panel-slider-label {
     display: block;
     font-weight: 600;
     color: var(--cb-text-muted);
     padding-top: 4px;
 }
 
-#three-container .three-mode-parcel-panel .parcel-panel-slider-label:first-of-type {
+.three-mode-parcel-panel .parcel-panel-slider-label:first-of-type {
     border-top: 1px solid var(--cb-line);
 }
 
 /* The Profit row label explains its formula on hover. */
-#three-container .three-mode-parcel-panel .parcel-panel-table td[title] {
+.three-mode-parcel-panel .parcel-panel-table td[title] {
     cursor: help;
 }
 
 /* The slider takes the primary accent every native control has (css/tokens.css). */
-#three-container .three-mode-parcel-panel .parcel-panel-price-slider {
+.three-mode-parcel-panel .parcel-panel-price-slider {
     width: 100%;
     margin: 2px 0;
     cursor: pointer;
@@ -488,42 +421,16 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
 
 /* Its × is a close-circle-btn; the pill hugs it. */
 
-/* On phones there is no horizontal room for the parcel panel (top-left) and the
-   Built/Both/Planned controls (top-right) side by side, so the panel docks to the
-   bottom of the 3D view instead, edge to edge: the mode strip hangs from the top-left on
-   phones, so the bottom is the panels'. */
 @media (max-width: 767.98px) {
-    #three-container .three-mode-parcel-panel {
-        top: auto;
-        bottom: calc(var(--map-shell-dock-height) + var(--cb-space-3));
-        left: 12px;
-        right: 12px;
-        width: auto;
-        max-width: 360px;
-    }
-
-    /* The planning inspector docks to the same bottom edge on phones, so while it is open the
-       value panel moves up: beside the mode strip, under the isolation pill's row, and scrolls
-       within the space the inspector leaves (at most half the screen, css/planning-views.css). */
-    body:has(#planning-inspector:not([hidden])) #three-container .three-mode-parcel-panel {
-        top: calc(var(--map-shell-top-clearance) + var(--map-shell-button-size) + var(--map-shell-gap));
-        bottom: auto;
-        left: var(--three-panel-left);
-        box-sizing: border-box;
-        max-height: calc(50dvh - var(--map-shell-bottom-clearance) - var(--map-shell-top-clearance) - var(--map-shell-button-size) - 2 * var(--map-shell-gap));
-        overflow-y: auto;
-    }
-
     /* The top edge belongs to the menu button, the Guest pill and the settings gear. The
        isolation pill takes the row under them instead of sliding beneath the Guest pill. */
     #three-container .three-mode-isolation-banner {
         top: 62px;
     }
 
-    /* The bottom-docked parcel/proposal panel overlaps the floating status message
-       ("Applied building proposal …") on small screens. While an info box is open the box
-       takes over that corner, so hide the status to avoid the text bleeding through. */
-    body.three-mode-active.three-info-open .floating-status {
+    /* The click stack's bottom sheet overlaps the floating status message ("Applied building
+       proposal …") on small screens; while it is open it takes over that edge. */
+    body.three-mode-active.three-click-stack-open .floating-status {
         display: none !important;
     }
 }

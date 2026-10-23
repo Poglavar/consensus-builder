@@ -166,8 +166,10 @@ test.describe('3D rendering and controls @features', () => {
     const point = await rayVerifiedPickPoint(page, 'parcel', 'HR-335754-1234');
     const before = await camera();
     await page.mouse.click(point.x, point.y);
-    await expect(page.locator('.three-mode-parcel-panel')).toBeVisible();
-    const parcelPanel = page.locator('.three-mode-parcel-panel');
+    // The parcel's figures open in the Parcel section of the 3D click stack.
+    await expect(page.locator('#three-click-stack .click-stack__section[data-kind="parcels"].is-expanded')).toBeVisible();
+    const parcelPanel = page.locator('#three-click-stack .three-mode-parcel-panel');
+    await expect(parcelPanel).toBeVisible();
     // The sale price slider reprices the Built / Planned / Proposed comparison; the built value follows it.
     const priceSlider = parcelPanel.locator('[data-role="sale-slider"]');
     const valueReadout = parcelPanel.locator('[data-cell="value:built"]');
@@ -198,11 +200,12 @@ test.describe('3D rendering and controls @features', () => {
       return count;
     });
     expect(visible).toBe(2);
-    // Isolation is exited through the banner's close button (the panel's Show-all button went in fbe3758d).
+    // The stack's close ends the isolation with it (the banner's × does the same).
     const banner = page.locator('.three-mode-isolation-banner');
     await expect(banner).toBeVisible();
-    await page.locator('.three-mode-parcel-panel [data-role="close-panel"]').click();
+    await page.locator('#three-click-stack [data-action="close"]').click();
     await expect(banner).toBeHidden();
+    await expect(page.locator('#three-click-stack')).toBeHidden();
     expect(await camera()).toEqual(before);
     expect((await sceneBuildings(page)).map(building => building.color)).toEqual(originalBuildings.map(building => building.color));
     await page.screenshot({ path: '/private/tmp/colosseum-3d-parcel-emphasis.png' });

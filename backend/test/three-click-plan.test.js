@@ -24,6 +24,9 @@ describe('planThreeClick', () => {
         expect(first).toMatchObject({ clearSelection: true, proposal: { id: 'p-1', action: 'isolate' }, parcel: { id: 'HR-3', action: 'view' }, openMassing: false });
         const again = planThreeClick({ ...idle, isolatedProposalId: 'p-1', viewedParcelId: 'HR-3', picked: { proposalId: 'p-1', parcelId: 'HR-3' }, groundParcelId: 'HR-3', proposalKnown: true });
         expect(again).toMatchObject({ proposal: { id: 'p-1', action: 'clear' }, parcel: null });
+        // Through a design the ray can reach the neighbour's slab: the design's own slice is the parcel in view.
+        expect(planThreeClick({ ...idle, picked: { proposalId: 'p-1', parcelId: 'HR-3' }, groundParcelId: 'HR-2', proposalKnown: true }).parcel)
+            .toEqual({ id: 'HR-3', action: 'view' });
         // An unknown proposal id is just ground.
         expect(planThreeClick({ ...idle, picked: { proposalId: 'gone', parcelId: 'HR-3' }, groundParcelId: 'HR-3', proposalKnown: false }).parcel).toEqual({ id: 'HR-3', action: 'view' });
     });

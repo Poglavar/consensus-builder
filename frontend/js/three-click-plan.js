@@ -2,7 +2,7 @@
 // a parcel click: the parcel under the click point, through whatever stands on it, becomes the
 // parcel in view (its panel, its massing, its outline), while the thing the ray hit first keeps its
 // own meaning on top (a massing opens its inspector, an existing building its record, a proposal
-// building selects and isolates the proposal). Isolation of a parcel, which dims the rest of the
+// building selects and isolates the proposal, and its own parcel slice is the parcel in view). Isolation of a parcel, which dims the rest of the
 // city, is a deliberate second click on the same parcel; a third click clears it. Pure: the caller
 // resolves the pick and the ground parcel and passes what it found.
 //
@@ -47,7 +47,9 @@
             const id = String(picked.proposalId);
             if (isolatedProposal === id) { plan.proposal = { id, action: 'clear' }; return plan; }
             plan.proposal = { id, action: 'isolate' };
-            plan.parcel = view(ground);
+            // The proposal's own parcel slice under the point: the slab the ray reaches through a
+            // tall or leaning design can be the neighbour's.
+            plan.parcel = view(picked.parcelId ? String(picked.parcelId) : ground);
             return plan;
         }
         const pid = ground || (picked && picked.parcelId ? String(picked.parcelId) : null);
