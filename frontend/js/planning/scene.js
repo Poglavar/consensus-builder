@@ -28,7 +28,7 @@
         return item.assessment?.meaning === 'zoning-area' ? values.zoningAreas : values[item.role];
     }
     function createStore(initial = {}) {
-        let state = Object.freeze({ ...settings(initial), variation: '', selectedId: null, revision: 0 });
+        let state = Object.freeze({ ...settings(initial), proposedVariation: '', permittedVariation: '', selectedId: null, revision: 0 });
         const listeners = new Set();
         const set = patch => {
             if (Object.keys(patch).every(key => state[key] === patch[key])) return state;
@@ -39,11 +39,15 @@
         return {
             get: () => state,
             configure: (key, value) => choices[key]?.includes(value) ? set({ [key]: value }) : state,
-            // One roll re-seeds every example build-out and every rolled configuration. A layer
-            // showing only its envelope switches to Both so the roll is visible.
-            reroll: () => set({ variation: String(Number(state.variation) + 1),
-                proposedForm: state.proposedForm === 'massing' ? 'both' : state.proposedForm,
-                permittedForm: state.permittedForm === 'bound' ? 'both' : state.permittedForm }),
+            // Each role has an independent roll. A layer showing only its envelope switches to
+            // Both so the roll is visible.
+            reroll: role => {
+                if (role === 'proposed') return set({ proposedVariation: String(Number(state.proposedVariation) + 1),
+                    proposedForm: state.proposedForm === 'massing' ? 'both' : state.proposedForm });
+                if (role === 'permitted') return set({ permittedVariation: String(Number(state.permittedVariation) + 1),
+                    permittedForm: state.permittedForm === 'bound' ? 'both' : state.permittedForm });
+                return state;
+            },
             select: id => set({ selectedId: id === null ? null : String(id) }),
             subscribe(listener) { listeners.add(listener); return () => listeners.delete(listener); }
         };

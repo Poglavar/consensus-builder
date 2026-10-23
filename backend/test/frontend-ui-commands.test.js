@@ -50,6 +50,7 @@ const NOT_COMMANDS = {
     'mode-realistic-toggle': 'map view control',
     'mode-ai-toggle': 'map view control',
     'planning-reroll': 'example build-out view control, handled by PlanningViews',
+    'planning-reroll-permitted': 'permitted configuration view control, handled by PlanningViews',
     'sun-enabled': 'model-view lighting setting, handled by three-sun.js',
     'sun-time': 'model-view lighting setting, handled by three-sun.js',
     'sun-date': 'model-view lighting setting, handled by three-sun.js',

@@ -70,6 +70,12 @@ test('Permitted keeps its envelope controls and ignores retired parcel-study lin
       : {schemaVersion:'planning-representations.v1',city:'colorado',sources:[source],items:path.endsWith('/envelopes')?[envelope]:[zone],
         summaries:[],unavailable:[],coverage:'source-results',nextCursor:null,omitted:0}});
   });
+  // Source selection is a frontend city setting; the backend catalog does not choose a default.
+  await page.route(/\/js\/city-config\.js(?:\?|$)/, async route => {
+    const response = await route.fetch();
+    const body = (await response.text()).replace('colorado: {', `colorado: { planning: { sourceIds: [${JSON.stringify(source.id)}] },`);
+    await route.fulfill({ response, body });
+  });
   await page.goto(url.replace('planningScenario=family1','planningScenario=all') + '&planningStudyScenario=family1'); await waitForMapReady(page);
   // The label names the shown configuration's height, never the bound's; the roll decides which one.
   const heightLabel = page.locator('.planning-envelope-height');
@@ -85,9 +91,13 @@ test('Permitted keeps its envelope controls and ignores retired parcel-study lin
   const panel=page.locator('#planning-views');
   await expect(panel.locator('.planning-scenario-select')).toHaveValue('all');
   // Rolling the dice turns the assumed street side and keeps the qualifying housing type; pinning a type overrides the roll.
-  await panel.locator('#planning-reroll').click();
+  const proposedBeforeRoll = await page.evaluate(() => (window as any).PlanningViews.getState().proposedVariation);
+  await panel.locator('#planning-reroll-permitted').click();
   const rolled = await shown();
   expect(rolled.frontEdge).not.toBe(first.frontEdge); expect(rolled.configuration).toBe('family1');
+  expect(await page.evaluate(() => (window as any).PlanningViews.getState().proposedVariation)).toBe(proposedBeforeRoll);
+  await panel.locator('#planning-reroll').click();
+  expect(await shown()).toEqual(rolled);
   await selectNativeOption(panel.locator('.planning-scenario-select'), 'family2');
   await expect(heightLabel).toHaveText('13.7 m');
   expect((await shown()).configuration).toBe('family2');

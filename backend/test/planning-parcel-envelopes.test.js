@@ -124,14 +124,12 @@ describe('viewport parcel envelopes', () => {
         await expect(loadParcelEnvelopes(query,options([],provider(),false))).rejects.toMatchObject({code:'study-parcel-incomplete'});
         await expect(loadParcelEnvelopes(query,options(Array.from({length:401},(_,i)=>parcel(String(i)))))).rejects.toMatchObject({code:'envelope-area-too-large'});
     });
-    it('falls back to the requesting city\'s default parcel source when the Atlas entry pins none', async () => {
+    it('requires an explicitly pinned parcel source instead of inferring one from the requesting city', async () => {
         const source = createAtlasProvider({type:'FeatureCollection',features:[{...turf.bboxPolygon([-105.002,39.999,-105,40.001]),properties}]},
             {...metadata,city:undefined,bbox:[-106,39,-104,41],parcelSourceId:undefined});
-        const parcelProvider = vi.fn(() => ({queryBounds:async () => ({features:[parcel()],complete:true})}));
-        const result = await loadParcelEnvelopes(query,{sources:[source],parcelProvider});
-        expect(parcelProvider.mock.calls[0][0].id).toBe('us-co-oit-public-parcels-denver');
-        expect(result.items[0].sourceEvidence.parcelReference.sourceId).toBe('us-co-oit-public-parcels-denver');
-        await expect(loadParcelEnvelopes({...query,city:'nowhere'},{sources:[source],parcelProvider})).rejects.toMatchObject({code:'study-parcel-source-unavailable'});
+        const parcelProvider = vi.fn();
+        await expect(loadParcelEnvelopes(query,{sources:[source],parcelProvider})).rejects.toMatchObject({code:'study-parcel-source-unavailable'});
+        expect(parcelProvider).not.toHaveBeenCalled();
     });
     it('reports an empty bound when no configuration draws', () => {
         expect(outerBound([{volumes:[]}])).toBeNull();
@@ -224,12 +222,23 @@ describe('configuration display logic', () => {
         expect([0,1,2,3].map(edge => envelopes.edgeSide(parcelGeometry, edge))).toEqual(['s','e','n','w']);
         expect(envelopes.frontEdgeFor({ id:'x' }, {})).toBeNull();
     });
-    it('rolling switches a bound-only layer to Both so the roll is visible, and re-seeds every roll', () => {
+    it('rerolls permitted and proposed variations independently and preserves settings and selection', () => {
         const store = scene.createStore({ permittedForm:'bound', proposedForm:'massing' });
-        store.reroll();
-        expect(store.get()).toMatchObject({ variation:'1', permittedForm:'both', proposedForm:'both' });
-        store.configure('permittedForm','configuration'); store.reroll();
-        expect(store.get()).toMatchObject({ variation:'2', permittedForm:'configuration' });
+        store.select('parcel-a');
+        const settingsBefore = scene.settings(store.get());
+        store.reroll('permitted');
+        expect(store.get()).toMatchObject({ permittedVariation:'1', proposedVariation:'', permittedForm:'both', proposedForm:'massing', selectedId:'parcel-a' });
+        expect(scene.settings(store.get())).toEqual({ ...settingsBefore, permittedForm:'both' });
+        store.configure('permittedForm','configuration');
+        const permittedForm = store.get().permittedForm;
+        store.reroll('proposed');
+        expect(store.get()).toMatchObject({ permittedVariation:'1', proposedVariation:'1', permittedForm, proposedForm:'both', selectedId:'parcel-a' });
+        expect(scene.settings(store.get())).toEqual({ ...settingsBefore, permittedForm, proposedForm:'both' });
+        const beforeInvalid = store.get();
+        expect(store.reroll('existing')).toBe(beforeInvalid);
+        expect(store.get()).toBe(beforeInvalid);
+        expect(store.reroll()).toBe(beforeInvalid);
+        expect(store.get()).toBe(beforeInvalid);
     });
     it('keeps zoning areas independent of the Permitted display control', () => {
         const sourceArea = {role:'permitted',assessment:{meaning:'zoning-area'}};

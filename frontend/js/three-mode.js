@@ -623,11 +623,11 @@
         const policy = window.PlanningViews?.getPolicy();
         if (!policy) return;
         const state = window.PlanningViews.getState();
-        const geometryChanged = plannedRepresentation !== state.proposedForm || buildOutDisplaySalt !== state.variation;
+        const geometryChanged = plannedRepresentation !== state.proposedForm || buildOutDisplaySalt !== state.proposedVariation;
         builtDisplay = policy.existing;
         plannedDisplay = policy.proposed;
         plannedRepresentation = state.proposedForm;
-        buildOutDisplaySalt = state.variation;
+        buildOutDisplaySalt = state.proposedVariation;
         if (isActive) {
             const retained = applyRetainedBuildingDisplay();
             if (!retained) rebuild3DBuildingsOnly();
@@ -7618,7 +7618,7 @@
         treesEnabled = loadTreesEnabledPref();
         waterEnabled = loadWaterEnabledPref();
         plannedRepresentation = window.PlanningViews.getState().proposedForm;
-        buildOutDisplaySalt = window.PlanningViews.getState().variation;
+        buildOutDisplaySalt = window.PlanningViews.getState().proposedVariation;
         try {
             setFacadeAppearance(PersistentStorage.getItem(FACADE_PREF_KEY) === '1',
                 PersistentStorage.getItem(FACADE_STYLE_KEY), false);

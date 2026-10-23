@@ -460,14 +460,14 @@
         <section id="planning-views" class="map-sheet planning-views" role="dialog" aria-labelledby="planning-views-title" hidden>
             <div class="map-sheet-header">
                 <h2 id="planning-views-title" class="map-sheet-title" data-i18n-key="planningViews.title">Buildings and massing</h2>
-                <div class="planning-control-heading">
-                    <button type="button" id="planning-reroll" class="btn btn-icon planning-reroll"><i class="fa-solid fa-dice" aria-hidden="true"></i></button>
-                    <button type="button" class="map-sheet-close close-circle-btn close-circle-btn--lg" data-sheet-close
-                        aria-label="Close" title="Close" data-i18n-key="common.close" data-i18n-attr="aria-label,title">×</button>
-                </div>
+                <button type="button" class="map-sheet-close close-circle-btn close-circle-btn--lg" data-sheet-close
+                    aria-label="Close" title="Close" data-i18n-key="common.close" data-i18n-attr="aria-label,title">×</button>
             </div>
             <div class="map-sheet-body">
-                <div class="planning-layer-controls"></div>
+                <div class="planning-layer-controls">
+                    <button type="button" id="planning-reroll-permitted" class="btn btn-icon planning-reroll" data-planning-reroll="permitted"><i class="fa-solid fa-dice" aria-hidden="true"></i></button>
+                    <button type="button" id="planning-reroll" class="btn btn-icon planning-reroll" data-planning-reroll="proposed"><i class="fa-solid fa-dice" aria-hidden="true"></i></button>
+                </div>
                 <p class="planning-view-status"></p>
                 <button type="button" id="planning-view-retry" class="cb-link planning-view-retry" hidden></button>
                 <p class="planning-inspect-hint"></p>

@@ -418,6 +418,7 @@ test.describe('3D rendering and controls @features', () => {
     await expect.poll(async () => (await geometry()).length).toBeGreaterThan(0);
     const buildoutCount = await allMeshes();
     const beforeReroll = await geometry();
+    const permittedBeforeRoll = await page.evaluate(() => (window as any).PlanningViews.getState().permittedVariation);
     // A valid realization can repeat; exercise up to five fresh samples of the height range.
     for (let attempt = 0; attempt < 5; attempt++) {
       await page.locator('#planning-reroll').click();
@@ -425,6 +426,7 @@ test.describe('3D rendering and controls @features', () => {
       if (JSON.stringify(await geometry()) !== JSON.stringify(beforeReroll)) break;
     }
     expect(await geometry()).not.toEqual(beforeReroll);
+    expect(await page.evaluate(() => (window as any).PlanningViews.getState().permittedVariation)).toBe(permittedBeforeRoll);
     await selectNativeOption(page.locator('[data-planning-setting="proposedForm"]'), 'both');
     await expect.poll(allMeshes).toBeGreaterThan(Math.max(massingCount, buildoutCount));
     expect(await proposalState(page, id)).toEqual(source);

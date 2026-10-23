@@ -1273,7 +1273,7 @@ function drawProposedBuildingsForProposal(proposalId, { announce = true } = {}) 
         try {
             // The same rule realization and salt drive the map and model; source records stay intact.
             const state = window.PlanningViews.getState();
-            const plan = window.UrbanRuleVariation.plannedDrawPlan(building, state.proposedForm, { turf }, state.variation);
+            const plan = window.UrbanRuleVariation.plannedDrawPlan(building, state.proposedForm, { turf }, state.proposedVariation);
             for (const [feature, envelope] of [[plan.massing, plan.massingStyle === 'envelope'], [plan.buildOut, false]]) {
                 if (!feature) continue;
                 L.geoJSON(feature, {

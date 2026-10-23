@@ -7,7 +7,7 @@
         solid: 'threeMode.controls.stateSolid', ghost: 'threeMode.controls.stateGhost', off: 'threeMode.controls.stateOff',
         surviving: 'threeMode.controls.stateSurviving', removed: 'threeMode.controls.stateRemoved',
         massing: 'threeMode.controls.representationMassing', buildout: 'threeMode.controls.representationBuildOut',
-        both: 'threeMode.controls.representationBoth', all: 'activityFeed.all', reroll: 'threeMode.controls.reroll', retry: 'bets.retry', close: 'common.close' };
+        both: 'threeMode.controls.representationBoth', all: 'activityFeed.all', retry: 'bets.retry', close: 'common.close' };
     const t = (key, params = {}) => root.i18n.t(sharedLabels[key] || `planningViews.${key}`, params);
     let store, items = [], payload = null, status = 'loading', layer, controller, request = 0;
     let panel, inspector, lastSettings = null, lastSelectedId = null, ready = false, selectionLayer;
@@ -18,7 +18,7 @@
     let restoreId = new URLSearchParams(location.search).get('planningSelection'), restoring = false, catalogReady = false, parcelPanel = null;
     // Per-item configuration pins chosen in the inspector; cleared with the source, housing type or city.
     let pins = {}, sourcesKey = '';
-    const displaySelection = () => ({ variation: store?.get().variation || '', scenario: scenarioId || envelopes.ANY_CONFIGURATION, pins });
+    const displaySelection = () => ({ variation: store?.get().permittedVariation || '', scenario: scenarioId || envelopes.ANY_CONFIGURATION, pins });
     const scenarioParam = () => scenarioId && scenarioId !== envelopes.ANY_CONFIGURATION ? scenarioId : '';
     const scenarioLabel = id => id ? t(`scenario.${id}`) : '';
     // Geometry helpers for client-side realization: turf for clipping, the shared evaluator for setbacks.
@@ -400,9 +400,11 @@
         for (const option of scenario.options) option.textContent = t(`scenario.${option.value}`);
         // A change that re-reads the viewport shows its wait beside the control it came from.
         for (const field of [scenario, sourceSelect]) field.parentElement.setAttribute('aria-busy', String(status === 'loading'));
-        const reroll = panel.querySelector('.planning-reroll');
-        reroll.title = t('reroll'); reroll.setAttribute('aria-label', t('reroll'));
-        reroll.disabled = policy().proposed === 'off' && (policy().permitted === 'off' || !descriptor?.parcelStudy);
+        for (const reroll of panel.querySelectorAll('[data-planning-reroll]')) {
+            const role = reroll.dataset.planningReroll;
+            reroll.title = t(`reroll.${role}`); reroll.setAttribute('aria-label', reroll.title);
+            reroll.disabled = policy()[role] === 'off' || (role === 'permitted' && !descriptor?.parcelStudy);
+        }
         for (const role of core.roles) {
             panel.querySelector(`[data-role-label="${role}"]`).textContent = t(role);
             const select = panel.querySelector(`[data-planning-setting="${role}"]`);
@@ -456,7 +458,7 @@
         document.body.dataset.planningProposed = view.proposed;
         document.body.dataset.planningExisting = view.existing;
         document.body.dataset.planningExistingScope = state.existingScope;
-        const signature = JSON.stringify({ ...core.settings(state), variation: state.variation });
+        const signature = JSON.stringify({ ...core.settings(state), proposedVariation: state.proposedVariation, permittedVariation: state.permittedVariation });
         const settingsChanged = lastSettings !== signature;
         if (settingsChanged) {
             const previous = lastSettings ? JSON.parse(lastSettings) : {};
@@ -470,7 +472,7 @@
             const existing = document.getElementById('showBuildings');
             if (existing && !existing.checked && view.existing !== 'off') { existing.checked = true; root.toggleLayer?.('buildings'); }
             if (previous.existingScope !== state.existingScope) root.rebuildBuildingLayerFromPool?.();
-            if (previous.proposedForm !== state.proposedForm || previous.variation !== state.variation) {
+            if (previous.proposedForm !== state.proposedForm || previous.proposedVariation !== state.proposedVariation) {
                 root.updateProposedBuildingsLayer?.({ announce: false });
             }
             root.dispatchEvent(new CustomEvent('planningviewchange', { detail: { settings: core.settings(state), policy: view } }));
@@ -709,24 +711,32 @@
             const label = element('span', 'planning-layer-label'); label.dataset.roleLabel = role;
             const swatch = element('span', `planning-swatch planning-swatch--${role}`); swatch.setAttribute('aria-hidden', 'true');
             const name = element('div', 'planning-layer-name'); name.append(swatch, label);
-            row.append(name, control(role), control(details[role])); controls.append(row);
-            if (role === 'permitted') row.append(control('permittedForm'));
+            const content = element('div', 'planning-layer-detail');
+            content.append(control(details[role]));
+            if (role === 'permitted') content.append(control('permittedForm'));
+            const actions = element('div', 'planning-layer-actions');
+            const reroll = panel.querySelector(`[data-planning-reroll="${role}"]`);
+            if (reroll) actions.append(reroll);
+            row.append(name, control(role), content, actions); controls.append(row);
         }
         const zoningField = element('label', 'planning-source-field planning-zoning-field');
         zoningField.append(element('span', 'planning-zoning-label'), control('zoningAreas')); body.append(zoningField);
-        const reroll = panel.querySelector('.planning-reroll'), die = reroll.querySelector('i');
         // The die turns once per roll. With reduced motion the roll is immediate; otherwise it starts
         // on the next paint, so the synchronous re-derivation runs under the turn, not before it.
-        for (const event of ['animationend', 'animationcancel']) die.addEventListener(event, () => reroll.classList.remove('is-rolling'));
-        reroll.addEventListener('click', () => {
-            if (root.__reducedMotion) { store.reroll(); return; }
-            if (reroll.classList.contains('is-rolling')) return;
-            reroll.classList.add('is-rolling');
-            requestAnimationFrame(() => requestAnimationFrame(() => {
-                store.reroll();
-                if (getComputedStyle(die).animationName === 'none') reroll.classList.remove('is-rolling');
-            }));
-        });
+        for (const reroll of panel.querySelectorAll('[data-planning-reroll]')) {
+            const die = reroll.querySelector('i');
+            const role = reroll.dataset.planningReroll;
+            for (const event of ['animationend', 'animationcancel']) die.addEventListener(event, () => reroll.classList.remove('is-rolling'));
+            reroll.addEventListener('click', () => {
+                if (root.__reducedMotion) { store.reroll(role); return; }
+                if (reroll.classList.contains('is-rolling')) return;
+                reroll.classList.add('is-rolling');
+                requestAnimationFrame(() => requestAnimationFrame(() => {
+                    store.reroll(role);
+                    if (getComputedStyle(die).animationName === 'none') reroll.classList.remove('is-rolling');
+                }));
+            });
+        }
         panel.querySelector('.planning-open-model').addEventListener('click', () => root.requestMapMode('model'));
         panel.querySelector('.planning-view-retry').addEventListener('click', () => refresh({ force: true }));
         root.map.createPane('planningSources');
@@ -760,7 +770,7 @@
         syncView();
         loadSources();
     }
-    root.PlanningViews = { getState: () => store?.get() || { ...core.defaults, variation: '' }, getPolicy: policy, getItems: sceneItems,
+    root.PlanningViews = { getState: () => store?.get() || { ...core.defaults, proposedVariation: '', permittedVariation: '' }, getPolicy: policy, getItems: sceneItems,
         getAppearance: appearance,
         getSelected: selected, isReady: () => ready, isInspecting: () => ready && !inspector.hidden,
         select, selectRecord, inspectBuilding, inspectProposal, showParcelEvidence, color, refresh,
@@ -775,6 +785,6 @@
             }).map(({ item }) => item);
         },
         selectAt: select,
-        configure: (key, value) => store?.configure(key, value), reroll: () => store?.reroll() };
+        configure: (key, value) => store?.configure(key, value), reroll: role => store?.reroll(role) };
     root.whenMapCoreReady().then(init);
 })(window);

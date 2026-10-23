@@ -5789,7 +5789,6 @@
             "representationBuildOutTooltip": "Izgradnja — jedan primjer onoga što bi se po pravilu stvarno moglo izgraditi",
             "representationBoth": "Oboje",
             "representationBothTooltip": "Oboje — primjer izgradnje unutar dopuštenog gabarita",
-            "reroll": "Bacite kocku za drugi primjer izgradnje, tip stanovanja i uličnu stranu. Ne mijenja ništa u zapisima.",
             "ineligibleParcels": "Neizgradive čestice",
             "ineligibleParcelsTooltip": "Prikažite prozirne volumene gdje trenutačno primijenjeno pravilo ne ostavlja izgradivu česticu; to ne znači da je zemljište općenito neizgradivo.",
             "showAllParcelsTooltip": "Uklonite izdvajanje čestice i ponovno prikažite cijelu scenu",
@@ -7216,6 +7215,10 @@
         }
     },
     "planningViews": {
+        "reroll": {
+            "proposed": "Bacite kocku za drugi primjer predložene izgradnje. Ne mijenja ništa u zapisima.",
+            "permitted": "Bacite kocku za drugi dopušteni tip stanovanja i uličnu stranu. Ne mijenja ništa u zapisima."
+        },
         "zoningAreas": "Područja izvornog plana",
         "envelopeTitle": "Dopuštena ovojnica",
         "permittedForm": "Prikaz dopuštenog",

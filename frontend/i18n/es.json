@@ -5782,7 +5782,6 @@
             "representationBuildOutTooltip": "Edificación — un ejemplo de lo que realmente podría construirse bajo la norma",
             "representationBoth": "Ambos",
             "representationBothTooltip": "Ambos — el ejemplo de edificación dentro del volumen permitido",
-            "reroll": "Tira otro ejemplo de edificación, tipo de vivienda y lado de calle. No cambia nada en los registros.",
             "ineligibleParcels": "Parcelas no edificables",
             "ineligibleParcelsTooltip": "Muestra volúmenes transparentes donde la regla aplicada actualmente no deja una parcela edificable; esto no significa que el terreno sea siempre no edificable.",
             "showAllParcelsTooltip": "Borra el aislamiento de la parcela y vuelve a mostrar toda la escena",
@@ -7198,6 +7197,10 @@
         }
     },
     "planningViews": {
+        "reroll": {
+            "proposed": "Genera otro ejemplo de edificación propuesta. No cambia nada en los registros.",
+            "permitted": "Genera otro tipo de vivienda y lado de calle permitidos. No cambia nada en los registros."
+        },
         "zoningAreas": "Áreas de la fuente urbanística",
         "envelopeTitle": "Envolvente permitida",
         "permittedForm": "Representación de lo permitido",

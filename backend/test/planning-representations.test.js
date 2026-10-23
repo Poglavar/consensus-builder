@@ -295,11 +295,14 @@ describe('shared planning scene', () => {
     });
     it('keeps content choices orthogonal to visibility and rerolls only the proposed representation', () => {
         const store = scene.createStore({ existing: 'off', permitted: 'solid', proposed: 'ghost' });
-        store.configure('existingScope', 'removed'); store.configure('proposedForm', 'massing'); store.reroll();
-        expect(store.get()).toMatchObject({ existingScope: 'removed', proposedForm: 'both', variation: '1' });
+        store.configure('existingScope', 'removed'); store.configure('proposedForm', 'massing'); store.reroll('proposed');
+        expect(store.get()).toMatchObject({ existingScope: 'removed', proposedForm: 'both', proposedVariation: '1', permittedVariation: '' });
+        store.reroll('permitted');
+        expect(store.get()).toMatchObject({ proposedVariation: '1', permittedVariation: '1' });
         expect(scene.displayPolicy(store.get())).toEqual({ existing: 'off', permitted: 'solid', proposed: 'ghost' });
         expect(scene.settings(store.get())).not.toHaveProperty('selectedId');
-        expect(scene.settings(store.get())).not.toHaveProperty('variation');
+        expect(scene.settings(store.get())).not.toHaveProperty('proposedVariation');
+        expect(scene.settings(store.get())).not.toHaveProperty('permittedVariation');
     });
     it('joins height components into one footprint while retaining explicit height steps', () => {
         const inner = turf.polygon([[[10.0002,40.0002],[10.0008,40.0002],[10.0008,40.0008],[10.0002,40.0008],[10.0002,40.0002]]]);
