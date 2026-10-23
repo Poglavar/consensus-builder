@@ -479,7 +479,7 @@
             ? `<p class="agreement-panel-note" data-agreement-read-only>${esc(tr('agreement.publish.readOnly', 'Read-only published agreement'))}</p>`
             : electorate === 'owners'
             ? '<div class="approval-card-slot" data-approval-card-slot></div>'
-            : `<p class="agreement-panel-note" data-agreement-community-note>${esc(tr('agreement.publish.communityNote', 'Votes on a community rule are counted off-chain in M3.'))}</p>`;
+            : `<p class="agreement-panel-note" data-agreement-community-note>${esc(tr('agreement.publish.communityNote', 'Community votes are counted without a blockchain transaction.'))}</p>`;
         return sectionHtml(tr('threeMode.parcelPanel.proposed', 'Proposed'),
             '<div class="agreement-panel-published">'
             + `<code class="agreement-panel-cid" title="${esc(cid)}">${esc(short)}</code>`

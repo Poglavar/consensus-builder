@@ -20,17 +20,17 @@ const sectionKinds = (page: Page) => clickStack(page).locator('.click-stack__sec
 
 // An agreement over a park applied here and a second, later one over the same design; the stack
 // opened on the park. Returns the park's id.
-async function twoAgreementsOnPark(page: Page): Promise<string> {
+async function twoAgreementsOnPark(page: Page, titles = ['First agreement', 'Second agreement']): Promise<string> {
   await openCity(page);
-  const first = await proposeOverPark(page, { title: 'First agreement' });
+  const first = await proposeOverPark(page, { title: titles[0] });
   // A second agreement over the same design, proposed later (agreements list newest first).
-  await page.evaluate(id => {
+  await page.evaluate(({ id, title }) => {
     const w = window as any;
     const stored = JSON.parse(JSON.stringify(w.AgreementStore.get(id)));
     delete stored.published;
-    w.AgreementStore.save({ ...stored, id: w.AgreementRecord.newId(), title: 'Second agreement',
+    w.AgreementStore.save({ ...stored, id: w.AgreementRecord.newId(), title,
       createdAt: new Date(Date.parse(stored.createdAt) + 60_000).toISOString() });
-  }, first.id);
+  }, { id: first.id, title: titles[1] });
   await page.keyboard.press('Escape');
   await expect(clickStack(page)).toBeHidden();
   await clickDesignOnMap(page, first.parkId);
@@ -178,7 +178,8 @@ test.describe('Click stack @core', () => {
     const kinds = await sectionKinds(page);
     expect(kinds.slice(0, 2)).toEqual(['agreements', 'designs']);
     const agreements = stackSection(page, 'agreements');
-    await expect(agreements.locator('.click-stack__row-title')).toHaveText('Agreements (2)');
+    await expect(agreements.locator('.click-stack__picker-label')).toHaveText('Agreements (2)');
+    await expect(agreements.locator('.click-stack__row-title')).toHaveText('Agreement');
     const chips = agreements.locator('.click-stack__strip .click-stack__chip');
     await expect(chips).toHaveText(['Second agreement', 'First agreement']);
     await expect(chips.nth(0)).toHaveAttribute('aria-pressed', 'true');
@@ -198,6 +199,43 @@ test.describe('Click stack @core', () => {
     await expect(agreementPanel(page)).toBeVisible();
     await expect(agreementPanel(page)).toContainText('First agreement');
     await expect(clickStack(page)).toBeHidden();
+  });
+
+  test('mobile item selectors sit above separate cards and related agreements follow the design details', async ({ mockApi: page }) => {
+    const titles = ['Garden neighbourhood — shared streets and public gardens', 'Garden neighbourhood — alternative housing and open spaces'];
+    await twoAgreementsOnPark(page, titles);
+    await page.setViewportSize({ width: 390, height: 844 });
+    const stack = clickStack(page);
+    const halfHeight = (await stack.boundingBox())!.height;
+    await stack.locator(':scope > .mobile-dock-sheet-handle').click();
+    await expect.poll(async () => (await stack.boundingBox())!.height).toBeGreaterThan(halfHeight + 100);
+    const agreements = stackSection(page, 'agreements');
+    const picker = agreements.locator('.click-stack__picker');
+    const card = agreements.locator('.click-stack__card');
+    const pickerBox = await picker.boundingBox();
+    const cardBox = await card.boundingBox();
+    expect(pickerBox!.y + pickerBox!.height).toBeLessThanOrEqual(cardBox!.y);
+    expect(cardBox!.y - pickerBox!.y - pickerBox!.height).toBeLessThanOrEqual(8);
+    await expect(card.locator('.click-stack__picker')).toHaveCount(0);
+    await expect(picker.locator('.click-stack__picker-label')).toHaveText('Agreements (2)');
+    await expect(card.locator('.click-stack__row-title')).toHaveText('Agreement');
+    const choices = picker.locator('.click-stack__chip');
+    await expect(choices).toHaveText([titles[1], titles[0]]);
+    await choices.nth(1).click();
+    await expect(card.locator('.click-stack__summary strong')).toHaveText(titles[0]);
+    await expect(choices.nth(1)).toHaveAttribute('aria-pressed', 'true');
+    const stripBox = await picker.locator('.click-stack__strip').boundingBox();
+    const chosenBox = await choices.nth(1).boundingBox();
+    expect(chosenBox!.x).toBeGreaterThanOrEqual(stripBox!.x - 1);
+    expect(chosenBox!.x + chosenBox!.width).toBeLessThanOrEqual(stripBox!.x + stripBox!.width + 1);
+    await expandStackSection(page, 'designs');
+    const design = stackSection(page, 'designs');
+    await expect(design.locator('.click-stack__row-detail')).toBeHidden();
+    const related = design.locator('.click-stack__related');
+    await expect(related.locator('.click-stack__strip-label')).toHaveText('Agreements including this design (2)');
+    expect(await related.evaluate(el => !!(document.getElementById('proposal-details-panel')!.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
+    await related.getByRole('button', { name: titles[1], exact: true }).click();
+    await expect(agreements.locator('.click-stack__summary strong')).toHaveText(titles[1]);
   });
 
   test('a design\'s In agreements chip opens that agreement in its section', async ({ mockApi: page }) => {

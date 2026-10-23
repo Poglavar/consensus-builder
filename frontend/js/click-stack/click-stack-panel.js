@@ -59,7 +59,7 @@
         unhost({ hide: false });
         state.hosted = { el, parent: el.parentNode, next: el.nextSibling };
         el.classList.add('is-hosted');
-        slot.appendChild(el);
+        slot.insertBefore(el, slot.querySelector('.click-stack__related'));
         if (id === 'parcel-info-panel') {
             // The section's row folds and the stack closes, so the panel's − and × are hidden there
             // (css/map.css) and it is never left minimized. Point-specific proposals have their
@@ -160,8 +160,9 @@
             case 'agreements': return section.multi ? t('agreements', 'Agreements ({{count}})', { count: section.count }) : t('agreement.panel.title', 'Agreement');
             case 'designs': return section.count > 1 ? t('proposals', 'Proposals ({{count}})', { count: section.count }) : t('proposal', 'Proposal');
             case 'built': return section.count > 1 ? t('buildings', 'Buildings ({{count}})', { count: section.count }) : t('building', 'Building');
-            case 'permitted': return t('planningViews.permitted', 'Permitted');
-            case 'formed': return instance?.designLabel ? t('formedBy', 'Formed by {{design}}', { design: instance.designLabel }) : t('formed', 'Formed parcel');
+            case 'permitted': return section.multi ? t('permittedMany', 'Permitted ({{count}})', { count: section.count }) : t('planningViews.permitted', 'Permitted');
+            case 'formed': return section.multi ? t('formedMany', 'Formed parcels ({{count}})', { count: section.count })
+                : instance?.designLabel ? t('formedBy', 'Formed by {{design}}', { design: instance.designLabel }) : t('formed', 'Formed parcel');
             case 'parcels': return section.count > 1 ? t('parcels', 'Parcels ({{count}})', { count: section.count })
                 : t('parcelReference', 'Cadastral parcel {{reference}}', { reference: parcelReference(instance) });
             case 'ground': {
@@ -198,6 +199,8 @@
         section.instances.forEach((instance, index) => {
             const chip = button('click-stack__chip', instance.label || instance.id, { action: 'instance', kind: section.kind, id: instance.id });
             chip.setAttribute('aria-pressed', String(index === section.selectedIndex));
+            chip.setAttribute('aria-controls', `click-stack-${section.kind}-card`);
+            chip.title = instance.label || instance.id;
             strip.appendChild(chip);
         });
         return strip;
@@ -220,6 +223,18 @@
             wrap.className = 'click-stack__section';
             wrap.dataset.kind = section.kind;
             wrap.classList.toggle('is-expanded', expanded);
+            if (section.multi) {
+                const picker = doc.createElement('div');
+                picker.className = 'click-stack__picker';
+                const label = doc.createElement('div');
+                label.className = 'click-stack__picker-label';
+                label.textContent = rowTitle(section);
+                picker.append(label, renderStrip(section));
+                wrap.appendChild(picker);
+            }
+            const card = doc.createElement('div');
+            card.className = 'click-stack__card';
+            card.id = `click-stack-${section.kind}-card`;
             const row = button('click-stack__row', undefined, { action: 'row', kind: section.kind });
             row.disabled = !section.expandable;
             if (section.expandable) row.setAttribute('aria-expanded', String(expanded));
@@ -228,7 +243,8 @@
             icon.setAttribute('aria-hidden', 'true');
             const name = doc.createElement('span');
             name.className = 'click-stack__row-title';
-            name.textContent = rowTitle(section);
+            // The selector counts the collection; the card always describes one selected item.
+            name.textContent = rowTitle(section.multi ? { ...section, multi: false, count: 1 } : section);
             const detail = doc.createElement('span');
             detail.className = 'click-stack__row-detail';
             detail.textContent = rowDetail(section);
@@ -254,13 +270,13 @@
                 copy.appendChild(icon);
                 heading.appendChild(copy);
             }
-            wrap.appendChild(heading);
-            if (section.multi) wrap.appendChild(renderStrip(section));
+            card.appendChild(heading);
             if (expanded) {
                 const body = doc.createElement('div');
                 body.className = 'click-stack__body';
-                wrap.appendChild(body);
+                card.appendChild(body);
             }
+            wrap.appendChild(card);
             list.appendChild(wrap);
         });
         el.appendChild(list);
@@ -310,19 +326,23 @@
         } catch (error) { console.error('[ClickStack] agreement designs could not be framed', error); }
     }
 
-    // The agreements a design at this spot belongs to, as the same strip the sections use.
+    // Related agreements follow the selected design's details; they do not select a design.
     function renderDesignAgreements(body, design) {
         const agreements = (state.hits?.agreements || []).filter(item => item.designIds.includes(String(design.id))
             || item.designIds.includes(String(design.proposal?.proposalId)));
         if (!agreements.length) return;
-        const strip = doc.createElement('div');
-        strip.className = 'click-stack__strip click-stack__strip--inline';
+        const related = doc.createElement('div');
+        related.className = 'click-stack__related';
         const label = doc.createElement('span');
         label.className = 'click-stack__strip-label';
-        label.textContent = t('inAgreements', 'In agreements ({{count}})', { count: agreements.length });
-        strip.appendChild(label);
+        label.textContent = t('inAgreements', 'Agreements including this design ({{count}})', { count: agreements.length });
+        const strip = doc.createElement('div');
+        strip.className = 'click-stack__strip click-stack__strip--inline';
+        strip.setAttribute('role', 'group');
+        strip.setAttribute('aria-label', label.textContent);
         agreements.forEach(item => strip.appendChild(button('click-stack__chip', item.label, { action: 'open-agreement', id: item.id })));
-        body.appendChild(strip);
+        related.append(label, strip);
+        body.appendChild(related);
     }
 
     // The main action of a section: what a person most often came to the spot to do.
@@ -367,7 +387,6 @@
             } else if (kind === 'designs' && instance.serverId) {
                 openPublishedDesign(instance);
             } else if (kind === 'designs') {
-                renderDesignAgreements(body, instance);
                 selectDesign(instance.id);
             } else if (kind === 'built') {
                 global.PlanningViews.inspectBuilding(instance.feature, instance.id);
@@ -403,6 +422,7 @@
             const target = (HOSTS[kind] || []).find(id => isShown(doc.getElementById(id)));
             if (target) host(body, target);
             else if (HOSTS[kind]) unhost();
+            if (kind === 'designs' && !instance.serverId) renderDesignAgreements(body, instance);
             if (target === 'parcel-info-panel') {
                 const toolbar = doc.getElementById(target)?.querySelector('.parcel-context-actions');
                 const actions = body.querySelector('.click-stack__actions--parcel');
@@ -615,9 +635,13 @@
         } else if (action === 'instance') {
             state.stack = model.selectInstance(state.stack, kind, id);
             expand(kind);
+            const chosen = state.el.querySelector(`.click-stack__section[data-kind="${kind}"] .click-stack__picker [aria-pressed="true"]`);
+            chosen?.focus?.({ preventScroll: true });
+            chosen?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
         } else if (action === 'open-agreement') {
             state.stack = model.selectInstance(state.stack, 'agreements', id);
             expand('agreements');
+            state.el.querySelector('.click-stack__section[data-kind="agreements"]')?.scrollIntoView?.({ block: 'nearest' });
         } else if (action === 'agreement-designs') {
             const agreement = model.selectedInstance(state.stack, 'agreements')?.agreement;
             if (agreement) showAgreementDesigns(agreement);

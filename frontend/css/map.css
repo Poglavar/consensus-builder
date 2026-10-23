@@ -857,6 +857,12 @@ body.three-mode-active #agent-bubbles-container {
     flex-direction: column;
 }
 
+/* The floating stack lets map clicks through its gaps; its sheet handle remains interactive. */
+#click-stack > .mobile-dock-sheet-handle,
+#three-click-stack > .mobile-dock-sheet-handle {
+    pointer-events: auto;
+}
+
 /* The column ends where its content does; only a hosted panel (with its own scrolling body) makes
    it run to the dock's bottom. */
 #click-stack:not(:has(.is-hosted)),
@@ -870,7 +876,7 @@ body.three-mode-active #agent-bubbles-container {
 }
 
 #click-stack.is-folded .click-stack__body,
-#click-stack.is-folded .click-stack__strip {
+#click-stack.is-folded .click-stack__picker {
     display: none;
 }
 
@@ -887,13 +893,20 @@ body.three-mode-active #agent-bubbles-container {
     flex: 1 1 auto;
 }
 
-/* A folded section keeps its row and strip whole; only the expanded one gives up height (its
-   hosted panel scrolls). */
+/* A section pairs a selector with the separate card for its selected item. */
 .click-stack__section {
     position: relative;
     display: flex;
     flex-direction: column;
     flex: 0 0 auto;
+    min-height: 0;
+    gap: var(--cb-space-1);
+}
+
+.click-stack__card {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
     min-height: 0;
     border: 1px solid var(--cb-line);
     border-radius: var(--cb-radius-lg);
@@ -918,7 +931,7 @@ body.three-mode-active #agent-bubbles-container {
     border-left: 2px solid var(--cb-text-muted);
 }
 
-.click-stack__section.is-expanded {
+.click-stack__section.is-expanded > .click-stack__card {
     border-color: var(--cb-primary);
 }
 
@@ -997,30 +1010,84 @@ body.three-mode-active #agent-bubbles-container {
     color: var(--cb-text-muted);
 }
 
+/* Short section nouns stay whole beside a long selected-item summary. */
+.click-stack__section[data-kind="agreements"] .click-stack__row-title,
+.click-stack__section[data-kind="designs"] .click-stack__row-title,
+.click-stack__section[data-kind="built"] .click-stack__row-title,
+.click-stack__section[data-kind="permitted"] .click-stack__row-title {
+    flex: 0 0 auto;
+}
+
 .click-stack__chevron {
     flex: 0 0 auto;
     color: var(--cb-text-muted);
     transition: transform 120ms ease;
 }
 
-.is-expanded > .click-stack__heading .click-stack__chevron {
+.is-expanded > .click-stack__card > .click-stack__heading .click-stack__chevron {
     transform: rotate(180deg);
 }
 
 /* Several instances at the spot (agreements, designs, cadastral parcels): one scrolling strip,
    the same component everywhere; the chosen one is aria-pressed. */
+.click-stack__picker {
+    flex: 0 0 auto;
+    min-width: 0;
+    padding: var(--cb-space-2);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-lg);
+    background: var(--cb-glass-sheet);
+    backdrop-filter: blur(var(--cb-panel-blur));
+    -webkit-backdrop-filter: blur(var(--cb-panel-blur));
+    pointer-events: auto;
+}
+
+.click-stack__picker-label {
+    margin-bottom: var(--cb-space-1);
+    font-size: var(--cb-text-xs);
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text-muted);
+}
+
 .click-stack__strip {
     display: flex;
     align-items: center;
     gap: var(--cb-space-1);
     min-width: 0;
-    padding: 0 var(--cb-space-3) var(--cb-space-2);
+    padding: 2px;
     overflow-x: auto;
     scrollbar-width: thin;
 }
 
 .click-stack__strip--inline {
-    padding: 0 0 var(--cb-space-2);
+    margin-top: var(--cb-space-1);
+}
+
+.click-stack__related {
+    flex: 0 0 auto;
+    padding-top: var(--cb-space-2);
+    border-top: 1px solid var(--cb-line);
+}
+
+/* The expanded card already names its item in the hosted details or agreement summary. */
+#click-stack .click-stack__section.is-expanded[data-kind="designs"] .click-stack__row-detail,
+.click-stack__section.is-expanded[data-kind="agreements"] .click-stack__row-detail,
+.click-stack__section.is-expanded[data-kind="built"] .click-stack__row-detail {
+    display: none;
+}
+
+/* The model view's figures have no title of their own: name the design in the card header. */
+#three-click-stack .click-stack__section.is-expanded[data-kind="designs"] .click-stack__row {
+    flex-wrap: wrap;
+}
+
+#three-click-stack .click-stack__section.is-expanded[data-kind="designs"] .click-stack__row-detail {
+    order: 1;
+    flex: 1 0 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    color: var(--cb-text);
+    font-weight: var(--cb-weight-semibold);
 }
 
 .click-stack__strip-label {
@@ -1032,16 +1099,17 @@ body.three-mode-active #agent-bubbles-container {
 
 .click-stack__chip {
     flex: 0 0 auto;
-    max-width: 14em;
-    padding: 2px var(--cb-space-2);
+    max-width: min(24rem, calc(100vw - 64px));
+    min-height: 44px;
+    padding: var(--cb-space-2);
     border: 1px solid var(--cb-line-strong);
-    border-radius: 999px;
+    border-radius: var(--cb-radius-md);
     background: var(--cb-surface);
     color: var(--cb-text);
     font-size: var(--cb-text-sm);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-align: left;
     cursor: pointer;
 }
 

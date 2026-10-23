@@ -104,6 +104,8 @@ function loadPanel({ memory = null, withEditLock = false } = {}) {
 describe('click stack panel: section nouns and counts', () => {
     it.each([
         ['built', 'Building', 'Buildings'],
+        ['permitted', 'Permitted', 'Permitted'],
+        ['formed', 'Formed parcel', 'Formed parcels'],
         ['parcels', 'Cadastral parcel first', 'Parcels'],
         ['designs', 'Proposal', 'Proposals']
     ])('labels the %s section by its unique hit count and keeps object references', (kind, singular, plural) => {
@@ -122,11 +124,16 @@ describe('click stack panel: section nouns and counts', () => {
         h.api.close();
         h.context.ClickStackHits.hitsAt.mockReturnValue({ [kind]: [first, second, first] });
         h.click(SPOT_B);
-        expect(title()).toBe(`${plural} (2)`);
+        expect(title()).toBe(singular);
+        expect(h.section(kind).querySelector('.click-stack__picker-label').textContent).toBe(`${plural} (2)`);
+        const picker = h.section(kind).querySelector('.click-stack__picker');
+        const card = h.section(kind).querySelector('.click-stack__card');
+        expect(picker.nextSibling).toBe(card);
+        expect(card.querySelector('.click-stack__strip')).toBeNull();
         expect(h.section(kind).querySelectorAll('.click-stack__chip').map(chip => chip.textContent))
             .toEqual(['Object first', 'Object second']);
         h.section(kind).querySelector('.click-stack__chip[data-id="second"]').click();
-        expect(title()).toBe(`${plural} (2)`);
+        expect(title()).toBe(kind === 'parcels' ? 'Cadastral parcel second' : singular);
         expect(h.api.current().sections[0].instances[h.api.current().sections[0].selectedIndex].id).toBe('second');
         if (kind === 'parcels') {
             expect(h.section(kind).querySelector('.click-stack__copy-reference').dataset.reference).toBe('second');
@@ -151,9 +158,29 @@ describe('click stack panel: section nouns and counts', () => {
             designs: [{ id: 'd1' }, { id: 'd2' }]
         });
         h.click(SPOT_B);
-        expect(title('built')).toBe('translated:clickStack.buildings:2');
-        expect(title('parcels')).toBe('translated:clickStack.parcels:2');
-        expect(title('designs')).toBe('translated:clickStack.proposals:2');
+        expect(title('built')).toBe('translated:clickStack.building:');
+        expect(title('parcels')).toBe('translated:clickStack.parcelReference:p1');
+        expect(title('designs')).toBe('translated:clickStack.proposal:');
+        expect(h.section('built').querySelector('.click-stack__picker-label').textContent).toBe('translated:clickStack.buildings:2');
+        expect(h.section('parcels').querySelector('.click-stack__picker-label').textContent).toBe('translated:clickStack.parcels:2');
+        expect(h.section('designs').querySelector('.click-stack__picker-label').textContent).toBe('translated:clickStack.proposals:2');
+    });
+
+    it('puts related agreements after the selected design, separate from its item selector', () => {
+        const h = loadPanel();
+        h.context.ClickStackHits.hitsAt.mockReturnValue({ ...HITS_A, agreements: [
+            { id: 'a1', label: 'Neighbourhood agreement', designIds: ['d1'], agreement: { id: 'a1', title: 'Neighbourhood agreement', designs: [{ proposalId: 'd1' }] } }
+        ] });
+        h.click(SPOT_A);
+        h.api.expand('designs');
+        const body = h.section('designs').querySelector('.click-stack__body');
+        const related = body.querySelector('.click-stack__related');
+        expect(body.children).toEqual([h.proposalPanel, related]);
+        expect(related.textContent).toContain('Agreements including this design (1)');
+        expect(h.section('designs').querySelector('.click-stack__picker .click-stack__chip').textContent).toBe('Park');
+        related.querySelector('.click-stack__chip').click();
+        expect(h.api.current().expanded).toBe('agreements');
+        expect(h.section('agreements').querySelector('.click-stack__summary strong').textContent).toBe('Neighbourhood agreement');
     });
 });
 

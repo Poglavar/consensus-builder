@@ -3,11 +3,37 @@
 // instance a strip shows first. The panel is checked in the browser; these are its pure rules.
 import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
+import { makeDocument } from './helpers/fake-dom.js';
 
 const require = createRequire(import.meta.url);
 const stack = require('../../frontend/js/three-click-stack.js');
 
 const feature = { type: 'Feature', properties: {}, geometry: null };
+
+describe('3D click stack item selectors', () => {
+    it.each(['built', 'designs', 'parcels'])('keeps the %s selector immediately above its selected-item card', kind => {
+        const document = makeDocument();
+        const context = { document, console };
+        context.window = context;
+        vm.createContext(context);
+        vm.runInContext(readFileSync(new URL('../../frontend/js/three-click-stack.js', import.meta.url), 'utf8'), context);
+        const api = context.ThreeClickStack;
+        const adapter = { activate: (_kind, item, body) => { body.textContent = item.label; } };
+        api.show({ [kind]: [{ id: 'a', label: 'First item' }, { id: 'b', label: 'Second item' }] }, { focus: kind }, adapter);
+        const section = () => document.querySelector(`.click-stack__section[data-kind="${kind}"]`);
+        const picker = section().querySelector('.click-stack__picker');
+        const card = section().querySelector('.click-stack__card');
+        expect(picker.nextSibling).toBe(card);
+        expect(card.querySelector('.click-stack__strip')).toBeNull();
+        expect(card.querySelector('.click-stack__body').textContent).toBe('First item');
+        picker.querySelector('[data-id="b"]').click();
+        expect(section().querySelector('.click-stack__body').textContent).toBe('Second item');
+        expect(section().querySelector('[aria-pressed="true"]').dataset.id).toBe('b');
+        expect(section().querySelector('[aria-pressed="true"]').getAttribute('aria-controls')).toBe(`three-click-stack-${kind}-card`);
+    });
+});
 
 describe('3D click stack rules', () => {
     it('orders the sections Built, Design, Permitted, Parcel and leaves out empty ones', () => {

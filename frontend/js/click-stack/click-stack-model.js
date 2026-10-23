@@ -36,7 +36,7 @@
     // parcels below it are the originals it came from. Ground is bare land with no register (the
     // former ground menu): it offers what can be drawn there, and shows only when nothing else is.
     const ORDER = Object.freeze(['agreements', 'designs', 'built', 'permitted', 'formed', 'parcels', 'ground']);
-    const MULTI = new Set(['agreements', 'designs', 'built', 'parcels']);
+    const MULTI = new Set(['agreements', 'designs', 'built', 'permitted', 'formed', 'parcels']);
     const EXPANDABLE = new Set(['agreements', 'designs', 'built', 'permitted', 'formed', 'parcels', 'ground']);
     const NEWEST_FIRST = new Set(['agreements', 'designs']);
 

@@ -95,8 +95,8 @@
         switch (section.kind) {
             case 'built': return section.multi ? t('clickStack.builtMany', 'Built ({{count}})', { count: section.count }) : t('threeMode.controls.built', 'Built');
             case 'designs': return section.multi ? t('clickStack.designs', 'Designs ({{count}})', { count: section.count }) : t('proposalDrafts.tabs.design', 'Design');
-            case 'permitted': return t('planningViews.permitted', 'Permitted');
-            default: return t('threeMode.parcelPanel.title', 'Parcel');
+            case 'permitted': return section.multi ? t('clickStack.permittedMany', 'Permitted ({{count}})', { count: section.count }) : t('planningViews.permitted', 'Permitted');
+            default: return section.multi ? t('clickStack.parcels', 'Parcels ({{count}})', { count: section.count }) : t('threeMode.parcelPanel.title', 'Parcel');
         }
     }
 
@@ -138,6 +138,9 @@
             wrap.className = 'click-stack__section';
             wrap.dataset.kind = section.kind;
             wrap.classList.toggle('is-expanded', expanded);
+            const card = doc.createElement('div');
+            card.className = 'click-stack__card';
+            card.id = `three-click-stack-${section.kind}-card`;
             const row = button('click-stack__row', undefined, { action: 'row', kind: section.kind });
             row.setAttribute('aria-expanded', String(expanded));
             const icon = doc.createElement('i');
@@ -145,7 +148,7 @@
             icon.setAttribute('aria-hidden', 'true');
             const name = doc.createElement('span');
             name.className = 'click-stack__row-title';
-            name.textContent = rowTitle(section);
+            name.textContent = rowTitle(section.multi ? { ...section, multi: false, count: 1 } : section);
             const detail = doc.createElement('span');
             detail.className = 'click-stack__row-detail';
             detail.textContent = instance.label || '';
@@ -156,8 +159,13 @@
             const heading = doc.createElement('div');
             heading.className = 'click-stack__heading';
             heading.appendChild(row);
-            wrap.appendChild(heading);
+            card.appendChild(heading);
             if (section.multi) {
+                const picker = doc.createElement('div');
+                picker.className = 'click-stack__picker';
+                const label = doc.createElement('div');
+                label.className = 'click-stack__picker-label';
+                label.textContent = rowTitle(section);
                 const strip = doc.createElement('div');
                 strip.className = 'click-stack__strip';
                 strip.setAttribute('role', 'group');
@@ -165,15 +173,19 @@
                 section.instances.forEach((item, index) => {
                     const chip = button('click-stack__chip', item.label || item.id, { action: 'instance', kind: section.kind, id: item.id });
                     chip.setAttribute('aria-pressed', String(index === section.selectedIndex));
+                    chip.setAttribute('aria-controls', card.id);
+                    chip.title = item.label || item.id;
                     strip.appendChild(chip);
                 });
-                wrap.appendChild(strip);
+                picker.append(label, strip);
+                wrap.appendChild(picker);
             }
             if (expanded) {
                 const body = doc.createElement('div');
                 body.className = 'click-stack__body';
-                wrap.appendChild(body);
+                card.appendChild(body);
             }
+            wrap.appendChild(card);
             list.appendChild(wrap);
         });
         el.appendChild(list);
@@ -248,6 +260,9 @@
             state.stack = expand(selectInstance(state.stack, kind, id), kind);
             render();
             activate();
+            const chosen = state.el.querySelector(`.click-stack__section[data-kind="${kind}"] .click-stack__picker [aria-pressed="true"]`);
+            chosen?.focus?.({ preventScroll: true });
+            chosen?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
         }
     }
 

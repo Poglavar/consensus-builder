@@ -325,6 +325,8 @@ describe('panel HTML', () => {
         expect(owners).not.toContain('data-agreement-community-note');
         const community = panel.publishedHtml({ published, remote: { cid, status: 'expired' }, electorate: 'community' });
         expect(community).toContain('data-agreement-community-note');
+        expect(community).toContain('Community votes are counted without a blockchain transaction.');
+        expect(community).not.toContain('M3');
         expect(community).not.toContain('data-approval-card-slot');
         expect(community).toContain('cb-badge--danger');
     });
