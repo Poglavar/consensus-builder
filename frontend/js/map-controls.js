@@ -94,22 +94,9 @@ function toggleAccordion(checkbox, options = {}) {
         } else if (typeof buildingLayer !== 'undefined' && buildingLayer) {
             map.removeLayer(buildingLayer);
         }
-    } else if (layerName === 'buildingsDgu') {
-        const showDgu = document.getElementById('showBuildingsDgu').checked;
-        if (showDgu) announceBuildingZoomGate();
-        if (showDgu) {
-            if (typeof fetchDguBuildings === 'function') fetchDguBuildings();
-        } else if (typeof hideDguBuildingLayer === 'function') {
-            hideDguBuildingLayer();
-        }
-    } else if (layerName === 'buildingsOsm') {
-        const showOsm = document.getElementById('showBuildingsOsm').checked;
-        if (showOsm) announceBuildingZoomGate();
-        if (showOsm) {
-            if (typeof fetchOsmBuildings === 'function') fetchOsmBuildings();
-        } else if (typeof hideOsmBuildingLayer === 'function') {
-            hideOsmBuildingLayer();
-        }
+    } else if (layerName === 'buildingsDgu' || layerName === 'buildingsOsm') {
+        if (checkbox.checked) announceBuildingZoomGate();
+        toggleLayer(layerName);
     }
     // Proposals section no longer has a checkbox - proposals are always shown
     // Update interactivity of this section's controls
@@ -411,21 +398,20 @@ function toggleLayer(layerType) {
         }
     }
 
-    if (layerType === 'buildingsDgu') {
-        const showDgu = document.getElementById('showBuildingsDgu')?.checked;
-        if (showDgu) {
-            if (typeof fetchDguBuildings === 'function') fetchDguBuildings();
-        } else if (typeof hideDguBuildingLayer === 'function') {
-            hideDguBuildingLayer();
-        }
-    }
-
-    if (layerType === 'buildingsOsm') {
-        const showOsm = document.getElementById('showBuildingsOsm')?.checked;
-        if (showOsm) {
-            if (typeof fetchOsmBuildings === 'function') fetchOsmBuildings();
-        } else if (typeof hideOsmBuildingLayer === 'function') {
-            hideOsmBuildingLayer();
+    if (layerType === 'buildingsDgu' || layerType === 'buildingsOsm') {
+        const isDgu = layerType === 'buildingsDgu';
+        const showReference = document.getElementById(isDgu ? 'showBuildingsDgu' : 'showBuildingsOsm')?.checked;
+        if (showReference) {
+            // These independent surveys cannot be filtered by the working stock's demolition
+            // records. Enabling one must leave the scope that hides it, including from share links.
+            const state = window.PlanningViews?.getState?.();
+            if (state?.existing === 'off') window.PlanningViews.configure('existing', 'ghost');
+            if (state?.existingScope && state.existingScope !== 'all') window.PlanningViews.configure('existingScope', 'all');
+            const fetchReference = isDgu ? window.fetchDguBuildings : window.fetchOsmBuildings;
+            fetchReference?.();
+        } else {
+            const hideReference = isDgu ? window.hideDguBuildingLayer : window.hideOsmBuildingLayer;
+            hideReference?.();
         }
     }
 

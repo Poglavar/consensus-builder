@@ -2,6 +2,36 @@ import { test, expect } from '../helpers/fixtures';
 import { openCity, stubBasemapTiles, PARCEL_GEOMETRY } from '../helpers/runtime';
 import { selectNativeOption } from '../helpers/controls';
 import { surveyResponse } from '../helpers/mocks/survey-data';
+import { openLayerSection } from '../helpers/layers';
+
+for (const reference of ['Osm', 'Dgu']) {
+  for (const display of [{ existing: 'solid', scope: 'surviving' }, { existing: 'off', scope: 'removed' }]) {
+    test(`enabling ${reference} reference buildings reveals them from ${display.existing}/${display.scope}`, async ({ mockApi: page }) => {
+      await stubBasemapTiles(page);
+      await page.route('**/buildings**', route => {
+        const url = new URL(route.request().url());
+        if (!['/buildings', '/buildings/osm'].includes(url.pathname)) return route.fallback();
+        const features = [{
+          type: 'Feature', properties: { object_id: 'survey-one', osm_id: 'w1', zgrada_id: 'cadastre-one' }, geometry: PARCEL_GEOMETRY,
+        }];
+        return route.fulfill({ json: url.pathname === '/buildings/osm'
+          ? { type: 'FeatureCollection', features } : surveyResponse(features) });
+      });
+      await page.goto(`/?city=zg&reduceMotion=1&at=45.80025,15.9822,18&existing=${display.existing}&existingScope=${display.scope}`, { waitUntil: 'domcontentloaded' });
+      await openLayerSection(page, 'buildings');
+      const checkbox = page.locator(`#showBuildings${reference}`);
+      await checkbox.check();
+      const shape = page.locator('.leaflet-observedReferences-pane path').first();
+      await expect(shape).toBeVisible();
+      expect(await page.evaluate(() => (window as any).PlanningViews.getState())).toMatchObject({
+        existing: display.existing === 'off' ? 'ghost' : 'solid', existingScope: 'all',
+      });
+      expect(new URL(page.url()).searchParams.get('existingScope')).toBe('all');
+      await checkbox.uncheck();
+      await expect(shape).toBeHidden();
+    });
+  }
+}
 
 test('observed buildings start off and retain a faint contrasting fill when shown', async ({ mockApi: page }) => {
   await stubBasemapTiles(page);
