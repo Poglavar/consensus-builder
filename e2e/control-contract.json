@@ -1633,11 +1633,11 @@
       "controlType": "button"
     },
     {
-      "id": "control-f13a3c1e16f57c-1",
+      "id": "control-99f8c6a795847c-1",
       "source": "index.html",
-      "markup": "<input type=\"checkbox\" id=\"multiSelectCheckboxInfo\" onchange=\"multiParcelSelection.toggle({ preserveSelectedParcel: true })\">",
-      "interaction": "change",
-      "controlType": "checkbox"
+      "markup": "<button type=\"button\" id=\"parcel-manual-selection\" class=\"btn btn-sm\" aria-pressed=\"false\" onclick=\"multiParcelSelection.toggle({ preserveSelectedParcel: true })\" data-i18n-key=\"panel.parcel.selectManually\">",
+      "interaction": "click",
+      "controlType": "button"
     },
     {
       "id": "control-22ef66b70477a1-1",

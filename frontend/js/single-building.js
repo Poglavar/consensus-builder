@@ -124,8 +124,8 @@
 
     // Initial square dimensions in metres. Once placed, its GeoJSON polygon is canonical; there are
     // deliberately no width, length, or chamfer parameters in the freeform editor.
-    const DEFAULT_LENGTH_M = 6; // along Y
-    const DEFAULT_WIDTH_M = 3;  // along X
+    const DEFAULT_LENGTH_M = 20; // along Y; enough room between the initial vertex handles
+    const DEFAULT_WIDTH_M = 20;  // along X
     const DEFAULT_HEIGHT_M = 10; // meters
     let currentHeightM = DEFAULT_HEIGHT_M;
     let singleBuildingOverrideContext = null;
@@ -262,8 +262,9 @@
     }
 
     function buildInitialBuildingFeature(centerLatLng, widthM, lengthM, heightM, rotationDeg = 0) {
-        const fitted = fitRectangleAtCenter(centerLatLng, widthM, lengthM, heightM, rotationDeg) || null;
-        return markAsEditablePolygon(fitted, heightM, rotationDeg);
+        // The starting site is a guide, not a lock. Shrinking to a narrow parcel made the initial
+        // handles overlap; imported dimensions must also survive placement unchanged.
+        return markAsEditablePolygon(buildRectangleFeature(centerLatLng, widthM, lengthM, heightM, rotationDeg), heightM, rotationDeg);
     }
 
     function addNewBuildingEntry(centerLatLng, options = {}) {
@@ -271,7 +272,7 @@
         const center = centerLatLng || placement.center;
         const width = Number(options.width) || placement.width || DEFAULT_WIDTH_M;
         const length = Number(options.length) || placement.length || DEFAULT_LENGTH_M;
-        const height = Number(options.height) || width;
+        const height = Number(options.height) || DEFAULT_HEIGHT_M;
         const rotation = Number(options.rotation) || 0;
         let feature = null;
         if (options.feature && options.feature.geometry) {
@@ -530,47 +531,9 @@
         const initialSquareSize = Math.max(DEFAULT_WIDTH_M, DEFAULT_LENGTH_M);
         if (!blockFeature) return { center: null, width: initialSquareSize, length: initialSquareSize };
 
-        const attempts = 12;
-        const growStep = 3;
-        const retreat = 2.5;
-        let best = { center: null, width: initialSquareSize, length: initialSquareSize };
-
-        for (let i = 0; i < attempts; i++) {
-            const center = randomPointInsideBlock(blockFeature);
-            if (!center) continue;
-
-            let size = 6;
-            let lastValid = null;
-            for (let j = 0; j < 160; j++) {
-                const candidate = buildRectangleFeature(center, size, size, DEFAULT_HEIGHT_M);
-                if (footprintFullyInsideBlock(candidate, blockFeature)) {
-                    lastValid = size;
-                    size += growStep;
-                } else {
-                    break;
-                }
-            }
-
-            if (!lastValid) continue;
-
-            let targetSize = Math.max(1, lastValid - retreat * 2);
-            for (let k = 0; k < 12; k++) {
-                const candidate = buildRectangleFeature(center, targetSize, targetSize, DEFAULT_HEIGHT_M);
-                if (footprintFullyInsideBlock(candidate, blockFeature)) break;
-                targetSize = Math.max(1, targetSize - retreat);
-            }
-
-            if (targetSize > best.width) {
-                best = { center, width: targetSize, length: targetSize };
-            }
-        }
-
-        if (!best.center) {
-            const fallbackCenter = getBlockCentroid(blockFeature);
-            return { center: fallbackCenter, width: initialSquareSize, length: initialSquareSize };
-        }
-
-        return best;
+        // Prefer a point on the selected land even for concave sites or courtyard holes.
+        const [lng, lat] = turf.pointOnFeature(blockFeature).geometry.coordinates;
+        return { center: L.latLng(lat, lng), width: initialSquareSize, length: initialSquareSize };
     }
 
     function singleBuildingPreview() {
@@ -589,7 +552,12 @@
     }
 
     function positionSingleBuildingToolbar() {
-        const center = featureCenterLatLng(singleRectFeature);
+        let center = featureCenterLatLng(singleRectFeature);
+        if (center && !window.isThreeModeActive?.()) {
+            // Put rotation controls beyond the footprint, leaving its lower vertex handles free.
+            const [west, south, east] = turf.bbox(singleRectFeature);
+            center = { lat: south, lng: (west + east) / 2 };
+        }
         singleSession?.setAnchor(center ? { lat: center.lat, lng: center.lng, height: currentHeightM } : null);
     }
 
@@ -628,41 +596,6 @@
             },
             geometry: { type: 'Polygon', coordinates: [closed] }
         };
-    }
-
-    function footprintFullyInsideBlock(footprintFeature, blockFeature) {
-        try {
-            if (!footprintFeature || !blockFeature) return false;
-            return window.SingleBuildingGeometry?.footprintWithinBoundary?.(
-                footprintFeature,
-                blockFeature,
-                turf
-            ) === true;
-        } catch (_) { return false; }
-    }
-
-    function fitRectangleAtCenter(centerLatLng, widthM, lengthM, heightM, rotationDeg = 0) {
-        if (!singleBlockFeature || !centerLatLng) return null;
-        let w = widthM;
-        let l = lengthM;
-        let best = null;
-        const maxIters = 14;
-        for (let i = 0; i < maxIters; i++) {
-            let candidate = buildRectangleFeature(centerLatLng, w, l, heightM, rotationDeg);
-            try { candidate = turf.rewind(candidate, { reverse: false }); } catch (_) { }
-            if (footprintFullyInsideBlock(candidate, singleBlockFeature)) {
-                best = candidate;
-                if (best && best.properties) {
-                    best.properties.width = w;
-                    best.properties.length = l;
-                    best.properties.rotation = rotationDeg;
-                }
-                break;
-            }
-            w *= 0.93;
-            l *= 0.93;
-        }
-        return best;
     }
 
     function bindRectangleLayerEvents() {
@@ -1398,7 +1331,6 @@
         const modalText = {
             title: translateSingleBuildingText('modal.singleBuilding.title', 'Freeform'),
             closeLabel: translateSingleBuildingText('modal.singleBuilding.closeLabel', 'Close buildings modal'),
-            more: translateSingleBuildingText('modal.singleBuilding.more', 'Site & details'),
             confirm: translateSingleBuildingText('modal.singleBuilding.confirm', 'Done'),
             buildingsTitle: translateSingleBuildingText('modal.singleBuilding.buildingsTitle', 'Buildings'),
             addLabel: translateSingleBuildingText('modal.singleBuilding.addLabel', 'Duplicate building'),
@@ -1464,41 +1396,38 @@
                             <input type="range" id="single-height-slider" min="3" max="250" step="1" value="${DEFAULT_HEIGHT_M}">
                         </div>
                         <div class="on-map-building__metrics"><span>${modalText.densityFootprint}</span><strong id="single-building-footprint-summary">—</strong></div>
-                        <details class="on-map-building__details">
-                            <summary>${modalText.more}</summary>
-                            <div class="on-map-building__scroll">
-                                <div class="building-picker-row">
-                                    <select id="single-building-selector" aria-label="${modalText.buildingsTitle}"></select>
-                                    <input type="text" id="single-building-name-input" maxlength="20" hidden aria-label="${modalText.renameLabel}">
-                                    <button id="single-building-rename" class="btn btn-quiet btn-icon" type="button" aria-label="${modalText.renameLabel}"><i class="fa-solid fa-pen" aria-hidden="true"></i></button>
-                                    <button id="single-building-delete" class="btn btn-quiet btn-icon" type="button" aria-label="${modalText.deleteLabel}"><i class="fa-solid fa-trash-can" aria-hidden="true"></i></button>
-                                    <button id="single-building-add" class="btn btn-quiet btn-icon" type="button" aria-label="${modalText.addLabel}"><i class="fa-solid fa-plus" aria-hidden="true"></i></button>
-                                </div>
-                                <div class="parameter-group">
-                                    <label for="single-ground-treatment">${modalText.surroundingsLabel}</label>
-                                    <select id="single-ground-treatment"><option value="none">${modalText.surroundingsNone}</option><option value="paved">${modalText.surroundingsPaved}</option><option value="green">${modalText.surroundingsGreen}</option></select>
-                                    <p class="parameter-info-text">${modalText.surroundingsInfo}</p>
-                                </div>
-                                <div class="parameter-group">
-                                    <label for="single-parcel-mode">${modalText.parcelLabel}</label>
-                                    <select id="single-parcel-mode"><option value="footprint">${modalText.parcelFootprint}</option><option value="whole">${modalText.parcelWhole}</option></select>
-                                    <p class="parameter-info-text">${modalText.parcelInfo}</p>
-                                </div>
-                                <section id="single-building-density-stats" class="building-density-card" aria-live="polite">
-                                    <h3 class="cb-kicker">${modalText.densityTitle}</h3>
-                                    <dl class="building-density-grid">
-                                        <div><dt>${modalText.densityParcelArea}</dt><dd id="single-building-density-parcel">—</dd></div>
-                                        <div><dt>${modalText.densityFootprint}</dt><dd id="single-building-density-footprint">—</dd></div>
-                                        <div><dt>${modalText.densitySiteCoverage}</dt><dd id="single-building-density-coverage">—</dd></div>
-                                        <div><dt>${modalText.densityGbp}</dt><dd id="single-building-density-gbp">—</dd></div>
-                                        <div><dt>${modalText.densityKin}</dt><dd id="single-building-density-kin">—</dd></div>
-                                    </dl>
-                                    <p id="single-building-density-hint" class="building-density-hint"></p>
-                                </section>
-                                <button id="single-building-geojson-upload" class="btn btn-block" type="button">${modalText.uploadGeojsonLabel}</button>
-                                <input id="single-building-geojson-input" type="file" accept=".geojson,.json,application/geo+json,application/json" hidden>
+                        <div class="on-map-building__fields">
+                            <div class="building-picker-row">
+                                <select id="single-building-selector" aria-label="${modalText.buildingsTitle}"></select>
+                                <input type="text" id="single-building-name-input" maxlength="20" hidden aria-label="${modalText.renameLabel}">
+                                <button id="single-building-rename" class="btn btn-quiet btn-icon" type="button" aria-label="${modalText.renameLabel}"><i class="fa-solid fa-pen" aria-hidden="true"></i></button>
+                                <button id="single-building-delete" class="btn btn-quiet btn-icon" type="button" aria-label="${modalText.deleteLabel}"><i class="fa-solid fa-trash-can" aria-hidden="true"></i></button>
+                                <button id="single-building-add" class="btn btn-quiet btn-icon" type="button" aria-label="${modalText.addLabel}"><i class="fa-solid fa-plus" aria-hidden="true"></i></button>
                             </div>
-                        </details>
+                            <div class="parameter-group">
+                                <label for="single-ground-treatment">${modalText.surroundingsLabel}</label>
+                                <select id="single-ground-treatment"><option value="none">${modalText.surroundingsNone}</option><option value="paved">${modalText.surroundingsPaved}</option><option value="green">${modalText.surroundingsGreen}</option></select>
+                                <p class="parameter-info-text">${modalText.surroundingsInfo}</p>
+                            </div>
+                            <div class="parameter-group">
+                                <label for="single-parcel-mode">${modalText.parcelLabel}</label>
+                                <select id="single-parcel-mode"><option value="footprint">${modalText.parcelFootprint}</option><option value="whole">${modalText.parcelWhole}</option></select>
+                                <p class="parameter-info-text">${modalText.parcelInfo}</p>
+                            </div>
+                            <section id="single-building-density-stats" class="building-density-card" aria-live="polite">
+                                <h3 class="cb-kicker">${modalText.densityTitle}</h3>
+                                <dl class="building-density-grid">
+                                    <div><dt>${modalText.densityParcelArea}</dt><dd id="single-building-density-parcel">—</dd></div>
+                                    <div><dt>${modalText.densityFootprint}</dt><dd id="single-building-density-footprint">—</dd></div>
+                                    <div><dt>${modalText.densitySiteCoverage}</dt><dd id="single-building-density-coverage">—</dd></div>
+                                    <div><dt>${modalText.densityGbp}</dt><dd id="single-building-density-gbp">—</dd></div>
+                                    <div><dt>${modalText.densityKin}</dt><dd id="single-building-density-kin">—</dd></div>
+                                </dl>
+                                <p id="single-building-density-hint" class="building-density-hint"></p>
+                            </section>
+                            <button id="single-building-geojson-upload" class="btn btn-block" type="button">${modalText.uploadGeojsonLabel}</button>
+                            <input id="single-building-geojson-input" type="file" accept=".geojson,.json,application/geo+json,application/json" hidden>
+                        </div>
 `,
                 footer: `
                         <button id="single-building-undo" type="button" class="btn btn-quiet" disabled>${translateSingleBuildingText('onMapEditor.undo', 'Undo')}</button>
@@ -1509,7 +1438,6 @@
             singleEditor = singleSession.root;
             singleSession.tools.setAttribute('role', 'toolbar');
             singleSession.tools.setAttribute('aria-label', modalText.rotationLabel);
-            singleEditor.querySelector('details').addEventListener('toggle', positionSingleBuildingToolbar);
             singleBuildingDesignChanges().start(document);
             document.getElementById('single-building-confirm').addEventListener('click', confirmSingleBuilding);
 
@@ -1664,7 +1592,7 @@
         if (parcelModeEl) parcelModeEl.value = currentTakeWholeParcels ? 'whole' : 'footprint';
         const initialPlacement = computeInitialPlacement(singleBlockFeature);
         const startCenter = initialPlacement.center || getBlockCentroid(singleBlockFeature);
-        currentHeightM = initialPlacement.width || DEFAULT_HEIGHT_M;
+        currentHeightM = DEFAULT_HEIGHT_M;
         currentRotationDeg = 0;
         singleRectFeature = null;
 

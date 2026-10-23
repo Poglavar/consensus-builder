@@ -109,15 +109,20 @@
     // Returns true when the tool launch should stop here.
     async function maybeSuggestWholeBlockForFreshProposal(goal, ids = []) {
         if (!shouldSuggestWholeBlockForFreshProposal(goal) || ids.length !== 1) return false;
-        if (typeof global.detectBlockParcelIdsForParcel !== 'function') return false;
-        const block = global.detectBlockParcelIdsForParcel(ids[0]);
+        const block = global.detectBlockParcelIdsForParcel?.(ids[0]);
+        const isBlock = ['block', 'buildings', 'urban-rule'].includes(String(goal).trim().toLowerCase());
+        if ((!block || block.count <= 1) && !isBlock) return false;
         // The count belongs in the question, not in a hidden policy gate. A large block is still
         // a block, and silently skipping the question made Detached behave differently depending
         // on where in the city it was launched.
-        if (!block || block.count <= 1) return false;
         if (typeof global.showStyledConfirm !== 'function') return false;
-        const message = tParcel('panel.parcel.suggestWholeBlock', { count: block.count },
-            `Only one parcel is selected. Did you mean the whole block (${block.count} parcels)?`);
+        // Silent detection only sees loaded neighbours. Missing results must not remove the
+        // user's choice to run detection explicitly.
+        const message = block?.count > 1
+            ? tParcel('panel.parcel.suggestWholeBlock', { count: block.count },
+                `Only one parcel is selected. Did you mean the whole block (${block.count} parcels)?`)
+            : tParcel('panel.parcel.chooseBlockScope', {},
+                'Only one parcel is selected. Use this parcel, or detect the whole block?');
         const wantsBlock = await global.showStyledConfirm(message, {
             okText: tParcel('panel.parcel.suggestWholeBlockYes', {}, 'Yes, select the block'),
             cancelText: tParcel('panel.parcel.suggestWholeBlockNo', {}, 'No, just this parcel')

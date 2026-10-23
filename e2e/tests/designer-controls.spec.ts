@@ -334,8 +334,6 @@ test.describe('Designer controls persist their edits @features', () => {
     // A rotation is disabled when the footprint cannot rotate inside the selected parcel.
     // This fixture's initial placement is constrained, so exercise the supported height and
     // surface controls without bypassing that real geometry gate.
-    const siteDetails = page.locator('#single-building-editor details.on-map-building__details > summary');
-    await siteDetails.click();
     await selectNativeOption(page.locator('#single-ground-treatment'), 'green');
     await selectNativeOption(page.locator('#single-parcel-mode'), 'whole');
     await page.locator('#single-building-add').click();

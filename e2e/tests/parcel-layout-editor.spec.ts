@@ -371,7 +371,7 @@ test('a plot laid across two owners\' parcels is held jointly by both, pro rata 
 
   // Both parcels selected, then laid out from the selection's palette.
   await openParcel(page);
-  await page.locator('#multiSelectCheckboxInfo').check();
+  await page.locator('#parcel-manual-selection').click();
   await closeParcel(page);
   await clickMapPoint(page, 15.9824, 45.80025);
   await expect.poll(() => page.evaluate(() => [...(window as any).multiParcelSelection.selectedParcels].sort())).toEqual(ADJACENT_IDS);

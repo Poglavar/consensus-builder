@@ -8652,6 +8652,12 @@
             clickDownXY = null;
             if (moved > 6) return;
         }
+        if (window.multiParcelSelection?.isActive) {
+            const id = parcelUnderClick(evt);
+            const layer = id && window.LiveParcelFabric?.get(id) && window.ParcelPresenter?.getLayer(id);
+            if (layer) window.multiParcelSelection.toggleParcel(layer);
+            return;
+        }
         const picked = pickMapSubjectFromEvent(evt);
         const proposal = picked?.proposalId ? (window.proposalStorage?.getProposal?.(picked.proposalId) || null) : null;
         // Every click is also a parcel click (three-click-plan.js): the parcel under the point comes

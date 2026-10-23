@@ -7,7 +7,7 @@ test('multi-parcel inspector Cancel selection clears the selected land and exits
   const second = 'HR-335754-1235';
   await page.evaluate(async id => (window as any).CadastralParcelRepository.ensureIds([id]), second);
   await openParcel(page);
-  await page.locator('#multiSelectCheckboxInfo').check();
+  await page.locator('#parcel-manual-selection').click();
   await closeParcel(page);
   await clickMapPoint(page, 15.9829, 45.80025);
   await expect.poll(() => page.evaluate(() => [...(window as any).multiParcelSelection.selectedParcels].sort()))
@@ -20,5 +20,5 @@ test('multi-parcel inspector Cancel selection clears the selected land and exits
     active: (window as any).multiParcelSelection.isActive,
   }))).toEqual({ selected: 0, active: false });
   await expect(page.locator('#selection-tray')).toBeHidden();
-  await expect(page.locator('#multiSelectCheckboxInfo')).not.toBeChecked();
+  await expect(page.locator('#parcel-manual-selection')).toHaveAttribute('aria-pressed', 'false');
 });

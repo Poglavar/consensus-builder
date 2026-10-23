@@ -1213,44 +1213,28 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
     box-sizing: border-box;
 }
 
-/* Center the multi-select checkbox in parcel info panel */
-#parcel-info-panel .parcel-context-actions .checkbox-group {
+/* Manual is a persistent selection mode; Detect block is a one-shot action. */
+#parcel-info-panel .parcel-context-actions .multi-select-group {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
-}
-
-#parcel-info-panel .parcel-context-actions .checkbox-group label {
     margin: 0;
-    width: auto;
-    justify-content: center;
-}
-
-/* "Select multiple parcels" group: title with the two selection modes side by side —
-   the Manually checkbox and the Detect block action (block floodfill from the selected parcel). */
-#parcel-info-panel .parcel-context-actions .multi-select-group {
     gap: 4px;
 }
 
 #parcel-info-panel .parcel-context-actions .multi-select-title {
     font-weight: 600;
-    font-size: 13px;
+    font-size: var(--cb-text-sm);
 }
 
 #parcel-info-panel .parcel-context-actions .multi-select-options {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: var(--cb-space-1);
+    min-height: var(--cb-control-height-lg);
     flex-wrap: wrap;
-}
-
-/* Touch: the Manually checkbox gets a finger-sized row like the Detect block button beside it. */
-@media (pointer: coarse) {
-    #parcel-info-panel .parcel-context-actions .multi-select-options label {
-        min-height: 34px;
-    }
 }
 
 /* Proposal list in parcel info panel */
@@ -1731,7 +1715,3 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 /* Selection belongs to the parcel, independently of which tab is open. */
 .parcel-context-actions { padding: var(--cb-space-2) 0; gap: var(--cb-space-1); align-items: flex-end; }
 .parcel-context-actions .click-stack__actions--parcel { margin: 0; min-height: var(--cb-control-height-lg); }
-#parcel-info-panel .parcel-context-actions .multi-select-group { align-items: flex-start; margin: 0; }
-#parcel-info-panel .parcel-context-actions .multi-select-title { font-size: var(--cb-text-sm); }
-#parcel-info-panel .parcel-context-actions .multi-select-options { gap: var(--cb-space-1); min-height: var(--cb-control-height-lg); }
-#parcel-info-panel .parcel-context-actions .multi-select-options label { padding-inline: 0; }

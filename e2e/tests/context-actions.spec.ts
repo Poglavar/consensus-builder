@@ -33,7 +33,7 @@ test.describe('Map context actions @features', () => {
     await ensureSecondParcel(page);
     const selectedFeatures = await page.evaluate(ids => JSON.parse(JSON.stringify(ids.map(id => (window as any).LiveParcelFabric.get(id)))), [PARCEL_ID, SECOND_PARCEL_ID]);
     await openParcel(page);
-    await page.locator('#multiSelectCheckboxInfo').check();
+    await page.locator('#parcel-manual-selection').click();
     await closeParcel(page);
     await clickMapPoint(page, 15.9829, 45.80025);
     await expect.poll(() => page.evaluate(() => [...(window as any).multiParcelSelection.selectedParcels].sort()))

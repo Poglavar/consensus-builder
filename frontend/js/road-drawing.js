@@ -2060,7 +2060,7 @@ function disableMultiSelectForDrawing() {
             if (multiParcelSelection.selectedParcels?.clear) multiParcelSelection.selectedParcels.clear();
             multiParcelSelection.isActive = false;
             if (typeof multiParcelSelection.updateUI === 'function') multiParcelSelection.updateUI();
-            if (typeof syncMultiSelectCheckboxes === 'function') syncMultiSelectCheckboxes(false);
+            if (typeof syncMultiSelectControls === 'function') syncMultiSelectControls(false);
         }
     } catch (_) { /* ignore */ }
 }

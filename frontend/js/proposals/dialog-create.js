@@ -1355,8 +1355,8 @@ function finishProposalDialogClose() {
             if (typeof multiParcelSelection.updateUI === 'function') {
                 multiParcelSelection.updateUI();
             }
-            if (typeof syncMultiSelectCheckboxes === 'function') {
-                syncMultiSelectCheckboxes(false);
+            if (typeof syncMultiSelectControls === 'function') {
+                syncMultiSelectControls(false);
             }
         } catch (_) { /* ignore */ }
     }

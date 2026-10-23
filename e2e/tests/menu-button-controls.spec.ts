@@ -25,7 +25,7 @@ test('Escape dismisses the parcel and History opens its actual history card', as
 test('parcel panel Select multiple starts a selection containing the clicked parcel', async ({ mockApi: page }) => {
   await openCity(page);
   await openParcelAt(page, 15.9822, 45.80025);
-  await page.locator('#multiSelectCheckboxInfo').check();
+  await page.locator('#parcel-manual-selection').click();
   await expect(page.locator('#selection-tray')).toBeVisible();
   await expect.poll(() => page.evaluate(() => [...(window as any).multiParcelSelection.selectedParcels])).toEqual([PARCEL_ID]);
 });
@@ -45,7 +45,7 @@ test('selection tray Detect block expands its selected seed to the cadastral blo
   await openCity(page);
   await page.evaluate(async () => (window as any).CadastralParcelRepository.ensureIds(['HR-335754-1235', 'HR-335754-1236', 'HR-335754-1237', 'HR-335754-1238']));
   await openParcelAt(page, 15.9821, 45.800225);
-  await page.locator('#multiSelectCheckboxInfo').check();
+  await page.locator('#parcel-manual-selection').click();
   await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.selectedParcels.size)).toBe(1);
   await page.locator('#selection-tray [data-command="blocks.fromSelected"]').click();
   await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.selectedParcels.size)).toBe(5);

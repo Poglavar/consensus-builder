@@ -225,7 +225,7 @@ async function reopenGeometryEditor(page: Page, proposalId: string, editorRoot: 
 // Select multiple on, and opens the Build palette for the selection.
 async function selectParcelsByHand(page: Page, ids: string[]): Promise<void> {
   await openParcel(page, 'info', ids[0]);
-  await page.locator('#multiSelectCheckboxInfo').check();
+  await page.locator('#parcel-manual-selection').click();
   await closeParcel(page);
   for (const id of ids.slice(1)) {
     const [lng, lat] = await page.evaluate(parcelId => (window as any).turf.centroid((window as any).LiveParcelFabric.get(parcelId)).geometry.coordinates, id);
@@ -257,6 +257,7 @@ async function openRuleOnFirstPlot(page: Page, rule: 'buildings' | 'row' | 'parc
   await page.evaluate(async ids => { await (window as any).CadastralParcelRepository.ensureIds(ids); }, [NEXT_PLOT, THIRD_PLOT]);
   await openParcel(page, 'proposals');
   await page.locator(`.parcel-build-btn--${rule}`).click();
+  if (rule === 'buildings') await page.getByRole('alertdialog').getByRole('button', { name: 'No, just this parcel' }).click();
   const done = rule === 'buildings' ? '#btn-blockify-done' : rule === 'row' ? '#btn-rowhouse-done' : '#btn-parcelbased-done';
   await expect(page.locator(done)).toBeEnabled({ timeout: 20_000 });
 }

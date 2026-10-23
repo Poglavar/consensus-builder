@@ -46,7 +46,7 @@ test.describe('Proposal creation and map lifecycle @features', () => {
       await openCity(page);
       await openParcel(page, type === 'row' ? 'info' : 'proposals');
       if (type === 'row') {
-        await page.locator('#multiSelectCheckboxInfo').check();
+        await page.locator('#parcel-manual-selection').click();
         await closeParcel(page);
         await clickMapPoint(page, 15.9829, 45.80025);
         await page.locator('#selection-tray [data-command="selection.propose"]').click();

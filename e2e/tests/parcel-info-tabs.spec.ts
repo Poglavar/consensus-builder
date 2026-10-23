@@ -98,8 +98,8 @@ test.describe('Parcel info panel tabs @core', () => {
     await expect(page.locator('#info-content')).toBeVisible();
   });
 
-  test('multi-select checkbox remains available above the tabs', async ({ mockApi: page }) => {
+  test('manual selection mode remains available above the tabs', async ({ mockApi: page }) => {
     await openDetails(page);
-    await expect(page.locator('#multiSelectCheckboxInfo')).toHaveAttribute('type', 'checkbox');
+    await expect(page.locator('#parcel-manual-selection')).toHaveAttribute('aria-pressed', 'false');
   });
 });

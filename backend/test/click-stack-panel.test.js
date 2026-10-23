@@ -100,6 +100,24 @@ function loadPanel({ memory = null, withEditLock = false } = {}) {
 }
 
 describe('click stack panel: a click opens, the same click closes', () => {
+    it('manual selection toggles live ground through a design once without opening content', () => {
+        const h = loadPanel({ withEditLock: true });
+        const layer = { id: 'p1' };
+        h.context.ParcelPresenter = { getLayer: vi.fn(() => layer) };
+        h.context.multiParcelSelection = { isActive: true, toggleParcel: vi.fn() };
+        h.context.__drillUi.stackAt.mockReturnValue([
+            { kind: 'proposal', key: 'd1' }, { kind: 'parcel', id: 'p1' }
+        ]);
+        h.click(SPOT_A);
+        h.api.handleClick({ ...SPOT_A });
+        expect(h.context.multiParcelSelection.toggleParcel).toHaveBeenCalledExactlyOnceWith(layer);
+        expect(h.context.ClickStackHits.hitsAt).not.toHaveBeenCalled();
+        expect(h.context.selectAndHighlightProposal).not.toHaveBeenCalled();
+        expect(h.api.isOpen()).toBe(false);
+        h.context.__drillUi.stackAt.mockReturnValue([{ kind: 'proposal', key: 'd1' }]);
+        h.click(SPOT_EMPTY);
+        expect(h.context.multiParcelSelection.toggleParcel).toHaveBeenCalledOnce();
+    });
     it('opens the spot with the topmost section expanded and its panel hosted in the section', () => {
         const h = loadPanel();
         expect(h.click(SPOT_A)).toBe(true);

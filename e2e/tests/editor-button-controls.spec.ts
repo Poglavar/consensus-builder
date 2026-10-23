@@ -112,7 +112,6 @@ test.describe('Editor button effects @features', () => {
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--single').click();
     await expect(modal.locator('.on-map-editor__panel')).toBeVisible();
-    await modal.locator('details > summary').click();
     const selector = page.locator('#single-building-selector');
     const initial = await selector.locator('option').count();
     const firstBuildingId = await selector.inputValue();
@@ -146,7 +145,6 @@ test.describe('Editor button effects @features', () => {
       // narrow, so a large generic city-centre rectangle is rejected as outside its boundary.
       geometry: { type: 'Polygon', coordinates: [[[15.98206,45.800205],[15.98214,45.800205],[15.98214,45.800245],[15.98206,45.800245],[15.98206,45.800205]]] },
     };
-    if (!(await page.locator('#single-building-geojson-upload').isVisible())) await page.locator('#single-building-editor details > summary').click();
     // The button opens its own file input; the chooser is taken at Playwright's boundary, so a
     // headed run never shows the native dialog.
     const singleChooser = page.waitForEvent('filechooser');

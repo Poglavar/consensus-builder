@@ -158,7 +158,8 @@
             hoverPending = null;
             if (global.ClickStack?.holdsHighlight?.()) return;
             const stack = stackAt(e.latlng);
-            const top = stack.length ? stack[0] : null;
+            const top = global.multiParcelSelection?.isActive
+                ? stack.find(entry => entry.kind === 'parcel') : stack[0];
             // The drill is the single hover authority (the parcels' own mouseover styling defers
             // to it): whatever claim is topmost — proposal, slice, or bare parcel — gets the
             // outline, so hover and click always agree on what the cursor is over.

@@ -32,6 +32,11 @@
         // A click from an old Leaflet layer can arrive while an atomic fabric commit replaces the
         // presentation. It has no authority to select geometry or identity after that commit.
         if (!feature || presentedLayer !== targetLayer) return;
+        if (global.multiParcelSelection?.isActive) {
+            if (e) L.DomEvent.stopPropagation(e);
+            if (e?.latlng) global.ClickStack.handleClick(e.latlng);
+            return;
+        }
         const isRoad = (typeof global.isRoadParcel === 'function') ? global.isRoadParcel(parcelId) : false;
 
         // Applied corridor parcels are both parcels and proposal surfaces. Remember the proposal now;
@@ -87,8 +92,8 @@
             return;
         }
 
-        // Shift+click enters multi-select on the fly — same as ticking the "Select multiple
-        // parcels" checkbox (updateUI syncs it). The currently viewed parcel is preserved as the
+        // Shift+click enters multi-select on the fly — same as pressing the Manual
+        // selection button (updateUI syncs it). The currently viewed parcel is preserved as the
         // seed, and the shift-clicked parcel joins the selection below.
         const shiftHeld = !!(e && e.originalEvent && e.originalEvent.shiftKey);
         if (shiftHeld && typeof global.multiParcelSelection !== 'undefined'
@@ -105,11 +110,9 @@
         }
 
         if (typeof global.multiParcelSelection !== 'undefined' && global.multiParcelSelection.isActive) {
-            const wasToggled = global.multiParcelSelection.toggleParcel(targetLayer);
-            if (wasToggled) {
-                L.DomEvent.stopPropagation(e);
-                return;
-            }
+            L.DomEvent.stopPropagation(e);
+            if (e?.latlng) global.ClickStack.handleClick(e.latlng);
+            return;
         }
 
         if (typeof global.multiParcelSelection !== 'undefined' && !global.multiParcelSelection.isActive) {
@@ -231,7 +234,7 @@
         return true;
     }
 
-    // Escape exits multi-select mode (same as unchecking the checkbox: the last parcel is
+    // Escape exits multi-select mode (same as turning Manual off: the last parcel is
     // restored as a single selection). Heavily guarded because many tools bind Escape for their
     // own cancel action — never hijack it while typing, inside a modal, or while the road/measure
     // tools (which drive multi-select programmatically) are active.

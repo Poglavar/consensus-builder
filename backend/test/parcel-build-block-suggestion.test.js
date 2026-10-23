@@ -145,6 +145,14 @@ describe('whole-block fresh-proposal suggestion', () => {
         expect(showStyledConfirm.mock.calls[0][0]).toContain('81');
     });
 
+    it.each([null, { count: 1, parcelIds: ['parcel-1'] }])('still offers block detection when silent detection returns %s', async block => {
+        const showStyledConfirm = vi.fn(async () => false);
+        const window = loadActions({ detectBlockParcelIdsForParcel: () => block, showStyledConfirm });
+        await expect(window.maybeSuggestWholeBlockForFreshProposal('block', ['parcel-1'])).resolves.toBe(false);
+        expect(showStyledConfirm).toHaveBeenCalledOnce();
+        expect(showStyledConfirm.mock.calls[0][0]).toContain('detect the whole block');
+    });
+
     it('stops the one-parcel launch after accepting and selecting the block', async () => {
         const animateFloodfillFromSelected = vi.fn(async () => true);
         const window = loadActions({

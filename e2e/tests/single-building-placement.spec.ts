@@ -21,10 +21,6 @@ async function openSingleEditor(page: Page, cityReady = false, parcelId = PARCEL
   await page.locator('#parcel-info-panel .parcel-build-btn--single').click();
   await expect(page.locator(`${EDITOR} .on-map-editor__panel`)).toBeVisible();
   await expect(page.locator('#single-building-confirm')).toBeEnabled();
-  const details = page.locator(`${EDITOR} details`);
-  if (!(await details.evaluate(node => (node as HTMLDetailsElement).open))) {
-    await details.locator('summary').click();
-  }
   if (multiBuildingDesign) {
     // Use the editor's duplicate and surroundings controls to make a real two-building design.
     await page.locator('#single-building-add').click();

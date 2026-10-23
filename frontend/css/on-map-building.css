@@ -32,37 +32,26 @@
     font-variant-numeric: tabular-nums;
 }
 
-.on-map-building__details {
-    margin-top: var(--cb-space-2);
-}
-
-.on-map-building__details summary {
-    padding: var(--cb-space-2) 0;
-    color: var(--cb-primary-soft-ink);
-    font-size: var(--cb-text-md);
-    font-weight: var(--cb-weight-semibold);
-    cursor: pointer;
-}
-
-.on-map-building__scroll {
+.on-map-building__fields {
+    margin-top: var(--cb-space-3);
     padding-right: var(--cb-space-1);
 }
 
-.on-map-building__scroll .building-picker-row {
+.on-map-building__fields .building-picker-row {
     gap: var(--cb-space-1);
 }
 
-.on-map-building__scroll .building-picker-row .btn-icon {
+.on-map-building__fields .building-picker-row .btn-icon {
     flex: 0 0 34px;
     width: 34px;
     padding: 0;
 }
 
-.on-map-building__scroll .parameter-group {
+.on-map-building__fields .parameter-group {
     margin-bottom: var(--cb-space-3);
 }
 
-.on-map-building__scroll .parameter-group > label {
+.on-map-building__fields .parameter-group > label {
     display: block;
     margin-bottom: var(--cb-space-1);
     color: var(--cb-text-strong);
@@ -70,22 +59,22 @@
     font-weight: var(--cb-weight-semibold);
 }
 
-.on-map-building__scroll .parameter-group select {
+.on-map-building__fields .parameter-group select {
     width: 100%;
 }
 
-.on-map-building__scroll .parameter-info-text {
+.on-map-building__fields .parameter-info-text {
     margin: var(--cb-space-1) 0 0;
     font-size: var(--cb-text-xs);
     line-height: 1.35;
 }
 
-.on-map-building__scroll .building-density-card {
+.on-map-building__fields .building-density-card {
     margin-bottom: var(--cb-space-3);
     padding: var(--cb-space-2);
 }
 
-.on-map-building__scroll .building-density-grid dt,
-.on-map-building__scroll .building-density-grid dd {
+.on-map-building__fields .building-density-grid dt,
+.on-map-building__fields .building-density-grid dd {
     font-size: var(--cb-text-sm);
 }

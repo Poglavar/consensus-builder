@@ -619,7 +619,21 @@
         // One physical click reaching several layers' handlers arrives within a few milliseconds.
         if (state.lastClick && now - state.lastClick.at < 50
             && state.lastClick.lat === latlng.lat && state.lastClick.lng === latlng.lng) return true;
-        state.lastClick = { at: now, lat: latlng.lat, lng: latlng.lng };
+        const click = { at: now, lat: latlng.lat, lng: latlng.lng };
+        state.lastClick = click;
+        // Bubbling handlers run in this event turn. A second physical click, even a quick one,
+        // must still toggle the selection; a 50 ms window alone swallowed fast deselections.
+        global.setTimeout?.(() => { if (state.lastClick === click) state.lastClick = null; }, 0);
+        // Manual parcel selection owns the click through buildings, permitted massing and designs.
+        // Resolve current live ground, never a proposal's source cadastral reference. Keep this
+        // after deduplication so a bubbling surface click cannot toggle the parcel twice.
+        if (global.multiParcelSelection?.isActive) {
+            const parcel = global.__drillUi?.stackAt(latlng).find(entry => entry.kind === 'parcel'
+                && global.LiveParcelFabric?.get(entry.id));
+            const layer = parcel && global.ParcelPresenter?.getLayer(parcel.id);
+            if (layer) global.multiParcelSelection.toggleParcel(layer);
+            return true;
+        }
         const hits = global.ClickStackHits.hitsAt(latlng, { onPublished: () => refreshSpot(latlng) });
         const stack = model.buildClickStack(hits, { remembered: remembered() });
         const action = model.clickAction(isOpen() ? state.stack?.topRef || null : null, stack);

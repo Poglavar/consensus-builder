@@ -1483,7 +1483,7 @@ const multiParcelSelection = {
     // asked for it: the tray's Propose, the menu's Details, the build palette). Opening the panel
     // on every toggle would bury the map under it while the person is still picking parcels.
     updateUI() {
-        syncMultiSelectCheckboxes(this.isActive);
+        syncMultiSelectControls(this.isActive);
 
         const count = this.selectedParcels.size;
         const panel = document.getElementById('parcel-info-panel');
