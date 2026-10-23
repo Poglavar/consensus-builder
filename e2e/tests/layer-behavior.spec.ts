@@ -1,3 +1,4 @@
+import { openLayerSection } from '../helpers/layers';
 import { test, expect } from '../helpers/fixtures';
 import { openCity, openParcel, createBuilding, proposalState, PARCEL_ID, expectStatusLogged } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
@@ -33,6 +34,8 @@ async function openLayers(page: any, { curatedRoads = true } = {}) {
     await expect.poll(() => page.evaluate(id => (window as any).LiveParcelFabric.get(id)?.properties?.BROJ_CESTICE, PARCEL_ID)).toBe('1234');
     await page.locator('#layers-button').click();
     await expect(page.locator('#layers-sheet')).toBeVisible();
+    await openLayerSection(page, 'parcels');
+    await openLayerSection(page, 'roads');
     // The never-built claims-count toggle was dropped from the sheet (fbe3758d); the ad-parcel toggle
     // is the one parcel control zoom must never gate.
     await expect(page.locator('#showClaimsCounts')).toHaveCount(0);
@@ -199,7 +202,7 @@ test.describe('Layers sheet behavior @features', () => {
       await installLayerDatasets(page);
       await openCity(page);
       await createGroundProposal(page, kind);
-      await page.locator('#layers-button').click();
+      await openLayerSection(page, 'parks-squares');
       const paneName = kind === 'park' ? 'parksPane' : 'squaresPane';
       const checkbox = page.locator(kind === 'park' ? '#showParksCheckbox' : '#showSquaresCheckbox');
       const panePaths = () => page.evaluate(name => (window as any).map.getPane(name)?.querySelectorAll('path').length || 0, paneName);

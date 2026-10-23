@@ -1,4 +1,8 @@
 {
+    "designDuplicate": {
+        "title": "Dupliciranje dizajna",
+        "hint": "Pomakni kopiju pa klikni za postavljanje. Escape odustaje."
+    },
     "planningStudy": {
         "exactStartHint": "Otvara ovu točnu česticu s izmjenjivim projektom i odabirom prednjeg ruba.",
         "title": "Studija čestice",
@@ -1363,7 +1367,7 @@
             "aboutTitle": "O projektu",
             "aboutParagraph": "<strong>Consensus Builder</strong> besplatan je alat za urbanističko planiranje na karti koji je pokrenuo Urban Game Theory. Hyperstition: Markets for Possible Cities njegov je hackathon projekt. Istražite stvarne čestice, usporedite prijedloge zoniranja i razvoja te gradite podršku s ljudima na koje promjene utječu. Pročitajte o <a class=\"cb-link\" href=\"/urban-planning.html\">otvorenom planiranju grada</a>, otvorite <a class=\"cb-link\" href=\"/hackathon-demo.html\">demonstraciju uživo</a>, pročitajte <a class=\"cb-link\" href=\"/deck.html\">prezentaciju</a> ili pogledajte <a class=\"cb-link\" href=\"roadmap.html\" target=\"_blank\" rel=\"noopener noreferrer\">plan razvoja</a>.",
             "instructionsTitle": "Kreni odavde",
-            "instructionsParagraph": "<strong>Nacrtaj promjenu, zatim gradi konsenzus.</strong> Dovršeni dizajn stvara primijenjeni lokalni prijedlog. Pregledaj ga, makni s karte, podijeli ili izradi uređivu varijantu kada želiš promijeniti dizajn ili uvjete. Pročitaj <a class=\"cb-link\" href=\"kako-koristiti.html\" target=\"_blank\" rel=\"noopener noreferrer\">vodič korak po korak</a> ili pogledaj što radi danas i što slijedi u <a class=\"cb-link\" href=\"roadmap.html\" target=\"_blank\" rel=\"noopener noreferrer\">planu razvoja</a>.",
+            "instructionsParagraph": "<strong>Nacrtaj promjenu pa prikupi suglasnost.</strong> Dovršen dizajn postaje primijenjeni lokalni prijedlog. Pregledaj ga, uredi geometriju, dupliciraj pomične dizajne ili ga podijeli. Pravila odlučivanja, sudionici i financiranje pripadaju zasebnom sporazumu o dizajnima. <a class=\"cb-link\" href=\"how-to-use.html\" target=\"_blank\" rel=\"noopener noreferrer\">Upute</a> · <a class=\"cb-link\" href=\"roadmap.html\" target=\"_blank\" rel=\"noopener noreferrer\">Plan razvoja</a>.",
             "advancedTitle": "Napredne opcije",
             "debugToggle": "Uključi debug način",
             "wipeDataButton": "Resetiraj sve (ovaj preglednik)",
@@ -1643,8 +1647,8 @@
                 "details": "Detalji prijedloga",
                 "propose": "Predloži",
                 "editDetails": "Detalji",
-                "forkDesign": "Kopiraj dizajn",
-                "forkDesignHint": "Izradite kopiju koju možete uređivati. Dizajn koji gledate ostaje nepromijenjen.",
+                "duplicateDesign": "Dupliciraj",
+                "duplicateDesignHint": "Pomakni kopiju pokazivačem i klikni za postavljanje novog dizajna.",
                 "apply_disabled_for_type": "Primjena je onemogućena za ovu vrstu prijedloga.",
                 "applyFailed": "Nije moguće primijeniti ovaj prijedlog: {{reason}}",
                 "applyFailedUnknown": "Nije moguće primijeniti ovaj prijedlog. Pokušajte ponovno.",
@@ -1814,7 +1818,7 @@
                 "record": "Zapis prijedloga",
                 "recordHint": "Datum izrade, lokalni ID i poveznice",
                 "actions": "Dodatne radnje",
-                "actionsHint": "Stvorite vlastitu verziju i istražite zemljište"
+                "actionsHint": "Pregledaj dizajn, dupliciraj pomičnu geometriju ili istraži njegovo zemljište."
             },
             "forkedFrom": "Izvedeno iz {{cid}}",
             "tabs": {
@@ -2076,6 +2080,7 @@
             }
         },
         "welcome": {
+            "profileTitle": "Vaš agent",
             "kicker": "Consensus Builder · Urban Game Theory",
             "title": "Tržište za stvarne promjene zemljišta",
             "statement": "Ljudi i agenti predlažu, financiraju i prognoziraju promjene na stvarnim česticama, dok javni registri potvrđuju što se doista dogodilo.",
@@ -2086,7 +2091,6 @@
             "flowResolve": "Razriješi",
             "demoLink": "Otvori demonstraciju uživo",
             "deckLink": "Pročitaj prezentaciju",
-            "subtitle": "Odaberite avatar i unesite korisničko ime:",
             "closeLabel": "Zatvori prozor dobrodošlice",
             "avatarLabel": "Odaberite avatar",
             "avatarAlt": "Avatar",
@@ -2139,6 +2143,7 @@
             "surroundingsGreen": "Zelenilo",
             "surroundingsInfo": "Jedan izbor za cijelu površinu čestica oko svih zgrada u ovom prijedlogu. Postojeće zgrade na tim česticama uklanjaju se u svakom slučaju.",
             "uploadGeojsonLabel": "Učitaj GeoJSON",
+            "uploadGlbLabel": "Učitaj .glb",
             "uploadNoPolygon": "Datoteku nije moguće uvesti. Upotrijebite valjane tlocrte zgrada tipa Polygon ili MultiPolygon.",
             "uploadOutside": "Učitani poligon ne preklapa se s ovim blokom na upotrebljiv način.",
             "uploadError": "Datoteku nije moguće pročitati.",

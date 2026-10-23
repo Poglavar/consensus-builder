@@ -1,4 +1,8 @@
 {
+    "designDuplicate": {
+        "title": "Duplicate design",
+        "hint": "Move the copy, then click to place it. Escape cancels."
+    },
     "planningStudy": {
         "exactStartHint": "Opens this exact parcel with an editable design and a selectable front edge.",
         "title": "Parcel study",
@@ -1353,7 +1357,7 @@
             "aboutTitle": "About",
             "aboutParagraph": "<strong>Consensus Builder</strong> is Urban Game Theory's free, map-based urban planning tool. Hyperstition: Markets for Possible Cities is its hackathon project. Explore real parcels, compare community zoning and development proposals, and build support with the people affected. Read about the <a class=\"cb-link\" href=\"/urban-planning.html\">open city planning workflow</a>, open the <a class=\"cb-link\" href=\"/hackathon-demo.html\">live hackathon demo</a>, read the <a class=\"cb-link\" href=\"/deck.html\">pitch deck</a>, or see <a class=\"cb-link\" href=\"roadmap.html\" target=\"_blank\" rel=\"noopener noreferrer\">the roadmap</a>.",
             "instructionsTitle": "Start here",
-            "instructionsParagraph": "<strong>Draw the change, then build consent.</strong> Finishing a design creates an applied local proposal. Inspect it, unapply it, share it, or fork it into an editable replacement when the design or terms need to change. Read the <a class=\"cb-link\" href=\"how-to-use.html\" target=\"_blank\" rel=\"noopener noreferrer\">step-by-step guide</a>, or see what works today and what comes next on the <a class=\"cb-link\" href=\"roadmap.html\" target=\"_blank\" rel=\"noopener noreferrer\">roadmap</a>.",
+            "instructionsParagraph": "<strong>Draw the change, then build consent.</strong> Finishing a design creates an applied local proposal. Inspect it, edit its geometry, duplicate movable designs, or share it. Decision rules, participants and funding belong in a separate agreement over the designs. <a class=\"cb-link\" href=\"how-to-use.html\" target=\"_blank\" rel=\"noopener noreferrer\">Guide</a> · <a class=\"cb-link\" href=\"roadmap.html\" target=\"_blank\" rel=\"noopener noreferrer\">Roadmap</a>.",
             "advancedTitle": "Advanced options",
             "debugToggle": "Enable debug mode",
             "wipeDataButton": "Reset everything (this browser)",
@@ -1630,8 +1634,8 @@
                 "details": "Proposal details",
                 "propose": "Propose",
                 "editDetails": "Details",
-                "forkDesign": "Fork design",
-                "forkDesignHint": "Create an editable copy. The design you are viewing stays unchanged.",
+                "duplicateDesign": "Duplicate",
+                "duplicateDesignHint": "Move a copy with the pointer and click to place a new design.",
                 "apply_disabled_for_type": "Apply is disabled for this proposal type.",
                 "applyFailed": "Could not apply this proposal: {{reason}}",
                 "applyFailedUnknown": "Could not apply this proposal. Please try again.",
@@ -1801,7 +1805,7 @@
                 "record": "Proposal record",
                 "recordHint": "Created date, local ID and links",
                 "actions": "More actions",
-                "actionsHint": "Fork this proposal and explore its land"
+                "actionsHint": "Inspect this design, duplicate movable geometry, or explore its land."
             },
             "forkedFrom": "Forked from {{cid}}",
             "tabs": {
@@ -2056,6 +2060,7 @@
             }
         },
         "welcome": {
+            "profileTitle": "Your agent",
             "kicker": "Consensus Builder · Urban Game Theory",
             "title": "Hyperstition: Markets for Possible Cities",
             "statement": "Humans and agents imagine, propose, fund and forecast changes to real parcels. Public records decide which possible futures became real.",
@@ -2068,7 +2073,6 @@
             "flowRealize": "Realize",
             "demoLink": "Open the live hackathon demo",
             "deckLink": "Read the pitch deck",
-            "subtitle": "Choose your avatar and enter a username:",
             "closeLabel": "Close welcome dialog",
             "avatarLabel": "Choose your avatar",
             "avatarAlt": "Avatar",
@@ -2117,6 +2121,7 @@
             "surroundingsGreen": "Green",
             "surroundingsInfo": "One choice for the whole parcel area around every building in this proposal. Existing buildings on these parcels are cleared either way.",
             "uploadGeojsonLabel": "Upload GeoJSON",
+            "uploadGlbLabel": "Upload .glb",
             "uploadNoPolygon": "Could not import the file. Use valid Polygon or MultiPolygon building footprints.",
             "uploadOutside": "The uploaded polygon does not overlap this block in a usable way.",
             "uploadError": "Could not read that file.",

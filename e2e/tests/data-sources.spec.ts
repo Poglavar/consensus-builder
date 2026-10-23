@@ -1,3 +1,4 @@
+import { openLayerSection } from '../helpers/layers';
 import { selectNativeOption } from '../helpers/controls';
 // Settings → Data sources: a person's own parcel and building sources, kept in this browser per city
 // (frontend/js/parcel-source-settings.js). The building flow is driven end to end against a mocked
@@ -37,6 +38,7 @@ test.describe('Data sources @features', () => {
     // The source pickers sit beside their layers in the Layers sheet since fbe3758d.
     await page.locator('#layers-button').click();
     await expect(page.locator('#layers-sheet')).toBeVisible();
+    await openLayerSection(page, 'parcels');
     await page.locator('#parcel-source-settings-button').click();
     const dialog = page.locator('#parcel-source-settings');
     await expect(dialog.getByRole('heading')).toHaveText('Choose a parcel source');
@@ -44,7 +46,7 @@ test.describe('Data sources @features', () => {
     await expect(dialog).toHaveCount(0);
 
     // Opening a dialog may fold the sheet away; reopen it as a person would.
-    if (!(await page.locator('#building-source-settings-button').isVisible())) await page.locator('#layers-button').click();
+    await openLayerSection(page, 'buildings');
     await page.locator('#building-source-settings-button').click();
     await expect(dialog.getByRole('heading')).toHaveText('Choose a building source');
     await dialog.locator('#parcel-source-url').fill(URL_IN);
@@ -71,7 +73,7 @@ test.describe('Data sources @features', () => {
     expect(footprintsBody).toMatchObject({ source: sourceId('ft') });
     expect(footprintsBody.city).toBeUndefined();
 
-    await page.locator('#layers-button').click();
+    await openLayerSection(page, 'buildings');
     await page.locator('#building-source-settings-button').click();
     await expect(dialog).toContainText('Current source: data.example (arcgis)');
     const backToDefault = page.waitForNavigation();

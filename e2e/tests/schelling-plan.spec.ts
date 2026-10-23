@@ -1,3 +1,4 @@
+import { openLayerSection } from '../helpers/layers';
 // Purpose: cover the Schelling plan through its real entry paths: the Layers switch opening the
 // plan's own panel (local street spacing and width, plot size, all reflected in the drawing and the
 // address bar; fold and close), the painting tool as the panel's next step (superblock, clear,
@@ -11,6 +12,7 @@ async function openLayers(page: Page): Promise<void> {
   const sheet = page.locator('#layers-sheet');
   if (!(await sheet.isVisible())) await page.locator('#layers-button').click();
   await expect(sheet).toBeVisible();
+  await openLayerSection(page, 'schelling-plan');
 }
 
 const count = (page: Page, selector: string) => page.locator(selector).count();

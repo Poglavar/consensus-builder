@@ -1,4 +1,8 @@
 {
+    "designDuplicate": {
+        "title": "Duplicar diseño",
+        "hint": "Mueve la copia y haz clic para colocarla. Escape cancela."
+    },
     "planningStudy": {
         "exactStartHint": "Abre esta parcela exacta con un diseño editable y un borde frontal seleccionable.",
         "title": "Estudio de parcela",
@@ -1376,7 +1380,7 @@
             "aboutTitle": "Acerca de",
             "aboutParagraph": "<strong>Consensus Builder</strong> es una herramienta gratuita de planificación urbana en el mapa, creada por Urban Game Theory. Hyperstition: Markets for Possible Cities es su proyecto de hackathon. Explora parcelas reales, compara propuestas comunitarias de zonificación y desarrollo, y suma apoyo de las personas afectadas. Descubre el <a class=\"cb-link\" href=\"/urban-planning.html\">proceso de planificación urbana abierta</a>, abre la <a class=\"cb-link\" href=\"/hackathon-demo.html\">demo en vivo del hackathon</a>, lee la <a class=\"cb-link\" href=\"/deck.html\">presentación</a> o consulta <a class=\"cb-link\" href=\"roadmap.html\" target=\"_blank\" rel=\"noopener noreferrer\">la hoja de ruta</a>.",
             "instructionsTitle": "Empieza aquí",
-            "instructionsParagraph": "<strong>Dibuja el cambio y después construye consenso.</strong> Al terminar un diseño se crea una propuesta local ya aplicada. Examínala, retírala del mapa, compártela o crea una variante editable cuando deban cambiar el diseño o las condiciones. Lee la <a class=\"cb-link\" href=\"how-to-use.html\" target=\"_blank\" rel=\"noopener noreferrer\">guía paso a paso</a> o consulta qué funciona hoy y qué viene después en la <a class=\"cb-link\" href=\"roadmap.html\" target=\"_blank\" rel=\"noopener noreferrer\">hoja de ruta</a>.",
+            "instructionsParagraph": "<strong>Dibuja el cambio y después reúne el consentimiento.</strong> Al terminar un diseño se crea una propuesta local aplicada. Puedes inspeccionarla, editar su geometría, duplicar los diseños que se pueden mover o compartirla. Las reglas de decisión, los participantes y la financiación pertenecen a un acuerdo separado sobre los diseños. <a class=\"cb-link\" href=\"how-to-use.html\" target=\"_blank\" rel=\"noopener noreferrer\">Guía</a> · <a class=\"cb-link\" href=\"roadmap.html\" target=\"_blank\" rel=\"noopener noreferrer\">Hoja de ruta</a>.",
             "advancedTitle": "Opciones avanzadas",
             "debugToggle": "Habilitar modo depuración",
             "wipeDataButton": "Restablecer todo (este navegador)",
@@ -1653,8 +1657,8 @@
                 "details": "Detalles de la propuesta",
                 "propose": "Proponer",
                 "editDetails": "Detalles",
-                "forkDesign": "Duplicar diseño",
-                "forkDesignHint": "Crea una copia editable. El diseño que estás viendo no cambia.",
+                "duplicateDesign": "Duplicar",
+                "duplicateDesignHint": "Mueve una copia con el puntero y haz clic para colocar un nuevo diseño.",
                 "apply_disabled_for_type": "Aplicar está desactivado para este tipo de propuesta.",
                 "applyFailed": "No se pudo aplicar esta propuesta: {{reason}}",
                 "applyFailedUnknown": "No se pudo aplicar esta propuesta. Inténtalo de nuevo.",
@@ -1824,7 +1828,7 @@
                 "record": "Registro de la propuesta",
                 "recordHint": "Fecha de creación, ID local y enlaces",
                 "actions": "Más acciones",
-                "actionsHint": "Crea una versión y explora el terreno"
+                "actionsHint": "Inspecciona este diseño, duplica su geometría si se puede mover o explora su terreno."
             },
             "forkedFrom": "Derivado de {{cid}}",
             "tabs": {
@@ -2081,6 +2085,7 @@
             }
         },
         "welcome": {
+            "profileTitle": "Tu agente",
             "kicker": "Consensus Builder · Urban Game Theory",
             "title": "Un mercado para cambios reales del suelo",
             "statement": "Personas y agentes proponen, financian y pronostican cambios en parcelas reales, mientras los registros públicos resuelven qué ocurrió.",
@@ -2091,7 +2096,6 @@
             "flowResolve": "Resolver",
             "demoLink": "Abrir la demo en vivo del hackathon",
             "deckLink": "Leer la presentación",
-            "subtitle": "Elige tu avatar e introduce un nombre de usuario:",
             "closeLabel": "Cerrar ventana de bienvenida",
             "avatarLabel": "Elige tu avatar",
             "avatarAlt": "Avatar",
@@ -2144,6 +2148,7 @@
             "surroundingsGreen": "Verde",
             "surroundingsInfo": "Una sola opción para toda la superficie de las parcelas alrededor de cada edificio de esta propuesta. Los edificios existentes en esas parcelas se eliminan en cualquier caso.",
             "uploadGeojsonLabel": "Subir GeoJSON",
+            "uploadGlbLabel": "Subir .glb",
             "uploadNoPolygon": "No se pudo importar el archivo. Usa huellas de edificios Polygon o MultiPolygon válidas.",
             "uploadOutside": "El polígono subido no se superpone con este bloque de forma utilizable.",
             "uploadError": "No se pudo leer ese archivo.",

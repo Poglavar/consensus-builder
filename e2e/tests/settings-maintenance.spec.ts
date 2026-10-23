@@ -1,3 +1,4 @@
+import { openLayerSection } from '../helpers/layers';
 import { selectNativeOption } from '../helpers/controls';
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
@@ -11,6 +12,7 @@ async function openSettings(page: import('@playwright/test').Page) {
 async function openLayers(page: import('@playwright/test').Page) {
   await page.locator('#layers-button').click();
   await expect(page.locator('#layers-sheet')).toBeVisible();
+  await openLayerSection(page, 'base-map');
 }
 
 // The resets sit folded under one "Reset data stored in this browser…" row (docs/design-language.md).

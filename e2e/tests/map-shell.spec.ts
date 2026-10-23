@@ -26,6 +26,32 @@ test.describe('Map shell sheets @features', () => {
     await waitForMapReady(page);
   });
 
+  test('Layers opens with ordered, collapsed sections every time', async ({ mockApi: page }, testInfo) => {
+    await page.locator(selectors.layersButton).click();
+    const sheet = page.locator(selectors.layersSheet);
+    const sections = sheet.locator('.map-sheet-body[data-map-modes="2d"] > details.accordion-section');
+    expect(await sections.evaluateAll(nodes => nodes.map(node => (node as HTMLElement).dataset.section))).toEqual([
+      'base-map', 'parcels', 'blocks', 'buildings', 'parks-squares', 'roads', 'schelling-plan'
+    ]);
+    await expect(sections.locator('> summary')).toHaveText([
+      'Base map', 'Parcels', 'Parcel blocks', 'Buildings', 'Parks and squares', 'Roads', 'Schelling plan'
+    ]);
+    await expect(sheet.locator('details.accordion-section[open]')).toHaveCount(0);
+    await expect(sheet.locator('[data-section="schelling-plan"] > summary .fa-handshake')).toHaveCount(1);
+    await page.screenshot({ path: testInfo.outputPath('layers-collapsed.png') });
+    await sheet.locator('[data-section="base-map"] > summary').click();
+    await expect(sheet.locator('#tile-source-select')).toBeVisible();
+    await sheet.locator('[data-section="buildings"] > summary').click();
+    await expect(sheet.locator('details.accordion-section[open]')).toHaveCount(2);
+    await sheet.locator(selectors.sheetClose).click();
+    await page.locator(selectors.layersButton).click();
+    await expect(sheet.locator('details.accordion-section[open]')).toHaveCount(0);
+    // Commands still reveal the specific section containing their target control.
+    await page.evaluate(() => (window as any).MapShell.revealControl('tile-source-select'));
+    await expect(sheet.locator('#tile-source-select')).toBeVisible();
+    await expect(sheet.locator('details.accordion-section[open]')).toHaveCount(1);
+  });
+
   for (const { name, button, sheet } of SHEETS) {
     test(`the ${name} button opens and closes its sheet`, async ({ mockApi: page }) => {
       const trigger = page.locator(button);

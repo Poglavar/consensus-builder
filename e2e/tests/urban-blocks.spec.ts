@@ -1,3 +1,4 @@
+import { openLayerSection } from '../helpers/layers';
 // Urban blocks · OSM (Layers sheet): the toggle loads OSM roads for the view, detects the blocks
 // they enclose in the worker and draws them; "Refresh this area" loads the roads again. The road
 // source is a protocol fixture: a crossed square around the view's centre encloses four blocks, a
@@ -47,7 +48,7 @@ test.describe('Urban blocks @features', () => {
     await openCity(page);
     const requests = await serveRoads(page, ['crossed', 'square']);
 
-    await page.locator(selectors.layersButton).click();
+    await openLayerSection(page, 'blocks');
     const sheet = page.locator(selectors.layersSheet);
     await expect(sheet).toBeVisible();
     const toggle = sheet.locator('#showUrbanBlocks');
@@ -70,7 +71,7 @@ test.describe('Urban blocks @features', () => {
     // the blocks list replaces the sheet; Refresh lives in the Layers sheet, so open it again
     await expect(page.locator('#urban-block-panel')).toBeVisible();
     await expect(sheet).toBeHidden();
-    await page.locator(selectors.layersButton).click();
+    await openLayerSection(page, 'blocks');
     await expect(sheet).toBeVisible();
 
     await expect(refresh).toBeEnabled();
@@ -80,7 +81,7 @@ test.describe('Urban blocks @features', () => {
     await expect.poll(() => drawnBlocks(page)).toBe(1);
     await expect(page.locator('#urban-block-list button[data-block-id]')).toHaveCount(1);
 
-    await page.locator(selectors.layersButton).click();
+    await openLayerSection(page, 'blocks');
     await expect(sheet).toBeVisible();
     await toggle.uncheck();
     await expect.poll(() => drawnBlocks(page)).toBe(0);

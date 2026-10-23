@@ -1,3 +1,4 @@
+import { openLayerSection } from '../helpers/layers';
 import { test, expect } from '../helpers/fixtures';
 import { openCity, PARCEL_ID, openParcel } from '../helpers/runtime';
 
@@ -19,7 +20,7 @@ test.describe('Parcel loading and rendering @core', () => {
 
   test('parcel layer visibility changes the map while retaining cadastral facts', async ({ mockApi: page }) => {
     await openCity(page);
-    await page.locator('#layers-button').click();
+    await openLayerSection(page, 'parcels');
     await page.locator('#parcelsCheckbox').uncheck();
     await expect.poll(() => page.evaluate(() => (window as any).map.hasLayer((window as any).parcelLayer))).toBe(false);
     expect(await page.evaluate(id => !!(window as any).CadastralParcelRepository.get(id), PARCEL_ID)).toBe(true);

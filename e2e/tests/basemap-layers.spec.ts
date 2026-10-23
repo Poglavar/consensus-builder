@@ -42,6 +42,7 @@ test.describe('Basemap and layer controls @features', () => {
     await waitForMapReady(page);
 
     await page.locator(selectors.layersButton).click();
+    await page.locator(`${selectors.layersSheet} [data-section="base-map"] > summary`).click();
     const select = page.locator(`${selectors.layersSheet} #tile-source-select`);
     await expect(select).toBeVisible();
     // Should have at least OpenStreetMap and MapTiler
@@ -127,6 +128,7 @@ test.describe('Basemap and layer controls @features', () => {
     await zoomToParcelLevel(page);
 
     await page.locator(selectors.layersButton).click();
+    await page.locator(`${selectors.layersSheet} [data-section="buildings"] > summary`).click();
     const checkbox = page.locator(`${selectors.layersSheet} #showBuildings`);
     await expect(checkbox).toBeVisible();
     await expect(checkbox).toBeEnabled();

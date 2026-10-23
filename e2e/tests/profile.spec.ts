@@ -1,6 +1,26 @@
 import { test, expect } from '../helpers/fixtures';
 import { openCity } from '../helpers/runtime';
 
+for (const width of [1280, 375]) {
+  test(`agent setup precedes the product introduction at ${width}px`, async ({ mockApi: page }, testInfo) => {
+    await page.setViewportSize({ width, height: 812 });
+    await openCity(page);
+    await page.locator('#username-display').click();
+    const welcome = page.locator('#welcome-modal');
+    await expect(welcome).toBeVisible();
+    await expect(welcome.locator('#welcome-modal-title')).toHaveText('Your agent');
+    await expect(welcome.locator('.welcome-identity-prompt')).toHaveCount(0);
+    const avatar = await welcome.locator('#selected-avatar').boundingBox();
+    const username = await welcome.locator('#username-input').boundingBox();
+    const introduction = await welcome.locator('.welcome-product').boundingBox();
+    expect(username!.y).toBeGreaterThan(avatar!.y + avatar!.height);
+    expect(introduction!.y).toBeGreaterThan(username!.y + username!.height);
+    await expect(welcome.locator('.welcome-product a')).toHaveCount(2);
+    await expect(welcome.locator('#welcome-submit-btn')).toBeVisible();
+    await page.screenshot({ path: testInfo.outputPath('agent-setup.png') });
+  });
+}
+
 for (const control of ['inactive', 'ai'] as const) {
   test(`profile personalization persists its avatar and logout hands the actor to ${control}`, async ({ mockApi: page }) => {
     await openCity(page);

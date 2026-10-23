@@ -1,3 +1,4 @@
+import { openLayerSection } from '../helpers/layers';
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
 
@@ -75,7 +76,7 @@ test.describe('Government road plan worker @features', () => {
       };
     });
 
-    await page.locator('#layers-button').click();
+    await openLayerSection(page, 'roads');
     await page.locator('#showGovernmentRoadPlan').check();
 
     await page.waitForFunction(() => {

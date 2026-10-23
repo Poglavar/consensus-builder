@@ -1,3 +1,4 @@
+import { openLayerSection } from '../helpers/layers';
 // The two building surveys, and the one rule that must never bend: what a corridor CUTS is decided
 // by the GDI object set, never by what the user happens to have switched on.
 //
@@ -107,7 +108,7 @@ test.describe('Building reference layers @features', () => {
     await page.goto('/?city=zg');
     await waitForMapReady(page);
     await page.evaluate(() => (window as any).map.setView([45.80015, 15.98216], 18, { animate: false }));
-    await page.locator('#layers-button').click();
+    await openLayerSection(page, 'buildings');
     const gdi = page.locator('#showBuildings');
     const dgu = page.locator('#showBuildingsDgu');
     await gdi.check();
@@ -146,7 +147,7 @@ test.describe('Building reference layers @features', () => {
     await page.goto('/?city=zg');
     await waitForMapReady(page);
     await page.evaluate(() => (window as any).map.setView([45.80015, 15.98216], 18, { animate: false }));
-    await page.locator('#layers-button').click();
+    await openLayerSection(page, 'buildings');
     await page.locator('#showBuildings').check();
     await expect.poll(() => page.evaluate(() => ((window as any).buildingFeaturePool || []).some((feature: any) => feature.properties.object_id === 61075))).toBe(true);
     await expect.poll(() => page.evaluate(() => {
@@ -165,7 +166,7 @@ test.describe('Building reference layers @features', () => {
     await page.goto('/?city=zg');
     await waitForMapReady(page);
     await page.evaluate(() => (window as any).map.setView([45.80015, 15.98216], 18, { animate: false }));
-    await page.locator('#layers-button').click();
+    await openLayerSection(page, 'buildings');
     await page.locator('#showBuildings').check();
     await page.locator('#showBuildingsDgu').uncheck();
     await expect.poll(() => page.evaluate(() => (window as any).map.hasLayer((window as any).buildingLayer))).toBe(true);
@@ -196,7 +197,7 @@ test.describe('Building reference layers @features', () => {
     await page.goto('/?city=zg');
     await waitForMapReady(page);
     await page.evaluate(() => (window as any).map.setView([45.80015, 15.98216], 18, { animate: false }));
-    await page.locator('#layers-button').click();
+    await openLayerSection(page, 'buildings');
     await page.locator('#showBuildings').uncheck();
     await page.locator('#showBuildingsDgu').uncheck();
     await page.locator('#layers-button').click();

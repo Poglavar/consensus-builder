@@ -295,7 +295,7 @@
         control('showUrbanBlocks', { id: 'layers.urbanBlocks', group: 'layers', kind: 'toggle', surfaces: ['layers'],
             labelKey: 'urbanBlocks.toggle', fallbackLabel: 'Detect and analyse blocks', icon: 'fas fa-shapes' }),
         control('showSchellingPlan', { id: 'layers.schellingPlan', group: 'layers', kind: 'toggle', surfaces: ['layers'], modes: ['2d'],
-            labelKey: 'schellingPlan.toggle', fallbackLabel: 'Show the Schelling plan', icon: 'fas fa-border-all' }),
+            labelKey: 'schellingPlan.toggle', fallbackLabel: 'Show the Schelling plan', icon: 'fas fa-handshake' }),
         control('urban-blocks-refresh', { id: 'urbanBlocks.refresh', group: 'blocks', surfaces: ['layers'],
             labelKey: 'urbanBlocks.refresh', fallbackLabel: 'Refresh this area', icon: 'fas fa-rotate' }),
         control('parcelBlocksCheckbox', { id: 'layers.blocks', group: 'layers', kind: 'toggle', surfaces: ['layers'],
