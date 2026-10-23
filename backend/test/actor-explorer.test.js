@@ -38,17 +38,20 @@ class FakeNode {
 
 // mount() reads the document once, when it is called; the module itself loaded without one, so it
 // did not boot the standalone page.
-function mountExplorer(options) {
+function mountExplorerWithController(options) {
     const element = new FakeNode('div');
     const previous = globalThis.document;
     globalThis.document = { createElement: tagName => new FakeNode(tagName) };
     try {
-        mount(element, options);
-        return element;
+        return { element, controller: mount(element, options) };
     } finally {
         if (previous === undefined) delete globalThis.document;
         else globalThis.document = previous;
     }
+}
+
+function mountExplorer(options) {
+    return mountExplorerWithController(options).element;
 }
 
 describe('actor explorer view model', () => {
@@ -84,6 +87,15 @@ describe('actor explorer view model', () => {
             { id: 'two', actor: { id: 'same-persona', name: 'Same persona', controller: 'llm', wallet: 'wallet-two' }, action: { type: 'run_status' } }
         ]);
         expect(profiles.map(profile => profile.key).sort()).toEqual(['wallet-one', 'wallet-two']);
+    });
+
+    it('preserves city and location metadata when normalizing events', () => {
+        const location = { lat: 40.7, lng: -74 };
+        const [normalized] = require('../../frontend/js/actor-explorer.js').newestFirst([
+            { id: 'nyc-design', cityId: 'new-york', location, action: { type: 'design' } }
+        ]);
+        expect(normalized.cityId).toBe('new-york');
+        expect(normalized.location).toEqual(location);
     });
 
     it('filters across shared fields without hiding the non-LLM actor types', () => {
@@ -147,6 +159,7 @@ describe('actor explorer view model', () => {
         const simulation = activityRowHtml({ source: 'simulation', turn: 4, occurredAt: '2024-01-02T00:00:00Z', messageHtml: '<a class="agent-link-clickable" data-agent-id="a1">Ana</a> pledged' });
         expect(simulation).toContain('<a class="agent-link-clickable" data-agent-id="a1">Ana</a> pledged');
         expect(simulation).toContain('Turn 4 · ');
+        expect(simulation).toContain('<span class="cb-badge">Simulation</span>');
     });
 
     it('localizes row labels through the host translator and interpolates English fallbacks', () => {
@@ -192,9 +205,24 @@ describe('actor explorer view model', () => {
 describe('actor explorer view', () => {
     const parcelEvent = { id: 'llm-parcel', actor: llm, action: { type: 'create', parcelId: 'P/1' }, entity: { type: 'parcel', id: 'P/1' }, recordedAt: '2026-09-20T09:00:00Z' };
 
+    it.each(['en', 'es', 'hr', 'sr'])('renders actor controls and run evidence with the real %s dictionary', async lang => {
+        const dictionary = JSON.parse(readFileSync(new URL(`../../frontend/i18n/${lang}.json`, import.meta.url), 'utf8'));
+        const translate = (key, fallback, params = {}) => {
+            const value = key.split('.').reduce((node, part) => node?.[part], dictionary);
+            expect(typeof value, `Missing ${lang} label: ${key}`).toBe('string');
+            return value.replace(/\{\{(\w+)\}\}/g, (_match, name) => String(params[name] ?? ''));
+        };
+        const host = mountExplorer({ events: [events[2], events[4]], translate, showActivityWithoutActor: true, loadRun: async () => ({
+            id: 'run-1', persona: 'Densifier', status: 'done', picks: [{ candidateId: 'c1' }], costs: [{ usd: 0.01 }]
+        }) });
+        expect(host.all().some(node => node.tagName === 'H2' && node.textContent === dictionary.gameDialogs.log.actors.title)).toBe(true);
+        host.all().find(node => node.tagName === 'BUTTON' && node.textContent.endsWith(' run-1')).click();
+        await vi.waitFor(() => expect(host.all().some(node => node.tagName === 'H2' && node.textContent.endsWith(' run-1'))).toBe(true));
+    });
+
     it('opens an agreement or a design through the host opener, and only labels them on the standalone page', () => {
         const opened = [];
-        const element = mountExplorer({ events: [events[2], events[4], parcelEvent], openEntity: entity => opened.push(entity) });
+        const element = mountExplorer({ events: [events[2], events[4], parcelEvent], openEntity: entity => opened.push(entity), showActivityWithoutActor: true });
         const entityButtons = element.all().filter(node => node.tagName === 'BUTTON' && /^(Agreement|Design) /.test(node.textContent));
         expect(entityButtons.map(button => [button.textContent, button.title])).toEqual([
             ['Agreement bafkreigb4sp…yk2eha', MINTED], ['Design bafkreiehkrt…vygce4', DESIGN]
@@ -205,7 +233,7 @@ describe('actor explorer view', () => {
         // The actor's card counts its agreements, not the design it published.
         expect(element.all().find(node => node.className === 'cb-option__desc').textContent).toBe('3 activities · 1 agreement · 1 transaction');
 
-        const standalone = mountExplorer({ events: [events[2]] });
+        const standalone = mountExplorer({ events: [events[2]], showActivityWithoutActor: true });
         expect(standalone.all().filter(node => /^Agreement /.test(node.textContent)).map(node => node.tagName)).toEqual(['SPAN']);
     });
 
@@ -217,13 +245,167 @@ describe('actor explorer view', () => {
                 { candidateId: 'c2', rationale: 'Too small.', designCid: null, agreementCid: null }
             ]
         }));
-        const element = mountExplorer({ events: [events[2]], loadRun });
-        element.all().find(node => node.tagName === 'BUTTON' && node.textContent.startsWith('run ')).click();
+        const element = mountExplorer({ events: [events[2]], loadRun, showActivityWithoutActor: true });
+        element.all().find(node => node.tagName === 'BUTTON' && node.textContent.startsWith('Run ')).click();
         expect(loadRun).toHaveBeenCalledWith('run-1');
         const texts = tag => element.all().filter(node => node.tagName === tag).map(node => node.textContent);
         await vi.waitFor(() => expect(texts('SMALL')).toEqual([
             `Agreement ${MINTED} · design ${DESIGN}`, 'Agreement not proposed · design not published'
         ]));
         expect(texts('STRONG')).toEqual(expect.arrayContaining(['Courtyard infill', 'c2']));
+    });
+
+    it('relabels actor controls, cards and open run evidence without losing selection or search', async () => {
+        let locale = 'en';
+        const seen = new Set();
+        const translate = (key, fallback, params = {}) => {
+            seen.add(key);
+            return `${locale === 'en' ? '' : '[hr] '}${fallback.replace(/\{\{(\w+)\}\}/g, (_m, name) => String(params[name] ?? `{{${name}}}`))}`;
+        };
+        const loadRun = vi.fn(async () => ({ id: 'run-1', persona: 'Densifier', status: 'done', stage: 'minted', model: 'model-x', costs: [], picks: [] }));
+        const element = new FakeNode('div');
+        const previous = globalThis.document;
+        globalThis.document = { createElement: tagName => new FakeNode(tagName) };
+        let controller;
+        try {
+            controller = mount(element, { events: [events[2]], loadRun, translate });
+            const card = element.all().find(node => node.tagName === 'BUTTON' && node.className === 'cb-option');
+            card.click();
+            const search = element.all().find(node => node.tagName === 'INPUT');
+            search.value = 'mint-tx';
+            search.listeners.input[0]();
+            element.all().find(node => node.tagName === 'BUTTON' && node.textContent.startsWith('Run ')).click();
+            await vi.waitFor(() => expect(element.all().some(node => node.tagName === 'H2' && node.textContent === 'Run run-1')).toBe(true));
+            locale = 'hr';
+            controller.relabel();
+            expect(search.value).toBe('mint-tx');
+            expect(element.all().some(node => node.tagName === 'H2' && node.textContent === '[hr] Actors')).toBe(true);
+            expect(element.all().some(node => node.tagName === 'H2' && node.textContent === '[hr] Run run-1')).toBe(true);
+            expect(element.all().find(node => node.className === 'cb-option').attributes['aria-pressed']).toBe('true');
+            expect([...seen]).toEqual(expect.arrayContaining([
+                'gameDialogs.log.actors.search', 'gameDialogs.log.actors.controllerAria',
+                'gameDialogs.log.actors.title', 'gameDialogs.log.actors.runTitle',
+                'gameDialogs.log.actors.runSummary', 'gameDialogs.log.actors.runCost'
+            ]));
+        } finally {
+            if (previous === undefined) delete globalThis.document;
+            else globalThis.document = previous;
+        }
+    });
+
+    it('preserves a pending run when refreshed events temporarily omit its actor', async () => {
+        let resolve;
+        const pending = new Promise(yes => { resolve = yes; });
+        const host = new FakeNode('div');
+        const previous = globalThis.document;
+        globalThis.document = { createElement: tagName => new FakeNode(tagName) };
+        try {
+            const controller = mount(host, { events: [events[2]], loadRun: () => pending });
+            host.all().find(node => node.tagName === 'BUTTON' && node.className === 'cb-option').click();
+            host.all().find(node => node.tagName === 'BUTTON' && node.textContent.startsWith('Run ')).click();
+            expect(host.all().some(node => node.textContent === 'Loading run details…')).toBe(true);
+            controller.setEvents([]);
+            resolve({ id: 'run-1', persona: 'Densifier', status: 'done', picks: [], costs: [] });
+            await Promise.resolve();
+            expect(host.all().some(node => node.tagName === 'H2' && node.textContent === 'Run run-1')).toBe(true);
+            expect(host.all().some(node => node.textContent === 'Loading run details…')).toBe(false);
+        } finally {
+            if (previous === undefined) delete globalThis.document;
+            else globalThis.document = previous;
+        }
+    });
+
+    it('keeps an externally selected actor and run when a refresh omits both, with an empty activity state', async () => {
+        const run = { id: 'run-1', persona: 'Densifier', status: 'done', stage: 'minted', model: 'model-x', costs: [], picks: [] };
+        const { element, controller } = mountExplorerWithController({ events: [events[2], events[3], events[4]], loadRun: async () => run });
+        expect(element.all().some(node => node.textContent === 'Choose an actor to see its activity.')).toBe(true);
+        expect(element.all().some(node => node.tagName === 'OL')).toBe(false);
+        controller.selectActor('Densifier'); // matches actor name
+        await controller.openRun('run-1');
+        expect(controller.getSelection()).toMatchObject({ actorKey: 'wallet-1', actor: { id: 'llm-1', name: 'Densifier' }, runId: 'run-1' });
+
+        controller.setEvents([events[0]]); // current scoped response temporarily omits actor + run
+        expect(controller.getSelection()).toMatchObject({ actorKey: 'wallet-1', runId: 'run-1' });
+        expect(element.all().find(node => node.className === 'cb-option').attributes['aria-pressed']).toBe('true');
+        expect(element.all().some(node => node.textContent === 'No activity matches this filter.')).toBe(true);
+        expect(element.all().some(node => node.tagName === 'H2' && node.textContent === 'Run run-1')).toBe(true);
+
+        controller.reset();
+        expect(controller.getSelection()).toEqual({ actorKey: null, actor: null, runId: null });
+        expect(element.all().some(node => node.tagName === 'H2' && node.textContent === 'Run run-1')).toBe(false);
+        expect(element.all().some(node => node.textContent === 'Choose an actor to see its activity.')).toBe(true);
+    });
+
+    it('supports public identity selection, run loading and latest-request guards', async () => {
+        let resolveFirst;
+        const first = new Promise(resolve => { resolveFirst = resolve; });
+        const latest = { id: 'run-latest', persona: 'Densifier', status: 'done', stage: 'selected', costs: [], picks: [] };
+        const loadRun = vi.fn(runId => runId === 'run-1' ? first : Promise.resolve(latest));
+        const { element, controller } = mountExplorerWithController({ events: [events[2]], loadRun });
+        controller.selectActor('wallet-1'); // wallet alias and profile key
+        expect(controller.getSelection().actor.name).toBe('Densifier');
+        const stale = controller.openRun('run-1');
+        await controller.openRun('run-latest');
+        resolveFirst({ id: 'run-1', persona: 'Stale', status: 'done', costs: [], picks: [] });
+        await stale;
+        expect(controller.getSelection().runId).toBe('run-latest');
+        expect(element.all().some(node => node.tagName === 'H2' && node.textContent === 'Run run-latest')).toBe(true);
+        expect(element.all().some(node => node.tagName === 'H2' && node.textContent === 'Run run-1')).toBe(false);
+
+        controller.selectActor('new-id');
+        expect(controller.getSelection()).toMatchObject({ actorKey: 'new-id', actor: { id: 'new-id', kind: 'unknown' } });
+    });
+
+    it('resolves a deferred actor placeholder to its wallet identity without losing the selected run', async () => {
+        const run = { id: 'run-1', persona: 'Densifier', status: 'done', costs: [], picks: [] };
+        const { element, controller } = mountExplorerWithController({ events: [], loadRun: async () => run });
+        controller.selectActor('llm-1');
+        await controller.openRun('run-1');
+        expect(controller.getSelection()).toMatchObject({ actorKey: 'llm-1', actor: { kind: 'unknown' }, runId: 'run-1' });
+
+        controller.setEvents([events[2]]);
+        expect(controller.getSelection()).toMatchObject({ actorKey: 'wallet-1', actor: { id: 'llm-1', wallet: 'wallet-1' }, runId: 'run-1' });
+        expect(element.all().find(node => node.className === 'cb-option').attributes['aria-pressed']).toBe('true');
+        expect(element.all().some(node => node.tagName === 'H2' && node.textContent === 'Run run-1')).toBe(true);
+    });
+
+    it('shows run-scoped events and run detail without selecting an actor, then resets to the chooser', async () => {
+        const run = { id: 'run-1', persona: 'Densifier', status: 'done', costs: [], picks: [] };
+        const { element, controller } = mountExplorerWithController({ events: [events[2]], loadRun: async () => run });
+        await controller.openRun('run-1');
+        expect(controller.getSelection()).toMatchObject({ actorKey: null, runId: 'run-1' });
+        expect(element.all().filter(node => node.className === 'ae-event')).toHaveLength(1);
+        expect(element.all().some(node => node.tagName === 'H2' && node.textContent === 'Run run-1')).toBe(true);
+
+        controller.setEvents([events[3]]); // A refresh may replace the event while preserving the run context.
+        expect(element.all().filter(node => node.className === 'ae-event')).toHaveLength(1);
+        expect(controller.getSelection()).toMatchObject({ actorKey: null, runId: 'run-1' });
+
+        controller.reset();
+        expect(element.all().some(node => node.textContent === 'Choose an actor to see its activity.')).toBe(true);
+        expect(element.all().filter(node => node.className === 'ae-event')).toHaveLength(0);
+    });
+
+    it('shows a human actor as Person without repeating the human controller', () => {
+        const element = mountExplorer({ events: [events[0]] });
+        const badge = element.all().find(node => node.className === 'cb-badge');
+        expect(badge.textContent).toBe('Person');
+    });
+
+    it('reports actor selection changes and marks simulated event rows with a translated source badge', () => {
+        const selected = [];
+        const seen = [];
+        const { element } = mountExplorerWithController({
+            events: [{ ...events[2], source: 'simulation' }],
+            onSelectActor: actor => selected.push(actor),
+            translate: (key, fallback) => { seen.push(key); return key === 'gameDialogs.log.actors.sourceSimulation' ? 'Simulation translated' : fallback; }
+        });
+        const card = element.all().find(node => node.tagName === 'BUTTON' && node.className === 'cb-option');
+        card.click();
+        expect(selected[0]).toMatchObject({ id: 'llm-1', wallet: 'wallet-1', name: 'Densifier', key: 'wallet-1' });
+        expect(element.all().some(node => node.textContent === 'Simulation translated')).toBe(true);
+        element.all().find(node => node.tagName === 'BUTTON' && node.className === 'cb-option' && node.attributes['aria-pressed'] === 'true').click();
+        expect(selected.at(-1)).toBeNull();
+        expect(seen).toContain('gameDialogs.log.actors.sourceSimulation');
     });
 });

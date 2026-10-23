@@ -508,8 +508,23 @@ export async function attachSharedIndex(page: Page, index: SharedIndex): Promise
     if (pathname.endsWith('/agent/activity')) {
       const limit = Math.min(Math.max(Number.parseInt(params.get('limit') || '', 10) || 100, 1), 250);
       const agreement = params.get('agreement');
-      const events = indexEvents(index).filter(event => !agreement || event.entity?.id === agreement).slice(-limit);
-      return json(route, 200, { events, count: events.length, source: 'live' });
+      const city = cityIdOf(params.get('city'));
+      const indexed = indexEvents(index);
+      // Match the live route: city filtering happens before the response limit, and unlocated
+      // activity belongs only to the all-cities feed. Keep cityId on each event for the UI's
+      // current-city filter and the scope assertions to inspect.
+      const matching = indexed.filter(event =>
+        (!agreement || event.entity?.id === agreement)
+        && (!city || cityIdOf(event.cityId) === city));
+      const events = matching.slice(-limit);
+      const filters = {
+        ...(agreement ? { agreement } : {}),
+        ...(city ? { city } : {}),
+      };
+      return json(route, 200, {
+        events, count: events.length, source: 'live',
+        ...(Object.keys(filters).length ? { filters, scanWindow: 1000 } : {}),
+      });
     }
     // /activity/cities: how many agreements each city holds (the globe's counts).
     const counts = new Map<string, number>();

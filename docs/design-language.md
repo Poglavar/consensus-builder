@@ -162,9 +162,14 @@ Every non-map page carries the same header: logo, "Back to the map", language. N
   Layers rather than adding another global panel.
 - Creation starts from map context: selecting a parcel or open ground exposes the actions that apply
   there. Do not add a global Create command or button.
-- Activity opens to recent events with All, People and Agents filters. Watched areas belong in
-  Activity. Keep Simulation in a folded, clearly labelled section there. Plan actions stay secondary
-  inside Proposals rather than becoming another primary navigation destination.
+- Activity is one dock panel with Events, Actors and Watched areas tabs. Events and Actors share
+  search and filters; Actors shows an actor’s activity after selection. Start with live events from
+  all cities. Keep advanced filters folded, disclose bounded retrieval, and preserve the visitor’s
+  view and filters across closes. Scoped actor, agreement and run links temporarily replace
+  conflicting filters; clearing their scope restores the ordinary view. Desktop expansion is
+  optional; phones use the available screen. Simulation and Technical status belong together under
+  Settings → Diagnostics. Simulation history remains inspectable while the engine is paused or off.
+  Plan actions stay secondary inside Proposals rather than becoming another primary destination.
 - During 2D editing, the active editor temporarily replaces the bottom dock with its existing
   finish/apply and cancel controls. Reuse the editor's actions; do not add a second generic Done or
   duplicate finish/cancel commands. A 3D preview keeps the current draft so returning to 2D resumes

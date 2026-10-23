@@ -59,7 +59,7 @@ const NOT_COMMANDS = {
     'planning-open-model': 'same model navigation as mode-3d-toggle',
     areaMonitorUploadButton: 'permanently disabled (upload not built)',
     showClaimsCounts: 'permanently disabled (claims counts not built)',
-    'aerial-city-visible': 'aerial renderer control created by the world view',
+    'activity-panel-expand': 'Activity sheet expand/collapse toggle handled by the Activity controller',
     'photo-parcels-visible': 'photo-view parcel boundary control handled by PhotorealParcels',
     'photo-parcel-close': 'photo-view selection close control handled by PhotorealParcels',
     'area-monitor-drawing-undo': 'transient area drawing toolbar action',
@@ -138,13 +138,12 @@ describe('rehoused sidebar controls', () => {
         }
     });
 
-    it('opens the Actors view from its Activity sheet button', () => {
-        const button = openingTags(shellHtml, 'button').find(tag => attr(tag, 'id') === 'activity-agents-button');
-        expect(button).toBeTruthy();
-        expect(shellHtml).toMatch(/<button[^>]*id="activity-agents-button"[^>]*>[\s\S]*?data-i18n-key="sidebar\.game\.showAgents"/);
-        const showGameLogDialog = vi.fn();
-        new Function('showGameLogDialog', `${attr(button, 'onclick')};`)(showGameLogDialog);
-        expect(showGameLogDialog).toHaveBeenCalledWith({ view: 'actors' });
+    it('routes Activity palette commands to the selected panel view', () => {
+        const openActivityPanel = vi.fn();
+        const ctx = { global: { openActivityPanel } };
+        UiCommands.runCommand('activity.events', ctx);
+        UiCommands.runCommand('activity.actors', ctx);
+        expect(openActivityPanel.mock.calls).toEqual([[{ view: 'events' }], [{ view: 'actors' }]]);
     });
 
     it('backs every command that drives a control with a control that exists', () => {
@@ -165,8 +164,7 @@ describe('rehoused sidebar controls', () => {
 
     it('keeps direct imagery and photo-view controls wired to their view handlers', () => {
         expect(parcelSourceSettingsSource).toContain("root.openImagerySourceSettings = () => api.open(root, 'imagery');");
-        expect(mapShellSource).toContain("doc.getElementById('aerial-city-visible')?.addEventListener('change'");
-        expect(mapShellSource).toContain('win.PhotorealMode?.setBuiltVisible(event.target.checked)');
+        expect(shellHtml).not.toContain('id="aerial-city-visible"');
         expect(photorealParcelsSource).toContain("toggle?.addEventListener('change', onToggle)");
         expect(photorealParcelsSource).toContain("close?.addEventListener('click', clearSelection)");
     });
@@ -181,6 +179,7 @@ describe('rehoused sidebar controls', () => {
                 if (id && (byControl.has(id) || NOT_COMMANDS[id])) continue;
                 if (tagName === 'button' && attr(tag, 'data-sheet-target') !== null) continue; // shell buttons
                 if (tagName === 'button' && attr(tag, 'data-sheet-close') !== null) continue;
+                if (tagName === 'button' && attr(tag, 'data-activity-view') !== null) continue; // Activity panel tabs
                 if (tagName === 'button' && commands.some(c => c.id === attr(tag, 'data-command'))) continue;
                 if (tagName === 'button' && attr(tag, 'data-site-intro-open') !== null) {
                     if (commands.some(c => c.id === 'settings.siteIntro')) continue;
@@ -211,18 +210,24 @@ describe('availability and search', () => {
         expect(withoutMeasure).toContain('tools.pinpoint');
     });
 
-    it('puts the explorer and the simulation on the Activity sheet surface, and in the palette', () => {
+    it('keeps Activity views on Activity and simulation diagnostics on Settings', () => {
         const activity = UiCommands.commandsFor('activity', fakeCtx()).map(c => c.id);
-        expect(activity).toEqual(expect.arrayContaining(['activity.explorer',
-            'activity.agents', 'game.enable', 'game.playPause', 'game.interval', 'game.new']));
+        expect(activity).toEqual(expect.arrayContaining(['activity.events', 'activity.actors']));
+        expect(activity.filter(id => id.startsWith('game.'))).toEqual([]);
         expect(UiCommands.SURFACES).not.toContain('game');
+        const settings = UiCommands.commandsFor('settings', fakeCtx()).map(c => c.id);
+        expect(settings).toEqual(expect.arrayContaining([
+            'game.enable', 'game.playPause', 'game.interval', 'game.new', 'settings.statusLog'
+        ]));
         const palette = UiCommands.commandsFor('palette', fakeCtx()).map(c => c.id);
-        expect(palette).toEqual(expect.arrayContaining(['activity.explorer', 'activity.agents', 'game.playPause']));
-        // A city that hides the game section loses the simulation, not the explorer.
+        expect(palette).toEqual(expect.arrayContaining(['activity.events', 'activity.actors', 'game.playPause', 'settings.statusLog']));
+        // A city that hides the game section loses the simulation but retains Activity views.
         const noGame = { ...fakeCtx(), isSectionHidden: section => section === 'game' };
-        const withoutGame = UiCommands.commandsFor('activity', noGame).map(c => c.id);
-        expect(withoutGame).toEqual(expect.arrayContaining(['activity.explorer', 'activity.agents']));
+        const withoutGame = UiCommands.commandsFor('settings', noGame).map(c => c.id);
+        expect(withoutGame).toEqual(expect.arrayContaining(['settings.statusLog']));
         expect(withoutGame.filter(id => id.startsWith('game.'))).toEqual([]);
+        expect(UiCommands.commandsFor('activity', noGame).map(c => c.id))
+            .toEqual(expect.arrayContaining(['activity.events', 'activity.actors']));
     });
 
     // One Parcel blocks section: blocks from OSM roads in every city, blocks formed from cadastral
@@ -239,26 +244,26 @@ describe('availability and search', () => {
     });
 
     it('dispatches the Actors command across all map modes, including cities that hide simulation', () => {
-        const command = UiCommands.findCommand('activity.agents');
+        const command = UiCommands.findCommand('activity.actors');
         expect(command.surfaces).toContain('activity');
         expect(command.modes).toBeUndefined();
-        const global = { showGameLogDialog: vi.fn() };
+        const global = { openActivityPanel: vi.fn() };
         for (const mode of ['2d', 'model', 'photo']) {
             const ctx = { mode, global };
-            expect(UiCommands.isAvailable('activity.agents', ctx), mode).toBe(true);
-            UiCommands.runCommand('activity.agents', ctx);
-            expect(global.showGameLogDialog).toHaveBeenCalledTimes(1);
-            expect(global.showGameLogDialog).toHaveBeenCalledWith({ view: 'actors' });
-            global.showGameLogDialog.mockClear();
+            expect(UiCommands.isAvailable('activity.actors', ctx), mode).toBe(true);
+            UiCommands.runCommand('activity.actors', ctx);
+            expect(global.openActivityPanel).toHaveBeenCalledTimes(1);
+            expect(global.openActivityPanel).toHaveBeenCalledWith({ view: 'actors' });
+            global.openActivityPanel.mockClear();
         }
         const noSimulation = {
             mode: '2d', global,
             isSectionHidden: section => section === 'game'
         };
-        expect(UiCommands.isAvailable('activity.agents', noSimulation)).toBe(true);
-        UiCommands.runCommand('activity.agents', noSimulation);
-        expect(global.showGameLogDialog).toHaveBeenCalledTimes(1);
-        expect(global.showGameLogDialog).toHaveBeenCalledWith({ view: 'actors' });
+        expect(UiCommands.isAvailable('activity.actors', noSimulation)).toBe(true);
+        UiCommands.runCommand('activity.actors', noSimulation);
+        expect(global.openActivityPanel).toHaveBeenCalledTimes(1);
+        expect(global.openActivityPanel).toHaveBeenCalledWith({ view: 'actors' });
     });
 
     it('keeps watched-area access available in every map mode and reveals its inline list', () => {
@@ -343,8 +348,8 @@ describe('availability and search', () => {
             expect(UiCommands.rankCommands(id, model, tEn).map(item => item.entry.id)).not.toContain(id);
             expect(UiCommands.runCommand(id, model), id).toBe(false);
         }
-        const browse3d = { ...model, global: { showAllProposalsModal: vi.fn(), openBetsSheet: vi.fn(), showGameLogDialog: vi.fn() } };
-        for (const id of ['proposals.list', 'bets.open', 'activity.explorer']) {
+        const browse3d = { ...model, global: { showAllProposalsModal: vi.fn(), openBetsSheet: vi.fn(), openActivityPanel: vi.fn() } };
+        for (const id of ['proposals.list', 'bets.open', 'activity.events']) {
             expect(UiCommands.isAvailable(id, browse3d), id).toBe(true);
         }
     });
@@ -403,12 +408,13 @@ describe('availability and search', () => {
 describe('running commands', () => {
     it('calls the existing global, with its arguments', () => {
         const showAllProposalsModal = vi.fn();
-        const showGameLogDialog = vi.fn();
-        const ctx = { global: { showAllProposalsModal, showGameLogDialog } };
+        const openActivityPanel = vi.fn();
+        const ctx = { global: { showAllProposalsModal, openActivityPanel } };
         UiCommands.runCommand('proposals.list', ctx);
-        UiCommands.runCommand('activity.explorer', ctx);
+        UiCommands.runCommand('activity.events', ctx);
         expect(showAllProposalsModal).toHaveBeenCalledOnce();
-        expect(showGameLogDialog).toHaveBeenCalledOnce();
+        expect(openActivityPanel).toHaveBeenCalledOnce();
+        expect(openActivityPanel).toHaveBeenCalledWith({ view: 'events' });
     });
 
     it('drives the rehoused control: clicks toggles and buttons, reveals inputs', () => {
@@ -438,6 +444,26 @@ describe('running commands', () => {
 });
 
 describe('the floating shell', () => {
+    it('provides one Activity panel with accessible view tabs and moves diagnostics to Settings', () => {
+        const activity = shellHtml.slice(shellHtml.indexOf('id="activity-sheet"'), shellHtml.indexOf('id="settings-sheet"'));
+        expect(activity).toContain('id="activity-panel-expand"');
+        expect(activity).toContain('data-i18n-key="activityPanel.expand"');
+        expect(activity).toContain('id="activity-panel-controls"');
+        expect(activity).toContain('id="activity-panel-status" role="status"');
+        expect(activity).toContain('id="activity-panel-scope"');
+        expect(activity).toContain('id="activity-events-pane"');
+        expect(activity).toContain('id="activity-actors-pane"');
+        expect(activity).toContain('id="activity-watched-pane"');
+        expect(activity).not.toContain('id="activity-feed"');
+        expect(activity).not.toContain('id="activity-explorer-button"');
+        expect(activity).not.toContain('id="activity-agents-button"');
+        expect(activity).not.toContain('id="game-play-pause-btn"');
+        expect(activity).not.toContain('id="status-log-expanded"');
+        expect(shellHtml).toContain('data-i18n-key="activityPanel.diagnostics"');
+        expect(shellHtml).toContain('id="game-play-pause-btn"');
+        expect(shellHtml).toContain('id="status-log-expanded"');
+    });
+
     it('wires every shell button to a sheet that exists', () => {
         const sheets = new Set(openingTags(shellHtml, 'section')
             .filter(tag => /class="map-sheet\b/.test(tag)).map(tag => attr(tag, 'id')));
@@ -588,7 +614,7 @@ describe('editing a design locks the controls that start another task', () => {
 
     it('locks the shell controls agreed for editing and leaves Layers, Buildings and massing and Measure', () => {
         expect([...MapShell.EDIT_LOCKED_CONTROLS].sort()).toEqual(
-            ['activity-button', 'bets-button', 'proposals-button', 'settings-button', 'username-display']);
+            ['activity-button', 'bets-button', 'proposals-button', 'settings-button', 'shareAppliedProposalsButton', 'username-display']);
         for (const id of ['layers-button', 'planning-views-button', 'measurement-button']) {
             expect(MapShell.EDIT_LOCKED_CONTROLS).not.toContain(id);
         }
@@ -598,7 +624,7 @@ describe('editing a design locks the controls that start another task', () => {
     it('makes the commands behind the locked controls unavailable in the palette, and only while editing', () => {
         const editing = { mode: '2d', isEditing: () => true };
         const idle = { mode: '2d', isEditing: () => false };
-        for (const id of ['proposals.list', 'bets.open', 'activity.explorer', 'settings.city', 'parcels.locate', 'world.open']) {
+        for (const id of ['proposals.list', 'bets.open', 'activity.events', 'settings.city', 'parcels.locate', 'world.open']) {
             expect(UiCommands.isAvailable(id, editing), id).toBe(false);
         }
         expect(UiCommands.isAvailable('bets.open', idle)).toBe(true);

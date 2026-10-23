@@ -69,13 +69,9 @@ const gameState = {
         if (this.updateGameUI) {
             this.updateGameUI();
         }
-        // Update agents button after loading
-        if (typeof updateAgentsButton === 'function') {
-            updateAgentsButton();
-        }
     },
 
-    // Add a structured activity; actor/action/source let the unified explorer filter simulation,
+    // Add a structured activity; actor/action/source let the Activity panel filter simulation,
     // live, human, algorithmic and LLM activity through one envelope.
     addActivityEvent(activity, options = {}) {
         const skipPersist = options && options.skipPersist === true;
@@ -87,6 +83,10 @@ const gameState = {
             recordedAt: activity?.recordedAt || new Date().toISOString(),
             turn: activity?.turn ?? this.currentTurn
         };
+        if (logEntryObj.source === 'simulation' && !logEntryObj.cityId) {
+            const cityId = window.CityConfigManager?.getCurrentCityId?.();
+            if (cityId) logEntryObj.cityId = cityId;
+        }
         this.gameLog.push(logEntryObj);
 
         // Keep only last 500 entries
@@ -101,7 +101,6 @@ const gameState = {
             this.updateGameUI();
         }
         if (!skipUiUpdate) {
-            updateGameLogDialogIfOpen();
             if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('activity:updated'));
         }
         // console.log('Game Log:', logEntry);
@@ -175,7 +174,6 @@ const gameState = {
 
         this.addLogEntry('Game state has been reset.');
         this.updateGameUI();
-        updateAgentsButton();
 
         // Automatically re-initialise the game state if requested
         if (autoReinit) {
@@ -243,7 +241,6 @@ function initializeGame() {
     gameState.save();
     gameState.addLogEntry(`Game initialized with ${agents.length} agents and ${assignedParcels} parcels assigned.`);
     gameState.updateGameUI();
-    updateAgentsButton();
 
     updateStatus(translateGameText('status.messages.game_initialized_summary', 'Game initialized: {{agents}} agents created, {{parcels}} parcels assigned', { agents: agents.length, parcels: assignedParcels }));
     console.log(`Game initialized: ${agents.length} agents created, ${assignedParcels} parcels assigned`);
@@ -458,8 +455,7 @@ async function executeGameTurn() {
         gameState.save();
         gameState.updateGameUI();
 
-        // Update Game Log dialog if it's currently open
-        updateGameLogDialogIfOpen();
+        window.refreshActivityPanel?.();
 
         console.log(`Turn ${gameState.currentTurn} completed. ${agents.length} agents acted.`);
     } finally {
@@ -521,25 +517,8 @@ async function dispatchAgentAction(actor, action, context = {}) {
         source: context.source || 'live',
         occurredAt: context.occurredAt || new Date().toISOString()
     });
-    updateGameLogDialogIfOpen();
+    window.refreshActivityPanel?.();
     return result;
-}
-
-/** This is a global actor explorer, not a simulation-agent count. The button is the Activity sheet's. */
-function updateAgentsButton() {
-    const agentsBtn = document.getElementById('activity-agents-button');
-    if (!agentsBtn) return;
-    const key = 'sidebar.game.showAgents';
-    const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
-    // The label span, beside the button's icon (the button itself only on older markup).
-    const label = agentsBtn.querySelector('[data-i18n-key]') || agentsBtn;
-    label.setAttribute('data-i18n-key', key);
-    label.removeAttribute('data-i18n-params');
-    if (i18nApi && typeof i18nApi.t === 'function') {
-        label.textContent = i18nApi.t(key);
-    } else {
-        label.textContent = 'Actors';
-    }
 }
 
 /**
@@ -621,29 +600,6 @@ gameState.updateGameUI = function () {
         window.SimulationIndicator.sync(document, this);
     }
 
-    // The Activity sheet's explorer button carries the count of this browser's activity entries.
-    const gameLogBtn = document.getElementById('activity-explorer-button');
-    if (gameLogBtn) {
-        // The label span, beside the button's icon (the button itself only on older markup).
-        const gameLogLabel = gameLogBtn.querySelector('[data-i18n-key]') || gameLogBtn;
-        const hasLogs = this.gameLog.length > 0;
-        const logKey = hasLogs ? 'mapShell.activityExplorerCount' : 'mapShell.commands.activityExplorer';
-        gameLogLabel.setAttribute('data-i18n-key', logKey);
-        if (hasLogs) {
-            gameLogLabel.setAttribute('data-i18n-params', JSON.stringify({ count: this.gameLog.length }));
-        } else {
-            gameLogLabel.removeAttribute('data-i18n-params');
-        }
-
-        if (i18nApi && typeof i18nApi.t === 'function') {
-            gameLogLabel.textContent = i18nApi.t(logKey, { count: this.gameLog.length });
-        } else {
-            gameLogLabel.textContent = hasLogs
-                ? `Open activity explorer (${this.gameLog.length})`
-                : 'Open activity explorer';
-        }
-    }
-
     try { updateGameSectionTitle(); } catch (_) { }
 };
 
@@ -659,29 +615,25 @@ function toggleGamePlayPause() {
     }
 }
 
-// Unified activity explorer: one dialog, one filter vocabulary (AgentActionEngine) and one row
-// renderer (ActorExplorer) for simulation, live and combined activity. Sources are adapters, so
-// switching from game data to live data never changes the interface or the action vocabulary.
+// Activity data adapters for the Activity panel. The panel owns presentation and filter state;
+// this module owns source loading, cache metadata, and actions attached to shared activity rows.
 let liveAgentActivity = null; // unscoped feed; null = not fetched yet; Refresh clears it
-// What the open explorer shows: its filter, its view (events | actors) and the sources that failed.
-// It was referenced but never declared, so every way into the explorer threw a ReferenceError.
-const activityExplorerState = { filter: null, view: 'events', failures: [] };
-// Backend origin for the live activity feed and run details (same base every other API call uses).
-// The mounted Actors view (ActorExplorer.mount); null until first shown and after the dialog closes.
-let actorExplorerController = null;
+let liveAgentActivityMetadata = null;
+const scopedLiveActivityMetadata = new Map();
 function activityApiBase() {
     return String(window.getBackendBase()).replace(/\/+$/, '');
 }
 const scopedLiveActivity = new Map(); // server-filtered feeds keyed by query string
 const liveActivityRequests = new Map(); // one in-flight fetch per query, shared by concurrent renders
 
-// A scoped explorer asks the API to filter (it scans a wider window than the 250-event feed),
+// A scoped activity query asks the API to filter (it scans a wider window than the 250-event feed),
 // so an old agreement's activity is not lost behind newer events.
 function liveActivityQuery(filter = {}) {
     const params = new URLSearchParams({ limit: '250' });
     if (filter.actorId) params.set('actor', filter.actorId);
     if (filter.agreementCid) params.set('agreement', filter.agreementCid);
     if (filter.runId) params.set('run', filter.runId);
+    if (filter.cityId) params.set('city', filter.cityId);
     return params.toString();
 }
 
@@ -696,8 +648,19 @@ async function fetchLiveAgentActivity(filter = {}) {
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const payload = await response.json();
             const events = Array.isArray(payload.events) ? payload.events : [];
-            if (unscoped) liveAgentActivity = events;
-            else scopedLiveActivity.set(query, events);
+            const metadata = {
+                limit: payload.limit ?? 250,
+                scanWindow: payload.scanWindow ?? null,
+                filters: payload.filters ?? null,
+                loadedCount: payload.count ?? events.length
+            };
+            if (unscoped) {
+                liveAgentActivity = events;
+                liveAgentActivityMetadata = metadata;
+            } else {
+                scopedLiveActivity.set(query, events);
+                scopedLiveActivityMetadata.set(query, metadata);
+            }
             return events;
         })().finally(() => liveActivityRequests.delete(query)));
     }
@@ -709,231 +672,39 @@ const activitySource = window.AgentActionEngine.createActivitySource({
     live: fetchLiveAgentActivity
 });
 
-// The inline feed shares the explorer's adapters and row bindings. Its refresh action clears the
-// same live cache, while opening the sheet can reuse already-fetched activity without polling.
-window.CbActivityFeedAdapter = {
-    async load({ refresh = false } = {}) {
-        if (refresh) {
-            liveAgentActivity = null;
-            scopedLiveActivity.clear();
-        }
-        return activitySource.load('combined', { ...window.AgentActionEngine.EMPTY_ACTIVITY_FILTER });
+function clearLiveActivityCache() {
+    liveAgentActivity = null;
+    liveAgentActivityMetadata = null;
+    scopedLiveActivity.clear();
+    scopedLiveActivityMetadata.clear();
+}
+
+// The Activity panel and inline feed share source loading, cache metadata, and row actions.
+window.ActivityData = {
+    async load({ filter = {}, refresh = false } = {}) {
+        if (refresh) clearLiveActivityCache();
+        const normalizedFilter = { ...window.AgentActionEngine.EMPTY_ACTIVITY_FILTER, ...filter };
+        const { events, failures } = await activitySource.load(normalizedFilter.source, normalizedFilter);
+        const query = liveActivityQuery(normalizedFilter);
+        const metadata = normalizedFilter.source === 'simulation'
+            ? null
+            : query === 'limit=250'
+                ? liveAgentActivityMetadata
+                : scopedLiveActivityMetadata.get(query) || null;
+        return { events, failures, metadata, simulationCount: gameState.gameLog.length };
     },
-    bindRowActions() { setupGameLogClickListeners(); }
+    bindRowActions() { setupGameLogClickListeners(); },
+    openEntity: openActivityEntity,
+    apiBase: activityApiBase
 };
 
 /** Everything known right now, without fetching; the per-agent log reads this synchronously. */
 function allActivityEvents() {
-    return window.AgentActionEngine.mergeActivities(gameState.gameLog, liveAgentActivity || []);
-}
-
-/** The explorer's filter (AgentActionEngine.EMPTY_ACTIVITY_FILTER), its scope included. */
-function effectiveActivityFilter() {
-    return activityExplorerState.filter || { ...window.AgentActionEngine.EMPTY_ACTIVITY_FILTER };
-}
-
-function activityScopeLabel(filter) {
-    if (filter.actorId) return translateGameText('gameDialogs.log.scopeActor', 'Actor: {{id}}', { id: filter.actorId });
-    if (filter.agreementCid) return translateGameText('gameDialogs.log.scopeAgreement', 'Agreement: {{id}}', { id: `${filter.agreementCid.slice(0, 12)}…${filter.agreementCid.slice(-6)}` });
-    if (filter.runId) return translateGameText('gameDialogs.log.scopeRun', 'Run: {{id}}', { id: filter.runId });
-    return '';
-}
-
-let activityRenderToken = 0;
-
-/** The scope chip above the list: what the explorer is narrowed to, hidden when it is not. */
-function showActivityScope(modal, filter) {
-    const scope = modal?.querySelector('[data-activity-scope-chip]');
-    if (!scope) return;
-    const scopeLabel = activityScopeLabel(filter);
-    scope.hidden = !scopeLabel;
-    scope.querySelector('span').textContent = scopeLabel;
-}
-
-async function renderActivityExplorer() {
-    if (!document.querySelector('.game-log-modal')) return;
-    const token = ++activityRenderToken;
-    const filter = effectiveActivityFilter();
-    // A scoped feed is fetched from the server and can take seconds: show the new scope and a
-    // loading line at once, so a drill-down click never looks like it did nothing.
-    const pending = document.querySelector('.game-log-modal');
-    showActivityScope(pending, filter);
-    const pendingStatus = pending.querySelector('[data-activity-live-status]');
-    const pendingContent = document.getElementById('game-log-content');
-    // A cached feed resolves in a microtask, before the next paint, so this never flickers.
-    if (pendingStatus) pendingStatus.textContent = translateGameText('world.activity.loading', 'Loading activity…');
-    pendingContent?.setAttribute('aria-busy', 'true');
-    const { events, failures } = await activitySource.load(filter.source, filter);
-    // A newer render (typing, filter change, new turn) superseded this one while it awaited.
-    const modal = document.querySelector('.game-log-modal');
-    if (token !== activityRenderToken || !modal) return;
-    document.getElementById('game-log-content')?.removeAttribute('aria-busy');
-    activityExplorerState.failures = failures;
-    const visible = events.filter(event => window.AgentActionEngine.matchesActivity(event, filter));
-
-    const status = modal.querySelector('[data-activity-live-status]');
-    if (status) {
-        status.textContent = failures.length
-            ? translateGameText('gameDialogs.log.sourceFailed', 'Could not load: {{sources}}', { sources: failures.map(failure => `${failure.source} (${failure.error})`).join(', ') })
-            : translateGameText('gameDialogs.log.count', '{{count}} events', { count: visible.length });
-    }
-    showActivityScope(modal, filter);
-    modal.querySelectorAll('[data-activity-filter-field]').forEach(field => {
-        const expected = filter[field.dataset.activityFilterField] ?? '';
-        if (field.value !== expected) field.value = expected;
-    });
-    modal.querySelectorAll('[data-activity-view]').forEach(button => {
-        button.setAttribute('aria-pressed', String(button.dataset.activityView === activityExplorerState.view));
-    });
-
-    const content = document.getElementById('game-log-content');
-    const actors = modal.querySelector('[data-activity-actors]');
-    content.hidden = activityExplorerState.view !== 'events';
-    actors.hidden = activityExplorerState.view !== 'actors';
-    if (activityExplorerState.view === 'actors') {
-        if (!actorExplorerController) {
-            actorExplorerController = window.ActorExplorer.mount(actors, {
-                events: visible,
-                showFilters: false,
-                onVisibleCount: count => {
-                    if (status && activityExplorerState.view === 'actors' && !activityExplorerState.failures.length) {
-                        status.textContent = translateGameText('gameDialogs.log.count', '{{count}} events', { count });
-                    }
-                },
-                openEntity: openActivityEntity,
-                loadRun: async runId => {
-                    const response = await fetch(`${activityApiBase()}/agent/runs/${encodeURIComponent(runId)}`);
-                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                    return (await response.json()).run;
-                }
-            });
-        } else {
-            actorExplorerController.setEvents(visible);
-        }
-    } else {
-        const newestFirst = [...visible].reverse();
-        content.innerHTML = newestFirst.length
-            ? newestFirst.map(event => window.ActorExplorer.activityRowHtml(event, { translate: translateGameText })).join('')
-            : `<p class="no-logs">${escapeHtml(translateGameText('gameDialogs.log.noMatch', 'No matching activity yet.'))}</p>`;
-        content.setAttribute('data-rendered-count', String(newestFirst.length));
-        setupGameLogClickListeners();
-    }
-}
-
-function setActivityFilter(field, value) {
-    const base = activityExplorerState.filter || { ...window.AgentActionEngine.EMPTY_ACTIVITY_FILTER };
-    activityExplorerState.filter = field === 'reset'
-        ? { ...window.AgentActionEngine.EMPTY_ACTIVITY_FILTER }
-        : { ...base, [field]: value };
-    if (field === 'reset') actorExplorerController?.reset();
-    renderActivityExplorer();
-}
-
-function clearActivityScope() {
-    activityExplorerState.filter = { ...activityExplorerState.filter, actorId: null, agreementCid: null, runId: null };
-    actorExplorerController?.reset();
-    renderActivityExplorer();
-}
-
-function setActivityView(view) {
-    activityExplorerState.view = view === 'actors' ? 'actors' : 'events';
-    renderActivityExplorer();
-}
-
-function refreshLiveActivity() {
-    liveAgentActivity = null;
-    scopedLiveActivity.clear();
-    renderActivityExplorer();
-}
-
-// The open explorer: the shared dialog (js/ui/dialogs.js) whose card carries the game-log-modal
-// identity class that renderActivityExplorer and the tests address it by.
-let gameLogDialog = null;
-
-/**
- * Open the one activity explorer, optionally scoped (actor/agreement/run) and on a view.
- * Every entry point — the Activity sheet's buttons, row drill-downs, proposal Details, ?activity= links — lands here.
- */
-function showGameLogDialog(options = {}) {
-    const scope = options.filter || {};
-    activityExplorerState.filter = { ...window.AgentActionEngine.EMPTY_ACTIVITY_FILTER, ...scope };
-    activityExplorerState.view = options.view === 'actors' ? 'actors' : 'events';
-    if (gameLogDialog) {
-        renderActivityExplorer();
-        return;
-    }
-    const t = (key, fallback) => escapeHtml(translateGameText(`gameDialogs.log.${key}`, fallback));
-    // One option per type in the shared action vocabulary, so every live and simulated action is filterable.
-    const actionOptionsHtml = window.ActorExplorer.actionOptions(translateGameText)
-        .map(option => `<option value="${escapeHtml(option.value)}">${escapeHtml(option.label)}</option>`).join('');
-    const body = `
-                <div class="activity-live-status" data-activity-live-status aria-live="polite"></div>
-                <div class="cb-segmented activity-views" role="group" aria-label="${t('viewsAria', 'Activity view')}">
-                    <button type="button" class="cb-segmented__option" data-activity-view="events" aria-pressed="true" onclick="setActivityView('events')">${t('viewEvents', 'Events')}</button>
-                    <button type="button" class="cb-segmented__option" data-activity-view="actors" aria-pressed="false" onclick="setActivityView('actors')">${t('viewActors', 'Actors')}</button>
-                </div>
-                <nav class="activity-filters" aria-label="${t('filtersAria', 'Filter activity')}">
-                    <input type="search" data-activity-filter-field="query" aria-label="${t('searchAria', 'Search activity')}" placeholder="${t('searchPlaceholder', 'Actor, agreement or transaction')}" oninput="setActivityFilter('query', this.value)">
-                    <select data-activity-filter-field="source" aria-label="${t('sourceAria', 'Activity source')}" onchange="setActivityFilter('source', this.value)">
-                        <option value="combined">${t('sourceAll', 'All sources')}</option><option value="live">${t('sourceLive', 'Live')}</option><option value="simulation">${t('sourceSimulation', 'Simulation')}</option>
-                    </select>
-                    <select data-activity-filter-field="kind" aria-label="${t('kindAria', 'Actor type')}" onchange="setActivityFilter('kind', this.value)">
-                        <option value="all">${t('kindAll', 'Everyone')}</option><option value="human">${t('kindHuman', 'People')}</option><option value="agent">${t('kindAgent', 'Agents')}</option><option value="system">${t('kindSystem', 'System')}</option>
-                    </select>
-                    <select data-activity-filter-field="controller" aria-label="${t('controllerAria', 'Controller')}" onchange="setActivityFilter('controller', this.value)">
-                        <option value="all">${t('controllerAll', 'Any controller')}</option><option value="human">${t('controllerHuman', 'Human')}</option><option value="algorithm">${t('controllerAlgorithm', 'Algorithm')}</option><option value="llm">${t('controllerLlm', 'LLM')}</option>
-                    </select>
-                    <select data-activity-filter-field="action" aria-label="${t('actionAria', 'Activity action')}" onchange="setActivityFilter('action', this.value)">
-                        <option value="all">${t('actionAll', 'All actions')}</option>${actionOptionsHtml}
-                    </select>
-                    <select data-activity-filter-field="status" aria-label="${t('statusAria', 'Activity result')}" onchange="setActivityFilter('status', this.value)">
-                        <option value="all">${t('statusAll', 'Any result')}</option><option value="success">${t('statusSuccess', 'Succeeded')}</option><option value="failed">${t('statusFailed', 'Failed')}</option>
-                    </select>
-                    <button type="button" class="btn btn-sm" onclick="setActivityFilter('reset')">${t('clearFilters', 'Clear')}</button>
-                    <button type="button" class="btn btn-sm activity-refresh" onclick="refreshLiveActivity()">${t('refresh', 'Refresh')}</button>
-                </nav>
-                <div class="cb-badge cb-badge--primary activity-scope-chip" data-activity-scope-chip hidden>
-                    <span></span><button type="button" class="btn btn-quiet btn-sm btn-icon" onclick="clearActivityScope()" aria-label="${t('clearScope', 'Clear scope')}"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
-                </div>
-                <div id="game-log-content" class="game-log-content"></div>
-                <div class="activity-actors" data-activity-actors hidden></div>`;
-
-    const dialogApi = window.CbDialog.open({
-        title: translateGameText('gameDialogs.log.title', 'Activity'),
-        size: 'lg',
-        className: 'game-log-modal',
-        bodyClassName: 'game-log-modal-body',
-        closeLabel: translateGameText('gameDialogs.log.closeAria', 'Close activity'),
-        body,
-        onClose: () => {
-            if (gameLogDialog === dialogApi) gameLogDialog = null;
-            onGameLogDialogClosed();
-        }
-    });
-    if (!dialogApi) return;
-    gameLogDialog = dialogApi;
-    const closeButton = dialogApi.header && dialogApi.header.querySelector('.close-circle-btn');
-    if (closeButton) closeButton.classList.add('game-log-modal-close');
-    renderActivityExplorer();
-}
-
-/**
- * Close the game log dialog
- */
-function closeGameLogDialog() {
-    if (gameLogDialog) gameLogDialog.close();   // its onClose finishes the job
-    else onGameLogDialogClosed();
-}
-
-function onGameLogDialogClosed() {
-    actorExplorerController = null;
-    // A ?activity= deep link has been followed once; left in the URL, every reload reopened the
-    // explorer the user had just closed.
-    const url = new URL(window.location.href);
-    if (url.searchParams.has('activity')) {
-        url.searchParams.delete('activity');
-        window.history.replaceState(window.history.state, '', url.toString());
-    }
+    return window.AgentActionEngine.mergeActivities(
+        gameState.gameLog,
+        liveAgentActivity || [],
+        ...Array.from(scopedLiveActivity.values())
+    );
 }
 
 // An activity row's agreement or design (ActorExplorer: an .activity-entity-link button, or the
@@ -941,7 +712,7 @@ function onGameLogDialogClosed() {
 // link's route), a design like a design from the proposal list.
 async function openActivityEntity({ type, id } = {}) {
     if (!id) return;
-    closeGameLogDialog();
+    window.closeActivityPanel?.();
     if (document.querySelector('.agent-dialog-modal') && typeof closeAgentDialog === 'function') closeAgentDialog();
     try {
         if (type === 'agreement') {
@@ -958,7 +729,7 @@ async function openActivityEntity({ type, id } = {}) {
     }
 }
 
-// Works wherever a shared row is rendered (the explorer, an agent dialog's log).
+// Works wherever a shared row is rendered (the Activity panel or an agent dialog's log).
 document.addEventListener('click', event => {
     const button = event.target.closest?.('.activity-entity-link');
     if (!button) return;
@@ -966,44 +737,27 @@ document.addEventListener('click', event => {
     openActivityEntity({ type: button.dataset.entityType, id: button.dataset.entityId });
 });
 
-// Row drill-downs (data-activity-scope) work wherever a shared row is rendered — the explorer
-// itself or an agent dialog's log — and always land in the one explorer, scoped.
+// Row drill-downs work wherever a shared row is rendered and open the Activity panel with that scope.
 document.addEventListener('click', event => {
     const button = event.target.closest?.('[data-activity-scope]');
     if (!button) return;
     event.preventDefault();
     if (button.closest('.agent-dialog-modal') && typeof closeAgentDialog === 'function') closeAgentDialog();
-    showGameLogDialog({ filter: { [button.dataset.activityScope]: button.dataset.activityValue } });
+    window.openActivityPanel?.({ filter: { [button.dataset.activityScope]: button.dataset.activityValue } });
 });
 
-// `?activity=agreement:<cid>` (or actor:/run:) opens the explorer scoped, so the Demo
-// Center, Details and shared links can deep-link straight into the same explorer.
-// It waits for the page and its translations: the dialog renders translated strings inline, and
-// before i18n registers its tables every lookup would return the raw key.
+// `?activity=agreement:<cid>` (or actor:/run:) opens the Activity panel with that scope.
+// Wait for translations before opening so the panel can render translated controls.
 function openActivityFromUrl() {
     const scope = window.AgentActionEngine.parseActivityLink(new URLSearchParams(window.location.search).get('activity'));
     if (!scope) return;
-    const open = () => showGameLogDialog({ filter: scope });
+    const open = () => window.openActivityPanel?.({ filter: scope });
     const probe = 'gameDialogs.log.viewEvents';
     if (typeof window.i18n?.t === 'function' && window.i18n.t(probe) !== probe) open();
     else window.addEventListener('i18n:translationsLoaded', open, { once: true });
 }
 if (document.readyState === 'complete') openActivityFromUrl();
 else window.addEventListener('load', openActivityFromUrl, { once: true });
-
-/**
- * Update the Game Log dialog content if it's currently open
- */
-function updateGameLogDialogIfOpen() {
-    const logContentElement = document.getElementById('game-log-content');
-    if (!logContentElement) {
-        // Game Log dialog is not open
-        return;
-    }
-
-    const scrollTop = logContentElement.scrollTop;
-    renderActivityExplorer().then(() => { logContentElement.scrollTop = scrollTop; });
-}
 
 /**
  * Setup click listeners for clickable links in game log and proposal dialogs
@@ -1041,8 +795,8 @@ function setupGameLogClickListeners() {
                 return;
             }
 
-            // Over the explorer (a modal above the docked panels) the dialog must be raised too.
-            showAgentDialog(agentId, { elevated: !!this.closest('.game-log-modal') });
+            // Activity is a persistent sheet; keep the agent dialog above it when opening a row.
+            showAgentDialog(agentId, { elevated: !!this.closest('#activity-sheet') });
         });
     });
 
@@ -1111,9 +865,7 @@ function showProposalFromLog(proposalId) {
     }
 
     // Close overlapping dialogs to surface the proposal details panel
-    if (typeof closeGameLogDialog === 'function') {
-        closeGameLogDialog();
-    }
+    window.closeActivityPanel?.();
     if (document.querySelector('.agent-dialog-modal') && typeof closeAgentDialog === 'function') {
         closeAgentDialog();
     }
@@ -1154,7 +906,7 @@ async function openServerProposalFromLog(lookup) {
         showGameAlert('proposal_with_id_not_found', 'Proposal with ID {{id}} not found.', { id: lookup });
         return;
     }
-    closeGameLogDialog();
+    window.closeActivityPanel?.();
     if (document.querySelector('.agent-dialog-modal') && typeof closeAgentDialog === 'function') closeAgentDialog();
     openProposalFromList(getProposalKey(proposal) || lookup, { proposal, closeSheets: true });
 }
@@ -1184,8 +936,8 @@ function closeProposalInfoDialog() {
  * Show parcel info from game log
  */
 function showParcelFromLog(parcelId) {
-    // Close Game Log dialog if open to allow better visibility of the parcel
-    closeGameLogDialog();
+    // Close the Activity panel to allow better visibility of the parcel.
+    window.closeActivityPanel?.();
 
     // Fold away an open sheet so the parcel is in view
     if (window.MapShell) window.MapShell.closeSheets();
@@ -1300,14 +1052,7 @@ window.stopGameLoop = stopGameLoop;
 window.executeGameTurn = executeGameTurn;
 window.toggleGamePlayPause = toggleGamePlayPause;
 window.resetGameState = resetGameState;
-window.showGameLogDialog = showGameLogDialog;
 window.dispatchAgentAction = dispatchAgentAction;
-window.closeGameLogDialog = closeGameLogDialog;
-window.updateGameLogDialogIfOpen = updateGameLogDialogIfOpen;
-window.setActivityFilter = setActivityFilter;
-window.setActivityView = setActivityView;
-window.clearActivityScope = clearActivityScope;
-window.refreshLiveActivity = refreshLiveActivity;
 window.setupGameLogClickListeners = setupGameLogClickListeners;
 window.showProposalFromLog = showProposalFromLog;
 window.showProposalInfoDialog = showProposalInfoDialog;
@@ -1316,7 +1061,6 @@ window.showParcelFromLog = showParcelFromLog;
 window.updateTurnIntervalDisplay = updateTurnIntervalDisplay;
 window.updateTurnInterval = updateTurnInterval;
 window.updateProgressBar = updateProgressBar;
-window.updateAgentsButton = updateAgentsButton;
 window.updateGameSectionTitle = updateGameSectionTitle;
 
 /**

@@ -50,14 +50,15 @@ test('source-hidden building labels gate the palette even inside a closed sheet'
     assert.equal(commands.isAvailable('layers.buildingsOsm', context), true);
 });
 
-test('actor reset clears nested selection and reports the displayed event count', () => {
+test('actor reset clears selection, returns to the chooser and reports the event count', () => {
     const { element, controller, counts } = actorView();
     element.querySelector('.ae-profiles button').click();
     assert.equal(element.querySelectorAll('.ae-event').length, 1);
     assert.equal(counts.at(-1), 1);
     controller.reset();
-    assert.equal(element.querySelectorAll('.ae-event').length, 2);
     assert.equal(element.querySelectorAll('.ae-profiles [aria-pressed="true"]').length, 0);
+    assert.match(element.querySelector('.ae-activity').textContent, /Choose an actor to see its activity/);
+    assert.equal(element.querySelectorAll('.ae-event').length, 0);
     assert.equal(counts.at(-1), 2);
 });
 
@@ -65,6 +66,7 @@ for (const rejected of [false, true]) test(`reset ignores a pending run ${reject
     let resolve, reject;
     const pending = new Promise((yes, no) => { resolve = yes; reject = no; });
     const { element, controller } = actorView({ loadRun: () => pending });
+    element.querySelector('.ae-profiles button').click();
     element.querySelector('.ae-meta button').click();
     assert.match(element.querySelector('.ae-run-detail').textContent, /Loading run/);
     controller.reset();

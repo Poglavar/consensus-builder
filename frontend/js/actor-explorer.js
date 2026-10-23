@@ -68,6 +68,8 @@
             id: string(input.id || `${actorKey(actor)}:${occurredAt || 'unknown'}:${action.type || 'activity'}`),
             actor,
             actorKey: actorKey(actor),
+            cityId: input.cityId ?? null,
+            location: input.location ?? null,
             action: { ...action, type: string(action.type || 'activity') },
             entity: input.entity || null,
             source: string(input.source || 'local'),
@@ -177,6 +179,9 @@
         const transactionLink = event.transaction
             ? `<a class="cb-link cb-link--external" href="https://explorer.solana.com/tx/${encodeURIComponent(event.transaction)}?cluster=devnet" target="_blank" rel="noopener noreferrer">${escapeHtml(tr('transaction', 'Transaction'))}</a>`
             : '';
+        const sourceBadge = event.source === 'simulation'
+            ? `<span class="cb-badge">${escapeHtml(translate('gameDialogs.log.actors.sourceSimulation', 'Simulation'))}</span>`
+            : '';
         const details = [
             tr('source', 'Source: {{value}}', { value: event.source || 'unknown' }),
             tr('controller', 'Controller: {{value}}', { value: event.actor?.controller || 'unknown' }),
@@ -199,7 +204,7 @@
             : '';
         return `<article class="log-entry activity-entry${event.ok === false ? ' is-failed' : ''}" data-source="${escapeHtml(event.source)}">
         <div class="activity-entry-main">${body}</div>
-        <div class="activity-entry-links">${timestamp}${entityLink}${transactionLink}</div>
+        <div class="activity-entry-links">${timestamp}${sourceBadge}${entityLink}${transactionLink}</div>
         <details class="activity-entry-meta"><summary>${escapeHtml(tr('details', 'Details'))}</summary><span>${details}</span><span>${escapeHtml(tr('actor', 'Actor:'))} ${actorScope}${actorDetails ? ` · ${actorDetails}` : ''}</span>${entityDetails}${agreementScope}${modelDetails}${event.runId ? `<span>${escapeHtml(tr('run', 'Run'))} ${scope('runId', event.runId, event.runId)}</span>` : ''}${event.batchId ? `<span>${escapeHtml(tr('batch', 'Batch'))} ${escapeHtml(event.batchId)}</span>` : ''}</details>
     </article>`;
     }
@@ -224,10 +229,23 @@
         return node;
     }
 
-    // "1 agreement" / "3 agreements". The actors view is English-only (no i18n keys yet), so a plain
-    // count-aware pair instead of "1 agreements".
-    function countText(count, one, many) {
-        return `${count} ${count === 1 ? one : many}`;
+    function translatorOf(translate) {
+        return typeof translate === 'function' ? translate : (_key, fallback, params = {}) =>
+            fallback.replace(/\{\{(\w+)\}\}/g, (_match, name) => string(params[name]));
+    }
+
+    function actorKindLabel(kind, t) {
+        const labels = { human: ['actorKindHuman', 'Person'], agent: ['actorKindAgent', 'Agent'], system: ['actorKindSystem', 'System'] };
+        const entry = labels[kind];
+        return entry ? t(`gameDialogs.log.actors.${entry[0]}`, entry[1])
+            : t('gameDialogs.log.actors.actorKindUnknown', 'Unknown type');
+    }
+
+    function controllerLabel(controller, t) {
+        const labels = { human: ['controllerHuman', 'Person'], algorithm: ['controllerAlgorithm', 'Algorithm'], llm: ['controllerLlm', 'LLM agent'] };
+        const entry = labels[controller];
+        return entry ? t(`gameDialogs.log.actors.${entry[0]}`, entry[1])
+            : t('gameDialogs.log.actors.controllerUnknown', 'Unknown controller');
     }
 
     function short(value, length = 10) {
@@ -263,94 +281,147 @@
     // openEntity({ type, id }): when the host can open an agreement or a design in place (the map), an
     // event's entity is a button that calls it; the standalone page has no opener, so there it is a
     // plain label.
-    function mount(element, { events = [], loadRun = null, openEntity = null, showFilters = true, onVisibleCount = null } = {}) {
+    function mount(element, { events = [], loadRun = null, openEntity = null, showFilters = true, onVisibleCount = null, translate = null, onSelectActor = null, showActivityWithoutActor = false } = {}) {
         if (!element || !root?.document) throw new Error('ActorExplorer.mount needs an element and a document');
         const doc = root.document;
+        const t = translatorOf(translate);
         let allEvents = newestFirst(events);
         let state = { query: '', controller: 'all', actorKey: null };
+        let selectedActor = null;
         let runRequest = 0;
+        let runDetail = null;
         element.replaceChildren();
         const filters = doc.createElement('div'); filters.className = 'ae-filters';
-        const search = doc.createElement('input'); search.type = 'search'; search.placeholder = 'Search actor, agreement, run or transaction'; search.setAttribute('aria-label', search.placeholder);
-        const controller = doc.createElement('select'); controller.setAttribute('aria-label', 'Actor controller');
-        [['all', 'All actors'], ['human', 'Humans'], ['algorithm', 'Algorithms'], ['llm', 'LLM agents']].forEach(([value, label]) => {
-            const option = text(doc, 'option', label); option.value = value; controller.append(option);
+        const search = doc.createElement('input'); search.type = 'search';
+        const controller = doc.createElement('select');
+        [['all', 'controllerAll', 'All controllers'], ['human', 'controllerHuman', 'Person'], ['algorithm', 'controllerAlgorithm', 'Algorithm'], ['llm', 'controllerLlm', 'LLM agent']].forEach(([value, key, fallback]) => {
+            const option = text(doc, 'option', t(`gameDialogs.log.actors.${key}`, fallback)); option.value = value; controller.append(option);
         });
-        const clear = text(doc, 'button', 'Clear selection', 'btn'); clear.type = 'button';
+        const clear = text(doc, 'button', '', 'btn'); clear.type = 'button';
         filters.append(search, controller, clear);
-        const profiles = doc.createElement('section'); profiles.className = 'ae-profiles'; profiles.setAttribute('aria-label', 'Actor profiles');
-        const activity = doc.createElement('section'); activity.className = 'ae-activity'; activity.setAttribute('aria-label', 'Activity');
+        const profiles = doc.createElement('section'); profiles.className = 'ae-profiles';
+        const activity = doc.createElement('section'); activity.className = 'ae-activity';
         const detail = doc.createElement('aside'); detail.className = 'ae-run-detail'; detail.setAttribute('aria-live', 'polite');
         if (showFilters) element.append(filters);
         element.append(profiles, activity, detail);
 
         function renderRun(run) {
             detail.replaceChildren();
-            detail.append(text(doc, 'h2', `Run ${run.id}`, 'ae-section-title'));
-            detail.append(text(doc, 'p', `${run.persona} · ${run.status} · ${run.stage || 'started'}`, 'ae-muted'));
-            detail.append(text(doc, 'p', `${run.model || 'No model recorded'} · ${formatUsd(runCostTotal(run))} exact cost`, 'ae-muted'));
+            detail.append(text(doc, 'h2', t('gameDialogs.log.actors.runTitle', 'Run {{id}}', { id: run.id }), 'ae-section-title'));
+            detail.append(text(doc, 'p', t('gameDialogs.log.actors.runSummary', '{{persona}} · {{status}} · {{stage}}', {
+                persona: run.persona || t('gameDialogs.log.actors.unknownPersona', 'Unknown actor'),
+                status: t(`gameDialogs.log.actors.runStatus.${run.status || 'unknown'}`, run.status || t('gameDialogs.log.actors.unknownStatus', 'Unknown status')),
+                stage: run.stage || t('gameDialogs.log.actors.runStageStarted', 'Started')
+            }), 'ae-muted'));
+            detail.append(text(doc, 'p', t('gameDialogs.log.actors.runCost', '{{model}} · {{amount}} exact cost', {
+                model: run.model || t('gameDialogs.log.actors.noModel', 'No model recorded'),
+                amount: formatUsd(runCostTotal(run))
+            }), 'ae-muted'));
             (run.picks || []).forEach(pick => {
                 const block = doc.createElement('div'); block.className = 'ae-rationale';
-                block.append(text(doc, 'strong', pick.name || pick.candidateId || 'Pick'));
+                block.append(text(doc, 'strong', pick.name || pick.candidateId || t('gameDialogs.log.actors.pick', 'Pick')));
                 if (pick.rationale) block.append(text(doc, 'p', pick.rationale));
-                block.append(text(doc, 'small', `Agreement ${pick.agreementCid || 'not proposed'} · design ${pick.designCid || 'not published'}`));
+                block.append(text(doc, 'small', t('gameDialogs.log.actors.pickEntities', 'Agreement {{agreement}} · design {{design}}', {
+                    agreement: pick.agreementCid || t('gameDialogs.log.actors.notProposed', 'not proposed'),
+                    design: pick.designCid || t('gameDialogs.log.actors.notPublished', 'not published')
+                })));
                 detail.append(block);
             });
-            (run.costs || []).forEach(cost => detail.append(text(doc, 'p', `${cost.item}: ${cost.model} · ${formatUsd(Number(cost.usd))}`, 'ae-provenance')));
+            (run.costs || []).forEach(cost => detail.append(text(doc, 'p', t('gameDialogs.log.actors.costItem', '{{item}}: {{model}} · {{amount}}', {
+                item: cost.item || t('gameDialogs.log.actors.cost', 'Cost'), model: cost.model || t('gameDialogs.log.actors.noModel', 'No model recorded'), amount: formatUsd(Number(cost.usd))
+            }), 'ae-provenance')));
+        }
+
+        function renderRunDetail() {
+            detail.replaceChildren();
+            if (!runDetail) return;
+            if (runDetail.state === 'loading') {
+                detail.append(text(doc, 'p', t('gameDialogs.log.actors.runLoading', 'Loading run details…'), 'ae-muted'));
+            } else if (runDetail.state === 'error') {
+                detail.append(text(doc, 'p', t('gameDialogs.log.actors.runError', 'Could not load run: {{error}}', { error: runDetail.error }), 'ae-error'));
+            } else if (runDetail.run) renderRun(runDetail.run);
         }
 
         async function openRun(runId) {
-            if (!runId || typeof loadRun !== 'function') return;
+            if (!runId || typeof loadRun !== 'function') return null;
             const request = ++runRequest;
-            detail.replaceChildren(text(doc, 'p', 'Loading run provenance…', 'ae-muted'));
+            const currentRunId = String(runId);
+            runDetail = { state: 'loading', runId: currentRunId };
+            render();
             // The detail sits below the whole activity list; without this the click looked dead.
             const reveal = () => { if (typeof detail.scrollIntoView === 'function') detail.scrollIntoView({ block: 'start' }); };
             reveal();
             try {
-                const run = await loadRun(runId);
-                if (request !== runRequest) return;
-                renderRun(run);
+                const run = await loadRun(currentRunId);
+                if (request !== runRequest || runDetail?.runId !== currentRunId) return null;
+                runDetail = { state: 'ready', runId: currentRunId, run };
+                render();
+                reveal();
+                return run;
             }
             catch (error) {
-                if (request !== runRequest) return;
-                detail.replaceChildren(text(doc, 'p', `Could not load run: ${error.message}`, 'ae-error'));
+                if (request !== runRequest || runDetail?.runId !== currentRunId) return null;
+                runDetail = { state: 'error', runId: currentRunId, error: error.message };
+                render();
+                reveal();
+                return null;
             }
-            reveal();
         }
 
         function render() {
             const visible = filterEvents(allEvents, state);
             if (typeof onVisibleCount === 'function') onVisibleCount(visible.length);
-            profiles.replaceChildren(text(doc, 'h2', 'Actors', 'ae-section-title'));
+            profiles.replaceChildren(text(doc, 'h2', t('gameDialogs.log.actors.title', 'Actors'), 'ae-section-title'));
             const cards = doc.createElement('div'); cards.className = 'ae-profile-grid';
             // Each profile is a selectable row (cb-option); the chosen actor is the pressed one.
-            buildActorProfiles(visible).forEach(profile => {
+            const profilesForView = buildActorProfiles(visible);
+            if (state.actorKey && !profilesForView.some(profile => profile.key === state.actorKey) && selectedActor) {
+                profilesForView.push({ key: state.actorKey, actor: selectedActor, retained: true });
+            }
+            profilesForView.forEach(profile => {
                 const card = doc.createElement('button'); card.type = 'button'; card.className = 'cb-option';
                 card.setAttribute('aria-pressed', state.actorKey === profile.key ? 'true' : 'false');
                 const body = doc.createElement('span'); body.className = 'cb-option__text';
-                body.append(text(doc, 'span', profile.actor.name, 'cb-option__title'), text(doc, 'span', `${profile.actor.kind} · ${profile.actor.controller}`, 'cb-badge'));
-                body.append(text(doc, 'span', `${countText(profile.activityCount, 'activity', 'activities')} · ${countText(profile.agreementCids.length, 'agreement', 'agreements')} · ${countText(profile.transactionCount, 'transaction', 'transactions')}`, 'cb-option__desc'));
+                const actorType = actorKindLabel(profile.actor.kind, t);
+                const controller = profile.actor.kind === 'human' && profile.actor.controller === 'human'
+                    ? ''
+                    : ` · ${controllerLabel(profile.actor.controller, t)}`;
+                body.append(text(doc, 'span', profile.actor.name, 'cb-option__title'), text(doc, 'span', `${actorType}${controller}`, 'cb-badge'));
+                if (!profile.retained) body.append(text(doc, 'span', [
+                    t(`gameDialogs.log.actors.countActivity.${profile.activityCount === 1 ? 'one' : 'many'}`, profile.activityCount === 1 ? '{{count}} activity' : '{{count}} activities', { count: profile.activityCount }),
+                    t(`gameDialogs.log.actors.countAgreement.${profile.agreementCids.length === 1 ? 'one' : 'many'}`, profile.agreementCids.length === 1 ? '{{count}} agreement' : '{{count}} agreements', { count: profile.agreementCids.length }),
+                    t(`gameDialogs.log.actors.countTransaction.${profile.transactionCount === 1 ? 'one' : 'many'}`, profile.transactionCount === 1 ? '{{count}} transaction' : '{{count}} transactions', { count: profile.transactionCount })
+                ].join(' · '), 'cb-option__desc'));
                 if (profile.actor.wallet) body.append(text(doc, 'code', short(profile.actor.wallet), 'ae-wallet'));
-                if (profile.modelCostUsd) body.append(text(doc, 'span', `${formatUsd(profile.modelCostUsd)} model cost`, 'cb-option__desc'));
+                if (profile.modelCostUsd) body.append(text(doc, 'span', t('gameDialogs.log.actors.modelCost', '{{amount}} model cost', { amount: formatUsd(profile.modelCostUsd) }), 'cb-option__desc'));
                 card.append(body);
-                card.addEventListener('click', () => { state.actorKey = state.actorKey === profile.key ? null : profile.key; render(); });
+                card.addEventListener('click', () => {
+                    selectActor(state.actorKey === profile.key ? null : profile.key, { notify: true, actor: profile.actor });
+                });
                 cards.append(card);
             });
-            if (!cards.childElementCount) cards.append(text(doc, 'p', 'No actors match this filter.', 'ae-empty'));
+            if (!cards.childElementCount) cards.append(text(doc, 'p', t('gameDialogs.log.actors.noActors', 'No actors match this filter.'), 'ae-empty'));
             profiles.append(cards);
 
-            activity.replaceChildren(text(doc, 'h2', `Activity (${visible.length})`, 'ae-section-title'));
+            activity.replaceChildren(text(doc, 'h2', t('gameDialogs.log.actors.activityCount', 'Activity ({{count}})', { count: visible.length }), 'ae-section-title'));
+            if (!state.actorKey && !showActivityWithoutActor && !runDetail) {
+                activity.append(text(doc, 'p', t('gameDialogs.log.actors.chooseActor', 'Choose an actor to see its activity.'), 'ae-empty'));
+                renderRunDetail();
+                return;
+            }
             const list = doc.createElement('ol'); list.className = 'ae-list';
             visible.forEach(event => {
                 const item = doc.createElement('li'); item.className = event.ok ? 'ae-event' : 'ae-event is-failed';
-                const heading = `${event.actor.name} · ${ACTION_LABELS[event.action.type] || event.action.type}`;
+                const actionLabel = t(`gameDialogs.log.actions.${event.action.type}`, ACTION_LABELS[event.action.type] || event.action.type);
+                const heading = t('gameDialogs.log.actors.eventHeading', '{{actor}} · {{action}}', { actor: event.actor.name, action: actionLabel });
                 item.append(text(doc, 'strong', heading));
+                if (event.source === 'simulation') item.append(text(doc, 'span', t('gameDialogs.log.actors.sourceSimulation', 'Simulation'), 'cb-badge'));
                 item.append(text(doc, 'span', event.message || `${event.action.type} ${event.entity?.id || ''}`, 'ae-event-message'));
                 item.append(text(doc, 'time', formatWhen(event.recordedAt), 'ae-muted'));
                 const meta = doc.createElement('div'); meta.className = 'ae-meta';
                 if (ENTITY_LABELS[event.entity?.type] && event.entity.id) {
                     const entity = { type: event.entity.type, id: string(event.entity.id) };
-                    const label = `${ENTITY_LABELS[entity.type]} ${shortCid(entity.id)}`;
+                    const label = t(`gameDialogs.log.actors.entity.${entity.type}`, `${ENTITY_LABELS[entity.type]} {{id}}`, { id: shortCid(entity.id) });
                     if (typeof openEntity === 'function') {
                         const button = text(doc, 'button', label, 'cb-link'); button.type = 'button';
                         button.title = entity.id;
@@ -361,41 +432,117 @@
                     }
                 }
                 if (event.transaction) {
-                    const transaction = text(doc, 'a', `tx ${short(event.transaction)}`, 'cb-link cb-link--external ae-wallet');
+                    const transaction = text(doc, 'a', t('gameDialogs.log.actors.transaction', 'Transaction {{id}}', { id: short(event.transaction) }), 'cb-link cb-link--external ae-wallet');
                     transaction.href = `https://explorer.solana.com/tx/${encodeURIComponent(event.transaction)}?cluster=devnet`;
                     transaction.target = '_blank'; transaction.rel = 'noopener noreferrer';
                     meta.append(transaction);
                 }
                 if (event.runId) {
-                    const run = text(doc, 'button', `run ${short(event.runId)}`, 'cb-link'); run.type = 'button'; run.addEventListener('click', () => openRun(event.runId)); meta.append(run);
+                    const run = text(doc, 'button', t('gameDialogs.log.actors.openRun', 'Run {{id}}', { id: short(event.runId) }), 'cb-link'); run.type = 'button'; run.addEventListener('click', () => openRun(event.runId)); meta.append(run);
                 }
-                if (event.model) meta.append(text(doc, 'span', `${event.model}${event.modelCostUsd !== null ? ` · ${formatUsd(event.modelCostUsd)}` : ''}`, 'cb-badge'));
+                if (event.model) meta.append(text(doc, 'span', t('gameDialogs.log.actors.eventModel', '{{model}}{{cost}}', { model: event.model, cost: event.modelCostUsd !== null ? ` · ${formatUsd(event.modelCostUsd)}` : '' }), 'cb-badge'));
                 item.append(meta);
                 const evidence = eventDetail(event);
                 if (evidence.rationale || evidence.transaction || evidence.provenance) {
-                    const more = doc.createElement('details'); more.append(text(doc, 'summary', 'Evidence'));
+                    const more = doc.createElement('details'); more.append(text(doc, 'summary', t('gameDialogs.log.actors.evidence', 'Evidence')));
                     if (evidence.rationale) more.append(text(doc, 'p', evidence.rationale));
-                    if (evidence.transaction) more.append(text(doc, 'p', `Transaction: ${evidence.transaction}`, 'ae-provenance'));
+                    if (evidence.transaction) more.append(text(doc, 'p', t('gameDialogs.log.actors.transactionFull', 'Transaction: {{id}}', { id: evidence.transaction }), 'ae-provenance'));
                     if (evidence.provenance) more.append(text(doc, 'pre', JSON.stringify(evidence.provenance, null, 2), 'ae-provenance'));
                     item.append(more);
                 }
                 list.append(item);
             });
-            if (!list.childElementCount) list.append(text(doc, 'li', 'No activity matches this filter.', 'ae-empty'));
+            if (!list.childElementCount) list.append(text(doc, 'li', t('gameDialogs.log.actors.noActivity', 'No activity matches this filter.'), 'ae-empty'));
             activity.append(list);
+            renderRunDetail();
         }
         search.addEventListener('input', () => { state.query = search.value; render(); });
-        controller.addEventListener('change', () => { state.controller = controller.value; state.actorKey = null; render(); });
+        controller.addEventListener('change', () => {
+            state.controller = controller.value;
+            if (state.actorKey) selectActor(null);
+            else render();
+        });
+
+        function selectActor(value, { notify = false, actor: actorInput = null } = {}) {
+            if (value === null || value === undefined || value === '') {
+                state.actorKey = null;
+                selectedActor = null;
+                runDetail = null;
+                ++runRequest;
+                if (notify && typeof onSelectActor === 'function') onSelectActor(null);
+                render();
+                return null;
+            }
+            const id = String(value);
+            const profile = buildActorProfiles(allEvents).find(candidate =>
+                [candidate.key, candidate.actor.id, candidate.actor.wallet, candidate.actor.name]
+                    .some(identity => identity != null && String(identity) === id));
+            const actor = actorInput || profile?.actor || { id, name: id, kind: 'unknown', controller: 'unknown', wallet: null };
+            state.query = '';
+            state.controller = 'all';
+            search.value = '';
+            controller.value = 'all';
+            state.actorKey = profile?.key || actorKey(actor) || id;
+            selectedActor = { ...actor };
+            if (runDetail) { runDetail = null; ++runRequest; }
+            if (notify && typeof onSelectActor === 'function') {
+                onSelectActor({ id: actor.id || null, wallet: actor.wallet || null, name: actor.name || null,
+                    key: state.actorKey, actorKey: state.actorKey, kind: actor.kind || 'unknown', controller: actor.controller || 'unknown' });
+            }
+            render();
+            return { ...selectedActor };
+        }
+
         function reset() {
             state = { query: '', controller: 'all', actorKey: null };
+            selectedActor = null;
             search.value = ''; controller.value = 'all';
             ++runRequest;
+            runDetail = null;
             detail.replaceChildren();
+            if (typeof onSelectActor === 'function') onSelectActor(null);
             render();
         }
         clear.addEventListener('click', reset);
-        render();
-        return { reset, setEvents(next) { allEvents = newestFirst(next); render(); }, getEvents() { return [...allEvents]; } };
+        function relabel() {
+            search.placeholder = t('gameDialogs.log.actors.search', 'Search actor, agreement, run or transaction');
+            search.setAttribute('aria-label', search.placeholder);
+            controller.setAttribute('aria-label', t('gameDialogs.log.actors.controllerAria', 'Actor controller'));
+            clear.textContent = t('gameDialogs.log.actors.clearSelection', 'Clear selection');
+            for (const option of controller.children) {
+                const key = option.value === 'all' ? 'controllerAll' : `controller${option.value[0].toUpperCase()}${option.value.slice(1)}`;
+                const fallback = { all: 'All controllers', human: 'Person', algorithm: 'Algorithm', llm: 'LLM agent' }[option.value];
+                option.textContent = t(`gameDialogs.log.actors.${key}`, fallback);
+            }
+            profiles.setAttribute('aria-label', t('gameDialogs.log.actors.profilesAria', 'Actor profiles'));
+            activity.setAttribute('aria-label', t('gameDialogs.log.actors.activityAria', 'Activity'));
+            render();
+        }
+        relabel();
+        return {
+            reset,
+            relabel,
+            selectActor,
+            openRun,
+            onRun: openRun,
+            getSelection() { return { actorKey: state.actorKey, actor: selectedActor ? { ...selectedActor } : null, runId: runDetail?.runId || null }; },
+            setEvents(next) {
+                allEvents = newestFirst(next);
+                if (state.actorKey && selectedActor) {
+                    const selectedIdentities = [state.actorKey, selectedActor.id, selectedActor.wallet, selectedActor.name]
+                        .filter(identity => identity !== null && identity !== undefined).map(String);
+                    const profile = buildActorProfiles(allEvents).find(candidate =>
+                        [candidate.key, candidate.actor.id, candidate.actor.wallet, candidate.actor.name]
+                            .some(identity => identity !== null && identity !== undefined && selectedIdentities.includes(String(identity))));
+                    if (profile) {
+                        state.actorKey = profile.key;
+                        selectedActor = { ...profile.actor };
+                    }
+                }
+                render();
+            },
+            getEvents() { return [...allEvents]; }
+        };
     }
 
     async function boot() {

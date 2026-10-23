@@ -887,3 +887,7 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-23: Remove the experimental Atlas parcel-study editor from the UI, including its entry point and link/draft restoration; retain Permitted envelope inspection and calculations.
 
 - 2026-10-23: Keep vocabulary.md as the canonical glossary of current system concepts; retain implementation history, research and unresolved findings in separate linked documents.
+
+- 2026-10-23: Activity uses one dock panel with Events, Actors and Watched areas; Simulation and Technical status live under Settings → Diagnostics. Live activity defaults to All cities so unlocated agent runs remain visible, and contextual scopes restore the visitor’s ordinary filters when cleared.
+
+- Source configuration belongs to the frontend for every pluggable dataset; backend services accept explicit source IDs and do not select sources from app city configuration.

@@ -207,12 +207,15 @@ test.describe('Supporting secondary controls @core', () => {
     await expect.poll(async () => (await getWalletStates(page)).solana?.cluster).toBe('mainnet-beta');
   });
 
-  test('activity row scope buttons filter the explorer, Clear scope resets it, and a row opens its agreement', async ({ mockApi: page }) => {
+  test('activity row scope buttons filter the panel, Clear scope resets it, and a row opens its agreement', async ({ mockApi: page }) => {
     const queries: URLSearchParams[] = [];
     await page.route('**/agent/activity**', route => {
       queries.push(new URL(route.request().url()).searchParams);
       return json(route, { events: [SCOPED_EVENT, OTHER_EVENT] });
     });
+    await page.route('**/agent/runs/scope-run-42', route => json(route, {
+      run: { id: 'scope-run-42', persona: 'Map Steward', status: 'done', picks: [], costs: [] },
+    }));
     await openCity(page);
     // This device proposed the scoped agreement, so its row opens the local copy's panel.
     const localId = await page.evaluate(cid => {
@@ -225,8 +228,7 @@ test.describe('Supporting secondary controls @core', () => {
       }).id);
     }, SCOPED_AGREEMENT);
     await page.locator('#activity-button').click();
-    await page.locator('#activity-explorer-button').click();
-    const modal = page.locator('.game-log-modal');
+    const modal = page.locator('#activity-sheet');
     const content = modal.locator('#game-log-content');
     await expect(content.locator('.log-entry')).toHaveCount(2);
     const scopedRow = content.locator('.log-entry').filter({ hasText: 'scoped park agreement' });
@@ -236,10 +238,11 @@ test.describe('Supporting secondary controls @core', () => {
     await scopedRow.locator('[data-activity-scope="actorId"]').click();
     await expect(scope).toBeVisible();
     await expect(scope).toContainText('Actor: scope-actor');
-    await expect(content.locator('.log-entry')).toHaveCount(1);
-    await expect(content).toContainText('Proposed the scoped park agreement');
-    await expect(content).not.toContainText('unrelated block agreement');
-    await modal.locator('[aria-label="Clear scope"]').click();
+    const actorEvents = modal.locator('#activity-actors-pane .ae-event');
+    await expect(actorEvents).toHaveCount(1);
+    await expect(actorEvents).toContainText('Proposed the scoped park agreement');
+    await expect(actorEvents).not.toContainText('unrelated block agreement');
+    await modal.locator('[data-activity-clear-scope]').click();
     await expect(scope).toBeHidden();
     await expect(content.locator('.log-entry')).toHaveCount(2);
 
@@ -252,7 +255,7 @@ test.describe('Supporting secondary controls @core', () => {
     await expect(content).toContainText('Proposed the scoped park agreement');
     await expect(content).not.toContainText('unrelated block agreement');
     expect(queries.some(query => query.get('agreement') === SCOPED_AGREEMENT)).toBe(true);
-    await modal.locator('[aria-label="Clear scope"]').click();
+    await modal.locator('[data-activity-clear-scope]').click();
     await expect(scope).toBeHidden();
     await expect(content.locator('.log-entry')).toHaveCount(2);
 
@@ -260,36 +263,37 @@ test.describe('Supporting secondary controls @core', () => {
     await scopedRow.locator('[data-activity-scope="runId"]').click();
     await expect(scope).toBeVisible();
     await expect(scope).toContainText('Run: scope-run-42');
-    await expect(content.locator('.log-entry')).toHaveCount(1);
-    await expect(content).toContainText('Proposed the scoped park agreement');
-    await expect(content).not.toContainText('unrelated block agreement');
-    await modal.locator('[aria-label="Clear scope"]').click();
+    await expect(actorEvents).toHaveCount(1);
+    await expect(actorEvents).toContainText('Proposed the scoped park agreement');
+    await expect(actorEvents).not.toContainText('unrelated block agreement');
+    await expect(modal.locator('#activity-actors-pane .ae-run-detail')).toContainText('Run scope-run-42');
+    await modal.locator('[data-activity-clear-scope]').click();
     await expect(scope).toBeHidden();
     await expect(content.locator('.log-entry')).toHaveCount(2);
 
-    // Open agreement: the explorer closes and the agreement's panel takes the right dock.
+    // Open agreement: Activity closes and the agreement's panel takes the right dock.
     await scopedRow.locator(`.activity-entity-link[data-entity-type="agreement"][data-entity-id="${SCOPED_AGREEMENT}"]`).click();
-    await expect(modal).toHaveCount(0);
+    await expect(modal).toBeHidden();
     await expect(page.locator('section#agreement-panel')).toBeVisible({ timeout: 30_000 });
     await expect(page.locator('#agreement-panel-title')).toHaveText('Scoped park agreement');
     expect(await page.evaluate(() => (window as any).AgreementPanel.current())).toBe(localId);
   });
 
-  test('an ?activity=agreement:<cid> link opens the explorer scoped to that agreement, once', async ({ mockApi: page }) => {
+  test('an ?activity=agreement:<cid> link opens the Activity panel scoped to that agreement, once', async ({ mockApi: page }) => {
     await stubBasemapTiles(page);
     await page.route('**/agent/activity**', route => json(route, { events: [SCOPED_EVENT, OTHER_EVENT] }));
     await page.goto(`/?city=zg&reduceMotion=1&activity=${encodeURIComponent(`agreement:${SCOPED_AGREEMENT}`)}`, { waitUntil: 'domcontentloaded' });
     await waitForMapReady(page);
-    const modal = page.locator('.game-log-modal');
+    const modal = page.locator('#activity-sheet');
     await expect(modal).toBeVisible({ timeout: 30_000 });
     await expect(modal.locator('[data-activity-scope-chip]')).toContainText(`Agreement: ${shortCid(SCOPED_AGREEMENT)}`);
     const content = modal.locator('#game-log-content');
     await expect(content.locator('.log-entry')).toHaveCount(1);
     await expect(content).toContainText('Proposed the scoped park agreement');
     await expect(content).not.toContainText('unrelated block agreement');
-    // Closing the explorer drops the link from the address, so a reload does not open it again.
-    await modal.locator('.game-log-modal-close').click();
-    await expect(modal).toHaveCount(0);
+    // Closing Activity drops the link from the address, so a reload does not open it again.
+    await modal.locator('[data-sheet-close]').click();
+    await expect(modal).toBeHidden();
     await expect.poll(() => page.evaluate(() => new URLSearchParams(location.search).has('activity'))).toBe(false);
   });
 

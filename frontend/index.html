@@ -490,9 +490,9 @@
         <div id="map-shell-bottom-right" class="map-shell-cluster map-shell-cluster--bottom-right" data-sheet-anchor>
             <button type="button" id="proposals-button" class="map-shell-button map-shell-button--labelled"
                 data-sheet-target="proposals-sheet" aria-controls="proposals-sheet" aria-expanded="false"
-                title="Proposals" data-i18n-key="mapShell.proposals" data-i18n-attr="title">
-                <i class="fas fa-handshake" aria-hidden="true"></i>
-                <span class="map-shell-button-label" data-i18n-key="mapShell.proposals">Proposals</span>
+                title="Designs" data-i18n-key="mapShell.proposals" data-i18n-attr="title">
+                <i class="fas fa-pencil-ruler" aria-hidden="true"></i>
+                <span class="map-shell-button-label" data-i18n-key="mapShell.proposals">Designs</span>
                 <span id="proposals-button-count" class="map-shell-badge" aria-hidden="true">0</span>
             </button>
             <button type="button" id="bets-button" class="map-shell-button map-shell-button--labelled"
@@ -512,6 +512,12 @@
                 <span id="activity-running-dot" class="map-shell-running-dot" role="img"
                     aria-label="Simulation running" title="Simulation running"
                     data-i18n-key="mapShell.simulation.running" data-i18n-attr="aria-label,title" hidden></span>
+            </button>
+            <button id="shareAppliedProposalsButton" type="button" class="map-shell-button map-shell-button--labelled share-map-button"
+                onclick="shareAppliedProposals()" title="Share this map" data-i18n-key="mapShell.shareMap" data-i18n-attr="title">
+                <i class="fas fa-share-alt" aria-hidden="true"></i>
+                <span class="share-plan-label map-shell-button-label" data-i18n-key="mapShell.share">Share</span>
+                <span class="share-plan-spinner" aria-live="polite" hidden><i class="fas fa-spinner fa-spin" aria-hidden="true"></i></span>
             </button>
         </div>
 
@@ -937,7 +943,6 @@
             </div>
             <div id="model-layer-controls" class="map-sheet-body" data-map-modes="3d" hidden></div>
             <div class="map-sheet-body" data-map-modes="photo" hidden>
-                <div class="checkbox-group"><label><input id="aerial-city-visible" type="checkbox" checked><span data-i18n-key="mapShell.reorg.aerialLayer">Existing city (Google imagery)</span></label></div>
                 <div class="checkbox-group"><label><input id="photo-parcels-visible" type="checkbox" checked><span data-i18n-key="threeMode.photoParcels.toggle">Cadastral parcel boundaries</span></label></div>
                 <p id="photo-parcels-status" class="photoreal-parcel-note"></p>
             </div>
@@ -1022,14 +1027,14 @@
             <div class="map-sheet-header">
                 <h2 id="proposals-sheet-title" class="map-sheet-title">
                     <span class="accordion-title-text" data-section-title="proposals"
-                        data-i18n-key="sidebar.proposals.title">Proposals</span>
+                        data-i18n-key="sidebar.proposals.title">Designs</span>
                 </h2>
                 <button type="button" class="map-sheet-close close-circle-btn close-circle-btn--lg" data-sheet-close
                     aria-label="Close" title="Close" data-i18n-key="common.close" data-i18n-attr="aria-label,title">×</button>
             </div>
             <div class="map-sheet-body sheet-section-body">
                 <div id="proposal-list-host"></div>
-                <details id="proposal-list-actions" class="layer-actions"><summary data-i18n-key="mapShell.reorg.proposalTools">Proposal tools</summary>
+                <nav id="proposal-list-actions" aria-label="Design actions" data-i18n-key="mapShell.designActions" data-i18n-attr="aria-label">
                 <div class="control-group">
                     <div class="btn-group">
                         <button id="showProposalsButton" hidden class="btn btn-block btn-primary" onclick="showAllProposalsModal()"
@@ -1059,17 +1064,6 @@
                                     data-i18n-key="sidebar.proposals.grainScore.buttonEmpty">Apply a proposal first</small>
                             </span>
                         </button>
-                        <button id="shareAppliedProposalsButton" class="btn btn-block share-plan-button" disabled
-                            onclick="shareAppliedProposals()">
-                            <i class="fas fa-share-alt"></i>
-                            <span class="share-plan-label" data-i18n-key="sidebar.proposals.shareButton">Share applied proposals</span>
-                            <span class="share-plan-subtext" data-i18n-key="sidebar.proposals.shareButtonEmpty">No
-                                applied proposals. Apply some first</span>
-                            <span class="share-plan-spinner" aria-live="polite" hidden>
-                                <i class="fas fa-spinner fa-spin"></i>
-                                <span data-i18n-key="sidebar.proposals.shareButtonPreparing">Preparing proposals…</span>
-                            </span>
-                        </button>
                         <button id="agreementsButton" type="button" class="btn btn-block agreements-button" onclick="window.AgreementList.open()">
                             <i class="fas fa-handshake" aria-hidden="true"></i>
                             <span data-i18n-key="sidebar.proposals.agreementsButton">Agreements</span>
@@ -1080,7 +1074,7 @@
                         </button>
                     </div>
                 </div>
-            </details>
+            </nav>
             </div>
         </section>
 
@@ -1111,116 +1105,70 @@
             </div>
         </section>
 
-        <!-- Activity: recent events, watched areas, simulation and technical status -->
+        <!-- Activity: one panel for recent events, agents and watched areas. -->
         <section id="activity-sheet" class="map-sheet map-sheet--dock" role="dialog" aria-labelledby="activity-sheet-title" hidden>
             <div class="map-sheet-header">
                 <h2 id="activity-sheet-title" class="map-sheet-title" data-i18n-key="mapShell.activity">Activity</h2>
+                <button type="button" id="activity-panel-expand" class="btn btn-icon"
+                    aria-label="Expand activity panel" title="Expand activity panel" aria-controls="activity-sheet"
+                    aria-expanded="false" data-i18n-key="activityPanel.expand" data-i18n-attr="aria-label,title">
+                    <i class="fas fa-up-right-and-down-left-from-center" aria-hidden="true"></i>
+                </button>
                 <button type="button" class="map-sheet-close close-circle-btn close-circle-btn--lg" data-sheet-close
                     aria-label="Close" title="Close" data-i18n-key="common.close" data-i18n-attr="aria-label,title">×</button>
             </div>
-            <div class="map-sheet-body">
-                <div id="activity-feed"></div>
-                <div class="btn-group activity-sheet-actions">
-                    <button type="button" id="activity-explorer-button" class="btn btn-block" onclick="showGameLogDialog()">
-                        <i class="fas fa-wave-square" aria-hidden="true"></i>
-                        <span data-i18n-key="mapShell.commands.activityExplorer">Open activity explorer</span>
-                    </button>
-                    <button type="button" id="activity-agents-button" class="btn btn-block" onclick="showGameLogDialog({ view: 'actors' })">
-                        <i class="fas fa-robot" aria-hidden="true"></i>
-                        <span data-i18n-key="sidebar.game.showAgents">Actors</span>
-                    </button>
+            <div class="map-sheet-body activity-panel-body">
+                <div class="cb-segmented activity-panel-tabs" role="tablist" aria-label="Activity views"
+                    data-i18n-key="activityPanel.tabs" data-i18n-attr="aria-label">
+                    <button type="button" id="activity-events-tab" class="cb-segmented__option"
+                        data-activity-view="events" role="tab" aria-controls="activity-events-pane" aria-selected="true"
+                        data-i18n-key="gameDialogs.log.viewEvents">Events</button>
+                    <button type="button" id="activity-actors-tab" class="cb-segmented__option"
+                        data-activity-view="actors" role="tab" aria-controls="activity-actors-pane" aria-selected="false"
+                        data-i18n-key="gameDialogs.log.viewActors">Actors</button>
+                    <button type="button" id="activity-watched-tab" class="cb-segmented__option"
+                        data-activity-view="watched" role="tab" aria-controls="activity-watched-pane" aria-selected="false"
+                        data-i18n-key="activityPanel.watchedAreas">Watched areas</button>
                 </div>
-                <!-- Simulation: the in-UI game, a secondary feature (the agents that matter run in the
-                     background and show up in the explorer). Play/pause with date · turn, and its
-                     settings folded away. The wrapper is the game section: city configs hide it
-                     (disabledSections 'game'), #gameCheckbox gates the settings, game.js titles it. -->
-                <details class="accordion-section activity-simulation" data-section="game">
-                    <summary class="sheet-section-title">
-                        <span class="accordion-title-text" data-section-title="game"
-                            data-i18n-key="mapShell.simulation.title">Simulation</span>
-                    </summary>
-                    <label class="checkbox-group activity-simulation-switch">
-                        <input type="checkbox" id="gameCheckbox" data-layer="game" onchange="toggleAccordion(this)">
-                        <span data-i18n-key="sidebar.game.enable">Enable game mode</span>
-                    </label>
-                    <div class="activity-simulation-row">
-                        <button type="button" id="game-play-pause-btn" class="btn btn-icon btn-sm activity-simulation-play"
-                            aria-pressed="false" onclick="toggleGamePlayPause()">
-                            <i class="fas fa-play" aria-hidden="true"></i>
-                            <span class="map-shell-sr-only" data-i18n-key="sidebar.game.play">Play</span>
-                        </button>
-                        <span class="activity-simulation-metrics">
-                            <span id="game-datetime">2024-01-01</span>
-                            <span aria-hidden="true">·</span>
-                            <span data-i18n-key="mapShell.simulation.turn">Turn</span>
-                            <span id="game-turns">0</span>
-                        </span>
-                    </div>
-                    <details class="activity-simulation-settings">
-                        <summary data-i18n-key="mapShell.simulation.settings">Simulation settings</summary>
-                        <!-- Gated by #gameCheckbox (greyed while game mode is off). The play row above and
-                             this summary stay live: Play turns game mode on by itself. -->
-                        <div class="sheet-section-body">
-                            <div class="slider-group">
-                                <label for="turn-interval-slider">
-                                    <span data-i18n-key="sidebar.game.secondsBetween">Seconds between turns:</span>
-                                    <span id="turn-interval-value">30</span>
-                                </label>
-                                <input type="range" id="turn-interval-slider" min="1" max="60" value="10"
-                                    onchange="updateTurnInterval(this.value)" oninput="updateTurnIntervalDisplay(this.value)">
-                            </div>
-
-                            <div class="turn-progress">
-                                <div class="turn-progress-label" data-i18n-key="sidebar.game.nextTurn">Next turn in:</div>
-                                <div class="turn-progress-bar">
-                                    <div id="turn-progress-fill" class="turn-progress-fill"></div>
+                <div id="activity-panel-controls"></div>
+                <p id="activity-panel-status" role="status" aria-live="polite"></p>
+                <div id="activity-panel-scope"></div>
+                <div class="activity-panel-panes">
+                    <section id="activity-events-pane" class="activity-panel-pane" role="tabpanel"
+                        aria-labelledby="activity-events-tab">
+                        <div id="game-log-content" class="game-log-content"></div>
+                    </section>
+                    <section id="activity-actors-pane" class="activity-panel-pane activity-actors" role="tabpanel"
+                        aria-labelledby="activity-actors-tab" data-activity-actors hidden></section>
+                    <section id="activity-watched-pane" class="activity-panel-pane" role="tabpanel"
+                        aria-labelledby="activity-watched-tab" hidden>
+                        <div class="accordion-section" data-section="areaMonitor">
+                            <h3 class="sheet-section-title">
+                                <i class="fas fa-draw-polygon" aria-hidden="true"></i>
+                                <span class="accordion-title-text" data-section-title="areaMonitor"
+                                    data-i18n-key="mapShell.reorg.watchedAreas">Watched areas</span>
+                            </h3>
+                            <div class="sheet-section-body">
+                                <div class="control-group">
+                                    <div class="btn-group" style="margin-top:6px;">
+                                        <div class="btn-grid-2x2" data-map-modes="2d">
+                                            <button id="areaMonitorDrawButton" data-map-modes="2d" class="btn btn-primary btn-block">
+                                                <i class="fas fa-draw-polygon" aria-hidden="true"></i>
+                                                <span data-i18n-key="sidebar.areaMonitor.drawButton">Draw freely</span>
+                                            </button>
+                                            <button id="areaMonitorFromPlanButton" data-map-modes="2d" class="btn btn-primary btn-block" disabled>
+                                                <i class="fas fa-map" aria-hidden="true"></i>
+                                                <span data-i18n-key="sidebar.areaMonitor.fromPlanButton">Draw from plan</span>
+                                            </button>
+                                        </div>
+                                        <div id="activity-watched-areas-list" aria-live="polite"></div>
+                                    </div>
                                 </div>
-                                <div class="turn-progress-time" id="turn-progress-time">--</div>
-                            </div>
-
-                            <div class="btn-group">
-                                <button class="btn btn-danger" onclick="resetGameState(true)">
-                                    <i class="fas fa-rotate-left" aria-hidden="true"></i>
-                                    <span data-i18n-key="sidebar.game.newGame">New Game</span>
-                                </button>
                             </div>
                         </div>
-                    </details>
-                </details>
-                <!-- Status bar: click to expand the recent log; Copy all / Open log appear once expanded -->
-
-<details class="layer-actions"><summary data-i18n-key="mapShell.reorg.statusLog">Technical status</summary><div class="status-bar">
-                    <span id="status" data-i18n-key="hud.statusReady">App initialized, loading parcels...</span>
-                    <div id="status-log-expanded" class="status-log-expanded" style="display: none;"></div>
-                </div></details>
-
-            <div class="accordion-section" data-section="areaMonitor">
-                    <h3 class="sheet-section-title">
-                        <i class="fas fa-draw-polygon" aria-hidden="true"></i>
-                        <span class="accordion-title-text" data-section-title="areaMonitor"
-                            data-i18n-key="mapShell.reorg.watchedAreas">Watched areas</span>
-                    </h3>
-                    <div class="sheet-section-body">
-                        <div class="control-group">
-
-                            <div class="btn-group" style="margin-top:6px;">
-                                <div class="btn-grid-2x2" data-map-modes="2d">
-                                    <button id="areaMonitorDrawButton" data-map-modes="2d" class="btn btn-primary btn-block">
-                                        <i class="fas fa-draw-polygon" aria-hidden="true"></i>
-                                        <span data-i18n-key="sidebar.areaMonitor.drawButton">Draw freely</span>
-                                    </button>
-                                    <button id="areaMonitorFromPlanButton" data-map-modes="2d" class="btn btn-primary btn-block" disabled>
-                                        <i class="fas fa-map" aria-hidden="true"></i>
-                                        <span data-i18n-key="sidebar.areaMonitor.fromPlanButton">Draw from plan</span>
-                                    </button>
-                                </div>
-
-                                <div id="activity-watched-areas-list" aria-live="polite"></div>
-                            </div>
-                        </div>
-                    </div>
+                    </section>
                 </div>
-</div>
+            </div>
         </section>
 
         <!-- Settings sheet -->
@@ -1427,6 +1375,68 @@
                         </div>
                     </div>
                 </div>
+                <details class="activity-diagnostics">
+                    <summary class="sheet-section-title" data-i18n-key="activityPanel.diagnostics">Diagnostics</summary>
+                    <div class="sheet-section-body">
+                        <!-- Simulation remains a city-configurable game section, now grouped under Settings diagnostics. -->
+                        <details class="accordion-section activity-simulation" data-section="game">
+                            <summary class="sheet-section-title">
+                                <span class="accordion-title-text" data-section-title="game"
+                                    data-i18n-key="mapShell.simulation.title">Simulation</span>
+                            </summary>
+                            <label class="checkbox-group activity-simulation-switch">
+                                <input type="checkbox" id="gameCheckbox" data-layer="game" onchange="toggleAccordion(this)">
+                                <span data-i18n-key="sidebar.game.enable">Enable game mode</span>
+                            </label>
+                            <div class="activity-simulation-row">
+                                <button type="button" id="game-play-pause-btn" class="btn btn-icon btn-sm activity-simulation-play"
+                                    aria-pressed="false" onclick="toggleGamePlayPause()">
+                                    <i class="fas fa-play" aria-hidden="true"></i>
+                                    <span class="map-shell-sr-only" data-i18n-key="sidebar.game.play">Play</span>
+                                </button>
+                                <span class="activity-simulation-metrics">
+                                    <span id="game-datetime">2024-01-01</span>
+                                    <span aria-hidden="true">·</span>
+                                    <span data-i18n-key="mapShell.simulation.turn">Turn</span>
+                                    <span id="game-turns">0</span>
+                                </span>
+                            </div>
+                            <details class="activity-simulation-settings">
+                                <summary data-i18n-key="mapShell.simulation.settings">Simulation settings</summary>
+                                <div class="sheet-section-body">
+                                    <div class="slider-group">
+                                        <label for="turn-interval-slider">
+                                            <span data-i18n-key="sidebar.game.secondsBetween">Seconds between turns:</span>
+                                            <span id="turn-interval-value">30</span>
+                                        </label>
+                                        <input type="range" id="turn-interval-slider" min="1" max="60" value="10"
+                                            onchange="updateTurnInterval(this.value)" oninput="updateTurnIntervalDisplay(this.value)">
+                                    </div>
+                                    <div class="turn-progress">
+                                        <div class="turn-progress-label" data-i18n-key="sidebar.game.nextTurn">Next turn in:</div>
+                                        <div class="turn-progress-bar">
+                                            <div id="turn-progress-fill" class="turn-progress-fill"></div>
+                                        </div>
+                                        <div class="turn-progress-time" id="turn-progress-time">--</div>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button class="btn btn-danger" onclick="resetGameState(true)">
+                                            <i class="fas fa-rotate-left" aria-hidden="true"></i>
+                                            <span data-i18n-key="sidebar.game.newGame">New Game</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </details>
+                        </details>
+                        <details class="layer-actions activity-technical-status">
+                            <summary data-i18n-key="mapShell.reorg.statusLog">Technical status</summary>
+                            <div class="status-bar">
+                                <span id="status" data-i18n-key="hud.statusReady">App initialized, loading parcels...</span>
+                                <div id="status-log-expanded" class="status-log-expanded" style="display: none;"></div>
+                            </div>
+                        </details>
+                    </div>
+                </details>
             </div>
         </section>
         <div id="station-placement-toolbar" class="map-editor-toolbar" hidden>
@@ -2158,6 +2168,7 @@
             'js/proposals/dialog-create.js?v=20261019-unknown-ownership',
             'js/proposals/ready-signal.js',
             'js/proposals/create-preview.js',
+            'js/map-share.js',
             'js/proposals/dialog-share.js?v=20261019-seller-offer',
             'js/design-record.js',
             'js/agreement-record.js',
@@ -2227,8 +2238,8 @@
             'js/agents.js?v=20261020-profile-offers',
             'js/agent-bubbles.js',
             'js/game.js',
-            'js/ui/activity-feed-model.js',
-            'js/ui/activity-feed.js',
+            'js/ui/activity-panel-model.js',
+            'js/ui/activity-panel.js',
             'js/park-planting.js',
             'js/structures.js',
             'js/structure-geometry-editor.js',

@@ -47,7 +47,7 @@ live('binding SQL and the pure rule agree on real parcels', () => {
     }
 
     async function both(site, toleranceM) {
-        const server = (await computeBinding(pool, { site, toleranceM })).binding;
+        const server = (await computeBinding(pool, { parcelSourceId: 'oss-wfs', site, toleranceM })).binding;
         const client = bindingFromParcels(site, await parcelsNear(site), { toleranceM, turf });
         return { server, client };
     }
@@ -87,11 +87,11 @@ live('binding SQL and the pure rule agree on real parcels', () => {
         const own = `HR-${KO}-${NUMBER}`;
         const site = await siteAround(0.3);
         const ids = list => (list || []).map(p => p.parcelId);
-        const neighbour = (await computeBinding(pool, { site, toleranceM: 0 })).binding.parcels
+        const neighbour = (await computeBinding(pool, { parcelSourceId: 'oss-wfs', site, toleranceM: 0 })).binding.parcels
             .find(p => p.parcelId !== own && p.intrusionM > 0.25)?.parcelId;
         expect(neighbour).toBeTruthy();
         const classify = async toleranceM => {
-            const binding = (await computeBinding(pool, { site, toleranceM })).binding;
+            const binding = (await computeBinding(pool, { parcelSourceId: 'oss-wfs', site, toleranceM })).binding;
             if (ids(binding.parcels).includes(neighbour)) return 'bound';
             if (ids(binding.unresolved).includes(neighbour)) return 'unresolved';
             if (ids(binding.touched).includes(neighbour)) return 'touched';
@@ -122,7 +122,7 @@ live('binding SQL and the pure rule agree on real parcels', () => {
 
     it('reports a site outside the held cadastre as unknown', async () => {
         const paris = { type: 'Polygon', coordinates: [[[2.35, 48.85], [2.351, 48.85], [2.351, 48.851], [2.35, 48.851], [2.35, 48.85]]] };
-        const { binding } = await computeBinding(pool, { site: paris });
+        const { binding } = await computeBinding(pool, { parcelSourceId: 'oss-wfs', site: paris });
         expect(binding.coverage).toBe('unknown');
         expect(binding.parcels).toEqual([]);
     }, 60000);

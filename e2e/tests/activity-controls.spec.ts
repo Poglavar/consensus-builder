@@ -9,13 +9,29 @@ import { Page } from '@playwright/test';
 
 const shortCid = (cid: string) => `${cid.slice(0, 12)}…${cid.slice(-6)}`;
 
-// The simulation sits folded in the Activity sheet behind its own "Simulation" summary (fbe3758d).
+// Simulation controls live under Settings > Diagnostics.
 async function openSimulation(page: Page) {
-  await page.locator('#activity-button').click();
-  const simulation = page.locator('#activity-sheet details.activity-simulation');
+  await page.locator('#settings-button').click();
+  const diagnostics = page.locator('#settings-sheet details.activity-diagnostics');
+  await expect(diagnostics).toBeVisible();
+  if (!(await diagnostics.evaluate((details: HTMLDetailsElement) => details.open))) await diagnostics.locator('> summary').click();
+  const simulation = diagnostics.locator('details.activity-simulation');
   await expect(simulation).toBeVisible();
   if (!(await simulation.evaluate((details: HTMLDetailsElement) => details.open))) await simulation.locator('> summary').click();
   await expect(simulation).toHaveAttribute('open', '');
+}
+
+async function openActivityPanel(page: Page, options: Record<string, unknown> = {}) {
+  await page.evaluate(opts => (window as any).openActivityPanel(opts), options);
+  const panel = page.locator('#activity-sheet');
+  await expect(panel).toBeVisible();
+  return panel;
+}
+
+async function expandActivityFilters(panel: import('@playwright/test').Locator) {
+  const details = panel.locator('#activity-panel-controls details').first();
+  if (!(await details.evaluate((node: HTMLDetailsElement) => node.open))) await details.locator('> summary').click();
+  await expect(details).toHaveAttribute('open', '');
 }
 
 test.describe('Activity and simulation controls @features', () => {
@@ -37,7 +53,7 @@ test.describe('Activity and simulation controls @features', () => {
     });
   }
 
-  test('activity explorer and agents view open from their real sheet actions and filter returned activity', async ({ mockApi: page }) => {
+  test('one Activity panel filters returned activity and keeps its ordinary filters after reopening', async ({ mockApi: page }) => {
     const requests: string[] = [];
     const cid = cidOfObject({ schema: 'agreement/v1', title: 'River park plan' });
     await page.route('**/agent/activity**', async route => {
@@ -57,12 +73,11 @@ test.describe('Activity and simulation controls @features', () => {
     });
 
     await openCity(page);
-    await page.locator('#activity-button').click();
-    await expect(page.locator('#activity-sheet')).toBeVisible();
-    await page.locator('#activity-explorer-button').click();
-    const modal = page.locator('.game-log-modal');
-    await expect(modal).toBeVisible();
+    const modal = await openActivityPanel(page);
+    await expandActivityFilters(modal);
     await expect(modal.locator('#game-log-content')).toContainText('river park plan');
+    await expect(page.locator('.game-log-modal')).toHaveCount(0);
+    await expect(modal.locator('[role="tab"]')).toHaveCount(3);
     // The row names what it is about: an agreement, opened from its link.
     await expect(modal.locator(`#game-log-content .activity-entity-link[data-entity-type="agreement"][data-entity-id="${cid}"]`)).toHaveText('Open agreement');
     await modal.locator('[data-activity-filter-field="query"]').fill('no matching title');
@@ -70,45 +85,46 @@ test.describe('Activity and simulation controls @features', () => {
     await modal.locator('[data-activity-filter-field="query"]').fill('river park');
     await expect(modal.locator('#game-log-content')).toContainText('river park plan');
     await modal.locator('[data-activity-view="actors"]').click();
-    await expect(modal.locator('[data-activity-view="actors"]')).toHaveAttribute('aria-pressed', 'true');
+    await expect(modal.locator('[data-activity-view="actors"]')).toHaveAttribute('aria-selected', 'true');
     await expect(modal.locator('[data-activity-actors]')).toBeVisible();
     await expect(modal.locator('[data-activity-actors]')).toContainText('Map Steward');
     await modal.locator('[data-activity-view="events"]').click();
-    await expect(modal.locator('[data-activity-view="events"]')).toHaveAttribute('aria-pressed', 'true');
+    await expect(modal.locator('[data-activity-view="events"]')).toHaveAttribute('aria-selected', 'true');
     await expect(modal.locator('#game-log-content')).toBeVisible();
     await expect(modal.locator('[data-activity-actors]')).toBeHidden();
     await modal.getByRole('button', { name: 'Clear', exact: true }).click();
     await expect(modal.locator('[data-activity-filter-field="query"]')).toHaveValue('');
     await expect(modal.locator('#game-log-content')).toContainText('river park plan');
+    await modal.locator('[data-activity-filter-field="query"]').fill('river park');
+    await expect(modal.locator('#game-log-content')).toContainText('river park plan');
     const beforeRefresh = requests.length;
     await modal.locator('.activity-refresh').click();
     await expect.poll(() => requests.length).toBeGreaterThan(beforeRefresh);
     await expect(modal.locator('#game-log-content')).toContainText('river park plan');
-    await modal.locator('.game-log-modal-close').click();
-    await expect(modal).toHaveCount(0);
-
-    // Closing the explorer leaves its parent Activity sheet open. Its dedicated Actors shortcut
-    // should reach the same view as the explorer's internal switch.
-    await expect(page.locator('#activity-sheet')).toBeVisible();
-    await page.locator('#activity-agents-button').click();
-    await expect(modal).toBeVisible();
-    await expect(modal.locator('[data-activity-view="actors"]')).toHaveAttribute('aria-pressed', 'true');
-    await expect(modal.locator('[data-activity-actors]')).toContainText('Map Steward');
+    await modal.locator('[data-sheet-close]').click();
+    await expect(modal).toBeHidden();
+    await openActivityPanel(page);
+    await expect(modal.locator('[data-activity-filter-field="query"]')).toHaveValue('river park');
+    await expect(modal.locator('#game-log-content')).toContainText('river park plan');
+    await expect(modal.locator('[data-activity-view="events"]')).toHaveAttribute('aria-selected', 'true');
+    await modal.locator('[data-activity-view="watched"]').click();
+    await expect(modal.locator('#activity-panel-controls')).toBeHidden();
+    await expect(modal.locator('#activity-events-pane')).toBeHidden();
+    await expect(modal.locator('#activity-watched-pane')).toBeVisible();
+    await modal.locator('[data-activity-view="events"]').click();
+    await expect(modal.locator('#activity-panel-controls')).toBeVisible();
+    await expect(modal.locator('#activity-watched-pane')).toBeHidden();
+    await expect(modal.locator('[data-activity-filter-field="query"]')).toHaveValue('river park');
     expect(requests.length).toBeGreaterThan(0);
   });
 
   test('the Activity sheet Actors action opens the actor view', async ({ mockApi: page }) => {
     await openCity(page);
-    await page.locator('#activity-button').click();
-    const sheet = page.locator('#activity-sheet');
-    await expect(sheet).toBeVisible();
-    await sheet.locator('#activity-agents-button').click();
-    const modal = page.locator('.game-log-modal');
-    await expect(modal).toBeVisible();
-    await expect(modal.locator('[data-activity-view="actors"]')).toHaveAttribute('aria-pressed', 'true');
-    await expect(modal.locator('[data-activity-actors]')).toBeVisible();
-    await modal.locator('.game-log-modal-close').click();
-    await expect(modal).toHaveCount(0);
+    const panel = await openActivityPanel(page, { view: 'actors' });
+    await expect(panel.locator('[data-activity-view="actors"]')).toHaveAttribute('aria-selected', 'true');
+    await expect(panel.locator('[data-activity-actors]')).toBeVisible();
+    await panel.locator('[data-sheet-close]').click();
+    await expect(panel).toBeHidden();
   });
 
   test('the command palette Actors action opens the actor view', async ({ mockApi: page }) => {
@@ -119,12 +135,134 @@ test.describe('Activity and simulation controls @features', () => {
     await page.locator('.command-palette__input').fill('Actors');
     await page.locator('.command-palette__item').filter({ hasText: 'Actors' }).first().click();
 
-    const modal = page.locator('.game-log-modal');
-    await expect(modal).toBeVisible();
-    await expect(modal.locator('[data-activity-view="actors"]')).toHaveAttribute('aria-pressed', 'true');
-    await expect(modal.locator('[data-activity-actors]')).toBeVisible();
-    await modal.locator('.game-log-modal-close').click();
-    await expect(modal).toHaveCount(0);
+    const panel = page.locator('#activity-sheet');
+    await expect(panel).toBeVisible();
+    await expect(panel.locator('[data-activity-view="actors"]')).toHaveAttribute('aria-selected', 'true');
+    await expect(panel.locator('[data-activity-actors]')).toBeVisible();
+    await panel.locator('[data-sheet-close]').click();
+    await expect(panel).toBeHidden();
+  });
+
+  test('ordinary filters are temporarily overridden by a deep scope and restored when it clears', async ({ mockApi: page }) => {
+    await page.goto('/?city=zg&reduceMotion=1');
+    const currentCity = await page.evaluate(() => (window as any).CityConfigManager.getCurrentCityId());
+    const index = pageIndex(page);
+    const first = fileIndexedAgreement(index, {
+      title: 'Scoped north square', createdAt: '2026-10-20T09:00:00.000Z', community: true,
+      row: { city: currentCity },
+    });
+    const firstRow = index.agreements.get(first.cid);
+    if (firstRow) firstRow.city = currentCity;
+    for (const designCid of first.designCids) {
+      const design = index.designs.get(designCid);
+      if (design) design.city = currentCity;
+    }
+    const second = fileIndexedAgreement(index, {
+      title: 'Scoped south park', createdAt: '2026-10-21T09:00:00.000Z', community: true,
+      row: { city: currentCity },
+    });
+    const secondRow = index.agreements.get(second.cid);
+    if (secondRow) secondRow.city = currentCity;
+    for (const designCid of second.designCids) {
+      const design = index.designs.get(designCid);
+      if (design) design.city = currentCity;
+    }
+    const panel = await openActivityPanel(page, {
+      filter: { query: 'north square', cityScope: 'current', source: 'live' },
+    });
+    await expandActivityFilters(panel);
+    const controls = panel.locator('#activity-panel-controls');
+    await expect(controls.locator('[data-activity-filter-field="query"]')).toHaveValue('north square');
+    await expect(controls.locator('[data-activity-filter-field="cityScope"]')).toHaveValue('current');
+    await expect(controls.locator('[data-activity-filter-field="source"]')).toHaveValue('live');
+
+    const row = panel.locator('#game-log-content .activity-entry').filter({ hasText: 'Scoped north square was proposed.' });
+    await row.locator('details.activity-entry-meta > summary').click();
+    await row.locator('[data-activity-scope="agreementCid"]').click();
+    await expect(panel.locator('[data-activity-scope-chip]')).toBeVisible();
+    await expect(panel.locator('#activity-panel-notices')).toContainText('Scoped results scan the most recent 1000 records per source.');
+    await expect(controls.locator('[data-activity-filter-field="cityScope"]')).toHaveValue('all');
+    await expect(controls.locator('[data-activity-filter-field="source"]')).toHaveValue('combined');
+    await expect(controls.locator('[data-activity-filter-field="query"]')).toHaveValue('');
+
+    await panel.locator('[data-activity-scope-chip] button').click();
+    await expect(panel.locator('[data-activity-scope-chip]')).toBeHidden();
+    await expect(controls.locator('[data-activity-filter-field="cityScope"]')).toHaveValue('current');
+    await expect(controls.locator('[data-activity-filter-field="source"]')).toHaveValue('live');
+    await expect(controls.locator('[data-activity-filter-field="query"]')).toHaveValue('north square');
+    const restoredRows = panel.locator('#game-log-content .activity-entry');
+    await expect(restoredRows).toHaveCount(2);
+    await expect(restoredRows.filter({ hasText: 'Agreement Scoped north square was proposed.' })).toHaveCount(1);
+    await expect(restoredRows.filter({ hasText: 'Design Scoped north square park was published.' })).toHaveCount(1);
+    expect(index.requests.some(request => request.method === 'GET' && request.path.includes('/agent/activity?')
+      && request.path.includes(`agreement=${first.cid}`))).toBe(true);
+  });
+
+  test('current-city and all-city feeds include only matching activity, with unlocated rows available in all cities', async ({ mockApi: page }) => {
+    await page.goto('/?city=zg&reduceMotion=1');
+    const { currentCity, otherCity } = await page.evaluate(() => {
+      const manager = (window as any).CityConfigManager;
+      const current = manager.getCurrentCityId();
+      const other = manager.getAvailableCities().find((city: any) => city.id !== current)?.id;
+      if (!other) throw new Error('The city directory needs at least two configured cities for this test');
+      return { currentCity: current, otherCity: other };
+    });
+    const index = pageIndex(page);
+    const addCityAgreement = (title: string, createdAt: string, city: string | null) => {
+      const fixture = fileIndexedAgreement(index, {
+        title, createdAt, community: true, row: { city },
+      });
+      const agreement = index.agreements.get(fixture.cid);
+      if (agreement) agreement.city = city;
+      for (const designCid of fixture.designCids) {
+        const design = index.designs.get(designCid);
+        if (design) design.city = city;
+      }
+    };
+    addCityAgreement('Current city activity row', '2026-10-20T09:00:00.000Z', currentCity);
+    addCityAgreement('Other city activity row', '2026-10-21T09:00:00.000Z', otherCity);
+    addCityAgreement('Unlocated activity row', '2026-10-22T09:00:00.000Z', null);
+    const panel = await openActivityPanel(page);
+    await expandActivityFilters(panel);
+    const controls = panel.locator('#activity-panel-controls');
+    await controls.locator('[data-activity-filter-field="source"]').selectOption('live');
+    await controls.locator('[data-activity-filter-field="cityScope"]').selectOption('current');
+    const rows = panel.locator('#game-log-content .activity-entry');
+    await expect(rows.filter({ hasText: 'Current city activity row was proposed.' })).toHaveCount(1);
+    await expect(rows.filter({ hasText: 'Other city activity row was proposed.' })).toHaveCount(0);
+    await expect(rows.filter({ hasText: 'Unlocated activity row was proposed.' })).toHaveCount(0);
+
+    await controls.locator('[data-activity-filter-field="cityScope"]').selectOption('all');
+    await expect(rows.filter({ hasText: 'Other city activity row was proposed.' })).toHaveCount(1);
+    await expect(rows.filter({ hasText: 'Unlocated activity row was proposed.' })).toHaveCount(1);
+    expect(index.requests.some(request => request.method === 'GET'
+      && request.path === `/agent/activity?limit=250&city=${currentCity}`)).toBe(true);
+  });
+
+  test('activity labels update in Spanish and Croatian, and folded filters fit on mobile', async ({ mockApi: page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await openCity(page);
+    const panel = await openActivityPanel(page);
+    const eventsTab = panel.locator('#activity-events-tab');
+    const english = await eventsTab.innerText();
+    await page.evaluate(async () => (window as any).i18n.setLanguage('es'));
+    await expect(eventsTab).toHaveText('Eventos');
+    const spanish = await eventsTab.innerText();
+    expect(spanish).toBe('Eventos');
+    await page.evaluate(async () => (window as any).i18n.setLanguage('hr'));
+    await expect(eventsTab).toHaveText('Događaji');
+    const croatian = await eventsTab.innerText();
+    expect(croatian).toBe('Događaji');
+    expect(spanish).not.toBe(english);
+    expect(croatian).not.toBe(spanish);
+    await page.evaluate(async () => (window as any).i18n.setLanguage('en'));
+    await expect(eventsTab).toHaveText('Events');
+
+    const filterDetails = panel.locator('#activity-panel-controls details').first();
+    await expect(filterDetails).not.toHaveAttribute('open', '');
+    const width = await panel.evaluate(element => ({ client: element.clientWidth, scroll: element.scrollWidth }));
+    expect(width.scroll).toBeLessThanOrEqual(width.client + 1);
+    await expect(panel.locator('#activity-events-pane')).toBeVisible();
   });
 
   test('an activity deep link opens the explorer scoped to one agreement, and clearing the scope shows the rest', async ({ mockApi: page }) => {
@@ -133,7 +271,7 @@ test.describe('Activity and simulation controls @features', () => {
     const first = fileIndexedAgreement(index, { title: 'North square agreement', createdAt: '2026-10-20T09:00:00.000Z', community: true, author: 'Activity fixture' });
     const second = fileIndexedAgreement(index, { title: 'South park agreement', createdAt: '2026-10-21T09:00:00.000Z', community: true, author: 'Activity fixture' });
     await page.goto(`/?city=zg&reduceMotion=1&activity=agreement:${first.cid}`);
-    const modal = page.locator('.game-log-modal');
+    const modal = page.locator('#activity-sheet');
     await expect(modal).toBeVisible({ timeout: 30_000 });
     const chip = modal.locator('[data-activity-scope-chip]');
     await expect(chip).toBeVisible();
@@ -160,9 +298,8 @@ test.describe('Activity and simulation controls @features', () => {
     // A community agreement over a park applied here, proposed from this device: the feed's agreement and design.
     const { cid, designCid, parkId, parkTitle } = await proposeOverPark(page, { title, author: 'Activity fixture' });
     const index = pageIndex(page);
-    await page.locator('#activity-button').click();
-    await page.locator('#activity-sheet #activity-explorer-button').click();
-    const modal = page.locator('.game-log-modal');
+    await openActivityPanel(page);
+    const modal = page.locator('#activity-sheet');
     await expect(modal).toBeVisible();
     const rows = modal.locator('#game-log-content .activity-entry');
     const agreementRow = rows.filter({ hasText: `Agreement ${title} was proposed.` });
@@ -179,7 +316,7 @@ test.describe('Activity and simulation controls @features', () => {
 
     // Its link opens the agreement over the map.
     await agreementRow.locator(`.activity-entity-link[data-entity-type="agreement"][data-entity-id="${cid}"]`).click();
-    await expect(modal).toHaveCount(0);
+    await expect(modal).toBeHidden();
     const panel = page.locator('section#agreement-panel');
     await expect(panel).toBeVisible({ timeout: 30_000 });
     await expect(page.locator('#agreement-panel-title')).toHaveText(title);
@@ -188,21 +325,22 @@ test.describe('Activity and simulation controls @features', () => {
     await expect(panel).toBeHidden();
 
     // A design's link opens the design this device holds under that CID.
-    await page.locator('#activity-button').click();
-    await page.locator('#activity-sheet #activity-explorer-button').click();
+    await openActivityPanel(page);
     await expect(modal).toBeVisible();
+    await modal.locator('[data-activity-scope-chip] button').click();
+    await expect(modal.locator('[data-activity-scope-chip]')).toBeHidden();
     await modal.locator(`.activity-entity-link[data-entity-type="design"][data-entity-id="${designCid}"]`).click({ timeout: 30_000 });
-    await expect(modal).toHaveCount(0);
+    await expect(modal).toBeHidden();
     await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection?.getKey?.())).toBe(parkId);
   });
 
   test('simulation settings change the interval, play advances turns, pause stops it, and New Game confirms reset', async ({ mockApi: page }) => {
     await openCity(page);
     await openSimulation(page);
-    const settings = page.locator('#activity-sheet .activity-simulation-settings');
+    const settings = page.locator('#settings-sheet .activity-simulation-settings');
     await settings.locator('summary').click();
     // The on/off switch is the section's first row, outside the settings fold.
-    const gameEnabled = page.locator('#activity-sheet .activity-simulation-switch #gameCheckbox');
+    const gameEnabled = page.locator('#settings-sheet .activity-simulation-switch #gameCheckbox');
     await gameEnabled.check();
     await expect(gameEnabled).toBeChecked();
     const interval = settings.locator('#turn-interval-slider');

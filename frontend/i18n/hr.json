@@ -864,7 +864,10 @@
                 "publish": "Objavi",
                 "published": "Objavljeno",
                 "listing": "Izrada popisa dizajna {{done}}/{{total}}…",
-                "checking": "Provjera dizajna {{done}}/{{total}}…"
+                "checking": "Provjera dizajna {{done}}/{{total}}…",
+                "publishSelected": "Objavi odabrana rješenja",
+                "selectionCount": "Uključeno {{selected}} od {{total}} rješenja · izostavljeno {{excluded}}",
+                "layoutNeedsAgreement": "{{title}} objavljuje se sa svojim sporazumom. Izradite sporazum koji ga uključuje ili ga odznačite kako biste podijelili ostala rješenja."
             },
             "route": {
                 "fetching": "Preuzimanje podijeljenih dizajna…",
@@ -963,16 +966,16 @@
             "aiBadgeTooltip": "Ova platforma je prijateljski za AI, što znači da je sva glavna funkcionalnost dostupna i upotrebljiva AI agentima. Certificirano od strane UN Ureda za ljudsko-AI odnose"
         },
         "proposals": {
-            "title": "Prijedlozi",
-            "listButton": "Popis prijedloga ({{count}})",
+            "title": "Rješenja",
+            "listButton": "Rješenja ({{count}})",
             "shareButton": "Podijeli primijenjene prijedloge",
             "shareButtonEmpty": "Nema primijenjenih prijedloga. Prvo primijeni neke",
             "shareButtonPreparing": "Priprema prijedloga…",
             "agreementsButton": "Sporazumi",
-            "mintedAgreementsButton": "Iskovani sporazumi",
+            "mintedAgreementsButton": "Sporazumi na lancu",
             "clearButton": "Resetiraj prijedloge (ovaj preglednik)",
             "planStats": {
-                "buttonLabel": "Statistika primijenjenih prijedloga",
+                "buttonLabel": "Statistika karte",
                 "calculating": "Izračunavanje…",
                 "modalTitle": "Statistika primijenjenih prijedloga",
                 "floorArea": "Bruto razvijena površina (m²)",
@@ -1006,7 +1009,7 @@
                 "unavailable": "Statistika nije dostupna. Ponovno učitaj stranicu i pokušaj opet."
             },
             "grainScore": {
-                "buttonLabel": "Prizovi pijetla urbanista",
+                "buttonLabel": "Kritika",
                 "buttonHint": "Neka iskuša svaku nastalu česticu",
                 "buttonEmpty": "Prvo primijeni barem jedan prijedlog",
                 "institute": "Institut za zrnatost",
@@ -1082,7 +1085,6 @@
             "play": "Pokreni",
             "pause": "Pauza",
             "newGame": "Nova igra",
-            "showAgents": "Akteri",
             "showAgentsCount": "Agenti ({{count}})"
         },
         "gameDialogs": {
@@ -2011,7 +2013,7 @@
                     "eyebrow": "Grad u pokretu",
                     "title": "Pratite kako se odluke razvijaju",
                     "body": "Pratite prijedloge i aktivnost agenata diljem svijeta. Ondje gdje je simulacija dostupna, pokrenite ili pauzirajte poteze i istražite kako se prijedlozi i podrška razvijaju.",
-                    "hint": "Otvorite Aktivnost za prijenos uživo i kontrole simulacije."
+                    "hint": "Otvorite Aktivnost za praćenje događaja, aktera i praćenih područja. Kontrole simulacije nalaze se u Postavkama > Dijagnostika."
                 },
                 "sources": {
                     "eyebrow": "Više od jednog polazišta",
@@ -2460,7 +2462,7 @@
                 "cancel": "Otkaži"
             },
             "proposalList": {
-                "title": "Prijedlozi",
+                "title": "Rješenja",
                 "closeAria": "Zatvori popis prijedloga",
                 "tabs": {
                     "active": "Aktivni",
@@ -2474,9 +2476,9 @@
                     "status": "Status",
                     "statusAll": "Svi statusi",
                     "applied": "Primijenjeno",
-                    "appliedAll": "Sve",
-                    "appliedYes": "Primijenjeno",
-                    "appliedNo": "Nije primijenjeno",
+                    "appliedAll": "Na karti i izvan nje",
+                    "appliedYes": "Na ovoj karti",
+                    "appliedNo": "Izvan ove karte",
                     "authorPlaceholder": "Svi autori",
                     "searchPlaceholder": "Traži naslov ili autora",
                     "reset": "Resetiraj",
@@ -2509,7 +2511,9 @@
                         "parcel-layout": "Raspored čestica",
                         "row": "Niz",
                         "other": "Ostalo"
-                    }
+                    },
+                    "publication": "Objava",
+                    "publicationAll": "Nacrti i objavljena rješenja"
                 },
                 "resultCountWord": "prikazano",
                 "sources": {
@@ -2589,7 +2593,7 @@
                 "detailsLabel": "Detalji",
                 "detailsTooltip": "Prikaži detalje",
                 "deleteTooltip": "Obriši prijedlog",
-                "empty": "Nijedan prijedlog ne odgovara trenutnim filterima.",
+                "empty": "Nema rješenja koja odgovaraju filtrima.",
                 "untitled": "Neimenovani prijedlog",
                 "lifecycle": {
                     "executed": "Izvršen",
@@ -2611,11 +2615,6 @@
                     "cumulative": "Kumulativno do {year}.",
                     "toApply": "treba primijeniti: {n}",
                     "toUnapply": "treba maknuti: {n}"
-                },
-                "navigation": {
-                    "hint2d": "Za izradu prijedloga dodirnite zemljište ili otvoreno tlo na karti.",
-                    "hint3d": "Prijedlozi se crtaju na 2D karti.",
-                    "open2d": "Otvori 2D kartu"
                 }
             },
             "proposalChoice": {
@@ -5477,12 +5476,96 @@
             "owner_offer_not_attested": "Ponuda vlasnika smije sadržavati samo čestice za koje je član tvoje leće potvrdio da ih tvoj novčanik posjeduje. {{detail}}"
         }
     },
+    "activityPanel": {
+        "tabs": "Prikazi aktivnosti",
+        "watchedAreas": "Praćena područja",
+        "expand": "Proširi ploču aktivnosti",
+        "collapse": "Sažmi ploču aktivnosti",
+        "diagnostics": "Dijagnostika",
+        "filters": "Filtri",
+        "allCities": "Svi gradovi",
+        "currentCity": "Trenutačni grad",
+        "cityAria": "Opseg grada",
+        "unlocatedHint": "Neke aktivnosti nemaju pridružen grad i prikazuju se samo kada su uključeni svi gradovi.",
+        "showAllCities": "Prikaži sve gradove",
+        "hiddenSimulation": "Skriveno simuliranih događaja: {{count}}",
+        "showSimulation": "Prikaži simulacijsku aktivnost",
+        "recentLimit": "Učitava se samo najnovijih {{count}} događaja.",
+        "scanWindow": "Ograničeni rezultati pregledavaju najnovijih {{count}} zapisa po izvoru.",
+        "localSimulation": "Povijest simulacije pohranjena je na ovom uređaju za trenutačni grad."
+    },
     "gameDialogs": {
         "log": {
             "title": "Aktivnost",
             "closeAria": "Zatvori aktivnost",
             "viewsAria": "Prikaz aktivnosti",
             "viewEvents": "Događaji",
+            "actors": {
+                "title": "Akteri",
+                "search": "Pretraži aktera, sporazum, izvođenje ili transakciju",
+                "controllerAria": "Upravljač aktera",
+                "controllerAll": "Svi upravljači",
+                "controllerHuman": "Osoba",
+                "controllerAlgorithm": "Algoritam",
+                "controllerLlm": "LLM agent",
+                "controllerUnknown": "Nepoznat upravljač",
+                "actorKindHuman": "Osoba",
+                "actorKindAgent": "Agent",
+                "actorKindSystem": "Sustav",
+                "actorKindUnknown": "Nepoznata vrsta",
+                "clearSelection": "Očisti odabir",
+                "profilesAria": "Profili aktera",
+                "activityAria": "Aktivnost",
+                "activityCount": "Aktivnost ({{count}})",
+                "countActivity": {
+                    "one": "{{count}} aktivnost",
+                    "many": "Aktivnosti: {{count}}"
+                },
+                "countAgreement": {
+                    "one": "{{count}} sporazum",
+                    "many": "Sporazumi: {{count}}"
+                },
+                "countTransaction": {
+                    "one": "{{count}} transakcija",
+                    "many": "Transakcije: {{count}}"
+                },
+                "modelCost": "Trošak modela: {{amount}}",
+                "noActors": "Nijedan akter ne odgovara filtru.",
+                "noActivity": "Nijedna aktivnost ne odgovara filtru.",
+                "chooseActor": "Odaberite aktera za pregled njegove aktivnosti.",
+                "eventHeading": "{{actor}} · {{action}}",
+                "sourceSimulation": "Simulacija",
+                "entity": {
+                    "agreement": "Sporazum {{id}}",
+                    "design": "Dizajn {{id}}"
+                },
+                "transaction": "Transakcija {{id}}",
+                "transactionFull": "Transakcija: {{id}}",
+                "openRun": "Izvođenje {{id}}",
+                "eventModel": "{{model}}{{cost}}",
+                "evidence": "Dokazi",
+                "runTitle": "Izvođenje {{id}}",
+                "runSummary": "{{persona}} · {{status}} · {{stage}}",
+                "unknownPersona": "Nepoznat akter",
+                "unknownStatus": "Nepoznato stanje",
+                "runStatus": {
+                    "unknown": "Nepoznato stanje",
+                    "running": "U tijeku",
+                    "done": "Završeno",
+                    "failed": "Neuspjelo"
+                },
+                "runStageStarted": "Pokrenuto",
+                "runCost": "{{model}} · točan trošak: {{amount}}",
+                "noModel": "Model nije zabilježen",
+                "pick": "Odabir",
+                "pickEntities": "Sporazum {{agreement}} · dizajn {{design}}",
+                "notProposed": "nije predložen",
+                "notPublished": "nije objavljen",
+                "costItem": "{{item}}: {{model}} · {{amount}}",
+                "cost": "Trošak",
+                "runLoading": "Učitavanje pojedinosti izvođenja…",
+                "runError": "Izvođenje nije moguće učitati: {{error}}"
+            },
             "viewActors": "Akteri",
             "kindAria": "Vrsta aktera",
             "kindAll": "Svi",
@@ -6153,11 +6236,10 @@
         "modeLocked": "Nedostupno dok uređujete — prvo završite ili odustanite",
         "layers": "Slojevi",
         "settings": "Postavke",
-        "proposals": "Prijedlozi",
+        "proposals": "Rješenja",
         "tools": "Alati",
         "activity": "Aktivnost",
-        "activityExplorerCount": "Otvori pregled aktivnosti ({{count}})",
-        "proposalsCount": "Prijedlozi ({{count}})",
+        "proposalsCount": "Rješenja ({{count}})",
         "simulation": {
             "title": "Simulacija",
             "titlePaused": "Simulacija (pauzirana)",
@@ -6174,10 +6256,9 @@
             "blockFromSelected": "Prepoznaj blok od odabrane čestice",
             "areaMonitorDraw": "Nacrtaj nadzirano područje",
             "areaMonitorFromPlan": "Nacrtaj nadzirano područje iz plana",
-            "proposalsList": "Otvori popis prijedloga",
+            "proposalsList": "Otvori rješenja",
             "gamePlayPause": "Pokreni / pauziraj igru",
             "gameInterval": "Razmak između poteza",
-            "activityExplorer": "Otvori pregled aktivnosti",
             "statusLog": "Otvori zapisnik statusa",
             "chooseCity": "Odaberi grad",
             "dataSource": "Izvor podataka",
@@ -6205,11 +6286,12 @@
             "parksSquares": "Parkovi i trgovi",
             "watchedAreas": "Nadzirana područja",
             "originalCadastre": "Izvorni katastar",
-            "aerialLayer": "Postojeći grad (Google snimke)",
-            "proposalTools": "Alati za prijedloge",
             "statusLog": "Tehnički status",
             "display": "Prikaz"
-        }
+        },
+        "share": "Podijeli",
+        "shareMap": "Podijeli ovu kartu",
+        "designActions": "Radnje za rješenja"
     },
     "parcelMenu": {
         "label": "Radnje za česticu",
@@ -6547,8 +6629,8 @@
         "unsupportedCrs": "Ovaj WMS zahtijeva podržani geografski koordinatni sustav ili Web Mercator."
     },
     "parcelSourceHealth": {
-    "countryRestricted": "Ovaj registar prihvaća samo veze iz ove države: {{country}}. Izvan nje nastavite bez čestica ili odaberite drugi izvor.",
-    "requestTimedOut": "Zahtjev je istekao.",
+        "countryRestricted": "Ovaj registar prihvaća samo veze iz ove države: {{country}}. Izvan nje nastavite bez čestica ili odaberite drugi izvor.",
+        "requestTimedOut": "Zahtjev je istekao.",
         "offline": "Izgleda da nemaš internetsku vezu. Poveži se na internet i pokušaj ponovno.",
         "rateLimited": "Ovaj izvor ograničava broj zahtjeva. Pokušaj ponovno za {{seconds}} sekundi.",
         "blocked": "Pružatelj je odbio pristup (HTTP {{status}}). Možda ograničava IP adrese ili zahtijeva prijavu. Odaberi drugi izvor ili pokušaj kasnije.",
@@ -6831,16 +6913,7 @@
         }
     },
     "activityFeed": {
-        "filters": "Filtriraj aktivnosti",
-        "all": "Sve",
-        "people": "Ljudi",
-        "agents": "Agenti",
-        "refresh": "Osvježi",
-        "loading": "Učitavanje nedavnih aktivnosti…",
-        "error": "Aktivnosti se nisu učitale. Pokušajte ponovno.",
-        "empty": "Nema nedavnih aktivnosti za ovaj filtar.",
-        "partial": "Neki izvori aktivnosti nisu se mogli učitati.",
-        "prompt": "Otvorite Aktivnosti za učitavanje nedavnih događaja."
+        "all": "Sve"
     },
     "ens": {
         "viewName": "Prikaži ENS naziv",
@@ -6959,9 +7032,11 @@
             "actions": {
                 "bet": "Kladi se",
                 "edit": "Uredi",
-                "delete": "Izbriši"
+                "removeLocal": "Ukloni s ovog uređaja"
             },
-            "deleteConfirm": "Izbrisati ovaj sporazum? Njegovi dizajni ostaju na karti."
+            "collapse": "Zatvori sporazum",
+            "removeLocalConfirm": "Ukloniti ovaj sporazum s ovog uređaja? Njegova rješenja ostaju na karti. Objavljeni sporazum ostaje dostupan putem poveznice.",
+            "compareUnavailable": "Prije / poslije dostupno je kada sporazum odgovara rješenjima primijenjenima na karti."
         },
         "list": {
             "create": "Stvori sporazum",
@@ -7312,7 +7387,9 @@
             "estimated": "Procjena izvora"
         },
         "zoningArea": "Izvorno područje zoniranja",
-        "inspectArea": "Pregledaj izvorno područje zoniranja {{parcel}}"
+        "inspectArea": "Pregledaj izvorno područje zoniranja {{parcel}}",
+        "mapContext": "Usporedite tlocrte zgrada i volumene na 2D karti.",
+        "noPermittedSource": "Nema izvora dopuštene izgradnje za ovo područje"
     },
     "clickStack": {
         "parcelReference": "Katastarska čestica {{reference}}",
@@ -7332,8 +7409,8 @@
         "copied": "Koordinate su kopirane"
     },
     "landTake": {
-    "acceptRequired": "Pregledajte zauzeće zemljišta i prihvatite njegove učinke prije spremanja.",
-    "reviewChanged": "Zauzeće zemljišta ili učinci rušenja su se promijenili. Pregledajte ih i ponovno prihvatite prije spremanja.",
+        "acceptRequired": "Pregledajte zauzeće zemljišta i prihvatite njegove učinke prije spremanja.",
+        "reviewChanged": "Zauzeće zemljišta ili učinci rušenja su se promijenili. Pregledajte ih i ponovno prihvatite prije spremanja.",
         "invalid": "Provjereno zauzimanje zemljišta mora sadržavati zgradu i biti unutar obuhvata.",
         "title": "Zauzimanje zemljišta",
         "intro": "Odaberite zemljište koje se uzima od svake dodirnute čestice. Zgrada zadržava svoj oblik.",

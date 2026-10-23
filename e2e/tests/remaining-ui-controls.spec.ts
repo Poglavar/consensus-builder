@@ -177,7 +177,7 @@ test.describe('Remaining UI controls @features', () => {
     await expect(page.locator('#activity-sheet')).toBeVisible();
   });
 
-  test('activity explorer source, actor, controller, action, and result fields filter events', async ({ mockApi: page }) => {
+  test('Activity source, actor, controller, action, and result filters narrow events', async ({ mockApi: page }) => {
     await page.route('**/agent/activity**', route => route.fulfill({ json: { events: [
       {
         id: 'filter-human-propose', occurredAt: '2026-10-01T12:00:00Z', recordedAt: '2026-10-01T12:00:00Z',
@@ -201,14 +201,14 @@ test.describe('Remaining UI controls @features', () => {
 
     await openCity(page);
     await page.locator('#activity-button').click();
-    await page.locator('#activity-explorer-button').click();
-    const modal = page.locator('.game-log-modal');
+    const modal = page.locator('#activity-sheet');
     await expect(modal).toBeVisible();
     const content = modal.locator('#game-log-content');
     await expect(content).toContainText('Proposed filter test agreement');
     await expect(content).toContainText('Created filter test design');
     await expect(content).toContainText('Failed filter test agreement');
 
+    await modal.locator('#activity-panel-controls details > summary').click();
     const field = (name: string) => modal.locator(`[data-activity-filter-field="${name}"]`);
     await selectNativeOption(field('source'), 'simulation');
     await expect(content).not.toContainText('Proposed filter test agreement');

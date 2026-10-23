@@ -267,13 +267,14 @@
             return { cid, pinnedAt: response.body.pinnedAt || null, bytes };
         }
 
-        // The parcel source a city's designs are bound with: its catalogue source, null for its default.
+        // The consumer selects the exact parcel dataset; the backend has no city default.
         // `city` is a city id or its short code (an agreement records the code it was made under, ?city=zg).
-        function parcelSourceIdOf(city) {
+        function parcelSourceIdOf(city, geometry = null) {
             const manager = win.CityConfigManager;
+            if (manager?.getDataContext) return manager.getDataContext(geometry, city).parcelSourceId;
             const id = manager && typeof manager.resolveCityId === 'function' ? manager.resolveCityId(city) || city : city;
             const config = manager && typeof manager.getCityConfig === 'function' ? manager.getCityConfig(id) : null;
-            return (config && config.parcels && config.parcels.sourceId) || null;
+            return config?.parcels?.sourceId || config?.parcels?.source || null;
         }
 
         // Marks the local record (and the stored one, when it is another object) published.
@@ -298,6 +299,10 @@
          */
         async function publishDesign(localDesign) {
             if (!isObject(localDesign)) throw new TypeError('publishDesign needs a local design record.');
+            const apiBase = currentApiBase();
+            if (!apiBase) throw new Error('The design index has no API base.');
+            const already = publishedCid(localDesign, apiBase);
+            if (already) return { cid: already, row: null, alreadyPublished: true };
             const refusal = win.ProposalPublishTerms.publishRefusal(localDesign);
             if (refusal) throw failure(refusal.code || 'layout-needs-agreement', refusal.message);
             // Publishing leaves the device and the design carries its author (GuestPolicy 'publish').
@@ -305,11 +310,6 @@
             if (nameNeeded) throw failure('name-needed', nameNeeded, { cancelled: true });
             // The author is content: it is stamped before the CID is taken.
             win.stampCurrentAuthor(localDesign);
-            const apiBase = currentApiBase();
-            if (!apiBase) throw new Error('The design index has no API base.');
-            const already = publishedCid(localDesign, apiBase);
-            if (already) return { cid: already, row: null, alreadyPublished: true };
-
             const content = designRecord().published(localDesign);
             const { cid } = await pinObject('design', content);
             const response = await request('POST', '/designs', { cid, content, parcelSourceId: parcelSourceIdOf(content.city) });

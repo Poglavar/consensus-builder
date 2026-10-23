@@ -3,6 +3,7 @@ import { openLayerSection } from '../helpers/layers';
 import { Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
+import { stubBasemapTiles } from '../helpers/runtime';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 import { surveyResponse } from '../helpers/mocks/survey-data';
 
@@ -90,18 +91,19 @@ test('register URL recovery and imagery-estimate controls show their current out
   await expect(estimates.getByRole('button', { name: 'Generate estimates' })).toBeVisible();
 });
 
-test('Not now dismisses register recovery for this session and its warning can be reopened or dismissed', async ({ mockApi: page }) => {
-  await unavailableRegister(page);
+test('Not now dismisses register recovery without leaving a duplicate warning banner', async ({ mockApi: page }) => {
+  const source = await unavailableRegister(page);
   const dialog = page.locator('.ground-fallback-dialog');
   await dialog.getByRole('button', { name: 'Not now', exact: true }).click();
   await expect(dialog).toHaveCount(0);
   await expect(page.locator('body')).not.toHaveClass(/ground-fallback-open/);
-  const banner = page.locator('#parcel-source-status');
-  await banner.getByRole('button', { name: 'Choose how to continue' }).click();
+  await expect(page.locator('#parcel-source-status')).toHaveCount(0);
+  await openLayerSection(page, 'parcels');
+  const beforeRefresh = source.count();
+  await page.locator('#refreshParcelDataButton').click();
+  await expect.poll(source.count).toBeGreaterThan(beforeRefresh);
   await expect(dialog).toBeVisible();
-  await dialog.getByRole('button', { name: 'Close', exact: true }).click();
-  await banner.getByRole('button', { name: 'Dismiss source warning' }).click();
-  await expect(banner).toHaveCount(0);
+  await expect(page.locator('#parcel-source-status')).toHaveCount(0);
 });
 
 test('Check and use installs the validated custom register and restores it after navigation', async ({ mockApi: page }) => {
@@ -134,6 +136,7 @@ test('Use the Schelling plan draws the plan layer and its panel over the map and
 });
 
 test('Explore banner requests its place, opens World view, and dismisses for this session', async ({ mockApi: page }) => {
+  await stubBasemapTiles(page);
   const requests: any[] = [];
   await page.route('**/cities/requests', route => {
     requests.push(route.request().postDataJSON());
@@ -150,7 +153,7 @@ test('Explore banner requests its place, opens World view, and dismisses for thi
   // separately name the nearest city, so the payload uses the canonical rounded coordinate.
   expect(requests[0]).toMatchObject({ name: '23.71040, 90.40740', placeKey: 'point:23.71040,90.40740' });
   await banner.locator('#explore-banner-world').click();
-  await expect(page.locator('#world-view')).toBeVisible();
+  await expect(page.locator('#world-view')).toBeVisible({ timeout: 15_000 });
   await page.locator('#world-view').getByRole('button', { name: 'Back to map' }).click();
   await expect(page.locator('#world-view')).toHaveCount(0);
   // This banner's accessible close label is localized as "Close" (the close-circle control),

@@ -28,7 +28,7 @@ const BROWSER_GLOBALS = [
     'IntersectionObserver', 'Worker', 'XMLHttpRequest', 'screen', 'devicePixelRatio', 'innerWidth', 'innerHeight',
     'scrollTo', 'open', 'close', 'getSelection', 'DOMParser', 'XMLSerializer', 'Option', 'Audio', 'CSS',
     'CanvasRenderingContext2D', 'OffscreenCanvas', 'ImageData', 'Path2D', 'DOMRect', 'DOMMatrix', 'Notification',
-    'caches', 'visualViewport', 'customElements', 'print', 'self', 'importScripts', 'requestIdleCallback',
+    'caches', 'visualViewport', 'customElements', 'print', 'self', 'importScripts', 'postMessage', 'requestIdleCallback',
     'cancelIdleCallback', 'FileReader', 'File',
     'L', 'turf', 'proj4', 'THREE', 'ethers', 'solanaWeb3', 'module', 'exports', 'require', 'define'
 ];

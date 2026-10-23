@@ -50,26 +50,7 @@
     box-shadow: var(--cb-shadow-sm);
 }
 
-/* Turn progress bar */
-/* The activity explorer (game.js showGameLogDialog): the shared dialog (css/primitives.css) with
-   `game-log-modal` as its identity class. A steady height keeps the box still while filters
-   change; the body is a column whose list scrolls while the views and filters stay put. */
-.game-log-modal {
-    height: min(80dvh, 760px);
-}
-
-.activity-live-status {
-    margin: 0 0 var(--cb-space-2);
-    color: var(--cb-text-muted);
-    font-size: var(--cb-text-sm);
-}
-
-.game-log-modal-body {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
+/* The Activity event list shares its rows with actor detail surfaces. */
 .game-log-content {
     flex: 1 1 auto;
     min-height: 0;
@@ -83,7 +64,7 @@
     line-height: var(--cb-leading);
 }
 
-/* While a newly scoped feed loads (js/game.js renderActivityExplorer), the old rows fade so the
+/* While a newly scoped feed loads, the old rows fade so the
    list visibly answers the click before the server does. */
 .game-log-content[aria-busy="true"] {
     opacity: 0.5;
@@ -93,12 +74,6 @@
     flex: 1;
     min-height: 0;
     overflow-y: auto;
-}
-
-/* Events · Actors: a cb-segmented control (css/primitives.css). */
-.activity-views {
-    flex: 0 0 auto;
-    margin-bottom: var(--cb-space-2);
 }
 
 /* The scope the explorer is narrowed to: a cb-badge cb-badge--primary (css/primitives.css) that
@@ -121,29 +96,6 @@
     display: flex;
     flex-wrap: wrap;
     gap: 4px var(--cb-space-3);
-}
-
-/* The filter row: base form controls and small buttons (css/primitives.css); this lays them out. */
-.activity-filters {
-    display: flex;
-    flex: 0 0 auto;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--cb-space-2);
-    margin-bottom: var(--cb-space-2);
-}
-
-.activity-filters input {
-    flex: 1 1 220px;
-    min-width: 0;
-}
-
-.activity-filters select {
-    max-width: 100%;
-}
-
-.activity-filters .activity-refresh {
-    margin-left: auto;
 }
 
 .activity-entry {

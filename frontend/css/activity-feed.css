@@ -1,38 +1,271 @@
-/* Compact, bounded recent feed inside the Activity sheet. */
-#activity-feed {
-    margin: 0 0 var(--cb-space-4);
-}
-
-/* The toolbar: the All · People · Agents filter (cb-segmented) and Refresh (btn btn-quiet btn-sm)
-   at the far end; the looks are css/primitives.css. */
-.activity-feed__filters {
+/* One Activity panel: shared controls and tabs stay visible while the selected view scrolls. */
+#activity-sheet .activity-panel-body {
     display: flex;
-    align-items: center;
-    flex-wrap: wrap;
+    flex: 1 1 auto;
+    flex-direction: column;
     gap: var(--cb-space-2);
-    margin-bottom: var(--cb-space-2);
+    min-height: 0;
+    overflow: hidden;
 }
 
-.activity-feed__refresh {
+#activity-sheet.activity-panel--expanded {
+    width: min(1100px, calc(100vw - 32px));
+}
+
+#activity-panel-expand {
     margin-left: auto;
 }
 
-.activity-feed__status {
-    margin: var(--cb-space-1) 0 var(--cb-space-2);
+.activity-panel-tabs {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
+    min-width: 0;
+    margin: calc(-1 * var(--cb-space-2)) calc(-1 * var(--cb-space-2)) 0;
+    padding: var(--cb-space-2);
+    overflow-x: auto;
+    background: var(--cb-glass-sheet);
+}
+
+.activity-panel-tabs .cb-segmented__option {
+    flex: 1 0 auto;
+    white-space: nowrap;
+}
+
+#activity-panel-controls {
+    display: flex;
+    flex: 0 0 auto;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--cb-space-2);
+    min-width: 0;
+}
+
+#activity-panel-controls[hidden],
+#activity-panel-status[hidden],
+#activity-panel-scope[hidden],
+#activity-panel-notices[hidden] {
+    display: none;
+}
+
+#activity-panel-controls [data-activity-primary-controls] {
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--cb-space-2);
+    min-width: 0;
+}
+
+#activity-panel-controls .activity-filters {
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--cb-space-2);
+    min-width: 0;
+    margin: 0;
+}
+
+#activity-panel-controls [data-activity-search],
+#activity-panel-controls [data-activity-filter-field="query"] {
+    flex: 1 1 14rem;
+    width: auto;
+    min-width: 0;
+}
+
+#activity-panel-controls [data-activity-primary-controls] > select {
+    flex: 0 1 9rem;
+    width: auto;
+}
+
+#activity-panel-controls select,
+#activity-panel-controls input {
+    min-width: 0;
+    max-width: 100%;
+}
+
+#activity-panel-controls details {
+    flex: 0 0 auto;
+    min-width: 0;
+}
+
+#activity-panel-controls details[open] {
+    flex-basis: 100%;
+}
+
+#activity-panel-controls details > summary {
+    width: fit-content;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+    cursor: pointer;
+}
+
+#activity-panel-controls details[open] [data-activity-filter-grid] {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--cb-space-2);
+    margin-top: var(--cb-space-2);
+}
+
+#activity-panel-status {
+    flex: 0 0 auto;
+    margin: 0;
     color: var(--cb-text-muted);
     font-size: var(--cb-text-sm);
 }
 
-.activity-feed__status:empty {
+#activity-panel-status:empty {
     display: none;
 }
 
-.activity-feed__list {
-    display: grid;
-    gap: var(--cb-space-2);
+#activity-panel-notices {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    gap: var(--cb-space-1);
+    min-width: 0;
 }
 
-.activity-feed__list .activity-entry {
+.activity-panel-notice {
+    margin: 0;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+}
+
+.activity-panel-caption {
+    margin: 0;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-xs);
+}
+
+#activity-panel-scope {
+    flex: 0 0 auto;
+    min-width: 0;
+}
+
+#activity-panel-scope [data-activity-scope-chip],
+.activity-panel-scope-chip {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+#activity-panel-scope .activity-scope-chip {
     margin: 0;
 }
 
+.activity-panel-panes {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.activity-panel-pane:not([hidden]) {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+#activity-events-pane #game-log-content {
+    width: 100%;
+}
+
+#activity-actors-pane [data-activity-actors] {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+#activity-watched-pane > .accordion-section {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+/* Simulation and technical status live under Settings > Diagnostics. */
+#settings-sheet .activity-diagnostics {
+    margin-top: var(--cb-space-3);
+    padding-top: var(--cb-space-3);
+    border-top: 1px solid var(--cb-line);
+}
+
+#settings-sheet .activity-diagnostics > summary {
+    color: var(--cb-text-muted);
+}
+
+#settings-sheet .activity-diagnostics .activity-simulation {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+#settings-sheet .activity-diagnostics .activity-technical-status .status-bar {
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-sm);
+}
+
+#settings-sheet .activity-diagnostics .status-log-expanded {
+    position: static;
+    max-height: 40vh;
+    margin-top: var(--cb-space-2);
+    border-bottom: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-sm);
+    box-shadow: none;
+}
+
+#settings-sheet .activity-diagnostics .status-log-actions {
+    position: static;
+    justify-content: flex-end;
+    margin: var(--cb-space-2) 0 0;
+}
+
+@media (max-width: 767.98px) {
+    #activity-sheet.map-sheet--dock {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    #activity-panel-expand {
+        display: none;
+    }
+
+    #activity-panel-controls [data-activity-primary-controls] {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        width: 100%;
+    }
+
+    #activity-panel-controls .activity-filters {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        width: 100%;
+    }
+
+    #activity-panel-controls [data-activity-search],
+    #activity-panel-controls [data-activity-filter-field="query"] {
+        grid-column: 1 / -1;
+        width: 100%;
+    }
+
+    #activity-panel-controls details[open] [data-activity-filter-grid] {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    #activity-panel-controls [data-activity-primary-controls] > *,
+    #activity-panel-controls .activity-filters > * {
+        max-width: 100%;
+    }
+
+    #activity-panel-controls [data-activity-primary-controls] > select {
+        width: 100%;
+    }
+}

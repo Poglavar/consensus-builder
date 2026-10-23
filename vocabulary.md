@@ -82,6 +82,10 @@ Whether a local agreement still matches its referenced designs, their applicatio
 
 A browser-local identifier used to find a working record. A `proposalId` or local agreement key is distinct from a publication CID, database row ID and chain account.
 
+### Remove from this device
+
+Removal of a browser-local agreement copy. Its designs retain their map application, and any published agreement retains its CID and remains accessible through its link.
+
 ### Publication
 
 The retention of canonical record bytes and their inclusion in the publication index. A locally computed CID, preview, saved draft or local map application does not by itself constitute publication.
@@ -115,6 +119,8 @@ A land unit represented by a particular cadastral, tax or other parcel provider.
 ### Parcel source
 
 The provider of parcel identities and geometry, identified by `sourceId`. Jurisdiction and legal authority describe the source but do not replace its identity. A custom source descriptor identifies the selected service and its interpretation. Map lookup and server-side site binding use that same selected parcel source.
+
+The frontend consumer owns source configuration and sends its selected source explicitly. Backend services validate and serve that selection; they do not infer a city default.
 
 ### Source-qualified parcel reference
 
@@ -196,6 +202,10 @@ The `unrepresentedGround` marker for open ground excluded from represented owner
 
 The set of designs currently applied in one browser and the land fabric they produce. This local composition is separate from an agreement, a publication selection and a statutory plan.
 
+### Map share
+
+A link naming a selected set of published designs and the current map view, including location and 2D, model 3D or realistic 3D mode. Selection starts with the entire applied working composition; exclusions are explicit. A map share does not create an agreement or a separate plan record. “Designs” names the map's design browser; “Agreements” names arrangements and decision rules over designs.
+
 ### Applied / unapplied
 
 Whether a design currently contributes to the working composition. Application expresses a modeled map effect, independently of consent, chain execution and physical construction.
@@ -227,6 +237,8 @@ An authored treatment of the land around proposed buildings, represented by `geo
 ### Corridor
 
 Transport land and its authored road or track design. Its alignment and cross-section describe its form; its footprint describes the land occupied.
+
+A corridor design's canonical stored form is `roadProposal.definition.osm`. Expanded drawing fields are a view of that form and do not independently determine the design's CID.
 
 ### Alignment
 
@@ -699,6 +711,17 @@ A quantity for which sufficient evidence or inputs are unavailable. It is distin
 ### Locale
 
 The selected language and regional formatting convention for the interface, numbers and dates. Locale is separate from city, currency and geographic location.
+
+## Activity
+
+An event record describing an actor’s action, its subject, outcome and provenance. Live activity
+records observed application and chain actions; simulation activity records actions in the local
+simulation. Simulation history belongs to the current device and city. A missing event location
+means its city is unknown, not the city currently shown on the map.
+
+The Activity panel presents Events, Actors and Watched areas. An actor, agreement or run scope
+selects related events; it does not change their identity or source. Watched areas are subscriptions
+to changes in defined areas and retain their own city context.
 
 
 ## Feedback report

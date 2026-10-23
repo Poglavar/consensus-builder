@@ -823,6 +823,7 @@ button.cb-link {
 }
 
 .cb-segmented__option[aria-pressed="true"],
+.cb-segmented__option[role="tab"][aria-selected="true"],
 .cb-segmented__option:has(input:checked) {
     border-color: var(--cb-primary);
     background: var(--cb-primary-soft);

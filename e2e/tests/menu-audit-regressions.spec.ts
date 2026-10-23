@@ -79,7 +79,7 @@ test('OSM block refresh and browsing remain palette commands when parcel blocks 
   }
 });
 
-test('Activity Clear resets the selected actor, event counts and run provenance', async ({ mockApi: page }) => {
+test('Activity Clear scope restores the Actors chooser, event count and run provenance', async ({ mockApi: page }) => {
   await page.route('**/agent/activity**', route => route.fulfill({ json: { events: ['Alice', 'Bob'].map((name, i) => ({
     id: `menu-event-${i}`, occurredAt: '2026-10-22T12:00:00Z', recordedAt: '2026-10-22T12:00:00Z',
     actor: { id: name, name, kind: 'agent', controller: 'llm' },
@@ -90,19 +90,19 @@ test('Activity Clear resets the selected actor, event counts and run provenance'
   } } }));
   await openCity(page);
   await page.locator('#activity-button').click();
-  await page.locator('#activity-agents-button').click();
-  const modal = page.locator('.game-log-modal');
+  await page.locator('#activity-actors-tab').click();
+  const modal = page.locator('#activity-sheet');
   const actors = modal.locator('[data-activity-actors]');
   await actors.locator('.ae-profiles button').filter({ hasText: 'Alice' }).click();
   await expect(actors.locator('.ae-event')).toHaveCount(1);
-  await expect(modal.locator('[data-activity-live-status]')).toHaveText('1 event');
-  await actors.getByRole('button', { name: /run menu/ }).click();
+  await expect(modal.locator('#activity-panel-status')).toContainText('1 event');
+  await actors.getByRole('button', { name: /Run menu/i }).click();
   await expect(actors.locator('.ae-run-detail')).toContainText('Run menu-run-0');
-  await modal.getByRole('button', { name: 'Clear', exact: true }).click();
-  await expect(actors.locator('.ae-event')).toHaveCount(2);
+  await modal.locator('[data-activity-clear-scope]').click();
+  await expect(actors.locator('.ae-event')).toHaveCount(0);
   await expect(actors.locator('.ae-profiles [aria-pressed="true"]')).toHaveCount(0);
   await expect(actors.locator('.ae-run-detail')).toBeEmpty();
-  await expect(modal.locator('[data-activity-live-status]')).toHaveText('2 events');
+  await expect(modal.locator('#activity-panel-status')).toContainText('2 events');
 });
 
 test('downloading a foreign-city design from Activity discloses the reload and lets the visitor stay', async ({ mockApi: page }) => {
@@ -114,8 +114,7 @@ test('downloading a foreign-city design from Activity discloses the reload and l
   await openCity(page);
   const actorId = await page.evaluate(() => (window as any).getCurrentUserAgent().id);
   await page.locator('#activity-button').click();
-  await page.locator('#activity-explorer-button').click();
-  const openDesign = page.locator(`#game-log-content .activity-entity-link[data-entity-type="design"][data-entity-id="${cid}"]`);
+  const openDesign = page.locator(`#activity-sheet #game-log-content .activity-entity-link[data-entity-type="design"][data-entity-id="${cid}"]`);
   await expect(openDesign).toBeVisible();
   await openDesign.click();
   await page.getByRole('button', { name: 'Download', exact: true }).click();
@@ -124,7 +123,7 @@ test('downloading a foreign-city design from Activity discloses the reload and l
   await expect(prompt).toContainText('London');
   await expect(prompt).toContainText('reloads');
   await prompt.getByRole('button', { name: /^Stay in Zagreb/ }).click();
-  await expect(prompt).toHaveCount(0);
+  await expect(prompt).toBeHidden();
   expect(await page.evaluate(() => (window as any).CityConfigManager.getCurrentCityId())).toBe('zagreb');
   expect(await page.evaluate(() => (window as any).getCurrentUserAgent().id)).toBe(actorId);
   expect(await page.evaluate(cid => (window as any).DesignSync.localCopyOf(cid), cid)).toBeNull();
@@ -139,7 +138,6 @@ for (const width of [1180, 390]) test(`expanded proposal filters and tools leave
   await page.locator('#proposals-button').click();
   const sheet = page.locator('#proposals-sheet');
   await sheet.locator('.proposal-filters-toggle').click();
-  await sheet.locator('#proposal-list-actions > summary').click();
   const list = sheet.locator('.proposal-list-modal-body');
   expect(await list.evaluate(el => el.clientHeight)).toBeGreaterThanOrEqual(100);
   const details = sheet.locator('.proposal-list-details-btn').first();
@@ -163,10 +161,10 @@ test('phone menus open, fit the viewport and dismiss; proposal statuses use the 
     expect(box!.y + box!.height).toBeLessThanOrEqual(844);
     if (id === 'proposals') {
       await sheet.locator('.proposal-filters-toggle').click();
-      const status = sheet.locator('#proposal-filter-lifecycle');
+      const status = sheet.locator('#proposal-filter-publication');
       await expect(status).toBeVisible();
       expect(await status.locator('option').evaluateAll(options => options.map(option => (option as HTMLOptionElement).value)))
-        .toEqual(['all', 'draft', 'active', 'executed', 'execution-unverified', 'expired', 'cancelled', 'awaiting-funding', 'unknown']);
+        .toEqual(['all', 'draft', 'published']);
       const labels = await status.locator('option').allTextContents();
       expect(new Set(labels).size).toBe(labels.length);
     }

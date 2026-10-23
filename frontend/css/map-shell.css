@@ -837,19 +837,6 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     margin: 0;
 }
 
-/* Activity sheet: the explorer buttons over the status line and its log */
-.activity-sheet-actions {
-    margin-bottom: 12px;
-}
-
-/* Simulation: a secondary section under the explorer buttons. One muted row (a small play/pause
-   icon button, then date · turn) and its settings folded into a <details>. */
-#activity-sheet .activity-simulation {
-    margin-bottom: 12px;
-    padding-top: 10px;
-    border-top: 1px solid var(--cb-line);
-}
-
 .activity-simulation .sheet-section-title {
     margin-bottom: 6px;
     color: var(--cb-text-muted);
@@ -925,30 +912,6 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     .activity-simulation-settings > summary {
         padding: 8px 0;
     }
-}
-
-#activity-sheet .status-bar {
-    border: 1px solid var(--cb-line);
-    border-radius: 8px;
-}
-
-/* The expanded log and its Copy all / Open log row were positioned above the bar, as they were
-   over the sidebar's bottom edge. In the sheet that put the log over the explorer buttons, clipped
-   by the sheet, with the two buttons on top of its last line. Here they flow under the status
-   line: line, log, buttons. */
-#activity-sheet .status-log-expanded {
-    position: static;
-    max-height: 40vh;
-    margin-top: 8px;
-    border-bottom: 1px solid var(--cb-line);
-    border-radius: 6px;
-    box-shadow: none;
-}
-
-#activity-sheet .status-log-actions {
-    position: static;
-    justify-content: flex-end;
-    margin: 8px 0 0;
 }
 
 /* Settings sheet: brand, debug badges, the city row */

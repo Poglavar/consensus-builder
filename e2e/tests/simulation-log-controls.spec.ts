@@ -8,13 +8,24 @@ import { sampleParcels } from '../helpers/mocks/parcel-data';
 
 const SECOND_PARCEL_ID = 'HR-335754-1235';
 
-async function openActivityExplorer(page: import('@playwright/test').Page): Promise<void> {
-  if (await page.locator('.game-log-modal').isVisible()) return;
+async function openActivityPanel(page: import('@playwright/test').Page): Promise<void> {
   const sheet = page.locator('#activity-sheet');
-  if (!(await sheet.isVisible())) await page.locator('#activity-button').click();
+  if (!(await sheet.isVisible())) await page.evaluate(() => (window as any).openActivityPanel());
   await expect(sheet).toBeVisible();
-  await sheet.locator('#activity-explorer-button').click();
-  await expect(page.locator('.game-log-modal')).toBeVisible();
+  const filters = sheet.locator('#activity-panel-controls details').first();
+  if (!(await filters.evaluate((node: HTMLDetailsElement) => node.open))) await filters.locator('> summary').click();
+}
+
+async function expectProposalTarget(page: import('@playwright/test').Page, proposalId: string, title: string): Promise<void> {
+  const inspector = page.locator('#planning-inspector');
+  const details = page.locator('#proposal-details-panel');
+  await expect.poll(() => page.evaluate(() => {
+    const w = window as any;
+    return w.ProposalSelection?.getKey?.() || w.currentlyHighlightedProposalId || w.PlanningViews?.getSelected?.()?.proposalId;
+  })).toBe(proposalId);
+  const inspectorTitle = inspector.getByRole('heading', { name: title, exact: true });
+  const detailsTitle = details.getByRole('heading', { name: title, exact: true });
+  await expect.poll(async () => await inspectorTitle.isVisible() || await detailsTitle.isVisible()).toBe(true);
 }
 
 test.describe('simulation log links @features', () => {
@@ -115,8 +126,9 @@ test.describe('simulation log links @features', () => {
       };
     }, { parcelIds: [PARCEL_ID, SECOND_PARCEL_ID] });
 
-    await openActivityExplorer(page);
-    const explorer = page.locator('.game-log-modal');
+    await openActivityPanel(page);
+    const explorer = page.locator('#activity-sheet');
+    await explorer.locator('[data-activity-filter-field="source"]').selectOption('simulation');
 
     // initializeGame emits both of these links through game.js, including the current guest actor.
     const userJoin = explorer.locator('.activity-entry').filter({ hasText: 'User agent joined' }).first();
@@ -168,10 +180,8 @@ test.describe('simulation log links @features', () => {
       const targetTitle = await page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.title, targetId);
       expect(targetTitle).toBeTruthy();
       await link.click();
-      const inspector = page.locator('#planning-inspector');
-      await expect(inspector.getByRole('heading', { name: targetTitle, exact: true })).toBeVisible();
-      await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection?.getKey?.())).toBe(targetId);
-      if (index + 1 < proposalLinkCount) await openActivityExplorer(page);
+      await expectProposalTarget(page, targetId!, targetTitle!);
+      if (index + 1 < proposalLinkCount) await openActivityPanel(page);
     }
   });
 
@@ -223,8 +233,12 @@ test.describe('simulation log links @features', () => {
       return { proposalId: proposal.proposalId, userAgentId: userAgent.id, userAgentName: userAgent.name };
     }, title);
 
-    await openActivityExplorer(page);
-    const explorer = page.locator('.game-log-modal');
+    await openActivityPanel(page);
+    const explorer = page.locator('#activity-sheet');
+    const source = explorer.locator('[data-activity-filter-field="source"]');
+    await source.selectOption('live');
+    await expect(explorer.locator(`.activity-entry-main .proposal-link-clickable[data-proposal-id="${fixture.proposalId}"]`)).toHaveCount(0);
+    await source.selectOption('simulation');
     const createdRow = explorer.locator('.activity-entry').filter({ hasText: / created a .* proposal/ })
       .filter({ has: page.locator(`.activity-entry-main .proposal-link-clickable[data-proposal-id="${fixture.proposalId}"]`) });
     const createdLink = createdRow.locator('.activity-entry-main .proposal-link-clickable');
@@ -239,8 +253,6 @@ test.describe('simulation log links @features', () => {
     await profile.locator('.agent-dialog-modal-close').click();
     await expect(profile).toHaveCount(0);
     await createdLink.click();
-    const inspector = page.locator('#planning-inspector');
-    await expect(inspector.getByRole('heading', { name: title, exact: true })).toBeVisible();
-    await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection?.getKey?.())).toBe(fixture.proposalId);
+    await expectProposalTarget(page, fixture.proposalId, title);
   });
 });

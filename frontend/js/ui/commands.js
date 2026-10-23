@@ -23,8 +23,7 @@
         'data-source-select', 'tile-source-select', 'wipeLocalDataButton',
         'showParcelCoverageButton', 'refreshParcelDataButton',
         'debugModeCheckbox',
-        // Activity sheet: the explorer buttons and the Simulation section
-        'activity-explorer-button', 'activity-agents-button',
+        // Settings > Diagnostics: the Simulation section
         'gameCheckbox', 'game-datetime', 'game-turns', 'turn-interval-slider', 'turn-interval-value',
         'turn-progress-fill', 'turn-progress-time', 'game-play-pause-btn',
         // Proposals sheet
@@ -389,13 +388,13 @@
 
         // ---- Proposals sheet ----
         { id: 'proposals.list', group: 'proposals', surfaces: ['proposals'], run: callGlobal('showAllProposalsModal'),
-            labelKey: 'mapShell.commands.proposalsList', fallbackLabel: 'Open the proposals list', icon: 'fas fa-list-ul' },
+            labelKey: 'mapShell.commands.proposalsList', fallbackLabel: 'Open Designs', icon: 'fas fa-list-ul' },
         control('planStatsButton', { id: 'proposals.planStats', group: 'proposals', surfaces: ['proposals'],
             labelKey: 'sidebar.proposals.planStats.buttonLabel', fallbackLabel: 'Applied proposal stats', icon: 'fas fa-chart-pie' }),
         control('roosterScoreButton', { id: 'proposals.grainScore', group: 'proposals', surfaces: ['proposals'],
             labelKey: 'sidebar.proposals.grainScore.buttonLabel', fallbackLabel: 'Summon the urbanist rooster', icon: 'fas fa-crow' }),
         control('shareAppliedProposalsButton', { id: 'proposals.sharePlan', group: 'proposals', surfaces: ['proposals'],
-            labelKey: 'sidebar.proposals.shareButton', fallbackLabel: 'Share applied proposals', icon: 'fas fa-share-alt' }),
+            labelKey: 'mapShell.shareMap', fallbackLabel: 'Share this map', icon: 'fas fa-share-alt' }),
         control('agreementsButton', { id: 'proposals.agreements', group: 'proposals', surfaces: ['proposals'],
             labelKey: 'sidebar.proposals.agreementsButton', fallbackLabel: 'Agreements', icon: 'fas fa-handshake' }),
         control('mintedAgreementsButton', { id: 'proposals.mintedAgreements', group: 'proposals', surfaces: ['proposals'],
@@ -403,23 +402,22 @@
         { id: 'proposals.clearLocal', group: 'proposals', surfaces: ['settings'], debugOnly: true, run: callGlobal('clearLocalProposalData'),
             labelKey: 'sidebar.proposals.clearButton', fallbackLabel: 'Clear Proposals From Local Storage', icon: 'fas fa-trash' },
 
-        // ---- Activity sheet: the explorer, and the Simulation section (group 'game', so a city
-        // config hiding the game section takes the simulation commands with it, not the explorer) ----
-        { id: 'activity.explorer', group: 'activity', surfaces: ['activity'], run: callGlobal('showGameLogDialog'),
-            labelKey: 'mapShell.commands.activityExplorer', fallbackLabel: 'Open activity explorer', icon: 'fas fa-wave-square' },
-        { id: 'activity.agents', group: 'activity', surfaces: ['activity'], run: callGlobal('showGameLogDialog', { view: 'actors' }),
-            labelKey: 'sidebar.game.showAgents', fallbackLabel: 'Actors', icon: 'fas fa-robot' },
-        control('gameCheckbox', { id: 'game.enable', group: 'game', kind: 'toggle', surfaces: ['activity'],
+        // ---- Activity panel views and Settings > Diagnostics simulation controls ----
+        { id: 'activity.events', group: 'activity', surfaces: ['activity'], run: callGlobal('openActivityPanel', { view: 'events' }),
+            labelKey: 'gameDialogs.log.viewEvents', fallbackLabel: 'Events', icon: 'fas fa-wave-square' },
+        { id: 'activity.actors', group: 'activity', surfaces: ['activity'], run: callGlobal('openActivityPanel', { view: 'actors' }),
+            labelKey: 'gameDialogs.log.viewActors', fallbackLabel: 'Actors', icon: 'fas fa-robot' },
+        control('gameCheckbox', { id: 'game.enable', group: 'game', kind: 'toggle', surfaces: ['settings'],
             labelKey: 'sidebar.game.enable', fallbackLabel: 'Enable game mode', icon: 'fas fa-gamepad' }),
-        { id: 'game.playPause', group: 'game', surfaces: ['activity'], run: callGlobal('toggleGamePlayPause'),
+        { id: 'game.playPause', group: 'game', surfaces: ['settings'], run: callGlobal('toggleGamePlayPause'),
             labelKey: 'mapShell.commands.gamePlayPause', fallbackLabel: 'Play / pause the game', icon: 'fas fa-play' },
-        control('turn-interval-slider', { id: 'game.interval', group: 'game', kind: 'input', surfaces: ['activity'],
+        control('turn-interval-slider', { id: 'game.interval', group: 'game', kind: 'input', surfaces: ['settings'],
             labelKey: 'mapShell.commands.gameInterval', fallbackLabel: 'Turn interval', icon: 'fas fa-stopwatch' }),
-        { id: 'game.new', group: 'game', surfaces: ['activity'], run: callGlobal('resetGameState', true),
+        { id: 'game.new', group: 'game', surfaces: ['settings'], run: callGlobal('resetGameState', true),
             labelKey: 'sidebar.game.newGame', fallbackLabel: 'New Game', icon: 'fas fa-rotate-left' },
 
-        // ---- Activity: the status log ----
-        { id: 'activity.statusLog', group: 'activity', surfaces: [], run: callGlobal('openStatusLogDialog'),
+        // ---- Settings > Diagnostics: the status log ----
+        { id: 'settings.statusLog', group: 'settings', surfaces: ['settings'], run: callGlobal('openStatusLogDialog'),
             labelKey: 'mapShell.commands.statusLog', fallbackLabel: 'Open the status log', icon: 'fas fa-terminal' },
 
         // ---- Bets sheet (js/bets/bets-sheet.js): its rows are rendered on open, so the only registered

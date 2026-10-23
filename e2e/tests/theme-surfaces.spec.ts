@@ -64,8 +64,8 @@ test('account and Actors dialogs expose the shared glass without opaque inner se
   }
   await account.locator('.agent-dialog-modal-close').click();
   await page.locator('#activity-button').click();
-  await page.locator('#activity-agents-button').click();
-  const actors = page.locator('.game-log-modal');
+  await page.locator('#activity-actors-tab').click();
+  const actors = page.locator('#activity-sheet');
   await expect(actors.locator('[data-activity-actors]')).toBeVisible();
   for (const theme of ['light', 'dark']) {
     await page.evaluate(value => (window as any).CbTheme.set(value), theme);

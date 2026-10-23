@@ -137,6 +137,7 @@
         return ['public-screen', 'zoning-area', 'partial-envelope', 'outer-bound'].includes(item.assessment?.meaning) ? 'sourceEvidenceBadge' : 'obligatory';
     }
     async function parcelRecords(parcel, signal, context = {}) {
+        if (!(context.source || sourceId)) return [];
         const url = new URL(`${root.getBackendBase()}/planning/parcel`);
         url.searchParams.set('city', context.city || root.CityConfigManager.getCurrentCityId());
         url.searchParams.set('parcel', parcel);
@@ -412,6 +413,18 @@
         sourceSelect.value = sourceId;
         sourceSelect.disabled = sourceOptions.length < 2;
         const descriptor = sourceOptions.find(source => source.id === sourceId);
+        const noPermittedSource = catalogReady && !descriptor;
+        sourceSelect.parentElement.hidden = !descriptor;
+        const permittedRow = panel.querySelector('[data-role-label="permitted"]').closest('.planning-layer-row');
+        permittedRow.classList.toggle('is-unavailable', !descriptor);
+        permittedRow.setAttribute('aria-disabled', String(!descriptor));
+        permittedRow.title = noPermittedSource ? t('noPermittedSource') : '';
+        permittedRow.querySelectorAll('select').forEach(input => { input.disabled = !descriptor; });
+        panel.querySelector('.planning-source-note').hidden = !descriptor;
+        panel.querySelector('.planning-coverage').hidden = !descriptor;
+        const mapContext = panel.querySelector('.planning-map-context');
+        mapContext.hidden = !!root.__mapModeState?.desired && root.__mapModeState.desired !== '2d';
+        mapContext.textContent = t('mapContext');
         panel.querySelector('.planning-source-note').textContent = descriptor?.parcelStudy ? t('envelopeNote') : descriptor?.capabilities.areas ? t('zoningAreaNote')
             : descriptor?.capabilities.volumes === false ? t('evidenceOnly') : '';
         panel.querySelector('.planning-zoning-label').textContent = t('zoningAreas');
@@ -440,9 +453,10 @@
         }
         // Configured sources choose bound / configuration / both; one-option sources choose the 2D footprint detail.
         panel.querySelector('[data-planning-setting="permittedForm"]').hidden = !descriptor?.parcelStudy || isPhoto();
-        panel.querySelector('[data-planning-setting="permittedMap"]').hidden = root.__mapModeState?.desired === 'model' || isPhoto()
+        panel.querySelector('[data-planning-setting="permittedMap"]').hidden = !descriptor || root.__mapModeState?.desired === 'model' || isPhoto()
             || descriptor?.capabilities.volumes === false;
-        panel.querySelector('.planning-view-status').textContent = stateText();
+        panel.querySelector('.planning-view-status').hidden = noPermittedSource;
+        panel.querySelector('.planning-view-status').textContent = noPermittedSource ? '' : stateText();
         panel.querySelector('.planning-view-status').setAttribute('aria-busy', String(status === 'loading'));
         const retry = panel.querySelector('.planning-view-retry');
         retry.hidden = status !== 'error' || policy().permitted === 'off' && store.get().zoningAreas === 'off'; retry.textContent = t('retry');
@@ -531,7 +545,7 @@
         const descriptor = sourceOptions.find(source => source.id === sourceId);
         const viewport = core.queryKey(city, bbox);
         const envelopeKey = descriptor?.parcelStudy && policy().permitted !== 'off' ? `${sourceId}:${viewport}` : '';
-        const areaKey = !descriptor?.capabilities.areas || store.get().zoningAreas !== 'off' ? `${sourceId}:${scenarioId}:${viewport}` : '';
+        const areaKey = descriptor && (!descriptor.capabilities.areas || store.get().zoningAreas !== 'off') ? `${sourceId}:${scenarioId}:${viewport}` : '';
         if (force) invalidate();
         if (!envelopeKey) envelopeCache = { key: '', answer: null };
         if (!areaKey) areaCache = { key: '', answer: null };
@@ -621,8 +635,10 @@
         const response = await fetch(url, { cache: 'no-store' });
         if (!response.ok) throw new Error(`Planning sources HTTP ${response.status}`);
         const answer = await response.json();
-        if (answer.city !== city || !Array.isArray(answer.sources)) throw new Error('Invalid planning sources response');
-        return answer.sources;
+        if (!Array.isArray(answer.sources)) throw new Error('Invalid planning sources response');
+        const configured = root.CityConfigManager.getCityConfig(city)?.planning?.sourceIds || [];
+        return configured.map(id => answer.sources.find(source => source.id === id)).filter(Boolean)
+            .map((source, index) => ({ ...source, default: index === 0 }));
     }
     function applySources(sources, requested) {
         sourceOptions = sources;
@@ -688,6 +704,7 @@
         panel = document.getElementById('planning-views');
         inspector = document.getElementById('planning-inspector');
         const body = panel.querySelector('.map-sheet-body');
+        body.prepend(element('p', 'planning-map-context'));
         const sourceField = element('label', 'planning-source-field');
         sourceField.append(element('span', 'planning-source-label'));
         const sourceInput = element('select', 'planning-layer-select planning-source-select');
@@ -724,7 +741,7 @@
             input.addEventListener('change', () => store.configure(key, input.value));
             return input;
         }
-        for (const role of core.roles) {
+        for (const role of ['permitted', 'existing', 'proposed']) {
             const row = element('div', 'planning-layer-row');
             const label = element('span', 'planning-layer-label'); label.dataset.roleLabel = role;
             const swatch = element('span', `planning-swatch planning-swatch--${role}`); swatch.setAttribute('aria-hidden', 'true');

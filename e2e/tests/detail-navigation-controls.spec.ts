@@ -19,8 +19,7 @@ test.describe('Detail navigation controls @features', () => {
     const { designCid, parkId, parkTitle } = await proposeOverPark(page, { title: 'Activity link agreement', author: 'Navigation actor' });
 
     await page.locator('#activity-button').click();
-    await page.locator('#activity-explorer-button').click();
-    const explorer = page.locator('.game-log-modal');
+    const explorer = page.locator('#activity-sheet');
     await expect(explorer).toBeVisible();
     const link = explorer.locator(`.activity-entity-link[data-entity-type="design"][data-entity-id="${designCid}"]`);
     await expect(link).toBeVisible({ timeout: 30_000 });

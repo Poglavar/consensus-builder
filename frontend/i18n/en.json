@@ -861,7 +861,10 @@
                 "publish": "Publish",
                 "published": "Published",
                 "listing": "Listing {{done}}/{{total}} designs…",
-                "checking": "Checking {{done}}/{{total}} designs…"
+                "checking": "Checking {{done}}/{{total}} designs…",
+                "publishSelected": "Publish selected designs",
+                "selectionCount": "{{selected}} of {{total}} designs included · {{excluded}} excluded",
+                "layoutNeedsAgreement": "{{title}} is published with its agreement. Create an agreement that includes it, or deselect it to share the other designs."
             },
             "route": {
                 "fetching": "Fetching the shared designs…",
@@ -976,20 +979,19 @@
             "play": "Play",
             "pause": "Pause",
             "newGame": "New game",
-            "showAgents": "Actors",
             "showAgentsCount": "Agents ({{count}})"
         },
         "proposals": {
-            "title": "Proposals",
-            "listButton": "Proposals list ({{count}})",
+            "title": "Designs",
+            "listButton": "Designs ({{count}})",
             "shareButton": "Share applied proposals",
             "shareButtonEmpty": "No applied proposals. Apply some first",
             "shareButtonPreparing": "Preparing proposals…",
             "agreementsButton": "Agreements",
-            "mintedAgreementsButton": "Minted agreements",
+            "mintedAgreementsButton": "On-chain agreements",
             "clearButton": "Reset proposals (this browser)",
             "planStats": {
-                "buttonLabel": "Applied proposal stats",
+                "buttonLabel": "Map stats",
                 "calculating": "Calculating…",
                 "modalTitle": "Applied proposal stats",
                 "resultingParcels": "Resulting parcels (avg m²)",
@@ -1023,7 +1025,7 @@
                 "unavailable": "Statistics are unavailable. Reload and try again."
             },
             "grainScore": {
-                "buttonLabel": "Summon the urbanist rooster",
+                "buttonLabel": "Critique",
                 "buttonHint": "Let him inspect every resulting parcel",
                 "buttonEmpty": "Apply a proposal first",
                 "institute": "Institut za zrnatost",
@@ -1991,7 +1993,7 @@
                     "eyebrow": "A city in motion",
                     "title": "See how decisions unfold",
                     "body": "Follow proposals and agent activity around the world. Where Simulation is available, play or pause turns to explore how proposals and support evolve.",
-                    "hint": "Open Activity for the live feed and Simulation controls."
+                    "hint": "Open Activity to follow events, actors and watched areas. Simulation controls are in Settings > Diagnostics."
                 },
                 "sources": {
                     "eyebrow": "More than one starting point",
@@ -2460,7 +2462,7 @@
                 "ok": "OK"
             },
             "proposalList": {
-                "title": "Proposals",
+                "title": "Designs",
                 "closeAria": "Close proposals list",
                 "tabs": {
                     "active": "Active",
@@ -2474,9 +2476,9 @@
                     "status": "Status",
                     "statusAll": "All statuses",
                     "applied": "Applied",
-                    "appliedAll": "Applied & not",
-                    "appliedYes": "Applied",
-                    "appliedNo": "Not applied",
+                    "appliedAll": "On map & off map",
+                    "appliedYes": "On this map",
+                    "appliedNo": "Off this map",
                     "authorPlaceholder": "All authors",
                     "searchPlaceholder": "Search title or author",
                     "reset": "Reset",
@@ -2509,7 +2511,9 @@
                         "parcel-layout": "Parcel layout",
                         "row": "Row",
                         "other": "Other"
-                    }
+                    },
+                    "publication": "Publication",
+                    "publicationAll": "Draft & published"
                 },
                 "resultCountWord": "shown",
                 "sources": {
@@ -2588,7 +2592,7 @@
                 "detailsLabel": "Details",
                 "detailsTooltip": "View details",
                 "deleteTooltip": "Delete proposal",
-                "empty": "No proposals match the current filters.",
+                "empty": "No designs match the current filters.",
                 "untitled": "Untitled proposal",
                 "lifecycle": {
                     "executed": "Executed",
@@ -2611,11 +2615,6 @@
                     "cumulative": "Cumulative to {year}.",
                     "toApply": "to apply: {n}",
                     "toUnapply": "to remove: {n}"
-                },
-                "navigation": {
-                    "hint2d": "To propose, tap land or open ground on the map.",
-                    "hint3d": "Proposals are drawn on the 2D map.",
-                    "open2d": "Open 2D map"
                 }
             },
             "proposalChoice": {
@@ -5444,12 +5443,96 @@
             "owner_offer_not_attested": "An owner offer can only name parcels your wallet is attested to own by a member of your lens. {{detail}}"
         }
     },
+    "activityPanel": {
+        "tabs": "Activity views",
+        "watchedAreas": "Watched areas",
+        "expand": "Expand activity panel",
+        "collapse": "Collapse activity panel",
+        "diagnostics": "Diagnostics",
+        "filters": "Filters",
+        "allCities": "All cities",
+        "currentCity": "Current city",
+        "cityAria": "City scope",
+        "unlocatedHint": "Some activity has no city and only appears when all cities are shown.",
+        "showAllCities": "Show all cities",
+        "hiddenSimulation": "{{count}} simulated events hidden",
+        "showSimulation": "Show simulation activity",
+        "recentLimit": "Only the most recent {{count}} events are loaded.",
+        "scanWindow": "Scoped results scan the most recent {{count}} records per source.",
+        "localSimulation": "Simulation history is stored on this device for the current city."
+    },
     "gameDialogs": {
         "log": {
             "title": "Activity",
             "closeAria": "Close activity",
             "viewsAria": "Activity view",
             "viewEvents": "Events",
+            "actors": {
+                "title": "Actors",
+                "search": "Search actor, agreement, run or transaction",
+                "controllerAria": "Actor controller",
+                "controllerAll": "All controllers",
+                "controllerHuman": "Person",
+                "controllerAlgorithm": "Algorithm",
+                "controllerLlm": "LLM agent",
+                "controllerUnknown": "Unknown controller",
+                "actorKindHuman": "Person",
+                "actorKindAgent": "Agent",
+                "actorKindSystem": "System",
+                "actorKindUnknown": "Unknown type",
+                "clearSelection": "Clear selection",
+                "profilesAria": "Actor profiles",
+                "activityAria": "Activity",
+                "activityCount": "Activity ({{count}})",
+                "countActivity": {
+                    "one": "{{count}} activity",
+                    "many": "{{count}} activities"
+                },
+                "countAgreement": {
+                    "one": "{{count}} agreement",
+                    "many": "{{count}} agreements"
+                },
+                "countTransaction": {
+                    "one": "{{count}} transaction",
+                    "many": "{{count}} transactions"
+                },
+                "modelCost": "{{amount}} model cost",
+                "noActors": "No actors match this filter.",
+                "noActivity": "No activity matches this filter.",
+                "chooseActor": "Choose an actor to see its activity.",
+                "eventHeading": "{{actor}} · {{action}}",
+                "sourceSimulation": "Simulation",
+                "entity": {
+                    "agreement": "Agreement {{id}}",
+                    "design": "Design {{id}}"
+                },
+                "transaction": "Transaction {{id}}",
+                "transactionFull": "Transaction: {{id}}",
+                "openRun": "Run {{id}}",
+                "eventModel": "{{model}}{{cost}}",
+                "evidence": "Evidence",
+                "runTitle": "Run {{id}}",
+                "runSummary": "{{persona}} · {{status}} · {{stage}}",
+                "unknownPersona": "Unknown actor",
+                "unknownStatus": "Unknown status",
+                "runStatus": {
+                    "unknown": "Unknown status",
+                    "running": "Running",
+                    "done": "Done",
+                    "failed": "Failed"
+                },
+                "runStageStarted": "Started",
+                "runCost": "{{model}} · {{amount}} exact cost",
+                "noModel": "No model recorded",
+                "pick": "Pick",
+                "pickEntities": "Agreement {{agreement}} · design {{design}}",
+                "notProposed": "not proposed",
+                "notPublished": "not published",
+                "costItem": "{{item}}: {{model}} · {{amount}}",
+                "cost": "Cost",
+                "runLoading": "Loading run details…",
+                "runError": "Could not load run: {{error}}"
+            },
             "viewActors": "Actors",
             "kindAria": "Actor type",
             "kindAll": "Everyone",
@@ -6118,11 +6201,10 @@
         "modeLocked": "Not available while you are editing — finish or cancel first",
         "layers": "Layers",
         "settings": "Settings",
-        "proposals": "Proposals",
+        "proposals": "Designs",
         "tools": "Tools",
         "activity": "Activity",
-        "activityExplorerCount": "Open activity explorer ({{count}})",
-        "proposalsCount": "Proposals ({{count}})",
+        "proposalsCount": "Designs ({{count}})",
         "simulation": {
             "title": "Simulation",
             "titlePaused": "Simulation (paused)",
@@ -6139,10 +6221,9 @@
             "blockFromSelected": "Detect block from the selected parcel",
             "areaMonitorDraw": "Draw a monitored area",
             "areaMonitorFromPlan": "Draw a monitored area from the plan",
-            "proposalsList": "Open the proposals list",
+            "proposalsList": "Open Designs",
             "gamePlayPause": "Play / pause the game",
             "gameInterval": "Turn interval",
-            "activityExplorer": "Open activity explorer",
             "statusLog": "Open the status log",
             "chooseCity": "Choose a city",
             "dataSource": "Data source",
@@ -6170,11 +6251,12 @@
             "parksSquares": "Parks and squares",
             "watchedAreas": "Watched areas",
             "originalCadastre": "Original cadastre",
-            "aerialLayer": "Existing city (Google imagery)",
-            "proposalTools": "Proposal tools",
             "statusLog": "Technical status",
             "display": "Display"
-        }
+        },
+        "share": "Share",
+        "shareMap": "Share this map",
+        "designActions": "Design actions"
     },
     "parcelMenu": {
         "label": "Parcel actions",
@@ -6510,8 +6592,8 @@
         "unsupportedCrs": "This WMS needs a supported geographic or Web Mercator coordinate system."
     },
     "parcelSourceHealth": {
-    "countryRestricted": "This register only accepts connections from {{country}}. Outside {{country}}, continue without parcels or choose another source.",
-    "requestTimedOut": "The request timed out.",
+        "countryRestricted": "This register only accepts connections from {{country}}. Outside {{country}}, continue without parcels or choose another source.",
+        "requestTimedOut": "The request timed out.",
         "offline": "You appear to be offline. Connect to the internet and try again.",
         "rateLimited": "This parcel source is rate limited. Retry in {{seconds}} seconds.",
         "blocked": "The provider denied access (HTTP {{status}}). It may restrict IP addresses or require authentication. Choose another source or try again later.",
@@ -6790,16 +6872,7 @@
         }
     },
     "activityFeed": {
-        "filters": "Filter activity",
-        "all": "All",
-        "people": "People",
-        "agents": "Agents",
-        "refresh": "Refresh",
-        "loading": "Loading recent activity…",
-        "error": "Activity could not load. Try again.",
-        "empty": "No recent activity for this filter.",
-        "partial": "Some activity sources could not load.",
-        "prompt": "Open Activity to load recent events."
+        "all": "All"
     },
     "ens": {
         "viewName": "View ENS name",
@@ -6918,9 +6991,11 @@
             "actions": {
                 "bet": "Bet",
                 "edit": "Edit",
-                "delete": "Delete"
+                "removeLocal": "Remove from this device"
             },
-            "deleteConfirm": "Delete this agreement? Its designs stay on the map."
+            "collapse": "Close agreement",
+            "removeLocalConfirm": "Remove this agreement from this device? Its designs stay on the map. Any published agreement remains available through its link.",
+            "compareUnavailable": "Before / after is available when this agreement matches the designs applied on the map."
         },
         "list": {
             "create": "Create agreement",
@@ -7260,7 +7335,9 @@
             "estimated": "Source estimate"
         },
         "zoningArea": "Source zoning area",
-        "inspectArea": "Inspect source zoning area {{parcel}}"
+        "inspectArea": "Inspect source zoning area {{parcel}}",
+        "mapContext": "Compare building footprints and massing on the 2D map.",
+        "noPermittedSource": "No permitted source here"
     },
     "clickStack": {
         "parcelReference": "Cadastral parcel {{reference}}",
@@ -7280,8 +7357,8 @@
         "copied": "Coordinates copied"
     },
     "landTake": {
-    "acceptRequired": "Review the land take and accept its effects before saving.",
-    "reviewChanged": "The land take or demolition effects changed. Review and accept them again before saving.",
+        "acceptRequired": "Review the land take and accept its effects before saving.",
+        "reviewChanged": "The land take or demolition effects changed. Review and accept them again before saving.",
         "invalid": "The reviewed land take must contain the building and fit within the site.",
         "title": "Land take",
         "intro": "Choose the land taken from each touched parcel. The building keeps its shape.",
