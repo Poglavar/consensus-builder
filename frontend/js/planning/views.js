@@ -12,7 +12,6 @@
     let store, items = [], payload = null, status = 'loading', layer, controller, request = 0;
     let panel, inspector, lastSettings = null, lastSelectedId = null, ready = false, selectionLayer;
     let progress = null;
-    let selectionPoint = null;
     // The parcel the 3D view has in view (focusParcel). The sheet refers to that parcel, or else
     // to the parcel of the selected permitted massing (focusedParcel).
     let viewedParcelId = null, viewWantsMassing = false;
@@ -31,11 +30,6 @@
     function permittedFeatures(item) { return envelopes.realize(item, realization(item)); }
     const sideWord = (item, edge) => root.i18n.t(`modal.corridor.compass.${envelopes.edgeSide(item.derivation?.parcel, edge)}`);
     const lotNote = configuration => configuration?.lotArea?.status === 'fail' ? t('lotBelowMinimum', { minimum: area(configuration.lotArea.minimumM2) }) : '';
-    // The housing type a study of this item should use: the shown configuration, else the pinned type, else the source default.
-    function studyScenarioFor(item) {
-        return permittedFeatures(item).configuration?.id || scenarioParam() || item.source.scenario
-            || sourceOptions.find(source => source.id === item.source.id)?.scenario || undefined;
-    }
     function pinConfiguration(itemId, configurationId) {
         pins = { ...pins, [itemId]: configurationId };
         drawMap(); renderInspector(); notifyGeometry();
@@ -54,12 +48,7 @@
         return getComputedStyle(document.documentElement).getPropertyValue(`--cb-planning-${role}`).trim();
     }
     function policy() { return core.displayPolicy(store?.get()); }
-    function sceneItems() {
-        const study = root.PlanningParcelStudy?.getItems() || [];
-        const reference = study[0]?.sourceEvidence?.parcelReference;
-        return [...items.filter(item => !item.parcelEnvelope || item.sourceEvidence.parcelReference.parcelId !== reference?.parcelId
-            || item.sourceEvidence.parcelReference.sourceId !== reference?.sourceId), ...study];
-    }
+    function sceneItems() { return items; }
     function appearance(item) { return core.itemAppearance(item, store?.get()); }
     function selected() { return (focusedRecord?.id === store?.get().selectedId ? focusedRecord : null)
         || sceneItems().find(item => item.id === store?.get().selectedId) || null; }
@@ -69,7 +58,7 @@
         if (id && !sceneItems().some(item => item.id === id) && focusedRecord?.id !== id) return;
         if (id) {
             const target = focusedRecord?.id === id ? focusedRecord : sceneItems().find(item => item.id === id);
-            if (target?.role !== 'proposed' || target.study) root.ProposalSelection?.clear();
+            if (target?.role !== 'proposed') root.ProposalSelection?.clear();
             root.Parcels?.uiParcelPanel?.hideParcelInfoPanel?.({ preserveProposalSelection: target?.role === 'proposed' });
             root.hideProposalDetailsPanel?.(false, {
                 preserveCorridorSegment: target?.role === 'proposed'
@@ -202,15 +191,6 @@
         }
         layer.clearLayers();
         hitShapes = [];
-        const studyParcel = root.PlanningParcelStudy?.getContext()?.parcel;
-        const frontEdge = root.PlanningParcelStudy?.getForm()?.frontEdge;
-        if (studyParcel && sceneItems().some(item => item.study && policy()[item.role] !== 'off')) {
-            root.L.geoJSON(studyParcel, { pane: 'planningSources', interactive: false,
-                style: { color: color('existing'), fill: false, weight: 2 } }).addTo(layer);
-            const ring = studyParcel.geometry.coordinates[0];
-            if (ring[frontEdge]) root.L.polyline([ring[frontEdge], ring[frontEdge + 1]].map(p => [p[1], p[0]]),
-                { pane: 'planningSources', color: color('proposed'), weight: 5 }).bindTooltip(root.i18n.t('planningStudy.frontEdge')).addTo(layer);
-        }
         for (const item of sceneItems()) {
             const display = appearance(item);
             if (display === 'off') continue;
@@ -262,8 +242,7 @@
                     const node = part.getElement?.();
                     if (!node) return;
                     node.setAttribute('tabindex', '0'); node.setAttribute('role', 'button');
-                    node.setAttribute('aria-label', item.study ? `${root.i18n.t('planningStudy.title')}: ${label}`
-                        : t(item.areas?.length ? 'inspectArea' : 'inspectMassing', { parcel: label }));
+                    node.setAttribute('aria-label', t(item.areas?.length ? 'inspectArea' : 'inspectMassing', { parcel: label }));
                     node.addEventListener('keydown', event => {
                         if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); event.stopPropagation(); inspect(); }
                     });
@@ -303,11 +282,6 @@
         close.addEventListener('click', () => { select(null); document.getElementById('planning-views-button').focus(); });
         header.append(heading, close);
         inspector.append(header);
-        if (item.study) {
-            heading.querySelector('.planning-eyebrow').textContent = root.i18n.t('planningStudy.title');
-            root.PlanningParcelStudy.renderInspector(inspector);
-            return;
-        }
         const badges = element('div', 'planning-inspector__badges');
         badges.append(element('span', 'cb-badge', t(inspectorBadgeKey(item))));
         if (sourceResult && item.volumes.length) badges.append(element('span', 'cb-badge cb-badge--warning',
@@ -379,7 +353,6 @@
             evidence.append(element('p', '', t('sourceTerms')), terms);
         }
         inspector.append(evidence);
-        root.PlanningParcelStudy?.addSourceAction(inspector, item);
         for (const reference of item.sourceEvidence?.sourceReferences || []) {
             const button = element('button', 'btn btn-sm', t('referencedSource', { source: reference.providerId, revision: reference.revision.slice(0, 8) }));
             button.type = 'button'; button.addEventListener('click', async () => {
@@ -724,12 +697,9 @@
         const scenarioInput = element('select', 'planning-layer-select planning-scenario-select');
         scenarioField.append(scenarioInput); body.append(scenarioField);
         scenarioInput.addEventListener('change', () => {
-            const wasStudy = selected()?.study;
             // Envelopes keep their selection: they carry every housing type and only redraw. A
             // selected zoning area is re-read for the new type and re-selected when it returns.
-            const previousId = !wasStudy && selected()?.areas?.length ? store.get().selectedId : null;
-            root.PlanningParcelStudy?.clear();
-            if (wasStudy) store.select(null);
+            const previousId = selected()?.areas?.length ? store.get().selectedId : null;
             scenarioId = scenarioInput.value; pins = {};
             areaCache = { key: '', answer: null }; assembled = ''; items = items.filter(item => item.parcelEnvelope);
             if (previousId) { focusedRecord = null; store.select(null); restoreId = previousId; }
@@ -737,8 +707,7 @@
             drawMap(); render(); notifyGeometry(); refresh();
         });
         sourceInput.addEventListener('change', () => {
-            const clearSourceSelection = selected()?.role === 'permitted' || selected()?.study;
-            root.PlanningParcelStudy?.clear();
+            const clearSourceSelection = selected()?.role === 'permitted';
             sourceId = sourceInput.value; pins = {}; scenarioId = ''; controller?.abort(); request++; invalidate(); items = []; payload = null;
             populateScenarios();
             if (clearSourceSelection) { focusedRecord = null; store.select(null); }
@@ -790,7 +759,6 @@
         root.map.on('moveend', () => refresh());
         root.map.on('click', () => select(null));
         root.addEventListener('cityChanged', () => {
-            root.PlanningParcelStudy?.clear(); selectionPoint = null;
             controller?.abort(); request++; invalidate(); items = []; payload = null; status = 'loading';
             sourceOptions = []; sourceId = ''; scenarioId = ''; pins = {}; sourcesKey = ''; focusedRecord = null; restoreId = null; catalogReady = false; parcelPanel = null; viewedParcelId = null; viewWantsMassing = false;
             store.select(null); drawMap(); render(); notifyGeometry(); loadSources();
@@ -813,13 +781,11 @@
         loadSources();
     }
     root.PlanningViews = { getState: () => store?.get() || { ...core.defaults, variation: '' }, getPolicy: policy, getItems: sceneItems,
-        getSelectionPoint: () => selectionPoint?.id === selected()?.id ? selectionPoint : null, getAppearance: appearance,
-        refreshStudy({ inspector: updateInspector = true } = {}) { drawMap(); if (updateInspector) renderInspector(); notifyGeometry(); },
+        getAppearance: appearance,
         getSelected: selected, isReady: () => ready, isInspecting: () => ready && !inspector.hidden,
         select, selectRecord, inspectBuilding, inspectProposal, showParcelEvidence, focusParcel, color, refresh,
-        permittedFeatures, studyScenarioFor, pinConfiguration, getScenario: () => scenarioId,
-        // Drawn records covering a point, each once, in drawing order; selectAt also remembers the
-        // point the way a direct click on the shape did.
+        permittedFeatures, pinConfiguration, getScenario: () => scenarioId,
+        // Drawn records covering a point, each once, in drawing order.
         itemsAt(latlng) {
             const point = root.turf.point([latlng.lng, latlng.lat]), seen = new Set();
             return hitShapes.filter(({ item, feature }) => {
@@ -828,10 +794,7 @@
                 seen.add(item.id); return true;
             }).map(({ item }) => item);
         },
-        selectAt(id, latlng) {
-            if (latlng) selectionPoint = { id, lat: latlng.lat, lng: latlng.lng };
-            select(id);
-        },
+        selectAt: select,
         configure: (key, value) => store?.configure(key, value), reroll: () => store?.reroll() };
     root.whenMapCoreReady().then(init);
 })(window);

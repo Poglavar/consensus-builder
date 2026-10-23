@@ -56,5 +56,8 @@ Before sharing a preview, check the listening checkout, the browser's `getBacken
 real parcel/building data response. A static page loading successfully is not an API readiness
 check. Local pages normally target port 3000; when no local API is running, supply the supported
 `backend` query override explicitly (for example, the production API for read-only source data).
+Production read access does not establish write access: the production origin guard rejects uploads
+from localhost. For model uploads and authoring, use this checkout’s local development API and verify
+a real upload returns a retrievable model URL, plus complete building stock for land-take review.
 A link without a city retains the browser's saved city. Do not change cities just to conceal a
 source failure, and do not describe a mocked browser check as proof of live source availability.

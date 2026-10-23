@@ -114,4 +114,4 @@ nothing, a repeat click or the isolation banner's ×. It replaced the floating t
 
 In aerial imagery mode, source-parcel inspection uses the same 3D click-panel frame. Its Parcel
 section hosts the immutable source reference and measured area; Escape closes the selection.
-Dedicated planning study/editing tools remain separate from parcel information and design actions.
+Design editors remain separate from parcel information and design actions. The experimental parcel-study UI is removed.

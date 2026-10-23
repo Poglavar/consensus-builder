@@ -1,4 +1,4 @@
-// Synthetic source responses exercise actual study controls, persistence and stale-reference handling.
+// Permitted inspection remains available; the retired parcel study has no UI or link restoration.
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
 import { selectNativeOption } from '../helpers/controls';
@@ -22,78 +22,8 @@ function context(revision = 'source-1') {
 }
 const url = '/?at=39.73930,-104.99045,19&planningSource=atlas-study-test&planningScenario=family1&planningParcel=parcel-test&permitted=ghost&reduceMotion=1';
 
-test('Atlas parcel study edits actual geometry, rechecks limits and survives reload @features', async ({ mockApi: page }) => {
+test('Permitted keeps its envelope controls and ignores retired parcel-study links and drafts @features', async ({ mockApi: page }) => {
   test.setTimeout(90_000);
-  await page.route('**/planning/**', async route => {
-    if (!['xhr','fetch'].includes(route.request().resourceType())) return route.fallback();
-    const path = new URL(route.request().url()).pathname;
-    const json = path.endsWith('/study') ? context() : path.endsWith('/sources') ? {city:'colorado',sources:[source]}
-      : { schemaVersion:'planning-representations.v1',city:'colorado',items:[],sources:[source],summaries:[],unavailable:[],coverage:'source-results',nextCursor:null,omitted:0 };
-    await route.fulfill({json});
-  });
-  await page.goto(url); await waitForMapReady(page);
-  const inspector = page.locator('#planning-inspector');
-  await expect(inspector.getByLabel('Design height (m)')).toBeVisible({ timeout:45_000 });
-  await expect(inspector.locator('[data-check="height"]')).toHaveAttribute('data-status','pass');
-  await expect(inspector.locator('[data-check="frontSetback"]')).toHaveAttribute('data-status','unknown');
-  const original = await page.evaluate(() => (window as any).PlanningViews.getItems().find((item:any) => item.assessment.meaning === 'study-design').site);
-  await inspector.getByLabel('Design height (m)').fill('12');
-  await expect(inspector.locator('[data-check="height"]')).toHaveAttribute('data-status','fail');
-  expect(await page.evaluate(() => (window as any).PlanningViews.getItems().find((item:any) => item.assessment.meaning === 'study-design').volumes[0].topM)).toBe(12);
-  expect(await page.evaluate(() => (window as any).PlanningViews.getItems().find((item:any) => item.assessment.meaning === 'study-design').site)).toEqual(original);
-  await page.reload(); await waitForMapReady(page);
-  await expect(inspector.getByLabel('Design height (m)')).toHaveValue('12', {timeout:45_000});
-  await expect(inspector.locator('[data-check="height"]')).toHaveAttribute('data-status','fail');
-  await inspector.getByLabel('Design height (m)').fill('9');
-  await expect(inspector.locator('[data-check="height"]')).toHaveAttribute('data-status','pass');
-  await inspector.getByLabel('Footprint scale (%)').fill('80');
-  expect(await page.evaluate(() => (window as any).PlanningParcelStudy.getForm().scale)).toBe(0.8);
-  await inspector.getByLabel('Move north (m)').fill('50');
-  await expect(inspector.locator('[data-check="parcelContainment"]')).toHaveAttribute('data-status','fail');
-  await inspector.getByLabel('Move north (m)').fill('0');
-  await inspector.getByLabel('Move east (m)').fill('50');
-  await expect(inspector.locator('[data-check="parcelContainment"]')).toHaveAttribute('data-status','fail');
-  expect(await page.evaluate(() => (window as any).PlanningViews.getItems().filter((item:any) => item.study).length)).toBe(2);
-  await inspector.getByRole('button',{name:'Reset test design'}).click();
-  await expect(inspector.locator('[data-study-summary]')).toHaveAttribute('data-study-summary','unresolved');
-  await inspector.getByLabel('Move east (m)').fill('');
-  await inspector.getByLabel('Design height (m)').fill('12');
-  await selectNativeOption(inspector.locator('select[data-study-input="frontEdge"]'), '1');
-  await expect(inspector.locator('[data-study-summary]')).toHaveCount(0);
-  await expect(inspector.getByLabel('Move east (m)')).toHaveAttribute('aria-invalid','true');
-  expect(await page.evaluate(() => (window as any).PlanningViews.getItems().find((item:any) => item.assessment.meaning === 'study-design').volumes[0].topM)).toBe(9);
-  await inspector.getByLabel('Move east (m)').fill('0');
-  await expect(inspector.locator('[data-check="height"]')).toHaveAttribute('data-status','fail');
-  expect(await page.evaluate(() => (window as any).PlanningParcelStudy.getForm().frontEdge)).toBe(1);
-  await page.setViewportSize({width:390,height:844});
-  const bounds = await inspector.boundingBox();
-  expect(bounds!.x).toBeGreaterThanOrEqual(0); expect(bounds!.x+bounds!.width).toBeLessThanOrEqual(390);
-});
-
-test('changed Atlas input requires an explicit new study and retains the old draft @features', async ({ mockApi: page }) => {
-  test.setTimeout(90_000);
-  let revision = 'source-1';
-  await page.route('**/planning/**', async route => {
-    if (!['xhr','fetch'].includes(route.request().resourceType())) return route.fallback();
-    const path = new URL(route.request().url()).pathname;
-    await route.fulfill({json:path.endsWith('/study') ? context(revision) : path.endsWith('/sources') ? {city:'colorado',sources:[source]}
-      : {schemaVersion:'planning-representations.v1',city:'colorado',items:[],sources:[source],summaries:[],unavailable:[],coverage:'source-results',nextCursor:null,omitted:0}});
-  });
-  await page.goto(url); await waitForMapReady(page);
-  const inspector = page.locator('#planning-inspector');
-  await expect(inspector.getByLabel('Design height (m)')).toBeVisible({timeout:45_000});
-  await inspector.getByLabel('Design height (m)').fill('12');
-  revision = 'source-2';
-  await page.reload(); await waitForMapReady(page);
-  await expect(inspector.getByText('The parcel or zoning source has changed.',{exact:false})).toBeVisible({timeout:45_000});
-  expect(await page.evaluate(() => JSON.parse((window as any).PersistentStorage.getItem('cb_planning_parcel_study_v1')).design.topM)).toBe(12);
-  expect(await page.evaluate(() => (window as any).PlanningViews.getItems().filter((item:any) => item.study).flatMap((item:any)=>item.volumes).length)).toBe(0);
-  await inspector.getByRole('button',{name:'Start again with current sources'}).click();
-  await expect(inspector.getByLabel('Design height (m)')).toHaveValue('9');
-  expect(await page.evaluate(() => JSON.parse((window as any).PersistentStorage.getItem('cb_planning_parcel_study_v1')).sourceReference.revision)).toBe('source-2');
-});
-
-test('Permitted draws viewport parcel volumes without a study and zoning areas have their own control @features', async ({ mockApi: page }) => {
   const input=context();
   // Two drawable configurations inside one bound: the inner footprint is the western half of the parcel.
   const inner = { type:'Polygon', coordinates:[[[-104.9907,39.7391],[-104.99045,39.7391],[-104.99045,39.7395],[-104.9907,39.7395],[-104.9907,39.7391]]] };
@@ -113,16 +43,34 @@ test('Permitted draws viewport parcel volumes without a study and zoning areas h
     sourceEvidence:{parcelReference:input.parcelReference,zoningRecordId:'slice-test',excludedConfigurations:{family3:'prohibited'}}};
   const zone={...input.source,title:'Synthetic zoning area',areas:[{geometry}],volumes:[],metrics:{heightM:null},
     assessment:{meaning:'zoning-area',status:'allowed'}};
-  let envelopeReads = 0;
+  let envelopeReads = 0, studyReads = 0;
+  const savedDraft = JSON.stringify({ schemaVersion: 'planning-parcel-study.v1', form: { heightM: 12 } });
+  await page.addInitScript(value => {
+    try {
+      localStorage.setItem('cb_planning_parcel_study_v1', value);
+    } catch (_) { /* opaque origin */ }
+  }, savedDraft);
+  // Keep the independent cadastral source offline too, so its recovery UI cannot cover the controls.
+  await page.route('**/Colorado_Public_Parcels/FeatureServer/0**', async route => {
+    const params = new URL(route.request().url()).searchParams;
+    const attributes = { OBJECTID: 1, parcel_id: 'fixture', countyName: 'Denver' };
+    const json = params.get('returnIdsOnly') === 'true' ? { objectIdFieldName: 'OBJECTID', objectIds: [1] }
+      : params.get('returnCountOnly') === 'true' ? { count: 1 }
+      : params.get('f') === 'geojson' ? { type: 'FeatureCollection', features: [{ type: 'Feature', properties: attributes, geometry }] }
+      : { geometryType: 'esriGeometryPolygon', spatialReference: { wkid: 4326 },
+        features: [{ attributes, geometry: { rings: geometry.coordinates } }] };
+    await route.fulfill({ json });
+  });
   await page.route('**/planning/**', async route => {
     if (!['xhr','fetch'].includes(route.request().resourceType())) return route.fallback();
     const path=new URL(route.request().url()).pathname;
     if (path.endsWith('/envelopes')) envelopeReads++;
+    if (path.endsWith('/study')) studyReads++;
     await route.fulfill({json:path.endsWith('/study') ? input : path.endsWith('/sources') ? {city:'colorado',sources:[source]}
       : {schemaVersion:'planning-representations.v1',city:'colorado',sources:[source],items:path.endsWith('/envelopes')?[envelope]:[zone],
         summaries:[],unavailable:[],coverage:'source-results',nextCursor:null,omitted:0}});
   });
-  await page.goto(url.replace('&planningParcel=parcel-test','').replace('planningScenario=family1','planningScenario=all')); await waitForMapReady(page);
+  await page.goto(url.replace('planningScenario=family1','planningScenario=all') + '&planningStudyScenario=family1'); await waitForMapReady(page);
   // The label names the shown configuration's height, never the bound's; the roll decides which one.
   const heightLabel = page.locator('.planning-envelope-height');
   await expect(heightLabel).toHaveCount(1,{timeout:45_000});
@@ -132,7 +80,7 @@ test('Permitted draws viewport parcel volumes without a study and zoning areas h
   // Two-family is flagged below its minimum lot, so the roll keeps the parcel on one-family.
   expect(first.configuration).toBe('family1');
   await expect(heightLabel).toHaveText('10.7 m');
-  expect(await page.evaluate(() => (window as any).PlanningParcelStudy.getContext())).toBeUndefined();
+  expect(studyReads).toBe(0);
   await page.getByRole('button',{name:'Buildings and massing',exact:true}).click();
   const panel=page.locator('#planning-views');
   await expect(panel.locator('.planning-scenario-select')).toHaveValue('all');
@@ -172,9 +120,13 @@ test('Permitted draws viewport parcel volumes without a study and zoning areas h
   await expect(inspector.locator('[data-configuration="family1"] button')).toHaveAttribute('aria-pressed','true');
   await expect(heightLabel).toHaveText('10.7 m');
   await expect(inspector.getByText(/^Assumed street side: (north|east|south|west)\./)).toBeVisible();
-  await inspector.getByRole('button',{name:'Test a parcel here',exact:true}).click();
-  await expect(inspector.getByLabel('Design height (m)')).toBeVisible();
-  expect(await page.evaluate(() => (window as any).PlanningViews.getItems().filter((item:any)=>item.parcelEnvelope).length)).toBe(0);
-  expect(new URL(page.url()).searchParams.get('planningStudyScenario')).toBe('family1');
-  expect(new URL(page.url()).searchParams.get('planningScenario')).toBe('all');
+  await expect(page.getByRole('button', { name: 'Test a parcel here', exact: true })).toHaveCount(0);
+  await expect(page.locator('[data-study-input], [data-study-results]')).toHaveCount(0);
+  await page.screenshot({ path: '/tmp/permitted-without-parcel-study.png' });
+  await page.reload();
+  await waitForMapReady(page);
+  await expect(heightLabel).toHaveCount(1);
+  expect(studyReads).toBe(0);
+  await expect(page.locator('[data-study-input], [data-study-results]')).toHaveCount(0);
+  expect(await page.evaluate(() => localStorage.getItem('cb_planning_parcel_study_v1'))).toBe(savedDraft);
 });

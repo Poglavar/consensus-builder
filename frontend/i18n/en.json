@@ -3,71 +3,6 @@
         "title": "Duplicate design",
         "hint": "Move the copy, then click to place it. Escape cancels."
     },
-    "planningStudy": {
-        "exactStartHint": "Opens this exact parcel with an editable design and a selectable front edge.",
-        "title": "Parcel study",
-        "envelopeTitle": "Partial envelope",
-        "designTitle": "Design test",
-        "start": "Test a parcel here",
-        "startHint": "Uses the parcel at the clicked point, or at the map centre. Source areas and parcels keep their own identities.",
-        "loading": "Reading the parcel and zoning sources…",
-        "scope": "Edit a test volume against direct Atlas values. The envelope shows only the supported dimensional subset, with an assumed front edge and relative ground height.",
-        "heightM": "Design height (m)",
-        "scale": "Footprint scale (%)",
-        "eastM": "Move east (m)",
-        "northM": "Move north (m)",
-        "frontEdge": "Assumed front edge",
-        "edge": "Edge {{number}}",
-        "breach": "The design exceeds at least one tested limit. Other requirements remain unresolved.",
-        "unresolved": "No breach of the tested limits. Unresolved requirements remain.",
-        "measured": "Measured",
-        "limit": "Limit",
-        "missingDirectValue": "No direct source value is available.",
-        "unresolvedTitle": "Unresolved requirements and assumptions",
-        "saved": "Draft saved in this browser. No proposal has been applied or published.",
-        "saveError": "The draft could not be saved in this browser.",
-        "changed": "The parcel or zoning source has changed. The previous draft is retained; its assessment is no longer current.",
-        "restart": "Start again with current sources",
-        "reset": "Reset test design",
-        "references": "Pinned zoning and parcel references",
-        "invalidInput": "Enter dimensions within the displayed ranges. The map still shows the last valid design.",
-        "status": {
-            "pass": "Within tested limit",
-            "fail": "Exceeds tested limit",
-            "unknown": "Unresolved"
-        },
-        "checks": {
-            "parcelContainment": "Inside the source parcel",
-            "zoningCoverage": "Design area outside source coverage",
-            "frontSetback": "Front setback",
-            "sideSetback": "Side setbacks",
-            "rearSetback": "Rear setback",
-            "buildingCoverage": "Building coverage",
-            "use": "Recorded housing treatment"
-        },
-        "unresolvedReasons": {
-            "applicability": "Current legal applicability, overlays, exceptions and any required hearing remain unverified.",
-            "edge-assumption": "Front, rear and side edges follow the chosen front edge. This interpretation has not been verified against street or legal-lot evidence.",
-            "vertical-reference": "Height uses a flat relative ground reference. Surveyed terrain, roof rules and the ordinance’s height datum are unverified.",
-            "measurement-basis": "Area checks use this parcel and the test footprint. Legal lot, building and floor-area definitions may differ.",
-            "other-rules": "Parking, floor area, dwelling density, occupancy, infrastructure and other unsupported rules are not evaluated. Full source fields remain in the zoning inspector.",
-            "partial-source-coverage": "{{area}} of the parcel lies outside the supplied zoning area. The partial envelope excludes that area; its applicability is unresolved."
-        },
-        "errors": {
-            "study-source-unavailable": "A source could not be read. Retry when it is available.",
-            "study-unavailable": "This source has no configured parcel study.",
-            "study-parcel-source-unavailable": "The configured parcel source is unavailable.",
-            "study-parcel-missing": "No parcel was returned at this point. Click inside a parcel and retry.",
-            "study-parcel-ambiguous": "Several parcel identities overlap this point. Choose an exact parcel; no identity was inferred.",
-            "study-parcel-incomplete": "Parcel coverage is incomplete.",
-            "study-zoning-incomplete": "The zoning source returned incomplete coverage.",
-            "study-multiple-zoning-areas": "This parcel crosses multiple zoning areas. Their rules have not been composed.",
-            "study-zoning-missing": "No supplied zoning area intersects this parcel.",
-            "unsupported-parcel-shape": "This demonstration supports small convex parcels without holes. This parcel needs a different geometry evaluator.",
-            "empty-supported-bound": "The supported setbacks leave no drawable bound.",
-            "invalid-front-edge": "Choose a valid parcel edge."
-        }
-    },
     "onMapEditor": {
         "missingSite": "This saved building has no valid authored site boundary, so its geometry cannot be edited safely.",
         "cancel": "Cancel",
@@ -898,7 +833,8 @@
                 "cidMismatch": "The server computed a different identity for this design, so nothing was published.",
                 "pinningUnconfigured": "This server cannot pin published designs yet (pinning is not configured).",
                 "layoutNeedsAgreement": "A parcel layout is published with the agreement that settles its land.",
-                "tooLarge": "This design is too large to publish (more than 1 MB).",
+                "tooLarge": "This design exceeds the 10 MiB publication limit. Reduce its extent or detail before sharing; it is saved locally.",
+                "invalidDesign": "This design contains invalid data. Correct it before sharing.",
                 "rateLimitedFor": "Too many publications for now. Try again in about {{minutes}} min.",
                 "rateLimited": "Too many publications for now. Wait a few minutes and try again.",
                 "refused": "The server refused this design: {{reason}}",
@@ -2160,6 +2096,7 @@
             "errorEngine": "Could not load the model parser.",
             "uploading": "Uploading model…",
             "uploadFailed": "The model could not be uploaded. Check the connection and try again; your file is still selected.",
+            "uploadRefused": "The server refused this upload (403). Your file is still selected.",
             "placementFailed": "Could not open the building editor. Your file is still selected; try again.",
             "cancel": "Cancel",
             "confirm": "Use this building"
@@ -7000,6 +6937,9 @@
             "communityNote": "Votes on a community rule are counted off-chain in M3.",
             "copyLink": "Copy link",
             "rederive": "Its pieces are known here by their hashes only: apply its designs on the same ground to re-derive them and compare.",
+            "readOnly": "Read-only published agreement",
+            "readOnlyStatus": "Read-only view. Local map status is not evaluated.",
+            "readOnlyPieces": "Its pieces are available by hash only in this read-only view.",
             "linkCopied": "Agreement proposed. Its link is copied.",
             "proposedAt": "Agreement proposed: {{link}}",
             "linkCopiedShort": "Agreement link copied.",
@@ -7168,8 +7108,8 @@
         "assumedSide": "Assumed street side: {{side}}.",
         "lotBelowMinimum": "Lot below the {{minimum}} minimum",
         "sideOptions": {
-            "one": "{{count}} usable side; roll the dice for another housing type, or open a study to choose the edge.",
-            "other": "{{count}} usable sides; roll the dice for another side and housing type, or open a study to choose the edge."
+            "one": "{{count}} usable side; roll the dice for another housing type.",
+            "other": "{{count}} usable sides; roll the dice for another side and housing type."
         },
         "envelopesLoaded": {
             "one": "{{count}} partial parcel envelope · {{missing}} parcels without massing",

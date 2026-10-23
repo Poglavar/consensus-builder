@@ -46,7 +46,7 @@
 body[data-planning-proposed="ghost"] .leaflet-proposedBuildings-pane { opacity: 0.4; }
 body[data-planning-proposed="off"] .leaflet-proposedBuildings-pane { visibility: hidden; }
 body[data-planning-existing="ghost"] :is(.leaflet-observedBuildings-pane, .leaflet-observedReferences-pane) { opacity: 0.5; }
-body[data-planning-existing="solid"] :is(.leaflet-observedBuildings-pane, .leaflet-observedReferences-pane) path { fill-opacity: 1; stroke-opacity: 1; }
+body[data-planning-existing="solid"] :is(.leaflet-observedBuildings-pane, .leaflet-observedReferences-pane) path { stroke-opacity: 1; }
 body[data-planning-existing="off"] :is(.leaflet-observedBuildings-pane, .leaflet-observedReferences-pane),
 body[data-planning-existing-scope="surviving"] .leaflet-observedReferences-pane,
 body[data-planning-existing-scope="removed"] .leaflet-observedReferences-pane { visibility: hidden; }
@@ -84,19 +84,6 @@ body[data-planning-existing-scope="removed"] .leaflet-observedReferences-pane { 
 .planning-evidence summary { cursor: pointer; color: var(--cb-text); }
 .planning-evidence__terms { white-space: pre-wrap; overflow-wrap: anywhere; font-size: var(--cb-text-xs); }
 .planning-inspector__footer { margin-top: var(--cb-space-3); font-size: var(--cb-text-base); }
-.planning-study-start, .planning-study-controls { margin-block: var(--cb-space-4); }
-.planning-study-controls { display: grid; grid-template-columns: 1fr 1fr; gap: var(--cb-space-3); }
-.planning-study-controls label { display: grid; gap: var(--cb-space-1); min-width: 0; font-size: var(--cb-text-sm); }
-.planning-study-controls label:last-child { grid-column: 1 / -1; }
-.planning-study-controls :is(input, select) { width: 100%; min-width: 0; box-sizing: border-box; padding: var(--cb-space-2); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-md); background: var(--cb-surface); color: var(--cb-text); font: inherit; }
-.planning-study-checks { font-size: var(--cb-text-sm); }
-.planning-study-checks > div { padding-block: var(--cb-space-2); border-bottom: 1px solid var(--cb-line); }
-.planning-study-checks dt { font-weight: var(--cb-weight-semibold); }
-.planning-study-checks dd { margin: var(--cb-space-1) 0 0; }
-.planning-study-checks dd > * { display: block; }
-.planning-study-checks dd span { color: var(--cb-text-muted); margin-top: var(--cb-space-1); }
-.planning-study-checks [data-status="fail"] strong { color: var(--cb-danger); }
-.planning-study-checks [data-status="unknown"] strong { color: var(--cb-warning-soft-ink); }
 /* Configurations list in the inspector: one button per recorded housing type; the shown one is outlined. */
 .planning-configurations { margin: var(--cb-space-3) 0; font-size: var(--cb-text-sm); }
 .planning-configurations h3 { font-size: var(--cb-text-base); margin: 0 0 var(--cb-space-2); }

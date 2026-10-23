@@ -115,6 +115,29 @@ test('a failed GLB upload keeps the selected file and retries without reopening 
   });
 });
 
+test('a refused GLB upload reports 403 and retains the file for retry', async ({ page }) => {
+  let uploads = 0;
+  await page.route('**/models', route => {
+    uploads++;
+    return uploads === 1
+      ? route.fulfill({ status: 403, json: { error: 'Forbidden' } })
+      : route.fulfill({ json: { modelUrl: '/uploads/models/retried-building.glb' } });
+  });
+  await openImporter(page);
+  const input = page.locator('#building-upload-file');
+  await input.setInputFiles('../test-assets/test-building.glb');
+  const confirm = page.locator('#building-upload-confirm');
+  await expect(confirm).toBeEnabled({ timeout: 20_000 });
+  await confirm.click();
+  await expect(page.locator('#building-upload-status')).toHaveText('The server refused this upload (403). Your file is still selected.');
+  await expect(input).toHaveValue(/test-building\.glb/);
+  await expect(confirm).toBeEnabled();
+  expect(await page.evaluate(() => (window as any).importedBuilding)).toBeUndefined();
+  await confirm.click();
+  await expect(page.locator('#building-upload-modal')).toHaveCount(0);
+  expect(uploads).toBe(2);
+});
+
 test('late parse callbacks cannot replace a newer file or reopen a closed dialog', async ({ page }) => {
   await openImporter(page, 'constructor');
   await page.evaluate(() => {

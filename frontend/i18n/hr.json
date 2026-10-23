@@ -3,71 +3,6 @@
         "title": "Dupliciranje dizajna",
         "hint": "Pomakni kopiju pa klikni za postavljanje. Escape odustaje."
     },
-    "planningStudy": {
-        "exactStartHint": "Otvara ovu točnu česticu s izmjenjivim projektom i odabirom prednjeg ruba.",
-        "title": "Studija čestice",
-        "envelopeTitle": "Djelomična omotnica",
-        "designTitle": "Provjera oblikovanja",
-        "start": "Provjeri česticu ovdje",
-        "startHint": "Koristi česticu na odabranoj točki ili u središtu karte. Zonska područja i čestice zadržavaju zasebne identitete.",
-        "loading": "Učitavanje čestice i izvora prostornih pravila…",
-        "scope": "Uredite probni volumen prema izravnim vrijednostima Atlasa. Omotnica prikazuje podržani dio dimenzijskih ograničenja, uz pretpostavljeni prednji rub i relativnu visinu tla.",
-        "heightM": "Visina oblikovanja (m)",
-        "scale": "Mjerilo tlocrta (%)",
-        "eastM": "Pomak na istok (m)",
-        "northM": "Pomak na sjever (m)",
-        "frontEdge": "Pretpostavljeni prednji rub",
-        "edge": "Rub {{number}}",
-        "breach": "Oblikovanje prelazi barem jedno provjereno ograničenje. Ostali uvjeti ostaju nerazriješeni.",
-        "unresolved": "Provjerena ograničenja nisu prekoračena. Nerazriješeni uvjeti ostaju.",
-        "measured": "Izmjereno",
-        "limit": "Ograničenje",
-        "missingDirectValue": "Nije dostupna izravna vrijednost izvora.",
-        "unresolvedTitle": "Nerazriješeni uvjeti i pretpostavke",
-        "saved": "Nacrt je spremljen u ovom pregledniku. Prijedlog nije primijenjen ni objavljen.",
-        "saveError": "Nacrt se nije mogao spremiti u ovom pregledniku.",
-        "changed": "Izvor čestice ili prostornih pravila se promijenio. Prethodni nacrt je sačuvan; njegova procjena više nije aktualna.",
-        "restart": "Počni ponovno s aktualnim izvorima",
-        "reset": "Vrati početno probno oblikovanje",
-        "references": "Fiksirane reference pravila i čestice",
-        "invalidInput": "Unesite dimenzije unutar prikazanih raspona. Karta i dalje prikazuje posljednje valjano oblikovanje.",
-        "status": {
-            "pass": "Unutar provjerenog ograničenja",
-            "fail": "Prekoračeno provjereno ograničenje",
-            "unknown": "Nerazriješeno"
-        },
-        "checks": {
-            "parcelContainment": "Unutar izvorne čestice",
-            "zoningCoverage": "Dio oblikovanja izvan pokrivenosti izvora",
-            "frontSetback": "Prednji odmak",
-            "sideSetback": "Bočni odmaci",
-            "rearSetback": "Stražnji odmak",
-            "buildingCoverage": "Izgrađenost",
-            "use": "Zabilježeni uvjet stambene namjene"
-        },
-        "unresolvedReasons": {
-            "applicability": "Aktualna pravna primjenjivost, preklopna pravila, iznimke i potrebna rasprava nisu provjereni.",
-            "edge-assumption": "Prednji, stražnji i bočni rubovi proizlaze iz odabranog prednjeg ruba. Tumačenje nije provjereno prema ulici ili pravnom obuhvatu građevne čestice.",
-            "vertical-reference": "Visina koristi ravnu relativnu referencu tla. Izmjereni teren, pravila krova i visinska referenca propisa nisu provjereni.",
-            "measurement-basis": "Provjera površina koristi ovu česticu i probni tlocrt. Pravne definicije čestice, zgrade i etažne površine mogu se razlikovati.",
-            "other-rules": "Parkiranje, etažna površina, gustoća stanovanja, uvjeti stanovanja, infrastruktura i ostala nepodržana pravila nisu procijenjeni. Sva polja izvora ostaju u inspektoru prostornih pravila.",
-            "partial-source-coverage": "{{area}} čestice leži izvan dostavljenog zonskog područja. Djelomična omotnica isključuje tu površinu; primjenjivost ostaje nerazriješena."
-        },
-        "errors": {
-            "study-source-unavailable": "Izvor se nije mogao učitati. Pokušajte ponovno kada bude dostupan.",
-            "study-unavailable": "Za ovaj izvor nije postavljena studija čestice.",
-            "study-parcel-source-unavailable": "Postavljeni izvor čestica nije dostupan.",
-            "study-parcel-missing": "Na ovoj točki nije pronađena čestica. Kliknite unutar čestice i pokušajte ponovno.",
-            "study-parcel-ambiguous": "Na ovoj točki preklapa se više identiteta čestica. Odaberite točnu česticu; identitet nije pretpostavljen.",
-            "study-parcel-incomplete": "Pokrivenost česticama nije potpuna.",
-            "study-zoning-incomplete": "Izvor prostornih pravila vratio je nepotpunu pokrivenost.",
-            "study-multiple-zoning-areas": "Čestica prelazi više zonskih područja. Njihova pravila još nisu objedinjena.",
-            "study-zoning-missing": "Nijedno dostavljeno zonsko područje ne siječe ovu česticu.",
-            "unsupported-parcel-shape": "Demonstracija podržava male konveksne čestice bez rupa. Za ovu česticu potreban je drugi geometrijski evaluator.",
-            "empty-supported-bound": "Podržani odmaci ne ostavljaju omotnicu za prikaz.",
-            "invalid-front-edge": "Odaberite valjani rub čestice."
-        }
-    },
     "onMapEditor": {
         "missingSite": "Ova spremljena zgrada nema valjanu granicu izvorne lokacije pa nije moguće sigurno uređivati njezinu geometriju.",
         "cancel": "Odustani",
@@ -900,7 +835,8 @@
                 "cidMismatch": "Poslužitelj je izračunao drugačiji identitet ovog dizajna pa ništa nije objavljeno.",
                 "pinningUnconfigured": "Ovaj poslužitelj još ne može pohranjivati objavljene dizajne (pohrana nije konfigurirana).",
                 "layoutNeedsAgreement": "Raspored čestica objavljuje se zajedno sa sporazumom koji uređuje njegovo zemljište.",
-                "tooLarge": "Ovaj dizajn je prevelik za objavu (više od 1 MB).",
+                "tooLarge": "Dizajn prelazi ograničenje objave od 10 MiB. Smanjite njegov obuhvat ili detalje prije dijeljenja; spremljen je lokalno.",
+                "invalidDesign": "Dizajn sadrži neispravne podatke. Ispravite ih prije dijeljenja.",
                 "rateLimitedFor": "Zasad je previše objava. Pokušajte ponovno za otprilike {{minutes}} min.",
                 "rateLimited": "Zasad je previše objava. Pričekajte nekoliko minuta pa pokušajte ponovno.",
                 "refused": "Poslužitelj je odbio ovaj dizajn: {{reason}}",
@@ -2182,6 +2118,7 @@
             "errorEngine": "Nije moguće učitati čitač modela.",
             "uploading": "Učitavanje modela…",
             "uploadFailed": "Model nije moguće prenijeti. Provjerite vezu i pokušajte ponovno; datoteka je i dalje odabrana.",
+            "uploadRefused": "Poslužitelj je odbio prijenos (403). Datoteka je i dalje odabrana.",
             "placementFailed": "Uređivač zgrade nije moguće otvoriti. Datoteka je i dalje odabrana; pokušajte ponovno.",
             "cancel": "Odustani",
             "confirm": "Upotrijebi ovu zgradu"
@@ -7042,6 +6979,9 @@
             "communityNote": "Glasovi prema pravilu zajednice broje se izvan lanca u M3.",
             "copyLink": "Kopiraj link",
             "rederive": "Ovdje su njegovi dijelovi poznati samo po hashevima: primijenite njegove dizajne na istom tlu kako biste ih ponovno izveli i usporedili.",
+            "readOnly": "Objavljeni sporazum samo za čitanje",
+            "readOnlyStatus": "Prikaz samo za čitanje. Stanje lokalne karte ne provjerava se.",
+            "readOnlyPieces": "Dijelovi su u ovom prikazu samo za čitanje dostupni samo po sažecima.",
             "linkCopied": "Sporazum je predložen. Njegov link je kopiran.",
             "proposedAt": "Sporazum je predložen: {{link}}",
             "linkCopiedShort": "Poveznica na sporazum je kopirana.",
@@ -7214,9 +7154,9 @@
         "assumedSide": "Pretpostavljena ulična strana: {{side}}.",
         "lotBelowMinimum": "Čestica je manja od minimuma od {{minimum}}",
         "sideOptions": {
-            "one": "{{count}} upotrebljiva strana; bacite kocku za drugi tip stanovanja ili otvorite studiju za odabir ruba.",
-            "few": "{{count}} upotrebljive strane; bacite kocku za drugu stranu i tip stanovanja ili otvorite studiju za odabir ruba.",
-            "other": "{{count}} upotrebljivih strana; bacite kocku za drugu stranu i tip stanovanja ili otvorite studiju za odabir ruba."
+            "one": "{{count}} upotrebljiva strana; bacite kocku za drugi tip stanovanja.",
+            "few": "{{count}} upotrebljive strane; bacite kocku za drugu stranu i tip stanovanja.",
+            "other": "{{count}} upotrebljivih strana; bacite kocku za drugu stranu i tip stanovanja."
         },
         "envelopesLoaded": {
             "one": "{{count}} djelomična ovojnica čestice · {{missing}} čestica bez volumena",

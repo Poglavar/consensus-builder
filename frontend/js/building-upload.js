@@ -433,7 +433,11 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ modelData: dataUrl, fileName: file.name })
         });
-        if (!resp.ok) throw new Error('models endpoint returned ' + resp.status);
+        if (!resp.ok) {
+            const error = new Error('models endpoint returned ' + resp.status);
+            error.status = resp.status;
+            throw error;
+        }
         const json = await resp.json();
         if (!json || !json.modelUrl) throw new Error('models endpoint returned no modelUrl');
         return json.modelUrl;
@@ -461,8 +465,10 @@
         } catch (e) {
             if (version !== loadVersion || !modalEl) return;
             console.warn('Building model upload failed', e);
-            setStatus(t('modal.buildingUpload.uploadFailed',
-                'The model could not be uploaded. Check the connection and try again; your file is still selected.'), true);
+            setStatus(e.status === 403
+                ? t('modal.buildingUpload.uploadRefused', 'The server refused this upload (403). Your file is still selected.')
+                : t('modal.buildingUpload.uploadFailed',
+                    'The model could not be uploaded. Check the connection and try again; your file is still selected.'), true);
             setConfirmEnabled(true);
             return;
         }

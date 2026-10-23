@@ -878,3 +878,8 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-23: The user authorized the remaining 20 Sonnet 5.5 Batch MCP evaluation cases under an additional US$3 total cap, excluding permanent publication and wallet signing; deployment still needs its own authorization.
 
 - 2026-10-23: Freeform land take is reviewed per touched live parcel (footprint cut or whole parcel), stored as exact geometry separate from building massing, and shared by formation, demolition and agreement inputs; changed consequences require renewed acceptance.
+
+- 2026-10-23: Before sharing a local preview link, verify its listening checkout, resolved backend and a real source-data response in the browser; include the backend override when the local API is not running.
+- 2026-10-23: Built/GDI survey overlays start Off; when shown, use a faint fill with a contrasting border instead of opaque purple footprints.
+
+- 2026-10-23: Remove the experimental Atlas parcel-study editor from the UI, including its entry point and link/draft restoration; retain Permitted envelope inspection and calculations.
