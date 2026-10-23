@@ -463,11 +463,9 @@ function getProposalDisplayDescription(proposal, fallbackProposal = null, curren
 
 function applyProposalListFilters(dataset) {
     const goalFilter = proposalListState.filterType;
-    const authorFilter = proposalListState.authorFilter.trim().toLowerCase();
     const searchFilter = proposalListState.searchText.trim().toLowerCase();
-    // Publication and local map application are independent design states.
+    // Publication is independent of whether the design is applied on this map.
     const publicationFilter = proposalListState.publicationFilter || 'all';
-    const appliedFilter = proposalListState.appliedFilter || 'all';
 
     // Vremenska crta plana: kumulativni filtar po epohi (null = bez filtra).
     if (window.__proposalEpoch) {
@@ -477,10 +475,6 @@ function applyProposalListFilters(dataset) {
     return dataset.filter(entry => {
         const { metrics } = entry;
         if (goalFilter !== 'all' && metrics.goalKey !== goalFilter) {
-            return false;
-        }
-
-        if (authorFilter && !metrics.authorLower.includes(authorFilter)) {
             return false;
         }
 
@@ -494,13 +488,6 @@ function applyProposalListFilters(dataset) {
         if (publicationFilter !== 'all') {
             const published = !!window.DesignSync.publishedCid(entry.proposal);
             if ((publicationFilter === 'published') !== published) return false;
-        }
-
-        if (appliedFilter !== 'all') {
-            // The same "Applied" the row's badge shows (proposals/display-state.js).
-            const { applied } = window.__proposalDisplayState.of(entry.proposal);
-            if (appliedFilter === 'applied' && !applied) return false;
-            if (appliedFilter === 'not-applied' && applied) return false;
         }
 
         return true;

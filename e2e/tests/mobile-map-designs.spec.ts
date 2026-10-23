@@ -20,7 +20,7 @@ test('Designs gives most of a phone screen to cards with actions always visible'
   const body = await sheet.locator('.proposal-list-modal-body').boundingBox();
   expect(body!.height).toBeGreaterThan(844 * 0.55);
   await expect(sheet.locator('.proposal-list-item').first()).toBeInViewport({ ratio: 1 });
-  await expect(sheet.locator('#agreementsButton')).toBeVisible();
+  await expect(sheet.locator('#agreementsButton, #mintedAgreementsButton')).toHaveCount(0);
   await expect(sheet.locator('#planStatsButton')).toBeVisible();
   await expect(sheet.locator('#proposal-list-actions summary')).toHaveCount(0);
   await expect(sheet.locator('.proposal-list-navigation-hint')).toHaveCount(0);

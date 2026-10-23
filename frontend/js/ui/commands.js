@@ -28,7 +28,7 @@
         'turn-progress-fill', 'turn-progress-time', 'game-play-pause-btn',
         // Proposals sheet
         'showProposalsButton', 'planStatsButton', 'roosterScoreButton',
-        'shareAppliedProposalsButton', 'agreementsButton', 'mintedAgreementsButton',
+        'shareAppliedProposalsButton',
         // Layers sheet: parcels
         'parcelsCheckbox', 'showAdParcelsCheckbox', 'showParcelNumbers', 'showOwnerCounts',
         'showProposalCounts', 'markMintedCheckbox',
@@ -395,10 +395,6 @@
             labelKey: 'sidebar.proposals.grainScore.buttonLabel', fallbackLabel: 'Urban rooster', icon: 'fas fa-crow' }),
         control('shareAppliedProposalsButton', { id: 'proposals.sharePlan', group: 'proposals', surfaces: ['proposals'],
             labelKey: 'mapShell.shareMap', fallbackLabel: 'Share this map', icon: 'fas fa-share-alt' }),
-        control('agreementsButton', { id: 'proposals.agreements', group: 'proposals', surfaces: ['proposals'],
-            labelKey: 'sidebar.proposals.agreementsButton', fallbackLabel: 'Agreements', icon: 'fas fa-handshake' }),
-        control('mintedAgreementsButton', { id: 'proposals.mintedAgreements', group: 'proposals', surfaces: ['proposals'],
-            labelKey: 'sidebar.proposals.mintedAgreementsButton', fallbackLabel: 'Minted agreements', icon: 'fas fa-certificate' }),
         { id: 'proposals.clearLocal', group: 'proposals', surfaces: ['settings'], debugOnly: true, run: callGlobal('clearLocalProposalData'),
             labelKey: 'sidebar.proposals.clearButton', fallbackLabel: 'Clear Proposals From Local Storage', icon: 'fas fa-trash' },
 

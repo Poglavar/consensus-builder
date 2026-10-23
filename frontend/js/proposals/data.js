@@ -1815,8 +1815,6 @@ const proposalListState = {
     source: 'local',
     filterType: 'all',
     publicationFilter: 'all', // 'all' | 'draft' | 'published'
-    appliedFilter: 'all',   // 'all' | 'applied' | 'not-applied'
-    authorFilter: '',
     searchText: '',
     sortKey: 'created-desc',
     selectedId: null

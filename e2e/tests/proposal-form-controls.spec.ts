@@ -49,11 +49,11 @@ test('ownership, epoch and parcel tolerance persist from the draft review form',
   expect(restored).toMatchObject({ epochYear: 2035, toleranceM: 0.12 });
 });
 
-test('publication, map-state and author filters narrow the actual design list', async ({ mockApi: page }) => {
+test('publication and search filters narrow the design list by title and author', async ({ mockApi: page }) => {
   await openCity(page);
   await page.evaluate(parcelId => {
     const rows = [
-      { title: 'Applied active park', author: 'Alex', lifecycleStatus: 'Active', applied: true },
+      { title: 'Neighbourhood park', author: 'Alex', lifecycleStatus: 'Active', applied: true },
       { title: 'Unapplied active park', author: 'Blair', lifecycleStatus: 'Active', applied: false },
       { title: 'Published park', author: 'Alex', applied: false },
     ];
@@ -67,22 +67,26 @@ test('publication, map-state and author filters narrow the actual design list', 
   const titles = list.locator('.proposal-list-title');
   await expect(titles).toHaveCount(3);
   await list.locator('.proposal-filters-toggle').click();
+  await expect(list.locator('#proposal-filter-applied')).toHaveCount(0);
+  await expect(list.locator('#proposal-filter-author')).toHaveCount(0);
+  await expect(list.locator('.proposal-filters-toggle-count')).toHaveCount(0);
+  await expect(list.locator('#agreementsButton, #mintedAgreementsButton')).toHaveCount(0);
   await selectNativeOption(list.locator('#proposal-filter-publication'), 'draft');
   await expect(titles).toHaveCount(2);
-  await selectNativeOption(list.locator('#proposal-filter-applied'), 'applied');
-  await expect(titles).toHaveText(['Applied active park']);
-  await selectNativeOption(list.locator('#proposal-filter-applied'), 'not-applied');
+  await list.locator('#proposal-filter-search').fill('Neighbourhood');
+  await expect(titles).toHaveText(['Neighbourhood park']);
+  await list.locator('#proposal-filter-search').fill('Blair');
   await expect(titles).toHaveText(['Unapplied active park']);
-  await selectNativeOption(list.locator('#proposal-filter-applied'), 'all');
+  await list.locator('#proposal-filter-search').fill('');
   await selectNativeOption(list.locator('#proposal-filter-publication'), 'all');
-  await list.locator('#proposal-filter-author').fill('Alex');
+  await list.locator('#proposal-filter-search').fill('Alex');
   await expect(titles).toHaveCount(2);
   await expect(titles).not.toContainText(['Unapplied active park']);
   await selectNativeOption(list.locator('#proposal-filter-publication'), 'published');
   await expect(titles).toHaveText(['Published park']);
-  await list.locator('#proposal-filter-author').fill('Blair');
+  await list.locator('#proposal-filter-search').fill('Blair');
   await expect(titles).toHaveCount(0);
-  await list.locator('#proposal-filter-author').fill('');
+  await list.locator('#proposal-filter-search').fill('');
   await selectNativeOption(list.locator('#proposal-filter-publication'), 'all');
   await expect(titles).toHaveCount(3);
 });

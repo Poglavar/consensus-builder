@@ -21,9 +21,15 @@ async function openDesignList(page: Page): Promise<void> {
     }
   }, PARCEL_ID);
   await page.locator('#proposals-button').click();
-  await expect(page.locator('#proposals-sheet')).toBeVisible();
+  const sheet = page.locator('#proposals-sheet');
+  await expect(sheet).toBeVisible();
   await expect(page.locator('#roosterScoreButton')).toHaveAccessibleName('Urban rooster');
   await expect(page.locator('#roosterScoreButton strong')).toHaveText('Urban rooster');
+  await expect(sheet.locator('#agreementsButton, #mintedAgreementsButton')).toHaveCount(0);
+  await sheet.locator('.proposal-filters-toggle').click();
+  await expect(sheet.locator('#proposal-filter-applied, #proposal-filter-author')).toHaveCount(0);
+  await expect(sheet.locator('.proposal-filters-toggle-count')).toHaveCount(0);
+  await sheet.locator('.proposal-filters-toggle').click();
 }
 
 async function assertCardsStayAligned(page: Page, viewportWidth: number): Promise<void> {
