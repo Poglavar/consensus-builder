@@ -112,6 +112,7 @@ are retained here so that a later passing run does not erase their scope or caus
 | Fresh npm install and stock stdio client | 44 tools and a Madrid road draft passed from an unrelated directory; initial SDK import used the wrong export and stopped before connecting, then corrected |
 | Headless unit tests: source selection, Croatian binding/publication and shared binding (7 files, 90 tests) | Passed |
 | Headless unit tests: preview bounds, integrity, drafts and registration (4 files, 24 tests) | Passed, including the uncompressed preview limit |
+| Sealed package from implementation commit `05e8d889a`: fresh temporary install, stock stdio client | Passed: 44 tools, current-source Madrid road, canonical CID, authoring time and private preview from an unrelated cwd. 514 packed files, no credentials. Initial npm pack could not write the default cache; using a temporary cache succeeded. |
 | Paid street pilot, one task / seven total rounds | Passed, cumulative US$0.097633; first four rounds failed on cwd-dependent projection, corrected before continuing the same authorized task |
 
 The final draft-authoring-time correction is covered by the final headless unit run; the paid pilot
