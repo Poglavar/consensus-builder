@@ -17,10 +17,11 @@ const frontend = new URL('../../frontend/js/', import.meta.url);
 for (const path of ['cid.js', 'metric-frame.js', 'corridor-profile.js', 'corridor-osm-form.js', 'corridor-junction.js',
     'corridor-transition.js', 'proposals/corridor-levels.js', 'corridor-footprint.js', 'proposals/formation-depth.js',
     'design-record.js', 'parcel-layout-validation.js', 'parcel-layout-layouts.js', 'reparcellization-slice.js',
-    'parcels/schelling-grid.js', 'intent-design.js']) {
+    'parcels/schelling-grid.js', 'single-building-geometry.js', 'park-planting.js', 'urban-rule-variation.js', 'intent-editing.js', 'intent-design.js']) {
     const url = new URL(path, frontend);
     context.require = createRequire(url);
     runInContext(readFileSync(url, 'utf8'), context, { filename: path, timeout: 10_000 });
 }
 // Projection dependencies belong to the runtime, never the caller's cwd or a polluted global.
 export const intentDesign = context.IntentDesign;
+export const intentEditing = context.IntentEditing;

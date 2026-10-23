@@ -26,7 +26,7 @@ export async function checkContracts({ origin, fixtures = {}, onCheck = () => {}
                 if (Boolean(result.isError) !== publish) { record({ tool: tool.name, status: 'failed', result }); continue; }
                 const value = result.structuredContent;
                 const artifact = value?.untrusted?.design || value?.untrusted?.agreement || value?.untrusted?.content;
-                const draft = /^ugt_draft_|^ugt_modify_design$/.test(tool.name);
+                const draft = /^ugt_(draft_|modify_design$|edit_design$|edit_plan$)/.test(tool.name);
                 // Capabilities contain schema descriptors called "design" and "agreement";
                 // those are not draft artifacts and have no content CID.
                 if ((draft || value?.cid) && artifact && value.cid !== cidOfObject(artifact)) throw new Error(`CID mismatch from ${tool.name}`);

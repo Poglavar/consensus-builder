@@ -50,7 +50,8 @@ describe('hosted MCP HTTP', () => {
         const resources = await client.listResources();
         expect(resources.resources.map(r => r.uri)).toContain('ugt://vocabulary');
         expect((await client.readResource({ uri: 'ugt://schemas/design' })).contents[0].text).toContain('design/v1');
-        expect((await client.listPrompts()).prompts).toHaveLength(4);
+        expect((await client.listPrompts()).prompts).toHaveLength(5);
+        expect((await client.readResource({ uri: 'ugt://editing' })).contents[0].text).toContain('JSON Pointer');
     });
     it('rejects credential-bearing environments before starting', () => {
         for (const key of ['UGT_AGENT_KEYPAIR', 'DATABASE_URL', 'PINATA_JWT_TOKEN']) expect(() => createMcpHttpService({ env: { [key]: 'configured' } })).toThrow(/no credentials/);

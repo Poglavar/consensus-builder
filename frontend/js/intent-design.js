@@ -96,7 +96,15 @@
         } else if (intent.kind === 'urban-rule') {
             if (!intent.rule || typeof intent.rule !== 'object') fail('An urban rule needs its parameters');
             record = { goal: 'urban-rule', site, buildingProposal: { typologyType: 'urban-rule', parameters: copy(intent.rule) } };
+            if (intent.rule.typology === 'row') {
+                const building = load('IntentEditing', './intent-editing.js').rowEnvelope(site, intent.rule, d.turf);
+                record.goal = 'row';
+                record.buildingProposal = { typologyType: 'row', parameters: { ...copy(intent.rule), height: building.properties.height, rule: building.properties.urbanRule, manualMode: true } };
+                record.geometry = { buildings: [building] };
+            }
         } else fail('Unknown design kind');
+        if (intent.kind === 'space' && intent.spaceKind === 'park') load('IntentEditing', './intent-editing.js').planting(record,
+            { type: 'set_tree_count', count: intent.treeCount ?? 0 }, d.turf);
         return d.record.published({ ...record, title: intent.title, description: intent.description, author: intent.author,
             city: intent.city, toleranceM: intent.toleranceM, origin: intent.origin, createdAt: intent.authoredAt });
     }
@@ -149,11 +157,10 @@
             } else if (record.structureProposal && change.type === 'set_kind') {
                 if (!['park', 'square', 'lake'].includes(change.value)) fail('Unknown space kind');
                 record.goal = change.value; record.structureProposal.kind = change.value;
-            } else if (record.geometry?.buildings && ['set_floors', 'set_height', 'set_use'].includes(change.type)) {
-                const key = { set_floors: 'floors', set_height: 'height', set_use: 'use' }[change.type];
-                if (key !== 'use' && (!finite(change.value) || change.value <= 0 || (key === 'floors' && !Number.isInteger(change.value)))) fail('Supply a positive building measurement');
-                record.buildingProposal.parameters[key] = change.value;
-                record.geometry.buildings.forEach(b => { b.properties[key] = change.value; });
+            } else if (record.structureProposal && ['add_trees', 'set_tree_count'].includes(change.type)) {
+                load('IntentEditing', './intent-editing.js').planting(record, change, d.turf);
+            } else if (record.geometry?.buildings && ['set_floors', 'set_height', 'set_use', 'rotate', 'move', 'remove_building'].includes(change.type)) {
+                load('IntentEditing', './intent-editing.js').buildings(record, change, d.turf);
             } else fail('This typed change does not apply to this design');
         }
         return d.record.published({ ...record, createdAt: record.authoredAt });

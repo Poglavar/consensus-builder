@@ -239,8 +239,8 @@ node agents/lens-member-run.mjs --persona notary-01 --print
 
 ## MCP: one surface for any controller
 
-`npm run mcp` starts the local stdio server (45 tools). `npm run mcp:http` starts the hosted
-Streamable HTTP service on loopback port 3097 (26 tools), with `/healthz` and the experimental
+`npm run mcp` starts the local stdio server (49 tools). `npm run mcp:http` starts the hosted
+Streamable HTTP service on loopback port 3097 (30 tools), with `/healthz` and the experimental
 `/mcp/server-card` discovery document. Both use `ugt-agent-tools.js`; the hosted catalogue contains
 no signing or paying tool. Its launcher forwards only public configuration and the HTTP entry
 refuses credential-bearing environments. It never loads the backend `.env`.
@@ -290,6 +290,14 @@ chooses publication. Agreement drafts run the app's formation handlers in an iso
 complete cadastral source ground. Single-building ground follows the app’s footprint-parcel rule; stations remain content on their
 corridor and form no new parcel. Unsurveyed/open-ground agreements still require the app. Exact
 node/browser ground parity passes for the actual Borovje alternatives and Pionir archived sources.
+
+`ugt_inspect_design` reads exact authored fields by JSON Pointer. `ugt_edit_design` atomically
+patches any authored field, with metric transforms and polygon operations; it checks the expected
+CID, required drawing and coupled geometry. `ugt_inspect_plan` selects designs, buildings and
+derived pieces in an agreement composition. `ugt_edit_plan` adds, removes, replaces or edits
+designs and terms, rederiving ground for a private revision. See [the editing guide](../../docs/mcp-editing.md),
+also exposed as `ugt://editing`, and the `edit-my-plan` prompt. This is the granular authoring
+surface for composing requests beyond the optional typed conveniences.
 
 Approval links select Mint, Fund, accept, Execute, Cancel, Expire or a bet; loading one never signs.
 The current app has no pledge/donation wallet form, so those approval requests explicitly refuse;

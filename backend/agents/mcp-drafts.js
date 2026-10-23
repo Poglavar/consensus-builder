@@ -4,6 +4,7 @@ import { cidOfObject, designObject, isCid } from './agreement-objects.js';
 import { createMcpComparison } from './mcp-compare.js';
 import { previewArtifact } from './mcp-preview.js';
 import { parcelSourceIdOf } from './mcp-read-tools.js';
+import { editedDesign, valueAt } from './mcp-edit.js';
 const fail = (code, message, next) => Object.assign(new Error(message), { code, next });
 const geometry = value => value?.type === 'Feature' ? value.geometry : value;
 function union(features) {
@@ -59,6 +60,9 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference }) 
         return result(checked.content, intent.parcelSourceId || args.parcelSourceId);
     }
     async function resolveDesignSource(value) {
+        if (typeof value === 'string' && !isCid(value)) {
+            try { const url = new URL(value); if (url.origin === new URL(appOrigin).origin && /^\/designs\/baf(?:krei|ybei)[a-z2-7]{52}\/?$/.test(url.pathname)) value = url.pathname.split('/')[2]; } catch { /* Private reference errors are reported below. */ }
+        }
         const reference = typeof value === 'string' && !isCid(value) ? value : value?.draftRef;
         if (reference) {
             if (!resolveDraftReference) throw fail('draft-reference-unavailable', 'Use a canonical draft object here; hosted draftRef references belong to their HTTP server.');
@@ -79,6 +83,17 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference }) 
         resolveDesign, resolveDesignSource,
         draftRoad: args => draft('road', args), draftBuilding: args => draft('building', args),
         draftSpace: args => draft('space', args), draftParcelLayout: args => draft('parcel-layout', args), draftUrbanRule: args => draft('urban-rule', args),
+        async inspectDesign({ design, paths = [''] }) {
+            const resolved = await resolveDesignSource(design), content = resolved.content;
+            return { cid: cidOfObject(content), parcelSourceId: resolved.parcelSourceId,
+                values: paths.map(path => ({ path, untrustedValue: valueAt(content, path) })),
+                editableRoots: Object.keys(content).filter(key => !['schema', 'origin', 'authoredAt'].includes(key)).map(key => `/${key}`),
+                next: { tool: 'ugt_edit_design', action: 'Use this CID as expectedCid. Patch the authored JSON with ordered JSON Pointer edits. Canonical OSM changes rebuild the road footprint; coupled building geometry must remain consistent.' } };
+        },
+        async editDesign({ design, expectedCid, edits, parcelSourceId }) {
+            const resolved = await resolveDesignSource(design);
+            return result(editedDesign(resolved.content, expectedCid, edits), parcelSourceId || resolved.parcelSourceId);
+        },
         async modifyDesign({ design, changes, parcelSourceId }) {
             const resolved = await resolveDesignSource(design), original = resolved.content;
             parcelSourceId ||= resolved.parcelSourceId;

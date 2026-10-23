@@ -10,6 +10,7 @@ import { createRequire } from 'node:module';
 import { MCP_LOCAL_TOOLS, MCP_HOSTED_TOOLS } from './mcp-catalog.js';
 import { createMcpAgreementTools } from './mcp-ground.js';
 import { createMcpDraftTools } from './mcp-drafts.js';
+import { createMcpPlanTools } from './mcp-plan.js';
 import { createMcpReadTools } from './mcp-read-tools.js';
 import os from 'node:os';
 import path from 'node:path';
@@ -277,6 +278,7 @@ export function createUrbanGameTheoryTools({
 
     const companion = createMcpReadTools({ apiBase, appOrigin, fetchImpl });
     const drafts = createMcpDraftTools({ read: companion, appOrigin, resolveDraftReference });
+    const agreements = createMcpAgreementTools({ read: companion, drafts, appOrigin });
     function requirePublish(confirm) {
         if (confirm !== true) throw new Error('confirm must be true: publishing is public and permanent');
     }
@@ -284,7 +286,8 @@ export function createUrbanGameTheoryTools({
     return {
         ...companion,
         ...drafts,
-        ...createMcpAgreementTools({ read: companion, drafts, appOrigin }),
+        ...agreements,
+        ...createMcpPlanTools({ read: companion, drafts, agreements, appOrigin, resolveDraftReference }),
         config: {
             apiBase,
             appOrigin,
@@ -304,7 +307,7 @@ export function createUrbanGameTheoryTools({
                 if (mode !== 'local') throw error;
                 manifest = { upstream: { available: false, code: error.code || 'api-unavailable', next: { tool: 'ugt_chain_agreements', arguments: {} } } };
             }
-            return { ...manifest, mode, cluster: 'solana-devnet', agreementProgram: AGREEMENT_PROGRAM_ID, tools: mode === 'hosted' ? MCP_HOSTED_TOOLS : MCP_LOCAL_TOOLS, toolPhases: { reads: 'implemented', approvalLinks: 'mint, fund, decide accept, execute, cancel, expire, bet', drafts: 'implemented with complete cadastral ground; unsurveyed/open-ground agreement derivation requires the app', publication: 'implemented; permanent and public' }, hostedEndpoint: `${appOrigin}/mcp`, unsignedPublication: { confirm: true, requiresKey: false, permanent: true } };
+            return { ...manifest, mode, cluster: 'solana-devnet', agreementProgram: AGREEMENT_PROGRAM_ID, tools: mode === 'hosted' ? MCP_HOSTED_TOOLS : MCP_LOCAL_TOOLS, toolPhases: { reads: 'implemented', approvalLinks: 'mint, fund, decide accept, execute, cancel, expire, bet', drafts: 'implemented with complete cadastral ground; unsurveyed/open-ground agreement derivation requires the app', editing: 'inspect exact authored JSON; atomic revision-checked patches and geometry operations; plan add/remove/replace/edit with ground rederivation; see ugt://editing', publication: 'implemented; permanent and public' }, hostedEndpoint: `${appOrigin}/mcp`, unsignedPublication: { confirm: true, requiresKey: false, permanent: true } };
         },
 
         getActivity: ({ limit = 100, actor, source, action } = {}) => readJson(

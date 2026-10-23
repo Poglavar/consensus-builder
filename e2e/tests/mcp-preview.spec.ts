@@ -3,6 +3,8 @@ import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
 import { stubBasemapTiles, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
 import { pageIndex } from '../helpers/mocks/shared-server';
+import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 const builder = require('../../frontend/js/intent-design.js');
 const links = require('../../frontend/js/draft-link.js');
 const turf = require('../../backend/node_modules/@turf/turf');
@@ -14,7 +16,8 @@ test('MCP draft fragment opens an applied local park with no publication @core',
   test.setTimeout(120_000);
   await stubBasemapTiles(page);
   const design = builder.build({ kind: 'space', spaceKind: 'park', site: PARCEL_GEOMETRY, city: 'zagreb', title: 'MCP preview park', authoredAt: '2026-10-23T00:00:00.000Z' }, { turf });
-  const url = await links.build({ origin: baseURL, design });
+  const edited = builder.modify(design, [{ type: 'set_tree_count', count: 25 }], { turf });
+  const url = await links.build({ origin: baseURL, design: edited });
   await page.goto(url, { waitUntil: 'domcontentloaded' });
   await waitForMapReady(page);
   await expect.poll(() => page.evaluate(() => {
@@ -22,10 +25,29 @@ test('MCP draft fragment opens an applied local park with no publication @core',
     const records = w.proposalStorage?.getAllProposals?.() || [];
     const record = records.find((r: any) => r.title === 'MCP preview park');
     return record ? { published: !!record.published, lifecycle: record.lifecycleStatus, cid: w.DesignRecord.cidOf(record), pieces: w.LiveParcelFabric.producedBy(record.proposalId).length } : null;
-  }), { timeout: 60_000 }).toEqual({ published: false, lifecycle: 'draft', cid: cid.cidOfObject(design), pieces: 1 });
-  await expect(page.getByText('MCP preview park', { exact: true }).first()).toBeVisible();
+  }), { timeout: 60_000 }).toEqual({ published: false, lifecycle: 'draft', cid: cid.cidOfObject(edited), pieces: 1 });
+  await expect(page.getByRole('heading', { name: 'MCP preview park', exact: true })).toBeVisible();
+  await expect(page.locator('.park-tree-glyph')).toHaveCount(25);
   await page.screenshot({ path: testInfo.outputPath('draft-preview.png') });
   expect(pageIndex(page).requests.filter(r => r.method === 'POST' && ['/pins', '/designs', '/agreements'].includes(r.path))).toEqual([]);
+});
+
+test('MCP granular height and rotation edits reach the live building renderer @core', async ({ mockApi: page, baseURL }, testInfo) => {
+  test.setTimeout(120_000);
+  await stubBasemapTiles(page);
+  const design = JSON.parse(execFileSync(process.execPath, ['--input-type=module', '-e',
+    "import{readFileSync}from'node:fs';import{intentDesign,appTurf as turf}from'./agents/mcp-geometry.js';import{editedDesign}from'./agents/mcp-edit.js';import{cidOfObject}from'./cid.js';const d=intentDesign.build(JSON.parse(readFileSync(0,'utf8')),{turf});console.log(JSON.stringify(editedDesign(d,cidOfObject(d),[{op:'replace',path:'/geometry/buildings/0/properties/height',value:18},{op:'transform',path:'/geometry/buildings/0/geometry',degrees:-15}])));"],
+    { cwd: path.resolve(__dirname, '../../backend'), encoding: 'utf8', input: JSON.stringify({ kind: 'building', site: PARCEL_GEOMETRY, city: 'zg', title: 'Edited tower', floors: 12, coverage: 0.2 }), stdio: ['pipe', 'pipe', 'pipe'] }));
+  await page.goto(await links.build({ origin: baseURL, design }), { waitUntil: 'domcontentloaded' });
+  await waitForMapReady(page);
+  await expect.poll(() => page.evaluate(() => {
+    const w = window as any;
+    const record = w.proposalStorage?.getAllProposals?.().find((r: any) => r.title === 'Edited tower');
+    const drawing = w.proposedBuildings?.find((b: any) => b.properties.proposalId === record?.proposalId);
+    return record && drawing ? { published: !!record.published, cid: w.DesignRecord.cidOf(record), height: drawing.properties.height, floors: drawing.properties.floors, geometry: drawing.geometry } : null;
+  }), { timeout: 60_000 }).toEqual({ published: false, cid: cid.cidOfObject(design), height: 18, floors: 6, geometry: design.geometry.buildings[0].geometry });
+  await page.screenshot({ path: testInfo.outputPath('edited-tower.png') });
+  expect(pageIndex(page).requests.some(r => r.method === 'POST' && ['/pins', '/designs', '/agreements'].includes(r.path))).toBe(false);
 });
 
 test('MCP agreement fragment imports matching ground as an unpublished local agreement @core', async ({ mockApi: page, baseURL }) => {

@@ -11,7 +11,8 @@ export function markUntrusted(value) {
     for (const [key, item] of Object.entries(value)) {
         if (PROSE.has(key)) untrusted[key] = item;
         else if (['content', 'design', 'agreement'].includes(key) && ['design/v1', 'agreement/v1'].includes(item?.schema)) untrusted[key] = item;
-        else out[key] = key === 'next' ? item : markUntrusted(item);
+        // JSON Pointer inspection must retain exact editable values, including keys such as title.
+        else out[key] = key === 'next' || key === 'untrustedValue' ? item : markUntrusted(item);
     }
     if (Object.keys(untrusted).length) out.untrusted = { ...out.untrusted, ...untrusted };
     return out;

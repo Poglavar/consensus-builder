@@ -1,4 +1,4 @@
-// The stdio MCP server (agents/mcp-server.mjs) over an in-memory transport: its 45 ugt_* tools on
+// The stdio MCP server (agents/mcp-server.mjs) over an in-memory transport: its 49 ugt_* tools on
 // designs and agreements, their annotations and argument schemas (CIDs, lamports, confirm: true), and
 // that every call reaches the shared tool surface (ugt-agent-tools.js) only when its arguments validate,
 // with refusals coming back as tool errors.
@@ -50,7 +50,27 @@ async function toolsByName() {
 }
 
 describe('Urban Game Theory MCP server', () => {
-    it('publishes one 45-tool surface for designs, agreements, markets, support, activity and oracle facts', async () => {
+    it('exposes exact private inspection and granular edits through the actual MCP schemas', async () => {
+        const calls=[];
+        const tools=createUrbanGameTheoryTools({mode:'hosted',env:{},fetchImpl:async(url)=>{
+            calls.push(new URL(url).pathname);
+            return Response.json({parcelSourceId:'fixture',binding:{coverage:'complete',parcels:[{parcelId:'A'}]}});
+        }});
+        await connect(tools);
+        const drafted=await client.callTool({name:'ugt_draft_space',arguments:{city:'london',spaceKind:'park',treeCount:2,
+            outline:{type:'Polygon',coordinates:[[[-.1,51.5],[-.099,51.5],[-.099,51.501],[-.1,51.501],[-.1,51.5]]]}}});
+        expect(drafted.isError).not.toBe(true);
+        const design=drafted.structuredContent.untrusted.design;
+        const inspected=await client.callTool({name:'ugt_inspect_design',arguments:{design,paths:['/structureProposal/decorationDesign/trees']}});
+        expect(inspected.structuredContent.values[0].untrustedValue).toEqual(design.structureProposal.decorationDesign.trees);
+        const edited=await client.callTool({name:'ugt_edit_design',arguments:{design,expectedCid:drafted.structuredContent.cid,
+            edits:[{op:'replace',path:'/title',value:'Edited garden'},{op:'remove',path:'/structureProposal/decorationDesign/trees/0'}]}});
+        expect(edited.isError).not.toBe(true);
+        expect(edited.structuredContent.untrusted.design.title).toBe('Edited garden');
+        expect(edited.structuredContent.untrusted.design.structureProposal.decorationDesign.trees).toHaveLength(1);
+        expect(calls.every(path=>path==='/designs/binding')).toBe(true);
+    });
+    it('publishes one 49-tool surface for designs, agreements, editing, markets, support, activity and oracle facts', async () => {
         await connect(stubTools());
         const names = (await client.listTools()).tools.map(tool => tool.name);
         expect(names).toEqual([
@@ -59,9 +79,9 @@ describe('Urban Game Theory MCP server', () => {
             'ugt_propose_agreement', 'ugt_chain_agreements', 'ugt_chain_agreement', 'ugt_bet_on_account', 'ugt_mint_agreement', 'ugt_fund_agreement', 'ugt_bet_on_agreement',
             'ugt_buy_verified_fact', 'ugt_request_ownership', 'ugt_pledge', 'ugt_donate', 'ugt_refund_donation',
             'ugt_void_pledge', 'ugt_revoke_pledge', 'ugt_release_donations', 'ugt_fulfill_pledge',
-            'ugt_resolve_market', 'ugt_claim_market', 'ugt_resolve_external_market', 'ugt_claim_external_market', 'ugt_approval_link', 'ugt_find_place', 'ugt_parcel_context', 'ugt_list_designs', 'ugt_get_design', 'ugt_markets', 'ugt_explain', 'ugt_draft_road', 'ugt_draft_building', 'ugt_draft_space', 'ugt_draft_parcel_layout', 'ugt_draft_urban_rule', 'ugt_modify_design', 'ugt_compare', 'ugt_draft_agreement', 'ugt_submit_feedback'
+            'ugt_resolve_market', 'ugt_claim_market', 'ugt_resolve_external_market', 'ugt_claim_external_market', 'ugt_approval_link', 'ugt_find_place', 'ugt_parcel_context', 'ugt_list_designs', 'ugt_get_design', 'ugt_markets', 'ugt_explain', 'ugt_draft_road', 'ugt_draft_building', 'ugt_draft_space', 'ugt_draft_parcel_layout', 'ugt_draft_urban_rule', 'ugt_modify_design', 'ugt_inspect_design', 'ugt_edit_design', 'ugt_compare', 'ugt_draft_agreement', 'ugt_inspect_plan', 'ugt_edit_plan', 'ugt_submit_feedback'
         ]);
-        expect(names).toHaveLength(45);
+        expect(names).toHaveLength(49);
         expect(names.some(name => /proposal|forecast|verdict|accept/.test(name))).toBe(false);
     });
 

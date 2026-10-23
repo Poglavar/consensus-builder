@@ -2,6 +2,7 @@
 // No publication, payment, signature or model call. The caller selects the existing agreement.
 import { appTurf as turf, intentDesign as builder } from '../agents/mcp-geometry.js';
 import { createMcpReadTools } from '../agents/mcp-read-tools.js';
+import { cidOfObject } from '../cid.js';
 
 export async function acceptanceFixtures({ apiBase, appOrigin, agreementCid, fetchImpl = fetch }) {
     const read = createMcpReadTools({ apiBase, appOrigin, fetchImpl });
@@ -35,8 +36,12 @@ export async function acceptanceFixtures({ apiBase, appOrigin, agreementCid, fet
         ugt_draft_parcel_layout: { ...scope, algorithm: 'equal', count: 4, authoredAt },
         ugt_draft_urban_rule: { ...scope, rule: { floors: 6 }, authoredAt },
         ugt_modify_design: { design, parcelSourceId, changes: [{ type: 'retitle', value: 'MCP acceptance draft' }] },
+        ugt_inspect_design: { design, paths: ['/structureProposal'] },
+        ugt_edit_design: { design, parcelSourceId, expectedCid: cidOfObject(design), edits: [{ op: 'replace', path: '/title', value: 'MCP acceptance edit' }] },
+        ugt_inspect_plan: { plan: agreementCid, filter: { kind: 'design' } },
+        ugt_edit_plan: { plan: agreementCid, expectedCid: agreementCid, terms: { title: 'MCP acceptance revision' } },
         ugt_compare: { targets: [design, building], parcelSourceId },
-        ugt_draft_agreement: { designs: [design], parcelSourceId, title: 'MCP acceptance draft', createdAt: authoredAt }
+        ugt_draft_agreement: { designs: [design], parcelSourceId, currency: row.content.money.currency, title: 'MCP acceptance draft', createdAt: authoredAt }
     };
     return { fixtures, seed: { ...scope, streetPoints, agreementAccount: account }, provenance: { agreementCid, parcelId, parcelSourceId } };
 }

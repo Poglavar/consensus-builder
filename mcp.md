@@ -2,7 +2,70 @@
 
 # MCP: Urban Game Theory for agents
 
-**Status (2026-10-23): the prior production transport release is active. The authorized remaining twenty paid cases finished at $2.077047: 15 passed, five failed, with the later free sealed-source checks recorded below. The local follow-up adds private feedback and fixes the transport request-size mismatch; it is not deployed yet. Complete production tool-contract and live wallet acceptance remain pending.** Branch and worktree `colosseum-worlds-fair`.
+**Status (2026-10-24): local implementation now includes granular design and agreement-plan editing, alongside the feedback and transport-size follow-ups. This session has not deployed these changes. The authorized earlier twenty paid cases finished at $2.077047: 15 passed, five failed, with later free checks recorded below. Complete production tool-contract and live wallet acceptance remain pending.** Branch and worktree `colosseum-worlds-fair`.
+
+## Granular editor parity checkpoint (2026-10-24)
+
+The user's contract is that anything a human can author in the site should be editable by an
+agent, including requests we cannot anticipate. The interface therefore exposes canonical fields
+and composable operations. It does not enumerate a separate tool for every natural-language intent.
+
+- `ugt_inspect_design` reads exact JSON Pointer paths from a canonical design, private draftRef,
+  published CID or published design link. `untrustedValue` preserves editable JSON without moving
+  nested property names. `ugt_edit_design` applies atomic JSON Patch operations and metric
+  translation/rotation/scaling, polygon union/difference/intersection and buffering.
+- `ugt_inspect_plan` inventories designs, individual buildings and derived land pieces in an
+  agreement composition. Selection supports type/title, bounding boxes and compass relationships.
+  References belong to the inspected revision; expected CIDs and optional patch tests reject stale
+  assumptions. Piece geometry is rederived and checked against committed hashes before inspection.
+- `ugt_edit_plan` composes add/remove/replace/edit/modify operations and editable agreement terms,
+  rebuilds ground through the app formation host, and validates the revised agreement. Unchanged
+  terms are retained; orphaned allocations require explicit replacements. Rights retained over
+  unchanged input IDs are labelled unverified, and changed inputs require reviewed rights before
+  carrying holder or money terms. A new CID carries no prior decisions.
+- The generic field surface covers building footprints, dimensions, model/material properties,
+  block/row/detached rules, surroundings and land take; canonical road OSM nodes and profiles;
+  park/square/lake/station geometry and furniture; parcel borders; metadata and agreement terms.
+  Required payloads, polygons, OSM references and layout coverage are checked. Road edits rebuild
+  their derived footprint/site. Height/floors, rule metadata and existing surroundings holes are
+  kept consistent. Shape-affecting parameters require corresponding authored geometry.
+- Optional typed conveniences edit one building's height, floors, use, movement or rotation; remove
+  a building; and add/set park planting. Row-rule drafting returns a visible envelope. New MCP park
+  drafts contain explicit planting (zero trees by default). Unknown generated browser planting is
+  not claimed to be preserved. Arbitrary sentence-level operations such as `rezone` are unnecessary.
+- Local registration now has 49 tools; hosted registration has 30. Both expose `ugt://editing`
+  and the fifth prompt, `edit-my-plan`. The [editing guide](docs/mcp-editing.md) documents field
+  paths, coupling, tree records, selection and conversation examples. Acceptance fixtures and the
+  contract checker include the new inspection/editing tools.
+
+Boundaries: these tools edit portable saved authored records, not an open browser's unsaved state,
+local asset files or generated runtime caches. Existing asset references remain editable. An
+agreement plan is distinct from a map share; standalone designs can be edited independently.
+Complete cadastral ground is still required for agreement formation. Public publication remains
+a separate explicit action. No new paid model call, publication, wallet action, push or deployment
+ran for this work.
+
+All verification below was targeted. No full unit or full browser suite was run; no run was stopped.
+
+| Type and scope | Result |
+| --- | --- |
+| Headless unit: drafts and runtime, 2 files / 14 tests | Passed |
+| Headless unit: granular edits, 1 file / 12 tests | 9 passed, 3 failed; fixed metric-frame translation anchor handling |
+| Headless unit: edits and plans, 2 files / 18 tests | 17 passed, 1 failed; inspection now rederives geometry omitted from canonical output records |
+| Headless unit: plans, 1 file / 6 tests | Passed |
+| Headless unit: MCP server, HTTP, drafts, edits, plans, ground, 6 files / 58 tests | Passed |
+| Headless unit: final payload/rule/rights/reference checks, 2 files / 23 tests | Passed |
+| Headless Playwright: artifacts and previews, 2 files / 15 cases | 14 passed, 1 failed; an old park-title selector chose a hidden list entry; corrected to the visible heading |
+| Headed Playwright: previews, 1 file / 3 cases, background Chrome | Passed; screenshots inspected: 25 authored park trees and a rotated tower footprint. The live building collection has the edited 18 m / 6 floors and exact footprint; agreement CID/ground matches. No publication requests. |
+| Headless unit: edits, plans, MCP server and HTTP, 4 files / 41 tests | Passed |
+| Headless unit: final nested-geometry and acceptance-checker changes, edits and HTTP, 2 files / 25 tests | Passed |
+| Headless unit: land-piece anchors in spatial plan selection, 1 file / 8 tests | Passed |
+| Staged local npm package | 523 source files; 49 tools and editing resource load from the staged directory with existing local dependencies. No fresh registry install or publication claimed. |
+
+The local browser cases use explicit API fixtures; they demonstrate artifact import/application,
+not production source availability. A bounded read-only review checked reference invalidation,
+derived piece selection and rights retention. The browser processes opened by the targeted runs
+closed on completion. Unrelated worktree changes are excluded from this commit.
 
 ## Implementation checkpoint (2026-10-23)
 

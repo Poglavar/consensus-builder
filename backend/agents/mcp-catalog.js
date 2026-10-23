@@ -8,6 +8,6 @@ export const MCP_LOCAL_TOOLS = Object.freeze([
     'ugt_resolve_external_market', 'ugt_claim_external_market',
     'ugt_approval_link', 'ugt_find_place', 'ugt_parcel_context', 'ugt_list_designs', 'ugt_get_design', 'ugt_markets', 'ugt_explain',
     'ugt_draft_road', 'ugt_draft_building', 'ugt_draft_space', 'ugt_draft_parcel_layout', 'ugt_draft_urban_rule',
-    'ugt_modify_design', 'ugt_compare', 'ugt_draft_agreement', 'ugt_submit_feedback'
+    'ugt_modify_design', 'ugt_inspect_design', 'ugt_edit_design', 'ugt_compare', 'ugt_draft_agreement', 'ugt_inspect_plan', 'ugt_edit_plan', 'ugt_submit_feedback'
 ]);
 export const MCP_HOSTED_TOOLS = Object.freeze([...MCP_LOCAL_TOOLS.slice(0, 10), ...MCP_LOCAL_TOOLS.slice(29)]);

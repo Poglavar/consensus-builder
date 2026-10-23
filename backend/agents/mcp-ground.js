@@ -9,7 +9,7 @@ export const deriveAgreementGround = deriveWithApp;
 
 export function createMcpAgreementTools({ read, drafts, appOrigin }) {
     return {
-        async draftAgreement({ designs: values, rulePreset = 'community-vote', rights, lens, allocations = [], money, currency, deadline = null, sponsor = null, title = null, author = null, createdAt = null, parcelSourceId }) {
+        async draftAgreement({ designs: values, rulePreset = 'community-vote', rights, lens, allocations = [], money, currency, deadline = null, sponsor = null, title = null, author = null, createdAt = null, parcelSourceId, includeGround = false }) {
             const designs = [];
             const ids = new Set();
             let city;
@@ -38,7 +38,7 @@ export function createMcpAgreementTools({ read, drafts, appOrigin }) {
                 designs: designs.map(d => ({ cid: d.cid, goal: d.content.goal, title: d.content.title })),
                 parcels: land.inputs.parcels.map(parcel => ({ ...parcel, parcelSourceId: source.parcelSourceId })), openGroundM2: land.inputs.openGroundM2, outputs: land.outputs, allocations,
                 money: money || noMoney(currency), rule, deadline });
-            return { agreement: published.content, cid: published.cid, parcelSourceId: source.parcelSourceId, takes: [...ids], warnings: ['Draft ground is isolated from other local designs. Review the preview before publishing.'],
+            return { agreement: published.content, cid: published.cid, parcelSourceId: source.parcelSourceId, takes: [...ids], ...(includeGround ? { ground: land } : {}), warnings: ['Draft ground is isolated from other local designs. Review the preview before publishing.'],
                 ...await previewArtifact({ origin: appOrigin, agreement: published.content, designs: designs.map(d => d.content), parcelSourceId: source.parcelSourceId }), designs: designs.map(d => ({ cid: d.cid, content: d.content })) };
         }
     };
