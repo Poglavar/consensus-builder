@@ -813,11 +813,12 @@ function latestAuthoredDesignId(proposalIds) {
  * Opens shared designs: a /designs/<cid>,<cid> link (core.js handleProposalRouteFromUrl). Reads them
  * from the index (DesignSync.fetchDesigns), imports each as a local design (a local copy of the same
  * CID is used as it stands), applies the ones not yet on the map in replay order, frames the
- * latest-authored one and opens its details. A design of another city asks to switch city first.
+ * latest-authored one and opens its details. Conflicts offer explicit unapply/continue or skip;
+ * no existing design is unapplied without that choice. A different city asks to switch first.
  * @param cids the link's design CIDs
  * @param options { openDetails = true, frame = true, enter3D = true, summary = true } — the agreement
  *   route (agreement-sync.js) applies its designs and opens the agreement instead.
- * @returns {Promise<{ applied: string[], skipped: string[], failed: { id, label, reason }[],
+ * @returns {Promise<{ applied: string[], skipped: string[], omitted: string[], failed: { id, label, reason }[],
  *   blocked: boolean, localIds: Map<string, string> }>} local proposal ids; localIds maps CID → local id
  */
 async function handleSharedDesignRoute(cids, options = {}) {
@@ -826,7 +827,7 @@ async function handleSharedDesignRoute(cids, options = {}) {
     const t = getProposalI18nHelper();
     const tShare = getShareI18nHelper();
     const log = (message, ...rest) => console.log(`[${new Date().toISOString()}] [handleSharedDesignRoute] ${message}`, ...rest);
-    const result = { applied: [], skipped: [], failed: [], blocked: false, localIds: new Map() };
+    const result = { applied: [], skipped: [], omitted: [], failed: [], blocked: false, localIds: new Map() };
     const labelOf = (record, fallback) => formatSharedProposalLabel(record, fallback);
     let replayTakeover = null;
     try {
@@ -930,9 +931,61 @@ async function handleSharedDesignRoute(cids, options = {}) {
             console.warn(`[${new Date().toISOString()}] [handleSharedDesignRoute] precheck refused`, item.proposalId, item.verdict.code, item.verdict.message);
             result.failed.push({ id: item.proposalId, label: labelOf(proposalStorage.getProposal(item.proposalId), item.proposalId), reason: item.verdict.message });
         });
-        const toApply = queue.filter(id => !blockedIds.has(id));
-
-        if (toApply.length) {
+        let toApply = queue.filter(id => !blockedIds.has(id));
+        const memberIds = new Set(result.localIds.values());
+        const preexistingApplied = proposalStorage.getAllProposals().filter(record =>
+            isProposalCurrentlyApplied(record) && !memberIds.has(String(record.proposalId)));
+        const conflicts = new Map(), conflictingIncoming = new Set();
+        // Include linked members that already stand here: a previous partial open may have left
+        // both road versions applied. The warning must name every rival the confirmed apply parks.
+        for (const id of memberIds) {
+            const verdict = ProposalManager.validateSharedProposalGround(id, memberIds, preexistingApplied);
+            for (const blocker of verdict.blockers || []) {
+                conflictingIncoming.add(id);
+                conflicts.set(String(blocker.proposalId), blocker);
+            }
+        }
+        let replaceConflicts = false;
+        if (conflicts.size && !result.failed.length) {
+            // Decide before applying any new member. The existing dialog primitive escapes the
+            // titles as plain text and gives the same choice on phones and desktops.
+            hideProposalLoadOverlay();
+            const choice = await window.CbDialog.choice(
+                t('proposals.share.route.conflicts', 'This plan conflicts with designs already applied on this device. Unapply the existing conflicting designs and continue, or skip the conflicting designs in this plan. All designs will stay saved.')
+                    + '\n\n' + [...conflicts.values()].map(record => record.title || String(record.proposalId)).join('\n'),
+                [
+                    { value: 'replace', label: t('proposals.share.route.unapplyContinue', 'Unapply existing & continue'), primary: true },
+                    { value: 'skip', label: t('proposals.share.route.skipConflicts', 'Skip conflicting designs') },
+                    { value: 'cancel', label: t('modal.common.cancel', 'Cancel') }
+                ], { title: t('proposals.share.route.conflictTitle', 'Plan conflicts') });
+            if (choice !== 'replace' && choice !== 'skip') { result.blocked = true; return result; }
+            replaceConflicts = choice === 'replace';
+            if (!replaceConflicts) {
+                result.omitted.push(...toApply.filter(id => conflictingIncoming.has(id)));
+                toApply = toApply.filter(id => !conflictingIncoming.has(id));
+            }
+            showProposalLoadOverlay(tShare('plan.materializing', 'Starting proposal materialization…'), {
+                total: toApply.length, title: t('proposals.share.route.title', 'Shared designs')
+            });
+        }
+        if (replaceConflicts) {
+            updateProposalLoadOverlay({ status: tShare('plan.materializing', 'Starting proposal materialization…') });
+            const members = [...result.localIds.values()];
+            const chosen = await ProposalManager.applyProposalPlan(members, {
+                silent: true, onProgress: reportSharedPlanProgress
+            });
+            if (chosen && chosen.ok === true) {
+                result.applied.push(...members);
+                result.skipped.length = 0;
+            } else {
+                const failures = ProposalManager._lastFailedPlanApplySummary?.failed || [];
+                const reason = failures.map(failure => failure.reason || failure.message).filter(Boolean).join('; ')
+                    || t('proposals.share.errors.applyFailed', 'The design could not be applied to the ground here.');
+                result.failed.push({ id: null, label: t('proposals.share.route.title', 'Shared designs'), reason });
+            }
+            updateProposalLayer();
+            updateShowProposalsButton();
+        } else if (toApply.length) {
             updateProposalLoadOverlay({ status: tShare('plan.materializing', 'Starting proposal materialization…') });
             const scoped = await materializeQueuedSharedProposals(toApply, {
                 planMemberIds: new Set([...result.skipped, ...toApply]),
@@ -980,6 +1033,8 @@ async function handleSharedDesignRoute(cids, options = {}) {
                         + `<ul class="shared-plan-failures">${items}</ul>`,
                     actions: [{ label: t('modal.common.close', 'Close'), primary: true }]
                 });
+            } else if (result.omitted.length) {
+                showEphemeralMessage(t('proposals.share.route.omitted', 'Opened the shared plan, skipping {{count}} conflicting designs.', { count: result.omitted.length }), 5000, 'info');
             } else if (result.applied.length) {
                 showEphemeralMessage(t('proposals.share.route.applied', 'Applied {{count}} shared designs.', { count: result.applied.length }), 5000, 'info');
             } else if (result.skipped.length) {

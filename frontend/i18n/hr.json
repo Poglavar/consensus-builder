@@ -884,6 +884,11 @@
                     "other": "Primijenjeno je {{count}} podijeljenih dizajna."
                 },
                 "alreadyApplied": "Ovi podijeljeni dizajni već su na karti.",
+                "conflictTitle": "Sukobi plana",
+                "conflicts": "Ovaj se plan preklapa s rješenjima koja su već primijenjena na ovom uređaju. Uklonite postojeća rješenja u sukobu s karte i nastavite ili preskočite rješenja u sukobu iz ovog plana. Sva će rješenja ostati spremljena.",
+                "unapplyContinue": "Ukloni postojeća s karte i nastavi",
+                "skipConflicts": "Preskoči rješenja u sukobu",
+                "omitted": "Otvoren je podijeljeni plan uz preskakanje {{count}} rješenja u sukobu.",
                 "failed": "Podijeljene dizajne nije bilo moguće otvoriti."
             }
         }

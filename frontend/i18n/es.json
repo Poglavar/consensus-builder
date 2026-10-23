@@ -879,6 +879,11 @@
                     "other": "Se aplicaron {{count}} diseños compartidos."
                 },
                 "alreadyApplied": "Estos diseños compartidos ya están en el mapa.",
+                "conflictTitle": "Conflictos del plan",
+                "conflicts": "Este plan entra en conflicto con diseños ya aplicados en este dispositivo. Desaplica los diseños existentes en conflicto y continúa, u omite los diseños en conflicto de este plan. Todos los diseños seguirán guardados.",
+                "unapplyContinue": "Desaplicar existentes y continuar",
+                "skipConflicts": "Omitir diseños en conflicto",
+                "omitted": "Se abrió el plan compartido, omitiendo {{count}} diseños en conflicto.",
                 "failed": "No se pudieron abrir los diseños compartidos."
             }
         }

@@ -231,6 +231,23 @@ describe('a road across an applied structure', () => {
     });
 });
 
+describe('overlapping published road revisions', () => {
+    const box = west => turf.polygon([[[west,45.8],[west+.002,45.8],[west+.002,45.8001],[west,45.8001],[west,45.8]]]).geometry;
+    const originalCid = Cid.cidOfObject({ road: 'original' });
+    const source = { proposalId:'original-road', goal:'road-track', applied:true, published:{cid:originalCid}, roadProposal:{definition:{polygon:box(16)}} };
+    const revision = { proposalId:'revised-road', goal:'road-track', applied:true, origin:{cid:originalCid}, roadProposal:{definition:{polygon:box(16)}} };
+    it('treats the same road profile revisions as rivals in either direction', () => {
+        expect(collectAppliedProposalAlternatives(revision,[source],{planOrder})).toEqual([source]);
+        expect(collectAppliedProposalAlternatives(source,[revision],{planOrder})).toEqual([revision]);
+    });
+    it('retains moved copies and ordinary crossing roads', () => {
+        const moved={...revision,roadProposal:{definition:{polygon:box(16.1)}}};
+        expect(collectAppliedProposalAlternatives(moved,[source],{planOrder})).toEqual([]);
+        const crossing={...revision,origin:null};
+        expect(collectAppliedProposalAlternatives(crossing,[source],{planOrder})).toEqual([]);
+    });
+});
+
 describe('appliedRivals reads the footprint lazily', () => {
     it('never unions the target when no applied rival is there to compare with', () => {
         const planOrder = require('../../frontend/js/proposals/plan-order.js');

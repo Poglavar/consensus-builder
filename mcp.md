@@ -709,3 +709,42 @@ for inbox commands and configuration names.
 No full unit or browser suite was run. No production database, deployed API or paid evaluation
 was changed by this notification follow-up. Deployment of the updated backend and its environment
 is required for live feedback notifications.
+
+### Shared-plan conflict choices (2026-10-24)
+
+The Digbeth revision link worked on a clean desktop but refused four towers on a device with
+the original plan saved and applied. Reproduced against the public API in a dedicated mobile-sized
+headed browser: 22 designs saved, 18 applied, four `ground-held-by-proposal` refusals. The extra
+applied record was the original Spine Street alongside its revised profile.
+
+The shared-link loader now checks the complete linked set before applying new members and uses
+the existing dialog primitive to offer **Unapply existing & continue**, **Skip conflicting designs**,
+or **Cancel**. Existing designs are never silently unapplied. Confirmation uses the existing atomic
+`applyProposalPlan` boundary: only geometric rivals are parked, unrelated applied work remains,
+and a derivation failure restores the previous composition. Skipping records the omitted incoming
+IDs separately from already-applied copies; private agreement previews respect skip/cancel and
+do not create a partial agreement.
+
+Overlapping published road revisions now count as rivals in both directions, including sibling
+revisions. A moved, disjoint copy remains compatible, as do unrelated roads meeting at a junction.
+The warning checks already-applied linked members too, so a previous partial open cannot cause
+an unlisted old road to be unapplied after confirmation. Titles are plain text in the dialog.
+The copy follows the site's English, Spanish, Croatian and Serbian localization pattern.
+
+The earlier conflict dialog was checked in repository history; its explicit unapply/retry or
+continue behavior informed this repair. No legacy record reader or old implementation was restored.
+A bounded read-only test/history lookup used the available small worker, `gpt-6-luna` at low effort.
+
+| Verification type and scope | Result |
+| --- | --- |
+| Headless unit tests: shared-plan import, ground conflicts, mutation boundary and shared-ground gate, 4 files / 78 tests | Passed |
+| Headless Playwright: `shared-plan-conflicts.spec.ts`, 2 cases at 390 px and 1280 px | Passed; each case exercises cancel, skip, unapply/continue, an unrelated applied park, saved CIDs, live tower dimensions and reload; no publication requests |
+| Headless unit tests: private preview integrity, 1 file / 5 tests | Passed, including cancellation and skipped-member agreement prevention |
+| Headless unit tests: shared-plan import after adding the already-applied road regression, 1 file / 30 tests | Passed |
+| Manual headed browser, real public Digbeth records | Reproduced the original mobile error; inspected the five-conflict warning; skip/cancel kept the standing plan; confirmed switches applied all 17 requested designs, retained all 22 records and preserved every published CID |
+
+The browser consumed this checkout's uncached frontend with the explicit public API override.
+The final view was manually framed at the supplied Digbeth coordinates after the automation
+browser reconnected; the four live tower heights were 54, 66, 81 and 96 m. Screenshots were inspected.
+No full unit or browser suite was run, no run was stopped, and no paid evaluation, public write,
+push or deployment ran for this fix.

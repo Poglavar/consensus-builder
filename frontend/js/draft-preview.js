@@ -31,7 +31,8 @@
             rows.set(cid, { cid, content, city: content.city, binding: binding.binding });
         }
         const applied = await root.handleSharedDesignRoute([...rows.keys()], { draftRows: rows, enter3D: false, openDetails: !artifact.agreement });
-        if (applied.failed.length || applied.blocked) throw new Error('Some draft designs could not be applied; review the map.');
+        if (applied.blocked || applied.omitted?.length) return applied;
+        if (applied.failed.length) throw new Error('Some draft designs could not be applied; review the map.');
         if (artifact.agreement) {
             const content = artifact.agreement, cid = root.Cid.cidOfObject(content);
             const records = [...applied.localIds.values()].map(id => root.proposalStorage.getProposal(id));

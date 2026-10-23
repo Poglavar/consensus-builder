@@ -191,7 +191,15 @@
             // a plan member whose footprint lies inside an applied park must be refused, not
             // stacked on top of it (Šibenik, 2026-09-03: a plan re-applied two buildings inside
             // freshly created structures because only buildings counted as rivals).
-            if (!isBuildingContentProposal(candidate) && !candidate.structureProposal) return false;
+            // Distinct roads can meet at a junction. Overlapping published revisions of the same
+            // road are alternatives, however: keeping both would leave the old traffic profile
+            // standing beside its replacement. Lineage only makes this pair eligible for the
+            // ordinary geometric test below; a moved copy with no overlap still coexists.
+            const roadRevision = proposal.roadProposal && candidate.roadProposal && (
+                (proposal.origin?.cid && proposal.origin.cid === candidate.published?.cid)
+                || (candidate.origin?.cid && candidate.origin.cid === proposal.published?.cid)
+                || (proposal.origin?.cid && proposal.origin.cid === candidate.origin?.cid));
+            if (!isBuildingContentProposal(candidate) && !candidate.structureProposal && !roadRevision) return false;
             // A road or track does not displace a park, square or lake it crosses: it cuts through
             // and the rest of the structure stays (the road tool's "Build through"; the carve is
             // apply/road.js _groundAfterLaterCorridors). Buildings it covers still go.

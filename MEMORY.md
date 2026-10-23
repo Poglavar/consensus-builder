@@ -1,5 +1,7 @@
 # Memory
 
+- 2026-10-24: Applying a shared plan must warn about conflicts and offer to unapply the existing conflicting designs, skip the conflicting incoming designs, or cancel. Reuse the existing conflict flow; never silently replace the working composition. Keep all saved designs and unrelated applied work.
+
 - 2026-10-24: MCP authoring should expose every human-editable authored field through granular inspection, patches and geometry operations; compose unforeseen requests from those primitives instead of adding a high-level tool for each sentence. Plan changes create private revisions with rederived ground, preserving immutable publication identities.
 
 - 2026-10-24: Use one mobile top-handle pattern across sheets, panels and long forms: drag to resize, drag below the compact limit to close through existing cleanup. Map context opens half-height, lists/forms expanded; short confirmations keep direct actions. Avoid a second visible X when the shared handle dismisses.

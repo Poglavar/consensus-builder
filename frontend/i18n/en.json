@@ -878,6 +878,11 @@
                     "other": "Applied {{count}} shared designs."
                 },
                 "alreadyApplied": "These shared designs are already on the map.",
+                "conflictTitle": "Plan conflicts",
+                "conflicts": "This plan conflicts with designs already applied on this device. Unapply the existing conflicting designs and continue, or skip the conflicting designs in this plan. All designs will stay saved.",
+                "unapplyContinue": "Unapply existing & continue",
+                "skipConflicts": "Skip conflicting designs",
+                "omitted": "Opened the shared plan, skipping {{count}} conflicting designs.",
                 "failed": "The shared designs could not be opened."
             }
         }

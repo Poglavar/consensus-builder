@@ -13,4 +13,16 @@ describe('private agreement fragment integrity', () => {
         await expect(window.DraftPreview.open()).rejects.toThrow(/exactly match/);
         expect(apiBase).not.toHaveBeenCalled(); expect(fetch).not.toHaveBeenCalled();
     });
+    it.each([{ blocked: true, omitted: [] }, { blocked: false, omitted: ['skipped-design'] }])('respects the conflict choice before creating an agreement (%j)', async choice => {
+        const applied = { applied: [], skipped: [], failed: [], ...choice }, save = vi.fn();
+        const window = { location: { hash: '#draft=fixture' }, Cid: { cidOfObject },
+            DraftLink: { parse: async () => ({ agreement: { schema:'agreement/v1', designs:[{cid:cidOfObject(first)}] }, designs:[first] }) },
+            DesignSync: { apiBase: () => 'https://api.example', parcelSourceIdOf: () => 'fixture' },
+            DesignRecord: { validate: () => ({valid:true}) }, __siteBinding: { siteOf: () => ({}) },
+            fetch: async () => ({ok:true,json:async()=>({binding:{}})}),
+            handleSharedDesignRoute: async () => applied, AgreementStore: { save } };
+        runInContext(script, createContext({ window }));
+        await expect(window.DraftPreview.open()).resolves.toBe(applied);
+        expect(save).not.toHaveBeenCalled();
+    });
 });

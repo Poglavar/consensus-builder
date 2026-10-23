@@ -505,7 +505,7 @@ const row = (name, { goal = 'park', authoredAt = '2026-10-10T10:00:00.000Z', cit
 // holds; `local` the local copies DesignSync.localCopyOf finds, by CID; `refused` the local ids the
 // apply precheck refuses, with its message; `failing` the local ids whose apply fails, with the stored
 // failure; `foreignCity` a city whose rows belong to another city's store.
-function designLink({ designs = [], local = {}, refused = {}, failing = {}, foreignCity = null, leaveForCity = true,
+function designLink({ designs = [], local = {}, refused = {}, failing = {}, held = {}, conflictChoice = 'cancel', planFailure = null, foreignCity = null, leaveForCity = true,
     wants3D = false, replayDone = true, tookOver = false, fetchError = null } = {}) {
     const records = new Map(Object.values(local).map(record => [record.proposalId, record]));
     const rows = new Map(designs.map(design => [design.cid, design]));
@@ -545,6 +545,7 @@ function designLink({ designs = [], local = {}, refused = {}, failing = {}, fore
         },
         __applyRoute: { classifyApplyRoute: () => 'replay' }
     };
+    window.CbDialog = { choice: vi.fn(async () => conflictChoice) };
     const ProposalManager = {
         _initialReapplyDone: replayDone,
         reapplyAppliedProposals: vi.fn(async () => { order.push('replay'); ProposalManager._initialReapplyDone = true; }),
@@ -553,6 +554,17 @@ function designLink({ designs = [], local = {}, refused = {}, failing = {}, fore
             if (failing[id]) return false;
             records.get(id).applied = true;
             return true;
+        }),
+        validateSharedProposalGround: vi.fn((id, members, candidates) => {
+            const blockers = (candidates || []).filter(record => record.applied && !members.has(record.proposalId) && (held[id] || []).includes(record.proposalId));
+            return { ok: !blockers.length, blockers };
+        }),
+        applyProposalPlan: vi.fn(async ids => {
+            if (planFailure) { ProposalManager._lastFailedPlanApplySummary = { failed: [{ reason: planFailure }] }; return false; }
+            const conflicts = new Set(ids.flatMap(id => held[id] || []).filter(id => !ids.includes(id)));
+            conflicts.forEach(id => { records.get(id).applied = false; });
+            ids.forEach(id => { records.get(id).applied = true; });
+            return { ok: true, releasedIds: [...conflicts] };
         }),
         _refreshUIAfterProposalChange: vi.fn()
     };
@@ -587,6 +599,75 @@ describe('opening a /designs link', () => {
     const block = row('Block', { goal: 'single', authoredAt: '2026-10-09T10:00:00.000Z', parcels: ['HR-3'] });
     const square = row('Square', { authoredAt: '2026-09-30T10:00:00.000Z', parcels: ['HR-4'] });
     const standingSquare = { proposalId: 'local-square', title: 'Square', goal: 'park', createdAt: '2026-09-30T10:00:00.000Z', applied: true };
+
+    function conflictingLink(conflictChoice, extra = {}) {
+        const old = { proposalId: 'old-tower', title: 'Tower', goal: 'single', applied: true };
+        const unrelated = { proposalId: 'elsewhere', title: 'Elsewhere', goal: 'park', applied: true };
+        const tower = row('Tower', { goal: 'single' });
+        return { tower, ...designLink({ designs: [tower, park], local: { old, unrelated },
+            held: { [`design-${tower.cid}`]: [old.proposalId] }, conflictChoice, ...extra }) };
+    }
+
+    it('warns before unapplying only the existing conflicts and applies the plan together', async () => {
+        const link = conflictingLink('replace');
+        const choice = link.window.CbDialog.choice;
+        choice.mockImplementation(async () => {
+            expect(link.records.get('old-tower').applied).toBe(true);
+            expect(link.records.get(`design-${link.tower.cid}`).applied).toBe(false);
+            expect(link.ProposalManager.applyProposal).not.toHaveBeenCalled();
+            return 'replace';
+        });
+        const result = await link.open([link.tower.cid, park.cid]);
+        expect(choice.mock.calls[0][0]).toContain('Tower');
+        expect(choice.mock.calls[0][0]).not.toContain('Elsewhere');
+        expect(choice.mock.calls[0][1].map(action => action.value)).toEqual(['replace','skip','cancel']);
+        expect(link.ProposalManager.applyProposalPlan).toHaveBeenCalledExactlyOnceWith(
+            [`design-${link.tower.cid}`, `design-${park.cid}`], { silent: true, onProgress: expect.any(Function) });
+        expect(result.failed).toEqual([]);expect(result.omitted).toEqual([]);
+        expect(link.records.get('old-tower').applied).toBe(false);
+        expect(link.records.get('elsewhere').applied).toBe(true);
+        expect(link.records.size).toBe(4);
+    });
+
+    it('skips conflicting incoming designs by choice, keeping existing work and applying clear members', async () => {
+        const link = conflictingLink('skip');
+        const result = await link.open([link.tower.cid, park.cid]);
+        expect(result).toMatchObject({ applied: [`design-${park.cid}`], omitted: [`design-${link.tower.cid}`], failed: [] });
+        expect(link.records.get('old-tower').applied).toBe(true);
+        expect(link.records.get(`design-${link.tower.cid}`).applied).toBe(false);
+        expect(link.ProposalManager.applyProposalPlan).not.toHaveBeenCalled();
+        expect(link.showSimpleShareModal).not.toHaveBeenCalled();
+        expect(link.showEphemeralMessage.mock.calls[0][0]).toContain('skipping 1 conflicting');
+    });
+
+    it('warns about a stale road version even when the linked road was applied by a previous partial open', async () => {
+        const road = row('Spine', { goal:'road-track' });
+        const linked = { proposalId:'linked-spine', title:'Spine', goal:'road-track', applied:true };
+        const old = { proposalId:'old-spine', title:'Original spine', goal:'road-track', applied:true };
+        const link = designLink({ designs:[road,block], local:{[road.cid]:linked,old}, held:{[linked.proposalId]:[old.proposalId]}, conflictChoice:'replace' });
+        const result=await link.open([road.cid,block.cid]);
+        expect(link.window.CbDialog.choice.mock.calls[0][0]).toContain('Original spine');
+        expect(link.ProposalManager.applyProposalPlan).toHaveBeenCalledExactlyOnceWith(
+            [linked.proposalId,`design-${block.cid}`],{silent:true,onProgress:expect.any(Function)});
+        expect(result.failed).toEqual([]);expect(link.records.get(old.proposalId).applied).toBe(false);
+    });
+
+    it.each(['cancel', null])('cancel/close leaves the previous map applied (%s)', async conflictChoice => {
+        const link = conflictingLink(conflictChoice);
+        const result = await link.open([link.tower.cid, park.cid]);
+        expect(result.blocked).toBe(true);expect(result.applied).toEqual([]);
+        expect(link.records.get('old-tower').applied).toBe(true);
+        expect(link.ProposalManager.applyProposal).not.toHaveBeenCalled();
+        expect(link.ProposalManager.applyProposalPlan).not.toHaveBeenCalled();
+    });
+
+    it('reports an atomic replacement failure without claiming any new member applied', async () => {
+        const link = conflictingLink('replace', { planFailure: 'The proposed plots do not cover the site.' });
+        const result = await link.open([link.tower.cid, park.cid]);
+        expect(result.applied).toEqual([]);expect(result.failed[0].reason).toContain('cover the site');
+        expect(link.records.get('old-tower').applied).toBe(true);
+        expect(link.records.get(`design-${link.tower.cid}`).applied).toBe(false);
+    });
 
     it('imports the designs parked, applies what is not on the map in package order and frames the latest-authored', async () => {
         const link = designLink({ designs: [park, block, square], local: { [square.cid]: standingSquare } });
