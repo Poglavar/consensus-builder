@@ -19,6 +19,15 @@ function store() {
     }) };
 }
 describe('private feedback inbox', () => {
+    it('wakes delivery only after storage and keeps the receipt if notification startup fails', async () => {
+        const pool = store(), onReceived = vi.fn(() => { throw new Error('notification unavailable'); });
+        const app = appWith(pool, { onReceived });
+        expect((await request(app).post('/feedback').send(body)).status).toBe(201);
+        expect(onReceived).toHaveBeenCalledTimes(1);
+        expect(pool.query).toHaveBeenCalledTimes(1);
+        expect((await request(app).post('/feedback').send({ ...body, message: '' })).status).toBe(400);
+        expect(onReceived).toHaveBeenCalledTimes(1);
+    });
     it('stores a report and returns a private receipt; retrying the same ID does not create another report', async () => {
         const pool = store(), app = appWith(pool);
         for (let n = 0; n < 2; n++) {

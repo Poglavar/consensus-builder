@@ -731,3 +731,8 @@ or API. Its receipt UUID identifies that report; status `received` means it was 
 it has been triaged or fixed. Retrying the same receipt and content is idempotent; reusing the
 receipt for different content is refused. Report text is not a published design, agreement,
 wallet decision or instruction to an agent. The inbox has no public listing.
+
+The maintainer can receive a private Telegram notification with a bounded text excerpt and the
+receipt ID. Notification delivery is separate from report receipt: `telegram_notified_at` records
+confirmed delivery, while `telegram_attempted_at` and `telegram_attempts` track retries. Delivery
+does not mean the report has been read, triaged or fixed.

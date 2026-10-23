@@ -26,6 +26,33 @@ From the repository root:
 
 The launcher starts this checkout’s frontend and API on available local ports and prints the URL. Stop it with Ctrl-C. The map is plain HTML, CSS and JavaScript; its data-dependent flows still require a working API and datasets.
 
+## Private feedback inbox and Telegram
+
+The web form at `/feedback.html` and MCP `ugt_submit_feedback` store reports in the same private
+`consensus.feedback` inbox. Read it with the backend's database environment:
+
+```sh
+cd backend
+node --env-file=.env scripts/feedback-inbox.mjs --list --limit 20
+node --env-file=.env scripts/feedback-inbox.mjs --id RECEIPT_UUID
+```
+
+The API sends notifications through the existing `TELEGRAM_ACTIVITY_BOT_TOKEN`,
+`TELEGRAM_ACTIVITY_CHAT_ID` and `TELEGRAM_ACTIVITY_THREAD_ID` configuration. Set these secrets in
+the backend's ignored environment on the API host. Reports include their receipt, source, text
+excerpt and optional page URL; link previews are disabled. Full text remains in the private inbox.
+There is no public inbox endpoint.
+
+Apply `backend/routes/feedback-ddl.sql` before starting the updated API; `deploy-backend.sh` includes
+this step. The API owns delivery, with no extra cron job: it checks pending reports at startup,
+after submissions and every minute, processing up to five per check. A failed attempt becomes
+eligible again after five minutes. Missing Telegram configuration leaves reports pending.
+`telegram_notified_at`, `telegram_attempted_at` and `telegram_attempts` in the inbox CLI show delivery
+state. Identical submission retries do not resend a confirmed notification. Telegram and the
+database do not share a transaction: a lost Telegram receipt or crash before saving success can
+cause another delivery. The receipt ID identifies such duplicates. Test-mode API processes never
+send notifications.
+
 ## Verify a change
 
 Run the headless unit test files for the behavior you changed. For the public guide contracts:

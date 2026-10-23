@@ -11,12 +11,12 @@ if (!args.includes('--list') && !args.includes('--id')) {
         if (args.includes('--id')) {
             const id = args[args.indexOf('--id') + 1];
             if (!/^[0-9a-f-]{36}$/i.test(id || '')) throw new Error('Supply a receipt UUID');
-            const { rows } = await pool.query('SELECT id, kind, message, page_url, source, created_at FROM consensus.feedback WHERE id = $1::uuid', [id]);
+            const { rows } = await pool.query('SELECT id, kind, message, page_url, source, created_at, telegram_notified_at, telegram_attempted_at, telegram_attempts FROM consensus.feedback WHERE id = $1::uuid', [id]);
             console.log(JSON.stringify(rows, null, 2));
         } else {
             const value = args.includes('--limit') ? Number(args[args.indexOf('--limit') + 1]) : 20;
             if (!Number.isInteger(value) || value < 1 || value > 100) throw new Error('limit must be 1–100');
-            const { rows } = await pool.query('SELECT id, kind, left(message, 160) AS summary, page_url, source, created_at FROM consensus.feedback ORDER BY created_at DESC LIMIT $1', [value]);
+            const { rows } = await pool.query('SELECT id, kind, left(message, 160) AS summary, page_url, source, created_at, telegram_notified_at, telegram_attempts FROM consensus.feedback ORDER BY created_at DESC LIMIT $1', [value]);
             console.log(JSON.stringify(rows, null, 2));
         }
     } finally { await pool.end(); }

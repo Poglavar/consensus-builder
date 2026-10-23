@@ -51,6 +51,7 @@ import { setupLandEventsRoute } from './routes/land-events.js';
 import { setupLensesRoute } from './routes/lenses.js';
 import { setupCityRequestsRoute } from './routes/city-requests.js';
 import { setupFeedbackRoute } from './routes/feedback.js';
+import { createFeedbackNotifications } from './feedback/notifications.js';
 import { setupParcelHistoryRoute } from './routes/parcel-history.js';
 import { setupHackathonProofRoute } from './routes/hackathon-proof.js';
 import { setupHackathonCasesRoute } from './routes/hackathon-cases.js';
@@ -454,7 +455,7 @@ export function createApp({
     setupLandEventsRoute(app, activePool); // deterministic agreement lifecycle events + court recipe declarations
     setupLensesRoute(app, activePool); // lens attester directory + SAS schema definitions (lens-model.md)
     setupCityRequestsRoute(app, activePool); // world view "Ask for this city" demand counts
-    setupFeedbackRoute(app, activePool); // private web/MCP feedback inbox
+    setupFeedbackRoute(app, activePool, { onReceived: () => { void app.locals.feedbackNotifications?.wake(); } });
     setupParcelHistoryRoute(app, activePool); // permanent per-parcel log: agreements, ownership attestations, executions
     setupHackathonProofRoute(app, { env }); // public hackathon scope plus redacted prospective resolver status
     setupHackathonCasesRoute(app, activePool, { env }); // one data-derived proposal → support/forecast/evidence graph
@@ -510,17 +511,21 @@ export function startServer({ env = process.env, pool } = {}) {
     installUnhandledRejectionLogger();
     const port = env.API_PORT || 3000;
     const { app, pool: activePool } = createApp({ env, pool });
+    const feedbackNotifications = createFeedbackNotifications({ pool: activePool, env });
+    app.locals.feedbackNotifications = feedbackNotifications;
     const server = app.listen(port, () => {
         console.log(`Backend listening on port ${port}`);
+        feedbackNotifications.start();
     });
 
     // PM2's zero-downtime reload waits for the old worker to stop accepting new
     // connections. Keep the database pool alive until existing HTTP requests
     // drain, then release it before the worker exits.
     server.gracefulShutdown = async () => {
-        await new Promise((resolve, reject) => {
+        const drained = new Promise((resolve, reject) => {
             server.close((error) => error ? reject(error) : resolve());
         });
+        await Promise.all([drained, feedbackNotifications.close()]);
         if (typeof activePool?.end === 'function') {
             await activePool.end();
         }

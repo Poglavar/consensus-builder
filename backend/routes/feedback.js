@@ -23,7 +23,7 @@ export function validateFeedback(body) {
     return { value: { id: body.reportId || randomUUID(), kind: body.kind, message: body.message.trim(), pageUrl, source } };
 }
 
-export function setupFeedbackRoute(app, pool, { requestLimit = 30 } = {}) {
+export function setupFeedbackRoute(app, pool, { requestLimit = 30, onReceived = () => {} } = {}) {
     const limiter = rateLimit({ windowMs: 60 * 60 * 1000, limit: requestLimit, standardHeaders: 'draft-7', legacyHeaders: false,
         message: { code: 'feedback-rate-limited', error: 'Too many reports; please try again later.' } });
     app.post('/feedback', limiter, async (req, res) => {
@@ -41,6 +41,9 @@ export function setupFeedbackRoute(app, pool, { requestLimit = 30 } = {}) {
                     AND existing.page_url IS NOT DISTINCT FROM EXCLUDED.page_url AND existing.source = EXCLUDED.source
                 RETURNING id, created_at`, [value.id, value.kind, value.message, value.pageUrl, value.source]);
             if (!rows.length) return res.status(409).json({ code: 'feedback-id-conflict', error: 'This reportId was already used for different feedback.' });
+            // Delivery is independent of the receipt: a stored report stays saved if Telegram
+            // is unavailable. A wake-up is only a hint; pending work is retained in the database.
+            try { onReceived(); } catch { console.error('[feedback] notification wake-up failed; report remains saved'); }
             return res.status(201).json({ report: { id: rows[0].id, status: 'received', createdAt: rows[0].created_at } });
         } catch {
             // Do not log the report text or connection details.

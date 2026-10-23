@@ -16,10 +16,10 @@ function chunk(text, size) {
  * Send a plain-text Telegram message, split across messages when it is too long.
  *
  * @param {string} text
- * @param {{ fetchImpl?: Function, env?: object }} [options]
+ * @param {{ fetchImpl?: Function, env?: object, disablePreview?: boolean, timeoutMs?: number }} [options]
  * @returns {Promise<boolean>} true when every chunk was accepted
  */
-export async function sendTelegram(text, { fetchImpl, env = process.env } = {}) {
+export async function sendTelegram(text, { fetchImpl, env = process.env, disablePreview = false, timeoutMs = 10_000 } = {}) {
     const token = env?.TELEGRAM_ACTIVITY_BOT_TOKEN;
     const chatId = env?.TELEGRAM_ACTIVITY_CHAT_ID;
     const threadId = env?.TELEGRAM_ACTIVITY_THREAD_ID;
@@ -44,15 +44,20 @@ export async function sendTelegram(text, { fetchImpl, env = process.env } = {}) 
             const res = await send(`https://api.telegram.org/bot${token}/sendMessage`, {
                 method: 'POST',
                 headers: { 'content-type': 'application/json' },
-                body: JSON.stringify({ chat_id: chatId, text: part, message_thread_id: Number(threadId) })
+                signal: AbortSignal.timeout(timeoutMs),
+                body: JSON.stringify({ chat_id: chatId, text: part, message_thread_id: Number(threadId),
+                    ...(disablePreview ? { link_preview_options: { is_disabled: true } } : {}) })
             });
             if (!res.ok) {
-                const body = await res.text().catch(() => '');
-                console.error(`[telegram] sendMessage failed: ${res.status} ${body}`);
+                console.error(`[telegram] sendMessage failed: HTTP ${res.status}`);
+                ok = false;
+            } else if ((await res.json()).ok !== true) {
+                console.error('[telegram] sendMessage returned no success receipt');
                 ok = false;
             }
-        } catch (err) {
-            console.error('[telegram] sendMessage error:', err?.message || err);
+        } catch {
+            // Fetch errors can contain the URL, which contains the bot token.
+            console.error('[telegram] sendMessage transport or response error');
             ok = false;
         }
     }

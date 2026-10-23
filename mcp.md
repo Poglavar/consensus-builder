@@ -616,3 +616,33 @@ separate open issue; this change does not claim to fix comparison freshness.
 
 No full unit or browser suite was started. API, frontend, isolated MCP and nginx publication are
 separate release steps and have not been performed by this follow-up.
+
+### Private Telegram feedback notifications (2026-10-23)
+
+The user requested Telegram notifications for incoming feedback. The API now wakes an inbox
+delivery worker after storing a report and checks pending reports at startup and every minute.
+It reuses the existing private activity bot/chat configuration. Each message includes the report
+kind, source, receipt UUID, a bounded text excerpt and an optional page link with previews disabled.
+The notification does not change the `received` receipt or indicate triage. There is no extra bot
+process, scheduler, public inbox or paid model call.
+
+The feedback row retains delivery timestamps and an attempt count. Row locks coordinate API
+workers; confirmed reports are skipped on submission retries and API restarts. Failed delivery
+becomes eligible after five minutes. A crash after Telegram accepts a message but before its
+database commit, or an uncertain Telegram response, can cause another delivery; the receipt ID
+identifies it. Missing configuration keeps reports pending. Requests have a ten-second timeout,
+and shutdown drains the active delivery before closing the database pool. Report text, Telegram
+tokens and connection URLs are excluded from delivery logs. See [local development](docs/development.md)
+for inbox commands and configuration names.
+
+| Verification | Scope | Outcome |
+| --- | --- | --- |
+| Targeted headless unit tests | Four named files: feedback, feedback notifications, agent Telegram and API index | 57 passed |
+| Local database delivery integration | Two concurrent workers, failed delivery, retry cooldown and recovery; mocked Telegram transport | Passed; one delivery across concurrent workers, retry state persisted; isolated fixtures removed |
+| Local HTTP → Telegram integration, first harness | One labelled test report to the configured private chat | Telegram accepted one message; harness asserted the wrong request/receipt field names and stopped after receipt; recovered the uniquely labelled fixture rather than sending another test |
+| Local HTTP → Telegram integration, recovery | Verify persisted success and resubmit the same report using `reportId` | Passed; one original delivery attempt, identical retry returned the same receipt without another notification; test fixture removed |
+| Local schema and review API | Apply additive DDL to loopback geodata, restart this task's feedback-only API | Delivery state installed; local review API uses the worker |
+
+No full unit or browser suite was run. No production database, deployed API or paid evaluation
+was changed by this notification follow-up. Deployment of the updated backend and its environment
+is required for live feedback notifications.

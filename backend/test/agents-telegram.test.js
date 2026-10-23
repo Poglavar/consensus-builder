@@ -23,11 +23,23 @@ afterEach(() => {
 function okFetch(calls) {
     return async (url, init) => {
         calls.push({ url, body: JSON.parse(init.body) });
-        return { ok: true, status: 200, text: async () => '{"ok":true}' };
+        return { ok: true, status: 200, text: async () => '{"ok":true}', json: async () => ({ ok: true }) };
     };
 }
 
 describe('sendTelegram', () => {
+    it('can suppress link previews and bounds the Telegram request', async () => {
+        const fetchImpl = vi.fn(async () => ({ ok: true, json: async () => ({ ok: true }) }));
+        expect(await sendTelegram('A report link', { fetchImpl, env: ENV, disablePreview: true })).toBe(true);
+        expect(fetchImpl.mock.calls[0][1].signal).toBeInstanceOf(AbortSignal);
+        expect(JSON.parse(fetchImpl.mock.calls[0][1].body).link_preview_options).toEqual({ is_disabled: true });
+    });
+
+    it('requires a successful Telegram API receipt and never logs token-bearing errors', async () => {
+        expect(await sendTelegram('report', { env: ENV, fetchImpl: async () => ({ ok: true, json: async () => ({ ok: false }) }) })).toBe(false);
+        expect(await sendTelegram('report', { env: ENV, fetchImpl: async () => { throw new Error('https://api.telegram.org/botPRIVATE_TOKEN/sendMessage'); } })).toBe(false);
+        expect(JSON.stringify(error.mock.calls)).not.toContain('PRIVATE_TOKEN');
+    });
     it('never falls back to alert credentials for activity', async () => {
         const calls = [];
         const env = { TELEGRAM_BOT_TOKEN: 'old-token', TELEGRAM_CHAT_ID: 'old-chat' };
