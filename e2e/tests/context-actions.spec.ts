@@ -196,10 +196,16 @@ test.describe('Map context actions @features', () => {
     expect(result.saved.title).toBe(sourceBefore.title);
   });
 
-  test('a consumed cadastral source explains why Propose needs current formed ground', async ({ mockApi: page }) => {
+  test('a consumed cadastral source selects its current parcels from the Propose recovery action', async ({ mockApi: page }) => {
     await openCity(page);
     await createSpace(page, 'park');
     await expect.poll(() => page.evaluate(id => !!(window as any).LiveParcelFabric.get(id), PARCEL_ID)).toBe(false);
+    const replacements = await page.evaluate(id => {
+      const w = window as any;
+      return w.LiveParcelFabric.snapshot().parcelIds.filter((key: string) =>
+        w.LiveParcelFabric.explicitCadastreIds(w.LiveParcelFabric.get(key)).includes(id));
+    }, PARCEL_ID);
+    expect(replacements.length).toBeGreaterThan(0);
     const before = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().length);
     await page.evaluate(id => {
       const w = window as any;
@@ -207,18 +213,12 @@ test.describe('Map context actions @features', () => {
       w.switchParcelTab(null, 'propose-tab');
     }, PARCEL_ID);
     const panel = page.locator('#parcel-info-panel');
-    await expect(panel.locator('[data-parcel-source-only]')).toContainText('Select a current formed ground piece');
-    await expect(panel.locator('.parcel-build-btn')).toHaveCount(0);
+    const recovery = panel.locator('[data-parcel-build-state="replaced"]');
+    await expect(recovery).toContainText('The parcel boundaries on the map have changed. Select the current parcels to continue.');
     expect(await page.evaluate(() => (window as any).proposalStorage.getAllProposals().length)).toBe(before);
-    await page.evaluate(id => {
-      const w = window as any;
-      const formed = w.LiveParcelFabric.snapshot().parcelIds.find((key: string) =>
-        w.LiveParcelFabric.explicitCadastreIds(w.LiveParcelFabric.get(key)).includes(id));
-      if (!formed) throw new Error('Expected formed ground replacing the source');
-      w.ParcelsUISelection.selectParcelFromStack(formed);
-      w.switchParcelTab(null, 'propose-tab');
-    }, PARCEL_ID);
-    await expect(panel.locator('[data-parcel-source-only]')).toHaveCount(0);
+    await panel.locator('[data-parcel-build-recovery="select-current"]').click();
+    await expect.poll(() => page.evaluate(() => [...(window as any).multiParcelSelection.selectedParcels].sort()))
+      .toEqual(replacements.slice().sort());
     await expect(panel.locator('.parcel-build-btn--park')).toBeEnabled();
   });
 });

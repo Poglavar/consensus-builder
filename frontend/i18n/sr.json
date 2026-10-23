@@ -1459,7 +1459,10 @@
                 "undergroundStation": "Metro stanica",
                 "elevatedStation": "Nadzemna stanica",
                 "selectParcelFirst": "Prvo izaberi parcelu.",
-                "sourceOnly": "Ovo je izvorni katastarski zapis samo za čitanje. Za predlog promene na karti izaberite trenutni oblikovani deo zemljišta.",
+                "replaced": "Granice parcela na mapi su promenjene. Za nastavak izaberite trenutne parcele.",
+                "unavailable": "Podaci o trenutnom stanju ove parcele nisu učitani. Za nastavak ponovo učitajte parcele.",
+                "selectCurrent": "Izaberi trenutne parcele",
+                "reload": "Ponovo učitaj parcele",
                 "rulesCategory": "Urbana pravila",
                 "structuresCategory": "Objekti"
             },

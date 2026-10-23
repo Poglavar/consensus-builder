@@ -1463,7 +1463,10 @@
                 "undergroundStation": "Metro station",
                 "elevatedStation": "Elevated station",
                 "selectParcelFirst": "Select a parcel first.",
-                "sourceOnly": "This is a read-only cadastral source record. Select a current formed ground piece on the map to propose a change.",
+                "replaced": "The parcel boundaries on the map have changed. Select the current parcels to continue.",
+                "unavailable": "This parcel’s current map data is not loaded. Reload parcels to continue.",
+                "selectCurrent": "Select current parcels",
+                "reload": "Reload parcels",
                 "rulesCategory": "Urban rules",
                 "structuresCategory": "Structures"
             },

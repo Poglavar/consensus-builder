@@ -1486,7 +1486,10 @@
                 "undergroundStation": "Estación de metro",
                 "elevatedStation": "Estación elevada",
                 "selectParcelFirst": "Selecciona una parcela primero.",
-                "sourceOnly": "Este es un registro catastral de origen de solo lectura. Selecciona en el mapa una pieza de terreno formada actual para proponer un cambio.",
+                "replaced": "Los límites de las parcelas en el mapa han cambiado. Selecciona las parcelas actuales para continuar.",
+                "unavailable": "Los datos actuales de esta parcela no están cargados en el mapa. Vuelve a cargar las parcelas para continuar.",
+                "selectCurrent": "Seleccionar parcelas actuales",
+                "reload": "Volver a cargar parcelas",
                 "rulesCategory": "Normas urbanas",
                 "structuresCategory": "Estructuras"
             },

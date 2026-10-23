@@ -32,6 +32,7 @@ function loadActions(overrides = {}) {
         document: { querySelector: vi.fn(() => null), getElementById: vi.fn(() => null) },
         console,
         ParcelMenuModel,
+        LiveParcelFabric: { get: id => ({ id: String(id) }) },
         ...overrides
     };
     window.window = window;

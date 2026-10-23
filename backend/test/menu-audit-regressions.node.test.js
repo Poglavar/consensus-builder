@@ -176,23 +176,102 @@ test('facet text generation preserves authored fields and updates explicitly gen
     assert.equal(title.value, 'Generated Park'); assert.equal(description.value, 'Default Park');
 });
 
-test('source-only cadastral Propose context explains current-ground selection without changing it', () => {
+test('a replaced cadastral source selects its exact current parcels and opens their design palette', () => {
     const document = makeDocument();
     document.body.innerHTML = '<div id="parcel-proposal-primary-actions"></div>';
-    const selected = new Set(['formed-piece']);
-    const window = { document, currentParcel: { id: 'formed-piece' },
-        multiParcelSelection: { isActive: true, selectedParcels: selected },
-        LiveParcelFabric: { get: id => id === 'formed-piece' ? { id } : null },
-        ParcelMenuModel: require('../../frontend/js/ui/parcel-menu-model.js') };
+    const sourceId = 'consumed-source';
+    const replacementIds = ['formed-piece'];
+    const features = replacementIds.map(id => ({ id }));
+    const layers = new Map(replacementIds.map(id => [id, { id }]));
+    const selected = new Set(['unrelated-old-selection']);
+    const multi = {
+        isActive: true, selectedParcels: selected,
+        clearSelection() { selected.clear(); },
+        addLayers(liveLayers) { liveLayers.forEach(layer => selected.add(layer.id)); },
+        finish() { multi.isActive = false; openedPanel = true; window.renderParcelProposalActions(); }
+    };
+    let openedPanel = false;
+    const window = { document, currentParcel: { id: sourceId }, multiParcelSelection: multi,
+        LiveParcelFabric: {
+            get: id => replacementIds.includes(String(id)) ? { id: String(id) } : null,
+            entriesForCadastre: ids => { assert.equal(ids.length, 1); assert.equal(ids[0], sourceId); return features; }
+        },
+        ParcelPresenter: { resolveLiveLayers: ids => {
+            assert.deepEqual(Array.from(ids), [sourceId]);
+            return replacementIds.map(id => layers.get(id));
+        } } };
+    window.ParcelMenuModel = require('../../frontend/js/ui/parcel-menu-model.js');
     vm.runInNewContext(fs.readFileSync(new URL('../../frontend/js/parcels/ui/proposal-actions.js', import.meta.url), 'utf8'), { window, document, console });
-    window.renderParcelProposalActions('consumed-source');
+    window.renderParcelProposalActions(sourceId);
     const container = document.getElementById('parcel-proposal-primary-actions');
-    assert.match(container.textContent, /read-only cadastral source record.*current formed ground piece/);
-    assert.equal(container.querySelectorAll('button').length, 0);
-    assert.deepEqual([...selected], ['formed-piece']);
-    assert.equal(window.currentParcel.id, 'formed-piece');
-    window.renderParcelProposalActions('formed-piece');
+    assert.equal(container.querySelector('[data-parcel-build-state="replaced"]')?.getAttribute('data-parcel-build-state'), 'replaced');
+    assert.match(container.textContent, /The parcel boundaries on the map have changed\. Select the current parcels to continue\./);
+    assert.equal(container.querySelector('[data-parcel-source-only]'), null);
+    const select = container.querySelector('[data-parcel-build-recovery="select-current"]');
+    assert.ok(select);
+    assert.equal(select.textContent, 'Select current parcels');
+    select.click();
+    assert.deepEqual([...selected].sort(), replacementIds);
+    assert.equal(multi.isActive, false);
+    assert.equal(openedPanel, true);
     assert.ok(container.querySelector('.parcel-build-btn--park'));
+});
+
+test('an exact live cadastral source remains buildable in its explicit Propose context', async () => {
+    const document = makeDocument();
+    document.body.innerHTML = '<div id="parcel-proposal-primary-actions"></div>';
+    const getCalls = [];
+    const sourceId = 'live-cadastral-source';
+    let createdIds = null;
+    const window = { document, currentParcel: { id: 'older-current-parcel' },
+        multiParcelSelection: { isActive: true, selectedParcels: new Set(['another-live-parcel']) },
+        LiveParcelFabric: {
+            get: id => { getCalls.push(String(id)); return String(id) === sourceId ? { id: sourceId } : null; },
+            entriesForCadastre: () => { throw new Error('An exact live source needs no replacement lookup.'); }
+        },
+        instantCreateStructureFromSelection: (_kind, ids) => { createdIds = ids; return true; } };
+    window.ParcelMenuModel = require('../../frontend/js/ui/parcel-menu-model.js');
+    vm.runInNewContext(fs.readFileSync(new URL('../../frontend/js/parcels/ui/proposal-actions.js', import.meta.url), 'utf8'), { window, document, console });
+    window.renderParcelProposalActions(sourceId);
+    const container = document.getElementById('parcel-proposal-primary-actions');
+    assert.ok(container.querySelector('.parcel-build-btn--park'));
+    assert.equal(container.querySelector('[data-parcel-build-state]'), null);
+    assert.deepEqual(getCalls, [sourceId]);
+    await window.startParcelBuildTool('park');
+    assert.deepEqual(createdIds, [sourceId]);
+});
+
+test('an unavailable parcel source offers reload and rerenders the same context', async () => {
+    const document = makeDocument();
+    document.body.innerHTML = '<div id="parcel-proposal-primary-actions"></div>';
+    const sourceId = 'not-loaded-source';
+    const getCalls = [];
+    let refreshes = 0;
+    const refresh = async () => { refreshes += 1; };
+    const window = { document, currentParcel: { id: 'different-current-parcel' },
+        multiParcelSelection: { isActive: false, selectedParcels: new Set() },
+        LiveParcelFabric: {
+            get: id => { getCalls.push(String(id)); return null; },
+            entriesForCadastre: ids => { assert.equal(ids[0], sourceId); return []; }
+        },
+        ParcelPresenter: { getLayer: () => null },
+        refreshParcelDataWithBusyState: refresh };
+    window.ParcelMenuModel = require('../../frontend/js/ui/parcel-menu-model.js');
+    vm.runInNewContext(fs.readFileSync(new URL('../../frontend/js/parcels/ui/proposal-actions.js', import.meta.url), 'utf8'), { window, document, console });
+    window.renderParcelProposalActions(sourceId);
+    const container = document.getElementById('parcel-proposal-primary-actions');
+    assert.equal(container.querySelector('[data-parcel-build-state="unavailable"]')?.getAttribute('data-parcel-build-state'), 'unavailable');
+    assert.match(container.textContent, /This parcel’s current map data is not loaded\. Reload parcels to continue\./);
+    const reload = container.querySelector('[data-parcel-build-recovery="reload"]');
+    assert.ok(reload);
+    assert.equal(reload.textContent, 'Reload parcels');
+    const initialCalls = getCalls.length;
+    reload.click();
+    await new Promise(resolve => setImmediate(resolve));
+    assert.equal(refreshes, 1);
+    assert.ok(getCalls.length > initialCalls);
+    assert.equal(getCalls.at(-1), sourceId);
+    assert.equal(container.querySelector('[data-parcel-build-state="unavailable"]')?.getAttribute('data-parcel-build-state'), 'unavailable');
 });
 
 

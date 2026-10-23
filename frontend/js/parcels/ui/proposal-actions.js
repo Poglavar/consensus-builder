@@ -83,12 +83,16 @@
         if (stationType) global.startTransitStationPlacement?.(stationType);
     }
 
+    let parcelBuildContextId = null;
+
     function parcelBuildSelectionIds() {
         const multi = global.multiParcelSelection;
-        if (multi && multi.selectedParcels && multi.selectedParcels.size > 0) {
-            return [...multi.selectedParcels].map(String);
-        }
-        return global.currentParcel && global.currentParcel.id ? [String(global.currentParcel.id)] : [];
+        return global.ParcelMenuModel.buildTargetIds({
+            parcelId: global.currentParcel?.id,
+            parcelIdOverride: parcelBuildContextId,
+            selectionIds: multi?.selectedParcels || [],
+            selecting: !!multi?.isActive
+        });
     }
 
     // One policy for every FRESH parcel-based design. Corridors target the exact parcel(s)
@@ -256,37 +260,71 @@
         `;
     }
 
+    function renderBuildRecovery(container, state, targetIds, parcelIdOverride) {
+        const note = document.createElement('p');
+        note.className = 'parcel-build-disabled-reason';
+        note.dataset.parcelBuildState = state;
+        const key = 'panel.parcel.build.' + state;
+        const message = state === 'replaced'
+            ? 'The parcel boundaries on the map have changed. Select the current parcels to continue.'
+            : 'This parcel’s current map data is not loaded. Reload parcels to continue.';
+        note.setAttribute('data-i18n-key', key);
+        note.textContent = tParcel(key, {}, message);
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'btn';
+        button.dataset.parcelBuildRecovery = state === 'replaced' ? 'select-current' : 'reload';
+        const buttonKey = 'panel.parcel.build.' + (state === 'replaced' ? 'selectCurrent' : 'reload');
+        button.setAttribute('data-i18n-key', buttonKey);
+        button.textContent = tParcel(buttonKey, {}, state === 'replaced' ? 'Select current parcels' : 'Reload parcels');
+        button.addEventListener('click', async () => {
+            button.disabled = true;
+            try {
+                if (state === 'replaced') {
+                    // Explicit user action: select the current parcels linked to this original.
+                    // Re-resolve at click time because an apply/unapply may have changed them.
+                    const layers = global.ParcelPresenter.resolveLiveLayers(targetIds);
+                    if (!layers.length) {
+                        renderBuildRecovery(container, 'unavailable', targetIds, parcelIdOverride);
+                        return;
+                    }
+                    const multi = global.multiParcelSelection;
+                    multi.clearSelection();
+                    multi.isActive = true;
+                    multi.addLayers(layers);
+                    multi.finish();
+                    return;
+                }
+                await global.refreshParcelDataWithBusyState();
+                renderParcelProposalActions(parcelIdOverride);
+            } catch (error) {
+                console.warn('[parcel design] current parcels could not be selected or reloaded', error);
+                renderBuildRecovery(container, 'unavailable', targetIds, parcelIdOverride);
+            } finally {
+                button.disabled = false;
+            }
+        });
+        container.replaceChildren(note, button);
+    }
+
     function renderParcelProposalActions(parcelIdOverride = null) {
         const container = document.getElementById('parcel-proposal-primary-actions')
             || document.getElementById('parcel-proposal-actions');
         if (!container) return;
-
-        const hasMultiSelect = typeof global.multiParcelSelection !== 'undefined' && !!global.multiParcelSelection;
-        const multiSelectActive = hasMultiSelect && (global.multiParcelSelection.isActive || global.multiParcelSelection.selectedParcels?.size > 0);
-        const selectionCount = multiSelectActive && global.multiParcelSelection.selectedParcels
-            ? global.multiParcelSelection.selectedParcels.size
-            : 0;
-
-        const parcelContextId = parcelIdOverride || (global.currentParcel && global.currentParcel.id);
-        if (parcelContextId && typeof global.LiveParcelFabric?.get === 'function'
-            && !global.LiveParcelFabric.get(String(parcelContextId))) {
-            // A registry record can remain inspectable after its live ground has been replaced.
-            // Its Propose tab must not act on an unrelated selection or guess a descendant.
-            const note = document.createElement('p');
-            note.className = 'parcel-build-disabled-reason';
-            note.dataset.parcelSourceOnly = 'true';
-            note.setAttribute('data-i18n-key', 'panel.parcel.build.sourceOnly');
-            note.textContent = tParcel('panel.parcel.build.sourceOnly', {},
-                'This is a read-only cadastral source record. Select a current formed ground piece on the map to propose a change.');
-            container.replaceChildren(note);
+        parcelBuildContextId = parcelIdOverride;
+        const multi = global.multiParcelSelection;
+        const targetIds = parcelBuildSelectionIds();
+        const missing = targetIds.filter(id => !global.LiveParcelFabric?.get?.(id));
+        if (missing.length) {
+            const replacements = targetIds.length === 1
+                ? global.LiveParcelFabric?.entriesForCadastre?.(targetIds) || [] : [];
+            renderBuildRecovery(container, replacements.length ? 'replaced' : 'unavailable', targetIds, parcelIdOverride);
             return;
         }
-        // The one palette predicate (ui/parcel-menu-model.js buildPaletteAvailable).
-        if (global.ParcelMenuModel.buildPaletteAvailable({ multiSelectActive, selectionCount, parcelContextId })) {
-            container.innerHTML = buildPaletteHtml();
-        } else {
-            container.innerHTML = '';
-        }
+        if (global.ParcelMenuModel.buildPaletteAvailable({
+            parcelContextId: targetIds[0], multiSelectActive: !!multi?.isActive, selectionCount: targetIds.length
+        })) container.innerHTML = buildPaletteHtml();
+        else container.innerHTML = '';
     }
 
     global.shouldSuggestWholeBlockForFreshProposal = shouldSuggestWholeBlockForFreshProposal;

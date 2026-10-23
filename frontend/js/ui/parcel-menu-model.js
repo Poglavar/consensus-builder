@@ -14,6 +14,18 @@
     // What stays available on a piece of open ground (no cadastral parcel under it).
     const GROUND_ACTIONS = new Set(['details', 'useAsSite']);
 
+    // An explicitly inspected record owns its context. Otherwise the current selection owns
+    // Design, even if an older single-parcel panel left its id behind.
+    function buildTargetIds({ parcelId, parcelIdOverride, selectionIds = [], selecting = false } = {}) {
+        const id = value => value === null || value === undefined ? '' : String(value);
+        const explicit = id(parcelIdOverride);
+        if (explicit) return [explicit];
+        const selected = [...new Set(Array.from(selectionIds, id).filter(Boolean))];
+        if (selecting || selected.length) return selected;
+        const current = id(parcelId);
+        return current ? [current] : [];
+    }
+
     // The build palette (parcels/ui/proposal-actions.js renderParcelProposalActions) renders whenever
     // there is a parcel context: a non-empty multi-selection or a single parcel.
     function buildPaletteAvailable(state) {
@@ -169,6 +181,7 @@
     return {
         ACTIONS,
         buildPaletteAvailable,
+        buildTargetIds,
         parcelHistoryIds,
         isActionAvailable,
         availableActions,

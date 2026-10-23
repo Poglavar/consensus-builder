@@ -79,10 +79,12 @@ describe('parcel menu actions', () => {
         const source = readFileSync(new URL('../../frontend/js/parcels/ui/proposal-actions.js', import.meta.url), 'utf8');
         const render = (state) => {
             const container = { innerHTML: '' };
+            const liveIds = state.liveParcelIds ? new Set(state.liveParcelIds) : null;
             const window = {
                 document: { querySelector: () => null, getElementById: id => (id === 'parcel-proposal-primary-actions' ? container : null) },
                 console,
                 ParcelMenuModel: Model,
+                LiveParcelFabric: { get: id => (!liveIds || liveIds.has(String(id)) ? { id: String(id) } : null) },
                 ...state
             };
             window.window = window;
@@ -101,6 +103,47 @@ describe('parcel menu actions', () => {
         expect(multi).not.toContain('parcel-build-btn--offer');
         expect(render({ multiParcelSelection: { isActive: false, selectedParcels: new Set(['a', 'b']) } }))
             .toContain('parcel-build-btn--park');
+    });
+
+    it('renders for valid selected parcels even when currentParcel is stale', () => {
+        const source = readFileSync(new URL('../../frontend/js/parcels/ui/proposal-actions.js', import.meta.url), 'utf8');
+        const container = { innerHTML: '' };
+        const calls = [];
+        const window = {
+            document: { querySelector: () => null, getElementById: id => (id === 'parcel-proposal-primary-actions' ? container : null) },
+            console,
+            ParcelMenuModel: Model,
+            currentParcel: { id: 'consumed-source' },
+            multiParcelSelection: { isActive: true, selectedParcels: new Set(['live-a', 'live-b']) },
+            LiveParcelFabric: { get: id => { calls.push(String(id)); return ['live-a', 'live-b'].includes(String(id)) ? { id: String(id) } : null; } }
+        };
+        window.window = window;
+        vm.runInNewContext(source, { window, globalThis: window, document: window.document, console });
+        window.renderParcelProposalActions();
+        expect(container.innerHTML).toContain('parcel-build-btn--park');
+        expect(container.innerHTML).not.toContain('data-parcel-build-state');
+        expect(calls).toEqual(['live-a', 'live-b']);
+    });
+});
+
+describe('parcel build target ids', () => {
+    it('prefers selected live parcels to a stale current parcel', () => {
+        expect(Model.buildTargetIds({ parcelId: 'consumed-source', selectionIds: ['live-a', 'live-b'] }))
+            .toEqual(['live-a', 'live-b']);
+    });
+
+    it('uses an explicit parcel override alone, even with another selection', () => {
+        expect(Model.buildTargetIds({ parcelId: 'current', parcelIdOverride: 'exact-source', selectionIds: ['live-a', 'live-b'] }))
+            .toEqual(['exact-source']);
+    });
+
+    it('does not fall back to currentParcel while manually selecting an empty set', () => {
+        expect(Model.buildTargetIds({ parcelId: 'consumed-source', selectionIds: [], selecting: true })).toEqual([]);
+    });
+
+    it('uses the current parcel only when there is no override or active selection', () => {
+        expect(Model.buildTargetIds({ parcelId: 'current' })).toEqual(['current']);
+        expect(Model.buildTargetIds({})).toEqual([]);
     });
 });
 
