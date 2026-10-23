@@ -109,6 +109,22 @@ test.describe('Click stack @core', () => {
     await expect(page.locator('#parcel-info-panel')).toBeHidden();
   });
 
+  // Corridors save through their own atomic transaction (createCorridorProposalAtomically), not
+  // the building/park apply, and still open in the stack's Design section on Finish.
+  for (const kind of ['road', 'track'] as const) {
+    test(`a finished ${kind} opens in the stack's Design section`, async ({ mockApi: page }) => {
+      await openCity(page);
+      const id = await drawCorridor(page, kind);
+      const designs = stackSection(page, 'designs');
+      await expect(designs.locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'true');
+      await expect(designs.locator('#proposal-details-panel')).toBeVisible();
+      await expect(designs.locator('#proposal-details-panel [data-proposal-tab="overview"]')).toBeVisible();
+      const key = await page.evaluate(proposalId => String((window as any).getProposalKey(
+        (window as any).proposalStorage.getProposal(proposalId))), id);
+      await expect(designs.locator('#proposal-details-content')).toHaveAttribute('data-proposal-id', key);
+    });
+  }
+
   test('a design orders above its formed and cadastral parcels, and the expanded kind is remembered', async ({ mockApi: page }) => {
     await openCity(page);
     const parkId = await createSpace(page, 'park');
