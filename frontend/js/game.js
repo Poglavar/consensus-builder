@@ -795,6 +795,11 @@ async function renderActivityExplorer() {
             actorExplorerController = window.ActorExplorer.mount(actors, {
                 events: visible,
                 showFilters: false,
+                onVisibleCount: count => {
+                    if (status && activityExplorerState.view === 'actors' && !activityExplorerState.failures.length) {
+                        status.textContent = translateGameText('gameDialogs.log.count', '{{count}} events', { count });
+                    }
+                },
                 openEntity: openActivityEntity,
                 loadRun: async runId => {
                     const response = await fetch(`${activityApiBase()}/agent/runs/${encodeURIComponent(runId)}`);
@@ -820,11 +825,13 @@ function setActivityFilter(field, value) {
     activityExplorerState.filter = field === 'reset'
         ? { ...window.AgentActionEngine.EMPTY_ACTIVITY_FILTER }
         : { ...base, [field]: value };
+    if (field === 'reset') actorExplorerController?.reset();
     renderActivityExplorer();
 }
 
 function clearActivityScope() {
     activityExplorerState.filter = { ...activityExplorerState.filter, actorId: null, agreementCid: null, runId: null };
+    actorExplorerController?.reset();
     renderActivityExplorer();
 }
 
@@ -1139,7 +1146,8 @@ async function openServerProposalFromLog(lookup) {
         proposal = await importServerProposal(lookup);
     } catch (error) {
         if (error?.code === 'proposal-in-other-city') {
-            await openProposalInItsCity(lookup, error.cityId);
+            // Download consent did not disclose the destination city or the reload.
+            await openProposalInItsCity(lookup, error.cityId, { ask: true });
             return;
         }
         console.warn(`[${new Date().toISOString()}] [activity] could not download proposal ${lookup}`, error);

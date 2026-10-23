@@ -182,16 +182,21 @@ function updateProposalNameAndDescription(proposalType, forceUpdate = false) {
             nameInput.addEventListener('input', () => { nameInput.dataset.titleOrigin = 'user'; });
             nameInput.dataset.titleOriginBound = 'true';
         }
-        if (forceUpdate || !nameInput.value.trim()) {
+        if ((forceUpdate && nameInput.dataset.titleOrigin === 'generated') || !nameInput.value.trim()) {
             nameInput.value = generateDefaultProposalName(proposalType);
             nameInput.dataset.titleOrigin = 'generated';
         }
     }
 
     if (descriptionInput) {
-        if (forceUpdate || !descriptionInput.value.trim()) {
+        if (descriptionInput.dataset.descriptionOriginBound !== 'true') {
+            descriptionInput.addEventListener('input', () => { descriptionInput.dataset.descriptionOrigin = 'user'; });
+            descriptionInput.dataset.descriptionOriginBound = 'true';
+        }
+        if ((forceUpdate && descriptionInput.dataset.descriptionOrigin === 'generated') || !descriptionInput.value.trim()) {
             const proposalName = nameInput && nameInput.value.trim() ? nameInput.value.trim() : generateDefaultProposalName(proposalType);
             descriptionInput.value = generateDefaultProposalDescription(proposalType, proposalName);
+            descriptionInput.dataset.descriptionOrigin = 'generated';
         }
     }
 }

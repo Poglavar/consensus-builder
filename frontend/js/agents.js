@@ -1041,7 +1041,7 @@ async function showAgentDialog(agentId, options = {}) {
                         </div>
                     ` : ''}
                 </div>
-                <button type="button" class="close-circle-btn agent-dialog-modal-close" aria-label="Close agent dialog" onclick="closeAgentDialog()" data-readonly-allow="true">&times;</button>
+                <button type="button" class="close-circle-btn agent-dialog-modal-close" aria-label="${escapeHtml(translateText('agentDialog.close', 'Close agent dialog'))}" data-i18n-key="agentDialog.close" data-i18n-attr="aria-label" onclick="closeAgentDialog()" data-readonly-allow="true">&times;</button>
             </div>
             <div class="cb-dialog__body agent-dialog-modal-body">
                 <div class="agent-stats-grid">
@@ -1917,7 +1917,7 @@ function getAgentLogEntries(agentId) {
     const events = typeof allActivityEvents === 'function' ? allActivityEvents() : [];
     const agentEvents = window.ActorExplorer.eventsInvolvingActor(events, agentId);
     if (agentEvents.length === 0) {
-        return '<div class="empty-log">No activities recorded for this agent yet.</div>';
+        return `<div class="empty-log" data-i18n-key="agentDialog.emptyLog">${escapeHtml(translateText('agentDialog.emptyLog', 'No activities recorded for this agent yet.'))}</div>`;
     }
 
     // Return the last 20 entries (most recent first)

@@ -42,6 +42,11 @@
     const manager = () => global.CityConfigManager || null;
     const finite = value => typeof value === 'number' && Number.isFinite(value);
 
+    function reportOpenFailure(error) {
+        console.error(`[${new Date().toISOString()}] [world-entry] world view failed to open`, error);
+        global.showEphemeralMessage?.(t('world.openFailed', 'World view could not start. Check your browser’s graphics support and try again. You can keep using the map.'), 8000, 'warning');
+    }
+
     function landed(reason) {
         state.bootOpen = false;
         log(`landed (${reason})`);
@@ -354,7 +359,7 @@
         }
         const world = el('button', 'btn btn-sm', { type: 'button', id: 'explore-banner-world', text: t('world.explore.worldView', 'World view') });
         world.addEventListener('click', () => global.BusyControl.track(world, () => open({}))
-            .catch(error => console.error('[world-entry] world view failed to open', error)));
+            .catch(reportOpenFailure));
         actions.appendChild(world);
         banner.appendChild(actions);
         if (state.request === 'error') {
@@ -405,7 +410,7 @@
         if (!button) return;
         button.addEventListener('click', () => {
             global.BusyControl.track(button, () => open({}))
-                .catch(error => console.error('[world-entry] world view failed to open', error));
+                .catch(reportOpenFailure);
         });
     }
 
@@ -441,7 +446,7 @@
                 || !!(global.MapShell && global.MapShell.isBlockingDialogOpen && global.MapShell.isBlockingDialogOpen());
             if (Model.shouldReturnToGlobe({ fromZoom: previousZoom, toZoom: zoom, userInitiated, blocked })) {
                 const center = map.getCenter();
-                open({ focus: { lat: center.lat, lon: center.lng, zoom } }).catch(error => console.error('[world-entry] world view failed to open', error));
+                open({ focus: { lat: center.lat, lon: center.lng, zoom } }).catch(reportOpenFailure);
             }
             previousZoom = zoom;
         });

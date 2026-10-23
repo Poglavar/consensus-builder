@@ -62,9 +62,9 @@
         try { return typeof global[name] === 'function' && global[name]() === true; } catch (_) { return false; }
     }
 
-    function blocksSelection() {
+    function blocksSelection({ allowUrbanBlocks = false } = {}) {
         if (isHeld()) return true;
-        if (global.UrbanBlocksView?.ownsClicks()) return true;
+        if (!allowUrbanBlocks && global.UrbanBlocksView?.ownsClicks()) return true;
         if (truthy('measureMode') || global.measureMode) return true;
         if (truthy('roadDrawingMode')) return true;
         if (truthy('cadastreViewActive')) return true;

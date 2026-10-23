@@ -290,7 +290,8 @@ function computeOwnershipStatsFromSelection(selection) {
         return result;
     }
 
-    parcelIds.forEach((parcelId, index) => {
+    let complete = true;
+    parcelIds.forEach(parcelId => {
         let addedOwnerForParcel = false;
 
         if (parcelId && typeof getParcelOwnerSlots === 'function') {
@@ -298,6 +299,7 @@ function computeOwnershipStatsFromSelection(selection) {
                 const slots = getParcelOwnerSlots(String(parcelId));
                 if (Array.isArray(slots) && slots.length) {
                     slots.forEach(slot => {
+                        if (!slot || slot.placeholder === true) return;
                         const key = slot && (slot.key || slot.ownerKey || slot.displayName || slot.name);
                         if (key) {
                             result.ownerKeys.add(String(key));
@@ -311,13 +313,12 @@ function computeOwnershipStatsFromSelection(selection) {
         }
 
         if (!addedOwnerForParcel) {
-            const fallbackKey = parcelId ? `parcel:${parcelId}:owner` : `parcel:index:${index}`;
-            result.ownerKeys.add(fallbackKey);
+            complete = false;
         }
     });
 
-    result.ownerCount = result.ownerKeys.size;
-    result.mode = result.ownerCount <= 1 ? 'single' : 'multiple';
+    result.ownerCount = complete ? result.ownerKeys.size : null;
+    result.mode = complete && result.ownerCount <= 1 ? 'single' : 'multiple';
     return result;
 }
 

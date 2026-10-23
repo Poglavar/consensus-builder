@@ -1361,6 +1361,8 @@
         }
     },
     "agentDialog": {
+        "emptyLog": "No activities recorded for this agent yet.",
+        "close": "Close agent dialog",
         "agentNotFound": "Agent not found.",
         "userLabel": "You",
         "ethBalance": "ETH balance",
@@ -1457,6 +1459,7 @@
                 "undergroundStation": "Metro station",
                 "elevatedStation": "Elevated station",
                 "selectParcelFirst": "Select a parcel first.",
+                "sourceOnly": "This is a read-only cadastral source record. Select a current formed ground piece on the map to propose a change.",
                 "rulesCategory": "Urban rules",
                 "structuresCategory": "Structures"
             },
@@ -6010,6 +6013,7 @@
         }
     },
     "world": {
+        "openFailed": "World view could not start. Check your browser’s graphics support and try again. You can keep using the map.",
         "title": "Choose a place",
         "hint": "Drag to spin · select a city or an exact location",
         "reach": {

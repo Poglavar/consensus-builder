@@ -26,7 +26,7 @@ const payload = (items: unknown[] = [], available = sources) => ({
   summaries: [], unavailable: [], coverage: 'source-results', nextCursor: null, omitted: 0,
 });
 
-test('planning source, scenario, display and retry controls update the actual view @features', async ({ mockApi: page }) => {
+for (const blocksEnabled of [false, true]) test(`planning source, scenario, display and retry controls update the actual view (OSM blocks ${blocksEnabled ? 'on' : 'off'}) @features`, async ({ mockApi: page }) => {
   let fail = true;
   const requests: URL[] = [];
   await page.route('**/planning/**', async route => {
@@ -72,11 +72,26 @@ test('planning source, scenario, display and retry controls update the actual vi
   expect(new URL(page.url()).searchParams.get('planningScenario')).toBe('family2');
   await panel.getByRole('button', { name: 'Close', exact: true }).click();
   await expect(panel).toBeHidden();
+  if (blocksEnabled) {
+    await page.route('**/blocks/roads**', route => route.fulfill({ json: { type: 'FeatureCollection', features: [] } }));
+    await page.locator('#layers-button').click();
+    await page.locator('#showUrbanBlocks').check();
+    await expect(page.locator('#urban-blocks-status')).toContainText('No fully enclosed blocks');
+    await page.locator('#layers-button').click();
+  }
+  // A physical click must resolve the same permitted shape as its keyboard action.
   const shape = page.getByRole('button', { name: 'Inspect permitted massing on Planning edition B massing', exact: true });
   await expect(shape).toBeAttached();
+  await shape.click();
+  const clickStack = page.locator('#click-stack');
+  await expect(clickStack.locator('.click-stack__section[data-kind="permitted"]')).toBeVisible();
+  const inspector = page.locator('#planning-inspector');
+  await expect(inspector.getByRole('heading', { name: 'Planning edition B massing', exact: true })).toBeVisible();
+  expect(new URL(page.url()).searchParams.get('planningSelection')).toBe('planning-controls-b:massing');
+  await page.keyboard.press('Escape');
+  await expect(clickStack).toBeHidden();
   await shape.focus();
   await shape.press('Enter');
-  const inspector = page.locator('#planning-inspector');
   await expect(inspector.getByRole('heading', { name: 'Planning edition B massing', exact: true })).toBeVisible();
   await inspector.getByRole('button', { name: 'Close', exact: true }).click();
   await expect(inspector).toBeHidden();

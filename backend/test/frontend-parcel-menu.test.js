@@ -306,20 +306,22 @@ describe('the parcel click chain ends in the click stack', () => {
         expect(h.context.selectAndHighlightProposal).not.toHaveBeenCalled();
     });
 
-    it('toggles the parcel in multi-select without the click stack', () => {
+    it('routes manual multi-select through the click stack to resolve current live ground', () => {
         const h = loadClickChain({ multiActive: true });
-        h.click();
-        expect(h.multi.toggleParcel).toHaveBeenCalledWith(h.layer);
-        expect(h.handleClick).not.toHaveBeenCalled();
+        const event = h.click();
+        expect(h.handleClick).toHaveBeenCalledExactlyOnceWith(event.latlng);
+        expect(h.multi.toggleParcel).not.toHaveBeenCalled();
+        expect(h.stopPropagation).toHaveBeenCalledWith(event);
         expect(h.context.selectedParcelId).toBeUndefined();
     });
 
-    it('enters multi-select on Shift+click, seeded with the current parcel, without the click stack', () => {
+    it('enters multi-select on Shift+click and routes its seeded selection through the click stack', () => {
         const h = loadClickChain();
-        h.click(true);
+        const event = h.click(true);
         expect(h.multi.toggle).toHaveBeenCalledWith({ preserveSelectedParcel: true });
-        expect(h.multi.toggleParcel).toHaveBeenCalledWith(h.layer);
-        expect(h.handleClick).not.toHaveBeenCalled();
+        expect(h.handleClick).toHaveBeenCalledExactlyOnceWith(event.latlng);
+        expect(h.multi.toggleParcel).not.toHaveBeenCalled();
+        expect(h.stopPropagation).toHaveBeenCalledWith(event);
     });
 
     it('stays out of a tool that owns map clicks', () => {

@@ -34,6 +34,20 @@ test.describe('Plan arithmetic @features', () => {
     await modal.locator('#plan-stats-persons').fill('4');
     await modal.locator('#plan-stats-persons').press('Tab');
     await expect.poll(async () => Number((await value('people')).replace(/[^\d]/g, ''))).toBeGreaterThan(0);
+    // Committed assumptions must show the values the unchanged yield formulas actually use.
+    for (const [id, entered, effective] of [
+      ['housing-share', '150', '100'], ['housing-share', '-1', '75'], ['housing-share', '0', '0'],
+      ['efficiency', '150', '100'], ['efficiency', '0', '80'],
+      ['apartment-size', '0', '65'], ['apartment-size', '-5', '65'], ['apartment-size', '', '65'],
+      ['persons', '0', '2.4'], ['price', '-100', '0'],
+    ]) {
+      const input = modal.locator(`#plan-stats-${id}`);
+      await input.fill(entered);
+      await input.press('Tab');
+      await expect(input).toHaveValue(effective);
+      expect(await input.evaluate((el: HTMLInputElement) => el.validity.rangeUnderflow || el.validity.rangeOverflow || el.validity.valueMissing)).toBe(false);
+    }
+    expect(await value('floor-area')).toBe(floorArea);
     await modal.getByRole('button', { name: 'Close applied proposal stats' }).click();
     await expect(modal).toBeHidden();
   });

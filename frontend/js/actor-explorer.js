@@ -263,11 +263,12 @@
     // openEntity({ type, id }): when the host can open an agreement or a design in place (the map), an
     // event's entity is a button that calls it; the standalone page has no opener, so there it is a
     // plain label.
-    function mount(element, { events = [], loadRun = null, openEntity = null, showFilters = true } = {}) {
+    function mount(element, { events = [], loadRun = null, openEntity = null, showFilters = true, onVisibleCount = null } = {}) {
         if (!element || !root?.document) throw new Error('ActorExplorer.mount needs an element and a document');
         const doc = root.document;
         let allEvents = newestFirst(events);
         let state = { query: '', controller: 'all', actorKey: null };
+        let runRequest = 0;
         element.replaceChildren();
         const filters = doc.createElement('div'); filters.className = 'ae-filters';
         const search = doc.createElement('input'); search.type = 'search'; search.placeholder = 'Search actor, agreement, run or transaction'; search.setAttribute('aria-label', search.placeholder);
@@ -300,17 +301,26 @@
 
         async function openRun(runId) {
             if (!runId || typeof loadRun !== 'function') return;
+            const request = ++runRequest;
             detail.replaceChildren(text(doc, 'p', 'Loading run provenance…', 'ae-muted'));
             // The detail sits below the whole activity list; without this the click looked dead.
             const reveal = () => { if (typeof detail.scrollIntoView === 'function') detail.scrollIntoView({ block: 'start' }); };
             reveal();
-            try { renderRun(await loadRun(runId)); }
-            catch (error) { detail.replaceChildren(text(doc, 'p', `Could not load run: ${error.message}`, 'ae-error')); }
+            try {
+                const run = await loadRun(runId);
+                if (request !== runRequest) return;
+                renderRun(run);
+            }
+            catch (error) {
+                if (request !== runRequest) return;
+                detail.replaceChildren(text(doc, 'p', `Could not load run: ${error.message}`, 'ae-error'));
+            }
             reveal();
         }
 
         function render() {
             const visible = filterEvents(allEvents, state);
+            if (typeof onVisibleCount === 'function') onVisibleCount(visible.length);
             profiles.replaceChildren(text(doc, 'h2', 'Actors', 'ae-section-title'));
             const cards = doc.createElement('div'); cards.className = 'ae-profile-grid';
             // Each profile is a selectable row (cb-option); the chosen actor is the pressed one.
@@ -376,9 +386,16 @@
         }
         search.addEventListener('input', () => { state.query = search.value; render(); });
         controller.addEventListener('change', () => { state.controller = controller.value; state.actorKey = null; render(); });
-        clear.addEventListener('click', () => { state.actorKey = null; search.value = ''; state.query = ''; controller.value = 'all'; state.controller = 'all'; render(); });
+        function reset() {
+            state = { query: '', controller: 'all', actorKey: null };
+            search.value = ''; controller.value = 'all';
+            ++runRequest;
+            detail.replaceChildren();
+            render();
+        }
+        clear.addEventListener('click', reset);
         render();
-        return { setEvents(next) { allEvents = newestFirst(next); render(); }, getEvents() { return [...allEvents]; } };
+        return { reset, setEvents(next) { allEvents = newestFirst(next); render(); }, getEvents() { return [...allEvents]; } };
     }
 
     async function boot() {

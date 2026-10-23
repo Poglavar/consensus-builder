@@ -270,6 +270,19 @@
             : 0;
 
         const parcelContextId = parcelIdOverride || (global.currentParcel && global.currentParcel.id);
+        if (parcelContextId && typeof global.LiveParcelFabric?.get === 'function'
+            && !global.LiveParcelFabric.get(String(parcelContextId))) {
+            // A registry record can remain inspectable after its live ground has been replaced.
+            // Its Propose tab must not act on an unrelated selection or guess a descendant.
+            const note = document.createElement('p');
+            note.className = 'parcel-build-disabled-reason';
+            note.dataset.parcelSourceOnly = 'true';
+            note.setAttribute('data-i18n-key', 'panel.parcel.build.sourceOnly');
+            note.textContent = tParcel('panel.parcel.build.sourceOnly', {},
+                'This is a read-only cadastral source record. Select a current formed ground piece on the map to propose a change.');
+            container.replaceChildren(note);
+            return;
+        }
         // The one palette predicate (ui/parcel-menu-model.js buildPaletteAvailable).
         if (global.ParcelMenuModel.buildPaletteAvailable({ multiSelectActive, selectionCount, parcelContextId })) {
             container.innerHTML = buildPaletteHtml();

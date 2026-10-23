@@ -1384,6 +1384,8 @@
         }
     },
     "agentDialog": {
+        "emptyLog": "Todavía no hay actividades registradas para este agente.",
+        "close": "Cerrar el diálogo del agente",
         "agentNotFound": "Agente no encontrado.",
         "userLabel": "Tú",
         "ethBalance": "Saldo en ETH",
@@ -1480,6 +1482,7 @@
                 "undergroundStation": "Estación de metro",
                 "elevatedStation": "Estación elevada",
                 "selectParcelFirst": "Selecciona una parcela primero.",
+                "sourceOnly": "Este es un registro catastral de origen de solo lectura. Selecciona en el mapa una pieza de terreno formada actual para proponer un cambio.",
                 "rulesCategory": "Normas urbanas",
                 "structuresCategory": "Estructuras"
             },
@@ -6037,6 +6040,7 @@
         }
     },
     "world": {
+        "openFailed": "No se pudo iniciar la vista del mundo. Comprueba la compatibilidad gráfica del navegador e inténtalo de nuevo. Puedes seguir usando el mapa.",
         "title": "Elige un lugar",
         "hint": "Arrastra para girar · selecciona una ciudad o una ubicación exacta",
         "reach": {

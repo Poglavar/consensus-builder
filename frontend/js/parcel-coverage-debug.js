@@ -210,7 +210,7 @@
         // The grid size is in dataset units: metres for a metric CRS (3765), where its square is the
         // cell's area, but degrees for EPSG:4326 grids, where squaring it reported "0.000025 m²". Those
         // cells are measured on the ground, from a cell's own corners in a frame at the cell.
-        const datasetCrs = window.CityConfigManager?.getProjectionConfig?.()?.datasetCrs;
+        const datasetCrs = window.CityConfigManager?.getCurrentCityConfig?.()?.projection?.datasetCrs;
         const firstCell = result.cellBounds[0];
         if (datasetCrs === 'EPSG:4326' && firstCell && window.__metricFrame) {
             const sw = firstCell.getSouthWest();

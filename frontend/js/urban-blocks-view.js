@@ -455,6 +455,9 @@
         // This native capture handler runs before Leaflet can suppress the click after a drag.
         if (win.map.dragging?.moved?.() || win.map.boxZoom?.moved?.()) return;
         if (event.target.closest?.('.leaflet-control, .leaflet-popup, .leaflet-tooltip')) return;
+        // Permitted massing is an explicit inspection target. Let its Leaflet handler build the
+        // click stack; capturing it here swallowed the mouse action while Enter still worked.
+        if (event.target.closest?.('.planning-sources-pane [role="button"]')) return;
         if (!event.target.closest?.('.leaflet-pane') && event.target !== win.map.getContainer()) return;
         event.stopImmediatePropagation();
         selectAt(win.map.mouseEventToLatLng(event));

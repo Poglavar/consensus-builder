@@ -37,7 +37,7 @@
         'highlightOwnershipPrivate',
         'parcels-in-view',
         // Layers sheet: blocks, buildings, roads
-        'showUrbanBlocks', 'urban-blocks-refresh',
+        'showUrbanBlocks', 'urban-blocks-refresh', 'urban-blocks-browse',
         'parcelBlocksCheckbox', 'showBlockNames', 'showParksCheckbox', 'showSquaresCheckbox',
         'showBuildings', 'showBuildingsDgu', 'showBuildingsOsm', 'showProposedBuildings',
         'showGovernmentRoadPlan', 'showOSMRoadLines', 'showGUPRoadLines', 'showWFSPolygons',
@@ -296,8 +296,10 @@
             labelKey: 'urbanBlocks.toggle', fallbackLabel: 'Detect and analyse blocks', icon: 'fas fa-shapes' }),
         control('showSchellingPlan', { id: 'layers.schellingPlan', group: 'layers', kind: 'toggle', surfaces: ['layers'], modes: ['2d'],
             labelKey: 'schellingPlan.toggle', fallbackLabel: 'Show the Schelling plan', icon: 'fas fa-border-all' }),
-        control('urban-blocks-refresh', { id: 'urbanBlocks.refresh', group: 'blocks', surfaces: ['layers'],
+        control('urban-blocks-refresh', { id: 'urbanBlocks.refresh', group: 'blocks', section: 'urban-blocks', surfaces: ['layers'],
             labelKey: 'urbanBlocks.refresh', fallbackLabel: 'Refresh this area', icon: 'fas fa-rotate' }),
+        control('urban-blocks-browse', { id: 'urbanBlocks.browse', group: 'blocks', section: 'urban-blocks', surfaces: ['layers'],
+            labelKey: 'urbanBlocks.browse', fallbackLabel: 'Browse blocks', icon: 'fas fa-list' }),
         control('parcelBlocksCheckbox', { id: 'layers.blocks', group: 'layers', kind: 'toggle', surfaces: ['layers'],
             labelKey: 'sidebar.blocks.showBlocks', fallbackLabel: 'Show formed blocks', icon: 'fas fa-th-large' }),
         control('showBlockNames', { id: 'layers.blockNames', group: 'layers', kind: 'toggle', surfaces: ['layers'],
@@ -530,7 +532,7 @@
     });
 
     function sectionHiddenForCity(entry, ctx) {
-        const section = GROUP_SECTIONS[entry.group];
+        const section = entry.section || GROUP_SECTIONS[entry.group];
         if (!section || !ctx || typeof ctx.isSectionHidden !== 'function') return false;
         try {
             return !!ctx.isSectionHidden(section);

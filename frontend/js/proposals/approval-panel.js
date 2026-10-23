@@ -43,11 +43,12 @@
         return subject;
     }
 
-    // The server's status of the agreement ('active' | 'expired'): an expired one takes no decision.
+    // Terminal agreements show their recorded decisions without offering new owner actions.
     function setStatus(agreementId, status) {
         const subject = subjectFor(agreementId);
         if (!subject) return;
-        if (status === 'expired') subject.lifecycleStatus = 'Expired';
+        const terminal = { executed: 'Executed', cancelled: 'Cancelled', expired: 'Expired' };
+        if (terminal[status]) subject.lifecycleStatus = terminal[status];
         else delete subject.lifecycleStatus;
     }
 
@@ -213,7 +214,7 @@
         const current = actor();
         const mine = current ? runtime().authorizedOwnerIds(subject, current) : [];
         const connected = wallet();
-        const closed = subject.lifecycleStatus === 'Expired';
+        const closed = ['Executed', 'Cancelled', 'Expired'].includes(subject.lifecycleStatus);
         let html = '';
         if (mine.length && !closed) {
             const names = list(mine.map(label));
@@ -608,7 +609,7 @@
         if (inspect) {
             // Read-only: the owner (or whoever acts for them) goes on to the signing review.
             parts.footer.append(button('btn', t('common.close', 'Close'), close));
-            if (!review.alreadyAccepted && subject.lifecycleStatus !== 'Expired') {
+            if (!review.alreadyAccepted && !['Executed', 'Cancelled', 'Expired'].includes(subject.lifecycleStatus)) {
                 const acceptAs = button('btn btn-success', t('proposalApproval.deals.acceptAsOwner', 'I am {{owner}} — review and accept', { owner: label(ownerId) }),
                     () => openReview(agreementId, ownerId));
                 acceptAs.setAttribute('data-approval-deal-accept', ownerId);

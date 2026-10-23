@@ -21527,7 +21527,14 @@
     function applyBuildingLayerChoices() {
         const source = getCurrentCityConfig()?.buildings?.source || 'gdi';
         const row = id => document.getElementById(id)?.closest('label');
-        const show = (id, visible) => { const label = row(id); if (label) label.hidden = !visible; };
+        const show = (id, visible) => {
+            const label = row(id);
+            if (!label) return;
+            label.hidden = !visible;
+            // The palette shares the source gate, even while its parent sheet is closed.
+            if (visible) label.removeAttribute('data-feature-hidden');
+            else label.setAttribute('data-feature-hidden', 'true');
+        };
         show('showBuildings', source !== 'nyc');
         show('showBuildingsDgu', source === 'gdi');
         show('showBuildingsOsm', source !== 'osm');

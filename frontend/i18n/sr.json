@@ -1371,6 +1371,8 @@
         }
     },
     "agentDialog": {
+        "emptyLog": "Još nema zabeleženih aktivnosti za ovog agenta.",
+        "close": "Zatvori dijalog agenta",
         "agentNotFound": "Agent nije pronađen.",
         "userLabel": "Ti",
         "ethBalance": "ETH stanje",
@@ -1453,6 +1455,7 @@
                 "undergroundStation": "Metro stanica",
                 "elevatedStation": "Nadzemna stanica",
                 "selectParcelFirst": "Prvo izaberi parcelu.",
+                "sourceOnly": "Ovo je izvorni katastarski zapis samo za čitanje. Za predlog promene na karti izaberite trenutni oblikovani deo zemljišta.",
                 "rulesCategory": "Urbana pravila",
                 "structuresCategory": "Objekti"
             },
@@ -6044,6 +6047,7 @@
         }
     },
     "world": {
+        "openFailed": "Prikaz sveta nije mogao da se pokrene. Proverite grafičku podršku pregledača i pokušajte ponovo. Možete nastaviti da koristite mapu.",
         "title": "Izaberite mesto",
         "hint": "Prevuci za okretanje · izaberi grad ili tačnu lokaciju",
         "reach": {

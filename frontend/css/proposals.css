@@ -265,6 +265,26 @@
     overflow: hidden;
 }
 
+/* Expanded controls share the fixed sheet with the cards. Each can scroll without squeezing
+   the list to zero height, including when Filters and Proposal tools are both expanded. */
+#proposal-list-actions {
+    flex: 0 1 auto;
+    min-height: 36px;
+    max-height: 35%;
+    overflow-y: auto;
+}
+
+.proposal-list-modal-content > .proposal-list-controls {
+    flex-shrink: 1;
+    min-height: 0;
+    max-height: 30dvh;
+    overflow-y: auto;
+}
+
+.proposal-list-modal-content > .proposal-list-modal-body {
+    flex: 1 0 120px;
+}
+
 .proposal-list-modal {
     display: flex;
     flex: 1 1 auto;

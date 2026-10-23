@@ -41,8 +41,8 @@
         try { if (kind) global.localStorage.setItem(MEMORY_KEY, kind); } catch (_) { /* memory is a convenience */ }
     }
 
-    function blocked() {
-        try { return global.__mapEditLock ? global.__mapEditLock.blocksSelection() : false; } catch (_) { return false; }
+    function blocked(options) {
+        try { return global.__mapEditLock ? global.__mapEditLock.blocksSelection(options) : false; } catch (_) { return false; }
     }
 
     // ── hosting existing panels ───────────────────────────────────────────────────────────────
@@ -605,7 +605,7 @@
 
     // Every map click on the 2D map arrives here, whichever layer received it. One physical click
     // can reach several layers' handlers; only the first counts.
-    function handleClick(latlng) {
+    function handleClick(latlng, { allowUrbanBlocks = false } = {}) {
         if (!latlng) return false;
         // A surface picking designs (js/map-pick.js) takes the topmost design and nothing else. It
         // holds the edit lock itself, so it is asked before the lock refuses the click.
@@ -614,7 +614,7 @@
             if (top) global.MapPick.pick(top.key);
             return true;
         }
-        if (blocked()) return false;
+        if (blocked({ allowUrbanBlocks })) return false;
         const now = Date.now();
         // One physical click reaching several layers' handlers arrives within a few milliseconds.
         if (state.lastClick && now - state.lastClick.at < 50

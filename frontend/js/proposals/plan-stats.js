@@ -102,15 +102,18 @@
             || null;
     }
 
-    function readAssumptionsFromModal(modal) {
+    function readAssumptionsFromModal(modal, { normalizeInput = null } = {}) {
         const api = yieldApi();
         const defaults = api ? api.DEFAULTS : {};
         const read = (id, fallback, scale = 1) => {
             const input = modal ? modal.querySelector(id) : null;
             const value = Number(input && input.value);
             const minimum = input && input.min !== '' && input.min !== undefined ? Number(input.min) : 0;
-            return input && input.value.trim() !== '' && Number.isFinite(value) && value >= minimum
-                ? value * scale : fallback;
+            const maximum = input && input.max !== '' && input.max !== undefined ? Number(input.max) : Infinity;
+            const effective = input && input.value.trim() !== '' && Number.isFinite(value) && value >= minimum
+                ? Math.min(value, maximum) : fallback;
+            if (input && input === normalizeInput) input.value = String(effective);
+            return effective * scale;
         };
         return {
             appliedOnly: true,
@@ -527,6 +530,11 @@
             if (!input || input.dataset.planStatsBound) return;
             input.dataset.planStatsBound = '1';
             input.addEventListener('input', handleAssumptionChange);
+            input.addEventListener('change', () => {
+                if (input.id === 'plan-stats-price') input.value = String(Math.max(0, Number(input.value) || 0));
+                else readAssumptionsFromModal(modal, { normalizeInput: input });
+                handleAssumptionChange();
+            });
         });
     }
 

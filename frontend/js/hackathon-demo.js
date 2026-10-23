@@ -437,9 +437,9 @@
         how.append(steps);
         element.append(how);
 
-        // The two proven agreements, NO and YES, side by side.
+        // Each card reports the evidence currently supplied for its intended outcome.
         const cases = section(doc, 'Two agreements, followed end to end',
-            'One was cancelled and its market resolved NO. The other was carried out and resolved YES. Every stage is recorded on Solana devnet.');
+            'Follow a cancellation case (NO) and an execution case (YES). Each card shows the available Solana devnet evidence; PENDING means the complete outcome has not been recorded here.');
         cases.id = 'judge-path';
         const caseGrid = node(doc, 'div', null, 'hd-cases');
         caseGrid.append(caseCard(doc, model.canonicalCase, 'Cancelled case'), caseCard(doc, model.executedCase, 'Executed case'));
@@ -552,7 +552,7 @@
             { label: 'Solana faucet', href: 'https://faucet.solana.com' },
             { label: 'Circle USDC faucet', href: 'https://faucet.circle.com' }
         ]));
-        tryIt.append(node(doc, 'p', 'Without a wallet, open the map, expand Game, turn on game mode and choose New Game. It only resets this browser’s simulation; public records and devnet transactions stay as they are.', 'hd-muted'));
+        tryIt.append(node(doc, 'p', 'Without a wallet, open the map and choose Activity → Simulation. Turn on game mode, expand Simulation settings and choose New Game. It only resets this browser’s simulation; public records and devnet transactions stay as they are.', 'hd-muted'));
         tryIt.append(linkRow(doc, [{ label: 'Open the map simulation', href: '/?reduceMotion=1' }]));
         element.append(tryIt);
 

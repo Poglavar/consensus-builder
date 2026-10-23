@@ -601,13 +601,14 @@ function showProposalDialog(overrides = null) {
 
     const siteArea = siteContext && window.__siteDraft ? window.__siteDraft.siteAreaM2(siteContext.site) : 0;
     const siteParcelIds = siteContext ? (siteContext.cadastreParcelIds || []) : [];
-    const totalArea = siteContext ? siteArea : selectedFeatures.reduce((sum, feature) => {
-        const area = feature.properties?.calculatedArea || 0;
-        return sum + area;
-    }, 0);
+    const sourceAreas = selectedFeatures.map(feature => window.ProposalArea.sourceAreaM2(feature,
+        geometry => turf.area({ type: 'Feature', properties: {}, geometry })));
+    const totalArea = siteContext ? siteArea : sourceAreas.every(Number.isFinite)
+        ? sourceAreas.reduce((sum, area) => sum + area, 0) : null;
 
     const ownershipStats = computeOwnershipStatsFromSelection(selection);
-    const totalOwners = siteContext ? siteParcelIds.length : (ownershipStats.ownerCount || selectedParcels.length);
+    const totalOwners = !siteContext && Number.isFinite(ownershipStats.ownerCount)
+        ? ownershipStats.ownerCount : t('common.unknown', 'Unknown');
     const siteSummaryHtml = siteContext ? `<p class="proposal-site-summary">${siteParcelIds.length
         ? t('modal.createProposal.site.bound', 'Site of {{area}} m², bound parcels: {{count}}. Publishing checks the binding against the full cadastre.', { area: CbFormat.formatNumber(siteArea, { maxFractionDigits: 0 }), count: siteParcelIds.length })
         : t('modal.createProposal.site.unbound', 'Site of {{area}} m² without bound parcel records. Ownership is unknown. On-chain execution requires an authority verdict.', { area: CbFormat.formatNumber(siteArea, { maxFractionDigits: 0 }) })}</p>` : '';
@@ -809,7 +810,7 @@ function showProposalDialog(overrides = null) {
                             <div id="proposalSummaryContent" style="display:none;">
                                 <div class="summary-stats">
                                     <p><strong>${summaryParcelsLabel}</strong> ${selectedParcels.length}</p>
-                                    <p><strong>${summaryAreaLabel}</strong> ${CbFormat.formatArea(totalArea)}</p>
+                                    <p><strong>${summaryAreaLabel}</strong> ${CbFormat.formatArea(totalArea, { missing: t('common.unknown', 'Unknown') })}</p>
                                     <p><strong>${summaryOwnersLabel}</strong> ${totalOwners}</p>
                                 </div>
                                 <div class="parcel-list">
@@ -1196,6 +1197,7 @@ function showProposalDialog(overrides = null) {
     }
     if (descriptionInputEl && overridePrefill.description) {
         descriptionInputEl.value = overridePrefill.description;
+        descriptionInputEl.dataset.descriptionOrigin = 'user';
     }
 
     // Update description when name changes
@@ -1203,6 +1205,7 @@ function showProposalDialog(overrides = null) {
     const descriptionInputField = document.getElementById('proposalDescription');
     if (nameInputField && descriptionInputField) {
         nameInputField.addEventListener('input', () => {
+            if (descriptionInputField.dataset.descriptionOrigin !== 'generated') return;
             const proposalType = document.getElementById('proposalType')?.value || DEFAULT_PROPOSAL_TYPE;
             const proposalName = nameInputField.value.trim() || generateDefaultProposalName(proposalType);
             descriptionInputField.value = generateDefaultProposalDescription(proposalType, proposalName);

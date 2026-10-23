@@ -260,8 +260,11 @@
                 // A massing click is a map click: the click stack shows it with everything else
                 // under the point (click-stack.md) and selects it when its section expands.
                 shape.on('click', event => {
+                    // Editing and measurement need this event to reach the map. A passive massing
+                    // overlay must not consume it before the active tool can place its geometry.
+                    if (root.__mapEditLock?.blocksSelection({ allowUrbanBlocks: true })) return;
                     root.L.DomEvent.stopPropagation(event);
-                    if (!root.__mapEditLock?.isHeld()) root.ClickStack.handleClick(event.latlng);
+                    if (!root.__mapEditLock?.isHeld()) root.ClickStack.handleClick(event.latlng, { allowUrbanBlocks: true });
                 });
                 hitShapes.push({ item, feature });
                 shape.eachLayer(part => {

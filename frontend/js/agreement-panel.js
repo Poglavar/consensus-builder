@@ -448,11 +448,21 @@
             + `${hintsHtml(hints)}${busy}</div>`);
     }
 
-    // The index's status of a proposed agreement, in words: active, expired, or not read (yet).
+    // A terminal account read takes precedence over the index's cached active/deadline status.
+    // An Active account cannot reopen an agreement the index already records as terminal.
+    function observedRemote(remote, chain) {
+        const status = idOf(chain?.value?.status).toLowerCase();
+        if (['executed', 'cancelled', 'expired'].includes(status)) return { ...remote, status, loading: false, error: null };
+        return remote;
+    }
+
+    // The index's lifecycle, including terminal states, never an inferred title or payment state.
     function remoteStatusOf(remote, tr = t) {
         if (!remote || remote.loading) return { tone: 'neutral', label: tr('agreement.publish.statusChecking', 'Checking the server…') };
         if (remote.error) return { tone: 'warning', label: tr('agreement.publish.statusUnavailable', 'Server status unavailable: {{reason}}', { reason: remote.error }) };
         if (remote.status === 'expired') return { tone: 'danger', label: tr('agreement.publish.statusExpired', 'Expired') };
+        if (remote.status === 'executed') return { tone: 'executed', label: CHAIN_STATUS.Executed.text(tr) };
+        if (remote.status === 'cancelled') return { tone: 'withdrawn', label: CHAIN_STATUS.Cancelled.text(tr) };
         return { tone: 'success', label: tr('agreement.publish.statusActive', 'Active') };
     }
 
@@ -635,7 +645,7 @@
             return status
                 + byHashOnly
                 + actionsHtml({ canCompare: current, comparing: comparing(state.id), canPropose: current && !published, published, canBet: binding && betAvailable(agreement) })
-                + publishedHtml({ published: agreement.published, remote: state.remote, electorate: agreement.rule && agreement.rule.electorate })
+                + publishedHtml({ published: agreement.published, remote: observedRemote(state.remote, chainView(agreement)?.chain), electorate: agreement.rule && agreement.rule.electorate })
                 + (binding ? chainHtml(chainView(agreement)) : nonBindingChainHtml(agreement.published))
                 + designsHtml(designRows(agreement, { designOf, isApplied: win.isApplied, typeLabel }))
                 + landHtml(landSummary(agreement))
@@ -654,7 +664,10 @@
             panel.querySelector('[data-agreement-region="body"]').innerHTML = bodyHtml();
             // The owners' decisions on a proposed agreement (proposals/approval-panel.js).
             const slot = panel.querySelector('[data-approval-card-slot]');
-            if (slot && win.ProposalApprovalPanel) win.ProposalApprovalPanel.render(slot, state.id);
+            if (slot && win.ProposalApprovalPanel) {
+                win.ProposalApprovalPanel.setStatus(state.id, observedRemote(state.remote, chainView(state.agreement)?.chain)?.status);
+                win.ProposalApprovalPanel.render(slot, state.id);
+            }
             panel.classList.add('visible');
             doc.body.classList.add('agreement-panel-open');
         }
@@ -663,6 +676,8 @@
 
         // The markets offer a bet on this agreement (window.AgreementBets, js/bets/).
         function betAvailable(agreement) {
+            const status = observedRemote(state.remote, chainView(agreement)?.chain)?.status;
+            if (['executed', 'cancelled', 'expired'].includes(status)) return false;
             const bets = win.AgreementBets;
             if (!bets || typeof bets.available !== 'function' || !agreement) return false;
             try {
@@ -724,18 +739,21 @@
             const id = agreement.id;
             const token = ++state.chainToken;
             const current = () => state.id === id && token === state.chainToken;
-            state.chain = { account: ref.account, loading: true, value: null, error: null, attestation: null, lensError: null };
+            const previous = state.chain?.account === ref.account ? state.chain.value : null;
+            const terminal = previous && ['Executed', 'Cancelled', 'Expired'].includes(previous.status) ? previous : null;
+            state.chain = { account: ref.account, loading: true, value: terminal, error: null, attestation: null, lensError: null };
             if (isOpen() && state.id === id) renderPanel();
             let value = null;
             try {
                 value = await win.AgreementBridge.read(agreement);
                 if (!current()) return;
+                if (terminal) value = terminal;
                 state.chain = { account: ref.account, loading: false, value, error: null, attestation: null, lensError: null };
                 log(`${id}: ${ref.account} on ${ref.cluster} is ${value ? `${value.status}, decision ${value.decision}, escrow ${value.escrowLamports}/${value.requiredLamports} lamports` : 'not on chain'}`);
             } catch (error) {
                 if (!current()) return;
                 console.warn(`[${new Date().toISOString()}] [AgreementPanel] ${ref.account} could not be read`, error);
-                state.chain = { account: ref.account, loading: false, value: null, error: (error && error.message) || String(error), attestation: null, lensError: null };
+                state.chain = { account: ref.account, loading: false, value: terminal, error: (error && error.message) || String(error), attestation: null, lensError: null };
             }
             if (isOpen() && state.id === id) renderPanel();
             if (!value || value.status !== 'Active' || value.decision !== 'Pending') return;
@@ -804,7 +822,7 @@
                 state.remote = { cid, loading: false, status: null, error: (error && error.message) || String(error), onchain: null };
             }
             if (win.ProposalApprovalPanel) {
-                win.ProposalApprovalPanel.setStatus(id, state.remote.status);
+                win.ProposalApprovalPanel.setStatus(id, observedRemote(state.remote, state.chain)?.status);
                 win.ProposalApprovalPanel.sync(id);
             }
             if (isOpen() && state.id === id) renderPanel();
@@ -1246,7 +1264,7 @@
 
     return {
         titleOf, statusOf, landSummary, allocationLines, ledgerRows, ruleSummary, ruleShort, designRows, groundIds, holdersLine,
-        statusHtml, actionsHtml, remoteStatusOf, publishedHtml, designsHtml, landHtml, allocationHtml, ledgerHtml, ruleHtml,
+        statusHtml, actionsHtml, remoteStatusOf, observedRemote, publishedHtml, designsHtml, landHtml, allocationHtml, ledgerHtml, ruleHtml,
         shortKey, chainStatusText, mintReadiness, isBinding, chainHtml, nonBindingChainHtml, browserPanel
     };
 });

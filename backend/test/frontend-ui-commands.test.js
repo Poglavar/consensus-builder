@@ -58,7 +58,6 @@ const NOT_COMMANDS = {
     'planning-view-retry': 'retry the current source request after an error',
     'planning-open-model': 'same model navigation as mode-3d-toggle',
     areaMonitorUploadButton: 'permanently disabled (upload not built)',
-    'urban-blocks-browse': 'permanently disabled (browse is not built)',
     showClaimsCounts: 'permanently disabled (claims counts not built)',
     'aerial-city-visible': 'aerial renderer control created by the world view',
     'photo-parcels-visible': 'photo-view parcel boundary control handled by PhotorealParcels',

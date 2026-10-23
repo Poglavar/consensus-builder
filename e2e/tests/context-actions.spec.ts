@@ -119,7 +119,17 @@ test.describe('Map context actions @features', () => {
   });
 
   test('editing an unpublished proposal saves in place on the ground beneath it', async ({ mockApi: page }) => {
+    await page.route('**/planning/sources**', route => ['fetch', 'xhr'].includes(route.request().resourceType()) ? route.fulfill({ json: { city: 'zagreb', sources: [{ id: 'editor-massing', city: 'zagreb', default: true, label: 'Editor massing', capabilities: { areas: true, volumes: true } }] } }) : route.fallback());
+    await page.route('**/planning/representations**', route => ['fetch', 'xhr'].includes(route.request().resourceType()) ? route.fulfill({ json: {
+      schemaVersion: 'planning-representations.v1', city: 'zagreb', sources: [], coverage: 'source-results', summaries: [], unavailable: [], omitted: 0, nextCursor: null,
+      items: [{ id: 'editor-massing:parcel', role: 'permitted', title: 'Editor massing', source: { id: 'editor-massing' }, site: sampleParcels.features[0].geometry,
+        spatialReference: { horizontal: 'OGC:CRS84', vertical: 'relative-ground', unit: 'm' },
+        volumes: [{ geometry: sampleParcels.features[0].geometry, baseM: 0, topM: 12 }], areas: [],
+        assessment: { meaning: 'partial-envelope', status: 'unresolved' } }],
+    } }) : route.fallback());
     await openCity(page);
+    await page.evaluate(() => { const w = window as any; w.PlanningViews.configure('permitted', 'solid'); w.PlanningViews.configure('zoningAreas', 'ghost'); });
+    await expect(page.getByRole('button', { name: 'Inspect permitted massing on Editor massing', exact: true })).toBeAttached();
     const sourceId = await createSpace(page, 'park');
     const sourceBefore = await proposalState(page, sourceId);
     await showProposal(page, sourceId);
@@ -184,5 +194,31 @@ test.describe('Map context actions @features', () => {
     expect(result.saved.site).toEqual(sourceBefore.site);
     expect(result.saved.structureProposal.geometry).toEqual(sourceBefore.structureProposal.geometry);
     expect(result.saved.title).toBe(sourceBefore.title);
+  });
+
+  test('a consumed cadastral source explains why Propose needs current formed ground', async ({ mockApi: page }) => {
+    await openCity(page);
+    await createSpace(page, 'park');
+    await expect.poll(() => page.evaluate(id => !!(window as any).LiveParcelFabric.get(id), PARCEL_ID)).toBe(false);
+    const before = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().length);
+    await page.evaluate(id => {
+      const w = window as any;
+      w.__claimsUi.openBaseParcel(id);
+      w.switchParcelTab(null, 'propose-tab');
+    }, PARCEL_ID);
+    const panel = page.locator('#parcel-info-panel');
+    await expect(panel.locator('[data-parcel-source-only]')).toContainText('Select a current formed ground piece');
+    await expect(panel.locator('.parcel-build-btn')).toHaveCount(0);
+    expect(await page.evaluate(() => (window as any).proposalStorage.getAllProposals().length)).toBe(before);
+    await page.evaluate(id => {
+      const w = window as any;
+      const formed = w.LiveParcelFabric.snapshot().parcelIds.find((key: string) =>
+        w.LiveParcelFabric.explicitCadastreIds(w.LiveParcelFabric.get(key)).includes(id));
+      if (!formed) throw new Error('Expected formed ground replacing the source');
+      w.ParcelsUISelection.selectParcelFromStack(formed);
+      w.switchParcelTab(null, 'propose-tab');
+    }, PARCEL_ID);
+    await expect(panel.locator('[data-parcel-source-only]')).toHaveCount(0);
+    await expect(panel.locator('.parcel-build-btn--park')).toBeEnabled();
   });
 });

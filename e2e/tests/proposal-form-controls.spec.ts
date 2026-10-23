@@ -15,9 +15,15 @@ test('ownership, epoch and parcel tolerance persist from the counterproposal for
   await panel.locator('.btn-counterpropose-proposal').click();
   const form = page.locator('.create-proposal-modal:visible');
   await expect(form).toBeVisible();
+  const areaSummary = form.locator('#proposalSummaryContent p').filter({ hasText: 'Total area:' });
+  await expect(areaSummary).toContainText(/[1-9][\d,.\s\u202f]*m²/);
+  await form.locator('#proposalName').fill('Detailed inherited park title');
+  await form.locator('#proposalDescription').fill('Keep these authored design details when ownership changes.');
   for (const ownership of ['to-me', 'to-city', 'no-change']) {
     await form.locator(`input[name="proposalOwnership"][value="${ownership}"]`).locator('..').click();
     await expect.poll(() => page.evaluate(() => (window as any).proposalFacets?.ownership)).toBe(ownership);
+    await expect(form.locator('#proposalName')).toHaveValue('Detailed inherited park title');
+    await expect(form.locator('#proposalDescription')).toHaveValue('Keep these authored design details when ownership changes.');
   }
   await expect(form.locator('input[name="proposalParcelsMode"][value="as-is"]')).toBeChecked();
   // A design carries no terms and no decision kind: who decides is the agreement's rule (M2).
