@@ -5,6 +5,7 @@
 // ingestion: the city keeps this updated daily and we proxy it (cached briefly) on demand.
 
 import { extrudeFootprint } from './extrude.js';
+import { createNycStockProvider } from './nyc-stock.js';
 
 const SOCRATA_GEOJSON_URL = 'https://data.cityofnewyork.us/resource/5zhs-2jue.geojson';
 const FEET_TO_METRES = 0.3048;
@@ -107,7 +108,25 @@ export function createNycProvider(env = process.env) {
         return { buildings, count: buildings.length, source: 'nyc-footprints' };
     }
 
-    return { near };
+    const stock = createNycStockProvider({
+        source: 'nyc-footprints',
+        async featuresIn([w, s, e, n]) {
+            // Stock includes buildings without a recorded roof height. Height is optional evidence,
+            // never a filter on what can be demolished.
+            const params = new URLSearchParams({
+                '$where': `within_box(the_geom, ${n}, ${w}, ${s}, ${e}) AND feature_code = ${FEATURE_CODE_BUILDING}`,
+                '$order': 'objectid', '$limit': String(MAX_BUILDINGS)
+            });
+            const response = await fetch(`${SOCRATA_GEOJSON_URL}?${params}`, {
+                headers: appToken ? { 'X-App-Token': appToken } : {}
+            });
+            if (!response.ok) throw new Error(`Socrata HTTP ${response.status}`);
+            const fc = await response.json();
+            if (!Array.isArray(fc.features)) throw new Error('Socrata did not return footprints');
+            return { features: fc.features, truncated: fc.features.length >= MAX_BUILDINGS };
+        }
+    });
+    return { near, footprints: stock.footprints, footprintsUnder: stock.footprintsUnder };
 }
 
 function cacheNow() { return Date.now(); }

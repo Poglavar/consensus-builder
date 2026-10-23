@@ -9,3 +9,7 @@ This project is experimental. Prefer one coherent current contract over preservi
 Make changes in small, verified steps; do not add legacy/new flow branches, compatibility readers,
 or migrations solely to retain old experimental records. Record intentional contract breaks and
 recreate affected records when needed instead of maintaining parallel implementations.
+
+Before sharing a local preview URL, verify the listening checkout, the browser's resolved backend,
+and real source-data responses for the intended flow, including its required capabilities. A frontend
+HTTP 200 alone is insufficient. If no local API is running, include the supported `backend` URL override explicitly and verify it in the browser.

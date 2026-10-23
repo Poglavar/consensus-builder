@@ -81,6 +81,11 @@
 
     /* Spatial representation roles, shared by the map and model comparison. */
     --cb-planning-existing: #64748b;
+    --cb-observed-building-fill: #c4b5fd;
+    --cb-observed-building-stroke: #475569;
+    --cb-observed-building-fill-opacity: 0.14;
+    --cb-observed-building-stroke-opacity: 0.85;
+    --cb-observed-building-stroke-width: 1.25;
     --cb-planning-permitted: #168b87;
     --cb-planning-proposed: #c26336;
     --cb-planning-control-width: 440px;

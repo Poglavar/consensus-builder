@@ -261,7 +261,7 @@ describe('shared planning scene', () => {
         const store = scene.createStore(), listener = vi.fn();
         const off = store.subscribe(listener); store.select('a'); store.configure('permitted', 'solid');
         store.configure('permitted', 'solid'); store.configure('permitted', 'unknown'); store.configure('bogus', 'solid');
-        expect(scene.displayPolicy(store.get())).toEqual({ existing: 'ghost', permitted: 'solid', proposed: 'solid' });
+        expect(scene.displayPolicy(store.get())).toEqual({ existing: 'off', permitted: 'solid', proposed: 'solid' });
         expect(store.get()).toMatchObject({ selectedId: 'a', revision: 2 }); expect(listener).toHaveBeenCalledTimes(2);
         off(); store.select(null); expect(listener).toHaveBeenCalledTimes(2);
     });

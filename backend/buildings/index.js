@@ -1,6 +1,6 @@
 // Registry of per-city 3D building providers. Each city has its own idiosyncratic source
 // (Zagreb: a PostGIS LOD2 mesh table; NYC: live footprint+height feeds), but every
-// provider exposes the same `near(geometry, bufferMeters)` contract and returns buildings in
+// provider exposes near(), footprints() and footprintsUnder(), returning buildings in
 // one common face-mesh shape, so the route and the frontend renderer stay source-agnostic.
 // Adding a city = one new provider file + one line in createBuildingProviders(), OR — for any
 // city that has no bespoke local model — one entry in overture-cities.js, which gets wired to the

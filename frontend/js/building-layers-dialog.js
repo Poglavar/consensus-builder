@@ -7,11 +7,13 @@
 (function (global) {
     'use strict';
 
-    // All three surveys draw in the SAME light purple, deliberately: they are three answers to one
-    // question, and telling them apart by colour invites reading them as different KINDS of thing.
-    // Low fill opacity is what makes the combination legible — where two surveys agree the overlap
-    // stacks darker, so the eye finds the disagreements on its own.
-    const BUILDING_LAYER_STYLE = { color: '#7c3aed', opacity: 0.55, weight: 1, fillColor: '#7c3aed', fillOpacity: 0.12 };
+    // A faint survey fill with a contrasting outline; the palette lives in tokens.css.
+    function buildingLayerStyle() {
+        const palette = global.getComputedStyle(global.document.documentElement);
+        const token = name => palette.getPropertyValue(`--cb-observed-building-${name}`).trim();
+        return { color: token('stroke'), opacity: Number(token('stroke-opacity')), weight: Number(token('stroke-width')),
+            fillColor: token('fill'), fillOpacity: Number(token('fill-opacity')) };
+    }
 
     const SURVEYS = [
         { key: 'gdi', box: 'showBuildings', label: 'modal.buildingLayers.gdi', hint: 'modal.buildingLayers.gdiHint' },
@@ -53,7 +55,7 @@
         const showing = currentBuildingLayerState();
         const anyShowing = SURVEYS.some(survey => showing[survey.key]);
         // Prefill from the map when something is on it, otherwise from the last answer.
-        const start = anyShowing ? showing : (rememberedBuildingLayers() || { gdi: true, dgu: false, osm: false });
+        const start = anyShowing ? showing : (rememberedBuildingLayers() || { gdi: false, dgu: false, osm: false });
 
         const list = document.createElement('div');
         list.className = 'building-layers-options';
@@ -116,7 +118,7 @@
     }
 
     global.BuildingLayersDialog = {
-        style: BUILDING_LAYER_STYLE,
+        get style() { return buildingLayerStyle(); },
         open,
         currentBuildingLayerState,
         remember: rememberBuildingLayers,

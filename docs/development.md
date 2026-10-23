@@ -48,3 +48,13 @@ The deployed guide sources and [current packaged media](https://github.com/Pogla
 Use the intended branch’s `frontend/deploy-frontend.sh` after committing and pushing the reviewed changes. The protocol branch supports a `BRANCH` override; inspect the entrypoint before running it. A normal frontend deploy builds and mirrors a complete release. A documentation-only publication must include its CSS and media before swapping HTML, and the committed files must also reach the production branch so a later release preserves them.
 
 Verify the served HTML, captions, media content types and byte-range playback after publication. A successful upload alone does not establish that the CDN serves the new files.
+
+
+## Verified local preview links
+
+Before sharing a preview, check the listening checkout, the browser's `getBackendBase()` and a
+real parcel/building data response. A static page loading successfully is not an API readiness
+check. Local pages normally target port 3000; when no local API is running, supply the supported
+`backend` query override explicitly (for example, the production API for read-only source data).
+A link without a city retains the browser's saved city. Do not change cities just to conceal a
+source failure, and do not describe a mocked browser check as proof of live source availability.

@@ -2,6 +2,7 @@
 // This is the temporary default while the NYC Open Data Socrata publication is incomplete.
 
 import { extrudeFootprint } from './extrude.js';
+import { createNycStockProvider } from './nyc-stock.js';
 
 const ARCGIS_QUERY_URL = 'https://services6.arcgis.com/yG5s3afENB5iO9fj/arcgis/rest/services/BUILDING_view/FeatureServer/0/query';
 const FEET_TO_METRES = 0.3048;
@@ -99,7 +100,40 @@ export function createNycArcgisProvider() {
         return { buildings, count: buildings.length, source: 'nyc-arcgis' };
     }
 
-    return { near };
+    const stock = createNycStockProvider({
+        source: 'nyc-arcgis',
+        async featuresIn(bbox) {
+            const params = new URLSearchParams({
+                f: 'geojson', where: `FEATURE_CODE = ${FEATURE_CODE_BUILDING}`,
+                geometry: bbox.join(','), geometryType: 'esriGeometryEnvelope',
+                inSR: '4326', outSR: '4326', spatialRel: 'esriSpatialRelIntersects',
+                outFields: 'BIN,DOITT_ID,HEIGHT_ROOF,OBJECTID', returnGeometry: 'true',
+                resultRecordCount: String(MAX_BUILDINGS), orderByFields: 'OBJECTID ASC'
+            });
+            const read = async query => {
+                const response = await fetch(`${ARCGIS_QUERY_URL}?${query}`);
+                if (!response.ok) throw new Error(`NYC ArcGIS HTTP ${response.status}`);
+                const payload = await response.json();
+                if (payload.error) throw new Error('NYC ArcGIS query failed');
+                return payload;
+            };
+            const fc = await read(params);
+            // The service can impose a smaller cap than resultRecordCount. Count independently:
+            // a short GeoJSON response alone does not prove the source covered the requested box.
+            const countParams = new URLSearchParams(params);
+            countParams.set('f', 'json');
+            countParams.set('returnCountOnly', 'true');
+            countParams.delete('resultRecordCount');
+            countParams.delete('orderByFields');
+            const totals = await read(countParams);
+            if (!Array.isArray(fc.features) || !Number.isInteger(totals.count) || totals.count < 0) {
+                throw new Error('NYC ArcGIS did not report complete footprint coverage');
+            }
+            return { features: fc.features, truncated: totals.count !== fc.features.length
+                || fc.exceededTransferLimit === true || fc.properties?.exceededTransferLimit === true };
+        }
+    });
+    return { near, footprints: stock.footprints, footprintsUnder: stock.footprintsUnder };
 }
 
 function cacheNow() { return Date.now(); }

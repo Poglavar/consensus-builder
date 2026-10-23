@@ -79,6 +79,20 @@ describe('building source client', () => {
         expect(calls.server).toHaveLength(0);
     });
 
+    it('never confirms empty demolition stock when browser tiles are partial or unavailable', async () => {
+        for (const payload of [{ features: [], truncated: true }, { features: [], partial: true }, null]) {
+            client._reset();
+            const { global } = page({ buildings: { source: 'overture-tiles' } });
+            global.OvertureTiles.createOvertureTilesSource = () => ({ featuresIn: async () => {
+                if (payload === null) throw new Error('tile offline');
+                return payload;
+            } });
+            const result = await client.request('/buildings/under', { regions: [{ key: 'a', geometry: box(10, 10) }] }, { global });
+            expect(result.truncated).toBe(true);
+            if (payload === null) expect(result.unavailable).toBe(true);
+        }
+    });
+
     it('sends every other source to the backend without the city a caller still names', async () => {
         const answer = { buildings: [{ object_id: 'z1' }], count: 1, source: 'zagreb-3d' };
         const { global, calls } = page({ buildings: { source: 'gdi' }, server: answer });
@@ -142,6 +156,16 @@ describe('building source client', () => {
             const { global, calls } = page({ buildings, server: answer, tileFeatures });
             expect(await client.request('/buildings/under', { regions: [{ key: 'a', geometry: box(10, 10) }] }, { global })).toEqual(answer);
             expect(calls.tiles).toBe(0);
+        });
+
+        it('uses the configured tiles when the server demolition scan is truncated', async () => {
+            const { global, calls } = page({ buildings, tileFeatures, server: {
+                supported: true, regions: { a: [] }, truncated: true, source: 'custom-footprints'
+            } });
+            const result = await client.request('/buildings/under', { regions: [{ key: 'a', geometry: box(10, 10) }] }, { global });
+            expect(calls.tiles).toBe(1);
+            expect(result).toMatchObject({ supported: true, truncated: false, source: 'overture-tiles-footprints' });
+            expect(result.regions.a.map(b => b.id)).toEqual(['gers-9']);
         });
 
         it('does not swallow an aborted request', async () => {

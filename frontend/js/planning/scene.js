@@ -16,7 +16,7 @@
         permittedForm: ['bound', 'configuration', 'both'],
         permittedMap: ['footprint', 'steps'], zoningAreas: ['off', 'ghost']
     });
-    const defaults = Object.freeze({ existing: 'ghost', permitted: 'ghost', proposed: 'solid',
+    const defaults = Object.freeze({ existing: 'off', permitted: 'ghost', proposed: 'solid',
         existingScope: 'all', proposedForm: 'both', permittedForm: 'both', permittedMap: 'footprint', zoningAreas: 'off' });
     function settings(input = {}) {
         return Object.fromEntries(Object.entries(defaults).map(([key, value]) =>

@@ -98,7 +98,7 @@
 
     // Nothing usable from the server source: it failed, or found no buildings where the tiles might.
     function serverAnswerIsEmpty(path, payload) {
-        if (!payload || payload.unavailable || payload.supported === false) return true;
+        if (!payload || payload.unavailable || payload.supported === false || payload.truncated === true) return true;
         if (path === '/buildings/near') return !(payload.buildings && payload.buildings.length);
         if (path === '/buildings/footprints') return !(payload.footprints && payload.footprints.length);
         return false;

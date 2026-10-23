@@ -350,10 +350,8 @@ export function setupBuildingsRoute(app, pool) {
     // inside a GeoJSON polygon. Backs the urban-rule "based on existing buildings" mode.
     // Body: { geometry: <GeoJSON Geometry in EPSG:4326> }
     //
-    // Footprints are an OPTIONAL per-city provider capability: a provider that implements
-    // `footprints(geometry)` supports it, everything else reports `supported: false` (the
-    // frontend hides/reverts the mode). Unknown cities resolve to no provider on purpose —
-    // the Zagreb fallback used by /buildings/near would falsely claim support here.
+    // All registered providers implement footprints and footprintsUnder. The explicit unsupported
+    // response remains for a location with no provider; incomplete reads report truncated instead.
     //
     // Response shape:
     //   {

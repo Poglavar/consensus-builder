@@ -77,5 +77,35 @@ export function createZagrebProvider(pool) {
         return { footprints, count: footprints.length, source: 'zagreb-cadastre' };
     }
 
-    return { near, footprints };
+    // Demolition follows the observed GDI objects rendered by near(), not the legal-cadastre
+    // stock used by footprints(). Include every intersection, even a sliver of a building.
+    async function footprintsUnder(regions) {
+        const byKey = new Map(regions.map(region => [String(region.key), []]));
+        const { rows } = await pool.query(`
+            WITH regions AS (
+                SELECT r.key, ST_CollectionExtract(ST_MakeValid(ST_Transform(
+                    ST_SetSRID(ST_GeomFromGeoJSON(r.geometry::text), 4326), 3765)), 3) AS geom
+                FROM jsonb_to_recordset($1::jsonb) AS r(key text, geometry jsonb)
+            )
+            SELECT r.key, f.object_id AS id, g.height_m,
+                   ST_AsGeoJSON(ST_Transform(v.geom, 4326), 7)::json AS geometry
+            FROM regions r
+            JOIN gdi_building_footprint f ON f.geom && r.geom
+            CROSS JOIN LATERAL (
+                SELECT ST_CollectionExtract(ST_MakeValid(f.geom), 3) AS geom
+            ) v
+            LEFT JOIN gdi_building g ON g.object_id = f.object_id
+            WHERE ST_Intersects(v.geom, r.geom)
+            ORDER BY r.key, f.object_id
+            LIMIT 4001
+        `, [JSON.stringify(regions)]);
+        const truncated = rows.length > 4000;
+        if (!truncated) for (const row of rows) {
+            byKey.get(String(row.key)).push({ id: row.id, geometry: row.geometry,
+                height_m: row.height_m ?? null, floors: null });
+        }
+        return { regions: byKey, truncated, source: 'gdi' };
+    }
+
+    return { near, footprints, footprintsUnder };
 }

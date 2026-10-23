@@ -3565,13 +3565,11 @@
                 requiresBackend: true
             },
             buildings: {
-                // Live NYC Open Data footprints + roof heights, extruded server-side
-                // (backend/buildings/nyc-footprints.js). Resolved by city id, not this string.
+                // NYCMaps/ArcGIS (or the configured Socrata feed) supplies 3D meshes,
+                // map footprints and demolition stock from the same building identities.
                 source: 'nyc'
             },
             sidebar: {
-                // NYC's 3D buildings load automatically in 3D mode; its provider has no 2D footprints,
-                // so the Buildings section offers only the OSM reference (applyBuildingLayerChoices).
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
             },
             parcelBuilder: {
@@ -21522,8 +21520,7 @@
 
     // Every city has buildings now (OpenStreetMap at the least), so the Layers Buildings section is
     // always on; which surveys it lists depends on the city's source. GDI and DGU are Zagreb's; the
-    // separate OSM reference only adds something where OSM is not already the working set; NYC's
-    // provider has no 2D footprints at all.
+    // separate OSM reference only adds something where OSM is not already the working set.
     function applyBuildingLayerChoices() {
         const source = getCurrentCityConfig()?.buildings?.source || 'gdi';
         const row = id => document.getElementById(id)?.closest('label');
@@ -21535,7 +21532,7 @@
             if (visible) label.removeAttribute('data-feature-hidden');
             else label.setAttribute('data-feature-hidden', 'true');
         };
-        show('showBuildings', source !== 'nyc');
+        show('showBuildings', source !== 'none');
         show('showBuildingsDgu', source === 'gdi');
         show('showBuildingsOsm', source !== 'osm');
         const text = row('showBuildings')?.querySelector('[data-i18n-key]');
@@ -21543,6 +21540,7 @@
         const key = source === 'osm' ? 'sidebar.buildings.showOsm'
             : source === 'overture' || source === 'overture-tiles' ? 'sidebar.buildings.showOverture'
             : source === 'cadastre' ? 'sidebar.buildings.showCadastre'
+            : source === 'nyc' ? 'sidebar.buildings.showLayer'
             : source === 'custom' ? 'sidebar.buildings.showCustom'
             : 'sidebar.buildings.showGdi';
         text.setAttribute('data-i18n-key', key);

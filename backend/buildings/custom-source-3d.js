@@ -89,7 +89,10 @@ export function createCustomBuildingProvider(descriptor, { fetchImpl = createPub
     async function footprints(geometry) {
         let found;
         try {
-            found = await featuresIn(fitBox(turf.bbox(geometry)));
+            const wanted = turf.bbox(geometry);
+            const fitted = fitBox(wanted);
+            found = await featuresIn(fitted);
+            if (fitted.some((value, i) => Math.abs(value - wanted[i]) > 1e-12)) found.complete = false;
         } catch (error) {
             log(`${descriptor.name}: no footprints: ${error.message}`);
             return { footprints: [], count: 0, truncated: true, source: 'custom-footprints', ...unavailableFrom(error) };

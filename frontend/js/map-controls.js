@@ -402,6 +402,7 @@ function toggleLayer(layerType) {
 
     if (layerType === 'buildings') {
         if (showBuildings) {
+            if (window.PlanningViews?.getState?.().existing === 'off') window.PlanningViews.configure('existing', 'ghost');
             if (typeof fetchBuildings === 'function') {
                 fetchBuildings(null, { announce: true });
             }

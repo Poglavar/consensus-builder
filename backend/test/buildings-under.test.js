@@ -68,12 +68,13 @@ describe('the coverage contract', () => {
         expect(res.body.regions.a[0]).toEqual(expect.objectContaining({ id: '7', height_m: 12.5, floors: null }));
     });
 
-    it('says unsupported where the place\'s provider cannot scan, rather than pretending an empty scan', async () => {
-        // Zagreb's LOD2 mesh provider has no footprint scan; the region's place decides, not a city
+    it('supports Zagreb using its observed GDI stock; the place decides, not a city', async () => {
+        pool.setResult({ rows: [] });
         const res = await post({ regions: [{ key: 'a', geometry: square(15.97, 45.81) }], city: 'sibenik' });
         expect(res.status).toBe(200);
-        expect(res.body.supported).toBe(false);
-        expect(res.body.regions).toEqual({});
+        expect(res.body.supported).toBe(true);
+        expect(res.body.source).toBe('gdi');
+        expect(res.body.regions).toEqual({ a: [] });
     });
 });
 

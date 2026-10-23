@@ -72,6 +72,17 @@ describe('custom building provider', () => {
         expect(read({ HEIGHT_FT: null, NUM_FLOORS: 4 })).toMatchObject({ measured_height_m: null, levels: 4 });
     });
 
+    it('does not claim a large footprint query was fully covered after shrinking its box', async () => {
+        const id = encodeCustomSource({ adapter: 'arcgis', endpoint: arcgisUrl, cityIds: ['zagreb'], metricSrid: 32633,
+            idField: 'OBJECTID', objectIdField: 'OBJECTID', idType: 'integer', outFields: ['OBJECTID'], kind: 'building' });
+        const provider = createCustomBuildingProvider(decodeCustomBuildingSource(id), {
+            fetchImpl: vi.fn(async () => response({ type: 'FeatureCollection', features: [] }))
+        });
+        const geometry = { type: 'Polygon', coordinates: [[[15.96, 45.79], [15.99, 45.79], [15.99, 45.82], [15.96, 45.82], [15.96, 45.79]]] };
+        expect((await provider.footprints(geometry)).truncated).toBe(true);
+        expect((await provider.footprintsUnder([{ key: 'large', geometry }])).truncated).toBe(true);
+    });
+
     it('extrudes what the source returns, with the height source of each block', async () => {
         const id = encodeCustomSource({ adapter: 'arcgis', endpoint: arcgisUrl, cityIds: ['zagreb'], metricSrid: 32633, idField: 'OBJECTID',
             objectIdField: 'OBJECTID', idType: 'integer', outFields: ['OBJECTID', 'H'], kind: 'building', heightField: 'H', heightUnit: 'm' });
