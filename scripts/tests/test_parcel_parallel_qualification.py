@@ -204,6 +204,27 @@ class ParallelTests(unittest.TestCase):
         self.assertIn("without owned metadata", self.runner.state["adapterStageBlocked"]["reason"])
         self.assertFalse(parallel.advance_candidates(self.runner, [self.city], self.root))
 
+    def test_missing_city_inputs_defer_only_that_city_and_healthy_city_integrates(self):
+        def inputs(root, city, receipt, packet):
+            if city["cityCode"] == "42":
+                raise FileNotFoundError("missing city sample")
+            return {"fixture": "immutable"}
+
+        with patch.object(stage, "_input_hashes", side_effect=inputs), \
+                patch.object(parallel, "prepare_workspace", side_effect=self.prepare) as prepare, \
+                patch.object(parallel, "finish_workspace"), \
+                patch.object(stage, "run_candidate", side_effect=lambda child, city, *args: self.result(child, city)), \
+                patch.object(parallel, "admit_candidate", return_value={"status": "integrated"}):
+            self.assertTrue(parallel.advance_candidates(self.runner, [self.city, {"cityCode": "43"}], self.root))
+        self.assertEqual(prepare.call_count, 1)
+        self.assertEqual(prepare.call_args.args[3]["cityCode"], "43")
+        deferred = self.runner._city_entry(self.city)["qualification"]
+        self.assertEqual(deferred["status"], "pending-inputs")
+        self.assertIn("missing city sample", deferred["summary"])
+        self.assertEqual(self.runner.state["cities"]["43"]["qualification"]["status"], "integrated")
+        self.assertNotIn("adapterStageBlocked", self.runner.state)
+        self.assertNotIn("pipelineFailures", self.runner._city_entry(self.city))
+
     def test_import_keeps_artifact_names_and_bytes_and_revalidates(self):
         ws, isolation, document = self.isolated()
         result = parallel._import_result(self.runner, self.city, {}, {}, isolation, document)

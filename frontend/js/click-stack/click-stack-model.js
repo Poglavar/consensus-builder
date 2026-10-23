@@ -13,7 +13,7 @@
     // parcels below it are the originals it came from. Ground is bare land with no register (the
     // former ground menu): it offers what can be drawn there, and shows only when nothing else is.
     const ORDER = Object.freeze(['agreements', 'designs', 'built', 'permitted', 'formed', 'parcels', 'ground']);
-    const MULTI = new Set(['agreements', 'designs', 'parcels']);
+    const MULTI = new Set(['agreements', 'designs', 'built', 'parcels']);
     const EXPANDABLE = new Set(['agreements', 'designs', 'built', 'permitted', 'formed', 'parcels', 'ground']);
     const NEWEST_FIRST = new Set(['agreements', 'designs']);
 
@@ -31,10 +31,23 @@
             seen.add(id);
             out.push({ ...item, id, ref: refOf(kind, id) });
         }
-        if (NEWEST_FIRST.has(kind)) {
-            out.sort((a, b) => time(b.createdAt) - time(a.createdAt) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
-        }
+        // What is under the point comes before what only stands on its parcel (onParcel).
+        const near = item => (item.onParcel ? 1 : 0);
+        out.sort((a, b) => near(a) - near(b) || (NEWEST_FIRST.has(kind)
+            ? time(b.createdAt) - time(a.createdAt) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0) : 0));
         return out;
+    }
+
+    // The section's selected instance when the section has something under the point: only those
+    // open by default and decide whether the same click closes the panel. A section holding only
+    // what stands on the parcel (its buildings and proposals) waits for its row to be clicked.
+    function pointSections(sections) {
+        return sections.filter(section => section.atPoint);
+    }
+
+    function topRefOf(sections) {
+        const top = pointSections(sections)[0] || sections[0];
+        return top ? top.instances[top.selectedIndex].ref : null;
     }
 
     // hits: { agreements, designs, built, permitted, formed, parcels } arrays of { id, label, ... }.
@@ -48,13 +61,14 @@
             const wanted = options.selected && options.selected[kind];
             const chosen = wanted ? instances.findIndex(item => item.id === String(wanted)) : -1;
             sections.push({ kind, instances, count: instances.length, multi: MULTI.has(kind) && instances.length > 1,
-                expandable: EXPANDABLE.has(kind), selectedIndex: chosen >= 0 ? chosen : 0 });
+                expandable: EXPANDABLE.has(kind), selectedIndex: chosen >= 0 ? chosen : 0,
+                atPoint: instances.some(item => !item.onParcel) });
         }
         const remembered = options.remembered;
-        const expandedSection = sections.find(section => section.expandable && section.kind === remembered)
+        const candidates = pointSections(sections).filter(section => section.expandable);
+        const expandedSection = candidates.find(section => section.kind === remembered) || candidates[0]
             || sections.find(section => section.expandable) || null;
-        const top = sections[0] ? sections[0].instances[sections[0].selectedIndex] : null;
-        return { sections, expanded: expandedSection ? expandedSection.kind : null, topRef: top ? top.ref : null };
+        return { sections, expanded: expandedSection ? expandedSection.kind : null, topRef: topRefOf(sections) };
     }
 
     // A click on the same topmost object, or on a spot with nothing on it, closes an open panel;
@@ -78,8 +92,7 @@
             const index = section.instances.findIndex(item => item.id === String(id));
             return index < 0 ? section : { ...section, selectedIndex: index };
         });
-        const top = sections[0] ? sections[0].instances[sections[0].selectedIndex] : null;
-        return { ...stack, sections, topRef: top ? top.ref : null };
+        return { ...stack, sections, topRef: topRefOf(sections) };
     }
 
     function selectedInstance(stack, kind) {

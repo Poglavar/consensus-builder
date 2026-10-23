@@ -149,7 +149,7 @@ body.corridor-editor-open .leaflet-interactive {
     font-weight: 800;
     line-height: 1;
     border-radius: 3px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+    box-shadow: var(--cb-shadow-sm);
     pointer-events: none;
 }
 
@@ -202,7 +202,7 @@ body.corridor-editor-open .leaflet-interactive {
     width: 12px;
     height: 22px;
     border-radius: 2px;
-    border: 1px solid rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--cb-line-glass);
 }
 
 /* The row's fields take their look from the base form controls (css/primitives.css); only their
@@ -456,9 +456,9 @@ body.corridor-editor-open .leaflet-interactive {
     left: 50%;
     margin-left: -1px;
     width: 2px;
-    background: rgba(255, 255, 255, 0.85);
+    background: var(--cb-glass-sheet);
     border-radius: 1px;
-    box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.25);
+    box-shadow: 0 0 0 1px var(--cb-line-glass);
 }
 
 /* Touch: the 14 px seam grab area is unhittable with a finger — widen the invisible target
@@ -504,11 +504,11 @@ body.corridor-editor-open .leaflet-interactive {
 }
 
 .corridor-section-seam--locked::after {
-    background: rgba(255, 255, 255, 0.45);
+    background: color-mix(in srgb, var(--cb-surface) 45%, transparent);
 }
 
 .corridor-section-seam--locked:hover::after {
-    background: rgba(255, 255, 255, 0.45);
+    background: color-mix(in srgb, var(--cb-surface) 45%, transparent);
 }
 
 /* A parking lane's depth is a fixed standard: its width field is disabled, and the base disabled
@@ -720,7 +720,7 @@ body.corridor-busy .leaflet-interactive {
 }
 
 .corridor-chart-area {
-    fill: rgba(37, 99, 235, 0.08);
+    fill: color-mix(in srgb, var(--cb-primary) 8%, transparent);
     stroke: none;
 }
 

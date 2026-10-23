@@ -2,7 +2,7 @@ import { selectNativeOption } from '../helpers/controls';
 // Purpose: cover real editor buttons whose effects are not asserted by the broad workflow specs.
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
-import { openCity, openParcel, drawCorridor, showProposal, proposalState, clickMapPoint, createSpace, runParcelCommand, openParcelTabAt } from '../helpers/runtime';
+import { openCity, openParcel, drawCorridor, showProposal, proposalState, clickMapPoint, createSpace, runParcelCommand, openParcelTabAt, closeParcel } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { surveyResponse } from '../helpers/mocks/survey-data';
 
@@ -15,7 +15,7 @@ async function openRowHouseEditor(page: any) {
   await openParcel(page, 'info', BLOCK_PARCEL_IDS[0]);
   await page.locator('.multi-select-detect-btn').click();
   await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.selectedParcels.size)).toBeGreaterThan(1);
-  await page.locator('#parcel-info-panel .close-button').click();
+  await closeParcel(page);
   await page.locator('#selection-tray [data-command="selection.propose"]').click();
   await page.locator('.parcel-build-btn--row').click();
   await expect(page.locator('#rowhouse').locator('.on-map-editor__panel')).toBeVisible();
@@ -218,8 +218,7 @@ test.describe('Editor button effects @features', () => {
     await expect(page.locator('#btn-blockify-done')).toBeEnabled({ timeout: 20_000 });
     await page.locator('#blockify-modal .on-map-editor__header .close-circle-btn').click();
     await expect(blockify).toHaveCount(0);
-    const parcelInfoClose = page.locator('#parcel-info-panel .close-button');
-    if (await parcelInfoClose.isVisible().catch(() => false)) await parcelInfoClose.click();
+    if (await page.locator('#parcel-info-panel').isVisible()) await closeParcel(page);
 
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--buildings').click();
@@ -238,8 +237,7 @@ test.describe('Editor button effects @features', () => {
     await expect(blockPreview).toHaveText(blockBefore || '');
     await page.locator('#blockify-modal .on-map-editor__header .close-circle-btn').click();
     await expect(blockify).toHaveCount(0);
-    const parcelInfoCloseAfterBlock = page.locator('#parcel-info-panel .close-button');
-    if (await parcelInfoCloseAfterBlock.isVisible().catch(() => false)) await parcelInfoCloseAfterBlock.click();
+    if (await page.locator('#parcel-info-panel').isVisible()) await closeParcel(page);
 
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--parcelBased').click();
@@ -252,8 +250,7 @@ test.describe('Editor button effects @features', () => {
       await parcelDiscard.getByRole('button', { name: 'Discard', exact: true }).click();
     }
     await expect(parcelBased).toHaveCount(0);
-    const parcelInfoCloseForReopen = page.locator('#parcel-info-panel .close-button');
-    if (await parcelInfoCloseForReopen.isVisible().catch(() => false)) await parcelInfoCloseForReopen.click();
+    if (await page.locator('#parcel-info-panel').isVisible()) await closeParcel(page);
 
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--parcelBased').click();

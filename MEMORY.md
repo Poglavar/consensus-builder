@@ -866,4 +866,6 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
   in an isolated node host, so a second parcel-cutting implementation cannot diverge from the app.
 - Draft previews travel in compressed fragments and import as unpublished local records; current
   app-contract gaps and live acceptance checks are recorded in `mcp.md`.
+
+- 2026-10-23: UI themes use one token palette and shared translucent surface/blur; click selection shows independent connected cards, with Design first, parcel tab retention, and selection controls before Custom site.
 - 2026-10-23: The 3D model view gets its own click stack (`three-click-stack.js`, click-stack.md "3D model view"): Built → Design (whole proposal, figures + authored record) → Permitted → Parcel in the right dock, replacing the floating top-left panel.

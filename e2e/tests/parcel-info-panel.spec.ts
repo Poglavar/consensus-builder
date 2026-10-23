@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, clickMapPoint, createSpace, PARCEL_ID } from '../helpers/runtime';
+import { openCity, openParcel, clickMapPoint, createSpace, PARCEL_ID, closeParcel } from '../helpers/runtime';
 
 test.describe('Parcel inspector @core', () => {
   test('a map click exposes cadastral identity, area and private ownership', async ({ mockApi: page }) => {
@@ -12,7 +12,7 @@ test.describe('Parcel inspector @core', () => {
     await expect(page.locator('#info-content')).toContainText('m²');
     await expect(page.locator('#info-content')).toContainText('Private owner');
     await expect(page.locator('#info-content')).not.toContainText('Privatni vlasnik');
-    await page.locator('#parcel-info-panel .close-button').click();
+    await closeParcel(page);
     await expect(page.locator('#parcel-info-panel')).toBeHidden();
     await page.evaluate(() => (window as any).i18n.setLanguage('hr'));
     await openParcel(page);
@@ -87,7 +87,7 @@ test.describe('Parcel inspector @core', () => {
     await expect(page.locator('.parcel-build-btn')).toHaveCount(14);
     await page.locator('#parcel-info-panel').getByRole('tab', { name: 'Tools', exact: true }).click();
     await expect(page.locator('#parcelBuilderButton')).toBeVisible();
-    await page.locator('#parcel-info-panel .close-button').click();
+    await closeParcel(page);
     await expect(page.locator('#parcel-info-panel')).toBeHidden();
   });
 });

@@ -29,6 +29,7 @@
     --cb-surface-3: #e5e7eb;        /* pressed rows, dividers on surface-2 */
     --cb-glass: rgba(255, 255, 255, 0.97); /* floating map chrome */
     --cb-glass-veil: rgba(255, 255, 255, 0.72); /* the bottom dock: the map shows through (blurred behind it) */
+    --cb-panel-blur: 6px;           /* shared by dialogs, sheets, and floating panels */
     --cb-glass-sheet: rgba(255, 255, 255, 0.8); /* every panel and sheet over the map: a little of it shows through, for orientation */
     --cb-text: #1f2937;
     --cb-text-strong: #111827;
@@ -84,6 +85,11 @@
     --cb-planning-proposed: #c26336;
     --cb-planning-control-width: 440px;
     --cb-planning-inspector-width: 330px;
+
+    /* The night-sky artwork stays dark; its controls use the shared dark theme below. */
+    --cb-scene-sky: #87ceeb;
+    --cb-world-space: #030712;
+    --cb-world-ground: radial-gradient(ellipse at 50% 45%, #0d1d44 0%, #081231 45%, var(--cb-world-space) 100%);
 
     /* Country coverage and source evidence on the world globe. */
     --cb-world-coverage-full: #71bc91;

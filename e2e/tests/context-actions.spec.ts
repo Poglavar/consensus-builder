@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { clickMapPoint, createSpace, openCity, openParcel, proposalState, showProposal, PARCEL_ID } from '../helpers/runtime';
+import { clickMapPoint, createSpace, openCity, openParcel, proposalState, showProposal, PARCEL_ID, closeParcel } from '../helpers/runtime';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 
 const SECOND_PARCEL_ID = 'HR-335754-1235';
@@ -34,7 +34,7 @@ test.describe('Map context actions @features', () => {
     const selectedFeatures = await page.evaluate(ids => JSON.parse(JSON.stringify(ids.map(id => (window as any).LiveParcelFabric.get(id)))), [PARCEL_ID, SECOND_PARCEL_ID]);
     await openParcel(page);
     await page.locator('#multiSelectCheckboxInfo').check();
-    await page.locator('#parcel-info-panel .close-button').click();
+    await closeParcel(page);
     await clickMapPoint(page, 15.9829, 45.80025);
     await expect.poll(() => page.evaluate(() => [...(window as any).multiParcelSelection.selectedParcels].sort()))
       .toEqual([PARCEL_ID, SECOND_PARCEL_ID].sort());

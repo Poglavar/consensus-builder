@@ -923,7 +923,7 @@
         minimize.setAttribute('title', minimizeLabel);
         minimize.setAttribute('aria-expanded', String(!state.proposeMinimized));
         panel.classList.toggle('is-minimized', state.proposeMinimized);
-        const labels = { info: t('panel.parcel.tabInfo', 'Info'), propose: t('panel.parcel.tabPropose', 'Propose'), proposals: t('panel.parcel.tabProposals', 'Proposals') };
+        const labels = { info: t('panel.parcel.tabInfo', 'Info'), propose: t('proposalDrafts.tabs.design', 'Design'), proposals: t('panel.parcel.tabProposals', 'Proposals') };
         const existing = existingProposals();
         panel.querySelectorAll('[data-site-tab]').forEach(button => {
             const tab = button.getAttribute('data-site-tab'), active = tab === state.proposeTab;

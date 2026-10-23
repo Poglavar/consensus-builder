@@ -1,6 +1,6 @@
 // Complete GeoJSON footprints use the standard Freeform editor and save as editable buildings.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, showProposal } from '../helpers/runtime';
+import { openCity, openParcel, showProposal, closeParcel } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 
 const ring = (x: number, y: number, size: number) => [[x,y],[x+size,y],[x+size,y+size],[x,y+size],[x,y]];
@@ -29,7 +29,7 @@ async function openTool(page: any, kind: string) {
     await openParcel(page, 'info');
     await page.locator('.multi-select-detect-btn').click();
     await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.selectedParcels.size)).toBeGreaterThan(1);
-    await page.locator('#parcel-info-panel .close-button').click();
+    await closeParcel(page);
     await page.locator('#selection-tray [data-command="selection.propose"]').click();
   } else await openParcel(page, 'proposals');
   await page.locator(`.parcel-build-btn--${kind}`).click();

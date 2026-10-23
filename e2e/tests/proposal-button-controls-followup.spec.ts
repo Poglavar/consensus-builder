@@ -114,7 +114,7 @@ test.describe('proposal button controls follow-up @features', () => {
     await expect(designs.locator(`.click-stack__chip[data-id="${otherId}"]`)).toHaveAttribute('aria-pressed', 'true');
     await expect(designs.locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'true');
     await expect(parcels.locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'false');
-    await stack.locator('.click-stack__close').click();
+    await page.keyboard.press('Escape');
     await expect(stack).toBeHidden();
   });
 });

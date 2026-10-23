@@ -51,15 +51,6 @@ class AgentBubbleManager {
     createBubbleContainer() {
         this.bubbleContainer = document.createElement('div');
         this.bubbleContainer.id = 'agent-bubbles-container';
-        this.bubbleContainer.style.cssText = `
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            pointer-events: none;
-            z-index: 1000;
-        `;
 
         // Add to map container
         const mapContainer = document.getElementById('map');
@@ -163,45 +154,15 @@ class AgentBubbleManager {
     createBubbleElement(bubbleData) {
         const bubble = document.createElement('div');
         bubble.className = 'agent-bubble';
-        bubble.style.cssText = `
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            background: white;
-            border: 3px solid #007bff;
-            border-radius: 50%;
-            cursor: pointer;
-            pointer-events: auto;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            transition: transform 0.2s ease, z-index 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1001;
-        `;
 
         // Add avatar image
         const avatar = document.createElement('img');
         avatar.src = getAvatarImagePath(bubbleData.avatarIndex);
-        avatar.style.cssText = `
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-        `;
         bubble.appendChild(avatar);
 
         // Add pointed tip (arrow)
         const tip = document.createElement('div');
         tip.className = 'bubble-tip';
-        tip.style.cssText = `
-            position: absolute;
-            width: 0;
-            height: 0;
-            border: 8px solid transparent;
-            border-bottom-color: #007bff;
-            z-index: 1002;
-        `;
         bubble.appendChild(tip);
 
         // Add click handler
@@ -211,14 +172,12 @@ class AgentBubbleManager {
 
         // Add hover effects
         bubble.addEventListener('mouseenter', () => {
-            bubble.style.transform = 'scale(1.1)';
-            bubble.style.zIndex = '1010';
+            bubble.classList.add('is-hovered');
             this.showBubbleTooltip(bubbleData, bubble);
         });
 
         bubble.addEventListener('mouseleave', () => {
-            bubble.style.transform = 'scale(1)';
-            bubble.style.zIndex = '1001';
+            bubble.classList.remove('is-hovered');
             this.hideBubbleTooltip();
         });
 
@@ -547,17 +506,6 @@ class AgentBubbleManager {
 
         const tooltip = document.createElement('div');
         tooltip.className = 'agent-bubble-tooltip';
-        tooltip.style.cssText = `
-            position: absolute;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-size: 12px;
-            white-space: nowrap;
-            z-index: 1020;
-            pointer-events: none;
-        `;
         tooltip.textContent = `${bubbleData.agentName}: ${bubbleData.action}`;
 
         // Add to container temporarily to measure dimensions
@@ -690,11 +638,7 @@ class AgentBubbleManager {
     _markBubbleStale(bubbleData) {
         if (!bubbleData || !bubbleData.element || bubbleData.staleApplied) return;
         bubbleData.staleApplied = true;
-        bubbleData.element.style.filter = 'grayscale(100%)';
-        bubbleData.element.style.opacity = '0.65';
-        bubbleData.element.style.borderColor = '#888';
-        const tip = bubbleData.element.querySelector('.bubble-tip');
-        if (tip) tip.style.borderBottomColor = '#888';
+        bubbleData.element.classList.add('is-stale');
     }
 
     /**

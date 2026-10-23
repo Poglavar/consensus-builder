@@ -84,7 +84,6 @@
         "loadFailed": "No se pudo cargar esta herramienta. Inténtalo de nuevo."
     },
     "urbanBlocks": {
-        "title": "Manzanas urbanas · OSM",
         "toggle": "Detectar y analizar manzanas",
         "hint": "Carga las calles OSM y colorea las manzanas cerradas. Los datos de parcelas son opcionales.",
         "starting": "Preparando la vista de manzanas…",
@@ -1120,7 +1119,9 @@
         },
         "blocks": {
             "title": "Bloques de parcelas",
-            "showBlocks": "Mostrar bloques de parcelas",
+            "showBlocks": "Mostrar bloques formados",
+            "fromRoadsTitle": "Desde las calles del mapa (OSM)",
+            "fromParcelsTitle": "Desde las parcelas catastrales",
             "operationsTitle": "Operaciones de bloques",
             "reformButton": "(Re)formar bloques",
             "reformTooltip": "Analiza las parcelas visibles y reconstruye los bloques",

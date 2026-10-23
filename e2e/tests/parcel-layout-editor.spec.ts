@@ -2,7 +2,7 @@
 // layouts and hand edits shape the plots, and Done applies them as a parcel layout whose live pieces
 // keep their plot references and are held by the owners of the ground under them.
 import { test, expect } from '../helpers/fixtures';
-import { clickMapPoint, openCity, openParcel, showProposal, PARCEL_ID } from '../helpers/runtime';
+import { clickMapPoint, openCity, openParcel, showProposal, PARCEL_ID, closeParcel } from '../helpers/runtime';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 import { editorOpen, editorClosed, editorCancel } from '../helpers/agreements';
 import type { Locator, Page } from '@playwright/test';
@@ -372,7 +372,7 @@ test('a plot laid across two owners\' parcels is held jointly by both, pro rata 
   // Both parcels selected, then laid out from the selection's palette.
   await openParcel(page);
   await page.locator('#multiSelectCheckboxInfo').check();
-  await page.locator('#parcel-info-panel .close-button').click();
+  await closeParcel(page);
   await clickMapPoint(page, 15.9824, 45.80025);
   await expect.poll(() => page.evaluate(() => [...(window as any).multiParcelSelection.selectedParcels].sort())).toEqual(ADJACENT_IDS);
   await page.locator('#selection-tray [data-command="selection.propose"]').click();

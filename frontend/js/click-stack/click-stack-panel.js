@@ -59,6 +59,13 @@
         state.hosted = { el, parent: el.parentNode, next: el.nextSibling };
         el.classList.add('is-hosted');
         slot.appendChild(el);
+        if (id === 'parcel-info-panel') {
+            // The section's row folds and the stack closes, so the panel's − and × are hidden there
+            // (css/map.css) and it is never left minimized. Its proposals are the Designs section,
+            // so its Proposals tab is hidden too and the panel shows its Info tab instead.
+            global.ParcelsUIParcelPanel?.setParcelInfoPanelMinimized?.(el, false);
+            if (el.querySelector('[data-parcel-tab-id="proposals-tab"][aria-selected="true"]')) global.switchParcelTab?.(null, 'info-tab');
+        }
     }
 
     // Puts the hosted panel back where it lives; hide also closes it (the section collapsed or the
@@ -333,11 +340,11 @@
             if (kind === 'agreements') {
                 unhost();
                 renderAgreement(body, instance);
+            } else if (kind === 'designs' && instance.serverId) {
+                openPublishedDesign(instance);
             } else if (kind === 'designs') {
                 renderDesignAgreements(body, instance);
-                global.selectAndHighlightProposal(instance.id, null, false, true);
-                // A proposal's own parcel may open its panel alongside; in the stack it has its section.
-                if (doc.getElementById('parcel-info-panel')?.classList.contains('visible')) global.hideParcelInfoPanel?.({ preserveProposalSelection: true });
+                selectDesign(instance.id);
             } else if (kind === 'built') {
                 global.PlanningViews.inspectBuilding(instance.feature, instance.id);
             } else if (kind === 'permitted') {
@@ -366,6 +373,50 @@
         } finally {
             state.expanding = false;
         }
+    }
+
+    function selectDesign(key) {
+        global.selectAndHighlightProposal(key, null, false, true);
+        // A proposal's own parcel may open its panel alongside; in the stack it has its section.
+        if (doc.getElementById('parcel-info-panel')?.classList.contains('visible')) global.hideParcelInfoPanel?.({ preserveProposalSelection: true });
+    }
+
+    // A published proposal on the clicked parcel that this browser holds no copy of: imported first
+    // (as the parcel's proposal list does), then shown in the section if it is still the one chosen.
+    async function openPublishedDesign(instance) {
+        let key;
+        try {
+            const proposal = global.DesignSync.importDesign(await global.DesignSync.fetchDesign(instance.serverId));
+            key = global.getProposalKey(proposal) || proposal.proposalId;
+        } catch (error) {
+            console.error(`[${new Date().toISOString()}] [ClickStack] published proposal ${instance.serverId} could not be loaded`, error);
+            global.updateStatus?.(t('modal.roadWidth.proposalList.downloadError', 'Failed to download proposal'));
+            return;
+        }
+        if (!isOpen() || state.stack.expanded !== 'designs' || model.selectedInstance(state.stack, 'designs')?.id !== instance.id) return;
+        state.expanding = true;
+        try {
+            selectDesign(key);
+            const target = HOSTS.designs.find(id => isShown(doc.getElementById(id)));
+            const body = bodyOf('designs');
+            if (target && body) host(body, target);
+        } finally {
+            state.expanding = false;
+        }
+    }
+
+    // The published proposals of the clicked parcel arrived after the stack opened: the same spot is
+    // shown again with them, keeping the chosen instances and the expanded section.
+    function refreshSpot(latlng) {
+        if (!isOpen() || state.latlng !== latlng) return;
+        const hits = global.ClickStackHits.hitsAt(latlng);
+        const selected = Object.fromEntries(state.stack.sections.map(section => [section.kind, section.instances[section.selectedIndex].id]));
+        const next = model.buildClickStack(hits, { selected });
+        const expanded = state.stack.expanded;
+        state.hits = hits;
+        state.stack = expanded && next.sections.some(section => section.kind === expanded) ? model.expand(next, expanded) : { ...next, expanded: null };
+        render();
+        if (state.stack.expanded) activate(state.stack.expanded);
     }
 
     function selectParcel(instance) {
@@ -504,7 +555,7 @@
         if (state.lastClick && now - state.lastClick.at < 50
             && state.lastClick.lat === latlng.lat && state.lastClick.lng === latlng.lng) return true;
         state.lastClick = { at: now, lat: latlng.lat, lng: latlng.lng };
-        const hits = global.ClickStackHits.hitsAt(latlng);
+        const hits = global.ClickStackHits.hitsAt(latlng, { onPublished: () => refreshSpot(latlng) });
         const stack = model.buildClickStack(hits, { remembered: remembered() });
         const action = model.clickAction(isOpen() ? state.stack?.topRef || null : null, stack);
         log(`click ${latlng.lat.toFixed(6)},${latlng.lng.toFixed(6)}: ${stack.sections.map(section => `${section.kind}×${section.count}`).join(' ') || 'nothing'} → ${action}`);

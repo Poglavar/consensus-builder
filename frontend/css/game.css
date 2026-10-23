@@ -22,7 +22,7 @@
     width: 100%;
     height: 6px;
     border-radius: 3px;
-    background: #dee2e6;
+    background: var(--cb-surface-3);
     outline: none;
     appearance: none;
     -webkit-appearance: none;
@@ -36,8 +36,8 @@
     border-radius: 50%;
     background: var(--cb-primary);
     cursor: pointer;
-    border: 2px solid white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    border: 2px solid var(--cb-surface);
+    box-shadow: var(--cb-shadow-sm);
 }
 
 #turn-interval-slider::-moz-range-thumb {
@@ -46,8 +46,8 @@
     border-radius: 50%;
     background: var(--cb-primary);
     cursor: pointer;
-    border: 2px solid white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    border: 2px solid var(--cb-surface);
+    box-shadow: var(--cb-shadow-sm);
 }
 
 /* Turn progress bar */
@@ -77,7 +77,7 @@
     border: 1px solid var(--cb-line);
     border-radius: var(--cb-radius-sm);
     padding: var(--cb-space-3);
-    background-color: var(--cb-surface-2);
+    background-color: transparent;
     font-family: var(--cb-font-sans);
     font-size: var(--cb-text-base);
     line-height: var(--cb-leading);
@@ -240,12 +240,6 @@
     min-width: 0;
 }
 
-.parcel-item, .proposal-item {
-    padding: 8px 12px; /* = modals.css; without it proposals.css's .proposal-item padding: 10px would win */
-    margin-bottom: 5px;
-    cursor: pointer;
-    transition: all 0.2s;
-}
 
 .agent-dialog-modal .parcel-item,
 .agent-dialog-modal .proposal-item {
@@ -261,14 +255,6 @@
     white-space: normal;
 }
 
-.parcel-item:last-child, .proposal-item:last-child {
-    margin-bottom: 0;
-}
-
-.parcel-item:hover, .proposal-item:hover {
-    background: var(--cb-surface-3);
-    border-color: var(--cb-primary);
-}
 
 /* Simplified parcel styling - no colored borders or backgrounds */
 .parcel-proposal-count {
@@ -296,8 +282,6 @@
 }
 
 
-
-
 .empty-log {
     font-size: 13px;
 }
@@ -309,12 +293,8 @@
     font-style: italic;
     font-size: 12px;
     border-top: 1px solid var(--cb-line);
-    background-color: #f1f3f4;
+    background-color: var(--cb-surface-2);
 }
-
-
-
-
 
 
 /* Avatar selection (the welcome dialog, user-management.js): the chosen avatar is a cb-option row
@@ -390,7 +370,7 @@
 
 /* Agent list item user indicator */
 .agent-stats-table .user-agent-row {
-    background: #f8f9ff;
+    background: var(--cb-primary-soft);
     border-left: 3px solid var(--cb-primary);
 }
 
@@ -438,4 +418,47 @@
         font-size: 10px !important;
         padding: 2px 5px !important;
     }
+}
+
+/* Agent pointers are positioned by agent-bubbles.js; their palette and states follow the theme. */
+.agent-bubble {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--cb-surface);
+    border: 3px solid var(--cb-primary);
+    border-radius: 50%;
+    box-shadow: var(--cb-shadow-md);
+    cursor: pointer;
+    pointer-events: auto;
+    z-index: var(--cb-z-map-chrome);
+    transition: transform 0.2s ease;
+}
+.agent-bubble > img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+.agent-bubble .bubble-tip {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border: 8px solid transparent;
+    border-bottom-color: var(--cb-primary);
+    z-index: var(--cb-z-local-1);
+}
+.agent-bubble.is-hovered { transform: scale(1.1); z-index: var(--cb-z-map-raised); }
+.agent-bubble.is-stale { filter: grayscale(100%); opacity: 0.65; border-color: var(--cb-text-faint); }
+.agent-bubble.is-stale .bubble-tip { border-bottom-color: var(--cb-text-faint); }
+
+#agent-bubbles-container { position: absolute; inset: 0; pointer-events: none; z-index: var(--cb-z-map-chrome); }
+.agent-bubble-tooltip {
+    position: absolute;
+    background: var(--cb-inverse);
+    color: var(--cb-inverse-ink);
+    padding: var(--cb-space-2) var(--cb-space-3);
+    border-radius: var(--cb-radius-sm);
+    font-size: var(--cb-text-sm);
+    white-space: nowrap;
+    z-index: var(--cb-z-map-raised);
+    pointer-events: none;
 }

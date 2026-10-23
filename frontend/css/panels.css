@@ -4,8 +4,8 @@
 .info-panel {
     /* A little of the map shows through every panel (user rule 2026-10-17). */
     background: var(--cb-glass-sheet);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(var(--cb-panel-blur));
+    -webkit-backdrop-filter: blur(var(--cb-panel-blur));
     color: var(--cb-text);
     border-radius: var(--cb-radius-lg);
     box-shadow: var(--cb-shadow-sm);
@@ -403,7 +403,7 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 #road-info-panel .metric-label.has-tooltip {
     text-decoration: underline;
     text-decoration-style: dashed;
-    text-decoration-color: #999;
+    text-decoration-color: var(--cb-text-faint);
     text-underline-offset: 2px;
     cursor: help;
 }
@@ -642,48 +642,48 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 }
 
 .parcel-layer {
-    fill: rgba(255, 0, 0, 0.2);
-    stroke: red;
+    fill: color-mix(in srgb, var(--cb-danger) 20%, transparent);
+    stroke: var(--cb-danger);
     stroke-width: 1;
 }
 
 .parcel-layer.road {
-    fill: rgba(128, 128, 128, 0.2);
+    fill: color-mix(in srgb, var(--cb-text-muted) 20%, transparent);
     stroke: var(--cb-text-muted);
 }
 
 .parcel-layer:hover {
-    fill: rgba(255, 0, 0, 0.4);
+    fill: color-mix(in srgb, var(--cb-danger) 40%, transparent);
     stroke-width: 2;
 }
 
 .parcel-layer.road:hover {
-    fill: rgba(128, 128, 128, 0.4);
+    fill: color-mix(in srgb, var(--cb-text-muted) 40%, transparent);
 }
 
 .parcel-layer.selected {
-    fill: rgba(255, 51, 0, 0.4);
-    stroke: #ff3300;
+    fill: color-mix(in srgb, var(--cb-danger) 40%, transparent);
+    stroke: var(--cb-danger);
     stroke-width: 4;
     stroke-opacity: 1;
 }
 
 .parcel-layer.multi-selected {
-    fill: rgba(255, 152, 0, 0.6);
-    stroke: #f57c00;
+    fill: color-mix(in srgb, var(--cb-warning) 60%, transparent);
+    stroke: var(--cb-warning);
     stroke-width: 3;
 }
 
 .road-name-tooltip {
-    background: rgba(0, 0, 0, 0.7);
+    background: var(--cb-inverse);
     border: none;
     border-radius: 3px;
-    color: white;
+    color: var(--cb-inverse-ink);
     font-weight: bold;
     padding: 2px 6px;
     white-space: nowrap;
     font-size: 12px;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    text-shadow: none;
 }
 
 .road-parcel {
@@ -703,18 +703,18 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
     margin-right: 8px;
     vertical-align: middle;
     border-radius: 2px;
-    border: 1px solid #888;
+    border: 1px solid var(--cb-line-strong);
 }
 
 
 .building-layer {
-    fill: rgba(0, 0, 255, 0.2);
-    stroke: blue;
+    fill: color-mix(in srgb, var(--cb-primary) 20%, transparent);
+    stroke: var(--cb-primary);
     stroke-width: 1;
 }
 
 .building-layer:hover {
-    fill: rgba(0, 0, 255, 0.4);
+    fill: color-mix(in srgb, var(--cb-primary) 40%, transparent);
     stroke-width: 2;
 }
 
@@ -859,23 +859,25 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 }
 
 .parcel-item, .proposal-item {
-    padding: 8px 12px;
+    padding: var(--cb-space-2) var(--cb-space-3);
     margin-bottom: 5px;
     background: var(--cb-surface-2);
-    border-radius: 4px;
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+    color: var(--cb-text);
+    font-size: var(--cb-text-base);
     cursor: pointer;
-    transition: all 0.3s;
-    border-left: 3px solid transparent;
+    transition: background-color 0.2s, border-color 0.2s;
 }
 
 .parcel-item:last-child, .proposal-item:last-child {
     margin-bottom: 0;
 }
 
-.parcel-item:hover, .proposal-item:hover {
+.parcel-item:hover, .proposal-item:hover,
+.parcel-item:focus-visible, .proposal-item:focus-visible {
     background: var(--cb-surface-3);
-    border-left-color: var(--cb-primary);
-    transform: translateX(2px);
+    border-color: var(--cb-primary);
 }
 
 .parcel-item.has-proposals {
@@ -927,27 +929,27 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 
 .selected-parcel {
     animation: selectedParcelBorder 1.5s ease-in-out infinite;
-    stroke: #ff3300;
+    stroke: var(--cb-danger);
     stroke-width: 2;
 }
 
 /* Measurement tool styles (the Measure button itself is a btn toggle: aria-pressed) */
 .measurement-line {
-    stroke: #ff3300;
+    stroke: var(--cb-danger);
     stroke-width: 2;
     stroke-dasharray: 5, 5;
     stroke-linecap: round;
 }
 
 .measurement-marker {
-    fill: #ff3300;
-    stroke: white;
+    fill: var(--cb-danger);
+    stroke: var(--cb-inverse-ink);
     stroke-width: 1;
 }
 
 .measurement-label {
-    background-color: rgba(255, 255, 255, 0.8);
-    border: 1px solid #ff3300;
+    background-color: var(--cb-glass-sheet);
+    border: 1px solid var(--cb-danger);
     border-radius: 4px;
     padding: 2px 6px;
     font-size: 12px;
@@ -1212,14 +1214,14 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 }
 
 /* Center the multi-select checkbox in parcel info panel */
-#parcel-info-panel #info-tab .checkbox-group {
+#parcel-info-panel .parcel-context-actions .checkbox-group {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
 }
 
-#parcel-info-panel #info-tab .checkbox-group label {
+#parcel-info-panel .parcel-context-actions .checkbox-group label {
     margin: 0;
     width: auto;
     justify-content: center;
@@ -1227,16 +1229,16 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 
 /* "Select multiple parcels" group: title with the two selection modes side by side —
    the Manually checkbox and the Detect block action (block floodfill from the selected parcel). */
-#parcel-info-panel #info-tab .multi-select-group {
+#parcel-info-panel .parcel-context-actions .multi-select-group {
     gap: 4px;
 }
 
-#parcel-info-panel #info-tab .multi-select-title {
+#parcel-info-panel .parcel-context-actions .multi-select-title {
     font-weight: 600;
     font-size: 13px;
 }
 
-#parcel-info-panel #info-tab .multi-select-options {
+#parcel-info-panel .parcel-context-actions .multi-select-options {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1246,7 +1248,7 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 
 /* Touch: the Manually checkbox gets a finger-sized row like the Detect block button beside it. */
 @media (pointer: coarse) {
-    #parcel-info-panel #info-tab .multi-select-options label {
+    #parcel-info-panel .parcel-context-actions .multi-select-options label {
         min-height: 34px;
     }
 }
@@ -1344,8 +1346,7 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
    deliberately absent: this rule has ID specificity, so listing one here silently overrides
    .right-dock-panel and the shared --right-dock-width stops meaning anything. */
 #block-info-panel,
-#area-monitor-detail-panel,
-#road-analysis-panel {
+#area-monitor-detail-panel {
     width: min(90vw, 400px);
 }
 
@@ -1501,7 +1502,7 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
     align-items: center;
     padding: 6px 14px;
     border-bottom: 1px solid var(--cb-line);
-    background: var(--cb-surface-2);
+    background: transparent;
     border-radius: 8px 8px 0 0;
     flex-shrink: 0; /* prevent header from shrinking */
     height: fit-content;
@@ -1706,3 +1707,31 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
     background: var(--cb-warning-soft);
     color: var(--cb-warning-soft-ink);
 }
+
+/* Ownership availability is semantic markup; its muted/error presentation follows the theme. */
+.owner-fallback-label { margin-top: var(--cb-space-2); font-size: var(--cb-text-sm); color: var(--cb-text-muted); }
+.owner-error { color: var(--cb-danger); }
+
+.block-name-label > span {
+    display: inline-block;
+    max-width: 180px;
+    padding: var(--cb-space-1) var(--cb-space-2);
+    border: 1px solid var(--cb-line-strong);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-glass-sheet);
+    color: var(--cb-text-strong);
+    box-shadow: var(--cb-shadow-sm);
+    font-size: var(--cb-text-lg);
+    font-weight: var(--cb-weight-bold);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Selection belongs to the parcel, independently of which tab is open. */
+.parcel-context-actions { padding: var(--cb-space-2) 0; gap: var(--cb-space-1); align-items: flex-end; }
+.parcel-context-actions .click-stack__actions--parcel { margin: 0; min-height: var(--cb-control-height-lg); }
+#parcel-info-panel .parcel-context-actions .multi-select-group { align-items: flex-start; margin: 0; }
+#parcel-info-panel .parcel-context-actions .multi-select-title { font-size: var(--cb-text-sm); }
+#parcel-info-panel .parcel-context-actions .multi-select-options { gap: var(--cb-space-1); min-height: var(--cb-control-height-lg); }
+#parcel-info-panel .parcel-context-actions .multi-select-options label { padding-inline: 0; }

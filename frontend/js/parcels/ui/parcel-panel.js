@@ -961,7 +961,8 @@
         }
 
         if (typeof global.multiParcelSelection !== 'undefined' && global.multiParcelSelection.isActive) {
-            global.switchParcelTab(findParcelTabButton('info-tab'), 'info-tab');
+            const activeTab = panelEl.querySelector('.parcel-tab-btn[aria-selected="true"]')?.dataset.parcelTabId || 'propose-tab';
+            global.switchParcelTab(findParcelTabButton(activeTab), activeTab);
         }
 
         resetMeasureAsRoadButton();

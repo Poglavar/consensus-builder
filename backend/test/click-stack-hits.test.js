@@ -11,11 +11,14 @@ const parcelFeature = (props = {}) => ({ type: 'Feature', properties: props, geo
 
 // stack: what __drillUi.stackAt finds (topmost first). Everything else is optional per test.
 function loadHits({ stack = [], buildings = [], planning = null, agreements = [], city = 'zagreb', bareGround = false,
-    registry = {}, proposals = {} } = {}) {
+    registry = {}, proposals = {}, parcelProposals = [], parcelBuildings = [] } = {}) {
     const context = {
         console,
         __drillUi: { stackAt: vi.fn(() => stack) },
         buildingsAt: vi.fn(() => buildings),
+        buildingsOn: vi.fn(() => parcelBuildings),
+        ParcelSetProposals: { lookup: vi.fn(() => ({ entries: parcelProposals })) },
+        getProposalKey: proposal => proposal.proposalId,
         PlanningViews: planning ? { isReady: () => true, itemsAt: vi.fn(() => planning) } : undefined,
         AgreementStore: { list: vi.fn(() => agreements) },
         CityConfigManager: { getCurrentCityId: () => city },
@@ -35,6 +38,35 @@ const formedEntry = (id, producerId, props = {}) => ({ kind: 'parcel', id, depth
 const bareEntry = (id, props = {}) => ({ kind: 'parcel', id, depth: 0, feature: parcelFeature(props) });
 
 describe('click stack hits', () => {
+    it('adds the buildings and proposals of the parcel under the point when no design is there', () => {
+        const house = { id: 'b1', feature: { type: 'Feature', properties: { name: 'House' }, geometry: null } };
+        const shed = { id: 'b2', feature: { type: 'Feature', properties: { name: 'Shed' }, geometry: null } };
+        const { hits, context } = loadHits({
+            stack: [bareEntry('HR-1-12')],
+            buildings: [house],
+            parcelBuildings: [house, shed],
+            parcelProposals: [
+                { proposal: { proposalId: 'local-1', title: 'Row houses', createdAt: '2026-10-01' } },
+                { proposal: { proposalId: null, cid: 'bafy-published', title: 'Park', createdAt: '2026-09-01' }, serverId: 'bafy-published' }
+            ]
+        });
+        expect(context.ParcelSetProposals.lookup).toHaveBeenCalledWith(['HR-1-12'], { onPublished: undefined });
+        expect(context.buildingsOn).toHaveBeenCalledWith(hits.parcels[0].feature);
+        expect(hits.designs.map(d => [d.id, d.label, d.serverId, d.onParcel])).toEqual([
+            ['local-1', 'Row houses', null, true], ['bafy-published', 'Park', 'bafy-published', true]]);
+        // The building under the point is listed once, as a point hit; the parcel adds the other.
+        expect(hits.built.map(b => [b.id, b.label, !!b.onParcel])).toEqual([['b1', 'House', false], ['b2', 'Shed', true]]);
+        expect(hits.agreements).toEqual([]);
+    });
+
+    it('lists only the point\'s own hits when a design is under it', () => {
+        const { hits, context } = loadHits({ stack: [proposalEntry('d1'), bareEntry('HR-1-12')],
+            parcelProposals: [{ proposal: { proposalId: 'other', title: 'Other' } }], parcelBuildings: [{ id: 'b9', feature: { properties: {} } }] });
+        expect(context.ParcelSetProposals.lookup).not.toHaveBeenCalled();
+        expect(hits.designs.map(d => d.id)).toEqual(['d1']);
+        expect(hits.built).toEqual([]);
+    });
+
     it('splits the drill stack into designs, formed parcels and cadastral parcels by kind and depth', () => {
         const { hits, context } = loadHits({
             stack: [proposalEntry('d1'), formedEntry('f1', 'd1'), bareEntry('HR-335550-12')],

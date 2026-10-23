@@ -891,10 +891,13 @@ body.three-mode-active #agent-bubbles-container {
     flex: 1 1 auto;
 }
 
+/* A folded section keeps its row and strip whole; only the expanded one gives up height (its
+   hosted panel scrolls). */
 .click-stack__section {
     position: relative;
     display: flex;
     flex-direction: column;
+    flex: 0 0 auto;
     min-height: 0;
     border: 1px solid var(--cb-line);
     border-radius: var(--cb-radius-lg);
@@ -1100,6 +1103,14 @@ body.three-mode-active #agent-bubbles-container {
 }
 
 #click-stack .is-hosted .mobile-dock-sheet-handle {
+    display: none;
+}
+
+/* In the stack the section row folds the parcel and the stack's × closes it, and the parcel's
+   proposals are the Designs section: the panel's own −, × and Proposals tab are not shown. */
+#click-stack #parcel-info-panel.is-hosted #parcel-info-minimize,
+#click-stack #parcel-info-panel.is-hosted .panel-header .close-button,
+#click-stack #parcel-info-panel.is-hosted [data-parcel-tab-id="proposals-tab"] {
     display: none;
 }
 

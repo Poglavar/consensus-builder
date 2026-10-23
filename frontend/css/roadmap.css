@@ -23,14 +23,14 @@
     gap: 7px;
     padding: 8px 12px;
     border-radius: 999px;
-    background: var(--guide-paper);
-    border: 1px solid var(--guide-line);
-    color: var(--guide-muted);
+    background: var(--cb-surface);
+    border: 1px solid var(--cb-line);
+    color: var(--cb-text-muted);
     font-size: 13px;
 }
 
 .roadmap-legend i {
-    color: var(--guide-blue);
+    color: var(--cb-primary);
 }
 
 .roadmap-section {
@@ -49,7 +49,7 @@
 .roadmap-heading h2,
 .roadmap-principles h2 {
     margin: 0 0 8px;
-    color: var(--guide-ink);
+    color: var(--cb-text-strong);
     font-size: clamp(24px, 3vw, 34px);
     line-height: 1.15;
     letter-spacing: -0.025em;
@@ -58,7 +58,7 @@
 .roadmap-heading p {
     margin: 0;
     max-width: 700px;
-    color: var(--guide-muted);
+    color: var(--cb-text-muted);
     line-height: 1.6;
 }
 
@@ -80,7 +80,7 @@
 }
 
 .roadmap-kicker.is-next {
-    background: var(--guide-blue);
+    background: var(--cb-primary);
 }
 
 .roadmap-kicker.is-later {
@@ -96,9 +96,9 @@
 
 .roadmap-card {
     padding: 22px;
-    border: 1px solid var(--guide-line);
+    border: 1px solid var(--cb-line);
     border-radius: 16px;
-    background: var(--guide-paper);
+    background: var(--cb-surface);
 }
 
 .roadmap-card > i {
@@ -109,20 +109,20 @@
     margin-bottom: 18px;
     border-radius: 12px;
     background: var(--cb-primary-soft);
-    color: var(--guide-blue);
+    color: var(--cb-primary);
 }
 
 .roadmap-card h3,
 .priority-list h3 {
     margin: 0 0 8px;
-    color: var(--guide-ink);
+    color: var(--cb-text-strong);
     font-size: 17px;
 }
 
 .roadmap-card p,
 .priority-list p {
     margin: 0;
-    color: var(--guide-muted);
+    color: var(--cb-text-muted);
     font-size: 14px;
     line-height: 1.58;
 }
@@ -166,7 +166,7 @@
     padding: 32px;
     border-radius: 20px;
     background: var(--cb-warning-soft);
-    color: var(--guide-ink);
+    color: var(--cb-text-strong);
 }
 
 .roadmap-principles > div {
@@ -184,7 +184,7 @@
 .roadmap-note {
     max-width: 720px;
     margin: 20px auto 0;
-    color: var(--guide-muted);
+    color: var(--cb-text-muted);
     font-size: 13px;
     line-height: 1.55;
     text-align: center;

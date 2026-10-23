@@ -1600,19 +1600,6 @@ function analyzeRoadWidthWithOSM(parcelFeature) {
     if (!document.getElementById('debug-log')) {
         const debugLog = document.createElement('div');
         debugLog.id = 'debug-log';
-        debugLog.style.position = 'absolute';
-        debugLog.style.bottom = '10px';
-        debugLog.style.right = '10px';
-        debugLog.style.zIndex = '1000';
-        debugLog.style.backgroundColor = 'rgba(255,255,255,0.8)';
-        debugLog.style.padding = '10px';
-        debugLog.style.borderRadius = '5px';
-        debugLog.style.maxHeight = '200px';
-        debugLog.style.overflowY = 'auto';
-        debugLog.style.width = '300px';
-        debugLog.style.color = 'black';
-        debugLog.style.fontFamily = 'monospace';
-        debugLog.style.fontSize = '12px';
         debugLog.innerHTML = '<strong>OSM Width Analysis Debug Log</strong><br>';
         document.body.appendChild(debugLog);
     }

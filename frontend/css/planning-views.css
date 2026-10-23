@@ -58,8 +58,9 @@ body[data-planning-existing-scope="removed"] .leaflet-observedReferences-pane { 
     max-height: calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance) - var(--cb-space-6));
     overflow: auto;
     z-index: var(--cb-z-panel);
-    background: var(--cb-glass);
-    backdrop-filter: blur(var(--cb-space-3));
+    background: var(--cb-glass-sheet);
+    backdrop-filter: blur(var(--cb-panel-blur));
+    -webkit-backdrop-filter: blur(var(--cb-panel-blur));
     border: 1px solid var(--cb-line-glass);
     border-radius: var(--cb-radius-xl);
     box-shadow: var(--cb-shadow-md);

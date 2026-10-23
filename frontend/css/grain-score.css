@@ -68,8 +68,8 @@
 }
 
 .grain-score-parcel {
-    fill: rgba(244, 234, 215, .58);
-    stroke: #17232b;
+    fill: color-mix(in srgb, var(--cb-surface-2) 58%, transparent);
+    stroke: var(--cb-text-strong);
     stroke-width: 2.5;
     vector-effect: non-scaling-stroke;
     opacity: .55;
@@ -79,22 +79,22 @@
 }
 
 .grain-score-parcel.is-active {
-    fill: rgba(255, 225, 89, .76);
-    stroke: #a3312a;
+    fill: color-mix(in srgb, var(--cb-warning) 76%, transparent);
+    stroke: var(--cb-primary);
     stroke-width: 4;
     opacity: 1;
-    filter: drop-shadow(0 3px 3px rgba(23, 35, 43, .25));
+    filter: drop-shadow(0 3px 3px var(--cb-line-glass));
 }
 
 .grain-score-parcel.is-eaten {
-    fill: rgba(85, 150, 87, .62);
-    stroke: #245b2a;
+    fill: color-mix(in srgb, var(--cb-success) 62%, transparent);
+    stroke: var(--cb-success-soft-ink);
     opacity: .24;
 }
 
 .grain-score-parcel.is-too-large {
-    fill: rgba(163, 49, 42, .36);
-    stroke: #8a231e;
+    fill: color-mix(in srgb, var(--cb-danger) 36%, transparent);
+    stroke: var(--cb-danger);
     stroke-dasharray: 7 5;
     opacity: .88;
 }
@@ -112,7 +112,7 @@
 .grain-rooster__body {
     width: 100%;
     transform-origin: 44% 76%;
-    filter: drop-shadow(0 7px 5px rgba(23, 35, 43, .24));
+    filter: drop-shadow(0 7px 5px var(--cb-line-glass));
 }
 
 .grain-rooster__body svg {
@@ -153,11 +153,11 @@
     bottom: 88%;
     max-width: 150px;
     padding: 5px 8px;
-    border: 2px solid #17232b;
+    border: 2px solid var(--cb-text-strong);
     border-radius: 10px 10px 10px 2px;
-    background: #fffdf7;
-    color: #17232b;
-    box-shadow: 2px 3px 0 rgba(23, 35, 43, .18);
+    background: var(--cb-surface);
+    color: var(--cb-text-strong);
+    box-shadow: var(--cb-shadow-sm);
     font-size: 11px;
     font-weight: 700;
     line-height: 1.15;
@@ -175,9 +175,9 @@
     z-index: var(--cb-z-local-3);
     width: 8px;
     height: 4px;
-    border: 1px solid #6c481d;
+    border: 1px solid var(--cb-warning-soft-ink);
     border-radius: 70% 30% 70% 30%;
-    background: #cf9a42;
+    background: var(--cb-warning);
     pointer-events: none;
 }
 
@@ -192,11 +192,11 @@
     gap: 9px;
     padding: 9px 14px;
     transform: translateX(-50%);
-    border: 1px solid #17232b;
+    border: 1px solid var(--cb-text-strong);
     border-radius: 999px;
-    background: rgba(255, 253, 247, .96);
-    box-shadow: 0 6px 18px rgba(23, 35, 43, .2);
-    color: #17232b;
+    background: var(--cb-glass-sheet);
+    box-shadow: var(--cb-shadow-md);
+    color: var(--cb-text-strong);
     font-size: 13px;
     font-weight: 650;
     text-align: center;
@@ -207,8 +207,8 @@
     height: 9px;
     flex: 0 0 auto;
     border-radius: 50%;
-    background: #a3312a;
-    box-shadow: 0 0 0 0 rgba(163, 49, 42, .45);
+    background: var(--cb-primary);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--cb-primary) 45%, transparent);
     animation: grain-score-pulse 1.25s ease-out infinite;
 }
 
@@ -222,11 +222,13 @@
     overflow: auto;
     box-sizing: border-box;
     padding: 16px;
-    border: 2px solid #17232b;
+    border: 2px solid var(--cb-text-strong);
     border-radius: 16px;
-    background: #fffdf7;
-    box-shadow: 7px 8px 0 rgba(23, 35, 43, .2), 0 18px 42px rgba(23, 35, 43, .22);
-    color: #17232b;
+    background: var(--cb-glass-sheet);
+    backdrop-filter: blur(var(--cb-panel-blur));
+    -webkit-backdrop-filter: blur(var(--cb-panel-blur));
+    box-shadow: var(--cb-shadow-md);
+    color: var(--cb-text-strong);
     pointer-events: auto;
 }
 
@@ -240,9 +242,9 @@
 .grain-score-panel__header img {
     width: 70px;
     height: 70px;
-    border: 1px solid rgba(23, 35, 43, .22);
+    border: 1px solid var(--cb-line);
     border-radius: 50%;
-    background: #f4ead7;
+    background: var(--cb-surface-2);
     object-fit: cover;
 }
 
@@ -254,14 +256,14 @@
 
 .grain-score-panel h2 {
     margin-bottom: 2px;
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: var(--cb-font-sans);
     font-size: 24px;
     line-height: 1;
 }
 
 .grain-score-eyebrow {
     margin-bottom: 4px;
-    color: #a3312a;
+    color: var(--cb-primary);
     font-size: 10px;
     font-weight: 800;
     letter-spacing: .12em;
@@ -270,7 +272,7 @@
 
 .grain-score-plan-name {
     margin-bottom: 0;
-    color: #5b5145;
+    color: var(--cb-text-muted);
     font-size: 12px;
     line-height: 1.25;
 }
@@ -285,9 +287,9 @@
     margin: 12px 0;
     padding: 5px 8px;
     border-radius: 5px;
-    background: #eee3d0;
-    color: #675a49;
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    background: var(--cb-surface-2);
+    color: var(--cb-text-muted);
+    font-family: var(--cb-font-mono);
     font-size: 10px;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -296,7 +298,7 @@
 .grain-score-loading,
 .grain-score-error {
     padding: 18px 4px 4px;
-    color: #4e453a;
+    color: var(--cb-text);
     line-height: 1.45;
     text-align: center;
 }
@@ -309,7 +311,7 @@
 }
 
 .grain-score-error {
-    color: #8a231e;
+    color: var(--cb-danger);
     font-weight: 650;
 }
 
@@ -329,34 +331,34 @@
     place-content: center;
     border-radius: 50%;
     background:
-        radial-gradient(circle closest-side, #fffdf7 73%, transparent 75% 99%, #fffdf7 0),
-        conic-gradient(#a3312a calc(var(--grain-score) * 1%), #dfd2bd 0);
+        radial-gradient(circle closest-side, var(--cb-surface) 73%, transparent 75% 99%, var(--cb-surface) 0),
+        conic-gradient(var(--cb-primary) calc(var(--grain-score) * 1%), var(--cb-surface-3) 0);
     text-align: center;
 }
 
 .grain-score-ring strong {
     display: block;
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: var(--cb-font-sans);
     font-size: 34px;
     line-height: .95;
 }
 
 .grain-score-ring span {
-    color: #6d6255;
+    color: var(--cb-text-muted);
     font-size: 11px;
 }
 
 .grain-score-verdict {
     display: block;
     margin-bottom: 5px;
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: var(--cb-font-sans);
     font-size: 22px;
     line-height: 1.05;
 }
 
 .grain-score-hero p {
     margin-bottom: 0;
-    color: #665b4e;
+    color: var(--cb-text-muted);
     font-size: 12px;
     line-height: 1.35;
 }
@@ -368,9 +370,9 @@
 
 .grain-score-dimensions article {
     padding: 11px 12px;
-    border: 1px solid #cfc1aa;
+    border: 1px solid var(--cb-line);
     border-radius: 9px;
-    background: #faf4e8;
+    background: var(--cb-surface-2);
 }
 
 .grain-score-dimensions article > div:first-child {
@@ -381,7 +383,7 @@
 }
 
 .grain-score-dimensions article > div:first-child > span {
-    color: #a3312a;
+    color: var(--cb-primary);
     font-size: 10px;
     font-weight: 800;
 }
@@ -392,14 +394,14 @@
 }
 
 .grain-score-dimensions article > div:first-child > strong {
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: var(--cb-font-sans);
     font-size: 24px;
 }
 
 .grain-score-dimensions article > p {
     min-height: 32px;
     margin: 6px 0 8px;
-    color: #64594c;
+    color: var(--cb-text-muted);
     font-size: 11px;
     line-height: 1.35;
 }
@@ -408,7 +410,7 @@
     height: 6px;
     overflow: hidden;
     border-radius: 999px;
-    background: #ded2bf;
+    background: var(--cb-surface-3);
 }
 
 .grain-score-meter i {
@@ -416,29 +418,29 @@
     width: 0;
     height: 100%;
     border-radius: inherit;
-    background: #a3312a;
+    background: var(--cb-primary);
     transition: width .55s ease;
 }
 
 .grain-score-note {
     margin: 10px 0 0;
     padding: 8px 9px;
-    border-left: 3px solid #a3312a;
-    background: #f8e8e2;
-    color: #6f302c;
+    border-left: 3px solid var(--cb-primary);
+    background: var(--cb-primary-soft);
+    color: var(--cb-primary-soft-ink);
     font-size: 11px;
     line-height: 1.4;
 }
 
 .grain-score-methodology {
     margin-top: 12px;
-    color: #655a4c;
+    color: var(--cb-text-muted);
     font-size: 11px;
     line-height: 1.45;
 }
 
 .grain-score-methodology summary {
-    color: #17232b;
+    color: var(--cb-text-strong);
     cursor: pointer;
     font-weight: 700;
 }
@@ -477,7 +479,7 @@ body.grain-score-mode #block-info-panel {
 }
 
 @keyframes grain-score-pulse {
-    70%, 100% { box-shadow: 0 0 0 8px rgba(163, 49, 42, 0); }
+    70%, 100% { box-shadow: 0 0 0 8px transparent; }
 }
 
 @media (max-width: 767.98px) {

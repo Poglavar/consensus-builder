@@ -87,14 +87,14 @@
 .structure-geometry-icon.is-bench span {
     display: block;
     width: 24px;
-    color: #7c2d12;
-    filter: drop-shadow(0 1px 1px #fff);
+    color: var(--cb-warning-soft-ink);
+    filter: drop-shadow(0 1px 1px var(--cb-surface));
     font-size: 22px;
     transform-origin: center;
 }
 
 .structure-geometry-icon.is-selected {
-    background: rgba(37, 99, 235, 0.2);
+    background: var(--cb-focus-ring);
     border: 2px solid var(--cb-primary);
     border-radius: 50%;
 }
@@ -117,7 +117,7 @@
 }
 
 .square-bench-icon {
-    color: #7c2d12;
-    filter: drop-shadow(0 1px 1px #fff);
+    color: var(--cb-warning-soft-ink);
+    filter: drop-shadow(0 1px 1px var(--cb-surface));
     font-size: 21px;
 }

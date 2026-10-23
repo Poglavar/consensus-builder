@@ -84,7 +84,6 @@
         "loadFailed": "Alat nije mogao da se učita. Pokušajte ponovo."
     },
     "urbanBlocks": {
-        "title": "Urbani blokovi · OSM",
         "toggle": "Otkrij i analiziraj blokove",
         "hint": "Učitaj OSM puteve i oboji zatvorene blokove. Podaci o parcelama su opcioni.",
         "starting": "Priprema prikaza blokova…",
@@ -1203,7 +1202,9 @@
         },
         "blocks": {
             "title": "Blokovi parcela",
-            "showBlocks": "Prikaži blokove parcela",
+            "showBlocks": "Prikaži oblikovane blokove",
+            "fromRoadsTitle": "Iz puteva na mapi (OSM)",
+            "fromParcelsTitle": "Iz katastarskih parcela",
             "operationsTitle": "Operacije nad blokom",
             "reformButton": "(Pre)formiraj blokove",
             "reformTooltip": "Skeniraj vidljive parcele i ponovo izgradi blokove",

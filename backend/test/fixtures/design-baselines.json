@@ -46,22 +46,22 @@
       "important": 0
     },
     "css/corridor-editor.css": {
-      "colourLiterals": 7,
+      "colourLiterals": 0,
       "zIndexLiterals": 0,
       "important": 0
     },
     "css/corridor-render.css": {
-      "colourLiterals": 4,
+      "colourLiterals": 0,
       "zIndexLiterals": 0,
       "important": 0
     },
     "css/game.css": {
-      "colourLiterals": 5,
+      "colourLiterals": 0,
       "zIndexLiterals": 0,
       "important": 6
     },
     "css/grain-score.css": {
-      "colourLiterals": 53,
+      "colourLiterals": 0,
       "zIndexLiterals": 0,
       "important": 1
     },
@@ -106,17 +106,17 @@
       "important": 0
     },
     "css/map-shell.css": {
-      "colourLiterals": 4,
+      "colourLiterals": 0,
       "zIndexLiterals": 0,
       "important": 0
     },
     "css/map.css": {
-      "colourLiterals": 18,
+      "colourLiterals": 0,
       "zIndexLiterals": 0,
       "important": 18
     },
     "css/modals.css": {
-      "colourLiterals": 33,
+      "colourLiterals": 0,
       "zIndexLiterals": 0,
       "important": 3
     },
@@ -141,7 +141,7 @@
       "important": 0
     },
     "css/panels.css": {
-      "colourLiterals": 19,
+      "colourLiterals": 0,
       "zIndexLiterals": 0,
       "important": 2
     },
@@ -161,7 +161,7 @@
       "important": 0
     },
     "css/photoreal-mode.css": {
-      "colourLiterals": 12,
+      "colourLiterals": 0,
       "zIndexLiterals": 0,
       "important": 1
     },
@@ -191,12 +191,12 @@
       "important": 0
     },
     "css/proposal-editor.css": {
-      "colourLiterals": 3,
+      "colourLiterals": 0,
       "zIndexLiterals": 0,
       "important": 0
     },
     "css/proposals.css": {
-      "colourLiterals": 37,
+      "colourLiterals": 0,
       "zIndexLiterals": 0,
       "important": 6
     },
@@ -221,7 +221,7 @@
       "important": 0
     },
     "css/site-tool.css": {
-      "colourLiterals": 8,
+      "colourLiterals": 0,
       "zIndexLiterals": 0,
       "important": 0
     },
@@ -231,7 +231,12 @@
       "important": 0
     },
     "css/structure-geometry-editor.css": {
-      "colourLiterals": 5,
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/three-sun.css": {
+      "colourLiterals": 0,
       "zIndexLiterals": 0,
       "important": 0
     },
@@ -261,41 +266,22 @@
       "important": 0
     },
     "css/utilities.css": {
-      "colourLiterals": 38,
+      "colourLiterals": 0,
       "zIndexLiterals": 0,
       "important": 10
     },
     "css/world.css": {
-      "colourLiterals": 48,
+      "colourLiterals": 0,
       "zIndexLiterals": 0,
       "important": 0
     }
   },
-  "conflicts": [
-    "#road-analysis-panel | css/panels.css > css/road-analysis.css | width",
-    ".map-shell-slot--tray | css/map-shell.css > css/selection-tray.css | bottom",
-    ".parcel-item | css/panels.css > css/game.css | transition",
-    ".parcel-item | css/panels.css > css/modals.css | border-radius",
-    ".proposal-item | css/modals.css > css/proposals.css | border-radius",
-    ".proposal-item | css/modals.css > css/proposals.css | padding",
-    ".proposal-item | css/panels.css > css/game.css | transition",
-    ".proposal-item | css/panels.css > css/modals.css | border-radius",
-    ".proposal-item | css/panels.css > css/proposals.css | margin-bottom",
-    ".proposal-item | css/panels.css > css/proposals.css | padding",
-    ".proposal-item | css/panels.css > css/proposals.css | transition",
-    ".proposal-item | css/proposals.css > css/game.css | margin-bottom",
-    ".proposal-item | css/proposals.css > css/game.css | padding",
-    ".proposal-item | css/proposals.css > css/game.css | transition",
-    ".proposal-parcel-item .parcel-number | css/proposals.css > css/utilities.css | font-weight",
-    ".proposal-parcel-item | css/proposals.css > css/utilities.css | border-bottom",
-    ".proposal-parcel-item | css/proposals.css > css/utilities.css | padding",
-    "body | css/base.css > css/layout.css | width"
-  ],
+  "conflicts": [],
   "i18n": {
     "titleCaseLabels": 30,
     "caseConflicts": 57,
     "threeDots": 0,
-    "duplicateGroups": 291
+    "duplicateGroups": 289
   },
   "js": {
     "js/corridor-editor.js": 1,

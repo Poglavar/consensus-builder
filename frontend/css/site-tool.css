@@ -2,16 +2,6 @@
    The site panel (js/site-drawing.js): drawing a proposal's site, its binding preview (bound
    parcels, small intrusions, open ground hatched, coverage) and the build palette on the site. */
 
-:root {
-    --site-outline: #111827;
-    --site-bound: #2563eb;
-    --site-warn: #d97706;
-    --site-touched: #9ca3af;
-    --site-open: #059669;
-    --site-plot: #7c3aed;
-    --site-building: #be185d;
-    --site-street: #0f766e;
-}
 
 /* ---- map layers (pane siteToolPane) ---- */
 .site-tool-pane {
@@ -23,9 +13,9 @@ body.site-tool-drawing .leaflet-container {
 }
 
 .site-outline {
-    stroke: var(--site-outline);
+    stroke: var(--cb-text-strong);
     stroke-width: 2.5px;
-    fill: var(--site-outline);
+    fill: var(--cb-text-strong);
     fill-opacity: 0.04;
 }
 
@@ -34,34 +24,34 @@ body.site-tool-drawing .leaflet-container {
 }
 
 .site-drawing-line {
-    stroke: var(--site-outline);
+    stroke: var(--cb-text-strong);
     stroke-width: 2px;
     stroke-dasharray: 6 4;
     fill: none;
 }
 
 .site-drawing-vertex {
-    stroke: var(--site-outline);
+    stroke: var(--cb-text-strong);
     stroke-width: 2px;
     fill: var(--cb-surface);
     fill-opacity: 1;
 }
 
 .site-drawing-vertex--first {
-    fill: var(--site-bound);
+    fill: var(--cb-primary);
 }
 
 .site-snap-marker {
-    stroke: var(--site-bound);
+    stroke: var(--cb-primary);
     stroke-width: 2px;
-    fill: var(--site-bound);
+    fill: var(--cb-primary);
     fill-opacity: 0.35;
 }
 
 /* Snapped to an existing building's outline rather than a parcel's. */
 .site-snap-marker--building {
-    stroke: var(--site-building);
-    fill: var(--site-building);
+    stroke: var(--cb-warning-soft-ink);
+    fill: var(--cb-warning-soft-ink);
 }
 
 /* What the snap marker landed on ("Building corner", "Parcel edge"): a small label beside it. */
@@ -69,14 +59,14 @@ body.site-tool-drawing .leaflet-container {
     padding: 1px 6px;
     font-size: 11px;
     font-weight: 600;
-    color: var(--site-bound);
-    border-color: var(--site-bound);
+    color: var(--cb-primary);
+    border-color: var(--cb-primary);
     box-shadow: none;
 }
 
 .leaflet-tooltip.site-snap-label--building {
-    color: var(--site-building);
-    border-color: var(--site-building);
+    color: var(--cb-warning-soft-ink);
+    border-color: var(--cb-warning-soft-ink);
 }
 
 .site-binding-parcel {
@@ -85,46 +75,46 @@ body.site-tool-drawing .leaflet-container {
 }
 
 .site-binding-parcel--bound {
-    stroke: var(--site-bound);
-    fill: var(--site-bound);
+    stroke: var(--cb-primary);
+    fill: var(--cb-primary);
 }
 
 .site-binding-parcel--small {
-    stroke: var(--site-warn);
-    fill: var(--site-warn);
+    stroke: var(--cb-warning);
+    fill: var(--cb-warning);
     fill-opacity: 0.18;
     stroke-dasharray: 5 3;
 }
 
 .site-binding-parcel--touched {
-    stroke: var(--site-touched);
-    fill: var(--site-touched);
+    stroke: var(--cb-text-faint);
+    fill: var(--cb-text-faint);
     stroke-dasharray: 2 4;
 }
 
 /* Open ground: hatched through the SVG pattern site-drawing.js puts in the pane's renderer. */
 .site-open-ground {
-    stroke: var(--site-open);
+    stroke: var(--cb-success);
     stroke-width: 1px;
     fill: url(#site-open-ground-hatch);
     fill-opacity: 1;
 }
 
 .site-open-ground-hatch-line {
-    stroke: var(--site-open);
+    stroke: var(--cb-success);
     stroke-width: 2px;
     stroke-opacity: 0.6;
 }
 
 .site-plot {
-    stroke: var(--site-plot);
+    stroke: var(--cb-primary-soft-ink);
     stroke-width: 1.5px;
-    fill: var(--site-plot);
+    fill: var(--cb-primary-soft-ink);
     fill-opacity: 0.06;
 }
 
 .site-frontage-edge {
-    stroke: var(--site-plot);
+    stroke: var(--cb-primary-soft-ink);
     stroke-width: 10px;
     stroke-opacity: 0.15;
     cursor: pointer;
@@ -169,8 +159,8 @@ body.site-tool-drawing .leaflet-container {
     border: 1px solid var(--cb-line);
     border-radius: var(--cb-radius-lg);
     background: var(--cb-glass-sheet);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(var(--cb-panel-blur));
+    -webkit-backdrop-filter: blur(var(--cb-panel-blur));
     box-shadow: var(--cb-shadow-md);
     color: var(--cb-text);
     font-size: var(--cb-text-md);
@@ -243,7 +233,7 @@ body.three-mode-active .site-panel {
 
 /* Which basis the plots' frontage stands on: a street (named), or the longest edge as a fallback. */
 .site-panel__frontage--street {
-    color: var(--site-street);
+    color: var(--cb-info);
     font-weight: 600;
 }
 
@@ -338,12 +328,12 @@ body.three-mode-active .site-panel {
     gap: 4px;
     padding: 6px 8px;
     border-bottom: 1px solid var(--cb-line);
-    border-left: 3px solid var(--site-warn);
+    border-left: 3px solid var(--cb-warning);
     background: var(--cb-warning-soft);
 }
 
 .site-panel__warning--touched {
-    border-left-color: var(--site-touched);
+    border-left-color: var(--cb-text-faint);
     background: var(--cb-surface-2);
 }
 
@@ -457,8 +447,8 @@ body.three-mode-active .site-panel {
     overflow: hidden;
     border-radius: var(--cb-radius-lg);
     background: var(--cb-glass-sheet);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(var(--cb-panel-blur));
+    -webkit-backdrop-filter: blur(var(--cb-panel-blur));
     z-index: var(--cb-z-panel);
 }
 

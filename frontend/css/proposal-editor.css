@@ -17,8 +17,8 @@
     border: 1px solid var(--cb-line-glass);
     border-radius: var(--cb-radius-lg);
     box-shadow: var(--cb-shadow-lg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(var(--cb-panel-blur));
+    -webkit-backdrop-filter: blur(var(--cb-panel-blur));
 }
 
 .proposal-editor-approval-status,
@@ -500,7 +500,7 @@ body.proposal-editor-open #proposal-details-panel.visible {
     background: var(--cb-surface);
     border: 3px solid var(--cb-success-soft-ink);
     border-radius: 50%;
-    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.4);
+    box-shadow: var(--cb-shadow-sm);
 }
 
 .road-node-handle:active {
@@ -553,7 +553,7 @@ body.proposal-editor-open #proposal-details-panel.visible {
     color: var(--cb-success-soft-ink);
     background: var(--cb-success-soft);
     border: 2px solid var(--cb-success-hover);
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.35);
+    box-shadow: var(--cb-shadow-sm);
 }
 
 .road-edge-add:hover {
@@ -575,7 +575,7 @@ body.proposal-editor-open #proposal-details-panel.visible {
     color: var(--cb-danger-soft-ink);
     background: var(--cb-danger-soft);
     border: 2px solid var(--cb-danger);
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.35);
+    box-shadow: var(--cb-shadow-sm);
     opacity: 0.85;
 }
 

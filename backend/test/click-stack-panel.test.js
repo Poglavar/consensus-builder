@@ -101,7 +101,7 @@ describe('click stack panel: a click opens, the same click closes', () => {
     it('opens the spot with the topmost section expanded and its panel hosted in the section', () => {
         const h = loadPanel();
         expect(h.click(SPOT_A)).toBe(true);
-        expect(h.context.ClickStackHits.hitsAt).toHaveBeenCalledWith(SPOT_A);
+        expect(h.context.ClickStackHits.hitsAt).toHaveBeenCalledWith(SPOT_A, { onPublished: expect.any(Function) });
         expect(h.api.isOpen()).toBe(true);
         expect(h.stackEl().classList.contains('visible')).toBe(true);
         expect(h.doc.body.classList.contains('click-stack-open')).toBe(true);
@@ -114,6 +114,25 @@ describe('click stack panel: a click opens, the same click closes', () => {
         // Two designs: a strip with the selected one pressed.
         const chips = h.section('designs').querySelectorAll('.click-stack__chip');
         expect(chips.map(chip => [chip.dataset.id, chip.getAttribute('aria-pressed')])).toEqual([['d1', 'true'], ['d2', 'false']]);
+    });
+
+    it('shows the parcel\'s published proposals when they arrive, keeping the parcel open', () => {
+        const h = loadPanel();
+        h.click(SPOT_B);
+        expect(h.api.current().expanded).toBe('parcels');
+        const { onPublished } = h.context.ClickStackHits.hitsAt.mock.calls[0][1];
+        h.context.ClickStackHits.hitsAt.mockImplementation(() => ({ ...HITS_B,
+            designs: [{ id: 'bafy-park', label: 'Park', serverId: 'bafy-park', onParcel: true, proposal: { cid: 'bafy-park' } }] }));
+        onPublished();
+        expect(h.kinds()).toEqual(['designs', 'parcels']);
+        expect(h.api.current().expanded).toBe('parcels');
+        expect(h.parcelPanel.parentNode).toBe(h.section('parcels').querySelector('.click-stack__body'));
+        expect(h.context.selectAndHighlightProposal).not.toHaveBeenCalled();
+        // A later answer for a spot no longer shown changes nothing.
+        h.context.ClickStackHits.hitsAt.mockImplementation(latlng => (latlng.lat === SPOT_A.lat ? HITS_A : HITS_B));
+        h.click(SPOT_A);
+        onPublished();
+        expect(h.api.current().expanded).toBe('designs');
     });
 
     it('closes on a second click on the same topmost object and puts the hosted panel back', () => {

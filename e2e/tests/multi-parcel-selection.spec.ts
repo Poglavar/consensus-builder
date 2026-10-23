@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, clickMapPoint, PARCEL_ID } from '../helpers/runtime';
+import { openCity, openParcel, clickMapPoint, PARCEL_ID, closeParcel } from '../helpers/runtime';
 
 test.describe('Multi-parcel selection @core', () => {
   test('tray tracks clicks, deselection, clearing and Done', async ({ mockApi: page }) => {
@@ -8,7 +8,7 @@ test.describe('Multi-parcel selection @core', () => {
     await page.locator('#multiSelectCheckboxInfo').check();
     const selected = () => page.evaluate(() => [...(window as any).multiParcelSelection.selectedParcels].sort());
     await expect.poll(selected).toEqual([PARCEL_ID]);
-    await page.locator('#parcel-info-panel .close-button').click();
+    await closeParcel(page);
     await clickMapPoint(page, 15.9829, 45.80025);
     await expect.poll(selected).toEqual([PARCEL_ID, 'HR-335754-1235']);
     await expect(page.locator('.selection-tray__count')).toContainText('2');
@@ -25,7 +25,7 @@ test.describe('Multi-parcel selection @core', () => {
     await openCity(page);
     await openParcel(page);
     await page.locator('#multiSelectCheckboxInfo').check();
-    await page.locator('#parcel-info-panel .close-button').click();
+    await closeParcel(page);
     await clickMapPoint(page, 15.9829, 45.80025);
     await page.locator('#selection-tray [data-command="selection.propose"]').click();
     await expect(page.locator('.parcel-build-palette')).toBeVisible();

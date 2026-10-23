@@ -115,7 +115,9 @@
     max-width: calc(100vw - 2 * var(--cb-space-4));
     border: 1px solid var(--cb-line);
     border-radius: var(--cb-radius-lg);
-    background: var(--cb-glass);
+    background: var(--cb-glass-sheet);
+    backdrop-filter: blur(var(--cb-panel-blur));
+    -webkit-backdrop-filter: blur(var(--cb-panel-blur));
     box-shadow: var(--cb-shadow-md);
     overflow: hidden;
 }

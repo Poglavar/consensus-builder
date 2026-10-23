@@ -4,7 +4,7 @@
 // freezes the rule's stored massing at its maximum height. Geometry is inspected read-only from the
 // rendered Leaflet outline, the active design draft and the stored proposals.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, showProposal, proposalState, clickMapPoint, createBuilding } from '../helpers/runtime';
+import { openCity, openParcel, showProposal, proposalState, clickMapPoint, createBuilding, closeParcel } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import type { Page } from '@playwright/test';
 
@@ -226,7 +226,7 @@ async function reopenGeometryEditor(page: Page, proposalId: string, editorRoot: 
 async function selectParcelsByHand(page: Page, ids: string[]): Promise<void> {
   await openParcel(page, 'info', ids[0]);
   await page.locator('#multiSelectCheckboxInfo').check();
-  await page.locator('#parcel-info-panel .close-button').click();
+  await closeParcel(page);
   for (const id of ids.slice(1)) {
     const [lng, lat] = await page.evaluate(parcelId => (window as any).turf.centroid((window as any).LiveParcelFabric.get(parcelId)).geometry.coordinates, id);
     await clickMapPoint(page, lng, lat);

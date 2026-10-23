@@ -696,6 +696,32 @@ function buildingsAt(latlng) {
 }
 window.buildingsAt = buildingsAt;
 
+// Existing buildings drawn on the map that stand on a parcel: more than a sliver (1 m²) of their
+// footprint lies inside it, so a neighbour that only touches the boundary is left out. The click
+// stack lists them for a click on the parcel's open ground.
+function buildingsOn(parcel) {
+    if (!parcel?.geometry || !window.turf) return [];
+    const [west, south, east, north] = window.turf.bbox(parcel);
+    const hits = [];
+    buildingRenderedLayersById.forEach((layers, id) => {
+        const layer = layers[0], feature = buildingFeatureById.get(id);
+        const bounds = typeof layer?.getBounds === 'function' ? layer.getBounds() : null;
+        if (!feature?.geometry || !bounds || bounds.getWest() > east || bounds.getEast() < west
+            || bounds.getSouth() > north || bounds.getNorth() < south) return;
+        try {
+            const inside = window.turf.intersect(feature, parcel);
+            if (inside && window.turf.area(inside) > 1) hits.push({ id, feature });
+        } catch (error) {
+            console.error(`[${new Date().toISOString()}] [buildingsOn] building ${id} could not be intersected with the parcel`, error);
+        }
+    });
+    if (!hits.length) return hits;
+    const outcomes = currentBuildingOutcomeState();
+    return hits.map(hit => ({ ...hit, demolition: outcomes.demolishedById.get(hit.id) || null,
+        tunnelled: outcomes.tunnelledIds.has(hit.id) }));
+}
+window.buildingsOn = buildingsOn;
+
 function buildingPoolFeatureKey(feature) {
     if (typeof window.corridorBuildingKey === 'function') return window.corridorBuildingKey(feature);
     const props = feature?.properties || {};

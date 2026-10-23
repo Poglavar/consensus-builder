@@ -132,7 +132,6 @@
     flex-shrink: 0;
     padding: var(--cb-space-3) var(--cb-space-5) var(--cb-space-4);
     border-top: 1px solid var(--cb-line);
-    background: var(--cb-surface);
 }
 
 .site-intro-progress-row,
@@ -1153,13 +1152,6 @@ body.site-intro-open { overflow: hidden; }
     gap: 6px;
 }
 
-.parcel-item, .proposal-item {
-    font-size: 14px;
-    padding: 8px 12px;
-    border-radius: 8px;
-    background: var(--cb-surface-2);
-    border: 1px solid var(--cb-line);
-}
 
 .agent-dialog-proposal-item {
     display: flex;
@@ -1188,7 +1180,7 @@ body.site-intro-open { overflow: hidden; }
 
 
 .parcel-item.has-color, .proposal-item.has-color {
-    border-left: 4px solid var(--proposal-color, #a5b4fc);
+    border-left: 4px solid var(--proposal-color, var(--cb-primary));
 }
 
 .loader-spinner {
@@ -1401,7 +1393,7 @@ body.site-intro-open { overflow: hidden; }
 .share-modal-body {
     padding: 22px 24px;
     overflow-y: auto;
-    color: #2f3142;
+    color: var(--cb-text);
     line-height: 1.5;
 }
 
@@ -1427,7 +1419,7 @@ body.site-intro-open { overflow: hidden; }
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--cb-line-glass);
     flex-shrink: 0;
 }
 
@@ -1449,7 +1441,7 @@ body.site-intro-open { overflow: hidden; }
 
 .proposal-list-meta {
     font-size: 13px;
-    color: #4a4a4a;
+    color: var(--cb-text-muted);
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 6px;
@@ -1476,7 +1468,7 @@ body.site-intro-open { overflow: hidden; }
 }
 
 .proposal-list-meta strong {
-    color: #444;
+    color: var(--cb-text-strong);
 }
 
 .proposal-list-description {
@@ -1524,12 +1516,12 @@ body.site-intro-open { overflow: hidden; }
     align-items: center;
     gap: 5px;
     font-size: 12px;
-    color: #70788a;
+    color: var(--cb-text-muted);
     margin-top: 2px;
 }
 
 .proposal-card-dot {
-    color: #cbd2dc;
+    color: var(--cb-line-strong);
 }
 
 .proposal-card-badges {
@@ -1787,13 +1779,13 @@ body.site-intro-open { overflow: hidden; }
 /* The swatches are the map's own layer colours (CELL_STYLE / VIEWPORT_STYLE in
    js/parcel-coverage-debug.js), so they stay literal. */
 .parcel-coverage-swatch.coverage {
-    background: rgba(245, 158, 11, 0.35);
-    border-color: rgba(217, 119, 6, 0.9);
+    background: color-mix(in srgb, var(--cb-warning) 35%, transparent);
+    border-color: var(--cb-warning);
 }
 
 .parcel-coverage-swatch.viewport {
-    background: rgba(37, 99, 235, 0.15);
-    border-color: rgba(37, 99, 235, 0.9);
+    background: color-mix(in srgb, var(--cb-primary) 15%, transparent);
+    border-color: var(--cb-primary);
 }
 
 .parcel-coverage-summary {
@@ -2038,21 +2030,21 @@ body.site-intro-open { overflow: hidden; }
     width: 14px;
     height: 14px;
     border-radius: 50%;
-    border: 2px solid #fff;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+    border: 2px solid var(--cb-surface);
+    box-shadow: var(--cb-shadow-sm);
     cursor: grab;
 }
 .blockify-handle:active span {
     cursor: grabbing;
 }
 .blockify-handle--gap span {
-    background: #e53935; /* red = gap (opening cut from the ring) */
+    background: var(--cb-danger); /* red = gap (opening cut from the ring) */
 }
 .blockify-handle--wing span {
-    background: #1e88e5; /* blue = wing (protrusion into the courtyard) */
+    background: var(--cb-primary); /* blue = wing (protrusion into the courtyard) */
 }
 .blockify-handle--vertex span {
-    background: #fb8c00; /* orange = draggable outline vertex (manual footprint mode) */
+    background: var(--cb-warning); /* orange = draggable outline vertex (manual footprint mode) */
     border-radius: 3px;  /* square-ish to read as a vertex, not a gap/wing dot */
 }
 .polygon-geometry-editor__vertex {
@@ -2090,17 +2082,17 @@ body.site-intro-open { overflow: hidden; }
     border: 1px solid color-mix(in srgb, var(--cb-danger) 50%, var(--cb-surface));
     border-radius: 50%;
     background: var(--cb-surface);
-    color: #c62828;
-    box-shadow: 0 2px 7px rgba(18, 32, 51, 0.28);
+    color: var(--cb-danger);
+    box-shadow: var(--cb-shadow-sm);
     cursor: pointer;
     font-size: 14px;
     line-height: 1;
 }
 .polygon-geometry-editor__delete-marker:hover span,
 .polygon-geometry-editor__delete-marker:focus span {
-    background: #fff1f1;
-    border-color: #e53935;
-    outline: 2px solid rgba(229, 57, 53, 0.25);
+    background: var(--cb-danger-soft);
+    border-color: var(--cb-danger);
+    outline: 2px solid color-mix(in srgb, var(--cb-danger) 25%, transparent);
     outline-offset: 1px;
 }
 .polygon-geometry-editor__edge {
@@ -2148,7 +2140,7 @@ body.site-intro-open { overflow: hidden; }
     border-radius: 50%;
     background: var(--cb-surface);
     border: 2px solid var(--cb-primary-hover);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+    box-shadow: var(--cb-shadow-sm);
     cursor: grab;
     box-sizing: border-box;
 }
@@ -2173,7 +2165,7 @@ body.site-intro-open { overflow: hidden; }
     height: 9px;
     margin: -4.5px 0 0 -4.5px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.85);
+    background: var(--cb-glass-sheet);
     border: 1.5px dashed var(--cb-primary-hover);
     cursor: copy;
     box-sizing: border-box;
@@ -2243,7 +2235,7 @@ body.site-intro-open { overflow: hidden; }
     border-radius: 50%;
     background: var(--cb-surface);
     border: 2px solid var(--cb-primary-hover);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+    box-shadow: var(--cb-shadow-sm);
     cursor: grab;
 }
 
@@ -2255,7 +2247,7 @@ body.site-intro-open { overflow: hidden; }
 /* Midpoint "insert a vertex here" targets, deliberately fainter than real vertices. */
 .geom-handle--mid {
     width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px;
-    background: rgba(255, 255, 255, 0.85);
+    background: var(--cb-glass-sheet);
     border: 1.5px dashed var(--cb-primary-hover);
     cursor: copy;
 }
@@ -2277,27 +2269,27 @@ path.geom-handle-edge.is-dragging { stroke-opacity: 0.35; }
    readjustment, the pooled outline, which belongs to the neighbours). Hollow, grey and explicitly
    not grabbable, so the boundary reads as given rather than as something you failed to drag. */
 .geom-handle--locked {
-    border-color: #94a3b8;
+    border-color: var(--cb-text-faint);
     border-style: dashed;
-    background: rgba(255, 255, 255, 0.55);
+    background: color-mix(in srgb, var(--cb-surface) 55%, transparent);
     box-shadow: none;
     cursor: not-allowed;
     width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px;
 }
 
 .geom-handle--locked.is-dragging,
-.geom-handle--locked:active { background: rgba(255, 255, 255, 0.55); cursor: not-allowed; }
+.geom-handle--locked:active { background: color-mix(in srgb, var(--cb-surface) 55%, transparent); cursor: not-allowed; }
 
 /* A node that may only travel along one line — where a cut lands on the outline. The horizontal
    resize cursor is the affordance: this one slides, it does not roam. */
 .geom-handle--slide {
-    border-color: #0f766e;
-    background: #ccfbf1;
+    border-color: var(--cb-info);
+    background: var(--cb-info-soft);
     cursor: ew-resize;
 }
 
 .geom-handle--slide.is-dragging,
-.geom-handle--slide:active { cursor: ew-resize; background: #0f766e; }
+.geom-handle--slide:active { cursor: ew-resize; background: var(--cb-info); }
 
 /* Undo control the shared polygon editor adds to its map when the host supplies none — so every
    geometry tool has a visible undo, not just the keyboard shortcut. It is map chrome
@@ -2418,7 +2410,7 @@ path.geom-handle-edge.is-dragging { stroke-opacity: 0.35; }
     list-style: none;
     margin: 6px 0 0;
     padding: 0 0 0 12px;
-    border-left: 2px solid #c7d2fe;
+    border-left: 2px solid var(--cb-line-strong);
 }
 
 .parcel-history-event {
@@ -2439,7 +2431,7 @@ path.geom-handle-edge.is-dragging { stroke-opacity: 0.35; }
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: #6366f1;
+    background: var(--cb-primary);
 }
 
 .parcel-history-time {
