@@ -26,11 +26,11 @@ describe('normalizeTreatment', () => {
         expect(BuildingGround.normalizeTreatment('GREEN')).toBe('green');
     });
 
-    it('falls back to none for anything else', () => {
-        expect(BuildingGround.normalizeTreatment(undefined)).toBe('none');
-        expect(BuildingGround.normalizeTreatment('none')).toBe('none');
-        expect(BuildingGround.normalizeTreatment('lawn')).toBe('none');
-        expect(BuildingGround.normalizeTreatment(null)).toBe('none');
+    it('defaults new authoring choices to paving', () => {
+        expect(BuildingGround.normalizeTreatment(undefined)).toBe('paved');
+        expect(BuildingGround.normalizeTreatment('none')).toBe('paved');
+        expect(BuildingGround.normalizeTreatment('lawn')).toBe('paved');
+        expect(BuildingGround.normalizeTreatment(null)).toBe('paved');
     });
 });
 
@@ -104,9 +104,9 @@ describe('buildSurface', () => {
         expect(surface.polygon.type).toBe('Polygon');
     });
 
-    it('builds nothing when the surroundings are left unchanged', () => {
-        expect(BuildingGround.buildSurface('none', BLOCK, [BUILDING])).toBeNull();
-        expect(BuildingGround.buildSurface(undefined, BLOCK, [BUILDING])).toBeNull();
+    it('persists paving when no authoring choice is supplied', () => {
+        expect(BuildingGround.buildSurface(undefined, BLOCK, [BUILDING]).treatment).toBe('paved');
+        expect(BuildingGround.TREATMENTS).toEqual(['paved', 'green']);
     });
 
     it('does not alias the source geometry', () => {
@@ -128,10 +128,10 @@ describe('surfaceOf / treatmentOf', () => {
         expect(BuildingGround.treatmentOf(proposal)).toBe('paved');
     });
 
-    it('treats a proposal without a surface as unchanged', () => {
+    it('does not invent geometry for a saved design that has no surface', () => {
         expect(BuildingGround.surfaceOf({ geometry: {} })).toBeNull();
         expect(BuildingGround.surfaceOf({})).toBeNull();
-        expect(BuildingGround.treatmentOf({ geometry: {} })).toBe('none');
+        expect(BuildingGround.treatmentOf({ geometry: {} })).toBe('paved');
     });
 
     it('rejects a surface with an unusable polygon', () => {
@@ -183,5 +183,42 @@ describe('appliedSurfaces', () => {
     it('returns nothing without a usable input', () => {
         expect(BuildingGround.appliedSurfaces(null, isApplied)).toEqual([]);
         expect(BuildingGround.appliedSurfaces([paved], null)).toEqual([]);
+    });
+});
+
+
+describe('vacant layout plots', () => {
+    const plot = (id, west) => ({ ...square(west, 45.81, 0.0002), properties: {
+        parcelId: id, producedByProposalId: 'layout', readjustmentPiece: { role: 'plot' }
+    } });
+    const west = plot('west', 15.97), east = plot('east', 15.9702);
+    const layout = { proposalId: 'layout', applied: true, parcelLayout: {} };
+    const applied = proposal => proposal.applied === true;
+    const vacant = (proposals = [layout], existing = [], features = [west, east]) =>
+        BuildingGround.vacantPlots(features, proposals, applied, turf, existing).map(f => f.properties.parcelId);
+
+    it('finds empty current plot outputs without changing their records', () => {
+        const before = JSON.stringify([west, east, layout]);
+        expect(vacant()).toEqual(['west', 'east']);
+        expect(JSON.stringify([west, east, layout])).toBe(before);
+    });
+    it('excludes cadastral land, remainders and unapplied layouts', () => {
+        expect(vacant([{ ...layout, applied: false }])).toEqual([]);
+        expect(vacant([layout], [], [BLOCK, { ...west, properties: { ...west.properties, readjustmentPiece: { role: 'remainder' } } }])).toEqual([]);
+    });
+    it.each(['buildings', 'park', 'road', 'surroundings'])('excludes a plot occupied by %s, independently of visibility', kind => {
+        const geometry = square(15.97004, 45.81004, 0.00008).geometry;
+        const content = { proposalId: 'content', applied: true,
+            ...(kind === 'buildings' ? { geometry: { buildings: [turf.feature(geometry)] } } : {}),
+            ...(kind === 'park' ? { structureProposal: { geometry } } : {}),
+            ...(kind === 'road' ? { roadProposal: { definition: { polygon: geometry } } } : {}),
+            ...(kind === 'surroundings' ? { geometry: { groundSurface: { polygon: geometry } } } : {})
+        };
+        expect(vacant([layout, content])).toEqual(['east']);
+        expect(vacant([layout, { ...content, applied: false }])).toEqual(['west', 'east']);
+    });
+    it('keeps adjacent plots empty while excluding a standing building', () => {
+        expect(vacant([layout], [west])).toEqual(['east']);
+        expect(vacant([layout], [square(15.9698, 45.81, 0.0002)])).toEqual(['west', 'east']);
     });
 });

@@ -30,8 +30,7 @@
         const select = document.createElement('select');
         select.id = id;
         for (const [value, key, text] of [
-            ['none', 'surroundingsNone', 'Leave as they are'],
-            ['paved', 'surroundingsPaved', 'Paved'],
+            ['paved', 'surroundingsPaved', 'Paving'],
             ['green', 'surroundingsGreen', 'Green']
         ]) {
             const option = document.createElement('option');
@@ -60,7 +59,6 @@
         }
         function refresh() {
             clear();
-            editButton.disabled = treatment === 'none';
             let value;
             try { value = surface(); } catch (error) {
                 if (error?.code !== 'clip-failed') throw error;
@@ -75,7 +73,7 @@
             editButton.disabled = !value;
             return value;
         }
-        editButton.disabled = treatment === 'none';
+        editButton.disabled = true;
         editButton.addEventListener('click', () => edit({ session, surface: surface(), onOpen: clear, onClose: refresh, onSave: design => {
             decorationDesign = design;
             session.setPreview({ ...(session.preview || {}), groundSurface: refresh() });

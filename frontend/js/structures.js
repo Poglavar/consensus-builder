@@ -816,7 +816,7 @@
         } catch (_) { }
     }
 
-    function drawSquareDecorations(group, squareFeature, pane = SQUARES_ICON_PANE) {
+    function drawSquareDecorations(group, squareFeature, pane = SQUARES_ICON_PANE, texture = true) {
         if (!squareFeature || !squareFeature.geometry) return;
         // While the geometry editor is editing THIS structure, it renders the live editable
         // copy — the static one would duplicate every object underneath it.
@@ -829,7 +829,7 @@
         const dec = squareFeature.properties && squareFeature.properties.decorations;
         if (!dec) return;
         // Subtle cobblestone texture first (under icons)
-        drawSquareTexture(group, squareFeature);
+        if (texture) drawSquareTexture(group, squareFeature);
 
         // Fountains (legacy squares store one `fountain`, edited squares store `fountains`).
         const fountains = Array.isArray(dec.fountains) ? dec.fountains : (Array.isArray(dec.fountain) ? [dec.fountain] : []);
@@ -1307,8 +1307,8 @@
     }
 
     // A freeform building proposal can pave or green the parcel area around its buildings. That
-    // surround is not a structure — it belongs to the building proposal — but it is the same two
-    // surfaces, so it draws with the square/park styles into its own layer. See building-ground.js.
+    // surround belongs to the building proposal and uses sidewalk slabs or park grass in its own
+    // layer. See building-ground.js.
     let editingGroundProposalId = null;
     function appliedBuildingGroundSurfaces() {
         const api = window.BuildingGround;
@@ -1338,7 +1338,33 @@
     // refresh — broadcasting unconditionally would rebuild the 3D scene for no reason at all.
     let buildingGroundSignature = null;
 
-    // Authored surroundings use the ordinary park/square furniture renderers, without generating a layout.
+    // Regular sidewalk slabs, separate from a square's decorative stone texture.
+    function drawSidewalkPaving(layer) {
+        const path = layer.getElement?.();
+        const svg = path?.ownerSVGElement;
+        if (!svg) return;
+        const ns = 'http://www.w3.org/2000/svg';
+        const id = `building-sidewalk-${L.stamp(svg)}`;
+        let pattern = svg.querySelector(`#${id}`);
+        if (!pattern) {
+            let defs = svg.querySelector('defs');
+            if (!defs) { defs = document.createElementNS(ns, 'defs'); svg.prepend(defs); }
+            pattern = document.createElementNS(ns, 'pattern');
+            pattern.id = id;
+            pattern.setAttribute('patternUnits', 'userSpaceOnUse');
+            const slab = document.createElementNS(ns, 'rect');
+            slab.setAttribute('width', '100%'); slab.setAttribute('height', '100%');
+            slab.setAttribute('fill', '#cdccc8'); slab.setAttribute('stroke', '#b7b6b0');
+            slab.setAttribute('stroke-width', '0.6');
+            pattern.append(slab); defs.append(pattern);
+        }
+        const metresPerPixel = 40075016.686 * Math.cos(map.getCenter().lat * Math.PI / 180) / (256 * 2 ** map.getZoom());
+        const size = Math.max(3, 1.5 / metresPerPixel);
+        pattern.setAttribute('width', String(size)); pattern.setAttribute('height', String(size));
+        path.setAttribute('fill', `url(#${id})`);
+    }
+
+    // Authored furniture reuses park/square tools; paved ground keeps its sidewalk surface.
     function drawBuildingGroundSurface(group, surface, pane) {
         const feature = {
             type: 'Feature', geometry: surface.polygon,
@@ -1346,14 +1372,33 @@
         };
         L.geoJSON(feature, {
             pane, style: { ...window.BuildingGround.SURFACE_STYLE_2D[surface.treatment], weight: 1, opacity: 1 },
-            interactive: false
+            interactive: false,
+            onEachFeature: (_, layer) => {
+                if (surface.treatment === 'paved') layer.on('add', () => drawSidewalkPaving(layer));
+            }
         }).addTo(group);
         if (surface.decorationDesign) {
             if (surface.treatment === 'green') drawParkDecorations(group, feature, pane);
-            else drawSquareDecorations(group, feature, pane);
-        } else if (surface.treatment === 'paved') drawSquareTexture(group, feature);
+            else drawSquareDecorations(group, feature, pane, false);
+        }
     }
     window.drawBuildingGroundSurface = drawBuildingGroundSurface;
+
+    function vacantLayoutPlots() {
+        const fabric = window.LiveParcelFabric;
+        if (!fabric || !window.BuildingGround || !window.proposalStorage) return [];
+        const proposals = window.proposalStorage.getAllProposals();
+        if (!proposals.some(proposal => proposal.parcelLayout && isApplied(proposal))) return [];
+        const bounds = map.getBounds();
+        const features = fabric.queryBounds([bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()]);
+        const demolished = new Map((window.collectDemolishedBuildingRecords?.() || []).map(record => [String(record.id), record]));
+        const existing = (window.buildingFeaturePool || []).map(feature => {
+            const record = demolished.get(String(window.corridorBuildingKey(feature)));
+            return record ? (record.remainder ? { ...feature, geometry: record.remainder } : null) : feature;
+        }).filter(Boolean);
+        return window.BuildingGround.vacantPlots(features, proposals, isApplied, turf, existing);
+    }
+    window.vacantLayoutPlots = vacantLayoutPlots;
 
     function updateBuildingGroundLayer() {
         if (typeof map === 'undefined') return;
@@ -1362,8 +1407,13 @@
 
         const cutters = appliedCorridorCutters();
         const surfaces = appliedBuildingGroundSurfaces();
+        const vacant = vacantLayoutPlots();
         let signature = '';
-        try { signature = JSON.stringify(surfaces.map(s => [s.proposalId, s.treatment, s.geometry, s.decorationDesign])); } catch (_) { signature = String(surfaces.length); }
+        try { signature = JSON.stringify([surfaces.map(s => [s.proposalId, s.treatment, s.geometry, s.decorationDesign]), vacant]); } catch (_) { signature = String(surfaces.length); }
+        vacant.forEach(feature => L.geoJSON(feature, {
+            pane: PARKS_PANE, interactive: false,
+            style: { color: '#6d705b', weight: 1.5, dashArray: '4,3', fillColor: '#adae75', fillOpacity: 0.9, className: 'vacant-layout-plot' }
+        }).addTo(group));
         surfaces.forEach(surface => {
             try {
                 const geometry = subtractCorridorsFromGeometry(surface.geometry, cutters);
@@ -1443,6 +1493,15 @@
     window.updateLakesLayer = updateLakesLayer;
     window.withStructureLayersRefreshHeld = withStructureLayersRefreshHeld;
     window.updateBuildingGroundLayer = updateBuildingGroundLayer;
+    let groundRefreshTimer = null;
+    ['parcelFabricCommitted', 'buildingsLayerUpdated', 'parksUpdated', 'squaresUpdated', 'lakesUpdated', 'stationsUpdated', 'moveend'].forEach(eventName => {
+        const refresh = () => {
+            clearTimeout(groundRefreshTimer);
+            groundRefreshTimer = setTimeout(updateBuildingGroundLayer, 0);
+        };
+        if (eventName === 'moveend') map.on(eventName, refresh);
+        else window.addEventListener(eventName, refresh);
+    });
     // The building editor paints its working copy. Keep the saved furniture out of that view so
     // removed items cannot remain visible behind the editable copy. Redraw only on ownership changes.
     document.addEventListener('on-map-editor-preview-change', () => {

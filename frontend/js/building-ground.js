@@ -1,6 +1,6 @@
 // Ground treatment for building proposals: the site area left over AROUND the placed
-// buildings, rendered either as paving (like a square) or as grass (like a park). One setting per
-// proposal covers the whole merged parcel area, whatever the building count. Pure turf read from
+// buildings, rendered either as sidewalk paving or as grass (like a park). One setting per
+// proposal covers its authored ground boundary, whatever the building count. Pure turf read from
 // the runtime global — plain GeoJSON in and out, no DOM and no map, so it is unit-testable
 // headlessly. Rendering lives in structures.js (2D), three-mode.js (model) and photoreal-mode.js.
 
@@ -11,16 +11,16 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
 
-    // 'none' is the default: the surroundings are left exactly as they are today.
-    const TREATMENTS = ['none', 'paved', 'green'];
+    // New and edited building designs always specify their surrounding surface.
+    const TREATMENTS = ['paved', 'green'];
 
     // Below this the leftover ring is a slither of rounding error, not a surface worth drawing.
     const MIN_SURFACE_AREA_M2 = 2;
 
-    // The 2D fill of each treatment, matching the square paving and park grass in structures.js —
+    // The 2D fill of each treatment, matching the sidewalk paving and park grass in structures.js —
     // one definition for the map layer and for the building editors' live previews.
     const SURFACE_STYLE_2D = {
-        paved: { color: '#666666', fillColor: '#bdbdbd', fillOpacity: 0.7 },
+        paved: { color: '#8e8c87', fillColor: '#cdccc8', fillOpacity: 1 },
         green: { color: '#0d3b1f', fillColor: '#1b5e20', fillOpacity: 0.65 }
     };
 
@@ -34,7 +34,7 @@
 
     function normalizeTreatment(value) {
         const key = String(value == null ? '' : value).trim().toLowerCase();
-        return TREATMENTS.indexOf(key) > 0 ? key : 'none';
+        return TREATMENTS.includes(key) ? key : 'paved';
     }
 
     function asFeature(input) {
@@ -72,11 +72,9 @@
         try { return JSON.parse(JSON.stringify(surface.geometry)); } catch (_) { return surface.geometry; }
     }
 
-    // { treatment, polygon } as it is persisted on the proposal, or null when the proposal leaves
-    // its surroundings unchanged (the default, and every proposal made before this feature).
+    // Persist the surface polygon with the design; a footprint-only take may have no area left.
     function buildSurface(treatment, blockFeature, buildingFeatures, decorationDesign = null) {
         const normalized = normalizeTreatment(treatment);
-        if (normalized === 'none') return null;
         const polygon = computeSurfacePolygon(blockFeature, buildingFeatures);
         if (!polygon) return null;
         return { treatment: normalized, polygon, ...(decorationDesign ? { decorationDesign: JSON.parse(JSON.stringify(decorationDesign)) } : {}) };
@@ -85,8 +83,8 @@
     function surfaceOf(proposal) {
         const raw = proposal && proposal.geometry ? proposal.geometry.groundSurface : null;
         if (!raw || typeof raw !== 'object') return null;
-        const treatment = normalizeTreatment(raw.treatment);
-        if (treatment === 'none') return null;
+        if (!TREATMENTS.includes(raw.treatment)) return null;
+        const treatment = raw.treatment;
         const feature = asFeature(raw.polygon);
         if (!feature) return null;
         return { treatment, polygon: feature.geometry, ...(raw.decorationDesign ? { decorationDesign: JSON.parse(JSON.stringify(raw.decorationDesign)) } : {}) };
@@ -94,7 +92,7 @@
 
     function treatmentOf(proposal) {
         const surface = surfaceOf(proposal);
-        return surface ? surface.treatment : 'none';
+        return surface ? surface.treatment : 'paved';
     }
 
     // Whole-design movement keeps authored furniture tied to the moving ground in WGS84.
@@ -133,6 +131,38 @@
         return out;
     }
 
+    // A vacant plot is a current output of an applied layout with no standing building or
+    // applied physical design on it. This is presentation, never authored land or ownership.
+    function vacantPlots(features, proposals, isAppliedFn, turfApi, existingBuildings = []) {
+        const applied = proposals.filter(proposal => isAppliedFn(proposal));
+        const layouts = new Set(applied.filter(proposal => proposal.parcelLayout).map(proposal => String(proposal.proposalId)));
+        const plots = features.filter(feature => feature.properties?.readjustmentPiece?.role === 'plot'
+            && layouts.has(String(feature.properties?.producedByProposalId)));
+        if (!plots.length) return [];
+        const occupied = existingBuildings.map(asFeature).filter(Boolean);
+        const add = value => { const feature = asFeature(value); if (feature) occupied.push(feature); };
+        applied.filter(proposal => !proposal.parcelLayout).forEach(proposal => {
+            (proposal.geometry?.buildings || []).forEach(add);
+            add(proposal.geometry?.landTake);
+            add(proposal.geometry?.groundSurface?.polygon);
+            add(proposal.structureProposal?.geometry);
+            add(proposal.roadProposal?.definition?.polygon);
+        });
+        const boxes = occupied.map(feature => ({ feature, box: turfApi.bbox(feature) }));
+        return plots.filter(feature => {
+            const box = turfApi.bbox(feature);
+            return !boxes.some(entry => {
+                if (box[0] >= entry.box[2] || box[2] <= entry.box[0] || box[1] >= entry.box[3] || box[3] <= entry.box[1]) return false;
+                try {
+                    const intersection = turfApi.intersect(feature, entry.feature);
+                    return intersection && turfApi.area(intersection) > 0.1;
+                } catch (error) {
+                    throw clipFailureOf('intersect', error, 'building-ground.vacantPlots', [feature, entry.feature]);
+                }
+            });
+        });
+    }
+
     return {
         TREATMENTS: TREATMENTS,
         MIN_SURFACE_AREA_M2: MIN_SURFACE_AREA_M2,
@@ -143,6 +173,7 @@
         surfaceOf: surfaceOf,
         treatmentOf: treatmentOf,
         moveDecorationDesign,
+        vacantPlots,
         appliedSurfaces: appliedSurfaces
     };
 });

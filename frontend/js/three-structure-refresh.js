@@ -26,6 +26,10 @@
             scoped = typeof source.clone === 'function'
                 ? source.clone()
                 : { ...source, userData: { ...(source.userData || {}) } };
+            // Three's clone() omits shader hooks; sidewalk slabs and wild grass need them in
+            // both solid and transparent display modes.
+            scoped.onBeforeCompile = source.onBeforeCompile;
+            scoped.customProgramCacheKey = source.customProgramCacheKey;
             scopedMaterialBySource.set(source, scoped);
             baseStateByScopedMaterial.set(scoped, {
                 opacity: clampOpacity(scoped.opacity, 1),

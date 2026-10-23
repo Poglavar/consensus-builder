@@ -40,12 +40,10 @@
     let currentRotationDeg = 0; // current rotation in degrees
 
     // Surroundings: one treatment per proposal for the whole merged parcel area around the
-    // buildings — left as it is, paved like a square, or grassed like a park. See building-ground.js.
-    let currentGroundTreatment = 'none';
+    // buildings — sidewalk paving or grass, independently of the land-take choice. See building-ground.js.
+    let currentGroundTreatment = 'paved';
     let currentGroundDecorationDesign = null;
     let singleBuildingSeedDecorationDesign = null;
-    // Transient movement flag; the durable contract is the exact geometry.landTake.
-    let currentTakeWholeParcels = false;
     let singleBuildingSeedGroundTreatment = null;
 
     function buildingGroundApi() {
@@ -54,7 +52,7 @@
 
     function normalizeGroundTreatment(value) {
         const api = buildingGroundApi();
-        return api ? api.normalizeTreatment(value) : 'none';
+        return api ? api.normalizeTreatment(value) : 'paved';
     }
 
     // The polygon the proposal will pave or green: the block minus every building footprint on it.
@@ -68,7 +66,7 @@
     function currentPlacementSite(buildings = null) {
         const features = buildings ? buildings.slice() : buildingEntries.filter(entry => entry?.feature).map(entry => entry.feature);
         if (singleLandTakeReview?.take) features.unshift(singleLandTakeReview.take);
-        else if ((currentGroundTreatment !== 'none' || currentTakeWholeParcels) && singleGroundBoundary) {
+        else if (singleGroundBoundary) {
             features.unshift(singleGroundBoundary);
         }
         let combined = null;
@@ -1008,8 +1006,7 @@
             ? featureWithGeometry(rectDragStartDesign.groundBoundary,
                 window.SingleBuildingGeometry.moveGeometry(rectDragStartDesign.groundBoundary.geometry, startCenter, target))
             : cloneSingleFeature(rectDragStartDesign.groundBoundary);
-        if ((currentGroundTreatment !== 'none' || currentTakeWholeParcels)
-            && movedGround && !singleSession.placement.accepts(movedGround)) return;
+        if (movedGround && !singleSession.placement.accepts(movedGround)) return;
         if (!rectDragHistoryRecorded) {
             ensureSingleBuildingHistory().record();
             rectDragHistoryRecorded = true;
@@ -1184,9 +1181,8 @@
         singleHistory = null;
         singleRectFeature = null;
         currentRotationDeg = 0;
-        currentGroundTreatment = 'none';
+        currentGroundTreatment = 'paved';
         currentGroundDecorationDesign = null;
-        currentTakeWholeParcels = false;
         if (!preservePending) {
             clearSingleBuildingPendingState();
         }
@@ -1392,8 +1388,7 @@
             uploadGeojsonLabel: translateSingleBuildingText('modal.singleBuilding.uploadGeojsonLabel', 'Upload GeoJSON'),
             uploadGlbLabel: translateSingleBuildingText('modal.singleBuilding.uploadGlbLabel', 'Upload .glb'),
             surroundingsLabel: translateSingleBuildingText('modal.singleBuilding.surroundingsLabel', 'Surroundings'),
-            surroundingsNone: translateSingleBuildingText('modal.singleBuilding.surroundingsNone', 'Leave as they are'),
-            surroundingsPaved: translateSingleBuildingText('modal.singleBuilding.surroundingsPaved', 'Paved'),
+            surroundingsPaved: translateSingleBuildingText('modal.singleBuilding.surroundingsPaved', 'Paving'),
             surroundingsGreen: translateSingleBuildingText('modal.singleBuilding.surroundingsGreen', 'Green'),
             surroundingsInfo: translateSingleBuildingText(
                 'modal.singleBuilding.surroundingsInfo',
@@ -1457,7 +1452,7 @@
                             </div>
                             <div class="parameter-group">
                                 <label for="single-ground-treatment">${modalText.surroundingsLabel}</label>
-                                <select id="single-ground-treatment"><option value="none">${modalText.surroundingsNone}</option><option value="paved">${modalText.surroundingsPaved}</option><option value="green">${modalText.surroundingsGreen}</option></select>
+                                <select id="single-ground-treatment"><option value="paved">${modalText.surroundingsPaved}</option><option value="green">${modalText.surroundingsGreen}</option></select>
                                 <button id="single-ground-treatment-edit" class="btn btn-sm" type="button" disabled>${translateSingleBuildingText('modal.singleBuilding.editSurroundings', 'Edit surroundings')}</button>
                                 <p class="parameter-info-text">${modalText.surroundingsInfo}</p>
                             </div>
@@ -1641,7 +1636,6 @@
         currentGroundDecorationDesign = cloneSingleFeature(singleBuildingSeedDecorationDesign);
         singleBuildingSeedDecorationDesign = null;
         singleBuildingSeedGroundTreatment = null;
-        currentTakeWholeParcels = false;
         const groundSelectEl = document.getElementById('single-ground-treatment');
         if (groundSelectEl) groundSelectEl.value = currentGroundTreatment;
         const initialPlacement = computeInitialPlacement(singleBlockFeature);
@@ -1685,10 +1679,9 @@
             initialTake: singleBuildingSeedLandTake,
             onHistory: () => ensureSingleBuildingHistory().record(),
             onReview: () => singleSession?.setPreview(singleBuildingPreview()),
-            onChange(take, hasWhole) {
+            onChange(take) {
                 if (JSON.stringify(singleGroundBoundary?.geometry) !== JSON.stringify(take.geometry)) currentGroundDecorationDesign = null;
                 singleGroundBoundary = cloneSingleFeature(take);
-                currentTakeWholeParcels = hasWhole;
                 updateGroundPreview();
                 refreshSingleBuildingDensityStats();
                 singleSession?.placement?.update(currentPlacementSite());

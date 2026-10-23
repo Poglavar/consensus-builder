@@ -45,8 +45,17 @@ async function openBuildingEditor(page: any, tool: string, typology: string, don
 }
 
 async function openOptions(parent: any) {
+  const panel = parent.locator('.on-map-editor__panel');
+  const handle = panel.locator(':scope > .mobile-dock-sheet-handle');
+  if (await handle.isVisible() && await panel.evaluate((element: HTMLElement) => element.getBoundingClientRect().height < innerHeight * 0.75)) await handle.click();
   const summary = parent.locator('details > summary').first();
-  if (await summary.count()) await summary.click();
+  if (await summary.count() && !(await summary.evaluate((element: HTMLElement) => (element.parentElement as HTMLDetailsElement).open))) await summary.click();
+}
+
+async function cancelEditor(parent: any) {
+  const close = parent.locator('.on-map-editor__header .close-circle-btn');
+  await close.focus();
+  await close.press('Enter');
 }
 
 for (const [tool, typology, root, prefix, done] of [
@@ -55,14 +64,15 @@ for (const [tool, typology, root, prefix, done] of [
   ['parcelBased', 'parcelBased', '#parcelbased', 'parcelbased', '#btn-parcelbased-done']
 ]) {
   test(`${typology} surroundings preview, save, publish and reopen`, async ({ mockApi: page }) => {
+    test.setTimeout(60_000);
     await openBuildingEditor(page, tool, typology, done);
     const editor = page.locator(root);
     await expect(page.locator(done)).toBeEnabled({ timeout: 20_000 });
-    await editor.locator('.on-map-editor__more-options > summary').click();
+    await openOptions(editor);
     const select = page.locator(`#${prefix}-ground-treatment`);
-    await expect(select).toHaveValue('none');
-    await selectNativeOption(select, 'green');
-    await expect.poll(() => page.evaluate(() => (window as any).OnMapEditor.getPreview()?.groundSurface?.treatment)).toBe('green');
+    await expect(select).toHaveValue('paved');
+    await expect(select.locator('option')).toHaveCount(2);
+    await expect.poll(() => page.evaluate(() => (window as any).OnMapEditor.getPreview()?.groundSurface?.treatment)).toBe('paved');
     const preview = await page.evaluate(() => (window as any).OnMapEditor.getPreview().groundSurface);
     expect(preview.polygon.type).toMatch(/Polygon/);
     await finishEditor(page, editor, done);
@@ -83,20 +93,18 @@ for (const [tool, typology, root, prefix, done] of [
     await showProposal(page, id);
     await page.locator('#proposal-details-footer .btn-edit-geometry').click();
     await expect(page.locator(done)).toBeEnabled({ timeout: 20_000 });
-    await editor.locator('.on-map-editor__more-options > summary').click();
-    await expect(select).toHaveValue('green');
-    await selectNativeOption(select, 'paved');
+    await openOptions(editor);
+    await expect(select).toHaveValue('paved');
+    await selectNativeOption(select, 'green');
     await finishEditor(page, editor, done);
-    expect((await proposalState(page, id)).geometry.groundSurface.treatment).toBe('paved');
+    expect((await proposalState(page, id)).geometry.groundSurface.treatment).toBe('green');
 
     await showProposal(page, id);
     await page.locator('#proposal-details-footer .btn-edit-geometry').click();
     await expect(page.locator(done)).toBeEnabled({ timeout: 20_000 });
-    await editor.locator('.on-map-editor__more-options > summary').click();
-    await expect(select).toHaveValue('paved');
-    await selectNativeOption(select, 'none');
-    await finishEditor(page, editor, done);
-    expect((await proposalState(page, id)).geometry.groundSurface).toBeUndefined();
+    await openOptions(editor);
+    await expect(select).toHaveValue('green');
+    await cancelEditor(editor);
   });
 }
 
@@ -134,7 +142,8 @@ for (const [tool, typology, root, prefix, done, treatment] of [
     const parent = page.locator(root);
     await openOptions(parent);
     const edit = page.locator(`#${prefix}-ground-treatment-edit`);
-    await expect(edit).toBeDisabled();
+    await expect(edit).toBeEnabled();
+    await expect(page.locator(`#${prefix}-ground-treatment`)).toHaveValue('paved');
     await selectNativeOption(page.locator(`#${prefix}-ground-treatment`), treatment);
     await expect(edit).toBeEnabled();
     const surfaceForPoints = await page.evaluate(() => (window as any).OnMapEditor.getPreview().groundSurface);
@@ -148,7 +157,7 @@ for (const [tool, typology, root, prefix, done, treatment] of [
     await child.locator('[data-tool="tree"]').click();
     await page.mouse.click(points[0].x, points[0].y);
     await expect(page.locator('.structure-geometry-icon.is-tree')).toHaveCount(1);
-    await child.locator('.on-map-editor__header .close-circle-btn').click();
+    await cancelEditor(child);
     await expect(child).toHaveCount(0);
     await expect(parent.locator('.on-map-editor__panel')).toBeVisible();
     await expect(page.locator('#mode-3d-toggle')).toBeEnabled();
@@ -187,9 +196,9 @@ for (const [tool, typology, root, prefix, done, treatment] of [
     await expect(page.locator('.structure-geometry-icon.is-tree')).toHaveCount(1);
     await expect(page.locator('.structure-geometry-icon.is-bench')).toHaveCount(1);
     await expect(page.locator('.park-tree-emoji, .square-tree-emoji')).toHaveCount(0);
-    await child.locator('.on-map-editor__header .close-circle-btn').click();
+    await cancelEditor(child);
     // Cancelling the entire building edit leaves the saved layout unchanged.
-    await parent.locator('.on-map-editor__header .close-circle-btn').click();
+    await cancelEditor(parent);
     expect((await proposalState(page, saved.proposalId)).geometry.groundSurface).toEqual(surface);
   });
 }

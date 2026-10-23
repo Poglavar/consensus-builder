@@ -37,7 +37,7 @@ function clone(value) {
     return value == null ? value : JSON.parse(JSON.stringify(value));
 }
 
-function movementHarness({ moveTogether = true, takeWhole = true, treatment = 'none', locked = false } = {}) {
+function movementHarness({ moveTogether = true, treatment = 'paved', locked = false } = {}) {
     const buildingEntries = [
         { id: 'building-a', feature: feature('building-a', 0.0002, 0.0002, 0.0004, 0.0004) },
         { id: 'building-b', feature: feature('building-b', 0.0007, 0.0002, 0.0009, 0.0004) }
@@ -97,7 +97,6 @@ function movementHarness({ moveTogether = true, takeWhole = true, treatment = 'n
         singleDragMarker: null,
         currentGroundTreatment: treatment,
         currentGroundDecorationDesign: null,
-        currentTakeWholeParcels: takeWhole,
         singleGroundBoundary: groundBoundary,
         singleBlockFeature: clone(groundBoundary),
         singleRectFeature: clone(buildingEntries[0].feature),
@@ -137,7 +136,7 @@ function movementHarness({ moveTogether = true, takeWhole = true, treatment = 'n
     };
     const declared = new Set([
         'singleMap', 'singleEditor', 'singleSession', 'buildingEntries', 'singleBuildingLayers',
-        'singleDragMarker', 'currentGroundTreatment', 'currentGroundDecorationDesign', 'currentTakeWholeParcels', 'singleGroundBoundary',
+        'singleDragMarker', 'currentGroundTreatment', 'currentGroundDecorationDesign', 'singleGroundBoundary',
         'singleBlockFeature', 'singleRectFeature', 'activeBuildingId', 'singleMoveTogether',
         'singleHistory', 'rectDragActive', 'rectDragHistoryRecorded', 'rectDragStartDesign',
         'rectDragStartFeature', 'rectDragLastValidFeature', 'rectDragStartPointerPt',
@@ -152,7 +151,7 @@ function movementHarness({ moveTogether = true, takeWhole = true, treatment = 'n
         let buildingEntries=this.buildingEntries, singleBuildingLayers=this.singleBuildingLayers;
         let singleDragMarker=this.singleDragMarker, currentGroundTreatment=this.currentGroundTreatment;
         let currentGroundDecorationDesign=this.currentGroundDecorationDesign;
-        let currentTakeWholeParcels=this.currentTakeWholeParcels, singleGroundBoundary=this.singleGroundBoundary;
+        let singleGroundBoundary=this.singleGroundBoundary;
         let singleBlockFeature=this.singleBlockFeature, singleRectFeature=this.singleRectFeature;
         let activeBuildingId=this.activeBuildingId, singleMoveTogether=this.singleMoveTogether;
         let singleHistory=null, rectDragActive=this.rectDragActive, rectDragHistoryRecorded=this.rectDragHistoryRecorded;
@@ -171,12 +170,13 @@ function movementHarness({ moveTogether = true, takeWhole = true, treatment = 'n
             if (active) active.feature=cloneSingleFeature(candidate);
         }
         this.state=()=>({ buildingEntries, singleGroundBoundary, singleRectFeature, activeBuildingId,
-            currentGroundTreatment, currentGroundDecorationDesign, currentTakeWholeParcels, rectDragActive, rectDragHistoryRecorded,
+            currentGroundTreatment, currentGroundDecorationDesign, rectDragActive, rectDragHistoryRecorded,
             rectDragStartDesign, rectDragStartPointerPt, rectDragStartCenterPt, sourceSnapshot });
         this.getHistory=()=>singleHistory;
         this.prepareDrag=()=>{ const [lng,lat]=turf.centroid(buildingEntries[0].feature).geometry.coordinates;
             rectDragStartDesign=captureSingleBuildingDesign(); rectDragStartCenterPt=point(lng,lat);
             rectDragStartPointerPt=point(lng,lat); return { lng,lat }; };
+        this.reviewTake=take=>{ singleLandTakeReview={ take, snapshot:()=>({ take }) }; };
         this.valid=editableFootprintValid;
     `;
     const context = { ...stubs };
@@ -256,7 +256,7 @@ describe('single-building whole-proposal placement', () => {
     });
 
     it('moves both buildings and the take-whole boundary freely, records one undo step, and restores all geometry', () => {
-        const h = movementHarness({ moveTogether: true, takeWhole: true, treatment: 'none' });
+        const h = movementHarness({ moveTogether: true, treatment: 'paved' });
         const start = h.context.prepareDrag();
         const original = clone(h.context.state());
 
@@ -282,12 +282,11 @@ describe('single-building whole-proposal placement', () => {
         const restored = h.context.state();
         expect(restored.buildingEntries).toEqual(original.buildingEntries);
         expect(restored.singleGroundBoundary).toEqual(original.singleGroundBoundary);
-        expect(restored.currentTakeWholeParcels).toBe(true);
         expect(h.context.getHistory().depth()).toBe(0);
     });
 
     it('moves only the active footprint when Move whole proposal is off', () => {
-        const h = movementHarness({ moveTogether: false, takeWhole: false, treatment: 'green' });
+        const h = movementHarness({ moveTogether: false, treatment: 'green' });
         const start = h.context.prepareDrag();
         const before = clone(h.context.state());
 
@@ -302,7 +301,7 @@ describe('single-building whole-proposal placement', () => {
     });
 
     it('refuses an outside drag when the starting site is explicitly locked', () => {
-        const h = movementHarness({ moveTogether: true, takeWhole: true, locked: true });
+        const h = movementHarness({ moveTogether: true, locked: true });
         const start = h.context.prepareDrag();
         const before = clone(h.context.state());
 
@@ -316,16 +315,16 @@ describe('single-building whole-proposal placement', () => {
         expect(h.placementUpdates).toHaveLength(0);
     });
 
-    it('includes all separate footprints, and includes the whole boundary when whole-parcel mode is active', () => {
-        const h = movementHarness({ moveTogether: false, takeWhole: false });
+    it.each(['paved', 'green'])('uses the reviewed take independently of the %s treatment', treatment => {
+        const h = movementHarness({ moveTogether: false, treatment });
+        const bodies = h.context.state().buildingEntries.map(entry => entry.feature);
+        h.context.reviewTake(turf.union(...bodies));
         const footprints = h.context.site();
         expect(footprints.type).toBe('MultiPolygon');
         expect(footprints.coordinates).toHaveLength(2);
-
-        const withWholeBoundary = movementHarness({ moveTogether: false, takeWhole: true });
-        const wholeSite = withWholeBoundary.context.site();
-        expect(wholeSite.type).toBe('MultiPolygon');
+        h.context.reviewTake(h.groundBoundary);
+        const wholeSite = h.context.site();
         expect(wholeSite.coordinates).toHaveLength(1);
-        expect(turf.area(wholeSite)).toBeCloseTo(turf.area(withWholeBoundary.groundBoundary), 2);
+        expect(turf.area(wholeSite)).toBeCloseTo(turf.area(h.groundBoundary), 2);
     });
 });

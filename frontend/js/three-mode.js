@@ -2110,7 +2110,7 @@
             if (surface.decorationDesign) {
                 feature.properties.decorations = window.ProposalApplyStructures.decorationsOnGround(surface.decorationDesign, surface.polygon, turf);
                 if (surface.treatment === 'green') buildParks3D(target, target, [feature]);
-                else buildSquares3D(target, target, [feature]);
+                else buildSquares3D(target, target, [feature], buildingSidewalkMaterial());
             }
             polygonFeatureToMeshes(feature, material, 0.035, 0).forEach(mesh => {
                 markOwnedMaterial(mesh, material);
@@ -2644,12 +2644,12 @@
     }
 
     // Build Squares (running-bond paving + furniture/fountains)
-    function buildSquares3D(flatTarget, decoTarget, features = null) {
+    function buildSquares3D(flatTarget, decoTarget, features = null, surfaceMaterial = null) {
         const squares = features || ((typeof window !== 'undefined' && Array.isArray(window.squares)) ? window.squares : []);
         if (!squares || squares.length === 0) return;
 
         const squareMats = squareSurfaceMaterials();
-        const stoneMat = squareMats.paving;
+        const stoneMat = surfaceMaterial || squareMats.paving;
         const rimMat = squareMats.rim;
         const waterMat = squareMats.water;
 
@@ -2658,7 +2658,10 @@
                 if (!sq || !sq.geometry) return;
                 // Ground slightly above base to avoid z-fighting
                 const groundMeshes = polygonFeatureToMeshes(sq, stoneMat, 0.06, 0);
-                groundMeshes.forEach(m => { m.userData.isSquareGround = true; flatTarget.add(m); });
+                groundMeshes.forEach(m => {
+                    if (surfaceMaterial) markOwnedMaterial(m, surfaceMaterial);
+                    m.userData.isSquareGround = true; flatTarget.add(m);
+                });
                 const borderLines = polygonFeatureToBorderLines(sq, squareMats.border, 0.075);
                 borderLines.forEach(line => { line.userData.isSquarePavingBorder = true; flatTarget.add(line); });
 
@@ -2742,9 +2745,19 @@
         });
     }
 
-    // Building ground and its optional authored furniture use the same park/square renderers.
+    function buildingSidewalkMaterial() {
+        ensureGroundLayer();
+        return window.__threeSiteGround.sidewalkMaterial(THREE, groundLayer, 1 / lifeMercatorK());
+    }
+
+    // Building ground keeps sidewalk paving even when it carries square-editor furniture.
     // Merely choosing a treatment never generates a furniture layout. See building-ground.js.
     function buildProposalGrounds3D(flatTarget) {
+        window.__threeSiteGround.buildVacantPlots({
+            THREE, features: window.vacantLayoutPlots(), target: flatTarget,
+            polygonMeshes: polygonFeatureToMeshes, project: coordsToXY, metresPerUnit: 1 / lifeMercatorK(),
+            ownMaterial: markOwnedMaterial, ownGeometry: markOwnedGeometry
+        });
         const api = (typeof window !== 'undefined') ? window.BuildingGround : null;
         if (!api || typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') return;
         let surfaces = [];
@@ -2758,7 +2771,7 @@
         }
         if (!surfaces.length) return;
 
-        const pavingMat = squareSurfaceMaterials().paving;
+        const pavingMat = buildingSidewalkMaterial();
         const grassMat = new THREE.MeshLambertMaterial({
             color: 0x1b5e20, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2
         });
@@ -2768,12 +2781,12 @@
                 if (surface.decorationDesign) {
                     feature.properties.decorations = window.ProposalApplyStructures.decorationsOnGround(surface.decorationDesign, surface.geometry, turf);
                     if (surface.treatment === 'green') buildParks3D(flatTarget, flatTarget, [feature]);
-                    else buildSquares3D(flatTarget, flatTarget, [feature]);
+                    else buildSquares3D(flatTarget, flatTarget, [feature], pavingMat);
                     return;
                 }
                 const material = surface.treatment === 'paved' ? pavingMat : grassMat;
                 polygonFeatureToMeshes(feature, material, 0.06, 0).forEach(mesh => {
-                    if (material === grassMat) markOwnedMaterial(mesh, grassMat);
+                    markOwnedMaterial(mesh, material);
                     mesh.userData.isProposalGround = true;
                     flatTarget.add(mesh);
                 });

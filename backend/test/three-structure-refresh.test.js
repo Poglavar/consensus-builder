@@ -122,6 +122,15 @@ function testGroup(material) {
 }
 
 describe('applyStructureDisplayMode', () => {
+    it('retains procedural surface shaders when cloning materials for display modes', () => {
+        const source = testMaterial({ onBeforeCompile: vi.fn(), customProgramCacheKey: () => 'site-ground' });
+        const group = testGroup(source);
+        applyStructureDisplayMode([group], 'solid');
+        expect(group.mesh.material.onBeforeCompile).toBe(source.onBeforeCompile);
+        expect(group.mesh.material.customProgramCacheKey()).toBe('site-ground');
+        applyStructureDisplayMode([group], 'ghost');
+        expect(group.mesh.material.onBeforeCompile).toBe(source.onBeforeCompile);
+    });
     it('makes planned structures visibly transparent without writing invisible depth', () => {
         const source = testMaterial();
         const group = testGroup(source);
