@@ -8683,7 +8683,11 @@
         if (plan.parcel?.action === 'isolate') isolateParcel(plan.parcel.id);
         // A parcel's massing is a section of the stack, opened from there, not on every click.
         else if (plan.parcel) viewParcel(plan.parcel.id, { openMassing: false });
-        if (!plan.parcel && !plan.proposal && !plan.selectMassing && !plan.inspectBuilding) return;
+        // A click on nothing closes the stack, as in 2D (it has no close button of its own).
+        if (!plan.parcel && !plan.proposal && !plan.selectMassing && !plan.inspectBuilding) {
+            if (window.ThreeClickStack?.isOpen?.()) endSelectionView();
+            return;
+        }
         showClickStack(picked, plan);
     }
 

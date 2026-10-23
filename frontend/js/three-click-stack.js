@@ -1,6 +1,8 @@
 // The 3D model view's click stack (click-stack.md, "3D model view"): what one click in the scene
-// stands on, as one right-docked column of sections, top to bottom Built → Design → Permitted →
-// Parcel. The 2D stack's look (its .click-stack__* classes) with the 3D view's own contents: the
+// stands on, as section cards floating over the scene down the right side, top to bottom Built →
+// Design → Permitted → Parcel; no panel or header around them. It closes the way the 2D stack does:
+// Escape, a click on nothing, a repeat click, the isolation banner's ×. The 2D stack's look (its
+// frame and .click-stack__* classes) with the 3D view's own contents: the
 // Design section holds the whole proposal's figures across all its parcels, the Parcel section the
 // one parcel's. Expanding a section collapses the others. The scene (three-mode.js) supplies an
 // adapter that does what a section means in 3D (isolate the proposal, outline the parcel, inspect a
@@ -111,7 +113,7 @@
         if (state.el && state.el.parentElement === container) return state.el;
         const el = doc.createElement('aside');
         el.id = 'three-click-stack';
-        el.className = 'click-stack info-panel right-dock-panel';
+        el.className = 'click-stack right-dock-panel';
         el.hidden = true;
         el.addEventListener('click', onPanelClick);
         el.addEventListener('keydown', event => { if (event.key === 'Escape') { event.preventDefault(); close(); } });
@@ -127,14 +129,6 @@
         state.adapter?.release?.();
         el.textContent = '';
         el.setAttribute('aria-label', t('clickStack.title', 'At this spot'));
-        const head = doc.createElement('header');
-        head.className = 'click-stack__head';
-        const title = doc.createElement('h2');
-        title.className = 'click-stack__title';
-        title.textContent = t('clickStack.title', 'At this spot');
-        const closeButton = button('click-stack__close close-circle-btn', '×', { action: 'close' });
-        closeButton.setAttribute('aria-label', t('common.close', 'Close'));
-        head.append(title, closeButton);
         const list = doc.createElement('div');
         list.className = 'click-stack__sections';
         stack.sections.forEach(section => {
@@ -159,7 +153,10 @@
             chevron.className = 'click-stack__chevron fas fa-chevron-down';
             chevron.setAttribute('aria-hidden', 'true');
             row.append(icon, name, detail, chevron);
-            wrap.appendChild(row);
+            const heading = doc.createElement('div');
+            heading.className = 'click-stack__heading';
+            heading.appendChild(row);
+            wrap.appendChild(heading);
             if (section.multi) {
                 const strip = doc.createElement('div');
                 strip.className = 'click-stack__strip';
@@ -179,7 +176,7 @@
             }
             list.appendChild(wrap);
         });
-        el.append(head, list);
+        el.appendChild(list);
     }
 
     function activate() {
@@ -236,7 +233,6 @@
         const target = event.target.closest('[data-action]');
         if (!target || !state.el.contains(target)) return;
         const { action, kind, id } = target.dataset;
-        if (action === 'close') { close(); return; }
         if (action === 'row') {
             // The open section's row folds everything to rows; another row opens that section.
             if (state.stack.expanded === kind) {

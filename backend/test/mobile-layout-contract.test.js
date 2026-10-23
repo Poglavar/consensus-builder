@@ -152,13 +152,13 @@ describe('the left-edge mode strip is never covered on phones', () => {
         expect(ruleBody(block, '#map-container #username-text')).toMatch(/clip-path/);
     });
 
-    // The 3D view's figures live in its click stack, which docks like the 2D one: the right dock on
-    // a desktop, the bottom sheet (.info-panel) on a phone; nothing floats top-left any more.
-    it('docks the 3D click stack like the 2D one instead of a floating 3D parcel panel', () => {
-        const stackCss = read('css/three-click-stack.css');
-        expect(stackCss).toMatch(/#three-click-stack\s*\{[^}]*position:\s*fixed[^}]*right:\s*var\(--right-dock-gap\)/);
+    // The 3D view's figures live in its click stack, which shares the 2D stack's frame: no panel or
+    // header, only the section cards over the scene; nothing floats top-left any more.
+    it('gives the 3D click stack the 2D stack frame instead of a floating 3D parcel panel', () => {
+        expect(ruleBody(mapCss, '#click-stack,\\s*#three-click-stack')).toMatch(/pointer-events:\s*none/);
         const stackJs = read('js/three-click-stack.js');
-        expect(stackJs).toContain("el.className = 'click-stack info-panel right-dock-panel'");
+        expect(stackJs).toContain("el.className = 'click-stack right-dock-panel'");
+        expect(stackJs).not.toContain("'click-stack__head'");
         expect(mapCss).not.toMatch(/\.three-mode-parcel-panel\s*\{[^}]*position:\s*absolute/);
     });
 });
@@ -182,11 +182,17 @@ describe('proposal details and compact card on phones', () => {
     });
 
     // The drill stack's own phone geometry (a full-width top-row card) went with it. The click stack
-    // is an ordinary right-dock info panel, so on phones it is the bottom sheet; a panel it hosts is
-    // part of its card and must not become a second sheet with a second handle.
-    it('makes the click stack the phone bottom sheet, never the panels it hosts', () => {
-        expect(clickStackPanel).toContain("el.className = 'click-stack info-panel right-dock-panel';");
+    // (2D and 3D alike) is no panel and no sheet: an invisible full-width column whose section cards
+    // float over the map, so the dock sheet (.info-panel) never wires it; a panel it hosts is part of
+    // its card and must not become a sheet with a handle either.
+    it('keeps the click stacks out of the phone dock sheet, their cards floating over the map', () => {
+        expect(clickStackPanel).toContain("el.className = 'click-stack right-dock-panel';");
+        expect(read('js/three-click-stack.js')).toContain("el.className = 'click-stack right-dock-panel';");
         expect(dockSheet).toContain("const PANEL_SELECTOR = '.info-panel.right-dock-panel:not(#proposal-details-panel):not(.is-hosted)';");
+        const [phone] = mediaBlocksContaining(mapCss, '(max-width: 767.98px)', '#three-click-stack');
+        const column = ruleBody(phone, '#click-stack,\\s*#three-click-stack');
+        expect(column).toMatch(/left:\s*0/);
+        expect(column).toMatch(/right:\s*0/);
         expect(ruleBody(mapCss, '#click-stack \\.is-hosted \\.mobile-dock-sheet-handle')).toMatch(/display:\s*none/);
         expect(mapCss).not.toContain('#drill-stack-panel');
     });

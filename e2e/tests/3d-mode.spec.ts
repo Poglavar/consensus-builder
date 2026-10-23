@@ -200,10 +200,10 @@ test.describe('3D rendering and controls @features', () => {
       return count;
     });
     expect(visible).toBe(2);
-    // The stack's close ends the isolation with it (the banner's × does the same).
+    // The banner's × ends the isolation and closes the click stack with it.
     const banner = page.locator('.three-mode-isolation-banner');
     await expect(banner).toBeVisible();
-    await page.locator('#three-click-stack [data-action="close"]').click();
+    await banner.locator('.isolation-banner-close').click();
     await expect(banner).toBeHidden();
     await expect(page.locator('#three-click-stack')).toBeHidden();
     expect(await camera()).toEqual(before);

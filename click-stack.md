@@ -81,8 +81,11 @@ right-side panels that clicks used to open one at a time.
 ## 3D model view
 
 The 3D model view has its own click stack (`frontend/js/three-click-stack.js`, user decisions
-2026-10-23): the same right-docked column and row/strip look, with what a click in the scene stands
-on. It replaced the floating top-left parcel / "Proposal info" panel.
+2026-10-23): the 2D stack's frame and row/strip look (`#click-stack, #three-click-stack` share the
+rules in `css/map.css`), with what a click in the scene stands on. Like 2D it has no panel, header or
+close button: the section cards float over the scene, and the stack closes on Escape, a click on
+nothing, a repeat click or the isolation banner's ×. It replaced the floating top-left parcel /
+"Proposal info" panel.
 
 - Sections, top to bottom: **Built** (the clicked building, and the existing buildings standing on
   the parcel, as a strip), **Design** (the clicked proposal, or the proposals on the parcel),
@@ -95,8 +98,9 @@ on. It replaced the floating top-left parcel / "Proposal info" panel.
 - A proposal click's parcel is the proposal's own parcel slice under the point, not the slab the ray
   reaches beside a tall design (`three-click-plan.js`).
 - The click rules stay those of `three-click-plan.js`: a second click on the viewed parcel isolates it,
-  a third clears; a second click on the isolated proposal clears. Clearing, Escape, the isolation
-  banner's ×, a massing chosen in the Buildings and massing sheet, and leaving 3D close the stack.
+  a third clears; a second click on the isolated proposal clears. Clearing, a click on nothing,
+  Escape, the isolation banner's ×, a massing chosen in the Buildings and massing sheet, and leaving
+  3D close the stack.
 - The pure rules (order, focus, strips, labels) are in the module's first half and unit tested
   (`backend/test/three-click-stack.test.js`); the 2D model (`click-stack-model.js`) is not shared,
   because its order puts Design above Built.

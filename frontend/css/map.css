@@ -828,8 +828,10 @@ body.three-mode-active #agent-bubbles-container {
    of sections in the right dock. Each section is a card with a one-line row; the gap and the
    connector line between cards say "separate layers of one spot". The expanded card hosts its
    action view: the planning inspector, proposal card or parcel info panel is moved inside and
-   loses its own docking (the .is-hosted rules below). On phones the stack is the bottom sheet. */
-#click-stack {
+   loses its own docking (the .is-hosted rules below). On phones the stack is the bottom sheet.
+   The 3D model view's stack (#three-click-stack, js/three-click-stack.js) takes the same frame. */
+#click-stack,
+#three-click-stack {
     position: fixed;
     right: var(--right-dock-gap);
     top: calc(var(--map-shell-top-clearance) + var(--cb-space-2));
@@ -849,14 +851,16 @@ body.three-mode-active #agent-bubbles-container {
     overflow-x: hidden;
 }
 
-#click-stack.visible {
+#click-stack.visible,
+#three-click-stack.visible {
     display: flex;
     flex-direction: column;
 }
 
 /* The column ends where its content does; only a hosted panel (with its own scrolling body) makes
    it run to the dock's bottom. */
-#click-stack:not(:has(.is-hosted)) {
+#click-stack:not(:has(.is-hosted)),
+#three-click-stack:not(:has(.is-hosted)) {
     bottom: auto;
 }
 
@@ -1098,7 +1102,8 @@ body.three-mode-active #agent-bubbles-container {
    its own. Two ids each, so these win over each panel's own id rules. */
 #click-stack #parcel-info-panel.is-hosted,
 #click-stack #proposal-details-panel.is-hosted,
-#click-stack #planning-inspector.is-hosted {
+#click-stack #planning-inspector.is-hosted,
+#three-click-stack #planning-inspector.is-hosted {
     position: static;
     inset: auto;
     width: auto;
@@ -1136,7 +1141,8 @@ body.three-mode-active #agent-bubbles-container {
 /* The same for a design's panel and the inspector (Built, Permitted): the section row folds them
    and Escape closes the spot, so their own − and × are not shown. */
 #click-stack #proposal-details-panel.is-hosted .panel-header__actions,
-#click-stack #planning-inspector.is-hosted .planning-inspector__header .close-circle-btn {
+#click-stack #planning-inspector.is-hosted .planning-inspector__header .close-circle-btn,
+#three-click-stack #planning-inspector.is-hosted .planning-inspector__header .close-circle-btn {
     display: none;
 }
 
@@ -1430,7 +1436,8 @@ body.three-mode-active #agent-bubbles-container {
 
 /* An invisible positioning column: the individual sections sit directly over the map. */
 @media (max-width: 767.98px) {
-    #click-stack {
+    #click-stack,
+    #three-click-stack {
         left: 0;
         right: 0;
         bottom: var(--map-visible-bottom);
