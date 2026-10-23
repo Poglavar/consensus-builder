@@ -1,10 +1,9 @@
-// The bottom row's three sheets (Proposals, Bets, Activity) share one frame: the same box on a wide
-// map, and on a phone the whole screen above the bar, translucent. Since a phone's list then hides
-// the map, a row tap there goes to the proposal (compact card) instead of previewing it behind.
+// Designs docks right on desktop. On phones, navigation sheets fill the screen above the bar;
+// a design row opens its context on the map and closes that sheet.
 import { test, expect } from '../helpers/fixtures';
 import { createSpace, openCity } from '../helpers/runtime';
 
-const SHEETS = ['proposals', 'bets', 'activity'];
+const SHEETS = ['bets', 'activity'];
 
 async function sheetBox(page: import('@playwright/test').Page, id: string) {
   const button = page.locator(`#${id}-button`);
@@ -21,13 +20,16 @@ async function sheetBox(page: import('@playwright/test').Page, id: string) {
 }
 
 test.describe('Dock sheets', () => {
-  test('open in one frame on a wide map, whichever button opens them', async ({ mockApi: page }) => {
+  test('Designs docks beside the map while Bets stays anchored above navigation', async ({ mockApi: page }) => {
     await page.setViewportSize({ width: 1280, height: 860 });
     await openCity(page);
-    const boxes = [];
-    for (const id of SHEETS) boxes.push(await sheetBox(page, id));
-    expect(boxes[0].w).toBe(560);
-    for (const box of boxes.slice(1)) expect(box).toEqual(boxes[0]);
+    const designs = await sheetBox(page, 'proposals');
+    const bets = await sheetBox(page, 'bets');
+    expect(designs.x).toBeGreaterThan(640);
+    expect(designs.x + designs.w).toBeGreaterThan(1250);
+    expect(designs.y).toBeLessThan(100);
+    expect(bets.x).toBeLessThan(designs.x);
+    expect(bets.y).toBeGreaterThan(designs.y);
   });
 
   test('fill a phone screen above the bar, with the map showing through', async ({ mockApi: page }) => {
@@ -35,7 +37,7 @@ test.describe('Dock sheets', () => {
     await openCity(page);
     const bar = await page.locator('#map-shell-bottom-right').boundingBox();
     expect(bar).not.toBeNull();
-    for (const id of SHEETS) {
+    for (const id of ['proposals', ...SHEETS]) {
       const box = await sheetBox(page, id);
       expect(box, id).toMatchObject({ x: 0, y: 0, w: 390 });
       // The bar's 1px top border is not in --map-shell-dock-height: the sheet may tuck under it by that.

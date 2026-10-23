@@ -10,7 +10,7 @@
     // Info panels in the right dock become bottom sheets on phones (the click stack among them);
     // a panel hosted inside the click stack is part of that sheet, not a sheet of its own.
     const PANEL_SELECTOR = '.info-panel.right-dock-panel:not(.is-hosted)';
-    const SURFACE_SELECTOR = PANEL_SELECTOR + ', .map-sheet, .cb-dialog:not(.cb-dialog--message), .share-plan-panel, .on-map-editor__panel, #click-stack, #three-click-stack, #grain-score-panel, #area-monitor-detail-panel, #urban-block-panel, .site-panel';
+    const SURFACE_SELECTOR = PANEL_SELECTOR + ', .map-sheet, .cb-dialog:not(.cb-dialog--message), .share-plan-panel:not(.share-plan-panel--embedded), .on-map-editor__panel, #click-stack, #three-click-stack, #grain-score-panel, #area-monitor-detail-panel, #urban-block-panel, .site-panel';
     const HANDLE_CLASS = 'mobile-dock-sheet-handle';
     const DEFAULT_RATIO = 0.5;
     const MIN_RATIO = 0.25;

@@ -71,6 +71,14 @@ describe('spinner na gumbu', () => {
         expect(read('../../frontend/css/proposals.css')).toMatch(/\.share-plan-spinner\[hidden\]\s*\{\s*display: none;/);
     });
 
+    it('keeps a loading Share tab enabled so arrow-key navigation retains focus', () => {
+        const button = fakeButton();
+        button.getAttribute = () => 'tab';
+        load(button)(true);
+        expect(button.disabled).toBe(false);
+        expect(button.parts['.share-plan-spinner'].hidden).toBe(false);
+    });
+
     it('bez gumba ne puca — panel se otvara i iz drugih putanja', () => {
         expect(() => new Function('document', `${body} return setSharePlanButtonBusy;`)(
             { getElementById: () => null })(true)).not.toThrow();
@@ -99,6 +107,18 @@ describe('otvaranje plana', () => {
         const ready = run(); tick(); tick(); await ready;
         expect(spies.guestPolicyBlocks).not.toHaveBeenCalled();
         expect(spies.showSharePlanPanel).toHaveBeenCalledTimes(1);
+    });
+
+    it('cancels a deferred open when Designs was closed or another tab chosen', async () => {
+        const { run, spies, tick } = harness();
+        let current = true;
+        const ready = run({ isCurrent: () => current });
+        tick();
+        current = false;
+        tick();
+        await ready;
+        expect(spies.showSharePlanPanel).not.toHaveBeenCalled();
+        expect(spies.setSharePlanButtonBusy).toHaveBeenLastCalledWith(false);
     });
 
     it('spinner se upali PRIJE nego što išta krene', () => {
@@ -150,7 +170,7 @@ describe('napredak u panelu', () => {
         expect(fill).toContain("'proposals.share.panel.listing', 'Listing {{done}}/{{total}} designs…'");
         expect(fill).toContain("'proposals.share.panel.checking', 'Checking {{done}}/{{total}} designs…'");
         // Each step reports its own position (executed below, in "punjenje panela u odsječcima").
-        expect(sliceBetween(dialog, 'const inChunks = async', 'document.body.appendChild(panelRoot);'))
+        expect(sliceBetween(dialog, 'const inChunks = async', "document.getElementById('designs-share').replaceChildren(panelRoot);"))
             .toContain('showProgress(phraseKey, fallback, i + 1, total);');
     });
 
@@ -172,7 +192,7 @@ describe('napredak u panelu', () => {
 // The panel used to be built in one synchronous block — every row and every map overlay before a
 // single pixel appeared. It now goes up empty and fills itself in slices.
 describe('punjenje panela u odsječcima', () => {
-    const body = sliceBetween(dialog, 'const FRAME_BUDGET_MS = 12;', 'document.body.appendChild(panelRoot);');
+    const body = sliceBetween(dialog, 'const FRAME_BUDGET_MS = 12;', "document.getElementById('designs-share').replaceChildren(panelRoot);");
 
     /** Lifted with its own panel-state variable, so a test can "close" the panel mid-run. */
     function harness({ msPerItem = 0 } = {}) {

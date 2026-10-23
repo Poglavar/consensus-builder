@@ -1,6 +1,7 @@
 // proposals/list-ui.js — extracted from proposals.js (behavior-preserving relocation).
 
 let _proposalListMountPromise = null;
+let _designsPanelRequest = 0;
 
 function ensureProposalListHostModal(host) {
     let modal = host.querySelector('.proposal-list-modal');
@@ -901,7 +902,7 @@ async function mountProposalList() {
             host.innerHTML = '<div class="proposal-list-loading"><i class="fas fa-spinner fa-spin"></i></div>';
         }
         if (typeof window.yieldToBrowser === 'function') await window.yieldToBrowser();
-        if (window.MapShell?.isOpen && !window.MapShell.isOpen('proposals-sheet')) {
+        if ((window.MapShell?.isOpen && !window.MapShell.isOpen('proposals-sheet')) || document.getElementById('designs-browse')?.hidden) {
             host.removeAttribute('aria-busy');
             return false;
         }
@@ -913,17 +914,55 @@ async function mountProposalList() {
     finally { _proposalListMountPromise = null; }
 }
 
+// One Designs panel owns browsing and sharing; leaving Share always releases its map pick mode.
+function setDesignsPanelTab(tab) {
+    const sharing = tab === 'share';
+    document.getElementById('designs-browse').hidden = sharing;
+    document.getElementById('designs-share').hidden = !sharing;
+    for (const [id, active] of [['designs-browse-tab', !sharing], ['shareAppliedProposalsButton', sharing]]) {
+        const button = document.getElementById(id);
+        button.setAttribute('aria-selected', String(active));
+        button.tabIndex = active ? 0 : -1;
+    }
+}
+
+function openDesignsTab(tab) {
+    const request = ++_designsPanelRequest;
+    if (tab === 'share') {
+        setDesignsPanelTab('share');
+        return shareAppliedProposals({ isCurrent: () => request === _designsPanelRequest });
+    }
+    closeSharePlanPanel({ fromPanel: true });
+    setDesignsPanelTab('browse');
+    if (!window.MapShell.isOpen('proposals-sheet')) window.MapShell.openSheet('proposals-sheet');
+    return mountProposalList();
+}
+
 function handleProposalSheetOpened(event) {
-    if (event?.detail?.id === 'proposals-sheet') mountProposalList();
+    if (event?.detail?.id !== 'proposals-sheet') return;
+    setDesignsPanelTab('browse');
+    mountProposalList();
 }
 
 function handleProposalSheetClosed(event) {
-    if (event?.detail?.id === 'proposals-sheet') closeProposalList({ fromSheet: true });
+    if (event?.detail?.id !== 'proposals-sheet') return;
+    _designsPanelRequest++;
+    closeSharePlanPanel({ fromPanel: true });
+    closeProposalList({ fromSheet: true });
+    setDesignsPanelTab('browse');
 }
 
 if (typeof document !== 'undefined') {
     document.addEventListener('mapshell:sheetopened', handleProposalSheetOpened);
     document.addEventListener('mapshell:sheetclosed', handleProposalSheetClosed);
+    document.addEventListener('keydown', event => {
+        const tab = event.target.closest?.('.designs-panel-tabs [role="tab"]');
+        if (!tab || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+        event.preventDefault();
+        const sharing = event.key === 'End' || (event.key !== 'Home' && tab.id === 'designs-browse-tab');
+        document.getElementById(sharing ? 'shareAppliedProposalsButton' : 'designs-browse-tab').focus();
+        openDesignsTab(sharing ? 'share' : 'browse');
+    });
 }
 
 // The fitBounds padding that frames content in the map a panel leaves visible. A panel with room

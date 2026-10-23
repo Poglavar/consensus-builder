@@ -3,6 +3,7 @@
 /* One phone sheet interaction for map panels, lists and forms. Desktop keeps its own layout. */
 @media (max-width: 767.98px) {
     #map-container .mobile-sheet-ready:not(.is-minimized):not(.is-hosted):not([hidden]),
+    .on-map-editor__panel.mobile-sheet-ready:not(.is-minimized):not([hidden]),
     .cb-dialog.mobile-sheet-ready {
         top: auto !important;
         bottom: calc(var(--mobile-visual-bottom, 0px) + var(--map-shell-dock-height, 0px));
@@ -19,7 +20,8 @@
         overflow: hidden;
     }
 
-    #map-container .mobile-sheet-ready.mobile-sheet-expanded {
+    #map-container .mobile-sheet-ready.mobile-sheet-expanded,
+    .on-map-editor__panel.mobile-sheet-ready.mobile-sheet-expanded {
         --mobile-sheet-initial-height: calc(var(--mobile-visual-height, 100dvh) - var(--map-shell-dock-height, 0px));
     }
 

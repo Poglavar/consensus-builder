@@ -104,7 +104,7 @@ describe('a click on the map finds the row', () => {
 
     it('the pick mode ends when the panel closes, and a late pick is ignored', () => {
         // Left picking, the map would scroll rows in a list that is no longer on screen.
-        expect(between('function closeSharePlanPanel()', 'function showSharePlanPanel(')).toContain("window.MapPick.end('share');");
+        expect(between('function closeSharePlanPanel(', 'function showSharePlanPanel(')).toContain("window.MapPick.end('share');");
         const picker = between('window.MapPick.begin({', '}).catch(');
         expect(picker).toContain('pick: (id, proposal, { parcelId }) => {');
         expect(picker).toContain('if (!panelStillOpen()) return;');

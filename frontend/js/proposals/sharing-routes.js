@@ -123,7 +123,8 @@ function setSharePlanButtonBusy(busy) {
     const spinner = button.querySelector('.share-plan-spinner');
     if (busy) button.dataset.sharePlanBusy = '1';
     else delete button.dataset.sharePlanBusy;
-    button.disabled = !!busy;
+    // Tabs keep keyboard focus while their contents load.
+    button.disabled = !!busy && button.getAttribute?.('role') !== 'tab';
     if (label) label.hidden = !!busy;
     if (subtext) subtext.hidden = !!busy;
     if (spinner) spinner.hidden = !busy;
@@ -142,10 +143,10 @@ function shareAppliedProposals(options) {
         const open = () => {
             let ready = null;
             try {
-                ready = showSharePlanPanel(options);
+                // Switching tabs or closing Designs cancels an opening deferred by two frames.
+                if (!options?.isCurrent || options.isCurrent()) ready = showSharePlanPanel(options);
             } finally {
-                // The panel folds the sheets away, so this is mostly for the next time it is opened —
-                // and for the failure path, where the button must not stay stuck spinning.
+                // Release the tab spinner on success, cancellation and failure.
                 if (typeof setSharePlanButtonBusy === 'function') setSharePlanButtonBusy(false);
             }
             // A thenable is adopted; an older build that returns nothing resolves right away, which
