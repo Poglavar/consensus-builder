@@ -522,3 +522,45 @@ returned source artifact. These operations remain independent of model-generated
   redirect receipts remain in the private evaluation records for integrity verification.
 
 - Headless unit tests: claimed CID on inline canonical wrappers (1 file, 12 tests): passed; copied content cannot silently disagree with its wrapper CID.
+
+
+### Authorized twenty-case evaluation outcome (2026-10-23)
+
+The remaining twenty Sonnet 5.5 Batch cases finished at **$2.077047 of the authorized $3 cap**,
+separate from the earlier $0.097633 pilot. Fifteen cases passed; five failed. This is a cumulative
+repair-and-resume acceptance run, not a clean first-attempt model benchmark. Seven cases resumed
+after the private-reference fix, retaining every prior artifact, paid round and cost. Their earlier
+messages were archived before starting fresh tool context after the local server restart. The
+original eight-round limit remained in force for every case.
+
+| Failed paid case | Observed limit/failure |
+| --- | --- |
+| Two-storey building | Repeated upstream HTTP 502; no draft before eight rounds |
+| Eight-storey building | Repeated upstream HTTP 502; no draft before eight rounds |
+| Add north-side cycleway | Correct draft reference used; binding returned repeated HTTP 502 |
+| Building fork | Repeated HTTP 502 consumed rounds; the last round produced the correct fork but no final preview handoff |
+| Community agreement | The local daemon captured a temporarily invalid frontend file during a concurrent edit; the subsequent attempt hit HTTP 502 |
+
+Free live-source API checks against sealed commit `26acd6b27` passed all five paths: two-storey and
+eight-storey buildings, a building fork by private reference, a north-side cycleway addition by
+reference, and a community agreement by reference. The committed source parsed and formed exact
+agreement ground successfully. These checks invoked no model, publication or wallet action and do
+not change the failed paid scores. Future paid acceptance should use a sealed committed source
+instead of a concurrently edited checkout. Upstream availability and clearer HTTP 5xx recovery
+remain hardening work; the observed source failures have not been erased by the later successful
+checks.
+
+The final integrity audit reproduced all twenty scores, checked 35 canonical artifact CIDs and
+decoded 37 preview payloads, including comparison alternatives. Private redirect receipts were
+sealed before stopping the temporary local server. Every case retained at most eight paid rounds;
+no tool published or signed. All 98 recorded paid batches matched finished successful provider
+results. One additional provider batch, with custom id `probe`, was canceled and has no model
+usage. No unknown successful batch or pending submission remains. Private checkpoints, transcripts,
+redirect receipts and the audit are retained outside the repository in the evaluation directory.
+
+Verification in this continuation was targeted headless unit testing only: the six-file/45-test
+reference run, two two-file/20-test validation runs, and the final one-file/12-test inline-identity
+run all passed. No full unit or browser suite was started. The five sealed live-source checks and
+the artifact/provider audits also completed. The private-reference implementation was committed
+locally as `26acd6b27`; this continuation did not push or deploy it. The vocabulary draft-reference
+hunk shares a file with another session's building-geometry edits and remains uncommitted.
