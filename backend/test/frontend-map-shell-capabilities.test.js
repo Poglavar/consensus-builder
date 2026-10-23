@@ -64,9 +64,10 @@ function bootMapShell({ phone = false, editors = null } = {}) {
     ];
     const measureSheet = new FakeElement({ id: 'measurement-sheet', classes: ['map-sheet'], attributes: { 'data-map-modes': '2d' }, hidden: true });
     const activitySheet = new FakeElement({ id: 'activity-sheet', classes: ['map-sheet', 'map-sheet--dock'], hidden: true });
+    const settingsSheet = new FakeElement({ id: 'settings-sheet', classes: ['map-sheet'], hidden: true });
     const trigger = new FakeElement({ id: 'measurement-trigger', attributes: { 'data-sheet-target': 'measurement-sheet' } });
     const nav = ['proposals', 'bets', 'activity'].map(id => new FakeElement({ id }));
-    const elements = new Map([[measureSheet.id, measureSheet], [activitySheet.id, activitySheet]]);
+    const elements = new Map([[measureSheet.id, measureSheet], [activitySheet.id, activitySheet], [settingsSheet.id, settingsSheet]]);
     for (const element of [...modes, ...nav, trigger]) elements.set(element.id, element);
 
     const doc = {
@@ -75,7 +76,7 @@ function bootMapShell({ phone = false, editors = null } = {}) {
         listeners: documentListeners,
         getElementById: id => elements.get(id) || null,
         querySelectorAll(selector) {
-            if (selector === '.map-sheet') return [measureSheet, activitySheet];
+            if (selector === '.map-sheet') return [measureSheet, activitySheet, settingsSheet];
             if (selector === '[data-sheet-target]') return [trigger];
             if (selector === '[data-sheet-close]') return [];
             if (selector === '[data-map-modes]') return [...modes, measureSheet];
@@ -116,7 +117,7 @@ function bootMapShell({ phone = false, editors = null } = {}) {
     if (editors) win.ResizeObserver = class { observe() {} unobserve() {} };
     vm.runInNewContext(fs.readFileSync(path.join(FRONTEND, 'js/ui/map-shell.js'), 'utf8'), { window: win, console });
     win.MapShell.initializeMapShell();
-    return { win, doc, body, modes, measureSheet, activitySheet, trigger, nav, windowListeners };
+    return { win, doc, body, modes, measureSheet, activitySheet, settingsSheet, trigger, nav, windowListeners };
 }
 
 describe('MapShell mode capabilities', () => {
@@ -156,19 +157,26 @@ describe('MapShell mode capabilities', () => {
         expect(nav.every(button => button.disabled === false)).toBe(true);
     });
 
-    // On a phone the dock's sheets fill the screen above the bar. The credits follow the map a
-    // sheet leaves exposed, and a full-screen one leaves none; a control sheet still lifts them.
-    it('reports a phone dock sheet as covering the map and moves no credits for it', () => {
-        const { win, body, measureSheet, activitySheet } = bootMapShell({ phone: true });
+    // Coverage follows the sheet's actual top edge: half-height sheets leave map visible, while
+    // full-height Settings covers it. The surface's class does not decide map coverage.
+    it('uses actual sheet geometry to report whether a phone sheet covers the map', () => {
+        const { win, body, measureSheet, activitySheet, settingsSheet } = bootMapShell({ phone: true });
         const shell = win.MapShell;
 
+        activitySheet.getBoundingClientRect = () => ({ top: 400, bottom: 800, left: 0, right: 400, width: 400, height: 400 });
         shell.openSheet(activitySheet, { focus: false });
-        expect(shell.coversMap()).toBe(true);
-        expect(body.style.values.has('--map-visible-bottom')).toBe(false);
+        expect(shell.coversMap()).toBe(false);
+        expect(body.style.values.get('--map-visible-bottom')).toBe('400px');
 
+        measureSheet.getBoundingClientRect = () => ({ top: 300, bottom: 800, left: 0, right: 400, width: 400, height: 500 });
         shell.openSheet(measureSheet, { focus: false });
         expect(shell.coversMap()).toBe(false);
-        expect(body.style.values.get('--map-visible-bottom')).toBe('790px');
+        expect(body.style.values.get('--map-visible-bottom')).toBe('500px');
+
+        settingsSheet.getBoundingClientRect = () => ({ top: 0, bottom: 800, left: 0, right: 400, width: 400, height: 800 });
+        shell.openSheet(settingsSheet, { focus: false });
+        expect(shell.coversMap()).toBe(true);
+        expect(body.style.values.has('--map-visible-bottom')).toBe(false);
 
         shell.closeSheets();
         expect(shell.coversMap()).toBe(false);

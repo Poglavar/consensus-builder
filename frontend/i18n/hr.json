@@ -7426,5 +7426,8 @@
         "legend": "Plavo: zauzeto zemljište · isprekidano: preostalo zemljište · crveno: uklonjene zgrade · zeleno: zadržane zgrade",
         "multi": "Spremite nepovezane zgrade zasebno prije odabira cijelih čestica.",
         "retry": "Ponovi provjeru"
+    },
+    "mobileSheet": {
+        "resize": "Promijeni veličinu panela. Povuci gore ili dolje; povuci do dna za zatvaranje."
     }
 }

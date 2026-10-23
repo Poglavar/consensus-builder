@@ -14,6 +14,7 @@ const panelsCss = readFileSync(fileURLToPath(new URL('../../frontend/css/panels.
 // Evaluates the dock's compound selector (classes plus :not(#id) / :not(.class)) against a fake
 // element's id and classes, so the test follows the real selector instead of comparing its text.
 function matchesCompound(el, selector) {
+    if (selector.includes(',')) return selector.split(',').some(part => matchesCompound(el, part.trim()));
     const negations = [...selector.matchAll(/:not\(([^)]+)\)/g)].map(m => m[1]);
     const positive = selector.replace(/:not\([^)]+\)/g, '');
     const one = part => (part.startsWith('#') ? el.id === part.slice(1) : el.classes.includes(part.slice(1)));
@@ -22,55 +23,114 @@ function matchesCompound(el, selector) {
 }
 
 function dockPanel({ id = 'parcel-info-panel', classes = ['info-panel', 'right-dock-panel'] } = {}) {
+    const classSet = new Set(classes);
     return {
         nodeType: 1,
         id,
         classes,
+        classList: {
+            add(name) { classSet.add(name); },
+            remove(name) { classSet.delete(name); },
+            contains(name) { return classSet.has(name); }
+        },
         handle: null,
-        matches(selector) { return matchesCompound(this, selector); },
-        querySelector() { return this.handle; },
+        matches(selector) { return matchesCompound({ ...this, classes: [...classSet] }, selector); },
+        querySelector(selector = '') {
+            if (selector.includes('mobile-dock-sheet-handle')) return this.handle;
+            if (selector.includes('form')) return null;
+            if (selector.includes('close') || selector.includes('agreement-action')) return this.closeButton || null;
+            return this.handle;
+        },
         querySelectorAll() { return []; },
         insertBefore(handle) { this.handle = handle; }
     };
 }
 
+function controllerFixture({ height = 350, close = () => {} } = {}) {
+    const panel = dockPanel();
+    const styleValues = new Map();
+    panel.style = {
+        setProperty(name, value) { styleValues.set(name, value); },
+        getPropertyValue(name) { return styleValues.get(name) || ''; }
+    };
+    panel.getBoundingClientRect = () => ({ height: Number.parseFloat(styleValues.get('--mobile-sheet-height')) || height, top: 0 });
+    let closeCount = 0;
+    panel.closeButton = { click() { closeCount += 1; close(); } };
+    const listeners = new Map();
+    const handle = {
+        classList: { add() {}, remove() {} },
+        setAttribute() {},
+        addEventListener(type, fn) { listeners.set(type, fn); },
+        setPointerCapture() {},
+        releasePointerCapture() {}
+    };
+    const win = {
+        innerHeight: 800,
+        document: { createElement() { return handle; }, getElementById() { return null; } },
+        matchMedia() { return { matches: true }; },
+        getComputedStyle() { return { getPropertyValue() { return '0px'; } }; }
+    };
+    wirePanel(win, panel, { close: () => { closeCount += 1; close(); } });
+    return {
+        panel, handle, listeners,
+        closeCount: () => closeCount,
+        fire(type, event = {}) {
+            let prevented = false;
+            listeners.get(type)?.({ pointerId: 1, clientY: 0, preventDefault() { prevented = true; }, ...event, get defaultPrevented() { return prevented; } });
+        }
+    };
+}
+
 function installWithObserver() {
     const mutationCallbacks = [];
+    const mutationObservers = [];
     const win = {
         document: {
             readyState: 'complete',
+            body: {},
             getElementById(id) { return id === 'map-container' ? {} : null; },
             querySelectorAll() { return []; },
             createElement() {
-                return { classList: { add() {}, remove() {} }, setAttribute() {}, addEventListener() {} };
+                return { className: '', classList: { add() {}, remove() {} }, setAttribute() {}, addEventListener() {} };
             }
         },
         MutationObserver: class {
-            constructor(callback) { mutationCallbacks.push(callback); }
+            constructor(callback) {
+                mutationCallbacks.push(callback);
+                this.disconnected = false;
+                this.disconnect = () => { this.disconnected = true; };
+                mutationObservers.push(this);
+            }
             observe() {}
         },
         addEventListener() {}
     };
     install(win);
-    return nodes => mutationCallbacks[0]([{ addedNodes: nodes }]);
+    return {
+        added: nodes => mutationCallbacks[0]([{ addedNodes: nodes }]),
+        removed: nodes => mutationCallbacks[0]([{ addedNodes: [], removedNodes: nodes }]),
+        mutationObservers
+    };
 }
 
 describe('mobile dock sheet geometry', () => {
     it('makes map tools tall sheets with visible, touch-safe drag handles', () => {
-        expect(panelsCss).toMatch(/\.info-panel\.right-dock-panel:not\(#proposal-details-panel\):not\(\.is-minimized\)\s*\{[\s\S]*?--mobile-dock-sheet-height:\s*66dvh/);
+        expect(sheetSource).toMatch(/DEFAULT_RATIO = 0\.5/);
+        expect(sheetSource).toMatch(/MIN_RATIO = 0\.25/);
+        expect(sheetSource).toMatch(/MIN_PIXELS = 200/);
+        expect(sheetSource).toMatch(/SURFACE_SELECTOR = PANEL_SELECTOR \+ ', \.map-sheet, \.cb-dialog/);
         expect(panelsCss).toMatch(/\.mobile-dock-sheet-handle\s*\{[\s\S]*?touch-action:\s*none/);
-        expect(panelsCss).not.toMatch(/#parcel-info-panel\s*\{[\s\S]*?height:\s*33vh/);
     });
 
-    it('opens taller than the retired 33vh panel while leaving room for map chrome', () => {
+    it('defaults to half-height while leaving room for map chrome', () => {
         const height = sheetHeight({ viewportHeight: 568, topClearance: 62, bottomClearance: 62 });
-        expect(height).toBeGreaterThan(568 * 0.33);
+        expect(height).toBe(568 * 0.5);
         expect(height).toBeLessThanOrEqual(568 - 62 - 62 - 8);
     });
 
     it('keeps a usable minimum height on a 320px-wide phone and caps a drag before the top chrome', () => {
         const range = limits(568, 62, 62);
-        expect(range.min).toBeGreaterThanOrEqual(240);
+        expect(range.min).toBe(200);
         expect(draggedHeight({ startHeight: 300, deltaY: -600, viewportHeight: 568, topClearance: 62, bottomClearance: 62 })).toBe(range.max);
         expect(draggedHeight({ startHeight: 300, deltaY: 600, viewportHeight: 568, topClearance: 62, bottomClearance: 62 })).toBe(range.min);
     });
@@ -83,27 +143,85 @@ describe('mobile dock sheet geometry', () => {
 
     it('treats missing dimensions as missing instead of coercing null to a zero-height sheet', () => {
         expect(sheetHeight({ viewportHeight: 568, topClearance: null, bottomClearance: null })).toBeGreaterThan(0);
-        expect(sheetHeight({ viewportHeight: 568, desiredHeight: null })).toBeGreaterThan(568 * 0.33);
+        expect(sheetHeight({ viewportHeight: 568, desiredHeight: null })).toBe(568 * 0.5);
     });
 
-    it('keeps the full-screen proposal reader out of draggable sheet wiring', () => {
-        let mutated = false;
-        const panel = { id: 'proposal-details-panel', querySelector() { return null; }, insertBefore() { mutated = true; } };
-        wirePanel({ document: { createElement() { throw new Error('No handle should be created'); } } }, panel);
-        expect(mutated).toBe(false);
+    it('does not wire a hosted proposal details panel with its own nested handle', () => {
+        const { added } = installWithObserver();
+        const hosted = dockPanel({ id: 'proposal-details-panel', classes: ['info-panel', 'right-dock-panel', 'is-hosted'] });
+        added([hosted]);
+        expect(hosted.handle).toBeNull();
+    });
+
+    it('preserves an open sheet when pointer interaction is cancelled', () => {
+        const fixture = controllerFixture({ height: 350 });
+        fixture.fire('pointerdown', { clientY: 200 });
+        fixture.fire('pointermove', { clientY: 260 });
+        fixture.fire('pointercancel', { clientY: 260, type: 'pointercancel' });
+        expect(fixture.closeCount()).toBe(0);
+        expect(fixture.panel.style.getPropertyValue('--mobile-sheet-height')).toBe('290px');
+    });
+
+    it('resizes up and down from pointer movement', () => {
+        const fixture = controllerFixture({ height: 350 });
+        fixture.fire('pointerdown', { clientY: 200 });
+        fixture.fire('pointermove', { clientY: 100 });
+        fixture.fire('pointerup', { clientY: 100, type: 'pointerup' });
+        expect(fixture.panel.style.getPropertyValue('--mobile-sheet-height')).toBe('450px');
+        expect(fixture.panel.style.getPropertyValue('--mobile-dock-sheet-height')).toBe('450px');
+        fixture.fire('pointerdown', { clientY: 100 });
+        fixture.fire('pointermove', { clientY: 200 });
+        fixture.fire('pointerup', { clientY: 200, type: 'pointerup' });
+        expect(fixture.closeCount()).toBe(0);
+        expect(fixture.panel.style.getPropertyValue('--mobile-sheet-height')).toBe('350px');
+    });
+
+    it('dismisses below the minimum drag threshold through the close callback once', () => {
+        const fixture = controllerFixture({ height: 350 });
+        fixture.fire('pointerdown', { clientY: 100 });
+        fixture.fire('pointermove', { clientY: 400 });
+        fixture.fire('pointerup', { clientY: 400, type: 'pointerup' });
+        expect(fixture.closeCount()).toBe(1);
+    });
+
+    it('suppresses the synthetic tap after a drag, then tap toggles between half and full height', () => {
+        const fixture = controllerFixture({ height: 350 });
+        fixture.fire('pointerdown', { clientY: 100 });
+        fixture.fire('pointermove', { clientY: 120 });
+        fixture.fire('pointerup', { clientY: 120, type: 'pointerup' });
+        fixture.fire('click');
+        expect(fixture.panel.style.getPropertyValue('--mobile-sheet-height')).toBe('330px');
+        fixture.fire('click');
+        expect(fixture.panel.style.getPropertyValue('--mobile-sheet-height')).toBe('792px');
+        fixture.fire('click');
+        expect(fixture.panel.style.getPropertyValue('--mobile-sheet-height')).toBe('400px');
+    });
+
+    it('supports keyboard expansion, collapse, and Escape dismissal', () => {
+        const fixture = controllerFixture({ height: 350 });
+        fixture.fire('keydown', { key: 'ArrowUp' });
+        expect(fixture.panel.style.getPropertyValue('--mobile-sheet-height')).toBe('414px');
+        fixture.fire('keydown', { key: 'ArrowDown' });
+        expect(fixture.panel.style.getPropertyValue('--mobile-sheet-height')).toBe('350px');
+        fixture.fire('keydown', { key: 'Escape' });
+        expect(fixture.closeCount()).toBe(1);
     });
 
     it('restores the handle when a panel renderer replaces its children', () => {
         const callbacks = [];
         const panel = {
+            classes: [],
+            classList: { add() {}, remove() {}, contains() { return false; } },
             handle: null,
-            querySelector() { return this.handle; },
+            matches(selector) { return matchesCompound(this, selector); },
+            querySelector(selector = '') { return selector.includes('mobile-dock-sheet-handle') ? this.handle : null; },
             insertBefore(handle) { this.handle = handle; },
             style: { getPropertyValue() { return ''; } }
         };
         const doc = {
             createElement() {
                 return {
+                    className: '',
                     classList: { add() {}, remove() {} },
                     setAttribute() {},
                     addEventListener() {}
@@ -127,7 +245,7 @@ describe('mobile dock sheet geometry', () => {
     });
 
     it('wires a map tool sheet added after the initial page scan', () => {
-        const added = installWithObserver();
+        const { added } = installWithObserver();
         const panel = dockPanel();
         added([panel]);
         expect(panel.handle).toBeTruthy();
@@ -136,15 +254,15 @@ describe('mobile dock sheet geometry', () => {
         expect(panel.handle).toBeTruthy();
     });
 
-    it('makes the click stack a sheet but not a panel hosted inside it, nor the proposal reader', () => {
-        const added = installWithObserver();
+    it('makes the click stack and unhosted proposal reader sheets, but not a hosted panel', () => {
+        const { added } = installWithObserver();
         const stack = dockPanel({ id: 'click-stack', classes: ['click-stack', 'info-panel', 'right-dock-panel'] });
         const hosted = dockPanel({ classes: ['info-panel', 'right-dock-panel', 'is-hosted'] });
         const reader = dockPanel({ id: 'proposal-details-panel' });
         added([stack, hosted, reader]);
         expect(stack.handle).toBeTruthy();
         expect(hosted.handle).toBeNull();
-        expect(reader.handle).toBeNull();
+        expect(reader.handle).toBeTruthy();
     });
 
     it('reports what the open sheet occupies so the credits stay in the map', () => {
@@ -180,19 +298,25 @@ describe('mobile dock sheet geometry', () => {
         const panel = {
             nodeType: 1,
             handle: null,
+            classList: { add() {}, remove() {}, contains() { return false; } },
             matches() { return true; },
-            querySelector() { return this.handle; },
+            querySelector(selector = '') { return selector.includes('mobile-dock-sheet-handle') ? this.handle : null; },
             querySelectorAll() { return []; },
+            style: { getPropertyValue() { return ''; }, setProperty() {} },
             insertBefore(handle) { this.handle = handle; }
         };
         const mapContainer = {};
+        const visualHeight = new Map();
         const win = {
+            innerHeight: 640,
             document: {
                 readyState: 'complete',
+                documentElement: { style: { setProperty(name, value) { visualHeight.set(name, value); } } },
                 getElementById(id) { return id === 'map-container' ? mapContainer : null; },
                 querySelectorAll() { return [panel]; },
                 createElement() {
                     return {
+                        className: '',
                         classList: { add() {}, remove() {} },
                         setAttribute() {},
                         addEventListener() {}
@@ -206,5 +330,17 @@ describe('mobile dock sheet geometry', () => {
         vm.runInNewContext(sheetSource, { window: win, globalThis: win });
         expect(panel.handle).toBeTruthy();
         expect(panel.handle.translated).toBe(true);
+        expect(visualHeight.get('--mobile-visual-height')).toBe('640px');
+    });
+
+    it('disconnects a removed surface’s child observer', () => {
+        const { added, removed } = installWithObserver();
+        const panel = dockPanel();
+        added([panel]);
+        const observer = panel.__mobileDockSheetObserver;
+        expect(observer).toBeTruthy();
+        panel.isConnected = false;
+        removed([panel]);
+        expect(observer.disconnected).toBe(true);
     });
 });

@@ -1,5 +1,7 @@
 # Memory
 
+- 2026-10-24: Use one mobile top-handle pattern across sheets, panels and long forms: drag to resize, drag below the compact limit to close through existing cleanup. Map context opens half-height, lists/forms expanded; short confirmations keep direct actions. Avoid a second visible X when the shared handle dismisses.
+
 - 2026-10-23: Default to official live cadastral sources for Belgrade and Buenos Aires; outside Serbia, RGZ failure uses the no-parcels flow. Cities without a dedicated building source use backend OSM. Parcel recovery uses one dialog with diagnostics and an in-place retry spinner.
 
 - 2026-10-19: Vocabulary work proceeds in small verified changes under one current contract; experimental records may be recreated instead of preserving legacy data through migrations or parallel code paths.

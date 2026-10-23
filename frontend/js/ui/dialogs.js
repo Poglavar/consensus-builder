@@ -251,6 +251,8 @@
             setTitle(text) { if (titleEl) titleEl.textContent = text || ''; }
         };
 
+        if (!options.message && options.showClose !== false) root.MobileDockSheet?.wirePanel(root, dialog, { close: () => close(null) });
+
         // Focus after layout: a synchronous focus from inside another handler loses to whatever
         // refocuses afterwards (the map container does).
         const autofocusEntry = buttons.find(entry => entry.action.autofocus) || buttons.find(entry => /primary|success|danger/.test(entry.button.className) && !entry.button.disabled);

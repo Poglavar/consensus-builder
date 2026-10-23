@@ -141,15 +141,24 @@ Every non-map page carries the same header: logo, "Back to the map", language. N
 
 ## Phone layout
 
-- The bottom dock is Proposals · Bets · Activity. On a phone it is a labelled bar across the width
+- The bottom dock is Designs · Bets · Activity · Share. On a phone it is a labelled bar across the width
   in every view, a veil the map shows through (`--cb-glass-veil`, blurred; its buttons are
-  transparent at rest); on a wide map it is three pills centred on the bottom edge, the same chrome
+  transparent at rest); on a wide map it is four pills centred on the bottom edge, the same chrome
   as the top-right cluster, so the map keeps its bottom edge. Its height is `--map-shell-bar-height`
   in both shapes; `--map-shell-bottom-clearance` keeps the tray and toast above it. The credits and
   the scale bar are set straight on the map with a text halo (`--cb-text-halo`) and no boxes: on a
   phone in the row right above the bar, on a wide map in the pills' own row, from the corners.
-- Sheets open above the bottom dock, which stays reachable while a sheet is open. On phones they
-  use the full available width and stop above the dock.
+- Mobile map panels, navigation sheets, lists and task forms use one top-handle interaction.
+  Drag up to enlarge, drag down to shrink, or drag below the compact limit to close through the
+  surface's existing cancel/close handler. A tap alternates half and expanded height; keyboard
+  arrows resize, Home/End choose compact/expanded, and Escape closes. Hosted cards share their
+  outer sheet's handle. A second visible X is omitted; its accessible close action remains available.
+- Map-context panels start at half-height. Navigation lists, Settings and long forms start expanded.
+  Map sheets stop above the reachable navigation dock; blocking forms may fill the phone. Headers
+  and actions stay reachable while content scrolls. Visual-viewport changes re-clamp the sheet.
+- Short confirmations keep direct action buttons and have no resize handle. Primary and compact
+  phone buttons and form fields have at least 44 px touch areas; form text is at least 16 px.
+  Shape-editing controls retain map context and close through their own cleanup when dragged down.
 
 ## Map shell structure
 

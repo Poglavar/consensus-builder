@@ -346,7 +346,7 @@
     // bar. A list there cannot preview on the map behind it (js/proposals/list-ui.js).
     function coversMap() {
         const sheet = state.openSheet;
-        return !!(sheet && !sheet.hidden && isMobile() && sheet.classList.contains('map-sheet--dock'));
+        return !!(sheet && !sheet.hidden && isMobile() && sheet.getBoundingClientRect().top < 24);
     }
 
     // Attribution follows the exposed map when a phone sheet opens. The dock never moves. A sheet

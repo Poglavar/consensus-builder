@@ -7374,5 +7374,8 @@
         "legend": "Blue: land taken · dashed: remaining land · red: removed buildings · green: retained buildings",
         "multi": "Save disconnected buildings separately before choosing whole parcels.",
         "retry": "Retry review"
+    },
+    "mobileSheet": {
+        "resize": "Resize panel. Drag up or down; drag to the bottom to close."
     }
 }

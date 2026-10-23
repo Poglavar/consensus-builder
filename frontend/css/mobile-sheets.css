@@ -1,0 +1,111 @@
+.mobile-dock-sheet-handle { display: none; }
+
+/* One phone sheet interaction for map panels, lists and forms. Desktop keeps its own layout. */
+@media (max-width: 767.98px) {
+    #map-container .mobile-sheet-ready:not(.is-minimized):not(.is-hosted):not([hidden]),
+    .cb-dialog.mobile-sheet-ready {
+        top: auto !important;
+        bottom: calc(var(--mobile-visual-bottom, 0px) + var(--map-shell-dock-height, 0px));
+        left: 0 !important;
+        right: 0 !important;
+        width: 100%;
+        max-width: 100%;
+        height: var(--mobile-sheet-height, var(--mobile-sheet-initial-height, 50dvh)) !important;
+        min-height: 0;
+        max-height: calc(var(--mobile-visual-height, 100dvh) - var(--map-shell-dock-height, 0px)) !important;
+        box-sizing: border-box;
+        padding: 0;
+        border-radius: var(--cb-radius-lg) var(--cb-radius-lg) 0 0;
+        overflow: hidden;
+    }
+
+    #map-container .mobile-sheet-ready.mobile-sheet-expanded {
+        --mobile-sheet-initial-height: calc(var(--mobile-visual-height, 100dvh) - var(--map-shell-dock-height, 0px));
+    }
+
+    .cb-dialog.mobile-sheet-ready {
+        position: fixed;
+        bottom: var(--mobile-visual-bottom, 0px);
+        margin: 0;
+        max-height: var(--mobile-visual-height, 100dvh) !important;
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    .cb-dialog.mobile-sheet-expanded { --mobile-sheet-initial-height: var(--mobile-visual-height, 100dvh); }
+
+    .mobile-sheet-ready > .mobile-dock-sheet-handle {
+        display: block;
+        flex: 0 0 44px;
+        width: 100%;
+        height: 44px;
+        min-height: 44px;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        touch-action: none;
+        cursor: ns-resize;
+    }
+
+    .mobile-sheet-ready > .mobile-dock-sheet-handle::after {
+        content: '';
+        display: block;
+        width: 40px;
+        height: 4px;
+        margin: auto;
+        border-radius: var(--cb-radius-pill);
+        background: var(--cb-text-muted);
+    }
+
+    /* Keep dismissal available to keyboard/assistive navigation without a second visible X. */
+    .mobile-sheet-ready > :is(.panel-header, .map-sheet-header, .cb-dialog__header, .share-plan-panel-header, .on-map-editor__header, .grain-score-panel__header, .road-panel-header, .site-panel__head, .urban-block-panel-header) .close-circle-btn {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        min-width: 1px;
+        min-height: 1px;
+        padding: 0;
+        overflow: hidden;
+        clip-path: inset(50%);
+    }
+    .mobile-sheet-ready .close-circle-btn:focus-visible {
+        position: static;
+        width: 44px;
+        height: 44px;
+        clip-path: none;
+    }
+
+    .mobile-sheet-ready > :is(.map-sheet-body, .cb-dialog__body, .panel-body) {
+        min-height: 0;
+        flex: 1 1 0;
+        overscroll-behavior: contain;
+    }
+
+    .mobile-sheet-ready :is(.map-sheet-header, .cb-dialog__header) {
+        padding: var(--cb-space-2) var(--cb-space-3);
+        flex-shrink: 0;
+    }
+
+    .mobile-sheet-ready .cb-dialog__footer:has(> [data-action-id="close"]:only-child) { display: none; }
+    #parcel-coverage-modal .cb-dialog__footer > #parcel-coverage-close-btn,
+    #status-log-modal .cb-dialog__footer > #status-log-modal-close { display: none; }
+    .share-plan-panel.mobile-sheet-ready { display: flex; flex-direction: column; }
+    .share-plan-panel.mobile-sheet-ready > .share-plan-panel-content { flex: 1 1 0; min-height: 0; height: auto; }
+    .mobile-sheet-ready .on-map-editor__content { flex: 1 1 0; }
+    #grain-score-panel.mobile-sheet-ready { display: flex; flex-direction: column; }
+    #grain-score-panel.mobile-sheet-ready > .grain-score-result { flex: 1 1 0; min-height: 0; overflow: auto; }
+    #grain-score-panel .grain-score-panel__header img { width: 36px; height: 36px; }
+    #grain-score-panel .grain-score-panel__header { padding: var(--cb-space-2) var(--cb-space-3); }
+    .mobile-sheet-ready .on-map-editor__toggle { display: none; }
+    body :is(.mobile-sheet-ready, .cb-page) :is(.btn, button.btn-quiet, .cb-segmented__option, .cb-tab) { min-height: 44px; }
+    body :is(.mobile-sheet-ready, .cb-page) input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="hidden"]),
+    body :is(.mobile-sheet-ready, .cb-page) select { min-height: 44px; }
+    :is(#area-monitor-detail-panel, #urban-block-panel, .site-panel).mobile-sheet-ready:not([hidden]):not(.is-minimized) { display: flex; flex-direction: column; }
+    .mobile-sheet-ready > :is(.site-panel__body, .urban-block-info, #urban-block-list-view, #urban-block-details-view) { min-height: 0; flex: 1 1 0; overflow: auto; }
+    .mobile-sheet-ready > :is(.site-panel__head, .site-panel__actions, .urban-block-panel-header) { flex-shrink: 0; }
+    body .mobile-sheet-ready button[aria-label] { min-width: 44px; }
+    .cb-page-header .cb-back-link { min-height: 44px; display: inline-flex; align-items: center; }
+    body :is(.mobile-sheet-ready, .cb-dialog, .cb-page) .btn:not(.btn-icon) { min-height: 44px; }
+    #proposals-sheet.mobile-sheet-ready .proposal-source-toggle { padding-top: 6px; }
+    #proposals-sheet.mobile-sheet-ready #proposal-list-actions { padding-block: 6px; }
+}

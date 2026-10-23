@@ -53,7 +53,7 @@
             toggle.type = 'button';
             node('i', 'fas fa-chevron-up', toggle).setAttribute('aria-hidden', 'true');
             header.addEventListener('click', event => {
-                if (event.target.closest('.close-circle-btn')) return;
+                if (env.matchMedia?.('(max-width: 767.98px)').matches || event.target.closest('.close-circle-btn')) return;
                 setCollapsed(!collapsed);
             });
             const cancel = node('button', 'close-circle-btn', header, '×');

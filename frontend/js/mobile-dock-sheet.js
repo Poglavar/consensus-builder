@@ -1,5 +1,4 @@
-// Resize the phone version of the parcel/road dock without giving each panel its own
-// touch implementation. The geometry helpers are deliberately DOM-free so they can be tested in
+// Shared phone resizing and dismissal for map panels, navigation sheets and task dialogs. The geometry helpers are deliberately DOM-free so they can be tested in
 // Node; the rest is only event wiring around one CSS custom property.
 (function (global, factory) {
     const api = factory();
@@ -10,12 +9,14 @@
 
     // Info panels in the right dock become bottom sheets on phones (the click stack among them);
     // a panel hosted inside the click stack is part of that sheet, not a sheet of its own.
-    const PANEL_SELECTOR = '.info-panel.right-dock-panel:not(#proposal-details-panel):not(.is-hosted)';
+    const PANEL_SELECTOR = '.info-panel.right-dock-panel:not(.is-hosted)';
+    const SURFACE_SELECTOR = PANEL_SELECTOR + ', .map-sheet, .cb-dialog:not(.cb-dialog--message), .share-plan-panel, .on-map-editor__panel, #click-stack, #three-click-stack, #grain-score-panel, #area-monitor-detail-panel, #urban-block-panel, .site-panel';
     const HANDLE_CLASS = 'mobile-dock-sheet-handle';
-    const DEFAULT_RATIO = 0.66;
-    const MIN_RATIO = 0.42;
-    const MAX_RATIO = 0.82;
-    const MIN_PIXELS = 240;
+    const DEFAULT_RATIO = 0.5;
+    const MIN_RATIO = 0.25;
+    const MAX_RATIO = 1;
+    const MIN_PIXELS = 200;
+    let sequence = 0;
 
     function finiteNumber(value, fallback = 0) {
         return (typeof value === 'number' && Number.isFinite(value)) ? value : fallback;
@@ -58,24 +59,14 @@
         return win.visualViewport?.height || win.innerHeight || 0;
     }
 
-    function resolvedCustomLength(win, name) {
-        const doc = win.document;
-        if (!doc?.body) return 0;
-        const probe = doc.createElement('div');
-        probe.style.cssText = `position:fixed; visibility:hidden; pointer-events:none; height:var(${name});`;
-        doc.body.appendChild(probe);
-        const value = probe.getBoundingClientRect().height;
-        probe.remove();
-        return finiteNumber(value);
-    }
-
     function clearances(win, panel) {
         const style = win.getComputedStyle(panel);
         return {
-            // getComputedStyle returns the custom property's literal `calc(...)`, not its resolved
-            // length. Resolve it through a temporary box so a tall drag cannot cover the top row.
-            topClearance: resolvedCustomLength(win, '--map-shell-top-clearance'),
-            bottomClearance: numberProperty(style, 'bottom')
+            // Expanded sheets may cover the map chrome; the bottom navigation stays reachable.
+            topClearance: 0,
+            // The keyboard gap is outside the visual viewport; do not subtract it twice.
+            bottomClearance: Math.max(0, numberProperty(style, 'bottom') - Math.max(0,
+                (win.innerHeight || viewportHeight(win)) - viewportHeight(win) - (win.visualViewport?.offsetTop || 0)))
         };
     }
 
@@ -84,6 +75,7 @@
         const { topClearance, bottomClearance } = clearances(win, panel);
         const height = sheetHeight({ viewportHeight: viewport, topClearance, bottomClearance, desiredHeight });
         panel.style.setProperty('--mobile-dock-sheet-height', `${Math.round(height)}px`);
+        panel.style.setProperty('--mobile-sheet-height', `${Math.round(height)}px`);
         // Attribution needs the same clearance while the parcel card is open. The sheet variable
         // normally lives on the panel, so mirror a dragged value onto the shared map ancestor.
         win.document.getElementById('map-container')?.style.setProperty('--mobile-dock-sheet-height', `${Math.round(height)}px`);
@@ -130,7 +122,9 @@
         const handle = win.document.createElement('button');
         handle.type = 'button';
         handle.className = HANDLE_CLASS;
-        handle.setAttribute('data-i18n-key', panel.id === 'agreement-panel' ? 'agreement.panel.collapse' : 'sidebar.areaMonitor.resizePanel');
+        handle.setAttribute('data-i18n-key', 'mobileSheet.resize');
+        handle.setAttribute('aria-label', 'Resize panel. Drag up or down; drag to the bottom to close.');
+        handle.setAttribute('title', 'Resize panel. Drag up or down; drag to the bottom to close.');
         handle.setAttribute('data-i18n-attr', 'aria-label,title');
         handle.setAttribute('aria-controls', panel.id);
         if (typeof win.i18n?.applyTranslations === 'function') win.i18n.applyTranslations(handle);
@@ -138,19 +132,30 @@
         return handle;
     }
 
-    function wirePanel(win, panel) {
-        if (!panel || panel.id === 'proposal-details-panel' || panel.querySelector(`:scope > .${HANDLE_CLASS}`)) return;
+    function wirePanel(win, panel, options = {}) {
+        if (!panel || panel.classList?.contains('is-hosted') || panel.querySelector(`:scope > .${HANDLE_CLASS}`)) return;
+        if (!panel.id) panel.id = `mobile-sheet-${++sequence}`;
         const handle = makeHandle(win, panel);
-        if (panel.id === 'agreement-panel') {
-            handle.addEventListener('click', () => win.AgreementPanel?.close());
-            observeOccupancy(win, panel);
-            return;
-        }
+        panel.classList.add('mobile-sheet-ready');
+        if (options.expanded || panel.matches?.('.map-sheet--dock, #settings-sheet, .cb-dialog--lg, .cb-dialog--xl, .cb-dialog--fixed, .proposal-modal-content, .lens-modal, .share-plan-panel, .agreement-list-dialog, .area-monitor-list-modal') || panel.querySelector('form')) panel.classList.add('mobile-sheet-expanded');
+        const close = () => {
+            if (options.close) return options.close();
+            if (panel.id === 'click-stack') return win.ClickStack?.close();
+            if (panel.id === 'three-click-stack') return win.ThreeClickStack?.close();
+            const button = panel.querySelector('[data-sheet-close], [data-agreement-action="close"], .close-button, .close-circle-btn:not([aria-expanded])');
+            if (button) return button.click();
+        };
         let drag = null;
+        let suppressClick = false;
+        handle.addEventListener('click', () => {
+            if (suppressClick) { suppressClick = false; return; }
+            const viewport = viewportHeight(win), available = limits(viewport, 0, clearances(win, panel).bottomClearance).max;
+            setHeight(win, panel, panel.getBoundingClientRect().height > available * 0.75 ? viewport * 0.5 : available);
+        });
 
         handle.addEventListener('pointerdown', event => {
             if (!win.matchMedia('(max-width: 767.98px)').matches || panel.classList.contains('is-minimized')) return;
-            drag = { pointerId: event.pointerId, y: event.clientY, height: panel.getBoundingClientRect().height };
+            drag = { pointerId: event.pointerId, y: event.clientY, height: panel.getBoundingClientRect().height, deltaY: 0 };
             handle.setPointerCapture?.(event.pointerId);
             handle.classList.add('is-dragging');
             event.preventDefault();
@@ -158,6 +163,7 @@
 
         handle.addEventListener('pointermove', event => {
             if (!drag || event.pointerId !== drag.pointerId) return;
+            drag.deltaY = event.clientY - drag.y;
             setHeight(win, panel, draggedHeight({
                 startHeight: drag.height,
                 deltaY: event.clientY - drag.y,
@@ -171,6 +177,8 @@
             if (!drag || event.pointerId !== drag.pointerId) return;
             handle.releasePointerCapture?.(event.pointerId);
             handle.classList.remove('is-dragging');
+            suppressClick = event.type !== 'pointercancel' && Math.abs(drag.deltaY) > 5;
+            if (event.type !== 'pointercancel' && drag.height - drag.deltaY < limits(viewportHeight(win), 0, clearances(win, panel).bottomClearance).min - 48) close();
             drag = null;
         };
         handle.addEventListener('pointerup', finishDrag);
@@ -181,6 +189,7 @@
             const viewport = viewportHeight(win);
             const step = Math.max(32, Math.round(viewport * 0.08));
             let next = null;
+            if (event.key === 'Escape') { close(); event.preventDefault(); event.stopPropagation?.(); return; }
             if (event.key === 'ArrowUp') next = current + step;
             else if (event.key === 'ArrowDown') next = current - step;
             else if (event.key === 'Home') next = limits(viewport, clearances(win, panel).topClearance, clearances(win, panel).bottomClearance).min;
@@ -188,6 +197,7 @@
             if (next === null) return;
             setHeight(win, panel, next);
             event.preventDefault();
+            event.stopPropagation?.();
         });
 
         // Parcel/proposal renderers replace a panel's children. Keep this control attached to the
@@ -203,18 +213,28 @@
 
     function wireAddedPanelNode(win, node) {
         if (!node || node.nodeType !== 1) return;
-        if (node.matches?.(PANEL_SELECTOR)) wirePanel(win, node);
-        node.querySelectorAll?.(PANEL_SELECTOR).forEach(panel => wirePanel(win, panel));
+        if (node.matches?.(SURFACE_SELECTOR)) wirePanel(win, node);
+        node.querySelectorAll?.(SURFACE_SELECTOR).forEach(panel => wirePanel(win, panel));
     }
 
     function observeAddedPanels(win) {
         if (win.__mobileDockSheetPanelObserver || typeof win.MutationObserver !== 'function') return;
-        // Proposal details is created lazily by Explore. Scope this observer to the map container,
-        // rather than document.body, so unrelated page mutations never wake the sheet wiring.
-        const container = win.document.getElementById('map-container');
+        // Dialogs may live outside the map. Only added/removed surface nodes need wiring;
+        // disconnected observers must not retain a closed form.
+        const container = win.document.body;
         if (!container) return;
         win.__mobileDockSheetPanelObserver = new win.MutationObserver(mutations => {
-            mutations.forEach(mutation => mutation.addedNodes.forEach(node => wireAddedPanelNode(win, node)));
+            mutations.forEach(mutation => {
+                mutation.addedNodes.forEach(node => wireAddedPanelNode(win, node));
+                mutation.removedNodes?.forEach(node => {
+                    if (node.nodeType !== 1 || node.isConnected) return;
+                    const panels = [...(node.matches?.('.mobile-sheet-ready') ? [node] : []), ...(node.querySelectorAll?.('.mobile-sheet-ready') || [])];
+                    panels.forEach(panel => {
+                        panel.__mobileDockSheetObserver?.disconnect();
+                        panel.__mobileDockSheetSizeObserver?.disconnect();
+                    });
+                });
+            });
         });
         win.__mobileDockSheetPanelObserver.observe(container, { childList: true, subtree: true });
     }
@@ -222,18 +242,28 @@
     function install(win = globalThis) {
         if (!win?.document || win.__mobileDockSheetInstalled) return;
         win.__mobileDockSheetInstalled = true;
-        const attach = () => win.document.querySelectorAll(PANEL_SELECTOR).forEach(panel => wirePanel(win, panel));
-        const reclamp = () => win.document.querySelectorAll(PANEL_SELECTOR).forEach(panel => {
+        const attach = () => win.document.querySelectorAll(SURFACE_SELECTOR).forEach(panel => wirePanel(win, panel));
+        const reclamp = () => win.document.querySelectorAll(SURFACE_SELECTOR).forEach(panel => {
             const desired = Number.parseFloat(panel.style.getPropertyValue('--mobile-dock-sheet-height'));
             if (Number.isFinite(desired)) setHeight(win, panel, desired);
         });
         const attachCard = () => observeOccupancy(win, win.document.getElementById('proposal-details-panel'));
-        const onResize = () => { reclamp(); reportOccupancy(win); };
+        const onResize = () => {
+            const height = viewportHeight(win);
+            if (height > 0) {
+                const style = win.document.documentElement?.style;
+                style?.setProperty('--mobile-visual-height', `${Math.round(height)}px`);
+                style?.setProperty('--mobile-visual-bottom', `${Math.round(Math.max(0, (win.innerHeight || height) - height - (win.visualViewport?.offsetTop || 0)))}px`);
+            }
+            reclamp(); reportOccupancy(win);
+        };
         if (win.document.readyState === 'loading') win.document.addEventListener('DOMContentLoaded', () => { attach(); attachCard(); }, { once: true });
         else { attach(); attachCard(); }
         observeAddedPanels(win);
+        onResize();
         win.addEventListener?.('resize', onResize);
         win.visualViewport?.addEventListener?.('resize', onResize);
+        win.visualViewport?.addEventListener?.('scroll', onResize);
     }
 
     const api = { clamp, limits, sheetHeight, draggedHeight, occupiedBottom, reportOccupancy, wirePanel, wireAddedPanelNode, install };

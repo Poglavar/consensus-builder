@@ -7402,5 +7402,8 @@
         "legend": "Azul: terreno ocupado · discontinuo: terreno restante · rojo: edificios eliminados · verde: edificios conservados",
         "multi": "Guarda los edificios desconectados por separado antes de elegir parcelas completas.",
         "retry": "Reintentar revisión"
+    },
+    "mobileSheet": {
+        "resize": "Cambia el tamaño del panel. Arrastra arriba o abajo; arrastra hasta abajo para cerrarlo."
     }
 }

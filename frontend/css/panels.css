@@ -67,7 +67,7 @@
         /* The default leaves the search/mode controls visible on a short phone while giving the
            build palette enough vertical room to use without immediately scrolling. JS can replace
            the height with a clamped pixel value while the handle is dragged. */
-        --mobile-dock-sheet-height: 66dvh;
+        --mobile-sheet-initial-height: 50dvh;
         height: min(var(--mobile-dock-sheet-height), calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance) - 8px));
         max-height: calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance) - 8px);
     }
@@ -1589,10 +1589,6 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
         height: auto;
         max-height: 50dvh;
         border-radius: 12px 12px 0 0;
-    }
-
-    #road-info-panel .mobile-dock-sheet-handle {
-        display: none;
     }
 
     /* A shorter header with smaller margins, so the half-screen sheet shows more metrics. */

@@ -1129,3 +1129,16 @@ button.cb-link {
     0%, 55% { transform: translateX(-120%); }
     100% { transform: translateX(120%); }
 }
+
+
+/* Phone controls retain usable touch areas even when a surface uses the compact button size. */
+@media (max-width: 767.98px) {
+    button.btn, a.btn, .btn.btn-sm, .btn.btn-icon,
+    .cb-segmented__option, .cb-tab, .close-circle-btn {
+        min-height: 44px;
+    }
+    .btn.btn-icon, .close-circle-btn { min-width: 44px; }
+    .cb-dialog__footer > .btn { flex: 1 1 0; }
+    .cb-dialog__body, .cb-page { overflow-wrap: anywhere; }
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="hidden"]), select, textarea { font-size: max(16px, 1em); }
+}

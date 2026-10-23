@@ -18,6 +18,7 @@ const indexHtml = read('index.html');
 const mapCreditsCss = read('css/map-credits.css');
 const proposalsCss = read('css/proposals.css');
 const proposalDetailsCss = read('css/proposal-details.css');
+const mobileSheetsCss = read('css/mobile-sheets.css');
 const clickStackPanel = read('js/click-stack/click-stack-panel.js');
 const dockSheet = read('js/mobile-dock-sheet.js');
 const threeMode = read('js/three-mode.js');
@@ -90,14 +91,14 @@ describe('the left-edge mode strip is never covered on phones', () => {
         expect(mapShellCss).not.toContain('--info-panel-mobile-inset: var(--map-mode-strip)');
     });
 
-    it('makes the road panel the full-width bottom block on the screen edge, at most half the screen', () => {
+    it('starts the road panel at the bottom and enables the shared drag handle', () => {
         const [block] = mediaBlocksContaining(panelsCss, '(max-width: 767.98px)', '#map-container #road-info-panel');
         const body = ruleBody(block, '#map-container #road-info-panel');
         expect(body).toMatch(/bottom:\s*0;/);
         expect(body).toMatch(/height:\s*auto/);
         expect(body).toMatch(/max-height:\s*50dvh/);
         expect(panelsCss + mapShellCss).not.toContain('--map-editor-toolbar-height');
-        expect(ruleBody(block, '#road-info-panel \\.mobile-dock-sheet-handle')).toMatch(/display:\s*none/);
+        expect(mobileSheetsCss).toContain('.mobile-sheet-ready > .mobile-dock-sheet-handle');
     });
 
     it('puts the road tools in one row under the panel header, not in it', () => {
@@ -188,14 +189,17 @@ describe('proposal details and compact card on phones', () => {
         expect(ruleBody(block, '#three-container \\.three-mode-isolation-banner')).toMatch(/top:\s*62px/);
     });
 
-    // The drill stack's own phone geometry (a full-width top-row card) went with it. The click stack
-    // (2D and 3D alike) is no panel and no sheet: an invisible full-width column whose section cards
-    // float over the map, so the dock sheet (.info-panel) never wires it; a panel it hosts is part of
-    // its card and must not become a sheet with a handle either.
-    it('keeps the click stacks out of the phone dock sheet, their cards floating over the map', () => {
+    // The outer 2D/3D click stack and unhosted proposal reader use the shared phone sheet controller;
+    // panels hosted inside a stack stay part of its card and must not get a nested handle.
+    it('gives outer click stacks and unhosted proposal readers the shared phone sheet sizing', () => {
         expect(clickStackPanel).toContain("el.className = 'click-stack right-dock-panel';");
         expect(read('js/three-click-stack.js')).toContain("el.className = 'click-stack right-dock-panel';");
-        expect(dockSheet).toContain("const PANEL_SELECTOR = '.info-panel.right-dock-panel:not(#proposal-details-panel):not(.is-hosted)';");
+        expect(dockSheet).toContain("const PANEL_SELECTOR = '.info-panel.right-dock-panel:not(.is-hosted)';");
+        expect(dockSheet).toContain(".map-sheet, .cb-dialog:not(.cb-dialog--message)");
+        expect(dockSheet).toContain('#click-stack, #three-click-stack');
+        expect(mobileSheetsCss).toMatch(/#map-container \.mobile-sheet-ready:not\(\.is-minimized\):not\(\.is-hosted\):not\(\[hidden\]\)/);
+        expect(mobileSheetsCss).toMatch(/height:\s*var\(--mobile-sheet-height, var\(--mobile-sheet-initial-height, 50dvh\)\) !important/);
+        expect(mobileSheetsCss).toMatch(/#map-container \.mobile-sheet-ready\.mobile-sheet-expanded/);
         const [phone] = mediaBlocksContaining(mapCss, '(max-width: 767.98px)', '#three-click-stack');
         const column = ruleBody(phone, '#click-stack,\\s*#three-click-stack');
         expect(column).toMatch(/left:\s*0/);
