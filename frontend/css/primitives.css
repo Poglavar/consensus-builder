@@ -46,7 +46,9 @@
     box-sizing: border-box;
     overflow: hidden;
     border-radius: var(--cb-radius-xl);
-    background: var(--cb-surface);
+    background: var(--cb-glass-sheet);
+    backdrop-filter: blur(var(--cb-panel-blur));
+    -webkit-backdrop-filter: blur(var(--cb-panel-blur));
     box-shadow: var(--cb-shadow-lg);
     color: var(--cb-text);
     font-family: var(--cb-font-sans);
@@ -109,11 +111,6 @@
 }
 
 /* A confirm with no header: the message is the body, the buttons the footer. */
-.cb-dialog--message .cb-dialog__body {
-    font-size: var(--cb-text-lg);
-    color: var(--cb-text);
-}
-
 @media (max-width: 767.98px) {
     .cb-dialog-overlay {
         padding: 0;
@@ -144,7 +141,7 @@
    .btn-danger   destructive: outlined red
    .btn-sm       the small size · .btn-block the full-width row · .btn-icon a square icon-only button
    [aria-pressed="true"]  the one selected look of every toggle: primary-soft fill, primary border.
-   No other class paints a button (backend/test/button-vocabulary.test.js); a surface may lay its
+   No other class paints a button (backend/test/ui-vocabulary.test.js); a surface may lay its
    buttons out (width, grid, order) but takes the look from here. Sheets lay theirs out as rows
    (css/map-shell.css). Everything is a token, so a theme changes the whole family at once. ---- */
 .btn {
@@ -629,21 +626,14 @@ textarea {
     white-space: nowrap;
 }
 
-.cb-badge--draft { background: var(--cb-surface-2); color: var(--cb-text-muted); }
-.cb-badge--applied { background: var(--cb-primary-soft); color: var(--cb-primary-soft-ink); }
-.cb-badge--published { background: var(--cb-info-soft); color: var(--cb-info-soft-ink); }
-.cb-badge--minted { background: var(--cb-warning-soft); color: var(--cb-warning-soft-ink); }
-.cb-badge--executed { background: var(--cb-success-soft); color: var(--cb-success-soft-ink); }
-.cb-badge--expired,
-.cb-badge--withdrawn { background: var(--cb-danger-soft); color: var(--cb-danger-soft-ink); }
-
-/* Tones for badges that are not a lifecycle rung (a check's outcome, a count, an environment). */
-.cb-badge--neutral { background: var(--cb-surface-2); color: var(--cb-text-muted); }
-.cb-badge--primary { background: var(--cb-primary-soft); color: var(--cb-primary-soft-ink); }
-.cb-badge--success { background: var(--cb-success-soft); color: var(--cb-success-soft-ink); }
-.cb-badge--warning { background: var(--cb-warning-soft); color: var(--cb-warning-soft-ink); }
-.cb-badge--danger { background: var(--cb-danger-soft); color: var(--cb-danger-soft-ink); }
-.cb-badge--info { background: var(--cb-info-soft); color: var(--cb-info-soft-ink); }
+/* Lifecycle hooks carry meaning; their appearance reuses the six shared tones.
+   Tones for badges also cover checks, counts, and environments without a lifecycle rung. */
+.cb-badge--draft, .cb-badge--neutral { background: var(--cb-surface-2); color: var(--cb-text-muted); }
+.cb-badge--applied, .cb-badge--primary { background: var(--cb-primary-soft); color: var(--cb-primary-soft-ink); }
+.cb-badge--executed, .cb-badge--success { background: var(--cb-success-soft); color: var(--cb-success-soft-ink); }
+.cb-badge--minted, .cb-badge--warning { background: var(--cb-warning-soft); color: var(--cb-warning-soft-ink); }
+.cb-badge--expired, .cb-badge--withdrawn, .cb-badge--danger { background: var(--cb-danger-soft); color: var(--cb-danger-soft-ink); }
+.cb-badge--published, .cb-badge--info { background: var(--cb-info-soft); color: var(--cb-info-soft-ink); }
 /* A count on a control (the dock's proposal count): filled, so it reads at a glance. */
 .cb-badge--count { background: var(--cb-primary); color: var(--cb-primary-ink); min-width: 20px; justify-content: center; padding: 0 var(--cb-space-1); }
 

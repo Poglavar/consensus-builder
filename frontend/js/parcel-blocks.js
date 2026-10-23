@@ -1948,7 +1948,7 @@ function addRejectionLabel(parcel, reason) {
     const label = L.marker([centroid[1], centroid[0]], {
         icon: L.divIcon({
             className: 'parcel-rejection-label',
-            html: `<span style="background: #fff3f3; color: #c00; border: 1px solid #c00; border-radius: 6px; padding: 2px 8px; font-size: 13px;">${reason}</span>`,
+            html: `<span class="cb-badge cb-badge--danger">${reason}</span>`,
             iconSize: [120, 24],
             iconAnchor: [60, 12]
         }),
@@ -2964,7 +2964,7 @@ function addBlockNameLabels() {
                 const label = L.marker([centroid[1], centroid[0]], {
                     icon: L.divIcon({
                         className: 'block-name-label',
-                        html: `<span style="background:rgba(255,255,200,0.85);color:#222;padding:2px 10px;border-radius:8px;font-weight:bold;font-size:15px;border:1.5px solid #222;box-shadow:0 1px 6px rgba(0,0,0,0.10);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;">${blockName}</span>`,
+                        html: `<span>${blockName}</span>`,
                         iconSize: [120, 24],
                         iconAnchor: [60, 12]
                     }),

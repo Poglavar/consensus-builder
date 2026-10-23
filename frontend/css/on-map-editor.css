@@ -24,8 +24,8 @@
     border-radius: var(--cb-radius-lg);
     background: var(--cb-glass-sheet);
     box-shadow: var(--cb-shadow-md);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(var(--cb-panel-blur));
+    -webkit-backdrop-filter: blur(var(--cb-panel-blur));
 }
 .on-map-editor__panel--wide { width: min(480px, calc(100vw - 32px)); }
 /* A layer's own panel (the Schelling plan) stands where editors open and wears their frame, but on

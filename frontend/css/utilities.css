@@ -5,18 +5,18 @@
 }
 
 .road-segment-item {
-    border: 1px solid rgba(26, 115, 232, 0.18);
+    border: 1px solid var(--cb-line);
     border-radius: 8px;
     padding: 10px 12px 10px 16px;
-    background: rgba(26, 115, 232, 0.04);
+    background: var(--cb-primary-soft);
     cursor: pointer;
     transition: border-color 0.2s ease, background-color 0.2s ease;
-    border-left: 6px solid rgba(26, 115, 232, 0.4);
+    border-left: 6px solid var(--cb-primary);
 }
 
 .road-segment-item:hover {
-    background: rgba(26, 115, 232, 0.08);
-    border-color: rgba(26, 115, 232, 0.4);
+    background: var(--cb-surface-3);
+    border-color: var(--cb-primary);
 }
 
 .road-segment-item__title {
@@ -118,7 +118,7 @@
 
 .status-bar.expanded {
     border-radius: 4px 4px 0 0;
-    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--cb-shadow-sm);
 }
 
 .status-bar.status-highlight {
@@ -133,8 +133,8 @@
     width: 12px;
     height: 12px;
     margin-right: 8px;
-    border: 2px solid rgba(51, 65, 85, 0.25);
-    border-top-color: #334155;
+    border: 2px solid var(--cb-line-strong);
+    border-top-color: var(--cb-text-muted);
     border-radius: 50%;
     animation: status-activity-spin 0.7s linear infinite;
 }
@@ -153,7 +153,7 @@
     .status-activity-spinner {
         animation: none;
         border-top-color: transparent;
-        background: #334155;
+        background: var(--cb-text-muted);
     }
 }
 
@@ -201,7 +201,7 @@
     border-radius: 4px 4px 0 0;
     max-height: 300px;
     overflow-y: auto;
-    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--cb-shadow-sm);
     z-index: var(--cb-z-map-raised);
 }
 
@@ -230,7 +230,7 @@
 }
 
 .status-log-entry.current-status:hover {
-    background-color: #e1f5fe;
+    background-color: var(--cb-primary-soft);
 }
 
 .status-log-time {
@@ -278,9 +278,9 @@ button.status-log-message {
     }
 
     25% {
-        background-color: #c8e6c9;
+        background-color: var(--cb-success-soft);
         /* Light Green highlight color */
-        box-shadow: 0 0 8px rgba(76, 175, 80, 0.7);
+        box-shadow: 0 0 8px color-mix(in srgb, var(--cb-success) 70%, transparent);
         /* Subtle green glow */
     }
 
@@ -426,7 +426,7 @@ body:has(#selection-tray) .map-feedback-stack {
 }
 
 .road-metrics-grid .metric-group {
-    border: 1px solid #e0e0e0;
+    border: 1px solid var(--cb-line);
     border-radius: 8px;
     padding: 8px;
     box-sizing: border-box;
@@ -570,8 +570,8 @@ body:has(#selection-tray) .map-feedback-stack {
 /* The parcel panel's Tools tab buttons are plain btn buttons now (index.html, css/panels.css). */
 
 .vertex-marker {
-    fill: #9C27B0;
-    stroke: white;
+    fill: var(--cb-primary);
+    stroke: var(--cb-surface);
     stroke-width: 1;
     opacity: 0.8;
     cursor: pointer;
@@ -579,7 +579,7 @@ body:has(#selection-tray) .map-feedback-stack {
 }
 
 .vertex-marker:hover {
-    fill: #7B1FA2;
+    fill: var(--cb-primary-hover);
     r: 6;
 }
 
@@ -604,7 +604,7 @@ body:has(#selection-tray) .map-feedback-stack {
     width: 14px;
     height: 14px;
     border: 2px solid var(--cb-line-strong);
-    border-top-color: #3b82f6;
+    border-top-color: var(--cb-primary);
     border-radius: 50%;
     animation: metric-spin 0.8s linear infinite;
     vertical-align: middle;
@@ -628,10 +628,10 @@ body:has(#selection-tray) .map-feedback-stack {
 
 /* New coordinates control */
 .coordinates-control {
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: var(--cb-glass-sheet);
     padding: 5px 10px;
     border-radius: 4px;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--cb-shadow-sm);
     font-size: 12px;
     font-family: monospace;
     line-height: 1.4;
@@ -646,9 +646,11 @@ body:has(#selection-tray) .map-feedback-stack {
     right: 30px;
     max-height: 70vh;
     overflow-y: auto;
-    background: var(--cb-surface);
+    background: var(--cb-glass-sheet);
+    backdrop-filter: blur(var(--cb-panel-blur));
+    -webkit-backdrop-filter: blur(var(--cb-panel-blur));
     border-radius: 8px;
-    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.18);
+    box-shadow: var(--cb-shadow-md);
     z-index: var(--cb-z-floating-list);
     /* Width intentionally not set to allow flexible sizing */
 }
@@ -681,7 +683,7 @@ body:has(#selection-tray) .map-feedback-stack {
     background-color: var(--cb-surface);
     padding: 10px 20px;
     border-radius: 20px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--cb-shadow-md);
     display: flex;
     gap: 10px;
     align-items: center;
@@ -701,17 +703,17 @@ body:has(#selection-tray) .map-feedback-stack {
 
 /* Animation Elements */
 .boundary-point {
-    fill: red;
+    fill: var(--cb-danger);
     r: 3;
 }
 
 .sample-point {
-    fill: blue;
+    fill: var(--cb-primary);
     r: 3;
 }
 
 .opposite-point {
-    fill: green;
+    fill: var(--cb-success);
     r: 3;
 }
 
@@ -721,23 +723,23 @@ body:has(#selection-tray) .map-feedback-stack {
 }
 
 .search-line {
-    stroke: rgba(100, 100, 100, 0.3);
+    stroke: color-mix(in srgb, var(--cb-text-muted) 30%, transparent);
     stroke-width: 1;
     stroke-dasharray: 2, 2;
 }
 
 .width-line-animation {
-    stroke: orange;
+    stroke: var(--cb-warning);
     stroke-width: 2;
 }
 
 .centerline-segment {
-    stroke: yellow;
+    stroke: var(--cb-warning);
     stroke-width: 3;
 }
 
 .final-centerline {
-    stroke: yellow;
+    stroke: var(--cb-warning);
     stroke-width: 3;
     stroke-dasharray: 10, 5;
 }
@@ -748,7 +750,7 @@ body:has(#selection-tray) .map-feedback-stack {
     background: var(--cb-surface);
     padding: 10px;
     border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--cb-shadow-sm);
 }
 
 .progress-bar {
@@ -772,29 +774,6 @@ body:has(#selection-tray) .map-feedback-stack {
     color: var(--cb-text-muted);
 }
 
-.button-group {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-.button-group button {
-    padding: 5px 10px;
-    background-color: var(--cb-primary);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.button-group button:hover {
-    background-color: var(--cb-primary-hover);
-}
-
-.button-group button:active {
-    background-color: #004085;
-}
 
 /* Block styles */
 .blocks-container {
@@ -804,37 +783,14 @@ body:has(#selection-tray) .map-feedback-stack {
     margin: 10px 0;
 }
 
-.block-rectangle {
-    background-color: var(--cb-surface-2);
-    border: 1px solid var(--cb-line);
-    border-radius: 4px;
-    padding: 8px 12px;
-    cursor: pointer;
-    transition: all 0.2s;
-    min-width: 60px;
-    text-align: center;
-    font-size: 14px;
-    color: var(--cb-text);
-}
-
-.block-rectangle:hover {
-    background-color: var(--cb-surface-3);
-    border-color: var(--cb-line-strong);
-}
-
-.block-rectangle.active {
-    background-color: var(--cb-primary);
-    border-color: var(--cb-primary-hover);
-    color: white;
-}
 
 .blocks-list {
     position: absolute;
     top: 20px;
     right: 20px;
-    background: var(--cb-glass);
+    background: var(--cb-glass-sheet);
     border-radius: 4px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--cb-shadow-sm);
     padding: 15px;
     font-family: var(--cb-font-sans);
     font-size: 14px;
@@ -879,7 +835,7 @@ body:has(#selection-tray) .map-feedback-stack {
 
 .block-item.active {
     background-color: var(--cb-primary);
-    color: white;
+    color: var(--cb-primary-ink);
 }
 
 .block-count {
@@ -888,7 +844,7 @@ body:has(#selection-tray) .map-feedback-stack {
 }
 
 .block-item.active .block-count {
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--cb-glass-sheet);
 }
 
 /* Blockify Sidebar Styles
@@ -1051,22 +1007,6 @@ input.proposal-author-name {
     font-size: 14px;
 }
 
-.proposal-parcel-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 4px 0;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-.proposal-parcel-item:last-child {
-    border-bottom: none;
-}
-
-.proposal-parcel-item .parcel-number {
-    font-weight: 600;
-    color: var(--cb-text);
-}
 
 .proposal-parcel-item .parcel-area {
     color: var(--cb-text-muted);
@@ -1086,7 +1026,7 @@ input.proposal-author-name {
 .turn-progress-bar {
     width: 100%;
     height: 8px;
-    background-color: #dee2e6;
+    background-color: var(--cb-surface-3);
     border-radius: 4px;
     overflow: hidden;
     margin-bottom: 4px;
@@ -1094,7 +1034,7 @@ input.proposal-author-name {
 
 .turn-progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #28a745 0%, #20c997 50%, #17a2b8 100%);
+    background: var(--cb-success);
     transition: width 0.1s ease-out;
     border-radius: 4px;
 }
@@ -1141,7 +1081,7 @@ input.proposal-author-name {
     position: absolute;
     top: 20px;
     right: 20px;
-    background: var(--cb-glass);
+    background: var(--cb-glass-sheet);
     border: 1px solid var(--cb-line-glass);
     border-radius: var(--cb-radius-pill);
     padding: 8px 15px 8px 12px;
@@ -1216,7 +1156,7 @@ input.proposal-author-name {
     bottom: var(--map-shell-bottom-clearance);
     border: 1px solid var(--cb-line-strong);
     border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--cb-shadow-md);
     /* One step above the parcel panel it shares the dock with, under the sheets: panels no longer
        step aside when a sheet opens, so a card at dialog level covered the sheet's own buttons. */
     z-index: calc(var(--cb-z-panel) + 20);
@@ -1256,7 +1196,7 @@ input.proposal-author-name {
            inside, or the user collapses the panel to its header strip. */
         max-height: 50vh;
         border-radius: 12px 12px 0 0;
-        box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.25);
+        box-shadow: var(--cb-shadow-md);
         box-sizing: border-box;
     }
 
@@ -1388,81 +1328,16 @@ input.proposal-author-name {
     gap: 15px;
 }
 
-.proposal-manager-actions .btn-delete {
-    background: none;
-    border: none;
-    color: #ff4d4d;
-    font-size: 1.4em;
-    cursor: pointer;
-    padding: 0 5px;
-}
-
-.proposal-manager-actions .btn-delete:hover {
-    color: #b30000;
-}
 
 /* The switch - the box around the slider */
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 44px;
-    height: 24px;
-}
 
 /* Hide default HTML checkbox */
-.switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
 
 /* The slider */
-.slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    -webkit-transition: .4s;
-    transition: .4s;
-}
 
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 18px;
-    width: 18px;
-    left: 3px;
-    bottom: 3px;
-    background-color: var(--cb-surface);
-    -webkit-transition: .4s;
-    transition: .4s;
-}
-
-input:checked+.slider {
-    background-color: #2196F3;
-}
-
-input:focus+.slider {
-    box-shadow: 0 0 1px #2196F3;
-}
-
-input:checked+.slider:before {
-    -webkit-transform: translateX(20px);
-    -ms-transform: translateX(20px);
-    transform: translateX(20px);
-}
 
 /* Rounded sliders */
-.slider.round {
-    border-radius: 24px;
-}
 
-.slider.round:before {
-    border-radius: 50%;
-}
 
 /* Memory monitor overlay (a developer readout, js/memory-monitor.js): a glass card on the tokens,
    its fold toggle a btn btn-quiet btn-sm btn-icon. */
@@ -1471,7 +1346,7 @@ input:checked+.slider:before {
     top: 16px;
     right: 16px;
     width: 260px;
-    background: var(--cb-glass);
+    background: var(--cb-glass-sheet);
     color: var(--cb-text);
     border: 1px solid var(--cb-line-glass);
     border-radius: var(--cb-radius-lg);
@@ -1479,7 +1354,8 @@ input:checked+.slider:before {
     font-size: 12px;
     line-height: 1.4;
     z-index: var(--cb-z-dev-overlay);
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(var(--cb-panel-blur));
+    -webkit-backdrop-filter: blur(var(--cb-panel-blur));
     pointer-events: auto;
 }
 

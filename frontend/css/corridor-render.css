@@ -13,10 +13,10 @@
     align-items: center;
     justify-content: center;
     transform-origin: center;
-    color: rgba(255, 255, 255, 0.94);
+    color: var(--cb-text-strong);
     font-size: 16px;
     line-height: 1;
-    text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+    text-shadow: var(--cb-text-halo);
 }
 
 .corridor-decoration--pedestrian .corridor-decoration-inner {
@@ -34,9 +34,9 @@
 }
 
 .corridor-decoration--tree .corridor-decoration-inner {
-    color: #245c2a;
+    color: var(--cb-success);
     font-size: 17px;
-    text-shadow: 0 0 2px rgba(255, 255, 255, 0.9);
+    text-shadow: var(--cb-text-halo);
 }
 
 /* Selected road segment: the amber dashes crawl so the scoped segment is unmistakable.

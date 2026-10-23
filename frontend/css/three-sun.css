@@ -58,7 +58,7 @@
     justify-content: space-between;
     gap: var(--cb-space-2);
     margin-top: var(--cb-space-1);
-    color: var(--sheet-muted);
+    color: var(--cb-text-muted);
     font-size: var(--cb-text-xs);
     font-variant-numeric: tabular-nums;
 }

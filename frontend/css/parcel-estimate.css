@@ -5,7 +5,9 @@
     overflow: auto;
     box-sizing: border-box;
     padding: 12px;
-    background: var(--cb-surface);
+    background: var(--cb-glass-sheet);
+    backdrop-filter: blur(var(--cb-panel-blur));
+    -webkit-backdrop-filter: blur(var(--cb-panel-blur));
     color: var(--cb-text);
     border: 1px solid var(--cb-line);
     border-radius: 10px;

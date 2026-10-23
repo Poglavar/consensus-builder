@@ -438,7 +438,7 @@
         parcelCommand('detectBlock', { surfaces: [], modes: ['2d'], labelKey: 'parcelMenu.actions.detectBlock', fallbackLabel: 'Detect block', icon: 'fas fa-fill-drip' }),
         // What the panel does not offer: shown as the parcel section's buttons.
         parcelCommand('compare', { labelKey: 'parcelMenu.actions.compare', fallbackLabel: 'Compare proposals here', icon: 'fas fa-code-compare' }),
-        parcelCommand('useAsSite', { modes: ['2d'], labelKey: 'parcelMenu.actions.useAsSite', fallbackLabel: 'Use as site', icon: 'fas fa-draw-polygon' }),
+        parcelCommand('useAsSite', { modes: ['2d'], labelKey: 'parcelMenu.actions.useAsSite', fallbackLabel: 'Custom site', icon: 'fas fa-draw-polygon' }),
 
         // ---- Ground menu (a click where there is no parcel), in menu order ----
         groundCommand('drawSite', { labelKey: 'groundMenu.actions.drawSite', fallbackLabel: 'Draw a site here', icon: 'fas fa-draw-polygon' }),

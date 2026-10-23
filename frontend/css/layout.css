@@ -4,7 +4,6 @@
 body {
     display: flex;
     flex-direction: row;
-    width: 100vw;
     height: var(--app-viewport-height);
     min-height: var(--app-viewport-height);
     padding-bottom: var(--app-safe-area-bottom);
@@ -25,7 +24,6 @@ body {
     flex-direction: column;
     padding: 0;
     overflow: hidden;
-    background: var(--cb-surface);
 }
 
 .road-analysis-modal .road-analysis-modal__body {

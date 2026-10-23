@@ -6,15 +6,6 @@
 
 /* The guides' palette, read through the product tokens (css/tokens.css): the accent is the
    product primary, the ground and the paper are the page and card surfaces. */
-:root {
-    --guide-ink: var(--cb-text-strong);
-    --guide-muted: var(--cb-text-muted);
-    --guide-blue: var(--cb-primary);
-    --guide-sand: var(--cb-bg);
-    --guide-paper: var(--cb-surface);
-    --guide-line: var(--cb-line);
-}
-
 html {
     height: 100%;
 }
@@ -27,8 +18,8 @@ body {
         "header header"
         "nav main";
     height: 100%;
-    background-color: var(--guide-sand);
-    color: var(--guide-ink);
+    background-color: var(--cb-bg);
+    color: var(--cb-text-strong);
 }
 
 body > .cb-page-header {
@@ -42,8 +33,8 @@ body > .cb-page-header {
     min-height: 0;
     overflow-y: auto;
     padding: 20px 12px;
-    background: var(--guide-paper);
-    border-right: 1px solid var(--guide-line);
+    background: var(--cb-surface);
+    border-right: 1px solid var(--cb-line);
 }
 
 .sidebar-links {
@@ -64,13 +55,13 @@ body > .cb-page-header {
 
 .sidebar-links [aria-current="page"] {
     background: var(--cb-primary-soft);
-    color: var(--guide-blue);
+    color: var(--cb-primary);
 }
 
 .sidebar-section {
     margin-top: 24px;
     padding-top: 20px;
-    border-top: 1px solid var(--guide-line);
+    border-top: 1px solid var(--cb-line);
 }
 
 /* Main content */
@@ -79,7 +70,7 @@ body > .cb-page-header {
     min-width: 0;
     min-height: 0;
     overflow-y: auto;
-    background-color: var(--guide-sand);
+    background-color: var(--cb-bg);
 }
 
 .container {
@@ -95,7 +86,7 @@ body > .cb-page-header {
 
 .intro h2 {
     font-size: clamp(28px, 4vw, 44px);
-    color: var(--guide-ink);
+    color: var(--cb-text-strong);
     line-height: 1.08;
     letter-spacing: -0.035em;
     margin-bottom: 12px;
@@ -103,7 +94,7 @@ body > .cb-page-header {
 
 .intro p {
     font-size: 16px;
-    color: var(--guide-muted);
+    color: var(--cb-text-muted);
     max-width: 640px;
     margin: 0 auto;
     line-height: 1.6;
@@ -116,8 +107,8 @@ body > .cb-page-header {
     align-items: center;
     text-align: left;
     padding: 28px;
-    background: var(--guide-paper);
-    border: 1px solid var(--guide-line);
+    background: var(--cb-surface);
+    border: 1px solid var(--cb-line);
     border-radius: 22px;
     box-shadow: var(--cb-shadow-sm);
 }
@@ -137,7 +128,7 @@ body > .cb-page-header {
 .eyebrow {
     display: inline-block;
     margin-bottom: 10px;
-    color: var(--guide-blue);
+    color: var(--cb-primary);
     font-size: 12px;
     font-weight: 800;
     letter-spacing: 0.12em;
@@ -154,13 +145,13 @@ body > .cb-page-header {
 
 .guide-card {
     display: block;
-    background: var(--guide-paper);
+    background: var(--cb-surface);
     border-radius: 14px;
     padding: 24px;
     box-shadow: var(--cb-shadow-sm);
     text-decoration: none;
     color: inherit;
-    border: 1px solid var(--guide-line);
+    border: 1px solid var(--cb-line);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -174,7 +165,7 @@ body > .cb-page-header {
     height: 48px;
     border-radius: 10px;
     background: var(--cb-primary-soft);
-    color: var(--guide-blue);
+    color: var(--cb-primary);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -185,12 +176,12 @@ body > .cb-page-header {
 .guide-card h3 {
     margin: 0 0 8px 0;
     font-size: 18px;
-    color: var(--guide-blue);
+    color: var(--cb-primary);
 }
 
 .guide-card p {
     margin: 0;
-    color: var(--guide-muted);
+    color: var(--cb-text-muted);
     font-size: 14px;
     line-height: 1.5;
 }
@@ -226,16 +217,16 @@ body > .cb-page-header {
 .video-card {
     overflow: hidden;
     min-width: 0;
-    border: 1px solid var(--guide-line);
+    border: 1px solid var(--cb-line);
     border-radius: 14px;
-    background: var(--guide-paper);
+    background: var(--cb-surface);
     color: inherit;
     text-decoration: none;
     box-shadow: var(--cb-shadow-sm);
 }
 
 .video-card:hover {
-    border-color: var(--guide-blue);
+    border-color: var(--cb-primary);
 }
 
 .video-card-preview {
@@ -254,8 +245,8 @@ body > .cb-page-header {
 .video-card-play,
 .video-card-duration {
     position: absolute;
-    background: var(--guide-ink);
-    color: var(--guide-paper);
+    background: var(--cb-text-strong);
+    color: var(--cb-surface);
     border-radius: 6px;
 }
 
@@ -294,16 +285,16 @@ body > .cb-page-header {
 .video-card-copy p {
     margin: 0;
     font-size: 13px;
-    color: var(--guide-muted);
+    color: var(--cb-text-muted);
 }
 
 .howto-video {
     margin: 24px 0;
     scroll-margin-top: 24px;
     padding: 16px;
-    border: 1px solid var(--guide-line);
+    border: 1px solid var(--cb-line);
     border-radius: 14px;
-    background: var(--guide-paper);
+    background: var(--cb-surface);
     box-shadow: var(--cb-shadow-sm);
 }
 
@@ -316,7 +307,7 @@ body > .cb-page-header {
 
 .video-duration {
     font-size: 13px;
-    color: var(--guide-muted);
+    color: var(--cb-text-muted);
     font-variant-numeric: tabular-nums;
 }
 
@@ -326,20 +317,20 @@ body > .cb-page-header {
     height: auto;
     aspect-ratio: 16 / 9;
     border-radius: 8px;
-    background: var(--guide-ink);
+    background: var(--cb-text-strong);
 }
 
 .howto-video figcaption {
     margin-top: 12px;
     font-size: 13px;
-    color: var(--guide-muted);
+    color: var(--cb-text-muted);
     line-height: 1.6;
 }
 
 .guide-footer {
     margin-top: 48px;
     padding-top: 20px;
-    border-top: 1px solid var(--guide-line);
+    border-top: 1px solid var(--cb-line);
     font-size: 14px;
     line-height: 1.6;
 }
@@ -352,13 +343,13 @@ body > .cb-page-header {
 
 .guide-section > h2,
 #izrada > h2 {
-    color: var(--guide-ink);
+    color: var(--cb-text-strong);
     font-size: 22px;
     margin: 0 0 20px;
 }
 
 #izrada > h3 {
-    color: var(--guide-ink);
+    color: var(--cb-text-strong);
     margin: 34px 0 0;
 }
 
@@ -392,8 +383,8 @@ body > .cb-page-header {
     gap: 16px;
     align-items: center;
     padding: 18px 20px;
-    background: var(--guide-paper);
-    border: 1px solid var(--guide-line);
+    background: var(--cb-surface);
+    border: 1px solid var(--cb-line);
     border-radius: 12px;
 }
 
@@ -401,7 +392,7 @@ body > .cb-page-header {
     flex: 0 0 46px;
     height: 46px;
     border-radius: 50%;
-    background: var(--guide-blue);
+    background: var(--cb-primary);
     color: var(--cb-primary-ink);
     display: flex;
     align-items: center;
@@ -411,13 +402,13 @@ body > .cb-page-header {
 }
 
 .view-list h3 {
-    color: var(--guide-ink);
+    color: var(--cb-text-strong);
     font-size: 17px;
     margin: 0 0 4px;
 }
 
 .view-list p {
-    color: var(--guide-muted);
+    color: var(--cb-text-muted);
     line-height: 1.5;
     margin: 0;
 }
@@ -436,11 +427,11 @@ body > .cb-page-header {
 
 .step {
     position: relative;
-    background: var(--guide-paper);
+    background: var(--cb-surface);
     border-radius: 14px;
     padding: 22px 24px 22px 70px;
     margin-bottom: 22px;
-    border: 1px solid var(--guide-line);
+    border: 1px solid var(--cb-line);
 }
 
 .step::before {
@@ -452,7 +443,7 @@ body > .cb-page-header {
     width: 34px;
     height: 34px;
     border-radius: 50%;
-    background: var(--guide-blue);
+    background: var(--cb-primary);
     color: var(--cb-primary-ink);
     font-weight: 700;
     display: flex;
@@ -463,7 +454,7 @@ body > .cb-page-header {
 .step h3 {
     margin: 4px 0 10px 0;
     font-size: 18px;
-    color: var(--guide-ink);
+    color: var(--cb-text-strong);
 }
 
 .step p {
@@ -510,7 +501,7 @@ body > .cb-page-header {
 
 .callout.note {
     background: var(--cb-surface-2);
-    border: 1px solid var(--guide-line);
+    border: 1px solid var(--cb-line);
     color: var(--cb-text);
 }
 
@@ -531,7 +522,7 @@ body > .cb-page-header {
     position: relative;
     border-radius: 8px;
     overflow: hidden;
-    border: 1px solid var(--guide-line);
+    border: 1px solid var(--cb-line);
     background: var(--cb-surface-2);
     min-height: 120px;
     display: flex;
@@ -565,7 +556,7 @@ body > .cb-page-header {
 }
 
 .howto-shot figcaption {
-    color: var(--guide-muted);
+    color: var(--cb-text-muted);
     font-size: 13px;
     margin-top: 6px;
     font-style: italic;
@@ -585,8 +576,8 @@ body > .cb-page-header {
 
 .flow-strip .flow-step {
     flex: 1 1 130px;
-    background: var(--guide-paper);
-    border: 1px solid var(--guide-line);
+    background: var(--cb-surface);
+    border: 1px solid var(--cb-line);
     border-radius: 12px;
     padding: 14px 12px;
     text-align: center;
@@ -595,20 +586,20 @@ body > .cb-page-header {
 .flow-strip .flow-step i {
     display: block;
     font-size: 20px;
-    color: var(--guide-blue);
+    color: var(--cb-primary);
     margin-bottom: 8px;
 }
 
 .flow-strip .flow-step strong {
     display: block;
     font-size: 14px;
-    color: var(--guide-ink);
+    color: var(--cb-text-strong);
     margin-bottom: 3px;
 }
 
 .flow-strip .flow-step span {
     font-size: 12px;
-    color: var(--guide-muted);
+    color: var(--cb-text-muted);
     line-height: 1.4;
 }
 
@@ -623,8 +614,8 @@ body > .cb-page-header {
     width: 100%;
     border-collapse: collapse;
     margin-top: 18px;
-    background: var(--guide-paper);
-    border: 1px solid var(--guide-line);
+    background: var(--cb-surface);
+    border: 1px solid var(--cb-line);
     border-radius: 10px;
     overflow: hidden;
     font-size: 14px;
@@ -632,7 +623,7 @@ body > .cb-page-header {
 
 .tool-table th {
     background: var(--cb-surface-2);
-    color: var(--guide-blue);
+    color: var(--cb-primary);
     text-align: left;
     padding: 11px 14px;
     font-size: 13px;
@@ -641,7 +632,7 @@ body > .cb-page-header {
 
 .tool-table td {
     padding: 11px 14px;
-    border-top: 1px solid var(--guide-line);
+    border-top: 1px solid var(--cb-line);
     color: var(--cb-text);
     line-height: 1.5;
     vertical-align: top;
@@ -650,18 +641,18 @@ body > .cb-page-header {
 .tool-table td:first-child {
     white-space: nowrap;
     font-weight: 600;
-    color: var(--guide-ink);
+    color: var(--cb-text-strong);
 }
 
 .tool-table td:first-child i {
-    color: var(--guide-blue);
+    color: var(--cb-primary);
     margin-right: 7px;
     width: 16px;
     text-align: center;
 }
 
 .tool-table tr.is-grouped td {
-    background: var(--guide-sand);
+    background: var(--cb-bg);
 }
 
 /* Wide content must scroll inside itself rather than pushing the page sideways. */
@@ -711,7 +702,7 @@ body > .cb-page-header {
         overflow-y: visible;
         padding: 8px 0;
         border-right: 0;
-        border-bottom: 1px solid var(--guide-line);
+        border-bottom: 1px solid var(--cb-line);
     }
 
     .sidebar-links {
@@ -793,6 +784,6 @@ body > .cb-page-header {
 
 /* Caption downloads and readable transcripts accompany the narrated guide clips. */
 .video-links { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: .6rem; }
-.video-transcript { margin-top: 1rem; color: var(--guide-muted); line-height: 1.6; }
-.video-transcript summary { cursor: pointer; color: var(--guide-blue); }
+.video-transcript { margin-top: 1rem; color: var(--cb-text-muted); line-height: 1.6; }
+.video-transcript summary { cursor: pointer; color: var(--cb-primary); }
 .video-transcript p { white-space: pre-line; }

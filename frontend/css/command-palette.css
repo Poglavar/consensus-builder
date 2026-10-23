@@ -26,7 +26,9 @@
     box-sizing: border-box;
     overflow: hidden;
     border-radius: 12px;
-    background: var(--cb-surface);
+    background: var(--cb-glass-sheet);
+    backdrop-filter: blur(var(--cb-panel-blur));
+    -webkit-backdrop-filter: blur(var(--cb-panel-blur));
     box-shadow: var(--cb-shadow-lg);
 }
 

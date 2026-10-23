@@ -35,7 +35,7 @@ async function openProposalFromList(page: import('@playwright/test').Page, propo
 }
 
 for (const viewport of VIEWPORTS) {
-  test(`parcel info panel in the stack copies its id, resizes on phones and closes with the stack on ${viewport.name} @features`, async ({ mockApi: page }) => {
+  test(`parcel info panel in the stack copies its section reference and closes with Escape on ${viewport.name} @features`, async ({ mockApi: page }) => {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await openCity(page);
     await openParcel(page);
@@ -46,20 +46,12 @@ for (const viewport of VIEWPORTS) {
     await expect(panel.locator('#parcel-info-minimize')).toBeHidden();
     await expect(panel.locator('.panel-header .close-button')).toBeHidden();
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
-    await panel.locator('.parcel-title-id').click();
+    await page.locator('#click-stack .click-stack__copy-reference').click();
     await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(PARCEL_ID);
-    if (viewport.width < 768) {
-      // The parcel panel is hosted in the click stack's parcel section; the stack is the sheet that resizes.
-      const sheet = page.locator('#click-stack');
-      const resize = sheet.locator(':scope > .mobile-dock-sheet-handle');
-      const originalHeight = await sheet.evaluate(element => element.getBoundingClientRect().height);
-      await resize.click();
-      await resize.press('ArrowUp');
-      await expect.poll(() => sheet.evaluate(element => element.getBoundingClientRect().height)).toBeGreaterThan(originalHeight);
-      await resize.press('ArrowDown');
-      await expect.poll(() => sheet.evaluate(element => Math.round(element.getBoundingClientRect().height))).toBe(Math.round(originalHeight));
-    }
-    await page.locator('#click-stack .click-stack__close').click();
+    // Sections own their surfaces; the shared positioning column has no header or resize bar.
+    await expect(page.locator('#click-stack')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    await expect(page.locator('#click-stack > .mobile-dock-sheet-handle')).toHaveCount(0);
+    await page.keyboard.press('Escape');
     await expect(page.locator('#click-stack')).toBeHidden();
     await expect(panel).toBeHidden();
   });

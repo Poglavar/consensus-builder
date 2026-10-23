@@ -58,6 +58,25 @@ test.describe('Click stack @core', () => {
     const panel = parcels.locator('.click-stack__body #parcel-info-panel');
     await expect(panel).toBeVisible();
     await expect(panel).toHaveClass(/is-hosted/);
+    await expect(parcels.locator('.click-stack__row-title')).toHaveText(`Cadastral parcel ${PARCEL_ID}`);
+    await expect(parcels.locator('.click-stack__row-detail')).toBeEmpty();
+    await expect(stack.locator('.click-stack__head')).toHaveCount(0);
+    await expect(panel.locator('.panel-header')).toBeHidden();
+    const designTab = panel.getByRole('tab', { name: 'Design', exact: true });
+    await expect(designTab).toHaveAttribute('aria-selected', 'true');
+    await expect(panel.getByRole('tab').first()).toHaveText('Design');
+    const selection = panel.locator('.multi-select-group');
+    const customSite = panel.getByRole('button', { name: 'Custom site', exact: true });
+    await expect(selection).toBeVisible();
+    await expect(customSite).toBeVisible();
+    const selectionBox = await selection.boundingBox();
+    const customBox = await customSite.boundingBox();
+    const tabsBox = await panel.locator('.parcel-tabs').boundingBox();
+    expect(selectionBox && customBox && tabsBox).toBeTruthy();
+    expect(selectionBox!.x).toBeLessThan(customBox!.x);
+    expect(selectionBox!.y + selectionBox!.height).toBeLessThanOrEqual(tabsBox!.y);
+    // The tab choice survives a different parcel and section collapse/reopen.
+    await panel.getByRole('tab', { name: 'Info', exact: true }).click();
     await expect(page.locator('#parcel-info-title')).toContainText(PARCEL_ID);
     await expect(panel.locator('[data-parcel-tab-id="propose-tab"]')).toBeVisible();
     for (const id of ['parcel.propose', 'parcel.details', 'parcel.proposals', 'parcel.tools', 'parcel.history', 'parcel.selectMore', 'parcel.detectBlock']) {
@@ -81,6 +100,7 @@ test.describe('Click stack @core', () => {
     await clickMapPoint(page, 15.9829, 45.80025);
     await expect(stack).toBeVisible();
     await expect(page.locator('#parcel-info-title')).toContainText(SECOND_PARCEL_ID);
+    await expect(stackSection(page, 'parcels').getByRole('tab', { name: 'Info', exact: true })).toHaveAttribute('aria-selected', 'true');
     await expect(stackSection(page, 'parcels').locator('#parcel-info-panel')).toBeVisible();
 
     // Escape closes it, and the hosted panel with it.

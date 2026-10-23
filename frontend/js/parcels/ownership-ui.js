@@ -478,7 +478,7 @@
                 : '';
             const safeDetail = shareDetail ? (typeof global.escapeHtml === 'function' ? global.escapeHtml(shareDetail) : shareDetail) : '';
             const shareHtml = safeShare
-                ? `<span style="color: #666; font-size: 0.9em;"${safeDetail ? ` title="${safeDetail}"` : ''}>${safeShare}</span>`
+                ? `<span class="parcel-owner-share"${safeDetail ? ` title="${safeDetail}"` : ''}>${safeShare}</span>`
                 : '';
             return `
             <div class="owner-row" style="display: flex; justify-content: space-between; gap: 8px;">
@@ -930,10 +930,10 @@
                 }
                 const fallbackSection = fallbackHtml
                     ? (hasSimulatedOwner
-                        ? `<div class="owner-fallback-label" style="margin-top: 6px; font-size: 0.85em; color: #666;">${tParcel('panel.parcel.owner.simulated', {}, 'Simulated owner')}</div>${fallbackHtml}`
-                        : `<div style="margin-top: 6px; color: #666;">${fallbackHtml}</div>`)
+                        ? `<div class="owner-fallback-label">${tParcel('panel.parcel.owner.simulated', {}, 'Simulated owner')}</div>${fallbackHtml}`
+                        : `<div class="owner-fallback-label">${fallbackHtml}</div>`)
                     : buildRealOwnerRowsHtml([]);
-                target.innerHTML = `<span class="owner-error" style="color: #c0392b;">${tParcel('panel.parcel.owner.error', {}, 'Unable to load real owner data.')}</span>${fallbackSection}`;
+                target.innerHTML = `<span class="owner-error">${tParcel('panel.parcel.owner.error', {}, 'Unable to load real owner data.')}</span>${fallbackSection}`;
                 const fallbackCount = fallbackHtml ? 1 : 0;
                 updateOwnersCount(fallbackCount);
                 updateOwnershipTypeLabel([]);

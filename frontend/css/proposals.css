@@ -474,25 +474,9 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.4px;
-    color: #556;
+    color: var(--cb-text-muted);
 }
 
-.proposal-filter-group select,
-.proposal-filter-group input {
-    border: 1px solid #ccd3dd;
-    border-radius: 6px;
-    padding: 6px 10px;
-    font-size: 13px;
-    background-color: var(--cb-surface);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.proposal-filter-group select:focus,
-.proposal-filter-group input:focus {
-    outline: none;
-    border-color: #4c8cfa;
-    box-shadow: 0 0 0 3px rgba(76, 140, 250, 0.18);
-}
 
 .proposal-list-modal-body {
     padding: 0;
@@ -592,12 +576,12 @@
     height: 80px;
     border-radius: 6px;
     overflow: visible;
-    background-color: #eef2f7;
-    border: 1px solid #d6dde6;
+    background-color: var(--cb-surface-2);
+    border: 1px solid var(--cb-line);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #5b6470;
+    color: var(--cb-text-muted);
 }
 
 .proposal-thumb-img {
@@ -681,7 +665,7 @@ textarea.proposal-description-input {
 }
 
 .proposal-market-status {
-    color: #66788a;
+    color: var(--cb-text-muted);
     font-size: 11px;
 }
 
@@ -742,12 +726,12 @@ textarea.proposal-description-input {
 .proposal-market-currency {
     flex: 0 0 auto;
     padding: 0 10px;
-    color: #52687b;
+    color: var(--cb-text-muted);
     font-size: 13px;
 }
 
 .proposal-funding-eyebrow {
-    color: #66788a;
+    color: var(--cb-text-muted);
     font-size: 11px;
 }
 
@@ -761,19 +745,6 @@ textarea.proposal-description-input {
     margin-top: 10px;
 }
 
-.proposal-item {
-    padding: 10px;
-    border: 1px solid var(--cb-line);
-    border-radius: 4px;
-    margin-bottom: 8px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.proposal-item:hover {
-    background-color: var(--cb-surface-2);
-    border-color: var(--cb-primary);
-}
 
 .proposal-title {
     font-weight: 600;
@@ -843,10 +814,10 @@ textarea.proposal-description-input {
 .proposal-agent-provenance {
     margin: 10px 0 14px;
     padding: 13px;
-    border: 1px solid #ddd6fe;
+    border: 1px solid var(--cb-line);
     border-radius: 10px;
-    background: linear-gradient(145deg, #faf8ff 0%, #f5f3ff 100%);
-    color: #312e81;
+    background: var(--cb-info-soft);
+    color: var(--cb-info-soft-ink);
 }
 
 .proposal-agent-provenance-head {
@@ -857,7 +828,7 @@ textarea.proposal-description-input {
 }
 
 .proposal-agent-eyebrow {
-    color: #6d28d9;
+    color: var(--cb-info);
     font-size: 10px;
     font-weight: 800;
     letter-spacing: 0.08em;
@@ -866,7 +837,7 @@ textarea.proposal-description-input {
 
 .proposal-agent-persona {
     margin-top: 2px;
-    color: #2e1065;
+    color: var(--cb-text-strong);
     font-size: 16px;
     font-weight: 750;
 }
@@ -874,17 +845,17 @@ textarea.proposal-description-input {
 .proposal-agent-payment {
     flex: 0 0 auto;
     padding: 4px 8px;
-    border: 1px solid #c4b5fd;
+    border: 1px solid var(--cb-line-strong);
     border-radius: 999px;
     background: var(--cb-surface);
-    color: #5b21b6;
+    color: var(--cb-info-soft-ink);
     font-size: 12px;
     font-weight: 750;
 }
 
 .proposal-agent-rationale {
     margin: 10px 0;
-    color: #4c466f;
+    color: var(--cb-text);
     font-size: 13px;
     line-height: 1.45;
 }
@@ -901,7 +872,7 @@ textarea.proposal-description-input {
 }
 
 .proposal-agent-facts dt {
-    color: #7c6fa3;
+    color: var(--cb-text-muted);
     font-size: 10px;
     font-weight: 700;
     letter-spacing: 0.04em;
@@ -911,7 +882,7 @@ textarea.proposal-description-input {
 .proposal-agent-facts dd {
     margin: 2px 0 0;
     overflow: hidden;
-    color: #312e81;
+    color: var(--cb-info-soft-ink);
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     font-size: 11px;
     text-overflow: ellipsis;
@@ -925,15 +896,15 @@ textarea.proposal-description-input {
     gap: 7px;
     margin-top: 12px;
     padding-top: 10px;
-    border-top: 1px solid #ddd6fe;
-    color: #6d28d9;
+    border-top: 1px solid var(--cb-line);
+    color: var(--cb-info);
     font-size: 10px;
     font-weight: 750;
     letter-spacing: 0.02em;
 }
 
 .proposal-agent-flow .fa-arrow-right {
-    color: #a78bfa;
+    color: var(--cb-text-faint);
     font-size: 9px;
 }
 
@@ -960,7 +931,7 @@ textarea.proposal-description-input {
 }
 
 .proposal-mint-state.minted-glow:hover {
-    box-shadow: 0 0 12px rgba(16, 185, 129, 0.35);
+    box-shadow: 0 0 12px color-mix(in srgb, var(--cb-success) 35%, transparent);
 }
 
 .proposal-mint-state {
@@ -968,9 +939,9 @@ textarea.proposal-description-input {
 }
 
 @keyframes mintedPulse {
-    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.35); }
-    50% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0.1); }
-    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--cb-success) 35%, transparent); }
+    50% { box-shadow: 0 0 0 8px color-mix(in srgb, var(--cb-success) 10%, transparent); }
+    100% { box-shadow: 0 0 0 0 transparent; }
 }
 .proposal-conditionality {
     font-size: 11px;
@@ -984,14 +955,14 @@ textarea.proposal-description-input {
 
 .proposal-conditionality.conditional {
     background-color: var(--cb-primary-soft);
-    color: #4338ca;
-    border: 1px solid #c7d2fe;
+    color: var(--cb-primary-soft-ink);
+    border: 1px solid var(--cb-primary);
 }
 
 .proposal-conditionality.partial {
     background-color: var(--cb-warning-soft);
-    color: #c2410c;
-    border: 1px solid #fed7aa;
+    color: var(--cb-warning-soft-ink);
+    border: 1px solid var(--cb-warning);
 }
 
 .proposal-apply-hint {
@@ -1019,7 +990,7 @@ textarea.proposal-description-input {
 
 .proposal-parcels-list .proposal-parcel-item {
     padding: 6px 10px;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--cb-line);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -1057,7 +1028,7 @@ textarea.proposal-description-input {
     --pc-a-fill: color-mix(in srgb, var(--pc-a) 38%, transparent);
     --pc-b-fill: color-mix(in srgb, var(--pc-b) 38%, transparent);
     max-width: none;
-    padding: 0;
+    padding: var(--cb-space-1) 0;
     border: 0;
 }
 .parcel-compare:not([open]) {
@@ -1243,7 +1214,7 @@ textarea.proposal-description-input {
     display: flex;
     justify-content: space-between;
     margin-bottom: 2px;
-    padding: 0;
+    padding: var(--cb-space-1) 0;
 }
 
 /* Ancestors, descendants, and parcels sections should stack vertically */
@@ -1286,7 +1257,8 @@ textarea.proposal-description-input {
 }
 
 .proposal-details .metric-label {
-    font-weight: 500;
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text);
     color: var(--cb-text-muted);
     min-width: 140px;
     margin-bottom: 2px;
@@ -1410,15 +1382,15 @@ textarea.proposal-description-input {
 
 .proposal-descendants-list .descendant-item:hover {
     background-color: var(--cb-surface-3);
-    border-color: #adb5bd;
+    border-color: var(--cb-line-strong);
 }
 
 .proposal-parcel-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0;
-    border-bottom: 1px solid #f1f1f1;
+    padding: var(--cb-space-1) 0;
+    border-bottom: 1px solid var(--cb-line);
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
@@ -1430,7 +1402,8 @@ textarea.proposal-description-input {
 }
 
 .proposal-parcel-item .parcel-number {
-    font-weight: 500;
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text);
 }
 
 .proposal-parcel-item .parcel-details {
@@ -1553,7 +1526,7 @@ textarea.proposal-description-input {
     align-items: center;
     justify-content: center;
     min-height: 140px;
-    background: #f4f4f4;
+    background: var(--cb-surface-2);
     border-radius: 4px;
 }
 
@@ -1561,7 +1534,7 @@ textarea.proposal-description-input {
     width: 24px;
     height: 24px;
     border: 3px solid var(--cb-line);
-    border-top-color: #888;
+    border-top-color: var(--cb-text-muted);
     border-radius: 50%;
     animation: proposal-screenshot-spin 0.8s linear infinite;
 }
@@ -1592,7 +1565,9 @@ textarea.proposal-description-input {
 .share-plan-panel-content {
     position: absolute;
     inset: 0;
-    background: var(--cb-glass);
+    background: var(--cb-glass-sheet);
+    backdrop-filter: blur(var(--cb-panel-blur));
+    -webkit-backdrop-filter: blur(var(--cb-panel-blur));
     box-shadow: var(--cb-shadow-lg);
     display: flex;
     flex-direction: column;

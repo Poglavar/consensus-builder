@@ -62,6 +62,14 @@ describe('selector hygiene', () => {
     });
 });
 
+// Campaign artwork has an intentionally independent palette; application UI has none of its own.
+const campaignCss = new Set(['css/hackathon-deck.css', 'css/hackathon-demo.css', 'css/pitch-variants.css']);
+describe('application palettes come only from theme tokens', () => {
+    it.each(cssFiles.filter(file => !campaignCss.has(file)))('%s has no hardcoded palette', file => {
+        expect(now.css[file].colourLiterals).toBe(0);
+    });
+});
+
 describe('literal ratchets (may only go down; rerun design-audit.mjs --write after lowering)', () => {
     it('has a baseline', () => {
         expect(baseline && baseline.css).toBeTruthy();

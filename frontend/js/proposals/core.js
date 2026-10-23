@@ -440,8 +440,7 @@ function addLocalBadgeToCard(card, t) {
     const label = t('modal.roadWidth.proposalList.labels.local', 'Local');
     const safe = (typeof escapeHtml === 'function') ? escapeHtml(label) : label;
     mintBadge.insertAdjacentHTML('afterend',
-        `<span class="proposal-mint-state proposal-mint-state--compact proposal-local-state" `
-        + `style="color:#334155;background:#f1f5f9;border:1px solid #cbd5e1;">${safe}</span>`);
+        `<span class="cb-badge cb-badge--neutral proposal-mint-state proposal-mint-state--compact proposal-local-state">${safe}</span>`);
 }
 
 function markProposalCardDownloaded(cardKey, imported) {

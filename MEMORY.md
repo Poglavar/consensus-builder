@@ -866,3 +866,5 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
   in an isolated node host, so a second parcel-cutting implementation cannot diverge from the app.
 - Draft previews travel in compressed fragments and import as unpublished local records; current
   app-contract gaps and live acceptance checks are recorded in `mcp.md`.
+
+- 2026-10-23: UI themes use one token palette and shared translucent surface/blur; click selection shows independent connected cards, with Design first, parcel tab retention, and selection controls before Custom site.

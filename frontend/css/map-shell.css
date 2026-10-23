@@ -42,7 +42,6 @@
 .map-shell-slot--tray {
     position: absolute;
     left: 50%;
-    bottom: var(--map-shell-bottom);
     transform: translateX(-50%);
     z-index: var(--cb-z-map-chrome);
 }
@@ -137,8 +136,8 @@ details[open] > summary.sheet-section-title::before {
     gap: var(--cb-space-3);
     padding: var(--cb-space-2) var(--cb-space-3) calc(var(--cb-space-2) + env(safe-area-inset-bottom, 0px));
     background: var(--cb-glass-sheet);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(var(--cb-panel-blur));
+    -webkit-backdrop-filter: blur(var(--cb-panel-blur));
     border-top: 1px solid var(--cb-line);
     font-size: var(--cb-text-sm);
 }
@@ -178,8 +177,8 @@ body.three-mode-active :is(.map-editor-toolbar, .area-monitor-creation-panel) {
     border-top: 1px solid var(--cb-line);
     border-radius: 0;
     background: var(--cb-glass-sheet);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(var(--cb-panel-blur));
+    -webkit-backdrop-filter: blur(var(--cb-panel-blur));
     color: var(--cb-text);
     box-shadow: var(--cb-shadow-md);
     z-index: var(--cb-z-notice);
@@ -345,8 +344,8 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
 }
 
 @keyframes map-shell-proposals-arrival-pulse {
-    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.44); }
-    50% { transform: scale(1.12); box-shadow: 0 0 0 5px rgba(37, 99, 235, 0); }
+    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 color-mix(in srgb, var(--cb-primary) 44%, transparent); }
+    50% { transform: scale(1.12); box-shadow: 0 0 0 5px transparent; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -373,8 +372,8 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
 }
 
 @keyframes map-shell-running-pulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.55); }
-    50% { box-shadow: 0 0 0 5px rgba(22, 163, 74, 0); }
+    0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--cb-success) 55%, transparent); }
+    50% { box-shadow: 0 0 0 5px transparent; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -432,8 +431,8 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     flex-direction: column;
     /* Every panel over the map lets a little of it through (user rule 2026-10-17; --cb-glass-sheet). */
     background: var(--cb-glass-sheet);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(var(--cb-panel-blur));
+    -webkit-backdrop-filter: blur(var(--cb-panel-blur));
     border: 1px solid var(--cb-line-glass);
     border-radius: 12px;
     box-shadow: var(--cb-shadow-md);
@@ -592,11 +591,6 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
    desktop and 44px touch targets on phones. */
 .map-sheet {
     --sheet-row-height: 36px;
-    --sheet-border: var(--cb-line-strong);
-    --sheet-muted: var(--cb-text-muted);
-    --sheet-hover: var(--cb-surface-2);
-    --sheet-focus: var(--cb-focus);
-    --sheet-danger: var(--cb-danger);
 }
 
 .control-group {
@@ -606,7 +600,7 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
 
 .control-group-title {
     margin: 0 0 6px;
-    color: var(--sheet-muted, var(--cb-text));
+    color: var(--cb-text-muted);
     font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.02em;
@@ -641,7 +635,7 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
 .map-sheet select:focus-visible,
 .map-sheet input:focus-visible,
 .map-sheet a:focus-visible {
-    outline: 2px solid var(--sheet-focus);
+    outline: 2px solid var(--cb-focus);
     outline-offset: 2px;
 }
 
@@ -657,14 +651,14 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
 
 .map-sheet .share-plan-subtext {
     padding-left: 24px;
-    color: var(--sheet-muted);
+    color: var(--cb-text-muted);
 }
 
 .map-sheet select {
     width: 100%;
     min-height: var(--sheet-row-height);
     padding: 6px 10px;
-    border: 1px solid var(--sheet-border);
+    border: 1px solid var(--cb-line-strong);
     border-radius: 8px;
     background: var(--cb-surface);
     color: var(--cb-text);
@@ -701,11 +695,11 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     width: 16px;
     height: 16px;
     margin: 0;
-    accent-color: var(--sheet-focus);
+    accent-color: var(--cb-focus);
 }
 
 .map-sheet .checkbox-group label:hover {
-    background: var(--sheet-hover);
+    background: var(--cb-surface-2);
 }
 
 /* A disabled row (3D lock, a section gated off, a control not built yet) reads as disabled. */
@@ -724,7 +718,7 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     width: 16px;
     height: 16px;
     margin: 0;
-    accent-color: var(--sheet-focus);
+    accent-color: var(--cb-focus);
 }
 
 .map-sheet .checkbox-group .ownership-legend-swatch {
@@ -763,7 +757,7 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
 }
 
 .sheet-field-label {
-    color: var(--sheet-muted);
+    color: var(--cb-text-muted);
     font-size: 12px;
     font-weight: 600;
 }
@@ -771,7 +765,7 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
 /* A quiet one-line readout (parcels in view, parcels counted). */
 .sheet-note {
     margin: 0 0 12px;
-    color: var(--sheet-muted);
+    color: var(--cb-text-muted);
     font-size: 12.5px;
 }
 
@@ -871,7 +865,7 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
 
 .activity-simulation .sheet-section-title {
     margin-bottom: 6px;
-    color: var(--sheet-muted);
+    color: var(--cb-text-muted);
     font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.02em;
@@ -886,7 +880,7 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
 
 /* Play / pause is a btn btn-icon btn-sm toggle (css/primitives.css): running is aria-pressed. */
 .activity-simulation-settings > summary:focus-visible {
-    outline: 2px solid var(--sheet-focus);
+    outline: 2px solid var(--cb-focus);
     outline-offset: 2px;
 }
 
@@ -894,7 +888,7 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     display: inline-flex;
     gap: 4px;
     min-width: 0;
-    color: var(--sheet-muted);
+    color: var(--cb-text-muted);
     font-size: 12.5px;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
@@ -909,7 +903,7 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
 .activity-simulation-settings > summary {
     width: fit-content;
     padding: 2px 0;
-    color: var(--sheet-muted);
+    color: var(--cb-text-muted);
     font-size: 12.5px;
     cursor: pointer;
 }
@@ -1038,7 +1032,7 @@ body.app-loading .map-shell-cluster {
     }
 
     /* The bar's own sheets are full screens above it, not bottom sheets: the bar stays as the way
-       between them. They take the bar's veil, so the map still shows through, blurred. */
+       between them. They keep the shared panel glass, so the map still shows through, blurred. */
     .map-sheet--dock {
         top: 0;
         bottom: var(--map-shell-dock-height);
@@ -1048,8 +1042,6 @@ body.app-loading .map-shell-cluster {
         padding-bottom: 0;
         border: 0;
         border-radius: 0;
-        background: var(--cb-glass-veil);
-        backdrop-filter: blur(12px);
         box-shadow: none;
     }
 

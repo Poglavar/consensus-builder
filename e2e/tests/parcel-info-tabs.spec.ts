@@ -12,7 +12,7 @@ const tab = (page: any, id: string) => page.locator(`#parcel-info-panel .parcel-
 // In the click stack the parcel panel shows Info · Propose (the build palette) · Tools (an icon);
 // the parcel's proposals are the stack's Designs section, so its Proposals tab, − and × are hidden.
 test.describe('Parcel info panel tabs @core', () => {
-  test('Info tab is active by default and ends with the collapsed History section', async ({ mockApi: page }) => {
+  test('Info tab ends with the collapsed History section', async ({ mockApi: page }) => {
     await openDetails(page);
     await expect(page.locator('#info-tab')).toBeVisible();
     for (const id of ['propose-tab', 'proposals-tab', 'tools-tab']) await expect(page.locator(`#${id}`)).toBeHidden();
@@ -30,15 +30,15 @@ test.describe('Parcel info panel tabs @core', () => {
     await expect(tab(page, 'proposals-tab')).toBeHidden();
     await expect(panel.locator('#parcel-info-minimize')).toBeHidden();
     await expect(panel.locator('.panel-header .close-button')).toBeHidden();
-    // The section's row folds the parcel; the stack's × closes the spot.
+    // The section's row folds the parcel; Escape closes the spot.
     await stackSection(page, 'parcels').locator('.click-stack__row').click();
     await expect(panel).toBeHidden();
     await expect(page.locator('#click-stack')).toBeVisible();
-    await page.locator('#click-stack .click-stack__close').click();
+    await page.keyboard.press('Escape');
     await expect(page.locator('#click-stack')).toBeHidden();
   });
 
-  test('Propose holds the palette', async ({ mockApi: page }) => {
+  test('Design holds the palette', async ({ mockApi: page }) => {
     await openDetails(page);
     await tab(page, 'propose-tab').click();
     await expect(page.locator('#propose-tab')).toBeVisible();
@@ -65,8 +65,8 @@ test.describe('Parcel info panel tabs @core', () => {
     await expect(designs.locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'false');
     await expect(designs.locator('.click-stack__row-title')).toHaveText('Design');
     await designs.locator('.click-stack__row').click();
-    await expect(page.locator('#planning-inspector')).toBeVisible();
-    await expect(designs.locator('#planning-inspector')).toBeVisible();
+    await expect(page.locator('#proposal-details-panel')).toBeVisible();
+    await expect(designs.locator('#proposal-details-panel')).toBeVisible();
   });
 
   test('a published proposal on the parcel is listed without being in this browser, and opening it imports it', async ({ mockApi: page }) => {
@@ -76,7 +76,7 @@ test.describe('Parcel info panel tabs @core', () => {
     await expect(designs.locator('.click-stack__row-detail')).toHaveText('Published park');
     expect(await page.evaluate(() => (window as any).proposalStorage.getAllProposals().length)).toBe(0);
     await designs.locator('.click-stack__row').click();
-    await expect(designs.locator('#planning-inspector')).toContainText('Published park');
+    await expect(designs.locator('#proposal-details-panel')).toContainText('Published park');
     await expect.poll(() => page.evaluate(cid => (window as any).proposalStorage.getAllProposals()
       .some((p: any) => p.published?.cid === cid), publishedCid)).toBe(true);
   });
@@ -98,7 +98,7 @@ test.describe('Parcel info panel tabs @core', () => {
     await expect(page.locator('#info-content')).toBeVisible();
   });
 
-  test('multi-select checkbox is available in Info content', async ({ mockApi: page }) => {
+  test('multi-select checkbox remains available above the tabs', async ({ mockApi: page }) => {
     await openDetails(page);
     await expect(page.locator('#multiSelectCheckboxInfo')).toHaveAttribute('type', 'checkbox');
   });

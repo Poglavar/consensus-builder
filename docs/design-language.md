@@ -68,7 +68,7 @@ Every non-map page carries the same header: logo, "Back to the map", language. N
   never a class, and has one look (primary-soft fill, primary border). The close control is
   `close-circle-btn`. Map chrome keeps `map-shell-button` and the view strip's `map-mode-tile`;
   the parcel and ground menus keep `parcel-menu__action`. Nothing else may paint a button
-  (`backend/test/button-vocabulary.test.js`): a component class beside `btn` may position
+  (`backend/test/ui-vocabulary.test.js`): a component class beside `btn` may position
   (width, grid, order), never colour. No gold, teal or gradient buttons; the only highlight is
   `cb-shimmer`, on at most one control per surface.
 - **Links** are `cb-link`: primary colour, underlined, on an `<a>` or on a `<button class="cb-link">`
@@ -81,7 +81,10 @@ Every non-map page carries the same header: logo, "Back to the map", language. N
   `.prompt`) on `cb-dialog-overlay > cb-dialog > cb-dialog__header / __body / __footer` with one
   `close-circle-btn` in the header; a message dialog has no header. Sizes `--sm / --md / --lg /
   --xl`; on a phone every dialog is a bottom sheet. Nothing calls the browser's `confirm`, `alert`
-  or `prompt`. Sheets use `map-sheet`; right-dock panels use `right-dock-panel`; anchored menus
+  or `prompt`. Dialogs, sheets, and floating panels use `--cb-glass-sheet` with backdrop blur in
+  both themes, including phone layouts; `--cb-panel-blur` owns their shared blur. Headers and large embedded sections stay transparent so
+  they do not cover the glass; inputs, buttons, and small cards keep their own surface roles.
+  Sheets use `map-sheet`; right-dock panels use `right-dock-panel`; anchored menus
   use the parcel menu's chrome. No other overlay families; z-index only from the `--cb-z-*`
   ladder; the backdrop is `--cb-backdrop`.
 - **Tabs** are `cb-tabs > cb-tab` with `role="tab"` and `aria-selected`; **segmented controls**
@@ -95,6 +98,11 @@ Every non-map page carries the same header: logo, "Back to the map", language. N
   whole app (Settings → Appearance, `js/ui/theme.js`). A literal colour in a component is a theme
   bug. Inline `style=` on a control is never a look: data-driven values only (a lane colour, a
   measured width).
+- **Role count.** Reuse the six badge tones (neutral, primary, success, warning, danger, info)
+  plus the count variant; lifecycle hooks share those definitions. Feature styles own layout
+  and semantic states, with colors taken directly from the shared roles. Do not add local
+  palette aliases or a new visual component for an existing control. Parcel/proposal rows have
+  one owner in `panels.css`; parcel-detail rows have one owner in `proposals.css`.
 - **Form controls** inherit the base rules in `primitives.css`; no per-component input styling.
 - **Breakpoint:** phones are `max-width: 767.98px`, desktop `min-width: 768px`. No other edge.
 - **Stacking:** `--cb-z-*` ladder only. No 13001, no 100001, no `!important` z-index.
@@ -186,7 +194,8 @@ inline colours.
   while open: done for the lens dialogs and the welcome dialog; still to do for the minted list, share,
   create proposal, bets, wallet, parcel compare, status log and the five editors.
 - The campaign pages (deck, deck2, deck3, hackathon demo, pitch variants) keep their own dialect by decision.
-- The remaining 504 colour literals outside the vocabulary (legacy inner content), ratcheted downwards.
+- Application CSS has no literal palette outside `tokens.css`; campaign artwork keeps its
+  independent palette by the decision above. `design-tokens.test.js` enforces this boundary.
 
 ## Migration order (done)
 

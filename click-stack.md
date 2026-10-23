@@ -1,4 +1,4 @@
-# Click stack: one panel for everything under a map click
+# Click stack: sections for everything under a map click
 
 Design of record for 2D map selection (user decisions, 2026-10-22). It replaces the drill
 panel (`#drill-stack-panel`), the parcel menu popover on left click, and the separate
@@ -14,12 +14,13 @@ right-side panels that clicks used to open one at a time.
   published ones it has no copy of (a published one is imported when opened). They follow the
   point's own hits, and only the point's own hits open by default and decide the same-spot close,
   so a click on open ground still opens the parcel.
-- The result opens as **one right-docked panel** (the shared `--right-dock-width`; a bottom
-  sheet on phones): a column of sections, with small gaps and connector lines between them to
-  show that they are separate layers of one spot.
+- The result opens as **individual cards directly over the map**, in the shared right-dock
+  column (`--right-dock-width`; full width on phones). Small gaps and short connector lines
+  show that these sections describe layers of one spot. The positioning container has no
+  background, heading, or close button; each section owns the shared translucent surface.
 - Clicking the **same spot again** (the same topmost object) closes the panel, and so does a
-  click on ground with nothing on it; a click on a different spot shows that spot. Escape and
-  the close button close it too. This lets the map be explored without the panel.
+  click on ground with nothing on it; a click on a different spot shows that spot. Escape
+  closes the selection too. This lets the map be explored without the panel.
 
 ## Sections, top to bottom (only those present at the point)
 
@@ -44,13 +45,17 @@ right-side panels that clicks used to open one at a time.
     (opens the agreement panel).
   - Design: the proposal summary and actions, plus the agreements it belongs to as a strip.
   - Built: the building record. Permitted: the massing inspector.
-  - Cadastral or formed parcel: the parcel info panel. Its tabs (Info, Propose, Tools) and
-    Info-tab controls (Select multiple, Detect block, History) are the parcel's actions; the
-    section adds buttons only for what the panel lacks: Compare proposals here and Use as site.
-    The other parcel commands stay in the command palette. In the stack the panel's Proposals
-    tab and its − and × are hidden (the Designs section lists the parcel's proposals, the row
-    folds the section and the stack's × closes it); outside the stack (a multi-parcel selection,
-    a detected block) the panel keeps them.
+  - Cadastral or formed parcel: the parcel info panel. The cadastral section heading is
+    **Cadastral parcel <reference>**; it replaces the panel's duplicate identity heading and
+    the former area/ownership summary. Source and formed-ground provenance remains in Info.
+    **Select multiple parcels** (Manually / Detect block) sits above the tabs, before
+    **Custom site**. Custom site starts an editable working boundary; it does not change the
+    parcel layout and remains available for drawing a design over that boundary.
+    **Design · Info · Tools** are the tabs. Design opens first; a selected tab stays selected
+    on subsequent parcel clicks. The panel's Proposals tab is hidden inside the stack because
+    Designs already lists those records. Outside the stack the panel retains Proposals and
+    its standalone heading/close controls. Hosted Built/Permitted inspectors have no close
+    button: their section heading collapses them or another section takes over.
 - The map highlight follows the expanded section and its selected instance.
 - **Memory:** the kind of the expanded section is remembered (also across reloads). The next
   click expands that kind if it exists there, otherwise the topmost section.
@@ -64,4 +69,4 @@ right-side panels that clicks used to open one at a time.
 - `frontend/js/click-stack/click-stack-panel.js`: the panel; hosts the existing panels
   (planning inspector, proposal card, parcel info panel) inside the expanded section.
 - The parcel menu popover is removed. Shift multi-selection and its tray stay; "use as site"
-  lives in the parcel section and the selection tray.
+  lives in the parcel section as Custom site and in the selection tray.

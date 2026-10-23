@@ -4,16 +4,17 @@ import { openCity, clickMapPoint, PARCEL_ID, PARCEL_GEOMETRY, runParcelCommand, 
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
 
-test('click stack Close dismisses the parcel and History opens its actual history card', async ({ mockApi: page }) => {
+test('Escape dismisses the parcel and History opens its actual history card', async ({ mockApi: page }) => {
   await openCity(page);
   const stack = page.locator('#click-stack');
   await clickMapPoint(page, 15.9822, 45.80025);
   await expect(stack).toBeVisible();
-  await stack.locator('.click-stack__close').click();
+  await page.keyboard.press('Escape');
   await expect(stack).toBeHidden();
   await expect(page.locator('#parcel-info-panel')).toBeHidden();
   // Elsewhere on the same parcel: one physical click at one point is counted once.
   await openParcelAt(page, 15.9821, 45.8002);
+  await page.locator('#parcel-info-panel [data-parcel-tab-id="info-tab"]').click();
   // The History section sits collapsed at the end of the Info tab; opening it fetches the history.
   const history = page.locator('#parcel-info-panel [data-parcel-history]');
   await expect(history.first()).toBeVisible();
@@ -117,12 +118,12 @@ test('parcel section Compare opens both proposals and Details follows the chosen
   }
 });
 
-test('click stack Close dismisses the bare-ground section', async ({ mockApi: page }) => {
+test('Escape dismisses the bare-ground section', async ({ mockApi: page }) => {
   await openCity(page);
   await clickMapPoint(page, 15.98255, 45.80025);
   const stack = page.locator('#click-stack');
   await expect(stack.locator('.click-stack__section[data-kind="ground"]')).toBeVisible();
-  await stack.locator('.click-stack__close').click();
+  await page.keyboard.press('Escape');
   await expect(stack).toBeHidden();
 });
 

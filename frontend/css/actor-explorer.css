@@ -11,6 +11,8 @@
 .ae-section-title { margin:0; font-size:1.15rem; }
 .ae-muted { color:var(--cb-text-muted); }
 .ae-filters,.ae-profiles,.ae-activity,.ae-run-detail { margin:0 0 14px; padding:12px; background:var(--cb-surface); border:1px solid var(--cb-line); border-radius:var(--cb-radius-lg); }
+/* Embedded sections share the dialog's glass instead of painting an opaque layer over it. */
+.activity-actors :where(.ae-filters, .ae-profiles, .ae-activity, .ae-run-detail) { background:transparent; }
 .ae-filters { display:flex; flex-wrap:wrap; gap:8px; }
 .ae-filters input { flex:1 1 260px; min-width:0; }
 .ae-filters input,.ae-filters select { min-height:var(--cb-control-height); }

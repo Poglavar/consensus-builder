@@ -10,8 +10,8 @@
     overflow: hidden;
     color: var(--cb-text);
     background: var(--cb-glass-sheet);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(var(--cb-panel-blur));
+    -webkit-backdrop-filter: blur(var(--cb-panel-blur));
     border: 1px solid var(--cb-line);
     border-radius: var(--cb-radius-lg);
     box-shadow: var(--cb-shadow-md);

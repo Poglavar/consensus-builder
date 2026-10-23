@@ -1450,20 +1450,38 @@
                     onclick="(window.Parcels?.uiParcelPanel?.hideParcelInfoPanel || window.hideParcelInfoPanel || function(){})();">×</button>
             </div>
 
+            <div class="cb-actions parcel-context-actions">
+                <div class="checkbox-group multi-select-group">
+                    <span class="multi-select-title" data-i18n-key="panel.parcel.selectMultiple">Select multiple
+                        parcels</span>
+                    <div class="multi-select-options">
+                        <label>
+                            <input type="checkbox" id="multiSelectCheckboxInfo"
+                                onchange="multiParcelSelection.toggle({ preserveSelectedParcel: true })">
+                            <span data-i18n-key="panel.parcel.selectManually">Manually</span>
+                        </label>
+                        <button type="button" class="btn btn-primary btn-sm multi-select-detect-btn"
+                            data-i18n-key="panel.parcel.detectBlock"
+                            onclick="(window.animateFloodfillFromSelected || function(){})();">Detect block</button>
+                    </div>
+                </div>
+            </div>
+
+
             <!-- Tab Navigation -->
-            <!-- Propose holds the palette of things to create; Proposals lists what already exists
+            <!-- Design holds the palette of things to create; Proposals lists what already exists
                  here (its count rides in a badge); Tools is an icon so four tabs fit a phone. The
                  strip is the shared cb-tabs (css/primitives.css); parcel-tab-btn / parcel-tabs stay
                  as the hooks switchParcelTab (js/parcels/proposals.js) and the specs find them by. -->
             <div class="cb-tabs cb-tabs--fill parcel-tabs" role="tablist">
                 <button type="button" class="cb-tab parcel-tab-btn" role="tab" aria-selected="true"
+                    aria-controls="propose-tab" data-parcel-tab-id="propose-tab"
+                    onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'propose-tab')"><span
+                        class="parcel-tab-label" data-i18n-key="proposalDrafts.tabs.design">Design</span></button>
+                <button type="button" class="cb-tab parcel-tab-btn" role="tab" aria-selected="false"
                     aria-controls="info-tab" data-parcel-tab-id="info-tab"
                     onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'info-tab')"><span
                         class="parcel-tab-label" data-i18n-key="panel.parcel.tabInfo">Info</span></button>
-                <button type="button" class="cb-tab parcel-tab-btn" role="tab" aria-selected="false"
-                    aria-controls="propose-tab" data-parcel-tab-id="propose-tab"
-                    onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'propose-tab')"><span
-                        class="parcel-tab-label" data-i18n-key="panel.parcel.tabPropose">Propose</span></button>
                 <button type="button" class="cb-tab parcel-tab-btn" role="tab" aria-selected="false"
                     aria-controls="proposals-tab" data-parcel-tab-id="proposals-tab"
                     onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'proposals-tab')"><span
@@ -1478,21 +1496,7 @@
 
             <div class="panel-body">
                 <!-- Info Tab -->
-                <div id="info-tab" class="parcel-tab-content" role="tabpanel">
-                    <div class="checkbox-group multi-select-group">
-                        <span class="multi-select-title" data-i18n-key="panel.parcel.selectMultiple">Select multiple
-                            parcels</span>
-                        <div class="multi-select-options">
-                            <label>
-                                <input type="checkbox" id="multiSelectCheckboxInfo"
-                                    onchange="multiParcelSelection.toggle({ preserveSelectedParcel: true })">
-                                <span data-i18n-key="panel.parcel.selectManually">Manually</span>
-                            </label>
-                            <button type="button" class="btn btn-primary btn-sm multi-select-detect-btn"
-                                data-i18n-key="panel.parcel.detectBlock"
-                                onclick="(window.animateFloodfillFromSelected || function(){})();">Detect block</button>
-                        </div>
-                    </div>
+                <div id="info-tab" class="parcel-tab-content" role="tabpanel" hidden>
                     <div id="info-content"></div>
                     <!-- The parcel's permanent history, collapsed; js/proposals/parcel-history-card.js
                          fetches it the first time it is opened. Outside #info-content, which is
@@ -1500,8 +1504,8 @@
                     <div id="parcel-history-section"></div>
                 </div>
 
-                <!-- Propose Tab -->
-                <div id="propose-tab" class="parcel-tab-content" role="tabpanel" hidden>
+                <!-- Design Tab -->
+                <div id="propose-tab" class="parcel-tab-content" role="tabpanel">
                     <div id="propose-content"></div>
                 </div>
 

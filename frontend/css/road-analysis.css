@@ -90,3 +90,21 @@
 .segment-metrics {
     margin-top: 8px;
 }
+
+/* The optional diagnostic panel shares the map's surface; JS only supplies its content. */
+#debug-log {
+    position: absolute;
+    bottom: var(--cb-space-3);
+    right: var(--cb-space-3);
+    z-index: var(--cb-z-map-chrome);
+    width: 300px;
+    max-height: 200px;
+    overflow-y: auto;
+    padding: var(--cb-space-3);
+    border-radius: var(--cb-radius-sm);
+    background: var(--cb-glass-sheet);
+    backdrop-filter: blur(var(--cb-panel-blur));
+    -webkit-backdrop-filter: blur(var(--cb-panel-blur));
+    color: var(--cb-text);
+    font: var(--cb-text-sm)/var(--cb-leading) var(--cb-font-mono);
+}
