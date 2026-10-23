@@ -245,7 +245,7 @@ agreement also returns a link that shows it on the map.
 | `ugt_explain` | A domain term → its vocabulary entry | `vocabulary.md` |
 | `ugt_activity`, `ugt_support_status`, `ugt_oracle_events`, `ugt_list_attesters`, `ugt_inspect_verified_fact` | as today | exist |
 
-### Draft (H, L): nothing stored, nothing signed
+### Draft (H, L): nothing published, nothing signed
 
 Each returns `{ design (design/v1), cid, takes: [parcel ids], warnings, previewUrl }`. Geometry is
 built on the server from intent with the app's own pure modules, so a draft has exactly the CID the
