@@ -415,3 +415,31 @@ is replaced by `ugt_inspect_verified_fact`, which returns the x402 challenge for
 - Any signing or custody on the hosted server (decided).
 - Accounts, OAuth or per-user state on the hosted server.
 - Mainnet, EVM agreements, Canton.
+
+### Paid evaluation follow-up: preview handoff (2026-10-23)
+
+The user authorized the remaining 20 cases with an additional US$3 cap. Real runs exposed both
+intermittent public-source HTTP 502s and two model responses that altered characters in otherwise
+valid long fragment URLs. Artifact-only success was insufficient: the scorer now requires the final
+response to deliver the exact returned preview/approval links for a qualifying artifact.
+Hosted HTTP now wraps private fragments in short, cryptographically random bearer links. Only the
+fragment URL is retained, in bounded process memory (256 entries; at most 24 hours). Expiration,
+eviction or restart invalidates a link. A GET redirects to the unchanged fragment with no-store
+and no-referrer; no pin, index write or wallet action occurs. The local stdio transport retains
+direct fragments. The reviewed nginx config includes the preview route; production is unchanged.
+
+- Headless unit tests: short links, HTTP, evaluator and registration (4 files, 25 tests): passed.
+- Headless unit tests: same 4 files / 25 tests after exact-link scoring: passed.
+- The serial evaluation was stopped with its in-flight batch preserved, then continued with four
+  local workers. A provider connection timeout interrupted five known batches and ten uncertain
+  submissions. A read-only inventory reconciled all 26 accepted batches; no unmatched submissions
+  existed. Known batch IDs were resumed and confirmed unaccepted submissions cleared. Initial
+  worker caps totaled US$3; completed workers release unused allowance to the same interrupted
+  cases. The aggregate cap remains US$3, including all previous spend. Evaluation checkpoints
+  retain the original attempts; no result is inferred from pending batches.
+
+- Headless unit tests: exact URL-token delivery (1 file, 7 tests): passed; altered and appended URL characters fail scoring.
+- Free live-source stock MCP client check: a Madrid road returned a 67-character private link;
+  GET returned 302/no-store and decoded to the exact canonical design CID.
+
+- Headless unit tests: configured preview-host routing (1 file, 9 tests): passed after review identified that an explicitly configured preview hostname also needs admission by the host/origin guard.

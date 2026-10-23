@@ -254,8 +254,11 @@ Failures return `{ code, message, next }`.
 `ugt_find_place`, `ugt_parcel_context`, design/agreement reads, markets and `ugt_explain` discover
 the place and its contract. The intent tools draft roads, buildings, spaces, parcel layouts and
 urban rules with the app's pure modules; `ugt_modify_design` makes a fork with `origin.cid` and typed
-changes. Previews travel in bounded compressed URL fragments and become local browser drafts,
-without a pin or index write. Above the URL limit the canonical artifact and CID are still returned with
+changes. Local stdio previews travel in bounded compressed URL fragments. Hosted HTTP wraps them in short
+unguessable bearer links so agents do not have to reproduce long encoded strings. Up to 256 links
+live in process memory for at most 24 hours; expiration, eviction or a server restart requires a
+fresh preview. Opening one redirects with no-store and no-referrer; the app imports the artifact
+as a local browser draft without a pin or index write. Above the URL limit the canonical artifact and CID are still returned with
 `previewStatus: publication-required`; its recovery has `confirm: false` until the person explicitly
 chooses publication. Agreement drafts run the app's formation handlers in an isolated fabric over
 complete cadastral source ground. Single-building ground follows the app’s footprint-parcel rule; stations remain content on their

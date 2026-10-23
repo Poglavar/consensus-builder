@@ -7,7 +7,7 @@ import { join } from 'node:path';
 import { once } from 'node:events';
 import * as turf from '@turf/turf';
 import { buildEvalTasks } from '../agents/mcp-eval-tasks.js';
-import { scoreArtifact, runEval } from '../scripts/mcp-eval.mjs';
+import { scoreArtifact, scoreConversation, runEval } from '../scripts/mcp-eval.mjs';
 import { createMcpHttpService } from '../agents/mcp-http.mjs';
 import { createUrbanGameTheoryMcpServer } from '../agents/mcp-server.mjs';
 import { cidOfObject } from '../cid.js';
@@ -24,9 +24,16 @@ describe('MCP agent evaluation artifacts', () => {
         const artifact = { untrusted: { design }, cid: cidOfObject(design), takes: ['A'], previewUrl: 'https://app.example/designs#draft=fixture' };
         const task = { expected: { goal: 'road-track', drivingLanes: 2, cycleLanes: 0 } };
         expect(scoreArtifact(task, [artifact]).passed).toBe(true);
+        expect(scoreArtifact(task, [{ ...artifact, previewUrl: `https://app.example/mcp/previews/${'a'.repeat(32)}`, previewStatus: 'private-link' }]).passed).toBe(true);
         expect(scoreArtifact({ expected: { ...task.expected, drivingLanes: 4 } }, [artifact]).passed).toBe(false);
         expect(scoreArtifact(task, [{ ...artifact, cid: 'invented' }])).toEqual({ passed: false, reason: 'cid-mismatch' });
         expect(scoreArtifact(task, [{ message: 'I made a road.' }]).passed).toBe(false);
+        const record = { artifacts: [artifact], messages: [{ role: 'assistant', content: [{ type: 'text', text: artifact.previewUrl + 'corrupted' }] }] };
+        expect(scoreConversation(task, record)).toEqual({ passed: false, reason: 'preview-link-not-delivered' });
+        record.messages[0].content[0].text = artifact.previewUrl.replace('fixture', 'changed');
+        expect(scoreConversation(task, record)).toEqual({ passed: false, reason: 'preview-link-not-delivered' });
+        record.messages[0].content[0].text = artifact.previewUrl;
+        expect(scoreConversation(task, record).passed).toBe(true);
     });
     it('scores the actual approval target, amount and side', () => {
         const task = { expected: { action: 'bet', target: 'account', amount: '0.05', side: 'yes' } };
@@ -49,7 +56,7 @@ describe('paid evaluation orchestration without a paid API', () => {
             retrieve: vi.fn(async () => ({ processing_status: 'ended' })),
             async *results(id) { yield { result: { type: 'succeeded', message: { model: 'fixture-model', usage: { input_tokens: 100, output_tokens: 50 },
                 content: id === 'batch-1' ? [{ type: 'tool_use', id: 'draft-1', name: 'ugt_draft_road', input: args }]
-                    : [{ type: 'text', text: 'The returned preview is ready.' }] } } }; }
+                    : [{ type: 'text', text: 'The returned preview is ready: https://app.example/designs#draft=fixture' }] } } }; }
         } } };
         const options = { origin: `http://127.0.0.1:${service.http.address().port}`, model: 'fixture-model', budgetUsd: 1,
             inputUsdPerMillion: 1, outputUsdPerMillion: 5, output: join(mkdtempSync(join(tmpdir(), 'ugt-mcp-eval-')), 'checkpoint.json'),
@@ -89,7 +96,7 @@ describe('paid evaluation orchestration without a paid API', () => {
         options.anthropic.messages.batches.results = async function * (id) {
             yield { result: { type: 'succeeded', message: { model: 'fixture-model', usage: { input_tokens: 100, output_tokens: 50 },
                 content: id === 'batch-2' ? [{ type: 'tool_use', id: 'retry-draft', name: 'ugt_draft_road', input: args }]
-                    : [{ type: 'text', text: id === 'batch-1' ? 'The server was unavailable.' : 'The draft is ready.' }] } } };
+                    : [{ type: 'text', text: id === 'batch-1' ? 'The server was unavailable.' : 'The draft is ready: https://app.example/designs#draft=fixture' }] } } };
         };
         try {
             expect((await runEval(options)).tasks[0].score.passed).toBe(false);

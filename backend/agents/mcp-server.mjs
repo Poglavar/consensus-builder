@@ -41,7 +41,7 @@ function success(value) {
     };
 }
 
-function handler(fn) {
+function toolHandler(fn) {
     return async (args) => {
         try {
             return success(await fn(args));
@@ -57,10 +57,11 @@ const PUBLISH = { readOnlyHint: false, destructiveHint: false, idempotentHint: t
 const PAID_IDEMPOTENT = { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: true };
 const PAID_NON_IDEMPOTENT = { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: true };
 
-export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.env, fetchImpl, tools } = {}) {
+export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.env, fetchImpl, tools, decorateResult = value => value } = {}) {
     if (!['hosted', 'local'].includes(mode)) throw new Error('mode must be hosted or local');
     if (mode === 'hosted' && env.UGT_AGENT_KEYPAIR) throw new Error('Hosted MCP must have no UGT_AGENT_KEYPAIR');
     const actions = tools || createUrbanGameTheoryTools({ mode, env, fetchImpl });
+    const handler = fn => toolHandler(async args => decorateResult(await fn(args)));
     const server = new McpServer(
         { name: 'xyz.urbangametheory/urban-game-theory', version: '0.3.0' },
         {

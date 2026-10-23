@@ -5,6 +5,7 @@ import { pathToFileURL } from 'node:url';
 import { createMcpHandler } from '@modelcontextprotocol/server';
 import { toNodeHandler, hostHeaderValidation, originValidation } from '@modelcontextprotocol/node';
 import { createUrbanGameTheoryMcpServer } from './mcp-server.mjs';
+import { createPreviewLinks } from './mcp-preview-links.js';
 
 export function assertHostedEnvironment(env) {
     const names = Object.keys(env).filter(name => env[name] && /(?:KEYPAIR|SECRET|TOKEN|PASSWORD|API_KEY|DATABASE_URL)/i.test(name));
@@ -13,17 +14,18 @@ export function assertHostedEnvironment(env) {
 
 export function createMcpHttpService({ env = process.env, fetchImpl, factory,
     publicOrigin = 'https://urbangametheory.xyz', maxConcurrent = 8, maxPerMinute = 600,
-    maxPublishPerMinute = 10, now = Date.now } = {}) {
+    maxPublishPerMinute = 10, now = Date.now, previewOrigin = env.MCP_PREVIEW_ORIGIN || publicOrigin, previewTtlMs } = {}) {
     assertHostedEnvironment(env);
     const origin = new URL(publicOrigin);
     if (origin.protocol !== 'https:' || origin.username || origin.password || origin.pathname !== '/' || origin.search || origin.hash) throw new Error('MCP_PUBLIC_ORIGIN must be an HTTPS origin');
-    const allowed = ['localhost', '127.0.0.1', '[::1]', origin.hostname];
+    const allowed = ['localhost', '127.0.0.1', '[::1]', origin.hostname, new URL(previewOrigin).hostname];
     const hostGuard = hostHeaderValidation(allowed), originGuard = originValidation(allowed);
     let active = 0, count = 0, publishes = 0, start = now();
-    const makeServer = factory || (() => createUrbanGameTheoryMcpServer({ mode: 'hosted', env, fetchImpl }));
+    const previews = createPreviewLinks({ origin: previewOrigin, appOrigin: env.UGT_APP_ORIGIN || 'https://urbangametheory.xyz', now, ...(previewTtlMs == null ? {} : { ttlMs: previewTtlMs }) });
+    const makeServer = factory || (options => createUrbanGameTheoryMcpServer({ mode: 'hosted', env, fetchImpl, ...options }));
     // Count writes at the tool boundary too: this covers legacy clients without MCP routing headers.
     const guardedFactory = () => {
-        const server = makeServer();
+        const server = makeServer({ decorateResult: previews.decorate });
         // The shared server applies its write budget through an injected gate, not request headers.
         server.ugtPublishGate = () => {
             resetWindow();
@@ -40,6 +42,15 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
         res.setHeader('X-Content-Type-Options', 'nosniff');
         if (!hostGuard(req, res) || !originGuard(req, res)) return;
         const json = (status, body, headers = {}) => { res.writeHead(status, { 'Content-Type': 'application/json', ...headers }); res.end(JSON.stringify(body)); };
+        if (/^\/mcp\/previews\/[\w-]{32}$/.test(req.url)) {
+            if (req.method !== 'GET') return json(405, { code: 'method-not-allowed' }, { Allow: 'GET' });
+            resetWindow();
+            if (count >= maxPerMinute) return json(429, { code: 'rate-limited' }, { 'Retry-After': '60' });
+            count++;
+            const target = previews.get(req.url.split('/').at(-1));
+            if (!target) return json(410, { code: 'preview-expired', message: 'This temporary preview is unavailable. Ask your agent to generate it again.' });
+            res.writeHead(302, { Location: target, 'Referrer-Policy': 'no-referrer' }); return res.end();
+        }
         if (req.url === '/healthz' && req.method === 'GET') return json(200, { service: 'ugt-mcp', status: 'ok', upstreamChecked: false });
         if (req.url === '/mcp/server-card' && req.method === 'GET') return json(200, {
             $schema: 'https://static.modelcontextprotocol.io/schemas/v1/server-card.schema.json',
@@ -62,6 +73,7 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
     http.requestTimeout = 30_000;
     http.headersTimeout = 10_000;
     return { http, async close() {
+        previews.clear();
         await handler.close();
         if (!http.listening) return;
         const closed = new Promise((resolve, reject) => http.close(error => error ? reject(error) : resolve()));

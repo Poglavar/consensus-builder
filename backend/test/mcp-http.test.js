@@ -17,6 +17,24 @@ async function host(options = {}) {
     return `http://127.0.0.1:${service.http.address().port}`;
 }
 describe('hosted MCP HTTP', () => {
+    it('returns short private links that redirect to the exact fragment and expire', async () => {
+        let now = 0;
+        const target = 'https://urbangametheory.xyz/designs#draft=unchanged';
+        const base = await host({ now: () => now, previewTtlMs: 100, previewOrigin: 'https://preview.example', factory: options => createUrbanGameTheoryMcpServer({ ...options, mode: 'hosted', env: {}, tools: {
+            draftSpace: () => ({ previewUrl: target, previewStatus: 'private-fragment', design: { schema: 'design/v1' }, cid: 'unchanged' })
+        } }) });
+        const client = new Client({ name: 'private-link', version: '1' }); clients.push(client);
+        await client.connect(new StreamableHTTPClientTransport(new URL(`${base}/mcp`)));
+        const result = (await client.callTool({ name: 'ugt_draft_space', arguments: { city: 'london', spaceKind: 'park' } })).structuredContent;
+        expect(result).toMatchObject({ cid: 'unchanged', previewStatus: 'private-link' });
+        expect(new URL(result.previewUrl).origin).toBe('https://preview.example');
+        const path = new URL(result.previewUrl).pathname;
+        const response = await fetch(`${base}${path}`, { redirect: 'manual', headers: { host: 'preview.example' } });
+        expect(response.status).toBe(302); expect(response.headers.get('location')).toBe(target);
+        expect(response.headers.get('cache-control')).toBe('no-store');
+        expect(response.headers.get('referrer-policy')).toBe('no-referrer');
+        now = 100; expect((await fetch(`${base}${path}`, { redirect: 'manual' })).status).toBe(410);
+    });
     for (const mode of ['modern', 'legacy']) it(`supports a stock ${mode} client without exposing signing`, async () => {
         const base = await host();
         const client = new Client({ name: 'protocol-test', version: '1' }, { versionNegotiation: { mode } }); clients.push(client);

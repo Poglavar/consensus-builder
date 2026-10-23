@@ -4,7 +4,7 @@ import { spawn } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 export function hostedEnvironment(env) {
-    const allowed = ['PATH', 'HOME', 'TMPDIR', 'LANG', 'LC_ALL', 'NODE_ENV', 'MCP_PORT', 'MCP_PUBLIC_ORIGIN', 'UGT_API_BASE', 'UGT_APP_ORIGIN'];
+    const allowed = ['PATH', 'HOME', 'TMPDIR', 'LANG', 'LC_ALL', 'NODE_ENV', 'MCP_PORT', 'MCP_PUBLIC_ORIGIN', 'MCP_PREVIEW_ORIGIN', 'UGT_API_BASE', 'UGT_APP_ORIGIN'];
     return Object.fromEntries(allowed.filter(name => env[name] !== undefined).map(name => [name, env[name]]));
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

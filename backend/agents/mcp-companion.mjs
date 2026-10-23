@@ -28,7 +28,7 @@ export function registerMcpCompanion(server, { actions, handler, readOnly }) {
         title: z.string().max(200).optional(), description: z.string().max(2000).optional(), author: z.string().max(100).optional(), authoredAt: z.iso.datetime().optional() };
     const lane = z.object({ type: z.string(), width: z.number().min(0.25).max(20), direction: z.enum(['forward', 'backward', 'both']).optional(), landscape: z.enum(['trees', 'grass']).optional() });
     const profile = { preset: z.enum(['2+2', '1+1', '1+1 with cycle lanes']).optional(), lanes: z.array(lane).min(1).max(32).optional() };
-    add('ugt_draft_road', 'Draft a road from WGS84 points or a street name/id with a small bbox and a cross-section. Nothing is published. Returns canonical design, CID, land take and private fragment preview.',
+    add('ugt_draft_road', 'Draft a road from WGS84 points or a street name/id with a small bbox and a cross-section. Nothing is published. Returns canonical design, CID, land take and private preview.',
         { ...site, points: z.array(point).min(2).max(200).optional(), street: z.string().max(200).optional(), streetId: z.string().max(100).optional(), bbox: bbox.optional(), ...profile, width: z.number().min(1).max(100).optional() }, 'draftRoad');
     add('ugt_draft_building', 'Draft a parcel-bound building. Coverage is a fraction (0,1]. permitted uses the selected planning source envelope; its applicability remains unresolved.',
         { ...site, floors: z.number().int().min(1).max(200).optional(), height: z.number().positive().max(800).optional(), use: z.string().max(100).optional(), coverage: z.number().positive().max(1).optional(), permitted: z.boolean().optional(), planningSource: z.string().max(100).optional() }, 'draftBuilding');

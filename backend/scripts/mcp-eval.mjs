@@ -12,7 +12,8 @@ import { cidOfObject } from '../cid.js';
 
 const require = createRequire(import.meta.url);
 const osm = require('../../frontend/js/corridor-osm-form.js');
-const previewHash = value => { try { return new URL(value).hash.startsWith('#draft='); } catch { return false; } };
+const privatePreview = result => { try { const url = new URL(result.previewUrl); return url.hash.startsWith('#draft=')
+    || (result.previewStatus === 'private-link' && /^\/mcp\/previews\/[\w-]{32}$/.test(url.pathname)); } catch { return false; } };
 
 export function scoreArtifact(task, artifacts) {
     for (const result of artifacts) {
@@ -21,7 +22,7 @@ export function scoreArtifact(task, artifacts) {
         if (task.expected.goal && value?.goal === task.expected.goal
             && (!task.expected.floors || value.buildingProposal?.parameters?.floors === task.expected.floors)
             && Array.isArray(result.takes) && (task.expected.parcelIds || []).every(id => result.takes.includes(id))
-            && previewHash(result.previewUrl)) {
+            && privatePreview(result)) {
             const lanes = value.roadProposal ? osm.toView(value.roadProposal.definition).profile.strips : [];
             if (task.expected.origin && !value.origin?.cid) continue;
             if (task.expected.title && value.title !== task.expected.title) continue;
@@ -42,6 +43,19 @@ export function scoreArtifact(task, artifacts) {
             && (task.expected.parcelIds || []).every(id => value.inputs.parcels.some(p => p.parcelId === id))) return { passed: true, cid: result.cid };
     }
     return { passed: false, reason: 'expected-artifact-not-produced' };
+}
+
+export function scoreConversation(task, record) {
+    const score = scoreArtifact(task, record.artifacts);
+    if (!score.passed) return score;
+    const last = record.messages.filter(message => message.role === 'assistant').at(-1);
+    const text = (Array.isArray(last?.content) ? last.content : []).filter(block => block.type === 'text').map(block => block.text).join('\n');
+    const returnedUrls = new Set(text.match(/https?:\/\/[^\s<>"\])\x60]+/g) || []);
+    const delivered = record.artifacts.filter(artifact => scoreArtifact(task, [artifact]).passed).some(artifact => {
+        const urls = artifact.alternatives?.map(alternative => alternative.previewUrl) || [artifact.approvalUrl || artifact.previewUrl];
+        return urls.every(url => typeof url === 'string' && returnedUrls.has(url));
+    });
+    return delivered ? score : { passed: false, reason: 'preview-link-not-delivered' };
 }
 
 export async function runEval({ origin, tasks, model, budgetUsd, inputUsdPerMillion, outputUsdPerMillion, output, limit = 1, retryFailed = false, anthropic = new Anthropic({ maxRetries: 0 }), recordUsage }) {
@@ -109,8 +123,8 @@ export async function runEval({ origin, tasks, model, budgetUsd, inputUsdPerMill
                 }
                 record.rounds.push({ round, batchId: state.pending.id, usage, costUsd }); state.pending = null;
                 if (toolResults.length) record.messages.push({ role: 'user', content: toolResults });
-                else record.score = scoreArtifact(task, record.artifacts);
-                if (round === 7) record.score = scoreArtifact(task, record.artifacts);
+                else record.score = scoreConversation(task, record);
+                if (round === 7) record.score = scoreConversation(task, record);
                 save(); log(`${task.id} round ${round + 1}: $${costUsd.toFixed(6)}; task $${record.costUsd.toFixed(6)}; run $${state.spentUsd.toFixed(6)}/${budgetUsd}`);
             }
         }
