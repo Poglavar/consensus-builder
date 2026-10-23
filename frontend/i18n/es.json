@@ -6537,6 +6537,8 @@
         "unsupportedCrs": "Este WMS necesita un sistema de coordenadas geográfico o Web Mercator compatible."
     },
     "parcelSourceHealth": {
+    "countryRestricted": "Este registro solo acepta conexiones desde {{country}}. Fuera de ese país, continúa sin parcelas o elige otra fuente.",
+    "requestTimedOut": "Se agotó el tiempo de espera de la solicitud.",
         "offline": "Parece que no tienes conexión. Conéctate a internet y vuelve a intentarlo.",
         "rateLimited": "Esta fuente limita las solicitudes. Reintenta en {{seconds}} segundos.",
         "blocked": "El proveedor ha denegado el acceso (HTTP {{status}}). Puede restringir direcciones IP o exigir autenticación. Elige otra fuente o inténtalo más tarde.",

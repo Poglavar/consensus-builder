@@ -38,10 +38,10 @@ describe('map credits helpers', () => {
             raster: { attribution: rasterCredit } } })).toEqual([newCityCredit, rasterCredit]);
     });
 
-    it('credits Overture wherever the buildings are, or may fall back to, its tiles', () => {
+    it('credits OpenStreetMap for the backend building source and fallback', () => {
         const cadastre = '<a href="https://example.test/b">City buildings</a>';
-        expect(buildingCredits({ buildings: { source: 'overture-tiles' } })).toEqual([expect.stringContaining('Overture Maps Foundation')]);
-        expect(buildingCredits({ buildings: { source: 'cadastre', attribution: cadastre, fallback: 'overture-tiles' } }))
+        expect(buildingCredits({ buildings: { source: 'osm' } })).toEqual([expect.stringContaining('OpenStreetMap')]);
+        expect(buildingCredits({ buildings: { source: 'cadastre', attribution: cadastre, fallback: 'osm' } }))
             .toEqual([cadastre, expect.stringContaining('OpenStreetMap')]);
         expect(buildingCredits({ buildings: { source: 'gdi' } })).toEqual([]);
         expect(buildingCredits({})).toEqual([]);

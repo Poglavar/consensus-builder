@@ -1147,3 +1147,6 @@ body.app-loading .map-shell-cluster {
 @media (hover: none), (pointer: coarse) {
     [data-command-palette-shortcut], .map-search__shortcut { display: none; }
 }
+
+/* First visible labels use the selected locale; the map can load in parallel. */
+body.i18n-loading [data-i18n-key] { visibility: hidden; }

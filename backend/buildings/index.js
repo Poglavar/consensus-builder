@@ -2,12 +2,7 @@
 // (Zagreb: a PostGIS LOD2 mesh table; NYC: live footprint+height feeds), but every
 // provider exposes near(), footprints() and footprintsUnder(), returning buildings in
 // one common face-mesh shape, so the route and the frontend renderer stay source-agnostic.
-// Adding a city = one new provider file + one line in createBuildingProviders(), OR — for any
-// city that has no bespoke local model — one entry in overture-cities.js, which gets wired to the
-// shared Overture provider automatically below. Every other city, explore included, gets the
-// OpenStreetMap provider (osm-3d.js) here. The app itself no longer asks for those cities: their
-// config says 'overture-tiles', which the browser reads straight from Overture's public tiles
-// (frontend/js/overture-tiles.js); this provider still answers other callers.
+// Cities without a dedicated provider, including explore, use backend OpenStreetMap.
 //
 // A request names no city: its geometry does (location-first.md). The city whose data applies there
 // (jurisdiction.js, the rule the boot and the globe share) picks the provider; nowhere covered is
@@ -16,8 +11,6 @@
 import { createZagrebProvider } from './zagreb-3d.js';
 import { createNycProvider } from './nyc-footprints.js';
 import { createNycArcgisProvider } from './nyc-arcgis.js';
-import { createOvertureProvider } from './overture-3d.js';
-import { OVERTURE_CITIES } from './overture-cities.js';
 import { createOsmProvider } from './osm-3d.js';
 import { createCustomBuildingProvider } from './custom-source-3d.js';
 import { createOverpassBuildingProvider } from './overpass-source.js';
@@ -35,12 +28,6 @@ export function createBuildingProviders(pool, env = process.env) {
         zagreb: createZagrebProvider(pool),
         new_york: nycProvider
     };
-
-    // Every city declared in overture-cities.js gets the generic Overture provider. A bespoke
-    // provider above wins if a city id appears in both (none currently do).
-    for (const cityId of Object.keys(OVERTURE_CITIES)) {
-        if (!providers[cityId]) providers[cityId] = createOvertureProvider(pool, cityId);
-    }
 
     // One OSM provider per city id, made on first use. The id is validated because it becomes a
     // cache key and a staged-table label.
@@ -75,6 +62,7 @@ export function createBuildingProviders(pool, env = process.env) {
     // The provider for a request: its own `source` when it names one, else that of the city whose
     // data applies where `geometry` lies. A city the client sends is not consulted.
     function forRequest({ source, geometry } = {}) {
+        if (source === 'osm') return osmProviderFor(jurisdictionOf(geometry) || NO_CITY);
         if (typeof source === 'string' && source) return resolveSource(source);
         return resolve(jurisdictionOf(geometry));
     }

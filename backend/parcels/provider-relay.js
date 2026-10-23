@@ -132,6 +132,15 @@ function resourceAllowed(url, descriptor, sourceId) {
             || descriptor.adapter === 'arcgis' && url.pathname === `${endpoint.pathname.replace(/\/$/, '')}/query`)) return true;
         return false;
     }
+    if (descriptor.proxyEndpoint && exactResource(url, descriptor.proxyEndpoint)) {
+        const keys = [...url.searchParams.keys()];
+        const upstream = url.searchParams.get('url');
+        try {
+            const target = new URL(upstream);
+            return keys.length === 1 && keys[0] === 'url' && target.protocol === 'https:'
+                && !target.username && !target.password && !target.hash && exactResource(target, descriptor.endpoint);
+        } catch (_) { return false; }
+    }
     if (isHmlr(descriptor) && url.origin === HMLR && !url.search && (url.pathname === new URL(HMLR_ROOT).pathname || HMLR_ZIP.test(url.pathname))) {
         return true;
     }

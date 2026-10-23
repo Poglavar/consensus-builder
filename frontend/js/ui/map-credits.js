@@ -54,16 +54,12 @@
         const parcels = city?.parcels || {};
         return [...new Set([parcels.attribution, parcels.raster?.attribution].filter(Boolean))];
     }
-    // Overture's buildings carry OpenStreetMap's licence (ODbL) and credit their other contributors.
-    const OVERTURE_BUILDINGS_CREDIT = '<a href="https://overturemaps.org/">Overture Maps Foundation</a> buildings · '
-        + '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Esri Community Maps, '
-        + 'Google Open Buildings, Microsoft ML Buildings · <a href="https://opendatacommons.org/licenses/odbl/">ODbL</a>';
-    // Credits for the city's working set of buildings: its own attribution, and Overture's whenever
-    // the buildings are (or may fall back to) Overture's tiles.
     function buildingCredits(city) {
         const buildings = city?.buildings || {};
         const credits = [buildings.attribution];
-        if (buildings.source === 'overture-tiles' || buildings.fallback === 'overture-tiles') credits.push(OVERTURE_BUILDINGS_CREDIT);
+        if (buildings.source === 'osm' || buildings.fallback === 'osm') {
+            credits.push('© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors');
+        }
         return credits.filter(Boolean);
     }
     function providerCredits(key, source = null) {

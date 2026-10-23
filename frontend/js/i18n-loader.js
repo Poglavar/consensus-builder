@@ -44,51 +44,45 @@
     async function loadJson(url) {
         const cacheBust = getCacheBuster();
         const urlWithBust = `${url}?v=${cacheBust}`;
-        const response = await fetch(urlWithBust, { credentials: 'same-origin' });
+        const response = await fetch(urlWithBust, { credentials: 'same-origin', signal: AbortSignal.timeout(15000) });
         if (!response.ok) {
             throw new Error(`Failed to load ${url}: ${response.status} ${response.statusText}`);
         }
         return response.json();
     }
 
-    async function loadAndRegisterTranslations() {
-        const api = (typeof window !== 'undefined') ? window.i18n : null;
-        if (!api || typeof api.registerTranslations !== 'function') {
-            return;
-        }
-        try {
-            const loaded = await Promise.all(
-                SOURCES.map(async ({ lang, url }) => {
-                    const json = await loadJson(url);
-                    return { lang, flat: flattenTranslations(json) };
-                })
-            );
-            loaded.forEach(({ lang, flat }) => {
-                api.registerTranslations(lang, flat);
-            });
-            if (typeof api.applyTranslations === 'function') {
-                api.applyTranslations();
-            }
+    const api = window.i18n;
+    if (!api) return;
+    const pending = new Map();
+    function loadLanguage(lang) {
+        if (!pending.has(lang)) pending.set(lang, (async () => {
+            const source = SOURCES.find(source => source.lang === lang);
+            if (!source) return;
             try {
-                if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
-                    window.dispatchEvent(new CustomEvent('i18n:translationsLoaded'));
-                }
-            } catch (_) { }
-        } catch (error) {
-            console.warn('[i18n] Failed to load translations', error);
-        }
+                api.registerTranslations(lang, flattenTranslations(await loadJson(source.url)));
+            } catch (error) {
+                pending.delete(lang);
+                console.warn('[i18n] Failed to load ' + lang, error);
+            }
+        })());
+        return pending.get(lang);
     }
-
-    function bootstrap() {
-        const api = (typeof window !== 'undefined') ? window.i18n : null;
-        const ready = api && api.ready && typeof api.ready.then === 'function' ? api.ready : null;
-        if (ready) {
-            ready.then(loadAndRegisterTranslations).catch(() => loadAndRegisterTranslations());
-        } else {
-            loadAndRegisterTranslations();
-        }
+    function apply() {
+        api.applyTranslations();
+        window.dispatchEvent(new CustomEvent('i18n:translationsLoaded'));
     }
-
-    bootstrap();
+    // Locale detection includes the saved preference and URL. Only English and the selected
+    // dictionary are on the first-paint path; another language cannot delay them or make them fail.
+    api.translationsReady = Promise.resolve(api.ready).then(async () => {
+        let language;
+        do {
+            language = api.getLanguage();
+            await Promise.all([...new Set(['en', language])].map(loadLanguage));
+        } while (language !== api.getLanguage());
+        apply();
+    }).finally(() => document.body?.classList.remove('i18n-loading'));
+    api.onChange(async lang => {
+        await loadLanguage(lang);
+        apply();
+    });
 })();
-

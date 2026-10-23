@@ -88,7 +88,9 @@
             // script in the load list. If that one file ever fails to fetch, the gate must fail
             // OPEN, not lock the sidebar forever — window load fires after every sync script.
             window.addEventListener('load', function () {
-                document.body.classList.remove('app-loading');
+                Promise.resolve(window.i18n?.translationsReady).finally(function () {
+                    document.body.classList.remove('app-loading', 'i18n-loading');
+                });
             });
             // opts.defer emits `defer` script tags: deferred classic scripts run in insertion
             // order AFTER module scripts (like the THREE ESM bootstrap), so a list that needs
@@ -188,7 +190,7 @@
     <!-- Turf.js for geometric calculations -->
     <script src="vendor/turf-6.5.0/turf.min.js"></script>
 
-    <!-- PMTiles reader: buildings read in the browser from Overture's public tiles (js/overture-tiles.js) -->
+    <!-- PMTiles reader for tiled parcel providers -->
     <script src="vendor/pmtiles-4.4.1/pmtiles.js"></script>
 
     <!-- Viewport-safe layout helpers -->
@@ -241,7 +243,7 @@
     <!-- No inline styles, they're now in viewer.css -->
 </head>
 
-<body class="app-loading">
+<body class="app-loading i18n-loading">
     <!-- World view handoff (js/world/handoff.js): first in <body>, so the globe's last frame covers
          the map before its first paint after a city switch from the globe. -->
     <script>
@@ -1932,11 +1934,10 @@
             'js/parcels/controller.js',
             'js/parcels/activity-listener.js',
             // bundle:end parcel-data-clients
-            // Existing buildings: shared height/extrusion rules, the provider core, Overture's tiles
-            // read in the browser, and the one client every /buildings/* request goes through.
+            // Existing buildings: shared height/extrusion rules, the provider core,
+            // and the client routing every building read through the backend.
             'js/building-extrusion.js',
             'js/footprint-provider.js',
-            'js/overture-tiles.js',
             'js/building-source-client.js',
             'js/map-core.js?v=20261009-map-credits',
             'js/user-management.js?v=20261020-modeled-totals',

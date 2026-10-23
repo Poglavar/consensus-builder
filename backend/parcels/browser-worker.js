@@ -19,6 +19,6 @@ self.addEventListener('message', async ({ data }) => {
         self.postMessage({ id, result: await runtime.query(sourceId, method, args, customDescriptor, { onProgress, signal: controller.signal }) });
     } catch (error) {
         self.postMessage({ id, error: { message: error.message, status: error.status, code: error.code,
-            upstreamStatus: error.upstreamStatus, retryAfterSeconds: error.retryAfterSeconds, knownLimit: error.knownLimit } });
+            upstreamStatus: error.upstreamStatus, retryAfterSeconds: error.retryAfterSeconds, knownLimit: error.knownLimit, accessCountry: error.accessCountry } });
     } finally { if (controllers.get(id) === controller) controllers.delete(id); }
 });

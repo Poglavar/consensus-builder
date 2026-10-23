@@ -189,7 +189,7 @@ describe('parcel source health requester', () => {
 
     it('explains a failure by the provider limit the adapter matched instead of guessing the cause', () => {
         expect(health.describeFailure({ code: 'parcel-source-blocked', upstreamStatus: 403, knownLimit: 'hourly-requests' }))
-            .toBe('This register limits how many requests each network may send per hour, and refuses more until the limit resets. Try again later. Already loaded parcels remain visible. Retry or choose another source.');
+            .toBe('This register limits how many requests each network may send per hour, and refuses more until the limit resets. Try again later. HTTP 403 Already loaded parcels remain visible. Retry or choose another source.');
         expect(health.describeFailure({ code: 'parcel-source-blocked', upstreamStatus: 403, knownLimit: 'daily-requests' }))
             .toContain('per day, and refuses more until the next day. Try again tomorrow.');
         expect(health.describeFailure({ code: 'parcel-source-unavailable', status: 504, knownLimit: 'network-restricted' }))
@@ -219,4 +219,15 @@ describe('parcel source health requester', () => {
         expect(health.describeFailure(failure, { translate, loaded: { inMemory: 5, inView: 2 } }))
             .toContain('parcelSourceHealth.loadedCounts:{"inMemory":5,"inView":2}');
     });
+});
+
+
+it('shows a known country restriction and the diagnostic without exposing credentials', () => {
+ const text=health.describeFailure({knownLimit:'network-restricted',accessCountry:'RS',status:504,message:'request failed'});
+ expect(text).toContain('Serbia');
+ expect(text).toContain('only accepts connections');
+ expect(text).toContain('request timed out');
+ const detail=health.describeFailure({upstreamStatus:503,message:'Maintenance; token=private-value'});
+ expect(detail).toContain('HTTP 503: Maintenance');
+ expect(detail).not.toContain('private-value');
 });

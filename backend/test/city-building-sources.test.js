@@ -13,23 +13,23 @@ runInContext(read('../../frontend/js/city-config.js'), createContext(cityContext
 const manager = cityContext.CityConfigManager;
 
 describe('city building sources', () => {
-    const KNOWN = new Set(['gdi', 'nyc', 'overture', 'overture-tiles', 'cadastre', 'none']);
+    const KNOWN = new Set(['gdi', 'nyc', 'osm', 'cadastre', 'none']);
     const cities = manager.getAvailableCities();
 
-    it('names only sources the app can serve, and no city reads OpenStreetMap through Overpass any more', () => {
+    it('uses backend OSM for every city without a dedicated building source', () => {
         const bySource = {};
         for (const city of cities) {
             const source = city.buildings?.source || 'gdi';
             bySource[source] = (bySource[source] || 0) + 1;
             expect(KNOWN.has(source), `${city.id}: ${source}`).toBe(true);
         }
-        expect(bySource.osm).toBeUndefined();
-        expect(bySource['overture-tiles']).toBeGreaterThan(500);
+        expect(bySource.osm).toBeGreaterThan(500);
+        expect(bySource['overture-tiles']).toBeUndefined();
     });
 
-    it("reads Bogotá's cadastre buildings with their storey counts, Overture behind them", () => {
+    it("reads Bogotá's cadastre buildings with their storey counts, OSM behind them", () => {
         const bogota = manager.getCityConfig('bogota').buildings;
-        expect(bogota).toMatchObject({ source: 'cadastre', fallback: 'overture-tiles' });
+        expect(bogota).toMatchObject({ source: 'cadastre', fallback: 'osm' });
         const descriptor = decodeCustomBuildingSource(bogota.sourceId);
         expect(descriptor).toMatchObject({ adapter: 'arcgis', kind: 'building', cityIds: ['bogota'], idField: 'FID', levelsField: 'CONNPISOS' });
         expect(descriptor.endpoint).toMatch(/Construcciones_Bogota_DC_vista\/FeatureServer\/0$/);

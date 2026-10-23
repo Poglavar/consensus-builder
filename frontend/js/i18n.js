@@ -264,6 +264,8 @@
             if (targetAttrs.length === 0) targetAttrs.push('text');
 
             const translated = translate(key, params);
+            // Keep the readable HTML label/attribute while its dictionary is loading or missing.
+            if (translated === key) return;
             targetAttrs.forEach(target => {
                 if (target === 'html') {
                     node.innerHTML = translated;

@@ -73,10 +73,12 @@
         const defaultMessage = code === 'parcel-source-blocked' ? 'Parcel source access is blocked.'
             : code === 'parcel-source-rate-limited' ? 'Parcel source is rate limited.'
                 : 'Parcel source is unavailable.';
-        const message = safeErrorString(body.message ?? outer.message ?? body.error, defaultMessage);
+        const message = safeErrorString(body.message ?? outer.message ?? body.error, safeErrorString(response?.statusText, defaultMessage));
         const error = new Error(message);
         error.status = Number.isSafeInteger(status) ? status : 502;
         error.code = code;
+        if (Object.hasOwn(KNOWN_LIMITS, body.knownLimit ?? outer.knownLimit)) error.knownLimit = body.knownLimit ?? outer.knownLimit;
+        if (/^[A-Z]{2}$/.test(body.accessCountry ?? outer.accessCountry ?? '')) error.accessCountry = body.accessCountry ?? outer.accessCountry;
         if (upstreamStatus !== undefined) error.upstreamStatus = upstreamStatus;
         if (retryAfterSeconds !== undefined) error.retryAfterSeconds = retryAfterSeconds;
         return error;
@@ -97,6 +99,9 @@
             const value = error?.[key];
             if (Number.isSafeInteger(value) || (key === 'code' && typeof value === 'string')) safe[key] = value;
         }
+        if (Object.hasOwn(KNOWN_LIMITS, error?.knownLimit)) safe.knownLimit = error.knownLimit;
+        if (/^[A-Z]{2}$/.test(error?.accessCountry || '')) safe.accessCountry = error.accessCountry;
+        if (error?.name === 'TimeoutError') safe.name = 'TimeoutError';
         if (!safe.code) safe.code = 'parcel-source-unavailable';
         if (!safe.status) safe.status = 502;
         return safe;
@@ -266,7 +271,7 @@
         return t('loadedCounts', `${inMemory} parcels are loaded in memory, ${inView} of them in this view; they stay on the map. Retry or choose another source.`, { inMemory, inView });
     }
 
-    function describeFailure(error, { offline = false, translate, loaded = null } = {}) {
+    function describeFailure(error, { offline = false, translate, loaded = null, locale = undefined } = {}) {
         const t = (key, fallback, values = {}) => {
             try {
                 const translated = typeof translate === 'function'
@@ -282,7 +287,11 @@
         const knownLimit = Object.hasOwn(KNOWN_LIMITS, error?.knownLimit) ? KNOWN_LIMITS[error.knownLimit] : null;
         let message;
         if (offline) message = t('offline', 'You appear to be offline. Connect to the internet and try again.');
-        else if (knownLimit) message = t(`knownLimit.${knownLimit.key}`, knownLimit.text);
+        else if (knownLimit && /^[A-Z]{2}$/.test(error?.accessCountry || '')) {
+            let country = error.accessCountry;
+            try { country = new Intl.DisplayNames(locale, { type: 'region' }).of(country); } catch (_) { }
+            message = t('countryRestricted', `This register only accepts connections from ${country}. Outside ${country}, continue without parcels or choose another source.`, { country });
+        } else if (knownLimit) message = t(`knownLimit.${knownLimit.key}`, knownLimit.text);
         else if (code === 'parcel-source-rate-limited' || status === 429) {
             message = t('rateLimited', `This parcel source is rate limited. Retry in ${retry} seconds.`, { seconds: retry });
         } else if (code === 'parcel-source-blocked' || status === 401 || status === 403) {
@@ -293,7 +302,12 @@
         } else {
             message = t('unavailable', 'This parcel source is temporarily unavailable.');
         }
-        return `${message} ${loadedSentence(loaded, t)}`;
+        const timedOut = status === 504 || error?.name === 'TimeoutError';
+        const detail = safeErrorString(error?.message, '');
+        const http = Number.isSafeInteger(status) && status >= 400 && status <= 599;
+        const diagnostic = timedOut ? (knownLimit ? t('requestTimedOut', 'The request timed out.') : '')
+            : http ? `HTTP ${status}${detail ? ': ' + detail : ''}` : detail;
+        return [message, diagnostic, loadedSentence(loaded, t)].filter(Boolean).join(' ');
     }
 
     return Object.freeze({ createRequester, errorFromResponse, describeFailure, withDeadline });

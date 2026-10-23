@@ -40,10 +40,9 @@ describe('database defaults and explicit upstream alternatives',()=>{
  it('keeps other imported cities on DB by default and validates their configured alternatives',()=>{
   const normal=boot('?city=new_york').window.CityConfigManager;
   const live=boot('?city=new_york&parcelSource=live').window.CityConfigManager;
-  for(const city of ['zagreb','split','sibenik','belgrade','buenos_aires','new_york']){
+  for(const city of ['zagreb','split','sibenik','new_york']){
    expect(normal.getCityConfig(city).parcels.source).not.toBe('parcel-source');
    const alternative=normal.getCityConfig(city).parcels.liveSource;
-   if(city==='belgrade'){expect(alternative).toBeUndefined();continue;}
    expect(live.getCityConfig(city).parcels.source).toBe('parcel-source');
    const configured=parcelSourceCatalog.sources.find(d=>d.id===alternative.sourceId);
    expect(configured.defaultForCity).toBe(false);expect(configured.cityIds).toContain(city);

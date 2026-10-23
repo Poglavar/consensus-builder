@@ -5,7 +5,7 @@ import rateLimit from 'express-rate-limit';
 import { createPublicSourceFetch, validatePublicSourceUrl } from '../parcels/public-source-fetch.js';
 import { discoverCustomParcelSource } from '../parcels/custom-source-discovery.js';
 import { decodeCustomSource, encodeCustomSource } from '../parcels/custom-source-config.js';
-import { validateBounds } from '../parcels/source-contract.js';
+import { validateBounds, knownLimitFor } from '../parcels/source-contract.js';
 
 export function setupParcelSourcesRoute(app, { sources = catalog.sources, fetchImpl, discover = discoverCustomParcelSource, publicFetch = createPublicSourceFetch() } = {}) {
     const adapters = new Map(sources.map(source => {
@@ -16,7 +16,9 @@ export function setupParcelSourcesRoute(app, { sources = catalog.sources, fetchI
         const status = error.status || (error.code === 'no-available-adapter' ? 422 : 502);
         res.set('Cache-Control', 'no-store');
         if (error.retryAfterSeconds !== undefined) res.set('Retry-After', String(Math.ceil(error.retryAfterSeconds)));
-        return res.status(status).json({ error: error.message, code: error.code,
+        const descriptor = sources.find(source => source.id === sourceId);
+        const knownLimit = knownLimitFor(descriptor, error);
+        return res.status(status).json({ error: error.message, code: error.code, knownLimit, accessCountry: knownLimit ? descriptor?.knownLimit?.countryCode : undefined,
             sourceId, upstreamStatus: error.upstreamStatus, retryAfterSeconds: error.retryAfterSeconds, attempts: error.attempts,
             parcelCounts: error.parcelCounts });
     };

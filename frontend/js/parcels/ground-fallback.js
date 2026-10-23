@@ -19,7 +19,7 @@
 // with their polygons retained in localStorage. Every feature keeps its source provenance.
 //
 // A failed fetch and "no register" are kept apart on purpose (see unsurveyed-ground.md): the dialog
-// states which one happened, and only a temporary failure gets a Retry button.
+// states which one happened. Every failed source can be retried in the same dialog.
 (function attachGroundFallback(global) {
     'use strict';
 
@@ -134,7 +134,7 @@
                 return { kind: 'temporary', retryable: true, detail: `HTTP ${httpStatus}` };
             }
             if (httpStatus === 401 || httpStatus === 403 || httpStatus === 404) {
-                return { kind: 'refused', retryable: false, detail: `HTTP ${httpStatus}` };
+                return { kind: 'refused', retryable: true, detail: `HTTP ${httpStatus}` };
             }
             return { kind: 'unknown', retryable: true, detail: `HTTP ${httpStatus}` };
         }
@@ -448,6 +448,7 @@
         const verdict = classify(detail.error, { parcelSettings: cityParcelSettings(city) });
         const context = { ...detail, city, verdict, explicit: detail.explicit === true };
         failures.set(city, context);
+        if (openDialog && openDialog.city === city) { openDialog.updateFailure?.(context); return false; }
         if (!city || isWithoutParcels(city) || sources.has(city) || openDialog || isDismissed(city)) return false;
         presentDialog(context);
         return true;
@@ -498,8 +499,10 @@
             const bounds = global.map && typeof global.map.getBounds === 'function' ? global.map.getBounds() : undefined;
             await global.fetchParcelData(bounds);
             try { global.ParcelPresenter && global.ParcelPresenter.restoreSelectionStyles && global.ParcelPresenter.restoreSelectionStyles(); } catch (_) { }
+            return true;
         } catch (error) {
             console.error('[GroundFallback] parcels still unavailable after the visitor’s choice', error);
+            return false;
         }
     }
 
@@ -528,6 +531,8 @@
     function showDialog(context) {
         const { city, verdict } = context;
         const statusLine = el('p', `ground-fallback-status ground-fallback-status--${verdict.kind}`, context.message || describeVerdict(city, verdict));
+        statusLine.setAttribute('role', 'status');
+        statusLine.setAttribute('aria-live', 'polite');
         const body = el('div', 'ground-fallback-body');
         const CHOSEN = 'chosen';
 
@@ -544,7 +549,6 @@
                 document.body.classList.remove('ground-fallback-open');
                 if (result !== CHOSEN) {
                     dismiss(city);
-                    global.ParcelSourceSettings?.reportFailure?.(global, context.message || describeVerdict(city, verdict));
                     status(t('groundFallback.status.dismissed', 'Parcel register unavailable. Open the parcel options to choose how to continue.'));
                 }
             }
@@ -596,16 +600,21 @@
                 list.appendChild(option('retry', 'fa-rotate-right',
                     t('groundFallback.options.retry.title', 'Retry the official register'),
                     t('groundFallback.options.retry.desc', 'Ask the register again. Right for a network hiccup or a server that was briefly down.'),
-                    async () => {
-                        close();
-                        status(t('groundFallback.status.retrying', 'Retrying the parcel register…'));
+                    async event => {
+                        const button = event.currentTarget;
+                        if (button.disabled) return;
+                        button.disabled = true;
+                        statusLine.textContent = t('groundFallback.status.retrying', 'Retrying the parcel register…');
                         resetDismissal(city);
-                        if (isWithoutParcels(city)) {
-                            clearWithoutParcels(city);
-                            reloadWithSource();
-                            return;
-                        }
-                        await refetchViewport();
+                        try {
+                            await global.BusyControl.track(button, async () => {
+                                if (await refetchViewport()) close();
+                                else {
+                                    const latest = failures.get(city) || context;
+                                    statusLine.textContent = latest.message || describeVerdict(city, latest.verdict);
+                                }
+                            });
+                        } finally { button.disabled = false; }
                     }));
             }
             list.appendChild(option('without-parcels', 'fa-layer-group',
@@ -717,6 +726,12 @@
         renderOptions();
         document.body.classList.add('ground-fallback-open');
         openDialog = dialogApi.overlay;
+        openDialog.city = city;
+        openDialog.updateFailure = latest => {
+            statusLine.className = `ground-fallback-status ground-fallback-status--${latest.verdict.kind}`;
+            statusLine.textContent = latest.message || describeVerdict(city, latest.verdict);
+        };
+        global.ParcelSourceSettings?.clearFailure?.(global);
         requestAnimationFrame(() => {
             const first = body.querySelector('button:not([disabled])');
             if (first) first.focus({ preventScroll: true });

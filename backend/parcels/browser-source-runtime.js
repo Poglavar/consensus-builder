@@ -212,7 +212,10 @@ export function createBrowserParcelRuntime(options = {}) {
             } catch (error) {
                 // Only catalog sources declare a known limit; a visitor's own descriptor cannot.
                 const knownLimit = knownLimitFor(catalog.sources.find(source => source.id === sourceId), error);
-                if (knownLimit && error && typeof error === 'object') error.knownLimit = knownLimit;
+                if (knownLimit && error && typeof error === 'object') {
+                    error.knownLimit = knownLimit;
+                    error.accessCountry = catalog.sources.find(source => source.id === sourceId)?.knownLimit?.countryCode;
+                }
                 throw error;
             } finally {
                 const listeners = progressListeners.get(sourceId);

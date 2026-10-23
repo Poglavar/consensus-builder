@@ -70,7 +70,8 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
         || (requestProperties && (typeof descriptor.geometryField !== 'string' || !identifier.test(descriptor.geometryField)
             || outFields.some(field => typeof field !== 'string' || !identifier.test(field))))
         || (descriptor.parcelNumberField && !outFields.includes(descriptor.parcelNumberField))
-        || new URL(endpoint).protocol !== 'https:') throw new Error('Invalid WFS parcel source descriptor.');
+        || new URL(endpoint).protocol !== 'https:'
+        || (descriptor.proxyEndpoint && new URL(descriptor.proxyEndpoint).protocol !== 'https:')) throw new Error('Invalid WFS parcel source descriptor.');
     const attributeFilter = createParcelAttributeFilter(descriptor);
     const hasFixedAttributeFilter = Boolean(attributeFilter.where);
     if (hasFixedAttributeFilter && (typeof descriptor.geometryField !== 'string' || !identifier.test(descriptor.geometryField))) {
@@ -172,7 +173,10 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
                     // Start the timeout after any provider-specific rate-limit wait.
                     const signal = AbortSignal.timeout(15000);
                     try {
-                        const response = await fetchImpl(`${endpoint}?${search}`, { signal, redirect: 'error',
+                        const upstreamUrl = `${endpoint}?${search}`;
+                        const requestUrl = descriptor.proxyEndpoint
+                            ? `${descriptor.proxyEndpoint}?${new URLSearchParams({ url: upstreamUrl })}` : upstreamUrl;
+                        const response = await fetchImpl(requestUrl, { signal, redirect: 'error',
                             ...(featureIdMode ? { cache: 'no-store' } : {}),
                             headers: { Accept: 'application/geo+json, application/json' } });
                         if (!response.ok) throw providerHttpError(response);

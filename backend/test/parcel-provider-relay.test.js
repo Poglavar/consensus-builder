@@ -306,3 +306,15 @@ describe('parcel provider relay route', () => {
         expect(relayFetch).not.toHaveBeenCalled();
     });
 });
+
+it('allows the official RGZ proxy only when its nested URL names the fixed cadastral endpoint', () => {
+    const descriptor=parcelSourceCatalog.sources.find(source=>source.id==='rs-rgz-dkp-parcels');
+    const url=descriptor.proxyEndpoint+'?'+new URLSearchParams({url:descriptor.endpoint+'?service=WFS&request=GetFeature'});
+    expect(validateParcelProviderRelayRequest(descriptor.id,{url},{sources:[descriptor]}).target.href).toBe(url);
+    const credentialUrl = new URL(descriptor.endpoint);
+    credentialUrl.username = 'user'; credentialUrl.password = 'pass';
+    for(const target of ['https://example.invalid/private',String(credentialUrl)]) {
+        const bad=descriptor.proxyEndpoint+'?'+new URLSearchParams({url:target});
+        expect(()=>validateParcelProviderRelayRequest(descriptor.id,{url:bad},{sources:[descriptor]})).toThrow();
+    }
+});

@@ -114,7 +114,7 @@ A land unit represented by a particular cadastral, tax or other parcel provider.
 
 ### Parcel source
 
-The provider of parcel identities and geometry, identified by `sourceId`. Jurisdiction and legal authority describe the source but do not replace its identity. A custom source descriptor identifies the selected service and its interpretation.
+The provider of parcel identities and geometry, identified by `sourceId`. Jurisdiction and legal authority describe the source but do not replace its identity. A custom source descriptor identifies the selected service and its interpretation. Map lookup and server-side site binding use that same selected parcel source.
 
 ### Source-qualified parcel reference
 

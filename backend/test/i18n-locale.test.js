@@ -69,3 +69,21 @@ describe('picking a locale', () => {
         expect((await loadI18n()).i18n.getSupportedLocales()).toEqual(['en-GB', 'en-US', 'es-ES', 'sr-Latn-RS', 'hr-HR']);
     });
 });
+
+describe('dictionary startup', () => {
+    it('preserves readable HTML labels and attributes until their translations exist', async () => {
+        const node = { textContent: 'Proposals', title: 'Proposals',
+            getAttribute: key => ({ 'data-i18n-key':'mapShell.proposals', 'data-i18n-attr':'text,title' })[key],
+            setAttribute(key,value) { this[key]=value; } };
+        const document = { querySelectorAll: () => [node], addEventListener() {} };
+        const win = { location:{search:'?lang=es'}, document, PersistentStorage:fakeStorage() };
+        new Function('window','self','globalThis','document',src)(win,win,win,document);
+        await win.i18n.ready;
+        expect(node.textContent).toBe('Proposals');
+        expect(node.title).toBe('Proposals');
+        win.i18n.registerTranslations('es',{'mapShell.proposals':'Propuestas'});
+        win.i18n.applyTranslations();
+        expect(node.textContent).toBe('Propuestas');
+        expect(node.title).toBe('Propuestas');
+    });
+});

@@ -161,3 +161,47 @@ test('Explore banner requests its place, opens World view, and dismisses for thi
   await waitForMapReady(page);
   await expect(banner).toHaveCount(0);
 });
+
+
+test('retry stays in one recovery dialog, spins, and shows the latest HTTP error', async ({ mockApi: page }) => {
+ await unavailableRegister(page);
+ const dialog=page.locator('.ground-fallback-dialog');
+ await expect(page.locator('#parcel-source-status')).toHaveCount(0);
+ await page.evaluate(() => {
+  const w=window as any;
+  w.fetchParcelData=async()=>new Promise((resolve,reject)=>{
+   w.finishParcelRetry=()=>{
+    const error=Object.assign(new Error('Service maintenance'),{status:503,upstreamStatus:503});
+    w.ParcelGroundFallback.onGroundUnavailable({city:w.CityConfigManager.getCurrentCityId(),error,
+     message:w.ParcelSourceHealth.describeFailure(error)});
+    reject(error);
+   };
+  });
+ });
+ const retry=dialog.locator('[data-option="retry"]');
+ await retry.click();
+ await expect(retry).toHaveAttribute('aria-busy','true');
+ await expect(retry).toHaveClass(/cb-busy/);
+ await expect(retry).toBeDisabled();
+ await expect(dialog).toHaveCount(1);
+ await expect(dialog.locator('.ground-fallback-status')).toContainText('Retrying');
+ await page.evaluate(()=>(window as any).finishParcelRetry());
+ await expect(retry).not.toHaveAttribute('aria-busy','true');
+ await expect(retry).toBeEnabled();
+ await expect(dialog.locator('.ground-fallback-status')).toContainText('HTTP 503: Service maintenance');
+ await expect(page.locator('#parcel-source-status')).toHaveCount(0);
+});
+
+test('Belgrade explains Serbia-only access and offers continuation without parcels',async({mockApi:page})=>{
+ await page.route('https://portal.rgz.gov.rs/**',route=>route.fulfill({status:403,headers:{'Access-Control-Allow-Origin':'*'},body:'Forbidden'}));
+ await page.route('**/parcel-provider-relay/rs-rgz-dkp-parcels',route=>route.fulfill({status:403,json:{error:'Forbidden'}}));
+ await page.goto('/?city=belgrade&at=44.810918,20.438859,18&lang=en&reduceMotion=1',{waitUntil:'domcontentloaded'});
+ const dialog=page.locator('.ground-fallback-dialog');
+ await expect(dialog).toBeVisible({timeout:20000});
+ await expect(dialog.locator('.ground-fallback-status')).toContainText('only accepts connections from Serbia');
+ await expect(dialog.locator('.ground-fallback-status')).toContainText('HTTP 403');
+ await expect(page.locator('#parcel-source-status')).toHaveCount(0);
+ await dialog.locator('[data-option="without-parcels"]').click();
+ await expect.poll(()=>page.evaluate(()=>(window as any).ParcelGroundFallback?.isWithoutParcels('belgrade'))).toBe(true);
+ await expect(dialog).toHaveCount(0);
+});

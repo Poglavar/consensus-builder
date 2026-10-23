@@ -67,8 +67,8 @@ describe('what went wrong is named, not guessed', () => {
         const http = status => Object.assign(new Error(`Parcel request failed: HTTP ${status}`), { status });
         expect(Fallback.classify(http(503))).toMatchObject({ kind: 'temporary', retryable: true, detail: 'HTTP 503' });
         expect(Fallback.classify(http(429)).retryable).toBe(true);
-        expect(Fallback.classify(http(403))).toMatchObject({ kind: 'refused', retryable: false });
-        expect(Fallback.classify(http(404)).retryable).toBe(false);
+        expect(Fallback.classify(http(403))).toMatchObject({ kind: 'refused', retryable: true });
+        expect(Fallback.classify(http(404)).retryable).toBe(true);
         expect(Fallback.classify(new TypeError('Failed to fetch'))).toMatchObject({ kind: 'temporary', retryable: true });
         expect(Fallback.classify(new Error('Parcel response was not JSON: Unexpected token <'))).toMatchObject({ kind: 'broken', retryable: true });
         expect(Fallback.classify(new Error('something odd'))).toMatchObject({ kind: 'unknown', retryable: true });

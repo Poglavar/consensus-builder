@@ -1606,7 +1606,7 @@
       "catalogueUrl": "https://data.buenosaires.gob.ar/dataset/parcelas",
       "attribution": "Gobierno de la Ciudad de Buenos Aires, IDECABA cadastral parcel layer. Adapted to WGS84.",
       "licenceNote": "The previously checked catalogue stated CC-BY-2.5-AR; it is historical evidence, not a fresh terms verification. Source conditions remain informational.",
-      "defaultForCity": false
+      "defaultForCity": true
     },
     {
       "idType": "string",
@@ -14690,6 +14690,42 @@
       "defaultForCity": true,
       "cityScopes": {
         "joao_teves": "Fresh initial qualification on 2026-10-20: 3 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission."
+      }
+    },
+    {
+      "id": "rs-rgz-dkp-parcels",
+      "name": "RGZ cadastral parcels — Belgrade",
+      "adapter": "wfs",
+      "endpoint": "https://ogc-tmp.geosrbija.rs/regdkp/ows",
+      "proxyEndpoint": "https://portal.rgz.gov.rs/rga-portal-api/gis/wms/proxy",
+      "version": "1.1.0",
+      "featureType": "dkp:dkp_parcels_weekly_only_utm",
+      "idField": "source_parcel_id",
+      "idType": "integer",
+      "idPrefix": "SR-RGZ-DKP-",
+      "parcelNumberField": "parcel_num",
+      "outFields": [
+        "source_parcel_id",
+        "cadmun_code",
+        "parcel_num"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32634,
+      "countryCode": "RS",
+      "cityIds": [
+        "belgrade"
+      ],
+      "defaultForCity": true,
+      "catalogueUrl": "https://www.rgz.gov.rs/geo-srbija",
+      "attribution": "Republički geodetski zavod (RGZ), cadastral parcels. Adapted to WGS84.",
+      "scope": "Official RGZ cadastral WFS for Belgrade. Access is restricted to Serbian IP addresses; outside Serbia the app uses its no-parcels flow.",
+      "licenceNote": "Source conditions are informational. No owner or personal fields are retained.",
+      "knownLimit": {
+        "kind": "network-restricted",
+        "countryCode": "RS",
+        "evidence": "Serbian-IP restriction confirmed on 2026-10-23; probes from outside Serbia timed out. The official RGZ WFS and proxy were traced from the existing importer."
       }
     }
   ],

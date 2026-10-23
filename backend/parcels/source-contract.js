@@ -31,8 +31,8 @@ function retryAfterSeconds(value) {
     return Number.isFinite(seconds) ? Math.min(MAX_RETRY_AFTER_SECONDS, Math.max(0, Math.ceil(seconds))) : undefined;
 }
 
-// Translate upstream HTTP/service errors to stable gateway metadata without copying
-// provider response text, URLs, credentials, or query parameters into client errors.
+// Translate upstream HTTP/service errors to stable gateway metadata. Short service reasons
+// are retained with URLs and credentials redacted; whole response bodies are not copied.
 export function providerHttpError(responseOrStatus, retryAfterOverride) {
     const status = typeof responseOrStatus === 'number'
         ? responseOrStatus
@@ -51,7 +51,13 @@ export function providerHttpError(responseOrStatus, retryAfterOverride) {
     const error = upstreamError(message, 502, code);
     if (upstreamStatus !== undefined) {
         error.upstreamStatus = upstreamStatus;
-        error.message = `${message.replace(/\.$/, '')} (HTTP ${upstreamStatus}).`;
+        const reason = typeof responseOrStatus === 'object'
+            ? String(responseOrStatus?.message || responseOrStatus?.statusText || '').trim()
+                .replace(/https?:\/\/\S+/gi, '[provider]')
+                .replace(/\b(Bearer|Basic)\s+[^\s,;]+/gi, '$1 [redacted]')
+                .replace(/\b([\w-]*token|password|secret|authorization|api[_-]?key)\s*[:=]\s*[^\s,;]+/gi, '$1=[redacted]')
+                .replace(/[\u0000-\u001f\u007f]/g, ' ').slice(0, 240) : '';
+        error.message = `${message.replace(/\.$/, '')} (HTTP ${upstreamStatus}${reason ? ': ' + reason : ''}).`;
     }
     if (status === 429) {
         let retry = retryAfterOverride;
@@ -76,6 +82,8 @@ const KNOWN_LIMIT_FAILURES = Object.freeze({
 
 export function knownLimitFor(descriptor, error) {
     const kind = descriptor?.knownLimit?.kind;
+    if (kind === 'network-restricted' && /^[A-Z]{2}$/.test(descriptor.knownLimit.countryCode || '')
+        && ['parcel-source-blocked', 'parcel-source-unavailable', 'parcel-source-rate-limited'].includes(error?.code)) return kind;
     return Object.hasOwn(KNOWN_LIMIT_FAILURES, kind) && KNOWN_LIMIT_FAILURES[kind](error) ? kind : undefined;
 }
 

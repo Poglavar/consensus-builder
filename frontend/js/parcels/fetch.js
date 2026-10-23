@@ -814,7 +814,7 @@
         const message = error && error.message ? error.message : String(error || 'unknown error');
         return global.ParcelSourceHealth?.describeFailure?.(error, {
             offline: global.navigator?.onLine === false, translate: global.i18n?.t?.bind(global.i18n),
-            loaded: loadedParcelCounts()
+            loaded: loadedParcelCounts(), locale: global.i18n?.getLocale?.()
         }) || `Cadastral ground failed to load: ${message}`;
     }
 
@@ -824,7 +824,7 @@
         const userMessage = parcelFailureMessage(error);
         // The banner says it (ephemerals.md); the status log keeps the line without the status line repeating it.
         global.updateStatus?.(userMessage, { floating: false });
-        global.ParcelSourceSettings?.reportFailure?.(global, userMessage);
+        if (!global.ParcelGroundFallback) global.ParcelSourceSettings?.reportFailure?.(global, userMessage);
     }
 
     function fetchParcelDataReported(customBounds, source) {

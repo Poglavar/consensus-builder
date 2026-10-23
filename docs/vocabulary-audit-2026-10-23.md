@@ -516,7 +516,7 @@ Coverage values are `complete`, `partial`, `none`, `unknown`. `none` and `unknow
 
 New York's default imported source (`parcel-nyc`) binds against the same NYS footprint and unit tables used by the map. Each footprint uses its first sorted SWIS ID (`US-NY-…`); binding records `server:parcel-nyc` and refuses incomplete source queries. The optional live DOF source uses separate `US-NYC-BBL-…` identities and is never substituted for the imported source. [Imported source](../backend/parcels/nyc-database-source.js).
 
-Observed unresolved audit (2026-10-23): Belgrade and Buenos Aires still display imported database parcels without a matching server binding adapter. Their default `/designs/binding` requests return `unknown`, which blocks the Freeform Done flow, including imported GLBs. This is not a GLB parsing restriction.
+Resolved 2026-10-23: Belgrade and Buenos Aires formerly displayed imported database parcels without matching server binding adapters, blocking Freeform Done. Their defaults now select the official RGZ and IDECABA WFS adapters for both map reads and site binding. Belgrade’s Serbian-IP access restriction remains an availability constraint and uses the no-parcels recovery flow outside Serbia. The new provider-qualified identities intentionally replace the imported ID namespaces; affected experimental designs must be recreated.
 
 ### Owner / party / actor — `RightsParty`, `DecisionActor`
 

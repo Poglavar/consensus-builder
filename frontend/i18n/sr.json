@@ -6547,6 +6547,8 @@
         "unsupportedCrs": "Ovaj WMS zahteva podržani geografski koordinatni sistem ili Web Mercator."
     },
     "parcelSourceHealth": {
+    "countryRestricted": "Ovaj registar prihvata samo veze iz ove države: {{country}}. Izvan nje nastavite bez parcela ili izaberite drugi izvor.",
+    "requestTimedOut": "Zahtev je istekao.",
         "offline": "Izgleda da nemaš internet vezu. Poveži se na internet i pokušaj ponovo.",
         "rateLimited": "Ovaj izvor ograničava broj zahteva. Pokušaj ponovo za {{seconds}} sekundi.",
         "blocked": "Pružalac je odbio pristup (HTTP {{status}}). Možda ograničava IP adrese ili zahteva prijavu. Izaberi drugi izvor ili pokušaj kasnije.",
