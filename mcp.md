@@ -2,7 +2,7 @@
 
 # MCP: Urban Game Theory for agents
 
-**Status (2026-10-23): local functionality, public-source contract checks and the first paid pilot pass. Production activation, the remaining paid cases and live wallet acceptance are pending.** Branch and worktree `colosseum-worlds-fair`.
+**Status (2026-10-23): local functionality, public-source contract checks and the first paid pilot pass. The authorized remaining 20 paid cases are running under an additional US$3 cap; production activation and live wallet acceptance remain pending.** Branch and worktree `colosseum-worlds-fair`.
 
 ## Implementation checkpoint (2026-10-23)
 
@@ -42,8 +42,13 @@
   records shared usage accounting. An uncertain submission cannot be silently resubmitted.
   The authorized one-task Sonnet 5.5 street pilot passed after seven total rounds at **US$0.097633**.
   Its first four rounds cost US$0.049973 and exposed the cwd bug; the same checkpoint continued
-  within the original US$1 cap. The seed contains 21 cases; the remaining 20 need separate spend
-  authorization. No permanent publication, wallet signature, push, deployment or registry listing ran.
+  within the original US$1 cap. The user subsequently authorized the remaining 20 cases under an
+  additional US$3 total cap. The serial job was stopped after its first case passed, preserving its second in-flight batch.
+  Managed job `ugt-mcp-paid-remaining-20-parallel` resumes it with four local workers: one
+  two-case checkpoint capped at US$0.30 and 18 single-case checkpoints capped at US$0.15 each.
+  These caps total US$3 including prior spend. The pilot-excluded manifests/checkpoints live in
+  `~/.config/ugt/mcp-evals/2026-10-23-remaining-20-cases/`. No paid batch is resubmitted when
+  moving the checkpoint. The evaluation is running; no result is inferred from submission. No permanent publication, wallet signature, push, deployment or registry listing ran.
 
 **Intentional experimental contract correction:** agreement input/output areas now use the shared
 Turf-compatible spherical calculation (radius 6378137 m), deterministic sine arithmetic and rounding

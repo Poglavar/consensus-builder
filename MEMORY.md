@@ -874,3 +874,5 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 
 - 2026-10-23: Replace Fork design with click-to-place Duplicate for movable material designs; copying geometry must not copy agreement state or source binding.
 - 2026-10-23: Expose Upload .glb beside Upload GeoJSON in Freeform and import into the existing editor session.
+
+- 2026-10-23: The user authorized the remaining 20 Sonnet 5.5 Batch MCP evaluation cases under an additional US$3 total cap, excluding permanent publication and wallet signing; deployment still needs its own authorization.
