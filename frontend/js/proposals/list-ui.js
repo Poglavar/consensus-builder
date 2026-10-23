@@ -673,12 +673,14 @@ function buildProposalListItemsHtml(dataset, options = {}) {
                     ${downloadButtonHtml || deleteButtonHtml}
                 </div>
                 <div class="proposal-card-sub">${metaBits}</div>
-                <div class="proposal-card-badges">
+                <div class="proposal-card-actions">
+                    ${detailsButtonHtml}
+                    <div class="proposal-card-badges">
+                        ${proposalLadderBadgesHtml(proposal, { applied: appliedState })}
+                        ${agentProvenance ? `<span class="cb-badge cb-badge--published proposal-agent-badge" title="${escapeHtml(agentBadgeTitle)}"><i class="fas fa-robot" aria-hidden="true"></i> ${escapeHtml(agentBadgeLabel)}</span>` : ''}
+                    </div>
                     ${window.__proposalEpoch ? window.__proposalEpoch.cardEpochSelectHtml(proposal, proposalId) : ''}
-                    ${proposalLadderBadgesHtml(proposal, { applied: appliedState })}
-                    ${agentProvenance ? `<span class="cb-badge cb-badge--published proposal-agent-badge" title="${escapeHtml(agentBadgeTitle)}"><i class="fas fa-robot" aria-hidden="true"></i> ${escapeHtml(agentBadgeLabel)}</span>` : ''}
                 </div>
-                <div class="proposal-card-actions">${detailsButtonHtml}</div>
             </div>
         `;
     }).join('');

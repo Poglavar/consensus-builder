@@ -329,7 +329,7 @@
         const naslov = t('modal.roadWidth.proposalList.epoch.rowLabel', 'Plan epoch');
         const odabrana = trenutna === null ? '' : String(trenutna);
         const opcije = yearOptionList(trenutna).map(o =>
-            `<option value="${esc(o.v)}"${o.v === odabrana ? ' selected' : ''}>${esc(o.txt)}</option>`).join('');
+            `<option value="${esc(o.v)}"${o.v === odabrana ? ' selected' : ''}>${esc(o.v === '' ? '—' : o.v === 'custom' ? o.txt : o.v)}</option>`).join('');
         return `<select class="proposal-epoch-card-select${trenutna === null ? ' is-empty' : ''}"`
             + ` data-proposal-id="${esc(proposalId)}" title="${esc(naslov)}" aria-label="${esc(naslov)}">`
             + `${opcije}</select>`;

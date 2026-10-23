@@ -392,7 +392,7 @@
         control('planStatsButton', { id: 'proposals.planStats', group: 'proposals', surfaces: ['proposals'],
             labelKey: 'sidebar.proposals.planStats.buttonLabel', fallbackLabel: 'Applied proposal stats', icon: 'fas fa-chart-pie' }),
         control('roosterScoreButton', { id: 'proposals.grainScore', group: 'proposals', surfaces: ['proposals'],
-            labelKey: 'sidebar.proposals.grainScore.buttonLabel', fallbackLabel: 'Summon the urbanist rooster', icon: 'fas fa-crow' }),
+            labelKey: 'sidebar.proposals.grainScore.buttonLabel', fallbackLabel: 'Urban rooster', icon: 'fas fa-crow' }),
         control('shareAppliedProposalsButton', { id: 'proposals.sharePlan', group: 'proposals', surfaces: ['proposals'],
             labelKey: 'mapShell.shareMap', fallbackLabel: 'Share this map', icon: 'fas fa-share-alt' }),
         control('agreementsButton', { id: 'proposals.agreements', group: 'proposals', surfaces: ['proposals'],

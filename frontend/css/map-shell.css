@@ -483,6 +483,15 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     height: min(var(--sheet-max-height, 70vh), 80vh, 880px);
 }
 
+@media (min-width: 768px) {
+    #proposals-sheet {
+        top: var(--map-shell-top-clearance);
+        bottom: var(--map-shell-bottom-clearance);
+        height: auto;
+        max-height: none;
+    }
+}
+
 .map-sheet .btn-group {
     display: flex;
     flex-direction: column;
@@ -641,7 +650,7 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     color: var(--cb-text-muted);
 }
 
-.map-sheet select {
+.map-sheet select:not(.proposal-epoch-card-select) {
     width: 100%;
     min-height: var(--sheet-row-height);
     padding: 6px 10px;

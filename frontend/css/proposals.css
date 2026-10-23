@@ -323,20 +323,6 @@
     pointer-events: auto;
 }
 
-@media (max-width: 767.98px) {
-    /* The title gets its own line: squeezed next to the number, status pill and action button it
-       was cut to "Block 2109…", dropping exactly the part that tells sibling proposals apart. */
-    .proposal-card-head {
-        flex-wrap: wrap;
-    }
-
-    .proposal-list-item--compact .proposal-list-title {
-        flex: 1 1 calc(100% - 28px);
-        white-space: normal;
-        overflow-wrap: anywhere;
-    }
-}
-
 .proposal-list-modal-header {
     padding: 10px 14px;
     display: flex;
@@ -471,11 +457,6 @@
         padding: 10px;
     }
 
-    /* A wallet address as author is one unbreakable 44-character word: let it break. */
-    .proposal-card-sub span {
-        overflow-wrap: anywhere;
-        min-width: 0;
-    }
 }
 
 /* Short desktop windows: the Proposals sheet is capped to the window (MapShell --sheet-max-height)
@@ -533,9 +514,12 @@
 
 .proposal-card-actions {
     display: flex;
-    justify-content: flex-end;
+    align-items: center;
+    gap: var(--cb-space-2);
     margin-top: var(--cb-space-2);
 }
+
+.proposal-card-actions > .proposal-list-details-btn { flex: 0 0 auto; }
 
 /* The one list region of the proposals list (dialog-share.js renders it). */
 .proposal-tab-content {

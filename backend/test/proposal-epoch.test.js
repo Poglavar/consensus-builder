@@ -129,21 +129,21 @@ describe('izbornik epohe na kartici', () => {
     it('pokazuje godinu prijedloga kao odabranu, i zna koja je kartica', () => {
         const html = cardHtml({ epochYear: 2045 }, 'c-abc');
         expect(html).toContain('data-proposal-id="c-abc"');
-        expect(html).toContain('<option value="2045" selected>2045.</option>');
+        expect(html).toContain('<option value="2045" selected>2045</option>');
         expect(html.match(/ selected>/g)).toHaveLength(1);
         expect(html).not.toContain('is-empty');
     });
 
-    it('bez epohe drži "Bez epohe" i blijedi chip', () => {
+    it('shows an empty year as a dash in the compact selector', () => {
         const html = cardHtml({}, 'c-abc');
         expect(html).toContain('class="proposal-epoch-card-select is-empty"');
-        expect(html).toContain('<option value="" selected>No epoch</option>');
+        expect(html).toContain('<option value="" selected>—</option>');
         expect(html.match(/ selected>/g)).toHaveLength(1);
     });
 
     it('godinu izvan ponude pokazuje kao odabranu, umjesto da tiho padne na drugu', () => {
         const html = cardHtml({ epochYear: 2077 }, 'c-abc');
-        expect(html).toContain('<option value="2077" selected>2077.</option>');
+        expect(html).toContain('<option value="2077" selected>2077</option>');
         expect(html.indexOf('value="2066"')).toBeLessThan(html.indexOf('value="2077"'));
     });
 

@@ -1502,6 +1502,8 @@ body.site-intro-open { overflow: hidden; }
     gap: 6px;
 }
 
+.proposal-card-head > button { flex: 0 0 auto; }
+
 .proposal-card-icon {
     font-size: 15px;
     line-height: 1;
@@ -1521,7 +1523,6 @@ body.site-intro-open { overflow: hidden; }
 
 .proposal-card-sub {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
     gap: 5px;
     font-size: 12px;
@@ -1529,16 +1530,32 @@ body.site-intro-open { overflow: hidden; }
     margin-top: 2px;
 }
 
+.proposal-card-sub > span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.proposal-card-sub > .proposal-card-dot { flex: 0 0 auto; }
+
 .proposal-card-dot {
     color: var(--cb-line-strong);
 }
 
 .proposal-card-badges {
     display: flex;
-    flex-wrap: wrap;
+    flex: 1;
+    min-width: 0;
     align-items: center;
-    gap: 5px;
-    margin-top: 5px;
+    gap: var(--cb-space-1);
+}
+
+.proposal-card-badges > .cb-badge {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* The reused mint-state badge, shrunk inside the compact card. */
@@ -2324,10 +2341,13 @@ path.geom-handle-edge.is-dragging { stroke-opacity: 0.35; }
    postavlja je, pa kartici ne treba i značka, a prijedlog se ne mora otvoriti
    da bi mu se epoha promijenila. Bez epohe je siv, sa epohom u primarnoj boji (tokeni). */
 .proposal-epoch-card-select {
+    flex: 0 0 auto;
+    width: calc(4ch + 28px);
+    min-height: var(--cb-control-height-sm);
     font-size: 10px;
     line-height: 1.5;
     padding: 1px 4px;
-    max-width: 110px;
+    margin-left: auto;
     border-radius: 9px;
     color: var(--cb-primary-soft-ink);
     background: var(--cb-primary-soft);

@@ -332,11 +332,6 @@ describe('smaller fixes', () => {
         expect(ruleBody(primitivesCss, '\\n\\.btn')).toMatch(/font:\s*inherit;/);
     });
 
-    it('lets a proposal title wrap on phones instead of cutting its distinguishing end', () => {
-        const [block] = mediaBlocksContaining(proposalsCss, '(max-width: 767.98px)', '.proposal-card-head');
-        expect(ruleBody(block, '\\.proposal-card-head')).toMatch(/flex-wrap:\s*wrap/);
-        expect(ruleBody(block, '\\.proposal-list-item--compact \\.proposal-list-title')).toMatch(/white-space:\s*normal/);
-    });
 });
 
 describe('the parcel-layout plot table holds its columns still', () => {
