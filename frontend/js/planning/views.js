@@ -88,6 +88,14 @@
         renderFocus();
     }
     function selectRecord(record) { focusedRecord = record; referenceStatus = null; select(record?.id || null); }
+    // The actions panel of the selected proposal opened, by its "Proposal actions" button or directly
+    // (the click stack's Design section): the proposal's summary steps back while it is open.
+    function actionsShown(key) {
+        const item = selected();
+        if (item?.role !== 'proposed' || String(item.proposalId) !== String(key)) return;
+        actionsOpen = true;
+        renderInspector();
+    }
     // The parcel the sheet refers to: the one the 3D view isolated, else the parcel of the
     // selected permitted massing.
     function parcelOf(item) {
@@ -311,21 +319,18 @@
         if (sourceResult && item.volumes.length) badges.append(element('span', 'cb-badge cb-badge--warning',
             t(item.assessment.meaning === 'existing-stock-estimate' ? 'stockBadge' : item.parcelEnvelope ? 'bound' : 'approximate')));
         if (item.assessment.refresh) badges.append(element('span', 'cb-badge cb-badge--warning', t('refreshPending')));
-        inspector.append(badges, element('p', 'planning-inspector__description',
+        inspector.append(badges);
+        // An authored proposal is summed up by its badge, figures and actions; the notes on what a
+        // record does and does not establish, its conditions and its source belong to the
+        // observed and permitted records.
+        if (item.role !== 'proposed') inspector.append(element('p', 'planning-inspector__description',
             t(item.assessment.meaning === 'existing-stock-estimate' ? 'stockEstimate'
                 : item.assessment.meaning === 'public-screen' ? 'evidenceOnly'
                     : item.assessment.meaning === 'zoning-area' ? 'zoningAreaNote'
                         : item.parcelEnvelope ? 'envelopeNote'
                         : sourceResult ? (item.volumes.length ? 'oneOption' : 'savedNoShape')
-                        : item.role === 'existing' ? 'observedNote' : 'authoredNote')));
-        if (item.role === 'proposed') {
-            const proposal = root.proposalStorage?.getProposal(item.proposalId);
-            const lifecycleKey = root.getProposalLifecycleKey(proposal);
-            inspector.append(element('p', 'planning-inspector__description', root.getProposalLifecycleLabel(lifecycleKey)));
-            const state = root.__proposalDisplayState.of(proposal);
-            const hint = root.__proposalDisplayState.rungHint(state.rung, (key, fallback) => root.i18n.t(key) || fallback);
-            if (hint) inspector.append(element('p', 'planning-inspector__description', hint));
-        } else if (item.assessment.status && !item.parcelEnvelope) inspector.append(element('p', 'planning-inspector__description', resultLabel(item.assessment.status)));
+                        : 'observedNote')));
+        if (item.role !== 'proposed' && item.assessment.status && !item.parcelEnvelope) inspector.append(element('p', 'planning-inspector__description', resultLabel(item.assessment.status)));
         if (item.assessment.reason) inspector.append(element('p', 'planning-cache-reason', item.assessment.reason));
         if (item.assessment.current === false) inspector.append(element('p', 'planning-inspector__description', t('savedWithdrawn')));
         if (referenceStatus && referenceStatus !== 'same') inspector.append(element('p', 'planning-assessment', t('referenceChanged')));
@@ -353,7 +358,7 @@
             `${t('assumedSide', { side: sideWord(item, realization.frontEdge) })} ${t('sideOptions', { count: item.derivation.frontEdges.length })}`));
         const assessment = element('div', 'planning-assessment');
         assessment.append(element('strong', '', t('conditionsTitle')), element('p', '', t('conditionsNote')));
-        if (item.role === 'proposed' || (sourceResult && item.volumes.length)) inspector.append(assessment);
+        if (sourceResult && item.volumes.length) inspector.append(assessment);
         const constraints = shown ? shown.constraints : item.constraints;
         if (constraints?.length) {
             const limits = element('dl', 'planning-limits');
@@ -382,7 +387,7 @@
             const terms = element('pre', 'planning-evidence__terms', JSON.stringify(item.sourceEvidence, null, 2));
             evidence.append(element('p', '', t('sourceTerms')), terms);
         }
-        inspector.append(evidence);
+        if (item.role !== 'proposed') inspector.append(evidence);
         root.PlanningParcelStudy?.addSourceAction(inspector, item);
         for (const reference of item.sourceEvidence?.sourceReferences || []) {
             const button = element('button', 'btn btn-sm', t('referencedSource', { source: reference.providerId, revision: reference.revision.slice(0, 8) }));
@@ -827,7 +832,7 @@
         syncView();
         loadSources();
     }
-    root.PlanningViews = { getState: () => store?.get() || { ...core.defaults, variation: '' }, getPolicy: policy, getItems: sceneItems,
+    root.PlanningViews = { getState: () => store?.get() || { ...core.defaults, variation: '' }, getPolicy: policy, getItems: sceneItems, actionsShown,
         getSelectionPoint: () => selectionPoint?.id === selected()?.id ? selectionPoint : null, getAppearance: appearance,
         refreshStudy({ inspector: updateInspector = true } = {}) { drawMap(); if (updateInspector) renderInspector(); notifyGeometry(); },
         getSelected: selected, isReady: () => ready, isInspecting: () => ready && !inspector.hidden,

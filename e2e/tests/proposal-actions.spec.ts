@@ -4,7 +4,7 @@
 // agreement's, and only agreements are minted besides parcel anchors (M3).
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
-import { openCity, openParcel, showProposal, PARCEL_ID } from '../helpers/runtime';
+import { openCity, openParcel, showProposal, PARCEL_ID, showProposalTab } from '../helpers/runtime';
 import { connectWalletByConnectorId, injectMockSolanaWallet, stubSolanaParcelMint, waitForBlockchainRuntime } from '../helpers/blockchain';
 
 const SOLANA_WALLET = '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT';
@@ -16,6 +16,7 @@ async function expandProposalDetails(page: import('@playwright/test').Page): Pro
 }
 
 async function openProposalSection(page: import('@playwright/test').Page, section: 'land'): Promise<void> {
+  await showProposalTab(page, 'details');
   const details = page.locator(`#proposal-details-panel details[data-proposal-section="${section}"]`);
   await details.locator(':scope > summary').click();
   await expect(details).toHaveJSProperty('open', true);
@@ -47,7 +48,7 @@ test.describe('Proposal actions @features', () => {
     expect(areas.primary).toBeGreaterThan(12000);
     await showProposal(page, ids.partial);
     await expandProposalDetails(page);
-    await openProposalSection(page, 'land');
+    // The site area is the Overview's one area figure; the source parcels' sum is under Details.
     const site = page.locator('[data-proposal-area-basis="site"]');
     const sources = page.locator('[data-proposal-area-basis="source-parcels"]');
     await expect(site.locator('.metric-label')).toHaveText('Site area:');
@@ -55,6 +56,7 @@ test.describe('Proposal actions @features', () => {
     const siteArea = Number((await site.locator('.metric-value').innerText()).replace(/[^\d]/g, ''));
     expect(siteArea).toBeGreaterThan(12000);
     expect(siteArea).toBeLessThan(12500);
+    await openProposalSection(page, 'land');
     await expect(sources).toHaveAttribute('data-area-complete', 'false');
     await expect(sources.locator('.metric-label')).toHaveText('Available source parcel area:');
     await expect(sources.locator('.metric-value')).not.toHaveText('—');

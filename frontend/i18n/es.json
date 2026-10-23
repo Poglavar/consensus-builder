@@ -1451,7 +1451,6 @@
                 "sourcePartNote": "Una parte conexa de una parcela de origen. Esta referencia identifica la parte mostrada; la parcela de origen puede contener otras partes."
             },
             "tabInfo": "Info",
-            "tabPropose": "Proponer",
             "tabProposals": "Propuestas",
             "tabTools": "Herramientas",
             "historySection": "Historial",
@@ -1826,7 +1825,11 @@
                 "actions": "Más acciones",
                 "actionsHint": "Crea una versión y explora el terreno"
             },
-            "forkedFrom": "Derivado de {{cid}}"
+            "forkedFrom": "Derivado de {{cid}}",
+            "tabs": {
+                "overview": "Resumen",
+                "details": "Detalles"
+            }
         },
         "block": {
             "title": "Información del bloque",
@@ -6255,7 +6258,7 @@
             "tools": "Herramientas",
             "view3d": "Ver en 3D",
             "detectBlock": "Detectar bloque",
-            "useAsSite": "Usar como sitio"
+            "useAsSite": "Sitio personalizado"
         },
         "groundTitle": "Terreno sin parcela",
         "groundNote": "sin parcela catastral"
@@ -7300,7 +7303,6 @@
         "builtRecord": "Edificio observado",
         "proposedRecord": "Propuesta de diseño",
         "observedNote": "Datos del edificio de la fuente. Las medidas que faltan siguen siendo desconocidas.",
-        "authoredNote": "Un diseño propuesto. Mostrarlo no acredita autorización ni construcción.",
         "proposalActions": "Acciones de la propuesta",
         "footprintArea": "Superficie de huella",
         "referenceChanged": "La fuente cambió desde la versión citada por el diseño. Se muestra el registro guardado actual; la revisión citada no se ha reconstruido.",
@@ -7331,6 +7333,7 @@
         "inspectArea": "Inspeccionar área de zonificación {{parcel}}"
     },
     "clickStack": {
+        "parcelReference": "Parcela catastral {{reference}}",
         "title": "En este punto",
         "agreements": "Acuerdos ({{count}})",
         "designs": "Diseños ({{count}})",

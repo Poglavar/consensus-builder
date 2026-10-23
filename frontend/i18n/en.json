@@ -1428,7 +1428,6 @@
                 "sourcePartNote": "One connected part of a source parcel. This reference identifies the displayed part; the source parcel can contain other parts."
             },
             "tabInfo": "Info",
-            "tabPropose": "Propose",
             "tabProposals": "Proposals",
             "tabTools": "Tools",
             "historySection": "History",
@@ -1803,7 +1802,11 @@
                 "actions": "More actions",
                 "actionsHint": "Fork this proposal and explore its land"
             },
-            "forkedFrom": "Forked from {{cid}}"
+            "forkedFrom": "Forked from {{cid}}",
+            "tabs": {
+                "overview": "Overview",
+                "details": "Details"
+            }
         },
         "block": {
             "title": "Block info",
@@ -6228,7 +6231,7 @@
             "tools": "Tools",
             "view3d": "View in 3D",
             "detectBlock": "Detect block",
-            "useAsSite": "Use as site"
+            "useAsSite": "Custom site"
         },
         "groundTitle": "Open ground",
         "groundNote": "no cadastral parcel"
@@ -7272,7 +7275,6 @@
         "builtRecord": "Observed building",
         "proposedRecord": "Authored proposal",
         "observedNote": "Source building data. Missing measurements remain unknown.",
-        "authoredNote": "An authored design. Displaying it does not establish permission or construction.",
         "proposalActions": "Proposal actions",
         "footprintArea": "Footprint area",
         "referenceChanged": "This source has changed since the design referenced it. Showing the currently saved record; the referenced revision is not reconstructed.",
@@ -7303,6 +7305,7 @@
         "inspectArea": "Inspect source zoning area {{parcel}}"
     },
     "clickStack": {
+        "parcelReference": "Cadastral parcel {{reference}}",
         "title": "At this spot",
         "agreements": "Agreements ({{count}})",
         "designs": "Designs ({{count}})",

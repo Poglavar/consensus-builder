@@ -1,7 +1,7 @@
 // Exercise proposal action buttons and assert the resulting UI and stored state: the related-design
 // link, the grain-score Repeat control, and Share publishing a design (POST /pins, /designs).
 import { test, expect } from '../helpers/fixtures';
-import { openCity, createSpace, showProposal, PARCEL_ID } from '../helpers/runtime';
+import { openCity, createSpace, showProposal, PARCEL_ID, showProposalTab } from '../helpers/runtime';
 import { pageIndex } from '../helpers/mocks/shared-server';
 
 async function addProposal(page: import('@playwright/test').Page, proposal: Record<string, unknown>): Promise<string> {
@@ -17,6 +17,7 @@ async function showExpandedProposal(page: import('@playwright/test').Page, propo
 }
 
 async function openLandSection(page: import('@playwright/test').Page): Promise<void> {
+  await showProposalTab(page, 'details');
   const section = page.locator('#proposal-details-content details[data-proposal-section="land"]');
   if (!(await section.evaluate(element => (element as HTMLDetailsElement).open))) {
     await section.locator(':scope > summary').click();

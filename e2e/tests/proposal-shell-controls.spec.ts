@@ -184,7 +184,8 @@ test.describe('Shared proposal editor shell controls @core', () => {
     await expect.poll(() => page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.description, sourceId), { timeout: 45_000 })
       .toBe('Updated description from the proposal editor.');
     await expect.poll(() => page.evaluate(id => (window as any).proposalDraftStore.getDraft(id), draftId)).toBeNull();
-    await expect(page.locator('#planning-inspector')).toBeVisible();
+    // The published proposal opens in the click stack, its Design section showing its card.
+    await expect(page.locator('#click-stack .click-stack__section[data-kind="designs"] #proposal-details-panel')).toBeVisible();
     await expect.poll(() => page.evaluate(() => (window as any).currentlyHighlightedProposalId)).toBe(sourceId);
     await showProposal(page, sourceId);
     await expect(page.locator('#proposal-details-panel')).toBeVisible();

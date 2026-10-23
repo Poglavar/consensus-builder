@@ -4,7 +4,7 @@
 // editor's own divider is covered by parcel-layout-audit.spec.ts and designer-controls.spec.ts.
 import { test, expect } from '../helpers/fixtures';
 import type { Page } from '@playwright/test';
-import { openCity, openParcel, createSpace, showProposal, drawCorridor, clickMapPoint, PARCEL_ID, PARCEL_GEOMETRY } from '../helpers/runtime';
+import { openCity, openParcel, createSpace, showProposal, drawCorridor, clickMapPoint, PARCEL_ID, PARCEL_GEOMETRY, showProposalTab, unfoldStack } from '../helpers/runtime';
 import { pageIndex } from '../helpers/mocks/shared-server';
 import { fileIndexedAgreement, MINTED_ACCOUNT as AGREEMENT_ACCOUNT, OPEN_POOL } from '../helpers/agreements';
 // A 1×1 PNG stands in for a rendered picture; the dialog accepts data URLs like any other image.
@@ -18,6 +18,7 @@ const beforeLayers = async (page: Page) => JSON.parse((await beforeMap(page).get
 // The full reader, with its parcels section open (the per-parcel chips live there).
 async function openParcelsSection(page: Page): Promise<void> {
   await page.evaluate(() => (window as any).toggleProposalDetailsPanelMinimized(false));
+  await showProposalTab(page, 'details');
   const summary = page.locator('#proposal-details-panel details.proposal-detail-section summary').filter({ hasText: 'Land & ownership' });
   await expect(summary).toBeVisible();
   if (!(await summary.evaluate(el => (el.parentElement as HTMLDetailsElement).open))) await summary.click();
@@ -40,6 +41,7 @@ test.describe('Before / after on the main map @features', () => {
     const button = page.locator('#proposal-details-panel .btn-compare-proposal');
     await expect(button).toBeVisible();
     await expect(button).toHaveAttribute('aria-pressed', 'false');
+    await unfoldStack(page);
     await button.click();
 
     await expect(beforeMap(page)).toBeVisible();
@@ -67,6 +69,7 @@ test.describe('Before / after on the main map @features', () => {
     await expect(handle).toHaveAttribute('aria-valuenow', '6');
     expect(await beforeMap(page).evaluate(el => (el as HTMLElement).style.clipPath)).toMatch(/^inset\(0(px)? [\d.]+px 0(px)? 0(px)?\)$/);
 
+    await unfoldStack(page);
     await button.click();
     await expect(beforeMap(page)).toHaveCount(0);
     await expect(divider(page)).toHaveCount(0);
@@ -74,6 +77,7 @@ test.describe('Before / after on the main map @features', () => {
     expect(await dragging(page)).toBe(true);
 
     // Unapplying ends the comparison and hides its action: there is no "after" any more.
+    await unfoldStack(page);
     await button.click();
     await expect(beforeMap(page)).toBeVisible();
     await page.evaluate(id => (window as any).removeProposalFromMap(id), id);
@@ -86,9 +90,12 @@ test.describe('Before / after on the main map @features', () => {
     await openCity(page);
     const id = await createSpace(page, 'park');
     await showProposal(page, id);
-    // Keep both grip positions on exposed map, outside the expanded proposal panel.
-    await page.locator('#proposal-details-minimize').click();
+    // Keep both grip positions on exposed map, outside the expanded proposal panel (a card hosted
+    // in the click stack has no − of its own; the stack's width is the panel's).
+    const minimize = page.locator('#proposal-details-minimize');
+    if (await minimize.isVisible()) await minimize.click();
     const button = page.locator('#proposal-details-panel .btn-compare-proposal');
+    await unfoldStack(page);
     await button.click();
     const state = () => page.evaluate(() => {
       const w = window as any;
@@ -161,6 +168,7 @@ test.describe('Before / after on the main map @features', () => {
     const parcelId = await chip.getAttribute('data-focus-parcel');
     expect(parcelId).toBe(PARCEL_ID);
 
+    await unfoldStack(page);
     await chip.click();
     await expect(beforeMap(page)).toBeVisible();
     await expect(chip).toHaveAttribute('aria-pressed', 'true');
@@ -170,6 +178,7 @@ test.describe('Before / after on the main map @features', () => {
     await expect.poll(() => page.locator('#map .leaflet-overlay-pane path[stroke="#0369a1"]').count()).toBeGreaterThan(0);
 
     // The same chip again closes it and clears the outline.
+    await unfoldStack(page);
     await chip.click();
     await expect(beforeMap(page)).toHaveCount(0);
     await expect(page.locator('#map .leaflet-overlay-pane path[stroke="#0369a1"]')).toHaveCount(0);
@@ -190,6 +199,7 @@ test.describe('Before / after on the main map @features', () => {
     await expect(chip).toBeVisible();
     await expect(chip).toContainText('Before / after');
     await expect(chip).toHaveAttribute('aria-pressed', 'false');
+    await unfoldStack(page);
     await chip.click();
     await expect(beforeMap(page)).toBeVisible();
     await expect(chip).toHaveAttribute('aria-pressed', 'true');
@@ -211,6 +221,7 @@ test.describe('Before / after on a phone @features', () => {
     await showProposal(page, id);
     await page.evaluate(() => (window as any).toggleProposalDetailsPanelMinimized(true));
     const button = page.locator('#proposal-details-panel .btn-compare-proposal');
+    await unfoldStack(page);
     await button.click();
     const cdp = await page.context().newCDPSession(page);
     const mapBox = (await page.locator('#map').boundingBox())!;
@@ -255,6 +266,7 @@ test.describe('Before / after on a phone @features', () => {
     await page.evaluate(() => (window as any).toggleProposalDetailsPanelMinimized(true));
     const button = page.locator('#proposal-details-panel .btn-compare-proposal');
     await expect(button).toBeVisible();
+    await unfoldStack(page);
     await button.click();
     await expect(beforeMap(page)).toBeVisible();
     const box = await divider(page).locator('.map-compare__grip').boundingBox();
@@ -267,6 +279,7 @@ test.describe('Before / after on a phone @features', () => {
       expect(label!.x).toBeGreaterThanOrEqual(0);
       expect(label!.x + label!.width).toBeLessThanOrEqual(390);
     }
+    await unfoldStack(page);
     await button.click();
     await expect(beforeMap(page)).toHaveCount(0);
   });

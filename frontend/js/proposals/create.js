@@ -836,18 +836,14 @@ async function createProposal() {
             updateStatus('Proposal saved, but it could not be applied to the cadastral fabric.');
         }
 
-        const focusParcelId = selectedLiveParcelIds[0] || null;
         const openProposalDetails = () => {
             if (!waitingPopupVisible) {
                 waitingPopupVisible = true;
                 setProposalModalDimmed(true);
             }
-            if (typeof selectAndHighlightProposal === 'function') {
-                // Do not refocus map when opening details immediately after creation
-                selectAndHighlightProposal(proposalId, focusParcelId, false, true);
-            } else if (typeof showProposalDetailsModal === 'function') {
-                showProposalDetailsModal(proposalId);
-            }
+            // The placed proposal opens in the click stack, its Design section expanded, without
+            // moving the map (click-stack.md).
+            window.ClickStack.showDesign(proposalId);
             // Hide popup after a short delay to allow panel to render
             setTimeout(() => {
                 hideWaitingPopupSafe();

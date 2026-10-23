@@ -1424,7 +1424,6 @@
                 "proposalsHint": "Kreiraj predlog koji uključuje sve izabrane parcele."
             },
             "tabInfo": "Info",
-            "tabPropose": "Predloži",
             "tabProposals": "Predlozi",
             "tabTools": "Alati",
             "historySection": "Istorija",
@@ -1816,7 +1815,11 @@
                 "actions": "Dodatne radnje",
                 "actionsHint": "Napravite svoju verziju i istražite zemljište"
             },
-            "forkedFrom": "Izvedeno iz {{cid}}"
+            "forkedFrom": "Izvedeno iz {{cid}}",
+            "tabs": {
+                "overview": "Pregled",
+                "details": "Detalji"
+            }
         },
         "block": {
             "title": "Informacije o bloku",
@@ -6264,7 +6267,7 @@
             "tools": "Alati",
             "view3d": "Prikaži u 3D-u",
             "detectBlock": "Detektuj blok",
-            "useAsSite": "Koristi kao lokaciju"
+            "useAsSite": "Prilagođena lokacija"
         },
         "groundTitle": "Tlo bez parcele",
         "groundNote": "nije katastarska parcela"
@@ -7324,7 +7327,6 @@
         "builtRecord": "Postojeća zgrada",
         "proposedRecord": "Autorski predlog",
         "observedNote": "Izvorni podaci o zgradi. Nedostajuće mere ostaju nepoznate.",
-        "authoredNote": "Autorski projekat. Njegov prikaz ne potvrđuje dozvolu ni izgradnju.",
         "proposalActions": "Radnje predloga",
         "footprintArea": "Površina osnove",
         "referenceChanged": "Izvor se promenio od verzije navedene u projektu. Prikazuje se trenutno sačuvani zapis; navedena verzija nije rekonstruisana.",
@@ -7356,6 +7358,7 @@
         "inspectArea": "Pregledaj izvorno područje zoniranja {{parcel}}"
     },
     "clickStack": {
+        "parcelReference": "Katastarska parcela {{reference}}",
         "title": "Na ovom mestu",
         "agreements": "Sporazumi ({{count}})",
         "designs": "Dizajni ({{count}})",

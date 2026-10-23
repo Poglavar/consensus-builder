@@ -62,10 +62,12 @@
         if (id === 'parcel-info-panel') {
             // The section's row folds and the stack closes, so the panel's − and × are hidden there
             // (css/map.css) and it is never left minimized. Its proposals are the Designs section,
-            // so its Proposals tab is hidden too and the panel shows its Info tab instead.
+            // so its Proposals tab is hidden too and the panel shows Design instead.
             global.ParcelsUIParcelPanel?.setParcelInfoPanelMinimized?.(el, false);
-            if (el.querySelector('[data-parcel-tab-id="proposals-tab"][aria-selected="true"]')) global.switchParcelTab?.(null, 'info-tab');
+            if (el.querySelector('[data-parcel-tab-id="proposals-tab"][aria-selected="true"]')) global.switchParcelTab?.(null, 'propose-tab');
         }
+        // A design's panel has no − in the stack either: it is never left minimized there.
+        if (id === 'proposal-details-panel' && el.classList.contains('is-minimized')) global.toggleProposalDetailsPanelMinimized?.();
     }
 
     // Puts the hosted panel back where it lives; hide also closes it (the section collapsed or the
@@ -75,6 +77,7 @@
         if (!hosted) return;
         state.hosted = null;
         hosted.el.classList.remove('is-hosted');
+        hosted.el.querySelector('.click-stack__actions--parcel')?.remove();
         if (hosted.parent) hosted.parent.insertBefore(hosted.el, hosted.next && hosted.next.parentNode === hosted.parent ? hosted.next : null);
         if (!hide) return;
         if (hosted.el.id === 'planning-inspector') global.PlanningViews?.select(null);
@@ -121,7 +124,7 @@
         if (state.el && doc.body.contains(state.el)) return state.el;
         const el = doc.createElement('aside');
         el.id = PANEL_ID;
-        el.className = 'click-stack info-panel right-dock-panel';
+        el.className = 'click-stack right-dock-panel';
         el.hidden = true;
         el.addEventListener('click', onPanelClick);
         el.addEventListener('keydown', event => { if (event.key === 'Escape') { event.preventDefault(); close(); } });
@@ -139,6 +142,10 @@
         return node;
     }
 
+    function parcelReference(instance) {
+        return global.ParcelMenuModel?.displayParcelId?.(instance?.feature?.properties || {}, instance?.id) || instance?.id || '';
+    }
+
     function rowTitle(section) {
         const instance = section.instances[section.selectedIndex];
         switch (section.kind) {
@@ -147,7 +154,10 @@
             case 'built': return section.count > 1 ? t('builtMany', 'Built ({{count}})', { count: section.count }) : t('threeMode.controls.built', 'Built');
             case 'permitted': return t('planningViews.permitted', 'Permitted');
             case 'formed': return instance?.designLabel ? t('formedBy', 'Formed by {{design}}', { design: instance.designLabel }) : t('formed', 'Formed parcel');
-            case 'parcels': return section.multi ? t('parcels', 'Cadastral parcels ({{count}})', { count: section.count }) : t('parcel', 'Cadastral parcel');
+            case 'parcels': {
+                const reference = parcelReference(instance);
+                return t('parcelReference', 'Cadastral parcel {{reference}}', { reference });
+            }
             case 'ground': {
                 const text = global.GroundMenuModel?.describeGround(global.GroundMenu?.factsAt(state.latlng)?.kind) || {};
                 return text.titleKey ? global.i18n.t(text.titleKey) : t('groundMenu.title.noCadastre', 'Open ground');
@@ -164,7 +174,7 @@
             const design = by ? global.proposalStorage?.getProposal?.(by) : null;
             return design ? t('demolishedBy', 'Demolished by {{design}}', { design: design.title || by }) : t('demolished', 'Demolished');
         }
-        if (section.kind === 'ground') return '';
+        if (section.kind === 'ground' || section.kind === 'parcels') return '';
         if ((section.kind === 'parcels' || section.kind === 'formed') && instance.live !== false && instance.feature) {
             // The facts the parcel popover used to show: number · area · ownership · owners.
             const facts = global.ParcelMenu.factsFor(instance.id, instance.feature);
@@ -194,15 +204,6 @@
         if (state.hosted) unhost({ hide: false });
         el.textContent = '';
         el.setAttribute('aria-label', t('title', 'At this spot'));
-        const head = doc.createElement('header');
-        head.className = 'click-stack__head';
-        const title = doc.createElement('h2');
-        title.className = 'click-stack__title';
-        title.textContent = t('title', 'At this spot');
-        const close = button('click-stack__close close-circle-btn', '×', { action: 'close' });
-        close.setAttribute('aria-label', t('common.close', 'Close'));
-        head.append(title, close);
-        el.appendChild(head);
         const list = doc.createElement('div');
         list.className = 'click-stack__sections';
         stack.sections.forEach(section => {
@@ -230,7 +231,22 @@
                 chevron.setAttribute('aria-hidden', 'true');
                 row.appendChild(chevron);
             }
-            wrap.appendChild(row);
+            const heading = doc.createElement('div');
+            heading.className = 'click-stack__heading';
+            heading.appendChild(row);
+            if (section.kind === 'parcels') {
+                const reference = parcelReference(section.instances[section.selectedIndex]);
+                const copy = button('btn btn-quiet btn-sm btn-icon click-stack__copy-reference', undefined, { action: 'parcel-reference', reference });
+                const hint = t('common.copyToClipboard', 'Copy to clipboard');
+                copy.setAttribute('aria-label', `${hint}: ${reference}`);
+                copy.title = hint;
+                const icon = doc.createElement('i');
+                icon.className = 'fas fa-copy';
+                icon.setAttribute('aria-hidden', 'true');
+                copy.appendChild(icon);
+                heading.appendChild(copy);
+            }
+            wrap.appendChild(heading);
             if (section.multi) wrap.appendChild(renderStrip(section));
             if (expanded) {
                 const body = doc.createElement('div');
@@ -368,6 +384,11 @@
             const target = (HOSTS[kind] || []).find(id => isShown(doc.getElementById(id)));
             if (target) host(body, target);
             else if (HOSTS[kind]) unhost();
+            if (target === 'parcel-info-panel') {
+                const toolbar = doc.getElementById(target)?.querySelector('.parcel-context-actions');
+                const actions = body.querySelector('.click-stack__actions--parcel');
+                if (toolbar && actions) toolbar.appendChild(actions);
+            }
         } catch (error) {
             console.error(`[ClickStack] the ${kind} section could not open`, error);
         } finally {
@@ -375,8 +396,10 @@
         }
     }
 
+    // The design's actions panel opens in the section directly (its Overview tab with the actions
+    // below it), not the planning inspector's summary with a further "Proposal actions" button.
     function selectDesign(key) {
-        global.selectAndHighlightProposal(key, null, false, true);
+        global.selectAndHighlightProposal(key, null, false, true, false, { planningActions: true, presentation: 'details' });
         // A proposal's own parcel may open its panel alongside; in the stack it has its section.
         if (doc.getElementById('parcel-info-panel')?.classList.contains('visible')) global.hideParcelInfoPanel?.({ preserveProposalSelection: true });
     }
@@ -452,6 +475,7 @@
 
     function show(stack, latlng, hits) {
         observePanels();
+        ensureElement().classList.remove('is-folded');
         state.expanding = true;
         try {
             // Panels another surface opened step aside; the stack is now what describes the map.
@@ -495,8 +519,15 @@
         state.stack = null;
         state.hits = null;
         state.el.hidden = true;
+        state.el.classList.remove('is-folded');
         state.el.classList.remove('visible');
         doc.body.classList.remove('click-stack-open');
+    }
+
+    // Before / after needs the map: the stack folds to its rows. The expanded section keeps its
+    // panel hosted (hidden), so the comparison it started keeps running; a row click unfolds.
+    function fold() {
+        if (isOpen()) state.el.classList.add('is-folded');
     }
 
     function isOpen() {
@@ -517,8 +548,13 @@
             return;
         }
         const { action, kind, id } = target.dataset;
-        if (action === 'close') close();
+        if (action === 'parcel-reference') global.copyTextWithFeedback?.(target.dataset.reference);
         else if (action === 'row') {
+            // A folded stack unfolds first: its open section's row shows that section again.
+            if (state.el.classList.contains('is-folded')) {
+                state.el.classList.remove('is-folded');
+                if (state.stack.expanded === kind) return;
+            }
             if (state.stack.expanded === kind) collapse(); else expand(kind);
         } else if (action === 'instance') {
             state.stack = model.selectInstance(state.stack, kind, id);
@@ -536,6 +572,35 @@
             global.navigator.clipboard?.writeText(text).then(() => global.updateStatus?.(t('copied', 'Coordinates copied')),
                 error => console.error('[ClickStack] coordinates could not be copied', error));
         }
+    }
+
+    // A proposal just placed opens the stack at a point inside it, its Design section expanded on
+    // it, instead of a card of its own. In 3D, where the stack does not open, the proposal is
+    // selected as before (the scene shows it).
+    function showDesign(key) {
+        const proposal = global.getProposalByIdOrHash?.(key) || global.proposalStorage?.getProposal?.(key);
+        if (!proposal) throw new Error(`ClickStack: proposal ${key} is not stored`);
+        const designKey = String(global.getProposalKey?.(proposal) || proposal.proposalId);
+        if (doc.body.classList.contains('three-mode-active')) {
+            global.selectAndHighlightProposal(designKey, null, false, true);
+            return;
+        }
+        const footprint = global.__planOrder?.footprintOf?.(proposal);
+        if (!footprint) throw new Error(`ClickStack: proposal ${designKey} has no footprint to open at`);
+        const [lng, lat] = global.turf.pointOnFeature(footprint).geometry.coordinates;
+        const latlng = global.L.latLng(lat, lng);
+        const hits = global.ClickStackHits.hitsAt(latlng, { onPublished: () => refreshSpot(latlng) });
+        // The new design is the one shown, also where something else stands above it at that point.
+        if (!hits.designs.some(design => String(design.id) === designKey)) {
+            hits.designs.unshift({ id: designKey, label: String(proposal.title || proposal.name || designKey),
+                createdAt: proposal.createdAt, proposal, goal: proposal.goal || '' });
+        }
+        const stack = model.expand(model.buildClickStack(hits, { selected: { designs: designKey } }), 'designs');
+        state.lastClick = null;
+        log(`placed ${designKey}: ${stack.sections.map(section => `${section.kind}×${section.count}`).join(' ')}`);
+        // No click opened this spot, so the first click on the design is a new one (it selects what
+        // it hits, such as a road's stretch), not "the same spot again", which would close the stack.
+        show({ ...stack, topRef: null }, latlng, hits);
     }
 
     // Every map click on the 2D map arrives here, whichever layer received it. One physical click
@@ -579,6 +644,6 @@
 
     // The agreement section outlines all its designs; map hover leaves that outline alone.
     const holdsHighlight = () => isOpen() && state.stack?.expanded === 'agreements';
-    global.ClickStack = Object.freeze({ handleClick, close, isOpen, expand, collapse, holdsHighlight,
+    global.ClickStack = Object.freeze({ handleClick, showDesign, fold, close, isOpen, expand, collapse, holdsHighlight,
         current: () => state.stack, point: () => state.latlng });
 })(window);

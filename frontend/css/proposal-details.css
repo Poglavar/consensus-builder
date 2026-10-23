@@ -3,8 +3,8 @@
     padding: 0;
     /* A little of the map shows through (user rule 2026-10-16), on desktop as on phones. */
     background: var(--cb-glass-sheet);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(var(--cb-panel-blur));
+    -webkit-backdrop-filter: blur(var(--cb-panel-blur));
     overflow: hidden;
 }
 
@@ -176,6 +176,16 @@
 #proposal-details-panel .proposal-context-actions > button { min-width: 0; min-height: var(--cb-control-height); margin: 0; font-size: 12px; padding: 6px 8px; white-space: normal; }
 
 @media (max-width: 767.98px) {
+    /* On a phone the actions sit two to a row, so a label breaks between words, not inside one
+       ("Unappl y" at three to a row). */
+    #proposal-details-panel .proposal-primary-actions {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    #proposal-details-panel .proposal-actions-group button {
+        overflow-wrap: break-word;
+    }
+
     /* Details is a full-screen reader; the compact card leaves the map and navigation visible. */
     #proposal-details-panel.right-dock-panel:not(.is-minimized) {
         inset: 0;
@@ -187,7 +197,6 @@
         border: 0;
         border-radius: 0;
         z-index: calc(var(--cb-z-sheet) + 50);
-        background: var(--cb-surface);
         overflow: hidden;
     }
 
@@ -204,8 +213,8 @@
         max-width: 100%;
         border-radius: 12px 12px 0 0;
         background: var(--cb-glass-sheet);
-        backdrop-filter: blur(6px);
-        -webkit-backdrop-filter: blur(6px);
+        backdrop-filter: blur(var(--cb-panel-blur));
+        -webkit-backdrop-filter: blur(var(--cb-panel-blur));
     }
 
     #proposal-details-panel.is-minimized .panel-header {

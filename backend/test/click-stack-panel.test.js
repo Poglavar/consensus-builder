@@ -23,6 +23,8 @@ const HITS_A = {
     parcels: [{ id: 'p1', label: '12', feature: parcelFeature, live: true }]
 };
 const HITS_B = { parcels: [{ id: 'p2', label: '13', feature: parcelFeature, live: true }] };
+// A design opens its actions panel in the section directly, not the planning inspector's summary.
+const DESIGN_PANEL = { planningActions: true, presentation: 'details' };
 
 function loadPanel({ memory = null, withEditLock = false } = {}) {
     const doc = makeDocument();
@@ -108,7 +110,7 @@ describe('click stack panel: a click opens, the same click closes', () => {
         expect(h.kinds()).toEqual(['designs', 'parcels']);
         // No remembered kind: the topmost expandable section, its newest design.
         expect(h.api.current().expanded).toBe('designs');
-        expect(h.context.selectAndHighlightProposal).toHaveBeenCalledWith('d1', null, false, true);
+        expect(h.context.selectAndHighlightProposal).toHaveBeenCalledWith('d1', null, false, true, false, DESIGN_PANEL);
         expect(h.proposalPanel.parentNode).toBe(h.section('designs').querySelector('.click-stack__body'));
         expect(h.proposalPanel.classList.contains('is-hosted')).toBe(true);
         // Two designs: a strip with the selected one pressed.
@@ -133,6 +135,55 @@ describe('click stack panel: a click opens, the same click closes', () => {
         h.click(SPOT_A);
         onPublished();
         expect(h.api.current().expanded).toBe('designs');
+    });
+
+    it('opens a placed design at a point inside it, its Design section expanded on it', () => {
+        const h = loadPanel({ memory: 'parcels' });
+        const placed = { proposalId: 'd9', title: 'New park', createdAt: '2026-10-23' };
+        Object.assign(h.context, {
+            getProposalByIdOrHash: id => (id === 'd9' ? placed : null),
+            getProposalKey: proposal => proposal.proposalId,
+            __planOrder: { footprintOf: () => ({ type: 'Feature', geometry: { type: 'Polygon', coordinates: [] } }) },
+            turf: { pointOnFeature: () => ({ geometry: { coordinates: [SPOT_B.lng, SPOT_B.lat] } }) },
+            L: { latLng: (lat, lng) => ({ lat, lng }) }
+        });
+        h.context.ClickStackHits.hitsAt.mockImplementation(() => ({ designs: [], ...HITS_B }));
+        h.api.showDesign('d9');
+        // The parcel under the point stays listed; the placed design is added and opened.
+        expect(h.kinds()).toEqual(['designs', 'parcels']);
+        expect(h.api.current().expanded).toBe('designs');
+        expect(h.context.selectAndHighlightProposal).toHaveBeenCalledWith('d9', null, false, true, false, DESIGN_PANEL);
+        expect(h.proposalPanel.parentNode).toBe(h.section('designs').querySelector('.click-stack__body'));
+        // No click opened it: the first click on the design shows that spot rather than closing.
+        expect(h.api.current().topRef).toBe(null);
+        h.click(SPOT_B);
+        expect(h.api.isOpen()).toBe(true);
+        // In 3D the stack does not open; the design is selected for the scene.
+        h.api.close();
+        h.context.selectAndHighlightProposal.mockClear();
+        h.doc.body.classList.add('three-mode-active');
+        h.api.showDesign('d9');
+        expect(h.api.isOpen()).toBe(false);
+        expect(h.context.selectAndHighlightProposal).toHaveBeenCalledWith('d9', null, false, true);
+    });
+
+    it('folds to its rows for Before / after, keeping the open card hosted, and a row click unfolds it', () => {
+        const h = loadPanel();
+        h.click(SPOT_A);
+        h.api.fold();
+        expect(h.stackEl().classList.contains('is-folded')).toBe(true);
+        // The card stays hosted and shown (the comparison lives with it); only the CSS hides it.
+        expect(h.proposalPanel.parentNode).toBe(h.section('designs').querySelector('.click-stack__body'));
+        expect(h.proposalPanel.classList.contains('visible')).toBe(true);
+        expect(h.context.hideProposalDetailsPanel).not.toHaveBeenCalled();
+        // The open section's row unfolds it rather than collapsing it.
+        h.section('designs').querySelector('.click-stack__row').click();
+        expect(h.stackEl().classList.contains('is-folded')).toBe(false);
+        expect(h.api.current().expanded).toBe('designs');
+        // A new spot opens unfolded.
+        h.api.fold();
+        h.click(SPOT_B);
+        expect(h.stackEl().classList.contains('is-folded')).toBe(false);
     });
 
     it('closes on a second click on the same topmost object and puts the hosted panel back', () => {
@@ -181,10 +232,12 @@ describe('click stack panel: a click opens, the same click closes', () => {
         expect(h.context.ClickStackHits.hitsAt).not.toHaveBeenCalled();
     });
 
-    it('closes on Escape and on the close button', () => {
+    it('has no joint-panel header or close control and closes on Escape', () => {
         const h = loadPanel();
         h.click(SPOT_A);
-        h.stackEl().querySelector('.click-stack__close').click();
+        expect(h.stackEl().querySelector('.click-stack__head')).toBe(null);
+        expect(h.stackEl().querySelector('.click-stack__close')).toBe(null);
+        h.api.close();
         expect(h.api.isOpen()).toBe(false);
         h.click(SPOT_A);
         const escape = { type: 'keydown', key: 'Escape', defaultPrevented: false, target: h.doc.body, preventDefault() { this.defaultPrevented = true; } };
@@ -238,7 +291,7 @@ describe('click stack panel: the remembered section', () => {
         const h = loadPanel();
         h.click(SPOT_A);
         h.section('designs').querySelector('.click-stack__chip[data-id="d2"]').click();
-        expect(h.context.selectAndHighlightProposal).toHaveBeenLastCalledWith('d2', null, false, true);
+        expect(h.context.selectAndHighlightProposal).toHaveBeenLastCalledWith('d2', null, false, true, false, DESIGN_PANEL);
         expect(h.proposalPanel.parentNode).toBe(h.section('designs').querySelector('.click-stack__body'));
         expect(h.proposalPanel.classList.contains('visible')).toBe(true);
     });

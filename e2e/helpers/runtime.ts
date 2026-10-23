@@ -111,12 +111,20 @@ export async function expandStackSection(page: Page, kind: string): Promise<void
 // shows only the actions the panel does not offer (Compare, Use as site) as [data-command] buttons.
 export const parcelTab = (page: Page, tabId: string) => page.locator(`#parcel-info-panel [data-parcel-tab-id="${tabId}"]`);
 
+// Before / after folds the click stack to its rows; the Design row shows its card again. A
+// stack that is not folded is left as it is.
+export async function unfoldStack(page: Page): Promise<void> {
+  if (!(await clickStack(page).evaluate(element => element.classList.contains('is-folded')).catch(() => false))) return;
+  await stackSection(page, 'designs').locator('.click-stack__row').click();
+  await expect(clickStack(page)).not.toHaveClass(/\bis-folded\b/);
+}
+
 // Closes the parcel panel wherever it is: in the stack its own × is hidden and the stack's × closes
 // it; a panel outside the stack (a multi-parcel selection) closes with its own ×.
 export async function closeParcel(page: Page): Promise<void> {
   const panel = page.locator('#parcel-info-panel');
-  if (await panel.evaluate(element => element.classList.contains('is-hosted'))) {
-    await clickStack(page).locator('.click-stack__close').click();
+  if (await clickStack(page).locator('#parcel-info-panel').isVisible()) {
+    await page.keyboard.press('Escape');
     await expect(clickStack(page)).toBeHidden();
   } else {
     await panel.locator('.panel-header .close-button').click();
@@ -146,7 +154,7 @@ export async function openParcelTabAt(page: Page, lng: number, lat: number, tabI
 }
 
 // Clicks the parcel's centre and brings up its section in the click stack, with the parcel panel on
-// `tab` (info is what the section shows; proposals opens its Propose tab, tools its Tools tab).
+// `tab` (explicitly selects Info, Design, or Tools; the application's default is Design).
 export async function openParcel(page: Page, tab = 'info', id = PARCEL_ID): Promise<void> {
   const center = await page.evaluate(parcelId => {
     const w = window as any;
@@ -158,14 +166,15 @@ export async function openParcel(page: Page, tab = 'info', id = PARCEL_ID): Prom
   }, id);
   // A second click on the same spot closes an open stack; start from a closed one.
   if (await clickStack(page).isVisible()) {
-    await clickStack(page).locator('.click-stack__close').click();
+    await page.keyboard.press('Escape');
     await expect(clickStack(page)).toBeHidden();
   }
   await clickMapPoint(page, center.lng, center.lat);
   await expect(clickStack(page)).toBeVisible();
   await expandStackSection(page, 'parcels');
   await expect(stackSection(page, 'parcels').locator('#parcel-info-panel')).toBeVisible();
-  if (tab === 'proposals') await parcelTab(page, 'propose-tab').click();
+  if (tab === 'info') await parcelTab(page, 'info-tab').click();
+  else if (tab === 'proposals' || tab === 'design') await parcelTab(page, 'propose-tab').click();
   else if (tab === 'tools') await parcelTab(page, 'tools-tab').click();
   await expect(page.locator('#parcel-info-panel')).toBeVisible();
 }
@@ -208,6 +217,14 @@ export async function createSpace(page: Page, kind: 'park'|'square'|'lake'): Pro
 
 export async function proposalState(page: Page, id: string): Promise<any> {
   return page.evaluate(id => JSON.parse(JSON.stringify((window as any).getProposalByIdOrHash(id))), id);
+}
+
+// The proposal panel's tabs: Overview (name, rung, type, author, size) and Details (land and
+// ownership, verification, the record). The actions stay in the footer under both.
+export async function showProposalTab(page: Page, tab: 'overview' | 'details'): Promise<void> {
+  const button = page.locator(`#proposal-details-panel [data-proposal-tab="${tab}"]`);
+  if (await button.getAttribute('aria-selected') !== 'true') await button.click();
+  await expect(page.locator(`#proposal-details-panel [data-proposal-tabpanel="${tab}"]`)).toBeVisible();
 }
 
 export async function showProposal(page: Page, id: string): Promise<void> {

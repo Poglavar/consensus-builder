@@ -126,7 +126,6 @@ body:has(.info-panel.right-dock-panel.visible) .leaflet-control-scale {
    views are read against, so it anchors the stack rather than trailing after them. */
 
 
-
 /* Parcels previewed while a council archive imports (js/parcels/preview-layer.js): a dashed outline
    under the real parcel vectors, never clickable; the layer clears itself when the view's load settles. */
 .leaflet-parcelPreview-pane { z-index: var(--cb-z-map-pane-parcel-preview); pointer-events: none; }
@@ -186,7 +185,7 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
     width: 18px;
     height: 18px;
     margin: -9px 0 0 -9px;
-    border: 2px solid rgba(128, 128, 128, 0.4);
+    border: 2px solid var(--cb-line-strong);
     border-top-color: currentColor;
     border-radius: 50%;
     animation: map-mode-spin 0.7s linear infinite;
@@ -636,7 +635,7 @@ body.three-mode-active #agent-bubbles-container {
     align-items: center;
     justify-content: center;
     font-size: 22px;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--cb-shadow-md);
     pointer-events: none;
     border: 1px solid var(--cb-text-strong);
     z-index: var(--cb-z-map-raised);
@@ -646,18 +645,9 @@ body.three-mode-active #agent-bubbles-container {
 .form-group textarea {
     width: 100%;
     padding: 8px 12px;
-    border: 1px solid var(--cb-line);
-    border-radius: 4px;
-    font-size: 14px;
     box-sizing: border-box;
 }
 
-.form-group input:focus,
-.form-group textarea:focus {
-    outline: none;
-    border-color: var(--cb-primary);
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-}
 
 .proposal-summary {
     background-color: var(--cb-surface-2);
@@ -685,8 +675,8 @@ body.three-mode-active #agent-bubbles-container {
 
 /* Parcel number labels */
 .parcel-number-label {
-    background: rgba(255, 255, 255, 0.9);
-    border: 1px solid #333;
+    background: var(--cb-glass);
+    border: 1px solid var(--cb-text-strong);
     border-radius: 3px;
     padding: 0;
     font-size: 11px;
@@ -694,7 +684,7 @@ body.three-mode-active #agent-bubbles-container {
     color: var(--cb-text);
     text-align: center;
     white-space: nowrap;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--cb-shadow-sm);
     pointer-events: none;
     display: inline-flex;
     align-items: center;
@@ -747,30 +737,30 @@ body.three-mode-active #agent-bubbles-container {
 
 /* Parcel proposal count labels */
 .parcel-proposal-count-label {
-    background: #2196F3 !important;
-    border: 2px solid #1976D2 !important;
+    background: var(--cb-primary) !important;
+    border: 2px solid var(--cb-primary-hover) !important;
     border-radius: 50%;
     padding: 0;
     width: 20px !important;
     height: 20px !important;
     font-size: 11px;
     font-weight: 700;
-    color: #fff !important;
+    color: var(--cb-primary-ink) !important;
     text-align: center;
     white-space: nowrap;
     display: flex;
     align-items: center;
     justify-content: center;
     pointer-events: none;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--cb-shadow-sm);
     line-height: 1;
 }
 
 .parcel-proposal-count-label div {
-    background: #2196F3 !important;
+    background: var(--cb-primary) !important;
     border: none !important;
     box-shadow: none !important;
-    color: #fff !important;
+    color: var(--cb-primary-ink) !important;
     border-radius: 50%;
     width: 20px !important;
     height: 20px !important;
@@ -781,24 +771,24 @@ body.three-mode-active #agent-bubbles-container {
 
 /* Minted parcel markers */
 .minted-parcel-icon {
-    color: #f6b700;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(246, 183, 0, 0.55);
+    color: var(--cb-warning);
+    background: var(--cb-glass);
+    border: 1px solid var(--cb-warning);
     border-radius: 50%;
     width: 10px;
     height: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
+    box-shadow: var(--cb-shadow-sm);
     line-height: 1;
     pointer-events: none;
 }
 
 .minted-parcel-icon i {
     font-size: 8px;
-    color: #f6b700;
-    text-shadow: 0 0 6px rgba(255, 215, 0, 0.7);
+    color: var(--cb-warning);
+    text-shadow: var(--cb-text-halo);
 }
 
 /* Display-state rows keep one stable label column in both abstract and photoreal 3D. */
@@ -845,8 +835,15 @@ body.three-mode-active #agent-bubbles-container {
     top: calc(var(--map-shell-top-clearance) + var(--cb-space-2));
     bottom: var(--right-dock-bottom);
     max-height: none;
-    padding: var(--cb-space-2) var(--cb-space-3) var(--cb-space-3);
+    padding: 0;
     gap: 0;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    pointer-events: none;
     z-index: var(--cb-z-panel);
     overflow-y: auto;
     overflow-x: hidden;
@@ -863,22 +860,21 @@ body.three-mode-active #agent-bubbles-container {
     bottom: auto;
 }
 
-.click-stack__head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--cb-space-2);
-    margin-bottom: var(--cb-space-2);
+/* Folded for Before / after: only the rows show; the open section's panel stays hosted, hidden. */
+#click-stack.is-folded {
+    bottom: auto;
 }
 
-.click-stack__title {
-    margin: 0;
-    font-size: var(--cb-text-xs);
-    font-weight: var(--cb-weight-semibold);
-    text-transform: uppercase;
-    letter-spacing: var(--cb-tracking-caps);
-    color: var(--cb-text-muted);
+#click-stack.is-folded .click-stack__body,
+#click-stack.is-folded .click-stack__strip {
+    display: none;
 }
+
+#click-stack.is-folded .click-stack__section {
+    flex: 0 0 auto;
+    min-height: 0;
+}
+
 
 .click-stack__sections {
     display: flex;
@@ -897,7 +893,11 @@ body.three-mode-active #agent-bubbles-container {
     min-height: 0;
     border: 1px solid var(--cb-line);
     border-radius: var(--cb-radius-lg);
-    background: var(--cb-surface);
+    background: var(--cb-glass-sheet);
+    backdrop-filter: blur(var(--cb-panel-blur));
+    -webkit-backdrop-filter: blur(var(--cb-panel-blur));
+    box-shadow: var(--cb-shadow-sm);
+    pointer-events: auto;
 }
 
 .click-stack__section + .click-stack__section {
@@ -909,17 +909,35 @@ body.three-mode-active #agent-bubbles-container {
     content: '';
     position: absolute;
     left: calc(var(--cb-space-3) + 7px);
-    top: calc(-1 * var(--cb-space-3) - 1px);
+    top: calc(-1 * var(--cb-space-3) - 2px);
     height: var(--cb-space-3);
-    border-left: 2px solid var(--cb-line-strong);
+    border-left: 2px solid var(--cb-text-muted);
 }
 
 .click-stack__section.is-expanded {
     border-color: var(--cb-primary);
 }
 
+/* The expanded card gives up height down to a floor that keeps its panel's tabs, first lines and
+   actions in view; below that the stack itself scrolls. */
 .click-stack__section.is-expanded:has(.is-hosted) {
     flex: 1 1 auto;
+    min-height: min(22rem, 70vh);
+}
+
+/* In the phone sheet the expanded card is as tall as its panel, which does not scroll inside
+   itself: the sheet scrolls, so the panel's tabs, text and actions all stay reachable. */
+@media (max-width: 767.98px) {
+    .click-stack__section.is-expanded:has(.is-hosted) {
+        flex: 0 0 auto;
+        min-height: 0;
+    }
+
+    #click-stack .is-hosted .panel-body {
+        flex: none;
+        max-height: none;
+        overflow: visible;
+    }
 }
 
 .click-stack__row {
@@ -960,7 +978,9 @@ body.three-mode-active #agent-bubbles-container {
 }
 
 .click-stack__row-title {
-    flex: 0 0 auto;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow-wrap: anywhere;
     font-weight: var(--cb-weight-semibold);
 }
 
@@ -979,7 +999,7 @@ body.three-mode-active #agent-bubbles-container {
     transition: transform 120ms ease;
 }
 
-.is-expanded > .click-stack__row .click-stack__chevron {
+.is-expanded > .click-stack__heading .click-stack__chevron {
     transform: rotate(180deg);
 }
 
@@ -1060,6 +1080,8 @@ body.three-mode-active #agent-bubbles-container {
 }
 
 .click-stack__coords {
+    pointer-events: auto;
+    text-shadow: var(--cb-text-halo);
     align-self: flex-start;
     margin-top: var(--cb-space-2);
     padding: 2px var(--cb-space-2);
@@ -1102,11 +1124,19 @@ body.three-mode-active #agent-bubbles-container {
     display: none;
 }
 
-/* In the stack the section row folds the parcel and the stack's × closes it, and the parcel's
+/* In the stack the section row folds the parcel and Escape closes the spot, and the parcel's
    proposals are the Designs section: the panel's own −, × and Proposals tab are not shown. */
+#click-stack #parcel-info-panel.is-hosted > .panel-header,
 #click-stack #parcel-info-panel.is-hosted #parcel-info-minimize,
 #click-stack #parcel-info-panel.is-hosted .panel-header .close-button,
 #click-stack #parcel-info-panel.is-hosted [data-parcel-tab-id="proposals-tab"] {
+    display: none;
+}
+
+/* The same for a design's panel and the inspector (Built, Permitted): the section row folds them
+   and Escape closes the spot, so their own − and × are not shown. */
+#click-stack #proposal-details-panel.is-hosted .panel-header__actions,
+#click-stack #planning-inspector.is-hosted .planning-inspector__header .close-circle-btn {
     display: none;
 }
 
@@ -1397,3 +1427,18 @@ body.three-mode-active #agent-bubbles-container {
 .leaflet-container a.cb-link:hover {
     color: var(--cb-link-hover);
 }
+
+/* An invisible positioning column: the individual sections sit directly over the map. */
+@media (max-width: 767.98px) {
+    #click-stack {
+        left: 0;
+        right: 0;
+        bottom: var(--map-visible-bottom);
+        width: auto;
+        max-width: none;
+    }
+}
+
+.click-stack__heading { display: flex; align-items: center; }
+.click-stack__heading > .click-stack__row { flex: 1; min-width: 0; width: auto; }
+.click-stack__copy-reference { flex: 0 0 auto; margin-right: var(--cb-space-2); }

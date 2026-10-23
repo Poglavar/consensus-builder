@@ -93,9 +93,12 @@ describe('shared building and proposal representations', () => {
             protocol: 'proposal-lifecycle-evidence/1', state: 'unknown', claimedStatus: 'Executed'
         } }, { key: 'local' });
         expect(proposal.sourceEvidence.lifecycleEvidence).toMatchObject({ state: 'unknown', claimedStatus: 'Executed' });
+        // An authored proposal's summary carries no notes, conditions or source disclosure: its
+        // rung, lifecycle and records are in its actions panel.
         const inspectorSource = source.slice(inspector.start, inspector.end);
-        expect(inspectorSource).toContain('root.getProposalLifecycleLabel(lifecycleKey)');
-        expect(inspectorSource).toContain('root.__proposalDisplayState.rungHint(state.rung');
+        expect(inspectorSource).not.toContain('getProposalLifecycleLabel');
+        expect(inspectorSource).toContain("if (item.role !== 'proposed') inspector.append(evidence);");
+        expect(inspectorSource).toContain('if (sourceResult && item.volumes.length) inspector.append(assessment);');
     });
     it('does not clear an authored selection when source massing becomes unavailable at a wider zoom', async () => {
         const source = readFileSync(new URL('../../frontend/js/planning/views.js', import.meta.url), 'utf8');

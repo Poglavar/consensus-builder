@@ -46,6 +46,7 @@ function loadInstantCreate({ lands, reason = 'The live fabric could not be valid
         relation: 'revision', source: { kind: 'local', localProposalId: 'source-lake' }, title: 'Source lake'
     };
     const selectAndHighlightProposal = vi.fn();
+    const ClickStack = { showDesign: vi.fn() };
     const showStyledAlert = vi.fn();
     const showEphemeralMessage = vi.fn();
 
@@ -82,6 +83,7 @@ function loadInstantCreate({ lands, reason = 'The live fabric could not be valid
     install('ProposalLineage', lineage);
     install('isPublishedProposalRecord', lineage.isPublished);
     install('selectAndHighlightProposal', selectAndHighlightProposal);
+    install('ClickStack', ClickStack);
     install('showStyledAlert', showStyledAlert);
     install('showEphemeralMessage', showEphemeralMessage);
     install('updateShowProposalsButton', vi.fn());
@@ -90,7 +92,7 @@ function loadInstantCreate({ lands, reason = 'The live fabric could not be valid
 
     delete require.cache[shellPath];
     require(shellPath);
-    return { selectAndHighlightProposal, showStyledAlert, showEphemeralMessage, proposal, ProposalManager };
+    return { selectAndHighlightProposal, ClickStack, showStyledAlert, showEphemeralMessage, proposal, ProposalManager };
 }
 
 beforeEach(() => {
@@ -400,7 +402,7 @@ describe('one-click structure creation focus', () => {
     });
 
     it('preserves the whole-block selection when placement is refused', async () => {
-        const { selectAndHighlightProposal, showStyledAlert, showEphemeralMessage, ProposalManager } = loadInstantCreate({ lands: false, replacement: true });
+        const { selectAndHighlightProposal, ClickStack, showStyledAlert, showEphemeralMessage, ProposalManager } = loadInstantCreate({ lands: false, replacement: true });
 
         const releaseEditorSeededMultiSelection = vi.fn();
         install('releaseEditorSeededMultiSelection', releaseEditorSeededMultiSelection);
@@ -412,21 +414,18 @@ describe('one-click structure creation focus', () => {
         expect(showEphemeralMessage).not.toHaveBeenCalledWith('Geometry updated.', expect.anything(), 'success');
         expect(ProposalManager.updateProposalInPlace).not.toHaveBeenCalled();
         expect(selectAndHighlightProposal).not.toHaveBeenCalled();
+        expect(ClickStack.showDesign).not.toHaveBeenCalled();
         expect(releaseEditorSeededMultiSelection).not.toHaveBeenCalled();
     });
 
-    it('focuses a structure after it really lands', async () => {
-        const { selectAndHighlightProposal, showStyledAlert, proposal } = loadInstantCreate({ lands: true });
+    it('opens a structure in the click stack after it really lands', async () => {
+        const { ClickStack, selectAndHighlightProposal, showStyledAlert, proposal } = loadInstantCreate({ lands: true });
 
         await globalThis.instantCreateProposalFromDraft('draft-park');
 
         expect(showStyledAlert).not.toHaveBeenCalled();
-        expect(selectAndHighlightProposal).toHaveBeenCalledWith(
-            proposal.proposalId,
-            null,
-            false,
-            true
-        );
+        expect(ClickStack.showDesign).toHaveBeenCalledWith(proposal.proposalId);
+        expect(selectAndHighlightProposal).not.toHaveBeenCalled();
     });
 
     it('shows a thrown placement reason and keeps replacement edits without a success toast', async () => {
@@ -467,7 +466,7 @@ describe('one-click structure creation focus', () => {
     it('releases the editor-seeded multi-select once the structure lands', async () => {
         // One-click structures have no design session to disarm the selection they seeded; the
         // selection tray used to stay on with nothing selected after a park was created.
-        const { selectAndHighlightProposal } = loadInstantCreate({ lands: true });
+        const { ClickStack } = loadInstantCreate({ lands: true });
         const releaseEditorSeededMultiSelection = vi.fn();
         install('releaseEditorSeededMultiSelection', releaseEditorSeededMultiSelection);
 
@@ -475,7 +474,7 @@ describe('one-click structure creation focus', () => {
 
         expect(releaseEditorSeededMultiSelection).toHaveBeenCalledOnce();
         expect(releaseEditorSeededMultiSelection.mock.invocationCallOrder[0])
-            .toBeLessThan(selectAndHighlightProposal.mock.invocationCallOrder[0]);
+            .toBeLessThan(ClickStack.showDesign.mock.invocationCallOrder[0]);
     });
 });
 

@@ -1438,7 +1438,6 @@
                 "sourcePartNote": "Jedan povezani dio izvorne čestice. Ova oznaka identificira prikazani dio; izvorna čestica može sadržavati i druge dijelove."
             },
             "tabInfo": "Info",
-            "tabPropose": "Predloži",
             "tabProposals": "Prijedlozi",
             "tabTools": "Alati",
             "historySection": "Povijest",
@@ -1816,7 +1815,11 @@
                 "actions": "Dodatne radnje",
                 "actionsHint": "Stvorite vlastitu verziju i istražite zemljište"
             },
-            "forkedFrom": "Izvedeno iz {{cid}}"
+            "forkedFrom": "Izvedeno iz {{cid}}",
+            "tabs": {
+                "overview": "Pregled",
+                "details": "Detalji"
+            }
         },
         "block": {
             "title": "Informacije o bloku",
@@ -6264,7 +6267,7 @@
             "tools": "Alati",
             "view3d": "Prikaži u 3D-u",
             "detectBlock": "Detektiraj blok",
-            "useAsSite": "Koristi kao lokaciju"
+            "useAsSite": "Prilagođena lokacija"
         },
         "groundTitle": "Tlo bez čestice",
         "groundNote": "nije katastarska čestica"
@@ -7324,7 +7327,6 @@
         "builtRecord": "Postojeća zgrada",
         "proposedRecord": "Autorski prijedlog",
         "observedNote": "Izvorni podaci o zgradi. Nedostajuće mjere ostaju nepoznate.",
-        "authoredNote": "Autorski projekt. Njegov prikaz ne potvrđuje dozvolu ni izgradnju.",
         "proposalActions": "Radnje prijedloga",
         "footprintArea": "Tlocrtna površina",
         "referenceChanged": "Izvor se promijenio od verzije navedene u projektu. Prikazuje se trenutačno spremljeni zapis; navedena verzija nije rekonstruirana.",
@@ -7356,6 +7358,7 @@
         "inspectArea": "Pregledaj izvorno područje zoniranja {{parcel}}"
     },
     "clickStack": {
+        "parcelReference": "Katastarska čestica {{reference}}",
         "title": "Na ovom mjestu",
         "agreements": "Sporazumi ({{count}})",
         "designs": "Dizajni ({{count}})",

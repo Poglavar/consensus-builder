@@ -2,7 +2,7 @@
 // They cover compact-card actions and the narrow mobile footer, where a visible button must remain
 // reachable and complete its real UI transition rather than merely exist in the rendered markup.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, proposalState, showProposal, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
+import { openCity, proposalState, showProposal, PARCEL_GEOMETRY, PARCEL_ID, showProposalTab } from '../helpers/runtime';
 import { pageIndex } from '../helpers/mocks/shared-server';
 
 async function addLocalEditableProposal(page: import('@playwright/test').Page, key: string): Promise<string> {
@@ -133,6 +133,7 @@ test.describe('compact proposal card actions @features', () => {
     await details.click();
     await expect(panel).not.toHaveClass(/is-minimized/);
     await expect(panel.locator('.panel-body')).toBeVisible();
+    await showProposalTab(page, 'details');
     const record = panel.locator('details[data-proposal-section="record"]');
     await record.locator('summary').click();
     const copy = record.locator('.proposal-id-copy');

@@ -10,7 +10,7 @@
 // is comfortably above that and small enough to keep test runtime sane.
 
 import { test, expect } from '../helpers/fixtures';
-import { openCity, showProposal } from '../helpers/runtime';
+import { openCity, showProposal, showProposalTab } from '../helpers/runtime';
 
 const MEGA_PARCEL_COUNT = 320;
 
@@ -135,6 +135,7 @@ test.describe('Mega proposal loading @features', () => {
       await minimizeButton.click();
     }
     await expect(panel.locator('.panel-body')).toBeVisible();
+    await showProposalTab(page, 'details');
     await panel.locator('summary').filter({ hasText: 'Land & ownership' }).click();
     const ancestorsList = page.locator('#proposal-parent-parcels-list');
     await expect(ancestorsList).toBeVisible();

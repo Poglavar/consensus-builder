@@ -43,7 +43,14 @@ right-side panels that clicks used to open one at a time.
 - The expanded section is the **action view**:
   - Agreement: summary, "Show its designs" (highlights all of them on the map) and "Details"
     (opens the agreement panel).
-  - Design: the proposal summary and actions, plus the agreements it belongs to as a strip.
+  - Design: the proposal's actions panel itself (2026-10-23), without its own − and ×: an
+    Overview tab (name, rung badges, type, author, parcel count and one area) and a Details tab
+    (land and ownership, verification, the record), with the actions under both; plus the
+    agreements it belongs to as a strip. Starting Before / after from it folds the stack to its
+    rows (the card stays hosted, so the comparison keeps running); a row click unfolds it.
+- A proposal just placed (an editor's Done, a one-click structure, the create dialog) opens the
+  stack at a point inside it with its Design section expanded, instead of a card of its own. No
+  click opened that spot, so the first click on the design is a new click, not a close.
   - Built: the building record. Permitted: the massing inspector.
   - Cadastral or formed parcel: the parcel info panel. The cadastral section heading is
     **Cadastral parcel <reference>**; it replaces the panel's duplicate identity heading and

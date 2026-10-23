@@ -27,7 +27,13 @@
     if (root && typeof root.document !== 'undefined') {
         const instance = api.create(() => api.browserDependencies(root));
         root.ProposalBeforeAfter = Object.assign(instance, { beforeLayers: api.beforeLayers, create: api.create, agreementKey: api.agreementKey });
-        root.toggleProposalBeforeAfter = (key, options) => instance.toggle(key, options);
+        // A comparison started from the click stack folds the stack to its rows: the map is what
+        // the reader now looks at (the card stays hosted, hidden, so the comparison keeps running).
+        root.toggleProposalBeforeAfter = async (key, options) => {
+            const shown = await instance.toggle(key, options);
+            if (shown === true && root.ClickStack?.isOpen()) root.ClickStack.fold();
+            return shown;
+        };
         root.toggleAgreementBeforeAfter = id => instance.toggleAgreement(id);
     }
 })(typeof window !== 'undefined' ? window : globalThis, function () {

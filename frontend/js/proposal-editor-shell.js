@@ -2097,7 +2097,7 @@
         }
         try { if (typeof global.updateShowProposalsButton === 'function') global.updateShowProposalsButton(); } catch (_) { }
         // The drawing seeded the multi-parcel selection, which pops the parcel info panel — hide
-        // it; the object's own details panel opens collapsed instead.
+        // it; the click stack opens on the placed object instead.
         try { global.document?.getElementById('parcel-info-panel')?.classList.remove('visible'); } catch (_) { }
         // A refused object is parked in the list, but it is not the thing the user selected on the
         // map. Focusing it collapses a carefully built multi-parcel/block selection to its first
@@ -2110,7 +2110,10 @@
             // now, like a confirmed design tool's. Without this the selection tray stayed on
             // ("Click parcels to select them") and the next parcel click joined a selection.
             try { global.releaseEditorSeededMultiSelection?.(); } catch (_) { }
-            try { global.selectAndHighlightProposal?.(proposalId, null, false, true); } catch (_) { }
+            // The placed object opens in the click stack, its Design section expanded (click-stack.md).
+            try { global.ClickStack.showDesign(proposalId); } catch (error) {
+                console.error(`[${new Date().toISOString()}] [proposalEditorShell] the placed proposal ${proposalId} could not open in the click stack`, error);
+            }
         }
         return proposalId;
     }
