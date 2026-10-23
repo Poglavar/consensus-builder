@@ -48,14 +48,13 @@ async function openCompactFromProposalList(page: import('@playwright/test').Page
   await expect(row).toBeVisible();
   // This is the actual list action that opens proposal details, not a direct JS call to the panel.
   await row.locator('.proposal-list-details-btn').click();
-  await expect(page.locator('#planning-inspector')).toBeVisible();
+  await expect(page.locator('#planning-inspector')).toBeHidden();
   await expect.poll(() => page.evaluate(() => (window as any).currentlyHighlightedProposalId)).toBe(proposalId);
   await showProposal(page, proposalId);
   const panel = page.locator('#proposal-details-panel');
   await expect(panel).toBeVisible();
-  const toggle = panel.locator('#proposal-details-minimize');
-  if (await toggle.getAttribute('aria-expanded') === 'true') await toggle.click();
-  await expect(panel).toHaveClass(/is-minimized/);
+  await expect(panel).toHaveClass(/is-hosted/);
+  await expect(panel.locator('#proposal-details-minimize')).toBeHidden();
 }
 
 test.describe('compact proposal card actions @features', () => {

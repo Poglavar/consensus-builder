@@ -74,7 +74,7 @@ Content choices are separate from appearance. **Built: All / Surviving / Removed
 
 The **source inspector** refers to the same representation ID as map shapes and 3D volumes. Select a shape directly (map shapes also support keyboard focus); the former viewport-item dropdown is removed. Its **Obligatory source proposal** badge follows the provider record's normative role independently of geometry; NYC public-screen evidence and Atlas zoning areas use a neutral **Source evidence** badge because neither asserts a site-specific obligatory proposal. Source boundaries are consistently solid, with selection indicated by greater line weight. Neither line style nor visibility expresses legal certainty. Selection survives display and map/model changes while the item remains loaded. Geographic coordinates use `OGC:CRS84` longitude/latitude; `baseM` and `topM` are metres relative to the model's ground reference. Unsupported frames are not rendered. The existing model's horizontal projection is Web Mercator and its vertical dimensions are raw metres; this is a visualization convention, not a globally survey-accurate local engineering frame.
 
-Existing buildings and authored proposals retain their source stores and detailed rendering paths; pure [representation adapters](frontend/js/planning/representations.js) project them into the same inspection contract. The shared inspector owns map/model inspection and highlights; it resolves authored selections by their browser-local key, retains API-qualified publication identity separately, and reuses the lifecycle evidence labels so an unverified execution claim remains unverified; authored actions remain available through its Proposal actions button. Refreshing an already open action panel for the same local record preserves that panel; a new selection or a closed action panel opens the shared inspector. Cancelling a structure geometry edit restores the selected proposal's compact actions without saving the discarded draft. Saving a corridor cross-section restores the saved proposal's actions after the map editor closes, including the new local identity when a published source produces a counterproposal. Selection is encoded in the URL and restored when its source/building/proposal becomes available. Unknown measurements remain unknown instead of being inferred from storey counts.
+Existing buildings and authored proposals retain their source stores and detailed rendering paths; pure [representation adapters](frontend/js/planning/representations.js) project them into the shared selection and highlighting contract. Authored selections resolve by their browser-local key and retain API-qualified publication identity separately. Their reader and actions appear only inside the **click panel**, including list opens, shared links, editor returns and restored selections; the former authored-proposal inspector is removed. The model's Design section shows proposal figures and opens actions by switching to that design in the map's click panel. Parcel information likewise appears only in its click-panel section, without an automatic companion panel beside a proposal; aerial imagery hosts its immutable source-parcel reference and area in the 3D Parcel section. Dedicated source evidence and planning study/editing tools remain separate. Lifecycle evidence labels keep an unverified execution claim unverified. Cancelling a structure geometry edit restores the selected proposal's actions without saving the discarded draft. Saving a corridor cross-section restores the saved proposal's actions after the map editor closes, including the new local identity when a published source produces a counterproposal. Selection is encoded in the URL and restored when its source/building/proposal becomes available. Unknown measurements remain unknown instead of being inferred from storey counts.
 
 The provider registry declares editions, supported scenarios, geographic scope and capabilities separately. NYC exposes its saved pilot screen, with no accepted envelope geometry. The optional Atlas adapter exposes supplied slice polygons as **zoning areas**, clipped only for viewport display, and distinguishes source numeric values from estimates and indeterminate/missing values. A zoning area is not a cadastral parcel or building envelope; its 3D display is a ground surface. Housing-type selection chooses the source constraints used by the separate parcel-envelope and study paths; the original zoning polygon remains an area. Full dictionary fields remain in source evidence. The bounded parcel study below adds dimensional checks; complete constraint assessment, surveyed terrain/datum placement and unavailable historical source versions remain unresolved. See [implementation record](docs/planning-rule-audit.md#infra-and-inspection-follow-up).
 
@@ -600,12 +600,16 @@ nothing of decisions, terms or funding.
 
 A source building is an object in a particular survey or provider dataset. A proposed building is authored geometry, parameters and optional architectural evidence belonging to a proposal. Both can be rendered as buildings, but they make different assertions about existence.
 
-A glTF/GLB building import derives its footprint dimensions (X × Z) and height (Y) in metres
-from the parsed scene's bounding box. Successful parsing and finite, nonempty bounds make the
-model ready for upload and placement; the optional WebGL preview is not an import requirement.
-A preview failure leaves the model file and dimensions available to “Use this building”.
-Placement requires a successful model upload. An upload failure keeps the importer open with
-the file and dimensions intact for retry; a refused placement also reports its error in that dialog.
+A glTF/GLB building import projects the visible mesh triangles onto the horizontal X/−Z
+plane and unions them into one connected footprint in metres, preserving concavities and
+courtyard holes. This top-down silhouette includes roof overhangs and canopies; it does not
+infer a foundation boundary. Separate disconnected parts are refused rather than enclosed by
+a bounding box or convex hull. The scene bounds supply height (Y) and displayed dimensions.
+Successful parsing and outline extraction make the model ready for upload and placement;
+the optional WebGL preview is not an import requirement. A preview failure leaves the model
+file and outline available to “Use this building”. Placement requires a successful model upload.
+An upload failure keeps the importer open with the file and outline intact for retry; a refused
+placement also reports its error in that dialog.
 [Model importer](frontend/js/building-upload.js).
 
 A Block, Row or Detached urban rule specifies rules on parcels; its `geometry.buildings` may contain multiple permitted volumes or per-parcel cuts. A Freeform proposal (`goal` and `typologyType: single`) specifies one connected building footprint, including its courtyard holes. Converting a connected Block/Row massing unions the footprint and freezes the maximum permitted height; disconnected houses become separate Freeform proposals. A GeoJSON collection or MultiPolygon upload preserves every polygon and interior ring, previews the buildings in the Freeform editor, and saves one proposal per disconnected polygon. An ordinary named plan groups a supplied development layout, including the Candlestick imports; the imports have no special runtime mode. `buildingProposal` primarily carries authored settings; the canonical cleaner removes older duplicate feature containers. A building can overlap multiple cadastral parcels. Survey, cadastral and Overture identities are source-qualified rather than automatically merged.
@@ -1614,3 +1618,35 @@ Historical origin records and the immutable-source behavior of geometry editing 
 **Upload .glb** in the Freeform editor opens the existing model importer. Using a model replaces
 only the selected footprint and retains the other authored buildings, surroundings and undo history.
 Cancelling leaves the current design unchanged; **Done** commits through the ordinary editor flow.
+
+## Freeform land take review (2026-10-23)
+
+A Freeform building's material footprint (`geometry.buildings`) and its **land take**
+(`geometry.landTake`, a polygonal GeoJSON feature) are separate authored geometries. A narrow
+building can take a whole parcel without enlarging its material footprint. In the editor, each
+materially touched current live parcel offers **Footprint only** (its intersection with the building)
+or **Whole parcel**. Footprint only is the default, including small edge overlaps. The resulting
+single building parcel joins those chosen areas and the footprint on open ground; untaken owned
+remainders keep their owners. Whole means the current live parcel, not the original uncut cadastre.
+The durable take stores geometry, never ephemeral live parcel IDs or a second cadastral declaration.
+
+The **Land take** section previews taken ground, owner remainders, full building removals, partial
+cuts and retained buildings. Intersecting applied building designs are identified as being removed
+from the working map, not as observed demolitions. Review uses complete source stock and the same
+current demolition rules as apply. A failed, unsupported, missing or truncated source answer stays
+unknown and cannot be accepted. Done rechecks the consequences; changed land or removals require
+fresh acceptance, and an unaccepted review keeps the editor open. Acceptance is a local design
+choice, not an owner receipt, agreement acceptance or claim that demolition occurred in reality.
+
+Formation, shared footprint/binding derivation, demolition prefetch/replay and agreement drafting
+use the exact authored take. Replay never expands it to newly encountered whole hosts. The building
+must fit inside the take and the take inside the design site. Surroundings treat only the taken land
+outside the authored building, and “Leave as they are” does not retain buildings scheduled for removal.
+“Flatten” here clears building stock; it does not grade terrain. Disconnected imported buildings save
+as separate Freeform designs; whole-parcel choices require editing one connected building at a time.
+
+This intentionally replaces `buildingProposal.takeWholeParcels`. Existing experimental whole-take
+records without explicit land geometry must be reopened and reviewed/recreated; apply refuses them
+rather than silently shrinking their land to a building footprint. A design without a larger authored
+take continues to form a footprint parcel. [Geometry](frontend/js/freeform-land-take.js),
+[review](frontend/js/freeform-land-take-review.js), [formation](frontend/js/proposals/apply/buildings.js).

@@ -220,7 +220,7 @@ async function shareSingleProposal(proposalIdOrProposal) {
         // The panel says Published now.
         if (currentProposalDetailsContext && String(getProposalKey(currentProposalDetailsContext)) === String(proposal.proposalId)
             && typeof showProposalInfo === 'function') {
-            showProposalInfo(proposalStorage.getProposal(proposal.proposalId) || proposal, null, null, { planningActions: true });
+            showProposalInfo(proposalStorage.getProposal(proposal.proposalId) || proposal);
         }
         return { cid, link };
     } catch (error) {

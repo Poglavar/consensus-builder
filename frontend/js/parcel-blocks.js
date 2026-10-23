@@ -1507,9 +1507,6 @@ async function renderBlockInfoStats(blockName) {
                 const metrics = calculateRoadMetrics(selectedFeature.geometry.coordinates);
                 showParcelInfoPanel(selectedFeature, metrics);
 
-                // Show the parcel info panel
-                document.getElementById('parcel-info-panel').classList.add('visible');
-
                 // Update status
                 updateStatus(
                     tBlock('status.messages.selected_parcel_with_number', { number: selectedFeature.properties?.BROJ_CESTICE || parcelId }, 'Selected parcel {{number}}'));

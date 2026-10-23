@@ -153,9 +153,11 @@ test('Photo parcel controls show source status, select an immutable parcel from 
     return { x: pixelX, y: pixelY };
   });
   await canvas.click({ position: point });
-  const card = page.locator('#photo-parcel-selection');
+  const parcelSection = page.locator('#three-click-stack .click-stack__section[data-kind="parcels"]');
+  const card = parcelSection.locator('#photo-parcel-selection');
   await expect(card).toBeVisible();
   await expect(page.locator('#photo-parcel-reference')).toHaveText('HR-335754-1234');
+  await page.screenshot({ path: '/tmp/aerial-parcel-click-panel.png' });
   await page.locator('#layers-button').click();
   await toggle.uncheck();
   await expect(status).toBeHidden();
@@ -164,8 +166,10 @@ test('Photo parcel controls show source status, select an immutable parcel from 
   await expect(status).toBeVisible();
   await expect(card).toBeVisible();
   await page.locator('#layers-button').click();
-  await page.locator('#photo-parcel-close').click();
+  await expect(page.locator('#photo-parcel-close')).toBeHidden();
+  await page.keyboard.press('Escape');
   await expect(card).toBeHidden();
+  await expect(page.locator('#three-click-stack')).toBeHidden();
 });
 
 test('Buildings and massing opens the model from photo view and returns through the real 2D mode control', async ({ mockApi: page }) => {

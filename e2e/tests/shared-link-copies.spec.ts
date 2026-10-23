@@ -6,6 +6,7 @@ import { waitForMapReady } from '../helpers/app';
 import { createSpace, openCity, showProposal, PARCEL_ID } from '../helpers/runtime';
 import { mockAllApiRoutes } from '../helpers/mocks/api-routes';
 import { attachSharedIndex, pageIndex } from '../helpers/mocks/shared-server';
+import { mockBuildingScene } from '../helpers/mocks/building-data';
 
 test('design links ignore a local key equal to the CID and fork ancestry, then reuse the exact imported copy', async ({ mockApi: author, browser, baseURL }) => {
   test.setTimeout(150_000);
@@ -66,10 +67,37 @@ test('design links ignore a local key equal to the CID and fork ancestry, then r
       .then((result: any) => ({ applied: result.applied, skipped: result.skipped, failed: result.failed })), cid);
     expect(again).toEqual({ applied: [], skipped: [localId], failed: [] });
     expect(await page.evaluate(() => (window as any).proposalStorage.peekAllProposals().length)).toBe(3);
-    const inspector = page.locator('#planning-inspector');
-    await expect(inspector.getByRole('heading', { name: title, exact: true })).toBeVisible({ timeout: 30_000 });
-    await expect(inspector.getByRole('button', { name: 'Proposal actions', exact: true })).toBeVisible();
+    const design = page.locator('#click-stack .click-stack__section[data-kind="designs"]');
+    await expect(design.locator('#proposal-details-panel')).toBeVisible({ timeout: 30_000 });
+    await expect(page.locator('#planning-inspector')).toBeHidden();
     await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection?.getKey?.())).toBe(localId);
+
+    // A fresh device follows the real URL into model mode, retaining its Design section while
+    // the scene initializes. Actions return to that same design in the map's click panel.
+    const modelContext = await browser.newContext({ baseURL });
+    try {
+      await modelContext.addInitScript(() => {
+        try { localStorage.setItem('cb_site_intro_seen_v1', '1'); } catch (_) { /* opaque origin */ }
+      });
+      const model = await modelContext.newPage();
+      await mockAllApiRoutes(model);
+      await attachSharedIndex(model, index);
+      await mockBuildingScene(model);
+      await model.goto(`/designs/${cid}?city=zg&model&reduceMotion=1`, { waitUntil: 'domcontentloaded' });
+      await expect(model.locator('body')).toHaveClass(/three-mode-active/, { timeout: 60_000 });
+      const modelDesign = model.locator('#three-click-stack .click-stack__section[data-kind="designs"]');
+      await expect(modelDesign).toHaveClass(/is-expanded/, { timeout: 30_000 });
+      await expect(modelDesign).toContainText(title);
+      await expect(model.locator('#planning-inspector')).toBeHidden();
+      await expect(model.getByText('Authored proposal', { exact: true })).toHaveCount(0);
+      await model.screenshot({ path: '/tmp/shared-design-model-click-panel.png' });
+      await modelDesign.getByRole('button', { name: 'Proposal actions', exact: true }).click();
+      await expect(model.locator('body')).not.toHaveClass(/three-mode-active/);
+      await expect(model.locator('#click-stack .click-stack__section[data-kind="designs"] #proposal-details-panel')).toBeVisible();
+      await expect(model.locator('#planning-inspector')).toBeHidden();
+    } finally {
+      await modelContext.close();
+    }
   } finally {
     await context.close();
   }

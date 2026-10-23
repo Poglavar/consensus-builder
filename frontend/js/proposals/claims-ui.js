@@ -53,7 +53,6 @@
                     }
                 } catch (_) { }
                 global.showParcelInfoPanel(feature);
-                try { document.getElementById('parcel-info-panel')?.classList.add('visible'); } catch (_) { }
                 return;
             }
             if (typeof global.selectParcel === 'function') {

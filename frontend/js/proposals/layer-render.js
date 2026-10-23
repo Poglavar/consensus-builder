@@ -654,95 +654,6 @@ function reapplyProposalHighlights() {
     }
 }
 
-// Close only the secondary parcel panel opened for a proposal-owned live feature. This deliberately
-// does not call hideParcelInfoPanel(): that general dismissal also clears the proposal selection,
-// while an apply/unapply refresh must keep the proposal card and its highlight selected.
-function clearProposalOwnParcelInfo(expectedParcelIds = null) {
-    const trackedId = window.__proposalOwnParcelPanelId != null
-        ? String(window.__proposalOwnParcelPanelId)
-        : null;
-    if (!trackedId) return false;
-
-    if (expectedParcelIds != null) {
-        const expected = new Set(Array.from(expectedParcelIds || []).map(String));
-        if (!expected.has(trackedId)) return false;
-    }
-
-    const openedOver = window.__proposalOwnParcelOpenedOver || {};
-    window.__proposalOwnParcelPanelId = null;
-    window.__proposalOwnParcelOpenedOver = null;
-    window.__openParcelInfoCollapsed = false;
-
-    const selectedId = window.selectedParcelId != null ? String(window.selectedParcelId) : null;
-    const currentId = window.currentParcel?.id != null ? String(window.currentParcel.id) : null;
-    // A direct map click may have reused the same panel for a different parcel since the proposal
-    // opened it. In that case the direct selection owns the panel now, so only forget our marker.
-    // The selection that was already there when the panel opened (typically the parcel a Build
-    // palette tool just consumed) is not a takeover: treating it as one left the companion panel
-    // open after its proposal card closed.
-    const ours = (id, before) => !id || id === trackedId || (before != null && id === before);
-    if (!ours(selectedId, openedOver.selected) || !ours(currentId, openedOver.current)) {
-        return false;
-    }
-
-    if (selectedId) window.selectedParcelId = null;
-    if (currentId) {
-        window.currentParcel = null;
-        window.currentParcelCoordinates = null;
-    }
-    document.getElementById('parcel-info-panel')?.classList.remove('visible');
-    return true;
-}
-
-// A proposal that produces exactly one live parcel shows that parcel's info alongside the proposal
-// card, collapsed to its header so the proposal stays the primary surface. Proposals that currently
-// produce no parcel and those that create many (a parcel layout) open nothing here.
-function showOwnParcelInfoForProposal(proposal) {
-    if (window.PlanningViews?.isInspecting()) return;
-    // 3D is a viewing mode: the details card does not open there (showProposalInfo bails out), so
-    // a collapsed parcel row would be the leftover of a selection the card has already dropped.
-    if (typeof document !== 'undefined' && document.body?.classList?.contains('three-mode-active')) {
-        clearProposalOwnParcelInfo();
-        return;
-    }
-    const resolver = window.ProposalOwnParcel;
-    const showPanel = window.Parcels?.uiParcelPanel?.showParcelInfoPanel || window.showParcelInfoPanel;
-    if (!resolver || typeof showPanel !== 'function') {
-        clearProposalOwnParcelInfo();
-        return;
-    }
-    const fabric = window.LiveParcelFabric;
-    if (!fabric || typeof fabric.get !== 'function' || typeof fabric.producedBy !== 'function') {
-        clearProposalOwnParcelInfo();
-        return;
-    }
-    const lookup = id => fabric.get(String(id));
-    let ownId = null;
-    try { ownId = resolver.ownParcelId(proposal, fabric.producedBy(proposal.proposalId)); } catch (error) {
-        console.error('[selectAndHighlightProposal] own-parcel lookup failed', error);
-        clearProposalOwnParcelInfo();
-        return;
-    }
-    const feature = ownId ? lookup(ownId) : null;
-    if (!feature) {
-        clearProposalOwnParcelInfo();
-        return;
-    }
-    clearProposalOwnParcelInfo();
-    window.__openParcelInfoCollapsed = true;
-    try {
-        window.__proposalOwnParcelOpenedOver = {
-            selected: window.selectedParcelId != null ? String(window.selectedParcelId) : null,
-            current: window.currentParcel?.id != null ? String(window.currentParcel.id) : null
-        };
-        showPanel(feature);
-        window.__proposalOwnParcelPanelId = String(ownId);
-    } catch (error) {
-        console.error('[selectAndHighlightProposal] could not open the proposal own parcel', ownId, error);
-        window.__openParcelInfoCollapsed = false;
-    }
-}
-
 function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = false, showDetails = true, keepHighlightsWithoutUi = false, panelOptions = { presentation: 'compact' }) {
     // While a corridor tool is drawing, NOTHING may select a proposal — the session opened with a
     // clean selection and every click belongs to the drawing. Any call here mid-drawing is a bug
@@ -785,10 +696,10 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
         window.selectedParcelInProposal = parcelId;
         if (detailsWanted) {
             showProposalInfo(proposal, parcelId, null, panelOptions);
-            showOwnParcelInfoForProposal(proposal);
         } else {
             hideProposalDetailsPanel();
         }
+        if (in3D && showDetails) window.showThreeModeDesign(proposalKey, parcelId);
         updateStatus(selectedProposalStatusText(proposal));
         // If the same proposal remains selected (common when clicking Apply/Remove inside the panel),
         // we still need to (re)apply overlays when its applied/unapplied state changes.
@@ -820,10 +731,10 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
     // Show proposal info immediately (no visual changes yet)
     if (detailsWanted) {
         showProposalInfo(proposal, parcelId, null, panelOptions);
-        showOwnParcelInfoForProposal(proposal);
     } else {
         hideProposalDetailsPanel();
     }
+    if (in3D && showDetails) window.showThreeModeDesign(proposalKey, parcelId);
 
     // Update status
     updateStatus(selectedProposalStatusText(proposal));

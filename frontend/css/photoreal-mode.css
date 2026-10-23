@@ -149,26 +149,16 @@ body.realistic-mode-active #mode-walk-toggle {
     top: 8px;
 }
 
-/* Photo source selection is a read-only map card; actions reuse the shared button category.
+/* Photo source selection is the Parcel section's read-only body in the click panel.
    Renderer ink reads the --cb-photo-parcel-* roles in tokens.css. */
 .photoreal-parcel-card {
-    position: absolute;
-    left: calc(var(--cb-space-4) + 48px);
-    bottom: calc(var(--map-visible-bottom) + 84px);
-    z-index: var(--cb-z-map-chrome);
     box-sizing: border-box;
-    width: min(310px, calc(100% - 88px));
-    padding: var(--cb-space-3);
-    border: 1px solid var(--cb-line);
-    border-radius: var(--cb-radius-md);
-    background: var(--cb-surface);
     color: var(--cb-text);
-    box-shadow: var(--cb-shadow-md);
     font: var(--cb-text-base)/var(--cb-leading) var(--cb-font-sans);
     overflow-wrap: anywhere;
 }
 .photoreal-parcel-card[hidden] { display: none; }
-.photoreal-parcel-card-heading { display: flex; align-items: center; justify-content: space-between; gap: var(--cb-space-2); }
+.photoreal-parcel-card-heading { display: none; }
 .photoreal-parcel-card h2 { margin: 0; font-size: var(--cb-text-base); }
 .photoreal-parcel-card p { margin: var(--cb-space-2) 0 0; }
 .photoreal-parcel-reference { font-weight: var(--cb-weight-semibold); }

@@ -195,6 +195,7 @@
     function show(input, options, adapter) {
         const container = options.container || doc.body;
         ensureElement(container);
+        state.adapter?.release?.();
         state.adapter = adapter;
         state.stack = buildThreeStack(input, options);
         if (!state.stack.sections.length) { close({ silent: true }); return false; }

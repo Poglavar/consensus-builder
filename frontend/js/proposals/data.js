@@ -1468,6 +1468,7 @@ const multiParcelSelection = {
     // Show the current selection in the parcel panel (opening it): the multi-parcel summary for
     // two or more parcels, the parcel itself for one. Hosted by the click panel's Selected parcels section.
     showSelectionInPanel() {
+        if (!window.ClickStack.isDriving()) return window.ClickStack.syncSelection();
         const count = this.selectedParcels.size;
         if (count >= 2) {
             this.showMultiParcelInfo();
@@ -1493,7 +1494,6 @@ const multiParcelSelection = {
         const feature = parcelId ? window.LiveParcelFabric?.get?.(parcelId) : null;
         if (feature) {
             showParcelInfoPanel(feature);
-            document.getElementById('parcel-info-panel').classList.add('visible');
             setParcelInfoPanelTitle(
                 window.i18n ? window.i18n.t('panel.parcel.multiSelectionTitle', {}) : 'Multiparcel selection',
                 { i18nKey: 'panel.parcel.multiSelectionTitle' }

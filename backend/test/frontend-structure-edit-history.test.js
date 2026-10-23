@@ -35,7 +35,7 @@ function makeEditorHarness(decorations, options = {}) {
     const draft = {
         id: 'draft-1', adapterKey: kind, goal: kind, sourceProposalId: 'proposal-1',
         sourceSnapshot: { proposalId: 'proposal-1' },
-        editorPayload: { structureProposal: { kind, geometry, decorations, lakeGraphics: options.lakeGraphics || null } }
+        editorPayload: { structureProposal: { kind, geometry, ...(kind === 'lake' ? {} : { decorationDesign: decorations }), lakeGraphics: options.lakeGraphics || null } }
     };
     const historyInstances = [];
     const mapHandlers = new Map();
@@ -263,7 +263,7 @@ function makeEditorHarness(decorations, options = {}) {
             if (syncBehavior === 'throw') throw new Error('draft store unavailable');
             savedPayload = payload;
             syncOptions = options;
-            savedDecorations = payload.structureProposal.decorations;
+            savedDecorations = payload.structureProposal.decorationDesign;
             draft.editorPayload.structureProposal = JSON.parse(JSON.stringify(payload.structureProposal));
             return draft;
         },
@@ -381,7 +381,7 @@ function makeEditorHarness(decorations, options = {}) {
             panel.fireClick({ action: 'save' });
             return savedPayload?.structureProposal?.kind === 'lake'
                 ? savedPayload
-                : (savedPayload?.structureProposal?.decorations || savedDecorations);
+                : (savedPayload?.structureProposal?.decorationDesign || savedDecorations);
         },
         // The header × is the editor's only way out without saving (the shell's onCancel).
         cancel() { mapEditorOptions.at(-1).onCancel(); },
@@ -406,7 +406,7 @@ describe('structure geometry editor history wiring', () => {
         expect(harness.savedPayload).toBeNull();
         expect(harness.context.selectAndHighlightProposal).toHaveBeenCalledWith(
             'proposal-1', null, false, true, false,
-            { planningActions: true, presentation: 'compact' }
+            { presentation: 'details' }
         );
     });
 
@@ -822,7 +822,7 @@ describe('structure geometry editor history wiring', () => {
         harness.setSyncBehavior('success');
         const saved = harness.save();
         expect(saved.trees).toEqual([tree(0.4, 0.35)]);
-        expect(harness.savedPayload.structureProposal.decorations.trees).toEqual([tree(0.4, 0.35)]);
+        expect(harness.savedPayload.structureProposal.decorationDesign.trees).toEqual([tree(0.4, 0.35)]);
         expect(harness.context.isStructureGeometryEditorActive()).toBe(false);
         expect(harness.finishedDrafts).toEqual(['draft-1']);
         expect(harness.statusMessages).toContain('Structure design saved.');

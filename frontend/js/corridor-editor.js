@@ -2543,7 +2543,7 @@ async function corridorEditorSave() {
         // using the saved identity (a published source may have produced a counterproposal).
         if (typeof selectAndHighlightProposal === 'function') {
             selectAndHighlightProposal(updated === true ? sourceKey : String(updated), null, false, true, false, {
-                planningActions: true, presentation: 'details'
+                presentation: 'details'
             });
         }
         if (typeof updateStatus === 'function' && (updated === true || String(updated) === String(sourceKey))) updateStatus('Cross-section updated.');

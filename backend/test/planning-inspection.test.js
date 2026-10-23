@@ -93,11 +93,15 @@ describe('shared building and proposal representations', () => {
             protocol: 'proposal-lifecycle-evidence/1', state: 'unknown', claimedStatus: 'Executed'
         } }, { key: 'local' });
         expect(proposal.sourceEvidence.lifecycleEvidence).toMatchObject({ state: 'unknown', claimedStatus: 'Executed' });
-        // An authored proposal's summary carries no notes, conditions or source disclosure: its
-        // rung, lifecycle and records are in its actions panel.
+        // Authored records keep their selection projection, but their visible reader belongs to
+        // the click panel. A restored selection must clear the former standalone inspector.
         const inspectorSource = source.slice(inspector.start, inspector.end);
-        expect(inspectorSource).not.toContain('getProposalLifecycleLabel');
-        expect(inspectorSource).toContain("if (item.role !== 'proposed') inspector.append(evidence);");
+        const panel = { hidden: false, replaceChildren: vi.fn() };
+        const renderContext = vm.createContext({ selected: () => proposal, inspector: panel, isPhoto: () => false });
+        vm.runInContext(inspectorSource, renderContext);
+        renderContext.renderInspector();
+        expect(panel.hidden).toBe(true);
+        expect(panel.replaceChildren).toHaveBeenCalledOnce();
         expect(inspectorSource).toContain('if (sourceResult && item.volumes.length) inspector.append(assessment);');
     });
     it('does not clear an authored selection when source massing becomes unavailable at a wider zoom', async () => {

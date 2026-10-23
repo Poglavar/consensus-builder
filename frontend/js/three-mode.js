@@ -1312,6 +1312,7 @@
         activate(kind, instance, body) {
             if (!instance || !body) return;
             if (kind === 'designs') {
+                body.replaceChildren();
                 if (isolatedProposalId !== instance.id) {
                     withStackDriving(() => window.selectAndHighlightProposal?.(instance.id, null, false, false, true));
                     isolateProposal(instance.id);
@@ -8431,7 +8432,7 @@
         }
         const selectedDesign = window.ProposalSelection?.getKey?.();
         const focusedDesign = focusProposalIds?.size ? [...focusProposalIds][0] : null;
-        if (selectedDesign || focusedDesign) showThreeModeDesign(selectedDesign || focusedDesign);
+        if (focusedDesign || selectedDesign) showThreeModeDesign(focusedDesign || selectedDesign);
         return true;
     }
 

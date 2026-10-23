@@ -29,7 +29,7 @@ right-side panels that clicks used to open one at a time.
 3. **Built**: existing buildings at the point, or on the parcel there (a demolished one carries a
    "demolished by" badge).
 4. **Permitted**: massing / envelope records.
-5. **Formed parcel**: the parcel a design formed here. Never expands; it names the design.
+5. **Formed parcel**: the live ground a design formed here, with its parcel actions.
 6. **Cadastral parcels** under the point (or under the selected design).
 7. Footer: the coordinates (copyable).
 
@@ -48,7 +48,8 @@ right-side panels that clicks used to open one at a time.
     (land and ownership, verification, the record), with the actions under both; plus the
     agreements it belongs to as a strip. Starting Before / after from it folds the stack to its
     rows (the card stays hosted, so the comparison keeps running); a row click unfolds it.
-- A proposal just placed (an editor's Done, a one-click structure, the create dialog) opens the
+- A proposal opened from a list, shared link, restored selection, or just placed (an editor's Done,
+  a one-click structure, the create dialog) opens the
   stack at a point inside it with its Design section expanded, instead of a card of its own. No
   click opened that spot, so the first click on the design is a new click, not a close.
   - Built: the building record. Permitted: the massing inspector.
@@ -60,8 +61,9 @@ right-side panels that clicks used to open one at a time.
     parcel layout and remains available for drawing a design over that boundary.
     **Design · Info · Tools** are the tabs. Design opens first; a selected tab stays selected
     on subsequent parcel clicks. The panel's Proposals tab is hidden inside the stack because
-    Designs already lists those records. Outside the stack the panel retains Proposals and
-    its standalone heading/close controls. Hosted Built/Permitted inspectors have no close
+    Designs already lists those records. The selected-set section retains Proposals for the whole
+    set. Parcel information and proposal actions open only inside the click panel; there is no
+    automatic companion parcel panel beside a selected proposal. Hosted Built/Permitted inspectors have no close
     button: their section heading collapses them or another section takes over.
 - The map highlight follows the expanded section and its selected instance.
 - **Memory:** the kind of the expanded section is remembered (also across reloads). The next
@@ -95,8 +97,10 @@ nothing, a repeat click or the isolation banner's ×. It replaced the floating t
   **Permitted** (the clicked massing, or the parcel's cached massing), **Parcel** (the one parcel).
 - The clicked thing's section opens; one section is open at a time.
 - Design open: the proposal is isolated (as before) and the section shows the whole proposal's info
-  and Built / Planned / Proposed figures with the price sliders, then its authored record from the
-  Buildings and massing inspector. Parcel open: the same figures for the one parcel.
+  and Built / Planned / Proposed figures with the price sliders. **Proposal actions** switches to
+  the same design in the 2D click panel. Restoring a design or entering through a shared model link
+  opens this section; authored selections never open the Buildings and massing inspector.
+  Parcel open: the same figures for the one parcel.
 - Built and Permitted host the Buildings and massing inspector.
 - A proposal click's parcel is the proposal's own parcel slice under the point, not the slab the ray
   reaches beside a tall design (`three-click-plan.js`).
@@ -107,3 +111,7 @@ nothing, a repeat click or the isolation banner's ×. It replaced the floating t
 - The pure rules (order, focus, strips, labels) are in the module's first half and unit tested
   (`backend/test/three-click-stack.test.js`); the 2D model (`click-stack-model.js`) is not shared,
   because its order puts Design above Built.
+
+In aerial imagery mode, source-parcel inspection uses the same 3D click-panel frame. Its Parcel
+section hosts the immutable source reference and measured area; Escape closes the selection.
+Dedicated planning study/editing tools remain separate from parcel information and design actions.

@@ -51,17 +51,16 @@ async function focusProposalDetails(proposalIdOrHash, options = {}) {
 }
 
 function showProposalInfo(proposal, currentParcelId = null, preserveScrollPosition = null, options = {}) {
-    // New selections use the shared inspector. Refreshing actions already opened for this
-    // proposal (after a vote, wallet switch or receipt read) keeps that action context.
+    // This renderer supplies a click-panel body; routes, lists and refreshes never open a
+    // second proposal surface. Only the click panel may request an unhosted initial render.
     const activeActionsPanel = document.getElementById('proposal-details-panel');
     const activeActionsContent = document.getElementById('proposal-details-content');
     const refreshingActions = activeActionsPanel?.classList.contains('visible')
-        && activeActionsContent?.dataset.proposalId === String(getProposalKey(proposal));
-    if (!options.planningActions && !refreshingActions && window.PlanningViews?.isReady()) {
-        window.PlanningViews.inspectProposal(proposal);
-        return;
+        && activeActionsContent?.dataset.proposalId === String(getProposalKey(proposal))
+        && !!activeActionsPanel.closest?.('#click-stack');
+    if (!options.hosted && !refreshingActions) {
+        return window.ClickStack.showDesign(getProposalKey(proposal));
     }
-    if (options.planningActions) window.PlanningViews?.actionsShown?.(getProposalKey(proposal));
     // The proposal action panel is 2D-only for now: in 3D the selection/isolation machinery
     // still runs, but the button box would float context-less over the scene.
     if (typeof document !== 'undefined' && document.body?.classList?.contains('three-mode-active')) {
@@ -1371,12 +1370,6 @@ function hideProposalDetailsPanel(clearHighlights = false, { preserveCorridorSeg
     currentProposalDetailsContext = null;
     // The before/after divider lives and dies with the panel.
     try { window.ProposalBeforeAfter?.dispose(); } catch (_) { /* no map */ }
-
-    // The proposal's own parcel (opened collapsed beside this card by showOwnParcelInfoForProposal)
-    // belongs to the card: close it with the card. Left open, it turned the next parcel click into
-    // "move the open panel" instead of opening the parcel menu. A panel that a direct map selection
-    // has since taken over is left alone (clearProposalOwnParcelInfo checks the tracked id).
-    try { if (typeof clearProposalOwnParcelInfo === 'function') clearProposalOwnParcelInfo(); } catch (_) { }
 
     // Clear hover overlay when closing
     try { clearProposalInfoHoverOverlay(); } catch (_) { }

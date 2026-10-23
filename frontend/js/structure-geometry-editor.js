@@ -948,7 +948,7 @@
         if (!saved && reselectKey && typeof global.selectAndHighlightProposal === 'function') {
             try {
                 global.selectAndHighlightProposal(reselectKey, null, false, true, false, {
-                    planningActions: true, presentation: 'compact'
+                    presentation: 'details'
                 });
             } catch (_) { }
         }

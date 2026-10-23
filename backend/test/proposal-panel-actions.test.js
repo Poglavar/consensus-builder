@@ -38,6 +38,7 @@ function render(proposal, { applied = false, road = false, lifecycle = 'Active',
     const footer = { innerHTML: '', querySelector: () => null };
     const panelClasses = new Set();
     const panel = {
+        closest: () => panelClasses.has('is-hosted') ? panel : null,
         classList: { contains: key => panelClasses.has(key), add: key => panelClasses.add(key), toggle: (key, yes) => yes ? panelClasses.add(key) : panelClasses.delete(key) },
         querySelector: selector => selector === '.panel-body' ? body : null
     };
@@ -56,6 +57,7 @@ function render(proposal, { applied = false, road = false, lifecycle = 'Active',
         createElement: () => ({ ...htmlContainer(), get childNodes() { return [{ innerHTML: this.innerHTML }]; }, get firstChild() { return null; } })
     };
     const window = {
+        ClickStack: { showDesign: vi.fn() },
         CityMoney: require('../../frontend/js/city-money.js'),
         ProposalDesignGoals: require('../../frontend/js/proposals/design-goals.js'),
         i18n: null,
@@ -122,7 +124,8 @@ function render(proposal, { applied = false, road = false, lifecycle = 'Active',
     if (proposal.lifecycleStatus === undefined) proposal.lifecycleStatus = lifecycle;
     const context = vm.createContext(globals);
     vm.runInContext(`${renderSource}\nthis.renderProposal = showProposalInfo;`, context);
-    context.renderProposal(proposal, null, null, { presentation: 'compact' });
+    context.renderProposal(proposal, null, null, { hosted: true, presentation: 'compact' });
+    panelClasses.add('is-hosted');
     while (timers.length) timers.shift()();
     return {
         footer, content, window, panel, title: elements.get('proposal-details-title'),
@@ -148,7 +151,7 @@ describe('proposal details action footer', () => {
         expect(result.title.textContent).toBe('Updated terms');
     });
 
-    it.each(['closed', 'different'])('uses the shared inspector for a %s action context', context => {
+    it.each(['closed', 'different'])('uses the click panel for a %s action context', context => {
         const proposal = { proposalId: 'selected-actions', cadastreParcelIds: [] };
         const result = render(proposal);
         const inspectProposal = vi.fn();
@@ -156,7 +159,8 @@ describe('proposal details action footer', () => {
         if (context === 'closed') result.panel.classList.toggle('visible', false);
         const nextProposal = context === 'different' ? { ...proposal, proposalId: 'another-proposal' } : proposal;
         result.rerender(nextProposal);
-        expect(inspectProposal).toHaveBeenCalledExactlyOnceWith(nextProposal);
+        expect(inspectProposal).not.toHaveBeenCalled();
+        expect(result.window.ClickStack.showDesign).toHaveBeenCalledExactlyOnceWith(nextProposal.proposalId);
     });
 
     it('shows unknown source areas as an em dash and gives partial sums their actual coverage', () => {

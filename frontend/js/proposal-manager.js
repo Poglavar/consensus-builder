@@ -200,10 +200,6 @@ function _clearNonLiveParcelInteractionState(parcelIds) {
             else root.document?.getElementById('parcel-info-panel')?.classList.remove('visible');
         } catch (_) { }
     }
-    // showOwnParcelInfoForProposal does not make the generated parcel a direct map selection: its
-    // collapsed panel is secondary to the proposal card. Close that separately when its live output
-    // disappears, without using hideParcelInfoPanel (which would also clear the proposal highlight).
-    try { root.clearProposalOwnParcelInfo?.(removed); } catch (_) { }
     if (multiChanged) {
         try { multi.updateUI?.(); } catch (_) { }
     }
@@ -3639,7 +3635,6 @@ const ProposalManager = {
             try { window.ProposalSelection?.clear?.(); } catch (_) { }
             try { if (typeof clearProposalHighlights === 'function') clearProposalHighlights(); } catch (_) { }
             try { if (typeof hideProposalDetailsPanel === 'function') hideProposalDetailsPanel(); } catch (_) { }
-            try { if (typeof clearProposalOwnParcelInfo === 'function') clearProposalOwnParcelInfo(); } catch (_) { }
             this._refreshUIAfterProposalChange(null);
         });
         return { ok: true, count: records.length };

@@ -145,7 +145,7 @@ describe('corridorEditorSave: the cross-section is saved from the open editor, n
         await h.save();
         expect(h.context.__closeSpy).toHaveBeenCalledOnce();
         expect(h.context.selectAndHighlightProposal).toHaveBeenCalledWith(
-            'road-1', null, false, true, false, { planningActions: true, presentation: 'details' }
+            'road-1', null, false, true, false, { presentation: 'details' }
         );
         expect(h.context.updateStatus).toHaveBeenCalledWith('Cross-section updated.');
     });
@@ -170,7 +170,7 @@ describe('corridorEditorSave: the cross-section is saved from the open editor, n
         await h.save();
         expect(h.context.__closeSpy).toHaveBeenCalledOnce();
         expect(h.context.selectAndHighlightProposal).toHaveBeenCalledWith(
-            'fork-1', null, false, true, false, { planningActions: true, presentation: 'details' }
+            'fork-1', null, false, true, false, { presentation: 'details' }
         );
         expect(h.context.updateStatus).not.toHaveBeenCalledWith('Cross-section updated.');
     });

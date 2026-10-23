@@ -98,6 +98,8 @@ if (uParcelOn > 0.5) {
         const toggle = doc.getElementById('photo-parcels-visible');
         const status = doc.getElementById('photo-parcels-status');
         const card = doc.getElementById('photo-parcel-selection');
+        const cardHome = card?.parentNode;
+        let ownsStack = false;
         const close = doc.getElementById('photo-parcel-close');
         const element = internals.renderer.domElement;
         let enabled = toggle?.checked === true;
@@ -170,6 +172,21 @@ if (uParcelOn > 0.5) {
                             { index: matchIndex + 1, count: matches.length }) : '';
                 }
             }
+            if (parcel && enabled && card) {
+                ownsStack = true;
+                root.ThreeClickStack.show({ parcels: [{ id: parcel.id, label: root.ThreeClickStack.parcelLabel(parcel.id) }] },
+                    { focus: 'parcels', container: doc.getElementById('map-container') || doc.body }, {
+                        activate(_kind, _instance, body) {
+                            card.hidden = false;
+                            body.appendChild(card);
+                        },
+                        release() { card.hidden = true; cardHome?.appendChild(card); },
+                        closed() { ownsStack = false; clearSelection(); }
+                    });
+            } else if (ownsStack) {
+                ownsStack = false;
+                root.ThreeClickStack.close({ silent: true });
+            }
             draw();
         }
         function rebuild(features) {
@@ -216,7 +233,7 @@ if (uParcelOn > 0.5) {
         function onToggle() {
             enabled = toggle.checked;
             uniforms.uParcelOn.value = enabled && parcels.length ? 1 : 0;
-            if (card) card.hidden = !enabled || !selected;
+            showSelection(selected);
             if (status) status.hidden = !enabled;
             if (enabled) { dirty = true; update(); }
             root.invalidateThreeView?.();
@@ -252,6 +269,7 @@ if (uParcelOn > 0.5) {
         return {
             uniforms, update,
             dispose() {
+                if (ownsStack) { ownsStack = false; root.ThreeClickStack.close({ silent: true }); }
                 disposed = true;
                 request?.abort();
                 themeObserver.disconnect();

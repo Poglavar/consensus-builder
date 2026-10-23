@@ -18,7 +18,7 @@
     let viewedParcelId = null, viewWantsMassing = false;
     // The massing shapes drawn on the map, for "what is under this point" (click-stack.md).
     let hitShapes = [];
-    let sourceOptions = [], sourceId = '', scenarioId = '', focusedRecord = null, sourceGeneration = 0, actionsOpen = false, referenceStatus = null;
+    let sourceOptions = [], sourceId = '', scenarioId = '', focusedRecord = null, sourceGeneration = 0, referenceStatus = null;
     let restoreId = new URLSearchParams(location.search).get('planningSelection'), restoring = false, catalogReady = false, parcelPanel = null;
     // Per-item configuration pins chosen in the inspector; cleared with the source, housing type or city.
     let pins = {}, sourcesKey = '';
@@ -81,21 +81,12 @@
             root.ProposalSelection?.clear();
             root.hideProposalDetailsPanel?.();
         }
-        actionsOpen = false;
         restoreId = null;
         store.select(id);
         renderInspector();
         renderFocus();
     }
     function selectRecord(record) { focusedRecord = record; referenceStatus = null; select(record?.id || null); }
-    // The actions panel of the selected proposal opened, by its "Proposal actions" button or directly
-    // (the click stack's Design section): the proposal's summary steps back while it is open.
-    function actionsShown(key) {
-        const item = selected();
-        if (item?.role !== 'proposed' || String(item.proposalId) !== String(key)) return;
-        actionsOpen = true;
-        renderInspector();
-    }
     // The parcel the sheet refers to: the one the 3D view isolated, else the parcel of the
     // selected permitted massing.
     function parcelOf(item) {
@@ -296,14 +287,14 @@
     }
     function renderInspector() {
         const item = selected();
-        inspector.hidden = !item || actionsOpen || isPhoto();
+        inspector.hidden = !item || item.role === 'proposed' || isPhoto();
         inspector.replaceChildren();
-        if (!item) return;
+        if (!item || item.role === 'proposed') return;
         const header = element('header', 'planning-inspector__header');
         const heading = element('div');
         const sourceResult = item.role === 'permitted';
         heading.append(element('p', 'planning-eyebrow', item.parcelEnvelope ? t('envelopeTitle')
-            : t(item.areas?.length ? 'zoningArea' : sourceResult ? (item.volumes.length ? 'sourceProposal' : 'savedResult') : item.role === 'existing' ? 'builtRecord' : 'proposedRecord')), element('h2', '', item.title));
+            : t(item.areas?.length ? 'zoningArea' : sourceResult ? (item.volumes.length ? 'sourceProposal' : 'savedResult') : 'builtRecord')), element('h2', '', item.title));
         // A parcel's massing names its parcel; the title alone is the source edition and ratio.
         const parcelLabel = parcelOf(item);
         if (parcelLabel) heading.append(element('p', 'planning-inspector__parcel', `${t('focusParcel')} ${parcelLabel}`));
@@ -323,17 +314,14 @@
             t(item.assessment.meaning === 'existing-stock-estimate' ? 'stockBadge' : item.parcelEnvelope ? 'bound' : 'approximate')));
         if (item.assessment.refresh) badges.append(element('span', 'cb-badge cb-badge--warning', t('refreshPending')));
         inspector.append(badges);
-        // An authored proposal is summed up by its badge, figures and actions; the notes on what a
-        // record does and does not establish, its conditions and its source belong to the
-        // observed and permitted records.
-        if (item.role !== 'proposed') inspector.append(element('p', 'planning-inspector__description',
+        inspector.append(element('p', 'planning-inspector__description',
             t(item.assessment.meaning === 'existing-stock-estimate' ? 'stockEstimate'
                 : item.assessment.meaning === 'public-screen' ? 'evidenceOnly'
                     : item.assessment.meaning === 'zoning-area' ? 'zoningAreaNote'
                         : item.parcelEnvelope ? 'envelopeNote'
                         : sourceResult ? (item.volumes.length ? 'oneOption' : 'savedNoShape')
                         : 'observedNote')));
-        if (item.role !== 'proposed' && item.assessment.status && !item.parcelEnvelope) inspector.append(element('p', 'planning-inspector__description', resultLabel(item.assessment.status)));
+        if (item.assessment.status && !item.parcelEnvelope) inspector.append(element('p', 'planning-inspector__description', resultLabel(item.assessment.status)));
         if (item.assessment.reason) inspector.append(element('p', 'planning-cache-reason', item.assessment.reason));
         if (item.assessment.current === false) inspector.append(element('p', 'planning-inspector__description', t('savedWithdrawn')));
         if (referenceStatus && referenceStatus !== 'same') inspector.append(element('p', 'planning-assessment', t('referenceChanged')));
@@ -390,7 +378,7 @@
             const terms = element('pre', 'planning-evidence__terms', JSON.stringify(item.sourceEvidence, null, 2));
             evidence.append(element('p', '', t('sourceTerms')), terms);
         }
-        if (item.role !== 'proposed') inspector.append(evidence);
+        inspector.append(evidence);
         root.PlanningParcelStudy?.addSourceAction(inspector, item);
         for (const reference of item.sourceEvidence?.sourceReferences || []) {
             const button = element('button', 'btn btn-sm', t('referencedSource', { source: reference.providerId, revision: reference.revision.slice(0, 8) }));
@@ -413,17 +401,6 @@
             const link = element('a', 'cb-link cb-link--external', t('readSource'));
             link.href = item.source.url; link.target = '_blank'; link.rel = 'noopener noreferrer';
             footer.append(link);
-        }
-        if (item.role === 'proposed') {
-            const action = element('button', 'btn', t('proposalActions'));
-            action.type = 'button'; action.addEventListener('click', async () => {
-                const proposal = root.proposalStorage?.getProposal(item.proposalId);
-                if (!proposal) return;
-                if (root.__mapModeState?.desired === 'model') await root.requestMapMode('2d');
-                actionsOpen = true; renderInspector();
-                root.showProposalInfo(proposal, root.ProposalSelection?.getParcelId(), null, { planningActions: true });
-            });
-            footer.append(action);
         }
         inspector.append(footer);
     }
@@ -648,7 +625,7 @@
         }
         if (id.startsWith('proposed:')) {
             const proposal = root.proposalStorage?.getProposal(id.slice('proposed:'.length));
-            if (proposal) root.ProposalSelection.select(proposal);
+            if (proposal) root.ClickStack.showDesign(root.getProposalKey(proposal));
             return;
         }
         const provider = sourceOptions.find(source => id.startsWith(`${source.id}:`));
@@ -835,7 +812,7 @@
         syncView();
         loadSources();
     }
-    root.PlanningViews = { getState: () => store?.get() || { ...core.defaults, variation: '' }, getPolicy: policy, getItems: sceneItems, actionsShown,
+    root.PlanningViews = { getState: () => store?.get() || { ...core.defaults, variation: '' }, getPolicy: policy, getItems: sceneItems,
         getSelectionPoint: () => selectionPoint?.id === selected()?.id ? selectionPoint : null, getAppearance: appearance,
         refreshStudy({ inspector: updateInspector = true } = {}) { drawMap(); if (updateInspector) renderInspector(); notifyGeometry(); },
         getSelected: selected, isReady: () => ready, isInspecting: () => ready && !inspector.hidden,

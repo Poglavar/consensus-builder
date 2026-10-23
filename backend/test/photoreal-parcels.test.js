@@ -65,6 +65,7 @@ function fixture({ pending = false } = {}) {
     function element() {
         const handlers = {};
         return { checked: true, hidden: true, textContent: '', handlers,
+            classList: { add() {}, remove() {} }, parentNode: { appendChild() {} },
             addEventListener: (key, fn) => { handlers[key] = fn; },
             removeEventListener: (key, fn) => { if (handlers[key] === fn) delete handlers[key]; } };
     }
@@ -83,6 +84,15 @@ function fixture({ pending = false } = {}) {
         MutationObserver: class { observe() {} disconnect() {} }, __photorealFrame: { mercatorScaleFactor: () => 1 },
         getComputedStyle: () => ({ getPropertyValue: () => '#ffffff' }), L: { latLngBounds: (sw, ne) => [sw, ne] },
         CadastralParcelRepository: { ensureBounds: vi.fn(() => source) }, turf: { area: () => 100 }, invalidateThreeView: vi.fn()
+    };
+    let adapter;
+    root.ThreeClickStack = {
+        parcelLabel: id => id,
+        show: vi.fn((_input, _options, next) => {
+            adapter?.release(); adapter = next;
+            adapter.activate('parcels', null, { appendChild() {} });
+        }),
+        close: vi.fn(() => { adapter?.release(); adapter = null; })
     };
     const internals = { originLatLng: () => ({ lat: 0 }), controls: { target: { x: 0, y: 0 } }, latLngToXY: project,
         camera: { position: { distanceTo: () => 400 } },
@@ -107,6 +117,8 @@ describe('photo overlay lifecycle', () => {
         f.click();
         expect(f.nodes.get('photo-parcel-reference').textContent).toBe('source-1');
         expect(f.nodes.get('photo-parcel-selection').hidden).toBe(false);
+        expect(f.root.ThreeClickStack.show).toHaveBeenCalledWith({ parcels: [{ id: 'source-1', label: 'source-1' }] },
+            expect.objectContaining({ focus: 'parcels' }), expect.objectContaining({ activate: expect.any(Function) }));
         f.click();
         expect(f.nodes.get('photo-parcel-reference').textContent).toBe('overlap-2');
         f.root.handlers.keydown({ key: 'Escape' });

@@ -11,7 +11,7 @@
     const MEMORY_KEY = 'cb.clickStack.expanded';
     // The existing panels a section shows when expanded, first visible wins.
     const HOSTS = Object.freeze({
-        designs: ['proposal-details-panel', 'planning-inspector'],
+        designs: ['proposal-details-panel'],
         built: ['planning-inspector'],
         permitted: ['planning-inspector'],
         selection: ['parcel-info-panel'],
@@ -427,9 +427,7 @@
     // The design's actions panel opens in the section directly (its Overview tab with the actions
     // below it), not the planning inspector's summary with a further "Proposal actions" button.
     function selectDesign(key) {
-        global.selectAndHighlightProposal(key, null, false, true, false, { planningActions: true, presentation: 'details' });
-        // A proposal's own parcel may open its panel alongside; in the stack it has its section.
-        if (doc.getElementById('parcel-info-panel')?.classList.contains('visible')) global.hideParcelInfoPanel?.({ preserveProposalSelection: true });
+        global.selectAndHighlightProposal(key, null, false, true, false, { hosted: true, presentation: 'details' });
     }
 
     // A published proposal on the clicked parcel that this browser holds no copy of: imported first
@@ -634,22 +632,18 @@
         }
     }
 
-    // A proposal just placed opens the stack at a point inside it, its Design section expanded on
-    // it, instead of a card of its own. In 3D, where the stack does not open, the proposal is
-    // selected as before (the scene shows it).
+    // Every entry point (a route, list, editor or click) uses its view's Design section.
     function showDesign(key) {
         const proposal = global.getProposalByIdOrHash?.(key) || global.proposalStorage?.getProposal?.(key);
         if (!proposal) throw new Error(`ClickStack: proposal ${key} is not stored`);
         const designKey = String(global.getProposalKey?.(proposal) || proposal.proposalId);
         if (doc.body.classList.contains('three-mode-active')) {
-            global.selectAndHighlightProposal(designKey, null, false, true);
-            return;
+            return global.showThreeModeDesign(designKey);
         }
         const footprint = global.__planOrder?.footprintOf?.(proposal);
-        if (!footprint) throw new Error(`ClickStack: proposal ${designKey} has no footprint to open at`);
-        const [lng, lat] = global.turf.pointOnFeature(footprint).geometry.coordinates;
-        const latlng = global.L.latLng(lat, lng);
-        const hits = global.ClickStackHits.hitsAt(latlng, { onPublished: () => refreshSpot(latlng) });
+        const coordinates = footprint ? global.turf.pointOnFeature(footprint).geometry.coordinates : null;
+        const latlng = coordinates ? global.L.latLng(coordinates[1], coordinates[0]) : null;
+        const hits = latlng ? global.ClickStackHits.hitsAt(latlng, { onPublished: () => refreshSpot(latlng) }) : { designs: [] };
         // The new design is the one shown, also where something else stands above it at that point.
         if (!hits.designs.some(design => String(design.id) === designKey)) {
             hits.designs.unshift({ id: designKey, label: String(proposal.title || proposal.name || designKey),
@@ -660,6 +654,21 @@
         log(`placed ${designKey}: ${stack.sections.map(section => `${section.kind}×${section.count}`).join(' ')}`);
         // No click opened this spot, so the first click on the design is a new one (it selects what
         // it hits, such as a road's stretch), not "the same spot again", which would close the stack.
+        show({ ...stack, topRef: null }, latlng, hits);
+    }
+
+    function showParcel(feature) {
+        const id = String(global.LiveParcelFabric.featureId(feature));
+        if (doc.body.classList.contains('three-mode-active')) return global.showThreeModeParcel(id);
+        const [lng, lat] = global.turf.pointOnFeature(feature).geometry.coordinates;
+        const latlng = global.L.latLng(lat, lng);
+        const hits = global.ClickStackHits.hitsAt(latlng);
+        const kind = hits.formed?.some(item => item.id === id) ? 'formed' : 'parcels';
+        hits[kind] = hits[kind] || [];
+        if (!hits[kind].some(item => item.id === id)) hits[kind].unshift({ id, feature,
+            label: global.ClickStackHits.parcelLabel(id, feature), live: !!global.LiveParcelFabric.get(id) });
+        const stack = model.expand(model.buildClickStack(hits, { selected: { [kind]: id } }), kind);
+        state.lastClick = null;
         show({ ...stack, topRef: null }, latlng, hits);
     }
 
@@ -722,6 +731,6 @@
 
     // The agreement section outlines all its designs; map hover leaves that outline alone.
     const holdsHighlight = () => isOpen() && state.stack?.expanded === 'agreements';
-    global.ClickStack = Object.freeze({ handleClick, showDesign, syncSelection, fold, close, isOpen, expand, collapse, holdsHighlight,
+    global.ClickStack = Object.freeze({ handleClick, showDesign, showParcel, isDriving: () => state.expanding, syncSelection, fold, close, isOpen, expand, collapse, holdsHighlight,
         current: () => state.stack, point: () => state.latlng });
 })(window);

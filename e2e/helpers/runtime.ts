@@ -254,13 +254,11 @@ export async function showProposalTab(page: Page, tab: 'overview' | 'details'): 
 
 export async function showProposal(page: Page, id: string): Promise<void> {
   await page.evaluate(id => (window as any).showProposalDetails(id), id);
-  const inspector = page.locator('#planning-inspector');
-  const details = page.locator('#proposal-details-panel');
-  await expect.poll(async () => await inspector.isVisible() || await details.isVisible()).toBe(true);
-  if (await inspector.isVisible()) {
-    await inspector.getByRole('button', { name: 'Proposal actions', exact: true }).click();
-    await expect(details).toBeVisible();
+  if (await page.locator('body').evaluate(el => el.classList.contains('three-mode-active'))) {
+    await page.locator('#three-click-stack').getByRole('button', { name: 'Proposal actions', exact: true }).click();
   }
+  await expect(stackSection(page, 'designs').locator('#proposal-details-panel')).toBeVisible();
+  await expect(page.locator('#planning-inspector')).toBeHidden();
 }
 
 export async function drawCorridor(page: Page, kind: 'road'|'track'): Promise<string> {

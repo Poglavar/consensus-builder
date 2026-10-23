@@ -24,7 +24,7 @@ const HITS_A = {
 };
 const HITS_B = { parcels: [{ id: 'p2', label: '13', feature: parcelFeature, live: true }] };
 // A design opens its actions panel in the section directly, not the planning inspector's summary.
-const DESIGN_PANEL = { planningActions: true, presentation: 'details' };
+const DESIGN_PANEL = { hosted: true, presentation: 'details' };
 
 function loadPanel({ memory = null, withEditLock = false } = {}) {
     const doc = makeDocument();
@@ -212,13 +212,40 @@ describe('click stack panel: a click opens, the same click closes', () => {
         expect(h.api.current().topRef).toBe(null);
         h.click(SPOT_B);
         expect(h.api.isOpen()).toBe(true);
-        // In 3D the stack does not open; the design is selected for the scene.
+        // In 3D the model view's own click panel owns the design.
         h.api.close();
         h.context.selectAndHighlightProposal.mockClear();
         h.doc.body.classList.add('three-mode-active');
+        h.context.showThreeModeDesign = vi.fn();
         h.api.showDesign('d9');
         expect(h.api.isOpen()).toBe(false);
-        expect(h.context.selectAndHighlightProposal).toHaveBeenCalledWith('d9', null, false, true);
+        expect(h.context.showThreeModeDesign).toHaveBeenCalledWith('d9');
+    });
+
+    it('opens a record without loaded geometry in the Design section', () => {
+        const h = loadPanel();
+        h.context.proposalStorage = { getProposal: () => ({ proposalId: 'd3', title: 'Unplaced design' }) };
+        h.api.showDesign('d3');
+        expect(h.kinds()).toEqual(['designs']);
+        expect(h.api.point()).toBeNull();
+        expect(h.proposalPanel.parentNode).toBe(h.section('designs').querySelector('.click-stack__body'));
+    });
+
+    it('routes a parcel opened by a list into its section, or to the model click panel in 3D', () => {
+        const h = loadPanel();
+        h.context.LiveParcelFabric.featureId = () => 'p2';
+        h.context.turf.pointOnFeature = () => ({ geometry: { coordinates: [SPOT_B.lng, SPOT_B.lat] } });
+        h.context.L = { latLng: (lat, lng) => ({ lat, lng }) };
+        h.api.showParcel(parcelFeature);
+        expect(h.api.current().expanded).toBe('parcels');
+        expect(h.parcelPanel.parentNode).toBe(h.section('parcels').querySelector('.click-stack__body'));
+        expect(h.context.ParcelsUISelection.selectParcelFromStack).toHaveBeenCalledWith('p2');
+        h.api.close();
+        h.doc.body.classList.add('three-mode-active');
+        h.context.showThreeModeParcel = vi.fn();
+        h.api.showParcel(parcelFeature);
+        expect(h.context.showThreeModeParcel).toHaveBeenCalledWith('p2');
+        expect(h.api.isOpen()).toBe(false);
     });
 
     it('folds to its rows for Before / after, keeping the open card hosted, and a row click unfolds it', () => {
