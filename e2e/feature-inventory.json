@@ -302,12 +302,6 @@
       ]
     },
     {
-      "id": "areaMonitor.cityPlan",
-      "specs": [
-        "tests/road-plan-analysis.spec.ts"
-      ]
-    },
-    {
       "id": "areaMonitor.draw",
       "specs": [
         "tests/area-monitor-authoring.spec.ts"

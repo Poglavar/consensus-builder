@@ -259,9 +259,10 @@ describe('availability and search', () => {
         }
     });
 
-    it('places the city road-plan toggle on Layers', () => {
-        expect(UiCommands.findCommand('areaMonitor.cityPlan').surfaces).toContain('layers');
-        expect(UiCommands.findCommand('areaMonitor.cityPlan').surfaces).not.toContain('activity');
+    // The area monitor traces the Roads section's government road plan; it has no toggle of its own.
+    it('offers the government road plan once, as a Layers toggle', () => {
+        expect(UiCommands.findCommand('layers.governmentRoadPlan').surfaces).toContain('layers');
+        expect(UiCommands.findCommand('areaMonitor.cityPlan')).toBeFalsy();
     });
 
     it('places map data sources and parcel refresh on 2D Layers, with diagnostics in Settings', () => {

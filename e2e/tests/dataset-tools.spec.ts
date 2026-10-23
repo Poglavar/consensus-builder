@@ -20,15 +20,15 @@ async function openDatasetTools(page: any) {
   await openLayerActions(page, ROAD_DATA);
 }
 
-// The Tools sheet is gone (fbe3758d): road and block tools sit in folded "… data and analysis"
-// rows of the Layers sheet. Open the sheet (unless a tool left it open) and unfold the row.
-const ROAD_DATA = 'mapShell.reorg.roadData';
-const BLOCK_DATA = 'mapShell.reorg.blockData';
-async function openLayerActions(page: any, summaryKey: string) {
+// Road and block tools sit in the Layers sheet's Roads and Parcel Blocks sections, which fold as a
+// whole. Open the sheet (unless a tool left it open) and unfold the section.
+const ROAD_DATA = 'roads';
+const BLOCK_DATA = 'blocks';
+async function openLayerActions(page: any, section: string) {
   const sheet = page.locator('#layers-sheet');
   if (!(await sheet.isVisible())) await page.locator('#layers-button').click();
   await expect(sheet).toBeVisible();
-  const fold = sheet.locator(`details.layer-actions:has(> summary[data-i18n-key="${summaryKey}"])`);
+  const fold = sheet.locator(`details.accordion-section[data-section="${section}"]`);
   if (!(await fold.evaluate((el: HTMLDetailsElement) => el.open))) await fold.locator('> summary').click();
   await expect(fold).toHaveAttribute('open', '');
 }

@@ -6173,7 +6173,6 @@
             "highlightPrivate": "Highlight privately owned parcels",
             "locateParcel": "Locate a parcel by id",
             "blockFromSelected": "Detect block from the selected parcel",
-            "areaMonitorCityPlan": "Area monitor: show the city road plan",
             "areaMonitorDraw": "Draw a monitored area",
             "areaMonitorFromPlan": "Draw a monitored area from the plan",
             "proposalsList": "Open the proposals list",
@@ -6204,8 +6203,7 @@
             "commandDark": "Dark theme"
         },
         "reorg": {
-            "blockData": "Block data and analysis",
-            "roadData": "Road data and analysis",
+            "parksSquares": "Parks and squares",
             "watchedAreas": "Watched areas",
             "originalCadastre": "Original cadastre",
             "aerialLayer": "Existing city (Google imagery)",

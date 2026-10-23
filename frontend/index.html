@@ -523,12 +523,12 @@
             </div>
             <div class="map-sheet-body" data-map-modes="2d">
                 <!-- Parcels -->
-                <div data-map-modes="2d" class="accordion-section" data-section="parcels">
-                    <h3 class="sheet-section-title">
+                <details data-map-modes="2d" class="accordion-section" data-section="parcels" open>
+                    <summary class="sheet-section-title">
                         <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
                         <span class="accordion-title-text" data-section-title="parcels"
                             data-i18n-key="sidebar.parcels.title">Parcels</span>
-                    </h3>
+                    </summary>
                     <div class="sheet-section-body">
                         <div class="control-group">
                             <div class="checkbox-group">
@@ -615,14 +615,14 @@
 
 <button id="cadastre-view-toggle" class="btn" data-map-modes="2d" title="Cadastre view: original parcels only" data-i18n-key="claims.cadastreViewToggle" data-i18n-attr="title"><i class="fas fa-table-cells" aria-hidden="true"></i><span data-i18n-key="mapShell.reorg.originalCadastre">Original cadastre</span></button>
 </div>
-                </div>
+                </details>
 
                 <!-- OSM blocks remain available in every city, including those without parcels. -->
-                <div data-map-modes="2d" class="accordion-section" data-section="urban-blocks">
-                    <h3 class="sheet-section-title">
+                <details data-map-modes="2d" class="accordion-section" data-section="urban-blocks" open>
+                    <summary class="sheet-section-title">
                         <i class="fas fa-shapes" aria-hidden="true"></i>
                         <span data-i18n-key="urbanBlocks.title">Urban blocks · OSM</span>
-                    </h3>
+                    </summary>
                     <div class="sheet-section-body">
                         <div class="checkbox-group">
                             <label><input type="checkbox" id="showUrbanBlocks">
@@ -632,14 +632,14 @@
                         <button type="button" id="urban-blocks-refresh" class="btn" disabled>Refresh this area</button>
                         <button type="button" id="urban-blocks-browse" class="btn" data-i18n-key="urbanBlocks.browse" disabled>Browse blocks</button>
                     </div>
-                </div>
+                </details>
 
                 <!-- The Schelling plan: meridians and parallels, drawn over any city (js/schelling/) -->
-                <div data-map-modes="2d" class="accordion-section" data-section="schelling-plan">
-                    <h3 class="sheet-section-title">
+                <details data-map-modes="2d" class="accordion-section" data-section="schelling-plan" open>
+                    <summary class="sheet-section-title">
                         <i class="fas fa-border-all" aria-hidden="true"></i>
                         <span data-i18n-key="schellingPlan.title">Schelling plan</span>
-                    </h3>
+                    </summary>
                     <div class="sheet-section-body">
                         <div class="checkbox-group">
                             <label><input type="checkbox" id="showSchellingPlan">
@@ -647,15 +647,15 @@
                         </div>
                         <p class="sheet-note" data-i18n-key="schellingPlan.layerNote">Its settings and Propose open in their own panel on the map.</p>
                     </div>
-                </div>
+                </details>
 
                 <!-- Parcel blocks: the layer toggles (block actions are in the Tools sheet) -->
-                <div data-map-modes="2d" class="accordion-section" data-section="blocks">
-                    <h3 class="sheet-section-title">
+                <details data-map-modes="2d" class="accordion-section" data-section="blocks" open>
+                    <summary class="sheet-section-title">
                         <i class="fas fa-th-large" aria-hidden="true"></i>
                         <span class="accordion-title-text" data-section-title="blocks"
                             data-i18n-key="sidebar.blocks.title">Parcel Blocks</span>
-                    </h3>
+                    </summary>
                     <div class="sheet-section-body">
                         <div class="control-group">
                             <div class="checkbox-group block-toggles">
@@ -668,20 +668,10 @@
                                     <input type="checkbox" id="showBlockNames" checked onchange="toggleBlockNameLabels()">
                                     <span data-i18n-key="sidebar.blocks.showNames">Block names</span>
                                 </label>
-                                <label>
-                                    <input type="checkbox" id="showParksCheckbox" checked
-                                        onchange="toggleParksVisibility()">
-                                    <span data-i18n-key="sidebar.blocks.showParks">Parks</span>
-                                </label>
-                                <label>
-                                    <input type="checkbox" id="showSquaresCheckbox" checked
-                                        onchange="toggleSquaresVisibility()">
-                                    <span data-i18n-key="sidebar.blocks.showSquares">Squares</span>
-                                </label>
                             </div>
                         </div>
 
-<details class="layer-actions"><summary data-i18n-key="mapShell.reorg.blockData">Block data and analysis</summary>
+
                         <div class="control-group">
                             <div class="btn-group">
                                 <button class="btn btn-primary btn-block" onclick="countBlocks()"
@@ -713,17 +703,38 @@
 
                         <div id="parcels-counted" class="sheet-note" data-i18n-key="sidebar.blocks.countedDefault">Parcels
                             counted: 0</div>
-                    </details>
 </div>
-                </div>
+                </details>
+
+                <!-- Parks and squares proposed on the map -->
+                <details data-map-modes="2d" class="accordion-section" data-section="parks-squares" open>
+                    <summary class="sheet-section-title">
+                        <i class="fas fa-tree" aria-hidden="true"></i>
+                        <span data-i18n-key="mapShell.reorg.parksSquares">Parks and squares</span>
+                    </summary>
+                    <div class="sheet-section-body">
+                        <div class="checkbox-group">
+                                <label>
+                                    <input type="checkbox" id="showParksCheckbox" checked
+                                        onchange="toggleParksVisibility()">
+                                    <span data-i18n-key="sidebar.blocks.showParks">Parks</span>
+                                </label>
+                                <label>
+                                    <input type="checkbox" id="showSquaresCheckbox" checked
+                                        onchange="toggleSquaresVisibility()">
+                                    <span data-i18n-key="sidebar.blocks.showSquares">Squares</span>
+                                </label>
+                        </div>
+                    </div>
+                </details>
 
                 <!-- Buildings -->
-                <div data-map-modes="2d" class="accordion-section" data-section="buildings">
-                    <h3 class="sheet-section-title">
+                <details data-map-modes="2d" class="accordion-section" data-section="buildings" open>
+                    <summary class="sheet-section-title">
                         <i class="fas fa-building" aria-hidden="true"></i>
                         <span class="accordion-title-text" data-section-title="buildings"
                             data-i18n-key="sidebar.buildings.title">Buildings</span>
-                    </h3>
+                    </summary>
                     <div class="sheet-section-body">
                         <!-- Three views of the same city, and they disagree. GDI is the working set —
                              the objects the 3D model, the carve and every demolition record use. DGU is
@@ -757,24 +768,22 @@
                                 <span data-i18n-key="buildingSources.title">Choose a building source</span>
                             </button></div>
                     </div>
-                </div>
+                </details>
 
                 <!-- Roads: visibility, official plans and source operations -->
-                <div data-map-modes="2d" class="accordion-section" data-section="roads">
-                    <h3 class="sheet-section-title">
+                <details data-map-modes="2d" class="accordion-section" data-section="roads" open>
+                    <summary class="sheet-section-title">
                         <i class="fas fa-road" aria-hidden="true"></i>
                         <span class="accordion-title-text" data-section-title="roads"
                             data-i18n-key="sidebar.roads.title">Roads</span>
-                    </h3>
+                    </summary>
                     <div class="sheet-section-body">
-                        <div class="control-group">
-                            <div class="checkbox-group">
+                        <div class="checkbox-group">
                                 <label data-i18n-key="sidebar.roads.govPlanTooltip" data-i18n-attr="title">
                                     <input type="checkbox" id="showGovernmentRoadPlan">
-                                    <span data-i18n-key="sidebar.roads.govPlanToggle">Government road plan</span>
+                                    <span id="governmentRoadPlanLabel" data-i18n-key="sidebar.roads.govPlanToggle">Government road plan</span>
                                 </label>
                             </div>
-                        </div>
                         <div class="checkbox-group">
                             <label data-i18n-key="sidebar.roads.osmLinesTooltip" data-i18n-attr="title">
                                 <input type="checkbox" id="showOSMRoadLines" onchange="toggleOSMRoadLines()">
@@ -799,13 +808,7 @@
                                 <span data-i18n-key="sidebar.roads.centerlinesToggle">Existing road centrelines</span>
                             </label>
                         </div>
-                    <div class="checkbox-group">
-                                <label>
-                                    <input type="checkbox" id="amCityPlanToggle">
-                                    <span id="amCityPlanLabel" data-i18n-key="sidebar.roads.govPlanToggle">City road plan</span>
-                                </label>
-                            </div>
-<details class="layer-actions"><summary data-i18n-key="mapShell.reorg.roadData">Road data and analysis</summary>
+
                         <div class="control-group">
                             <div class="control-group-title" data-i18n-key="sidebar.roads.existingTitle">Existing roads
                             </div>
@@ -929,9 +932,8 @@
                                 <input type="number" id="legend-min-5" aria-label="Lower width bound (m)" data-i18n-key="sidebar.roads.legendMinLabel" data-i18n-attr="aria-label" value="12" style="width:40px;">+ m
                             </div>
                         </div>
-                    </details>
 </div>
-                </div>
+                </details>
                 <!-- Base map: the last row of the same scrolling body, not a pane of its own -->
                 <div class="map-sheet-base-map">
                     <label class="sheet-field">

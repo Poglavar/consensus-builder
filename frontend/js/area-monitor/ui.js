@@ -665,7 +665,7 @@
     }
 
     function setAmPlanToggleLoading(loading) {
-        const lbl = document.getElementById('amCityPlanLabel');
+        const lbl = document.getElementById('governmentRoadPlanLabel');
         if (!lbl) return;
         if (loading) {
             lbl._origText = lbl._origText || lbl.textContent;
@@ -707,19 +707,14 @@
 
     // Wire all area monitor controls once the DOM is ready.
     function wireAreaMonitorControls() {
-        const planToggle  = document.getElementById('amCityPlanToggle');
         const roadsToggle = document.getElementById('showGovernmentRoadPlan');
         const drawFreeBtn = document.getElementById('areaMonitorDrawButton');
         const fromPlanBtn = document.getElementById('areaMonitorFromPlanButton');
 
-        // City road plan toggle
-        if (planToggle) {
-            planToggle.addEventListener('change', () => {
-                if (roadsToggle && roadsToggle.checked !== planToggle.checked) {
-                    roadsToggle.checked = planToggle.checked;
-                    roadsToggle.dispatchEvent(new Event('change'));
-                }
-                if (planToggle.checked) {
+        // The Roads section's government road plan is the plan "Draw from the plan" traces.
+        if (roadsToggle) {
+            roadsToggle.addEventListener('change', () => {
+                if (roadsToggle.checked) {
                     setAmPlanToggleLoading(true);
                 } else {
                     _planDataLoaded = false;
@@ -730,16 +725,8 @@
             });
         }
 
-        // Keep AM toggle in sync when Roads section checkbox changes externally
-        if (roadsToggle && planToggle) {
-            roadsToggle.addEventListener('change', () => {
-                if (planToggle.checked !== roadsToggle.checked) planToggle.checked = roadsToggle.checked;
-            });
-        }
-
         // Initialise if plan is already on at page load
-        if (roadsToggle && roadsToggle.checked && planToggle) {
-            planToggle.checked = true;
+        if (roadsToggle && roadsToggle.checked) {
             const l = global.governmentRoadPlanLayer;
             if (l && typeof l.getLayers === 'function' && l.getLayers().length > 0) {
                 _planDataLoaded = true;
@@ -761,7 +748,6 @@
             _planDataLoaded = false;
             setAmPlanToggleLoading(false);
             setDrawFromPlanEnabled(false);
-            if (planToggle) planToggle.checked = false;
             if (roadsToggle) roadsToggle.checked = false;
         });
 

@@ -246,8 +246,26 @@
         if (!section) return null;
         const sheet = section.classList.contains('map-sheet') ? section : section.closest('.map-sheet');
         if (sheet) openSheet(sheet, { focus: false });
+        if (section.tagName === 'DETAILS') section.open = true;
         try { section.scrollIntoView({ block: 'nearest' }); } catch (_) { }
         return section;
+    }
+
+    // The Layers sheet's thematic sections fold; each viewer's folded ones stay folded next time.
+    const FOLDED_SECTIONS_KEY = 'cb_layers_folded_sections';
+    function rememberFoldedSections() {
+        const storage = win.PersistentStorage;
+        const sections = Array.from(doc.querySelectorAll('#layers-sheet details.accordion-section[data-section]'));
+        let folded = [];
+        try { folded = JSON.parse(storage?.getItem(FOLDED_SECTIONS_KEY) || '[]'); } catch (_) { folded = []; }
+        if (!Array.isArray(folded)) folded = [];
+        sections.forEach(section => {
+            if (folded.includes(section.dataset.section)) section.open = false;
+            section.addEventListener('toggle', () => {
+                const now = sections.filter(candidate => !candidate.open).map(candidate => candidate.dataset.section);
+                try { storage?.setItem(FOLDED_SECTIONS_KEY, JSON.stringify(now)); } catch (_) { }
+            });
+        });
     }
 
     // A long-running action locks the section(s) it belongs to (not the whole UI, as the sidebar
@@ -533,6 +551,7 @@
         win.addEventListener('areaMonitorDrawComplete', () => setAreaDrawing(false));
         doc.getElementById('area-monitor-drawing-cancel')?.addEventListener('click', () => activeAreaDrawingTool()?.deactivate());
         doc.getElementById('area-monitor-drawing-undo')?.addEventListener('click', () => activeAreaDrawingTool()?.undoLastVertex());
+        rememberFoldedSections();
         syncModeAvailability();
         watchProposalsBadge();
     }

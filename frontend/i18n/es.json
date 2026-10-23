@@ -6200,7 +6200,6 @@
             "highlightPrivate": "Resaltar parcelas de propiedad privada",
             "locateParcel": "Localizar una parcela por su id",
             "blockFromSelected": "Detectar la manzana desde la parcela seleccionada",
-            "areaMonitorCityPlan": "Monitor de área: mostrar el plan vial de la ciudad",
             "areaMonitorDraw": "Dibujar un área monitorizada",
             "areaMonitorFromPlan": "Dibujar un área monitorizada desde el plan",
             "proposalsList": "Abrir la lista de propuestas",
@@ -6231,8 +6230,7 @@
             "commandDark": "Tema oscuro"
         },
         "reorg": {
-            "blockData": "Datos y análisis de manzanas",
-            "roadData": "Datos y análisis de vías",
+            "parksSquares": "Parques y plazas",
             "watchedAreas": "Áreas vigiladas",
             "originalCadastre": "Catastro original",
             "aerialLayer": "Ciudad existente (imágenes de Google)",

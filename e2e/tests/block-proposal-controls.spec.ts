@@ -24,7 +24,7 @@ async function openBlock(page: Page) {
   // for detecting the current block instead of reopening a stale block from before the mutation.
   await openParcel(page, 'info', ids[1]);
   await page.locator('#layers-button').click();
-  const tools = page.locator('#layers-sheet details.layer-actions:has(> summary[data-i18n-key="mapShell.reorg.blockData"])');
+  const tools = page.locator('#layers-sheet details.accordion-section[data-section="blocks"]');
   if (!(await tools.evaluate((element: HTMLDetailsElement) => element.open))) await tools.locator('> summary').click();
   await tools.locator('[onclick="animateFloodfillFromSelected()"]').click();
   await expect.poll(() => page.evaluate(() => [...(window as any).multiParcelSelection.selectedParcels])).toContain(ids[1]);

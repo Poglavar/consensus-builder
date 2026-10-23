@@ -6208,7 +6208,6 @@
             "highlightPrivate": "Istakni parcele u privatnom vlasništvu",
             "locateParcel": "Pronađi parcelu po broju",
             "blockFromSelected": "Prepoznaj blok od izabrane parcele",
-            "areaMonitorCityPlan": "Nadzor područja: prikaži gradski plan puteva",
             "areaMonitorDraw": "Nacrtaj nadgledano područje",
             "areaMonitorFromPlan": "Nacrtaj nadgledano područje iz plana",
             "proposalsList": "Otvori spisak predloga",
@@ -6239,8 +6238,7 @@
             "commandDark": "Tamna tema"
         },
         "reorg": {
-            "blockData": "Подаци и анализа блокова",
-            "roadData": "Подаци и анализа путева",
+            "parksSquares": "Parkovi i trgovi",
             "watchedAreas": "Надгледана подручја",
             "originalCadastre": "Изворни катастар",
             "aerialLayer": "Постојећи град (Google снимци)",

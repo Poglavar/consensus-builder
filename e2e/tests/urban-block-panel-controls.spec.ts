@@ -295,7 +295,7 @@ test('OSM block browse, details, fit, copy, collapse, refresh, back, and close b
 const PARCEL_IDS = [
   'HR-335754-1234', 'HR-335754-1235', 'HR-335754-1236', 'HR-335754-1237', 'HR-335754-1238',
 ];
-const BLOCK_DATA = 'mapShell.reorg.blockData';
+const BLOCK_SECTION = 'blocks';
 
 test('parcel block inspector tabs switch to their supported information and tools', async ({ mockApi: page }) => {
   await installLayerDatasets(page);
@@ -311,7 +311,7 @@ test('parcel block inspector tabs switch to their supported information and tool
 
   const sheet = page.locator('#layers-sheet');
   if (!(await sheet.isVisible())) await page.locator('#layers-button').click();
-  const blockTools = sheet.locator(`details.layer-actions:has(> summary[data-i18n-key="${BLOCK_DATA}"])`);
+  const blockTools = sheet.locator(`details.accordion-section[data-section="${BLOCK_SECTION}"]`);
   if (!(await blockTools.evaluate((el: HTMLDetailsElement) => el.open))) await blockTools.locator('> summary').click();
   await blockTools.locator('button[onclick="countBlocks()"]').click();
   await expect.poll(() => page.evaluate(() => (window as any).statusLogEntries().some((entry: any) => entry.message.includes('Finished count.')))).toBe(true);

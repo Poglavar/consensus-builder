@@ -51,7 +51,7 @@
         'road-legend-title', 'road-legend',
         'legend-min-0', 'legend-max-0', 'legend-min-1', 'legend-max-1', 'legend-min-2', 'legend-max-2',
         'legend-min-3', 'legend-max-3', 'legend-min-4', 'legend-max-4', 'legend-min-5',
-        'amCityPlanToggle', 'amCityPlanLabel', 'areaMonitorDrawButton', 'areaMonitorFromPlanButton',
+        'governmentRoadPlanLabel', 'areaMonitorDrawButton', 'areaMonitorFromPlanButton',
         // Activity sheet + toast
         'status', 'status-log-expanded', 'floating-status', 'floating-status-text'
     ]);
@@ -375,8 +375,6 @@
             labelKey: 'sidebar.roads.applyGovPlan', fallbackLabel: 'Apply Government Road Plan', icon: 'fas fa-map-location-dot' }),
         control('analyzeAllRoadsButton', { id: 'roads.analyzeOsm', group: 'roads', surfaces: ['layers'],
             labelKey: 'sidebar.roads.analyzeOsm', fallbackLabel: 'Analyze Roads OSM', icon: 'fas fa-chart-line' }),
-        control('amCityPlanToggle', { id: 'areaMonitor.cityPlan', group: 'areaMonitor', kind: 'toggle', surfaces: ['layers'],
-            labelKey: 'mapShell.commands.areaMonitorCityPlan', fallbackLabel: 'Area monitor: show the city road plan', icon: 'fas fa-map' }),
         control('areaMonitorDrawButton', { id: 'areaMonitor.draw', group: 'areaMonitor', surfaces: ['activity'],
             labelKey: 'mapShell.commands.areaMonitorDraw', fallbackLabel: 'Draw a monitored area', icon: 'fas fa-draw-polygon' }),
         control('areaMonitorFromPlanButton', { id: 'areaMonitor.fromPlan', group: 'areaMonitor', surfaces: ['activity'],
