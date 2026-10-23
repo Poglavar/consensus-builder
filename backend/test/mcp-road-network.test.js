@@ -3,8 +3,9 @@ import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 import { appTurf as turf, intentDesign, corridorRuntime } from '../agents/mcp-geometry.js';
 import { authorPlanRoads } from '../agents/mcp-road-network.js';
-import { cidOfObject, designObject } from '../agents/agreement-objects.js';
+import { cidOfObject, designObject, agreementObject, communityRule, noMoney } from '../agents/agreement-objects.js';
 import { createUrbanGameTheoryTools } from '../agents/ugt-agent-tools.js';
+import { deriveAgreementGround } from '../agents/mcp-ground.js';
 
 const require = createRequire(import.meta.url);
 const { buildCorridorJunctionSet, corridorSegmentEntries } = require('../../frontend/js/corridor-profile.js');
@@ -109,13 +110,14 @@ describe('MCP agreement wiring', () => {
         const input = digbeth();
         const sites = [];
         const geometry = turf.bboxPolygon([-1.882, 52.478, -1.878, 52.481]).geometry;
+        const parcels = [{ type: 'Feature', id: 'A', properties: { parcelId: 'A' }, geometry }];
         const tools = createUrbanGameTheoryTools({ mode: 'hosted', env: {}, fetchImpl: async (url, options) => {
             const path = new URL(url).pathname;
             if (path === '/designs/binding') {
                 sites.push(JSON.parse(options.body).site);
                 return Response.json({ parcelSourceId: 'test', binding: { coverage: 'complete', parcels: [{ parcelId: 'A' }], unsurveyedM2: 0, unknownM2: 0 } });
             }
-            if (path === '/parcel-sources/test') return Response.json({ complete: true, features: [{ type: 'Feature', id: 'A', properties: { parcelId: 'A' }, geometry }] });
+            if (path === '/parcel-sources/test') return Response.json({ complete: true, features: parcels });
             throw new Error(`Unexpected read or publication: ${path}`);
         } });
         const plan = await tools.draftAgreement({ designs: input, currency: 'GBP', createdAt: time });
@@ -141,5 +143,20 @@ describe('MCP agreement wiring', () => {
         expect(removed.changes.some(c => c.type === 'road-junctions' && c.beforeCid === plan.designs[0].cid)).toBe(true);
         expect(view(removed.designs[0]).junctions).toBeUndefined();
         expect(removed.agreement.designs[0].cid).toBe(removed.designs[0].cid);
+
+        // Inspecting an already-published unconnected plan must replay its original land exactly,
+        // not quietly invoke the new authoring path and invalidate the committed output hashes.
+        const originalLand = await deriveAgreementGround({ designs: input.map(row => ({ ...row, parcelIds: ['A'] })), parcels });
+        const original = agreementObject({ city: 'birmingham', createdAt: time,
+            designs: input.map(row => ({ cid: row.cid, goal: row.content.goal, title: row.content.title })),
+            parcels: originalLand.inputs.parcels.map(p => ({ ...p, parcelSourceId: 'test' })),
+            openGroundM2: originalLand.inputs.openGroundM2, outputs: originalLand.outputs,
+            money: noMoney('GBP'), rule: communityRule() });
+        sites.length = 0;
+        const oldRead = await tools.inspectPlan({ plan: { agreement: original.content, designs: input }, filter: { kind: 'piece' } });
+        expect(oldRead.cid).toBe(original.cid);
+        expect(oldRead.items.length).toBeGreaterThan(0);
+        expect(sites).toEqual(input.map(row => row.content.site));
+        expect(junctions(input)).toHaveLength(0);
     });
 });
