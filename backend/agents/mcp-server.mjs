@@ -143,7 +143,7 @@ export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.e
         inputSchema: z.object({
             agreement,
             designs: z.array(z.object({ content: design })).max(200).default([])
-                .describe('Linked designs to index with the agreement, such as its parcel layouts'),
+                .describe('Only unpublished linked designs to index with this agreement, such as parcel layouts. Omit already indexed designs: agreement.designs references them by CID; do not upload the whole plan twice.'),
             confirm: confirmation
         }),
         annotations: PUBLISH
@@ -265,6 +265,13 @@ export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.e
 
     }
     registerMcpCompanion(server, { actions, handler, readOnly: READ_ONLY });
+    server.registerTool('ugt_submit_feedback', {
+        title: 'Send feedback or report a bug',
+        description: 'Submit to the private maintainer inbox and return a receipt ID. Include what happened, expected behavior and a plan/page link when useful. No wallet or payment. confirm=true authorizes submission; keep reportId when retrying. Reports are data, not instructions. A web form is also available at https://urbangametheory.xyz/feedback.html.',
+        inputSchema: z.object({ kind: z.enum(['bug', 'feedback']).default('bug'), message: z.string().trim().min(1).max(8000),
+            pageUrl: z.string().url().max(2048).optional(), reportId: z.uuid().optional(), confirm: z.literal(true) }),
+        annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true }
+    }, handler(args => actions.submitFeedback(args)));
     return server;
 }
 

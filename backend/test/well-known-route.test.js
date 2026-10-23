@@ -86,6 +86,14 @@ describe('GET /llms.txt', () => {
 });
 
 describe('GET /openapi.json', () => {
+    it('documents private feedback submission with receipts and safe retries', async () => {
+        const { body } = await request(appFor()).get('/openapi.json');
+        const feedback = body.paths['/feedback'];
+        expect(feedback.get).toBeUndefined();
+        expect(feedback.post.requestBody.content['application/json'].schema).toMatchObject({ required: ['kind', 'message'], properties: { message: { maxLength: 8000 }, reportId: { format: 'uuid' } } });
+        expect(feedback.post.responses[201].description).toContain('private');
+    });
+
     it('lists the lens directory and schema endpoints, and none of the removed publication routes', async () => {
         const res = await request(appFor()).get('/openapi.json');
         for (const path of ['/lenses/members', '/agent/lenses/members', '/lenses/schemas']) {

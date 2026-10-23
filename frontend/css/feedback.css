@@ -1,0 +1,13 @@
+/* The standalone report form uses the app's page chrome and shared form/button primitives. */
+.feedback-page {
+    max-width: 680px;
+    margin: var(--cb-space-6) auto;
+    padding: 0 var(--cb-space-4) var(--cb-space-6);
+}
+.feedback-form { display: grid; gap: var(--cb-space-2); }
+.feedback-form label { margin-top: var(--cb-space-3); font-weight: var(--cb-weight-semibold); }
+.feedback-form textarea { resize: vertical; min-height: 180px; }
+.feedback-form input, .feedback-form select, .feedback-form textarea { width: 100%; box-sizing: border-box; }
+.feedback-form button { justify-self: start; margin-top: var(--cb-space-3); }
+.feedback-hint { color: var(--cb-text-muted); font-size: var(--cb-text-sm); margin: 0; }
+.feedback-result { overflow-wrap: anywhere; }

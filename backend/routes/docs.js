@@ -390,6 +390,9 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                     ownerDecision: 'an owner\'s yes is not an attestation: it is a decision signed over the agreement CID and relayed at /agreements/{cid}/decisions'
                 },
                 mcp: {
+                    feedback: { tool: 'ugt_submit_feedback', endpoint: `${base}/feedback`, form: 'https://urbangametheory.xyz/feedback.html', visibility: 'private maintainer inbox' },
+                    publicationFlow: 'Publish designs individually. An agreement references their CIDs; only send unpublished linked designs (including parcel layouts) in the separate designs argument.',
+                    maxRequestBytes: 15 * 1024 * 1024,
                     transport: 'streamable-http',
                     url: 'https://urbangametheory.xyz/mcp',
                     hostedTools: MCP_HOSTED_TOOLS,

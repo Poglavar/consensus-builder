@@ -7,6 +7,10 @@ import { toNodeHandler, hostHeaderValidation, originValidation } from '@modelcon
 import { createUrbanGameTheoryMcpServer } from './mcp-server.mjs';
 import { createPreviewLinks } from './mcp-preview-links.js';
 
+// Match the API's JSON request budget. The former 32 KiB ceiling rejected ordinary agreements
+// carrying an unpublished layout, long before the application's per-object publication limit.
+export const MCP_MAX_REQUEST_BYTES = 15 * 1024 * 1024;
+
 export function assertHostedEnvironment(env) {
     const names = Object.keys(env).filter(name => env[name] && /(?:KEYPAIR|SECRET|TOKEN|PASSWORD|API_KEY|DATABASE_URL)/i.test(name));
     if (names.length) throw new Error(`Hosted MCP environment must contain no credentials: ${names.join(', ')}`);
@@ -35,8 +39,8 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
         return server;
     };
     function resetWindow() { if (now() - start >= 60_000) { start = now(); count = 0; publishes = 0; } }
-    const handler = createMcpHandler(guardedFactory, { legacy: 'stateless', maxRequestBodySize: 32_768, maxSubscriptions: 0 });
-    const nodeHandler = toNodeHandler(handler, { maxRequestBodySize: 32_768 });
+    const handler = createMcpHandler(guardedFactory, { legacy: 'stateless', maxRequestBodySize: MCP_MAX_REQUEST_BYTES, maxSubscriptions: 0 });
+    const nodeHandler = toNodeHandler(handler, { maxRequestBodySize: MCP_MAX_REQUEST_BYTES });
     const http = createServer(async (req, res) => {
         res.setHeader('Cache-Control', 'no-store');
         res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -62,6 +66,11 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
         if (!['POST', 'GET', 'DELETE'].includes(req.method)) return json(405, { code: 'method-not-allowed' }, { Allow: 'POST, GET, DELETE' });
         resetWindow();
         if (active >= maxConcurrent || count >= maxPerMinute) return json(429, { code: 'rate-limited', message: 'MCP request budget exhausted.', next: { action: 'Retry after 60 seconds.' } }, { 'Retry-After': '60' });
+        if (req.headers['content-length'] && Number(req.headers['content-length']) > MCP_MAX_REQUEST_BYTES) return json(413, {
+            code: 'mcp-request-too-large', maxRequestBytes: MCP_MAX_REQUEST_BYTES,
+            message: 'This MCP request exceeds the API JSON request limit.',
+            next: { action: 'Publish designs individually, then reference their CIDs in agreement.designs. Only carry unpublished linked designs in the separate designs argument.' }
+        });
         count++; active++;
         try { await nodeHandler(req, res); }
         catch (error) {

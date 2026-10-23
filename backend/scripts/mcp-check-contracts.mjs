@@ -17,7 +17,7 @@ export async function checkContracts({ origin, fixtures = {}, onCheck = () => {}
         if (JSON.stringify(tools.map(t => t.name)) !== JSON.stringify(MCP_HOSTED_TOOLS)) throw new Error('Hosted tool catalogue differs from registration');
         if (tools.some(t => t.annotations?.destructiveHint)) throw new Error('Hosted server advertises a signing or paid tool');
         for (const tool of tools) {
-            const publish = ['ugt_publish_design', 'ugt_propose_agreement'].includes(tool.name);
+            const publish = ['ugt_publish_design', 'ugt_propose_agreement', 'ugt_submit_feedback'].includes(tool.name);
             const defaults = { ugt_capabilities: {}, ugt_explain: { term: 'Parcel binding' } };
             const args = fixtures[tool.name] || defaults[tool.name];
             if (!args && !publish) { record({ tool: tool.name, status: 'missing-fixture' }); continue; }

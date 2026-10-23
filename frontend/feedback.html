@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Feedback · Consensus Builder</title>
+    <link rel="icon" href="images/consensus-builder-logo-2.png">
+    <link rel="stylesheet" href="css/tokens.css">
+    <link rel="stylesheet" href="css/primitives.css">
+    <link rel="stylesheet" href="css/page-chrome.css">
+    <link rel="stylesheet" href="css/feedback.css">
+    <script src="js/environment.js" defer></script>
+    <script src="js/persistent-storage.js" defer></script>
+    <script src="js/data-source.js" defer></script>
+    <script src="js/i18n.js" defer></script>
+    <script src="js/feedback-translations.js" defer></script>
+    <script src="js/feedback.js" defer></script>
+</head>
+<body class="cb-page">
+    <header class="cb-page-header">
+        <span class="cb-page-header__brand"><img class="cb-page-header__logo" src="images/consensus-builder-logo-2.png" width="28" height="28" alt="">Consensus Builder</span>
+        <div class="cb-page-header__title"><h1 data-i18n-key="feedback.title">Feedback &amp; bug reports</h1></div>
+        <a class="cb-link cb-back-link" href="/" data-i18n-key="feedback.back">Back to the map</a>
+        <select id="feedback-language" class="cb-page-header__lang" aria-label="Language" data-i18n-key="language.switcher.label" data-i18n-attr="aria-label">
+            <option value="en-GB">English</option><option value="es-ES">Español</option><option value="hr-HR">Hrvatski</option><option value="sr-Latn-RS">Srpski</option>
+        </select>
+    </header>
+    <main class="feedback-page">
+        <p data-i18n-key="feedback.intro">Tell us what happened, what you expected, or what you would like improved.</p>
+        <form id="feedback-form" class="feedback-form" method="post">
+            <label for="feedback-kind" data-i18n-key="feedback.kind">Report type</label>
+            <select id="feedback-kind" name="kind"><option value="bug" data-i18n-key="feedback.bug">Bug report</option><option value="feedback" data-i18n-key="feedback.suggestion">Feedback or suggestion</option></select>
+            <label for="feedback-message" data-i18n-key="feedback.message">Your report</label>
+            <textarea id="feedback-message" name="message" rows="9" maxlength="8000" required aria-describedby="feedback-hint"></textarea>
+            <p id="feedback-hint" class="feedback-hint" data-i18n-key="feedback.hint">For a bug, include the steps to reproduce it and any error message.</p>
+            <label for="feedback-page-url" data-i18n-key="feedback.pageUrl">Page or plan link (optional)</label>
+            <input id="feedback-page-url" name="pageUrl" type="url" maxlength="2048">
+            <p class="feedback-hint" data-i18n-key="feedback.privacy">Reports go to the private maintainer inbox. Include only information you want to share with us.</p>
+            <button id="feedback-submit" type="submit" class="btn btn-primary" data-i18n-key="feedback.send">Send report</button>
+        </form>
+        <p id="feedback-result" class="feedback-result" role="status" aria-live="polite"></p>
+    </main>
+</body>
+</html>

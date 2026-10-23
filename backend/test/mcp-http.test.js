@@ -3,7 +3,7 @@ import { request } from 'node:http';
 import { once } from 'node:events';
 import { Client, StreamableHTTPClientTransport } from '@modelcontextprotocol/client';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createMcpHttpService } from '../agents/mcp-http.mjs';
+import { createMcpHttpService, MCP_MAX_REQUEST_BYTES } from '../agents/mcp-http.mjs';
 import { createUrbanGameTheoryMcpServer } from '../agents/mcp-server.mjs';
 import { hostedEnvironment } from '../agents/mcp-launch.mjs';
 import { MCP_HOSTED_TOOLS } from '../agents/mcp-catalog.js';
@@ -46,7 +46,7 @@ describe('hosted MCP HTTP', () => {
         expect(tools.filter(t => t.annotations?.destructiveHint)).toEqual([]);
         expect(tools.some(t => /mint|fund|buy_|bet_on|pledge|donate|request_ownership/.test(t.name))).toBe(false);
         const result = await client.callTool({ name: 'ugt_explain', arguments: { term: 'Parcel binding' } });
-        expect(result.structuredContent.entries.join('')).toContain('ParcelBinding');
+        expect(result.structuredContent.entries.join('')).toContain('### Parcel binding');
         const resources = await client.listResources();
         expect(resources.resources.map(r => r.uri)).toContain('ugt://vocabulary');
         expect((await client.readResource({ uri: 'ugt://schemas/design' })).contents[0].text).toContain('design/v1');
@@ -62,11 +62,22 @@ describe('hosted MCP HTTP', () => {
         const wrongHost = await new Promise(resolve => { request(`${base}/mcp`, { headers: { host: 'evil.example' } }, res => { res.resume(); resolve(res.statusCode); }).end(); });
         expect(wrongHost).toBe(403);
         expect((await fetch(`${base}/mcp`, { headers: { origin: 'https://evil.example' } })).status).toBe(403);
-        const large = await fetch(`${base}/mcp`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ padding: 'a'.repeat(33_000) }) });
+        const large = await fetch(`${base}/mcp`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ padding: 'a'.repeat(MCP_MAX_REQUEST_BYTES + 1) }) });
         expect(large.status).toBe(413);
+        expect(await large.json()).toMatchObject({ code: 'mcp-request-too-large', maxRequestBytes: MCP_MAX_REQUEST_BYTES, next: expect.any(Object) });
         const health = await fetch(`${base}/healthz`);
         expect(health.headers.get('cache-control')).toBe('no-store');
         expect(await health.json()).toMatchObject({ upstreamChecked: false });
+    });
+    it('accepts an ordinary full-plan request above the former 32 KiB ceiling', async () => {
+        const proposeAgreement = vi.fn(async () => ({ cid: 'tested-without-publication' }));
+        const base = await host({ factory: () => createUrbanGameTheoryMcpServer({ mode: 'hosted', env: {}, tools: { proposeAgreement } }) });
+        const client = new Client({ name: 'large-plan', version: '1' }); clients.push(client);
+        await client.connect(new StreamableHTTPClientTransport(new URL(`${base}/mcp`)));
+        const args = { agreement: { schema: 'agreement/v1', outputs: Array.from({ length: 30 }, (_, i) => ({ hash: String(i), geometry: 'coordinates'.repeat(200) })) }, confirm: true };
+        expect(Buffer.byteLength(JSON.stringify(args))).toBeGreaterThan(32_768);
+        expect((await client.callTool({ name: 'ugt_propose_agreement', arguments: args })).isError).not.toBe(true);
+        expect(proposeAgreement).toHaveBeenCalledWith({ ...args, designs: [] });
     });
     it('bounds global traffic and resets the window', async () => {
         let now = 0; const base = await host({ maxPerMinute: 1, now: () => now });
@@ -106,7 +117,7 @@ describe('hosted MCP HTTP', () => {
         expect(report.ok).toBe(false);
         expect(report.checks.find(c => c.tool === 'ugt_capabilities').status).toBe('passed');
         expect(report.checks.some(c => c.status === 'missing-fixture')).toBe(true);
-        expect(report.checks.filter(c => c.status === 'write-refused-without-confirmation')).toHaveLength(2);
+        expect(report.checks.filter(c => c.status === 'write-refused-without-confirmation')).toHaveLength(3);
         expect(paths).not.toContain('/pins');
         expect(paths).not.toContain('/agreements');
     });

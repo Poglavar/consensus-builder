@@ -53,5 +53,6 @@ describe('MCP production routing', () => {
         const routes = [...nginx.matchAll(/location = \/mcp(?:\/server-card|\/)? \{([^}]+)\}/g)];
         expect(routes).toHaveLength(3);
         for (const route of routes) expect(route[1]).toContain(`proxy_pass http://127.0.0.1:${port};`);
+        for (const route of routes.filter(route => !route[0].includes('server-card'))) expect(route[1]).toContain('client_max_body_size 15m;');
     });
 });

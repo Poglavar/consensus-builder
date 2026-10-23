@@ -2,7 +2,7 @@
 
 # MCP: Urban Game Theory for agents
 
-**Status (2026-10-23): local functionality, public-source contract checks and the first paid pilot pass. Production transport is active and checked with a stock MCP client. The authorized remaining 20 paid cases are running under an additional US$3 cap; complete production tool-contract and live wallet acceptance remain pending.** Branch and worktree `colosseum-worlds-fair`.
+**Status (2026-10-23): the prior production transport release is active. The authorized remaining twenty paid cases finished at $2.077047: 15 passed, five failed, with the later free sealed-source checks recorded below. The local follow-up adds private feedback and fixes the transport request-size mismatch; it is not deployed yet. Complete production tool-contract and live wallet acceptance remain pending.** Branch and worktree `colosseum-worlds-fair`.
 
 ## Implementation checkpoint (2026-10-23)
 
@@ -564,3 +564,55 @@ run all passed. No full unit or browser suite was started. The five sealed live-
 the artifact/provider audits also completed. The private-reference implementation was committed
 locally as `26acd6b27`; this continuation did not push or deploy it. The vocabulary draft-reference
 hunk shares a file with another session's building-geometry edits and remains uncommitted.
+
+
+### Digbeth plan request size and private feedback (2026-10-23)
+
+The public Digbeth concept agreement
+`bafkreig2o7mfofimfnct7fe4xml4cg6p27mvzkrfpn2rnf47r4xqm52kre` links 17 designs and has
+30 outputs. Its JSON is 10,253 bytes; the MCP argument object without carried designs is
+10,282 bytes. Reconstructing an argument object that carries all seventeen indexed designs
+produces 65,013 bytes. The original client request is unavailable, so redundant carried designs
+are an explanation supported by this measurement, not a captured request trace. Both the Node
+adapter and nginx had a 32 KiB ceiling. They now match the API's 15 MiB JSON request budget;
+the canonical per-object limit remains 10 MiB. Oversized requests still refuse with HTTP 413 and
+CID-reference recovery guidance. Tool documentation now says to publish ordinary designs
+individually, reference their CIDs from the agreement, and only carry unpublished linked content
+such as a parcel layout. An agreement retains its own committed ground and terms; it is not a
+second upload of all design geometry.
+
+`ugt_submit_feedback` is a confirmed, unsigned, unpaid private write, separate from
+`ugt_support_status`. It uses the shared `POST /feedback` API and returns a receipt UUID with
+status `received`, not a promise of triage or repair. The hosted catalogue has 26 tools and local
+stdio has 45. The web form at `/feedback.html` is linked from Settings → Information → Contact,
+uses the existing i18n registration API for English, Spanish, Croatian and Serbian, and retains
+text on failure. Web retries retain their UUID; an uncertain MCP result returns retry arguments
+with the same UUID. Reusing a receipt for different content is refused. No public inbox or report
+read endpoint exists. Private draft fragments are stripped from attached URLs; no browser log,
+wallet or user identity is automatically attached.
+
+The table is defined once in `backend/routes/feedback-ddl.sql`; deployment applies it as
+`geo_user` before API reload. Maintainers use `backend/scripts/feedback-inbox.mjs` with their
+existing database environment. Local DDL was applied and ownership verified; only locally
+created test fixtures were deleted. No production table, user report, publication, wallet action
+or paid model call was created by this follow-up. The quoted roads-marked-changed problem is a
+separate open issue; this change does not claim to fix comparison freshness.
+
+| Verification | Scope | Outcome |
+| --- | --- | --- |
+| Headless unit tests, first run | Five named files: feedback, MCP feedback, HTTP, server and deployment config | 31 passed, two stale glossary wording assertions failed |
+| Headless unit tests, corrected assertions | Same five files | 33 passed |
+| Headless unit tests, lost-response recovery | MCP feedback file | Two passed |
+| Headless Playwright | Three cases in `feedback.spec.ts` | Three passed: submission, retry/locales and main-map entry point |
+| Headless unit tests, API discovery | One file | Twelve passed, including feedback schema and absence of a public GET |
+| Headless unit documentation launcher | Started from repository root in error | Stopped before test discovery; no test ran |
+| Headless Playwright navigation launcher | Wrong executable path | Exited before discovery; no test ran |
+| Headless Playwright, expanded entry-point check | One selected case | Passed: opened Settings, expanded Information and followed the link to the form |
+| Maintainer inbox CLI | Local list command after fixture cleanup | Passed; inbox empty |
+| Local database availability probe | Loopback geodata read | Sandbox attempt blocked with EPERM; allowed retry succeeded |
+| Local HTTP/database integration | Submission and identical retry | One stored row; test fixture removed |
+| Stock HTTP MCP/database integration | New tool and identical retry | Receipt verified, one stored row, 26-tool catalogue; fixture removed |
+| Manual headed background Chrome | Desktop and 390 px form, real local submission | Receipt displayed, no page error or horizontal overflow; test fixture removed and owned browser closed |
+
+No full unit or browser suite was started. API, frontend, isolated MCP and nginx publication are
+separate release steps and have not been performed by this follow-up.

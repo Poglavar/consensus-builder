@@ -239,8 +239,8 @@ node agents/lens-member-run.mjs --persona notary-01 --print
 
 ## MCP: one surface for any controller
 
-`npm run mcp` starts the local stdio server (44 tools). `npm run mcp:http` starts the hosted
-Streamable HTTP service on loopback port 3096 (25 tools), with `/healthz` and the experimental
+`npm run mcp` starts the local stdio server (45 tools). `npm run mcp:http` starts the hosted
+Streamable HTTP service on loopback port 3097 (26 tools), with `/healthz` and the experimental
 `/mcp/server-card` discovery document. Both use `ugt-agent-tools.js`; the hosted catalogue contains
 no signing or paying tool. Its launcher forwards only public configuration and the HTTP entry
 refuses credential-bearing environments. It never loads the backend `.env`.
@@ -250,6 +250,29 @@ permanent, unsigned** writes: `confirm: true` is required, with no `UGT_MCP_LIVE
 Publishing recomputes the CID and reads the index back, checking both CID and content. Public prose
 and canonical artifacts appear under `untrusted`; canonical objects are kept intact for reuse.
 Failures return `{ code, message, next }`.
+
+Publish ordinary designs individually, then reference their CIDs in `agreement.designs`. The
+separate `ugt_propose_agreement.designs` argument is only for unpublished linked content, including
+parcel layouts that must be indexed with their agreement. Do not resend already indexed designs.
+The MCP transport and its nginx proxy accept the API's 15 MiB JSON request budget; each canonical
+published object still has its own 10 MiB limit. A larger transport request returns HTTP 413 with
+recovery guidance rather than changing the design/agreement contract.
+
+`ugt_submit_feedback` sends a bug report or suggestion to the private maintainer inbox with
+`confirm: true`. It needs no wallet or payment and returns a receipt ID; reuse `reportId` on retry.
+The web form is `/feedback.html`, also linked from Settings → Information → Contact. The shared
+API is `POST /feedback` with `{kind: "bug"|"feedback", message, pageUrl?, reportId?, source?}`;
+headless API clients send the app Origin as for other writes. It stores bounded text, drops draft
+fragments from links, rate limits submissions and exposes no public report listing. A receipt
+means received, not triaged or fixed. Maintainers read it privately from the backend directory:
+
+```sh
+node --env-file=.env scripts/feedback-inbox.mjs --list --limit 20
+node --env-file=.env scripts/feedback-inbox.mjs --id <receipt-UUID>
+```
+
+Deployment applies `routes/feedback-ddl.sql` as `geo_user` before reloading the API. Serving the
+new form/tool requires frontend, API and MCP releases, plus the increased nginx request limit.
 
 `ugt_find_place`, `ugt_parcel_context`, design/agreement reads, markets and `ugt_explain` discover
 the place and its contract. The intent tools draft roads, buildings, spaces, parcel layouts and

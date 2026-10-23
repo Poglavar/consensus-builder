@@ -5,6 +5,7 @@
 // subject (bettor.js, pledger.js, donor.js, lifecycle-actions.js): the adapters the deterministic
 // runners use, never a second execution path.
 import fs from 'node:fs';
+import { randomUUID } from 'node:crypto';
 import { createRequire } from 'node:module';
 import { MCP_LOCAL_TOOLS, MCP_HOSTED_TOOLS } from './mcp-catalog.js';
 import { createMcpAgreementTools } from './mcp-ground.js';
@@ -372,6 +373,18 @@ export function createUrbanGameTheoryTools({
                     return paidFetch(url, init);
                 }
             });
+        },
+
+        // Store private feedback through the same API as the human form.
+        async submitFeedback({ kind = 'bug', message, pageUrl, reportId, confirm } = {}) {
+            if (confirm !== true) throw Object.assign(new Error('confirm must be true to send feedback.'), { code: 'confirmation-required' });
+            reportId ||= randomUUID();
+            try { return await companion.request('/feedback', {}, { kind, message, pageUrl, reportId, source: 'mcp' }); }
+            catch (error) {
+                error.next = { action: 'Retry this report with the same reportId to avoid a duplicate.', tool: 'ugt_submit_feedback',
+                    arguments: { kind, message, pageUrl, reportId, confirm: true } };
+                throw error;
+            }
         },
 
         // Pin and index one design/v1 object. The index derives its binding (the parcels its site takes)

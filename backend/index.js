@@ -50,6 +50,7 @@ import { setupAgentOracleFactsRoute } from './routes/agent-oracle-facts.js';
 import { setupLandEventsRoute } from './routes/land-events.js';
 import { setupLensesRoute } from './routes/lenses.js';
 import { setupCityRequestsRoute } from './routes/city-requests.js';
+import { setupFeedbackRoute } from './routes/feedback.js';
 import { setupParcelHistoryRoute } from './routes/parcel-history.js';
 import { setupHackathonProofRoute } from './routes/hackathon-proof.js';
 import { setupHackathonCasesRoute } from './routes/hackathon-cases.js';
@@ -453,6 +454,7 @@ export function createApp({
     setupLandEventsRoute(app, activePool); // deterministic agreement lifecycle events + court recipe declarations
     setupLensesRoute(app, activePool); // lens attester directory + SAS schema definitions (lens-model.md)
     setupCityRequestsRoute(app, activePool); // world view "Ask for this city" demand counts
+    setupFeedbackRoute(app, activePool); // private web/MCP feedback inbox
     setupParcelHistoryRoute(app, activePool); // permanent per-parcel log: agreements, ownership attestations, executions
     setupHackathonProofRoute(app, { env }); // public hackathon scope plus redacted prospective resolver status
     setupHackathonCasesRoute(app, activePool, { env }); // one data-derived proposal → support/forecast/evidence graph

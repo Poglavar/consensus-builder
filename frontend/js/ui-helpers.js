@@ -2,6 +2,24 @@ let statusHighlightTimeout = null;
 let statusLog = [];
 let isStatusExpanded = false;
 
+// The report form is a satellite page; this link stays available alongside the app's contacts.
+document.addEventListener('DOMContentLoaded', () => {
+    const contact = document.querySelector('[data-i18n-key="sidebar.info.contactTitle"]')?.parentElement;
+    if (!contact || contact.querySelector('[data-feedback-link]')) return;
+    import('./feedback-translations.js').then(() => {
+        const link = document.createElement('a');
+        link.className = 'btn btn-quiet'; link.dataset.feedbackLink = '';
+        link.dataset.i18nKey = 'feedback.open'; link.href = '/feedback.html';
+        link.addEventListener('click', () => {
+            const target = new URL('/feedback.html', window.location.origin);
+            target.searchParams.set('page', window.location.origin + window.location.pathname);
+            target.searchParams.set('lang', window.i18n.getLocale());
+            link.href = target.href;
+        });
+        contact.appendChild(link); window.i18n.applyTranslations(contact);
+    }).catch(error => console.error('Feedback link could not load', error));
+});
+
 // How much of the session the log remembers.
 //
 // It was 100, which a batch outruns in seconds: applying a hundred block rules writes several

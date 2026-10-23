@@ -4,6 +4,7 @@
 // /robots.txt. All read-only, built from the same x402 config as the paid routes themselves.
 
 import { MCP_READ_PATHS } from './mcp-openapi.js';
+import { FEEDBACK_PATHS } from './feedback-openapi.js';
 import { readX402OracleConfig } from '../utils/x402-payment.js';
 import { publicBase } from './agent-discovery.js';
 
@@ -219,6 +220,7 @@ export function buildOpenApi(base, env) {
         tags: [{ name: 'x402', description: 'Paid over the x402 protocol.' }],
         paths: {
             ...MCP_READ_PATHS,
+            ...FEEDBACK_PATHS,
             '/agent/oracle/facts': {
                 get: {
                     tags: ['x402'],
