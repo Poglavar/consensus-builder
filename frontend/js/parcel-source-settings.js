@@ -279,9 +279,9 @@
     // failing at once reads as one card with one line per source. Parcel choices live in the ground
     // fallback dialog; building failures retain their own retry/source actions.
     const BANNERS = {
-        parcel: { id: 'parcel-source-status', choose: ['groundFallback.reopen', 'Choose how to continue'] },
-        imagery: { id: 'imagery-source-status', retry: ['imagerySources.retry', 'Retry imagery'], choose: ['imagerySources.title', 'Choose an imagery source'], defaultRetry: () => {} },
-        building: { id: 'building-source-status', retry: ['buildingSources.retry', 'Retry buildings'], choose: ['buildingSources.title', 'Choose a building source'],
+        parcel: { id: 'parcel-source-status', title: ['parcelSources.unavailableTitle', 'Parcels unavailable'], icon: 'fas fa-draw-polygon', choose: ['groundFallback.reopen', 'Choose how to continue'] },
+        imagery: { id: 'imagery-source-status', title: ['imagerySources.unavailableTitle', 'Imagery unavailable'], icon: 'fas fa-satellite', retry: ['imagerySources.retry', 'Retry imagery'], choose: ['imagerySources.title', 'Choose an imagery source'], defaultRetry: () => {} },
+        building: { id: 'building-source-status', title: ['buildingSources.unavailableTitle', 'Buildings unavailable'], icon: 'fas fa-building', retry: ['buildingSources.retry', 'Retry buildings'], choose: ['buildingSources.title', 'Choose a building source'],
             defaultRetry: () => {} }
     };
     function reportFailure(global, message, kind = 'parcel', retry = null) {
@@ -292,6 +292,12 @@
         if (!banner) {
             banner = doc.createElement('aside'); banner.id = spec.id;
             banner.className = 'source-status cb-banner'; banner.setAttribute('role', 'status');
+            const title = doc.createElement('h3'); title.className = 'cb-banner__title';
+            const icon = doc.createElement('i'); icon.className = spec.icon; icon.setAttribute('aria-hidden', 'true');
+            const label = doc.createElement('span'); label.setAttribute('data-i18n-key', spec.title[0]);
+            const translatedTitle = global.i18n?.t?.(spec.title[0]);
+            label.textContent = translatedTitle && translatedTitle !== spec.title[0] ? translatedTitle : spec.title[1];
+            title.append(icon, label); banner.append(title);
             const text = doc.createElement('p'); text.className = 'source-status__message'; banner.append(text);
             const button = ([key, fallback], action) => {
                 const node = doc.createElement('button'); node.type = 'button'; node.className = 'btn';
@@ -301,7 +307,8 @@
             if (kind === 'parcel') {
                 button(spec.choose, () => global.ParcelGroundFallback.openOptions());
             } else {
-                button(spec.retry, () => { const again = banner.retry || spec.defaultRetry; banner.remove(); again(global); });
+                // A retry is an attempt, not recovery. Only this source's successful load clears it.
+                button(spec.retry, () => { const again = banner.retry || spec.defaultRetry; again(global); });
                 button(spec.choose, () => open(global, kind));
             }
             button(['parcelSources.dismiss', 'Dismiss source warning'], () => banner.remove());

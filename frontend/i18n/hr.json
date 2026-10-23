@@ -6553,6 +6553,7 @@
         }
     },
     "parcelSources": {
+        "unavailableTitle": "Katastarske čestice nisu dostupne",
         "recent": "Nedavne provjere izvora",
         "attribution": "Korisnički odabran izvor čestica",
         "title": "Odaberi izvor čestica",
@@ -6578,6 +6579,7 @@
         "dismiss": "Sakrij upozorenje izvora"
     },
     "imagerySources": {
+        "unavailableTitle": "Snimke nisu dostupne",
         "title": "Odaberi izvor snimaka",
         "intro": "Dodaj javni HTTPS URL XYZ pločica (s {z}, {x}, {y}) ili WMS servis za ovo područje. Snimke su vizualna pozadina; ne mijenjaju čestice ni zgrade.",
         "url": "URL izvora snimaka",
@@ -6614,6 +6616,7 @@
         "title": "Izvori podataka"
     },
     "buildingSources": {
+        "unavailableTitle": "Zgrade nisu dostupne",
         "title": "Odaberi izvor zgrada",
         "intro": "Dodaj javni HTTPS URL tlocrta zgrada za ovaj grad ili OpenStreetMap zrcala (adresa Overpass API-ja koja završava na /interpreter). Isprobavamo svaki podržani format i čitamo polje visine ili broja katova ako postoji; ostale visine se procjenjuju.",
         "url": "URL izvora zgrada",

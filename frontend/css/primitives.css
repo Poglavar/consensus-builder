@@ -604,6 +604,15 @@ textarea {
     margin: 0;
 }
 
+.cb-banner__title {
+    display: flex;
+    align-items: center;
+    gap: var(--cb-space-2);
+    margin: 0 0 var(--cb-space-2);
+    font-size: inherit;
+    font-weight: var(--cb-weight-semibold);
+}
+
 .cb-banner .btn {
     margin: var(--cb-space-2) var(--cb-space-2) 0 0;
 }

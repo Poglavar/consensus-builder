@@ -113,9 +113,43 @@ test.describe('Data sources @features', () => {
     await expect(dialog).toContainText('OpenStreetMap mirror');
     await dialog.getByRole('button', { name: 'Close' }).click();
 
+    // A successful building retry must not dismiss a still-failing parcel source.
+    await page.evaluate(() => (window as any).ParcelSourceSettings.reportFailure(window, 'Parcel source is still unavailable.', 'parcel'));
     fail = false;
     await banner.getByRole('button', { name: 'Retry buildings' }).click();
     await expect.poll(() => requests).toBe(2);
     await expect(banner).toHaveCount(0);
+    await expect(page.locator('#parcel-source-status')).toContainText('Parcel source is still unavailable.');
+  });
+
+  test('source warnings identify each layer and clear independently', async ({ mockApi: page }) => {
+    await openCity(page);
+    await page.evaluate(() => {
+      const settings = (window as any).ParcelSourceSettings;
+      for (const kind of ['parcel', 'building', 'imagery']) settings.clearFailure(window, kind);
+      settings.reportFailure(window, 'Fixture parcel warning.', 'parcel');
+      settings.reportFailure(window, 'Fixture building warning.', 'building');
+      settings.reportFailure(window, 'Fixture imagery warning.', 'imagery');
+    });
+
+    const parcel = page.locator('#parcel-source-status');
+    const building = page.locator('#building-source-status');
+    const imagery = page.locator('#imagery-source-status');
+    await expect(parcel.locator('h3')).toHaveText('Parcels unavailable');
+    await expect(building.locator('h3')).toHaveText('Buildings unavailable');
+    await expect(imagery.locator('h3')).toHaveText('Imagery unavailable');
+    await expect(parcel.locator('i[aria-hidden="true"]')).toHaveClass(/fa-draw-polygon/);
+    await expect(building.locator('i[aria-hidden="true"]')).toHaveClass(/fa-building/);
+    await expect(imagery.locator('i[aria-hidden="true"]')).toHaveClass(/fa-satellite/);
+
+    await page.evaluate(() => (window as any).ParcelSourceSettings.clearFailure(window, 'building'));
+    await expect(building).toHaveCount(0);
+    await expect(parcel).toContainText('Fixture parcel warning.');
+    await expect(imagery).toContainText('Fixture imagery warning.');
+    await page.evaluate(() => (window as any).ParcelSourceSettings.clearFailure(window, 'parcel'));
+    await expect(parcel).toHaveCount(0);
+    await expect(imagery).toBeVisible();
+    await imagery.getByRole('button', { name: 'Dismiss source warning', exact: true }).click();
+    await expect(imagery).toHaveCount(0);
   });
 });

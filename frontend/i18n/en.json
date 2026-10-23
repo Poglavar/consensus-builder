@@ -6516,6 +6516,7 @@
         }
     },
     "parcelSources": {
+        "unavailableTitle": "Parcels unavailable",
         "recent": "Recent source checks",
         "attribution": "User-selected parcel source",
         "title": "Choose a parcel source",
@@ -6541,6 +6542,7 @@
         "dismiss": "Dismiss source warning"
     },
     "imagerySources": {
+        "unavailableTitle": "Imagery unavailable",
         "title": "Choose an imagery source",
         "intro": "Add a public HTTPS XYZ tile URL (with {z}, {x}, {y}) or WMS service for this area. Imagery is a visual background; it does not change parcels or buildings.",
         "url": "Imagery source URL",
@@ -6577,6 +6579,7 @@
         "title": "Data sources"
     },
     "buildingSources": {
+        "unavailableTitle": "Buildings unavailable",
         "title": "Choose a building source",
         "intro": "Add a public HTTPS URL of building footprints for this city, or of an OpenStreetMap mirror (an Overpass API address ending in /interpreter). We try each supported format and read a height or storey field when it has one; other heights are estimated.",
         "url": "Building source URL",
