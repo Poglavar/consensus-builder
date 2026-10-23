@@ -54,9 +54,9 @@ describe('the ground a building proposal clears', () => {
         expect(prefetchApi.buildingDemolitionGeometry(single, [parcelA])).toEqual(square(15.87, 43.75));
         // Any 'building…' goal is the single key, as proposals/core.js normalizes it.
         expect(prefetchApi.buildingClearsParcels({ ...single, goal: 'Building' })).toBe(false);
-        const whole = { ...single, buildingProposal: { takeWholeParcels: true } };
-        expect(prefetchApi.buildingClearsParcels(whole)).toBe(true);
-        expect(prefetchApi.buildingDemolitionGeometry(whole, [parcelA]).coordinates).toHaveLength(2);
+        const whole = { ...single, geometry: { ...single.geometry, landTake: parcelA } };
+        expect(prefetchApi.buildingClearsParcels(whole)).toBe(false);
+        expect(prefetchApi.buildingDemolitionGeometry(whole, [parcelA])).toEqual(parcelA.geometry || parcelA);
     });
 
     it('nothing to scan without footprints or parcels', () => {

@@ -1037,8 +1037,8 @@
             });
             const firstPatch = conversion.freeformDraftPatch(draft, { building: list[0].building, site: list[0].site });
             if (list[0].surroundings) {
-                const { groundSurface = null, groundBoundary = null, takeWholeParcels = false } = list[0].surroundings;
-                Object.assign(firstPatch.editorPayload.context, JSON.parse(JSON.stringify({ groundSurface, groundBoundary, takeWholeParcels })));
+                const { groundSurface = null, groundBoundary = null, landTake = null } = list[0].surroundings;
+                Object.assign(firstPatch.editorPayload.context, JSON.parse(JSON.stringify({ groundSurface, groundBoundary, landTake })));
             }
             replaceWithFreeform(store, draft, firstPatch);
         } catch (error) {

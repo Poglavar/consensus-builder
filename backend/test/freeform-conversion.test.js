@@ -124,7 +124,7 @@ describe('freeformDraftPatch: the draft becomes a Freeform free placement on its
             fields: { site, selectedParcelIds: [], cadastreParcelIds: [], binding: null }
         });
         expect(patch.editorPayload.context.buildings).toEqual([building]);
-        expect(patch.editorPayload.context).toMatchObject({ blockName: 'Block 12', blockMassing: null, ineligibleParcels: [], takeWholeParcels: false });
+        expect(patch.editorPayload.context).toMatchObject({ blockName: 'Block 12', blockMassing: null, ineligibleParcels: [], landTake: null });
         expect(patch.editorPayload.context.parameters).toEqual({ typology: 'single', height: 9, rotation: 0, footprintMode: 'polygon' });
     });
 });

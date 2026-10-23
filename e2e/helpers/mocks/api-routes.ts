@@ -230,6 +230,15 @@ export async function mockBuildingsRoute(page: Page): Promise<void> {
     }
 
     const source = new URL(request.url()).searchParams.get('source') || 'gdi';
+    if (new URL(request.url()).pathname.endsWith('/buildings/under')) {
+      const regions = request.postDataJSON()?.regions || [];
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({
+        supported: true, source, truncated: false,
+        regions: Object.fromEntries(regions.map((region: any) => [region.key, []])),
+      }) });
+      return;
+    }
+
     route.fulfill({
       status: 200,
       contentType: 'application/json',

@@ -50,7 +50,7 @@
      * authored footprints. A proposal clears the ground it takes (user decision 2026-10-22: a
      * block rule's parcels lose their courtyard buildings too). A rule or block on existing
      * parcels takes those parcels. A Freeform building that forms its own parcel out of its
-     * footprint takes just that, unless takeWholeParcels says otherwise (the same test as
+     * footprint takes its exact reviewed land (the same test as
      * apply/buildings.js shouldFormOwnBuildingParcel). A rule that models the EXISTING buildings
      * (blockify mode 'existing' raises them) clears only what it redraws, so the ones it skipped
      * stay standing.
@@ -58,7 +58,7 @@
     function buildingClearsParcels(proposal, helpers = {}) {
         const sub = (proposal && proposal.buildingProposal) || {};
         if (sub.parameters && sub.parameters.mode === 'existing') return false;
-        if (goalKeyOf(proposal, helpers) === 'single' && buildingFeaturesOf(proposal).length === 1 && sub.takeWholeParcels !== true) return false;
+        if (goalKeyOf(proposal, helpers) === 'single' && buildingFeaturesOf(proposal).length === 1) return false;
         return true;
     }
 
@@ -69,6 +69,10 @@
      */
     function buildingDemolitionGeometry(proposal, parcelFeatures, helpers = {}) {
         if (!proposal) return null;
+        if (goalKeyOf(proposal, helpers) === 'single' && proposal.geometry?.landTake) {
+            const take = proposal.geometry.landTake;
+            return take.type === 'Feature' ? take.geometry : take;
+        }
         const parcels = buildingClearsParcels(proposal, helpers) ? polygonsOf(parcelFeatures) : [];
         const polygons = parcels.concat(polygonsOf(buildingFeaturesOf(proposal)));
         if (!polygons.length) return null;
@@ -154,7 +158,16 @@
         return byKey;
     }
 
-    const api = { demolitionRegionOf, collectDemolitionRegions, buildingFeaturesFromBulk, buildingClearsParcels, buildingDemolitionGeometry };
+    // An authoritative empty region is different from a failed or truncated source answer.
+    async function loadBuildingStock(geometry, request, key = 'land-take') {
+        const payload = await request('/buildings/under', { regions: [{ key, geometry }] });
+        if (!payload || payload.supported === false || payload.truncated === true || !Array.isArray(payload.regions?.[key])) {
+            throw new Error('Building stock is incomplete; the land take cannot be verified.');
+        }
+        return buildingFeaturesFromBulk(payload.regions, payload.source).get(key);
+    }
+
+    const api = { loadBuildingStock, demolitionRegionOf, collectDemolitionRegions, buildingFeaturesFromBulk, buildingClearsParcels, buildingDemolitionGeometry };
 
     // Namespaced only — a bare global here could shadow a top-level function in the classic
     // scripts loaded alongside this file.

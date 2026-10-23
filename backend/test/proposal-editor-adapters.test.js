@@ -598,14 +598,15 @@ describe('building proposal adapters', () => {
             const adapter = buildBuildingAdapter('single');
             const source = {
                 ...freeform,
-                buildingProposal: { ...freeform.buildingProposal, takeWholeParcels: true }
+                geometry: { ...freeform.geometry, landTake: freeform.geometry.buildings[0] }
             };
             const draft = draftFor(adapter, source);
 
-            expect(draft.editorPayload.context.takeWholeParcels).toBe(true);
-            draft.editorPayload.context.takeWholeParcels = false;
-
-            expect(adapter.serializeProposal(draft).buildingProposal.takeWholeParcels).toBe(false);
+            expect(draft.editorPayload.context.landTake).toEqual(source.geometry.landTake);
+            draft.editorPayload.context.landTake = null;
+            const saved = adapter.serializeProposal(draft);
+            expect(saved.geometry.landTake).toBeUndefined();
+            expect(saved.buildingProposal.takeWholeParcels).toBeUndefined();
         });
     });
 
@@ -1347,7 +1348,7 @@ describe('site-first drafts', () => {
                 ...draft.editorPayload.context,
                 groundBoundary: { type: 'Feature', properties: { role: 'ground-boundary' }, geometry: POLYGON },
                 groundSurface: { treatment: 'green', polygon: POLYGON },
-                takeWholeParcels: true
+                landTake: { type: 'Feature', properties: {}, geometry: POLYGON }
             }
         };
         const saved = adapter.serializeProposal(draft);
@@ -1356,7 +1357,7 @@ describe('site-first drafts', () => {
         expect(saved.site).toEqual(SITE);
         expect(saved.cadastreParcelIds).toEqual([]);
         expect(saved.geometry.groundBoundary).toEqual(draft.editorPayload.context.groundBoundary);
-        expect(saved.buildingProposal.takeWholeParcels).toBe(true);
+        expect(saved.geometry.landTake).toEqual(draft.editorPayload.context.landTake);
 
         const reopenedSeed = adapter.draftFromProposal(saved);
         expect(reopenedSeed.editorPayload.placement).toEqual({ free: true, site: SITE, bindingStatus: 'bound' });
@@ -1378,7 +1379,7 @@ describe('site-first drafts', () => {
                 parcelIds: [], site: SITE, initialBuildings: saved.geometry.buildings,
                 placement: { free: true, site: SITE },
                 initialGroundBoundary: saved.geometry.groundBoundary,
-                initialGroundTreatment: 'green', initialTakeWholeParcels: true
+                initialGroundTreatment: 'green', initialLandTake: saved.geometry.landTake
             }));
         } finally {
             if (previous.open === undefined) delete globalThis.openSingleBuildingForParcels;

@@ -208,7 +208,7 @@
             ineligibleParcels: [],
             groundSurface: null,
             groundBoundary: null,
-            takeWholeParcels: false
+            landTake: null
         };
     }
 

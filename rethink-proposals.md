@@ -2094,3 +2094,14 @@ overlap prefilter). Tests: `backend/test/parcels-under-geometry.test.js`,
   `backend/test/apply-parcels.characterization.test.js`, fixture `backend/test/fixtures/plan-97-104.json`
 - Commits: `350a9ed` (parcel hole), `baddb2b` (completeness gate), `70d9f82` (cadastreParcelIds),
   `32a01d0` (backfill + legacy road footprints)
+
+### Freeform land-take authoring update (2026-10-23)
+
+The per-parcel Land take review replaces §15a's global Freeform whole-parcel toggle and its
+footprint-coverage gate. Keep the building footprint unchanged; author `geometry.landTake` as the
+union of each touched live parcel's chosen whole outline or footprint intersection. That exact
+geometry drives binding, formation, owner remainders, demolition and surroundings. Review full
+removals and partial cuts before Done; incomplete source stock blocks acceptance and changed
+consequences require acceptance again. This is design authoring, not agreement or owner consent.
+Older experimental whole-take records without explicit take geometry require review/recreation.
+See vocabulary.md, “Freeform land take review”.

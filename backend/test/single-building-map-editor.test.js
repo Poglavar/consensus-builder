@@ -68,7 +68,7 @@ function closeHarness(options = {}) {
         threeControls: { removeEventListener: vi.fn() }, editorFocusReturn: null,
         EDIT_LOCK_OWNER: 'single-building-editor', CustomEvent: class { constructor(type, init) { this.type = type; this.detail = init.detail; } }
     };
-    const variables = `let singleGroundBoundary=null, singleHistory=this.singleHistory, singleBuildingLayers=this.singleBuildingLayers, singleSession=this.singleSession, singleMap=this.singleMap, singleEditor=this.singleEditor, singleUploadOnConfirm=this.singleUploadOnConfirm, singleBlockLayer=this.singleBlockLayer, singleParcelBorderLayer=this.singleParcelBorderLayer, singleRectGroup=this.singleRectGroup, singleGroundPreviewLayer=this.singleGroundPreviewLayer, singleRectLayer=this.singleRectLayer, singleActivePolygonLayer=this.singleActivePolygonLayer, singleDragMarker=this.singleDragMarker, singlePendingVertexActionIndex=this.singlePendingVertexActionIndex, singleBuildingDesignChangeTracker=this.singleBuildingDesignChangeTracker, disabledViewButtons=this.disabledViewButtons, suspendedPanels=this.suspendedPanels, threeControls=this.threeControls, editorFocusReturn=this.editorFocusReturn, singleBlockFeature={geometry:{}}, singleRectFeature={geometry:{}}, currentRotationDeg=90, currentGroundTreatment='paved', currentTakeWholeParcels=true;`;
+    const variables = `let singleLandTakeReview=null, singleGroundBoundary=null, singleHistory=this.singleHistory, singleBuildingLayers=this.singleBuildingLayers, singleSession=this.singleSession, singleMap=this.singleMap, singleEditor=this.singleEditor, singleUploadOnConfirm=this.singleUploadOnConfirm, singleBlockLayer=this.singleBlockLayer, singleParcelBorderLayer=this.singleParcelBorderLayer, singleRectGroup=this.singleRectGroup, singleGroundPreviewLayer=this.singleGroundPreviewLayer, singleRectLayer=this.singleRectLayer, singleActivePolygonLayer=this.singleActivePolygonLayer, singleDragMarker=this.singleDragMarker, singlePendingVertexActionIndex=this.singlePendingVertexActionIndex, singleBuildingDesignChangeTracker=this.singleBuildingDesignChangeTracker, disabledViewButtons=this.disabledViewButtons, suspendedPanels=this.suspendedPanels, threeControls=this.threeControls, editorFocusReturn=this.editorFocusReturn, singleBlockFeature={geometry:{}}, singleRectFeature={geometry:{}}, currentRotationDeg=90, currentGroundTreatment='paved', currentTakeWholeParcels=true;`;
     const names = ['singleBuildingPreview', 'updateSingleBuildingPreview', 'closeSingleBuildingMapEditor', 'requestCloseSingleBuildingMapEditor'];
     const context = { console, ...stubs };
     const locallyDeclared = new Set(['singleMap', 'singleEditor', 'singleSession', 'singleUploadOnConfirm', 'singleBlockLayer', 'singleParcelBorderLayer', 'singleRectGroup', 'singleGroundPreviewLayer', 'singleRectLayer', 'singleActivePolygonLayer', 'singleDragMarker', 'singlePendingVertexActionIndex', 'singleBuildingDesignChangeTracker', 'disabledViewButtons', 'suspendedPanels', 'threeControls', 'editorFocusReturn', 'currentGroundTreatment', 'currentTakeWholeParcels', 'singleHistory', 'singleBuildingLayers']);
@@ -121,7 +121,7 @@ describe('single-building map editor lifecycle', () => {
     it('refreshes footprint handles and publishes the live geometry when the shared view changes', () => {
         const feature = { type: 'Feature', geometry: { type: 'Polygon', coordinates: [] } };
         const singleSession = { setPreview: vi.fn() };
-        const stubs = { singleSession, singleEditor: {}, buildingEntries: [{ feature }],
+        const stubs = { singleLandTakeReview: null, singleSession, singleEditor: {}, buildingEntries: [{ feature }],
             singleBlockFeature: { geometry: {} }, currentGroundSurface: () => ({ treatment: 'green', polygon: {} }),
             cloneSingleFeature: value => JSON.parse(JSON.stringify(value)),
             renderSharedPolygonEditor: vi.fn(), refreshSingleBuildingDensityStats: vi.fn(), positionSingleBuildingToolbar: vi.fn() };
@@ -163,7 +163,8 @@ describe('single-building map editor lifecycle', () => {
         const confirm = vi.fn();
         const variables = `let singleEditor=null, singleBuildingOverrideContext=null, singleBlockFeature=null, buildingEntries=[], activeBuildingId=null, nextBuildingId=1, singleBuildingSeedBuildings=null, singleUploadOnConfirm=null; const DEFAULT_HEIGHT_M=12, DEFAULT_WIDTH_M=10; this.getSeed=()=>singleBuildingSeedBuildings; this.getContext=()=>singleBuildingOverrideContext;`;
         const stubs = {
-            window: { OnMapEditor: { isActive: () => false } },
+            window: { OnMapEditor: { isActive: () => false }, SingleBuildingGeometry: { placeModelFootprint: () => entry.feature } },
+            markAsEditablePolygon: vi.fn(), editableFootprintValid: () => true,
             singleBuildingParcelsForIds: ids => ids.map(id => ({ id })),
             describeSingleBuildingSelection: () => 'Parcel block',
             getSelectedBlockFeature: () => ({ type: 'Feature', geometry: { type: 'Polygon', coordinates: [] } }),
@@ -192,7 +193,7 @@ describe('single-building map editor lifecycle', () => {
             expect(context.getContext().site).toEqual(site);
             expect(context.getContext().parcels[0].feature.geometry).toEqual(site);
         }
-        expect(addEntry).toHaveBeenCalledWith([15, 45], { width: 11, length: 13, height: 17, rotation: 0 });
+        expect(addEntry).toHaveBeenCalledWith([15, 45], { feature: entry.feature, height: 17, rotation: 0 });
         expect(entry.feature.properties).toMatchObject({ source: 'upload', modelName: 'museum.glb', modelUrl: '/models/museum.glb', height: 17 });
         expect(context.getSeed()[0].properties).toMatchObject({ source: 'upload', modelName: 'museum.glb', modelUrl: '/models/museum.glb', height: 17 });
         expect(openEditor).toHaveBeenCalledOnce();
@@ -233,6 +234,7 @@ describe('single-building map editor lifecycle', () => {
         const close = vi.fn();
         const afterUploadDone = vi.fn();
         const stubs = {
+            singleLandTakeReview: { prepare: async () => true, take: feature },
             getActiveBuilding: () => entry, getSingleBuildingContext: () => ({ blockName: 'Block', parcels: [{ feature: { properties: { BROJ_CESTICE: '77' } } }] }),
             setSingleBuildingStatus: vi.fn(), resolveParcelId: () => 'parcel-77', describeSingleBuildingSelection: () => 'Block',
             multiParcelSelection: { clearSelection: vi.fn(), selectedParcels: new Set(), updateUI: vi.fn() },
@@ -246,9 +248,9 @@ describe('single-building map editor lifecycle', () => {
         const context = { ...stubs, entry };
         const bindings = Object.keys(stubs).filter(key => key !== 'singleUploadOnConfirm').map(key => `const ${key}=this.${key};`).join('\n');
         vm.runInNewContext(`${variables}\n${bindings}\n${functions.get('confirmSingleBuilding')}\nthis.confirm=confirmSingleBuilding;`, context);
-        context.confirm();
+        await context.confirm();
         expect(pendingContexts).toHaveLength(1);
-        expect(pendingContexts[0]).toMatchObject({ parcelIds: ['parcel-77'], blockName: 'Block', takeWholeParcels: true });
+        expect(pendingContexts[0]).toMatchObject({ parcelIds: ['parcel-77'], blockName: 'Block', landTake: feature });
         expect(pendingContexts[0].buildings).toHaveLength(1);
         expect(stubs.window.SingleBuildingGeometry.clipFootprintToBoundary).not.toHaveBeenCalled();
         expect(pendingContexts[0].placement).toMatchObject({ free: true });

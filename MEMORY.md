@@ -876,3 +876,5 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-23: Expose Upload .glb beside Upload GeoJSON in Freeform and import into the existing editor session.
 
 - 2026-10-23: The user authorized the remaining 20 Sonnet 5.5 Batch MCP evaluation cases under an additional US$3 total cap, excluding permanent publication and wallet signing; deployment still needs its own authorization.
+
+- 2026-10-23: Freeform land take is reviewed per touched live parcel (footprint cut or whole parcel), stored as exact geometry separate from building massing, and shared by formation, demolition and agreement inputs; changed consequences require renewed acceptance.

@@ -2475,3 +2475,24 @@ path.geom-handle-edge.is-dragging { stroke-opacity: 0.35; }
     color: var(--cb-text-muted);
 }
 
+
+/* Freeform land review uses semantic map colors from the shared editor palette. */
+.land-take-review {
+    --land-take: var(--cb-primary);
+    --land-remainder: var(--cb-text-muted);
+    --land-removed: var(--cb-danger);
+    --land-retained: var(--cb-success);
+    --land-focus: var(--cb-warning);
+    display: grid;
+    gap: var(--cb-space-2);
+    border-top: 1px solid var(--cb-line-glass);
+    padding-top: var(--cb-space-3);
+}
+.land-take-review h3, .land-take-review p { margin: 0; }
+.land-take-review p { font-size: var(--cb-text-sm); }
+.land-take-rows { display: grid; gap: var(--cb-space-2); max-height: 12rem; overflow-y: auto; }
+.land-take-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(8rem, 1fr); align-items: center; gap: var(--cb-space-2); }
+.land-take-row span { overflow-wrap: anywhere; }
+.land-take-accept { display: flex; align-items: start; gap: var(--cb-space-2); }
+.land-take-accept input { flex: 0 0 auto; }
+.land-take-legend { color: var(--cb-text-muted); }

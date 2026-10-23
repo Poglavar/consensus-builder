@@ -703,11 +703,15 @@ async function createProposal() {
                 blockName: pendingBuildingContext.blockName || formatParcelSelectionLabel(designParcelIds),
                 parameters: safeClone(pendingBuildingContext.parameters) || {},
                 ineligibleParcels: safeClone(pendingBuildingContext.ineligibleParcels) || [],
-                // §15a: how a FREEFORM building forms its parcel — footprint parcel by default,
-                // whole host parcels when the author chose so in the design modal.
-                ...(selectedTool === 'single' && pendingBuildingContext.takeWholeParcels === true
-                    ? { takeWholeParcels: true } : {})
+
             };
+
+            if (selectedTool === 'single' && pendingBuildingContext.landTake) {
+                proposal.geometry.landTake = safeClone(pendingBuildingContext.landTake);
+            }
+            if (selectedTool === 'single' && pendingBuildingContext.groundBoundary) {
+                proposal.geometry.groundBoundary = safeClone(pendingBuildingContext.groundBoundary);
+            }
 
             // Clear the pending context so it isn't reused accidentally
             if (typeof window !== 'undefined') {

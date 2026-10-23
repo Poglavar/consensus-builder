@@ -333,7 +333,7 @@
             // Keep the authored host outline separate from the effective ground surface.
             groundBoundary: clone(proposal?.geometry?.groundBoundary || null),
             // §15a: footprint parcel (default) vs taking the whole host parcels.
-            takeWholeParcels: bp.takeWholeParcels === true
+            landTake: clone(proposal?.geometry?.landTake || null)
         };
     }
 
@@ -1159,7 +1159,7 @@
                         site: placementSite || authoredSite,
                         placement: relocated ? clone(context.placement) : null,
                         initialGroundTreatment: context.groundSurface?.treatment || null, initialDecorationDesign: context.groundSurface?.decorationDesign || null,
-                        initialTakeWholeParcels: context.takeWholeParcels === true,
+                        initialLandTake: clone(context.landTake || null),
                         initialGroundBoundary: clone(context.groundBoundary || null)
                     });
                     return opened !== false;
@@ -1222,11 +1222,18 @@
                 const groundBoundary = typology === 'single' ? clone(context.groundBoundary || null) : null;
                 if (groundBoundary) output.geometry.groundBoundary = groundBoundary;
                 else delete output.geometry.groundBoundary;
+                const landTake = typology === 'single' ? clone(context.landTake || null) : null;
+                if (landTake) {
+                    if (!geometryWithinSite(landTake, output.site) || !features.every(building => geometryWithinSite(building, landTake))) {
+                        throw new Error(global.i18n?.t?.('landTake.invalid') || 'The reviewed land take must contain the building and fit within the site.');
+                    }
+                    output.geometry.landTake = landTake;
+                } else delete output.geometry.landTake;
                 output.buildingProposal = {
                     ...(clone(output.buildingProposal || {})),
                     applied: false,
                     typologyType: typology,
-                    ...(typology === 'single' ? { takeWholeParcels: context.takeWholeParcels === true } : {}),
+
                     parameters: clone(context.parameters || {}),
                     // Plots the rule left out, with the building each would carry. Not buildings and
                     // never applied — the 3D view draws them see-through so a gap in an applied block
@@ -1234,6 +1241,7 @@
                     ineligibleParcels: isFreePlacementDraft(draft) ? [] : clone(context.ineligibleParcels || []),
                     blockName: context.blockName || null
                 };
+                delete output.buildingProposal.takeWholeParcels;
                 return finalizeAuthoredProposal(output);
             },
             summarizeChanges(source, draft) {

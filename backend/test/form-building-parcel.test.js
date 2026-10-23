@@ -222,30 +222,35 @@ describe('_formBuildingParcel — footprint mode (default)', () => {
     });
 });
 
-describe('_formBuildingParcel — whole-parcel option', () => {
-    it('adopts the single host parcel for the proposer when takeWholeParcels is set', async () => {
+describe('_formBuildingParcel — reviewed take', () => {
+    it('forms whole host land around a narrow building without changing its footprint', async () => {
         const host = parcelOf('HR-A', 0, 2);
         const manager = makeManager([host]);
-        globalThis.window.__cadastreAncestry = { resolveParentsByGeometry: () => ({ ids: ['HR-A'], coverage: 1 }) };
-        const bp = { takeWholeParcels: true };
-        const result = await manager._formBuildingParcel('p-bld', { author: 'Ana' }, bp, rect(0, 0, 2, 2), [], 'p-bld');
-
+        const result = await manager._formBuildingParcel('p-bld', { author: 'Proposer', geometry: { landTake: host.geometry } }, {}, rect(.5, .5, 1, 1.5), [], 'p-bld');
         expect(result.ok).toBe(true);
-        expect(bp).not.toHaveProperty('formation');
-        expect(host.properties.ownershipDetails.owners[0].name).toBe('Owner HR-A');
         expect(manager.added).toHaveLength(1);
-        expect(manager.added[0].properties.ownershipDetails.owners[0].name).toBe('Ana');
+        expect(manager.added[0].geometry).toEqual(host.geometry);
         expect(manager.hidden).toEqual([host]);
     });
-
-    it('refuses partial coverage under the whole-parcel option, naming the offender', async () => {
+    it('takes a whole parcel beside a cut and retains the neighbour owner and all land', async () => {
         const parcels = [parcelOf('HR-A', 0, 2), parcelOf('HR-B', 2, 4)];
         const manager = makeManager(parcels);
-        const bp = { takeWholeParcels: true };
-        const result = await manager._formBuildingParcel('p-bld', { author: 'Ana' }, bp, rect(0, 0, 3, 2), [], 'p-bld');
+        const body = rect(1, .5, 3, 1.5);
+        const take = turf.union(parcels[0], turf.feature(body));
+        const result = await manager._formBuildingParcel('p-bld', { author: 'Proposer', geometry: { landTake: take } }, {}, body, [], 'p-bld');
+        expect(result.ok).toBe(true);
+        const child = manager.added.find(f => f.properties.buildingParcel);
+        expect(turf.area(child)).toBeCloseTo(turf.area(take), 3);
+        const remainders = manager.added.filter(f => !f.properties.buildingParcel);
+        expect(remainders.length).toBeGreaterThan(0);
+        expect(remainders.every(f => f.properties.ownershipDetails.owners[0].name === 'Owner HR-B')).toBe(true);
+        expect(manager.added.reduce((sum, f) => sum + turf.area(f), 0)).toBeCloseTo(parcels.reduce((sum, f) => sum + turf.area(f), 0), 3);
+    });
+    it('refuses land that does not contain the building before touching hosts', async () => {
+        const manager = makeManager([parcelOf('HR-A', 0, 2)]);
+        const result = await manager._formBuildingParcel('p-bld', { geometry: { landTake: rect(0, 0, 1, 2) } }, {}, rect(.5, .5, 1.5, 1.5), [], 'p-bld');
         expect(result.ok).toBe(false);
-        const failure = manager._setLastApplyFailure.mock.calls[0][1];
-        expect(failure.code).toBe('building-partial-parcels');
-        expect(failure.message).toContain('HR-B');
+        expect(manager._setLastApplyFailure.mock.calls[0][1].code).toBe('building-outside-land-take');
+        expect(manager.hidden).toHaveLength(0);
     });
 });

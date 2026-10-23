@@ -5,6 +5,11 @@ import { selectNativeOption } from '../helpers/controls';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 
 async function finishEditor(page: any, editor: any, done: string) {
+  const acceptance = editor.locator('[data-land-accept]');
+  if (await acceptance.count()) {
+    await expect(acceptance).toBeEnabled();
+    await acceptance.check();
+  }
   await page.locator(done).click();
   const proceed = page.getByRole('button', { name: 'Proceed anyway' });
   await expect.poll(async () => await editor.count() === 0 || await proceed.isVisible()).toBe(true);
@@ -32,6 +37,11 @@ async function openBuildingEditor(page: any, tool: string, typology: string, don
     await expect.poll(async () => await scope.isVisible() || await page.locator(done).isVisible(), { timeout: 45_000 }).toBe(true);
     if (await scope.isVisible()) await scope.getByRole('button', { name: 'No, just this parcel' }).click();
     await expect(page.locator(done)).toBeEnabled({ timeout: 45_000 });
+    if (typology === 'single') {
+      await expect(page.locator('[data-land-accept]')).toBeEnabled();
+      await page.locator('[data-land-whole]').click();
+      await expect(page.locator('[data-land-accept]')).toBeEnabled();
+    }
 }
 
 async function openOptions(parent: any) {

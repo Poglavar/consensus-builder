@@ -112,6 +112,7 @@
         // A parcel layout's plots are its complete footprint; `proposal.geometry` on a layout would
         // be an apply-time union of whatever live pool it consumed.
         if (!layout) add('geometry', proposal.geometry);
+        add('geometry.landTake', proposal.geometry?.landTake);
         add('buildingGeometry', proposal.buildingGeometry);
         if (proposal.geometry && Array.isArray(proposal.geometry.buildings)) {
             proposal.geometry.buildings.forEach(building => add('geometry.buildings', building));
