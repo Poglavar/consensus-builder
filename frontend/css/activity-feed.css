@@ -191,6 +191,36 @@
     border: 0;
 }
 
+#activity-watched-pane:not([hidden]) {
+    overflow: hidden;
+}
+
+#activity-watched-pane :is(.accordion-section, .sheet-section-body, .control-group, .btn-group),
+#activity-watched-areas-list {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    min-height: 0;
+}
+
+#activity-watched-pane .control-group {
+    margin-bottom: 0;
+    padding: 0;
+}
+
+#activity-watched-pane .sheet-section-title,
+#activity-watched-pane .btn-grid-2x2,
+#activity-watched-areas-list .area-monitor-list-filter {
+    flex: 0 0 auto;
+}
+
+#activity-watched-areas-list .area-monitor-list-items {
+    flex: 1 1 0;
+    min-height: 0;
+    max-height: none;
+}
+
 /* Simulation and technical status live under Settings > Diagnostics. */
 #settings-sheet .activity-diagnostics {
     margin-top: var(--cb-space-3);

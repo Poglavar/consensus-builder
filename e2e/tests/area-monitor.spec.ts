@@ -5,6 +5,7 @@ import { installAreaMonitorSpaFallback } from '../helpers/mocks/area-monitor-ser
 // Watched areas (draw controls and the monitor list) live in the Activity sheet since fbe3758d.
 async function openWatchedAreas(page: import('@playwright/test').Page) {
   await page.locator('#activity-button').click();
+  await page.locator('#activity-watched-tab').click();
   await expect(page.locator('#activity-sheet [data-section="areaMonitor"]')).toBeVisible();
 }
 // The address follows the map as ?at= (map-core.js), so a route is checked by path and city only.
@@ -16,6 +17,37 @@ async function expectRoute(page: import('@playwright/test').Page, pathname: stri
 }
 
 test.describe('Area monitor @features', () => {
+  for (const width of [1280, 390]) {
+    test(`watched list fills the panel and scrolls beneath its controls at ${width}px`, async ({ mockApi: page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.route(url => url.pathname.endsWith('/area-monitors'), route => route.fulfill({ json: {
+        monitors: Array.from({ length: 30 }, (_, i) => ({
+          id: i + 1, name: `Watched area ${i + 1}`, parcelCount: 3, createdAt: '2026-10-23T10:00:00Z',
+        })),
+      } }));
+      await page.goto('/?city=zg&reduceMotion=1');
+      await waitForMapReady(page);
+      await openWatchedAreas(page);
+      const list = page.locator('#activity-watched-areas-list .area-monitor-list-items');
+      await expect(list.locator('.area-monitor-list-item')).toHaveCount(30);
+      const measure = () => list.evaluate(node => {
+        const pane = document.querySelector('#activity-watched-pane')!;
+        const filter = document.querySelector('#activity-watched-areas-list .area-monitor-list-filter')!;
+        return { bottomGap: pane.getBoundingClientRect().bottom - node.getBoundingClientRect().bottom,
+          height: node.clientHeight, viewport: innerHeight, content: node.scrollHeight, paneScroll: pane.scrollTop,
+          filterTop: filter.getBoundingClientRect().top };
+      });
+      const before = await measure();
+      expect(Math.abs(before.bottomGap)).toBeLessThanOrEqual(2);
+      expect(before.height).toBeGreaterThan(before.viewport * 0.34);
+      expect(before.content).toBeGreaterThan(before.height);
+      await list.evaluate(node => { node.scrollTop = node.scrollHeight; });
+      await expect(list.locator('.area-monitor-list-item').last()).toBeInViewport();
+      expect((await measure()).filterTop).toBe(before.filterTop);
+      expect((await measure()).paneScroll).toBe(0);
+    });
+  }
+
   test('draw control enters and Escape exits real polygon drawing mode', async ({ mockApi: page }) => {
     await page.goto('/?city=zg');
     await waitForMapReady(page);
