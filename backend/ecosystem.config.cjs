@@ -69,7 +69,10 @@ module.exports = {
     time: true
   }, {
     name: 'ugt-mcp',
-    script: 'agents/mcp-launch.mjs',
+    // Run the CLI directly: PM2's module loader does not satisfy its direct-entry guard.
+    script: process.execPath,
+    args: ['agents/mcp-launch.mjs'],
+    interpreter: 'none',
     cwd: __dirname,
     exec_mode: 'fork',
     instances: 1,
