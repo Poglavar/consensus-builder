@@ -93,6 +93,13 @@
     transform-origin: center;
 }
 
+/* --tree-icon-size is set from the stored height by park-planting.js, in symbolic map pixels. */
+.park-tree-glyph {
+    display: block;
+    font-size: var(--tree-icon-size);
+    line-height: 1;
+}
+
 .structure-geometry-icon.is-selected {
     background: var(--cb-focus-ring);
     border: 2px solid var(--cb-primary);

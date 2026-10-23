@@ -66,6 +66,15 @@ describe('tree looks', () => {
         expect(Planting.treeGlyph({ coordinate: [0, 0], kind: 'conifer', heightM: 10 })).toBe('🌲');
         expect(Planting.treeGlyph({ coordinate: [0, 0], kind: 'ornamental', heightM: 4 })).toBe('🌳');
     });
+
+    it('sizes and centres the 2D icon from the same height the 3D tree uses', () => {
+        const icon = heightM => Planting.treeIcon({ coordinate: [0, 0], kind: 'columnar', heightM });
+        expect(icon(10).iconSize).toEqual([24, 24]);
+        expect(icon(20).iconSize).toEqual([38, 38]);
+        expect(icon(20).iconAnchor).toEqual([19, 19]);
+        expect(icon(20).html).toContain('--tree-icon-size: 38px');
+        expect(icon(10).html).toContain('--tree-icon-size: 24px');
+    });
 });
 
 describe('flowerbed planting', () => {

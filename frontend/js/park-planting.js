@@ -133,6 +133,18 @@
         return tree && tree.kind === 'conifer' ? '🌲' : '🌳';
     }
 
+    // A symbolic map size follows the authored height in metres; it does not claim a crown footprint.
+    // The CSS custom property is the narrow geometry interface shared by editor and saved-map icons.
+    function treeIcon(entry) {
+        const tree = treeOf(entry);
+        const size = tree ? Math.round(10 + tree.heightM * 1.4) : 24;
+        return {
+            html: `<span class="park-tree-glyph" style="--tree-icon-size: ${size}px">${treeGlyph(entry)}</span>`,
+            iconSize: [size, size],
+            iconAnchor: [size / 2, size / 2]
+        };
+    }
+
     // --- flowerbeds -----------------------------------------------------------------------------
 
     // Blossom colours, in rings from the edge inwards: each bed takes two or three of them.
@@ -238,5 +250,5 @@
         return plants;
     }
 
-    return { TREE_KINDS, FLOWER_COLORS, treeOf, treeCoordinate, rerollTree, treeShape, treeGlyph, flowerbedPlanting, ringSeed };
+    return { TREE_KINDS, FLOWER_COLORS, treeOf, treeCoordinate, rerollTree, treeShape, treeGlyph, treeIcon, flowerbedPlanting, ringSeed };
 });

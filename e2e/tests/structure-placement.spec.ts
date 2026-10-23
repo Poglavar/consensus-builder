@@ -171,6 +171,40 @@ function savedStructureForTranslation(structure: any, kind: 'park' | 'square'): 
 }
 
 test.describe('Whole-site placement editing @features', () => {
+  test('tree clicks resize the 2D glyph with the stored height and keep the size after saving', async ({ mockApi: page }) => {
+    await openCity(page);
+    const { proposalId } = await addEditableStructure(page, 'park', 'tree-size');
+    const editor = page.locator('#structure-geometry-editor');
+    await editor.locator('[data-tool="tree"]').click();
+    // Drive the real reroll with deterministic random draws: tallest then shortest columnar tree.
+    await page.evaluate(() => {
+      const planting = (window as any).__parkPlanting;
+      const reroll = planting.rerollTree;
+      let clicks = 0;
+      planting.rerollTree = (tree: any) => {
+        const values = [0.6, clicks++ === 0 ? 1 : 0];
+        let index = 0;
+        return reroll(tree, () => values[index++ % values.length]);
+      };
+    });
+    const tree = page.locator('.structure-geometry-icon.is-tree').first();
+    await tree.click();
+    await expect(tree.locator('.park-tree-glyph')).toHaveCSS('font-size', '38px');
+    await expect(tree).toHaveCSS('width', '38px');
+    await tree.click();
+    await expect(tree.locator('.park-tree-glyph')).toHaveCSS('font-size', '23px');
+    await expect(tree).toHaveCSS('width', '23px');
+    await editor.locator('[data-action="save"]').click();
+    await expect(editor).toHaveCount(0);
+    const saved = await page.evaluate(id => (window as any).proposalStorage.getAllProposals()
+      .find((p: any) => p.proposalId === id)?.structureProposal.decorations.trees[0], proposalId);
+    expect(saved.heightM).toBe(9);
+    await showProposal(page, proposalId);
+    await page.locator('#proposal-details-footer .btn-edit-geometry').click();
+    await expect(tree.locator('.park-tree-glyph')).toHaveCSS('font-size', '23px');
+    await editor.locator('.on-map-editor__header .close-circle-btn').click();
+  });
+
   test('park and square Move includes decorations, Undo restores the gesture, and individual decoration dragging remains available', async ({ mockApi: page }) => {
     await openCity(page);
     for (const kind of ['park', 'square'] as const) {

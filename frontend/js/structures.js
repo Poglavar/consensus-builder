@@ -336,9 +336,7 @@
                 L.marker([lat, lng], {
                     icon: L.divIcon({
                         className: 'park-tree-emoji',
-                        html: window.__parkPlanting.treeGlyph(tree),
-                        iconSize: [20, 20],
-                        iconAnchor: [10, 10]
+                        ...window.__parkPlanting.treeIcon(tree)
                     }),
                     pane: PARKS_PANE,
                     interactive: false
@@ -850,7 +848,7 @@
             .forEach(tree => {
                 const [lng, lat] = tree.coordinate;
                 L.marker([lat, lng], {
-                    icon: L.divIcon({ className: 'square-tree-emoji', html: window.__parkPlanting.treeGlyph(tree), iconSize: [20, 20], iconAnchor: [10, 10] }),
+                    icon: L.divIcon({ className: 'square-tree-emoji', ...window.__parkPlanting.treeIcon(tree) }),
                     pane: SQUARES_ICON_PANE,
                     zIndexOffset: 1000,
                     interactive: false

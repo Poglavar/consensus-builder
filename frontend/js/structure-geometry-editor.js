@@ -199,6 +199,13 @@
         });
     }
 
+    function makeTreeIcon(tree) {
+        return global.L.divIcon({
+            className: 'structure-geometry-icon is-tree',
+            ...parkPlanting().treeIcon(tree)
+        });
+    }
+
     function rejectOutside() {
         if (typeof global.updateStatus === 'function') global.updateStatus(t('statusOutside', 'Place items inside the structure boundary.'));
     }
@@ -463,7 +470,7 @@
             interactive: state.tool !== 'move',
             className: 'structure-geometry-draggable'
         }).addTo(group), 'flowerbeds', index));
-        state.decorations.trees.forEach((tree, index) => addPointMarker(group, 'trees', tree.coordinate, index, makeIcon('is-tree', parkPlanting().treeGlyph(tree))));
+        state.decorations.trees.forEach((tree, index) => addPointMarker(group, 'trees', tree.coordinate, index, makeTreeIcon(tree)));
         (state.decorations.benches || []).forEach((bench, index) => addPointMarker(group, 'benches', bench.coordinate, index, makeIcon('is-bench', '▰')));
         if (state.pathPoints.length) {
             global.L.polyline(state.pathPoints.map(([lng, lat]) => [lat, lng]), {
@@ -500,7 +507,7 @@
 
     function renderSquare(group) {
         state.decorations.fountains.forEach((coord, index) => addPointMarker(group, 'fountains', coord, index, makeIcon('is-fountain', '⛲', 30)));
-        state.decorations.trees.forEach((tree, index) => addPointMarker(group, 'trees', tree.coordinate, index, makeIcon('is-tree', parkPlanting().treeGlyph(tree))));
+        state.decorations.trees.forEach((tree, index) => addPointMarker(group, 'trees', tree.coordinate, index, makeTreeIcon(tree)));
         state.decorations.benches.forEach((bench, index) => {
             const icon = makeIcon('is-bench', `<span style="transform:rotate(${bench.bearing || 0}deg)">▰</span>`);
             addPointMarker(group, 'benches', bench.coordinate, index, icon);
