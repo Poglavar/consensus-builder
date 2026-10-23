@@ -17,6 +17,10 @@
     font: var(--cb-text-sm)/var(--cb-leading) var(--cb-font-sans);
 }
 
+.map-credits-control .cb-link--external::after {
+    content: none;
+}
+
 /* The 2D basemap is covered in model/photo view; Google's visible tiles credit themselves. */
 body.three-mode-active .map-credits-control { display: none; }
 
