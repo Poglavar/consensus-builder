@@ -9,6 +9,21 @@
     const EARTH_RADIUS_M = 6378137;
     const FINE_GRAIN_LIMIT_M = 10;
     const HAPPY_SCORE = 60;
+    const ROOSTER_PECK = Object.freeze({ angleDeg: -35, dropPx: 7 });
+
+    // SVG beak tip (28,79) in a 180×220 drawing, tilted about the body's 44%/76% pivot.
+    // Position the contact pose, including mirroring, rather than the bird's bounding-box centre.
+    function roosterPose({ target, width, height, facing = 1 }) {
+        const angle = ROOSTER_PECK.angleDeg * Math.PI / 180;
+        const pivot = { x: width * 0.44, y: height * 0.76 };
+        const dx = width * 28 / 180 - pivot.x;
+        const dy = height * 79 / 220 - pivot.y + ROOSTER_PECK.dropPx;
+        const beak = {
+            x: pivot.x + dx * Math.cos(angle) - dy * Math.sin(angle),
+            y: pivot.y + dx * Math.sin(angle) + dy * Math.cos(angle)
+        };
+        return { x: target.x - (facing < 0 ? width - beak.x : beak.x), y: target.y - beak.y };
+    }
 
     function finite(value) {
         return typeof value === 'number' && Number.isFinite(value);
@@ -233,6 +248,8 @@
     const api = {
         FINE_GRAIN_LIMIT_M,
         HAPPY_SCORE,
+        ROOSTER_PECK,
+        roosterPose,
         measureParcelRows,
         parcelDimensionsMeters,
         isFineGrainParcel,

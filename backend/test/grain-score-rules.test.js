@@ -9,10 +9,29 @@ const {
     isFineGrainParcel,
     startingParcelIds,
     scoreParcelCount,
-    scorePlan
+    scorePlan,
+    roosterPose
 } = require('../../frontend/js/proposals/grain-score-rules.js');
 
 const R = 6378137;
+
+describe('beak contact pose', () => {
+    it('mirrors around the beak contact point without moving the target', () => {
+        const target = { x: 400, y: 300 }, width = 90, height = 110;
+        const left = roosterPose({ target, width, height, facing: 1 });
+        const right = roosterPose({ target, width, height, facing: -1 });
+        expect(left.y).toBeCloseTo(right.y, 8);
+        expect(left.x + right.x + width).toBeCloseTo(2 * target.x, 8);
+        expect(left.x).toBeGreaterThan(target.x);
+        expect(right.x).toBeLessThan(target.x - width);
+    });
+    it('translates with the parcel rather than clamping the bird away from the parcel', () => {
+        const at = target => roosterPose({ target, width: 78, height: 78 * 220 / 180 });
+        const a = at({ x: 10, y: 50 }), b = at({ x: 210, y: 350 });
+        expect(b.x - a.x).toBeCloseTo(200, 8);
+        expect(b.y - a.y).toBeCloseTo(300, 8);
+    });
+});
 
 function rotatedPolygon(corners, angleDegrees, center = [15.98, 45.81]) {
     const theta = angleDegrees * Math.PI / 180;

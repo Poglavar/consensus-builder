@@ -102,7 +102,7 @@
                     <path d="M65 46C60 28 65 16 74 10C83 14 84 26 80 36C87 23 96 16 105 18C111 25 105 37 98 44C108 37 118 38 123 45C120 55 108 61 94 63Z"/>
                     <path d="M72 86C64 100 66 115 77 119C87 112 87 97 81 87Z"/>
                 </g>
-                <path d="M53 66L28 79L57 85Z" fill="#c58a2b" stroke="#17232b" stroke-width="6" stroke-linejoin="round"/>
+                <path data-grain-role="beak" d="M53 66L28 79L57 85Z" fill="#c58a2b" stroke="#17232b" stroke-width="6" stroke-linejoin="round"/>
                 <path class="grain-rooster__critical" d="M30 79Q43 80 56 87" fill="none" stroke="#17232b" stroke-width="3.5" stroke-linecap="round"/>
                 <circle class="grain-rooster__critical" cx="72" cy="61" r="6" fill="#17232b"/>
                 <path class="grain-rooster__critical" d="M55 49L87 43" stroke="#17232b" stroke-width="7" stroke-linecap="round"/>
@@ -473,10 +473,16 @@
         const leafletMap = mapInstance();
         // The rooster takes the map: fold away the sheet the button was pressed in.
         if (global.MapShell) global.MapShell.closeSheets();
+        global.AgreementPanel?.close();
         if (!state.priorMapView && leafletMap && typeof leafletMap.getCenter === 'function') {
             state.priorMapView = { center: leafletMap.getCenter(), zoom: leafletMap.getZoom() };
         }
         try { if (typeof hideProposalDetailsPanel === 'function') hideProposalDetailsPanel(false); } catch (_) { }
+        global.clearProposalHighlights?.();
+        global.clearProposalInfoHoverOverlay?.();
+        global.clearParcelHover?.();
+        global.ClickStack?.close();
+        global.ProposalSelection?.clear?.();
         try {
             if (typeof global.isThreeModeActive === 'function' && global.isThreeModeActive()
                 && typeof global.exitThreeMode === 'function') global.exitThreeMode();
@@ -580,30 +586,24 @@
         return animation;
     }
 
-    function targetForPath(path, rooster) {
-        const box = path.getBBox();
-        const width = rooster.offsetWidth || 96;
-        const height = rooster.offsetHeight || 118;
-        const host = state.ui.overlay;
-        const desiredX = box.x + box.width / 2 - width / 2;
-        const desiredY = box.y + box.height / 2 - height * 0.72;
-        return {
-            x: Math.max(4, Math.min(host.clientWidth - width - 4, desiredX)),
-            y: Math.max(36, Math.min(host.clientHeight - height - 18, desiredY))
-        };
-    }
-
     function transformFor(position, facing) {
         return `translate3d(${position.x}px, ${position.y}px, 0) scaleX(${facing})`;
     }
 
     async function walkTo(item, pace) {
         const rooster = state.ui.overlay.querySelector('[data-grain-role="rooster"]');
-        const target = targetForPath(item.path, rooster);
         const previous = rooster.__grainPosition || { x: 8, y: state.ui.overlay.clientHeight - (rooster.offsetHeight || 118) - 20 };
-        const facing = target.x >= previous.x ? 1 : -1;
+        const point = turf.pointOnFeature(item.feature).geometry.coordinates;
+        const targetPoint = mapInstance().latLngToContainerPoint([point[1], point[0]]);
+        const body = rooster.querySelector('.grain-rooster__body').getBoundingClientRect();
+        let facing = targetPoint.x >= previous.x + body.width / 2 ? -1 : 1;
+        let target = rules.roosterPose({ target: targetPoint, width: body.width, height: body.height, facing });
+        if (target.x < 4 || target.x + body.width > state.ui.overlay.clientWidth - 4) {
+            facing *= -1;
+            target = rules.roosterPose({ target: targetPoint, width: body.width, height: body.height, facing });
+        }
         // scaleX(-1) mirrors the whole rooster, speech bubble included; the class lets the CSS
-        // mirror the bubble back so its text stays readable while he walks left.
+        // mirror the bubble back so its text stays readable with either facing direction.
         rooster.classList.toggle('is-facing-left', facing < 0);
         rooster.classList.add('is-walking');
         const animation = await animate(rooster, [
@@ -621,7 +621,7 @@
         const body = state.ui.overlay.querySelector('.grain-rooster__body');
         await animate(body, [
             { transform: 'rotate(0deg) translateY(0)' },
-            { transform: 'rotate(17deg) translateY(7px)', offset: 0.48 },
+            { transform: `rotate(${rules.ROOSTER_PECK.angleDeg}deg) translateY(${rules.ROOSTER_PECK.dropPx}px)`, offset: 0.48 },
             { transform: 'rotate(0deg) translateY(0)' }
         ], { duration: pace * 0.22, easing: 'ease-in-out' });
     }
@@ -679,7 +679,7 @@
         if (rooster) {
             rooster.hidden = true;
             rooster.removeAttribute('style');
-            rooster.classList.remove('is-happy', 'is-walking');
+            rooster.classList.remove('is-happy', 'is-walking', 'is-facing-left');
             delete rooster.__grainPosition;
             delete rooster.__grainFacing;
         }

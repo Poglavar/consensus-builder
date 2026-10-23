@@ -99,6 +99,9 @@
     opacity: .88;
 }
 
+/* Inspection owns one highlight; previous results and unvisited parcels stay unaccented. */
+.grain-score-parcel:not(.is-active) { opacity: 0; }
+
 .grain-rooster {
     position: absolute;
     top: 0;
