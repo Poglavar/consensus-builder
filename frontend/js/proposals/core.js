@@ -726,7 +726,8 @@ function tryEnterRealisticMode(options) {
 
 // URL entry shares the same cancellable transition as the mode buttons.
 function enterUrlDrivenView(focusProposalIds) {
-    const restoreView = (typeof window.getAiSceneRestoreView === 'function') ? window.getAiSceneRestoreView() : null;
+    const restoreView = window.MapShare?.readCamera(new URLSearchParams(window.location.search).get('camera'))
+        || ((typeof window.getAiSceneRestoreView === 'function') ? window.getAiSceneRestoreView() : null);
     const options = { fromUrl: true, focusProposalIds, restoreView, frameProposal: true };
     return isRealisticModeRequestedFromUrl() ? tryEnterRealisticMode(options) : tryEnterThreeMode(options);
 }

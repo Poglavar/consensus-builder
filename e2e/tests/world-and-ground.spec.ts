@@ -399,7 +399,6 @@ test.describe('World navigation and open ground @features', () => {
     await createSpace(page, 'park');
     await page.locator('#proposals-button').click();
     // Plan-wide actions sit in the collapsed "Plan actions" group (fbe3758d).
-    await page.locator('#proposal-list-actions > summary').click();
     await page.locator('#roosterScoreButton').click();
     const panel = page.locator('#grain-score-panel');
     await expect(panel).toBeVisible();

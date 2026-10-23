@@ -363,7 +363,10 @@
                 const requestTransport = transport();
                 const fetchByIds = requestTransport && requestTransport.fetchByIds;
                 if (typeof fetchByIds !== 'function') throw new Error('Cadastral id transport is unavailable.');
-                emit(options.onProgress, { phase: 'ground-load-ids', done: 0, total: requestedIds.length });
+                emit(options.onProgress, {
+                    phase: 'ground-load-ids', done: 0, total: ids.length,
+                    requested: requestedIds.length, cached: cachedIds.length
+                });
                 ownRequest = Promise.resolve()
                     .then(() => timedTransport((signal, activity) => fetchByIds(requestedIds, {
                         city,

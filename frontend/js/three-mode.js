@@ -3228,6 +3228,7 @@
         }
         await buildParcels3D(targetGroup, generation, stillCurrent);
         if (!stillCurrent()) return;
+        rebuildGroundOnly(null);
         applyParcelVisibilityForMode(derivedParcelVisibilityMode());
         applyParcelEmphasis();
     }
@@ -5709,6 +5710,31 @@
             const source = graph || buildLifeGraph();
             const bounds = lifeSurfaceBounds(lifeProjector());
             const result = source ? window.__groundGeometry.buildGroundGeometry({ carriageways: source.surface.carriageways, bounds }) : null;
+            const cuts = groundCutFootprintFeatures();
+            if (result?.plane && cuts.length) {
+                const project = lifeProjector();
+                const openings = cuts.map(feature => {
+                    const polygon = rings => rings.map(ring => ring.map(([lng, lat]) => project(lng, lat)));
+                    return { type: 'Feature', properties: {}, geometry: {
+                        type: feature.geometry.type,
+                        coordinates: feature.geometry.type === 'Polygon' ? polygon(feature.geometry.coordinates)
+                            : feature.geometry.coordinates.map(polygon)
+                    } };
+                });
+                const previousTriangles = result.plane.triangles;
+                result.plane = window.__groundGeometry.buildPavementGeometry(bounds, openings, {
+                    difference: (surface, opening) => {
+                        try { return turf.difference(surface, opening); } catch (error) {
+                            reportThreeClip('difference', error, 'three-mode.pavementOpening', [surface, opening]);
+                            return surface;
+                        }
+                    },
+                    triangulate: (outer, holes) => THREE.ShapeUtils.triangulateShape(
+                        outer.map(([x, y]) => new THREE.Vector2(x, y)),
+                        holes.map(ring => ring.map(([x, y]) => new THREE.Vector2(x, y))))
+                });
+                result.stats.triangles += (result.plane?.triangles || 0) - previousTriangles;
+            }
             groundLayer.setGeometry(result);
             if (result) {
                 const s = result.stats;

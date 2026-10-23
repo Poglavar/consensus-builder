@@ -54,7 +54,11 @@
         if (!isObject(value)) return null;
         const payload = formationDepth().stripDerivedPayloadData(key, copy(value));
         RUNTIME_KEYS.forEach(field => { delete payload[field]; });
-        return payload;
+        // The store decodes a corridor for drawing. Identity always uses its canonical OSM form,
+        // just as persistence and MCP publication do, rather than the expanded drawing fields.
+        return key === 'roadProposal'
+            ? formationDepth().encodeRoadRecord({ roadProposal: payload }).roadProposal
+            : payload;
     }
 
     /**

@@ -213,7 +213,7 @@ describe('panel HTML', () => {
         expect(panel.actionsHtml({ canCompare: false })).toMatch(/data-agreement-action="compare" aria-pressed="false" disabled/);
         expect(panel.actionsHtml({ canCompare: true, comparing: true })).toMatch(/data-agreement-action="compare" aria-pressed="true">/);
         expect(panel.actionsHtml()).toContain('data-agreement-action="edit"');
-        expect(panel.actionsHtml()).toMatch(/class="btn btn-danger" data-agreement-action="delete"/);
+        expect(panel.actionsHtml()).toMatch(/class="btn btn-quiet" data-agreement-action="delete"/);
     });
 
     it('offers Propose only for a current agreement not yet proposed, and no Edit once proposed', () => {
@@ -254,6 +254,7 @@ describe('panel HTML', () => {
             classList: { values: new Set(), add(value) { this.values.add(value); }, remove(value) { this.values.delete(value); }, contains(value) { return this.values.has(value); } },
             addEventListener: vi.fn(), setAttribute: vi.fn(),
             querySelector: selector => selector === '#agreement-panel-title' ? title
+                : selector === '.agreement-panel-kind' ? { textContent: '' }
                 : selector === '[data-agreement-action="close"]' ? closeButton
                     : selector === '[data-agreement-region="body"]' ? panelBody : null
         };

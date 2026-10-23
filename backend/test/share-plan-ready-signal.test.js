@@ -69,12 +69,13 @@ describe('showSharePlanPanel can never leave a caller waiting', () => {
         expect(iife).toBeGreaterThan(started);
     });
 
-    it('settles on the happy path before the publication check, not after', () => {
+    it('knows publication before signaling that the rows are ready', () => {
         // Which rows are published is filled in after the panel is up, in plain sight.
         const settle = body.indexOf("readySignal.settle('ready')");
         const checks = body.indexOf('window.DesignSync.publishedCid(proposal)');
         expect(settle).toBeGreaterThan(-1);
-        expect(checks).toBeGreaterThan(settle);
+        expect(checks).toBeGreaterThan(-1);
+        expect(checks).toBeLessThan(settle);
     });
 
     it('keeps a backstop in the async finally for a cancelled or failed build', () => {

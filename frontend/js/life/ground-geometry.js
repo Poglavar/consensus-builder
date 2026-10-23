@@ -290,6 +290,33 @@
         return len;
     }
 
+    // The same openings as the parcel ground, cut into the pavement itself. Work in the local
+    // metric frame; subtraction and triangulation are supplied by the scene's geometry libraries.
+    function buildPavementGeometry(bounds, openings, { difference, triangulate }) {
+        const [x0, y0, x1, y1] = bounds;
+        let surface = { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [
+            [[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0, y0]]
+        ] } };
+        for (const opening of openings) {
+            surface = difference(surface, opening);
+            if (!surface) return null;
+        }
+        const polygons = surface.geometry.type === 'Polygon' ? [surface.geometry.coordinates] : surface.geometry.coordinates;
+        const positions = [], indices = [];
+        for (const polygon of polygons) {
+            const rings = polygon.map(ring => {
+                const points = ring.map(point => [point[0], point[1]]);
+                if (points.length > 1 && points[0][0] === points.at(-1)[0] && points[0][1] === points.at(-1)[1]) points.pop();
+                return points;
+            });
+            const offset = positions.length / 3;
+            const triangles = triangulate(rings[0], rings.slice(1));
+            rings.flat().forEach(([x, y]) => positions.push(x, y, 0));
+            triangles.forEach(triangle => indices.push(...triangle.map(index => index + offset)));
+        }
+        return { positions: new Float32Array(positions), indices: new Uint32Array(indices), triangles: indices.length / 3 };
+    }
+
     // `carriageways`: [{ pts: [[x, y, z?], …], halfWidth, drop?, lanes? }] in true metres (the life
     // graph's surface.carriageways; `drop` sinks that way's asphalt below its centreline z and is its
     // kerb height, 0 or absent for flush; `lanes` [{ offset, dir }] are the lane centres left-positive
@@ -407,7 +434,7 @@
     }
 
     return {
-        buildGroundGeometry, ribbonEdges, splitAtSharpBends, nodeKey,
+        buildGroundGeometry, buildPavementGeometry, ribbonEdges, splitAtSharpBends, nodeKey,
         NODE_SNAP_M, MITRE_LIMIT, DISC_SEGMENTS, KERB_TOL_M, MARK_HALF_M, MARK_DASH_M, MARK_GAP_M, MARK_LIFT_M
     };
 });

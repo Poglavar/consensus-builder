@@ -209,8 +209,7 @@ async function openProposalTools(page: Page): Promise<void> {
   const sheet = page.locator('#proposals-sheet');
   if (!(await sheet.isVisible())) await page.locator('#proposals-button').click();
   await expect(sheet).toBeVisible();
-  const tools = page.locator('#proposal-list-actions');
-  if (!(await tools.evaluate(element => (element as HTMLDetailsElement).open))) await tools.locator('summary').click();
+  await expect(page.locator('#proposal-list-actions')).toBeVisible();
 }
 
 export async function openAgreementsList(page: Page): Promise<Locator> {

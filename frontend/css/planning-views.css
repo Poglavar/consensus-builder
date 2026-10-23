@@ -31,7 +31,7 @@
 .planning-source-field { display: flex; align-items: center; gap: var(--cb-space-2); margin-top: var(--cb-space-2); font-size: var(--cb-text-xs); }
 .planning-source-field[hidden] { display: none; }
 .planning-source-label { flex: 0 0 auto; color: var(--cb-text-muted); }
-.planning-source-note { font-size: var(--cb-text-xs); color: var(--cb-text-muted); margin: var(--cb-space-1) 0 0; }
+.planning-source-note, .planning-map-context { font-size: var(--cb-text-xs); color: var(--cb-text-muted); margin: var(--cb-space-1) 0 0; }
 .planning-source-note:empty { display: none; }
 .planning-parcel-evidence { border-top: 1px solid var(--cb-line); padding-top: var(--cb-space-3); margin-top: var(--cb-space-3); font-size: var(--cb-text-sm); }
 /* The parcel the 3D view has isolated: the sheet names it and lists its saved evidence. */
@@ -126,3 +126,8 @@ body[data-planning-existing-scope="removed"] .leaflet-observedReferences-pane { 
     .planning-reroll.is-rolling i { animation: none; }
     .planning-source-field[aria-busy="true"]::after { animation: none; border-top-color: var(--cb-text-muted); }
 }
+
+/* No source is a disabled comparison row, without an empty source-information section. */
+.planning-layer-row.is-unavailable { opacity: 0.45; }
+.planning-layer-row.is-unavailable select { cursor: not-allowed; }
+.planning-map-context { margin: 0 0 var(--cb-space-3); }

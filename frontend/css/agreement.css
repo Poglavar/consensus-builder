@@ -23,6 +23,30 @@
     flex-direction: column;
 }
 
+.agreement-panel-heading-group { min-width: 0; }
+.agreement-panel-kind {
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-medium);
+}
+
+@media (max-width: 767.98px) {
+    #map-container #agreement-panel.info-panel.right-dock-panel {
+        top: auto;
+        left: 0;
+        right: 0;
+        bottom: var(--map-shell-dock-height);
+        height: 50dvh;
+        max-height: 50dvh;
+        width: 100%;
+        max-width: none;
+        border-radius: var(--cb-radius-lg) var(--cb-radius-lg) 0 0;
+    }
+    #agreement-panel .panel-header { padding: var(--cb-space-2) var(--cb-space-3); }
+    #agreement-panel [data-agreement-action="close"] { display: none; }
+    #agreement-panel .agreement-panel-actions { display: grid; grid-template-columns: 1fr; }
+}
+
 /* Approval links select an action visually even before its wallet is connected. */
 #agreement-panel [data-approval-selected="true"] {
     outline: 2px solid var(--cb-primary);

@@ -116,13 +116,16 @@ function renderProposalListModal() {
         scrollPositions.body = existingBody.scrollTop;
     }
 
-    const source = proposalListState.source || 'local';
+    let source = proposalListState.source || 'local';
     const cityCode = resolveCurrentCityCode();
     const area = typeof getProposalCountAreaContext === 'function' ? getProposalCountAreaContext() : null;
     const allStoredProposals = proposalStorage.getAllProposals();
     const allProposals = area?.explore && window.__proposalCounts?.proposalIntersectsBounds
         ? allStoredProposals.filter(proposal => window.__proposalCounts.proposalIntersectsBounds(proposal, area.bounds))
         : allStoredProposals;
+    if (!proposalListState.sourceChosen) {
+        source = proposalListState.source = allProposals.length ? 'local' : 'server';
+    }
 
     const buildDatasets = (augmentedList) => {
         // Single list — lifecycle status and applied state are dropdown filters inside
@@ -184,19 +187,18 @@ function renderProposalListModal() {
         : (serverCount !== null ? serverCount : 0);
 
 
-    // Status (lifecycle) and Applied are two orthogonal dropdown filters that replaced the old
-    // Active/Executed tabs. Every lifecycle status is selectable; labels reuse getProposalLifecycleLabel.
-    const lifecycleFilterOptions = [
-        { value: 'all', label: t('modal.roadWidth.proposalList.filters.statusAll', 'All statuses') },
-        ...['draft', 'active', 'executed', 'execution-unverified', 'expired', 'cancelled', 'awaiting-funding', 'unknown']
-            .map(key => ({ value: key, label: getProposalLifecycleLabel(key) }))
+    // Publication belongs to a design; decisions and execution belong to agreements.
+    const publicationFilterOptions = [
+        { value: 'all', label: t('modal.roadWidth.proposalList.filters.publicationAll', 'Draft & published') },
+        { value: 'draft', label: t('common.lifecycle.draft', 'Draft') },
+        { value: 'published', label: t('common.lifecycle.published', 'Published') }
     ];
     const appliedFilterOptions = [
-        { value: 'all', label: t('modal.roadWidth.proposalList.filters.appliedAll', 'Applied & not') },
-        { value: 'applied', label: t('modal.roadWidth.proposalList.filters.appliedYes', 'Applied') },
-        { value: 'not-applied', label: t('modal.roadWidth.proposalList.filters.appliedNo', 'Not applied') }
+        { value: 'all', label: t('modal.roadWidth.proposalList.filters.appliedAll', 'On map & off map') },
+        { value: 'applied', label: t('modal.roadWidth.proposalList.filters.appliedYes', 'On this map') },
+        { value: 'not-applied', label: t('modal.roadWidth.proposalList.filters.appliedNo', 'Off this map') }
     ];
-    const statusFilterLabel = t('modal.roadWidth.proposalList.filters.status', 'Status');
+    const statusFilterLabel = t('modal.roadWidth.proposalList.filters.publication', 'Publication');
     const appliedFilterLabel = t('modal.roadWidth.proposalList.filters.applied', 'Applied');
 
     // Phones: the list is a half-height bottom sheet, and seven filter fields left the list itself
@@ -230,8 +232,8 @@ function renderProposalListModal() {
                 </select>
             </div>
             <div class="proposal-filter-group">
-                <select id="proposal-filter-lifecycle" aria-label="${escapeHtml(statusFilterLabel)}">
-                    ${lifecycleFilterOptions.map(o => `<option value="${o.value}" ${o.value === (proposalListState.lifecycleFilter || 'all') ? 'selected' : ''}>${escapeHtml(o.label)}</option>`).join('')}
+                <select id="proposal-filter-publication" aria-label="${escapeHtml(statusFilterLabel)}">
+                    ${publicationFilterOptions.map(o => `<option value="${o.value}" ${o.value === (proposalListState.publicationFilter || 'all') ? 'selected' : ''}>${escapeHtml(o.label)}</option>`).join('')}
                 </select>
             </div>
             <div class="proposal-filter-group">
@@ -305,9 +307,6 @@ function renderProposalListModal() {
                 <div id="proposals-list" class="proposal-tab-content">
                     ${buildTabContent(chosen.sorted)}
                 </div>
-            </div>
-            <div class="proposal-list-footer">
-                <span class="proposal-list-navigation-hint"></span>
             </div>
         </div>
     `;
@@ -439,6 +438,7 @@ function renderProposalListModal() {
             const nextSource = event.currentTarget.getAttribute('data-source');
             if (!nextSource || proposalListState.source === nextSource) return;
             proposalListState.source = nextSource;
+            proposalListState.sourceChosen = true;
             if (nextSource === 'server') {
                 ensureServerProposals(resolveCurrentCityCode());
             }
@@ -455,10 +455,10 @@ function renderProposalListModal() {
         });
     }
 
-    const lifecycleSelect = modal.querySelector('#proposal-filter-lifecycle');
+    const lifecycleSelect = modal.querySelector('#proposal-filter-publication');
     if (lifecycleSelect) {
         lifecycleSelect.addEventListener('change', event => {
-            proposalListState.lifecycleFilter = event.target.value;
+            proposalListState.publicationFilter = event.target.value;
             renderProposalListModal();
         });
     }
@@ -494,24 +494,6 @@ function renderProposalListModal() {
     try {
         if (window.__proposalEpoch) window.__proposalEpoch.injectTimeline(modal);
     } catch (_) { }
-
-    const navigationHint = modal.querySelector('.proposal-list-navigation-hint');
-    if (navigationHint) {
-        if (document.body.classList.contains('three-mode-active')) {
-            navigationHint.textContent = `${t('modal.roadWidth.proposalList.navigation.hint3d', 'Proposals are drawn on the 2D map.')} `;
-            // Switching the view runs script, so it is a button that reads as a link.
-            const link = document.createElement('button');
-            link.type = 'button';
-            link.className = 'cb-link';
-            link.textContent = t('modal.roadWidth.proposalList.navigation.open2d', 'Open 2D map');
-            link.addEventListener('click', () => {
-                if (typeof window.requestMapMode === 'function') window.requestMapMode('2d');
-            });
-            navigationHint.appendChild(link);
-        } else {
-            navigationHint.textContent = t('modal.roadWidth.proposalList.navigation.hint2d', 'To propose, tap land or open ground on the map.');
-        }
-    }
 
     if (proposalListState.selectedId) {
         const selectedEl = Array.from(modal.querySelectorAll('.proposal-list-item'))
@@ -572,6 +554,7 @@ function closeSharePlanPanel() {
         try { state.unregisterEscape?.(); } catch (_) { }
         try { document.removeEventListener('keydown', state.onKeyDown); } catch (_) { }
         try { if (state.root && state.root.parentNode) state.root.parentNode.removeChild(state.root); } catch (_) { }
+        if (state.returnFocus?.isConnected) state.returnFocus.focus({ preventScroll: true });
     }
     try { if (typeof clearProposalHoverLayers === 'function') clearProposalHoverLayers(); } catch (_) { }
 }
@@ -596,12 +579,18 @@ function showSharePlanPanel(options) {
         const t = getProposalI18nHelper();
         const tShare = getShareI18nHelper();
         if (typeof proposalStorage === 'undefined') return;
+        const shareView = window.MapShare.capture(window);
         const applied = proposalStorage.getAllProposals().filter(isProposalCurrentlyApplied);
         if (applied.length === 0) {
-            if (typeof showEphemeralMessage === 'function') {
-                showEphemeralMessage(t('ephemeral.messages.no_applied_proposals_to_share_yet', 'No applied proposals to share yet.'));
-            }
-            return;
+            const url = window.MapShare.link(window.resolveFrontendBaseUrl(), shareView);
+            return showSimpleShareModal({
+                title: t('mapShell.shareMap', 'Share this map'),
+                body: `<label class="share-plan-link"><input class="share-plan-link__input" readonly aria-label="${escapeHtml(t('mapShell.shareMap', 'Share this map'))}" value="${escapeHtml(url)}"></label>`,
+                actions: [{ label: tShare('copyUrlButton', 'Copy URL'), primary: true, keepOpen: true,
+                    onClick: async () => {
+                        if (await window.DesignSync.copyLink(url)) showEphemeralMessage(tShare('copySuccess', 'Share link copied to clipboard!'));
+                    } }]
+            });
         }
 
         const proposalsByHash = new Map();
@@ -617,6 +606,7 @@ function showSharePlanPanel(options) {
             return;
         }
 
+        const returnFocus = document.activeElement;
         // Reopening replaces any previous instance (and resets a stale lockdown).
         closeSharePlanPanel();
 
@@ -627,17 +617,13 @@ function showSharePlanPanel(options) {
 
         // Fold away an open sheet so the (locked) chrome doesn't cover the map — the same move the
         // proposals list makes when it opens. The lockdown itself starts with the pick mode below
-        // (MapPick.begin, which also leaves model/photo view: the highlight is a 2D map layer).
+        // (MapPick.begin is used only for the 2D map; model/photo sharing keeps its view).
         if (window.MapShell) window.MapShell.closeSheets();
 
-        // A parcel layout is published only with its agreement (ProposalPublishTerms.publishRefusal):
-        // its row is listed, never selected or published.
+        // An unpublished parcel layout needs an agreement; an existing publication can be linked.
         const publishRefusals = new Map();
-        proposalsByHash.forEach((proposal, key) => {
-            const refusal = window.ProposalPublishTerms.publishRefusal(proposal);
-            if (refusal) publishRefusals.set(key, refusal);
-        });
-        const selected = new Set([...proposalsByHash.keys()].filter(key => !publishRefusals.has(key)));
+        // Every applied design starts selected. Excluding a blocked design is an explicit choice.
+        const selected = new Set(proposalsByHash.keys());
         // key -> { cid: the CID the design is published as here, or null; publishing }
         const publishState = new Map();
         const isPublished = key => !!(publishState.get(key) || {}).cid;
@@ -652,6 +638,8 @@ function showSharePlanPanel(options) {
         // and the share-link area pinned at the bottom.
         const panelRoot = document.createElement('div');
         panelRoot.className = 'share-plan-panel';
+        panelRoot.setAttribute('role', 'dialog');
+        panelRoot.setAttribute('aria-labelledby', 'share-map-title');
         const panelContent = document.createElement('div');
         panelContent.className = 'share-plan-panel-content';
         panelRoot.appendChild(panelContent);
@@ -659,7 +647,8 @@ function showSharePlanPanel(options) {
         const panelHeader = document.createElement('div');
         panelHeader.className = 'share-plan-panel-header';
         const panelTitle = document.createElement('h2');
-        panelTitle.textContent = t('proposals.share.panel.title', 'Share applied designs');
+        panelTitle.id = 'share-map-title';
+        panelTitle.textContent = t('mapShell.shareMap', 'Share this map');
         const panelCloseBtn = document.createElement('button');
         panelCloseBtn.type = 'button';
         panelCloseBtn.className = 'close-circle-btn close-circle-btn--lg';
@@ -698,6 +687,7 @@ function showSharePlanPanel(options) {
             modeWrap.appendChild(button);
         });
         filterRow.appendChild(modeWrap);
+        filterRow.hidden = shareView.mode !== '2d';
         panelContent.appendChild(filterRow);
 
         const container = document.createElement('div');
@@ -889,6 +879,26 @@ function showSharePlanPanel(options) {
         });
         linkRow.append(linkInput, copyBtn);
         shareArea.appendChild(linkRow);
+        const publishSelected = document.createElement('button');
+        publishSelected.type = 'button';
+        publishSelected.className = 'btn btn-primary share-plan-publish-selected';
+        publishSelected.textContent = t('proposals.share.panel.publishSelected', 'Publish selected designs');
+        publishSelected.hidden = true;
+        shareArea.appendChild(publishSelected);
+        const agreementAction = document.createElement('button');
+        agreementAction.type = 'button';
+        agreementAction.className = 'btn share-plan-create-agreement';
+        agreementAction.textContent = t('agreement.list.create', 'Create agreement');
+        agreementAction.hidden = true;
+        agreementAction.addEventListener('click', () => {
+            const designIds = [...selected];
+            closeSharePlanPanel();
+            Promise.resolve(window.AgreementDialog.open({ designIds })).catch(error => {
+                console.error(`[${new Date().toISOString()}] [share-plan] opening agreement failed`, error);
+                showEphemeralMessage(error.message, 5000, 'error');
+            });
+        });
+        shareArea.appendChild(agreementAction);
         container.appendChild(shareArea);
 
         const setStatus = (message) => {
@@ -898,6 +908,14 @@ function showSharePlanPanel(options) {
         // The link names the selected designs by CID: /designs/<cid>,<cid>, sorted.
         const updateShareUrl = () => {
             const selectedKeys = Array.from(selected);
+            countLine.textContent = t('proposals.share.panel.selectionCount', '{{selected}} of {{total}} designs included · {{excluded}} excluded', {
+                selected: selectedKeys.length, total: proposalsByHash.size, excluded: proposalsByHash.size - selectedKeys.length
+            });
+            const pendingKeys = selectedKeys.filter(key => !isPublished(key));
+            const blockedKeys = pendingKeys.filter(key => publishRefusals.has(key));
+            publishSelected.hidden = !pendingKeys.some(key => !publishRefusals.has(key));
+            publishSelected.disabled = selectedKeys.some(key => publishState.get(key)?.publishing);
+            agreementAction.hidden = !blockedKeys.some(key => publishRefusals.get(key)?.code === 'layout-needs-agreement');
             const showLink = url => {
                 linkInput.value = url || '';
                 linkRow.hidden = !url;
@@ -915,12 +933,18 @@ function showSharePlanPanel(options) {
             const cids = selectedKeys.map(key => (publishState.get(key) || {}).cid).filter(Boolean);
             if (cids.length !== selectedKeys.length) {
                 showLink(null);
-                setStatus(cids.length
+                const blockedKey = blockedKeys[0];
+                const blockedMessage = blockedKey && publishRefusals.get(blockedKey)?.code === 'layout-needs-agreement'
+                    ? t('proposals.share.panel.layoutNeedsAgreement', '{{title}} is published with its agreement. Create an agreement that includes it, or deselect it to share the other designs.', {
+                        title: proposalsByHash.get(blockedKey)?.title || t('proposals.share.untitled', 'Untitled design')
+                    })
+                    : publishRefusals.get(blockedKey)?.message;
+                setStatus(blockedKeys.length ? blockedMessage : cids.length
                     ? t('proposals.share.panel.publishHint', 'Publish every selected design to get the link, or deselect some.')
                     : t('proposals.share.panel.noPublishedHint', 'Publish at least one design to get a link.'));
                 return;
             }
-            showLink(window.DesignSync.designLink(cids));
+            showLink(window.MapShare.link(window.DesignSync.designLink(cids), shareView));
             setStatus('');
         };
 
@@ -970,9 +994,21 @@ function showSharePlanPanel(options) {
                 }
             }
             updateRowState(key);
-            if (!(publishState.get(key) || {}).cid) return;
+            if (!(publishState.get(key) || {}).cid) return false;
             updateShareUrl();
+            return true;
         };
+
+        // Publish sequentially, stop on the first failure and retain completed rows for retry.
+        publishSelected.addEventListener('click', async () => {
+            publishSelected.disabled = true;
+            for (const key of [...selected]) {
+                if (!_sharePlanPanelState || _sharePlanPanelState.root !== panelRoot) break;
+                if (isPublished(key) || publishRefusals.has(key)) continue;
+                if (!await publishRow(key)) break;
+            }
+            publishSelected.disabled = false;
+        });
 
         const attachRow = (proposal, key) => {
             const row = document.createElement('div');
@@ -984,8 +1020,7 @@ function showSharePlanPanel(options) {
             const refusal = publishRefusals.get(key) || null;
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
-            checkbox.checked = !refusal;
-            checkbox.disabled = !!refusal;
+            checkbox.checked = selected.has(key);
             checkbox.addEventListener('change', () => onCheckboxChange(key, checkbox.checked));
 
             // The chip (a cb-badge) carries the exact colour this design is painted with on the map:
@@ -1093,13 +1128,14 @@ function showSharePlanPanel(options) {
 
         document.body.appendChild(panelRoot);
         const unregisterEscape = window.ModalEscape?.register(panelRoot, closeSharePlanPanel);
-        _sharePlanPanelState = { root: panelRoot, unregisterEscape, token: panelToken };
+        _sharePlanPanelState = { root: panelRoot, unregisterEscape, token: panelToken, returnFocus };
+        panelCloseBtn.focus({ preventScroll: true });
 
         // The panel picks on the map (js/map-pick.js): the lockdown starts, and clicking a design ON
         // THE MAP finds it in the list. The resolution from a click to its applied design is the
         // map's own (onParcelClick in parcels/ui/parcel-selection.js, the drill for corridors and
         // structures), which is why this is a callback rather than a second map handler racing it.
-        window.MapPick.begin({
+        if (shareView.mode === '2d') window.MapPick.begin({
             name: 'share',
             pick: (id, proposal, { parcelId }) => {
                 if (!panelStillOpen()) return;
@@ -1122,24 +1158,29 @@ function showSharePlanPanel(options) {
         (async () => {
             try {
                 const entries = [...proposalsByHash.entries()];
-                if (!await inChunks(entries, ([key, proposal]) => attachRow(proposal, key),
+                if (!await inChunks(entries, ([key, proposal]) => {
+                    const cid = window.DesignSync.publishedCid(proposal);
+                    publishState.set(key, { cid, publishing: false });
+                    const refusal = cid ? null : window.ProposalPublishTerms.publishRefusal(proposal);
+                    if (refusal) publishRefusals.set(key, refusal);
+                    attachRow(proposal, key);
+                },
                     'proposals.share.panel.listing', 'Listing {{done}}/{{total}} designs…')) return;
 
                 // The map is NOT painted on open: overlays are what HOVER and CLICK are for, and
                 // toggling a row still syncs its own overlay.
-                try { if (typeof fitMapToAppliedProposals === 'function') fitMapToAppliedProposals(); } catch (_) { }
+                // Keep the map/camera the user asked to share.
 
-                // Rows are up and the map is framed: whoever is holding a dialog over the panel can
-                // let go. Which rows are published is filled in next, in plain sight.
+                // Rows have their publication/refusal state. The opener can release its busy indicator.
                 readySignal.settle('ready');
 
                 if (!await inChunks(entries, ([key, proposal]) => {
-                    publishState.set(key, { cid: window.DesignSync.publishedCid(proposal), publishing: false });
                     updateRowState(key);
                 }, 'proposals.share.panel.checking', 'Checking {{done}}/{{total}} designs…')) return;
                 updateShareUrl();
             } catch (error) {
                 console.error('share plan: filling the panel failed', error);
+                setStatus(error.message || t('ephemeral.messages.failed_to_generate_share_link', 'Failed to generate share link.'));
             } finally {
                 // Backstop: a cancelled build (panel closed mid-fill) or a throw before the line
                 // above must not leave the opener's dialog spinning with no way out.
@@ -1215,7 +1256,7 @@ function countActiveProposalListFilters(listState) {
     const st = listState || {};
     let count = 0;
     if (st.filterType && st.filterType !== 'all') count++;
-    if (st.lifecycleFilter && st.lifecycleFilter !== 'all') count++;
+    if (st.publicationFilter && st.publicationFilter !== 'all') count++;
     if (st.appliedFilter && st.appliedFilter !== 'all') count++;
     if (String(st.authorFilter || '').trim()) count++;
     if (String(st.searchText || '').trim()) count++;

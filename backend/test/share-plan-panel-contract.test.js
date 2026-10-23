@@ -40,7 +40,8 @@ describe('share plan panel contract', () => {
     it('opens as a right-docked panel, never through the share modal', () => {
         expect(panelFn).toContain("panelRoot.className = 'share-plan-panel'");
         expect(panelFn).toContain("panelContent.className = 'share-plan-panel-content'");
-        expect(panelFn).not.toContain('showSimpleShareModal(');
+        // An empty map shares its location through the small link dialog.
+        expect(panelFn).toContain('if (applied.length === 0)');
         // The panel replaced the modal entirely — no share-plan modal entry point remains.
         expect(dialogShare).not.toContain('function showSharePlanModal');
         expect(sharingRoutes).toContain('showSharePlanPanel(');
@@ -86,18 +87,18 @@ describe('share plan panel contract', () => {
         // A design reads as published while it hashes to the CID it was published as at this index
         // (DesignSync.publishedCid). The city-scoped server listing this replaced missed designs it
         // did not cover and offered to upload them a second time.
-        expect(fill).toContain('publishState.set(key, { cid: window.DesignSync.publishedCid(proposal), publishing: false });');
+        expect(fill).toContain('const cid = window.DesignSync.publishedCid(proposal);');
         expect(panelFn).not.toMatch(/\bfetch\(/);
         // The link waits for every selected design to be published, then names them by CID.
         const link = sourceSection(panelFn, 'const updateShareUrl = () => {', 'const updateRowState =');
         expect(link).toContain('if (cids.length !== selectedKeys.length) {');
-        expect(link).toContain('showLink(window.DesignSync.designLink(cids));');
+        expect(link).toContain('window.MapShare.link(window.DesignSync.designLink(cids), shareView)');
     });
 
     it('publishes a row through DesignSync and never a parcel layout', () => {
         // A layout is published with the agreement that settles its land (ProposalPublishTerms.publishRefusal).
-        expect(panelFn).toContain('const refusal = window.ProposalPublishTerms.publishRefusal(proposal);');
-        expect(panelFn).toContain('const selected = new Set([...proposalsByHash.keys()].filter(key => !publishRefusals.has(key)));');
+        expect(panelFn).toContain('const refusal = cid ? null : window.ProposalPublishTerms.publishRefusal(proposal);');
+        expect(panelFn).toContain('const selected = new Set(proposalsByHash.keys());');
         const publish = sourceSection(panelFn, 'const publishRow = async (key) => {', 'const attachRow =');
         expect(publish).toContain('if (!proposal || publishRefusals.has(key)) return;');
         expect(publish).toContain('await window.DesignSync.publishDesign(proposal);');
@@ -176,7 +177,7 @@ describe('share plan panel contract', () => {
 
     it('locks every fabric interaction surface while a surface picks', () => {
         // Selection/edit gate shared by many surfaces.
-        expect(sourceSection(mapEditLock, 'function blocksSelection()', 'const api'))
+        expect(sourceSection(mapEditLock, 'function blocksSelection(', 'const api'))
             .toContain('try { if (global.MapPick?.active()) return true; } catch (_) { }');
         // Parcel hover.
         expect(sourceSection(parcelHover, 'function highlightFeature(e)', 'clearPreviousHover'))
@@ -189,7 +190,7 @@ describe('share plan panel contract', () => {
         // click-stack-panel.test.js ("a surface picking designs").
         expect(sourceSection(drillUi, 'function interactionBlocked()', 'let hoverPending'))
             .toContain('if (global.MapPick?.active()) return true;');
-        const stackClick = sourceSection(clickStackPanel, 'function handleClick(latlng)', 'const hits =');
+        const stackClick = sourceSection(clickStackPanel, 'function handleClick(', 'const hits =');
         expect(stackClick).toContain('if (global.MapPick?.active()) {');
         expect(stackClick).toContain('if (top) global.MapPick.pick(top.key);');
         // The one funnel every proposal-opening surface goes through.

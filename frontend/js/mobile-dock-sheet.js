@@ -130,7 +130,7 @@
         const handle = win.document.createElement('button');
         handle.type = 'button';
         handle.className = HANDLE_CLASS;
-        handle.setAttribute('data-i18n-key', 'sidebar.areaMonitor.resizePanel');
+        handle.setAttribute('data-i18n-key', panel.id === 'agreement-panel' ? 'agreement.panel.collapse' : 'sidebar.areaMonitor.resizePanel');
         handle.setAttribute('data-i18n-attr', 'aria-label,title');
         handle.setAttribute('aria-controls', panel.id);
         if (typeof win.i18n?.applyTranslations === 'function') win.i18n.applyTranslations(handle);
@@ -141,6 +141,11 @@
     function wirePanel(win, panel) {
         if (!panel || panel.id === 'proposal-details-panel' || panel.querySelector(`:scope > .${HANDLE_CLASS}`)) return;
         const handle = makeHandle(win, panel);
+        if (panel.id === 'agreement-panel') {
+            handle.addEventListener('click', () => win.AgreementPanel?.close());
+            observeOccupancy(win, panel);
+            return;
+        }
         let drag = null;
 
         handle.addEventListener('pointerdown', event => {

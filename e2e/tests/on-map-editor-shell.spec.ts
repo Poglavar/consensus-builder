@@ -153,9 +153,6 @@ test.describe('Shared on-map editor shell @features', () => {
     const actions = page.locator('#proposal-list-actions');
     const openActionsIfNeeded = async () => {
       if (!(await actions.isVisible())) await page.locator('#proposals-button').click();
-      if (!(await actions.evaluate(element => (element as HTMLDetailsElement).open))) {
-        await actions.locator(':scope > summary').click();
-      }
     };
     await openActionsIfNeeded();
     const statsButton = page.locator('#planStatsButton');

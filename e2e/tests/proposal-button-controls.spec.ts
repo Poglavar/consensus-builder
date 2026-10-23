@@ -66,7 +66,6 @@ test.describe('proposal detail button controls @features', () => {
     await openCity(page);
     await createSpace(page, 'park');
     await page.locator('#proposals-button').click();
-    await page.locator('#proposal-list-actions > summary').click();
     await page.locator('#roosterScoreButton').click();
 
     const panel = page.locator('#grain-score-panel');
@@ -101,7 +100,6 @@ test.describe('proposal detail button controls @features', () => {
     // The whole applied plan: its row is already published, and the selection's link is the same.
     await page.locator('#proposals-button').click();
     const actions = page.locator('#proposal-list-actions');
-    if (!(await actions.evaluate(element => (element as HTMLDetailsElement).open))) await actions.locator(':scope > summary').click();
     await page.locator('#shareAppliedProposalsButton').click();
     const plan = page.locator('.share-plan-panel');
     await expect(plan).toBeVisible({ timeout: 30000 });

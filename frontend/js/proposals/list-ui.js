@@ -465,9 +465,8 @@ function applyProposalListFilters(dataset) {
     const goalFilter = proposalListState.filterType;
     const authorFilter = proposalListState.authorFilter.trim().toLowerCase();
     const searchFilter = proposalListState.searchText.trim().toLowerCase();
-    // Lifecycle status (all + every getProposalLifecycleKey value) and applied state are two
-    // orthogonal dropdown filters — they replaced the old Active/Executed tabs.
-    const lifecycleFilter = proposalListState.lifecycleFilter || 'all';
+    // Publication and local map application are independent design states.
+    const publicationFilter = proposalListState.publicationFilter || 'all';
     const appliedFilter = proposalListState.appliedFilter || 'all';
 
     // Vremenska crta plana: kumulativni filtar po epohi (null = bez filtra).
@@ -492,9 +491,9 @@ function applyProposalListFilters(dataset) {
             }
         }
 
-        if (lifecycleFilter !== 'all') {
-            const key = (typeof getProposalLifecycleKey === 'function') ? getProposalLifecycleKey(entry.proposal) : 'active';
-            if (key !== lifecycleFilter) return false;
+        if (publicationFilter !== 'all') {
+            const published = !!window.DesignSync.publishedCid(entry.proposal);
+            if ((publicationFilter === 'published') !== published) return false;
         }
 
         if (appliedFilter !== 'all') {
@@ -784,7 +783,7 @@ async function handleProposalListItemClick(event) {
     // On a phone the list fills the screen, so a preview behind it would show nothing: the tap
     // closes the list and goes to the proposal on the map with its compact card, as a search
     // result does. Its Details button still opens the full panel.
-    if (window.MapShell?.coversMap?.()) {
+    if (window.MapShell?.coversMap?.() || document.body.classList.contains('three-mode-active')) {
         await openListedProposal(proposal, proposalIdAttr, 'compact');
         return;
     }
@@ -846,16 +845,7 @@ async function handleProposalListDetailsClick(event) {
 // on a phone ('compact'). The map is centred on it only when the list covered the map, where no
 // preview has framed it.
 async function openListedProposal(proposal, proposalId, presentation) {
-    const centerOnProposal = !!window.MapShell?.coversMap?.();
-    if (document.body.classList.contains('three-mode-active')) {
-        if (typeof window.requestMapMode !== 'function') return;
-        try { await window.requestMapMode('2d'); } catch (error) {
-            console.error('[ProposalList] could not switch to 2D for proposal details', error);
-            return;
-        }
-        if (document.body.classList.contains('three-mode-active')) return;
-    }
-
+    const centerOnProposal = !!window.MapShell?.coversMap?.() || document.body.classList.contains('three-mode-active');
     const resolvedId = getProposalKey(proposal) || proposalId;
     if (typeof openProposalFromList === 'function') {
         openProposalFromList(resolvedId, { proposal, centerOnProposal, closeSheets: true, presentation });
@@ -1166,8 +1156,7 @@ function updateShowProposalsButton() {
     // While the plan is being prepared the button owns its own disabled state — re-enabling it here
     // would invite a second click straight into a half-built panel.
     if (sharePlanButton && !sharePlanButton.dataset.sharePlanBusy) {
-        const appliedCount = proposalStorage.getAllProposals().filter(isProposalCurrentlyApplied).length;
-        sharePlanButton.disabled = appliedCount === 0;
+        sharePlanButton.disabled = false;
     }
 
     // The grain inspector has the same plan-level scope as Share and Plan Stats. Keep its empty

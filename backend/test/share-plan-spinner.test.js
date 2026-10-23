@@ -94,12 +94,11 @@ describe('otvaranje plana', () => {
         return { run, spies, frames, tick: () => frames.splice(0).forEach(cb => cb()) };
     }
 
-    it('gost bez imena ne dobije poveznicu: traži se ime, ništa se ne gradi', async () => {
-        const { run, spies, frames } = harness({ nameGate: () => 'Choose a profile name to share' });
-        await run();
-        expect(spies.guestPolicyBlocks).toHaveBeenCalledWith('share');
-        expect(spies.setSharePlanButtonBusy).not.toHaveBeenCalled();
-        expect(frames).toHaveLength(0);
+    it('opens sharing for a guest: only publication requires an author', async () => {
+        const { run, spies, tick } = harness({ nameGate: () => 'Choose a profile name to share' });
+        const ready = run(); tick(); tick(); await ready;
+        expect(spies.guestPolicyBlocks).not.toHaveBeenCalled();
+        expect(spies.showSharePlanPanel).toHaveBeenCalledTimes(1);
     });
 
     it('spinner se upali PRIJE nego što išta krene', () => {
@@ -287,7 +286,7 @@ describe('gumb ne smije pobjeći iz zauzetog stanja', () => {
         const button = sliceBetween(html, 'id="shareAppliedProposalsButton"', '</button>');
         expect(button).toContain('class="share-plan-spinner"');
         expect(button).toContain('fa-spinner fa-spin');
-        expect(button).toContain('sidebar.proposals.shareButtonPreparing');
+        expect(button).toContain('mapShell.share');
     });
 
     it.each(['en', 'hr', 'sr', 'es'])('%s zna reći oboje', locale => {

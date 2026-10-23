@@ -509,6 +509,16 @@ describe('CadastralParcelRepository', () => {
         expect(fetchParcelsByIds).not.toHaveBeenCalled();
     });
 
+    it('reports the requested and cached counts used by the loading message', async () => {
+        const { service } = fixture();
+        await service.ensureIds(['HR-A']);
+        const events = [];
+        await service.ensureIds(['HR-A', 'HR-B', 'HR-C'], { onProgress: event => events.push(event) });
+        expect(events.find(event => event.phase === 'ground-load-ids')).toEqual({
+            phase: 'ground-load-ids', done: 0, total: 3, requested: 2, cached: 1
+        });
+    });
+
     it('emits factual cache, load, and ready phases without exposing transport decisions to callers', async () => {
         const { service } = fixture();
         const phases = [];

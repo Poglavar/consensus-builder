@@ -185,8 +185,8 @@ test('an agreement over an applied parcel layout is created from its details, co
   // Delete asks first; the agreement goes, its design stays on the map.
   await agreementPanel(page).locator('[data-agreement-action="delete"]').click();
   const confirm = page.getByRole('alertdialog');
-  await expect(confirm).toContainText('Delete this agreement? Its designs stay on the map.');
-  await confirm.getByRole('button', { name: 'Delete', exact: true }).click();
+  await expect(confirm).toContainText('Remove this agreement from this device? Its designs stay on the map. Any published agreement remains available through its link.');
+  await confirm.getByRole('button', { name: 'Remove from this device', exact: true }).click();
   await expect(confirm).toHaveCount(0);
   await expect(agreementPanel(page)).toBeHidden();
   expect(await storedAgreements(page)).toEqual([]);

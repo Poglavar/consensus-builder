@@ -69,11 +69,8 @@ test('Photo view enters the actual tiles renderer and returning to 2D releases i
   });
   await expect.poll(meshVisible, { timeout: 20000 }).toBe(true);
   await page.locator('#layers-button').click();
-  const imagery = page.locator('#aerial-city-visible');
-  await expect(imagery).toBeVisible();
-  await imagery.uncheck();
-  await expect.poll(meshVisible).toBe(false);
-  await imagery.check();
+  await expect(page.locator('#aerial-city-visible')).toHaveCount(0);
+  await expect(page.locator('#photo-parcels-visible')).toBeVisible();
   await expect.poll(meshVisible).toBe(true);
   await page.locator('#layers-button').click();
   // Open the generated-scene editor from this real photo-mode session and close it through its

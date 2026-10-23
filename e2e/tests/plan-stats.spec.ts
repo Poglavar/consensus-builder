@@ -7,7 +7,6 @@ test.describe('Plan arithmetic @features', () => {
     await createBuilding(page);
     await page.locator('#proposals-button').click();
     // Plan-wide actions sit in the collapsed "Plan actions" group (fbe3758d).
-    await page.locator('#proposal-list-actions > summary').click();
     await page.locator('#planStatsButton').click();
     const modal = page.locator('#plan-stats-modal');
     await expect(modal).toBeVisible();

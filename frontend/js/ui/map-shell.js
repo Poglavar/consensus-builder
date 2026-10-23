@@ -67,7 +67,7 @@
     // hidden: the dock keeps its shape and the tooltip says how to get them back. The views the
     // editor cannot run in are locked the same way by map-mode-loader.js (paintModeLocks). Layers,
     // Buildings and massing and Measure stay: they help with the drawing.
-    const EDIT_LOCKED_CONTROLS = Object.freeze(['proposals-button', 'bets-button', 'activity-button', 'settings-button', 'username-display']);
+    const EDIT_LOCKED_CONTROLS = Object.freeze(['proposals-button', 'bets-button', 'activity-button', 'shareAppliedProposalsButton', 'settings-button', 'username-display']);
     const EDIT_LOCKED_SELECTORS = '.map-search__chip, .map-search__icon-button, .map-search__input';
     const EDIT_LOCKED_SHEETS = Object.freeze(['proposals-sheet', 'bets-sheet', 'activity-sheet', 'settings-sheet']);
 
@@ -314,10 +314,6 @@
             if (!el.classList.contains('map-sheet') || !supported) el.hidden = !supported;
         });
         if (state.openSheet?.hidden) closeSheet({ restoreFocus: false });
-        const imagery = doc.getElementById('aerial-city-visible');
-        if (imagery && mode === 'photo' && typeof win.PhotorealMode?.isBuiltVisible === 'function') {
-            imagery.checked = win.PhotorealMode.isBuiltVisible();
-        }
         if (mode === '2d' && win.roadDrawingMode) doc.getElementById('road-info-panel')?.classList.add('visible');
         paintEditLocks();
         observeEditors();
@@ -524,10 +520,6 @@
         if (typeof win.MutationObserver === 'function') {
             new win.MutationObserver(syncModeAvailability).observe(doc.body, { attributes: true, attributeFilter: ['class'] });
         }
-        doc.getElementById('aerial-city-visible')?.addEventListener('change', event => {
-            win.PhotorealMode?.setBuiltVisible(event.target.checked);
-            win.invalidateThreeView?.();
-        });
         doc.addEventListener('corridor-drawing-mode-changed', event => {
             doc.body.classList.toggle('corridor-drawing-active', !!event.detail?.road);
             if (event.detail?.road) closeSheets();

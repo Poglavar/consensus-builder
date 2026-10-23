@@ -1814,7 +1814,7 @@ const LAKE_SHORE_TARGET_RATIO = 0.2;
 const proposalListState = {
     source: 'local',
     filterType: 'all',
-    lifecycleFilter: 'all', // 'all' | any getProposalLifecycleKey value (replaced the Active/Executed tabs)
+    publicationFilter: 'all', // 'all' | 'draft' | 'published'
     appliedFilter: 'all',   // 'all' | 'applied' | 'not-applied'
     authorFilter: '',
     searchText: '',

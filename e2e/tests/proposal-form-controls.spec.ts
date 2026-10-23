@@ -49,38 +49,40 @@ test('ownership, epoch and parcel tolerance persist from the draft review form',
   expect(restored).toMatchObject({ epochYear: 2035, toleranceM: 0.12 });
 });
 
-test('lifecycle, applied-state and author filters narrow the actual proposal list', async ({ mockApi: page }) => {
+test('publication, map-state and author filters narrow the actual design list', async ({ mockApi: page }) => {
   await openCity(page);
   await page.evaluate(parcelId => {
     const rows = [
       { title: 'Applied active park', author: 'Alex', lifecycleStatus: 'Active', applied: true },
       { title: 'Unapplied active park', author: 'Blair', lifecycleStatus: 'Active', applied: false },
-      { title: 'Executed park', author: 'Alex', lifecycleStatus: 'Executed', applied: false,
-        lifecycleEvidence: { protocol: 'proposal-lifecycle-evidence/1', state: 'observed', status: 'Executed', observedAt: '2026-10-01T00:00:00.000Z' } },
+      { title: 'Published park', author: 'Alex', applied: false },
     ];
-    rows.forEach(row => (window as any).proposalStorage.addProposal({ ...row, goal: 'park', cadastreParcelIds: [parcelId] }));
+    const w = window as any;
+    const ids = rows.map(row => w.proposalStorage.addProposal({ ...row, goal: 'park', cadastreParcelIds: [parcelId] }));
+    const published = w.proposalStorage.getProposal(ids[2]);
+    w.DesignSync.markPublished(published, { cid: w.DesignRecord.cidOf(published), apiBase: w.resolveBackendBaseUrl(), publishedAt: '2026-10-01T00:00:00.000Z' });
   }, PARCEL_ID);
   await page.locator('#proposals-button').click();
   const list = page.locator('#proposals-sheet .proposal-list-modal');
   const titles = list.locator('.proposal-list-title');
   await expect(titles).toHaveCount(3);
   await list.locator('.proposal-filters-toggle').click();
-  await selectNativeOption(list.locator('#proposal-filter-lifecycle'), 'active');
+  await selectNativeOption(list.locator('#proposal-filter-publication'), 'draft');
   await expect(titles).toHaveCount(2);
   await selectNativeOption(list.locator('#proposal-filter-applied'), 'applied');
   await expect(titles).toHaveText(['Applied active park']);
   await selectNativeOption(list.locator('#proposal-filter-applied'), 'not-applied');
   await expect(titles).toHaveText(['Unapplied active park']);
   await selectNativeOption(list.locator('#proposal-filter-applied'), 'all');
-  await selectNativeOption(list.locator('#proposal-filter-lifecycle'), 'all');
+  await selectNativeOption(list.locator('#proposal-filter-publication'), 'all');
   await list.locator('#proposal-filter-author').fill('Alex');
   await expect(titles).toHaveCount(2);
   await expect(titles).not.toContainText(['Unapplied active park']);
-  await selectNativeOption(list.locator('#proposal-filter-lifecycle'), 'executed');
-  await expect(titles).toHaveText(['Executed park']);
+  await selectNativeOption(list.locator('#proposal-filter-publication'), 'published');
+  await expect(titles).toHaveText(['Published park']);
   await list.locator('#proposal-filter-author').fill('Blair');
   await expect(titles).toHaveCount(0);
   await list.locator('#proposal-filter-author').fill('');
-  await selectNativeOption(list.locator('#proposal-filter-lifecycle'), 'all');
+  await selectNativeOption(list.locator('#proposal-filter-publication'), 'all');
   await expect(titles).toHaveCount(3);
 });

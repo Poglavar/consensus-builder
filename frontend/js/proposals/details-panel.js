@@ -431,7 +431,8 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
 
     // A parcel layout cannot be shared on its own: it is published with the agreement that includes
     // it (ProposalPublishTerms.publishRefusal).
-    const publishRefusal = window.ProposalPublishTerms.publishRefusal(fullProposal || proposal);
+    const publishRefusal = window.DesignSync.publishedCid(fullProposal || proposal)
+        ? null : window.ProposalPublishTerms.publishRefusal(fullProposal || proposal);
     const agreementOnlyPublication = publishRefusal?.code === 'layout-needs-agreement';
     // Share publishes the design and copies its link (sharing-routes.js shareSingleProposal). It is
     // the main action of an applied design; before it is applied, applying is.

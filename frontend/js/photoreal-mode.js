@@ -111,7 +111,6 @@
     let savedBackground;
     let hadSavedBackground = false;
     let grounded = false;
-    let builtVisible = true; // three-mode's Built row drives the mesh while the layer is up
     let lockSamples = [];
     let lockedGroundZ = null; // final pre-seat height chosen by the temporal stability gate
     let lastProbeSummary = null; // raw round distribution, exposed by ?seat for ground-vs-roof diagnosis
@@ -417,7 +416,7 @@
         renderCarveMask(0, 0);
         scheduleSettledTerrainRefresh('ground-lock');
         if (typeof window.setRealisticLayerActive === 'function') window.setRealisticLayerActive(true);
-        tiles.group.visible = builtVisible;
+        tiles.group.visible = true;
         attributionDirty = true;
         console.log('[photoreal] world seated: ground shifted ' + (use + GROUND_BELOW_CONTENT_M).toFixed(2)
             + ' m (' + (stable ? 'stable' : 'median-after-timeout') + ')');
@@ -2068,7 +2067,7 @@
     };
 
     function pickPhotoSurface(event) {
-        if (!tiles || !grounded || !builtVisible) return null;
+        if (!tiles || !grounded) return null;
         const rect = internals.renderer.domElement.getBoundingClientRect();
         const ray = new window.THREE.Raycaster();
         ray.setFromCamera(new window.THREE.Vector2(
@@ -2475,7 +2474,7 @@
                 renderCarveMask(0, 0);
                 if (grounded) {
                     if (typeof window.setRealisticLayerActive === 'function') window.setRealisticLayerActive(true);
-                    tiles.group.visible = builtVisible;
+                    tiles.group.visible = true;
                     attributionDirty = true;
                 }
                 lastFrameNow = 0;
@@ -2565,7 +2564,6 @@
             ensureMaskObjects();
 
             grounded = false;
-            builtVisible = true;
             lockSamples = [];
             lockedGroundZ = null;
             lastProbeSummary = null;
@@ -2730,13 +2728,6 @@
                 cachedModels: loadedTileScenes.size, visibleTiles: tiles?.visibleTiles?.size || 0,
                 failedRequests: tiles?.stats?.failed || 0, waitingSeconds: lockWaitS,
                 emptySeconds: sinceAnyLoadS, progress: tiles ? Number(tiles.loadProgress) : null };
-        },
-        // three-mode's Built row drives the mesh while the layer is up.
-        isBuiltVisible: function () { return builtVisible; },
-        setBuiltVisible: function (v) {
-            builtVisible = !!v;
-            if (tiles && grounded) tiles.group.visible = builtVisible;
-            attributionDirty = true; // the credit follows the mesh on and off
         },
         // Whether proposed-building footprints join the carve (roads/parks/demolitions always do).
         setCarveProposedBuildings: function (v) {

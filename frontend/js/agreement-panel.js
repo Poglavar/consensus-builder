@@ -282,7 +282,7 @@
             + `<i class="fas fa-left-right" aria-hidden="true"></i> ${esc(tr('mapCompare.toggle', 'Before / after'))}</button>`
             + (canBet && !readOnly ? `<button type="button" class="btn" data-agreement-action="bet"><i class="fas fa-chart-line" aria-hidden="true"></i> ${esc(tr('agreement.panel.actions.bet', 'Bet'))}</button>` : '')
             + (published || readOnly ? '' : `<button type="button" class="btn" data-agreement-action="edit"><i class="fas fa-pen" aria-hidden="true"></i> ${esc(tr('agreement.panel.actions.edit', 'Edit'))}</button>`)
-            + (readOnly ? '' : `<button type="button" class="btn btn-danger" data-agreement-action="delete"><i class="fas fa-trash" aria-hidden="true"></i> ${esc(tr('agreement.panel.actions.delete', 'Delete'))}</button>`)
+            + (readOnly ? '' : `<button type="button" class="btn btn-quiet" data-agreement-action="delete"><i class="fas fa-folder-minus" aria-hidden="true"></i> ${esc(tr('agreement.panel.actions.removeLocal', 'Remove from this device'))}</button>`)
             + '</div>';
     }
 
@@ -610,7 +610,7 @@
             panel.setAttribute('aria-labelledby', 'agreement-panel-title');
             panel.innerHTML = `
                 <div class="panel-header">
-                    <h3 id="agreement-panel-title"></h3>
+                    <div class="agreement-panel-heading-group"><span class="agreement-panel-kind"></span><h3 id="agreement-panel-title"></h3></div>
                     <button type="button" class="close-circle-btn close-circle-btn--lg close-button" data-agreement-action="close">×</button>
                 </div>
                 <div class="panel-body" data-agreement-region="body"></div>`;
@@ -653,6 +653,7 @@
             return status
                 + byHashOnly
                 + actionsHtml({ canCompare: current, comparing: comparing(state.id), canPropose: current && !published, published, canBet: binding && betAvailable(agreement), readOnly })
+                + (!current && !readOnly ? `<p class="agreement-panel-hint" data-agreement-compare-unavailable>${esc(t('agreement.panel.compareUnavailable', 'Before / after is available when this agreement matches the designs applied on the map.'))}</p>` : '')
                 + publishedHtml({ published: agreement.published, remote: observedRemote(state.remote, chainView(agreement)?.chain), electorate: agreement.rule && agreement.rule.electorate, readOnly })
                 + (binding ? chainHtml({ ...chainView(agreement), readOnly }) : nonBindingChainHtml(agreement.published))
                 + designsHtml(designRows(agreement, { designOf, isApplied: win.isApplied, typeLabel }), t, readOnly)
@@ -665,6 +666,7 @@
         function renderPanel() {
             const panel = ensurePanel();
             panel.querySelector('#agreement-panel-title').textContent = state.agreement ? titleOf(state.agreement) : t('agreement.panel.title', 'Agreement');
+            panel.querySelector('.agreement-panel-kind').textContent = t('agreement.panel.title', 'Agreement');
             const close = panel.querySelector('[data-agreement-action="close"]');
             const closeLabel = t('modal.common.close', 'Close');
             close.setAttribute('aria-label', closeLabel);
@@ -901,9 +903,8 @@
 
         async function remove() {
             const id = state.id;
-            const confirmed = await win.CbDialog.confirm(t('agreement.panel.deleteConfirm', 'Delete this agreement? Its designs stay on the map.'), {
-                destructive: true,
-                okText: t('agreement.panel.actions.delete', 'Delete'),
+            const confirmed = await win.CbDialog.confirm(t('agreement.panel.removeLocalConfirm', 'Remove this agreement from this device? Its designs stay on the map. Any published agreement remains available through its link.'), {
+                okText: t('agreement.panel.actions.removeLocal', 'Remove from this device'),
                 cancelText: t('common.cancel', 'Cancel')
             });
             if (!confirmed || state.id !== id) return;

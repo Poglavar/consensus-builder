@@ -2498,3 +2498,17 @@ path.geom-handle-edge.is-dragging { stroke-opacity: 0.35; }
 .land-take-confirmation { display: grid; gap: var(--cb-space-2); }
 .land-take-error { color: var(--cb-danger); font-weight: 600; }
 .land-take-legend { color: var(--cb-text-muted); }
+/* City names can be long: the two choices keep equal tap areas on a phone. */
+@media (max-width: 767.98px) {
+    .city-switch-dialog .cb-dialog__footer {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        grid-auto-rows: 1fr;
+    }
+
+    .city-switch-dialog .cb-dialog__footer .btn {
+        width: 100%;
+        min-height: 44px;
+        white-space: normal;
+    }
+}

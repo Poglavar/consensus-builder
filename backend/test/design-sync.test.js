@@ -256,6 +256,17 @@ function fakeWindow({ records = [], server = fakeServer(), blocked = null, confi
 }
 
 describe('publishDesign', () => {
+    it('reuses an already published parcel layout without a publication or author gate', async () => {
+        const record = road({ goal: 'parcel-layout', parcelLayout: { plots: [] } });
+        record.published = { cid: DesignRecord.cidOf(record), apiBase: API };
+        const { sync, server, win } = fakeWindow({ records: [record], blocked: 'Choose a name' });
+        win.stampCurrentAuthor = () => { throw new Error('must not alter published content'); };
+        expect(await sync.publishDesign(record)).toEqual({ cid: record.published.cid, row: null, alreadyPublished: true });
+        expect(server.calls).toEqual([]);
+        record.title = 'Revised layout';
+        expect(await thrown(() => sync.publishDesign(record))).toMatchObject({ code: 'layout-needs-agreement' });
+    });
+
     it('refuses oversized designs locally before pinning or indexing, retaining the draft', async () => {
         const record = { proposalId: 'large-block', goal: 'buildings', buildingProposal: { notes: 'x'.repeat(10 * 1024 * 1024) }, geometry: { buildings: [] } };
         const { sync, server } = fakeWindow();

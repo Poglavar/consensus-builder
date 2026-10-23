@@ -255,6 +255,9 @@
     display: flex;
     flex-direction: column;
     min-height: 0;
+    flex: 1;
+    padding: 0;
+    overflow: hidden;
 }
 
 #proposal-list-host {
@@ -265,14 +268,28 @@
     overflow: hidden;
 }
 
-/* Expanded controls share the fixed sheet with the cards. Each can scroll without squeezing
-   the list to zero height, including when Filters and Proposal tools are both expanded. */
+/* Always-visible compact actions leave the remaining sheet to the design list. */
 #proposal-list-actions {
-    flex: 0 1 auto;
-    min-height: 36px;
-    max-height: 35%;
-    overflow-y: auto;
+    flex: 0 0 auto;
+    padding: 8px 10px;
+    border-top: 1px solid var(--cb-line);
 }
+
+#proposal-list-actions .control-group { margin: 0; }
+#proposal-list-actions .btn-group {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    margin: 0;
+}
+#proposal-list-actions .btn { min-height: 40px; margin: 0; font-size: var(--cb-text-sm); }
+#proposal-list-actions .grain-score-button__portrait,
+#proposal-list-actions .grain-score-button__hint,
+#proposal-list-actions .grain-score-button__empty { display: none; }
+#proposal-list-actions .grain-score-button { padding: 6px 10px; }
+#proposal-list-actions .grain-score-button__copy { text-align: center; }
+#proposal-list-actions #agreementsButton { grid-column: 1; grid-row: 1; }
+#proposal-list-actions #mintedAgreementsButton { grid-column: 2; grid-row: 1; }
 
 .proposal-list-modal-content > .proposal-list-controls {
     flex-shrink: 1;
@@ -282,7 +299,7 @@
 }
 
 .proposal-list-modal-content > .proposal-list-modal-body {
-    flex: 1 0 120px;
+    flex: 1 1 0;
 }
 
 .proposal-list-modal {
@@ -1595,14 +1612,16 @@ textarea.proposal-description-input {
 
 @media (max-width: 767.98px) {
     .share-plan-panel {
-        top: auto;
+        top: 0;
+        bottom: var(--map-shell-dock-height);
         left: 0;
         width: 100%;
-        height: 50vh;
+        height: auto;
+        padding-top: env(safe-area-inset-top, 0px);
     }
 
     .share-plan-panel-content {
-        border-radius: 12px 12px 0 0;
+        border-radius: 0;
     }
 }
 

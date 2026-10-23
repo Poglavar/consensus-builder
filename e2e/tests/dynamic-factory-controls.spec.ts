@@ -224,7 +224,6 @@ test.describe('shared dynamic button factories @features', () => {
     }, firstId);
 
     await page.locator('#proposals-button').click();
-    await page.locator('#proposal-list-actions > summary').click();
     await page.locator('#planStatsButton').click();
     const modal = page.locator('#plan-stats-modal');
     await expect(modal).toBeVisible();

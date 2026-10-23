@@ -103,7 +103,6 @@ test.describe('proposal button controls: modal and alternate states @features', 
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write'], { origin: new URL(page.url()).origin });
     await openProposalList(page);
     const actions = page.locator('#proposal-list-actions');
-    if (!(await actions.evaluate((element: HTMLDetailsElement) => element.open))) await actions.locator(':scope > summary').click();
     await page.locator('#shareAppliedProposalsButton').click();
 
     const plan = page.locator('.share-plan-panel');

@@ -74,7 +74,7 @@ describe('phone proposal list', () => {
     const { countActiveProposalListFilters, shouldAutofocusProposalListSearch } = require('../../frontend/js/proposals/dialog-share.js');
 
     it('counts only filters that narrow the list (not sort)', () => {
-        const base = { filterType: 'all', lifecycleFilter: 'all', appliedFilter: 'all', authorFilter: '', searchText: '', sortKey: 'title-asc' };
+        const base = { filterType: 'all', publicationFilter: 'all', appliedFilter: 'all', authorFilter: '', searchText: '', sortKey: 'title-asc' };
         expect(countActiveProposalListFilters(base)).toBe(0);
         expect(countActiveProposalListFilters({ ...base, filterType: 'road', appliedFilter: 'applied', searchText: ' park ' })).toBe(3);
         expect(countActiveProposalListFilters({ ...base, authorFilter: '   ' })).toBe(0);

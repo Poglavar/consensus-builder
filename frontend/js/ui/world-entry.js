@@ -454,6 +454,9 @@
 
     global.WorldEntry = {
         open,
+        // Only an explicit arrival view belongs to a shared link. map-core later writes the
+        // remembered local view into ?at=, which must not stop the link framing its own designs.
+        arrivalMapView: () => Model.parseAt(new URLSearchParams(entryLocation.search).get('at')),
         finishNavigation: () => landed('proposal'),
         ownsBoot: () => state.bootOpen,
         explorePlaceName: () => placeName(state.explorePlace)

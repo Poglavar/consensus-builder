@@ -126,6 +126,26 @@ describe('published', () => {
 });
 
 describe('cidOf', () => {
+    it('keeps a published OSM street identity when the store decodes it for drawing', () => {
+        const form = require('../../frontend/js/corridor-osm-form.js');
+        const depth = require('../../frontend/js/proposals/formation-depth.js');
+        const street = { ...park(), goal: 'road-track', structureProposal: undefined,
+            roadProposal: { definition: form.toRecord({
+                segments: [[{ lat: 52.48, lng: -1.88 }, { lat: 52.481, lng: -1.88 }]],
+                segmentIds: ['intent-street'], width: 7.5,
+                profile: { strips: [{ type: 'sidewalk', width: 1.5 }, { type: 'driving', width: 2.25, direction: 'forward' }, { type: 'driving', width: 2.25, direction: 'backward' }, { type: 'sidewalk', width: 1.5 }] }
+            }) }
+        };
+        const expected = DesignRecord.cidOf(street);
+        const drawing = depth.decodeRoadView(street);
+        expect(drawing.roadProposal.definition.osm).toBeUndefined();
+        expect(drawing.roadProposal.definition.segments).toHaveLength(1);
+        expect(DesignRecord.cidOf(drawing)).toBe(expected);
+        expect(DesignRecord.published(drawing)).toEqual(DesignRecord.published(street));
+        drawing.roadProposal.definition.segments[0][1].lat += 0.001;
+        expect(DesignRecord.cidOf(drawing)).not.toBe(expected);
+    });
+
     it('is the CID of the published object, the same before and after applying', () => {
         const cid = DesignRecord.cidOf(park());
         expect(cid).toBe(Cid.cidOfObject(DesignRecord.published(park())));

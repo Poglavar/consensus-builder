@@ -24,8 +24,6 @@ const appliedImports = (page: Page, cids: string[]) => page.evaluate(ids => ids.
 async function openSharePanel(page: Page): Promise<void> {
   if (!(await page.locator('#proposals-sheet').isVisible())) await page.locator('#proposals-button').click();
   await expect(page.locator('#proposals-sheet')).toBeVisible();
-  const tools = page.locator('#proposal-list-actions');
-  if (!(await tools.evaluate(element => (element as HTMLDetailsElement).open))) await tools.locator('summary').click();
   await expect(page.locator('#shareAppliedProposalsButton')).toBeEnabled();
   await page.locator('#shareAppliedProposalsButton').click();
 }
@@ -49,11 +47,12 @@ test.describe('Sharing the applied plan @core', () => {
 
     // A share link carries its author: a guest chooses a profile name first.
     await openSharePanel(sender);
+    await sender.locator('.share-plan-panel .close-circle-btn').click();
+    await sender.evaluate(() => (window as any).guestPolicyBlocks('publish'));
     await chooseProfileName(sender, 'Plan author');
-    await expect(sender.locator('.share-plan-panel')).toHaveCount(0);
     await openSharePanel(sender);
     const panel = sender.locator('.share-plan-panel');
-    await expect(panel.locator('.share-plan-count')).toHaveText('2 designs applied on this map');
+    await expect(panel.locator('.share-plan-count')).toHaveText('2 of 2 designs included · 0 excluded');
     const park = panel.locator('.share-plan-row').filter({ hasText: /park/i });
     const square = panel.locator('.share-plan-row').filter({ hasText: /square/i });
     await expect(park).toBeVisible();
@@ -90,7 +89,8 @@ test.describe('Sharing the applied plan @core', () => {
     const cids = rows.map(row => row.cid).sort();
     const link = panel.locator('.share-plan-link__input');
     await expect(linkRow).toBeVisible();
-    await expect(link).toHaveValue(`${new URL(sender.url()).origin}/designs/${cids.join(',')}?city=zg&3d&lang=en`);
+    expect(new URL(await link.inputValue()).pathname).toBe(`/designs/${cids.join(',')}`);
+    expect(new URL(await link.inputValue()).searchParams.has('3d')).toBe(false);
 
     // Deselecting a row narrows the link to the rest.
     await park.locator('input[type="checkbox"]').uncheck();
@@ -123,16 +123,15 @@ test.describe('Sharing the applied plan @core', () => {
     test.setTimeout(180_000);
     await applyLayout(page);
     await openSharePanel(page);
-    await chooseProfileName(page, 'Layout author');
-    await openSharePanel(page);
+
     const row = page.locator('.share-plan-panel .share-plan-row');
     await expect(row).toHaveCount(1);
     await expect(row.locator('.share-plan-row__refusal')).toHaveText('A parcel layout is published with its agreement. Propose an agreement that includes it.');
-    await expect(row.locator('input[type="checkbox"]')).toBeDisabled();
-    await expect(row.locator('input[type="checkbox"]')).not.toBeChecked();
+    await expect(row.locator('input[type="checkbox"]')).toBeEnabled();
+    await expect(row.locator('input[type="checkbox"]')).toBeChecked();
     await expect(row.getByRole('button', { name: 'Publish', exact: true })).toBeDisabled();
     await expect(page.locator('.share-plan-panel .share-plan-link')).toBeHidden();
-    await expect(page.locator('.share-plan-panel .share-plan-status')).toHaveText('Select at least one design to share.');
+    await expect(page.locator('.share-plan-panel .share-plan-create-agreement')).toBeVisible();
     expect(pageIndex(page).requests.filter(request => request.method === 'POST')).toEqual([]);
   });
 

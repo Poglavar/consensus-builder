@@ -18,6 +18,7 @@ function loadSharedImportHelpers(overrides = {}) {
     const browserWindow = overrides.window || {};
     const context = {
         console,
+        URLSearchParams,
         isProposalCurrentlyApplied: proposal => proposal?.applied === true,
         ...overrides,
         window: browserWindow
@@ -52,6 +53,13 @@ describe('shared-plan progress labels', () => {
 
         expect(view.status).toBe('Cutting affected cadastral parcels (75/131)…');
         expect(view.progress).toEqual({ done: 75, total: 131 });
+    });
+
+    it('renders the ground-load counts without leaving template placeholders', () => {
+        const { sharedPlanProgressView } = loadSharedImportHelpers();
+        const view = sharedPlanProgressView({ phase: 'ground-load-ids', done: 0, total: 3, requested: 2, cached: 1 }, t);
+        expect(view.status).toBe('Loading 2 missing cadastral parcels; 1 already cached…');
+        expect(view.progress).toEqual({ done: 1, total: 3 });
     });
 
     it('distinguishes waiting on an existing request from starting another fetch', () => {
@@ -504,6 +512,7 @@ function designLink({ designs = [], local = {}, refused = {}, failing = {}, fore
     const order = [];
     const takeover = { stop: vi.fn(), tookOver: () => tookOver };
     const window = {
+        location: { search: "" },
         Cid,
         DesignSync: {
             fetchDesigns: vi.fn(async cids => {

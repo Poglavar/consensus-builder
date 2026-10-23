@@ -132,8 +132,7 @@ function setSharePlanButtonBusy(busy) {
 // Resolves when the panel is ready to look at, so a caller that opened this from its own dialog
 // can keep that dialog up meanwhile. `options` is passed straight through (see showSharePlanPanel).
 function shareAppliedProposals(options) {
-    // A share link carries its author (GuestPolicy 'share').
-    if (guestPolicyBlocks('share')) return Promise.resolve(null);
+    // Reading or copying an existing publication needs no profile; publishing asks for an author.
     if (typeof setSharePlanButtonBusy === 'function') setSharePlanButtonBusy(true);
     // Opening the panel starts with a long SYNCHRONOUS block: a row per applied proposal, plus one
     // map overlay each (turf intersections + a Leaflet layer), plus fitting the map. Starting it in
@@ -203,7 +202,7 @@ async function shareSingleProposal(proposalIdOrProposal) {
         showEphemeralMessage(t('ephemeral.messages.cannot_share_this_proposal_right_now', 'Cannot share this proposal right now.'), 4000, 'error');
         return null;
     }
-    const refusal = window.ProposalPublishTerms.publishRefusal(proposal);
+    const refusal = window.DesignSync.publishedCid(proposal) ? null : window.ProposalPublishTerms.publishRefusal(proposal);
     if (refusal) {
         showEphemeralMessage(refusal.message, 5000, 'info');
         return null;
@@ -821,6 +820,8 @@ function latestAuthoredDesignId(proposalIds) {
  *   blocked: boolean, localIds: Map<string, string> }>} local proposal ids; localIds maps CID → local id
  */
 async function handleSharedDesignRoute(cids, options = {}) {
+    const sharedView = window.WorldEntry?.arrivalMapView();
+    if (sharedView) options = { ...options, frame: false, openDetails: false };
     const t = getProposalI18nHelper();
     const tShare = getShareI18nHelper();
     const log = (message, ...rest) => console.log(`[${new Date().toISOString()}] [handleSharedDesignRoute] ${message}`, ...rest);
@@ -985,7 +986,10 @@ async function handleSharedDesignRoute(cids, options = {}) {
             }
         }
 
-        // A link that asks for 3D opens the scene framed on its own designs.
+        if (sharedView && !userTookOver()) {
+            map.setView([sharedView.lat, sharedView.lon], sharedView.zoom ?? map.getZoom(), { animate: false });
+        }
+        // A link that asks for 3D restores its captured camera when supplied.
         if (options.enter3D !== false && !url3DModeHandled && is3DModeRequestedFromUrl() && standing.length) {
             url3DModeHandled = true;
             enterUrlDrivenViewWhenReady(standing);
