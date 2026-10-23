@@ -262,6 +262,10 @@ describe('validateAgreementContent', () => {
         expect(refused({ inputs: { parcels: [], openGroundM2: 120 } }).ok).toBe(true);
     });
 
+    it.each(['EUR', 'GBP', 'USD', 'ZAR'])('accepts money counted in a city currency (%s)', (currency) => {
+        expect(refused({ money: { currency, lines: [{ ownerKey: 'owner-a', amountCents: 500 }] } }).ok).toBe(true);
+    });
+
     it.each([
         ['details', { schema: 'agreement/v0' }],
         ['details', { title: 'x'.repeat(501) }],
@@ -286,7 +290,8 @@ describe('validateAgreementContent', () => {
         ['allocation', { allocations: [{ output: valid.outputs[0].hash, to: { kind: 'auction' } }] }],
         ['allocation', { allocations: [{ output: valid.outputs[0].hash, to: { kind: 'party' } }] }],
         ['allocation', { allocations: [{ output: valid.outputs[0].hash, to: { kind: 'joint', shares: [holder('a', 0.5), holder('b', 0.4)] } }] }],
-        ['money', { money: { currency: 'USD', lines: [] } }],
+        ['money', { money: { currency: 'SOL', lines: [] } }],
+        ['money', { money: { currency: 'usd', lines: [] } }],
         ['money', { money: { currency: 'EUR', lines: [{ ownerKey: 'owner-a', amountCents: 1 }, { ownerKey: 'owner-a', amountCents: 2 }] } }],
         ['money', { money: { currency: 'EUR', lines: [{ ownerKey: 'owner-a', amountCents: 10.5 }] } }],
         ['rule', { rule: { electorate: 'everyone', binding: true, lens: [] } }],

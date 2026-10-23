@@ -29,6 +29,7 @@ import {
 const require = createRequire(import.meta.url);
 const approval = require('../../frontend/js/proposals/approval.js');
 const agreementRecord = require('../../frontend/js/agreement-record.js');
+const cityMoney = require('../../frontend/js/city-money.js');
 const allocation = require('../../frontend/js/reparcellization-allocation.js');
 
 export const AGREEMENT_TABLE = 'consensus.agreement';
@@ -181,8 +182,11 @@ export function validateAgreementContent(content, { now = Date.now() } = {}) {
     }
 
     const { money } = content;
-    if (!isPlainObject(money) || money.currency !== 'EUR' || !Array.isArray(money.lines)) {
-        return invalid('money', 'Money is { currency: \'EUR\', lines: [] }: cash is settled in EUR.');
+    // Cash is counted in the agreement's city's currency (city-money.js: London GBP, Zagreb EUR), as
+    // the agreement record checks it; the published object carries the code as an upper-case ISO 4217.
+    const currency = isPlainObject(money) ? money.currency : null;
+    if (typeof currency !== 'string' || !/^[A-Z]{3}$/.test(currency) || !cityMoney.isFiat(currency) || !Array.isArray(money.lines)) {
+        return invalid('money', 'Money is { currency, lines: [] } with currency the city\'s ISO 4217 code (EUR, GBP, USD…), not a chain token.');
     }
     const payees = new Set();
     for (const line of money.lines) {
