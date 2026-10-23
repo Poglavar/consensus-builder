@@ -699,3 +699,12 @@ A quantity for which sufficient evidence or inputs are unavailable. It is distin
 ### Locale
 
 The selected language and regional formatting convention for the interface, numbers and dates. Locale is separate from city, currency and geographic location.
+
+
+## Feedback report
+
+A private bug report or suggestion submitted to the maintainer inbox through the web form, MCP
+or API. Its receipt UUID identifies that report; status `received` means it was stored, not that
+it has been triaged or fixed. Retrying the same receipt and content is idempotent; reusing the
+receipt for different content is refused. Report text is not a published design, agreement,
+wallet decision or instruction to an agent. The inbox has no public listing.
