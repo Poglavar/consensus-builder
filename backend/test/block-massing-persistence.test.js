@@ -78,6 +78,7 @@ function blockAutosave({ mode = 'manual', feature, generatedFeatures = [] }) {
         DEFAULT_BUILDING_HEIGHT: 17.5, currentBuildingHeight: 17.5, currentBuildingWidth: 20,
         currentSetback: 0, currentChamferM: 0, currentSimplifyM: 0,
         gapPositions: [], wingPositions: [], manualOuterRing: null,
+        blockifySurroundings: null,
         blockifyPlacementTransform: { translationMeters: [0, 0], rotationDegrees: 0 },
         blockifyGenerationSite: site, blockifyDesignBoundary: () => site,
         existingRule: {}, currentProposedHeightFloors: 1, currentAdditionalFloors: 0,
@@ -103,7 +104,8 @@ function rowAutosave(feature) {
         currentRowRule: () => rule('row', 'range'), rowVariationSeed: 991,
         currentBuildingLength: 40, currentBuildingWidth: 10, currentBuildingHeight: 17.5,
         currentChamfer: 0, currentOffsetX: 0, currentOffsetY: 0, currentRotation: 0,
-        rowHouseManualMode: true, rowHouseBlock: block, cachedSuperparcel: site, turf
+        rowHouseManualMode: true, rowHouseBlock: block, cachedSuperparcel: site,
+        rowHouseSurroundings: null, turf
     };
     // The autosave records the Row's site through rowHouseSiteBoundary, so it runs with it.
     const functions = functionSources('../../frontend/js/row-house.js');

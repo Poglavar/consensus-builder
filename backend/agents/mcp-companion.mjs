@@ -2,7 +2,7 @@
 import * as z from 'zod/v4';
 import { readFileSync } from 'node:fs';
 
-const cid = z.string().regex(/^bafkrei[a-z2-7]{52}$/);
+const cid = z.string().regex(/^baf(?:krei|ybei)[a-z2-7]{52}$/);
 const designInput = z.union([cid, z.string().url().max(300), z.record(z.string(), z.unknown())]);
 const city = z.string().min(1).max(80);
 const bbox = z.tuple([z.number().min(-180).max(180), z.number().min(-85).max(85), z.number().min(-180).max(180), z.number().min(-85).max(85)]);

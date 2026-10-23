@@ -38,7 +38,7 @@ function mismatch(what, expected, received) {
 }
 
 function requireCid(cid, label = 'cid') {
-    if (!isCid(cid)) throw new Error(`${label} must be a CIDv1 raw sha2-256 base32 CID (bafkrei…), got ${JSON.stringify(cid)}`);
+    if (!isCid(cid)) throw new Error(`${label} must be a CIDv1 UnixFS sha2-256 base32 CID, got ${JSON.stringify(cid)}`);
     return cid;
 }
 

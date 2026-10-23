@@ -5,7 +5,7 @@
     if (root) root.ApprovalLink = api;
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
-    const CID = /^bafkrei[a-z2-7]{52}$/;
+    const CID = /^baf(?:krei|ybei)[a-z2-7]{52}$/;
     const ACCOUNT = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
     const ACTIONS = ['mint', 'fund', 'decide', 'execute', 'cancel', 'expire', 'bet', 'pledge', 'donate'];
     const AMOUNT = /^(?:0|[1-9]\d{0,8})(?:\.\d{1,6})?$/;

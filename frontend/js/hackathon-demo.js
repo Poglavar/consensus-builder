@@ -90,6 +90,14 @@
     } = {}) {
         const latestAlgorithm = newest(runs, run => run.controller === 'algorithm' && (run.role || 'proposer') === 'proposer');
         const latestSupporter = newest(runs, run => run.controller === 'algorithm' && run.role === 'supporter');
+        const supporterTransaction = latestSupporter?.support?.signature || latestSupporter?.support?.stakeSignature || null;
+        const supporterType = latestSupporter?.support?.type;
+        const supporterActed = latestSupporter?.status === 'done'
+            && latestSupporter?.outcome === 'completed'
+            && ['pledge', 'donate', 'stake'].includes(supporterType)
+            && Boolean(latestSupporter?.support?.agreementCid)
+            && Boolean(supporterTransaction)
+            && latestSupporter?.support?.replayed !== true;
         const latestLlm = newest(runs, run => run.controller === 'llm');
         // An agent's agreement on chain: its mint, the agreement program's create.
         const mintEvent = newest(events, event => event.entity?.type === 'agreement' && event.action?.type === 'mint');
@@ -129,7 +137,7 @@
             },
             {
                 label: 'Support on-chain',
-                status: latestSupporter?.status === 'done' && Boolean(latestSupporter.support?.signature) ? 'success' : 'waiting'
+                status: supporterActed ? 'success' : 'waiting'
             },
             {
                 label: 'Court evidence',
@@ -184,14 +192,18 @@
                 detail: 'This card updates from the checkpoint ledger; an older LLM run is not relabelled as algorithmic.', run: null
             },
             supporter: latestSupporter ? {
-                tone: latestSupporter.status === 'done' ? 'success' : latestSupporter.status === 'failed' ? 'error' : 'waiting',
-                label: latestSupporter.status === 'done' ? 'Supporter persona acted on-chain' : `Supporter run ${latestSupporter.status}`,
-                detail: latestSupporter.support
+                tone: supporterActed ? 'success' : latestSupporter.status === 'failed' ? 'error' : 'waiting',
+                label: supporterActed ? 'Supporter action recorded on-chain'
+                    : latestSupporter.outcome === 'no-eligible-agreement' ? 'No eligible agreement for supporter'
+                        : latestSupporter.outcome === 'already-supported' ? 'Agreement already supported; no new transaction'
+                            : latestSupporter.status === 'done' ? 'Supporter run completed without transaction proof'
+                                : `Supporter run ${latestSupporter.status}`,
+                detail: supporterActed
                     ? `${latestSupporter.persona} · ${latestSupporter.support.type} · agreement ${latestSupporter.support.agreementCid}`
                     : `${latestSupporter.persona} · ${latestSupporter.outcome || latestSupporter.stage || 'pending'}`,
                 run: latestSupporter,
-                transaction: latestSupporter.support?.signature || null,
-                agreementCid: latestSupporter.support?.agreementCid || null
+                transaction: supporterActed ? supporterTransaction : null,
+                agreementCid: supporterActed ? latestSupporter.support.agreementCid || null : null
             } : {
                 tone: 'waiting', label: 'Supporter persona ready, first run pending',
                 detail: 'The deterministic supporter will pledge to an active minted agreement by another actor.', run: null

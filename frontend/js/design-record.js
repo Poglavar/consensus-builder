@@ -8,6 +8,10 @@
 })(typeof window !== 'undefined' ? window : globalThis, function (root) {
     'use strict';
     const SCHEMA = 'design/v1';
+    // The publication budget is independent of the IPFS file chunk size.
+    const fileCodec = root.IpfsFileCid || (typeof require === 'function' ? require('../vendor/ipfs-file-cid/ipfs-file-cid.js') : null);
+    if (!fileCodec) throw new Error('The IPFS file codec is not loaded.');
+    const MAX_PUBLISHED_OBJECT_BYTES = fileCodec.MAX_BYTES;
     // What the design draws, by its type; a design carries exactly one.
     const PAYLOAD_KEYS = Object.freeze(['roadProposal', 'buildingProposal', 'structureProposal', 'parcelLayout']);
     // State a payload picks up while it is applied in one browser, beyond what apply derives again
@@ -62,6 +66,8 @@
     function published(localDesign) {
         if (!isObject(localDesign)) throw new TypeError('published needs a local design record.');
         const origin = textOf(isObject(localDesign.origin) ? localDesign.origin.cid : null);
+        const authored = root.ProposalAuthoredRecord || (typeof require === 'function' ? require('./proposals/authored-record.js') : null);
+        if (!authored) throw new Error('The authored geometry boundary is not loaded.');
         const design = {
             schema: SCHEMA,
             goal: textOf(localDesign.goal),
@@ -71,7 +77,7 @@
             city: textOf(localDesign.city),
             site: copy(localDesign.site),
             toleranceM: positive(localDesign.toleranceM) ? localDesign.toleranceM : null,
-            geometry: copy(localDesign.geometry),
+            geometry: authored.compactBuildingGeometry(copy(localDesign.geometry)),
             origin: origin ? { cid: origin } : null,
             authoredAt: instantOf(localDesign.createdAt)
         };
@@ -126,7 +132,12 @@
             add('design-field-invalid', 'authoredAt is an ISO instant or null.', 'authoredAt');
         }
 
-        if (object.site == null && object.geometry == null) add('design-shape', 'A design needs a site or a geometry.');
+        if (object.site == null && object.geometry == null) {
+            const partsApi = root.__footprintParts || (typeof require === 'function' ? require('./proposals/footprint-parts.js') : null);
+            if (!partsApi) throw new Error('The authored footprint selector is not loaded.');
+            const parts = partsApi.footprintParts(object);
+            if (parts.invalid || !parts.polygons.length) add('design-shape', 'A design needs a site or a polygon drawing in its payload.');
+        }
         if (object.site != null && !(isObject(object.site) && (object.site.type === 'Polygon' || object.site.type === 'MultiPolygon')
             && Array.isArray(object.site.coordinates))) {
             add('design-field-invalid', 'The site is a Polygon or MultiPolygon geometry.', 'site');
@@ -140,5 +151,7 @@
         return { valid: !errors.length, errors };
     }
 
-    return { SCHEMA, PAYLOAD_KEYS, published, cidOf, validate };
+    const publicationSize = localDesign => cid().canonicalBytes(published(localDesign)).byteLength;
+
+    return { SCHEMA, PAYLOAD_KEYS, MAX_PUBLISHED_OBJECT_BYTES, publicationSize, published, cidOf, validate };
 });

@@ -173,6 +173,21 @@ describe('validate', () => {
         expect(DesignRecord.validate({ ...valid(), origin: null, site: null })).toEqual({ valid: true, errors: [] });
     });
 
+    it.each(['road', 'track'])('accepts a %s whose only land is its authored corridor polygon', kind => {
+        const { structureProposal, ...content } = valid();
+        const design = { ...content, goal: 'road-track', site: null, geometry: null,
+            roadProposal: { definition: { transportMode: kind, polygon: SITE,
+                points: [{ lat: 45.8, lng: 15.96 }, { lat: 45.801, lng: 15.961 }], width: 7 } } };
+        expect(DesignRecord.validate(design)).toEqual({ valid: true, errors: [] });
+        delete design.roadProposal.definition.polygon;
+        expect(codes(design)).toContain('design-shape');
+    });
+
+    it('counts the exact canonical UTF-8 bytes for publication', () => {
+        const record = { goal: 'single', title: 'Courtyard č', buildingProposal: {}, site: SITE };
+        expect(DesignRecord.publicationSize(record)).toBe(Cid.canonicalBytes(DesignRecord.published(record)).length);
+    });
+
     it('names each problem by its code and field', () => {
         expect(codes(null)).toEqual(['design-schema']);
         expect(codes({ ...valid(), schema: 'proposal/v1' })).toEqual(['design-schema']);
@@ -187,7 +202,7 @@ describe('validate', () => {
         expect(codes({ ...valid(), authoredAt: '2026-10-21' })).toEqual(['design-field-invalid']);
         expect(codes({ ...valid(), site: { type: 'Point', coordinates: [15.96, 45.8] } })).toEqual(['design-field-invalid']);
         expect(codes({ ...valid(), geometry: 'square' })).toEqual(['design-field-invalid']);
-        expect(codes({ ...valid(), site: null, geometry: null })).toEqual(['design-shape']);
+        expect(codes({ ...valid(), site: null, geometry: null, structureProposal: {} })).toEqual(['design-shape']);
         expect(codes({ ...valid(), origin: { cid: 'c2-abc' } })).toEqual(['design-origin']);
         expect(codes({ ...valid(), origin: { cid: ORIGIN, title: 'extra' } })).toEqual(['design-origin']);
     });

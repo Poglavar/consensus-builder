@@ -67,7 +67,7 @@ const AGREEMENT_ROWS = `
       LEFT JOIN consensus.design d ON d.cid = a.design_cids[1]`;
 // The agreements that have a chain account, or can have one: recorded once minted, derived from a sponsor.
 const WITH_ACCOUNT = `a.onchain IS NOT NULL OR a.content->>'sponsor' IS NOT NULL`;
-const DESIGN_ROWS = 'SELECT cid, city, goal, title, bounds, created_at FROM consensus.design';
+const DESIGN_ROWS = 'SELECT cid, city, goal, title, author, bounds, created_at FROM consensus.design';
 const TRANSACTION_ROWS = 'SELECT signature, slot, block_time, raw, created_at FROM consensus.solana_transaction';
 
 const iso = value => (value instanceof Date ? value.toISOString() : value ?? null);
@@ -218,6 +218,7 @@ export function agreementEvents(rows = []) {
 export function designEvents(rows = []) {
     return rows.map(row => ({
         id: `design:${row.cid}:published`, source: 'live',
+        ...(row.author ? { actor: { id: String(row.author), name: String(row.author), kind: 'unknown', controller: 'unknown' } } : {}),
         action: { type: 'design', designCid: row.cid },
         entity: { type: 'design', id: row.cid },
         ok: true, transaction: null, occurredAt: iso(row.created_at), recordedAt: iso(row.created_at),

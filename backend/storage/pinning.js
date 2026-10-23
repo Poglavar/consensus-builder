@@ -4,13 +4,15 @@
 // assumption about how Pinata builds the CID fails loudly at the first pin, never silently.
 // pinFileToPinata is the one multipart pinFileToIPFS call; routes/ipfs.js pins NFT images through it.
 import { cidOf } from '../cid.js';
+import { createRequire } from 'node:module';
+
+const { MAX_PUBLISHED_OBJECT_BYTES } = createRequire(import.meta.url)('../../frontend/js/design-record.js');
 
 export const PINATA_FILE_ENDPOINT = 'https://api.pinata.cloud/pinning/pinFileToIPFS';
 // One published object is at most this many bytes (designs, agreements and decision bundles alike).
-// One Pinata chunk: a larger file gets a dag-pb root CID instead of the raw-leaf CID the browser
-// computed, so the pin would be refused as a mismatch anyway. Objects are small (a 500-plot layout
-// is about 150 KB).
-export const MAX_PINNED_OBJECT_BYTES = 256 * 1024;
+// Files larger than one 256 KiB chunk use a UnixFS dag-pb root with raw leaves;
+// the browser and server compute that same file CID before uploading.
+export const MAX_PINNED_OBJECT_BYTES = MAX_PUBLISHED_OBJECT_BYTES;
 
 const log = message => console.log(`[${new Date().toISOString()}] [pinning] ${message}`);
 

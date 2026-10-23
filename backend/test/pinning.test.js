@@ -72,13 +72,13 @@ describe('pinBytes', () => {
         expect(fetchImpl).not.toHaveBeenCalled();
     });
 
-    it('pins at most MAX_PINNED_OBJECT_BYTES (256 KiB), one Pinata chunk', async () => {
-        expect(MAX_PINNED_OBJECT_BYTES).toBe(256 * 1024);
+    it('pins IPFS files up to 10 MiB across multiple chunks', async () => {
+        expect(MAX_PINNED_OBJECT_BYTES).toBe(10 * 1024 * 1024);
         const atCap = Buffer.alloc(MAX_PINNED_OBJECT_BYTES, 0x20);
         const fetchImpl = pinata({ IpfsHash: cidOf(atCap) });
         await expect(pinBytes({ bytes: atCap, name: 'cap', cid: cidOf(atCap) })).resolves.toMatchObject({ cid: cidOf(atCap) });
         const over = Buffer.alloc(MAX_PINNED_OBJECT_BYTES + 1, 0x20);
-        await expect(pinBytes({ bytes: over, name: 'over', cid: cidOf(over) })).rejects.toMatchObject({ code: 'too-large', status: 413 });
+        await expect(pinBytes({ bytes: over, name: 'over', cid })).rejects.toMatchObject({ code: 'too-large', status: 413 });
         expect(fetchImpl).toHaveBeenCalledTimes(1);
         await expect(pinBytes({ bytes: new Uint8Array(), name: 'empty', cid: cidOf(new Uint8Array()) }))
             .rejects.toMatchObject({ code: 'invalid-pin', status: 400 });

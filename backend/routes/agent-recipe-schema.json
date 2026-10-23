@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://api.urbangametheory.xyz/docs/agents.json",
   "title": "Urban Game Theory — what an agent publishes: design/v1 and agreement/v1",
-  "description": "Two content-addressed objects, checked as the server checks them (frontend/js/design-record.js validate with routes/designs.js validateDesignContent; routes/agreements.js validateAgreementContent). A CID is CIDv1, raw codec, sha2-256, base32 lower case (bafkrei…) over the object's canonical bytes: JSON with keys sorted at every depth, no whitespace, UTF-8. Publish steps: (1) POST /designs/binding { site, toleranceM? } (free, nothing stored) shows the parcels a site takes. (2) Build a design/v1 object, POST /pins { kind: 'design', cid, bytes (base64 canonical bytes) }, then POST /designs { cid, content, parcelSourceId? }: the row carries its binding. A parcel layout is not indexed alone: it travels in the designs of its agreement. (3) Build an agreement/v1 object over the design CIDs, its inputs exactly the union of the designs' bindings, POST /pins { kind: 'agreement', … }, then POST /agreements { cid, content, designs?: [{ cid, content }] }. Writes need an Origin header of the app (https://urbangametheory.xyz); pins are limited to 30 per 15 minutes per client. (4) The sponsor creates the agreement's account (PDA [\"agreement\", sponsor, sha256(cid)]) on the agreement program and reports it at POST /agreements/{cid}/onchain { chain: 'solana', cluster: 'devnet', account, signature }. The app publishes both objects with every field below present (null when empty); the MCP tools refuse anything else.",
+  "description": "Two content-addressed objects, checked as the server checks them (frontend/js/design-record.js validate with routes/designs.js validateDesignContent; routes/agreements.js validateAgreementContent). A CID identifies a UnixFS file: CIDv1, sha2-256, lower-case base32, fixed 256 KiB chunks and raw leaves. Single-chunk files use the raw codec (bafkrei…); multi-chunk files use a UnixFS dag-pb root (bafybei…). The CID covers the object's canonical bytes: JSON with keys sorted at every depth, no whitespace, UTF-8. Publish steps: (1) POST /designs/binding { site, toleranceM? } (free, nothing stored) shows the parcels a site takes. (2) Build a design/v1 object, POST /pins { kind: 'design', cid, bytes (base64 canonical bytes) }, then POST /designs { cid, content, parcelSourceId? }: the row carries its binding. A parcel layout is not indexed alone: it travels in the designs of its agreement. (3) Build an agreement/v1 object over the design CIDs, its inputs exactly the union of the designs' bindings, POST /pins { kind: 'agreement', … }, then POST /agreements { cid, content, designs?: [{ cid, content }] }. Writes need an Origin header of the app (https://urbangametheory.xyz); pins are limited to 30 per 15 minutes per client. (4) The sponsor creates the agreement's account (PDA [\"agreement\", sponsor, sha256(cid)]) on the agreement program and reports it at POST /agreements/{cid}/onchain { chain: 'solana', cluster: 'devnet', account, signature }. The app publishes both objects with every field below present (null when empty); the MCP tools refuse anything else.",
   "oneOf": [
     { "$ref": "#/$defs/design" },
     { "$ref": "#/$defs/agreement" }
@@ -10,8 +10,8 @@
   "$defs": {
     "cid": {
       "type": "string",
-      "pattern": "^bafkrei[a-z2-7]{52}$",
-      "description": "CIDv1, raw codec (0x55), sha2-256, base32 lower case."
+      "pattern": "^baf(?:krei|ybei)[a-z2-7]{52}$",
+      "description": "CIDv1 UnixFS file, sha2-256, lower-case base32, fixed 256 KiB chunks and raw leaves; single-chunk files use the raw codec (bafkrei…), multi-chunk files use a UnixFS dag-pb root (bafybei…)."
     },
     "instant": {
       "type": "string",

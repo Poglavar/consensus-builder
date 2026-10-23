@@ -3,7 +3,7 @@ import { createRequire } from 'node:module';
 import { describe, it, expect } from 'vitest';
 import * as turf from '@turf/turf';
 import { validateDesignContent } from '../routes/designs.js';
-import { cidOfObject } from '../cid.js';
+import { cidOf, cidOfObject } from '../cid.js';
 import { createUrbanGameTheoryTools } from '../agents/ugt-agent-tools.js';
 import { createPreviewLinks } from '../agents/mcp-preview-links.js';
 const require = createRequire(import.meta.url);
@@ -100,6 +100,17 @@ describe('intent design artifacts', () => {
     });
 });
 describe('approval links', () => {
+    it('round-trips a UnixFS agreement CID as an approval intent', () => {
+        const bytes = new Uint8Array(256 * 1024 + 1);
+        bytes.fill(0x61);
+        const target = cidOf(bytes);
+        expect(target).toMatch(/^bafybei[a-z2-7]{52}$/);
+        const intent = { action: 'execute', target, params: { city: 'test-city' } };
+        const url = new URL(approval.build({ origin: 'https://app.example', ...intent }));
+        expect(url.pathname).toBe(`/agreements/${target}`);
+        expect(approval.parse(url)).toEqual(intent);
+    });
+
     it('round-trips a bet and refuses injected targets or amounts', () => {
         const intent = { action: 'bet', target: '11111111111111111111111111111111', params: { amount: '0.05', side: 'yes', city: 'london' } };
         expect(approval.parse(new URL(approval.build({ origin: 'https://app.example', ...intent })))).toEqual(intent);

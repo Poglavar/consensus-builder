@@ -5,7 +5,7 @@
 // (M3): only a binding agreement has one (Mint, or the account's status, decision and escrow with the
 // actions its state allows, from AgreementBridge.chainActions), a vote gets one line instead; and the
 // rows of the Minted agreements dialog.
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
@@ -229,6 +229,78 @@ describe('panel HTML', () => {
         expect(proposed).not.toContain('data-agreement-action="edit"');
         expect(proposed).toMatch(/class="btn btn-primary" data-agreement-action="compare"/);
         expect(proposed).toContain('data-agreement-action="delete"');
+    });
+
+    it('renders a secondary-tab agreement as content only, without edit, delete, chain, vote or design actions', () => {
+        const actions = panel.actionsHtml({ published: true, readOnly: true, canCompare: true, canBet: true });
+        expect(actions).toContain('data-agreement-action="compare" aria-pressed="false" disabled');
+        expect(actions).not.toContain('data-agreement-action="edit"');
+        expect(panel.actionsHtml({ readOnly: true })).not.toContain('data-agreement-action="edit"');
+        expect(actions).not.toContain('data-agreement-action="delete"');
+        expect(actions).not.toContain('data-agreement-action="bet"');
+        expect(panel.publishedHtml({ published: PUBLISHED, readOnly: true })).toContain('data-agreement-read-only');
+        expect(panel.publishedHtml({ published: PUBLISHED, readOnly: true })).not.toContain('data-approval-card-slot');
+        expect(panel.designsHtml([{ proposalId: 'd1', title: 'Layout', type: 'Layout', missing: false }], undefined, true))
+            .toContain('data-agreement-design="d1" disabled');
+        expect(panel.chainHtml({ published: true, readOnly: true, ref: null, actions: { canMint: true } }))
+            .not.toContain('data-agreement-action="mint"');
+    });
+
+    it('opens an in-memory published record without reading or writing the local agreement store', async () => {
+        const panelBody = { innerHTML: '' };
+        const title = { textContent: '' };
+        const closeButton = { setAttribute: vi.fn(), title: '' };
+        const panelNode = {
+            classList: { values: new Set(), add(value) { this.values.add(value); }, remove(value) { this.values.delete(value); }, contains(value) { return this.values.has(value); } },
+            addEventListener: vi.fn(), setAttribute: vi.fn(),
+            querySelector: selector => selector === '#agreement-panel-title' ? title
+                : selector === '[data-agreement-action="close"]' ? closeButton
+                    : selector === '[data-agreement-region="body"]' ? panelBody : null
+        };
+        const doc = {
+            body: { appendChild: vi.fn(), classList: { add: vi.fn(), remove: vi.fn() } },
+            addEventListener: vi.fn(), getElementById: () => null, createElement: () => panelNode
+        };
+        const store = { get: vi.fn(() => { throw new Error('read-only view must not read local storage'); }), save: vi.fn(), subscribe: vi.fn() };
+        const approval = { setStatus: vi.fn(), sync: vi.fn(), render: vi.fn() };
+        const win = {
+            document: doc,
+            AgreementStore: store,
+            AgreementRecord: record,
+            AgreementDialog: { sponsorLine: () => null, inputParcelIds: () => [], originalsById: () => [] },
+            AgreementGround: {
+                check: async () => ({ current: false, reasons: [] }), localHolders: () => () => null, areaOf: () => null
+            },
+            AgreementSync: { fetchAgreement: async () => ({ status: 'active' }) },
+            ProposalApprovalPanel: approval,
+            ProposalBeforeAfter: { agreementKey: id => id, isActive: () => false },
+            CbFormat: format,
+            proposalStorage: { getProposal: () => null },
+            CadastralParcelRepository: { ensureIds: async () => ({ features: [] }) },
+            LiveParcelFabric: {},
+            isApplied: () => false,
+            PersistentStorage: {}, agentStorage: {}
+        };
+        const viewRecord = record.normalize(agreement({ title: 'Read-only view', published: PUBLISHED,
+            rule: { electorate: 'owners', binding: false, approvalConfig: null, lens: [] } }));
+        const browser = panel.browserPanel(win);
+
+        await browser.openReadOnly(viewRecord);
+        await Promise.resolve();
+        await Promise.resolve();
+
+        expect(browser.current()).toBe(viewRecord.id);
+        expect(store.get).not.toHaveBeenCalled();
+        expect(store.save).not.toHaveBeenCalled();
+        expect(title.textContent).toBe('Read-only view');
+        expect(panelBody.innerHTML).toContain('data-agreement-read-only');
+        expect(panelBody.innerHTML).toContain('data-agreement-read-only-status');
+        expect(panelBody.innerHTML).not.toContain('Reading the land under the designs');
+        expect(panelBody.innerHTML).not.toContain('data-agreement-action="edit"');
+        expect(panelBody.innerHTML).not.toContain('data-agreement-action="delete"');
+        expect(panelBody.innerHTML).not.toContain('data-approval-card-slot');
+        expect(approval.sync).not.toHaveBeenCalled();
+        expect(approval.render).not.toHaveBeenCalled();
     });
 
     it('words what the index says of a proposed agreement', () => {

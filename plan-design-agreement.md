@@ -4,7 +4,7 @@
 
 **Status (2026-10-22): M1, M2 and M3 built and tested; M3 committed, nothing pushed or deployed.**
 "Lay out parcels" (M1 a) and the local agreement with its dialog, panel and list (M1 b) came first.
-M2 (the "M2 build contract" below) publishes designs and agreements as CIDv1 raw-leaf objects pinned
+M2 (the "M2 build contract" below) publishes designs and agreements as CIDv1 UnixFS files with raw leaves, pinned
 through `POST /pins` and indexed in `consensus.design` / `consensus.agreement`; share links are
 `/designs/<cid,…>` and `/agreements/<cid>`; design dialogs have no terms or kind; the decide-later
 type, Walrus, prepare, the proposal write path, edit tokens, effect hashes, lineage by row id and
@@ -391,12 +391,16 @@ had to be made are marked **(call)**.
 
 ### Identity: one CID scheme
 
-- A published object's identity is its **CIDv1, codec `raw` (0x55), multihash sha2-256, base32
-  lower-case** (`bafkrei…`), over the object's canonical bytes: `stableStringify` (keys sorted at
+- A published object's identity is its **CIDv1 UnixFS file address, multihash sha2-256, base32
+  lower-case**, over the object's canonical bytes: `stableStringify` (keys sorted at
   every depth, no whitespace) encoded as UTF-8. Computed in the browser by a pure module
   `frontend/js/cid.js` on the vendored noble sha256; the server recomputes it from the bytes it
-  receives and refuses a mismatch. **(call)** Pinata reproduces a raw-leaf CID for a single-chunk
-  file pinned with `cidVersion: 1`; the courier compares its answer with the computed CID and refuses
+  receives and refuses a mismatch. The file profile uses fixed 256 KiB chunks and raw leaves:
+  one chunk has codec `raw` (0x55, `bafkrei…`); multiple chunks have a UnixFS `dag-pb` root
+  (0x70, `bafybei…`). The publication budget is 10 MiB, independently of chunk size.
+  Identical sole-building and whole-block features are stored once under `geometry.buildings`;
+  affected older duplicate records require review and republication under this canonical contract.
+  Pinata files use `cidVersion: 1`; the courier compares its answer with the computed CID and refuses
   on a difference, so a wrong assumption fails loudly at the first pin, never silently.
 - **Design object** `design/v1`: `{ schema, goal, title, description, author, city, site, toleranceM,
   roadProposal | buildingProposal | structureProposal | parcelLayout (cleaned

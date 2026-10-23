@@ -21,11 +21,21 @@
      * code is the index's own refusal of one (POST /designs).
      */
     function publishRefusal(record) {
-        if (!record || record.goal !== 'parcel-layout') return null;
-        return {
+        if (!record) return null;
+        if (record.goal === 'parcel-layout') return {
             code: 'layout-needs-agreement',
             message: text('parcelLayout.publishWithAgreement', 'A parcel layout is published with its agreement. Propose an agreement that includes it.')
         };
+        const api = root.DesignRecord || (typeof require === 'function' ? require('../design-record.js') : null);
+        if (!api) throw new Error('DesignRecord is not loaded.');
+        let bytes;
+        try { bytes = api.publicationSize(record); } catch (error) {
+            return { code: error.code || 'invalid-design', message: text('proposals.share.errors.invalidDesign', 'This design contains invalid data. Correct it before sharing.') };
+        }
+        return bytes > api.MAX_PUBLISHED_OBJECT_BYTES ? {
+            code: 'too-large', bytes, maxBytes: api.MAX_PUBLISHED_OBJECT_BYTES,
+            message: text('proposals.share.errors.tooLarge', 'This design exceeds the 10 MiB publication limit. Reduce its extent or detail before sharing; it is saved locally.')
+        } : null;
     }
 
     return Object.freeze({ publishRefusal });

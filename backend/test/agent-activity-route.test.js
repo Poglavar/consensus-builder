@@ -150,10 +150,12 @@ describe('index events', () => {
             occurredAt: '2026-10-21T10:00:00Z', recordedAt: '2026-10-21T10:00:00Z', message: 'Agreement Pocket park deal was proposed.'
         }]);
         const created = new Date('2026-10-21T09:00:00Z');
-        expect(designEvents([{ cid: DESIGN, title: null, created_at: created }])[0]).toMatchObject({
+        expect(designEvents([{ cid: DESIGN, title: null, author: 'TESTQA', created_at: created }])[0]).toMatchObject({
             id: `design:${DESIGN}:published`, action: { type: 'design', designCid: DESIGN }, entity: { type: 'design', id: DESIGN },
+            actor: { id: 'TESTQA', name: 'TESTQA', kind: 'unknown', controller: 'unknown' },
             occurredAt: '2026-10-21T09:00:00.000Z', message: `Design ${DESIGN} was published.`
         });
+        expect(designEvents([{ cid: DESIGN, title: null, created_at: created }])[0]).not.toHaveProperty('actor');
     });
 });
 
@@ -272,7 +274,7 @@ describe('GET /agent/activity', () => {
     const mintRow = { raw: tx('create-tx', [agreementIx('create', ACCOUNT)], { time: '2026-10-21T08:03:30Z' }) };
     const pool = () => poolFor({
         runs: [run], transactions: [mintRow, stakeRow], proposed: [agreementRow(AGREEMENT)],
-        designs: [{ cid: DESIGN, city: 'zagreb', goal: 'park', title: 'Pocket park', bounds: BOUNDS, created_at: '2026-10-21T07:59:00Z' }]
+        designs: [{ cid: DESIGN, city: agreementRow(AGREEMENT).city, goal: 'park', title: 'Pocket park', author: 'TESTQA', bounds: BOUNDS, created_at: '2026-10-21T07:59:00Z' }]
     });
 
     it('merges index, chain and run events: a run\'s record replaces the index\'s and the decoded chain\'s copy', async () => {
@@ -282,7 +284,7 @@ describe('GET /agent/activity', () => {
         // One design, one propose and one mint (the run's), the run's stake and the human's decoded stake.
         expect(keyed.sort()).toEqual(['design:2026-10-21-densifier-01', 'mint:2026-10-21-densifier-01', 'propose:2026-10-21-densifier-01', 'stake:-', 'stake:2026-10-21-densifier-01']);
         const design = response.body.events.find(event => event.action.type === 'design');
-        expect(design).toMatchObject({ designName: 'Pocket park', designGoal: 'park', cityId: 'zagreb', location: { lat: 45.81, lon: 15.91 } });
+        expect(design).toMatchObject({ designName: 'Pocket park', designGoal: 'park', cityId: agreementRow(AGREEMENT).city, location: { lat: 45.81, lon: 15.91 }, actor: { name: 'densifier-01', controller: 'algorithm' } });
         const chainStake = response.body.events.find(event => event.action.type === 'stake' && !event.runId);
         expect(chainStake).toMatchObject({ actor: { id: HUMAN }, agreementName: 'Pocket park deal', action: { side: 'yes', amount: '0.01' } });
         expect(response.body).toMatchObject({ count: 5, source: 'live' });

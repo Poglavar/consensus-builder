@@ -5,7 +5,7 @@
 // device. On chain (M3): the mint mirrored into the index and kept on the record even when the index
 // refuses it, the index's minted list, an agreement proposed again with a sponsor, and an opened
 // link that keeps this device's mint.
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, vi } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
@@ -156,7 +156,7 @@ const json = (status, body) => ({ ok: status >= 200 && status < 300, status, jso
 // /designs and /agreements file content under its CID, GET /agreements/:cid serves a row.
 // POST /agreements/:cid/onchain answers onchain(body, cid) ({ status, body }); GET /agreements (the
 // minted listing) answers minted(searchParams).
-function fakeServer({ rows = new Map(), onchain = null, minted = null } = {}) {
+function fakeServer({ rows = new Map(), designs = new Map(), onchain = null, minted = null } = {}) {
     const calls = [];
     async function fetch(url, init = {}) {
         const { pathname, searchParams } = new URL(url);
@@ -171,6 +171,9 @@ function fakeServer({ rows = new Map(), onchain = null, minted = null } = {}) {
         if (method === 'GET' && pathname === '/agreements' && minted) {
             const answer = minted(searchParams);
             return json(answer.status, answer.body);
+        }
+        if (method === 'POST' && pathname === '/designs/batch') {
+            return json(200, { items: body.cids.flatMap(cid => designs.has(cid) ? [{ cid, design: designs.get(cid) }] : []) });
         }
         if (method === 'POST' && pathname === '/pins') {
             const cid = NodeCid.cidOf(Buffer.from(body.bytes, 'base64'));
@@ -473,6 +476,45 @@ describe('proposeAgain', () => {
 });
 
 describe('opening an /agreements link', () => {
+    it('opens a published agreement and fetched designs as a read-only view in a secondary tab without writes or apply', async () => {
+        const content = AgreementRecord.published(agreement());
+        const cid = Cid.cidOfObject(content);
+        const row = { cid, content, createdAt: '2026-10-21T12:00:05.000Z', city: content.city, status: 'active', onchain: null };
+        const layoutContent = DesignRecord.published(layout());
+        const roadContent = DesignRecord.published(road());
+        const layoutCid = Cid.cidOfObject(layoutContent);
+        const roadCid = Cid.cidOfObject(roadContent);
+        const designRows = new Map([
+            [layoutCid, { cid: layoutCid, content: layoutContent, createdAt: row.createdAt, city: layoutContent.city }],
+            [roadCid, { cid: roadCid, content: roadContent, createdAt: row.createdAt, city: roadContent.city }]
+        ]);
+        const server = fakeServer({ rows: new Map([[cid, row]]), designs: designRows });
+        const { win, sync, agreements } = fakeWindow({ server });
+        win.__cbSecondaryTab = true;
+        win.CityConfigManager.foreignCityFor = () => false;
+        const openReadOnly = vi.fn(async () => {});
+        const handleSharedDesignRoute = vi.fn(async () => { throw new Error('must not import or apply in a secondary tab'); });
+        win.AgreementPanel = { openReadOnly };
+        win.handleSharedDesignRoute = handleSharedDesignRoute;
+        const save = vi.spyOn(win.AgreementStore, 'save');
+
+        await sync.handleAgreementRoute(cid);
+
+        expect(server.calls.map(call => `${call.method} ${call.pathname}`)).toEqual([
+            `GET /agreements/${cid}`, 'POST /designs/batch'
+        ]);
+        expect(handleSharedDesignRoute).not.toHaveBeenCalled();
+        expect(save).not.toHaveBeenCalled();
+        expect(agreements.size).toBe(1);
+        expect(openReadOnly).toHaveBeenCalledOnce();
+        const [view, { designs }] = openReadOnly.mock.calls[0];
+        expect(view).toMatchObject({ id: `published-${cid}`, published: { cid }, title: content.title });
+        expect(view.designs.map(design => design.proposalId)).toEqual([layoutCid, roadCid]);
+        expect(view.outputs.every(output => output.geometry === null)).toBe(true);
+        expect(designs.get(layoutCid)).toMatchObject({ proposalId: layoutCid, goal: 'parcel-layout', title: 'Lay out k9', parcelLayout: layoutContent.parcelLayout });
+        expect(designs.get(roadCid)).toMatchObject({ proposalId: roadCid, goal: 'road', title: 'New lane', roadProposal: roadContent.roadProposal });
+    });
+
     it('keeps a mint this device made that the index has not recorded, and takes the index\'s once it has', async () => {
         const content = AgreementRecord.published({ ...agreement(), sponsor: SPONSOR });
         const cid = Cid.cidOfObject(content);

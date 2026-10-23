@@ -1,5 +1,6 @@
 // The server's CID scheme (backend/cid.js, plan-design-agreement.md M2 "Identity: one CID scheme"):
-// CIDv1, raw, sha2-256, base32 over the canonical bytes. Known IPFS vectors, the canonical form, the
+// CIDv1 UnixFS file with raw leaves and fixed 256 KiB chunks, sha2-256, base32 over canonical bytes.
+// Known IPFS vectors, the canonical form, the
 // browser twin (frontend/js/cid.js) giving the same answers, and isCid accepting one spelling only.
 import { describe, expect, it } from 'vitest';
 import { createHash } from 'node:crypto';
@@ -112,7 +113,8 @@ describe('isCid', () => {
     });
 
     it('refuses other codecs, versions, hashes and digest lengths', () => {
-        expect(isCid(cidText([0x01, 0x70, 0x12, 0x20], digest))).toBe(false); // dag-pb (bafybei…)
+        expect(isCid(cidText([0x01, 0x70, 0x12, 0x20], digest))).toBe(true); // UnixFS file root
+        expect(isCid(cidText([0x01, 0x71, 0x12, 0x20], digest))).toBe(false); // unsupported dag-cbor
         expect(isCid(cidText([0x01, 0x55, 0x13, 0x20], digest))).toBe(false); // another hash function
         expect(isCid(cidText([0x02, 0x55, 0x12, 0x20], digest))).toBe(false); // another version
         expect(isCid(cidText([0x01, 0x55, 0x12, 0x1f], digest.subarray(0, 31)))).toBe(false);

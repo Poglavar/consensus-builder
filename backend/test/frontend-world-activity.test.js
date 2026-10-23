@@ -5,6 +5,7 @@ import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
+import { cidOf } from '../cid.js';
 const require = createRequire(import.meta.url);
 const { prepare, TYPES, locationOf, goalKey } = require('../../frontend/js/world/activity-model.js');
 const activitySource = readFileSync(new URL('../../frontend/js/world/activity.js', import.meta.url), 'utf8');
@@ -146,6 +147,17 @@ describe('world recent activity', () => {
         expect(prepare([event('y', 'cancel')])[0]).toMatchObject({ subject: 'bafkreiftzbz…3kuf7y', href: `/agreements/${AGREEMENT}` });
         // An event whose entity is something else still links the agreement its action names.
         expect(prepare([event('z', 'donate', undefined, { entity: null })])[0].agreementCid).toBe(AGREEMENT);
+    });
+    it('keeps a multi-chunk UnixFS agreement CID linkable in world activity', () => {
+        const bytes = new Uint8Array(256 * 1024 + 1);
+        bytes.fill(0x62);
+        const cid = cidOf(bytes);
+        expect(cid).toMatch(/^bafybei[a-z2-7]{52}$/);
+        const prepared = prepare([event('large-cid', 'execute', undefined, {
+            action: { type: 'execute', agreementCid: cid }, entity: { type: 'agreement', id: cid }
+        })]);
+        expect(prepared).toHaveLength(1);
+        expect(prepared[0]).toMatchObject({ agreementCid: cid, href: `/agreements/${cid}` });
     });
     it('keeps the design goal separately from the activity action and never guesses it', () => {
         expect(prepare([event('x', 'propose', undefined, { designGoal: ' park ' })])[0]).toMatchObject({ type: 'propose', designGoal: 'park' });

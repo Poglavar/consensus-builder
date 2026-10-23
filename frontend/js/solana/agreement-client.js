@@ -178,7 +178,8 @@
 
     // ---- CID and PDA ----------------------------------------------------------------------------------
 
-    // The program's rule: 1-64 ASCII letters and digits (a raw sha2-256 CIDv1, `bafkrei…`, is 59).
+    // The program's rule: 1-64 ASCII letters and digits (CIDv1 UnixFS file CIDs with raw leaves
+    // and fixed 256 KiB chunks are 59 characters: raw `bafkrei…` for one chunk, dag-pb `bafybei…` for more).
     function requireCid(cid) {
         if (typeof cid !== 'string' || !/^[A-Za-z0-9]+$/.test(cid)) throw new Error('cid must be 1-64 ASCII letters and digits');
         if (cid.length > constants.MAX_CID_BYTES) throw new Error(`cid is ${cid.length} bytes; the program stores at most ${constants.MAX_CID_BYTES}`);

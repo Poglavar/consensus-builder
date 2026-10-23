@@ -54,11 +54,11 @@
 
     function normalizeEvent(input = {}) {
         const rawActor = input.actor || {};
-        const controller = string(rawActor.controller || (rawActor.kind === 'human' ? 'human' : 'algorithm'));
+        const controller = string(rawActor.controller || (rawActor.kind === 'human' ? 'human' : 'unknown'));
         const actor = {
             id: string(rawActor.id || rawActor.wallet || rawActor.name || 'unknown'),
             name: string(rawActor.name || rawActor.persona || rawActor.id || rawActor.wallet || 'Unknown actor'),
-            kind: string(rawActor.kind || (controller === 'human' ? 'human' : 'agent')),
+            kind: string(rawActor.kind || (controller === 'human' ? 'human' : controller === 'unknown' ? 'unknown' : 'agent')),
             controller,
             wallet: rawActor.wallet ? string(rawActor.wallet) : null
         };

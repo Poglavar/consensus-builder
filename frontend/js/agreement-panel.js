@@ -256,7 +256,8 @@
 
     const sectionHtml = (title, content) => `<section class="agreement-panel-section"><h4 class="agreement-panel-heading">${esc(title)}</h4>${content}</section>`;
 
-    function statusHtml({ checking, error, status, designTitles }, tr = t) {
+    function statusHtml({ checking, error, status, designTitles, readOnly = false }, tr = t) {
+        if (readOnly) return `<p class="agreement-panel-note" data-agreement-read-only-status>${esc(tr('agreement.publish.readOnlyStatus', 'Read-only view. Local map status is not evaluated.'))}</p>`;
         if (error) {
             return `<p class="agreement-panel-note agreement-panel-note--danger" role="alert">${esc(tr('agreement.panel.status.error', 'The agreement could not be checked against the map: {{reason}}', { reason: error }))}</p>`;
         }
@@ -273,14 +274,15 @@
     // Propose is the main action of a current agreement not yet proposed; a proposed agreement is
     // immutable, so it has no Edit (a change is a new agreement). Bet appears when the markets offer
     // one on the agreement (window.AgreementBets.available).
-    function actionsHtml({ canCompare = false, comparing = false, canPropose = false, published = false, canBet = false } = {}, tr = t) {
+    function actionsHtml({ canCompare = false, comparing = false, canPropose = false, published = false, canBet = false, readOnly = false } = {}, tr = t) {
+        canPropose = canPropose && !readOnly;
         return '<div class="agreement-panel-actions">'
             + (canPropose ? `<button type="button" class="btn btn-primary" data-agreement-action="propose"><i class="fas fa-paper-plane" aria-hidden="true"></i> ${esc(tr('agreement.publish.propose', 'Propose'))}</button>` : '')
-            + `<button type="button" class="btn${canPropose ? '' : ' btn-primary'}" data-agreement-action="compare" aria-pressed="${comparing ? 'true' : 'false'}"${canCompare ? '' : ' disabled'}>`
+            + `<button type="button" class="btn${canPropose ? '' : ' btn-primary'}" data-agreement-action="compare" aria-pressed="${comparing ? 'true' : 'false'}"${canCompare && !readOnly ? '' : ' disabled'}>`
             + `<i class="fas fa-left-right" aria-hidden="true"></i> ${esc(tr('mapCompare.toggle', 'Before / after'))}</button>`
-            + (canBet ? `<button type="button" class="btn" data-agreement-action="bet"><i class="fas fa-chart-line" aria-hidden="true"></i> ${esc(tr('agreement.panel.actions.bet', 'Bet'))}</button>` : '')
-            + (published ? '' : `<button type="button" class="btn" data-agreement-action="edit"><i class="fas fa-pen" aria-hidden="true"></i> ${esc(tr('agreement.panel.actions.edit', 'Edit'))}</button>`)
-            + `<button type="button" class="btn btn-danger" data-agreement-action="delete"><i class="fas fa-trash" aria-hidden="true"></i> ${esc(tr('agreement.panel.actions.delete', 'Delete'))}</button>`
+            + (canBet && !readOnly ? `<button type="button" class="btn" data-agreement-action="bet"><i class="fas fa-chart-line" aria-hidden="true"></i> ${esc(tr('agreement.panel.actions.bet', 'Bet'))}</button>` : '')
+            + (published || readOnly ? '' : `<button type="button" class="btn" data-agreement-action="edit"><i class="fas fa-pen" aria-hidden="true"></i> ${esc(tr('agreement.panel.actions.edit', 'Edit'))}</button>`)
+            + (readOnly ? '' : `<button type="button" class="btn btn-danger" data-agreement-action="delete"><i class="fas fa-trash" aria-hidden="true"></i> ${esc(tr('agreement.panel.actions.delete', 'Delete'))}</button>`)
             + '</div>';
     }
 
@@ -382,12 +384,12 @@
         const title = tr('agreement.chain.heading', 'On chain');
         if (!view.ref) {
             const ready = mintReadiness(view, tr);
-            const button = ready.repropose
+            const button = view.readOnly ? '' : ready.repropose
                 ? chainButton('repropose', 'fas fa-paper-plane', tr('agreement.chain.actions.repropose', 'Propose again with this wallet'), { tone: 'primary', disabled: locked || !ready.canRepropose })
                 : chainButton('mint', 'fas fa-cube', tr('agreement.chain.actions.mint', 'Mint'), { tone: 'primary', disabled: locked || !ready.canMint });
             return sectionHtml(title, '<div class="agreement-chain" data-agreement-chain="unminted">'
                 + `<p class="agreement-panel-meta">${esc(tr('agreement.chain.notMinted', 'Not minted. Minting commits this agreement to Solana at its sponsor’s address; its lens then attests the decision, and executing it releases the escrow.'))}</p>`
-                + `<div class="agreement-panel-actions">${button}</div>${hintsHtml(ready.hints)}${busy}</div>`);
+                + (button ? `<div class="agreement-panel-actions">${button}</div>` : '') + `${view.readOnly ? '' : hintsHtml(ready.hints)}${busy}</div>`);
         }
         const ref = view.ref;
         const link = bridgeApi().explorerUrl({ account: ref.account, cluster: ref.cluster });
@@ -426,7 +428,7 @@
         const active = value.status === 'Active';
         const buttons = [];
         const hints = [];
-        if (active) {
+        if (active && !view.readOnly) {
             if (view.attestation && value.decision === 'Pending') {
                 buttons.push(chainButton('attest', 'fas fa-stamp', tr('agreement.chain.actions.attest', 'Record decision'), { tone: 'primary', disabled: locked || !actions.attest }));
             }
@@ -468,12 +470,14 @@
 
     // A proposed agreement: its CID (shortened; the whole one in the title), Copy link, the index's
     // status, and where its parties decide: the owners' card, or the community note.
-    function publishedHtml({ published, remote = null, electorate = 'owners' } = {}, tr = t) {
+    function publishedHtml({ published, remote = null, electorate = 'owners', readOnly = false } = {}, tr = t) {
         if (!published) return '';
         const cid = idOf(published.cid);
         const short = cid.length > 20 ? `${cid.slice(0, 12)}…${cid.slice(-6)}` : cid;
         const status = remoteStatusOf(remote, tr);
-        const decide = electorate === 'owners'
+        const decide = readOnly
+            ? `<p class="agreement-panel-note" data-agreement-read-only>${esc(tr('agreement.publish.readOnly', 'Read-only published agreement'))}</p>`
+            : electorate === 'owners'
             ? '<div class="approval-card-slot" data-approval-card-slot></div>'
             : `<p class="agreement-panel-note" data-agreement-community-note>${esc(tr('agreement.publish.communityNote', 'Votes on a community rule are counted off-chain in M3.'))}</p>`;
         return sectionHtml(tr('threeMode.parcelPanel.proposed', 'Proposed'),
@@ -485,8 +489,8 @@
             + decide);
     }
 
-    function designsHtml(rows, tr = t) {
-        const items = rows.map(row => `<li><button type="button" class="btn btn-quiet agreement-panel-design" data-agreement-design="${esc(row.proposalId)}"${row.missing ? ' disabled' : ''}>`
+    function designsHtml(rows, tr = t, readOnly = false) {
+        const items = rows.map(row => `<li><button type="button" class="btn btn-quiet agreement-panel-design" data-agreement-design="${esc(row.proposalId)}"${row.missing || readOnly ? ' disabled' : ''}>`
             + `<span class="agreement-panel-design__text"><span class="agreement-panel-design__title">${esc(row.title)}</span>`
             + (row.type ? `<span class="agreement-panel-design__type">${esc(row.type)}</span>` : '') + '</span>'
             + (row.applied ? `<span class="cb-badge cb-badge--applied">${esc(tr('agreement.designs.onMap', 'Applied'))}</span>` : '')
@@ -547,11 +551,12 @@
         // loading, value, error }); chainBusy: the chain action running ({ action, phase }).
         const state = {
             token: 0, id: null, agreement: null, check: null, checking: false, error: null, panel: null, wired: false, remote: null,
-            chain: null, chainToken: 0, chainBusy: null
+            chain: null, chainToken: 0, chainBusy: null, readOnlyAgreement: null, readOnlyDesigns: null
         };
         const log = (message, ...rest) => console.log(`[${new Date().toISOString()}] [AgreementPanel] ${message}`, ...rest);
         const isOpen = () => !!(state.panel && state.panel.classList.contains('visible'));
-        const designOf = id => (win.proposalStorage && typeof win.proposalStorage.getProposal === 'function' ? win.proposalStorage.getProposal(id) || null : null);
+        const designOf = id => (state.readOnlyDesigns && state.readOnlyDesigns.get(id))
+            || (win.proposalStorage && typeof win.proposalStorage.getProposal === 'function' ? win.proposalStorage.getProposal(id) || null : null);
         const typeLabel = record => {
             const key = win.ProposalDesignGoals && typeof win.ProposalDesignGoals.keyOf === 'function' ? win.ProposalDesignGoals.keyOf(record) : null;
             return key && typeof win.formatProposalTypeLabel === 'function' ? win.formatProposalTypeLabel(key) : '';
@@ -617,8 +622,9 @@
 
         function bodyHtml() {
             const agreement = state.agreement;
+            const readOnly = !!state.readOnlyAgreement;
             const status = statusHtml({
-                checking: state.checking, error: state.error,
+                checking: state.checking, error: state.error, readOnly,
                 status: state.check ? statusOf(state.check) : null,
                 designTitles: new Map(((agreement && agreement.designs) || []).map(design => [idOf(design.proposalId), design.title || '']))
             });
@@ -640,14 +646,16 @@
             const binding = isBinding(agreement);
             // An agreement imported from its link whose pieces did not re-derive here keeps them by hash.
             const byHashOnly = (agreement.outputs || []).some(output => !output.geometry)
-                ? `<p class="agreement-panel-note" data-agreement-rederive>${esc(t('agreement.publish.rederive', 'Its pieces are known here by their hashes only: apply its designs on the same ground to re-derive them and compare.'))}</p>`
+                ? `<p class="agreement-panel-note" data-agreement-rederive>${esc(readOnly
+                    ? t('agreement.publish.readOnlyPieces', 'Its pieces are available by hash only in this read-only view.')
+                    : t('agreement.publish.rederive', 'Its pieces are known here by their hashes only: apply its designs on the same ground to re-derive them and compare.'))}</p>`
                 : '';
             return status
                 + byHashOnly
-                + actionsHtml({ canCompare: current, comparing: comparing(state.id), canPropose: current && !published, published, canBet: binding && betAvailable(agreement) })
-                + publishedHtml({ published: agreement.published, remote: observedRemote(state.remote, chainView(agreement)?.chain), electorate: agreement.rule && agreement.rule.electorate })
-                + (binding ? chainHtml(chainView(agreement)) : nonBindingChainHtml(agreement.published))
-                + designsHtml(designRows(agreement, { designOf, isApplied: win.isApplied, typeLabel }))
+                + actionsHtml({ canCompare: current, comparing: comparing(state.id), canPropose: current && !published, published, canBet: binding && betAvailable(agreement), readOnly })
+                + publishedHtml({ published: agreement.published, remote: observedRemote(state.remote, chainView(agreement)?.chain), electorate: agreement.rule && agreement.rule.electorate, readOnly })
+                + (binding ? chainHtml({ ...chainView(agreement), readOnly }) : nonBindingChainHtml(agreement.published))
+                + designsHtml(designRows(agreement, { designOf, isApplied: win.isApplied, typeLabel }), t, readOnly)
                 + landHtml(landSummary(agreement))
                 + allocationHtml(allocationLines(agreement))
                 + ledgerHtml(ledger)
@@ -664,7 +672,7 @@
             panel.querySelector('[data-agreement-region="body"]').innerHTML = bodyHtml();
             // The owners' decisions on a proposed agreement (proposals/approval-panel.js).
             const slot = panel.querySelector('[data-approval-card-slot]');
-            if (slot && win.ProposalApprovalPanel) {
+            if (slot && win.ProposalApprovalPanel && !state.readOnlyAgreement) {
                 win.ProposalApprovalPanel.setStatus(state.id, observedRemote(state.remote, chainView(state.agreement)?.chain)?.status);
                 win.ProposalApprovalPanel.render(slot, state.id);
             }
@@ -809,19 +817,20 @@
             const cid = agreement && agreement.published ? agreement.published.cid : null;
             if (!cid || (!force && state.remote && state.remote.cid === cid)) return;
             const id = agreement.id;
+            const readOnly = state.readOnlyAgreement === agreement;
             state.remote = { cid, loading: true, status: null, error: null, onchain: null };
             try {
                 const row = await win.AgreementSync.fetchAgreement(cid);
                 if (state.id !== id) return;
                 const onchain = row.onchain && typeof row.onchain === 'object' ? row.onchain : null;
                 state.remote = { cid, loading: false, status: row.status, error: null, onchain };
-                reconcileOnchain(id, onchain);
+                if (!readOnly) reconcileOnchain(id, onchain);
             } catch (error) {
                 if (state.id !== id) return;
                 console.warn(`[${new Date().toISOString()}] [AgreementPanel] the server status of ${cid} is unavailable`, error);
                 state.remote = { cid, loading: false, status: null, error: (error && error.message) || String(error), onchain: null };
             }
-            if (win.ProposalApprovalPanel) {
+            if (win.ProposalApprovalPanel && !readOnly) {
                 win.ProposalApprovalPanel.setStatus(id, observedRemote(state.remote, state.chain)?.status);
                 win.ProposalApprovalPanel.sync(id);
             }
@@ -832,7 +841,7 @@
         async function refresh(token = ++state.token) {
             const id = state.id;
             try {
-                const agreement = store().get(id);
+                const agreement = state.readOnlyAgreement || store().get(id);
                 if (token !== state.token) return;
                 if (!agreement) {
                     log(`${id} is no longer on this device`);
@@ -840,11 +849,19 @@
                     return;
                 }
                 state.agreement = agreement;
+                const readOnly = state.readOnlyAgreement === agreement;
                 state.checking = true;
                 state.error = null;
                 renderPanel();
                 readRemote(agreement);
                 syncChain(agreement);
+                if (readOnly) {
+                    state.check = null;
+                    state.checking = false;
+                    state.error = null;
+                    renderPanel();
+                    return;
+                }
                 const check = await checkAgreement(agreement);
                 if (token !== state.token) return;
                 state.check = check;
@@ -1152,10 +1169,13 @@
 
         function onPanelClick(event) {
             const design = event.target.closest('[data-agreement-design]');
+            if (state.readOnlyAgreement && design) return;
             if (design) { selectDesign(design.getAttribute('data-agreement-design')); return; }
             const action = event.target.closest('[data-agreement-action]');
             if (!action || action.disabled) return;
-            switch (action.getAttribute('data-agreement-action')) {
+            const actionName = action.getAttribute('data-agreement-action');
+            if (state.readOnlyAgreement && !['close', 'link'].includes(actionName)) return;
+            switch (actionName) {
                 case 'close': close(); break;
                 case 'compare': win.BusyControl.track(action, () => win.toggleAgreementBeforeAfter(state.id)); break;
                 case 'propose': win.BusyControl.track(action, () => propose()); break;
@@ -1219,7 +1239,7 @@
             if (doc.getElementById('proposal-details-panel')?.classList.contains('visible') && typeof win.hideProposalDetailsPanel === 'function') win.hideProposalDetailsPanel(true);
         }
 
-        async function open(id) {
+        async function openRecord(id, readOnlyAgreement = null, readOnlyDesigns = null) {
             const agreementId = idOf(id);
             if (!agreementId) throw new Error('AgreementPanel.open: an agreement id is required');
             wire();
@@ -1234,6 +1254,8 @@
             }
             state.id = agreementId;
             state.agreement = null;
+            state.readOnlyAgreement = readOnlyAgreement;
+            state.readOnlyDesigns = readOnlyDesigns;
             state.check = null;
             state.error = null;
             state.checking = true;
@@ -1242,12 +1264,29 @@
             await refresh(token);
         }
 
+        async function open(id) {
+            return openRecord(id);
+        }
+
+        async function openReadOnly(agreement, { designs = [] } = {}) {
+            if (!agreement || !agreement.published || !agreement.published.cid) {
+                throw new TypeError('AgreementPanel.openReadOnly needs a published agreement record.');
+            }
+            const id = idOf(agreement.id) || agreement.published.cid;
+            const entries = designs instanceof Map ? designs : new Map(
+                (Array.isArray(designs) ? designs : []).map(design => [idOf(design && design.proposalId), design])
+            );
+            return openRecord(id, agreement, entries);
+        }
+
         // The before / after lives and dies with the panel.
         function close() {
             state.token += 1;
             if (comparing(state.id)) win.ProposalBeforeAfter.dispose();
             state.id = null;
             state.agreement = null;
+            state.readOnlyAgreement = null;
+            state.readOnlyDesigns = null;
             state.check = null;
             state.error = null;
             state.checking = false;
@@ -1259,7 +1298,7 @@
             doc.body.classList.remove('agreement-panel-open');
         }
 
-        return { open, close, isOpen, current: () => state.id };
+        return { open, openReadOnly, close, isOpen, current: () => state.id };
     }
 
     return {

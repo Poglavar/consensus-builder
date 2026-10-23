@@ -139,7 +139,7 @@ const LENS_MEMBERS_SCHEMA = {
     }
 };
 
-const CID_PROPERTY = { type: 'string', pattern: '^bafkrei[a-z2-7]{52}$', description: 'CIDv1, raw codec, sha2-256, base32 lower case: over the object\'s canonical JSON bytes (keys sorted at every depth, no whitespace, UTF-8).' };
+const CID_PROPERTY = { type: 'string', pattern: '^baf(?:krei|ybei)[a-z2-7]{52}$', description: 'CIDv1 UnixFS file, sha2-256, lower-case base32, fixed 256 KiB chunks and raw leaves; single-chunk files use the raw codec (bafkrei…), multi-chunk files use a UnixFS dag-pb root (bafybei…). It covers the object\'s canonical JSON bytes (keys sorted at every depth, no whitespace, UTF-8).' };
 const GEOJSON_SITE = { type: 'object', required: ['type', 'coordinates'], properties: { type: { type: 'string', enum: ['Polygon', 'MultiPolygon'] }, coordinates: { type: 'array' } }, description: 'GeoJSON Polygon or MultiPolygon in WGS84: at most 100000 vertices and a 500 km² bounding box.' };
 
 const DESIGN_BINDING_BODY = {
@@ -160,7 +160,7 @@ const PIN_BODY = {
     properties: {
         kind: { type: 'string', enum: ['design', 'agreement'] },
         cid: CID_PROPERTY,
-        bytes: { type: 'string', contentEncoding: 'base64', description: 'The object\'s canonical bytes, base64; at most 256 KiB.' }
+        bytes: { type: 'string', contentEncoding: 'base64', description: 'The object\'s canonical bytes, base64; at most 10 MiB.' }
     }
 };
 
@@ -337,14 +337,14 @@ export function buildOpenApi(base, env) {
             },
             '/pins': {
                 post: {
-                    summary: 'Pin a design/v1 or agreement/v1 object on IPFS (CIDv1 raw, sha2-256) as exactly these canonical bytes; the server recomputes the CID and checks the object as the index would. Needs an Origin header of the app; 30 pins per 15 minutes per client',
+                    summary: 'Pin a design/v1 or agreement/v1 object as a UnixFS file on IPFS (CIDv1, sha2-256, fixed 256 KiB chunks, raw leaves) with exactly these canonical bytes; single-chunk files use a raw CID and multi-chunk files a UnixFS dag-pb root. The server recomputes the CID and checks the object as the index would. Needs an Origin header of the app; 30 pins per 15 minutes per client',
                     operationId: 'pinObject',
                     requestBody: { required: true, content: { 'application/json': { schema: PIN_BODY } } },
                     responses: {
                         200: { description: '{ cid, pinnedAt }' },
                         400: { description: 'invalid-kind, invalid-cid, invalid-bytes, cid-mismatch, not-canonical, or the object\'s own refusal (invalid-design, invalid-agreement).' },
                         409: { description: 'cid-mismatch: the pinning service answered another CID.' },
-                        413: { description: 'too-large: over 256 KiB.' },
+                        413: { description: 'too-large: over 10 MiB.' },
                         429: { description: 'upload-rate-limited, with retryAfterSeconds.' }
                     }
                 }

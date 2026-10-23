@@ -25,32 +25,19 @@ oracle-fact terms.
   on, pledged to and executed; a vote (the community's, or the owners' without binding them) is a
   **poll**: it lives in the index, is never minted and has no market. Several agreements may cover the
   same designs or the same land; agreements over shared land form one contest in the markets.
-- A **CID** is CIDv1, raw codec, sha2-256, base32 lower case (`bafkrei…`) over the object's canonical
-  bytes: JSON with keys sorted at every depth, no whitespace, UTF-8. The same object always has the
-  same CID; the server recomputes it from what you send and refuses a mismatch. Published objects are
-  immutable: a changed design is a new design (a fork names its `origin`), changed terms are a new
-  agreement over the same designs.
+- A **CID** identifies the canonical JSON as a UnixFS file: CIDv1, sha2-256, base32 lower case,
+  fixed 256 KiB chunks and raw leaves. Small files have a raw CID (`bafkrei…`); larger files have
+  a UnixFS dag-pb root (`bafybei…`). The object limit is 10 MiB. Use the shared codec instead of
+  hashing the entire file as one raw block. The server recomputes the same file CID and refuses
+  a mismatch. Changed content is a new immutable design or agreement.
 
 ```js
-import { createHash } from 'node:crypto';
-
-const canonical = value => value === null || typeof value !== 'object' ? JSON.stringify(value)
-    : Array.isArray(value) ? `[${value.map(canonical).join(',')}]`
-        : `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${canonical(value[key])}`).join(',')}}`;
+import { canonicalBytes, cidOf } from '../cid.js';
 
 // { cid, bytes } of a design/v1 or agreement/v1 object.
 function addressOf(object) {
-    const bytes = Buffer.from(canonical(object), 'utf8');
-    const raw = Buffer.concat([Buffer.from([0x01, 0x55, 0x12, 0x20]), createHash('sha256').update(bytes).digest()]);
-    const alphabet = 'abcdefghijklmnopqrstuvwxyz234567';
-    let cid = 'b', buffer = 0, bits = 0;
-    for (const byte of raw) {
-        buffer = (buffer << 8) | byte; bits += 8;
-        while (bits >= 5) { bits -= 5; cid += alphabet[(buffer >>> bits) & 31]; }
-        buffer &= (1 << bits) - 1;
-    }
-    if (bits) cid += alphabet[(buffer << (5 - bits)) & 31];
-    return { cid, bytes };
+    const bytes = canonicalBytes(object);
+    return { cid: cidOf(bytes), bytes };
 }
 ```
 
@@ -258,7 +245,7 @@ console.log(cid, row.binding.parcels.map(hit => hit.parcelId));
 ```
 
 Other refusals: 400 `cid-mismatch`, `invalid-design`, `invalid-site`, `invalid-tolerance`,
-`invalid-footprint`, `site-required`, `footprint-outside-site`; 413 `too-large` (over 256 KiB) or
+`invalid-footprint`, `site-required`, `footprint-outside-site`; 413 `too-large` (over 10 MiB) or
 `too-many-parcels`; 503 `binding-unavailable` (nothing was stored; try again).
 
 ## 4. Build an agreement

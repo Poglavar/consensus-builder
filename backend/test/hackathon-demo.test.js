@@ -127,8 +127,8 @@ describe('hackathon demo evidence model', () => {
         // Without the tool that mints an agreement the loop is not complete.
         const partial = demo.buildDemoModel({ docs: { ...docs, mcp: { ...docs.mcp, tools: docs.mcp.tools.filter(tool => tool !== 'ugt_mint_agreement') } } });
         expect(partial.agentTools).toMatchObject({ tone: 'waiting', label: 'Agent tool package unavailable', source: null });
-        // The tools docs/agents.json serves (routes/docs.js MCP_TOOLS) are the complete surface.
-        const served = readFileSync(new URL('../routes/docs.js', import.meta.url), 'utf8').match(/const MCP_TOOLS = Object\.freeze\(\[([\s\S]*?)\]\);/);
+        // The shared catalogue is what both docs/agents.json and MCP registration serve.
+        const served = readFileSync(new URL('../agents/mcp-catalog.js', import.meta.url), 'utf8').match(/MCP_LOCAL_TOOLS = Object\.freeze\(\[([\s\S]*?)\]\);/);
         expect(served).not.toBeNull();
         const tools = [...served[1].matchAll(/'([a-z_]+)'/g)].map(match => match[1]);
         expect(tools).toEqual(expect.arrayContaining(LOOP_TOOLS));
@@ -249,16 +249,49 @@ describe('hackathon demo evidence model', () => {
             now: '2026-09-21T12:00:00Z', docs,
             runs: [{
                 id: 'support', persona: 'supporter-01', role: 'supporter', controller: 'algorithm',
-                status: 'done', updatedAt: '2026-09-21T02:15:00Z',
+                status: 'done', outcome: 'completed', updatedAt: '2026-09-21T02:15:00Z',
                 support: { type: 'pledge', agreementCid: AGREEMENT, account: 'agreement-account', signature: 'support-tx' }
             }]
         });
         expect(model.algorithm.run).toBeNull();
         expect(model.supporter).toMatchObject({
-            tone: 'success', detail: `supporter-01 · pledge · agreement ${AGREEMENT}`,
+            tone: 'success', label: 'Supporter action recorded on-chain', detail: `supporter-01 · pledge · agreement ${AGREEMENT}`,
             transaction: 'support-tx', agreementCid: AGREEMENT
         });
+        expect(model.proofChecks).toContainEqual({ label: 'Support on-chain', status: 'success' });
         expect(model.programs).toEqual({ market: 'market-program', support: 'support-program' });
+    });
+
+    it('keeps completed supporter runs from claiming an on-chain action without action evidence', () => {
+        const run = {
+            id: 'support', persona: 'supporter-01', role: 'supporter', controller: 'algorithm',
+            status: 'done', updatedAt: '2026-09-21T02:15:00Z', outcome: 'no-eligible-agreement'
+        };
+        const noEligible = demo.buildDemoModel({ docs, runs: [run] });
+        expect(noEligible.supporter).toMatchObject({
+            tone: 'waiting', label: 'No eligible agreement for supporter', detail: 'supporter-01 · no-eligible-agreement',
+            transaction: null, agreementCid: null
+        });
+        expect(noEligible.proofChecks).toContainEqual({ label: 'Support on-chain', status: 'waiting' });
+
+        const missingTransaction = demo.buildDemoModel({ docs, runs: [{ ...run, outcome: 'completed',
+            support: { type: 'pledge', agreementCid: AGREEMENT } }] });
+        expect(missingTransaction.supporter).toMatchObject({
+            tone: 'waiting', label: 'Supporter run completed without transaction proof', transaction: null
+        });
+        expect(missingTransaction.proofChecks).toContainEqual({ label: 'Support on-chain', status: 'waiting' });
+
+        const noActionDetails = demo.buildDemoModel({ docs, runs: [{ ...run, outcome: 'completed',
+            support: { signature: 'unattributed-tx' } }] });
+        expect(noActionDetails.supporter).toMatchObject({
+            tone: 'waiting', label: 'Supporter run completed without transaction proof', transaction: null
+        });
+
+        const replayed = demo.buildDemoModel({ docs, runs: [{ ...run, outcome: 'already-supported',
+            support: { type: 'pledge', agreementCid: AGREEMENT, signature: 'old-tx', replayed: true } }] });
+        expect(replayed.supporter).toMatchObject({
+            tone: 'waiting', label: 'Agreement already supported; no new transaction', transaction: null
+        });
     });
 
     it('presents one aggregate case without treating partial branches as complete', () => {

@@ -38,7 +38,7 @@ const classes = [
     ['CadastreReference', 'Declared cadastral reference', 'A cadastral identifier an agreement names as its input land. This node is scoped to the agreement; it does not establish cross-provider parcel identity.', ['prov:Entity']]
 ];
 const properties = [
-    ['cid', 'Content identifier', 'The CIDv1 (raw codec, sha2-256, base32) of the record\'s canonical bytes: its identity. Changed content is a different record.', 'xsd:string'],
+    ['cid', 'Content identifier', 'The CIDv1 (UnixFS file, raw leaves, sha2-256, base32) of the record\'s canonical bytes: its identity. Changed content is a different record.', 'xsd:string'],
     ['authorLabel', 'Author label', 'A stored author attribution string; not a verified person, organization or signing authority.', 'xsd:string'],
     ['declaredGoal', 'Declared design goal', 'The exact design-goal string carried by the design, including unclassified values.', 'xsd:string'],
     ['designGoal', 'Design-goal concept', 'An exact match to the current design-goal concept scheme; not a physical-object classification.', 'skos:Concept'],

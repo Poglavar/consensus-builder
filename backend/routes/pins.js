@@ -3,7 +3,7 @@
 // pins those bytes through Pinata with CIDv1 (storage/pinning.js) and answers only when Pinata's CID is
 // the same one, so the browser can verify what it later mints against. This route spends OUR Pinata
 // quota, so it is no open relay: it takes one canonical design/v1 or agreement/v1 object of at most
-// MAX_PINNED_OBJECT_BYTES (256 KiB, one Pinata chunk), shaped as the index would accept it, within the
+// MAX_PINNED_OBJECT_BYTES (10 MiB, chunked as an IPFS file), shaped as the index would accept it, within the
 // upload routes' per-client rate limit.
 import { canonicalBytes, cidOf, isCid } from '../cid.js';
 import { MAX_PINNED_OBJECT_BYTES, pinBytes as defaultPinBytes } from '../storage/pinning.js';
@@ -17,7 +17,12 @@ const KINDS = Object.freeze({
     design: { schema: DESIGN_SCHEMA, validate: content => validateDesignContent(content) },
     agreement: { schema: AGREEMENT_SCHEMA, validate: content => validateAgreementContent(content) }
 });
-const BASE64 = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
+// A repeated-group regex over megabytes can overflow the JS engine's backtracking stack.
+function isBase64(value) {
+    if (typeof value !== 'string' || !value.length || value.length % 4) return false;
+    const padding = value.endsWith('==') ? 2 : value.endsWith('=') ? 1 : 0;
+    return !/[^A-Za-z0-9+/]/.test(value.slice(0, value.length - padding));
+}
 const MAX_BASE64_LENGTH = Math.ceil(MAX_PINNED_OBJECT_BYTES / 3) * 4;
 
 const refuse = (res, status, code, error, extra = {}) => res.status(status).json({ error, code, ...extra });
@@ -35,11 +40,11 @@ export function setupPinsRoute(app, deps = {}) {
         }
         const kind = Object.prototype.hasOwnProperty.call(KINDS, body.kind) ? KINDS[body.kind] : null;
         if (!kind) return refuse(res, 400, 'invalid-kind', 'kind must be design or agreement.');
-        if (!isCid(body.cid)) return refuse(res, 400, 'invalid-cid', 'cid must be a CIDv1 raw sha2-256 base32 CID (bafkrei…).');
+        if (!isCid(body.cid)) return refuse(res, 400, 'invalid-cid', 'cid must be a CIDv1 UnixFS sha2-256 base32 CID.');
         if (typeof body.bytes === 'string' && body.bytes.length > MAX_BASE64_LENGTH) {
             return refuse(res, 413, 'too-large', `A pinned object is at most ${MAX_PINNED_OBJECT_BYTES} bytes.`);
         }
-        if (typeof body.bytes !== 'string' || !body.bytes || !BASE64.test(body.bytes)) {
+        if (!isBase64(body.bytes)) {
             return refuse(res, 400, 'invalid-bytes', 'bytes must be the object\'s canonical bytes, base64-encoded.');
         }
         const bytes = Buffer.from(body.bytes, 'base64');

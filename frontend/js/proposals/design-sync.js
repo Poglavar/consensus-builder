@@ -201,7 +201,7 @@
             if (code === 'cid-mismatch') return t('proposals.share.errors.cidMismatch', 'The server computed a different identity for this design, so nothing was published.');
             if (code === 'pinning-unconfigured') return t('proposals.share.errors.pinningUnconfigured', 'This server cannot pin published designs yet (pinning is not configured).');
             if (code === 'layout-needs-agreement') return t('proposals.share.errors.layoutNeedsAgreement', 'A parcel layout is published with the agreement that settles its land.');
-            if (code === 'too-large') return t('proposals.share.errors.tooLarge', 'This design is too large to publish (more than 1 MB).');
+            if (code === 'too-large') return t('proposals.share.errors.tooLarge', 'This design exceeds the 10 MiB publication limit. Reduce its extent or detail before sharing; it is saved locally.');
             if (status === 429) {
                 const seconds = Number(body && body.retryAfterSeconds);
                 return Number.isFinite(seconds) && seconds > 0
@@ -249,6 +249,11 @@
         // Returns { cid, pinnedAt, bytes }.
         async function pinObject(kind, object) {
             const bytes = cidApi().canonicalBytes(object);
+            if (bytes.byteLength > designRecord().MAX_PUBLISHED_OBJECT_BYTES) {
+                throw failure('too-large', refusalMessage(413, { code: 'too-large' }), {
+                    bytes: bytes.byteLength, maxBytes: designRecord().MAX_PUBLISHED_OBJECT_BYTES
+                });
+            }
             const cid = cidApi().cidOf(bytes);
             const response = await request('POST', '/pins', { kind, cid, bytes: base64OfBytes(bytes) });
             if (!response.ok) {

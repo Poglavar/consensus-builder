@@ -89,7 +89,7 @@ describe('POST /designs', () => {
     it('binds a road designation by its own polygon: a design is never an act on parcels', async () => {
         const pool = indexPool();
         const { structureProposal: _park, ...rest } = designContent();
-        const content = { ...rest, goal: 'road-track', site: null, geometry: PARK, roadProposal: { definition: { polygon: PARK } } };
+        const content = { ...rest, goal: 'road-track', site: null, geometry: null, roadProposal: { definition: { polygon: PARK } } };
         const res = await request(appFor(pool).app).post('/designs').send(body(content));
         expect(res.status).toBe(201);
         expect(pool.getBindingCalls().map(call => call.sql)).toEqual([BINDING_COUNT_SQL, BINDING_SQL]);
@@ -120,7 +120,7 @@ describe('POST /designs', () => {
         const res = await request(app).post('/designs').send(body(partial));
         expect(res.status).toBe(400);
         expect(res.body.code).toBe('invalid-design');
-        expect(res.body.errors.map(error => error.code)).toEqual(expect.arrayContaining(['design-field-missing', 'design-shape']));
+        expect(res.body.errors.map(error => error.code)).toEqual(expect.arrayContaining(['design-field-missing']));
         expect(res.body.errors.filter(error => error.code === 'design-field-missing').map(error => error.field))
             .toEqual(['title', 'description', 'author', 'city', 'site', 'toleranceM', 'geometry', 'origin', 'authoredAt']);
 
@@ -150,9 +150,9 @@ describe('POST /designs', () => {
         }
     });
 
-    it('refuses a design over the 256 KiB object cap', async () => {
+    it('refuses a design over the 10 MiB object cap', async () => {
         const content = designContent({ description: 'x'.repeat(MAX_PINNED_OBJECT_BYTES) });
-        const res = await request(appFor(indexPool()).app).post('/designs').send(body(content));
+        const res = await request(appFor(indexPool()).app).post('/designs').send({ cid: cidOf(designContent()), content });
         expect([res.status, res.body.code]).toEqual([413, 'too-large']);
     });
 
@@ -213,7 +213,7 @@ describe('POST /designs', () => {
             const pool = indexPool({ cadastre });
             const { app, thumbnailQueue } = appFor(pool);
             const res = await request(app).post('/designs').send(body(content));
-            expect([res.status, res.body.code], code).toEqual([status, code]);
+            expect([res.status, res.body.code], `${code}: ${JSON.stringify(res.body)}`).toEqual([status, code]);
             expect(inserts(pool)).toEqual([]);
             expect(thumbnailQueue.enqueue).not.toHaveBeenCalled();
         }

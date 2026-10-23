@@ -145,7 +145,7 @@ function bindingFailure(error) {
  *   (the city's default when null)
  */
 export async function prepareDesign(db, { cid, content } = {}, { allowLayout = false, parcelSourceId = null } = {}) {
-    if (!isCid(cid)) return refusal(400, 'invalid-cid', 'cid must be a CIDv1 raw sha2-256 base32 CID (bafkrei…).');
+    if (!isCid(cid)) return refusal(400, 'invalid-cid', 'cid must be a CIDv1 UnixFS sha2-256 base32 CID.');
     if (!isPlainObject(content)) return refusal(400, 'invalid-design', `content must be a ${designRecord.SCHEMA} object.`);
     let bytes;
     try { bytes = canonicalBytes(content); } catch (error) { return refusal(400, 'invalid-design', error.message); }

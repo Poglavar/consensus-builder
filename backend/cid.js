@@ -1,9 +1,12 @@
 // Content identifiers of published designs and agreements (plan-design-agreement.md, M2 "Identity: one
-// CID scheme"): CIDv1, codec raw (0x55), multihash sha2-256, multibase base32 lower case (`bafkrei…`),
+// CID scheme"): CIDv1 UnixFS file (raw leaves, fixed 256 KiB chunks), sha2-256, base32,
 // over an object's canonical bytes (JSON with keys sorted at every depth, no whitespace, UTF-8). The
 // node twin of frontend/js/cid.js: the same object gets the same CID on both sides, which is what lets
 // the courier and the index refuse any bytes that do not hash to the CID they are sent under.
 import { createHash } from 'node:crypto';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
 
 const VERSION = 1;
 const CODEC_RAW = 0x55;
@@ -97,24 +100,28 @@ export function canonicalBytes(object) {
 
 /**
  * The CID of exactly these bytes: what `ipfs add --cid-version=1 --raw-leaves` gives for a file that
- * fits in one block. Any bytes hash here; the browser twin takes UTF-8 only, which is all a published
+ * is imported with fixed 256 KiB chunks. Any bytes hash here; the browser twin takes UTF-8 only, which is all a published
  * object ever is.
  */
 export function cidOf(bytes) {
     if (!(bytes instanceof Uint8Array)) fail('invalid-cid-input', 'cidOf needs bytes (a Buffer or Uint8Array).');
-    const digest = createHash('sha256').update(bytes).digest();
-    return MULTIBASE_BASE32 + base32(Buffer.concat([PREFIX, digest]));
+    const hash = input => createHash('sha256').update(input).digest();
+    const root = bytes.length <= 256 * 1024 ? { codec: CODEC_RAW, digest: hash(bytes) }
+        : require('../frontend/vendor/ipfs-file-cid/ipfs-file-cid.js').fileRoot(bytes, hash);
+    const prefix = Buffer.from([VERSION, root.codec, HASH_SHA2_256, DIGEST_BYTES]);
+    return MULTIBASE_BASE32 + base32(Buffer.concat([prefix, root.digest]));
 }
 
 export const cidOfObject = object => cidOf(canonicalBytes(object));
 
 /**
- * Whether text is a CID of this scheme (`bafkrei…`, 59 characters): base32 lower case, CIDv1, raw,
+ * Whether text is a CID of this scheme (59 characters): base32 lower case, CIDv1, raw or dag-pb,
  * sha2-256, a 32-byte digest and its one spelling (minimal varints, zero padding bits). Never throws.
  */
 export function isCid(text) {
     if (typeof text !== 'string' || text[0] !== MULTIBASE_BASE32) return false;
     const bytes = fromBase32(text.slice(1));
-    return !!bytes && bytes.length === CID_BYTES && bytes.subarray(0, PREFIX.length).equals(PREFIX)
+    return !!bytes && bytes.length === CID_BYTES && bytes[0] === VERSION && [CODEC_RAW, 0x70].includes(bytes[1])
+        && bytes[2] === HASH_SHA2_256 && bytes[3] === DIGEST_BYTES
         && MULTIBASE_BASE32 + base32(bytes) === text;
 }

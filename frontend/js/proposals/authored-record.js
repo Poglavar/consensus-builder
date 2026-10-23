@@ -76,6 +76,35 @@
             : [];
     }
 
+    function deeplyEqual(left, right) {
+        if (Object.is(left, right)) return true;
+        if (!left || !right || typeof left !== 'object' || typeof right !== 'object') return false;
+        if (Array.isArray(left) || Array.isArray(right)) {
+            return Array.isArray(left) && Array.isArray(right)
+                && left.length === right.length
+                && left.every((value, index) => deeplyEqual(value, right[index]));
+        }
+        const leftKeys = Object.keys(left).sort();
+        const rightKeys = Object.keys(right).sort();
+        return leftKeys.length === rightKeys.length
+            && leftKeys.every((key, index) => key === rightKeys[index]
+                && deeplyEqual(left[key], right[key]));
+    }
+
+    // A one-building block may carry the same authored shape twice: once as the rendered building
+    // feature and again as block massing. Keep the feature as the single source of truth when the
+    // complete cleaned features match; distinct massing remains authored geometry.
+    function compactBuildingGeometry(geometry) {
+        if (!geometry || typeof geometry !== 'object' || Array.isArray(geometry)
+            || !Array.isArray(geometry.buildings) || geometry.buildings.length !== 1
+            || !geometry.buildings[0] || !geometry.buildings[0].geometry
+            || !geometry.blockMassing
+            || !deeplyEqual(geometry.buildings[0], geometry.blockMassing)) return geometry;
+        const compacted = { ...geometry };
+        delete compacted.blockMassing;
+        return compacted;
+    }
+
     function cleanFeatureContainers(record) {
         if (!record || typeof record !== 'object' || Array.isArray(record)) return record;
         const out = clone(record);
@@ -137,6 +166,7 @@
                         out.geometry[key] = cleanFeature(out.geometry[key]);
                     }
                 });
+            out.geometry = compactBuildingGeometry(out.geometry);
             if (Object.keys(out.geometry).length === 0) delete out.geometry;
         }
         ['name', 'title', 'description', 'proposalName', 'blockName'].forEach(key => {
@@ -242,6 +272,7 @@
         RUNTIME_FEATURE_PROPERTIES,
         restrictLandClaimsToAnchors,
         cleanFeature,
+        compactBuildingGeometry,
         cleanFeatureContainers,
         stripCadastreAliases,
         legacyCadastreDeclarations,

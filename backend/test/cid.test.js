@@ -1,6 +1,6 @@
 // Unit tests for the content identifiers of published designs and agreements: frontend/js/cid.js (the
 // browser module) and backend/cid.js (its node twin used by the courier and the index). CIDv1, codec
-// raw, sha2-256, base32 lower case over canonical JSON bytes; both twins must give the same answers.
+// UnixFS with raw leaves, sha2-256, base32 lower case over canonical JSON bytes; both twins must give the same answers.
 import { describe, it, expect, beforeAll } from 'vitest';
 import { createRequire } from 'node:module';
 import { createHash } from 'node:crypto';
@@ -53,6 +53,24 @@ describe('cidOf', () => {
         expect(Cid.parse(cid)).toEqual({ version: 1, codec: 0x55, digest: new Uint8Array(sha256(bytes)) });
     });
 
+    it('uses the same UnixFS file root in browser and server for multi-megabyte JSON', () => {
+        const object = { schema: 'design/v1', geometry: { coordinates: Array.from({ length: 40000 }, (_, i) => [10 + i / 1000000, 45 + i / 2000000]) } };
+        const bytes = Cid.canonicalBytes(object);
+        expect(bytes.length).toBeGreaterThan(256 * 1024);
+        const cid = Cid.cidOf(bytes);
+        expect(Cid.parse(cid).codec).toBe(0x70);
+        expect(Node.cidOf(bytes)).toBe(cid);
+        expect(Node.isCid(cid)).toBe(true);
+    });
+
+    it('hashes binary chunks even when a Unicode character straddles a chunk boundary', () => {
+        const prefix = '{"text":"';
+        const bytes = utf8(prefix + 'x'.repeat(256 * 1024 - prefix.length - 1) + '🌇雪ž"}');
+        expect(thrownCode(() => Cid.cidOf(bytes.subarray(0, 256 * 1024)))).toBe('invalid-cid-input');
+        expect(Cid.cidOf(bytes)).toBe(Node.cidOf(bytes));
+        expect(Cid.parse(Cid.cidOf(bytes)).codec).toBe(0x70);
+    });
+
     it('needs a Uint8Array and, in the browser, UTF-8 bytes', () => {
         for (const value of ['hello', [104, 105], utf8('hi').buffer, null]) {
             expect(thrownCode(() => Cid.cidOf(value))).toBe('invalid-cid-input');
@@ -98,10 +116,11 @@ describe('isCid and parse', () => {
     it('accept this scheme only', () => {
         expect(Cid.isCid(EMPTY_CID)).toBe(true);
         expect(Cid.isCid(HELLO_CID)).toBe(true);
+        expect(Cid.isCid(spell([0x01, 0x70, 0x12, 0x20], digest))).toBe(true);
         const others = [
             undefined, null, 42, '', 'b', HELLO_CID.toUpperCase(), HELLO_CID.slice(1),
             'QmPZ9gcCEpqKTo6aq61g2nXGUhM4iCL3ewB6LDXZCtioEB', // CIDv0
-            spell([0x01, 0x70, 0x12, 0x20], digest), // dag-pb
+            spell([0x01, 0x71, 0x12, 0x20], digest), // unsupported dag-cbor
             spell([0x01, 0x55, 0x13, 0x40], Buffer.concat([digest, digest])), // sha2-512
             spell([0x00, 0x55, 0x12, 0x20], digest), // version 0
             spell([0x01, 0x55, 0x12, 0x20], digest.subarray(0, 31)), // short digest

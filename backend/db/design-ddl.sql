@@ -14,7 +14,7 @@ SET ROLE geo_user;
 CREATE SCHEMA IF NOT EXISTS consensus;
 
 CREATE TABLE IF NOT EXISTS consensus.design (
-    cid                   text        PRIMARY KEY,           -- CIDv1 raw sha2-256 base32 (bafkrei…) of the canonical content
+    cid                   text        PRIMARY KEY,           -- CIDv1 UnixFS file sha2-256 base32 of the canonical content
     city                  text,                              -- where the site lies (proposals/publication-city.js), not the city the author named
     goal                  text        NOT NULL,              -- the design type, content.goal
     title                 text,

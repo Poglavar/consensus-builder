@@ -13,7 +13,7 @@ import { markUntrusted, toolError } from './mcp-results.js';
 
 const BASE58_KEY = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 // CIDv1, raw codec, sha2-256, base32 lower case (backend/cid.js).
-const CID = /^bafkrei[a-z2-7]{52}$/;
+const CID = /^baf(?:krei|ybei)[a-z2-7]{52}$/;
 
 const agreementAccount = z.string().regex(BASE58_KEY)
     .describe('Chain account of a minted (binding owners\') agreement: the PDA ["agreement", sponsor, sha256(cid)] under the agreement program (ugt_get_agreement answers it)');

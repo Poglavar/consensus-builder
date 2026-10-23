@@ -95,14 +95,16 @@ function base32(bytes: Uint8Array): string {
 
 /** CIDv1, codec raw, sha2-256, base32 lower case (`bafkrei…`) of exactly these bytes. */
 export function cidOfBytes(bytes: Uint8Array): string {
-  const digest = createHash('sha256').update(bytes).digest();
-  return `b${base32(Uint8Array.from([0x01, 0x55, 0x12, 0x20, ...digest]))}`;
+  const hash = (input: Uint8Array) => createHash('sha256').update(input).digest();
+  const root = bytes.length <= 256 * 1024 ? { codec: 0x55, digest: hash(bytes) }
+    : backendRequire('../frontend/vendor/ipfs-file-cid/ipfs-file-cid.js').fileRoot(bytes, hash);
+  return `b${base32(Uint8Array.from([0x01, root.codec, 0x12, 0x20, ...root.digest]))}`;
 }
 
 /** The CID of an object's canonical bytes. */
 export const cidOfObject = (value: any): string => cidOfBytes(Buffer.from(canonicalJson(value), 'utf8'));
 
-const isCid = (value: unknown): value is string => typeof value === 'string' && /^bafkrei[a-z2-7]{52}$/.test(value);
+const isCid = (value: unknown): value is string => typeof value === 'string' && /^baf(?:krei|ybei)[a-z2-7]{52}$/.test(value);
 
 // ---- binding: the parcels a design's ground takes ------------------------------------------------
 

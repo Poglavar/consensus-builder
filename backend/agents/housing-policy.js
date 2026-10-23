@@ -54,7 +54,7 @@ export function housingOutreach({ candidate, agreementCid, publicBase }) {
     const origin=new URL(publicBase);
     if(origin.protocol!=='https:' || origin.hostname==='localhost') throw new Error('Explicit public HTTPS origin required');
     const a=candidate.housing.affordability;
-    if (typeof agreementCid !== 'string' || !/^bafkrei[a-z2-7]{52}$/.test(agreementCid)) throw new Error('A published agreement is required for outreach');
+    if (typeof agreementCid !== 'string' || !/^baf(?:krei|ybei)[a-z2-7]{52}$/.test(agreementCid)) throw new Error('A published agreement is required for outreach');
     const url=new URL(`/agreements/${agreementCid}?city=${encodeURIComponent(a.city)}`,origin).href;
     return {id:agreementCid,status:'pending-review',channel:a.authority.email?'email':'official-contact-form',
         authority:a.authority,agreementUrl:url,subject:`Housing research for planning review — ${a.label}`,

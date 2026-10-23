@@ -15,7 +15,7 @@ SET ROLE geo_user;
 CREATE SCHEMA IF NOT EXISTS consensus;
 
 CREATE TABLE IF NOT EXISTS consensus.agreement (
-    cid                   text        PRIMARY KEY,           -- CIDv1 raw sha2-256 base32 (bafkrei…) of the canonical content
+    cid                   text        PRIMARY KEY,           -- CIDv1 UnixFS file sha2-256 base32 of the canonical content
     city                  text,                              -- the city of its first design (consensus.design.city)
     title                 text,
     author                text,

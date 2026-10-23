@@ -432,6 +432,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     // A parcel layout cannot be shared on its own: it is published with the agreement that includes
     // it (ProposalPublishTerms.publishRefusal).
     const publishRefusal = window.ProposalPublishTerms.publishRefusal(fullProposal || proposal);
+    const agreementOnlyPublication = publishRefusal?.code === 'layout-needs-agreement';
     // Share publishes the design and copies its link (sharing-routes.js shareSingleProposal). It is
     // the main action of an applied design; before it is applied, applying is.
     const shareButtonHtml = publishRefusal
@@ -454,7 +455,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     // parcel layout leaves the device only with its agreement, so there it is the main action, before
     // the disabled Share; elsewhere it follows Share.
     const addToAgreementButtonHtml = (appliedState === true && proposalKey) ? `
-        <button type="button" class="btn ${publishRefusal ? 'btn-primary ' : ''}btn-create-agreement" onclick="window.AgreementDialog.addDesign(${inlineJsArg(proposalKey)})">
+        <button type="button" class="btn ${agreementOnlyPublication ? 'btn-primary ' : ''}btn-create-agreement" onclick="window.AgreementDialog.addDesign(${inlineJsArg(proposalKey)})">
             <i class="fas fa-handshake" aria-hidden="true"></i> ${tProposal('panel.proposal.actions.addToAgreement', 'Add to agreement')}
         </button>
     ` : '';
@@ -540,9 +541,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const primaryActionsHtml = `
         <div class="proposal-actions proposal-actions-group proposal-primary-actions">
             ${mapActionButtonHtml}
-            ${publishRefusal ? addToAgreementButtonHtml : ''}
+            ${agreementOnlyPublication ? addToAgreementButtonHtml : ''}
             ${shareButtonHtml}
-            ${publishRefusal ? '' : addToAgreementButtonHtml}
+            ${agreementOnlyPublication ? '' : addToAgreementButtonHtml}
             ${duplicateButtonHtml}
             <button type="button" class="btn btn-proposal-details" onclick="toggleProposalDetailsPanelMinimized(false)">
                 <i class="fas fa-circle-info" aria-hidden="true"></i> ${tProposal('panel.proposal.actions.details', 'Details')}

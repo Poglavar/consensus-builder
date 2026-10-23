@@ -256,6 +256,17 @@ function fakeWindow({ records = [], server = fakeServer(), blocked = null, confi
 }
 
 describe('publishDesign', () => {
+    it('refuses oversized designs locally before pinning or indexing, retaining the draft', async () => {
+        const record = { proposalId: 'large-block', goal: 'buildings', buildingProposal: { notes: 'x'.repeat(10 * 1024 * 1024) }, geometry: { buildings: [] } };
+        const { sync, server } = fakeWindow();
+        expect(await thrown(() => sync.publishDesign(record))).toMatchObject({ code: 'too-large' });
+        expect(server.calls).toEqual([]);
+        expect(record.published).toBeUndefined();
+        expect(record.buildingProposal.notes.length).toBe(10 * 1024 * 1024);
+        expect(await thrown(() => sync.pinDesign(record))).toMatchObject({ code: 'too-large' });
+        expect(server.calls).toEqual([]);
+    });
+
     it.each(['block', 'row', 'parcelBased', 'single', 'park', 'square'])('pins and imports the exact authored %s furniture', async kind => {
         const geometry = square(10, 45);
         const design = { version: 3, trees: [{ coordinate: [10.0001, 45.0001], kind: 'conifer', heightM: 12 }], paths: [[[10.0001, 45.0002], [10.0002, 45.0003]]], benches: [] };
@@ -422,7 +433,7 @@ describe('links, parcel sources and refusals', () => {
         expect(sync.refusalMessage(409, { code: 'cid-mismatch' })).toMatch(/different identity/);
         expect(sync.refusalMessage(503, { code: 'pinning-unconfigured' })).toMatch(/pinning is not configured/);
         expect(sync.refusalMessage(422, { code: 'layout-needs-agreement' })).toMatch(/published with the agreement/);
-        expect(sync.refusalMessage(413, { code: 'too-large' })).toMatch(/more than 1 MB/);
+        expect(sync.refusalMessage(413, { code: 'too-large' })).toMatch(/10 MiB/);
         expect(sync.refusalMessage(429, {})).toBe('Too many publications for now. Wait a few minutes and try again.');
         expect(sync.refusalMessage(429, { retryAfterSeconds: 30 })).toBe('Too many publications for now. Try again in about 1 min.');
         expect(sync.refusalMessage(400, { error: 'site is not a polygon' })).toBe('The server refused this design: site is not a polygon');

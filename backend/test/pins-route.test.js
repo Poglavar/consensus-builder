@@ -1,6 +1,6 @@
 // POST /pins, the courier that pins a design or an agreement the browser addressed itself
 // (routes/pins.js, plan-design-agreement.md M2): the server recomputes the CID from the exact bytes,
-// takes only a canonical design/v1 or agreement/v1 object of at most 256 KiB, and answers only when
+// takes only a canonical design/v1 or agreement/v1 object of at most 10 MiB, and answers only when
 // Pinata pinned it under that CID. The pinning call is replaced through registerContentRoutes.
 import { describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
@@ -44,6 +44,17 @@ describe('POST /pins', () => {
         const agreement = pinBody('agreement', agreementContent([design]));
         expect((await request(app).post('/pins').send(agreement)).body).toEqual({ cid: agreement.cid, pinnedAt: PINNED_AT });
         expect(pinBytes.mock.calls[1][0].name).toBe(`agreement-${agreement.cid}`);
+    });
+
+    it.each(['road', 'track'])('pins a %s carried entirely in its corridor payload', async kind => {
+        const { structureProposal, ...base } = designContent();
+        const content = { ...base, goal: 'road-track', site: null, geometry: null,
+            roadProposal: { definition: { transportMode: kind, polygon: structureProposal.geometry } } };
+        const { app, pinBytes } = appWith();
+        const res = await request(app).post('/pins').send(pinBody('design', content));
+        expect(res.status).toBe(200);
+        expect(pinBytes).toHaveBeenCalledTimes(1);
+        expect(JSON.parse(Buffer.from(pinBytes.mock.calls[0][0].bytes).toString())).toEqual(content);
     });
 
     it('refuses a malformed request before anything is decoded', async () => {
@@ -106,14 +117,14 @@ describe('POST /pins', () => {
         expect(pinBytes).not.toHaveBeenCalled();
     });
 
-    it('takes at most 256 KiB, refused before or after decoding', async () => {
+    it('takes at most 10 MiB, refused before or after decoding', async () => {
         const { app, pinBytes } = appWith();
         // Decodes to one byte over the cap, in base64 that still fits the encoded bound.
         const justOver = Buffer.alloc(MAX_PINNED_OBJECT_BYTES + 1, 0x20);
-        const decoded = await request(app).post('/pins').send({ kind: 'design', cid: cidOf(justOver), bytes: justOver.toString('base64') });
+        const decoded = await request(app).post('/pins').send({ kind: 'design', cid: cidOf(Buffer.from('oversize-test')), bytes: justOver.toString('base64') });
         expect([decoded.status, decoded.body.code]).toEqual([413, 'too-large']);
         const farOver = Buffer.alloc(MAX_PINNED_OBJECT_BYTES + 3, 0x20);
-        const encoded = await request(app).post('/pins').send({ kind: 'design', cid: cidOf(farOver), bytes: farOver.toString('base64') });
+        const encoded = await request(app).post('/pins').send({ kind: 'design', cid: cidOf(Buffer.from('oversize-test')), bytes: farOver.toString('base64') });
         expect([encoded.status, encoded.body.code]).toEqual([413, 'too-large']);
         expect(pinBytes).not.toHaveBeenCalled();
     });

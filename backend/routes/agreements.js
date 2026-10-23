@@ -290,7 +290,7 @@ export function setupAgreementsRoute(app, deps) {
             return send(res, 400, { error: 'Body must be { cid, content, designs? }.', code: 'bad-request' });
         }
         const { cid, content } = body;
-        if (!isCid(cid)) return send(res, 400, { error: 'cid must be a CIDv1 raw sha2-256 base32 CID (bafkrei…).', code: 'invalid-cid' });
+        if (!isCid(cid)) return send(res, 400, { error: 'cid must be a CIDv1 UnixFS sha2-256 base32 CID.', code: 'invalid-cid' });
         if (!isPlainObject(content)) return send(res, 400, { error: `content must be an ${AGREEMENT_SCHEMA} object.`, code: 'invalid-agreement' });
         let bytes;
         try { bytes = canonicalBytes(content); } catch (error) {

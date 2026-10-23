@@ -48,11 +48,16 @@ await bundle({
     version: '1.8.0',
     packageDir: await pinnedPackage('@noble/hashes/sha2.js', '@noble/hashes', '1.8.0'),
     globalName: '__consentSha256',
-    purpose: 'synchronous SHA-256 hex fingerprints for browser and Node consent code.',
+    purpose: 'synchronous SHA-256 text and byte fingerprints for browser and Node code.',
     entryName: 'consent-sha256-entry.js',
     outputDir: 'frontend/vendor/noble-hashes-1.8.0',
     fileName: 'sha256.js',
     source: `import { sha256 } from '@noble/hashes/sha2.js';
+
+export function sha256Bytes(bytes) {
+    if (!(bytes instanceof Uint8Array)) throw new TypeError('sha256Bytes expects a Uint8Array');
+    return sha256(bytes);
+}
 
 export function sha256Hex(text) {
     if (typeof text !== 'string') throw new TypeError('sha256Hex expects a string');

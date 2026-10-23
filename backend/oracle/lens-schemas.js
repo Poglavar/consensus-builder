@@ -219,7 +219,7 @@ export const LENS_DECISIONS = Object.freeze(['satisfied']);
 // The program compares agreementCid byte for byte with the account's CID and sponsor with its
 // authority, so both are checked in their one canonical spelling here.
 export function validateDecision(fields, { nowSeconds } = {}) {
-    if (!isCid(fields?.agreementCid)) throw new Error('agreementCid must be an agreement CID (CIDv1 raw sha2-256, bafkrei…)');
+    if (!isCid(fields?.agreementCid)) throw new Error('agreementCid must be an agreement CID (CIDv1 UnixFS sha2-256)');
     if (!isBase58Pubkey(fields.sponsor)) throw new Error('sponsor must be a base58 public key');
     if (!LENS_DECISIONS.includes(fields.decision)) throw new Error('decision must be "satisfied"');
     requireText(fields.evidenceRef, 'evidenceRef');

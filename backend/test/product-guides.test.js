@@ -24,11 +24,24 @@ describe('public product guides', () => {
         const html = readFrontend(name);
 
         expect(html).toContain('site-intro-parcels.webp');
-        expect(html).toMatch(/Fork proposal|Razgranaj prijedlog/);
-        expect(html).toMatch(/local\s+proposal is created and applied|lokalni prijedlog koji je već primijenjen/);
-        expect(html).toMatch(/source stays unchanged|Izvor ostaje netaknut/);
+        expect(html).toMatch(/local design applied to the map|lokalni prijedlog koji je već primijenjen/);
         expect(html).not.toMatch(/map doesn't change until|karta se ne mijenja dok/);
         expect(html).not.toMatch(/id="drafts"|id="skice"/);
+    });
+
+    it('how-to-use.html describes the current design-to-agreement workflow', () => {
+        const html = readFrontend('how-to-use.html');
+        expect(html).toContain('<span class="ui-label">Design</span>');
+        expect(html).toContain('<span class="ui-label">Manual mode</span>');
+        expect(html).toContain('<span class="ui-label">Selected parcels</span>');
+        expect(html).toContain('<span class="ui-label">Done selecting</span>');
+        expect(html).toContain('<span class="ui-label">Custom site</span>');
+        expect(html).toContain('Share applied designs');
+        expect(html).toContain('create an agreement from applied designs');
+        expect(html).toContain('Propose');
+        expect(html).toContain('Owners sign decisions for that agreement');
+        expect(html).toContain('A community vote is non-binding and counted off-chain');
+        expect(html).not.toMatch(/<td>\s*Offer\s*<\/td>|Owner deal|Owner vote|Fork proposal|Propose here|Select more|selection tray|Propose tab|Use as site/i);
     });
 
     it.each(['how-to-use-road.html', 'kako-koristiti-cesta.html'])('%s describes finished roads as proposals', (name) => {

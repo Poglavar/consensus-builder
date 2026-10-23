@@ -12,7 +12,7 @@
     // A bet's own actions open that bet (its dialog, at /bets/<agreement account>), not the agreement.
     const BET_TYPES = ['createMarket', 'stake', 'resolve', 'claim'];
     const ACCOUNT = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
-    const CID = /^bafkrei[a-z2-7]{52}$/;
+    const CID = /^baf(?:krei|ybei)[a-z2-7]{52}$/;
     // The design type of the agreement's first design (its goal), the key of its label.
     function goalKey(event = {}) {
         const goal = typeof event.designGoal === 'string' ? event.designGoal.trim() : '';

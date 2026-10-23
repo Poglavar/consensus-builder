@@ -64,7 +64,7 @@
       "@id": "cb:cid",
       "@type": "rdf:Property",
       "rdfs:label": "Content identifier",
-      "rdfs:comment": "The CIDv1 (raw codec, sha2-256, base32) of the record's canonical bytes: its identity. Changed content is a different record.",
+      "rdfs:comment": "The CIDv1 (UnixFS file, raw leaves, sha2-256, base32) of the record's canonical bytes: its identity. Changed content is a different record.",
       "rdfs:range": {
         "@id": "xsd:string"
       }

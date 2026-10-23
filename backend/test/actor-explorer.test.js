@@ -72,6 +72,12 @@ describe('actor explorer view model', () => {
         expect(buildActorProfiles(samePersona)[0]).toMatchObject({ key: 'wallet-d', activityCount: 3 });
     });
 
+    it('keeps absent actor provenance unknown instead of inventing an algorithmic actor', () => {
+        const [profile] = buildActorProfiles([{ id: 'published-design', action: { type: 'design' } }]);
+        expect(profile.actor).toMatchObject({ id: 'unknown', name: 'Unknown actor', kind: 'unknown', controller: 'unknown' });
+        expect(filterEvents([{ id: 'published-design', action: { type: 'design' } }], { controller: 'algorithm' })).toEqual([]);
+    });
+
     it('keeps actors with distinct wallets in separate profiles even if their names match', () => {
         const profiles = buildActorProfiles([
             { id: 'one', actor: { id: 'same-persona', name: 'Same persona', controller: 'algorithm', wallet: 'wallet-one' }, action: { type: 'run_status' } },

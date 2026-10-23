@@ -301,7 +301,7 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                 design: {
                     schema: 'design/v1',
                     jsonSchema: '#/schema/$defs/design',
-                    cid: 'CIDv1, raw codec, sha2-256, base32 lower case (bafkrei…) over the canonical bytes: JSON with keys sorted at every depth, no whitespace, UTF-8',
+                    cid: 'CIDv1 UnixFS file, sha2-256, lower-case base32, fixed 256 KiB chunks and raw leaves; single-chunk files use a raw CID (bafkrei…), multi-chunk files a UnixFS dag-pb root (bafybei…). The CID covers canonical bytes: JSON with keys sorted at every depth, no whitespace, UTF-8',
                     types: {
                         road: { goals: ['road-track'], payload: 'roadProposal' },
                         building: { goals: ['single', 'buildings', 'row', 'parcelBased'], payload: 'buildingProposal' },
