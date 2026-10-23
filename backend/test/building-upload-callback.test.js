@@ -44,4 +44,42 @@ describe('model import consumers', () => {
         expect(r.env.close).not.toHaveBeenCalled();
         expect(r.env.setConfirmEnabled).toHaveBeenLastCalledWith(true);
     });
+
+    it('aborts editor creation after an upload failure and keeps the selected model retryable', async () => {
+        const r = pendingUpload();
+        r.env.uploadModel = vi.fn().mockRejectedValue(new Error('connection refused'));
+        await r.env.confirmUpload();
+        expect(r.env.uploadModel).toHaveBeenCalledOnce();
+        expect(r.custom).not.toHaveBeenCalled();
+        expect(r.fallback).not.toHaveBeenCalled();
+        expect(r.env.close).not.toHaveBeenCalled();
+        expect(r.env.setStatus).toHaveBeenLastCalledWith(
+            'The model could not be uploaded. Check the connection and try again; your file is still selected.', true
+        );
+        expect(r.env.setConfirmEnabled).toHaveBeenLastCalledWith(true);
+        expect(r.env.loadedFile).toMatchObject({ name: 'model.glb' });
+        expect(r.env.currentContext).toMatchObject({ parcelIds: ['source-ground'] });
+        expect(r.env.modalEl).toBeTruthy();
+    });
+
+    it.each([
+        ['returns false', () => false],
+        ['throws', () => { throw new Error('editor failed'); }]
+    ])('keeps the dialog retryable when the editor callback %s', async (_description, callback) => {
+        const r = pendingUpload();
+        r.custom.mockImplementation(callback);
+        const done = r.env.confirmUpload();
+        r.finish('/models/new.glb');
+        await done;
+        expect(r.custom).toHaveBeenCalledOnce();
+        expect(r.fallback).not.toHaveBeenCalled();
+        expect(r.env.close).not.toHaveBeenCalled();
+        expect(r.env.setStatus).toHaveBeenLastCalledWith(
+            'Could not open the building editor. Your file is still selected; try again.', true
+        );
+        expect(r.env.setConfirmEnabled).toHaveBeenLastCalledWith(true);
+        expect(r.env.loadedFile).toMatchObject({ name: 'model.glb' });
+        expect(r.env.currentContext).toMatchObject({ parcelIds: ['source-ground'] });
+        expect(r.env.modalEl).toBeTruthy();
+    });
 });

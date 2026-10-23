@@ -2179,7 +2179,8 @@
             "previewUnavailable": "La vista previa 3D no está disponible. Puedes seguir usando este edificio.",
             "errorEngine": "No se pudo cargar el lector de modelos.",
             "uploading": "Subiendo modelo…",
-            "uploadFailed": "Error al subir el modelo; el edificio usará una caja simple.",
+            "uploadFailed": "No se pudo subir el modelo. Comprueba la conexión e inténtalo de nuevo; el archivo sigue seleccionado.",
+            "placementFailed": "No se pudo abrir el editor del edificio. El archivo sigue seleccionado; inténtalo de nuevo.",
             "cancel": "Cancelar",
             "confirm": "Usar este edificio"
         },

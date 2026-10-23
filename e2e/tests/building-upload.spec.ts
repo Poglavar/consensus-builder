@@ -76,6 +76,42 @@ test('invalid and empty models remain blocked without trying to create a preview
   await expect(page.locator('#building-upload-3d')).toBeEmpty();
 });
 
+test('a failed GLB upload keeps the selected file and retries without reopening the chooser', async ({ page }) => {
+  let uploads = 0;
+  let successfulBody: any;
+  await page.route('**/models', async route => {
+    uploads += 1;
+    if (uploads === 1) return route.abort('connectionrefused');
+    successfulBody = route.request().postDataJSON();
+    return route.fulfill({ json: { modelUrl: '/uploads/models/retried-building.glb' } });
+  });
+  await openImporter(page);
+  const input = page.locator('#building-upload-file');
+  await input.setInputFiles('../test-assets/test-building.glb');
+  const confirm = page.locator('#building-upload-confirm');
+  const status = page.locator('#building-upload-status');
+  await expect(confirm).toBeEnabled({ timeout: 20_000 });
+  await confirm.click();
+
+  await expect(status).toHaveText('The model could not be uploaded. Check the connection and try again; your file is still selected.');
+  await expect(status).toHaveAttribute('data-tone', 'error');
+  await expect(confirm).toBeEnabled();
+  await expect(input).toHaveValue(/test-building\.glb/);
+  await expect(page.locator('#building-upload-modal')).toBeVisible();
+  expect(await page.evaluate(() => (window as any).importedBuilding)).toBeUndefined();
+  await expect.poll(() => uploads).toBe(1);
+
+  // Retry from the still-open dialog; the selected file is uploaded again without choosing it again.
+  await confirm.click();
+  await expect.poll(() => uploads).toBe(2);
+  await expect(page.locator('#building-upload-modal')).toHaveCount(0);
+  expect(successfulBody.fileName).toBe('test-building.glb');
+  expect(await page.evaluate(() => (window as any).importedBuilding)).toMatchObject({
+    width: 16, length: 20, height: 16, modelName: 'test-building.glb',
+    modelUrl: '/uploads/models/retried-building.glb', blockName: 'Test block', parcelIds: ['test-parcel']
+  });
+});
+
 test('late parse callbacks cannot replace a newer file or reopen a closed dialog', async ({ page }) => {
   await openImporter(page, 'constructor');
   await page.evaluate(() => {

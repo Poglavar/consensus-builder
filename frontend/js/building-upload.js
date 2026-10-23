@@ -362,21 +362,32 @@
             ...currentContext, ...loadedDims, modelName: loadedName, onConfirm: onConfirmCb
         };
 
-        // Persist the mesh so the main-map 3D view can render it. If this fails the
-        // proposal is still created, just with a plain extruded box instead of the mesh.
-        let modelUrl = null;
+        // The imported building needs its mesh. A failed upload stays here for a retry.
+        let modelUrl;
         try {
             modelUrl = await uploadModel(loadedFile);
         } catch (e) {
             if (version !== loadVersion || !modalEl) return;
-            console.warn('Building model upload failed; falling back to footprint box', e);
+            console.warn('Building model upload failed', e);
             setStatus(t('modal.buildingUpload.uploadFailed',
-                'Model upload failed; the building will use a plain box.'), true);
+                'The model could not be uploaded. Check the connection and try again; your file is still selected.'), true);
+            setConfirmEnabled(true);
+            return;
         }
 
         if (version !== loadVersion || !modalEl) return;
-        const created = use({ ...input, modelUrl });
-        if (!created) { setConfirmEnabled(true); return; } // single-building.js surfaces its own status
+        let created;
+        try {
+            created = use({ ...input, modelUrl });
+        } catch (error) {
+            console.warn('Building model placement failed', error);
+        }
+        if (!created) {
+            setStatus(t('modal.buildingUpload.placementFailed',
+                'Could not open the building editor. Your file is still selected; try again.'), true);
+            setConfirmEnabled(true);
+            return;
+        }
         close();
     }
 

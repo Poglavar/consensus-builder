@@ -2174,7 +2174,8 @@
             "previewUnavailable": "3D pregled nije dostupan. I dalje možeš upotrijebiti ovu zgradu.",
             "errorEngine": "Nije moguće učitati čitač modela.",
             "uploading": "Učitavanje modela…",
-            "uploadFailed": "Učitavanje modela nije uspjelo; zgrada će koristiti običnu kutiju.",
+            "uploadFailed": "Model nije moguće prenijeti. Provjerite vezu i pokušajte ponovno; datoteka je i dalje odabrana.",
+            "placementFailed": "Uređivač zgrade nije moguće otvoriti. Datoteka je i dalje odabrana; pokušajte ponovno.",
             "cancel": "Odustani",
             "confirm": "Upotrijebi ovu zgradu"
         },

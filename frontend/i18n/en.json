@@ -2152,7 +2152,8 @@
             "previewUnavailable": "3D preview unavailable. You can still use this building.",
             "errorEngine": "Could not load the model parser.",
             "uploading": "Uploading model…",
-            "uploadFailed": "Model upload failed; the building will use a plain box.",
+            "uploadFailed": "The model could not be uploaded. Check the connection and try again; your file is still selected.",
+            "placementFailed": "Could not open the building editor. Your file is still selected; try again.",
             "cancel": "Cancel",
             "confirm": "Use this building"
         },

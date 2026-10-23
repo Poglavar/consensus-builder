@@ -604,6 +604,8 @@ A glTF/GLB building import derives its footprint dimensions (X × Z) and height 
 from the parsed scene's bounding box. Successful parsing and finite, nonempty bounds make the
 model ready for upload and placement; the optional WebGL preview is not an import requirement.
 A preview failure leaves the model file and dimensions available to “Use this building”.
+Placement requires a successful model upload. An upload failure keeps the importer open with
+the file and dimensions intact for retry; a refused placement also reports its error in that dialog.
 [Model importer](frontend/js/building-upload.js).
 
 A Block, Row or Detached urban rule specifies rules on parcels; its `geometry.buildings` may contain multiple permitted volumes or per-parcel cuts. A Freeform proposal (`goal` and `typologyType: single`) specifies one connected building footprint, including its courtyard holes. Converting a connected Block/Row massing unions the footprint and freezes the maximum permitted height; disconnected houses become separate Freeform proposals. A GeoJSON collection or MultiPolygon upload preserves every polygon and interior ring, previews the buildings in the Freeform editor, and saves one proposal per disconnected polygon. An ordinary named plan groups a supplied development layout, including the Candlestick imports; the imports have no special runtime mode. `buildingProposal` primarily carries authored settings; the canonical cleaner removes older duplicate feature containers. A building can overlap multiple cadastral parcels. Survey, cadastral and Overture identities are source-qualified rather than automatically merged.
