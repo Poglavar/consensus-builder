@@ -267,6 +267,18 @@ describe('agent run events', () => {
         expect(controllerOf({ decisionResult: { controller: 'collect' } })).toBe('collect');
         expect(controllerOf({})).toBe('algorithm');
     });
+
+    it('uses only a city recorded on the run and normalizes case and whitespace', () => {
+        const recorded = runEvents({ ...run, summary: { city: ` ${ROWS[0].city.toUpperCase()} `, activities: [
+            { action: { type: 'design' }, entity: { type: 'design', id: DESIGN } }
+        ] } })[0];
+        expect(recorded.cityId).toBe(ROWS[0].city);
+
+        const unlocated = runEvents({ ...run, summary: { wallet: SPONSOR, mints: { c1: { account: ACCOUNT } }, activities: [
+            { action: { type: 'propose', agreementCid: AGREEMENT }, entity: { type: 'agreement', id: AGREEMENT } }
+        ] } })[0];
+        expect(unlocated).not.toHaveProperty('cityId');
+    });
 });
 
 describe('GET /agent/activity', () => {
@@ -305,6 +317,59 @@ describe('GET /agent/activity', () => {
         expect((await request(appFor(pool())).get('/agent/activity?source=simulation')).body.count).toBe(0);
     });
 
+    it('filters recorded city aliases before the final limit and leaves unscoped activity intact', async () => {
+        const localCity = ROWS[0].city;
+        const localOlder = agreementRow(cidOfObject({ cityCase: 'local-older' }), {
+            city: localCity, title: 'Local older', created_at: '2026-10-21T08:00:00Z'
+        });
+        const localNewer = agreementRow(cidOfObject({ cityCase: 'local-newer' }), {
+            city: localCity, title: 'Local newer', created_at: '2026-10-21T09:00:00Z'
+        });
+        const split = agreementRow(cidOfObject({ cityCase: 'split' }), {
+            city: 'split', title: 'Split', created_at: '2026-10-21T11:00:00Z'
+        });
+        const unlocated = agreementRow(cidOfObject({ cityCase: 'unlocated' }), {
+            city: null, title: 'Unlocated', created_at: '2026-10-21T12:00:00Z'
+        });
+        const activityPool = () => poolFor({ proposed: [localOlder, localNewer, split, unlocated], withAccount: [] });
+
+        const limited = await request(appFor(activityPool())).get('/agent/activity').query({ city: localCity.toUpperCase(), limit: 1 });
+        expect(limited.status).toBe(200);
+        expect(limited.body.events.map(event => event.agreementName)).toEqual(['Local newer']);
+        expect(limited.body.events[0].cityId).toBe(localCity);
+        expect(limited.body).toMatchObject({ filters: { city: localCity }, scanWindow: ACTIVITY_SCAN_WINDOW });
+
+        const normalized = await request(appFor(activityPool())).get('/agent/activity').query({ city: ` ${localCity.toUpperCase()} `, limit: 10 });
+        expect(normalized.body.events.map(event => event.agreementName)).toEqual(['Local older', 'Local newer']);
+        expect(normalized.body.events.every(event => event.cityId === localCity)).toBe(true);
+
+        const unknown = await request(appFor(activityPool())).get('/agent/activity?city=not-a-city');
+        expect(unknown.body).toMatchObject({ count: 0, filters: { city: 'not-a-city' } });
+
+        const unscoped = await request(appFor(activityPool())).get('/agent/activity?limit=10');
+        expect(unscoped.body.events.map(event => event.agreementName)).toEqual(['Local older', 'Local newer', 'Split', 'Unlocated']);
+        expect(unscoped.body.count).toBe(4);
+        expect(unscoped.body.events.find(event => event.agreementName === 'Unlocated').cityId).toBeNull();
+    });
+
+    it('filters agent-run events by recorded city and does not infer a city from an account', async () => {
+        const cityRun = { ...run, run_id: 'recorded-city-run', updated_at: '2026-10-21T10:00:00Z', summary: {
+            city: ` ${ROWS[0].city.toUpperCase()} `, activities: [{ action: { type: 'propose', agreementCid: RECORDED }, entity: { type: 'agreement', id: RECORDED } }]
+        } };
+        const unlocatedRun = { ...run, run_id: 'unlocated-account-run', updated_at: '2026-10-21T11:00:00Z', summary: {
+            wallet: SPONSOR, mints: { c1: { account: ACCOUNT } },
+            activities: [{ action: { type: 'stake', agreementCid: AGREEMENT }, entity: { type: 'agreement', id: AGREEMENT } }]
+        } };
+        const runPool = () => poolFor({ proposed: [], withAccount: [agreementRow(RECORDED, { city: null })], runs: [cityRun, unlocatedRun] });
+
+        const scoped = await request(appFor(runPool())).get('/agent/activity').query({ city: ROWS[0].city });
+        expect(scoped.body.events.map(event => event.runId)).toEqual(['recorded-city-run']);
+        expect(scoped.body.events[0].cityId).toBe(ROWS[0].city);
+        const all = await request(appFor(runPool())).get('/agent/activity');
+        expect(all.body.events).toHaveLength(2);
+        expect(all.body.events.find(event => event.runId === 'unlocated-account-run')).not.toHaveProperty('cityId');
+    });
+
     it('bounds the window to 250 without filters', async () => {
         const bounded = pool();
         const response = await request(appFor(bounded)).get('/agent/activity?limit=999');
@@ -320,7 +385,10 @@ describe('GET /agent/activity', () => {
         expect(matchesActivityFilters(event, { agreement: AGREEMENT })).toBe(true);
         expect(matchesActivityFilters({ ...event, entity: { type: 'design', id: DESIGN } }, { agreement: AGREEMENT })).toBe(true);
         expect(matchesActivityFilters({ ...event, entity: { type: 'design', id: DESIGN }, action: { type: 'design' } }, { agreement: AGREEMENT })).toBe(false);
-        expect(activityFilters({ actor: '  ', action: ' stake ', agreement: AGREEMENT, proposal: 'p1', unknown: 'x' })).toEqual({ action: 'stake', agreement: AGREEMENT });
+        expect(activityFilters({ actor: '  ', action: ' stake ', agreement: AGREEMENT, city: ` ${ROWS[0].city.toUpperCase()} `, proposal: 'p1', unknown: 'x' }))
+            .toEqual({ action: 'stake', agreement: AGREEMENT, city: ROWS[0].city });
+        expect(matchesActivityFilters({ ...event, cityId: ` ${ROWS[0].city.toUpperCase()} ` }, { city: ROWS[0].city })).toBe(true);
+        expect(matchesActivityFilters({ ...event, cityId: null }, { city: ROWS[0].city })).toBe(false);
     });
 });
 

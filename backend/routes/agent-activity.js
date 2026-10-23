@@ -246,7 +246,8 @@ function withSubject(event, { agreements = new Map(), designs = new Map() } = {}
         const row = agreements.get(id);
         const location = centreOf(row.design_bounds);
         return {
-            ...event, agreementName: row.title ?? null, designGoal: row.design_goal ?? null, cityId: row.city ?? null,
+            ...event, agreementName: row.title ?? null, designGoal: row.design_goal ?? null,
+            cityId: normalizeCityCode(row.city) || normalizeCityCode(event.cityId) || null,
             ...(location ? { location } : {})
         };
     }
@@ -254,7 +255,8 @@ function withSubject(event, { agreements = new Map(), designs = new Map() } = {}
         const row = designs.get(id);
         const location = centreOf(row.bounds);
         return {
-            ...event, designName: row.title ?? null, designGoal: row.goal ?? null, cityId: row.city ?? null,
+            ...event, designName: row.title ?? null, designGoal: row.goal ?? null,
+            cityId: normalizeCityCode(row.city) || normalizeCityCode(event.cityId) || null,
             ...(location ? { location } : {})
         };
     }
@@ -322,10 +324,12 @@ function picksBySubject(summary) {
 function runEvents(row, book = null) {
     const summary = row.summary || {};
     const actor = runActor(row, summary, book);
+    const recordedCity = normalizeCityCode(summary.city);
     const base = {
         source: 'live', actor, ok: row.status !== 'failed',
         occurredAt: row.updated_at || row.started_at, recordedAt: row.updated_at || row.started_at,
         runId: row.run_id,
+        ...(recordedCity ? { cityId: recordedCity } : {}),
         model: summary.decisionResult?.model || summary.model || null,
         modelCostUsd: summary.decisionResult?.costUsd ?? summary.pickCostUsd ?? null,
         batchId: summary.decisionResult?.batchId || summary.batchId || null
@@ -353,6 +357,7 @@ function runEvents(row, book = null) {
             source: 'live',
             actor: activityActorForRun(event.actor, actor, row.persona),
             runId: row.run_id,
+            ...(!event.cityId && recordedCity ? { cityId: recordedCity } : {}),
             model: event.model || base.model,
             modelCostUsd: event.modelCostUsd ?? base.modelCostUsd,
             batchId: event.batchId || base.batchId
@@ -365,7 +370,7 @@ function runEvents(row, book = null) {
     })];
 }
 
-// Scope filters for /agent/activity (actor, source, action, agreement, run). Chain events are decoded
+// Scope filters for /agent/activity (actor, source, action, agreement, run, city). Chain events are decoded
 // in JS, so filtering happens after projection; a filtered request scans a wider, still bounded,
 // window per source and reports it, so a client can tell "none in the window" from "none at all".
 export const ACTIVITY_SCAN_WINDOW = 1000;
@@ -385,13 +390,16 @@ export function recentWithBets(events = [], limit = 12) {
     const chosen = new Set([...bets.slice(0, betCount), ...rest.slice(0, limit - betCount)]);
     return sorted.filter(event => chosen.has(event));
 }
-const ACTIVITY_FILTER_FIELDS = ['actor', 'source', 'action', 'agreement', 'run'];
+const ACTIVITY_FILTER_FIELDS = ['actor', 'source', 'action', 'agreement', 'run', 'city'];
 
 export function activityFilters(query = {}) {
     const filters = {};
     for (const field of ACTIVITY_FILTER_FIELDS) {
         const value = typeof query[field] === 'string' ? query[field].trim() : '';
-        if (value) filters[field] = value.slice(0, 200);
+        if (!value) continue;
+        const bounded = value.slice(0, 200);
+        const normalized = field === 'city' ? normalizeCityCode(bounded) : bounded;
+        if (normalized) filters[field] = normalized;
     }
     return filters;
 }
@@ -402,6 +410,7 @@ export function matchesActivityFilters(event, filters) {
     if (filters.action && event.action?.type !== filters.action) return false;
     if (filters.agreement && ![event.entity?.type === 'agreement' ? event.entity.id : null, event.action?.agreementCid].includes(filters.agreement)) return false;
     if (filters.run && event.runId !== filters.run) return false;
+    if (filters.city && normalizeCityCode(event.cityId) !== filters.city) return false;
     return true;
 }
 
@@ -579,8 +588,8 @@ export function setupAgentActivityRoute(app, pool, {
                 designEvents(designs.rows),
                 chain,
                 runs.rows.flatMap(row => runEvents(row, book))
-            ).filter(event => matchesActivityFilters(event, filters)).slice(-limit)
-                .map(event => withSubject(event, subjects));
+            ).map(event => withSubject(event, subjects))
+                .filter(event => matchesActivityFilters(event, filters)).slice(-limit);
             res.json({
                 events, count: events.length, source: 'live',
                 ...(filtered ? { filters, scanWindow: ACTIVITY_SCAN_WINDOW } : {})
