@@ -222,6 +222,25 @@ class ParcelSourceStageTests(unittest.TestCase):
         with patch.object(stage, "_support", return_value=support):
             return stage.run_candidate(harness, self.city, self.receipt, self.packet)
 
+    def test_review_sample_with_full_cohort_path_resolves_from_repository(self):
+        self.packet["review"]["sampleFile"] = {
+            "file": "cohort/review-sample.geojson", "sha256": "recorded separately"}
+        hashes = stage._input_hashes(self.root, self.city, self.receipt, self.packet)
+        self.assertIn("cohort/review-sample.geojson", hashes["sampleFiles"])
+
+    def test_missing_cohort_sample_does_not_fall_back_to_nested_file(self):
+        (self.cohort / "review-sample.geojson").unlink()
+        nested = self.cohort / "cohort/review-sample.geojson"
+        nested.parent.mkdir()
+        nested.write_text("{}")
+        self.packet["review"] = {"sampleFile": {"file": "cohort/review-sample.geojson"}}
+        error = stage.qualification_input_error(self.root, self.city, self.receipt, self.packet)
+        self.assertIn("service-review sample is not a file", error)
+
+    def test_sample_cannot_escape_repository(self):
+        with self.assertRaises(ValueError):
+            stage._cohort_sample_path(self.root, self.cohort, "../../outside.geojson", "sample")
+
     def test_reused_adapter_is_adapter_ready_after_independent_verifier(self):
         harness = Harness(self.root, self.attempt_dir)
         result = self.call_stage(harness)

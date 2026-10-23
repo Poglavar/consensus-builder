@@ -372,7 +372,16 @@ def advance_candidates(runner, cities, cohort_dir):
                 continue
             entry.setdefault("qualificationHistory", []).append({**current, "invalidationReason": reason})
             current = {}
-        if current.get("status") not in {None, "pending", "running", "interrupted"}:
+        if current.get("status") not in {None, "pending", "pending-inputs", "running", "interrupted"}:
+            continue
+        input_error = stage.qualification_input_error(runner.root, city, receipt, packet)
+        if input_error:
+            entry["qualification"] = {"status": "pending-inputs", "receiptSha256": digest,
+                                      "summary": input_error}
+            runner.log("city qualification deferred; required evidence unavailable",
+                       cityCode=str(city["cityCode"]), reason=input_error)
+            runner.save_state()
+            progressed = True
             continue
         selected.append((city, receipt, packet, digest))
         if len(selected) == 2:

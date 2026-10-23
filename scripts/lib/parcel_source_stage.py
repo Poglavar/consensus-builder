@@ -88,11 +88,25 @@ def _cohort_sample_path(root: Path, base: Path, value: Any, label: str) -> tuple
     if not isinstance(value, (str, Path)) or not str(value):
         raise ValueError(f"{label} must be a non-empty sample path")
     raw = Path(value)
-    path = (raw if raw.is_absolute() else base / raw).resolve()
+    cohort = base.resolve().relative_to(root.resolve())
+    # Reviews may name the whole cohort path, or a filename within that cohort.
+    # Choose the declared namespace before checking existence; never try a second
+    # location just because the required file is missing.
+    repo_relative = raw.parts[:len(cohort.parts)] == cohort.parts
+    path = (raw if raw.is_absolute() else (root if repo_relative else base) / raw).resolve()
     path.relative_to(root.resolve())
     if not path.is_file():
         raise ValueError(f"{label} is not a file: {value}")
     return path, path.relative_to(root.resolve()).as_posix()
+
+
+def qualification_input_error(root: Path, city: dict, receipt: dict, packet: dict) -> str | None:
+    """An unavailable city's evidence must not stop unrelated qualification work."""
+    try:
+        _input_hashes(root, city, receipt, packet)
+    except (ValueError, FileNotFoundError) as exc:
+        return f"{type(exc).__name__}: {exc}"
+    return None
 
 
 def _sample_refs(value: Any, key: str = "") -> set[str]:

@@ -133,6 +133,19 @@ class PipelineTests(unittest.TestCase):
         self.assertNotIn('pipelineFailures', row)
         self.assertEqual(self.runner.state['adapterStageBlocked'], block)
 
+    def test_deferred_city_does_not_starve_other_candidates_and_resumes_when_inputs_return(self):
+        for city in self.cities:
+            self.runner._city_entry(city).update(status='reviewed-candidate', discoveryDecision='candidate',
+                                                packetValid=True)
+        deferred = self.runner.state['cities']['1']
+        deferred['qualification'] = {'status': 'pending-inputs', 'summary': 'missing sample'}
+        with patch.object(pipeline.source_stage, 'qualification_input_error', return_value='missing sample'):
+            self.assertEqual(self.pool._select('qualification', 2), self.cities[1:3])
+        self.assertEqual(deferred['qualification']['status'], 'pending-inputs')
+        with patch.object(pipeline.source_stage, 'qualification_input_error', return_value=None):
+            self.assertEqual(self.pool._select('qualification', 2), self.cities[:2])
+        self.assertEqual(deferred['qualification']['status'], 'pending')
+
     def test_failed_stage_cannot_validate_an_unchanged_integrated_result(self):
         saved = {'status': 'integrated', 'receiptSha256': 'receipt'}
         self.runner.state['cities']['1']['qualification'] = saved

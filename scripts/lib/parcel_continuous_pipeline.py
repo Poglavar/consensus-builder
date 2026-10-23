@@ -14,6 +14,7 @@ from pathlib import Path
 
 import parcel_discovery_coordination as coordination
 import parcel_discovery_outcomes as outcomes
+import parcel_source_stage as source_stage
 from parcel_city_storage import clear_qualification_scratch, forget_histories, finish_city, record_attempts, task_finished
 
 
@@ -156,9 +157,14 @@ class ContinuousPipeline:
                         and (code, fingerprint) in self.validated):
                     continue
                 packet = self.runner._packet(city, self.cohort)
-                if not self.runner._reviewed_city_receipt(city, packet):
+                receipt = self.runner._reviewed_city_receipt(city, packet)
+                if not receipt:
                     row["status"] = "research-complete" if packet.get("valid") else "pending"
                     continue
+                if saved.get("status") == "pending-inputs":
+                    if source_stage.qualification_input_error(self.runner.root, city, receipt, packet):
+                        continue
+                    row["qualification"] = {"status": "pending", "receiptSha256": saved.get("receiptSha256")}
             selected.append(city)
             if len(selected) >= count:
                 break
