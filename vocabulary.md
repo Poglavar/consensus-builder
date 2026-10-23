@@ -1551,7 +1551,11 @@ A **draft artifact** is a canonical `design/v1` or `agreement/v1` object and its
 returned without a pin or index write. Having a CID does not make it published. A compressed
 fragment preview carries the artifact to the app. Hosted HTTP returns a short unguessable bearer
 link to that fragment, retained only in bounded process memory (256 entries, at most 24 hours);
-expiry, eviction or restart requires regeneration. Knowing this link grants access to its draft.
+expiry, eviction or restart requires regeneration. Knowing this link grants access to its draft. Its `draftRef` is the same capability URL,
+accepted by modification, comparison and agreement-drafting tools. It resolves the exact canonical
+artifact in that server’s temporary cache. A bare CID resolves an indexed publication; a private
+draft CID alone is not a content-retrieval capability. Fork origin identifies the actual source
+artifact, not a model-retyped approximation.
 No pin or index record is created. In the app, the artifact is imported as a local draft without
 `published`. New draft designs and typed modifications carry a fresh authoring time; app import
 retains the canonical time. Agreement records retain author, sponsor and source-qualified input
