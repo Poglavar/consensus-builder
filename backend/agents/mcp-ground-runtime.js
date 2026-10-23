@@ -3,11 +3,11 @@
 import { createContext, runInContext } from 'node:vm';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import * as turf from '@turf/turf';
+import { installAppGeometry } from './mcp-geometry.js';
 
 const root = new URL('../../frontend/js/', import.meta.url);
 const scripts = [
-    'cid.js', 'agreement-record.js', 'agreement-ground.js', 'work-slicer.js', 'proposals/parcel-contiguity.js',
+    'cid.js', 'agreement-record.js', 'agreement-ground.js', 'work-slicer.js', 'proposals/apply/route.js', 'proposals/parcel-contiguity.js',
     'proposals/footprint-parts.js', 'proposals/parcel-arrangement.js', 'proposals/plan-order.js', 'proposals/formation-edit.js',
     'parcel-layout-validation.js', 'parcel-layout-record.js', 'parcel-layout-ownership.js',
     'parcels/live-fabric.js', 'proposals/apply/road.js', 'proposals/apply/buildings.js', 'proposals/apply/structures.js', 'proposals/apply/parcels.js'
@@ -17,7 +17,8 @@ const classic = ['proposal-parcel-identity.js', 'proposal-road-geometry.js', 'pr
 
 export async function deriveWithApp({ designs, parcels, ownerOf = () => [] }) {
     const logger = Object.fromEntries(['log', 'debug', 'info', 'warn', 'error'].map(level => [level, (...args) => console.error(`[${new Date().toISOString()}] [mcp-ground]`, ...args)]));
-    const ctx = createContext({ turf, console: logger, structuredClone, performance, URL, TextEncoder, Uint8Array, Buffer });
+    const ctx = createContext({ console: logger, structuredClone, performance, URL, TextEncoder, Uint8Array, Buffer });
+    installAppGeometry(ctx);
     ctx.window = ctx;
     ctx.require = createRequire(new URL('proposal-manager.js', root));
     for (const script of scripts) {

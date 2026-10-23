@@ -50,7 +50,7 @@ test('an approval link focuses its action without clicking or invoking a wallet'
   expect(result).toEqual({ clicks: 0, signatures: 0, selected: 'mint' });
 });
 
-for (const kind of ['space', 'parcel-layout', 'road']) test(`MCP ${kind} agreement ground matches the browser formation handlers`, async ({ page }) => {
+async function loadGroundRuntime(page: any) {
   const scripts = [
     'js/agreement-record.js', 'js/agreement-ground.js', 'js/work-slicer.js', 'js/proposals/status.js',
     'js/proposals/parcel-contiguity.js', 'js/proposals/footprint-parts.js', 'js/proposals/parcel-arrangement.js',
@@ -62,6 +62,9 @@ for (const kind of ['space', 'parcel-layout', 'road']) test(`MCP ${kind} agreeme
     'js/proposals/apply/parcels.js', 'js/proposal-manager.js', 'js/agreement-headless.js'
   ];
   for (const file of scripts) await page.addScriptTag({ path: path.join(root, file) });
+}
+for (const kind of ['space', 'parcel-layout', 'road']) test(`MCP ${kind} agreement ground matches the browser formation handlers`, async ({ page }) => {
+  await loadGroundRuntime(page);
   const content = builder.build({ site, city: 'london', kind, spaceKind: 'park', algorithm: 'equal', count: 4,
     points: [[-0.1, 51.5005], [-0.099, 51.5005]], authoredAt: '2026-10-23T00:00:00.000Z' }, { turf });
   const fixture = { designs: [{ cid: cid.cidOfObject(content), content, parcelIds: ['A'] }],
@@ -71,4 +74,19 @@ for (const kind of ['space', 'parcel-layout', 'road']) test(`MCP ${kind} agreeme
     { cwd: path.resolve(root, '../backend'), input: JSON.stringify(fixture), encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] }));
   const browserResult = await page.evaluate(fixture => (window as any).AgreementHeadless.derive(fixture), fixture);
   expect(browserResult).toEqual(nodeResult);
+});
+
+for (const key of ['borovje-official', 'borovje-blocks', 'folnegoviceva-rapska']) test(`MCP ${key} restatement ground matches browser with strict cadastral validation`, async ({ page }) => {
+  test.setTimeout(120_000);
+  await loadGroundRuntime(page);
+  const { fixture, expected } = JSON.parse(execFileSync(process.execPath, ['--input-type=module', '-e',
+    "import{restatementFixture}from'./test/fixtures/mcp-restatements.mjs';import{deriveAgreementGround}from'./agents/mcp-ground.js';const fixture=await restatementFixture(process.argv[1]);console.log(JSON.stringify({fixture,expected:await deriveAgreementGround(fixture)}));", key],
+    { cwd: path.resolve(root, '../backend'), encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'], maxBuffer: 10_000_000 }));
+  const actual = await page.evaluate(fixture => (window as any).AgreementHeadless.derive(fixture), fixture);
+  expect(actual).toEqual(expected);
+  expect(actual.outputs.length).toBeGreaterThan(1);
+  if (key.startsWith('borovje')) {
+    const parkCid = fixture.designs.find((d: any) => d.content.title?.includes('park Z1-5')).cid;
+    expect(actual.outputs.filter((o: any) => o.producedBy === parkCid).some((o: any) => o.fromParcelIds.includes('HR-335550-4302/4'))).toBe(true);
+  }
 });

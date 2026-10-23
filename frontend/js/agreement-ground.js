@@ -25,6 +25,33 @@
     };
     const compare = (a, b) => a < b ? -1 : a > b ? 1 : 0;
     const finite = value => typeof value === 'number' && Number.isFinite(value);
+    // Areas enter the agreement CID. Native Math.sin differs at its last bit between JS engines;
+    // near a rounding boundary that gives the SAME parcel two committed areas. This fixed series
+    // implements the same spherical ring formula as Turf using IEEE arithmetic only. Fourteen
+    // terms cover geographic latitudes with double precision; published areas resolve to 1 mm².
+    const committedArea = value => Math.round(value * 1e6) / 1e6;
+    function areaOf(value) {
+        const geometry = value?.type === 'Feature' ? value.geometry : value;
+        const sine = radians => {
+            let term = radians, sum = radians;
+            for (let k = 1; k <= 14; k++) { term *= -(radians * radians) / ((2 * k) * (2 * k + 1)); sum += term; }
+            return sum;
+        };
+        const ringArea = ring => {
+            let sum = 0;
+            const length = ring.length - 1, radians = Math.PI / 180;
+            for (let i = 0; i < length; i++) {
+                const previous = ring[(i + length - 1) % length], next = ring[(i + 1) % length];
+                sum += (next[0] - previous[0]) * radians * sine(ring[i][1] * radians);
+            }
+            // @turf/area 6.5 uses the WGS84 semi-major radius, 6378137 m.
+            return Math.abs(sum * (6378137 * 6378137 / 2));
+        };
+        const polygonArea = rings => ringArea(rings[0]) - rings.slice(1).reduce((sum, ring) => sum + ringArea(ring), 0);
+        if (geometry?.type === 'Polygon') return committedArea(polygonArea(geometry.coordinates));
+        if (geometry?.type === 'MultiPolygon') return committedArea(geometry.coordinates.reduce((sum, rings) => sum + polygonArea(rings), 0));
+        return null;
+    }
     const idsOf = list => (Array.isArray(list) ? list : [])
         .map(id => id === undefined || id === null ? '' : String(id).trim()).filter(Boolean);
     const sortedUnique = list => Array.from(new Set(list)).sort(numeric);
@@ -57,7 +84,7 @@
      * @param area (feature) → m² (turf.area)
      * @returns {{ inputs: { parcels: { parcelId, areaM2, holders }[], openGroundM2 }, outputs: object[] }}
      */
-    function derive({ designs, fabric, originals, ownerOf, area } = {}) {
+    function derive({ designs, fabric, originals, ownerOf, area = areaOf } = {}) {
         if (!Array.isArray(designs) || designs.some(design => !design || design.proposalId == null)) {
             throw new TypeError('derive needs design records with a proposalId.');
         }
@@ -74,7 +101,7 @@
         const parcels = parcelIds.map(parcelId => {
             const original = originals && typeof originals.get === 'function' ? originals.get(parcelId) : null;
             const measured = original ? area(original) : null;
-            return { parcelId, areaM2: finite(measured) && measured >= 0 ? measured : null, holders: holdersOf(ownerOf, parcelId) };
+            return { parcelId, areaM2: finite(measured) && measured >= 0 ? committedArea(measured) : null, holders: holdersOf(ownerOf, parcelId) };
         });
         const openGroundM2 = designs.reduce((sum, design) => sum + Math.max(0, Number(design.parcelLayout && design.parcelLayout.openGroundM2) || 0), 0);
 
@@ -93,7 +120,7 @@
             outputs.push({
                 hash: record().outputHash(feature.geometry),
                 pieceId,
-                areaM2,
+                areaM2: committedArea(areaM2),
                 fromParcelIds: sortedUnique(idsOf(props.cadastreParcelIds)),
                 producedBy: props.producedByProposalId ? String(props.producedByProposalId) : null,
                 role: roleOf(props),
@@ -113,7 +140,7 @@
      * @returns {{ current: boolean, reasons: { code: 'design-missing' | 'design-not-applied'
      *   | 'design-changed' | 'ground-changed', proposalId?: string }[] }}
      */
-    function check(agreement, { designOf, isApplied, fingerprintOf, fabric, originals, ownerOf, area } = {}) {
+    function check(agreement, { designOf, isApplied, fingerprintOf, fabric, originals, ownerOf, area = areaOf } = {}) {
         if (typeof designOf !== 'function' || typeof isApplied !== 'function' || typeof fingerprintOf !== 'function') {
             throw new TypeError('check needs designOf, isApplied and fingerprintOf functions.');
         }
@@ -169,5 +196,5 @@
         };
     }
 
-    return { derive, check, localHolders };
+    return { derive, check, localHolders, areaOf };
 });

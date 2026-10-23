@@ -2,43 +2,56 @@
 
 # MCP: Urban Game Theory for agents
 
-**Status (2026-10-23): local implementation and targeted verification landed; hosted deployment and live acceptance remain pending.** Branch and worktree `colosseum-worlds-fair`.
+**Status (2026-10-23): local functionality, public-source contract checks and the first paid pilot pass. Production activation, the remaining paid cases and live wallet acceptance are pending.** Branch and worktree `colosseum-worlds-fair`.
 
 ## Implementation checkpoint (2026-10-23)
 
-- P0 is present: the design/agreement merge and deployed devnet program predate this implementation.
-- P1: loopback stateless HTTP, modern and legacy protocol clients, mode isolation, public-source
-  reads, vocabulary/schema/city/example resources, prompts, actionable errors, request/publish
-  budgets, no-store, nginx/PM2 configuration and a read-only contract checker are implemented.
-  Hosted registers 25 tools; local registers 44. Production acceptance needs an explicit deploy.
-- P2: unsigned publication uses only `confirm:true` and verifies an index readback. Mint, fund,
-  acceptance, execute, cancel, expire and bet links preselect without auto-signing; bet hand-over
-  preserves amount/side. Pledge/donation approval links explicitly refuse because the current app
-  removed those wallet forms; local signing remains available. A real sponsor mint through a
-  hosted link has not been exercised in this session.
-- P3: an isolated node host runs the existing app's formation handlers, identity assignment,
-  parcel arrangement, fabric validation and `AgreementGround.derive`. Node/browser parity passes
-  for bounded road, park and layout fixtures. Complete cadastral source ground is required;
-  attached stations, open ground and freeform-building formations still need the app. Full Borovje
-  and Pionir parity against current cadastral source data remains an acceptance check.
-- P4: all five intent builders, typed modifications (including permitted-envelope fit), comparison,
-  private fragment previews and conversational prompts are implemented. CID parity passes for all
-  five kinds; an actual app route imports/applies a draft without publishing it. Comparison keeps
-  absent demolition and design-only ledger evidence null; it does not invent a before/after tally.
-- P5: a self-contained npm tarball can be staged, packed and installed. Its stdio entry was tested
-  from a fresh temporary install (44 tools). RPC-only account discovery, staking and claiming are
-  covered with the UGT API offline in a headless unit test; a funded live settlement was not run.
-  The public package name/publication remain open.
-- P6: both discovery documents and agent docs describe hosted/local operation; OpenAPI covers
-  source operations used by the tools. The experimental Server Card extension currently recommends
-  `/mcp/server-card`, not a domain-root well-known server-card path. The opt-in evaluator uses
-  resumable Anthropic batches, explicit prices/budget and artifact scores with 20 seeded tasks.
-  No paid evaluation, npm publication, registry listing, push or deploy was performed.
+- P0: the design/agreement merge and deployed devnet program predate this implementation.
+- P1: the stateless loopback HTTP service registers 25 tools; the local stdio package registers
+  44. All 25 hosted tools, 11 resources and four prompts passed against current public API data.
+  Both publication tools were checked with `confirm:false`. Production still serves SPA HTML on
+  GET `/mcp` and nginx 405 on POST initialization: PM2 has no `ugt-mcp` process and the live vhost
+  has no MCP route. Reviewed nginx/PM2 configuration is present locally; deployment is not authorized.
+- P2: unsigned publication requires `confirm:true` and verifies index readback. Mint, fund,
+  acceptance, execute, cancel, expire and bet links preselect without auto-signing. Bet hand-over
+  retains amount/side. The app removed pledge/donation wallet forms; those approval links refuse
+  explicitly, while local signing tools remain available. Real sponsor mint and settlement acceptance
+  have not been exercised in this session.
+- P3: an isolated node runtime uses the shipped browser Turf/projection bundles, formation handlers,
+  parcel arrangement, fabric validation and agreement derivation. Exact node/browser geometry,
+  ground and CID parity passes for the official Borovje, urban-blocks Borovje and Pionir restatements,
+  including multi-building, freeform-building and attached-station behavior on cadastral ground.
+  Formation provenance now uses the shared 0.25 m² intersection threshold: dropping a real
+  0.8756 m² Borovje anchor previously broke the immutable ground scope.
+  Agreement drafting requires complete cadastral coverage and 1–200 input parcels; unsurveyed/open
+  ground remains an explicit app-review recovery, not a fabricated cadastral input.
+- P4: all five intent builders, typed modifications, comparison, private previews and prompts are
+  implemented. Six worked resources cover all five kinds and an agreement. Comparison measures
+  unique full/partial demolition through the app's split rules, retains unsupported evidence as
+  null, and uses the shared party ledger for derived ground. Oversized previews retain the canonical
+  artifact and CID and return a publication recovery with `confirm:false`. Agreement previews
+  preflight the exact linked/carried design set before importing or applying anything. Binding-selected source identity is retained, including indexed binding provenance. The explicit
+  Croatian `oss-wfs` database selector now works for binding and publication. Source-qualified
+  inputs, author and sponsor survive app import without CID drift; new designs have an authoring time.
+- P5: the self-contained npm tarball installs freshly and advertises 44 stdio tools. A road was
+  drafted from an unrelated working directory. The real pilot exposed a projection dependency on
+  process cwd; the isolated shared runtime now removes it. RPC-only account discovery, staking and
+  claiming are covered offline; funded live settlement and public npm publication remain pending.
+- P6: discovery, OpenAPI and agent documentation are present. The opt-in evaluator uses resumable
+  Anthropic batches, explicit prices and a reserved cost cap, disables automatic paid retries and
+  records shared usage accounting. An uncertain submission cannot be silently resubmitted.
+  The authorized one-task Sonnet 5.5 street pilot passed after seven total rounds at **US$0.097633**.
+  Its first four rounds cost US$0.049973 and exposed the cwd bug; the same checkpoint continued
+  within the original US$1 cap. The seed contains 21 cases; the remaining 20 need separate spend
+  authorization. No permanent publication, wallet signature, push, deployment or registry listing ran.
 
-Current implementation deliberately limits itself where the app has no corresponding contract:
-it returns explicit recoveries instead of fabricating owner decisions, app wallet forms, source
-coverage or demolition measurements. These limits mean the original end-to-end phase acceptance
-criteria above are not all satisfied yet.
+**Intentional experimental contract correction:** agreement input/output areas now use the shared
+Turf-compatible spherical calculation (radius 6378137 m), deterministic sine arithmetic and rounding
+to 0.000001 m². This removes native runtime rounding differences from canonical agreement CIDs.
+Recreate affected experimental agreements; there is no compatibility reader or historical rewrite.
+These numerical units do not assert cadastral survey accuracy. Source identity and retained author/
+sponsor metadata are part of the current record contract. Outstanding acceptance work below remains
+open; this checkpoint does not declare all original phase gates complete.
 
 ### Verification record for this implementation
 
@@ -69,6 +82,41 @@ check (1 test). An initial agreement-preview invocation recorded a startup failu
 test results; the final headless Playwright run passed both design and agreement previews (2 tests),
 including canonical CID/ground equality and no publication requests. Live production contract checks, sponsor
 wallet signing and paid model evaluation were not run.
+
+### Continuation verification record (2026-10-23)
+
+All runs were targeted. No full unit or full browser suite was started. Failed and startup-only runs
+are retained here so that a later passing run does not erase their scope or cause.
+
+| Type and scope | Result |
+|---|---|
+| Headless unit tests: comparison, ground, reads (3 files, 16 tests) | Passed |
+| Headless unit tests: comparison, ground, preview, formation, HTTP (5 files, 55 tests) | Passed |
+| Public-source loopback MCP: first 25-tool contract check | 24 passed; checker mistook a capabilities schema descriptor for an artifact; corrected |
+| Public-source loopback MCP: 25 tools | Passed, including both publication refusals |
+| Headless Playwright: initial two-spec startup attempts | Three startup-only attempts; no tests ran (static server dependency unavailable, then loopback access); corrected |
+| Headless Playwright: artifacts and previews (2 specs, 14 tests) | 9 passed, 5 failed: three real-restatement parity failures and two dropped script loads from the temporary static server |
+| Headless Playwright: real restatements (3 tests) | Pionir passed; two Borovje cases exposed native trigonometric rounding differences after geometry alignment |
+| Headless Playwright: artifacts and previews (2 specs, 14 tests) | Passed after deterministic arithmetic and a no-cache Express static server |
+| Headless unit tests: MCP and agreement regressions (13 files, 162 tests), sandboxed | 150 passed, 12 failed: seven denied loopback binds and five incorrect spherical radius expectations; radius corrected |
+| Headless unit tests: same 13 files, 162 tests, loopback enabled | Passed |
+| Headless unit tests: evaluator orchestration (1 file, 6 tests, fake API) | Passed |
+| Headless Playwright: artifacts and previews, corrected radius/source integrity (2 specs, 14 tests) | Passed |
+| Public-source loopback MCP: 25 tools, 11 resources, four prompts | All 40 checks passed; no permanent publication, model call or signature |
+| Headless unit tests: MCP/records/source regressions (10 files, 152 tests) | 151 passed; one old expectation discarded source identity; corrected |
+| Headed Playwright: private design and agreement previews (1 spec, 2 tests, background Chrome) | Passed; exact agreement CID, metadata, source and applied ground checked; screenshot inspected |
+| Headless unit tests: runtime, evaluator, records, sync, ground, drafts and previews (7 files, 90 tests) | Passed |
+| Headless unit tests: evaluator including continuation (1 file, 7 tests, fake API) | Passed |
+| Headless unit tests: final MCP/agreement regressions (16 files, 209 tests), sandboxed | 198 passed; 11 HTTP/fake-API tests denied loopback binds |
+| Headless unit tests: same final 16 files, 209 tests, loopback enabled | Passed |
+| Fresh npm install and stock stdio client | 44 tools and a Madrid road draft passed from an unrelated directory; initial SDK import used the wrong export and stopped before connecting, then corrected |
+| Headless unit tests: source selection, Croatian binding/publication and shared binding (7 files, 90 tests) | Passed |
+| Headless unit tests: preview bounds, integrity, drafts and registration (4 files, 24 tests) | Passed, including the uncompressed preview limit |
+| Paid street pilot, one task / seven total rounds | Passed, cumulative US$0.097633; first four rounds failed on cwd-dependent projection, corrected before continuing the same authorized task |
+
+The final draft-authoring-time correction is covered by the final headless unit run; the paid pilot
+preceded that correction. The public-source and browser acceptance checks exercise local code against
+public reads, not a deployed `/mcp` server. Production and funded wallet acceptance remain pending.
 
 ## Goal
 

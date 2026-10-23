@@ -42,13 +42,36 @@ describe('intent design artifacts', () => {
         const calls = [];
         const fetchImpl = async (url, init) => {
             calls.push([new URL(url).pathname, init?.method || 'GET']);
-            return new Response(JSON.stringify({ binding: { parcels: [{ parcelId: 'parcel-A' }], coverage: 'complete' } }));
+            return new Response(JSON.stringify({ parcelSourceId: 'selected-source', binding: { parcels: [{ parcelId: 'parcel-A' }], coverage: 'complete' } }));
         };
         const tools = createUrbanGameTheoryTools({ mode: 'hosted', env: {}, fetchImpl });
         const result = await tools.draftSpace({ city: 'london', outline: site, spaceKind: 'park' });
         expect(result.cid).toBe(cidOfObject(result.design));
+        expect(new Date(result.design.authoredAt).toISOString()).toBe(result.design.authoredAt);
         expect(result.takes).toEqual(['parcel-A']);
+        expect(result.parcelSourceId).toBe('selected-source');
+        expect((await links.parse(new URL(result.previewUrl).hash)).parcelSourceId).toBe('selected-source');
         expect(calls).toEqual([['/designs/binding', 'POST']]);
+    });
+    it('preserves the indexed non-default parcel source when forking, comparing and drafting an agreement', async () => {
+        const design = builder.build({ ...common, kind: 'space', spaceKind: 'park' }, { turf });
+        const cid = cidOfObject(design), bindings = [];
+        const tools = createUrbanGameTheoryTools({ mode: 'hosted', env: {}, fetchImpl: async (url, init) => {
+            const path = new URL(url).pathname;
+            if (path === `/designs/${cid}`) return Response.json({ cid, content: design, binding: { parcelSource: { sourceId: 'non-default' } } });
+            if (path === '/designs/binding') {
+                bindings.push(JSON.parse(init.body).parcelSourceId);
+                return Response.json({ binding: { coverage: 'complete', parcels: [{ parcelId: 'A' }] } });
+            }
+            if (path === '/parcel-sources/non-default') return Response.json({ complete: true, features: [{ type: 'Feature', id: 'A', properties: { parcelId: 'A' }, geometry: site }] });
+            if (path === '/buildings/under') return Response.json({ supported: true, regions: { [cid]: [] } });
+            throw new Error(`Unexpected source route ${path}`);
+        } });
+        expect((await tools.modifyDesign({ design: cid, changes: [{ type: 'retitle', value: 'A fork' }] })).parcelSourceId).toBe('non-default');
+        expect((await tools.draftAgreement({ designs: [cid] })).parcelSourceId).toBe('non-default');
+        const compared = await tools.compare({ targets: [cid, cid] });
+        expect(compared.alternatives.every(a => a.measurementErrors.length === 0)).toBe(true);
+        expect(bindings).toEqual(['non-default', 'non-default', 'non-default', 'non-default']);
     });
 });
 describe('approval links', () => {

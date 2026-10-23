@@ -8,6 +8,15 @@
         if (!artifact) return;
         const designs = artifact.agreement ? artifact.designs : [artifact.design];
         if (!Array.isArray(designs) || !designs.length || designs.length > 100) throw new Error('Draft preview needs 1–100 designs');
+        if (artifact.agreement) {
+            const carried = designs.map(content => root.Cid.cidOfObject(content));
+            const linked = artifact.agreement.designs?.map(design => design.cid);
+            if (!Array.isArray(linked) || new Set(carried).size !== carried.length || new Set(linked).size !== linked.length
+                || carried.length !== linked.length || linked.some(cid => !carried.includes(cid))) throw new Error('Draft preview designs must exactly match the agreement’s linked CIDs.');
+            // Agreement replay order belongs to the agreement, not the fragment envelope.
+            const byCid = new Map(designs.map(content => [root.Cid.cidOfObject(content), content]));
+            designs.splice(0, designs.length, ...linked.map(cid => byCid.get(cid)));
+        }
         const rows = new Map();
         const apiBase = root.DesignSync.apiBase();
         for (const content of designs) {
@@ -30,7 +39,7 @@
             const originals = await root.CadastralParcelRepository.ensureIds(ids, { retainOnly: true });
             const derived = root.AgreementGround.derive({ designs: records, fabric: root.LiveParcelFabric,
                 originals: root.AgreementDialog.originalsById(originals.features, root.LiveParcelFabric.featureId),
-                ownerOf: () => [], area: root.turf.area });
+                ownerOf: () => [] });
             const record = root.AgreementSync.recordFromPublished({ cid, content }, { id: `draft-${cid}`, apiBase,
                 localIdOf: designCid => applied.localIds.get(designCid), derived });
             delete record.published;

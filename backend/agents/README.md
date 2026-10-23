@@ -255,15 +255,20 @@ Failures return `{ code, message, next }`.
 the place and its contract. The intent tools draft roads, buildings, spaces, parcel layouts and
 urban rules with the app's pure modules; `ugt_modify_design` makes a fork with `origin.cid` and typed
 changes. Previews travel in bounded compressed URL fragments and become local browser drafts,
-without a pin or index write. A preview above the URL limit is refused until the person explicitly
+without a pin or index write. Above the URL limit the canonical artifact and CID are still returned with
+`previewStatus: publication-required`; its recovery has `confirm: false` until the person explicitly
 chooses publication. Agreement drafts run the app's formation handlers in an isolated fabric over
-complete cadastral source ground. Open ground, attached stations and freeform-building formations
-currently require review in the app; demo-wide live-source parity is still pending.
+complete cadastral source ground. Single-building ground follows the app’s footprint-parcel rule; stations remain content on their
+corridor and form no new parcel. Unsurveyed/open-ground agreements still require the app. Exact
+node/browser ground parity passes for the actual Borovje alternatives and Pionir archived sources.
 
 Approval links select Mint, Fund, accept, Execute, Cancel, Expire or a bet; loading one never signs.
 The current app has no pledge/donation wallet form, so those approval requests explicitly refuse;
-local `ugt_pledge` and `ugt_donate` remain available. `ugt_compare` reports authored areas, known
-parcel inputs and the money schedule; missing demolition and design-only ledger evidence stays null.
+local `ugt_pledge` and `ugt_donate` remain available. `ugt_compare` reports authored floor area, unioned green/road area, bound parcel inputs, full
+building removals and partial cuts using the app’s demolition thresholds, and the shared per-party
+land/cash ledger for agreements. Unsupported, truncated or missing building stock remains unknown
+with a recovery. Design-only alternatives have no agreement ledger. CID resolution preserves the
+indexed parcel source in comparisons, forks and agreement drafts.
 
 Local signed/paid tools still require an operator-controlled devnet `UGT_AGENT_KEYPAIR`,
 `UGT_MCP_LIVE=1` and `confirm: true`. `UGT_MCP_MAX_USDC_PER_ACTION` (default 0.25) caps every USDC
@@ -312,3 +317,19 @@ covered by the `UGT Agent Runner` check in `alerts-server-telegram/bot-list.json
 `frontend/actor-explorer.html` is a read-only explorer of the shared activity envelope: it loads
 `GET /agent/activity` (`routes/agent-activity.js`) and opens `GET /agent/runs/:runId` when a run is
 selected, with the recorded rationales and exact `consensus.agent_cost` rows.
+
+A complete public-source acceptance check can run against an ephemeral local hosted transport:
+
+```sh
+node scripts/mcp-local-acceptance.mjs --api https://api.urbangametheory.xyz \
+  --origin https://urbangametheory.xyz --agreement <existing-minted-cid> --output /tmp/mcp-acceptance.json
+```
+
+It records every tool, resource and prompt; publication uses `confirm: false`. It never invokes a
+model or wallet. The same current parcel fixture supplies a reproducible model-evaluation seed.
+
+Ground drafting uses the exact browser Turf bundle. Agreement ground areas use a deterministic
+spherical calculation at 1 mm² resolution; the radius stays Turf 6.5’s 6378137 m. Layout provenance
+uses the existing 0.25 m² ancestry floor, retaining legitimate small parcel contributions. These
+corrections can change experimental agreement CIDs; recreate affected records rather than retaining
+a second geometry or area contract.

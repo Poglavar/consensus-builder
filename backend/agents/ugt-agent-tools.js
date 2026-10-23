@@ -302,7 +302,7 @@ export function createUrbanGameTheoryTools({
                 if (mode !== 'local') throw error;
                 manifest = { upstream: { available: false, code: error.code || 'api-unavailable', next: { tool: 'ugt_chain_agreements', arguments: {} } } };
             }
-            return { ...manifest, mode, cluster: 'solana-devnet', agreementProgram: AGREEMENT_PROGRAM_ID, tools: mode === 'hosted' ? MCP_HOSTED_TOOLS : MCP_LOCAL_TOOLS, toolPhases: { reads: 'implemented', approvalLinks: 'mint, fund, decide accept, execute, cancel, expire, bet', drafts: 'implemented with complete cadastral ground; station/freeform/open-ground agreement derivation requires the app', publication: 'implemented; permanent and public' }, hostedEndpoint: `${appOrigin}/mcp`, unsignedPublication: { confirm: true, requiresKey: false, permanent: true } };
+            return { ...manifest, mode, cluster: 'solana-devnet', agreementProgram: AGREEMENT_PROGRAM_ID, tools: mode === 'hosted' ? MCP_HOSTED_TOOLS : MCP_LOCAL_TOOLS, toolPhases: { reads: 'implemented', approvalLinks: 'mint, fund, decide accept, execute, cancel, expire, bet', drafts: 'implemented with complete cadastral ground; unsurveyed/open-ground agreement derivation requires the app', publication: 'implemented; permanent and public' }, hostedEndpoint: `${appOrigin}/mcp`, unsignedPublication: { confirm: true, requiresKey: false, permanent: true } };
         },
 
         getActivity: ({ limit = 100, actor, source, action } = {}) => readJson(

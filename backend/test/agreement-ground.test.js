@@ -66,6 +66,17 @@ const ownerOf = id => holders[id] || [];
 const area = feature => turf.area(feature);
 
 describe('derive', () => {
+    it('commits geographic areas deterministically without native trigonometry', () => {
+        const feature = piece('k9', rect(0, 0, 3, 2));
+        expect(ground.areaOf(feature)).toBeCloseTo(turf.area(feature), 4);
+        const native = Math.sin;
+        try {
+            Math.sin = () => { throw new Error('Native sine must not determine agreement identity'); };
+            const measured = ground.areaOf(feature);
+            expect(Number.isFinite(measured)).toBe(true);
+            expect(measured * 1e6).toBeCloseTo(Math.round(measured * 1e6), 0);
+        } finally { Math.sin = native; }
+    });
     it('takes each design\'s declared parcels and the anchors of what it produced, in numeric order', () => {
         const { inputs } = ground.derive({ designs: designs(), fabric: fakeFabric(pieces()), originals, ownerOf, area });
         expect(inputs.parcels.map(parcel => parcel.parcelId)).toEqual(['k9', 'k10']);
