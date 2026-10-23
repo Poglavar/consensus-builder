@@ -3,6 +3,7 @@ import * as z from 'zod/v4';
 import { readFileSync } from 'node:fs';
 
 const cid = z.string().regex(/^bafkrei[a-z2-7]{52}$/);
+const designInput = z.union([cid, z.string().url().max(300), z.record(z.string(), z.unknown())]);
 const city = z.string().min(1).max(80);
 const bbox = z.tuple([z.number().min(-180).max(180), z.number().min(-85).max(85), z.number().min(-180).max(180), z.number().min(-85).max(85)]);
 const point = z.tuple([z.number().min(-180).max(180), z.number().min(-85).max(85)]);
@@ -45,13 +46,13 @@ export function registerMcpCompanion(server, { actions, handler, readOnly }) {
         z.object({ type: z.literal('fit_to_permitted'), planningSource: z.string().min(1).max(100) }),
         z.object({ type: z.literal('set_use'), value: z.string().min(1).max(100) }), z.object({ type: z.literal('set_kind'), value: z.enum(['park', 'square', 'lake']) })
     ]);
-    add('ugt_modify_design', 'Fork a CID or canonical draft with typed changes, never coordinate edits. Compass sides are across the street; ambiguous or multi-stretch edits are refused. origin.cid records the source.',
-        { design: z.union([cid, z.record(z.string(), z.unknown())]), changes: z.array(changes).min(1).max(20), parcelSourceId: z.string().max(100).optional() }, 'modifyDesign');
-    add('ugt_compare', 'Compare two or more canonical designs or indexed design/agreement CIDs. Areas are square metres; absent measurements remain null.',
-        { targets: z.array(z.union([cid, z.record(z.string(), z.unknown())])).min(2).max(10), parcelSourceId: z.string().max(100).optional() }, 'compare');
+    add('ugt_modify_design', 'Fork a published CID, hosted draftRef or canonical draft with typed changes. For private drafts use draftRef; never retype geometry or pass an unpublished CID. Compass sides are across the street; ambiguous or multi-stretch edits are refused. origin.cid records the source.',
+        { design: designInput, changes: z.array(changes).min(1).max(20), parcelSourceId: z.string().max(100).optional() }, 'modifyDesign');
+    add('ugt_compare', 'Compare canonical drafts, hosted draftRef references or indexed design/agreement CIDs. Use draftRef for private drafts instead of copying geometry. Areas are square metres; absent measurements remain null.',
+        { targets: z.array(designInput).min(2).max(10), parcelSourceId: z.string().max(100).optional() }, 'compare');
 
-    add('ugt_draft_agreement', 'Derive an agreement on isolated complete cadastral ground using the app formation handlers. Owner rules require a rights snapshot; binding owner-deal requires one independent lens. No pin, index write or signature.',
-        { designs: z.array(z.union([cid, z.record(z.string(), z.unknown())])).min(1).max(100), rulePreset: z.enum(['owner-deal', 'owner-vote', 'community-vote']).default('community-vote'), rights: z.record(z.string(), z.unknown()).optional(), lens: z.string().optional(), allocations: z.array(z.record(z.string(), z.unknown())).default([]), money: z.record(z.string(), z.unknown()).optional(), deadline: z.iso.datetime().nullable().optional(), sponsor: z.string().nullable().optional(), title: z.string().max(200).optional(), author: z.string().max(100).optional(), createdAt: z.iso.datetime().optional(), parcelSourceId: z.string().max(100).optional() }, 'draftAgreement');
+    add('ugt_draft_agreement', 'Derive an agreement on isolated complete cadastral ground using the app formation handlers. For unpublished designs pass their hosted draftRef values, not CIDs; local clients may pass canonical objects. Owner rules require a rights snapshot; binding owner-deal requires one independent lens. No pin, index write or signature.',
+        { designs: z.array(designInput).min(1).max(100), rulePreset: z.enum(['owner-deal', 'owner-vote', 'community-vote']).default('community-vote'), rights: z.record(z.string(), z.unknown()).optional(), lens: z.string().optional(), allocations: z.array(z.record(z.string(), z.unknown())).default([]), money: z.record(z.string(), z.unknown()).optional(), deadline: z.iso.datetime().nullable().optional(), sponsor: z.string().nullable().optional(), title: z.string().max(200).optional(), author: z.string().max(100).optional(), createdAt: z.iso.datetime().optional(), parcelSourceId: z.string().max(100).optional() }, 'draftAgreement');
 
     const recipe = JSON.parse(readFileSync(new URL('../routes/agent-recipe-schema.json', import.meta.url), 'utf8'));
     const resources = [

@@ -498,3 +498,27 @@ Chrome was closed afterward. No design was saved, model uploaded, agreement publ
 signed, paid provider invoked or autonomous schedule activated by these release checks.
 
 - Headless unit tests: evaluator descriptor discrimination (1 file, 7 tests): passed. Capability schema descriptors without a result CID are not artifacts and cannot poison later artifact scoring.
+
+### Private draft references (2026-10-23)
+
+Paid runs also exposed a private/public identity mismatch: unpublished draft CIDs cannot resolve
+through the public index, and model-retyped canonical objects changed geometry and therefore the
+fork source CID. Hosted results now return `draftRef`, the same short capability URL used for the
+preview. Modification, comparison and agreement assembly accept it and resolve/validate the exact
+canonical artifact from the temporary store. Optional wrapper CIDs must match the reference.
+Private agreement comparison uses the carried canonical designs without index publication. Local
+stdio clients continue to pass canonical objects. Possessing the reference grants draft access;
+it expires with the preview cache. Evaluation fork scoring now requires origin to match an actual
+returned source artifact. These operations remain independent of model-generated geometry.
+
+- Headless unit tests: references, comparison, links, HTTP, evaluator and registration (6 files,
+  45 tests): passed.
+- Headless unit tests: canonical reference validation (2 files, 20 tests): passed.
+- Headless unit tests: reference-wrapper identity guards (2 files, 20 tests): passed.
+- Free live-source stock MCP check: draft park → modify by reference → community agreement by
+  reference → compare design/agreement references passed, including exact source CID and no publication.
+- Fourteen live private redirects were checked and sealed before the planned local server restart;
+  restart intentionally invalidates these in-memory links, while their canonical artifacts and
+  redirect receipts remain in the private evaluation records for integrity verification.
+
+- Headless unit tests: claimed CID on inline canonical wrappers (1 file, 12 tests): passed; copied content cannot silently disagree with its wrapper CID.

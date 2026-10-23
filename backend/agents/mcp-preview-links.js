@@ -1,6 +1,8 @@
 // Short bearer links avoid asking a model to reproduce thousands of compressed URL characters.
 // Only the already-generated fragment URL lives in bounded, expiring process memory; no pin/index.
 import { randomBytes } from 'node:crypto';
+import { createRequire } from 'node:module';
+const links = createRequire(import.meta.url)('../../frontend/js/draft-link.js');
 
 export function createPreviewLinks({ origin, appOrigin, now = Date.now, ttlMs = 86_400_000, maxEntries = 256 }) {
     if (!Number.isInteger(maxEntries) || maxEntries < 1 || !Number.isFinite(ttlMs) || ttlMs <= 0) throw new Error('Preview bounds must be positive');
@@ -24,8 +26,16 @@ export function createPreviewLinks({ origin, appOrigin, now = Date.now, ttlMs = 
             token = randomBytes(24).toString('base64url');
             entries.set(token, { target: target.href, expiresAt: now() + ttlMs }); byTarget.set(target.href, token);
         }
-        return { ...out, previewUrl: new URL(`/mcp/previews/${token}`, base).href, previewStatus: 'private-link',
+        const reference = new URL(`/mcp/previews/${token}`, base).href;
+        return { ...out, previewUrl: reference, draftRef: reference, previewStatus: 'private-link',
             previewExpiresAt: new Date(entries.get(token).expiresAt).toISOString() };
     }
-    return { decorate, get(token) { prune(); return entries.get(token)?.target || null; }, clear() { entries.clear(); byTarget.clear(); } };
+    const get = token => { prune(); return entries.get(token)?.target || null; };
+    return { decorate, get, async resolve(reference) {
+        const url = new URL(reference);
+        if (url.origin !== base.origin || !/^\/mcp\/previews\/[\w-]{32}$/.test(url.pathname) || url.search || url.hash) throw new Error('Use a draftRef returned by this server.');
+        const target = get(url.pathname.split('/').at(-1));
+        if (!target) throw Object.assign(new Error('This private draft reference expired. Draft it again.'), { code: 'draft-reference-expired' });
+        return links.parse(new URL(target).hash);
+    }, clear() { entries.clear(); byTarget.clear(); } };
 }

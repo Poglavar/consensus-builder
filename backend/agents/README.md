@@ -258,7 +258,10 @@ changes. Local stdio previews travel in bounded compressed URL fragments. Hosted
 unguessable bearer links so agents do not have to reproduce long encoded strings. Up to 256 links
 live in process memory for at most 24 hours; expiration, eviction or a server restart requires a
 fresh preview. Opening one redirects with no-store and no-referrer; the app imports the artifact
-as a local browser draft without a pin or index write. Above the URL limit the canonical artifact and CID are still returned with
+as a local browser draft without a pin or index write. The same bearer URL is returned as
+`draftRef`: pass that value to modify, compare or draft an agreement. It resolves the exact private
+canonical object without copying geometry. A bare CID resolves only indexed designs; local stdio
+clients can pass the canonical object directly. Above the URL limit the canonical artifact and CID are still returned with
 `previewStatus: publication-required`; its recovery has `confirm: false` until the person explicitly
 chooses publication. Agreement drafts run the app's formation handlers in an isolated fabric over
 complete cadastral source ground. Single-building ground follows the app’s footprint-parcel rule; stations remain content on their

@@ -5,6 +5,7 @@ import * as turf from '@turf/turf';
 import { validateDesignContent } from '../routes/designs.js';
 import { cidOfObject } from '../cid.js';
 import { createUrbanGameTheoryTools } from '../agents/ugt-agent-tools.js';
+import { createPreviewLinks } from '../agents/mcp-preview-links.js';
 const require = createRequire(import.meta.url);
 const builder = require('../../frontend/js/intent-design.js');
 const links = require('../../frontend/js/draft-link.js');
@@ -12,6 +13,30 @@ const approval = require('../../frontend/js/approval-link.js');
 const site = { type: 'Polygon', coordinates: [[[-0.1, 51.5], [-0.099, 51.5], [-0.099, 51.501], [-0.1, 51.501], [-0.1, 51.5]]] };
 const common = { site, city: 'london', title: 'A drawing', authoredAt: '2026-10-23T00:00:00.000Z' };
 describe('intent design artifacts', () => {
+    it('modifies, compares and assembles private drafts by reference without copying geometry or publishing', async () => {
+        const store = createPreviewLinks({ origin: 'https://mcp.example', appOrigin: 'https://urbangametheory.xyz' });
+        const paths = [];
+        const tools = createUrbanGameTheoryTools({ mode: 'hosted', env: {}, resolveDraftReference: store.resolve, fetchImpl: async (url, init) => {
+            const path = new URL(url).pathname; paths.push(path);
+            if (path === '/designs/binding') return Response.json({ parcelSourceId: 'private-test', binding: { coverage: 'complete', parcels: [{ parcelId: 'A' }] } });
+            if (path === '/parcel-sources/private-test') return Response.json({ complete: true, features: [{ type: 'Feature', id: 'A', properties: { parcelId: 'A' }, geometry: site }] });
+            if (path === '/buildings/under') return Response.json({ supported: true, regions: Object.fromEntries(JSON.parse(init.body).regions.map(region => [region.key, []])) });
+            throw new Error(`Unexpected index/publication route ${path}`);
+        } });
+        const first = store.decorate(await tools.draftSpace({ city: 'london', outline: site, spaceKind: 'park' }));
+        const fork = store.decorate(await tools.modifyDesign({ design: { draftRef: first.draftRef, cid: first.cid }, changes: [{ type: 'set_kind', value: 'square' }] }));
+        expect(fork.design.origin.cid).toBe(first.cid);
+        expect(fork.parcelSourceId).toBe('private-test');
+        await expect(tools.modifyDesign({ design: { draftRef: first.draftRef, cid: fork.cid }, changes: [{ type: 'retitle', value: 'Wrong identity' }] })).rejects.toMatchObject({ code: 'cid-mismatch' });
+        await expect(tools.modifyDesign({ design: { design: first.design, cid: fork.cid }, changes: [{ type: 'retitle', value: 'Wrong copied identity' }] })).rejects.toMatchObject({ code: 'cid-mismatch' });
+        const agreement = store.decorate(await tools.draftAgreement({ designs: [first.draftRef] }));
+        expect(agreement.agreement.designs[0].cid).toBe(first.cid);
+        const compared = await tools.compare({ targets: [fork.draftRef, agreement.draftRef] });
+        expect(compared.alternatives.every(alternative => alternative.measurementErrors.length === 0)).toBe(true);
+        expect(paths.some(path => /^\/designs\//.test(path) && path !== '/designs/binding')).toBe(false);
+        await expect(store.resolve(first.draftRef.replace('mcp.example', 'other.example'))).rejects.toThrow(/this server/);
+        store.clear(); await expect(tools.modifyDesign({ design: first.draftRef, changes: [{ type: 'retitle', value: 'Expired' }] })).rejects.toMatchObject({ code: 'draft-reference-expired' });
+    });
     for (const intent of [
         { kind: 'road', points: [[-0.1, 51.5], [-0.099, 51.5]], preset: '1+1 with cycle lanes' },
         { kind: 'space', spaceKind: 'park' }, { kind: 'building', floors: 5, coverage: 0.4 },

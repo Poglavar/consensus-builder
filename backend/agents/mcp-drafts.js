@@ -10,7 +10,7 @@ function union(features) {
     return features.reduce((a, b) => a ? turf.union(a, b) : b, null)?.geometry;
 }
 
-export function createMcpDraftTools({ read, appOrigin }) {
+export function createMcpDraftTools({ read, appOrigin, resolveDraftReference }) {
     async function result(design, parcelSourceId) {
         const binding = await read.request('/designs/binding', {}, { site: read.siteOfDesign(design), city: design.city, toleranceM: design.toleranceM, parcelSourceId });
         parcelSourceId = parcelSourceIdOf(binding) || parcelSourceId;
@@ -59,10 +59,19 @@ export function createMcpDraftTools({ read, appOrigin }) {
         return result(checked.content, intent.parcelSourceId || args.parcelSourceId);
     }
     async function resolveDesignSource(value) {
+        const reference = typeof value === 'string' && !isCid(value) ? value : value?.draftRef;
+        if (reference) {
+            if (!resolveDraftReference) throw fail('draft-reference-unavailable', 'Use a canonical draft object here; hosted draftRef references belong to their HTTP server.');
+            const artifact = await resolveDraftReference(reference);
+            if (!artifact.design) throw fail('design-reference-required', 'This operation needs a design draftRef, not an agreement.');
+            if (value?.cid && value.cid !== cidOfObject(artifact.design)) throw fail('cid-mismatch', 'The draftRef does not identify the supplied CID.');
+            value = { content: artifact.design, parcelSourceId: artifact.parcelSourceId };
+        }
         const row = isCid(value) ? await read.getDesign({ designCid: value }) : value;
         const content = row?.untrusted?.design || row?.untrusted?.content || row?.design || row?.content || row;
         const rebuilt = designObject({ ...content, createdAt: content?.authoredAt });
         if (cidOfObject(content) !== rebuilt.cid) throw fail('invalid-design', 'Draft is not a canonical design/v1 object.', { action: 'Use a design returned by a draft tool.' });
+        if (row?.cid && row.cid !== rebuilt.cid) throw fail('cid-mismatch', 'The supplied canonical design differs from its claimed CID.');
         return { content, parcelSourceId: row?.parcelSourceId };
     }
     const resolveDesign = async value => (await resolveDesignSource(value)).content;
@@ -88,6 +97,6 @@ export function createMcpDraftTools({ read, appOrigin }) {
             modified.authoredAt = new Date().toISOString();
             return result(modified, parcelSourceId);
         },
-        compare: createMcpComparison({ read, resolveDesign, appOrigin })
+        compare: createMcpComparison({ read, resolveDesign, appOrigin, resolveDraftReference })
     };
 }

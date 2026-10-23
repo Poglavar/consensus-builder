@@ -202,6 +202,7 @@ export function createUrbanGameTheoryTools({
     mode = 'local',
     env = process.env,
     fetchImpl = globalThis.fetch,
+    resolveDraftReference,
     createConnection = (rpcUrl) => createRpcConnection(rpcUrl, 'confirmed'),
     dependencies = {}
 } = {}) {
@@ -274,7 +275,7 @@ export function createUrbanGameTheoryTools({
     }
 
     const companion = createMcpReadTools({ apiBase, appOrigin, fetchImpl });
-    const drafts = createMcpDraftTools({ read: companion, appOrigin });
+    const drafts = createMcpDraftTools({ read: companion, appOrigin, resolveDraftReference });
     function requirePublish(confirm) {
         if (confirm !== true) throw new Error('confirm must be true: publishing is public and permanent');
     }

@@ -2,7 +2,7 @@
 // keep the affected measurement unknown; a missing source never becomes an empty building stock.
 import { createRequire } from 'node:module';
 import { appTurf as turf } from './mcp-geometry.js';
-import { cidOfObject } from './agreement-objects.js';
+import { cidOfObject, isCid } from './agreement-objects.js';
 import { deriveWithApp } from './mcp-ground-runtime.js';
 import { previewArtifact } from './mcp-preview.js';
 import { parcelSourceIdOf } from './mcp-read-tools.js';
@@ -33,14 +33,19 @@ export function authoredAreas(designs) {
         roadAreaM2: roads.length ? turf.area(union(roads)) : 0 };
 }
 
-export function createMcpComparison({ read, resolveDesign, appOrigin }) {
+export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDraftReference }) {
     return async function compare({ targets, parcelSourceId }) {
         const alternatives = [], warnings = [];
         for (const target of targets) {
+            const reference = typeof target === 'string' && !isCid(target) ? target : target?.draftRef;
+            if (reference && !resolveDraftReference) throw fail('draft-reference-unavailable', 'Use canonical draft objects here; hosted references belong to their HTTP server.');
+            const privateArtifact = reference ? await resolveDraftReference(reference) : null;
+            if (privateArtifact && target?.cid && target.cid !== cidOfObject(privateArtifact.agreement || privateArtifact.design)) throw fail('cid-mismatch', 'The draftRef does not identify the supplied CID.');
             let content = target?.untrusted?.agreement || target?.untrusted?.design || target?.agreement || target?.design || target;
             let sourceId = target?.parcelSourceId || parcelSourceId;
             let published = false;
-            if (typeof target === 'string') {
+            if (privateArtifact) { content = privateArtifact.agreement || privateArtifact.design; sourceId = privateArtifact.parcelSourceId || sourceId; }
+            else if (typeof target === 'string') {
                 try {
                     const row = await read.getDesign({ designCid: target }); content = row.content;
                     sourceId ||= row.parcelSourceId;
@@ -54,7 +59,8 @@ export function createMcpComparison({ read, resolveDesign, appOrigin }) {
                 }
             }
             const isAgreement = content?.schema === 'agreement/v1';
-            const designs = isAgreement ? await Promise.all(content.designs.map(d => resolveDesign(d.cid))) : [await resolveDesign(content)];
+            const carried = new Map((privateArtifact?.designs || []).map(design => [cidOfObject(design), design]));
+            const designs = isAgreement ? await Promise.all(content.designs.map(d => resolveDesign(carried.get(d.cid) || d.cid))) : [await resolveDesign(content)];
             if (!isAgreement) content = designs[0];
             const cid = cidOfObject(content), scoped = [], parcels = new Map();
             const measurementErrors = [];

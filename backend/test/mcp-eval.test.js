@@ -35,6 +35,13 @@ describe('MCP agent evaluation artifacts', () => {
         expect(scoreConversation(task, record)).toEqual({ passed: false, reason: 'preview-link-not-delivered' });
         record.messages[0].content[0].text = artifact.previewUrl;
         expect(scoreConversation(task, record).passed).toBe(true);
+        const forkDesign = { ...design, origin: { cid: 'a copied object that was never returned' } };
+        const forkArtifact = { ...artifact, untrusted: { design: forkDesign }, cid: cidOfObject(forkDesign) };
+        const forkTask = { expected: { ...task.expected, origin: true } };
+        record.artifacts.push(forkArtifact);
+        expect(scoreConversation(forkTask, record)).toEqual({ passed: false, reason: 'fork-source-not-returned' });
+        forkDesign.origin.cid = artifact.cid; forkArtifact.cid = cidOfObject(forkDesign);
+        expect(scoreConversation(forkTask, record).passed).toBe(true);
     });
     it('scores the actual approval target, amount and side', () => {
         const task = { expected: { action: 'bet', target: 'account', amount: '0.05', side: 'yes' } };

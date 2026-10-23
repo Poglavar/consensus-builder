@@ -53,7 +53,11 @@ export function scoreConversation(task, record) {
     const last = record.messages.filter(message => message.role === 'assistant').at(-1);
     const text = (Array.isArray(last?.content) ? last.content : []).filter(block => block.type === 'text').map(block => block.text).join('\n');
     const returnedUrls = new Set(text.match(/https?:\/\/[^\s<>"\])\x60]+/g) || []);
-    const delivered = record.artifacts.filter(artifact => scoreArtifact(task, [artifact]).passed).some(artifact => {
+    const known = new Set(record.artifacts.filter(artifact => artifact.cid).map(artifact => artifact.cid));
+    const candidates = record.artifacts.filter(artifact => scoreArtifact(task, [artifact]).passed).filter(artifact => !task.expected.origin
+        || known.has((artifact.untrusted?.design || artifact.design)?.origin?.cid));
+    if (!candidates.length) return { passed: false, reason: 'fork-source-not-returned' };
+    const delivered = candidates.some(artifact => {
         const urls = artifact.alternatives?.map(alternative => alternative.previewUrl) || [artifact.approvalUrl || artifact.previewUrl];
         return urls.every(url => typeof url === 'string' && returnedUrls.has(url));
     });

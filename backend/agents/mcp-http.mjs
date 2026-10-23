@@ -25,7 +25,7 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
     const makeServer = factory || (options => createUrbanGameTheoryMcpServer({ mode: 'hosted', env, fetchImpl, ...options }));
     // Count writes at the tool boundary too: this covers legacy clients without MCP routing headers.
     const guardedFactory = () => {
-        const server = makeServer({ decorateResult: previews.decorate });
+        const server = makeServer({ decorateResult: previews.decorate, resolveDraftReference: previews.resolve });
         // The shared server applies its write budget through an injected gate, not request headers.
         server.ugtPublishGate = () => {
             resetWindow();
