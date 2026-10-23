@@ -1674,7 +1674,14 @@ and republish such designs under the current contract; no duplicate-geometry com
 is retained.
 The generated HR-339164-2491 example measured 20,257 positions and 1,582,635 canonical bytes
 before removing that identical copy (no image/model data). This is an observed generated design,
-not a claim that every large parcel generates that many positions.
+not a normal geometry requirement. The generator repeatedly buffered previously rounded results,
+multiplying vertices. Insets now offset the original outline at the requested distance; a stepped
+search for a valid courtyard or minimum edge likewise uses cumulative distances from its fixed
+source. No post-generation simplification or cadastral-boundary change is introduced. The stored
+regression parcel has 320 source positions; its current generated footprint has 818 positions and
+about 33 KiB of canonical JSON, with the courtyard and 15 m requested depth preserved. Saved older
+designs keep their geometry until explicitly regenerated; the publication size limit remains
+independent of this generator correction.
 
 
 ### Building stock coverage across sources (2026-10-23)

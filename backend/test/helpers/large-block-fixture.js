@@ -1,4 +1,4 @@
-// Rebuilds the oversized Block example from its small source polygon using the same Turf and
+// Rebuilds the reported large-parcel Block from its small source polygon using the same Turf and
 // blockRingOutline implementation as the editor. The source coordinates are public; its parcel
 // identifiers and other cadastral properties have been replaced with a neutral test identifier.
 import { readFileSync } from 'node:fs';

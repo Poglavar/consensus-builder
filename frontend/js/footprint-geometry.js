@@ -82,32 +82,23 @@
         }
     }
 
-    // Robust negative buffer (inset). Performs incremental buffering in small steps to avoid topology collapses
+    // Offset the source once. Rebuffering intermediate results rounds their already rounded
+    // corners again, multiplying vertices and accumulating geometric error.
     function robustNegativeBuffer(feature, targetInsetMeters) {
-        const step = Math.max(0.5, Math.min(2, targetInsetMeters / 5)); // 0.5–2m steps
-        let remaining = targetInsetMeters;
-        let current = feature;
-        while (remaining > 1e-6) {
-            const d = Math.min(step, remaining);
+        if (!(targetInsetMeters > 1e-6)) return feature;
+        try {
+            const inset = turf.buffer(feature, -targetInsetMeters, { units: 'meters', steps: GEOM_BUFFER_STEPS });
+            return inset?.geometry ? inset : null;
+        } catch (_) {
+            // Retry broken input once after the existing tiny clean-up operation.
             try {
-                const next = turf.buffer(current, -d, { units: 'meters', steps: GEOM_BUFFER_STEPS });
-                if (!next || !next.geometry) return null;
-                current = next;
-                remaining -= d;
-            } catch (e) {
-                // Try tiny clean-up and retry once
-                try {
-                    const cleaned = turf.buffer(current, GEOM_EPSILON_M, { units: 'meters', steps: GEOM_BUFFER_STEPS });
-                    const retried = turf.buffer(cleaned, -(d + GEOM_EPSILON_M), { units: 'meters', steps: GEOM_BUFFER_STEPS });
-                    if (!retried || !retried.geometry) return null;
-                    current = retried;
-                    remaining -= d;
-                } catch (_) {
-                    return null;
-                }
+                const cleaned = turf.buffer(feature, GEOM_EPSILON_M, { units: 'meters', steps: GEOM_BUFFER_STEPS });
+                const inset = turf.buffer(cleaned, -(targetInsetMeters + GEOM_EPSILON_M), { units: 'meters', steps: GEOM_BUFFER_STEPS });
+                return inset?.geometry ? inset : null;
+            } catch (_) {
+                return null;
             }
         }
-        return current;
     }
 
     function siteClipApi() {
@@ -507,7 +498,8 @@
         return { minLen, minPair };
     }
 
-    // Incrementally inset a polygon by applying multiple small negative buffers
+    // Search inset distances in small steps, always offsetting the original outline. Retain the
+    // last acceptable distance when the courtyard collapses or an edge becomes too short.
     function incrementalInsetPolygon(startFeature, targetInsetMeters, minEdgeMeters) {
         const result = {
             feature: null,
@@ -523,12 +515,12 @@
 
         const step = Math.max(0.25, Math.min(1.0, targetInsetMeters / 10));
         let remaining = targetInsetMeters;
-        let current = toSingleLargestPolygon(startFeature) || startFeature;
-        let lastValid = current;
+        const source = toSingleLargestPolygon(startFeature) || startFeature;
+        let lastValid = source;
 
         while (remaining > 1e-6) {
             const d = Math.min(step, remaining);
-            let candidate = robustNegativeBuffer(current, d);
+            let candidate = robustNegativeBuffer(source, result.achievedInset + d);
             candidate = toSingleLargestPolygon(candidate) || candidate;
             if (!candidate || !candidate.geometry || candidate.geometry.type !== 'Polygon') {
                 result.reason = 'invalid';
@@ -546,7 +538,6 @@
             }
             // Accept this step
             lastValid = candidate;
-            current = candidate;
             result.achievedInset += d;
             remaining -= d;
         }

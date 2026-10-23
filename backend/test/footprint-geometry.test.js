@@ -31,6 +31,12 @@ function square(west, south, side) {
     ]]);
 }
 const S = () => square(15.97, 45.80, 0.0018); // ~200 m box
+const coordinateCount = feature => JSON.stringify(feature.geometry.coordinates).match(/\[/g)?.length || 0;
+const expectSameBufferedShape = (actual, expected) => {
+    expect(actual.geometry.type).toBe(expected.geometry.type);
+    expect(turf.area(actual)).toBeCloseTo(turf.area(expected), 5);
+    expect(coordinateCount(actual)).toBeLessThanOrEqual(coordinateCount(expected) + 4);
+};
 
 describe('toSingleLargestPolygon', () => {
     it('returns a Polygon feature unchanged', () => {
@@ -64,6 +70,23 @@ describe('robustNegativeBuffer', () => {
     it('returns null when the inset consumes the whole polygon', () => {
         const small = square(15.97, 45.80, 0.0002); // ~2 m box
         expect(robustNegativeBuffer(small, 50)).toBeNull();
+    });
+
+    it('matches one direct inset for a concave polygon with a hole without mutating its source', () => {
+        const origin = [15.97, 45.80];
+        const at = ([x, y]) => [origin[0] + x / 80000, origin[1] + y / 111000];
+        const ring = points => [...points.map(at), at(points[0])];
+        const source = turf.polygon([
+            ring([[0, 0], [120, 0], [120, 120], [80, 120], [80, 45], [40, 45], [40, 120], [0, 120]]),
+            ring([[50, 10], [50, 25], [70, 25], [70, 10]])
+        ]);
+        const original = JSON.stringify(source);
+        const expected = turf.buffer(source, -8, { units: 'meters', steps: 16 });
+        const actual = robustNegativeBuffer(source, 8);
+
+        expect(actual).toBeTruthy();
+        expectSameBufferedShape(actual, expected);
+        expect(JSON.stringify(source)).toBe(original);
     });
 });
 
@@ -265,5 +288,30 @@ describe('incrementalInsetPolygon', () => {
         const out = incrementalInsetPolygon(f, 20, 5);
         expect(out).toBeTruthy();
         expect(out.feature ? turf.area(out.feature) : turf.area(out)).toBeLessThan(turf.area(f));
+    });
+
+    it('keeps a partial min-edge result equal to one inset from the original and bounded in size', () => {
+        const f = square(15.97, 45.80, 0.00039); // about 30 m wide, so a 27 m edge floor stops early
+        const original = JSON.stringify(f);
+        const out = incrementalInsetPolygon(f, 8, 27);
+        const expected = turf.buffer(f, -out.achievedInset, { units: 'meters', steps: 16 });
+
+        expect(out.reason).toBe('min_edge');
+        expect(out.achievedInset).toBeGreaterThan(0);
+        expect(out.achievedInset).toBeLessThan(8);
+        expect(out.minEdgeValue).toBeLessThan(27);
+        expectSameBufferedShape(out.feature, expected);
+        expect(JSON.stringify(f)).toBe(original);
+    });
+
+    it('returns the original unchanged when the next inset is invalid', () => {
+        const f = square(15.97, 45.80, 0.00002);
+        const original = JSON.stringify(f);
+        const out = incrementalInsetPolygon(f, 20, 0);
+
+        expect(out.reason).toBe('invalid');
+        expect(out.achievedInset).toBe(0);
+        expect(out.feature).toEqual(f);
+        expect(JSON.stringify(f)).toBe(original);
     });
 });

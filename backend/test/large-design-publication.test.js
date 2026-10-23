@@ -1,4 +1,4 @@
-// A real generated Block crosses the old one-chunk limit and must pin, index and reload intact.
+// The reported Block stays compact; a synthetic collection independently exercises chunked publication.
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import request from 'supertest';
@@ -17,20 +17,36 @@ const BrowserCid = require('../../frontend/js/cid.js');
 
 afterEach(() => { vi.unstubAllGlobals(); vi.unstubAllEnvs(); vi.restoreAllMocks(); });
 
-describe('large authored design publication', () => {
-    it('pins the generated courtyard with a standard file CID, indexes it and reloads its exact geometry', async () => {
-        const { design } = generateLargeBlockFixture();
+describe('generated building design publication', () => {
+    it.each([1, 16])('pins and reloads %i generated courtyards with their exact geometry', async count => {
+        const { design, ring } = generateLargeBlockFixture();
+        if (count > 1) {
+            // Explicit synthetic transport fixture: a grid of separate buildings. A single building
+            // must not need thousands of redundant vertices just to exercise multi-chunk pinning.
+            const template = design.geometry.buildings[0];
+            design.geometry = { buildings: Array.from({ length: count }, (_, index) => ({
+                ...structuredClone(template),
+                geometry: { type: 'Polygon', coordinates: template.geometry.coordinates.map(outline => outline.map(([x, y]) =>
+                    [x + (index % 4) * 0.004, y + Math.floor(index / 4) * 0.004])) }
+            })) };
+        }
         const uncompressed = canonicalBytes(design).length;
         const content = DesignRecord.published({ ...design, createdAt: design.authoredAt });
         const bytes = canonicalBytes(content);
         const cid = cidOf(bytes);
-        expect(uncompressed).toBeGreaterThan(1024 * 1024);
-        expect(bytes.length).toBeGreaterThan(256 * 1024);
-        expect(bytes.length).toBeLessThan(uncompressed * 0.6);
+        expect(ring.widthAchieved).toBe(15);
+        if (count === 1) {
+            expect(content.geometry.buildings[0].geometry.coordinates.flat().length).toBeLessThan(1000);
+            expect(bytes.length).toBeLessThan(64 * 1024);
+            expect(bytes.length).toBeLessThan(uncompressed * 0.6);
+        } else {
+            expect(bytes.length).toBeGreaterThan(256 * 1024);
+        }
+        expect(content.geometry.buildings).toHaveLength(count);
         expect(content.geometry.blockMassing).toBeUndefined();
         expect(content.geometry.buildings[0].geometry.coordinates).toHaveLength(2);
         expect(BrowserCid.cidOfObject(content)).toBe(cid);
-        expect(BrowserCid.parse(cid).codec).toBe(0x70);
+        expect(BrowserCid.parse(cid).codec).toBe(count === 1 ? 0x55 : 0x70);
         expect(DesignRecord.validate(content).valid).toBe(true);
 
         vi.stubEnv('PINATA_API_KEY', 'test-key');
