@@ -1510,8 +1510,7 @@ const multiParcelSelection = {
     },
 
     // Show the current selection in the parcel panel (opening it): the multi-parcel summary for
-    // two or more parcels, the parcel itself for one. Used by updateUI while the panel is open and
-    // by the click panel's Selected parcels section.
+    // two or more parcels, the parcel itself for one. Hosted by the click panel's Selected parcels section.
     showSelectionInPanel() {
         const count = this.selectedParcels.size;
         if (count >= 2) {
@@ -1567,7 +1566,6 @@ const multiParcelSelection = {
             return { parcel, parcelId, feature, area, estimate };
         }).filter(summary => summary.feature);
 
-        const totalArea = parcelSummaries.reduce((sum, p) => sum + (p.area || 0), 0);
         const totalEstimate = priceModel
             ? priceModel.aggregate(parcelSummaries.map(p => p.estimate), parcels.length)
             : { amount: null, currency: null, basis: 'unavailable' };
@@ -1650,7 +1648,7 @@ const multiParcelSelection = {
                     <div class="metric-value">${totalOwners}</div>
                 </div>
             </div>
-            <hr style="border: 0; height: 1px; background-color: #ddd; margin: 10px 0;">
+            <hr>
             <div class="selected-parcels-section">
                 <div class="metric-label" data-i18n-key="panel.parcel.multi.selectedParcelsHeading">${tParcelMulti('panel.parcel.multi.selectedParcelsHeading', {}, 'Selected Parcels:')}</div>
                 <div class="selected-parcels-list">
@@ -1669,7 +1667,7 @@ const multiParcelSelection = {
                                 <div class="parcel-details">
                                             ${CbFormat.formatArea(area)} •
                                             ${priceBasis ? `${priceBasis}: ` : ''}${priceDisplay}
-                                    ${isRoad ? ` • <span style="color: #28a745;">${roadLabel}</span>` : ''}
+                                    ${isRoad ? ` • <span class="cb-badge cb-badge--success">${roadLabel}</span>` : ''}
                                 </div>
                             </div>
                         `;

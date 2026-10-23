@@ -1,7 +1,7 @@
 # Design language
 
 One page of decisions so every surface, old or new, reads as one product. The map shell
-(`css/map-shell.css`, `parcel-menu.css`, `selection-tray.css`, `map-search.css`) is the reference
+(`css/map-shell.css`, `map.css`, `map-search.css`) is the reference
 dialect; everything else migrates to it. Tokens live in `frontend/css/tokens.css`, shared components
 in `frontend/css/primitives.css`; both load first. Tests in `backend/test/` keep the rules from
 drifting (`design-tokens.test.js`, `i18n-style.test.js`, `page-chrome.test.js`,

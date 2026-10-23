@@ -62,10 +62,10 @@
         slot.appendChild(el);
         if (id === 'parcel-info-panel') {
             // The section's row folds and the stack closes, so the panel's − and × are hidden there
-            // (css/map.css) and it is never left minimized. Its proposals are the Designs section,
-            // so its Proposals tab is hidden too and the panel shows Design instead.
+            // (css/map.css) and it is never left minimized. Point-specific proposals have their
+            // own Designs section; a selected set keeps Proposals to list designs on all its land.
             global.ParcelsUIParcelPanel?.setParcelInfoPanelMinimized?.(el, false);
-            if (el.querySelector('[data-parcel-tab-id="proposals-tab"][aria-selected="true"]')) global.switchParcelTab?.(null, 'propose-tab');
+            if (state.stack?.expanded !== 'selection' && el.querySelector('[data-parcel-tab-id="proposals-tab"][aria-selected="true"]')) global.switchParcelTab?.(null, 'propose-tab');
         }
         // A design's panel has no − in the stack either: it is never left minimized there.
         if (id === 'proposal-details-panel' && el.classList.contains('is-minimized')) global.toggleProposalDetailsPanelMinimized?.();
@@ -212,7 +212,8 @@
         // that expands next hosts it again.
         if (state.hosted) unhost({ hide: false });
         el.textContent = '';
-        el.setAttribute('aria-label', t('title', 'At this spot'));
+        el.setAttribute('aria-label', stack.topRef === 'selection:current'
+            ? t('selectedParcels.label', 'Selected parcels') : t('title', 'At this spot'));
         const list = doc.createElement('div');
         list.className = 'click-stack__sections';
         stack.sections.forEach(section => {

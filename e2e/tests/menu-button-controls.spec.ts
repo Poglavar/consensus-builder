@@ -1,6 +1,6 @@
 // Check contextual parcel and ground actions through the map's visible menus.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, clickMapPoint, PARCEL_ID, PARCEL_GEOMETRY, runParcelCommand, openParcelAt, runSelectionCommand, selectionSection } from '../helpers/runtime';
+import { openCity, clickMapPoint, PARCEL_ID, PARCEL_GEOMETRY, runParcelCommand, openParcelAt, selectionSection } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
 
@@ -47,7 +47,7 @@ test('selection section Detect block expands its selected seed to the cadastral 
   await openParcelAt(page, 15.9821, 45.800225);
   await page.locator('#parcel-manual-selection').click();
   await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.selectedParcels.size)).toBe(1);
-  await runSelectionCommand(page, 'blocks.fromSelected');
+  await selectionSection(page).locator('.multi-select-detect-btn').click();
   await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.selectedParcels.size)).toBe(5);
 });
 

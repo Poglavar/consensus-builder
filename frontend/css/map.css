@@ -1133,8 +1133,11 @@ body.three-mode-active #agent-bubbles-container {
    proposals are the Designs section: the panel's own −, × and Proposals tab are not shown. */
 #click-stack #parcel-info-panel.is-hosted > .panel-header,
 #click-stack #parcel-info-panel.is-hosted #parcel-info-minimize,
-#click-stack #parcel-info-panel.is-hosted .panel-header .close-button,
-#click-stack #parcel-info-panel.is-hosted [data-parcel-tab-id="proposals-tab"] {
+#click-stack #parcel-info-panel.is-hosted .panel-header .close-button {
+    display: none;
+}
+
+#click-stack .click-stack__section:not([data-kind="selection"]) #parcel-info-panel.is-hosted [data-parcel-tab-id="proposals-tab"] {
     display: none;
 }
 

@@ -369,6 +369,11 @@ not searched); places in other countries' configured cities are offered by dista
 
 ### Phase 3 (parcel menu, selection tray) — built, browser-checked
 
+**Superseded on 2026-10-23:** the bottom selection tray is removed. Selected parcels now has a
+section in the click panel, including its empty state, count, measured area, Clear and Done.
+The section hosts the selected land’s tabs and tools. The details below record the earlier phase;
+see [click-stack.md](click-stack.md) for the current contract.
+
 **Built**
 - `frontend/js/ui/parcel-menu-model.js` (pure, UMD, `window.ParcelMenuModel`): `availableActions(facts)`
   / `isActionAvailable(action, facts)` (menu order: propose, selectMore, details, history, tools,
