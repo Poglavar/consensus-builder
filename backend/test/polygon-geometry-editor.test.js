@@ -251,6 +251,34 @@ describe('shared Leaflet interaction model', () => {
         editor.destroy();
     });
 
+    it('previews the insertion point on the edge without editing, and clears it on leave and teardown', () => {
+        const map = fakeMap();
+        const commits = [];
+        const editor = create({ map, leaflet: fakeLeaflet(), turf, ring: square,
+            onCommit: payload => commits.push(payload) });
+        const edge = editor.layerGroup.layers.find(layer => layer.kind === 'edge');
+        edge.handlers.mouseover({ latlng: { lng: 0.3, lat: 0.08 } });
+        const preview = editor.insertionMarker;
+        expect(preview.latLng.lng).toBeCloseTo(0.3, 3);
+        expect(preview.latLng.lat).toBeCloseTo(0, 10);
+        expect(preview.options.interactive).toBe(false);
+        expect(editor.ring).toHaveLength(4);
+        expect(commits).toEqual([]);
+        edge.handlers.mousemove({ latlng: { lng: 0.6, lat: 0.08 } });
+        expect(editor.insertionMarker).toBe(preview);
+        expect(preview.latLng.lng).toBeCloseTo(0.6, 3);
+        edge.handlers.mouseout();
+        expect(editor.insertionMarker).toBeNull();
+        expect(map.layers).not.toContain(preview);
+        edge.handlers.mouseover({ latlng: { lng: 0.5, lat: 0 } });
+        map.handlers.movestart();
+        expect(editor.insertionMarker).toBeNull();
+        edge.handlers.mouseover({ latlng: { lng: 0.5, lat: 0 } });
+        const next = editor.insertionMarker;
+        editor.destroy();
+        expect(map.layers).not.toContain(next);
+    });
+
     it('lets a vertex follow the pointer freely and snaps only on drag end', () => {
         const liveChanges = [];
         const commits = [];

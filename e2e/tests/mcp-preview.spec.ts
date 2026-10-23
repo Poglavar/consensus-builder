@@ -8,6 +8,7 @@ const links = require('../../frontend/js/draft-link.js');
 const turf = require('../../backend/node_modules/@turf/turf');
 const cid = require('../../frontend/js/cid.js');
 const agreementRecord = require('../../frontend/js/agreement-record.js');
+const agreementGround = require('../../frontend/js/agreement-ground.js');
 
 test('MCP draft fragment opens an applied local park with no publication @core', async ({ mockApi: page, baseURL }, testInfo) => {
   test.setTimeout(120_000);
@@ -31,10 +32,10 @@ test('MCP agreement fragment imports matching ground as an unpublished local agr
   test.setTimeout(120_000);
   await stubBasemapTiles(page);
   const design = builder.build({ kind: 'space', spaceKind: 'park', site: PARCEL_GEOMETRY, city: 'zagreb', title: 'Agreement park', authoredAt: '2026-10-23T00:00:00.000Z' }, { turf });
-  const designCid = cid.cidOfObject(design), areaM2 = turf.area(turf.feature(PARCEL_GEOMETRY));
-  const local = { schema: 'agreement/v1', id: 'fixture-agreement', title: 'MCP preview agreement', city: 'zagreb', createdAt: design.authoredAt,
+  const designCid = cid.cidOfObject(design), areaM2 = agreementGround.areaOf(PARCEL_GEOMETRY);
+  const local = { schema: 'agreement/v1', id: 'fixture-agreement', title: 'MCP preview agreement', author: 'Preview author', sponsor: '11111111111111111111111111111111', city: 'zagreb', createdAt: design.authoredAt,
     designs: [{ proposalId: designCid, cid: designCid, goal: design.goal, title: design.title }],
-    inputs: { parcels: [{ parcelId: PARCEL_ID, areaM2, holders: [] }], openGroundM2: 0 },
+    inputs: { parcels: [{ parcelId: PARCEL_ID, parcelSourceId: 'oss-wfs', areaM2, holders: [] }], openGroundM2: 0 },
     outputs: [{ hash: agreementRecord.outputHash(PARCEL_GEOMETRY), pieceId: 'fixture-piece', areaM2, fromParcelIds: [PARCEL_ID], producedBy: designCid, role: 'parcel', holders: [], geometry: PARCEL_GEOMETRY }],
     allocations: [], money: { currency: 'EUR', lines: [] }, rule: { electorate: 'community', binding: false, approvalConfig: null, lens: [] }, deadline: null };
   const agreement = agreementRecord.published(local, (id: string) => id);
@@ -45,8 +46,8 @@ test('MCP agreement fragment imports matching ground as an unpublished local agr
   const actual = await page.evaluate(() => {
     const w = window as any;
     const agreement = w.AgreementStore.list().find((record: any) => record.title === 'MCP preview agreement');
-    return agreement ? { published: !!agreement.published, hashes: agreement.outputs.map((output: any) => output.hash) } : null;
+    return agreement ? { published: !!agreement.published, hashes: agreement.outputs.map((output: any) => output.hash), cid: w.AgreementRecord.publishedCid(agreement, (id: string) => w.DesignRecord.cidOf(w.proposalStorage.getProposal(id))) } : null;
   });
-  expect(actual).toEqual({ published: false, hashes: agreement.outputs.map((output: any) => output.hash) });
+  expect(actual).toEqual({ published: false, hashes: agreement.outputs.map((output: any) => output.hash), cid: cid.cidOfObject(agreement) });
   expect(pageIndex(page).requests.some(r => r.method === 'POST' && ['/pins', '/designs', '/agreements'].includes(r.path))).toBe(false);
 });

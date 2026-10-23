@@ -89,6 +89,7 @@ function loadInstantCreate({ lands, reason = 'The live fabric could not be valid
     install('updateShowProposalsButton', vi.fn());
     install('beginApplyIndicator', vi.fn());
     install('endApplyIndicator', vi.fn());
+    install('activeProposalDraftComparison', null);
 
     delete require.cache[shellPath];
     require(shellPath);
@@ -111,6 +112,56 @@ afterEach(() => {
 });
 
 describe('one-click structure creation focus', () => {
+    it.each(['create', 'edit'])('keeps a %s preview until deferred application has rendered the result', async mode => {
+        const editOf = mode === 'edit' ? { proposalId: 'own-park', goal: 'park', applied: true } : null;
+        const { proposal, ProposalManager } = loadInstantCreate({ lands: true, editOf });
+        const preview = { kind: 'structure', geometry: { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [0, 1], [0, 0]]] } };
+        install('proposalEditorAdapterRegistry', { get: () => ({ renderPreview: () => preview }) });
+        const paint = vi.fn();
+        install('updateProposalDraftMapPreview', paint);
+        let finish;
+        const operation = mode === 'edit' ? ProposalManager.updateProposalInPlace : ProposalManager.applyProposal;
+        operation.mockImplementation(() => new Promise(resolve => { finish = resolve; }));
+        const saving = globalThis.instantCreateProposalFromDraft('draft-park');
+        const snapshot = globalThis.activeProposalDraftComparison;
+        expect(snapshot).toMatchObject({ saving: true, sourceProposal: null, draftPreview: preview });
+        expect(paint.mock.calls.map(([detail]) => detail)).toEqual([snapshot]);
+        // Creation has consumed the draft already; its snapshot must remain independently visible.
+        if (mode === 'create') expect(globalThis.proposalDraftStore.consumeAfterPublish).toHaveBeenCalledOnce();
+        proposal.applied = true;
+        if (editOf) editOf.applied = true;
+        finish({ applied: true });
+        await saving;
+        expect(globalThis.activeProposalDraftComparison).toBeNull();
+        expect(paint).toHaveBeenLastCalledWith(null);
+        expect(paint.mock.invocationCallOrder.at(-1)).toBeGreaterThan(ProposalManager._refreshUIAfterProposalChange.mock.invocationCallOrder[0]);
+    });
+
+    it.each([false, true])('clears the saving outline after application failure (throws=%s)', async throws => {
+        loadInstantCreate({ lands: false, throws });
+        const paint = vi.fn();
+        install('updateProposalDraftMapPreview', paint);
+        await globalThis.instantCreateProposalFromDraft('draft-park');
+        expect(paint.mock.calls[0][0]).toMatchObject({ saving: true });
+        expect(paint).toHaveBeenLastCalledWith(null);
+        expect(globalThis.activeProposalDraftComparison).toBeNull();
+    });
+
+    it('does not clear a newer preview when an older save finishes', async () => {
+        const { ProposalManager } = loadInstantCreate({ lands: true });
+        let finish;
+        ProposalManager.applyProposal.mockImplementation(() => new Promise(resolve => { finish = resolve; }));
+        const paint = vi.fn();
+        install('updateProposalDraftMapPreview', paint);
+        const saving = globalThis.instantCreateProposalFromDraft('draft-park');
+        const newerPreview = { draftId: 'another-draft', saving: true };
+        globalThis.activeProposalDraftComparison = newerPreview;
+        finish(false);
+        await saving;
+        expect(globalThis.activeProposalDraftComparison).toBe(newerPreview);
+        expect(paint).not.toHaveBeenCalledWith(null);
+    });
+
     it('shows the serializer rejection and reopens the retained drawing without creating a record', async () => {
         const { showEphemeralMessage } = loadInstantCreate({ lands: true });
         const openProposalDraftDesign = vi.fn(async () => true);

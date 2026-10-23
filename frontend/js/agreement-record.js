@@ -156,6 +156,7 @@
             seen.add(parcelId);
             return {
                 parcelId,
+                ...(parcel.parcelSourceId == null ? {} : { parcelSourceId: idOf(parcel.parcelSourceId, 'The parcel source') }),
                 areaM2: areaOf(parcel.areaM2, `Input parcel ${parcelId}`, true),
                 holders: holdersOf(parcel.holders, `input parcel ${parcelId}`)
             };
@@ -287,6 +288,8 @@
             schema: SCHEMA,
             id: idOf(raw.id, 'The agreement'),
             title: textOf(raw.title),
+            author: textOf(raw.author),
+            sponsor: textOf(raw.sponsor),
             city: textOf(raw.city),
             createdAt: timestampOf(raw.createdAt, 'createdAt'),
             updatedAt: timestampOf(raw.updatedAt, 'updatedAt'),
@@ -486,8 +489,8 @@
      * (each hash commits to it, and a reader re-derives the pieces by applying the designs), the
      * allocations, money and rule as stored, and the details. No local id, update time, piece ids,
      * output holders or fingerprints. Builds without judging: validate the record first.
-     * The record as stored (normalize) keeps neither an author nor a parcel source, so both are read
-     * from the object given: `{ ...stored, author }`, and a `parcelSourceId` on an input parcel.
+     * The stored record retains author, sponsor and input parcel source identity; a publisher may
+     * explicitly override author or sponsor on the object passed to this function.
      * @param designCidOf (proposalId) → that design's CID (DesignRecord.cidOf of its local record);
      *   asked for every design (refused unless it is a CID) and for every output's producedBy, where
      *   null means the producer is a design outside this agreement: the piece is then committed by

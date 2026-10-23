@@ -33,7 +33,8 @@
                 if (!await manager._applyParcelLayoutProposal(row.proposalId, row, options)) throw Object.assign(new Error(lastFailure?.message || 'Layout could not form'), lastFailure);
             } else if (row.structureProposal) {
                 const kind = row.structureProposal.kind;
-                if (kind === 'station') throw new Error('Station ground requires a corridor attachment in the app');
+                // Stations are content on their corridor; the app does not form new ground.
+                if (!root.ProposalApplyStructures.structureNeedsGroundFormation(kind)) continue;
                 const carved = manager._groundAfterLaterCorridors(row, [row.structureProposal.geometry], options);
                 if (!carved.geometries[0]) throw new Error('A later corridor takes the entire structure');
                 const record = { ...row, structureProposal: { ...row.structureProposal, geometry: carved.geometries[0] } };
@@ -41,14 +42,21 @@
                 if (!parents.ok) throw Object.assign(new Error(parents.message), lastFailure);
                 const formed = await manager._formStructureParcel(row.proposalId, record, record.structureProposal, carved.geometries[0], parents.ids, row.proposalId, parents.features, options);
                 if (!formed.ok) throw Object.assign(new Error(lastFailure?.message || 'Structure could not form'), lastFailure);
-            } else if (row.buildingProposal && !['buildings', 'urban-rule', 'row', 'parcelBased'].includes(row.goal)) {
-                throw new Error('Freeform building ground must be reviewed in the app');
+            } else if (row.buildingProposal) {
+                const buildings = row.geometry?.buildings || [];
+                const goal = root.__applyRoute.normalizeGoalKey(row.goal);
+                if (root.ProposalApplyBuildings.shouldFormOwnBuildingParcel(row, goal, buildings.length)) {
+                    const parents = manager._resolveLiveFormationParents(row, row.proposalId, 'building', options);
+                    if (!parents.ok) throw new Error(parents.message);
+                    const formed = await manager._formBuildingParcel(row.proposalId, row, row.buildingProposal, buildings[0].geometry, parents.ids, row.proposalId, parents.features, options);
+                    if (!formed.ok) throw Object.assign(new Error(lastFailure?.message || 'Building could not form'), lastFailure);
+                }
             }
         }
         // Validate the whole partition against immutable source facts, then derive with AgreementGround.
         mutation.replaceCadastreScope([...originals.keys()], mutation.list());
         await mutation.prepare(); mutation.publish();
-        return root.AgreementGround.derive({ designs: rows, fabric, originals, ownerOf, area: turf.area });
+        return root.AgreementGround.derive({ designs: rows, fabric, originals, ownerOf });
     }
     return { derive };
 });

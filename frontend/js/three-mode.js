@@ -2084,6 +2084,11 @@
                 side: THREE.DoubleSide
             });
             const feature = { type: 'Feature', properties: {}, geometry: surface.polygon };
+            if (surface.decorationDesign) {
+                feature.properties.decorations = window.ProposalApplyStructures.decorationsOnGround(surface.decorationDesign, surface.polygon, turf);
+                if (surface.treatment === 'green') buildParks3D(target, target, [feature]);
+                else buildSquares3D(target, target, [feature]);
+            }
             polygonFeatureToMeshes(feature, material, 0.035, 0).forEach(mesh => {
                 markOwnedMaterial(mesh, material);
                 mesh.renderOrder = 9190;
@@ -2267,8 +2272,8 @@
         applyParcelEmphasis();
     }
 
-    function buildParks3D(flatTarget, decoTarget) {
-        const parks = (typeof window !== 'undefined' && Array.isArray(window.parks)) ? window.parks : [];
+    function buildParks3D(flatTarget, decoTarget, features = null) {
+        const parks = features || ((typeof window !== 'undefined' && Array.isArray(window.parks)) ? window.parks : []);
         if (!parks || parks.length === 0) return;
         // Use polygonOffset to float slightly over base to avoid z-fighting and flicker
         const grassMat = new THREE.MeshLambertMaterial({ color: 0x1b5e20, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
@@ -2616,8 +2621,8 @@
     }
 
     // Build Squares (running-bond paving + furniture/fountains)
-    function buildSquares3D(flatTarget, decoTarget) {
-        const squares = (typeof window !== 'undefined' && Array.isArray(window.squares)) ? window.squares : [];
+    function buildSquares3D(flatTarget, decoTarget, features = null) {
+        const squares = features || ((typeof window !== 'undefined' && Array.isArray(window.squares)) ? window.squares : []);
         if (!squares || squares.length === 0) return;
 
         const squareMats = squareSurfaceMaterials();
@@ -2714,15 +2719,16 @@
         });
     }
 
-    // The paved/green surround of an applied freeform building proposal — the parcel area around
-    // its buildings. Same two surfaces as squares and parks, minus all the furniture: it is ground
-    // treatment, not a designed structure. See building-ground.js.
+    // Building ground and its optional authored furniture use the same park/square renderers.
+    // Merely choosing a treatment never generates a furniture layout. See building-ground.js.
     function buildProposalGrounds3D(flatTarget) {
         const api = (typeof window !== 'undefined') ? window.BuildingGround : null;
         if (!api || typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') return;
         let surfaces = [];
         try {
             surfaces = api.appliedSurfaces(proposalStorage.getAllProposals(), isApplied);
+            const editingId = window.OnMapEditor?.isActive() ? window.getActiveProposalDesignDraft?.()?.sourceLocalProposalId : null;
+            if (editingId) surfaces = surfaces.filter(surface => surface.proposalId !== editingId);
         } catch (error) {
             console.error('[three-mode] building ground surfaces could not be collected', error);
             return;
@@ -2736,6 +2742,12 @@
         surfaces.forEach(surface => {
             try {
                 const feature = { type: 'Feature', properties: {}, geometry: surface.geometry };
+                if (surface.decorationDesign) {
+                    feature.properties.decorations = window.ProposalApplyStructures.decorationsOnGround(surface.decorationDesign, surface.geometry, turf);
+                    if (surface.treatment === 'green') buildParks3D(flatTarget, flatTarget, [feature]);
+                    else buildSquares3D(flatTarget, flatTarget, [feature]);
+                    return;
+                }
                 const material = surface.treatment === 'paved' ? pavingMat : grassMat;
                 polygonFeatureToMeshes(feature, material, 0.06, 0).forEach(mesh => {
                     if (material === grassMat) markOwnedMaterial(mesh, grassMat);

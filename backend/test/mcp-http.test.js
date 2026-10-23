@@ -83,9 +83,10 @@ describe('hosted MCP HTTP', () => {
     });
     it('fails a contract check with missing source fixtures and never publishes', async () => {
         const paths = [];
-        const base = await host({ fetchImpl: async url => { paths.push(new URL(url).pathname); return new Response(JSON.stringify({ sources: [] })); } });
+        const base = await host({ fetchImpl: async url => { paths.push(new URL(url).pathname); return new Response(JSON.stringify({ sources: [], design: { schema: 'design/v1', description: 'A schema descriptor, not a draft' } })); } });
         const report = await checkContracts({ origin: base });
         expect(report.ok).toBe(false);
+        expect(report.checks.find(c => c.tool === 'ugt_capabilities').status).toBe('passed');
         expect(report.checks.some(c => c.status === 'missing-fixture')).toBe(true);
         expect(report.checks.filter(c => c.status === 'write-refused-without-confirmation')).toHaveLength(2);
         expect(paths).not.toContain('/pins');

@@ -112,6 +112,7 @@ function runtime({ claim = true, popup = false } = {}) {
         addEventListener(name, listener) { envListeners.set(name, listener); },
         removeEventListener(name) { envListeners.delete(name); },
         requestMapMode: vi.fn(),
+        syncMapModeLocks: vi.fn(),
         isThreeModeActive: () => false
     };
     const editor = createRuntime(env);
@@ -121,6 +122,34 @@ function runtime({ claim = true, popup = false } = {}) {
 afterEach(() => vi.restoreAllMocks());
 
 describe('OnMapEditor shared floating-panel lifecycle', () => {
+    it('returns from a child editor with the parent preview and ownership intact', () => {
+        const { editor, env, map } = runtime();
+        const parent = editor.open({ owner: 'building', modes: ['2d', 'model'] });
+        const preview = { groundSurface: { treatment: 'green' } };
+        parent.setPreview(preview);
+        const cancel = vi.fn();
+        const child = editor.open({ owner: 'structure-geometry-editor', parentSession: parent, modes: ['2d'], onCancel: cancel });
+        expect(parent.active).toBe(false);
+        expect(parent.root.hidden).toBe(true);
+        expect(map.getPane(parent.pane).inert).toBe(true);
+        expect(editor.getOwner()).toBe('structure-geometry-editor');
+        expect(editor.allowsMode('model')).toBe(false);
+        expect(env.syncMapModeLocks).toHaveBeenCalledTimes(2);
+        expect(env.__mapEditLock.claim).toHaveBeenCalledTimes(1);
+        expect(editor.open({ owner: 'unrelated' })).toBeNull();
+        child.close();
+        expect(parent.active).toBe(true);
+        expect(parent.root.hidden).toBe(false);
+        expect(map.getPane(parent.pane).inert).toBe(false);
+        expect(editor.getPreview()).toBe(preview);
+        expect(editor.allowsMode('model')).toBe(true);
+        expect(env.syncMapModeLocks).toHaveBeenCalledTimes(3);
+        expect(env.__mapEditLock.release).not.toHaveBeenCalled();
+        expect(cancel).not.toHaveBeenCalled();
+        parent.close();
+        expect(env.__mapEditLock.release).toHaveBeenCalledExactlyOnceWith('building');
+    });
+
     it('uses the global view buttons and keeps mode hints and guards in sync', () => {
         const { editor, env, buttons, envListeners } = runtime();
         const session = editor.open({

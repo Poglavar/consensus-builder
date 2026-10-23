@@ -111,7 +111,7 @@ function seedPendingGeometryFromProposal(source, goalKey, selectedLiveParcelIds 
             parameters: copyDeepClone(bp.parameters) || {},
             buildingFeature: copyDeepClone(primary),
             buildings: copyDeepClone(buildings.length ? buildings : [primary]),
-            // A freeform proposal's paved/green surroundings copy with its buildings.
+            // A building proposal's paved/green surroundings copy with its buildings.
             groundSurface: copyDeepClone(source.geometry && source.geometry.groundSurface) || null
         };
         window.pendingBuildingProposalContext = context;

@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, createSpace, proposalState, showProposal, clickMapPoint, drawCorridor, PARCEL_ID, openParcelTabAt, closeParcel } from '../helpers/runtime';
+import { openCity, openParcel, createSpace, proposalState, showProposal, clickMapPoint, drawCorridor, PARCEL_ID, openParcelTabAt, closeParcel, showSelectionDesignTab } from '../helpers/runtime';
 
 test.describe('Proposal creation and map lifecycle @features', () => {
   for (const kind of ['park', 'square', 'lake'] as const) {
@@ -49,7 +49,7 @@ test.describe('Proposal creation and map lifecycle @features', () => {
         await page.locator('#parcel-manual-selection').click();
         await closeParcel(page);
         await clickMapPoint(page, 15.9829, 45.80025);
-        await page.locator('#selection-tray [data-command="selection.propose"]').click();
+        await showSelectionDesignTab(page);
       }
       await page.locator(`.parcel-build-btn--${type}`).click();
       await expect(page.locator(done)).toBeVisible();

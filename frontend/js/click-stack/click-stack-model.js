@@ -8,6 +8,29 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
 
+    // Count and total area of the selected parcels. `featureFor(id)` gives a parcel's live feature
+    // (or null), `areaOf(feature)` its measured area in m². A parcel whose feature or area is
+    // missing still counts, but adds no area, and is reported as unmeasured; with nothing measured
+    // the total is null (unknown), never 0.
+    function summarizeSelection(ids, { featureFor, areaOf } = {}) {
+        const list = Array.isArray(ids) ? ids : [];
+        let total = 0;
+        let measured = 0;
+        for (const id of list) {
+            let area = null;
+            try {
+                const feature = typeof featureFor === 'function' ? featureFor(id) : null;
+                area = feature && typeof areaOf === 'function' ? areaOf(feature) : null;
+            } catch (_) { area = null; }
+            if (typeof area === 'number' && Number.isFinite(area) && area > 0) {
+                total += area;
+                measured += 1;
+            }
+        }
+        return { count: list.length, area: measured > 0 ? total : null, unmeasured: list.length - measured };
+    }
+
+
     // Top to bottom. A formed parcel is live ground a design made (the pieces a road leaves of a
     // parcel): it opens like a cadastral parcel, and is where the next design starts. Cadastral
     // parcels below it are the originals it came from. Ground is bare land with no register (the
@@ -71,6 +94,14 @@
         return { sections, expanded: expandedSection ? expandedSection.kind : null, topRef: topRefOf(sections) };
     }
 
+    // Selection is a map mode, not a hit at a point. Its section exists with zero members too.
+    function buildSelectionStack(summary, { expanded = true } = {}) {
+        const instance = { ...summary, id: 'current', ref: 'selection:current' };
+        return { sections: [{ kind: 'selection', instances: [instance], count: summary.count,
+            multi: false, expandable: true, selectedIndex: 0, atPoint: false }],
+            expanded: expanded ? 'selection' : null, topRef: instance.ref };
+    }
+
     // A click on the same topmost object, or on a spot with nothing on it, closes an open panel;
     // any other click shows the new spot.
     function clickAction(openTopRef, next) {
@@ -100,5 +131,5 @@
         return section ? section.instances[section.selectedIndex] : null;
     }
 
-    return Object.freeze({ ORDER, buildClickStack, clickAction, expand, selectInstance, selectedInstance });
+    return Object.freeze({ ORDER, summarizeSelection, buildSelectionStack, buildClickStack, clickAction, expand, selectInstance, selectedInstance });
 });

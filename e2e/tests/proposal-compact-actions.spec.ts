@@ -59,7 +59,7 @@ async function openCompactFromProposalList(page: import('@playwright/test').Page
 }
 
 test.describe('compact proposal card actions @features', () => {
-  test('the real list opens a compact card whose Fork, Edit, Share and Map buttons perform their actions', async ({ mockApi: page }) => {
+  test('the real list opens a compact card whose Duplicate, Edit, Share and Map buttons perform their actions', async ({ mockApi: page }) => {
     await openCity(page);
     await establishLocalProfile(page, 'Compact action author');
     const proposalId = await addLocalEditableProposal(page, 'actions');
@@ -69,22 +69,20 @@ test.describe('compact proposal card actions @features', () => {
 
     const panel = page.locator('#proposal-details-panel');
     const footer = panel.locator('#proposal-details-footer');
-    await expect(footer.locator('.btn-counterpropose-proposal')).toBeVisible();
+    await expect(footer.locator('.btn-duplicate-design')).toBeVisible();
     await expect(footer.locator('.btn-edit-geometry')).toBeVisible();
     await expect(footer.locator('.btn-share-proposal')).toBeVisible();
     await expect(footer.locator('.btn-proposal-details')).toBeVisible();
     const mapButton = footer.locator(`#proposal-action-btn-${proposalId}`);
     await expect(mapButton).toBeVisible();
 
-    await footer.locator('.btn-counterpropose-proposal').click();
-    const forkDialog = page.locator('.create-proposal-modal:visible');
-    await expect(forkDialog).toBeVisible();
-    await expect(forkDialog.locator('#proposalName')).toHaveValue(sourceBefore.title);
-    await forkDialog.locator('.proposal-modal-close').click();
-    await expect(forkDialog).toBeHidden();
+    await footer.locator('.btn-duplicate-design').click();
+    await expect(page.locator('#design-duplicate-editor .on-map-editor__panel')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#design-duplicate-editor')).toHaveCount(0);
     expect((await proposalState(page, proposalId)).title).toBe(sourceBefore.title);
 
-    // Forking closes the compact details card; reopen it through the real Proposals list before
+    // Duplication closes the compact details card; reopen it through the real Proposals list before
     // exercising the next footer action.
     await openCompactFromProposalList(page, proposalId);
     await footer.locator('.btn-share-proposal').click();

@@ -2,7 +2,7 @@
 // layouts and hand edits shape the plots, and Done applies them as a parcel layout whose live pieces
 // keep their plot references and are held by the owners of the ground under them.
 import { test, expect } from '../helpers/fixtures';
-import { clickMapPoint, openCity, openParcel, showProposal, PARCEL_ID, closeParcel } from '../helpers/runtime';
+import { clickMapPoint, openCity, openParcel, showProposal, PARCEL_ID, closeParcel, showSelectionDesignTab } from '../helpers/runtime';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 import { editorOpen, editorClosed, editorCancel } from '../helpers/agreements';
 import type { Locator, Page } from '@playwright/test';
@@ -375,7 +375,7 @@ test('a plot laid across two owners\' parcels is held jointly by both, pro rata 
   await closeParcel(page);
   await clickMapPoint(page, 15.9824, 45.80025);
   await expect.poll(() => page.evaluate(() => [...(window as any).multiParcelSelection.selectedParcels].sort())).toEqual(ADJACENT_IDS);
-  await page.locator('#selection-tray [data-command="selection.propose"]').click();
+  await showSelectionDesignTab(page);
   await expect(page.locator('.parcel-build-palette')).toBeVisible();
   await page.locator('.parcel-build-btn--parcel-layout').click();
   const editor = await editorReady(page);
@@ -419,7 +419,7 @@ test('a plot laid across two owners\' parcels is held jointly by both, pro rata 
   }
 });
 
-test('a parcel layout\'s details offer no sharing or fork: it is published with its agreement', async ({ mockApi: page }) => {
+test('a parcel layout\'s details offer no sharing or duplicate: it is published with its agreement', async ({ mockApi: page }) => {
   const editor = await openLayoutEditor(page);
   await editor.locator('[data-reparcel-commit]').click();
   await expect(editor).toHaveCount(0);
@@ -431,7 +431,7 @@ test('a parcel layout\'s details offer no sharing or fork: it is published with 
   await expect(share).toBeDisabled();
   await expect(share).toHaveAttribute('aria-describedby', 'proposal-publish-later-note');
   await expect(panel.locator('#proposal-publish-later-note')).toHaveText('A parcel layout is published with its agreement. Propose an agreement that includes it.');
-  await expect(panel.locator('.btn-counterpropose-proposal')).toHaveCount(0);
+  await expect(panel.locator('.btn-duplicate-design')).toHaveCount(0);
   // Nobody decides on or bets on a design by itself (M3): only an agreement over it is minted and bet on.
   await expect(panel.getByRole('button', { name: /\bbet\b/i })).toHaveCount(0);
   // What it offers instead: Add to agreement, the layout's main action, which opens the agreement

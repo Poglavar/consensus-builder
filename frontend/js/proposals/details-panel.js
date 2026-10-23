@@ -460,15 +460,15 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         </button>
     ` : '';
 
-    // Fork opens a cloned draft's proposal form. Edit geometry below opens its design tool
-    // directly; both preserve the published source record.
-    const forkButtonHtml = proposalKey && !publishRefusal
+    // Duplicate places fresh movable geometry. Site-bound acts and rules have no free-copy action.
+    // Edit geometry below still opens the source's design tool under the ordinary edit contract.
+    const duplicateButtonHtml = proposalKey && window.ProposalDesignGoals.canDuplicate(fullProposal)
         ? `
-        <button class="btn btn-counterpropose-proposal"
-            onclick="proposeExistingProposal(${inlineJsArg(proposalKey)})"
-            title="${tProposal('panel.proposal.actions.forkDesignHint', 'Create an editable copy. The design you are viewing stays unchanged.')}"
-            aria-label="${tProposal('panel.proposal.actions.forkDesignHint', 'Create an editable copy. The design you are viewing stays unchanged.')}">
-            <i class="fas fa-code-branch"></i> ${tProposal('panel.proposal.actions.forkDesign', 'Fork design')}
+        <button type="button" class="btn btn-duplicate-design"
+            onclick="startDesignDuplication(${inlineJsArg(proposalKey)})"
+            title="${tProposal('panel.proposal.actions.duplicateDesignHint', 'Move a copy with the pointer and click to place a new design.')}"
+            aria-label="${tProposal('panel.proposal.actions.duplicateDesign', 'Duplicate')}">
+            <i class="fas fa-copy" aria-hidden="true"></i> ${tProposal('panel.proposal.actions.duplicateDesign', 'Duplicate')}
         </button>
     `
         : '';
@@ -544,7 +544,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             ${publishRefusal ? addToAgreementButtonHtml : ''}
             ${shareButtonHtml}
             ${publishRefusal ? '' : addToAgreementButtonHtml}
-            ${forkButtonHtml}
+            ${duplicateButtonHtml}
             <button type="button" class="btn btn-proposal-details" onclick="toggleProposalDetailsPanelMinimized(false)">
                 <i class="fas fa-circle-info" aria-hidden="true"></i> ${tProposal('panel.proposal.actions.details', 'Details')}
             </button>

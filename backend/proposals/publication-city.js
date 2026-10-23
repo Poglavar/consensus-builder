@@ -12,14 +12,19 @@
 // Only new publications are placed (checkProposalBinding, the binding preview): stored records keep
 // their city, and drift and migrations measure them with it.
 
-import { resolveParcelSourceDescriptor } from '../parcels/sources.js';
+import { resolveParcelSourceDescriptor, parcelSourceCatalog } from '../parcels/sources.js';
 import { worldCoverage } from '../jurisdiction.js';
 
 // City ids configured with no cadastre at all (frontend/js/city-config.js parcels.source 'none').
 export const NO_CADASTRE_CITIES = Object.freeze(['explore']);
 
+// This gateway is backed by binding.js's Croatian PostGIS path, rather than a remote adapter.
+export const isHrDatabaseSource = (city, sourceId) => sourceId === 'oss-wfs'
+    && parcelSourceCatalog.databaseSources.find(source => source.id === sourceId)?.cityIds.includes(city);
+
 // Whether the catalogued source `sourceId` serves `city`.
 export function sourceServes(sourceId, city) {
+    if (isHrDatabaseSource(city, sourceId)) return true;
     let descriptor = null;
     try { descriptor = resolveParcelSourceDescriptor(sourceId); } catch (_) { descriptor = null; }
     return !!descriptor && descriptor.cityIds.includes(city);

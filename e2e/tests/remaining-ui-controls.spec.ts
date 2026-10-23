@@ -1,6 +1,6 @@
 // Cover reachable controls left outside the focused feature suites.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, clickMapPoint, showProposal, PARCEL_ID, PARCEL_GEOMETRY, runParcelCommand, closeParcel } from '../helpers/runtime';
+import { openCity, openParcel, clickMapPoint, showProposal, PARCEL_ID, PARCEL_GEOMETRY, runParcelCommand, closeParcel, showSelectionDesignTab } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { installAreaMonitorSpaFallback } from '../helpers/mocks/area-monitor-server';
 import { selectNativeOption } from '../helpers/controls';
@@ -32,7 +32,7 @@ async function openRowHouseEditor(page: Page): Promise<void> {
   await page.locator('.multi-select-detect-btn').click();
   await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.selectedParcels.size)).toBeGreaterThan(1);
   await closeParcel(page);
-  await page.locator('#selection-tray [data-command="selection.propose"]').click();
+  await showSelectionDesignTab(page);
   await page.locator('.parcel-build-btn--row').click();
   await expect(page.locator('#rowhouse').locator('.on-map-editor__panel')).toBeVisible();
   await expect(page.locator('#btn-rowhouse-done')).toBeEnabled({ timeout: 20_000 });
@@ -96,6 +96,7 @@ test.describe('Remaining UI controls @features', () => {
 
   test('proposal similarity opens the matching proposal details', async ({ mockApi: page }) => {
     await openCity(page);
+    await openParcel(page, 'proposals', PARCEL_ID);
     const { sourceId, similarId } = await page.evaluate(({ parcelId, geometry }) => {
       const w = window as any;
       const sourceId = w.proposalStorage.addProposal({
@@ -110,19 +111,13 @@ test.describe('Remaining UI controls @features', () => {
       });
       return { sourceId, similarId };
     }, { parcelId: PARCEL_ID, geometry: PARCEL_GEOMETRY });
-    await showProposal(page, sourceId);
     const details = page.locator('#proposal-details-panel');
-    const expand = details.getByRole('button', { name: 'Expand', exact: true });
-    if (await expand.isVisible()) await expand.click();
-    const moreActions = details.locator('summary').filter({ hasText: 'More actions' });
-    if (await moreActions.isVisible()) await moreActions.click();
-    await page.locator('.btn-counterpropose-proposal').click();
+    await page.evaluate(() => (window as any).showProposalDialog({ goal: 'park' }));
     const dialog = page.locator('.create-proposal-modal:visible');
     await expect(dialog).toBeVisible();
     const similar = dialog.locator(`.proposal-similar-item[data-proposal-id="${similarId}"]`);
     await expect(similar).toBeVisible();
     await similar.click();
-    await expect(page.locator('#planning-inspector')).toBeVisible();
     await expect.poll(() => page.evaluate(() => (window as any).currentlyHighlightedProposalId)).toBe(similarId);
     // Opening a similar proposal intentionally keeps the create dialog open; dismiss it before
     // the helper clicks Proposal actions in the inspector underneath.

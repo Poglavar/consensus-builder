@@ -90,6 +90,12 @@ describe('baseIdsOfFeatures', () => {
 });
 
 describe('overlappingBaseIds', () => {
+    it('keeps material sub-square-metre ancestry while excluding boundary noise', () => {
+        const context = { area: () => 100, intersectionArea: (_piece, parent) => parent.properties.overlap };
+        const parents = [0.8756, 0.25, 0.1, 0].map((overlap, i) => ({ baseId: `base-${i}`,
+            feature: { ...block(0, 0, 1, 1), properties: { overlap } } }));
+        expect(fe.overlappingBaseIds(block(0, 0, 1, 1), parents, context)).toEqual(['base-0', 'base-1']);
+    });
     it('anchors a plot to every base parcel actually under it, in parent order', () => {
         // Parents side by side; the plot spans the boundary.
         const parents = [

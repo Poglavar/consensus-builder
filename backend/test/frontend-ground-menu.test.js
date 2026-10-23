@@ -3,7 +3,7 @@
 // a city without a cadastre, never where the cadastre has simply not loaded yet; its actions are
 // Draw a site here and the transport tools. Also the repository fact it reads
 // (CadastralParcelRepository.isPointLoaded) and the site commands of the palette, parcel menu and
-// selection tray. PARCEL-OPTIONAL.md, phase 2.
+// parcel selection section. PARCEL-OPTIONAL.md, phase 2.
 import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 
@@ -99,9 +99,9 @@ describe('ground menu and site commands', () => {
         };
         global.multiParcelSelection = { isActive: true, selectedParcels };
         const context = UiCommands.createBrowserContext(global, { mode: '2d' });
-        expect(UiCommands.commandsFor('selection-tray', ctx({ global, selection: { active: true, count: 2 } })).map(c => c.id))
+        expect(UiCommands.commandsFor('parcel-selection', ctx({ global, selection: { active: true, count: 2 } })).map(c => c.id))
             .toContain('selection.useAsSite');
-        expect(UiCommands.commandsFor('selection-tray', ctx({ global, selection: { active: true, count: 0 } })).map(c => c.id))
+        expect(UiCommands.commandsFor('parcel-selection', ctx({ global, selection: { active: true, count: 0 } })).map(c => c.id))
             .not.toContain('selection.useAsSite');
         UiCommands.runCommand('selection.useAsSite', context);
         expect(startFromSelection).toHaveBeenCalledOnce();

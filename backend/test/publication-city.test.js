@@ -53,6 +53,9 @@ describe('which city a publication belongs to', () => {
 
 describe('the source that binds a publication', () => {
     it('is the requested one where it serves the placed city, else the placed city\'s own', () => {
+        expect(sourceServes('oss-wfs', 'zagreb')).toBe(true);
+        expect(sourceServes('oss-wfs', 'new_york')).toBe(false);
+        expect(sourceOf('zagreb', AT.zagreb, 'oss-wfs')).toBe('oss-wfs');
         expect(sourceServes('hr-dgu-oss-dkp-cestice', 'split')).toBe(true);
         expect(sourceServes('no-such-source', 'split')).toBe(false);
         expect(sourceOf('zagreb', AT.split, 'hr-dgu-oss-dkp-cestice')).toBe('hr-dgu-oss-dkp-cestice');
@@ -68,6 +71,7 @@ describe('the binding of a new publication is measured in the city its site lies
     const square = ({ lat, lon }, d = 0.0003) => ({ type: 'Polygon', coordinates: [[[lon - d, lat - d], [lon + d, lat - d], [lon + d, lat + d], [lon - d, lat + d], [lon - d, lat - d]]] });
 
     it('places the preview binding the same way', () => {
+        expect(publicationCityOf({ site: square(AT.zagreb), city: 'zagreb', parcelSourceId: 'oss-wfs' })).toEqual({ city: 'zagreb', parcelSourceId: 'oss-wfs' });
         expect(publicationCityOf({ site: square(AT.split), city: 'zagreb' })).toEqual({ city: 'split', parcelSourceId: null });
         expect(publicationCityOf({ site: square(AT.zagreb), city: null })).toEqual({ city: 'zagreb', parcelSourceId: null });
         expect(publicationCityOf({ site: square(AT.zagreb), city: 'new_york' })).toEqual({ city: 'zagreb', parcelSourceId: null });

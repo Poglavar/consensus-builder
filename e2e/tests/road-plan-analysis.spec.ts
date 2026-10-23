@@ -1,3 +1,4 @@
+import { openLayerSection } from '../helpers/layers';
 import { test, expect } from '../helpers/fixtures';
 import { clickMapPoint, openCity, openParcel } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
@@ -11,12 +12,12 @@ test.describe('Government plan and road analysis controls @features', () => {
     await page.evaluate(async ids => (window as any).CadastralParcelRepository.ensureIds(ids), PARCEL_IDS);
     await expect.poll(() => page.evaluate(ids => ids.filter((id: string) => !!(window as any).LiveParcelFabric.get(id)).length, PARCEL_IDS)).toBe(PARCEL_IDS.length);
 
-    await page.locator('#layers-button').click();
+    await openLayerSection(page, 'roads');
     await page.locator('#showGovernmentRoadPlan').check();
     await expect.poll(() => page.evaluate(() => (window as any).governmentRoadPlanLayer?.getLayers?.().length || 0)).toBeGreaterThan(0);
     await expect.poll(() => page.evaluate(() => (window as any).getGovernmentPlanCollection?.()?.features?.[0]?.geometry?.type)).toBe('Polygon');
 
-    // The plan tools sit in the Layers sheet's Roads section, open by default.
+    // The plan tools sit in the Layers sheet's Roads section, expanded above.
     await expect(page.locator('#layers-sheet details.accordion-section[data-section="roads"]')).toHaveAttribute('open', '');
     const apply = page.locator('#applyGovernmentRoadPlanButton');
     await expect(apply).toBeEnabled();
@@ -43,7 +44,7 @@ test.describe('Government plan and road analysis controls @features', () => {
 
     // The area monitor traces the Roads section's government road plan; the watched-area tools live
     // in the Activity sheet.
-    await page.locator('#layers-button').click();
+    await openLayerSection(page, 'roads');
     await page.locator('#showGovernmentRoadPlan').check();
     await expect.poll(() => page.evaluate(() => (window as any).governmentRoadPlanLayer?.getLayers?.().length || 0)).toBeGreaterThan(0);
     await page.locator('#activity-button').click();

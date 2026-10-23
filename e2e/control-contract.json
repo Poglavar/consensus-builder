@@ -3430,6 +3430,24 @@
           "attrs": {
             "data-command": "ground.elevatedStation"
           }
+        },
+        {
+          "name": "selection.useAsSite",
+          "attrs": {
+            "data-command": "selection.useAsSite"
+          }
+        },
+        {
+          "name": "selection.clear",
+          "attrs": {
+            "data-command": "selection.clear"
+          }
+        },
+        {
+          "name": "selection.done",
+          "attrs": {
+            "data-command": "selection.done"
+          }
         }
       ],
       "exhaustiveVariants": true,
@@ -5866,13 +5884,6 @@
       "controlType": "button"
     },
     {
-      "id": "control-dea26791f00eb5-1",
-      "source": "js/proposals/data.js",
-      "markup": "<button type=\"button\" class=\"btn\" onclick=\"cancelMultiParcelSelection()\" data-i18n-key=\"panel.parcel.multi.cancelSelection\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-6722faca57f7e8-1",
       "source": "js/proposals/details-panel.js",
       "markup": "<button type=\"button\" class=\"btn btn-quiet btn-sm btn-compare-parcel\" data-focus-parcel=\"${safeAgentText(String(parcelId))}\" aria-pressed=\"${parcelCompare.isActive(proposalKeyForCompare) && parcelCompare.activeFocus() === String(parcelId) ? 'true' : 'false'}\" title=\"${tProposal('mapCompare.sliderLabel', 'Before and after comparison')}\" onclick=\"event.stopPropagation(); event.preventDefault(); BusyControl.track(this, () =>",
@@ -7687,46 +7698,6 @@
       "dispatchEvidence": "The shared map-search button factory creates the current-city chip, Search opener, and Clear control; each dispatches to world view, search presentation, and query/results reset respectively.",
       "interaction": "auto",
       "controlType": "dynamic"
-    },
-    {
-      "id": "control-bb46d4f2373a89-1",
-      "source": "js/ui/selection-tray.js",
-      "markup": "doc.createElement('button')",
-      "variants": [
-        {
-          "name": "selection.propose",
-          "attrs": {
-            "data-command": "selection.propose"
-          }
-        },
-        {
-          "name": "selection.useAsSite",
-          "attrs": {
-            "data-command": "selection.useAsSite"
-          }
-        },
-        {
-          "name": "blocks.fromSelected",
-          "attrs": {
-            "data-command": "blocks.fromSelected"
-          }
-        },
-        {
-          "name": "selection.clear",
-          "attrs": {
-            "data-command": "selection.clear"
-          }
-        },
-        {
-          "name": "selection.done",
-          "attrs": {
-            "data-command": "selection.done"
-          }
-        }
-      ],
-      "exhaustiveVariants": true,
-      "interaction": "click",
-      "controlType": "button"
     },
     {
       "id": "control-912798e09b0935-1",

@@ -1,12 +1,16 @@
 // MCP source reads use current catalogue identities, including database-backed cities, and fail
 // incomplete coverage explicitly rather than turning unknown ground into an empty parcel set.
 import { describe, expect, it, vi } from 'vitest';
-import { createMcpReadTools } from '../agents/mcp-read-tools.js';
+import { createMcpReadTools, parcelSourceIdOf } from '../agents/mcp-read-tools.js';
 import { markUntrusted } from '../agents/mcp-results.js';
 const geometry = { type: 'Polygon', coordinates: [[[0, 0], [0.001, 0], [0.001, 0.001], [0, 0.001], [0, 0]]] };
 const sourceFeature = id => ({ type: 'Feature', id, properties: { parcelId: id }, geometry });
 const json = body => new Response(JSON.stringify(body));
 describe('MCP public source reads', () => {
+    it('maps the current Croatian binding namespace to its public gateway identity', () => {
+        expect(parcelSourceIdOf({ binding: { parcelSource: { sourceId: 'hr-cadastre' } } })).toBe('oss-wfs');
+        expect(parcelSourceIdOf({ parcelSourceId: 'selected', binding: { parcelSource: { sourceId: 'other' } } })).toBe('selected');
+    });
     it('resolves the configured database source and canonical parcel identity', async () => {
         const fetchImpl = vi.fn(async url => new URL(url).pathname === '/parcel-sources' ? json({ sources: [] }) : json({ features: [sourceFeature('HR-335550-1')] }));
         const reads = createMcpReadTools({ apiBase: 'https://api.example', appOrigin: 'https://app.example', fetchImpl });

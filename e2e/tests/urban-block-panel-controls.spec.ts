@@ -1,3 +1,4 @@
+import { openLayerSection } from '../helpers/layers';
 // Purpose: cover the standalone OSM block browser's list/details navigation and the legacy parcel
 // block inspector tabs through their real entry paths and visible state changes.
 import { Page, Route } from '@playwright/test';
@@ -44,6 +45,7 @@ async function openLayerUrbanBlocks(page: Page): Promise<void> {
   const sheet = page.locator('#layers-sheet');
   if (!(await sheet.isVisible())) await page.locator('#layers-button').click();
   await expect(sheet).toBeVisible();
+  await openLayerSection(page, 'blocks');
 }
 
 test('walking-time color and threshold controls recolor the block map and its legend', async ({ mockApi: page }) => {
@@ -368,7 +370,7 @@ test('parcel block inspector tabs switch to their supported information and tool
   await expect(page.locator('#block-info-content')).toContainText('Block name:');
   await panel.locator('.close-button').click();
   await expect(panel).not.toHaveClass(/visible/);
-  await page.locator('#layers-button').click();
+  await openLayerSection(page, 'blocks');
   await expect(page.locator('#blocks-list-container')).toBeVisible();
   await page.locator('.blocks-list-close').click();
   await expect(page.locator('#blocks-list-container')).toBeHidden();

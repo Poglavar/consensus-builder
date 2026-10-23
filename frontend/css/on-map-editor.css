@@ -4,6 +4,7 @@
     color: var(--cb-text);
     font-family: var(--cb-font-sans);
 }
+.on-map-editor[hidden] { display: none; }
 .on-map-editor__panel, .on-map-editor__tools {
     z-index: var(--cb-z-editor);
     pointer-events: auto;
@@ -83,7 +84,6 @@
 .on-map-editor__footer [role="status"]:not(:empty) { margin-bottom: var(--cb-space-2); font-size: var(--cb-text-sm); }
 .on-map-editor__tools { position: fixed; display: flex; flex-wrap: wrap; gap: var(--cb-space-1); }
 .on-map-editor__tools .btn { min-height: 36px; padding-inline: var(--cb-space-2); box-shadow: var(--cb-shadow-sm); }
-body.on-map-editing .map-shell-slot--tray { display: none; }
 
 /* Keep the editor in the same right-hand dock when switching map modes. */
 

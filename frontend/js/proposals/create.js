@@ -270,7 +270,7 @@ async function createProposal() {
         console.debug('[createProposal] Collecting parcel IDs');
         let finalParcelIds = [];
 
-        const createdFromMultiSelect = multiParcelSelection.isActive && multiParcelSelection.selectedParcels.size > 1;
+        const createdFromMultiSelect = multiParcelSelection.selectedParcels.size > 1;
 
         if (multiParcelSelection.selectedParcels.size > 0) {
             finalParcelIds = Array.from(multiParcelSelection.selectedParcels);
@@ -692,9 +692,8 @@ async function createProposal() {
                 : null;
             if (blockMassing?.geometry) proposal.geometry.blockMassing = blockMassing;
             else delete proposal.geometry.blockMassing;
-            // Freeform proposals may pave or green the parcel area around their buildings; no other
-            // typology offers the choice, so its surround never travels with them.
-            const groundSurface = selectedTool === 'single' ? safeClone(pendingBuildingContext.groundSurface) : null;
+            // Building surroundings belong to the same authored design for every typology.
+            const groundSurface = safeClone(pendingBuildingContext.groundSurface);
             if (groundSurface) proposal.geometry.groundSurface = groundSurface;
             else delete proposal.geometry.groundSurface;
 
@@ -821,7 +820,7 @@ async function createProposal() {
 
         if (typeof multiParcelSelection !== 'undefined') {
             if (createdFromMultiSelect && multiParcelSelection.isActive) {
-                multiParcelSelection.toggle({ restoreSingleSelection: false });
+                cancelMultiParcelSelection();
             } else if (multiParcelSelection.selectedParcels) {
                 multiParcelSelection.selectedParcels.clear();
                 multiParcelSelection.lastSelectedParcelId = null;

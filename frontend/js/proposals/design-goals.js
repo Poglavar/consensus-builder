@@ -32,6 +32,7 @@
         concepts: Object.freeze(definitions),
         keys: Object.freeze(definitions.map(concept => concept.key)),
         structureKeys: Object.freeze(definitions.filter(concept => concept.structure).map(concept => concept.key)),
+        canDuplicate: record => ['single', 'park', 'square', 'lake'].includes(keyOf(record)),
         get,
         keyOf
     });

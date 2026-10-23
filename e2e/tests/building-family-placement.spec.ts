@@ -4,7 +4,7 @@
 // freezes the rule's stored massing at its maximum height. Geometry is inspected read-only from the
 // rendered Leaflet outline, the active design draft and the stored proposals.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, showProposal, proposalState, clickMapPoint, createBuilding, closeParcel } from '../helpers/runtime';
+import { openCity, openParcel, showProposal, proposalState, clickMapPoint, createBuilding, closeParcel, showSelectionDesignTab } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import type { Page } from '@playwright/test';
 
@@ -233,7 +233,7 @@ async function selectParcelsByHand(page: Page, ids: string[]): Promise<void> {
     await expect.poll(() => page.evaluate(parcelId => (window as any).multiParcelSelection.selectedParcels.has(parcelId), id)).toBe(true);
   }
   await expect.poll(() => page.evaluate(() => [...(window as any).multiParcelSelection.selectedParcels].sort())).toEqual([...ids].sort());
-  await page.locator('#selection-tray [data-command="selection.propose"]').click();
+  await showSelectionDesignTab(page);
 }
 
 // The fixture block (layer datasets: two rows of plots sharing their edges), selected by hand.

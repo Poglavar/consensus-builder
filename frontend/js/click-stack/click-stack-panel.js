@@ -14,6 +14,7 @@
         designs: ['proposal-details-panel', 'planning-inspector'],
         built: ['planning-inspector'],
         permitted: ['planning-inspector'],
+        selection: ['parcel-info-panel'],
         formed: ['parcel-info-panel'],
         parcels: ['parcel-info-panel']
     });
@@ -21,7 +22,7 @@
     // Right-dock panels the stack never hosts: when one opens, the stack steps aside.
     const DOCKED_ELSEWHERE = ['block-info-panel', 'road-info-panel', 'road-analysis-panel'];
     const ICONS = Object.freeze({ agreements: 'fas fa-file-signature', designs: 'fas fa-drafting-compass', built: 'fas fa-building',
-        permitted: 'fas fa-cube', formed: 'fas fa-vector-square', parcels: 'fas fa-border-all', ground: 'fas fa-seedling' });
+        permitted: 'fas fa-cube', formed: 'fas fa-vector-square', parcels: 'fas fa-border-all', selection: 'fas fa-object-group', ground: 'fas fa-seedling' });
 
     const state = { el: null, stack: null, latlng: null, hits: null, hosted: null, expanding: false, lastClick: null, observing: false };
 
@@ -61,10 +62,10 @@
         slot.appendChild(el);
         if (id === 'parcel-info-panel') {
             // The section's row folds and the stack closes, so the panel's − and × are hidden there
-            // (css/map.css) and it is never left minimized. Its proposals are the Designs section,
-            // so its Proposals tab is hidden too and the panel shows Design instead.
+            // (css/map.css) and it is never left minimized. Point-specific proposals have their
+            // own Designs section; a selected set keeps Proposals to list designs on all its land.
             global.ParcelsUIParcelPanel?.setParcelInfoPanelMinimized?.(el, false);
-            if (el.querySelector('[data-parcel-tab-id="proposals-tab"][aria-selected="true"]')) global.switchParcelTab?.(null, 'propose-tab');
+            if (state.stack?.expanded !== 'selection' && el.querySelector('[data-parcel-tab-id="proposals-tab"][aria-selected="true"]')) global.switchParcelTab?.(null, 'propose-tab');
         }
         // A design's panel has no − in the stack either: it is never left minimized there.
         if (id === 'proposal-details-panel' && el.classList.contains('is-minimized')) global.toggleProposalDetailsPanelMinimized?.();
@@ -112,9 +113,10 @@
         });
         // The 3D view and the map's own sheets (tools, layers) take the screen: the 2D stack closes.
         new global.MutationObserver(() => {
-            if (!isOpen()) return;
             const body = doc.body.classList;
-            if (body.contains('three-mode-active') || body.contains('map-sheet-open')) close({ keepSelection: true });
+            if (body.contains('three-mode-active') || body.contains('map-sheet-open') || body.contains('on-map-editing')) {
+                if (isOpen()) close({ keepSelection: true });
+            } else if ((global.multiParcelSelection?.isActive || global.multiParcelSelection?.selectedParcels?.size) && !isOpen()) syncSelection();
         }).observe(doc.body, { attributes: true, attributeFilter: ['class'] });
     }
 
@@ -127,7 +129,12 @@
         el.className = 'click-stack right-dock-panel';
         el.hidden = true;
         el.addEventListener('click', onPanelClick);
-        el.addEventListener('keydown', event => { if (event.key === 'Escape') { event.preventDefault(); close(); } });
+        el.addEventListener('keydown', event => {
+            if (event.key !== 'Escape') return;
+            event.preventDefault();
+            if (state.stack?.topRef === 'selection:current') dismissSelection();
+            else close();
+        });
         (doc.getElementById('map-container') || doc.body).appendChild(el);
         state.el = el;
         return el;
@@ -149,6 +156,7 @@
     function rowTitle(section) {
         const instance = section.instances[section.selectedIndex];
         switch (section.kind) {
+            case 'selection': return t('selectedParcels.count', 'Selected parcels ({{count}})', { count: section.count });
             case 'agreements': return section.multi ? t('agreements', 'Agreements ({{count}})', { count: section.count }) : t('agreement.panel.title', 'Agreement');
             case 'designs': return section.multi ? t('designs', 'Designs ({{count}})', { count: section.count }) : t('proposalDrafts.tabs.design', 'Design');
             case 'built': return section.count > 1 ? t('builtMany', 'Built ({{count}})', { count: section.count }) : t('threeMode.controls.built', 'Built');
@@ -169,6 +177,7 @@
     function rowDetail(section) {
         const instance = section.instances[section.selectedIndex];
         if (!instance) return '';
+        if (section.kind === 'selection') return instance.area === null ? '' : global.CbFormat.formatArea(instance.area);
         if (section.kind === 'built' && instance.demolition) {
             const by = instance.demolition.proposalKey || instance.demolition.proposalId;
             const design = by ? global.proposalStorage?.getProposal?.(by) : null;
@@ -203,7 +212,8 @@
         // that expands next hosts it again.
         if (state.hosted) unhost({ hide: false });
         el.textContent = '';
-        el.setAttribute('aria-label', t('title', 'At this spot'));
+        el.setAttribute('aria-label', stack.topRef === 'selection:current'
+            ? t('selectedParcels.label', 'Selected parcels') : t('title', 'At this spot'));
         const list = doc.createElement('div');
         list.className = 'click-stack__sections';
         stack.sections.forEach(section => {
@@ -365,6 +375,17 @@
                 global.PlanningViews.inspectBuilding(instance.feature, instance.id);
             } else if (kind === 'permitted') {
                 global.PlanningViews.selectAt(instance.id, state.latlng);
+            } else if (kind === 'selection') {
+                renderCommands(body, 'parcel-selection', global.UiCommands.createBrowserContext(global));
+                if (section.count) global.multiParcelSelection.showSelectionInPanel();
+                else {
+                    unhost();
+                    global.hideParcelInfoPanel?.();
+                    const hint = doc.createElement('p');
+                    hint.className = 'click-stack__facts';
+                    hint.textContent = t('selectedParcels.empty', 'Click parcels to select them');
+                    body.appendChild(hint);
+                }
             } else if (kind === 'parcels' || kind === 'formed') {
                 selectParcel(instance);
                 // Only live ground takes new designs: an original a design has consumed is shown
@@ -388,6 +409,13 @@
                 const toolbar = doc.getElementById(target)?.querySelector('.parcel-context-actions');
                 const actions = body.querySelector('.click-stack__actions--parcel');
                 if (toolbar && actions) toolbar.appendChild(actions);
+                const customSite = body.querySelector('[data-command="selection.useAsSite"]');
+                if (toolbar && customSite) {
+                    const wrap = doc.createElement('div');
+                    wrap.className = 'cb-actions click-stack__actions--parcel';
+                    wrap.appendChild(customSite);
+                    toolbar.appendChild(wrap);
+                }
             }
         } catch (error) {
             console.error(`[ClickStack] the ${kind} section could not open`, error);
@@ -451,6 +479,36 @@
         }
     }
 
+    // Multi-selection has no single click point. Its section replaces the point's parcel view
+    // while picking or retaining selected land. The active mode also has an empty state.
+    function dismissSelection() {
+        const multi = global.multiParcelSelection;
+        if (multi?.isActive) multi.finish();
+        else global.cancelMultiParcelSelection();
+    }
+
+    function syncSelection() {
+        const multi = global.multiParcelSelection;
+        const wasSelection = state.stack?.topRef === 'selection:current';
+        if (!multi?.isActive && !multi?.selectedParcels?.size) {
+            if (wasSelection) close({ keepSelection: true });
+            return;
+        }
+        const body = doc.body.classList;
+        if (body.contains('three-mode-active') || body.contains('map-sheet-open') || body.contains('on-map-editing')) return;
+        const summary = model.summarizeSelection(Array.from(multi.selectedParcels), {
+            featureFor: id => global.LiveParcelFabric?.get(String(id)),
+            areaOf: feature => global.turf.area(feature)
+        });
+        const stack = model.buildSelectionStack(summary, { expanded: !wasSelection || state.stack.expanded === 'selection' });
+        if (!wasSelection) show(stack, null, {});
+        else {
+            state.stack = stack;
+            render();
+            if (stack.expanded) activate('selection');
+        }
+    }
+
     // ── state changes ─────────────────────────────────────────────────────────────────────────
 
     function expand(kind) {
@@ -459,7 +517,7 @@
         // choice) the panel stays open and is hosted again for the new instance.
         if (state.hosted && state.stack.expanded !== kind) unhost();
         state.stack = model.expand(state.stack, kind);
-        remember(state.stack.expanded);
+        if (kind !== 'selection') remember(state.stack.expanded);
         render();
         activate(state.stack.expanded);
     }
@@ -518,7 +576,9 @@
         global.highlightFeaturesForHover?.([]);
         state.stack = null;
         state.hits = null;
+        state.latlng = null;
         state.el.hidden = true;
+        state.el.textContent = '';
         state.el.classList.remove('is-folded');
         state.el.classList.remove('visible');
         doc.body.classList.remove('click-stack-open');
@@ -634,6 +694,8 @@
             if (layer) global.multiParcelSelection.toggleParcel(layer);
             return true;
         }
+        // An ordinary map click replaces the retained selection with the new point context.
+        if (global.multiParcelSelection?.selectedParcels?.size) global.multiParcelSelection.clearSelection();
         const hits = global.ClickStackHits.hitsAt(latlng, { onPublished: () => refreshSpot(latlng) });
         const stack = model.buildClickStack(hits, { remembered: remembered() });
         const action = model.clickAction(isOpen() ? state.stack?.topRef || null : null, stack);
@@ -650,14 +712,16 @@
         if (event.key !== 'Escape' || event.defaultPrevented || !isOpen()) return;
         if (global.isEditableTarget?.(event.target) || global.isAnyModalOpen?.()) return;
         event.preventDefault();
-        close();
+        if (state.stack?.topRef === 'selection:current') dismissSelection();
+        else close();
     });
+    doc.addEventListener('multi-parcel-selection-change', syncSelection);
     global.addEventListener('cityChanged', () => close());
     const relabel = () => { if (isOpen()) { const expanded = state.stack.expanded; render(); if (expanded) activate(expanded); } };
     global.addEventListener('i18n:translationsLoaded', relabel);
 
     // The agreement section outlines all its designs; map hover leaves that outline alone.
     const holdsHighlight = () => isOpen() && state.stack?.expanded === 'agreements';
-    global.ClickStack = Object.freeze({ handleClick, showDesign, fold, close, isOpen, expand, collapse, holdsHighlight,
+    global.ClickStack = Object.freeze({ handleClick, showDesign, syncSelection, fold, close, isOpen, expand, collapse, holdsHighlight,
         current: () => state.stack, point: () => state.latlng });
 })(window);

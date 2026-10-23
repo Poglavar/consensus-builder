@@ -807,7 +807,7 @@
             return ground.derive({
                 designs, fabric, originals,
                 ownerOf: ground.localHolders({ storage: root.PersistentStorage, agents: root.agentStorage }),
-                area: feature => root.turf.area(feature)
+                area: ground.areaOf
             });
         }
 

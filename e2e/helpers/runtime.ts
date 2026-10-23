@@ -98,6 +98,24 @@ export async function clickDesignOnMap(page: Page, id: string, at = { x: 0.3, y:
 export const clickStack = (page: Page) => page.locator('#click-stack');
 export const stackSection = (page: Page, kind: string) => page.locator(`#click-stack .click-stack__section[data-kind="${kind}"]`);
 export const stackCommand = (page: Page, id: string) => page.locator(`#click-stack [data-command="${id}"]`);
+export const selectionSection = (page: Page) => stackSection(page, 'selection');
+
+export async function expandSelectionSection(page: Page): Promise<void> {
+  const row = selectionSection(page).locator('.click-stack__row');
+  if (await row.getAttribute('aria-expanded') !== 'true') await row.click();
+  await expect(row).toHaveAttribute('aria-expanded', 'true');
+}
+
+// Selection actions live in the section body, so reveal them before using a command.
+export async function runSelectionCommand(page: Page, command: string): Promise<void> {
+  await expandSelectionSection(page);
+  await stackCommand(page, command).click();
+}
+
+export async function showSelectionDesignTab(page: Page): Promise<void> {
+  await expandSelectionSection(page);
+  await parcelTab(page, 'propose-tab').click();
+}
 
 // Expands a section of the open stack unless it already is.
 export async function expandStackSection(page: Page, kind: string): Promise<void> {
@@ -119,10 +137,17 @@ export async function unfoldStack(page: Page): Promise<void> {
   await expect(clickStack(page)).not.toHaveClass(/\bis-folded\b/);
 }
 
-// Closes the parcel panel wherever it is: in the stack its own × is hidden and the stack's × closes
-// it; a panel outside the stack (a multi-parcel selection) closes with its own ×.
+// Hides the parcel panel. In selection mode the section stays active, so collapse its row instead
+// of using Escape, which ends selection.
 export async function closeParcel(page: Page): Promise<void> {
   const panel = page.locator('#parcel-info-panel');
+  if (await selectionSection(page).count()) {
+    const row = selectionSection(page).locator('.click-stack__row');
+    if (await row.getAttribute('aria-expanded') === 'true') await row.click();
+    await expect(row).toHaveAttribute('aria-expanded', 'false');
+    await expect(panel).toBeHidden();
+    return;
+  }
   if (await clickStack(page).locator('#parcel-info-panel').isVisible()) {
     await page.keyboard.press('Escape');
     await expect(clickStack(page)).toBeHidden();

@@ -1,3 +1,4 @@
+import { openLayerSection } from '../helpers/layers';
 // Check ground and parcel controls through real map interactions.
 import { Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
@@ -62,7 +63,7 @@ test('register recovery Close, parcel Refresh, and Retry dismiss, reopen, and re
   const dialog = page.locator('.ground-fallback-dialog');
   await dialog.getByRole('button', { name: 'Close', exact: true }).click();
   await expect(dialog).toHaveCount(0);
-  await page.locator('#layers-button').click();
+  await openLayerSection(page, 'parcels');
   const beforeRefresh = source.count();
   await page.locator('#refreshParcelDataButton').click();
   await expect.poll(source.count).toBeGreaterThan(beforeRefresh);

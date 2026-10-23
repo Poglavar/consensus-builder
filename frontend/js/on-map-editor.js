@@ -5,8 +5,6 @@
     function createRuntime(env) {
         const doc = env.document;
         let active = null;
-        const pane = 'onMapEditorPane';
-        const handlePane = 'onMapEditorHandles';
 
         function text(key, fallback) {
             const translated = env.i18n?.t?.(`onMapEditor.${key}`);
@@ -31,9 +29,13 @@
         }
 
         function open(options) {
-            if (active || !env.map || !options?.owner) return null;
+            const parent = options?.parentSession || null;
+            if ((active && active !== parent) || (parent && active !== parent) || parent?.parent || !env.map || !options?.owner) return null;
             if (env.roadDrawingMode && options.owner !== 'corridor-editor') return null;
-            if (!env.__mapEditLock?.claim(options.owner, options.title || options.owner)) return null;
+            if (!parent && !env.__mapEditLock?.claim(options.owner, options.title || options.owner)) return null;
+            const pane = parent ? 'onMapSubeditorPane' : 'onMapEditorPane';
+            const handlePane = parent ? 'onMapSubeditorHandles' : 'onMapEditorHandles';
+            const parentMode = env.__mapModeState?.desired || '2d';
             const modes = options.modes?.length ? options.modes.slice() : ['2d', 'model'];
             const root = node('section', 'on-map-editor');
             root.id = options.id || `${options.owner}-editor`;
@@ -103,6 +105,7 @@
                 popupPane.style.top = `${origin.top - bounds.top}px`;
             }
             function onPopupOpen(event) {
+                if (active !== session) return;
                 openPopup = event.popup;
                 positionPopupPane();
                 const popupRect = openPopup.getElement?.()?.getBoundingClientRect();
@@ -133,6 +136,7 @@
             }
 
             function positionTools() {
+                if (active !== session) return;
                 if (!options.tools || !anchor || closed) return;
                 let point;
                 if (env.isThreeModeActive?.()) {
@@ -190,6 +194,7 @@
             const panelResize = env.ResizeObserver ? new env.ResizeObserver(positionTools) : null;
 
             function syncMode(notify = true) {
+                if (active !== session) return;
                 const mode = env.__mapModeState?.desired || (env.isThreeModeActive?.() ? 'model' : '2d');
                 updateHint();
                 const nextControls = env.getThreeModeInternals?.()?.controls || null;
@@ -208,6 +213,7 @@
 
             function onModeChange() { syncMode(); }
             function onKeydown(event) {
+                if (active !== session) return;
                 if (event.defaultPrevented || event.key !== 'Escape') return;
                 // A nested confirmation or specialized popup gets first use of Escape.
                 if ([...doc.querySelectorAll('.cb-dialog-overlay')]
@@ -227,6 +233,7 @@
             }
             function close() {
                 if (closed) return;
+                if (active?.parent === session) active.cancel();
                 closed = true;
                 map.off('move zoom resize', positionTools);
                 map.off('move zoom resize', positionPopupPane);
@@ -238,7 +245,7 @@
                     popupHome.parent.insertBefore(popupPane, popupHome.next);
                     popupPane.style.left = popupHome.left;
                     popupPane.style.top = popupHome.top;
-                    popupPane.classList.remove('on-map-editor-popups');
+                    if (!parent) popupPane.classList.remove('on-map-editor-popups');
                 }
                 env.removeEventListener('resize', positionTools);
                 env.removeEventListener('mapmodechange', onModeChange);
@@ -249,9 +256,17 @@
                 session.placement?.destroy();
                 suspended.forEach(({ element, display }) => { if (element.isConnected) element.style.display = display; });
                 root.remove();
-                if (active === session) active = null;
-                doc.body.classList.remove('on-map-editing');
-                env.__mapEditLock.release(options.owner);
+                if (active === session) active = parent;
+                env.syncMapModeLocks?.();
+                if (parent) {
+                    parent.root.hidden = false;
+                    for (const name of [parent.pane, parent.handlePane]) map.getPane(name).inert = false;
+                    if (parentMode !== (env.__mapModeState?.desired || '2d')) env.requestMapMode?.(parentMode);
+                    parent.resume();
+                } else {
+                    doc.body.classList.remove('on-map-editing');
+                    env.__mapEditLock.release(options.owner);
+                }
                 announce();
                 if (focusReturn?.isConnected) focusReturn.focus?.({ preventScroll: true });
                 map.invalidateSize?.({ pan: false });
@@ -259,6 +274,10 @@
 
             const session = {
                 root, panel, content, body, footer, tools, map, pane, handlePane, modes,
+                parent,
+                get active() { return active === session; },
+                cancel: () => options.onCancel?.(),
+                resume: () => syncMode(false),
                 owner: options.owner,
                 get collapsed() { return collapsed; },
                 setCollapsed,
@@ -297,7 +316,11 @@
             };
             active = session;
             try {
-                for (const [name, z] of [[pane, 655], [handlePane, 675]]) {
+                if (parent) {
+                    parent.root.hidden = true;
+                    for (const name of [parent.pane, parent.handlePane]) map.getPane(name).inert = true;
+                }
+                for (const [name, z] of [[pane, parent ? 685 : 655], [handlePane, parent ? 695 : 675]]) {
                     const layerPane = map.getPane(name) || map.createPane(name);
                     layerPane.style.zIndex = String(z);
                 }
@@ -331,6 +354,7 @@
                 }
                 setCollapsed(false);
                 syncMode(false);
+                env.syncMapModeLocks?.();
                 const desired = env.__mapModeState?.desired || '2d';
                 if (!modes.includes(desired)) Promise.resolve().then(() => { if (!closed) env.requestMapMode?.(modes[0]); });
                 return session;

@@ -5,6 +5,7 @@ import * as turf from '@turf/turf';
 import { deriveAgreementGround } from '../agents/mcp-ground.js';
 import { createUrbanGameTheoryTools } from '../agents/ugt-agent-tools.js';
 import { cidOfObject } from '../cid.js';
+import { restatementFixture } from './fixtures/mcp-restatements.mjs';
 const require = createRequire(import.meta.url);
 const builder = require('../../frontend/js/intent-design.js');
 const links = require('../../frontend/js/draft-link.js');
@@ -15,6 +16,31 @@ const make = (kind, extra = {}) => {
     return { content, cid: cidOfObject(content), parcelIds: ['A'] };
 };
 describe('headless app formation host', () => {
+    it('keeps a station as attached content without forming another parcel', async () => {
+        const design = make('space', { spaceKind: 'park' });
+        design.content.goal = 'station'; design.content.structureProposal.kind = 'station'; design.cid = cidOfObject(design.content);
+        const ground = await deriveAgreementGround({ designs: [design], parcels });
+        expect(ground.outputs).toHaveLength(1);
+        expect(ground.outputs[0].producedBy).toBeNull();
+        expect(ground.outputs[0].fromParcelIds).toEqual(['A']);
+    });
+    it('forms a single freeform building with the app’s footprint-parcel rule', async () => {
+        const design = make('building', { floors: 4 }); design.content.goal = 'single'; design.cid = cidOfObject(design.content);
+        const ground = await deriveAgreementGround({ designs: [design], parcels });
+        expect(ground.outputs.some(o => o.producedBy === design.cid)).toBe(true);
+        expect(ground.outputs.reduce((sum, o) => sum + o.areaM2, 0)).toBeCloseTo(turf.area(parcels[0]), 2);
+    });
+    for (const key of ['borovje-official', 'borovje-blocks', 'folnegoviceva-rapska']) it(`derives the actual ${key} designs over their archived immutable source`, async () => {
+        const fixture = await restatementFixture(key);
+        const ground = await deriveAgreementGround(fixture);
+        expect(ground.inputs.parcels.length).toBeGreaterThan(0);
+        expect(ground.outputs.length).toBeGreaterThan(1);
+        expect(ground.outputs.reduce((sum, piece) => sum + piece.areaM2, 0)).toBeCloseTo(ground.inputs.parcels.reduce((sum, piece) => sum + piece.areaM2, 0), 0);
+        if (key.startsWith('borovje')) {
+            const park = fixture.designs.find(d => d.content.title?.includes('park Z1-5'));
+            expect(ground.outputs.some(o => o.producedBy === park.cid && o.fromParcelIds.includes('HR-335550-4302/4'))).toBe(true);
+        }
+    });
     for (const design of [make('space', { spaceKind: 'park' }), make('building', { floors: 4 }), make('parcel-layout', { algorithm: 'equal', count: 4 })]) {
         it(`derives ${design.content.goal} from the same app handlers without losing ground`, async () => {
             const derived = await deriveAgreementGround({ designs: [design], parcels });
@@ -31,10 +57,12 @@ describe('headless app formation host', () => {
         const tools = createUrbanGameTheoryTools({ mode: 'hosted', env: {}, fetchImpl: async (url) => {
             const path = new URL(url).pathname; paths.push(path);
             return new Response(JSON.stringify(path === '/designs/binding'
-                ? { binding: { coverage: 'complete', parcels: [{ parcelId: 'A' }], unsurveyedM2: 0, unknownM2: 0 } }
+                ? { parcelSourceId: 'selected-source', binding: { coverage: 'complete', parcels: [{ parcelId: 'A' }], unsurveyedM2: 0, unknownM2: 0 } }
                 : { complete: true, features: parcels }));
         } });
-        const result = await tools.draftAgreement({ designs: [design.content], parcelSourceId: 'test', title: 'A park' });
+        const result = await tools.draftAgreement({ designs: [design.content], title: 'A park' });
+        expect(paths).toContain('/parcel-sources/selected-source');
+        expect(result.agreement.inputs.parcels[0].parcelSourceId).toBe('selected-source');
         expect(result.cid).toBe(cidOfObject(result.agreement));
         expect(result.agreement.money).toEqual({ currency: 'GBP', lines: [] });
         expect(result.agreement.rule.binding).toBe(false);

@@ -1,6 +1,6 @@
 import { selectNativeOption } from '../helpers/controls';
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, clickMapPoint, closeParcel } from '../helpers/runtime';
+import { openCity, openParcel, clickMapPoint, closeParcel, showSelectionDesignTab, parcelTab } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
 
@@ -119,7 +119,7 @@ test.describe('Designer controls persist their edits @features', () => {
     await page.locator('.multi-select-detect-btn').click();
     await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.selectedParcels.size)).toBeGreaterThan(1);
     await closeParcel(page);
-    await page.locator('#selection-tray [data-command="selection.propose"]').click();
+    await showSelectionDesignTab(page);
     await page.locator('.parcel-build-btn--buildings').click();
     const wholeBlockPrompt = page.getByRole('alertdialog');
     if (await wholeBlockPrompt.isVisible().catch(() => false)) {
@@ -357,7 +357,7 @@ test.describe('Designer controls persist their edits @features', () => {
     await page.locator('.multi-select-detect-btn').click();
     await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.selectedParcels.size)).toBeGreaterThan(1);
     await closeParcel(page);
-    await page.locator('#selection-tray [data-command="selection.propose"]').click();
+    await showSelectionDesignTab(page);
     await page.locator('.parcel-build-btn--row').click();
     await expect(page.locator('#rowhouse').locator('.on-map-editor__panel')).toBeVisible();
     await expect(page.locator('#btn-rowhouse-done')).toBeEnabled({ timeout: 20_000 });
@@ -465,8 +465,8 @@ test.describe('Designer controls persist their edits @features', () => {
     await expect.poll(async () => (await modal.isVisible()) || (await scopePrompt.isVisible())).toBe(true);
     if (await scopePrompt.isVisible()) {
       await scopePrompt.getByRole('button', { name: 'Yes, select the block' }).click();
-      await expect(page.locator('#selection-tray [data-command="selection.propose"]')).toBeVisible();
-      await page.locator('#selection-tray [data-command="selection.propose"]').click();
+      await expect(parcelTab(page, 'propose-tab')).toBeVisible();
+      await showSelectionDesignTab(page);
       await page.locator('.parcel-build-btn--parcel-layout').click();
     }
     await expect(modal.locator('.on-map-editor__panel')).toBeVisible();

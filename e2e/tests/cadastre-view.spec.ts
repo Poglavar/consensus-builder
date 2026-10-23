@@ -1,3 +1,4 @@
+import { openLayerSection } from '../helpers/layers';
 import { test, expect } from '../helpers/fixtures';
 import { openCity, createSpace, showProposal, clickMapPoint, PARCEL_ID, proposalState, closeParcel, showProposalTab } from '../helpers/runtime';
 import { Page } from '@playwright/test';
@@ -5,7 +6,7 @@ import { Page } from '@playwright/test';
 // The original-cadastre toggle moved from the lower-left mode strip into the 2D Layers sheet
 // (fbe3758d); the sheet is closed again so the map underneath takes the clicks.
 async function toggleCadastreView(page: Page, pressed: boolean) {
-  await page.locator('#layers-button').click();
+  await openLayerSection(page, 'parcels');
   const toggle = page.locator('#layers-sheet #cadastre-view-toggle');
   await toggle.click();
   await expect(toggle).toHaveAttribute('aria-pressed', String(pressed));

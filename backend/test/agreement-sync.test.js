@@ -106,7 +106,7 @@ describe('recordFromPublished', () => {
             { proposalId: 'design-layout', title: 'Lay out k9', goal: 'parcel-layout', cid: layoutCid },
             { proposalId: 'design-road', title: 'New lane', goal: 'road', cid: roadCid }
         ]);
-        expect(record.inputs).toEqual(agreement().inputs);
+        expect(record.inputs).toEqual(row.content.inputs);
         expect(record.outputs).toBe(derived.outputs);
         expect(AgreementRecord.normalize(record).outputs.every(piece => piece.geometry)).toBe(true);
     });

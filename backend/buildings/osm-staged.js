@@ -1,34 +1,13 @@
 // The OSM buildings reference layer, served from shared geodata instead of live Overpass.
 //
-// We already stage Overture Maps in `overture_building_footprint` (Zagreb + Split), and Overture's
-// buildings theme is mostly OSM: 191k of Zagreb's 191k+53k rows carry OpenStreetMap as their source,
-// with the OSM element id preserved in `osm_id`. Filtering to those rows IS the OSM survey — the
-// same footprints Overpass would return, minus the rate limit, the latency and the outage. The
-// Microsoft ML footprints in the same table are a different survey and are deliberately excluded:
-// this layer's whole purpose is to be the community map, not a blend of everything available.
-//
-// Overpass stays as the fallback for cities we have not ingested (see osm-reference.js), so the
-// endpoint keeps working everywhere while being instant where it matters.
+// Overture's buildings theme includes OpenStreetMap sourced rows with their element ids preserved
+// in `osm_id`. These rows provide a fast staged source when matching footprints cover the requested
+// bbox. They are not assumed to be a complete OSM survey: an empty bbox result falls through to the
+// live Overpass path. Microsoft ML footprints in the same table are deliberately excluded.
 
 // Rows above this and the request did not cover its bbox; the caller is told (`truncated`), exactly
 // as the Overpass path does.
 const STAGED_FEATURE_CAP = 8000;
-
-// Which cities are ingested, cached per process: a lookup per viewport pan would be silly, and the
-// answer only changes when someone runs an ingest.
-let stagedCities = null;
-let stagedCitiesAt = 0;
-const CITY_CACHE_TTL_MS = 10 * 60 * 1000;
-
-async function stagedOsmCities(pool) {
-    if (stagedCities && (stagedCitiesAt + CITY_CACHE_TTL_MS) > Date.now()) return stagedCities;
-    const { rows } = await pool.query(
-        `SELECT DISTINCT city FROM overture_building_footprint WHERE osm_id IS NOT NULL`
-    );
-    stagedCities = new Set(rows.map(row => String(row.city)));
-    stagedCitiesAt = Date.now();
-    return stagedCities;
-}
 
 // One staged row → the same Feature shape the Overpass path produces, so the frontend cannot tell
 // which path served it. `id` stays the OSM element id (w… / r…) for exactly that reason.
@@ -52,24 +31,27 @@ function stagedRowToFeature(row) {
     };
 }
 
-// Building footprints inside a WGS84 bbox from the staged table. Returns null when this city has
-// nothing ingested, which is the caller's signal to fall back to Overpass.
+// Building footprints inside a WGS84 bbox from the staged table. City is only a duplicate-row
+// preference; the bbox is the geographic scope. Returns null when no staged geometry matches, so
+// the caller can fall back to Overpass.
 async function fetchStagedOsmBuildings(pool, bbox, city) {
     if (!pool || !city) return null;
-    const cities = await stagedOsmCities(pool);
-    if (!cities.has(String(city))) return null;
 
     const [w, s, e, n] = bbox;
     const { rows } = await pool.query(
-        `SELECT osm_id, names, height, num_floors, class, subtype, ST_AsGeoJSON(geom)::json AS geometry
+        `SELECT DISTINCT ON (osm_id)
+                osm_id, names, height, num_floors, class, subtype,
+                ST_AsGeoJSON(geom)::json AS geometry
            FROM overture_building_footprint
-          WHERE city = $5
-            AND osm_id IS NOT NULL
+          WHERE osm_id IS NOT NULL
+            AND geom IS NOT NULL
             AND geom && ST_MakeEnvelope($1, $2, $3, $4, 4326)
             AND ST_Intersects(geom, ST_MakeEnvelope($1, $2, $3, $4, 4326))
+          ORDER BY osm_id, (city = $5) DESC NULLS LAST
           LIMIT ${STAGED_FEATURE_CAP + 1}`,
         [w, s, e, n, String(city)]
     );
+    if (!rows.length) return null;
     const truncated = rows.length > STAGED_FEATURE_CAP;
     return {
         type: 'FeatureCollection',
@@ -79,4 +61,4 @@ async function fetchStagedOsmBuildings(pool, bbox, city) {
     };
 }
 
-export { fetchStagedOsmBuildings, stagedRowToFeature, stagedOsmCities, STAGED_FEATURE_CAP };
+export { fetchStagedOsmBuildings, stagedRowToFeature, STAGED_FEATURE_CAP };

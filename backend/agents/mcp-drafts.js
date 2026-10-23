@@ -1,10 +1,9 @@
 // Resolve intent against authoritative sources, then call the browser's pure builders and hash results.
-import { createRequire } from 'node:module';
-import * as turf from '@turf/turf';
+import { appTurf as turf, intentDesign as builder } from './mcp-geometry.js';
 import { cidOfObject, designObject, isCid } from './agreement-objects.js';
-const require = createRequire(import.meta.url);
-const builder = require('../../frontend/js/intent-design.js');
-const links = require('../../frontend/js/draft-link.js');
+import { createMcpComparison } from './mcp-compare.js';
+import { previewArtifact } from './mcp-preview.js';
+import { parcelSourceIdOf } from './mcp-read-tools.js';
 const fail = (code, message, next) => Object.assign(new Error(message), { code, next });
 const geometry = value => value?.type === 'Feature' ? value.geometry : value;
 function union(features) {
@@ -14,14 +13,17 @@ function union(features) {
 export function createMcpDraftTools({ read, appOrigin }) {
     async function result(design, parcelSourceId) {
         const binding = await read.request('/designs/binding', {}, { site: read.siteOfDesign(design), city: design.city, toleranceM: design.toleranceM, parcelSourceId });
+        parcelSourceId = parcelSourceIdOf(binding) || parcelSourceId;
         if (binding.binding?.coverage === 'unknown' || binding.binding?.unknownM2 > 0) throw fail('ground-unavailable', 'The site binding is unknown.', { action: 'Retry when parcel coverage is available.' });
-        return { design, cid: cidOfObject(design), takes: (binding.binding?.parcels || []).map(p => p.parcelId), binding: binding.binding,
+        return { design, cid: cidOfObject(design), parcelSourceId, takes: (binding.binding?.parcels || []).map(p => p.parcelId), binding: binding.binding,
             warnings: [ ...(design.goal === 'buildings' ? ['An intent drawing is not a planning permission; envelope applicability remains unresolved.'] : []),
                 ...(binding.binding?.unsurveyedM2 > 0 ? ['The site includes ground outside the parcel register.'] : []) ],
-            previewUrl: await links.build({ origin: appOrigin, design, parcelSourceId }) };
+            ...await previewArtifact({ origin: appOrigin, design, parcelSourceId }) };
     }
     async function draft(kind, args) {
-        let intent = { ...args, kind };
+        // A new artifact needs its actual authoring time. A null time would be filled by browser
+        // import, changing its CID as soon as the person opened the supposedly exact preview.
+        let intent = { ...args, kind, authoredAt: args.authoredAt ?? new Date().toISOString() };
         if (kind === 'road' && !intent.points) {
             let bbox = args.bbox;
             if (!bbox && args.street) {
@@ -56,19 +58,21 @@ export function createMcpDraftTools({ read, appOrigin }) {
         const checked = designObject({ ...design, createdAt: design.authoredAt });
         return result(checked.content, intent.parcelSourceId || args.parcelSourceId);
     }
-    async function resolveDesign(value) {
-        if (isCid(value)) return (await read.getDesign({ designCid: value })).content;
-        const content = value?.untrusted?.design || value?.design || value;
+    async function resolveDesignSource(value) {
+        const row = isCid(value) ? await read.getDesign({ designCid: value }) : value;
+        const content = row?.untrusted?.design || row?.untrusted?.content || row?.design || row?.content || row;
         const rebuilt = designObject({ ...content, createdAt: content?.authoredAt });
         if (cidOfObject(content) !== rebuilt.cid) throw fail('invalid-design', 'Draft is not a canonical design/v1 object.', { action: 'Use a design returned by a draft tool.' });
-        return content;
+        return { content, parcelSourceId: row?.parcelSourceId };
     }
+    const resolveDesign = async value => (await resolveDesignSource(value)).content;
     return {
-        resolveDesign,
+        resolveDesign, resolveDesignSource,
         draftRoad: args => draft('road', args), draftBuilding: args => draft('building', args),
         draftSpace: args => draft('space', args), draftParcelLayout: args => draft('parcel-layout', args), draftUrbanRule: args => draft('urban-rule', args),
         async modifyDesign({ design, changes, parcelSourceId }) {
-            const original = await resolveDesign(design);
+            const resolved = await resolveDesignSource(design), original = resolved.content;
+            parcelSourceId ||= resolved.parcelSourceId;
             let modified = original;
             for (const change of changes) {
                 if (change.type === 'fit_to_permitted') {
@@ -81,34 +85,9 @@ export function createMcpDraftTools({ read, appOrigin }) {
                 } else modified = builder.modify(modified, [change], { turf });
             }
             modified.origin = { cid: cidOfObject(original) };
+            modified.authoredAt = new Date().toISOString();
             return result(modified, parcelSourceId);
         },
-        async compare({ targets }) {
-            const results = [];
-            for (const target of targets) {
-                let content = target;
-                if (typeof target === 'string') {
-                    try { content = (await read.getDesign({ designCid: target })).content; }
-                    catch (error) { if (error.code !== 'http-404' && error.code !== 'design-not-found') throw error; content = (await read.request(`/agreements/${encodeURIComponent(target)}`)).content; }
-                }
-                const agreement = content.schema === 'agreement/v1';
-                const designs = agreement ? await Promise.all(content.designs.map(d => resolveDesign(d.cid))) : [await resolveDesign(content)];
-                let floorAreaM2 = 0, greenAreaM2 = 0, roadAreaM2 = 0;
-                for (const d of designs) {
-                    for (const building of d.geometry?.buildings || []) {
-                        const floors = building.properties?.floors;
-                        if (typeof floors !== 'number' || !Number.isFinite(floors)) { floorAreaM2 = null; break; }
-                        if (floorAreaM2 !== null) floorAreaM2 += turf.area(building) * floors;
-                    }
-                    if (d.goal === 'park') greenAreaM2 += turf.area(turf.feature(d.structureProposal.geometry));
-                    if (d.roadProposal) roadAreaM2 += turf.area(turf.feature(d.roadProposal.definition.polygon));
-                }
-                results.push({ cid: cidOfObject(content), title: content.title, floorAreaM2, greenAreaM2, roadAreaM2,
-                    parcelsTaken: agreement ? content.inputs.parcels.map(p => p.parcelId) : null, buildingsRemoved: null,
-                    ledger: agreement ? content.money : null,
-                    previewUrl: agreement ? `${appOrigin}/agreements/${cidOfObject(content)}` : await links.build({ origin: appOrigin, design: content }) });
-            }
-            return { alternatives: results, warnings: ['Buildings removed and missing land or ledger measurements remain unknown. Areas are authored geometry, not a prediction of construction.'] };
-        }
+        compare: createMcpComparison({ read, resolveDesign, appOrigin })
     };
 }

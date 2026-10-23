@@ -85,7 +85,7 @@
 
     function parcelBuildSelectionIds() {
         const multi = global.multiParcelSelection;
-        if (multi && multi.isActive && multi.selectedParcels && multi.selectedParcels.size > 0) {
+        if (multi && multi.selectedParcels && multi.selectedParcels.size > 0) {
             return [...multi.selectedParcels].map(String);
         }
         return global.currentParcel && global.currentParcel.id ? [String(global.currentParcel.id)] : [];
@@ -131,11 +131,9 @@
         try { await Promise.resolve(global.animateFloodfillFromSelected?.({ replaceSelection: true })); } catch (error) {
             console.warn('[buildPalette] block selection failed', error);
         }
-        // Land on the build palette for the new selection. Selection changes no longer open the
-        // parcel panel (the map-driven UI shows the selection tray instead), so open it here —
-        // the same path as the tray's Propose — or the user is left with no palette on screen.
+        // Land on the build palette in the Selected parcels section.
         const multi = global.multiParcelSelection;
-        if (multi && multi.isActive && multi.selectedParcels && multi.selectedParcels.size > 0
+        if (multi && multi.selectedParcels && multi.selectedParcels.size > 0
             && typeof multi.showSelectionInPanel === 'function') {
             multi.showSelectionInPanel();
         }
@@ -264,7 +262,7 @@
         if (!container) return;
 
         const hasMultiSelect = typeof global.multiParcelSelection !== 'undefined' && !!global.multiParcelSelection;
-        const multiSelectActive = hasMultiSelect && global.multiParcelSelection.isActive;
+        const multiSelectActive = hasMultiSelect && (global.multiParcelSelection.isActive || global.multiParcelSelection.selectedParcels?.size > 0);
         const selectionCount = multiSelectActive && global.multiParcelSelection.selectedParcels
             ? global.multiParcelSelection.selectedParcels.size
             : 0;

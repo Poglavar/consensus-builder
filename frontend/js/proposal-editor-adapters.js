@@ -717,17 +717,8 @@
         const selection = global.multiParcelSelection;
         if (!selection || !selection.isActive || !selection.__seededByEditor) return;
         selection.__seededByEditor = false;
-        try {
-            if (typeof selection.toggle === 'function') {
-                selection.toggle({ restoreSingleSelection: false });
-                return;
-            }
-        } catch (_) { }
-        try {
-            selection.clearSelection?.();
-            selection.isActive = false;
-            selection.updateUI?.();
-        } catch (_) { }
+        selection.isActive = false;
+        selection.clearSelection();
     }
 
     async function prepareProposalDraftParcelSelection(draftOrParcelIds) {
@@ -866,7 +857,7 @@
                 viewMode: viewMode || '2d',
                 parcelIds: clone(draft?.fields?.selectedParcelIds || []),
                 geometry: clone(structureProposal.geometry || draft?.editorPayload?.geometry || null),
-                decorations: clone(structureProposal.decorations || null)
+                decorations: clone(structureProposal.decorationDesign || structureProposal.decorations || null)
             };
         };
         adapter.openDesignEditor = function openStructureDesignEditor(draft) {
@@ -1167,7 +1158,7 @@
                         initialBuildings: features,
                         site: placementSite || authoredSite,
                         placement: relocated ? clone(context.placement) : null,
-                        initialGroundTreatment: context.groundSurface?.treatment || null,
+                        initialGroundTreatment: context.groundSurface?.treatment || null, initialDecorationDesign: context.groundSurface?.decorationDesign || null,
                         initialTakeWholeParcels: context.takeWholeParcels === true,
                         initialGroundBoundary: clone(context.groundBoundary || null)
                     });
@@ -1178,20 +1169,21 @@
                         blockName: context.blockName,
                         parcelIds: selection.ids,
                         initialParameters: context.parameters || null,
+                        initialGroundTreatment: context.groundSurface?.treatment || null, initialDecorationDesign: context.groundSurface?.decorationDesign || null,
                         site: authoredSite,
                         initialFeature: features[0] || null
                     });
                     return opened !== false;
                 }
                 if (typology === 'parcelBased' && typeof global.openParcelBasedForParcels === 'function') {
-                    const opened = await global.openParcelBasedForParcels({ blockName: context.blockName, parcelIds: selection.ids, site: authoredSite, initialParameters: context.parameters || null });
+                    const opened = await global.openParcelBasedForParcels({ blockName: context.blockName, parcelIds: selection.ids, site: authoredSite, initialParameters: context.parameters || null, initialGroundTreatment: context.groundSurface?.treatment || null, initialDecorationDesign: context.groundSurface?.decorationDesign || null });
                     return opened !== false;
                 }
                 if (typeof global.openUrbanRuleForParcels === 'function') {
                     const seed = { ...(typeof global.buildBlockifySeed === 'function'
                         ? (global.buildBlockifySeed(context) || {})
                         : (context.parameters || {})) };
-                    const opened = await global.openUrbanRuleForParcels({ blockName: context.blockName, parcelIds: selection.ids, site: authoredSite, initialState: seed || null });
+                    const opened = await global.openUrbanRuleForParcels({ blockName: context.blockName, parcelIds: selection.ids, site: authoredSite, initialState: seed || null, initialGroundTreatment: context.groundSurface?.treatment || null, initialDecorationDesign: context.groundSurface?.decorationDesign || null });
                     return opened !== false;
                 }
                 return false;
@@ -1223,9 +1215,8 @@
                         : null;
                 if (blockMassing) output.geometry.blockMassing = blockMassing;
                 else delete output.geometry.blockMassing;
-                // Only the freeform editor offers a surroundings treatment; every other typology
-                // leaves the ground alone, so a stale surface must never survive a retypology.
-                const groundSurface = typology === 'single' ? clone(context.groundSurface || null) : null;
+                // Every building typology owns its authored surroundings within this same design.
+                const groundSurface = clone(context.groundSurface || null);
                 if (groundSurface) output.geometry.groundSurface = groundSurface;
                 else delete output.geometry.groundSurface;
                 const groundBoundary = typology === 'single' ? clone(context.groundBoundary || null) : null;

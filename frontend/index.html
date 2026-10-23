@@ -141,7 +141,6 @@
                 'css/map-credits.css',
                 'css/bets-sheet.css',
                 'css/site-tool.css',
-                'css/selection-tray.css',
                 'css/map-search.css',
                 'css/command-palette.css',
                 'css/world.css',
@@ -422,7 +421,6 @@
         </div>
 
         <!-- Phase 3 hook: the selection tray mounts here, bottom-centre, while parcels are selected. -->
-        <div id="selection-tray-slot" class="map-shell-slot map-shell-slot--tray"></div>
 
         <!-- Top-right, beside the user bubble: Layers and Settings -->
         <div id="map-shell-top-right" class="map-shell-cluster map-shell-cluster--top-right">
@@ -523,8 +521,23 @@
                     aria-label="Close" title="Close" data-i18n-key="common.close" data-i18n-attr="aria-label,title">×</button>
             </div>
             <div class="map-sheet-body" data-map-modes="2d">
-                <!-- Parcels -->
-                <details data-map-modes="2d" class="accordion-section" data-section="parcels" open>
+                <details data-map-modes="2d" class="accordion-section" data-section="base-map">
+                    <summary class="sheet-section-title">
+                        <i class="fas fa-map" aria-hidden="true"></i>
+                        <span id="base-map-title" data-i18n-key="mapShell.commands.baseMap">Base map</span>
+                    </summary>
+                    <div class="sheet-section-body">
+                        <div class="sheet-field">
+                            <select id="tile-source-select" aria-labelledby="base-map-title">
+                                <option value="openstreetmap">OpenStreetMap</option>
+                                <option value="maptiler">MapTiler</option>
+                            </select>
+                        </div>
+                        <div class="layer-source-actions"><button type="button" id="imagery-source-settings-button" class="btn" onclick="openImagerySourceSettings()" data-i18n-key="imagerySources.title">Choose an imagery source</button></div>
+                    </div>
+                </details>
+
+                <details data-map-modes="2d" class="accordion-section" data-section="parcels">
                     <summary class="sheet-section-title">
                         <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
                         <span class="accordion-title-text" data-section-title="parcels"
@@ -618,10 +631,7 @@
 </div>
                 </details>
 
-                <!-- Parcel blocks: the ground enclosed by roads. Blocks found from OSM roads work in every
-                     city, with or without parcels; blocks formed from cadastral parcels only where the
-                     city's cadastre has road parcels (feature parcelBlocks, city-config.js). -->
-                <details data-map-modes="2d" class="accordion-section" data-section="blocks" open>
+                <details data-map-modes="2d" class="accordion-section" data-section="blocks">
                     <summary class="sheet-section-title">
                         <i class="fas fa-th-large" aria-hidden="true"></i>
                         <span class="accordion-title-text" data-section-title="blocks"
@@ -683,46 +693,7 @@
                     </div>
                 </details>
 
-                <!-- The Schelling plan: meridians and parallels, drawn over any city (js/schelling/) -->
-                <details data-map-modes="2d" class="accordion-section" data-section="schelling-plan" open>
-                    <summary class="sheet-section-title">
-                        <i class="fas fa-border-all" aria-hidden="true"></i>
-                        <span data-i18n-key="schellingPlan.title">Schelling plan</span>
-                    </summary>
-                    <div class="sheet-section-body">
-                        <div class="checkbox-group">
-                            <label><input type="checkbox" id="showSchellingPlan">
-                                <span data-i18n-key="schellingPlan.toggle">Show the Schelling plan</span></label>
-                        </div>
-                        <p class="sheet-note" data-i18n-key="schellingPlan.layerNote">Its settings and Propose open in their own panel on the map.</p>
-                    </div>
-                </details>
-
-
-                <!-- Parks and squares proposed on the map -->
-                <details data-map-modes="2d" class="accordion-section" data-section="parks-squares" open>
-                    <summary class="sheet-section-title">
-                        <i class="fas fa-tree" aria-hidden="true"></i>
-                        <span data-i18n-key="mapShell.reorg.parksSquares">Parks and squares</span>
-                    </summary>
-                    <div class="sheet-section-body">
-                        <div class="checkbox-group">
-                                <label>
-                                    <input type="checkbox" id="showParksCheckbox" checked
-                                        onchange="toggleParksVisibility()">
-                                    <span data-i18n-key="sidebar.blocks.showParks">Parks</span>
-                                </label>
-                                <label>
-                                    <input type="checkbox" id="showSquaresCheckbox" checked
-                                        onchange="toggleSquaresVisibility()">
-                                    <span data-i18n-key="sidebar.blocks.showSquares">Squares</span>
-                                </label>
-                        </div>
-                    </div>
-                </details>
-
-                <!-- Buildings -->
-                <details data-map-modes="2d" class="accordion-section" data-section="buildings" open>
+                <details data-map-modes="2d" class="accordion-section" data-section="buildings">
                     <summary class="sheet-section-title">
                         <i class="fas fa-building" aria-hidden="true"></i>
                         <span class="accordion-title-text" data-section-title="buildings"
@@ -763,8 +734,28 @@
                     </div>
                 </details>
 
-                <!-- Roads: visibility, official plans and source operations -->
-                <details data-map-modes="2d" class="accordion-section" data-section="roads" open>
+                <details data-map-modes="2d" class="accordion-section" data-section="parks-squares">
+                    <summary class="sheet-section-title">
+                        <i class="fas fa-tree" aria-hidden="true"></i>
+                        <span data-i18n-key="mapShell.reorg.parksSquares">Parks and squares</span>
+                    </summary>
+                    <div class="sheet-section-body">
+                        <div class="checkbox-group">
+                                <label>
+                                    <input type="checkbox" id="showParksCheckbox" checked
+                                        onchange="toggleParksVisibility()">
+                                    <span data-i18n-key="sidebar.blocks.showParks">Parks</span>
+                                </label>
+                                <label>
+                                    <input type="checkbox" id="showSquaresCheckbox" checked
+                                        onchange="toggleSquaresVisibility()">
+                                    <span data-i18n-key="sidebar.blocks.showSquares">Squares</span>
+                                </label>
+                        </div>
+                    </div>
+                </details>
+
+                <details data-map-modes="2d" class="accordion-section" data-section="roads">
                     <summary class="sheet-section-title">
                         <i class="fas fa-road" aria-hidden="true"></i>
                         <span class="accordion-title-text" data-section-title="roads"
@@ -927,17 +918,20 @@
                         </div>
 </div>
                 </details>
-                <!-- Base map: the last row of the same scrolling body, not a pane of its own -->
-                <div class="map-sheet-base-map">
-                    <label class="sheet-field">
-                        <span class="sheet-field-label" data-i18n-key="sidebar.data.baseMapLabel">Base map:</span>
-                        <select id="tile-source-select">
-                            <option value="openstreetmap">OpenStreetMap</option>
-                            <option value="maptiler">MapTiler</option>
-                        </select>
-                    </label>
-                    <div class="layer-source-actions"><button type="button" id="imagery-source-settings-button" class="btn" onclick="openImagerySourceSettings()" data-i18n-key="imagerySources.title">Choose an imagery source</button></div>
-                </div>
+
+                <details data-map-modes="2d" class="accordion-section" data-section="schelling-plan">
+                    <summary class="sheet-section-title">
+                        <i class="fas fa-handshake" aria-hidden="true"></i>
+                        <span data-i18n-key="schellingPlan.title">Schelling plan</span>
+                    </summary>
+                    <div class="sheet-section-body">
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" id="showSchellingPlan">
+                                <span data-i18n-key="schellingPlan.toggle">Show the Schelling plan</span></label>
+                        </div>
+                        <p class="sheet-note" data-i18n-key="schellingPlan.layerNote">Its settings and Propose open in their own panel on the map.</p>
+                    </div>
+                </details>
             </div>
             <div id="model-layer-controls" class="map-sheet-body" data-map-modes="3d" hidden></div>
             <div class="map-sheet-body" data-map-modes="photo" hidden>
@@ -1457,9 +1451,9 @@
                         parcels</span>
                     <div class="multi-select-options">
                         <button type="button" id="parcel-manual-selection" class="btn btn-sm" aria-pressed="false"
-                            onclick="multiParcelSelection.toggle({ preserveSelectedParcel: true })"
+                            onclick="multiParcelSelection.toggle()"
                             data-i18n-key="panel.parcel.selectManually">Manual</button>
-                        <button type="button" class="btn btn-primary btn-sm multi-select-detect-btn"
+                        <button type="button" class="btn btn-sm multi-select-detect-btn"
                             data-i18n-key="panel.parcel.detectBlock"
                             onclick="(window.animateFloodfillFromSelected || function(){})();">Detect block</button>
                     </div>
@@ -1987,7 +1981,6 @@
             'js/ui/parcel-menu.js?v=20261019-plot-provenance',
             'js/ui/ground-menu-model.js',
             'js/ui/ground-menu.js',
-            'js/ui/selection-tray.js',
             'js/ui/search-model.js?v=20261008-point-parcels',
             'js/world/globe-math.js',
             'js/world/globe-city-display.js?v=20261012-city-counts',
@@ -2118,6 +2111,7 @@
             'js/proposals/claims-ui.js',
             'js/footprint-geometry.js',
             'js/building-ground.js',
+            'js/building-surroundings-editor.js',
             'js/proposal-own-parcel.js',
             // bundle:end proposal-geometry
             'js/proposals/area.js?v=20261020-complete-area',
@@ -2540,28 +2534,13 @@
             aria-labelledby="welcome-modal-title">
             <div class="cb-dialog__header">
                 <div class="welcome-modal__heading">
-                    <p class="cb-kicker" data-i18n-key="modal.welcome.kicker">Consensus Builder · Urban Game Theory</p>
-                    <h2 id="welcome-modal-title" class="cb-dialog__title" data-i18n-key="modal.welcome.title">Hyperstition: Markets for Possible Cities</h2>
+                    <h2 id="welcome-modal-title" class="cb-dialog__title" data-i18n-key="modal.welcome.profileTitle">Your agent</h2>
                 </div>
                 <button type="button" id="welcome-close-btn" class="close-circle-btn" aria-label="Close welcome dialog"
                     title="Close welcome dialog" data-i18n-key="modal.welcome.closeLabel" data-i18n-attr="aria-label,title"
                     onclick="hideWelcomeModal()">&times;</button>
             </div>
             <div class="cb-dialog__body">
-                <p class="welcome-product-statement" data-i18n-key="modal.welcome.statement">Humans and agents imagine, propose, fund and forecast changes to real parcels. Public records decide which possible futures became real.</p>
-                <div class="welcome-product-flow" role="list" aria-label="Product flow" data-i18n-key="modal.welcome.flowLabel" data-i18n-attr="aria-label">
-                    <span class="cb-badge" role="listitem" data-i18n-key="modal.welcome.flowImagine">Imagine</span>
-                    <span class="cb-badge" role="listitem" data-i18n-key="modal.welcome.flowPropose">Propose</span>
-                    <span class="cb-badge" role="listitem" data-i18n-key="modal.welcome.flowBack">Back</span>
-                    <span class="cb-badge" role="listitem" data-i18n-key="modal.welcome.flowForecast">Forecast</span>
-                    <span class="cb-badge" role="listitem" data-i18n-key="modal.welcome.flowAttest">Attest</span>
-                    <span class="cb-badge" role="listitem" data-i18n-key="modal.welcome.flowRealize">Realize</span>
-                </div>
-                <div class="cb-link-row welcome-hackathon-links">
-                    <a class="cb-link" href="/hackathon-demo.html" data-i18n-key="modal.welcome.demoLink">Open the live hackathon demo</a>
-                    <a class="cb-link" href="/deck.html" data-i18n-key="modal.welcome.deckLink">Read the pitch deck</a>
-                </div>
-                <p class="welcome-identity-prompt" data-i18n-key="modal.welcome.subtitle">Choose your avatar and enter a username:</p>
                 <form id="welcome-form" onsubmit="submitUsername(event)">
                     <div class="form-group">
                         <label class="welcome-field-label" for="selected-avatar" data-i18n-key="modal.welcome.avatarLabel">Choose your avatar</label>
@@ -2581,13 +2560,13 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <input type="text" id="username-input" placeholder="Your username" aria-label="Your username" required
+                            data-i18n-key="modal.welcome.usernamePlaceholder" data-i18n-attr="placeholder,aria-label">
+                    </div>
+                    <div class="form-group">
                         <div id="welcome-language-label" class="welcome-field-label" data-i18n-key="modal.welcome.languageLabel">Language and region</div>
                         <div id="welcome-language-picker" class="cb-segmented welcome-language-picker" data-language-switcher
                             role="group" aria-labelledby="welcome-language-label"></div>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" id="username-input" placeholder="Your username" aria-label="Your username" required
-                            data-i18n-key="modal.welcome.usernamePlaceholder" data-i18n-attr="placeholder,aria-label">
                     </div>
                     <div id="takeover-section" class="takeover-section" hidden>
                         <p id="takeover-message"></p>
@@ -2599,6 +2578,23 @@
                         </div>
                     </div>
                 </form>
+                <section class="welcome-product" aria-labelledby="welcome-product-title">
+                    <p class="cb-kicker" data-i18n-key="modal.welcome.kicker">Consensus Builder · Urban Game Theory</p>
+                    <h3 id="welcome-product-title" class="welcome-product__title" data-i18n-key="modal.welcome.title">Hyperstition: Markets for Possible Cities</h3>
+                    <p class="welcome-product-statement" data-i18n-key="modal.welcome.statement">Humans and agents imagine, propose, fund and forecast changes to real parcels. Public records decide which possible futures became real.</p>
+                    <div class="welcome-product-flow" role="list" aria-label="Product flow" data-i18n-key="modal.welcome.flowLabel" data-i18n-attr="aria-label">
+                        <span class="cb-badge" role="listitem" data-i18n-key="modal.welcome.flowImagine">Imagine</span>
+                        <span class="cb-badge" role="listitem" data-i18n-key="modal.welcome.flowPropose">Propose</span>
+                        <span class="cb-badge" role="listitem" data-i18n-key="modal.welcome.flowBack">Back</span>
+                        <span class="cb-badge" role="listitem" data-i18n-key="modal.welcome.flowForecast">Forecast</span>
+                        <span class="cb-badge" role="listitem" data-i18n-key="modal.welcome.flowAttest">Attest</span>
+                        <span class="cb-badge" role="listitem" data-i18n-key="modal.welcome.flowRealize">Realize</span>
+                    </div>
+                    <div class="cb-link-row welcome-hackathon-links">
+                        <a class="cb-link" href="/hackathon-demo.html" data-i18n-key="modal.welcome.demoLink">Open the live hackathon demo</a>
+                        <a class="cb-link" href="/deck.html" data-i18n-key="modal.welcome.deckLink">Read the pitch deck</a>
+                    </div>
+                </section>
             </div>
             <div class="cb-dialog__footer">
                 <button type="submit" form="welcome-form" class="btn btn-primary btn-block cb-shimmer" id="welcome-submit-btn"

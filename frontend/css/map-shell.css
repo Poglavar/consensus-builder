@@ -39,12 +39,7 @@
     gap: var(--map-shell-gap);
 }
 
-.map-shell-slot--tray {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: var(--cb-z-map-chrome);
-}
+
 
 /* ---- Floating buttons ---- */
 .map-shell-cluster {
@@ -494,16 +489,8 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     gap: 4px;
 }
 
-/* A section inside a sheet: a plain heading over its controls (the accordions are gone; the
-   `.accordion-section[data-section]` wrapper stays because code and the city config find it). */
+/* Sections share the same spacing whether their controls fold or stay visible. */
 .map-sheet-body > .accordion-section + .accordion-section {
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid var(--cb-line);
-}
-
-/* The base map row closes the Layers sheet like one more section. */
-.map-sheet-body > .map-sheet-base-map {
     margin-top: 12px;
     padding-top: 12px;
     border-top: 1px solid var(--cb-line);

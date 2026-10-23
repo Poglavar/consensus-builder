@@ -19,13 +19,14 @@
         session: null,
         reselectKey: null,
         lakeError: null,
-        initialSite: null
+        initialSite: null,
+        subeditor: null
     };
 
     // Everything the editor draws lives in its own pane ABOVE the structure panes (squares
     // surface z=630, icons 632; parks 625/627) — default marker/overlay panes sit BELOW them,
     // which buried the editor's icons under the square's semi-transparent surface.
-    const EDITOR_PANE = 'onMapEditorPane';
+    let EDITOR_PANE = 'onMapEditorPane';
     const EDIT_LOCK_OWNER = 'structure-geometry-editor';
 
     // The panel is built in JS, so it translates at build time: same fallback-aware helper the
@@ -175,7 +176,8 @@
     }
 
     function sourceDecorations(draft) {
-        const direct = draft?.editorPayload?.structureProposal?.decorations;
+        const definition = draft?.editorPayload?.structureProposal;
+        const direct = definition?.decorationDesign || definition?.decorations;
         // An explicit schema (even with every list empty) is a deliberate saved design. Only fall
         // back to the rendered feature for legacy proposals that never stored decorations at all.
         if (hasExplicitDecorationDesign(state.kind, direct)) return direct;
@@ -764,6 +766,7 @@
 
     // A tool is a .btn toggle: the chosen one is aria-pressed (css/primitives.css).
     function toolButton(tool, icon, label) {
+        if (state.subeditor && tool === 'move') return '';
         return `<button type="button" class="btn btn-sm" data-tool="${tool}" aria-pressed="false"><i class="fa-solid ${icon}" aria-hidden="true"></i>${label}</button>`;
     }
 
@@ -805,7 +808,7 @@
             ? `<button type="button" class="btn btn-sm" data-action="finish-path" hidden>${t('finishPath', 'Finish path')}</button>`
             : '';
         return `${error}<div class="structure-geometry-footer-tools">${undo}${finish}</div>
-            <div class="structure-geometry-footer-actions"><button type="button" class="btn btn-primary" data-action="save">${t('save', 'Save design')}</button></div>`;
+            <div class="structure-geometry-footer-actions"><button type="button" class="btn btn-primary" data-action="save">${state.subeditor ? t('done', 'Done') : t('save', 'Save design')}</button></div>`;
     }
 
     function updatePanelState() {
@@ -826,7 +829,9 @@
                     ? t('hintMove', 'Drag inside the boundary to move the full design. The outline and all its contents move together.')
                     : t('hintLake', 'Use the map points to reshape the lake boundary. Undo is available on the map.'));
             } else if (!state.tool) {
-                state.session.setHint(t('hintSelect', 'Select an item to begin.'));
+                state.session.setHint(state.subeditor
+                    ? t('hintSurroundings', 'Edit the surroundings, then return to the building with Done. Save the building to keep all changes.')
+                    : t('hintSelect', 'Select an item to begin.'));
             } else if (state.tool === 'move') {
                 state.session.setHint(t('hintMove', 'Drag inside the boundary to move the full design. The outline and all its contents move together.'));
             } else {
@@ -881,6 +886,7 @@
     }
 
     function closeEditor(saved) {
+        const subeditor = state.subeditor;
         const isCommit = global.isProposalDesignCommitSession?.() === true;
         const draftId = state.draftId;
         const reselectKey = state.reselectKey || null;
@@ -907,6 +913,7 @@
         state.boundary = null;
         state.initialSite = null;
         state.decorations = null;
+        state.subeditor = null;
         if (historyCtl) { historyCtl.destroy(); historyCtl = null; }
         state.tool = null;
         state.pathPoints = [];
@@ -919,6 +926,7 @@
         // editor's own, and must not be turned away by the lock it just held.
         if (session?.close) session.close();
         else global.__mapEditLock?.release(EDIT_LOCK_OWNER);
+        if (subeditor) { subeditor.onClose?.(saved); return true; }
         // Cancel must not commit a retained draft whose previous save failed.
         if (!saved && isCommit) global.discardProposalDraftDesignSession?.();
         let finished = true;
@@ -950,6 +958,13 @@
     function saveEditor() {
         if (!state.draftId) return false;
         if (state.tool === 'path') finishPath();
+        if (state.subeditor) {
+            const complete = state.subeditor.onSave;
+            const decorations = clone(state.decorations);
+            closeEditor(true);
+            complete(decorations);
+            return true;
+        }
         const draft = global.proposalDraftStore?.getDraft?.(state.draftId);
         if (!draft) {
             global.reportProposalDesignSaveFailure?.();
@@ -966,7 +981,8 @@
             current.lakeGraphics = clone(graphics);
             delete current.decorations;
         } else {
-            current.decorations = clone(state.decorations);
+            current.decorationDesign = clone(state.decorations);
+            delete current.decorations;
         }
         try {
             const updated = global.syncActiveProposalDraftFromEditor?.('structure', { structureProposal: current }, {
@@ -989,7 +1005,7 @@
         return closeEditor(true);
     }
 
-    function openStructureGeometryEditor(draftOrId) {
+    function openStructureGeometryEditor(draftOrId, options = {}) {
         if (!global.map || !global.L || !global.turf || !global.OnMapEditor?.open || state.draftId) return false;
         const draft = typeof draftOrId === 'string' ? global.proposalDraftStore?.getDraft?.(draftOrId) : draftOrId;
         const kind = draft?.adapterKey || draft?.goal;
@@ -1002,6 +1018,8 @@
             || !Array.isArray(initialLakeRing) || initialLakeRing.length < 4
             || typeof global.PolygonGeometryEditor?.create !== 'function')) return false;
         state.kind = kind;
+        state.subeditor = options.parentSession ? options : null;
+        EDITOR_PANE = state.subeditor ? 'onMapSubeditorPane' : 'onMapEditorPane';
         state.boundary = boundary;
         state.initialSite = clone(boundary);
         state.decorations = kind === 'lake' ? null : normalizeDecorations(kind, sourceDecorations(draft));
@@ -1016,12 +1034,13 @@
             : (kind === 'park' ? t('titlePark', 'Park editor') : t('titleSquare', 'Square editor'));
         let session = null;
         session = global.OnMapEditor.open({
+            parentSession: options.parentSession || null,
             owner: EDIT_LOCK_OWNER,
             id: 'structure-geometry-editor',
             title,
             content: panelMarkup(),
             footer: footerMarkup(),
-            placement: {
+            placement: state.subeditor ? null : {
                 site: clone(state.initialSite),
                 onLockChange: () => {
                     state.polygonEditor?.render?.({ refreshRing: true });
@@ -1035,6 +1054,7 @@
             }
         });
         if (!session) {
+            state.subeditor = null;
             state.kind = null;
             state.boundary = null;
             state.initialSite = null;

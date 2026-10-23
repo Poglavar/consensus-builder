@@ -1233,73 +1233,29 @@ const multiParcelSelection = {
     selectedParcels: new Set(),
     lastSelectedParcelId: null,
 
-    // Toggle multi-selection mode
-    toggle(options = {}) {
-        const preserveSelectedParcel = !!options.preserveSelectedParcel;
-        const restoreSingleSelection = options.restoreSingleSelection !== false;
-        const wasActive = this.isActive;
-        this.isActive = !this.isActive;
-
-        if (wasActive && !this.isActive) {
-            const fallbackParcelId = this.lastSelectedParcelId ||
-                (this.selectedParcels.size > 0 ? Array.from(this.selectedParcels).slice(-1)[0] : null) ||
-                (typeof selectedParcelId !== 'undefined' && selectedParcelId ? selectedParcelId.toString() : null);
-
-            this.clearSelection();
-            if (restoreSingleSelection) {
-
-                if (fallbackParcelId && typeof selectParcel === 'function') {
-                    try {
-                        selectParcel(fallbackParcelId, true);
-                    } catch (error) {
-                        console.warn('multiParcelSelection.toggle: failed to reselect fallback parcel', error);
-                        this.hideParcelInfo();
-                    }
-                } else {
-                    this.hideParcelInfo();
-                }
-            }
-        } else if (!wasActive && this.isActive) {
-            const hasCurrentParcel = typeof currentParcel !== 'undefined' && currentParcel && currentParcel.id;
-            const fallbackParcelId = !hasCurrentParcel && typeof selectedParcelId !== 'undefined' && selectedParcelId
-                ? selectedParcelId.toString()
-                : null;
-            const preservedParcelInfo = (preserveSelectedParcel && (hasCurrentParcel || fallbackParcelId))
-                ? {
-                    id: hasCurrentParcel ? currentParcel.id.toString() : fallbackParcelId,
-                    layer: this.findParcelById(hasCurrentParcel ? currentParcel.id : fallbackParcelId)
-                }
-                : null;
-
-            // Always seed multi-select with the currently viewed parcel (or the last single selection)
-            let seedInfo = preservedParcelInfo;
-            if (!seedInfo) {
-                const seedId = hasCurrentParcel
-                    ? currentParcel.id.toString()
-                    : (fallbackParcelId || null);
-                if (seedId) {
-                    const seedLayer = this.findParcelById(seedId);
-                    if (seedLayer) {
-                        seedInfo = { id: seedId, layer: seedLayer };
-                    }
-                }
-            }
-
-            this.selectedParcels.clear();
-
-            if (seedInfo && seedInfo.id) {
-                this.clearSingleParcelSelection({ preservePanel: true });
-                this.selectedParcels.add(seedInfo.id);
-                this.lastSelectedParcelId = seedInfo.id;
-                const targetLayer = seedInfo.layer || this.findParcelById(seedInfo.id);
-                if (targetLayer) {
-                    this.addParcelHighlight(targetLayer);
-                }
-            } else {
-                this.clearSingleParcelSelection();
+    // Manual controls map picking; the selected land survives leaving the mode.
+    toggle() {
+        if (this.isActive) {
+            this.finish();
+            return;
+        }
+        this.isActive = true;
+        if (this.selectedParcels.size === 0) {
+            const seedId = (typeof currentParcel !== 'undefined' && currentParcel?.id)
+                || (typeof selectedParcelId !== 'undefined' && selectedParcelId);
+            const layer = seedId && this.findParcelById(seedId);
+            this.clearSingleParcelSelection({ preservePanel: true });
+            if (layer) {
+                this.selectedParcels.add(String(seedId));
+                this.lastSelectedParcelId = String(seedId);
+                this.addParcelHighlight(layer);
             }
         }
+        this.updateUI();
+    },
 
+    finish() {
+        this.isActive = false;
         this.updateUI();
     },
 
@@ -1478,21 +1434,10 @@ const multiParcelSelection = {
         return parcels;
     },
 
-    // Update UI based on current selection. The selection tray (ui/selection-tray.js) is the
-    // surface of a selection; the parcel panel only follows it while the panel is open (someone
-    // asked for it: the tray's Propose, the menu's Details, the build palette). Opening the panel
-    // on every toggle would bury the map under it while the person is still picking parcels.
+    // Selection-dependent views follow one event. The click panel owns the active selection,
+    // including its empty state; it opens the existing parcel tabs when there is selected land.
     updateUI() {
         syncMultiSelectControls(this.isActive);
-
-        const count = this.selectedParcels.size;
-        const panel = document.getElementById('parcel-info-panel');
-        const panelOpen = !!(panel && panel.classList.contains('visible'));
-        if (count >= 2 || (count === 1 && this.isActive)) {
-            if (panelOpen) this.showSelectionInPanel();
-        } else if (count === 0) {
-            this.hideParcelInfo();
-        }
 
         if (typeof renderParcelProposalActions === 'function') {
             renderParcelProposalActions();
@@ -1505,7 +1450,7 @@ const multiParcelSelection = {
             }));
         } catch (_) { }
 
-        if (this.isActive) {
+        if (this.isActive || this.selectedParcels.size > 0) {
             const panel = document.getElementById('parcel-info-panel');
             if (panel && panel.classList.contains('visible')) {
                 setParcelInfoPanelTitle(
@@ -1521,8 +1466,7 @@ const multiParcelSelection = {
     },
 
     // Show the current selection in the parcel panel (opening it): the multi-parcel summary for
-    // two or more parcels, the parcel itself for one. Used by updateUI while the panel is open and
-    // by the selection tray's Propose.
+    // two or more parcels, the parcel itself for one. Hosted by the click panel's Selected parcels section.
     showSelectionInPanel() {
         const count = this.selectedParcels.size;
         if (count >= 2) {
@@ -1578,7 +1522,6 @@ const multiParcelSelection = {
             return { parcel, parcelId, feature, area, estimate };
         }).filter(summary => summary.feature);
 
-        const totalArea = parcelSummaries.reduce((sum, p) => sum + (p.area || 0), 0);
         const totalEstimate = priceModel
             ? priceModel.aggregate(parcelSummaries.map(p => p.estimate), parcels.length)
             : { amount: null, currency: null, basis: 'unavailable' };
@@ -1651,33 +1594,17 @@ const multiParcelSelection = {
         window.ParcelsUIParcelPanel.renderParcelHistory(null); // one parcel's history, not the selection's
 
         const content = `
-            <div class="multi-parcel-actions" style="margin-bottom: 15px; text-align: center;">
-                <button type="button" class="btn" onclick="cancelMultiParcelSelection()"
-                    data-i18n-key="panel.parcel.multi.cancelSelection">
-                    ${tParcelMulti('panel.parcel.multi.cancelSelection', {}, 'Cancel Selection')}
-                </button>
-            </div>
-            <div style="display: flex; gap: 8px;">
-                <div class="metric-group" style="flex: 1;">
-                    <div class="metric-label" data-i18n-key="panel.parcel.multi.selectedParcels">${tParcelMulti('panel.parcel.multi.selectedParcels', {}, 'Selected Parcels:')}</div>
-                    <div class="metric-value">${parcels.length}</div>
-                </div>
-                <div class="metric-group" style="flex: 1;">
-                    <div class="metric-label" data-i18n-key="panel.parcel.multi.totalArea">${tParcelMulti('panel.parcel.multi.totalArea', {}, 'Total Area:')}</div>
-                    <div class="metric-value">${CbFormat.formatArea(totalArea)}</div>
-                </div>
-            </div>
-            <div style="display: flex; gap: 8px;">
-                <div class="metric-group" style="flex: 1;">
+            <div class="multi-parcel-metrics">
+                <div class="metric-group">
                     <div class="metric-label">${totalEstimateLabel}:</div>
                     <div class="metric-value">${totalEstimateDisplay}</div>
                 </div>
-                <div class="metric-group" style="flex: 1;">
+                <div class="metric-group">
                     <div class="metric-label" data-i18n-key="panel.parcel.multi.totalOwners">${tParcelMulti('panel.parcel.multi.totalOwners', {}, 'Total owners:')}</div>
                     <div class="metric-value">${totalOwners}</div>
                 </div>
             </div>
-            <hr style="border: 0; height: 1px; background-color: #ddd; margin: 10px 0;">
+            <hr>
             <div class="selected-parcels-section">
                 <div class="metric-label" data-i18n-key="panel.parcel.multi.selectedParcelsHeading">${tParcelMulti('panel.parcel.multi.selectedParcelsHeading', {}, 'Selected Parcels:')}</div>
                 <div class="selected-parcels-list">
@@ -1696,7 +1623,7 @@ const multiParcelSelection = {
                                 <div class="parcel-details">
                                             ${CbFormat.formatArea(area)} •
                                             ${priceBasis ? `${priceBasis}: ` : ''}${priceDisplay}
-                                    ${isRoad ? ` • <span style="color: #28a745;">${roadLabel}</span>` : ''}
+                                    ${isRoad ? ` • <span class="cb-badge cb-badge--success">${roadLabel}</span>` : ''}
                                 </div>
                             </div>
                         `;
@@ -1762,7 +1689,7 @@ const multiParcelSelection = {
 
     // Reapply highlights to all currently selected parcels
     reapplyMultiParcelHighlights() {
-        if (!this.isActive || !this.selectedParcels || this.selectedParcels.size === 0) return;
+        if (!this.selectedParcels || this.selectedParcels.size === 0) return;
         if (typeof window.ParcelPresenter?.restoreSelectionStyles === 'function') {
             window.ParcelPresenter.restoreSelectionStyles();
             return;
@@ -1803,7 +1730,7 @@ const multiParcelSelection = {
 
         // Enable multi-selection mode if not already active
         if (!this.isActive) {
-            this.toggle({ preserveSelectedParcel: false });
+            this.toggle();
         }
 
         // Clear existing selection

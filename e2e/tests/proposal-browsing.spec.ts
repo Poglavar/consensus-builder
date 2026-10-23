@@ -65,34 +65,18 @@ test.describe('Proposal browsing @features', () => {
     await expect(list.locator('.proposal-list-item')).toHaveCount(2);
   });
 
-  test('Fork design on the details opens an editable copy that saves as a new design and leaves the source as it was', async ({ mockApi: page }) => {
+  test('Duplicate on the details starts placement and cancellation leaves the source unchanged', async ({ mockApi: page }) => {
     await openCity(page);
-    await page.locator('#username-display').click();
-    await page.locator('#username-input').fill('Fork author');
-    await page.locator('#welcome-submit-btn').click();
     const sourceId = await page.evaluate(({ parcelId, geometry }) => (window as any).proposalStorage.addProposal({
-      title: 'Original park', goal: 'park', author: 'Ada', lifecycleStatus: 'Active', cadastreParcelIds: [parcelId],
-      geometry, structureProposal: { kind: 'park', geometry, applied: true },
+      title: 'Original park', goal: 'park', cadastreParcelIds: [parcelId], site: geometry,
+      geometry, structureProposal: { kind: 'park', geometry },
     }), { parcelId: PARCEL_ID, geometry: PARCEL_GEOMETRY });
-    const sourceBefore = await proposalState(page, sourceId);
+    const before = await proposalState(page, sourceId);
     await showProposal(page, sourceId);
-    await expandProposalDetails(page);
-
-    await page.locator('.btn-counterpropose-proposal').click();
-    const createDialog = page.locator('.create-proposal-modal:visible');
-    await expect(createDialog).toBeVisible();
-    await expect(createDialog.locator('#proposalName')).toHaveValue('Original park');
-    await createDialog.locator('#proposalName').fill('Counterproposal park');
-    await createDialog.locator('#proposalDescription').fill('A revised park for the same parcel.');
-    await createDialog.locator('input[name="proposalLandUse"][value="park"]').check();
-    await createDialog.locator('#createProposalSubmitButton').click();
-    await expect(createDialog).toBeHidden({ timeout: 10000 });
-    await expect.poll(() => page.evaluate(id => (window as any).proposalStorage.getAllProposals()
-      .filter((proposal: any) => proposal.title === 'Counterproposal park' && proposal.proposalId !== id
-        && proposal.description === 'A revised park for the same parcel.').length, sourceId)).toBe(1);
-    const source = await proposalState(page, sourceId);
-    expect(source.title).toBe('Original park');
-    expect(source.description).toBe(sourceBefore.description);
+    await page.locator('.btn-duplicate-design').click();
+    await expect(page.locator('#design-duplicate-editor .on-map-editor__panel')).toBeVisible();
+    await page.keyboard.press('Escape');
+    expect(await proposalState(page, sourceId)).toEqual(before);
   });
 
   test('a parcel\'s History row loads the agreements over it, its ownership attestations and the executed agreement', async ({ mockApi: page }) => {

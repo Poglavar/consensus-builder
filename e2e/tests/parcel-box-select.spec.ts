@@ -1,7 +1,7 @@
 // Shift+drag on the map draws a box that adds every parcel it touches to the multi-parcel selection
 // (js/parcels/ui/box-select.js); plain clicks then add or remove single parcels.
 import { test, expect } from '../helpers/fixtures';
-import { clickMapPoint, openCity, publishOn, PARCEL_ID } from '../helpers/runtime';
+import { clickMapPoint, openCity, publishOn, PARCEL_ID, showSelectionDesignTab, selectionSection } from '../helpers/runtime';
 
 async function parcelBox(page: import('@playwright/test').Page, id: string) {
   return page.evaluate(parcelId => {
@@ -29,11 +29,11 @@ test.describe('Shift+drag box selection @core', () => {
     await page.keyboard.up('Shift');
     await expect.poll(() => page.evaluate(id => (window as any).multiParcelSelection.selectedParcels.has(id), PARCEL_ID)).toBe(true);
     expect(await page.evaluate(() => (window as any).map.getZoom())).toBe(zoom);
-    await expect(page.locator('#selection-tray')).toBeVisible();
-    await expect(page.locator('#click-stack')).toBeHidden();
+    await expect(selectionSection(page)).toBeVisible();
+    await expect(page.locator('#click-stack')).toBeVisible();
 
     // The selection's Proposals tab totals what stands on its parcels, published ones included.
-    await page.locator('#selection-tray [data-command="selection.propose"]').click();
+    await showSelectionDesignTab(page);
     await expect(page.locator('#propose-tab')).toBeVisible();
     await page.locator('#parcel-info-panel [data-parcel-tab-id="proposals-tab"]').click();
     await expect(page.locator(`#proposals-content [data-server-id="${publishedCid}"]`)).toContainText('Published park');

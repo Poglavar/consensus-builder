@@ -80,11 +80,13 @@
             schema: content.schema,
             id,
             title: content.title,
+            author: content.author,
+            sponsor: content.sponsor,
             city: content.city,
             createdAt: content.createdAt,
             designs,
             inputs: {
-                parcels: content.inputs.parcels.map(parcel => ({ parcelId: parcel.parcelId, areaM2: parcel.areaM2, holders: parcel.holders })),
+                parcels: content.inputs.parcels.map(parcel => ({ parcelId: parcel.parcelId, ...(parcel.parcelSourceId ? { parcelSourceId: parcel.parcelSourceId } : {}), areaM2: parcel.areaM2, holders: parcel.holders })),
                 openGroundM2: content.inputs.openGroundM2
             },
             outputs,
@@ -383,7 +385,7 @@
                 designs: records, fabric,
                 originals: win.AgreementDialog.originalsById(features, fabric && fabric.featureId),
                 ownerOf: ground.localHolders({ storage: win.PersistentStorage, agents: win.agentStorage }),
-                area: feature => win.turf.area(feature)
+                area: ground.areaOf
             });
         }
 

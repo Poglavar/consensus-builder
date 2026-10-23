@@ -57,7 +57,8 @@ function previewHarness() {
         window: {
             OnMapEditor: editor,
             __mapEditLock: mapEditLock,
-            proposalDraftStore: { getDraft: () => null }
+            proposalDraftStore: { getDraft: () => null },
+            ProposalApplyStructures: { decorationsOnGround: value => value }
         },
         THREE: {
             Group: group,
@@ -72,6 +73,9 @@ function previewHarness() {
         polygonFeatureToMeshes,
         polygonFeatureToBorderLines,
         markOwnedMaterial: vi.fn(),
+        turf: {},
+        buildParks3D: vi.fn((flat, furniture, features) => { calls.furniture = { kind: 'park', features }; }),
+        buildSquares3D: vi.fn((flat, furniture, features) => { calls.furniture = { kind: 'square', features }; }),
         invalidateThreeView: () => { calls.invalidations += 1; }
     };
     const context = { console, ...stubs };
@@ -162,6 +166,15 @@ function cleanupHarness(editorActive) {
 }
 
 describe('three-mode on-map editor live preview', () => {
+    it.each([['green', 'park'], ['paved', 'square']])('renders authored %s surroundings through the %s furniture renderer', (treatment, kind) => {
+        const harness = previewHarness();
+        const decorationDesign = { version: 3, trees: [{ coordinate: [10, 45], kind: 'conifer', heightM: 12 }] };
+        harness.editor.isActive = () => true;
+        harness.editor.getPreview = () => ({ draftPreview: { kind: 'buildings', features: [] }, groundSurface: { treatment, polygon: { type: 'Polygon', coordinates: [] }, decorationDesign } });
+        harness.api.rebuildProposalDraftPreview3D();
+        expect(harness.calls.furniture.kind).toBe(kind);
+        expect(harness.calls.furniture.features[0].properties.decorations).toEqual(decorationDesign);
+    });
     it('skins actual procedural building previews while preserving envelopes, exclusions and uploaded GLTF materials', () => {
         const harness = buildingPreviewHarness();
         const feature = {

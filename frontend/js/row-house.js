@@ -11,6 +11,9 @@
 (function () {
     // Modal state
     let rowHouseModal = null;
+    let rowHouseSurroundings = null;
+    let rowHouseInitialGroundTreatment = null;
+    let rowHouseInitialDecorationDesign = null;
     let rowHouseMap = null;
     let rowHouseGenerationTimer = null;
     let rowHouseParcelLayer = null;
@@ -242,7 +245,7 @@
             capture: rowHouseGeometrySnapshot,
             restore: restoreRowHouseGeometrySnapshot
         });
-        rowHouseHistoryKeydown = rowHouseHistory.bindKeyboard(document, { enabled: () => !!rowHouseModal });
+        rowHouseHistoryKeydown = rowHouseHistory.bindKeyboard(document, { enabled: () => rowHouseModal?.active === true });
         try {
             rowHouseUndoButton = document.createElement('button');
             rowHouseUndoButton.type = 'button';
@@ -1511,6 +1514,7 @@
 
         const previewFeatures = rowBuildOut.length ? rowBuildOut : [feature];
         rowHouseModal?.setPreview({
+            groundSurface: rowHouseSurroundings?.refresh() || null,
             draftPreview: { kind: 'buildings', features: rowBuildOut },
             boundary: rowHouseBlock?.site || cachedSuperparcel,
             envelopes: rowRuleKind === 'exact' ? [] : rowUnits,
@@ -1599,6 +1603,7 @@
             },
             buildingFeature: feature,
             buildings: [feature],
+            groundSurface: rowHouseSurroundings?.surface() || null,
             // A Row stays on its parcels (proposals/freeform-conversion.js): never a free placement.
             placement: { free: false, site: cloneRowHouseFeature(rowHouseSiteBoundary()) }
         }, { coalesceKey: 'row-house-live' });
@@ -1789,6 +1794,12 @@
                 rowHouseModal.tools.setAttribute('aria-label', translateRowHouseText('rowHouses.modal.labels.rotation', 'Rotate footprint'));
             }
             rowHouseMap = rowHouseModal.map;
+            rowHouseSurroundings = window.BuildingSurroundingsEditor.mount({
+                session: rowHouseModal, id: 'rowhouse-ground-treatment', initialTreatment: rowHouseInitialGroundTreatment, initialDecorationDesign: rowHouseInitialDecorationDesign,
+                boundary: rowHouseSiteBoundary,
+                buildings: () => [generatedRowHouseFeature].filter(Boolean),
+                onChange: () => autosaveRowHouseDraft()
+            });
             ensureRowHouseHistory();
             setRowHouseInfo('rowHouses.modal.generating', 'Generating row houses...');
 
@@ -2065,7 +2076,7 @@
     function rowHouseDesignChanges() {
         if (!rowHouseDesignChangeTracker) {
             rowHouseDesignChangeTracker = window.DesignChangeTracker.createDesignChangeTracker({
-                signature: () => window.DesignChangeTracker.featuresSignature(generatedRowHouseFeature)
+                signature: () => JSON.stringify([rowHouseSurroundings?.signature, window.DesignChangeTracker.featuresSignature(generatedRowHouseFeature)])
             });
         }
         return rowHouseDesignChangeTracker;
@@ -2081,6 +2092,10 @@
 
     function closeRowHouseModal(options = {}) {
         const { preservePending = false, continueDesignSession = false } = options;
+        rowHouseSurroundings?.destroy();
+        rowHouseSurroundings = null;
+        rowHouseInitialGroundTreatment = null;
+        rowHouseInitialDecorationDesign = null;
         if (rowHouseGenerationTimer !== null) {
             clearTimeout(rowHouseGenerationTimer);
             rowHouseGenerationTimer = null;
@@ -2260,6 +2275,7 @@
             },
             buildingFeature: clonedFeature,
             buildings: clonedUnits,
+            groundSurface: rowHouseSurroundings?.surface() || null,
             placement: { free: false, site: cloneRowHouseFeature(rowHouseSiteBoundary()) }
         };
 
@@ -2296,7 +2312,7 @@
     // Entry point for opening row house modal from parcels
     // Saved parameters keep the sliders meaningful; `initialFeature` preserves arbitrary edits or
     // an uploaded polygon instead of regenerating a rectangle when the proposal is reopened.
-    function openRowHouseForParcels({ blockName, parcelIds, initialParameters = null, initialFeature = null, site = null }) {
+    function openRowHouseForParcels({ blockName, parcelIds, initialParameters = null, initialFeature = null, site = null, initialGroundTreatment = null, initialDecorationDesign = null }) {
         const ids = Array.from(new Set((Array.isArray(parcelIds) ? parcelIds : []).map(String).filter(Boolean)));
         const authoredSite = site?.type === 'Feature' && site.geometry ? cloneRowHouseFeature(site) : null;
         if (!ids.length && !authoredSite?.geometry) {
@@ -2306,6 +2322,8 @@
             return false;
         }
         rowHouseSeedParameters = initialParameters || null;
+        rowHouseInitialGroundTreatment = initialGroundTreatment;
+        rowHouseInitialDecorationDesign = initialDecorationDesign;
         rowHouseSeedFeature = initialFeature?.geometry ? cloneRowHouseFeature(initialFeature) : null;
 
         const liveParcels = rowHouseParcelsForIds(ids);

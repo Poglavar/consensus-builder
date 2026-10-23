@@ -40,7 +40,7 @@ body {
        backend/test/map-mode-stack.test.js fails on a duplicate.
 
        Declared on body, not :root: a custom property is resolved where it is declared, so the
-       phone selection tray (css/selection-tray.css) can lift the whole ladder by overriding
+       map mode controls can lift the whole ladder by overriding
        --map-mode-stack-bottom on body only if the slots are computed there too. */
     --map-mode-stack-bottom: calc(100dvh - var(--app-safe-area-bottom, 0px) - var(--map-shell-bottom-clearance));
     --map-mode-slot-1: calc(var(--map-mode-stack-bottom) - 276px);
@@ -1133,8 +1133,11 @@ body.three-mode-active #agent-bubbles-container {
    proposals are the Designs section: the panel's own −, × and Proposals tab are not shown. */
 #click-stack #parcel-info-panel.is-hosted > .panel-header,
 #click-stack #parcel-info-panel.is-hosted #parcel-info-minimize,
-#click-stack #parcel-info-panel.is-hosted .panel-header .close-button,
-#click-stack #parcel-info-panel.is-hosted [data-parcel-tab-id="proposals-tab"] {
+#click-stack #parcel-info-panel.is-hosted .panel-header .close-button {
+    display: none;
+}
+
+#click-stack .click-stack__section:not([data-kind="selection"]) #parcel-info-panel.is-hosted [data-parcel-tab-id="proposals-tab"] {
     display: none;
 }
 

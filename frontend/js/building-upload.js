@@ -6,6 +6,8 @@
 (function () {
     let modalEl = null;
     let onConfirmCb = null;
+    let onUseCb = null;
+    let unregisterEscape = null;
     let currentContext = null;
 
     // Preview scene state
@@ -102,6 +104,7 @@
 
         document.body.appendChild(modal);
         modalEl = modal;
+        unregisterEscape = window.ModalEscape?.register(modal, close) || null;
 
         modal.querySelector('#building-upload-close').addEventListener('click', close);
         modal.querySelector('#building-upload-cancel').addEventListener('click', close);
@@ -347,12 +350,17 @@
     // Named so it does not shadow the browser's own confirm().
     async function confirmUpload() {
         if (!loadedDims || !currentContext || !loadedFile) return;
-        if (typeof window.createSingleBuildingFromUpload !== 'function') {
+        if (!onUseCb && typeof window.createSingleBuildingFromUpload !== 'function') {
             setStatus('Single building pipeline is unavailable.', true);
             return;
         }
         setConfirmEnabled(false);
         setStatus(t('modal.buildingUpload.uploading', 'Uploading model…'));
+        const version = loadVersion;
+        const use = onUseCb || window.createSingleBuildingFromUpload;
+        const input = {
+            ...currentContext, ...loadedDims, modelName: loadedName, onConfirm: onConfirmCb
+        };
 
         // Persist the mesh so the main-map 3D view can render it. If this fails the
         // proposal is still created, just with a plain extruded box instead of the mesh.
@@ -360,22 +368,14 @@
         try {
             modelUrl = await uploadModel(loadedFile);
         } catch (e) {
+            if (version !== loadVersion || !modalEl) return;
             console.warn('Building model upload failed; falling back to footprint box', e);
             setStatus(t('modal.buildingUpload.uploadFailed',
                 'Model upload failed; the building will use a plain box.'), true);
         }
 
-        const created = window.createSingleBuildingFromUpload({
-            blockName: currentContext.blockName,
-            parcelIds: currentContext.parcelIds,
-            site: currentContext.site,
-            width: loadedDims.width,
-            length: loadedDims.length,
-            height: loadedDims.height,
-            modelName: loadedName,
-            modelUrl,
-            onConfirm: onConfirmCb
-        });
+        if (version !== loadVersion || !modalEl) return;
+        const created = use({ ...input, modelUrl });
         if (!created) { setConfirmEnabled(true); return; } // single-building.js surfaces its own status
         close();
     }
@@ -398,11 +398,14 @@
 
     function close() {
         loadVersion++;
+        unregisterEscape?.();
+        unregisterEscape = null;
         disposeScene();
         preview.container = null;
         if (modalEl && modalEl.parentNode) modalEl.parentNode.removeChild(modalEl);
         modalEl = null;
         onConfirmCb = null;
+        onUseCb = null;
         currentContext = null;
         loadedDims = null;
         loadedName = null;
@@ -414,6 +417,7 @@
         if (modalEl) close();
         currentContext = context || {};
         onConfirmCb = typeof options.onConfirm === 'function' ? options.onConfirm : null;
+        onUseCb = typeof options.onUse === 'function' ? options.onUse : null;
         buildModal();
     }
 

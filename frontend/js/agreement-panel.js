@@ -592,7 +592,7 @@
                 fabric,
                 originals: dialogApi().originalsById(features, fabric && fabric.featureId),
                 ownerOf: ground.localHolders({ storage: win.PersistentStorage, agents: win.agentStorage }),
-                area: feature => win.turf.area(feature)
+                area: win.AgreementGround.areaOf
             });
         }
 

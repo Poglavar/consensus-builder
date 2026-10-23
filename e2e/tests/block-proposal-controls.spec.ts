@@ -1,3 +1,4 @@
+import { openLayerSection } from '../helpers/layers';
 import { selectNativeOption } from '../helpers/controls';
 // Exercise all proposal kinds in the block inspector against one consistent cadastral fixture.
 import { Page } from '@playwright/test';
@@ -91,7 +92,7 @@ for (const kind of ['road', 'building', 'park'] as const) {
     // The inspector rendered before this fixture metadata was assigned. Open it from the list
     // again, as a user would when revisiting a block, so it reads the updated stored record.
     await page.locator('#block-info-panel .close-button').click();
-    await page.locator('#layers-button').click();
+    await openLayerSection(page, 'blocks');
     await page.locator('#blocks-content .block-item').first().click();
     await page.locator('#layers-sheet [data-sheet-close]').click();
     await page.locator('#block-proposals-tab-button').click();

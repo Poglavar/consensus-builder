@@ -12,7 +12,7 @@
             for (;;) {
                 const { value, done } = await reader.read(); if (done) break;
                 size += value.byteLength;
-                if (size > MAX_BYTES) throw new Error('Draft preview exceeds one megabyte');
+                if (size > MAX_BYTES) throw Object.assign(new Error('Draft preview exceeds one megabyte'), { code: 'preview-too-large' });
                 chunks.push(value);
             }
         } finally { await reader.cancel(); }
@@ -22,10 +22,10 @@
     }
     async function build({ origin, design = null, agreement = null, designs = [], parcelSourceId = null }) {
         const raw = new TextEncoder().encode(JSON.stringify({ design, agreement, designs, parcelSourceId }));
-        if (raw.length > MAX_BYTES) throw new Error('Draft preview exceeds one megabyte');
+        if (raw.length > MAX_BYTES) throw Object.assign(new Error('Draft preview exceeds one megabyte'), { code: 'preview-too-large' });
         const compressed = await bytes(new Blob([raw]).stream().pipeThrough(new CompressionStream('gzip')));
         const encoded = btoa(Array.from(compressed, n => String.fromCharCode(n)).join('')).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-        if (encoded.length > MAX_FRAGMENT) throw Object.assign(new Error('Draft is too large for a preview URL. Publish it explicitly to get a map link.'), { code: 'preview-too-large', next: { tool: 'ugt_publish_design', arguments: { design, confirm: true } } });
+        if (encoded.length > MAX_FRAGMENT) throw Object.assign(new Error('Draft is too large for a preview URL. Publication needs the person’s explicit confirmation.'), { code: 'preview-too-large' });
         const url = new URL('/designs', origin);
         if ((design || agreement)?.city) url.searchParams.set('city', (design || agreement).city);
         url.hash = `draft=${encoded}`;

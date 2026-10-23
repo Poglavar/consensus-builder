@@ -1,3 +1,4 @@
+import { openLayerSection } from '../helpers/layers';
 import { test, expect } from '../helpers/fixtures';
 import { openCity, openParcel } from '../helpers/runtime';
 import { installLayerDatasets, FIXTURE_ROAD_PARCEL_ID } from '../helpers/mocks/layer-datasets';
@@ -164,6 +165,7 @@ test.describe('Dataset road tools @features', () => {
     const layersSheet = page.locator('#layers-sheet');
     if (!(await layersSheet.isVisible())) await page.locator('#layers-button').click();
     await expect(layersSheet).toBeVisible();
+    await openLayerSection(page, 'blocks');
     const blockPaths = () => page.evaluate(() => document.querySelectorAll('#map .leaflet-overlay-pane path').length);
     const pathsBeforeHide = await blockPaths();
     await page.locator('#parcelBlocksCheckbox').uncheck();

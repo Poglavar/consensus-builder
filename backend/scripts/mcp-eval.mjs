@@ -44,9 +44,15 @@ export function scoreArtifact(task, artifacts) {
     return { passed: false, reason: 'expected-artifact-not-produced' };
 }
 
-export async function runEval({ origin, tasks, model, budgetUsd, inputUsdPerMillion, outputUsdPerMillion, output, limit = 1, anthropic = new Anthropic() }) {
+export async function runEval({ origin, tasks, model, budgetUsd, inputUsdPerMillion, outputUsdPerMillion, output, limit = 1, retryFailed = false, anthropic = new Anthropic({ maxRetries: 0 }), recordUsage }) {
     if (!model || !output || ![budgetUsd, inputUsdPerMillion, outputUsdPerMillion].every(n => typeof n === 'number' && Number.isFinite(n) && n > 0)) throw new Error('Supply a model, checkpoint output, positive budget and explicit batch input/output prices');
     if (!Number.isInteger(limit) || limit < 1 || limit > 20) throw new Error('limit must be 1–20; first run should use one task');
+    // Fail before submission if shared metered accounting is unavailable. An injected recorder
+    // lets unit tests exercise paid orchestration without touching the user's ledger or any API.
+    if (!recordUsage) {
+        const accounting = await import(new URL('../../../agents/lib/llm-cost/index.mjs', import.meta.url));
+        recordUsage = row => accounting.record({ repo: 'consensus-builder', script: 'mcp-eval.mjs', billing: 'metered', batch: true, ...row });
+    }
     const fingerprint = cidOfObject({ origin, tasks: tasks.slice(0, limit), model, inputUsdPerMillion, outputUsdPerMillion });
     const state = existsSync(output) ? JSON.parse(readFileSync(output, 'utf8')) : { fingerprint, spentUsd: 0, tasks: [], pending: null };
     if (state.fingerprint !== fingerprint) throw new Error('Checkpoint belongs to a different evaluation');
@@ -59,7 +65,13 @@ export async function runEval({ origin, tasks, model, budgetUsd, inputUsdPerMill
         const tools = (await client.listTools()).tools.filter(t => t.annotations?.readOnlyHint).map(t => ({ name: t.name, description: t.description, input_schema: t.inputSchema }));
         for (const task of tasks.slice(0, limit)) {
             let record = state.tasks.find(t => t.id === task.id);
-            if (record?.score) { log(`skipped completed ${task.id}`); continue; }
+            if (record?.score) {
+                if (retryFailed && !record.score.passed && record.rounds.length < 8) {
+                    record.score = null;
+                    record.messages.push({ role: 'user', content: 'The MCP server configuration has been corrected. Retry the same requested task using the tools; retain the existing scope and do not publish or sign.' });
+                    save();
+                } else { log(`skipped completed ${task.id}`); continue; }
+            }
             if (!record) { record = { id: task.id, messages: [{ role: 'user', content: task.request }], artifacts: [], rounds: [], score: null, costUsd: 0 }; state.tasks.push(record); save(); }
             for (let round = record.rounds.length; round < 8 && !record.score; round++) {
                 const params = { model, max_tokens: 4096, tools, messages: record.messages,
@@ -67,9 +79,11 @@ export async function runEval({ origin, tasks, model, budgetUsd, inputUsdPerMill
                 if (!state.pending) {
                     const reserve = (Buffer.byteLength(JSON.stringify(params)) * inputUsdPerMillion + 4096 * outputUsdPerMillion) / 1e6;
                     if (state.spentUsd + reserve > budgetUsd) { save(); throw new Error(`Budget exhausted before ${task.id}, round ${round + 1}; spent $${state.spentUsd.toFixed(6)}`); }
+                    state.pending = { task: task.id, round, submitting: true, reservedUsd: reserve }; save();
                     const batch = await anthropic.messages.batches.create({ requests: [{ custom_id: `${task.id}-${round}`, params }] });
                     state.pending = { id: batch.id, task: task.id, round }; save();
                 }
+                if (state.pending.submitting) throw new Error('Batch submission outcome is uncertain. Recover its batch ID from Anthropic before resuming; do not submit another paid request.');
                 if (state.pending.task !== task.id || state.pending.round !== round) throw new Error('Pending batch does not match checkpoint round');
                 let batch;
                 while ((batch = await anthropic.messages.batches.retrieve(state.pending.id)).processing_status !== 'ended') {
@@ -83,6 +97,8 @@ export async function runEval({ origin, tasks, model, budgetUsd, inputUsdPerMill
                 if (usage.cache_creation_input_tokens || usage.cache_read_input_tokens) throw new Error('Unexpected cached usage; supply explicit cache pricing before accounting');
                 const costUsd = (usage.input_tokens * inputUsdPerMillion + usage.output_tokens * outputUsdPerMillion) / 1e6;
                 state.spentUsd += costUsd; record.costUsd += costUsd;
+                recordUsage({ model: message.model || model, usage, cost_usd: costUsd,
+                    meta: { task: task.id, round, batch_id: state.pending.id, run: fingerprint } });
                 record.messages.push({ role: 'assistant', content: message.content });
                 const toolResults = [];
                 for (const block of message.content.filter(b => b.type === 'tool_use')) {
@@ -105,7 +121,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     const args = process.argv.slice(2), option = name => args[args.indexOf(name) + 1];
     if (!args.includes('--run')) console.log('Usage (paid, requires user approval): node scripts/mcp-eval.mjs --run --origin <url> --tasks <json> --model <model> --budget-usd <cap> --input-price <batch-USD-per-Mtok> --output-price <batch-USD-per-Mtok> --output <checkpoint.json> --limit 1\nTasks are [{id, request, expected: {goal|schema|action|alternatives, parcelIds?, target?, floors?}}]. Resume with the same arguments. Use a durable checkpoint outside the checkout.');
     else {
-        const state = await runEval({ origin: option('--origin'), tasks: args.includes('--seed') ? buildEvalTasks(JSON.parse(readFileSync(option('--seed'), 'utf8'))) : JSON.parse(readFileSync(option('--tasks'), 'utf8')), model: option('--model'), budgetUsd: Number(option('--budget-usd')), inputUsdPerMillion: Number(option('--input-price')), outputUsdPerMillion: Number(option('--output-price')), output: option('--output'), limit: Number(option('--limit') || 1) });
+        const state = await runEval({ origin: option('--origin'), tasks: args.includes('--seed') ? buildEvalTasks(JSON.parse(readFileSync(option('--seed'), 'utf8'))) : JSON.parse(readFileSync(option('--tasks'), 'utf8')), model: option('--model'), budgetUsd: Number(option('--budget-usd')), inputUsdPerMillion: Number(option('--input-price')), outputUsdPerMillion: Number(option('--output-price')), output: option('--output'), limit: Number(option('--limit') || 1), retryFailed: args.includes('--retry-failed') });
         console.log(JSON.stringify({ spentUsd: state.spentUsd, tasks: state.tasks.map(t => ({ id: t.id, costUsd: t.costUsd, score: t.score })) }, null, 2));
         if (state.tasks.some(t => !t.score?.passed)) process.exitCode = 1;
     }

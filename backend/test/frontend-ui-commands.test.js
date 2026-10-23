@@ -82,6 +82,9 @@ const NOT_COMMAND_HANDLERS = {
 describe('command registry shape', () => {
     it('has commands, each with at least one known surface', () => {
         expect(commands.length).toBeGreaterThan(50);
+        expect(UiCommands.SURFACES).toContain('parcel-selection');
+        expect(UiCommands.SURFACES).not.toContain('selection-tray');
+        expect(commands.map(entry => entry.id)).not.toContain('selection.propose');
         for (const entry of commands) {
             expect(entry.surfaces.length, `${entry.id} has no surface`).toBeGreaterThan(0);
             for (const surface of entry.surfaces) {
@@ -229,6 +232,8 @@ describe('availability and search', () => {
         const withCadastre = { ...fakeCtx(), mode: '2d' };
         const noCadastre = { ...withCadastre, isControlAvailable: id => id !== 'parcelBlocksCheckbox' && id !== 'showBlockListButton' };
         for (const id of ['blocks.reform', 'blocks.fromSelected']) expect(UiCommands.isAvailable(id, withCadastre), id).toBe(true);
+        expect(UiCommands.findCommand('blocks.fromSelected').surfaces).toEqual(['layers', 'palette']);
+        expect(UiCommands.commandsFor('parcel-selection', { ...withCadastre, selection: { active: true, count: 2 } }).map(c => c.id)).not.toContain('blocks.fromSelected');
         for (const id of cadastral) expect(UiCommands.isAvailable(id, noCadastre), id).toBe(false);
         expect(UiCommands.isAvailable('urbanBlocks.refresh', noCadastre)).toBe(true);
     });
@@ -332,7 +337,7 @@ describe('availability and search', () => {
 
     it('shares the 2D capability rule across command listing, ranking, and execution', () => {
         const model = { mode: 'model', global: { isThreeModeActive: () => true } };
-        for (const id of ['stations.bus', 'site.draw', 'tools.measure', 'parcel.propose', 'selection.propose']) {
+        for (const id of ['stations.bus', 'site.draw', 'tools.measure', 'parcel.propose', 'selection.useAsSite']) {
             expect(UiCommands.supportsMode(id, model), id).toBe(false);
             expect(UiCommands.isAvailable(id, model), id).toBe(false);
             expect(UiCommands.rankCommands(id, model, tEn).map(item => item.entry.id)).not.toContain(id);
@@ -353,12 +358,13 @@ describe('availability and search', () => {
         expect(global.startTransitStationPlacement).toHaveBeenCalledWith('bus');
     });
 
-    it('keeps selection proposal dispatch behind a nonempty selection gate', () => {
-        const global = { SelectionTray: { propose: vi.fn() } };
+    it('keeps Use as site dispatch behind an active, nonempty selection gate', () => {
+        const startFromSelection = vi.fn();
+        const global = { SiteTool: { isActive: () => false, startFromSelection } };
         const ctx = { mode: '2d', global, selection: { active: false, count: 0 } };
-        expect(UiCommands.isAvailable('selection.propose', ctx)).toBe(false);
-        expect(UiCommands.runCommand('selection.propose', ctx)).toBe(false);
-        expect(global.SelectionTray.propose).not.toHaveBeenCalled();
+        expect(UiCommands.isAvailable('selection.useAsSite', ctx)).toBe(false);
+        expect(UiCommands.runCommand('selection.useAsSite', ctx)).toBe(false);
+        expect(startFromSelection).not.toHaveBeenCalled();
     });
 
     it('honors explicit data-map-modes on control containers while a sheet is closed', () => {
@@ -448,7 +454,7 @@ describe('the floating shell', () => {
 
     it('leaves the hooks later phases mount into', () => {
         expect(indexHtml).toContain('id="map-search-slot"');
-        expect(indexHtml).toContain('id="selection-tray-slot"');
+        expect(indexHtml).not.toContain('selection-tray');
     });
 
     it('opens a popover below a top button and above a bottom one, aligned to its side', () => {

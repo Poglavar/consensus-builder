@@ -351,6 +351,15 @@ describe('POST /designs/batch', () => {
 });
 
 describe('POST /designs/binding', () => {
+    it('uses the named Croatian database gateway for both binding preview and publication', async () => {
+        const pool = indexPool(), app = appFor(pool).app;
+        const preview = await request(app).post('/designs/binding').send({ site: SITE, city: 'zagreb', parcelSourceId: 'oss-wfs' });
+        expect(preview.status).toBe(200);
+        expect(preview.body).toMatchObject({ parcelSourceId: 'oss-wfs', binding: { parcelSource: { sourceId: 'hr-cadastre' }, coverage: 'complete' } });
+        const publication = await request(app).post('/designs').send({ ...body(designContent()), parcelSourceId: 'oss-wfs' });
+        expect(publication.status).toBe(201);
+        expect(publication.body.binding.parcels).toEqual(preview.body.binding.parcels);
+    });
     it('answers the binding a design on that site would get, storing nothing', async () => {
         const pool = indexPool({ cadastre: { unsurveyedM2: 4 } });
         const res = await request(appFor(pool).app).post('/designs/binding').send({ site: SITE, toleranceM: 0.01 });

@@ -21,7 +21,7 @@ export const CANONICAL_BUTTON_CLASSES = new Set([
     'cb-tab', 'cb-segmented__option', 'cb-tile', 'cb-option', 'cb-shimmer',
     'map-shell-button', 'map-shell-button--labelled', 'map-utility-button', 'map-mode-tile', 'map-mode-toggle',
     'map-search__chip', 'map-search__icon-button', 'map-search__clear', 'map-search__back',
-    'selection-tray__action', 'mobile-dock-sheet-handle', 'site-intro-dot', 'cb-lane-option', 'cb-lane-dropdown-toggle', 'corridor-section-lane'
+    'mobile-dock-sheet-handle', 'site-intro-dot', 'cb-lane-option', 'cb-lane-dropdown-toggle', 'corridor-section-lane'
 ]);
 
 // What counts as "painting" a control: its colours, lines, shape and type. Size and placement

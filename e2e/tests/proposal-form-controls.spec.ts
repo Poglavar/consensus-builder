@@ -1,9 +1,10 @@
+import { openDesignReview } from '../helpers/design-review';
 // Purpose: verify proposal metadata (ownership, epoch, tolerance) and list filters through their forms.
 import { test, expect } from '../helpers/fixtures';
 import { selectNativeOption } from '../helpers/controls';
 import { createSpace, openCity, PARCEL_ID, showProposal } from '../helpers/runtime';
 
-test('ownership, epoch and parcel tolerance persist from the counterproposal form', async ({ mockApi: page }) => {
+test('ownership, epoch and parcel tolerance persist from the draft review form', async ({ mockApi: page }) => {
   await openCity(page);
   const sourceId = await createSpace(page, 'park');
   await showProposal(page, sourceId);
@@ -12,7 +13,7 @@ test('ownership, epoch and parcel tolerance persist from the counterproposal for
   if (await expand.isVisible()) await expand.click();
   const more = panel.locator('summary').filter({ hasText: 'More actions' });
   if (await more.isVisible()) await more.click();
-  await panel.locator('.btn-counterpropose-proposal').click();
+  await openDesignReview(page, sourceId);
   const form = page.locator('.create-proposal-modal:visible');
   await expect(form).toBeVisible();
   const areaSummary = form.locator('#proposalSummaryContent p').filter({ hasText: 'Total area:' });
@@ -40,7 +41,7 @@ test('ownership, epoch and parcel tolerance persist from the counterproposal for
   const saved = await page.evaluate(() => (window as any).proposalStorage.getAllProposals()
     .find((proposal: any) => proposal.title === 'A park for 2035'));
   expect(saved).toMatchObject({ epochYear: 2035, toleranceM: 0.12 });
-  expect(saved.proposalOrigin).toMatchObject({ relation: 'revision', source: { kind: 'local', localProposalId: sourceId } });
+  expect(saved.proposalOrigin).toBeFalsy();
   for (const term of ['kind', 'offer', 'voteExpiryDays', 'expiresAt', 'isVote']) expect(saved).not.toHaveProperty(term);
   await page.reload({ waitUntil: 'domcontentloaded' });
   await expect.poll(() => page.evaluate(id => (window as any).proposalStorage?.getProposal(id)?.epochYear, saved.proposalId)).toBe(2035);

@@ -350,7 +350,12 @@
     // with thirty base anchors, §15.1). parentEntries: [{ baseId, feature }].
     function overlappingBaseIds(pieceFeature, parentEntries, ctx, options) {
         const opts = options || {};
-        const minM2 = Number.isFinite(opts.minM2) ? opts.minM2 : 1;
+        // Provenance uses the same measured intersection floor as source ancestry, not the
+        // whole-parcel area tolerance. Borovje's Z1-5 includes 0.8756 m² of one source parcel:
+        // dropping its anchor leaves legitimate geometry outside the declared immutable scope.
+        const order = (typeof window !== 'undefined' && window.__planOrder)
+            || (typeof require === 'function' ? require('./plan-order.js') : null);
+        const minM2 = Number.isFinite(opts.minM2) ? opts.minM2 : order.MIN_INTERSECTION_M2;
         const piece = asFeature(pieceFeature);
         if (!piece) return [];
         const seen = new Set();

@@ -161,8 +161,11 @@ its **CID**: CIDv1, codec `raw`, sha2-256, base32 (`bafkrei…`) over the stable
 bytes (`frontend/js/cid.js`, `backend/cid.js`, identical answers). The payload leaves out what
 applying it writes in one browser: the applied flag, the materialization, the demolition scan
 (`formation-depth.js` `stripDerivedPayloadData`) and a park's or square's `decorations`
-(`design-record.js`), so applying a design never changes its CID; hand-placed park or square
-furniture is therefore not published either, and a receiver lays out its own. A published **agreement** is its
+(`design-record.js`), so applying a design never changes its CID. **Authored furniture contract,
+2026-10-23:** saving the park/square editor writes `structureProposal.decorationDesign`; this explicit
+layout is published and changes the CID when edited. Generated `decorations` remain local rendering
+data. Existing unqualified decoration caches are not promoted into authored evidence automatically;
+saving them through the editor makes that choice explicit. A published **agreement** is its
 `agreement/v1` object: design CIDs in authored order, inputs with the holders snapshot, outputs by
 `piece1-sha256:` hash without geometry, allocations, money, rule, deadline, title, author, the
 `sponsor` wallet, city. One CID scheme replaced the content, consent and effect fingerprints, the
@@ -605,6 +608,30 @@ A preview failure leaves the model file and dimensions available to “Use this 
 
 A Block, Row or Detached urban rule specifies rules on parcels; its `geometry.buildings` may contain multiple permitted volumes or per-parcel cuts. A Freeform proposal (`goal` and `typologyType: single`) specifies one connected building footprint, including its courtyard holes. Converting a connected Block/Row massing unions the footprint and freezes the maximum permitted height; disconnected houses become separate Freeform proposals. A GeoJSON collection or MultiPolygon upload preserves every polygon and interior ring, previews the buildings in the Freeform editor, and saves one proposal per disconnected polygon. An ordinary named plan groups a supplied development layout, including the Candlestick imports; the imports have no special runtime mode. `buildingProposal` primarily carries authored settings; the canonical cleaner removes older duplicate feature containers. A building can overlap multiple cadastral parcels. Survey, cadastral and Overture identities are source-qualified rather than automatically merged.
 
+New Freeform drafts start as a 20 × 20 m square, 10 m high, centred on the selected land.
+The starting site is an optional guide: it does not shrink this initial footprint or imported
+model dimensions. Explicitly locking to that site enforces containment during editing. Restored
+and converted footprints retain their authored geometry.
+
+Browser OSM requests first use the application backend, which owns the paid Overpass provider,
+credentials, caching and provider failover. Road tools and the 3D street/life layer may use a public
+Overpass fallback if the backend request fails. Staged OSM building lookup follows the requested
+geographic bounds across dataset labels and deduplicates OSM identities; a city label does not
+prove geographic coverage.
+
+Manual multiple-parcel selection is a map mode. Its Selected parcels section replaces the
+point-specific parcel view in the click panel and stays available with zero selected parcels.
+The section owns the selection count, measured total area, Clear and Done actions; the bottom
+selection tray is removed. Clear removes the selected land without changing the mode. Done, Escape and switching Manual
+off exit the mode while retaining the selected parcels, their highlights and the hosted section.
+Resuming Manual keeps that set; a subsequent ordinary map click replaces it with the new point context.
+Detect block and Custom site are actions, not pressed modes. Clicks through buildings, permitted massing and
+designs toggle the current live parcel beneath the point, rather than selecting the content or
+reconstructing a source cadastral selection. A fresh Block design on one parcel always
+offers the choice of that parcel or block detection, even if silent detection lacks neighbours.
+The Block editor warns when its requested settings cannot fit or leave no buildable plots;
+an empty result cannot be saved.
+
 Splitting a multi-building Freeform preview into individual records is a save operation. If the
 first record cannot be saved, the complete unsaved design, including every building and its
 surroundings, is restored before the editor reopens. A retry still saves one connected building per
@@ -781,7 +808,7 @@ This intentionally replaces the transient overlay-only contract; no old overlay 
 
 | Term | De-facto definition and relationships | Evidence |
 | --- | --- | --- |
-| **Design / draft** | Local editable authoring state before publication. Editor adapters serialize it into a proposal. A local draft can have no decision kind; kind is selected at publication. A draft object and the server lifecycle value `draft` are different representations. | [drafts](frontend/js/proposal-drafts.js), [adapters](frontend/js/proposal-editor-adapters.js), publish kinds |
+| **Design / draft** | Local editable authoring state before publication. Editor adapters serialize it into a proposal. Confirming Done retains a temporary 2D outline / 3D preview while saving and applying the design, including after the draft is consumed; it clears once application settles. This is presentation state, not a second saved record. A local draft can have no decision kind; kind is selected at publication. A draft object and the server lifecycle value `draft` are different representations. | [drafts](frontend/js/proposal-drafts.js), [adapters](frontend/js/proposal-editor-adapters.js), publish kinds |
 | **Goal** | The canonical authored `goal` selects a design/tool concept. `ProposalDesignGoals` defines the shared current scheme for editor completeness, archive structure kinds and related views; it describes authored intent, not a physical object, decision kind, or statutory land-use class. Other runtime goals can exist outside that scheme. Consumers must not infer a missing goal from `type` or generic `id`. | [design-goals.js](frontend/js/proposals/design-goals.js), [adapters](frontend/js/proposal-editor-adapters.js): `CREATABLE_PROPOSAL_GOALS` |
 | **Type / typology** | `type` is a broad storage/API classification; `typologyType` and nested structure/corridor kinds express other classifications. They are not aliases for the canonical `goal`. The SQL `type` column is free text with a length limit, not an enum of the four values in its comment. | [proposal DDL](backend/routes/proposals-ddl.sql), [API](backend/routes/proposals.js), [design goals](frontend/js/proposals/design-goals.js) |
 | **Proposal kind** | `owner-deal`, `owner-vote`, `community-vote`: who decides and whether the proposal is binding in the app. Votes are nonbinding and cannot carry positive offer/budget or enabled deposits. Missing kind reads as `owner-deal`; unknown kind is invalid. Publication defaults to `community-vote`. This is independent of geometric goal. | proposal-kind.js: `kindOf`, `kindErrors`; [API validation](backend/routes/proposals.js) |
@@ -1097,10 +1124,11 @@ The reserved `ownerKey: 'open-ground'` entry with `unrepresentedGround: true` ac
 **Provider identity correction, 2026-10-21:** the South African CSG/DFFE Erven endpoint uses one catalog identity, `za-csg-dffe-erven`, including Chief Albert Luthuli Park. The duplicate `za-csg-dffe-national-erven` descriptor used the same endpoint, native key and parcel-ID prefix and has been removed. City-specific metric frames, scope evidence and qualification warnings remain attached to the canonical provider. Experimental records naming the removed descriptor require recreation; no alias or compatibility reader is provided.
 
 **Parcel-set projection correction, 2026-10-20:** an ID prefix no longer supplies a guessed registering authority, and unknown authority is no longer represented by placeholder prose. The derived set no longer repeats `geometryHash` or the ambiguous `referenceAt`; actual measurement-capture metadata remains only in `cadastreFrame`. `capturedAt` records the proposal measurement/reconstruction capture, not a source's legal effective date or dataset release. Proposal creation time cannot stand in for either. The API and case-summary projection use the same rule. This intentionally changes derived set hashes that previously included guessed authority. Old hashes are not reinterpreted or matched through a second algorithm; affected experimental copies must be refreshed or recreated. This does not change proposal/plan commitments or the separate market-question subject-hash contract.
-| **Ground surface / treatment** | Authored surroundings of freeform buildings, typically the ground boundary minus building footprints. `geometry.groundSurface` carries `{ treatment, polygon }`; treatments are `none`, `paved`, `green`. It is not the cadastral ground repository or the entire site by definition. | [building-ground.js](frontend/js/building-ground.js): `buildSurface`, `surfaceOf` |
+| **Ground surface / treatment** | Authored surroundings of Freeform, Block, Row and Detached building designs. The surface is the design's ground boundary minus its stored building footprints; for urban rules these are the permitted envelopes, so rerolling an example build-out does not change the ground treatment. `geometry.groundSurface` carries `{ treatment, polygon, decorationDesign? }`; treatments are `none`, `paved`, `green`. “Leave as they are” removes the authored surface. The surface and its optional authored furniture layout save and publish inside the building design, without another structure payload or joined proposal. Green opens the park sub-editor and paved opens the square sub-editor on the fixed surface boundary, including its holes. Done returns the edited layout to the building draft; Cancel discards the child edits; only the building editor commits the design. Changing treatment starts a fresh layout. It is not the cadastral ground repository or the entire site by definition. | [building-ground.js](frontend/js/building-ground.js): `buildSurface`, `surfaceOf`; [rule editor control](frontend/js/building-surroundings-editor.js) |
 | **Corridor / alignment / cross-section** | Corridor = occupied transport land and authored design. Alignment = line segments/points, with level/elevation information. Cross-section = lanes and widths describing transverse form. `roadProposal` can describe roads or tracks; a designation with a polygon but no centerline names road land without a constructed alignment. | [corridor profile](frontend/js/corridor-profile.js), [OSM form](frontend/js/corridor-osm-form.js), [corridor reconstruction](backend/proposals/corridor-reconstruction-geojson.js), [site-binding.js](frontend/js/proposals/site-binding.js): `isRoadDesignation` |
 | **Road / street / planned road** | A road/track proposal is an authored change. Existing named streets and road geodata provide context/frontage. Planned-road source data describe reservations or planned streets. Shared location does not make these the same object. | [street frontage](backend/streets/near.js), [planned roads](backend/routes/planned-roads.js), [corridor reconstruction](backend/proposals/corridor-reconstruction-geojson.js) |
 | **Structure** | An app category for area features such as park, square, lake, and station authoring. It is not the general engineering concept of a load-bearing structure. The specific reconstruction exporter currently only accepts park/square/lake. | [editor registry](frontend/js/proposal-editor-adapters.js), [structure exporter](backend/proposals/structure-reconstruction-geojson.js) |
+| **Planted tree** | A local park/square decoration stores a coordinate, kind and height in metres. Its 2D icon grows or shrinks with that same height in both the editor and saved map view; the icon is symbolic, not a measured crown footprint. Generated decoration caches remain unpublished; explicitly authored layouts publish through `decorationDesign`. | [park-planting.js](frontend/js/park-planting.js): `treeOf`, `treeIcon`, `treeShape` |
 | **Map claim / dossier** | A claim is selectable ground, fabric or proposal content, ranked for interaction. The bare cadastral ground is the null/no-change claim. A dossier collects proposals referencing the land. This use of “claim” is not a legal ownership claim or a signed oracle assertion. | [claims.js](frontend/js/proposals/claims.js): `CLAIM_RANKS`, `dossierFor` |
 | **City / place / source** | `proposal.city` is a filing/context code resolved from location on publish. A named plan's `place` is a free-text contest/location label. A provider's geographic coverage can span cities. World navigation selects explicit cities or exact map points at street level; administrative outlines are informational coverage context, never selectable destinations. None of these strings alone is a globally identified administrative jurisdiction. | [publication city](backend/proposals/publication-city.js), plan store: `membersCity`; [source registry](backend/parcels/sources.js) |
 
@@ -1514,7 +1542,10 @@ stated scope, not citywide completeness, cadastral title, ownership or survey ac
 A **draft artifact** is a canonical `design/v1` or `agreement/v1` object and its recomputed CID,
 returned without a pin or index write. Having a CID does not make it published. A compressed
 fragment preview carries the artifact to the app, where it is imported as a local draft without
-`published`. Public prose and carried canonical objects in MCP results are untrusted data.
+`published`. New draft designs and typed modifications carry a fresh authoring time; app import
+retains the canonical time. Agreement records retain author, sponsor and source-qualified input
+parcel identity, so opening a private preview does not silently change its CID. Public prose and
+carried canonical objects in MCP results are untrusted data.
 
 An **approval link** names an agreement CID (or a bet's agreement account), an action and optional
 amount/side. It is navigation intent: loading it never signs, funds or submits a decision. Funding
@@ -1524,6 +1555,47 @@ Owner receipts retain the existing acceptance/withdrawal contract.
 
 Headless agreement drafting derives a fresh working composition over complete immutable cadastral
 source facts using the app's handlers and fabric. It neither reads nor mutates the person's local
-working composition. Open-ground, attached-station and freeform-building formation parity remains
-unresolved for that host; the full restatement acceptance checks remain pending. These limits do
-not redefine what a design or agreement means in the app.
+working composition. Freeform single-building formation follows the same
+footprint-parcel handler; stations are attached content and form no new parcel. Exact node/browser
+ground parity is verified over the archived Borovje alternatives and Pionir source parcels.
+Unsurveyed/open-ground agreement drafting remains outside that host’s supported ground scope.
+These limits do not redefine what a design or agreement means in the app.
+
+**Committed agreement area (2026-10-23):** derived input/output areas are m² at 1 mm² resolution.
+The shared spherical calculation uses Turf 6.5’s radius of 6378137 m and deterministic arithmetic,
+so native trigonometry differences between JS engines cannot change the agreement’s CID. Layout
+piece provenance retains intersections at the existing 0.25 m² ancestry floor; a valid 0.8756 m²
+Borovje source contribution must not disappear under a separate 1 m² cutoff. Geometry, coverage
+and partition checks remain strict. These corrections can change experimental agreement CIDs;
+affected records require recreation, with one current calculation contract.
+
+An oversized **private preview** returns the canonical artifact/CID with `previewUrl: null` and
+`previewStatus: publication-required`. Its recovery keeps `confirm: false`; URL limits neither
+discard the draft nor authorize permanent publication. Agreement fragments must carry exactly the
+linked design CID set before any design is imported or applied.
+
+An MCP **comparison** reports authored floor area, unioned authored green/road area, bound source
+parcels, full building removals and partial cuts under the app’s demolition rules, and an
+agreement’s modeled party land/cash ledger. Missing or incomplete source stock remains unknown,
+not zero. The ledger is a modeled allocation, not proof of ownership or compensation. Published
+parcel-source identity is retained through CID-based comparisons, forks and agreement drafting.
+Binding-selected source identity is carried into private previews. The Croatian database gateway
+selector is `oss-wfs`; its persisted binding provenance names the `hr-cadastre` namespace. Explicit
+`oss-wfs` binding/publication uses the existing Croatian PostGIS path only in its catalogued cities.
+
+
+## Explicit design duplication (2026-10-23)
+
+User decision: **Duplicate** replaces the old **Fork design** form action. For movable Freeform
+buildings, parks, squares and lakes, a copy follows the pointer and a click places a new local
+design; Escape cancels without creating a draft or design. Authored geometry, settings, decorations
+and imported mesh references are copied, while the original design and its agreements stay unchanged.
+The copy has fresh identity and authorship time, no inherited publication, lifecycle, agreement,
+origin or cadastral binding. The moved site is bound through the current authoritative service
+before applying it. Failure does not fabricate cadastral coverage or consent. Site-bound building
+rules, parcel layouts, corridors, attached stations and rights-only acts have no free-copy action.
+Historical origin records and the immutable-source behavior of geometry editing remain distinct.
+
+**Upload .glb** in the Freeform editor opens the existing model importer. Using a model replaces
+only the selected footprint and retains the other authored buildings, surroundings and undo history.
+Cancelling leaves the current design unchanged; **Done** commits through the ordinary editor flow.

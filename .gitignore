@@ -33,6 +33,7 @@ frontend/rpc-config.js
 
 # Generated audiobook assets are local deliverables, not repository source.
 /data/metrocoalescence-chapter-*.mp3
+/data/metrocoalescence-audiobook/
 /data/Metrocoalescense-SinglePages.pdf
 
 # Raw source HTML, images, PDFs and migration reports are local files, outside Git.

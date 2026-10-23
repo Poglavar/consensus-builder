@@ -4,7 +4,7 @@
 // live in CSS and wiring, so they are asserted at the source — each assertion fails if its fix
 // is reverted.
 import { describe, expect, it } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 
 const read = path => readFileSync(new URL(`../../frontend/${path}`, import.meta.url), 'utf8');
 const mapCss = read('css/map.css');
@@ -16,7 +16,6 @@ const mapShellCss = read('css/map-shell.css');
 const primitivesCss = read('css/primitives.css');
 const indexHtml = read('index.html');
 const mapCreditsCss = read('css/map-credits.css');
-const selectionTrayCss = read('css/selection-tray.css');
 const proposalsCss = read('css/proposals.css');
 const proposalDetailsCss = read('css/proposal-details.css');
 const clickStackPanel = read('js/click-stack/click-stack-panel.js');
@@ -25,6 +24,15 @@ const threeMode = read('js/three-mode.js');
 const parcelBlocks = read('js/parcel-blocks.js');
 const listUi = read('js/proposals/list-ui.js');
 const cityPrompt = read('js/city-switch-prompt.js');
+
+describe('parcel selection presentation', () => {
+    it('has no retired tray markup or stylesheet', () => {
+        expect(indexHtml).not.toMatch(/selection-tray(?:-slot)?/);
+        expect(existsSync(new URL('../../frontend/css/selection-tray.css', import.meta.url))).toBe(false);
+        expect([mapCss, utilitiesCss, panelsCss, mapShellCss, proposalsCss].join('\n'))
+            .not.toMatch(/(?:#|\.)selection-tray\b/);
+    });
+});
 
 // Body of the first `selector { … }` block whose selector text matches, searched from `from`.
 function ruleBody(css, selectorPattern, from = 0) {
@@ -79,7 +87,6 @@ describe('the left-edge mode strip is never covered on phones', () => {
     it('hangs the mode strip from the top clearance on phones, and nothing lifts it from below', () => {
         const [block] = mediaBlocksContaining(mapCss, '(max-width: 767.98px)', '--map-mode-stack-bottom');
         expect(ruleBody(block, '(?:^|\\n)\\s*body')).toMatch(/--map-mode-stack-bottom:\s*calc\(var\(--map-shell-top-clearance\)\s*\+\s*276px\)/);
-        expect(selectionTrayCss).not.toMatch(/body:has\(#selection-tray\)\s*\{[^}]*--map-mode-stack-bottom/);
         expect(mapShellCss).not.toContain('--info-panel-mobile-inset: var(--map-mode-strip)');
     });
 
@@ -227,7 +234,6 @@ describe('3D and photo view', () => {
     it('sets the credits and the scale bar straight on the map, in the one row above the dock', () => {
         // Neither corner control is lifted or boxed: both Leaflet corners already sit at --map-visible-bottom.
         expect(ruleBody(mapCss, '\\.leaflet-bottom\\.leaflet-right \\.leaflet-control-scale')).toBeNull();
-        expect(ruleBody(selectionTrayCss, 'body:has\\(#selection-tray\\) \\.leaflet-bottom\\.leaflet-right \\.leaflet-control-scale')).toBeNull();
         expect(ruleBody(mapCss, '\\.leaflet-control-scale-line')).toMatch(/background:\s*transparent/);
         expect(ruleBody(mapCreditsCss, '\\.map-credits-control')).toMatch(/background:\s*transparent/);
         // On a phone the dock is a veil whose buttons at rest do not hide it; on a wide map it is
@@ -267,7 +273,6 @@ describe('3D and photo view', () => {
         expect(ruleBody(utilitiesCss, '\.map-feedback-stack')).toMatch(/display:\s*flex/);
         expect(ruleBody(utilitiesCss, '\.map-feedback-stack')).toMatch(/flex-direction:\s*column/);
         expect(ruleBody(utilitiesCss, '\.map-feedback-stack')).toMatch(/gap:\s*var\(--cb-space-2\)/);
-        expect(utilitiesCss).toMatch(/body:has\(#selection-tray\) \.map-feedback-stack\s*\{\s*bottom:/);
         expect(photorealCss).toMatch(/\.map-feedback-stack \.three-view-hint\s*\{[^}]*max-width:\s*100%;/s);
         expect(photorealCss).not.toMatch(/\.three-view-hint\s*\{[^}]*bottom:/s);
         expect(photorealCss).toMatch(/#map-container:has\(\.photoreal-cover\) \.three-view-hint\s*\{\s*display:\s*none;/);

@@ -80,6 +80,24 @@ describe('computeSurfacePolygon', () => {
 });
 
 describe('buildSurface', () => {
+    it('retains an independent authored furniture layout through storage and rendering projections', () => {
+        const design = { version: 3, trees: [{ coordinate: [15.9701, 45.8101], kind: 'conifer', heightM: 12 }] };
+        const surface = BuildingGround.buildSurface('green', BLOCK, [BUILDING], design);
+        const proposal = { proposalId: 'building', buildingProposal: {}, geometry: { groundSurface: surface } };
+        expect(BuildingGround.surfaceOf(proposal).decorationDesign).toEqual(design);
+        expect(BuildingGround.appliedSurfaces([proposal], () => true)[0].decorationDesign).toEqual(design);
+        surface.decorationDesign.trees[0].heightM = 18;
+        expect(design.trees[0].heightM).toBe(12);
+    });
+
+    it('moves furniture records and path coordinates without changing their authored attributes', () => {
+        const source = { version: 3, trees: [{ coordinate: [1, 2], kind: 'conifer', heightM: 12 }], paths: [[[1, 2], [2, 3]]] };
+        const shift = points => typeof points[0] === 'number' ? [points[0] + 1, points[1] + 2] : points.map(shift);
+        const moved = BuildingGround.moveDecorationDesign(source, null, null, shift);
+        expect(moved.trees).toEqual([{ coordinate: [2, 4], kind: 'conifer', heightM: 12 }]);
+        expect(moved.paths).toEqual([[[2, 4], [3, 5]]]);
+        expect(source.trees[0].coordinate).toEqual([1, 2]);
+    });
     it('builds a persisted surface for a real treatment', () => {
         const surface = BuildingGround.buildSurface('paved', BLOCK, [BUILDING]);
         expect(surface.treatment).toBe('paved');

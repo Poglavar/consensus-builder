@@ -252,12 +252,14 @@
             this.layerGroup = null;
             this.liveLayer = null;
             this.deleteMarker = null;
+            this.insertionMarker = null;
             this.deleteActionVisible = this.selectedVertexIndex !== null && options.showInitialDeleteAction === true;
             this.destroyed = false;
             this.dragStartRing = null;
             this.dragHistoryRecorded = false;
             this.boundKeydown = event => this.handleKeydown(event);
             this.boundMapClick = () => this.hideDeleteAction({ clearSelection: true });
+            this.boundMapMove = () => this.hideInsertionPreview();
 
             // Undo, shared with the plot and road editors. The ring is the whole state, so a
             // snapshot is just a copy of it — taken before a move/insert/remove commits.
@@ -293,6 +295,7 @@
 
             if (this.document) this.document.addEventListener('keydown', this.boundKeydown);
             if (typeof this.map.on === 'function') this.map.on('click', this.boundMapClick);
+            if (typeof this.map.on === 'function') this.map.on('movestart', this.boundMapMove);
         }
 
         // A small control in the map corner: map chrome (.map-shell-button), placed by
@@ -442,6 +445,7 @@
         }
 
         clearLayers() {
+            this.hideInsertionPreview();
             if (this.liveLayer && this.map) {
                 try { this.map.removeLayer(this.liveLayer); } catch (_) { }
             }
@@ -480,6 +484,9 @@
                     bubblingMouseEvents: false
                 }).addTo(this.layerGroup);
                 edge.on('click', event => this.handleEdgeClick(edgeIndex, event));
+                edge.on('mouseover', event => this.showInsertionPreview(edgeIndex, event));
+                edge.on('mousemove', event => this.showInsertionPreview(edgeIndex, event));
+                edge.on('mouseout', () => this.hideInsertionPreview());
             });
 
             this.ring.forEach(([lng, lat], vertexIndex) => {
@@ -514,6 +521,34 @@
             } catch (_) { }
         }
 
+        hideInsertionPreview() {
+            if (this.insertionMarker) this.map.removeLayer(this.insertionMarker);
+            this.insertionMarker = null;
+        }
+
+        showInsertionPreview(edgeIndex, event) {
+            if (this.destroyed || this.dragStartRing || !event?.latlng) return;
+            const coordinate = coordinateOnEdge(this.ring, edgeIndex,
+                [event.latlng.lng, event.latlng.lat], this.turf);
+            if (!coordinate) return;
+            const latLng = [coordinate[1], coordinate[0]];
+            if (this.insertionMarker) {
+                this.insertionMarker.setLatLng(latLng);
+                return;
+            }
+            this.insertionMarker = this.L.marker(latLng, {
+                pane: this.options.pane || 'markerPane',
+                interactive: false,
+                keyboard: false,
+                icon: this.L.divIcon({
+                    className: `${this.options.markerClassName || 'blockify-handle blockify-handle--vertex'} polygon-geometry-editor__insertion`,
+                    html: this.options.markerHtml || '<span></span>',
+                    iconSize: this.options.iconSize || [24, 24],
+                    iconAnchor: this.options.iconAnchor || [12, 12]
+                })
+            }).addTo(this.map);
+        }
+
         selectVertex(vertexIndex, options = {}) {
             const nextIndex = Number.isInteger(vertexIndex) ? vertexIndex : null;
             const alreadyShowingHere = nextIndex === this.selectedVertexIndex && !!this.deleteMarker;
@@ -546,6 +581,7 @@
         }
 
         handleVertexDragStart(vertexIndex, event) {
+            this.hideInsertionPreview();
             this.stopLeafletEvent(event);
             this.hideDeleteAction({ clearSelection: true });
             // Leaflet mutates this.ring during each drag event. Capture before that first mutation
@@ -654,6 +690,7 @@
             }
             if (this.document) this.document.removeEventListener('keydown', this.boundKeydown);
             if (typeof this.map.off === 'function') this.map.off('click', this.boundMapClick);
+            if (typeof this.map.off === 'function') this.map.off('movestart', this.boundMapMove);
             this.deleteMarker = null;
             this.deleteActionVisible = false;
             this.selectedVertexIndex = null;

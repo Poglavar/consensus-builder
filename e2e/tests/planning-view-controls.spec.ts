@@ -2,6 +2,7 @@
 import { test, expect } from '../helpers/fixtures';
 import { openCity, openParcel, PARCEL_ID, PARCEL_GEOMETRY } from '../helpers/runtime';
 import { selectNativeOption } from '../helpers/controls';
+import { openLayerSection } from '../helpers/layers';
 
 const sources = ['a', 'b'].map((suffix, index) => ({
   id: `planning-controls-${suffix}`, city: 'zagreb', label: `Planning edition ${suffix.toUpperCase()}`,
@@ -74,7 +75,7 @@ for (const blocksEnabled of [false, true]) test(`planning source, scenario, disp
   await expect(panel).toBeHidden();
   if (blocksEnabled) {
     await page.route('**/blocks/roads**', route => route.fulfill({ json: { type: 'FeatureCollection', features: [] } }));
-    await page.locator('#layers-button').click();
+    await openLayerSection(page, 'blocks');
     await page.locator('#showUrbanBlocks').check();
     await expect(page.locator('#urban-blocks-status')).toContainText('No fully enclosed blocks');
     await page.locator('#layers-button').click();

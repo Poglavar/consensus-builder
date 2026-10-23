@@ -1,3 +1,4 @@
+import { openLayerSection } from '../helpers/layers';
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
 import { selectors } from '../helpers/selectors';
@@ -10,11 +11,22 @@ const descriptor = (adapter = 'xyz', layer = 'ortho') => {
   return { ...value, id: 'imagery.' + Buffer.from(JSON.stringify(value)).toString('base64url') };
 };
 async function openChooser(page: import('@playwright/test').Page) {
-  await page.locator(selectors.layersButton).click();
+  await openLayerSection(page, 'base-map');
   await page.locator('#imagery-source-settings-button').click();
   return page.locator('#parcel-source-settings');
 }
 test.describe('Imagery area sources', () => {
+  test.beforeEach(async ({ mockApi: page }) => {
+    // Keep the unrelated NYC cadastral startup from covering the imagery controls with recovery UI.
+    await page.route('**/parcel-nyc**', route => route.fulfill({ json: {
+      type: 'FeatureCollection', features: [{ type: 'Feature',
+        properties: { parcelId: 'US-NY-100001', parcel_id: '100001', calculatedArea: 400 },
+        geometry: { type: 'Polygon', coordinates: [[[-74.0062, 40.7126], [-74.0058, 40.7126],
+          [-74.0058, 40.7130], [-74.0062, 40.7130], [-74.0062, 40.7126]]] }
+      }]
+    } }));
+  });
+
   test('verifies XYZ, persists through reload and resets to the standard map', async ({ mockApi: page }) => {
     const source = descriptor();
     let failTiles = false;
@@ -54,7 +66,7 @@ test.describe('Imagery area sources', () => {
     await expect(dialog.locator('#parcel-source-url')).toHaveValue(source.endpoint);
     await dialog.getByRole('button', { name: 'Close', exact: true }).click();
     await expect(dialog).toBeHidden();
-    await page.locator(selectors.layersButton).click();
+    await openLayerSection(page, 'base-map');
     await page.locator('#tile-source-select').selectOption('openstreetmap');
     expect(await page.evaluate(() => (window as any).BasemapManager.getCurrentBasemapKey())).toBe('openstreetmap');
     expect(page.url()).not.toContain('imagerySource=');

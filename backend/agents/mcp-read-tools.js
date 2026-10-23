@@ -1,7 +1,7 @@
 // Public MCP reads use the app's parcel gateway and search providers, with bounded upstream waits.
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import * as turf from '@turf/turf';
+import { appTurf as turf } from './mcp-geometry.js';
 import { cidOfObject, isCid } from '../cid.js';
 
 const require = createRequire(import.meta.url);
@@ -11,6 +11,10 @@ const search = require('../../frontend/js/ui/search-model.js');
 const databaseSources = JSON.parse(readFileSync(new URL('../parcels/source-catalog.json', import.meta.url), 'utf8')).databaseSources;
 const vocabulary = () => readFileSync(new URL('../../vocabulary.md', import.meta.url), 'utf8');
 const failure = (code, message, next) => Object.assign(new Error(message), { code, next });
+// Indexed designs retain the source on their binding. The Croatian PostGIS binding names its
+// cadastral namespace; the public read/binding gateway for that same stock is oss-wfs.
+export const parcelSourceIdOf = value => value?.parcelSourceId
+    || (value?.binding?.parcelSource?.sourceId === 'hr-cadastre' ? 'oss-wfs' : value?.binding?.parcelSource?.sourceId);
 
 export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
     async function request(path, query = {}, body, external = false) {
@@ -85,10 +89,15 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
     async function getDesign({ designCid }) {
         const row = await request(`/designs/${encodeURIComponent(designCid)}`);
         if (row.cid !== designCid || !row.content || cidOfObject(row.content) !== designCid) throw failure('cid-mismatch', 'The index returned a different design.', { action: 'Retry from a trusted index.' });
-        return { ...row, previewUrl: `${appOrigin}/designs/${designCid}` };
+        return { ...row, parcelSourceId: parcelSourceIdOf(row), previewUrl: `${appOrigin}/designs/${designCid}` };
+    }
+    async function getAgreement({ agreementCid }) {
+        const row = await request(`/agreements/${encodeURIComponent(agreementCid)}`);
+        if (row.cid !== agreementCid || !row.content || cidOfObject(row.content) !== agreementCid) throw failure('cid-mismatch', 'The index returned a different agreement.', { action: 'Retry from a trusted index.' });
+        return { ...row, previewUrl: `${appOrigin}/agreements/${agreementCid}` };
     }
     return {
-        request, parcels, mapUrl, listDesigns, getDesign,
+        request, parcels, mapUrl, listDesigns, getDesign, getAgreement,
         siteOfDesign(content) {
             if (content.site) return content.site;
             const parts = footprintParts.footprintParts(content);

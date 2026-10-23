@@ -14,7 +14,8 @@
     // from the definition (proposals/formation-depth.js stripDerivedPayloadData: the applied flag,
     // the materialization and the demolition scan): the furniture a park or square generates on its
     // first apply (`decorations`, written back by apply/structures.js) and the payload's local `hash`.
-    // None of it is part of the design, so applying a design never changes its CID.
+    // None of it is part of the design, so applying a design never changes its CID. An explicit
+    // decorationDesign is authored furniture and stays in the payload (or in a building groundSurface).
     const RUNTIME_KEYS = Object.freeze(['decorations', 'hash']);
     // Every other field of a design/v1 object, each present and null when the design has none.
     const FIELDS = Object.freeze(['schema', 'goal', 'title', 'description', 'author', 'city', 'site', 'toleranceM', 'geometry', 'origin', 'authoredAt']);
