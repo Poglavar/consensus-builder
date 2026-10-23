@@ -883,3 +883,5 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-23: Built/GDI survey overlays start Off; when shown, use a faint fill with a contrasting border instead of opaque purple footprints.
 
 - 2026-10-23: Remove the experimental Atlas parcel-study editor from the UI, including its entry point and link/draft restoration; retain Permitted envelope inspection and calculations.
+
+- 2026-10-23: Keep vocabulary.md as the canonical glossary of current system concepts; retain implementation history, research and unresolved findings in separate linked documents.
