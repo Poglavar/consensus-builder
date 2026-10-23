@@ -142,7 +142,7 @@ The derived relationship between authored site geometry and a stated parcel sour
 
 ### Binding coverage
 
-Whether the stated source query provides sufficient parcel evidence for the site: full, partial, none or unknown. Unknown or failed source data cannot establish that the site is open ground.
+The extent to which a site has represented cadastral coverage: `complete`, `partial`, `none` for confirmed lack of supported coverage, or `unknown` for unverified coverage. Unknown or failed source data cannot establish that the site is open ground.
 
 ### Binding drift
 
