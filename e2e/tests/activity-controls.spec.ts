@@ -9,15 +9,12 @@ import { Page } from '@playwright/test';
 
 const shortCid = (cid: string) => `${cid.slice(0, 12)}…${cid.slice(-6)}`;
 
-// Simulation controls live under Settings > Diagnostics.
+// Simulation controls live in their own top-level Settings section.
 async function openSimulation(page: Page) {
   await page.locator('#settings-button').click();
-  const diagnostics = page.locator('#settings-sheet details.activity-diagnostics');
-  await expect(diagnostics).toBeVisible();
-  if (!(await diagnostics.evaluate((details: HTMLDetailsElement) => details.open))) await diagnostics.locator('> summary').click();
-  const simulation = diagnostics.locator('details.activity-simulation');
+  const simulation = page.locator('#settings-sheet details.activity-simulation[data-section="game"]');
   await expect(simulation).toBeVisible();
-  if (!(await simulation.evaluate((details: HTMLDetailsElement) => details.open))) await simulation.locator('> summary').click();
+  if (!(await simulation.evaluate((details: HTMLDetailsElement) => details.open))) await simulation.locator(':scope > summary').click();
   await expect(simulation).toHaveAttribute('open', '');
 }
 
@@ -338,7 +335,6 @@ test.describe('Activity and simulation controls @features', () => {
     await openCity(page);
     await openSimulation(page);
     const settings = page.locator('#settings-sheet .activity-simulation-settings');
-    await settings.locator('summary').click();
     // The on/off switch is the section's first row, outside the settings fold.
     const gameEnabled = page.locator('#settings-sheet .activity-simulation-switch #gameCheckbox');
     await gameEnabled.check();

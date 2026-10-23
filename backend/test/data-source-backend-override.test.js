@@ -10,23 +10,35 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 
 const source = readFileSync(new URL('../../frontend/js/data-source.js', import.meta.url), 'utf8');
+const environmentSource = readFileSync(new URL('../../frontend/js/environment.js', import.meta.url), 'utf8');
 
 // Boot data-source.js against a localhost page carrying ?backend=http://localhost:4179.
-function bootWithOverride(cityConfig) {
-    const stored = new Map();
+function bootWithOverride(cityConfig, options = {}) {
+    const stored = new Map(Object.entries(options.stored || {}));
+    const storageCalls = [];
+    const domLookups = [];
+    const readyListeners = [];
     const storage = {
-        getItem: key => stored.get(key) ?? null,
-        setItem: (key, value) => stored.set(key, String(value)),
-        clear: () => stored.clear()
+        getItem: key => {
+            storageCalls.push(['get', key]);
+            return stored.get(key) ?? null;
+        },
+        setItem: (key, value) => {
+            storageCalls.push(['set', key, value]);
+            stored.set(key, String(value));
+        },
+        clear: () => {
+            storageCalls.push(['clear']);
+            stored.clear();
+        }
     };
     const window = {
         // map-core.js's view → EPSG:3765 bbox, stubbed: the request carries what it returns
         bboxInCrs: (bounds, crs) => (crs === 'EPSG:3765' ? '1,2,3,4' : null),
-        current_environment: 'development',
         location: {
             protocol: 'http:',
-            hostname: 'localhost',
-            search: '?backend=http%3A%2F%2Flocalhost%3A4179'
+            hostname: options.hostname || 'localhost',
+            search: options.search ?? '?backend=http%3A%2F%2Flocalhost%3A4179'
         },
         CityConfigManager: {
             requiresBackendDataSource: () => true,
@@ -40,13 +52,72 @@ function bootWithOverride(cityConfig) {
         PersistentStorage: storage,
         URLSearchParams,
         console,
-        document: { addEventListener() {}, getElementById: () => null }
+        document: {
+            readyState: 'loading',
+            body: { classList: { add() {}, contains: () => false } },
+            addEventListener(event, listener) {
+                if (event === 'DOMContentLoaded') readyListeners.push(listener);
+            },
+            getElementById(id) {
+                domLookups.push(id);
+                return null;
+            }
+        }
     });
+    vm.runInContext(environmentSource, context);
     vm.runInContext(source, context);
-    return { window, stored };
+    readyListeners.forEach(listener => listener());
+    return { window, stored, storageCalls, domLookups };
 }
 
 describe('data source backend override', () => {
+    it.each(['oss.uredjenazemlja.hr', 'api.urbangametheory.xyz', 'localhost'])(
+        'ignores the obsolete stored global choice %s and preserves saved data on startup', choice => {
+            const initial = {
+                cb_data_source: choice,
+                saved_parcels: '[{"id":"parcel-1"}]',
+                saved_proposals: '[{"id":"proposal-1"}]',
+                dataset_provider: 'direct'
+            };
+            const { window, stored, storageCalls, domLookups } = bootWithOverride({
+                parcels: { source: 'oss-wfs', requiresBackend: false }
+            }, { stored: initial, search: '' });
+
+            expect(window.getCurrentDataSource()).toBe('localhost');
+            expect(window.buildParcelRequestParams('1,2,3,4').url)
+                .toBe('http://localhost:3000/parcels?bbox=1%2C2%2C3%2C4');
+            expect(Object.fromEntries(stored)).toEqual(initial);
+            expect(storageCalls).not.toContainEqual(['get', 'cb_data_source']);
+            expect(storageCalls.some(([operation]) => operation === 'set' || operation === 'clear')).toBe(false);
+            expect(domLookups).not.toContain('data-source-select');
+        }
+    );
+
+    it('ignores URL and saved backend overrides in production', () => {
+        const { window, stored } = bootWithOverride({ parcels: { source: 'oss-wfs' } }, {
+            hostname: 'urbangametheory.xyz',
+            stored: { cb_data_source: 'localhost', cb_dev_backend_base: 'http://localhost:9999' }
+        });
+        expect(window.getCurrentDataSource()).toBe('api.urbangametheory.xyz');
+        expect(window.getBackendBase()).toBe('https://api.urbangametheory.xyz');
+        expect(window.buildParcelRequestParams('1,2,3,4').url)
+            .toBe('https://api.urbangametheory.xyz/parcels?bbox=1%2C2%2C3%2C4');
+        expect(stored.get('cb_dev_backend_base')).toBe('http://localhost:9999');
+    });
+
+    it('preserves environment defaults for street providers', () => {
+        const local = bootWithOverride({}).window;
+        expect(local.buildStreetRequestParams({ bbox: '1,2,3,4' })).toEqual({
+            url: 'http://localhost:4179/streets?bbox=1%2C2%2C3%2C4',
+            pageSize: null,
+            source: 'backend'
+        });
+        const production = bootWithOverride({}, { hostname: 'urbangametheory.xyz' }).window;
+        const request = production.buildStreetRequestParams();
+        expect(request.source).toBe('arcgis');
+        expect(request.url.startsWith('https://services8.arcgis.com/')).toBe(true);
+    });
+
     it('routes GDI building footprints through the backend named in the URL', () => {
         // A city that actually has GDI footprints — the Zagreb survey. The fixture used to name a
         // source of 'backend', which is not a building source at all; GDI requests are now refused

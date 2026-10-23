@@ -20,10 +20,10 @@
         'dev-badge', 'debug-badge', 'version-badge',
         'parcel-source-settings-button',
         'building-source-settings-button',
-        'data-source-select', 'tile-source-select', 'wipeLocalDataButton',
+        'tile-source-select', 'wipeLocalDataButton',
         'showParcelCoverageButton', 'refreshParcelDataButton',
         'debugModeCheckbox',
-        // Settings > Diagnostics: the Simulation section
+        // Settings: the Simulation section
         'gameCheckbox', 'game-datetime', 'game-turns', 'turn-interval-slider', 'turn-interval-value',
         'turn-progress-fill', 'turn-progress-time', 'game-play-pause-btn',
         // Proposals sheet
@@ -481,8 +481,6 @@
         // Opens the palette itself, so it is not listed in it.
         control('command-palette-button', { id: 'settings.commandPalette', group: 'settings', surfaces: ['settings'], palette: false,
             labelKey: 'commandPalette.open', fallbackLabel: 'Command palette', icon: 'fas fa-terminal' }),
-        control('data-source-select', { id: 'settings.dataSource', group: 'settings', kind: 'input', surfaces: ['settings'], modes: ['2d'],
-            labelKey: 'mapShell.commands.dataSource', fallbackLabel: 'Data source', icon: 'fas fa-database' }),
         control('tile-source-select', { id: 'settings.baseMap', group: 'settings', kind: 'input', surfaces: ['layers'], modes: ['2d'],
             labelKey: 'mapShell.commands.baseMap', fallbackLabel: 'Base map', icon: 'fas fa-map' }),
         control('wipeLocalDataButton', { id: 'settings.wipeLocalData', group: 'settings', surfaces: ['settings'],
@@ -693,7 +691,7 @@
             },
             // Every wrapper of the section hidden by the city config (applySidebarConfiguration).
             isSectionHidden(section) {
-                const wrappers = Array.from(doc.querySelectorAll(`.accordion-section[data-section="${section}"]`));
+                const wrappers = Array.from(doc.querySelectorAll(`[data-section="${section}"]`));
                 return wrappers.length > 0 && wrappers.every(wrapper => wrapper.style.display === 'none');
             },
             controlUnavailableReason(id) {
@@ -704,7 +702,7 @@
                     // A section the city config hid (or a feature flag) vs a control that is
                     // simply not shown right now (e.g. Clear Measurements with nothing measured).
                     const byCity = el.closest('[data-feature-hidden="true"]')
-                        || Array.from(doc.querySelectorAll('.accordion-section[data-section]'))
+                        || Array.from(doc.querySelectorAll('[data-section]'))
                             .some(section => section.style.display === 'none' && section.contains(el));
                     return byCity ? 'hiddenForCity' : 'disabled';
                 }

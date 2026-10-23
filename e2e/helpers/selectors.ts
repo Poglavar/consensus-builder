@@ -29,11 +29,11 @@ export const selectors = {
   measurementSheet: '#measurement-sheet',
   activityButton: '#activity-button',
   activitySheet: '#activity-sheet',
-  // The Simulation section inside the Activity sheet, and the running dot on the Activity button.
-  simulationSection: '#activity-sheet .activity-simulation[data-section="game"]',
-  simulationSummary: '#activity-sheet .activity-simulation[data-section="game"] > summary',
+  // Simulation lives in its own top-level Settings accordion section.
+  simulationSection: '#settings-sheet details.activity-simulation[data-section="game"]',
+  simulationSummary: '#settings-sheet details.activity-simulation[data-section="game"] > summary',
   simulationPlayPause: '#game-play-pause-btn',
-  simulationSettings: '#activity-sheet .activity-simulation-settings',
+  simulationSettings: '#settings-sheet .activity-simulation-settings',
   simulationRunningDot: '#activity-running-dot',
   proposalsList: '#proposals-list, [data-testid="proposals-list"]',
 

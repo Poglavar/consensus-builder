@@ -176,46 +176,28 @@ test.describe('Basemap and layer controls @features', () => {
     expect(await page.evaluate(() => (window as any).CityConfigManager.getCurrentCityId())).toBe('belgrade');
   });
 
-  // Was "data source selector exists". Changing the data source wipes local data, so it asks first;
-  // declining must leave the select on the source still in use.
-  test('the Settings sheet data-source select reverts when the wipe is declined', async ({ mockApi: page }) => {
+  test('Settings omits the data-source switch and leaves draft and local settings intact', async ({ mockApi: page }) => {
     await page.goto('/');
     await waitForMapReady(page);
-
-    await page.evaluate(() => {
+    const source = await page.evaluate(() => {
       const w = window as any;
-      w.__dataSourceConfirms = 0;
-      w.showStyledConfirm = async () => {
-        w.__dataSourceConfirms += 1;
-        return false;
-      };
+      localStorage.setItem('e2e-source-switch-sentinel', 'preserve');
+      w.proposalStorage.addProposal({
+        proposalId: 'e2e-source-switch-draft', title: 'Keep this draft', goal: 'park',
+        cadastreParcelIds: ['US-NY-100001'],
+      });
+      return w.getCurrentDataSource();
     });
 
     await page.locator(selectors.settingsButton).click();
-    const select = page.locator(`${selectors.settingsSheet} #data-source-select`);
-    await expect(select).toBeVisible();
-
-    const current = await page.evaluate(() => (window as any).getCurrentDataSource());
-    await expect(select).toHaveValue(current);
-
-    const other = await select.evaluate((el, cur) => {
-      const options = Array.from((el as HTMLSelectElement).options)
-        .map((option, index) => ({ index, value: option.value, label: option.label, disabled: option.disabled }))
-        .filter(option => !option.disabled);
-      const selectedIndex = (el as HTMLSelectElement).selectedIndex;
-      return options.find(option => {
-        if (option.value === cur) return false;
-        const initial = option.label.trim().slice(0, 1).toLowerCase();
-        const matching = options.filter(candidate => candidate.label.trim().toLowerCase().startsWith(initial));
-        const nextMatch = matching.find(candidate => candidate.index > selectedIndex) ?? matching[0];
-        return nextMatch?.index === option.index;
-      })?.value ?? null;
-    }, current);
-    expect(other).not.toBeNull();
-
-    await selectNativeOption(select, other!);
-    await expect.poll(() => page.evaluate(() => (window as any).__dataSourceConfirms)).toBe(1);
-    await expect(select).toHaveValue(current);
-    expect(await page.evaluate(() => (window as any).getCurrentDataSource())).toBe(current);
+    await expect(page.locator(`${selectors.settingsSheet} #data-source-select`)).toHaveCount(0);
+    expect(await page.evaluate(() => (window as any).getCurrentDataSource())).toBe(source);
+    await page.reload();
+    await waitForMapReady(page);
+    await page.locator(selectors.settingsButton).click();
+    await expect(page.locator(`${selectors.settingsSheet} #data-source-select`)).toHaveCount(0);
+    expect(await page.evaluate(() => localStorage.getItem('e2e-source-switch-sentinel'))).toBe('preserve');
+    expect(await page.evaluate(() => (window as any).proposalStorage.getProposal('e2e-source-switch-draft')?.title)).toBe('Keep this draft');
+    expect(await page.evaluate(() => (window as any).getCurrentDataSource())).toBe(source);
   });
 });

@@ -21545,7 +21545,7 @@
                 }
             }
             const dataSection = sectionToDataSection[sectionName] || sectionName;
-            document.querySelectorAll(`.accordion-section[data-section="${dataSection}"]`).forEach(section => {
+            document.querySelectorAll(`[data-section="${dataSection}"]`).forEach(section => {
                 section.style.display = 'none';
             });
         });

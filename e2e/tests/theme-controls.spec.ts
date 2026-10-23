@@ -7,6 +7,8 @@ test('appearance choices repaint the sheets, survive reload, and System follows 
   await page.emulateMedia({ colorScheme: 'light' });
   await openCity(page);
   await page.locator('#settings-button').click();
+  const appearance = page.locator('#settings-sheet details.accordion-section[data-section="appearance"]');
+  if (!(await appearance.evaluate((details: HTMLDetailsElement) => details.open))) await appearance.locator(':scope > summary').click();
   const background = () => page.locator('#settings-sheet').evaluate(node => getComputedStyle(node).backgroundColor);
   await page.locator('#theme-choice-light').click();
   const light = await background();
@@ -17,6 +19,7 @@ test('appearance choices repaint the sheets, survive reload, and System follows 
   expect(await page.evaluate(() => localStorage.getItem('cb.theme'))).toBe('dark');
   await page.reload({ waitUntil: 'domcontentloaded' });
   await page.locator('#settings-button').click();
+  if (!(await appearance.evaluate((details: HTMLDetailsElement) => details.open))) await appearance.locator(':scope > summary').click();
   await expect(page.locator('#theme-choice-dark')).toHaveAttribute('aria-pressed', 'true');
   await expect.poll(background).toBe(dark);
   await page.locator('#theme-choice-system').click();

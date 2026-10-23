@@ -158,14 +158,12 @@
         switch (section.kind) {
             case 'selection': return t('selectedParcels.count', 'Selected parcels ({{count}})', { count: section.count });
             case 'agreements': return section.multi ? t('agreements', 'Agreements ({{count}})', { count: section.count }) : t('agreement.panel.title', 'Agreement');
-            case 'designs': return section.multi ? t('designs', 'Designs ({{count}})', { count: section.count }) : t('proposalDrafts.tabs.design', 'Design');
-            case 'built': return section.count > 1 ? t('builtMany', 'Built ({{count}})', { count: section.count }) : t('threeMode.controls.built', 'Built');
+            case 'designs': return section.count > 1 ? t('proposals', 'Proposals ({{count}})', { count: section.count }) : t('proposal', 'Proposal');
+            case 'built': return section.count > 1 ? t('buildings', 'Buildings ({{count}})', { count: section.count }) : t('building', 'Building');
             case 'permitted': return t('planningViews.permitted', 'Permitted');
             case 'formed': return instance?.designLabel ? t('formedBy', 'Formed by {{design}}', { design: instance.designLabel }) : t('formed', 'Formed parcel');
-            case 'parcels': {
-                const reference = parcelReference(instance);
-                return t('parcelReference', 'Cadastral parcel {{reference}}', { reference });
-            }
+            case 'parcels': return section.count > 1 ? t('parcels', 'Parcels ({{count}})', { count: section.count })
+                : t('parcelReference', 'Cadastral parcel {{reference}}', { reference: parcelReference(instance) });
             case 'ground': {
                 const text = global.GroundMenuModel?.describeGround(global.GroundMenu?.factsAt(state.latlng)?.kind) || {};
                 return text.titleKey ? global.i18n.t(text.titleKey) : t('groundMenu.title.noCadastre', 'Open ground');

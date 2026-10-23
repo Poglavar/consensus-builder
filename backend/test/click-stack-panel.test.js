@@ -101,6 +101,62 @@ function loadPanel({ memory = null, withEditLock = false } = {}) {
     };
 }
 
+describe('click stack panel: section nouns and counts', () => {
+    it.each([
+        ['built', 'Building', 'Buildings'],
+        ['parcels', 'Cadastral parcel first', 'Parcels'],
+        ['designs', 'Proposal', 'Proposals']
+    ])('labels the %s section by its unique hit count and keeps object references', (kind, singular, plural) => {
+        const h = loadPanel();
+        const first = { id: 'first', label: 'Object first', feature: parcelFeature };
+        const second = { id: 'second', label: 'Object second', feature: parcelFeature };
+        const title = () => h.section(kind).querySelector('.click-stack__row-title').textContent;
+        h.context.ClickStackHits.hitsAt.mockReturnValue({ [kind]: [first, first] });
+        h.click(SPOT_A);
+        expect(title()).toBe(singular);
+        expect(h.section(kind).querySelector('.click-stack__strip')).toBeNull();
+        if (kind === 'parcels') {
+            expect(h.section(kind).querySelector('.click-stack__copy-reference').dataset.reference).toBe('first');
+        }
+
+        h.api.close();
+        h.context.ClickStackHits.hitsAt.mockReturnValue({ [kind]: [first, second, first] });
+        h.click(SPOT_B);
+        expect(title()).toBe(`${plural} (2)`);
+        expect(h.section(kind).querySelectorAll('.click-stack__chip').map(chip => chip.textContent))
+            .toEqual(['Object first', 'Object second']);
+        h.section(kind).querySelector('.click-stack__chip[data-id="second"]').click();
+        expect(title()).toBe(`${plural} (2)`);
+        expect(h.api.current().sections[0].instances[h.api.current().sections[0].selectedIndex].id).toBe('second');
+        if (kind === 'parcels') {
+            expect(h.section(kind).querySelector('.click-stack__copy-reference').dataset.reference).toBe('second');
+        }
+    });
+
+    it('uses the section-specific translation keys for single and multiple hits', () => {
+        const h = loadPanel();
+        h.context.i18n = { t: vi.fn((key, params) => `translated:${key}:${params.count ?? params.reference ?? ''}`) };
+        h.context.ClickStackHits.hitsAt.mockReturnValue({
+            built: [{ id: 'b1' }], parcels: [{ id: 'p1', feature: parcelFeature }], designs: [{ id: 'd1' }]
+        });
+        h.click(SPOT_A);
+        const title = kind => h.section(kind).querySelector('.click-stack__row-title').textContent;
+        expect(title('built')).toBe('translated:clickStack.building:');
+        expect(title('parcels')).toBe('translated:clickStack.parcelReference:p1');
+        expect(title('designs')).toBe('translated:clickStack.proposal:');
+        h.api.close();
+        h.context.ClickStackHits.hitsAt.mockReturnValue({
+            built: [{ id: 'b1' }, { id: 'b2' }],
+            parcels: [{ id: 'p1', feature: parcelFeature }, { id: 'p2', feature: parcelFeature }],
+            designs: [{ id: 'd1' }, { id: 'd2' }]
+        });
+        h.click(SPOT_B);
+        expect(title('built')).toBe('translated:clickStack.buildings:2');
+        expect(title('parcels')).toBe('translated:clickStack.parcels:2');
+        expect(title('designs')).toBe('translated:clickStack.proposals:2');
+    });
+});
+
 describe('click stack panel: a click opens, the same click closes', () => {
     it('hosts selected land, retains a collapsed selection while it changes, and keeps an empty mode reachable', () => {
         const h = loadPanel();

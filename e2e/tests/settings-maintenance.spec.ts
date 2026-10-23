@@ -9,6 +9,12 @@ async function openSettings(page: import('@playwright/test').Page) {
   await expect(page.locator('#settings-sheet')).toBeVisible();
 }
 
+async function openSettingsSection(page: import('@playwright/test').Page, section: string) {
+  const details = page.locator(`#settings-sheet > .map-sheet-body > details.accordion-section[data-section="${section}"]`);
+  if (!(await details.evaluate((el: HTMLDetailsElement) => el.open))) await details.locator(':scope > summary').click();
+  await expect(details).toHaveJSProperty('open', true);
+}
+
 async function openLayers(page: import('@playwright/test').Page) {
   await page.locator('#layers-button').click();
   await expect(page.locator('#layers-sheet')).toBeVisible();
@@ -17,15 +23,20 @@ async function openLayers(page: import('@playwright/test').Page) {
 
 // The resets sit folded under one "Reset data stored in this browser…" row (docs/design-language.md).
 async function openResets(page: import('@playwright/test').Page) {
-  const fold = page.locator('#settings-sheet details.sheet-reset');
-  if (!(await fold.evaluate((el: HTMLDetailsElement) => el.open))) await fold.locator('summary').click();
+  await openSettingsSection(page, 'reset');
   await expect(page.locator('#wipeLocalDataButton')).toBeVisible();
+}
+
+async function openDiagnostics(page: import('@playwright/test').Page) {
+  await openSettingsSection(page, 'diagnostics');
+  await expect(page.locator('#debugModeCheckbox')).toBeVisible();
 }
 
 test.describe('Settings maintenance @features', () => {
   test('coverage opens and refreshes, and a tile preference survives reload', async ({ mockApi: page }) => {
     await openCity(page);
     await openSettings(page);
+    await openSettingsSection(page, 'data');
     await page.locator('#showParcelCoverageButton').click();
     const coverage = page.locator('#parcel-coverage-modal');
     await expect(coverage).toBeVisible();
@@ -58,6 +69,7 @@ test.describe('Settings maintenance @features', () => {
     await page.goto('/?city=zg');
     await waitForMapReady(page);
     await openSettings(page);
+    await openDiagnostics(page);
     const debug = page.locator('#debugModeCheckbox');
     if (await debug.isChecked()) await debug.uncheck();
     await expect(page.locator('body')).not.toHaveClass(/debug-mode/);
@@ -84,7 +96,8 @@ test.describe('Settings maintenance @features', () => {
 
   test('parcel, block, and road clear controls remove their actual stored or projected state', async ({ mockApi: page }) => {
     await openCity(page);
-    await page.locator('#settings-button').click();
+    await openSettings(page);
+    await openDiagnostics(page);
     const debug = page.locator('#debugModeCheckbox');
     if (!(await debug.isChecked())) await debug.check();
 
@@ -143,35 +156,25 @@ test.describe('Settings maintenance @features', () => {
     expect(await page.evaluate(() => (window as any).PersistentStorage.getItem('e2e-wipe-persistent'))).toBeNull();
   });
 
-  test('declining a data-source change keeps the current source and its stored selection', async ({ mockApi: page }) => {
+  test('Settings has no data-source selector and preserves local draft and settings storage', async ({ mockApi: page }) => {
     await page.goto('/?city=zg');
     await waitForMapReady(page);
+    const before = await page.evaluate(parcelId => {
+      localStorage.setItem('e2e-settings-sentinel', 'keep-me');
+      const w = window as any;
+      w.proposalStorage.addProposal({ proposalId: 'e2e-settings-preserved-draft', title: 'Preserved settings draft', goal: 'park', cadastreParcelIds: [parcelId] });
+      return w.getCurrentDataSource();
+    }, PARCEL_ID);
     await openSettings(page);
-    const select = page.locator('#data-source-select');
-    const current = await select.inputValue();
-    const next = await select.evaluate((el, value) => {
-      const options = Array.from((el as HTMLSelectElement).options)
-        .map((option, index) => ({ index, value: option.value, label: option.label, disabled: option.disabled }))
-        .filter(option => !option.disabled);
-      const selectedIndex = (el as HTMLSelectElement).selectedIndex;
-      return options.find(option => {
-        if (option.value === value) return false;
-        const initial = option.label.trim().slice(0, 1).toLowerCase();
-        const matching = options.filter(candidate => candidate.label.trim().toLowerCase().startsWith(initial));
-        const nextMatch = matching.find(candidate => candidate.index > selectedIndex) ?? matching[0];
-        return nextMatch?.index === option.index;
-      })?.value ?? null;
-    }, current);
-    expect(next).toBeTruthy();
-    await selectNativeOption(select, next!);
-    const confirm = page.getByRole('alertdialog');
-    await expect(confirm).toBeVisible();
-    await confirm.getByRole('button', { name: /cancel/i }).click();
-    await expect(select).toHaveValue(current);
+    await expect(page.locator('#settings-sheet #data-source-select')).toHaveCount(0);
+    expect(await page.evaluate(() => (window as any).getCurrentDataSource())).toBe(before);
     await page.reload();
     await waitForMapReady(page);
     await openSettings(page);
-    await expect(page.locator('#data-source-select')).toHaveValue(current);
+    await expect(page.locator('#settings-sheet #data-source-select')).toHaveCount(0);
+    expect(await page.evaluate(() => localStorage.getItem('e2e-settings-sentinel'))).toBe('keep-me');
+    expect(await page.evaluate(() => (window as any).proposalStorage.getProposal('e2e-settings-preserved-draft')?.title)).toBe('Preserved settings draft');
+    expect(await page.evaluate(() => (window as any).getCurrentDataSource())).toBe(before);
   });
 
   test('Use my location asks permission and opens the nearest configured city', async ({ mockApi: page }) => {

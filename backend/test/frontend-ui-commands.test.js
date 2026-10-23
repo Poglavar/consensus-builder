@@ -41,6 +41,7 @@ const openingTags = (html, tagName) => [...html.matchAll(new RegExp(`<${tagName}
 
 // Interactive controls in the sheets that are deliberately NOT commands, and why.
 const NOT_COMMANDS = {
+    'designs-browse-tab': 'switches the Designs panel back to its browse tab',
     // View controls now follow the search/user row in DOM order, inside the floating shell's
     // markup range; their handlers belong to the map view rather than the sheet registry.
     'mode-walk-toggle': 'map view control',
@@ -292,7 +293,8 @@ describe('availability and search', () => {
         expect(layers).toEqual(expect.arrayContaining([
             'settings.parcelSourceSettings', 'settings.buildingSourceSettings', 'settings.baseMap', 'parcels.refresh'
         ]));
-        expect(settings).toEqual(expect.arrayContaining(['parcels.coverage', 'settings.dataSource']));
+        expect(settings).toContain('parcels.coverage');
+        expect(settings).not.toContain('settings.dataSource');
         expect(settings).not.toContain('parcels.refresh');
         const model = { mode: 'model', global: {} };
         for (const id of ['parcels.coverage', 'parcels.refresh', 'settings.dataSource', 'settings.baseMap']) {

@@ -70,7 +70,7 @@ describe('Data & maintenance section', () => {
         }
     });
 
-    it('keeps source selection and parcel refresh with Layers, while advanced data source stays in Settings', () => {
+    it('keeps parcel refresh and map sources with Layers and removes the global data-source switch', () => {
         const layers = sheetHtml('layers-sheet');
         for (const { marker, command } of LAYERS_DATA_ACTIONS) {
             expect(layers, marker).toContain(marker);
@@ -80,9 +80,8 @@ describe('Data & maintenance section', () => {
             expect(entry.surfaces, command).not.toContain('settings');
         }
         const settings = sheetHtml('settings-sheet');
-        expect(settings).toContain('id="data-source-select"');
-        expect(UiCommands.findCommand('settings.dataSource').surfaces).toContain('settings');
-        expect(UiCommands.findCommand('settings.dataSource').modes).toEqual(['2d']);
+        expect(settings).not.toContain('id="data-source-select"');
+        expect(UiCommands.findCommand('settings.dataSource')).toBeFalsy();
         expect(UiCommands.findCommand('parcels.coverage').surfaces).toContain('settings');
         expect(UiCommands.findCommand('parcels.coverage').modes).toEqual(['2d']);
     });
@@ -109,10 +108,18 @@ describe('Data & maintenance section', () => {
         }
     });
 
-    it('keeps the section hidden for a city when every wrapper is hidden, including the Settings upkeep', () => {
-        // isSectionHidden: true only when every .accordion-section[data-section] wrapper is hidden.
-        const wrappers = [...indexHtml.matchAll(/class="[^"]*accordion-section[^"]*"[^>]*data-section="parcels"/g)];
-        expect(wrappers.length).toBeGreaterThanOrEqual(2); // Layers' parcels section + the Settings upkeep
+    it('keeps only the seven Settings groups as accordions and leaves upkeep wrappers flat', () => {
+        const settings = sheetHtml('settings-sheet');
+        const groups = [...settings.matchAll(/<details\b([^>]*)>/g)].flatMap(([, attributes]) => {
+            const classes = attributes.match(/\bclass="([^"]*)"/)?.[1].split(/\s+/) || [];
+            const section = attributes.match(/\bdata-section="([^"]+)"/)?.[1];
+            return classes.includes('accordion-section') && section ? [section] : [];
+        });
+        expect(groups).toEqual(['navigation', 'appearance', 'data', 'info', 'game', 'diagnostics', 'reset']);
+        const upkeepWrappers = [...settings.matchAll(/<[^>]+data-section="(?:parcels|blocks|roads|proposals)"[^>]*>/g)]
+            .map(match => match[0]);
+        expect(upkeepWrappers.length).toBeGreaterThanOrEqual(4);
+        for (const wrapper of upkeepWrappers) expect(wrapper).not.toContain('accordion-section');
     });
 });
 
