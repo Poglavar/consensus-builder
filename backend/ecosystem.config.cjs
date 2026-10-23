@@ -79,7 +79,7 @@ module.exports = {
     max_memory_restart: '512M',
     env: {
       NODE_ENV: 'production',
-      MCP_PORT: '3096',
+      MCP_PORT: '3097',
       MCP_PUBLIC_ORIGIN: 'https://urbangametheory.xyz',
       UGT_APP_ORIGIN: 'https://urbangametheory.xyz',
       UGT_API_BASE: 'https://api.urbangametheory.xyz'

@@ -72,7 +72,7 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
     const service = createMcpHttpService({ publicOrigin: process.env.MCP_PUBLIC_ORIGIN });
-    const port = Number(process.env.MCP_PORT || 3096);
+    const port = Number(process.env.MCP_PORT || 3097);
     if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('Invalid MCP_PORT');
     service.http.listen(port, '127.0.0.1', () => console.error(`[${new Date().toISOString()}] [ugt-mcp] listening on loopback:${port}`));
     for (const signal of ['SIGINT', 'SIGTERM']) process.once(signal, () => service.close().then(() => process.exit(0)));
