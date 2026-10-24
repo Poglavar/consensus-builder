@@ -53,29 +53,33 @@ mcp-publisher publish server.json
 
 Read the published version back and compare its endpoint, description, version and identity. Publication receipts alone are insufficient.
 
-## Glama — sign-in required
+## Glama — public listing, ownership verification pending
 
-- [Connector catalogue and Add Server](https://glama.ai/mcp/connectors)
+- [Public connector listing](https://glama.ai/mcp/connectors/xyz.urbangametheory/urban-game-theory)
+- [Public badge](https://glama.ai/mcp/connectors/xyz.urbangametheory/urban-game-theory/badges/score.svg)
 - [Submission and ownership requirements](https://glama.ai/mcp/faq)
 
-The browser's Add Server action currently requires sign-in. Submit the endpoint as a **Connector**, using the copy above and No Auth. Check for an imported Registry listing before submitting a duplicate. Verify the endpoint passes Glama's health check, then record its actual listing URL here.
+Verified in the user's existing signed-in Chrome profile on **2026-10-24**. Glama automatically imported the official Registry entry with the correct title, description, Streamable HTTP transport and endpoint; no duplicate submission was made. The connector is public and its badge returns valid SVG. Glama currently reports **Not tested**, so this is not a Glama health-check success claim.
 
-For ownership, use the exact token issued by the signed-in Glama account. Put only its public claim JSON in `frontend/.well-known/glama.json` and serve it at `https://urbangametheory.xyz/.well-known/glama.json`; the exact route is already installed. Do not invent a claim token or use an account/session credential as proof.
+The signed-in account's public ownership proof is [`frontend/.well-known/glama.json`](../frontend/.well-known/glama.json), already served at `https://urbangametheory.xyz/.well-known/glama.json` and byte-verified against the file. It is a public claim token, not an account/session credential. Keep it published for verification to remain valid.
 
-## Awesome Remote MCP Servers — depends on Glama
+The final **Check HTTP file** action has not completed. Automatic approval review rejected it because it grants listing-management access and requires confirmation at action time; an explicit confirmation is pending. After approval, verify the claim in Glama, then configure No Auth and run the connector health check if available. Do not present ownership as claimed until the UI confirms it.
+
+## Awesome Remote MCP Servers — submitted for review
 
 - [Contribution requirements](https://github.com/punkpeye/awesome-remote-mcp-servers/blob/main/CONTRIBUTING.md)
-- Suggested category: **Real Estate**, alphabetically under Urban Game Theory.
+- [Submission PR #2810](https://github.com/punkpeye/awesome-remote-mcp-servers/pull/2810)
+- Category: **Real Estate**, alphabetically under Urban Game Theory.
 
-Prepare the following entry only after the actual Glama connector URL exists. Replace `ACTUAL_CONNECTOR_PATH` with its real namespace/name before submission; the list checks that the badge resolves.
+Submitted on **2026-10-24**. The pull request adds exactly three lines to `README.md`, with no deletions. Its automated **check-submission** check passed and applied **endpoint-ok** and **has-connector** labels. The submitting account starred the repository as required. The PR is open, not merged.
 
 ```md
 - [Urban Game Theory — Consensus Builder](https://urbangametheory.xyz) `https://urbangametheory.xyz/mcp`
-  [![Urban Game Theory MCP connector](https://glama.ai/mcp/connectors/ACTUAL_CONNECTOR_PATH/badges/score.svg)](https://glama.ai/mcp/connectors/ACTUAL_CONNECTOR_PATH)
+  [![Urban Game Theory MCP connector](https://glama.ai/mcp/connectors/xyz.urbangametheory/urban-game-theory/badges/score.svg)](https://glama.ai/mcp/connectors/xyz.urbangametheory/urban-game-theory)
   🔓 - Inspect real parcels, draft and edit urban plans, compare alternatives, and share 2D/3D designs.
 ```
 
-The submitting GitHub account must star the upstream repository. Fork it, add one entry, open the pull request, and verify its handshake and badge checks. Record the pull request URL and distinguish submitted from merged.
+The contribution commit is `c379ca81396aa9e29c7d059425850dfa31e782f1` on the dedicated `add-urban-game-theory-mcp` branch of the directory fork. Do not create a duplicate PR while review is pending.
 
 ## mcpservers.org — submitted for review
 
@@ -110,4 +114,6 @@ The source branch is intentional: the public MCP implementation is on `colosseum
 - Official Registry API returned the exact manifest as active, latest version 0.3.0; browser search displayed the published entry.
 - MCP.Directory's browser form confirmed receipt of the submission; publication remains pending review.
 - mcpservers.org's browser form confirmed successful submission on the Free plan; publication remains pending review.
+- Glama's imported public listing was verified in the user's Chrome profile; ownership remains pending explicit confirmation and Glama health remains Not tested.
+- Community directory PR #2810 adds exactly one three-line entry; its automated submission check passed.
 - No paid evaluation, paid listing, application release, or full test suite was run for this metadata-only change.
