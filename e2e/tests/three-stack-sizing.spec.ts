@@ -4,16 +4,17 @@ import path from 'node:path';
 
 const frontend = path.resolve(__dirname, '../../frontend');
 
-for (const viewport of [{ width: 1280, height: 720 }, { width: 390, height: 700 }]) {
+for (const viewport of [{ width: 1280, height: 720 }, { width: 390, height: 844 }]) {
   test.describe(`3D click stack sizing at ${viewport.width}px`, () => {
     test.use({ viewport });
 
     test.beforeEach(async ({ page }) => {
-      await page.setContent('<!doctype html><html><body class="three-mode-active"></body></html>');
-      for (const file of ['tokens', 'primitives', 'base', 'map', 'panels', 'map-shell', 'planning-views', 'three-click-stack']) {
+      await page.setContent('<!doctype html><html><body class="three-mode-active"><main id="map-container"></main></body></html>');
+      for (const file of ['tokens', 'primitives', 'base', 'map', 'panels', 'map-shell', 'planning-views', 'three-click-stack', 'mobile-sheets']) {
         await page.addStyleTag({ path: path.join(frontend, `css/${file}.css`) });
       }
       await page.addScriptTag({ path: path.join(frontend, 'js/three-click-stack.js') });
+      await page.addScriptTag({ path: path.join(frontend, 'js/mobile-dock-sheet.js') });
     });
 
     for (const scenario of [
@@ -25,7 +26,7 @@ for (const viewport of [{ width: 1280, height: 720 }, { width: 390, height: 700 
         await page.evaluate(({ kind, paragraphs, hosted }) => {
           const w = window as any;
           const input = Object.fromEntries(['built', 'designs', 'permitted', 'parcels'].map(kind => [kind, [{ id: kind }]]));
-          w.ThreeClickStack.show(input, { focus: kind }, {
+          w.ThreeClickStack.show(input, { focus: kind, container: document.getElementById('map-container') }, {
             activate(_kind: string, _instance: unknown, body: HTMLElement) {
               const panel = document.createElement('div');
               panel.className = hosted ? 'planning-inspector is-hosted' : 'three-mode-parcel-panel';
@@ -53,6 +54,13 @@ for (const viewport of [{ width: 1280, height: 720 }, { width: 390, height: 700 
             },
           });
         }, scenario);
+
+        // Four section headings plus source metrics exceed half of a short phone screen.
+        // Give the short record room to fit, then check that the sheet uses only that content.
+        if (scenario.paragraphs === 1 && viewport.width < 768) {
+          await page.locator('#three-click-stack > .mobile-dock-sheet-handle').focus();
+          await page.keyboard.press('End');
+        }
 
         const metrics = await page.evaluate(() => {
           const stack = document.querySelector('#three-click-stack')!;
@@ -90,7 +98,7 @@ for (const viewport of [{ width: 1280, height: 720 }, { width: 390, height: 700 
         }
         if (scenario.paragraphs === 1) {
           expect(metrics.body.height - metrics.content.height).toBeLessThan(20);
-          expect(metrics.stack.height).toBeLessThan(metrics.maxHeight - 100);
+          expect(metrics.stack.height).toBeLessThan(metrics.maxHeight);
           expect(metrics.bodyScrollHeight).toBeLessThanOrEqual(metrics.bodyClientHeight + 1);
         } else {
           expect(metrics.stack.height).toBeCloseTo(metrics.maxHeight, 0);
@@ -100,5 +108,37 @@ for (const viewport of [{ width: 1280, height: 720 }, { width: 390, height: 700 
         }
       });
     }
+
+    test('collapsing a section shrinks the panel, including after resizing it', async ({ page }) => {
+      await page.evaluate(() => {
+        const w = window as any;
+        const input = Object.fromEntries(['built', 'designs', 'permitted', 'parcels'].map(kind => [kind, [{ id: kind }]]));
+        w.ThreeClickStack.show(input, { focus: 'designs', container: document.getElementById('map-container') }, {
+          activate(_kind: string, _instance: unknown, body: HTMLElement) {
+            const content = document.createElement('div');
+            content.innerHTML = '<p>Building design details</p>'.repeat(40);
+            body.appendChild(content);
+          },
+        });
+      });
+      const stack = page.locator('#three-click-stack');
+      if (viewport.width < 768) {
+        const handle = stack.locator(':scope > .mobile-dock-sheet-handle');
+        await expect(handle).toBeVisible();
+        const surface = await stack.evaluate(el => ({ background: getComputedStyle(el).backgroundColor, handleHeight: el.firstElementChild!.getBoundingClientRect().height }));
+        expect(surface.background).toMatch(/^rgba\(.+, 0\.8\)$/);
+        expect(surface.handleHeight).toBeGreaterThanOrEqual(44);
+        await handle.focus();
+        await page.keyboard.press('End');
+      }
+      const expandedHeight = (await stack.boundingBox())!.height;
+      await stack.locator('[data-action="row"][data-kind="designs"]').click();
+      await expect(stack.locator('.click-stack__body')).toHaveCount(0);
+      await expect.poll(async () => (await stack.boundingBox())!.height).toBeLessThan(expandedHeight - 100);
+      const collapsedHeight = (await stack.boundingBox())!.height;
+      await stack.locator('[data-action="row"][data-kind="designs"]').click();
+      await expect.poll(async () => (await stack.boundingBox())!.height).toBeGreaterThan(collapsedHeight + 100);
+      await expect(stack.locator('.click-stack__body')).toHaveCount(1);
+    });
   });
 }

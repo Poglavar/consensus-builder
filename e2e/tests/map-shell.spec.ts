@@ -127,6 +127,43 @@ test.describe('Map shell sheets @features', () => {
     await expect(page.locator(selectors.openSheet)).toHaveCount(1);
   });
 
+  test('phone sheets shrink when their sections collapse', async ({ mockApi: page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.locator(selectors.layersButton).click();
+    const sheet = page.locator(selectors.layersSheet);
+    const section = sheet.locator('[data-section="buildings"]');
+    await sheet.locator(':scope > .mobile-dock-sheet-handle').focus();
+    await page.keyboard.press('End');
+    const collapsed = (await sheet.boundingBox())!.height;
+    await section.locator(':scope > summary').click();
+    await expect.poll(async () => (await sheet.boundingBox())!.height).toBeGreaterThan(collapsed + 50);
+    await sheet.locator(':scope > .mobile-dock-sheet-handle').focus();
+    await page.keyboard.press('End');
+    await section.locator(':scope > summary').click();
+    await expect.poll(async () => (await sheet.boundingBox())!.height).toBeLessThanOrEqual(collapsed + 1);
+  });
+
+  test('bottom navigation disappears in 3D and returns in 2D without reserving space', async ({ mockApi: page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    const bar = page.locator('#map-shell-bottom-right');
+    await expect(bar).toBeVisible();
+    // Exercise the shell's actual mode reaction without starting a WebGL renderer.
+    await page.evaluate(() => document.body.classList.add('three-mode-active'));
+    await expect(bar).toBeHidden();
+    await expect.poll(() => page.evaluate(() => {
+      const probe = document.createElement('div');
+      probe.style.height = 'var(--map-shell-dock-height)';
+      document.body.appendChild(probe);
+      const height = probe.getBoundingClientRect().height;
+      probe.remove();
+      return height;
+    })).toBe(0);
+    await page.evaluate(() => document.body.classList.remove('three-mode-active'));
+    await expect(bar).toBeVisible();
+    await page.locator(selectors.proposalsButton).click();
+    await expect(page.locator(selectors.proposalsSheet)).toBeVisible();
+  });
+
   test('Escape closes the open sheet and returns focus to its button', async ({ mockApi: page }) => {
     const trigger = page.locator(selectors.settingsButton);
     await trigger.click();

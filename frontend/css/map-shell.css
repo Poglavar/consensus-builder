@@ -155,6 +155,13 @@ body.three-mode-active :is(.map-editor-toolbar, .area-monitor-creation-panel) {
     display: none;
 }
 
+/* The 3D scene uses its selection controls; the map navigation row belongs to 2D. Reclaim its
+   clearance as well as hiding its buttons, while respecting a phone's home indicator. */
+body.three-mode-active {
+    --map-shell-dock-height: env(safe-area-inset-bottom, 0px);
+    --map-shell-bottom-clearance: calc(env(safe-area-inset-bottom, 0px) + var(--map-shell-gap));
+}
+
 /* The site tool's panel is a compact card of its own (site-tool.css). */
 .area-monitor-creation-panel {
     position: fixed;
