@@ -77,8 +77,6 @@
 
     // Cached superparcel data for boundary checking
     let cachedSuperparcel = null;
-    // Ground a Row must keep under it to count as standing on its site when it cannot fit (rowHouseFitsSite).
-    const ROW_SITE_OVERLAP_MIN_M2 = 1;
     let cachedSuperparcelMeters = null;
     let cachedCentroid = null;
     let cachedMetersPerDegLng = null;
@@ -154,7 +152,11 @@
     }
 
     function rowHouseGeneratorSite(block) {
-        if (block?.site?.geometry) return cloneRowHouseFeature(block.site);
+        if (block?.site?.geometry) {
+            // Remove redundant collinear vertices without changing the selected boundary.
+            // Cadastral provenance retains its original geometry on the block.
+            return turf.cleanCoords(cloneRowHouseFeature(block.site));
+        }
         return robustUnionLocal((block?.parcels || []).map(parcel => parcel?.feature).filter(Boolean));
     }
 
@@ -184,30 +186,63 @@
     // stays inside them. Leaving them is a choice made on the drop (onDragEnd).
     function rowHouseSiteBoundary() { return rowHouseBlock?.site || cachedSuperparcel; }
 
-    // Whether a bar of the current dimensions fits the cached site anywhere the placement rule looks
-    // (placeRowHouseBar: centred at the current rotation, or centred unrotated).
-    function rowHouseSiteHasFit() {
-        return [currentRotation, 0].some(rotation => checkBuildingFitsInSuperparcel(
-            currentBuildingLength, currentBuildingWidth, currentChamfer, 0, 0, rotation));
-    }
-
-    function rowHouseOverlapsSite(feature, boundary) {
-        const outside = turf.difference(feature, boundary);
-        const outsideArea = outside ? Number(turf.area(outside)) : 0;
-        return Number(turf.area(feature)) - outsideArea > ROW_SITE_OVERLAP_MIN_M2;
-    }
-
-    // The one rule for whether a Row stands on its site, used by generation, the re-run where it was
-    // dropped, drags, rotation and manual edits alike: inside the site; or, where no bar of its
-    // dimensions fits the site at all (an L too narrow for it), still standing on part of it. A bar
-    // the editor had to draw overhanging can therefore be moved and shaped like any other, and it
-    // leaves its parcels only when it no longer stands on them.
+    // Whole-footprint containment is the same requirement used when applying the design.
+    // A centroid or a few corner samples cannot prove containment on concavities or holes.
     function rowHouseFitsSite(feature, boundary = rowHouseSiteBoundary()) {
         if (!boundary?.geometry) return true;
         try {
-            if (window.SingleBuildingGeometry?.footprintWithinBoundary?.(feature, boundary, turf) === true) return true;
-            return !rowHouseSiteHasFit() && rowHouseOverlapsSite(feature, boundary);
+            return window.SingleBuildingGeometry?.footprintWithinBoundary?.(feature, boundary, turf) === true;
         } catch (_) { return false; }
+    }
+
+    // Search each connected component independently; the union centroid can lie in empty ground.
+    // These are placement candidates, never a claim that no geometric solution exists.
+    function rowHouseInteriorOffsets(site) {
+        if (!site?.geometry || !cachedCentroid) return [];
+        const polygons = site.geometry.type === 'MultiPolygon' ? site.geometry.coordinates : [site.geometry.coordinates];
+        const offsets = [];
+        const seen = new Set();
+        // Bound clipping work independently of cadastral vertex density. The global cap also
+        // bounds unusually fragmented selections; a missed placement is reported as unplaced.
+        const maxCandidates = 256;
+        const perComponentLimit = Math.min(96, Math.max(1, Math.floor(maxCandidates / polygons.length)));
+        for (const coordinates of polygons) {
+            if (offsets.length >= maxCandidates) break;
+            const componentStart = offsets.length;
+            const polygon = turf.polygon(coordinates);
+            const [west, south, east, north] = turf.bbox(polygon);
+            const points = [turf.centroid(polygon).geometry.coordinates, turf.pointOnFeature(polygon).geometry.coordinates];
+            for (let x = 1; x < 8; x++) for (let y = 1; y < 8; y++) {
+                points.push([west + (east - west) * x / 8, south + (north - south) * y / 8]);
+            }
+            const exterior = coordinates[0];
+            const edgeCount = exterior.length - 1;
+            const sampledEdges = Math.min(24, edgeCount);
+            for (let sample = 0; sample < sampledEdges; sample++) {
+                const index = Math.floor(sample * edgeCount / sampledEdges);
+                const a = exterior[index], b = exterior[index + 1];
+                const dx = (b[0] - a[0]) * cachedMetersPerDegLng;
+                const dy = (b[1] - a[1]) * cachedMetersPerDegLat;
+                const length = Math.hypot(dx, dy);
+                if (!length) continue;
+                for (const depth of [1, 3, 6, 12, currentBuildingWidth / 2 + 0.5]) {
+                    for (const sign of [-1, 1]) points.push([
+                        (a[0] + b[0]) / 2 - sign * dy / length * depth / cachedMetersPerDegLng,
+                        (a[1] + b[1]) / 2 + sign * dx / length * depth / cachedMetersPerDegLat
+                    ]);
+                }
+            }
+            for (const point of points) {
+                if (offsets.length - componentStart >= perComponentLimit || offsets.length >= maxCandidates) break;
+                const offsetX = (point[0] - cachedCentroid[0]) * cachedMetersPerDegLng;
+                const offsetY = (point[1] - cachedCentroid[1]) * cachedMetersPerDegLat;
+                const key = `${Math.round(offsetX * 100)},${Math.round(offsetY * 100)}`;
+                if (seen.has(key) || !turf.booleanPointInPolygon(point, polygon)) continue;
+                seen.add(key);
+                offsets.push({ offsetX, offsetY });
+            }
+        }
+        return offsets;
     }
 
     function rowHouseGeometrySnapshot() {
@@ -550,7 +585,6 @@
         if (typeof sanitizePolygonFeature === 'function') {
             superparcel = sanitizePolygonFeature(superparcel) || superparcel;
         }
-        superparcel = toSingleLargestPolygonLocal(superparcel) || superparcel;
 
         if (!superparcel || !superparcel.geometry) {
             throw new Error('Failed to process superparcel');
@@ -714,28 +748,16 @@
         return buildingPolygon;
     }
 
-    // One placement rule for a Row bar on its parcels, used both when the editor generates it and
-    // when the rule is re-run on the parcels it was dropped on: the bar goes at the asked offset and
-    // rotation, else centred, else centred unrotated, whichever first fits inside the site with a
-    // margin; when none fits it goes at the first of them that still stands on the site
-    // (rowHouseFitsSite) and may overhang (rebuildRowUnits then keeps it as one massing instead of
-    // cutting houses). Returns { feature, offsetX, offsetY, rotation }, or null when no bar stands on
-    // the site, and leaves the site cache (cachedSuperparcel and its frame) on this block.
+    // Preserve the requested placement when valid, then search interior points of every component.
+    // Reject an unplaceable bar instead of saving a draft that cadastral application must refuse.
     function placeRowHouseBar(block, { offsetX = 0, offsetY = 0, rotation = 0 } = {}) {
-        // Generating once caches this block's site and frame, which the fit check reads.
         if (!generateRowHousePolygon(block, currentBuildingLength, currentBuildingWidth, currentChamfer, 0, 0, rotation)) return null;
         const site = cachedSuperparcel;
-        const candidates = [{ offsetX, offsetY, rotation }, { offsetX: 0, offsetY: 0, rotation }, { offsetX: 0, offsetY: 0, rotation: 0 }];
-        const bar = candidate => generateRowHousePolygon(block, currentBuildingLength, currentBuildingWidth, currentChamfer,
-            candidate.offsetX, candidate.offsetY, candidate.rotation);
-        const fitting = candidates.find(candidate => checkBuildingFitsInSuperparcel(currentBuildingLength, currentBuildingWidth,
-            currentChamfer, candidate.offsetX, candidate.offsetY, candidate.rotation));
-        if (fitting) {
-            const feature = bar(fitting);
-            return feature ? { feature, ...fitting } : null;
-        }
+        const candidates = [{ offsetX, offsetY, rotation }, { offsetX: 0, offsetY: 0, rotation }, { offsetX: 0, offsetY: 0, rotation: 0 },
+            ...rowHouseInteriorOffsets(site).flatMap(offset => [{ ...offset, rotation }, { ...offset, rotation: 0 }])];
         for (const candidate of candidates) {
-            const feature = bar(candidate);
+            const feature = generateRowHousePolygon(block, currentBuildingLength, currentBuildingWidth, currentChamfer,
+                candidate.offsetX, candidate.offsetY, candidate.rotation);
             if (feature && rowHouseFitsSite(feature, site)) return { feature, ...candidate };
         }
         return null;
@@ -769,8 +791,8 @@
         ({ cachedSuperparcel, cachedSuperparcelMeters, cachedCentroid, cachedMetersPerDegLng, cachedMetersPerDegLat, baseRotation } = cache);
     }
 
-    // Calculate the maximum building dimensions that fit within the superparcel with 1m margin
-    // Also sets up cached values for consistent boundary checking
+    // Size the initial 2:1 bar, preferring the centred fit with a 1m margin.
+    // Irregular sites use interior candidates with whole-footprint containment instead.
     function calculateMaxBuildingDimensions(block) {
         if (!block || !Array.isArray(block.parcels) || block.parcels.length === 0) {
             return { maxLength: DEFAULT_BUILDING_LENGTH, maxWidth: DEFAULT_BUILDING_WIDTH };
@@ -789,7 +811,6 @@
         if (typeof sanitizePolygonFeature === 'function') {
             superparcel = sanitizePolygonFeature(superparcel) || superparcel;
         }
-        superparcel = toSingleLargestPolygonLocal(superparcel) || superparcel;
 
         if (!superparcel || !superparcel.geometry) {
             return { maxLength: DEFAULT_BUILDING_LENGTH, maxWidth: DEFAULT_BUILDING_WIDTH };
@@ -865,7 +886,7 @@
         const dx = longestSideEnd[0] - longestSideStart[0];
         const dy = longestSideEnd[1] - longestSideStart[1];
 
-        // Set baseRotation to the angle of the longest side (used by checkBuildingFitsInSuperparcel)
+        // Use the same base orientation as the bar generator.
         baseRotation = Math.atan2(dy, dx);
 
         const ux = dx / longestSideLength;
@@ -932,6 +953,29 @@
                 minScale = midScale;
             } else {
                 maxScale = midScale;
+            }
+        }
+
+        // A centred search has no useful result when the centroid falls in a concavity or hole.
+        // Size a 2:1 bar at interior candidates instead, checking the complete polygon each time.
+        const centredRing = [[-minScale, -minScale / 2], [minScale, -minScale / 2], [minScale, minScale / 2], [-minScale, minScale / 2]]
+            .map(([x, y]) => [cLng + (x * ux + y * perpX) / metersPerDegLng,
+                cLat + (x * uy + y * perpY) / metersPerDegLat]);
+        if (!rowHouseFitsSite(turf.polygon([[...centredRing, centredRing[0]]]), superparcel)) minScale = 0;
+        if (minScale < 2) {
+            for (const offset of rowHouseInteriorOffsets(superparcel)) {
+                let low = 0, high = 500;
+                for (let iteration = 0; iteration < 14; iteration++) {
+                    const scale = (low + high) / 2;
+                    const corners = [[-scale, -scale / 2], [scale, -scale / 2], [scale, scale / 2], [-scale, scale / 2]];
+                    const ring = corners.map(([x, y]) => [
+                        cLng + (offset.offsetX + x * ux + y * perpX) / metersPerDegLng,
+                        cLat + (offset.offsetY + x * uy + y * perpY) / metersPerDegLat
+                    ]);
+                    const feature = turf.polygon([[...ring, ring[0]]]);
+                    if (rowHouseFitsSite(feature, superparcel)) low = scale; else high = scale;
+                }
+                minScale = Math.max(minScale, low);
             }
         }
 
@@ -1638,10 +1682,11 @@
             setRowHouseInfo('', '');
 
         } catch (error) {
+            generatedRowHouseFeature = null;
             console.error('[RowHouse] Generation error:', error);
             setRowHouseInfo(
-                'rowHouses.modal.messages.creationFailed',
-                'Row houses creation failed. Try adjusting parameters.',
+                'rowHouses.modal.messages.invalidPlacement',
+                'The footprint must fit entirely within the selected land, avoiding gaps and holes. Reduce its dimensions or edit its shape.',
                 {}
             );
             const doneButton = document.getElementById('btn-rowhouse-done');
@@ -2208,6 +2253,12 @@
         const block = getActiveRowHouseBlock();
         if (!block || !Array.isArray(block.parcels) || block.parcels.length === 0) {
             setRowHouseInfo('rowHouses.modal.messages.blockHasNoParcels', 'Block has no parcels.');
+            return;
+        }
+
+        if (!rowHouseFeatureValid(generatedRowHouseFeature)) {
+            setRowHouseInfo('rowHouses.modal.messages.invalidPlacement',
+                'The footprint must fit entirely within the selected land, avoiding gaps and holes. Reduce its dimensions or edit its shape.');
             return;
         }
 

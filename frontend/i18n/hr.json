@@ -1984,6 +1984,12 @@
             "bodyConnected": "Novčanik je povezan. Koristiti ga za mintanje na lancu ili kreirati prijedlog u memoriji?"
         },
         "track": {
+            "curvature": {
+                "title": "Ciljani polumjer kolosijeka",
+                "warning": "Ovaj kolosijek ima {{count}} zavoja s procijenjenim polumjerom polilinije manjim od ciljanih {{minimum}} m za {{speed}} km/h. Najmanji je oko {{actual}} m. Ovo je provjera crteža, a ne inženjerska procjena. Nastaviti s ovom geometrijom ili nastaviti uređivati?",
+                "continue": "Nastavi",
+                "keepEditing": "Nastavi uređivati"
+            },
             "speedPickerTitle": "Odaberi brzinu pruge",
             "speedPickerDescription": "Odaberi maksimalnu brzinu za ovu prugu. Ovo određuje minimalni radijus zakrivljenosti. Pritisni Enter da počneš s zadanom selekcijom.",
             "startDrawing": "Počni crtanje",
@@ -2086,6 +2092,7 @@
             "buildingsLabel": "Odaberi zgradu",
             "addLabel": "Dupliciraj zgradu",
             "deleteLabel": "Obriši zgradu",
+            "keepOneBuilding": "Zadržite barem jednu zgradu u ovom projektu.",
             "renameLabel": "Preimenuj zgradu",
             "closeLabel": "Zatvori prozor jedne zgrade",
             "mapHint": "Povuci zgradu ili njezine vrhove. Dodirni brid za dodavanje vrha.",
@@ -2213,6 +2220,7 @@
             "subtitle": "Ukupna širina zbroj je traka — dodate li traku, cesta se proširi; uklonite li je, suzi se",
             "drawingSubtitle": "Promjene se prikazuju na karti prije stvaranja prijedloga",
             "proposalSubtitle": "Ovdje pregledajte promjene, a zatim ih spremite na ovu cestu",
+            "discardBody": "Zatvaranjem uređivača poprečnog presjeka odbacuju se vaše izmjene.",
             "totalWidth": "Ukupna širina",
             "dragSeam": "Povucite za promjenu širine traka s obje strane",
             "scopeLabel": "Primjenjuje se na",
@@ -3104,6 +3112,7 @@
             "messages": {
                 "generatedSummary": "Niz kuća generiran (duljina: {{length}}m, širina: {{width}}m, visina: {{height}}m)",
                 "creationFailed": "Kreiranje niza kuća nije uspjelo. Pokušaj prilagoditi parametre.",
+                "invalidPlacement": "Tlocrt mora biti potpuno unutar odabranog zemljišta, bez prelaska preko praznina i rupa. Smanji dimenzije ili uredi oblik.",
                 "generateBeforeFinishing": "Generiraj niz kuća prije završetka.",
                 "blockHasNoParcels": "Blok nema čestica.",
                 "unableToMapParcels": "Nije moguće mapirati čestice za ovaj blok.",

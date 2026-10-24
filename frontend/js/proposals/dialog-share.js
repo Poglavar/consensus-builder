@@ -493,6 +493,7 @@ const SHARE_PLAN_HOVER_PARCEL_COLOR = '#FFEB3B'; // parcels involved — dashed,
 const SHARE_PLAN_HOVER_BODY_COLOR = '#00E5FF';   // the proposal itself — solid, lightly filled
 
 let _sharePlanPanelState = null; // { root, token }
+const _sharePlanExcludedKeys = new Set(); // explicit exclusions for this Designs panel session
 
 function sharePlanColorForIndex(index) {
     const n = SHARE_PLAN_COLORS.length;
@@ -502,6 +503,7 @@ function sharePlanColorForIndex(index) {
 function closeSharePlanPanel(options = {}) {
     const state = _sharePlanPanelState;
     _sharePlanPanelState = null;
+    if (!options.preserveSelection) _sharePlanExcludedKeys.clear();
     // The pick mode ends with the panel (js/map-pick.js): the lockdown lifts, a subset's highlight
     // and the dimming go, and a map click no longer answers into a list that is not on screen.
     try { window.MapPick.end('share'); } catch (error) { console.error('share plan: ending the map pick failed', error); }
@@ -547,7 +549,7 @@ function showSharePlanPanel(options) {
             return;
         }
 
-        closeSharePlanPanel({ fromPanel: true });
+        closeSharePlanPanel({ fromPanel: true, preserveSelection: true });
         if (!window.MapShell.isOpen('proposals-sheet')) window.MapShell.openSheet('proposals-sheet');
         closeProposalList({ fromSheet: true });
         setDesignsPanelTab('share');
@@ -556,8 +558,9 @@ function showSharePlanPanel(options) {
 
         // An unpublished parcel layout needs an agreement; an existing publication can be linked.
         const publishRefusals = new Map();
-        // Every applied design starts selected. Excluding a blocked design is an explicit choice.
+        // Keep explicit exclusions while switching tabs; closing the Designs panel resets them.
         const selected = new Set(proposalsByHash.keys());
+        for (const key of _sharePlanExcludedKeys) selected.delete(key);
         // key -> { cid: the CID the design is published as here, or null; publishing }
         const publishState = new Map();
         const isPublished = key => !!(publishState.get(key) || {}).cid;
@@ -986,8 +989,13 @@ function showSharePlanPanel(options) {
         };
 
         const onCheckboxChange = (key, checked) => {
-            if (checked) selected.add(key);
-            else selected.delete(key);
+            if (checked) {
+                selected.add(key);
+                _sharePlanExcludedKeys.delete(key);
+            } else {
+                selected.delete(key);
+                _sharePlanExcludedKeys.add(key);
+            }
             // Toggling a row paints or unpaints THAT row (updateRowState repaints its highlight). The
             // map is not painted when the panel opens (see the fill below) — checked means "in the
             // plan", not "drawn right now".

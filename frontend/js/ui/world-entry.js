@@ -257,7 +257,7 @@
                 doc.body.classList.remove('world-view-pending');
             }, error => {
                 doc.body.classList.remove('world-view-pending');
-                console.error(`[${new Date().toISOString()}] [world-entry] the world view failed to open; staying in ${m.getCurrentCityId()}`, error);
+                reportOpenFailure(error);
                 landed('globe failed');
             });
         };

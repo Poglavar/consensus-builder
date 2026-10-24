@@ -577,3 +577,32 @@ describe('other starting layouts and pools', () => {
         expect(globalThis.pendingParcelLayout.openGroundM2).toBeCloseTo(area(site) - area(PARCELS[0].geometry), -1);
     });
 });
+
+describe('Old plots read-only controls', () => {
+    it('disables edit controls and history shortcuts while preserving individual validity flags', async () => {
+        const w = world();
+        await w.editor.openParcelLayoutEditor();
+        const controls = w.state.modal.querySelector('[data-reparcel-alg-group]');
+        const done = w.state.modal.querySelector('[data-reparcel-commit]');
+        w.editor.pushHistory();
+        const snapshot = JSON.stringify(w.state.slices);
+        const depth = w.state.historyCtl.depth();
+        done.disabled = true;
+        w.editor.setPlotsTab('old');
+        expect(controls.tagName).toBe('FIELDSET');
+        expect(controls.disabled).toBe(true);
+        expect(controls.getAttribute('aria-disabled')).toBe('true');
+        expect(w.state.nodeEdit.active).toBe(false);
+        w.key('z', { ctrlKey: true });
+        expect(w.state.historyCtl.depth()).toBe(depth);
+        expect(JSON.stringify(w.state.slices)).toBe(snapshot);
+        w.editor.setPlotsTab('new');
+        expect(controls.disabled).toBe(false);
+        expect(controls.getAttribute('aria-disabled')).toBe('false');
+        expect(done.disabled).toBe(true);
+        expect(w.state.undoEditBtn.disabled).toBe(false);
+        expect(w.state.redoEditBtn.disabled).toBe(true);
+        w.key('z', { ctrlKey: true });
+        expect(w.state.historyCtl.depth()).toBe(depth - 1);
+    });
+});

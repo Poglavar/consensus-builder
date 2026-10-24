@@ -932,7 +932,7 @@ function openDesignsTab(tab) {
         setDesignsPanelTab('share');
         return shareAppliedProposals({ isCurrent: () => request === _designsPanelRequest });
     }
-    closeSharePlanPanel({ fromPanel: true });
+    closeSharePlanPanel({ fromPanel: true, preserveSelection: true });
     setDesignsPanelTab('browse');
     if (!window.MapShell.isOpen('proposals-sheet')) window.MapShell.openSheet('proposals-sheet');
     return mountProposalList();

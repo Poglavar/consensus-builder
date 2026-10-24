@@ -444,9 +444,10 @@ test.describe('Designer controls persist their edits @features', () => {
     await openCity(page);
     await openParcel(page, 'proposals');
     await page.locator('.parcel-transport-btn--track').click();
-    await page.locator('#track-speed-confirm-btn').click();
+    await page.locator('.track-speed-option[data-speed="250"]').click();
     await clickMapPoint(page, 15.98195, 45.8001);
     await clickMapPoint(page, 15.9824, 45.8001);
+    await clickMapPoint(page, 15.9824, 45.8005);
     await page.locator('#editRoadCrossSectionButton').click();
     const editor = page.locator('#corridor-editor-overlay');
     const rail = editor.locator('.corridor-lane-row:has(.corridor-lane-gauge)').first();
@@ -456,11 +457,20 @@ test.describe('Designer controls persist their edits @features', () => {
     await expect(rail.locator('.corridor-lane-width')).not.toHaveValue(String(widthBefore));
     await editor.locator('.corridor-editor-save').click();
     await page.locator('#finishRoadButton').click();
+    const warning = page.getByRole('alertdialog');
+    await expect(warning).toContainText('5,000 m target for 250 km/h');
+    await expect(warning).toContainText('not an engineering assessment');
+    await warning.getByRole('button', { name: 'Keep editing', exact: true }).click();
+    await expect(page.locator('#road-drawing-controls')).toBeVisible();
+    expect(await page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((p: any) => p.applied && p.roadProposal))).toBe(false);
+    await page.locator('#finishRoadButton').click();
+    await warning.getByRole('button', { name: 'Continue', exact: true }).click();
     await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((p: any) => p.applied && p.roadProposal))).toBe(true);
 
     const track = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((p: any) => p.applied && p.roadProposal).roadProposal.definition);
     expect(track.profile.strips.some((lane: any) => lane.type === 'rail' && Number(lane.gauge) === 1000)).toBe(true);
-    expect(track.metadata.trackSpeed).toBeGreaterThan(0);
+    expect(track.metadata.trackSpeed).toBe(250);
+    expect(track.metadata.trackMinRadius).toBe(5000);
   });
 
   test('parcel-layout starting layouts, old/new tabs and commit reflect actual edits', async ({ mockApi: page }) => {

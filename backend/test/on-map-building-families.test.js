@@ -150,6 +150,7 @@ describe('floating building-family editors', () => {
             blockExcludedParcels: [],
             blockVariationSeed: 7,
             blockifyGenerationSite: feature,
+            blockifySurroundings: null,
             turf: {},
             multiParcelSelection: { selectedParcels: new Set(), updateUI() {}, clearSelection() {} },
             document: { getElementById: () => null },

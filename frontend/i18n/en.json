@@ -1964,6 +1964,12 @@
             "memory": "Create in memory"
         },
         "track": {
+            "curvature": {
+                "title": "Track radius target",
+                "warning": "This track has {{count}} bends with an estimated polyline radius below your {{minimum}} m target for {{speed}} km/h. The tightest is about {{actual}} m. This is a drawing check, not an engineering assessment. Continue with this geometry or keep editing?",
+                "continue": "Continue",
+                "keepEditing": "Keep editing"
+            },
             "speedPickerTitle": "Choose track speed",
             "speedPickerDescription": "Select the maximum speed for this track. This determines the minimum curvature radius. Press Enter to start with the default selection.",
             "startDrawing": "Start drawing",
@@ -2064,6 +2070,7 @@
             "buildingsLabel": "Select building",
             "addLabel": "Duplicate building",
             "deleteLabel": "Delete building",
+            "keepOneBuilding": "Keep at least one building in this design.",
             "renameLabel": "Rename building",
             "closeLabel": "Close single building modal",
             "mapHint": "Drag the building or its corners. Tap an edge to add a corner.",
@@ -2190,6 +2197,7 @@
             "subtitle": "The total width is the sum of the lanes — add or remove a lane and the road widens or narrows",
             "drawingSubtitle": "Changes update the road on the map before you create the proposal",
             "proposalSubtitle": "Preview changes here, then save them to this road",
+            "discardBody": "Closing the cross-section editor throws away your changes.",
             "totalWidth": "Total width",
             "dragSeam": "Drag to resize the lanes on both sides",
             "scopeLabel": "Applies to",
@@ -3072,6 +3080,7 @@
             "messages": {
                 "generatedSummary": "Row houses generated (length: {{length}}m, width: {{width}}m, height: {{height}}m)",
                 "creationFailed": "Row houses creation failed. Try adjusting parameters.",
+                "invalidPlacement": "The footprint must fit entirely within the selected land, avoiding gaps and holes. Reduce its dimensions or edit its shape.",
                 "generateBeforeFinishing": "Generate row houses before finishing.",
                 "blockHasNoParcels": "Block has no parcels.",
                 "unableToMapParcels": "Unable to map parcels for this block.",

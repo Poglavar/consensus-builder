@@ -323,7 +323,7 @@ describe('building-family rules stay on their parcels', () => {
             let window=this.window, turf=this.turf, generatedRowHouseFeature=this.feature, rowHouseBlock=this.block;
             let currentBuildingLength=16, currentBuildingWidth=13, currentBuildingHeight=12, currentChamfer=0;
             let currentOffsetX=31, currentOffsetY=4, currentRotation=0, rowVariationSeed=9, rowHouseManualMode=false;
-            let cachedSuperparcel=null;
+            let cachedSuperparcel=null, rowHouseSurroundings=null;
             const getActiveRowHouseBlock=()=>rowHouseBlock, getRowHouseDisplayName=()=> 'test row';
             const currentRowRule=()=>({kind:'exact'});
             const cloneRowHouseFeature=${functions.get('cloneRowHouseFeature')};

@@ -766,8 +766,8 @@
             <div class="station-editor-body">
                 <label class="station-editor-field station-editor-bearing">
                     <span>${stationEditorText('rotation', 'Rotation')}</span>
-                    <input type="range" data-station-editor-bearing-range min="0" max="359" step="1" value="${stationEditor.bearing}">
-                    <span class="station-editor-input-with-unit"><input type="number" data-station-editor-bearing min="0" max="359" step="1" value="${stationEditor.bearing}"><span>°</span></span>
+                    <input type="range" data-station-editor-bearing-range aria-label="${stationEditorText('rotation', 'Rotation')}" min="0" max="359" step="1" value="${stationEditor.bearing}">
+                    <span class="station-editor-input-with-unit"><input type="number" data-station-editor-bearing aria-label="${stationEditorText('rotation', 'Rotation')}" min="0" max="359" step="1" value="${stationEditor.bearing}"><span>°</span></span>
                 </label>
                 ${heightControl}
             </div>
@@ -1015,7 +1015,6 @@
         if (!previous) return null;
         if (previous.move) endStationMove();
         try { previous.panel?.removeEventListener('click', previous.onClick); } catch (_) { }
-        try { previous.panel?.removeEventListener('input', previous.onInput); } catch (_) { }
         try { previous.history?.destroy?.(); } catch (_) { }
         previous.session?.close();
         try { global.map?.removeLayer(previous.layer); } catch (_) { }
@@ -1088,7 +1087,6 @@
             centerMarker: null,
             history: null,
             move: null,
-            onInput: null,
             onClick: null,
             onKey: null
         };
@@ -1111,17 +1109,19 @@
         stationEditor.handleLayer = global.L.layerGroup().addTo(global.map);
         const panel = session.root;
         stationEditor.panel = panel;
-        stationEditor.onInput = event => {
-            if (event.target?.matches?.('[data-station-editor-bearing-range]')) updateStationEditorInputs('range');
-            else if (event.target?.matches?.('[data-station-editor-bearing]')) updateStationEditorInputs('number');
-            else if (event.target?.matches?.('[data-station-editor-height]')) updateStationEditorInputs('height');
-        };
+        const history = ensureStationEditorHistory();
+        [
+            ['[data-station-editor-bearing-range]', 'range'],
+            ['[data-station-editor-bearing]', 'number'],
+            ['[data-station-editor-height]', 'height']
+        ].forEach(([selector, source]) => {
+            history?.bindInput(panel.querySelector(selector), () => updateStationEditorInputs(source));
+        });
         stationEditor.onClick = event => {
             const action = event.target?.closest?.('[data-station-editor-action]')?.dataset.stationEditorAction;
             if (action === 'undo') return;
             else if (action === 'save') saveStationGeometryEditor();
         };
-        panel.addEventListener('input', stationEditor.onInput);
         panel.addEventListener('click', stationEditor.onClick);
         ensureStationEditorHistory()?.bindButton(panel.querySelector('[data-station-editor-action="undo"]'));
         global.transitStationGeometryEditorActive = true;

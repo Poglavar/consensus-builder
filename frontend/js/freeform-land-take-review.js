@@ -115,7 +115,9 @@
                     (...args) => env.BuildingSourceClient.request(...args));
                 if (closed || ticket !== sequence) return false;
                 const ownId = env.getActiveProposalDesignDraft?.()?.sourceLocalProposalId;
-                const pool = env.collectLoadedCorridorBuildings({ extraPool: stock, includeLoadedSurveyPool: false });
+                // Replacing this source must review its original stock, before its own removals.
+                const pool = env.collectLoadedCorridorBuildings({ extraPool: stock, includeLoadedSurveyPool: false,
+                    excludeProposalId: ownId });
                 const hits = env.findBuildingTunnelIntersections(current.take, pool, env.turf)
                     .filter(hit => !ownId || String(env.corridorTunnelHitProposalId(hit)) !== String(ownId));
                 const real = hits.filter(hit => !env.corridorTunnelHitProposalId(hit)).map(hit => ({

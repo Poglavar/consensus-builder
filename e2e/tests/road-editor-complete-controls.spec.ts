@@ -27,6 +27,7 @@ test.describe('Road editor complete controls @features', () => {
     await expect(editor.locator('.corridor-lane-row')).toHaveCount(initialStrips + 1);
 
     await page.keyboard.press('Escape');
+    await page.getByRole('button', { name: 'Discard', exact: true }).click();
     await expect(editorPanel).toBeHidden();
     await expect(page.locator('#road-drawing-controls')).toBeVisible();
     await expect.poll(() => page.evaluate(() => (window as any).roadDrawingMode)).toBe(true);

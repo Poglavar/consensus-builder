@@ -222,7 +222,22 @@ test.describe('parcel-layout button controls @core', () => {
     await expect(newTab).toHaveAttribute('aria-selected', 'true');
     await expect.poll(() => handles.count()).toBeGreaterThan(0);
 
+    const undoWasDisabled = await editor.locator('[data-reparcel-undo-edit]').isDisabled();
+    const doneWasDisabled = await editor.locator('[data-reparcel-commit]').isDisabled();
     await oldTab.click();
+    await expect(editor.locator('[data-reparcel-alg-group]')).toHaveAttribute('aria-disabled', 'true');
+    for (const selector of ['[data-reparcel-draw]', '[data-reparcel-line]', '[data-reparcel-erase]', '[data-reparcel-nodes]', '[data-reparcel-upload]', '[data-reparcel-undo-edit]', '[data-reparcel-redo-edit]', 'input[name="reparcel-algorithm"]']) {
+      await expect(editor.locator(selector).first()).toBeDisabled();
+    }
+    await expect(newTab).toBeEnabled();
+    await expect(editor.locator('[data-reparcel-cancel]')).toBeEnabled();
+    expect(await editor.locator('[data-reparcel-commit]').isDisabled()).toBe(doneWasDisabled);
+    // Keyboard focus cannot enter the disabled toolset, including its enabled-before-switch tools.
+    await oldTab.focus();
+    for (let index = 0; index < 8; index++) {
+      await page.keyboard.press('Tab');
+      expect(await editor.locator('[data-reparcel-alg-group]').evaluate(el => el.contains(document.activeElement))).toBe(false);
+    }
     await expect(oldTab).toHaveAttribute('aria-selected', 'true');
     await expect(newTab).toHaveAttribute('aria-selected', 'false');
     const oldPlots = editor.locator('[data-reparcel-oldplots-table]');
@@ -237,6 +252,10 @@ test.describe('parcel-layout button controls @core', () => {
 
     await newTab.click();
     await expect(newTab).toHaveAttribute('aria-selected', 'true');
+    await expect(editor.locator('[data-reparcel-alg-group]')).toHaveAttribute('aria-disabled', 'false');
+    await expect(editor.locator('[data-reparcel-draw]')).toBeEnabled();
+    expect(await editor.locator('[data-reparcel-undo-edit]').isDisabled()).toBe(undoWasDisabled);
+    expect(await editor.locator('[data-reparcel-commit]').isDisabled()).toBe(doneWasDisabled);
     await expect(editor.locator('[data-reparcel-newplots-table]')).toBeVisible();
     await expect(oldPlots).toBeHidden();
     await expect(editor.locator('[data-reparcel-nodes]')).toHaveAttribute('aria-pressed', 'true');

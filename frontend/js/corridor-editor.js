@@ -104,6 +104,25 @@ function corridorEditorCancel() {
     corridorEditorClose();
 }
 
+// The toolbar X and Escape discard previewed cross-section work only after the same
+// explicit choice used by the other map design editors. Internal teardown stays synchronous.
+async function corridorEditorRequestCancel() {
+    const state = corridorEditorState;
+    if (state?.dirty) {
+        const accepted = await window.CbDialog.confirm(
+            `${corridorEditorI18n('proposalDrafts.discardDesign.title', 'Discard this design?')}\n${corridorEditorI18n('modal.corridor.discardBody', 'Closing the cross-section editor throws away your changes.')}`,
+            {
+                destructive: true,
+                okText: corridorEditorI18n('proposalDrafts.discardDesign.confirm', 'Discard'),
+                cancelText: corridorEditorI18n('proposalDrafts.discardDesign.cancel', 'Keep editing')
+            }
+        );
+        if (!accepted || corridorEditorState !== state) return false;
+    }
+    corridorEditorCancel();
+    return true;
+}
+
 // Apply an edit, or refuse it — out loud. `edit` returns a new profile or null; null means the edit was
 // meaningless (a lane below its minimum, the last lane, an unknown type) and the right answer is to say
 // WHY. The with* transforms only answer null, so `attempt` records what was tried — which transform,
@@ -2618,7 +2637,7 @@ function corridorEditorOpenOverlayBody() {
     corridorEditorSession = window.OnMapEditor.open({
         owner: 'corridor-editor', id: 'corridor-editor-overlay',
         title: corridorEditorI18n('modal.corridor.title', 'Cross-section'),
-        wide: true, modes: ['2d'], onCancel: corridorEditorCancel,
+        wide: true, modes: ['2d'], onCancel: corridorEditorRequestCancel,
         content: `<p class="corridor-editor-subtitle">${drawing
             ? corridorEditorI18n('modal.corridor.drawingSubtitle', 'Changes update the road on the map before you create the proposal')
             : corridorEditorI18n('modal.corridor.proposalSubtitle', 'Preview changes here, then save them to this road')}</p>

@@ -133,6 +133,18 @@ describe('globe boot uses the arrival URL', () => {
         return { window, classes, ready: () => callbacks.forEach(callback => callback()) };
     }
 
+    it('reports a failed first-visit globe visibly and releases the boot cover', async () => {
+        const app = boot();
+        app.window.showEphemeralMessage = vi.fn();
+        app.window.WorldView.open.mockRejectedValueOnce(new Error('WebGL unavailable'));
+        app.ready();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        expect(app.classes.has('world-view-pending')).toBe(false);
+        expect(app.window.WorldEntry.ownsBoot()).toBe(false);
+        expect(app.window.showEphemeralMessage).toHaveBeenCalledWith(
+            expect.stringContaining('World view could not start'), 8000, 'warning');
+    });
+
     it('opens a copied map position without a first-visit globe', () => {
         const app = boot('?at=-1.264,36.840,17');
         expect(app.window.WorldEntry.ownsBoot()).toBe(false);
@@ -346,9 +358,9 @@ describe('the explore city (city-config.js)', () => {
         for (const section of ['parcels', 'parcelBlocks', 'roads', 'areaMonitor']) {
             expect(disabled).toContain(section);
         }
-        // Buildings need no parcels: explore shows Overture's buildings (OpenStreetMap's among them) anywhere on Earth.
+        // Buildings need no parcels: Explore's city default is OpenStreetMap through the backend.
         expect(disabled).not.toContain('buildings');
-        expect(tokyo.manager.getCityConfig('explore').buildings.source).toBe('overture-tiles');
+        expect(tokyo.manager.getCityConfig('explore').buildings.source).toBe('osm');
         // A site drawn here has an empty binding (PARCEL-OPTIONAL.md): proposals and stations
         // need no parcels.
         expect(disabled).not.toContain('proposals');
@@ -524,6 +536,7 @@ describe('wiring', () => {
     it('drops the commands of a section the city config hid, with the reason', () => {
         const UiCommands = require(path.join(REPO, 'frontend/js/ui/commands.js'));
         const ctx = hidden => ({
+            mode: '2d', selection: { active: false, count: 0 },
             global: { startTransitStationPlacement() {} }, parcel: { parcelId: 'parcel-1' },
             isControlAvailable: () => true, isSectionHidden: section => hidden.includes(section)
         });
@@ -531,7 +544,7 @@ describe('wiring', () => {
         expect(ids([])).toEqual(expect.arrayContaining(['blocks.reform', 'stations.bus', 'proposals.list', 'game.new']));
         const explore = ids(['parcels', 'blocks', 'stations', 'roads', 'proposals', 'game', 'areaMonitor']);
         for (const id of ['blocks.reform', 'stations.bus', 'roads.drawOsm', 'proposals.list', 'game.new', 'parcels.clearLocal']) expect(explore).not.toContain(id);
-        expect(explore).toEqual(expect.arrayContaining(['tools.measure', 'world.open', 'settings.baseMap', 'activity.explorer']));
+        expect(explore).toEqual(expect.arrayContaining(['tools.measure', 'world.open', 'settings.baseMap', 'activity.events', 'activity.actors']));
         const ranked = UiCommands.rankCommands('reform', ctx(['blocks']), null).find(item => item.entry.id === 'blocks.reform');
         expect(ranked).toMatchObject({ available: false, reason: 'hiddenForCity' });
     });

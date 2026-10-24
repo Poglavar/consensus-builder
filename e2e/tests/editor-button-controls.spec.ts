@@ -110,6 +110,31 @@ test.describe('Editor button effects @features', () => {
     expect(await page.evaluate(() => (window as any).pendingBuildingProposalContext.buildingFeature.properties.modelName)).toBe('test-building.glb');
   });
 
+  test('freeform height keyboard changes undo once per gesture and keep the last building', async ({ mockApi: page }) => {
+    await openCity(page);
+    await openParcel(page, 'proposals');
+    await page.locator('.parcel-build-btn--single').click();
+    const editor = page.locator('#single-building-editor');
+    await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
+    const height = editor.locator('#single-height-slider');
+    const undo = editor.locator('#single-building-undo');
+    const initial = await height.inputValue();
+    await expect(undo).toBeDisabled();
+    await expect(editor.locator('#single-building-delete')).toBeDisabled();
+    await expect(editor.locator('#single-building-delete')).toHaveAttribute('title', 'Keep at least one building in this design.');
+    await height.press('End');
+    await expect(height).toHaveValue('250');
+    await expect(height).toHaveAccessibleName('Height (m):');
+    await expect(undo).toBeEnabled();
+    await height.press('Home');
+    await expect(height).toHaveValue('3');
+    await undo.click();
+    await expect(height).toHaveValue('250');
+    await undo.click();
+    await expect(height).toHaveValue(initial);
+    await expect(undo).toBeDisabled();
+  });
+
   test('single-building Close dismisses its editor; rename, delete, and GeoJSON upload alter the active design', async ({ mockApi: page }) => {
     await openCity(page);
     await openParcel(page, 'proposals');
@@ -495,6 +520,18 @@ test.describe('Editor button effects @features', () => {
 
     await showProposal(page, stationId);
     editor = await openEditor();
+    const rotation = editor.locator('[data-station-editor-bearing-range]');
+    const undo = editor.locator('[data-station-editor-action="undo"]');
+    const initialBearing = await rotation.inputValue();
+    await expect(undo).toBeDisabled();
+    await rotation.press(initialBearing === '359' ? 'ArrowLeft' : 'ArrowRight');
+    await expect(rotation).not.toHaveValue(initialBearing);
+    await expect(rotation).toHaveAccessibleName('Rotation');
+    await expect(undo).toBeEnabled();
+    await undo.click();
+    await expect(rotation).toHaveValue(initialBearing);
+    await expect(editor.locator('[data-station-editor-bearing]')).toHaveValue(initialBearing);
+    await expect(undo).toBeDisabled();
     await editor.locator('[data-station-editor-bearing]').fill('45');
     await editor.locator('[data-station-editor-bearing]').press('Tab');
     await expect(editor.locator('[data-station-editor-bearing-range]')).toHaveValue('45');
@@ -551,6 +588,12 @@ test.describe('Editor button effects @features', () => {
     await parcelLimit.click();
     await expect(parcelLimit).toHaveAttribute('aria-pressed', oldLimit === 'true' ? 'false' : 'true');
     await editor.locator('.on-map-editor__header .close-circle-btn').click();
+    await expect(page.getByRole('alertdialog')).toContainText('Closing the cross-section editor throws away your changes.');
+    await page.getByRole('button', { name: 'Keep editing', exact: true }).click();
+    await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
+    await expect(rows).toHaveCount(before - 1);
+    await editor.locator('.on-map-editor__header .close-circle-btn').click();
+    await page.getByRole('button', { name: 'Discard', exact: true }).click();
     await expect(editor).toHaveCount(0);
     expect((await proposalState(page, id)).roadProposal.definition.profile.strips.length).toBe(before);
   });
@@ -655,6 +698,7 @@ test.describe('Editor button effects @features', () => {
     await editor.locator('[data-lane-type="sidewalk"]').click();
     await expect(editor.locator('.corridor-lane-row')).toHaveCount(before + 1);
     await editor.locator('.on-map-editor__header .close-circle-btn').click();
+    await page.getByRole('button', { name: 'Discard', exact: true }).click();
     await expect(editor).toHaveCount(0);
     await expect(page.locator('#road-drawing-controls')).toBeVisible();
     await page.locator('#editRoadCrossSectionButton').click();
@@ -700,6 +744,7 @@ test.describe('Editor button effects @features', () => {
       await expect(schematic).toHaveClass(/corridor-section-lane--selected/);
     }
     await editor.locator('.on-map-editor__header .close-circle-btn').click();
+    await page.getByRole('button', { name: 'Discard', exact: true }).click();
     await expect(editor).toHaveCount(0);
     await page.locator('#road-drawing-controls').getByRole('button', { name: 'Cancel', exact: true }).click();
     await expect(page.locator('#road-drawing-controls')).toBeHidden();

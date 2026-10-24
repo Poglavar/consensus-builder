@@ -354,6 +354,13 @@
     }
 
     function refreshBuildingSelector() {
+        const deleteButton = document.getElementById('single-building-delete');
+        if (deleteButton) {
+            deleteButton.disabled = buildingEntries.length <= 1;
+            deleteButton.title = buildingEntries.length <= 1
+                ? translateSingleBuildingText('modal.singleBuilding.keepOneBuilding', 'Keep at least one building in this design.')
+                : translateSingleBuildingText('modal.singleBuilding.deleteLabel', 'Delete building');
+        }
         const select = document.getElementById('single-building-selector');
         if (!select) return;
         select.replaceChildren(...buildingEntries.map(building => {
@@ -1432,7 +1439,7 @@
                 content: `                        <label class="on-map-editor__placement-option"><input id="single-move-together" type="checkbox" checked><span>${translateSingleBuildingText('modal.singleBuilding.moveTogether', 'Move whole proposal')}</span></label>
                         <div class="on-map-building__height">
                             <label for="single-height-slider">${modalText.heightLabel} <strong id="single-height-value">${DEFAULT_HEIGHT_M}</strong></label>
-                            <input type="range" id="single-height-slider" min="3" max="250" step="1" value="${DEFAULT_HEIGHT_M}">
+                            <input type="range" id="single-height-slider" aria-label="${modalText.heightLabel}" min="3" max="250" step="1" value="${DEFAULT_HEIGHT_M}">
                         </div>
                         <div class="on-map-building__metrics"><span>${modalText.densityFootprint}</span><strong id="single-building-footprint-summary">—</strong></div>
                         <div class="on-map-building__fields">
@@ -1496,7 +1503,7 @@
             });
 
             const hSlider = document.getElementById('single-height-slider');
-            hSlider.addEventListener('input', (e) => {
+            ensureSingleBuildingHistory().bindInput(hSlider, (e) => {
                 currentHeightM = parseFloat(e.target.value);
                 document.getElementById('single-height-value').textContent = CbFormat.formatNumber(currentHeightM, { maxFractionDigits: 0, minFractionDigits: 0 });
                 if (singleRectFeature) {

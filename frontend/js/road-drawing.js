@@ -1478,7 +1478,7 @@ function saveCurrentCorridorDrawingDraft(kind = corridorDrawingKind()) {
         profile: getRoadDrawingProfile(),
         width: roadWidth,
         sidewalkWidth: roadSidewalkWidth,
-        // The rail engineering limits ride along with any corridor that carries a track.
+        // The selected design targets ride along with any corridor that carries a track.
         trackSpeed,
         trackMinRadius: trackMinCurvatureRadius,
         tunnels: JSON.parse(JSON.stringify(roadBuildingTunnels || [])),
@@ -2230,7 +2230,7 @@ function toggleRoadDrawTool() {
         // A NEW TRACK starts as one standard-gauge track (3.5 m) and nothing else. Its width is the sum
         // of its lanes from here on: the cross-section editor adds a second track, a platform, a verge —
         // exactly as it adds a bus lane to a road. The rail speed limit picker comes first, because the
-        // minimum curve radius it fixes constrains the very first click.
+        // minimum curve radius it records is reviewed when the drawing is finished.
         if (corridorDrawKind === 'track') {
             roadSidewalkWidth = 0;
             if (typeof window !== 'undefined') window.roadSidewalkWidth = 0;
@@ -3064,17 +3064,8 @@ async function handleRoadClick(e) {
     let clickPoint = snap ? snap.latlng : e.latlng;
     clearRoadSnapMarker();
 
-    // A rail lane in the cross-section brings the rail curve limit with it: a train cannot take the
-    // corner a car can, so the click is nudged out to the minimum radius its design speed allows.
-    // A SNAPPED click is exempt — landing exactly on an existing node is the whole point of snapping,
-    // and moving it would break the connection the user asked for.
-    if (!snap && roadHasStarted && corridorDrawingIsTrack() && typeof checkCurvatureConstraint === 'function') {
-        const constraint = checkCurvatureConstraint(roadPoints, clickPoint, trackMinCurvatureRadius);
-        if (constraint.adjustedPoint) clickPoint = constraint.adjustedPoint;
-        if (constraint.wasAdjusted) {
-            updateStatus(`Curve eased to the ${trackMinCurvatureRadius} m minimum radius for ${trackSpeed} km/h`);
-        }
-    }
+    // Preserve the authored position, including exact snap connections. Finish reviews the
+    // actual track curvature against the selected target instead of extending a click far away.
 
     // Clicking an existing segment's end while the pen is up — before drawing has started, or after
     // Escape lifted it — continues that segment instead of beginning a new one: the same segment,
@@ -4091,6 +4082,31 @@ function corridorGhostDisposer(mapRef, layers) {
     };
 }
 
+async function reviewTrackCurvatureAtFinish(segments, segmentIds) {
+    const trackSegments = segments.filter((_segment, index) => {
+        const id = segmentIds[index];
+        return corridorProfileHasRail(roadSegmentProfiles[String(id)] || roadProfile);
+    });
+    if (!trackSegments.length) return true;
+    const bends = window.CorridorGeometry.measureCorridorCurvature(trackSegments, trackMinCurvatureRadius);
+    if (!bends.length) return true;
+    const tightest = Math.min(...bends.map(bend => bend.radiusM));
+    return window.CbDialog.confirm(translateRoadText(
+        'modal.track.curvature.warning',
+        'This track has {{count}} bends with an estimated polyline radius below your {{minimum}} m target for {{speed}} km/h. The tightest is about {{actual}} m. This is a drawing check, not an engineering assessment. Continue with this geometry or keep editing?',
+        {
+            count: CbFormat.formatNumber(bends.length),
+            minimum: CbFormat.formatNumber(trackMinCurvatureRadius),
+            speed: CbFormat.formatNumber(trackSpeed),
+            actual: CbFormat.formatNumber(tightest, { maxFractionDigits: 0 })
+        }
+    ), {
+        title: translateRoadText('modal.track.curvature.title', 'Track radius target'),
+        okText: translateRoadText('modal.track.curvature.continue', 'Continue'),
+        cancelText: translateRoadText('modal.track.curvature.keepEditing', 'Keep editing')
+    });
+}
+
 async function finishRoadDrawingOnce() {
     if (roadSegmentPlacementInProgress) {
         updateStatus('Wait for the current segment to finish validating.');
@@ -4109,6 +4125,7 @@ async function finishRoadDrawingOnce() {
     const segments = drawnSegments.map(entry => entry.segment);
     const segmentIds = drawnSegments.map(entry => entry.id);
     if (!segments.length) return;
+    if (!(await reviewTrackCurvatureAtFinish(segments, segmentIds))) return false;
 
     // No collision detection or choice dialog belongs here. Each edge recorded what it ran into when
     // it was placed, finishRoadDrawing reviewed all of it just before this (and inserted any tunnel
@@ -4262,7 +4279,7 @@ async function finishRoadDrawingOnce() {
             isRoad: !isTrack,
             isCorridor: true,
             source: 'road-drawing',
-            // The rail engineering limits the track was designed to; meaningless on a road.
+            // Selected track design targets; not an operating-speed certification.
             ...(isTrack ? { trackSpeed, trackMinRadius: trackMinCurvatureRadius } : {})
         }
     };
@@ -4547,7 +4564,7 @@ function findPreviewAffectedParcels(previewPolygon) {
 // code that draws a road, above.
 // ============================================================================
 
-// Design speed in km/h, which fixes the minimum curvature radius the drawing is held to.
+// Selected design speed and radius target; Finish warns about tighter drawn bends.
 let trackSpeed = 120; // Default speed
 let trackMinCurvatureRadius = 1000; // Default minimum radius in meters
 let trackSegmentSound = null; // Loaded lazily on first use
@@ -4867,7 +4884,7 @@ if (typeof window !== 'undefined') {
         undoLastRoadOrTrackSegment, cancelRoadOrTrackDrawing, finishRoadDrawing,
         markCorridorFinishPhase, reportCorridorFinishProfile, hasDrawableCorridor,
         corridorFinalizationLabel, detachDrawnCorridorAsGhost, corridorGhostDisposer,
-        finishRoadDrawingOnce, cancelRoadDrawing, resetRoadDrawing, clearAffectedParcels,
+        reviewTrackCurvatureAtFinish, finishRoadDrawingOnce, cancelRoadDrawing, resetRoadDrawing, clearAffectedParcels,
         clearPreviewAffectedParcels, findPreviewAffectedParcels, playTrackSegmentSound,
         showTrackSpeedPicker, showAcquiringDifficultyDialog, nowMs
     };

@@ -1989,6 +1989,12 @@
             "bodyConnected": "Hay una billetera conectada. ¿Usarla para acuñar on-chain o crear una propuesta en memoria?"
         },
         "track": {
+            "curvature": {
+                "title": "Objetivo de radio de vía",
+                "warning": "Esta vía tiene {{count}} curvas con un radio estimado de la polilínea inferior al objetivo de {{minimum}} m para {{speed}} km/h. El radio más pequeño es de unos {{actual}} m. Es una comprobación del dibujo, no una evaluación de ingeniería. ¿Continuar con esta geometría o seguir editando?",
+                "continue": "Continuar",
+                "keepEditing": "Seguir editando"
+            },
             "speedPickerTitle": "Elegir velocidad de vía",
             "speedPickerDescription": "Selecciona la velocidad máxima para esta vía. Esto determina el radio mínimo de curvatura. Presiona Enter para comenzar con la selección predeterminada.",
             "startDrawing": "Comenzar a dibujar",
@@ -2091,6 +2097,7 @@
             "buildingsLabel": "Selecciona un edificio",
             "addLabel": "Duplicar edificio",
             "deleteLabel": "Eliminar edificio",
+            "keepOneBuilding": "Conserva al menos un edificio en este diseño.",
             "renameLabel": "Renombrar edificio",
             "closeLabel": "Cerrar modal de edificio único",
             "mapHint": "Arrastra el edificio o sus esquinas. Toca un borde para añadir una esquina.",
@@ -2217,6 +2224,7 @@
             "subtitle": "El ancho total es la suma de los carriles: añade o quita un carril y la vía se ensancha o se estrecha",
             "drawingSubtitle": "Los cambios se muestran en el mapa antes de crear la propuesta",
             "proposalSubtitle": "Previsualiza los cambios aquí y luego guárdalos en esta vía",
+            "discardBody": "Al cerrar el editor de sección transversal se descartarán tus cambios.",
             "totalWidth": "Ancho total",
             "dragSeam": "Arrastra para cambiar el ancho de los carriles a ambos lados",
             "scopeLabel": "Se aplica a",
@@ -3099,6 +3107,7 @@
             "messages": {
                 "generatedSummary": "Viviendas en hilera generadas (largo: {{length}}m, ancho: {{width}}m, altura: {{height}}m)",
                 "creationFailed": "No se pudieron crear las viviendas en hilera. Intenta ajustar los parámetros.",
+                "invalidPlacement": "La huella debe quedar completamente dentro del terreno seleccionado, evitando huecos y vacíos. Reduce sus dimensiones o edita su forma.",
                 "generateBeforeFinishing": "Genera las viviendas en hilera antes de finalizar.",
                 "blockHasNoParcels": "El bloque no tiene parcelas.",
                 "unableToMapParcels": "No se pudieron mapear las parcelas para este bloque.",

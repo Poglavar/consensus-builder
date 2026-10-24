@@ -67,6 +67,7 @@ describe('corridor editor collision lifecycle', () => {
             const corridorProfileWidth=this.corridorProfileWidth, corridorEditorTotalText=this.corridorEditorTotalText;
             const corridorEditorI18n=this.corridorEditorI18n, corridorEditorLockMap=this.corridorEditorLockMap;
             const corridorEditorCancel=this.corridorEditorCancel;
+            const corridorEditorRequestCancel=this.corridorEditorCancel;
             const clearCorridorProfilePreview=this.clearCorridorProfilePreview;
             const corridorEditorRenderBuildingHits=this.corridorEditorRenderBuildingHits;
             const corridorEditorClearClearanceOverlays=this.corridorEditorClearClearanceOverlays;
@@ -173,6 +174,7 @@ describe('placed corridor stretch replacement in the shared editor', () => {
             let corridorEditorState=null, corridorEditorSession=null;
             const document=this.document, window=this.window, console=this.console;
             const corridorEditorCancel=this.corridorEditorCancel;
+            const corridorEditorRequestCancel=this.corridorEditorCancel;
             const corridorEditorClose=this.corridorEditorClose;
             const corridorEditorSave=this.corridorEditorSave;
             const corridorEditorLockMap=this.corridorEditorLockMap;
@@ -221,5 +223,34 @@ describe('placed corridor stretch replacement in the shared editor', () => {
         expect(context.getEditorState().replaceStretchProfiles).toBe(true);
         expect(preview).toHaveBeenLastCalledWith('road-1', profile, null, { keepOverrides: false });
         expect(host.innerHTML).toContain('checked');
+    });
+});
+
+
+describe('cross-section discard choice', () => {
+    function cancelHarness(dirty, accepted) {
+        const cancel = vi.fn();
+        const confirm = vi.fn(async () => accepted);
+        const context = { window: { CbDialog: { confirm } }, corridorEditorState: { dirty },
+            corridorEditorCancel: cancel, corridorEditorI18n: (_key, fallback) => fallback };
+        vm.runInNewContext(`${extracted('corridorEditorRequestCancel')}; this.request = corridorEditorRequestCancel`, context);
+        return { request: context.request, cancel, confirm };
+    }
+    it('keeps edited road cross-section open when Keep editing is chosen', async () => {
+        const env = cancelHarness(true, false);
+        expect(await env.request()).toBe(false);
+        expect(env.confirm).toHaveBeenCalledWith(expect.stringContaining('Discard this design?'), expect.objectContaining({ destructive: true, cancelText: 'Keep editing' }));
+        expect(env.cancel).not.toHaveBeenCalled();
+    });
+    it('discards edited cross-section only after acceptance', async () => {
+        const env = cancelHarness(true, true);
+        expect(await env.request()).toBe(true);
+        expect(env.cancel).toHaveBeenCalledOnce();
+    });
+    it('closes an unchanged cross-section without asking', async () => {
+        const env = cancelHarness(false, false);
+        expect(await env.request()).toBe(true);
+        expect(env.confirm).not.toHaveBeenCalled();
+        expect(env.cancel).toHaveBeenCalledOnce();
     });
 });

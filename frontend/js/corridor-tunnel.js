@@ -265,6 +265,7 @@
         const buildings = [];
         const seenProposalBuildings = new Set();
         const surveys = options.surveys || null;
+        const proposalStore = options.proposalStore || options._parcelMutation?.proposals || global.proposalStorage;
         // A bulk replay answer is an exact stock-building answer for ONE proposal footprint.
         // In that path the caller sets includeLoadedSurveyPool=false: adding the viewport/city
         // pool would turn a local scan back into an O(all loaded buildings) scan and could also
@@ -294,15 +295,16 @@
         if (surveys && surveys.osm) {
             corridorReferenceLayerFeatures(global.osmBuildingLayer).forEach(feature => buildings.push(feature));
         }
-        if (Array.isArray(global.proposedBuildings)) {
-            global.proposedBuildings.forEach(feature => {
+        const proposedBuildings = options._parcelMutation?.collections?.proposedBuildings || global.proposedBuildings;
+        if (Array.isArray(proposedBuildings)) {
+            proposedBuildings.forEach(feature => {
                 if (feature && feature.geometry) buildings.push(feature);
             });
         }
         // Applied building proposals of EVERY typology (block, row, parcel-based, single) block
         // corridors too — the shared proposedBuildings array does not reliably carry all of them.
         try {
-            (global.proposalStorage?.getAllProposals?.() || []).forEach(proposal => {
+            (proposalStore?.peekAllProposals?.() || proposalStore?.getAllProposals?.() || []).forEach(proposal => {
                 const bp = proposal?.buildingProposal;
                 if (!bp) return;
                 if (!appliedOf(proposal, bp)) return;
@@ -326,7 +328,9 @@
                 });
             });
         } catch (_) { }
-        return applyDemolitionRecordsToBuildingFeatures(buildings, collectDemolishedBuildingRecords());
+        return applyDemolitionRecordsToBuildingFeatures(buildings, collectDemolishedBuildingRecords({
+            proposalStore, excludeProposalId: options.excludeProposalId
+        }));
     }
 
     // Tunnel spans are covered structures that acquire nothing: splits each centerline segment
@@ -713,14 +717,16 @@
     // the server needs the same list without a proposalStorage; this stays as the browser's
     // storage-bound entry point. Roads, parks/squares/lakes and building typologies all clear
     // their ground the same way and all park their records on `<kind>Proposal.demolishedBuildings`.
-    function collectDemolishedBuildingRecords() {
+    function collectDemolishedBuildingRecords({ proposalStore = global.proposalStorage, excludeProposalId = null } = {}) {
         try {
             const from = global.demolishedBuildingRecordsFrom;
             if (typeof from !== 'function') {
                 console.error('[corridor-tunnel] corridor-carve.js not loaded — no demolition records');
                 return [];
             }
-            const records = from(global.proposalStorage?.getAllProposals?.() || [], {
+            const proposals = (proposalStore?.peekAllProposals?.() || proposalStore?.getAllProposals?.() || []).filter(proposal =>
+                excludeProposalId == null || String(proposal.proposalId) !== String(excludeProposalId));
+            const records = from(proposals, {
                 consolidateCorridorRecords: (records, region) =>
                     consolidateCorridorDemolitionRecords(records, region, global.turf)
             });
@@ -992,9 +998,8 @@
         }
         const hits = findBuildingTunnelIntersections(
             regionFeature,
-            collectLoadedCorridorBuildings(preloaded
-                ? { extraPool: preloaded, includeLoadedSurveyPool: false }
-                : {}),
+            collectLoadedCorridorBuildings({ _parcelMutation: options._parcelMutation,
+                ...(preloaded ? { extraPool: preloaded, includeLoadedSurveyPool: false } : {}) }),
             global.turf
         );
         for (const hit of hits) {
@@ -1131,6 +1136,7 @@
 
     if (typeof module !== 'undefined' && module.exports) {
         module.exports = {
+            collectLoadedCorridorBuildings,
             corridorTunnelEdgeKey,
             corridorEdgeFetchSegments,
             corridorBuildingKey,

@@ -468,7 +468,7 @@
         const uploadLabel = t('reparcellization.modal.uploadGeojson', 'Upload GeoJSON');
 
         const algorithmControls = `
-                    <div class="reparcel-controls" data-reparcel-alg-group>
+                    <fieldset class="reparcel-controls" data-reparcel-alg-group aria-label="${t('reparcellization.modal.layoutTitle', 'Starting layout')}" aria-disabled="false">
                       <div class="reparcel-secondary-controls" data-reparcel-secondary-controls>
                         <div class="cb-segmented reparcel-alg-options" role="radiogroup" aria-label="${t('reparcellization.modal.layoutTitle', 'Starting layout')}">${buildAlgorithmRadios(state.algorithm)}</div>
                         ${plotCountFieldHtml()}
@@ -499,7 +499,7 @@
                           <button type="button" class="btn btn-sm btn-success" data-reparcel-finish>${t('reparcellization.modal.drawFinish', 'Finish plot')} (F)</button>
                           <button type="button" class="btn btn-sm" data-reparcel-cancel-draw>${t('reparcellization.modal.drawCancel', 'Cancel')} (C)</button>
                       </div>
-                    </div>`;
+                    </fieldset>`;
 
         // The layout's output and its input: the plots it draws, and the parcels it redraws. Old plots
         // is a READ-ONLY view — the cadastre is the given, not something this editor edits.
@@ -690,7 +690,7 @@
         const history = ensureHistory();
         if (history) {
             // One shortcut and one button, both owned by the shared module.
-            history.bindKeyboard(window);
+            history.bindKeyboard(window, { enabled: () => state.plotsTab !== 'old' });
             if (state.undoEditBtn) history.bindButton(state.undoEditBtn);
             if (state.redoEditBtn) history.bindRedoButton(state.redoEditBtn);
         }
@@ -994,12 +994,20 @@
         // Editing belongs to the new-plots view only — there is nothing here to edit in the
         // cadastre, and leaving handles up over a read-only view invites a drag that means nothing.
         if (next === 'old') {
-            state.nodeEditWasActive = state.nodeEdit.active;
+            state.nodeEditWasActive = state.nodeEdit.active || state.erase.nodeEditWasActive;
+            if (state.erase.active) toggleEraseMode(false);
             if (state.nodeEdit.active) toggleNodeEditing(false);
             if (state.drawing.active) cancelDraw();
         } else if (state.nodeEditWasActive) {
             state.nodeEditWasActive = false;
             toggleNodeEditing(true);
+        }
+        // Native fieldset disabling removes every edit control from keyboard interaction while
+        // retaining each child's own validity/history disabled state for the new-plots view.
+        const editControls = state.modal?.querySelector('[data-reparcel-alg-group]');
+        if (editControls) {
+            editControls.disabled = next === 'old';
+            editControls.setAttribute('aria-disabled', String(next === 'old'));
         }
         (state.modal ? [state.modal] : []).forEach(el => el.classList.toggle('reparcel-old-plots-view', next === 'old'));
         clearInputHighlight();

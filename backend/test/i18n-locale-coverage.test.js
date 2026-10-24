@@ -7,6 +7,7 @@ import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
 
 const FRONTEND = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../frontend');
 const LANGS = ['en', 'hr', 'es', 'sr'];
@@ -16,6 +17,7 @@ const PLURAL_FORMS = ['zero', 'one', 'two', 'few', 'many', 'other'];
 // listed here on purpose; a new dynamic call site with an unlisted prefix fails the test.
 const DYNAMIC_KEY_PREFIXES = [
     'alerts.messages.',
+    'feedback.',                  // feedback.js selects status messages from the registered feature dictionary
     'commandPalette.groups.',   // frontend-map-search.test.js checks every command group
     'commandPalette.reason.',   // and every reason, in all four locales
     'parcelSourceHealth.',      // source-health messages are assembled from a runtime failure kind
@@ -93,9 +95,15 @@ function walk(dir, out = []) {
     return out;
 }
 
+// Feature dictionaries use registerTranslations in addition to the main JSON dictionaries.
+// Include their real entries, rather than exempting their keys from coverage.
+const feedbackTranslations = createRequire(import.meta.url)('../../frontend/js/feedback-translations.js');
 const locales = Object.fromEntries(LANGS.map(lang => [
     lang,
-    flatten(JSON.parse(fs.readFileSync(path.join(FRONTEND, 'i18n', `${lang}.json`), 'utf8')))
+    {
+        ...flatten(JSON.parse(fs.readFileSync(path.join(FRONTEND, 'i18n', `${lang}.json`), 'utf8'))),
+        ...flatten(feedbackTranslations[lang], 'feedback')
+    }
 ]));
 
 // i18n.js ships a small built-in table (language switcher labels) that the JSON files extend.
@@ -103,7 +111,7 @@ const inlineKeys = new Set(
     [...fs.readFileSync(path.join(FRONTEND, 'js/i18n.js'), 'utf8').matchAll(/'(language\.[\w.]+)'\s*:/g)].map(m => m[1])
 );
 
-const namespaces = new Set([...Object.keys(JSON.parse(fs.readFileSync(path.join(FRONTEND, 'i18n/en.json'), 'utf8'))), 'language', 'tools']);
+const namespaces = new Set([...Object.keys(JSON.parse(fs.readFileSync(path.join(FRONTEND, 'i18n/en.json'), 'utf8'))), 'feedback', 'language', 'tools']);
 
 function hasKey(table, key) {
     if (inlineKeys.has(key)) return true;

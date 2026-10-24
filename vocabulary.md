@@ -228,7 +228,7 @@ MCP plan drafting and revision author the included roads as a complete network b
 
 ### Map share
 
-A link naming a selected set of published designs and the current map view, including location and 2D, model 3D or realistic 3D mode. Selection starts with the entire applied working composition; exclusions are explicit. An unnamed map share carries its design CIDs and view in the URL. “Name this plan” saves a named plan snapshot instead. Neither form creates an agreement. “Designs” names the map's design browser; “Agreements” names arrangements and decision rules over designs.
+A link naming a selected set of published designs and the current map view, including location and 2D, model 3D or realistic 3D mode. Selection starts with the entire applied working composition; exclusions are explicit. Exclusions persist while switching Designs panel tabs and reset when the panel closes. An unnamed map share carries its design CIDs and view in the URL. “Name this plan” saves a named plan snapshot instead. Neither form creates an agreement. “Designs” names the map's design browser; “Agreements” names arrangements and decision rules over designs.
 
 Choosing “Unapply existing & continue” replaces the conflicting applied designs. An incoming parcel layout also replaces applied roads, layouts and content occupying its authored plots; designs outside that ground remain applied. Unapplied designs remain saved. The replacement commits together, or retains the previous working composition if any member cannot be applied.
 
@@ -267,6 +267,8 @@ The exact ground a design consumes. A Freeform design's `geometry.landTake` can 
 ### Demolition review
 
 The modeled full building removals and partial cuts caused by a land take. Acceptance acknowledges those shown consequences in the editor; it is distinct from an owner's agreement decision and from real-world demolition.
+
+Reviewing a replacement design evaluates observed stock before the source design's own removals. Application evaluates removals against the transaction's applied composition, including sources stood down by that replacement; an unchanged land take does not lose its removals merely because the source is still visible until commit.
 
 ### Ground surface
 
@@ -328,7 +330,7 @@ An urban-rule design generating perimeter building form and courtyard space from
 
 ### Row rule
 
-An urban-rule design generating a row arrangement of buildings from its land and stated dimensions.
+An urban-rule design generating a row arrangement of buildings from its land and stated dimensions. Its complete footprint must remain within the selected land, including its disconnected boundaries and excluding gaps and holes. An unplaceable footprint cannot be finished as a Row design.
 
 ### Detached rule
 
@@ -792,3 +794,7 @@ The maintainer can receive a private Telegram notification with a bounded text e
 receipt ID. Notification delivery is separate from report receipt: `telegram_notified_at` records
 confirmed delivery, while `telegram_attempted_at` and `telegram_attempts` track retries. Delivery
 does not mean the report has been read, triaged or fixed.
+
+### Track design target
+
+The selected track speed in km/h and minimum radius in metres are authored design targets. Changing a rail lane's gauge changes its cross-section without changing those targets. Finishing a drawing warns when circles through consecutive polyline points have tighter radii; the author can keep editing or explicitly continue. This diagnostic does not establish an engineered alignment or an achievable operating speed.

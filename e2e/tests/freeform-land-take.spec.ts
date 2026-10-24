@@ -43,6 +43,54 @@ test('a narrow building takes a whole parcel, previews demolition, saves and reo
   await expect(page.locator('[data-land-rows] select')).toHaveCount(1);
   await expect(page.locator('[data-land-rows] select')).toHaveValue('whole');
 });
+for (const published of [false, true]) test(`height-only editing retains demolition for ${published ? 'a published counterproposal' : 'an in-place save'}`, async ({ mockApi: page }) => {
+  const stock = { id: 'yard-building', height_m: 4,
+    geometry: { type: 'Polygon', coordinates: [[[15.98192,45.80002],[15.98198,45.80002],[15.98198,45.80008],[15.98192,45.80008],[15.98192,45.80002]]] } };
+  await page.route('**/buildings/under', route => {
+    const regions = route.request().postDataJSON().regions;
+    return route.fulfill({ json: { supported: true, source: 'gdi', truncated: false,
+      regions: Object.fromEntries(regions.map((r: any) => [r.key, [stock]])) } });
+  });
+  await open(page);
+  await selectNativeOption(page.locator(`[data-parcel-id="${first}"]`), 'whole');
+  await page.locator('#single-height-slider').fill('250');
+  await expect(page.locator('[data-land-accept]')).toBeEnabled();
+  await finish(page);
+  const current = () => page.evaluate(() => {
+    const w = window as any;
+    const p = w.proposalStorage.getAllProposals().find((p: any) => p.goal === 'single' && p.applied);
+    return { id: p?.proposalId, height: p?.geometry?.buildings?.[0]?.properties?.height,
+      demolished: w.collectDemolishedBuildingRecords().map((b: any) => String(b.id)),
+      drawnDemolished: [...w.currentBuildingOutcomeState().demolishedById.keys()] };
+  });
+  await expect.poll(current).toMatchObject({ height: 250, demolished: ['yard-building'], drawnDemolished: ['yard-building'] });
+  const before = await current();
+  if (published) await page.evaluate(id => {
+    const w = window as any;
+    const source = w.proposalStorage.getProposal(id);
+    source.published = { cid: w.Cid.cidOfObject(w.DesignRecord.published(source)) };
+    w.proposalStorage.save();
+  }, before.id);
+  await showProposal(page, before.id);
+  await page.locator('#proposal-details-footer .btn-edit-geometry').click();
+  await expect(page.locator('#single-height-slider')).toHaveValue('250');
+  await page.locator('#single-height-slider').focus();
+  await page.keyboard.press('ArrowLeft');
+  await expect(page.locator('#single-height-slider')).toHaveValue('249');
+  expect(await current()).toEqual(before);
+  await expect(page.locator('[data-land-accept]')).toBeEnabled();
+  await expect(page.locator('[data-land-status]')).toContainText('1 buildings removed');
+  await finish(page);
+  await expect.poll(current).toMatchObject({ height: 249,
+    demolished: ['yard-building'], drawnDemolished: ['yard-building'] });
+  if (published) {
+    expect((await current()).id).not.toBe(before.id);
+    expect(await page.evaluate(id => {
+      const p = (window as any).proposalStorage.getProposal(id);
+      return { applied: p.applied, height: p.geometry.buildings[0].properties.height };
+    }, before.id)).toEqual({ applied: false, height: 250 });
+  } else expect((await current()).id).toBe(before.id);
+});
 test('missing stock blocks acceptance and keeps the unsaved editor open',async({mockApi:page})=>{
   await open(page);
   await page.locator('[data-land-accept]').check();
