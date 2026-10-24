@@ -225,7 +225,7 @@
             const serverId = row.getAttribute('data-server-id');
             if (serverId) {
                 try {
-                    const proposal = root.DesignSync.importDesign(await root.DesignSync.fetchDesign(serverId));
+                    const proposal = await root.DesignSync.importDesign(await root.DesignSync.fetchDesign(serverId));
                     key = root.getProposalKey(proposal) || key;
                 } catch (error) {
                     console.error(`[${new Date().toISOString()}] [ParcelSetProposals] could not load published proposal ${serverId}`, error);

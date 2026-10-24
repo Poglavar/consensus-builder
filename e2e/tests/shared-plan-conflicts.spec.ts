@@ -7,7 +7,7 @@ import { fileDesign, pageIndex } from '../helpers/mocks/shared-server';
 const records = require('../../frontend/js/design-record.js');
 
 for (const width of [390, 1280]) test(`shared plan conflicts offer unapply, skip and cancel at ${width}px @core`, async ({ mockApi: page }, testInfo) => {
-  test.setTimeout(150_000);
+  test.setTimeout(240_000);
   await page.setViewportSize({ width, height: 844 });
   await stubBasemapTiles(page);
   const index = pageIndex(page), ring = PARCEL_GEOMETRY.coordinates[0];
@@ -52,7 +52,7 @@ for (const width of [390, 1280]) test(`shared plan conflicts offer unapply, skip
     await expect(page.locator('.shared-plan-failures')).toHaveCount(0);
   }
   await expect.poll(() => page.evaluate(() => (window as any).proposedBuildings.map((b: any) => b.properties.floors).sort((a: number,b: number) => a-b))).toEqual([18,22,27,32]);
-  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.reload({ waitUntil: 'domcontentloaded', timeout: 60_000 });
   await waitForMapReady(page);
   await expect.poll(applied).toEqual(revised);
   await expect(page.getByRole('alertdialog', { name: 'Plan conflicts' })).toHaveCount(0);
@@ -62,6 +62,46 @@ for (const width of [390, 1280]) test(`shared plan conflicts offer unapply, skip
   });
   expect(saved).toHaveLength(9);
   saved.forEach(record => expect(record.cid).toBe(record.published));
+
+  // Private imports must queue behind an older map snapshot. Otherwise that snapshot erases the
+  // newly imported draft before the person confirms replacement, producing a missing-member error.
+  const privateDesign = structuredClone(index.designs.get(newCids[0])!.content);
+  privateDesign.title = 'Private tower revision';
+  privateDesign.origin = { cid: newCids[0] };
+  const draftId = await page.evaluate(async content => {
+    const w = window as any, manager = w.ProposalManager;
+    const url = await w.DraftLink.build({ origin: location.origin, design: content });
+    history.replaceState({}, '', url);
+    const run = manager.runParcelMutation.bind(manager);
+    let started: () => void;
+    const begun = new Promise<void>(resolve => { started = resolve; });
+    const gate = new Promise<void>(resolve => { w.__releaseSharedImport = resolve; });
+    w.__sharedBackground = run('test-background-map-update', null, async () => {
+      started(); await gate; return true;
+    }, { _mapMutation: false });
+    await begun;
+    manager.runParcelMutation = (kind: string, ...args: any[]) => {
+      if (kind === 'import-shared-designs') w.__sharedImportQueued = true;
+      return run(kind, ...args);
+    };
+    w.__privatePreview = w.DraftPreview.open().then((result: any) => {
+      w.__privatePreviewResult = { failed: result.failed, applied: result.applied };
+    }).catch((error: Error) => { w.__privatePreviewError = error.message; });
+    return `draft-${w.Cid.cidOfObject(content)}`;
+  }, privateDesign);
+  await expect.poll(() => page.evaluate(() => (window as any).__sharedImportQueued)).toBe(true);
+  expect(await page.evaluate(id => !!(window as any).proposalStorage.getProposal(id), draftId)).toBe(false);
+  await page.evaluate(async () => { const w = window as any; w.__releaseSharedImport(); await w.__sharedBackground; });
+  const privateWarning = page.getByRole('alertdialog', { name: 'Plan conflicts' });
+  await expect(privateWarning).toBeVisible();
+  await privateWarning.getByRole('button', { name: 'Unapply existing & continue', exact: true }).click();
+  await expect.poll(() => page.evaluate(id => !!(window as any).proposalStorage.getProposal(id)?.applied, draftId)).toBe(true);
+  await expect.poll(() => page.evaluate(() => (window as any).__privatePreviewResult)).toEqual({ failed: [], applied: [draftId] });
+  expect(await page.evaluate(() => (window as any).__privatePreviewError)).toBeUndefined();
+  await expect(page.locator('.shared-plan-failures')).toHaveCount(0);
+  await page.reload({ waitUntil: 'domcontentloaded', timeout: 60_000 });
+  await waitForMapReady(page);
+  await expect.poll(() => page.evaluate(id => !!(window as any).proposalStorage.getProposal(id)?.applied, draftId)).toBe(true);
   await page.screenshot({ path: testInfo.outputPath(`revised-plan-${width}.png`) });
   expect(index.requests.some(r => r.method === 'POST' && ['/pins','/designs','/agreements'].includes(r.path))).toBe(false);
 });

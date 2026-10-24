@@ -548,6 +548,12 @@ function designLink({ designs = [], local = {}, refused = {}, failing = {}, held
     window.CbDialog = { choice: vi.fn(async () => conflictChoice) };
     const ProposalManager = {
         _initialReapplyDone: replayDone,
+        runParcelMutation: vi.fn(async (_kind, _id, operation) => {
+            const before = records.size;
+            const result = await operation({ _parcelMutation: { proposals: stubs.proposalStorage } });
+            if (records.size !== before) stubs.proposalStorage.save();
+            return result;
+        }),
         reapplyAppliedProposals: vi.fn(async () => { order.push('replay'); ProposalManager._initialReapplyDone = true; }),
         applyProposal: vi.fn(async id => {
             order.push(`apply:${records.get(id).title}`);
@@ -560,7 +566,7 @@ function designLink({ designs = [], local = {}, refused = {}, failing = {}, held
             return { ok: !blockers.length, blockers };
         }),
         applyProposalPlan: vi.fn(async ids => {
-            if (planFailure) { ProposalManager._lastFailedPlanApplySummary = { failed: [{ reason: planFailure }] }; return false; }
+            if (planFailure) { ProposalManager._lastFailedPlanApplySummary = { failed: Array.isArray(planFailure) ? planFailure : [{ reason: planFailure }] }; return false; }
             const conflicts = new Set(ids.flatMap(id => held[id] || []).filter(id => !ids.includes(id)));
             conflicts.forEach(id => { records.get(id).applied = false; });
             ids.forEach(id => { records.get(id).applied = true; });
@@ -669,6 +675,26 @@ describe('opening a /designs link', () => {
         expect(link.records.get(`design-${link.tower.cid}`).applied).toBe(false);
     });
 
+    it('names each failed design from the carried content even when the local record is missing', async () => {
+        const link = conflictingLink('replace');
+        const towerId = `design-${link.tower.cid}`, parkId = `design-${park.cid}`;
+        link.ProposalManager.applyProposalPlan.mockImplementation(async () => {
+            link.records.delete(towerId);
+            link.ProposalManager._lastFailedPlanApplySummary = { failed: [
+                { proposalId: towerId, reason: 'This proposal is no longer available.' },
+                { proposalId: parkId, reason: 'This proposal was withdrawn.' }
+            ] };
+            return false;
+        });
+        const result = await link.open([link.tower.cid, park.cid]);
+        expect(result.failed.map(failure => [failure.id, failure.label])).toEqual([[towerId, 'Tower'], [parkId, 'Park']]);
+        const body = link.showSimpleShareModal.mock.calls[0][0].body;
+        expect(body).toContain('2 of the shared designs');
+        expect(body).toContain('Tower · This proposal is no longer available.');
+        expect(body).toContain('Park · This proposal was withdrawn.');
+        expect(result.applied).toEqual([]);
+    });
+
     it('imports the designs parked, applies what is not on the map in package order and frames the latest-authored', async () => {
         const link = designLink({ designs: [park, block, square], local: { [square.cid]: standingSquare } });
 
@@ -676,8 +702,10 @@ describe('opening a /designs link', () => {
 
         expect(link.window.DesignSync.fetchDesigns).toHaveBeenCalledExactlyOnceWith([park.cid, block.cid, square.cid]);
         // The square stands on the map already: used as it is, never imported or applied again.
-        expect(link.window.DesignSync.importDesign.mock.calls.map(([design, options]) => [design.title, options]))
-            .toEqual([['Park', { deferSave: true }], ['Block', { deferSave: true }]]);
+        expect(link.window.DesignSync.importDesign.mock.calls.map(([design, options]) => [design.title, options._parcelMutation.proposals]))
+            .toEqual([['Park', link.proposalStorage], ['Block', link.proposalStorage]]);
+        expect(link.ProposalManager.runParcelMutation).toHaveBeenCalledExactlyOnceWith(
+            'import-shared-designs', null, expect.any(Function), { _mapMutation: false });
         // One write for all the imports, then one ground prefetch for what will be applied; buildings go
         // before public spaces through the one-boundary replay materializer, which writes once at its end.
         expect(link.CadastralParcelRepository.ensureIds).toHaveBeenCalledExactlyOnceWith(['HR-1', 'HR-2', 'HR-3'], expect.any(Object));

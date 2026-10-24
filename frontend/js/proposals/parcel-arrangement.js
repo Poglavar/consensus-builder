@@ -445,6 +445,15 @@
         return hash32(text).toString(36);
     }
 
+    // Pairwise snapped clips need a deterministic geometric order in every consumer.
+    function orderClips(entries, featureOfEntry) {
+        return entries.map(entry => {
+            const feature = featureOfEntry(entry);
+            return { entry, area: T().area(feature), key: JSON.stringify(feature.geometry) };
+        }).sort((a, b) => b.area - a.area || (a.key < b.key ? -1 : a.key > b.key ? 1 : 0))
+            .map(item => item.entry);
+    }
+
     function pieceId(parcelId, kind, geometry) {
         const text = canonicalPolygon(geometry);
         if (!text) return null;
@@ -482,7 +491,7 @@
         const id = String(parcelId || '');
         if (!id) throw new Error('parcel-arrangement: a cadastral parcel id is required');
 
-        const hits = Array.isArray(precomputedHits) ? precomputedHits : takeHitsOn(parcelFeature, takes);
+        let hits = Array.isArray(precomputedHits) ? precomputedHits : takeHitsOn(parcelFeature, takes);
         // A take whose overlap with this parcel could not be computed: the arrangement is unknown.
         const unknown = hits.find(entry => entry && entry.failure);
         if (unknown) throw unknown.failure;
@@ -500,6 +509,12 @@
                 takersUsed: []
             };
         }
+
+        // Snapping between pairwise clips makes their numeric result order-dependent. MCP import,
+        // local edits and replay enumerate the same corridors differently, so choose one geometric
+        // order before BOTH union and subtraction. Largest first, then exact geometry for ties;
+        // local proposal ids and caller-owned hit arrays must not affect the resulting land hashes.
+        hits = orderClips(hits, entry => entry.hit);
 
         // The taken area of THIS parcel, as one shape: a junction is two corridors meeting, and the
         // union is what makes it a single connected piece instead of a precedence question.
@@ -788,6 +803,7 @@
         featureForPiece,
         takesOverlapping,
         takeHitsOn,
+        orderClips,
         pieceId,
         isArrangementFeature,
         canonicalPolygon,

@@ -79,7 +79,9 @@ describe('proposals on a set of parcels', () => {
             expect(Object.keys(set.summary)).toContain('other');
             expect(Object.keys(set.covers)).toContain('other');
             if (lang === 'hr' || lang === 'sr') expect(Object.keys(set.summary)).toEqual(['one', 'few', 'other']);
-            expect(typeof i18n.panel.parcel.tabPropose).toBe('string');
+            expect(typeof set.publishedHeading).toBe('string');
+            expect(typeof set.loading).toBe('string');
+            expect(typeof set.unavailable).toBe('string');
             expect(typeof i18n.panel.parcel.historySection).toBe('string');
             expect(Object.keys(i18n.siteTool.proposals).sort()).toEqual(['existing', 'none', 'show']);
         }

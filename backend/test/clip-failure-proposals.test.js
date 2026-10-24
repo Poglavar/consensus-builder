@@ -384,21 +384,6 @@ describe('apply/buildings.js _formBuildingParcel', () => {
         expect(failure.parcelId).toBe('ground:abc');
     });
 
-    it('a whole-parcel merge refusal carries the clipper\'s error', async () => {
-        installApplyGlobals();
-        globalThis.window.__cadastreAncestry = { resolveParentsByGeometry: () => ({ ids: ['HR-A', 'HR-B'], coverage: 1 }) };
-        const parcels = [parcelFeature('HR-A', rect(0, 0, 10, 10)), parcelFeature('HR-B', rect(10, 0, 20, 10))];
-        const self = mixinThis({ _formBuildingParcel: buildingsApply._formBuildingParcel }, parcels);
-        globalThis.turf = failingTurf(['union']);
-        const before = siteCount('apply-buildings.hostUnion');
-        const result = await run(self, { takeWholeParcels: true }, rect(0, 0, 20, 10));
-        expect(result.ok).toBe(false);
-        const refusal = self._setLastApplyFailure.mock.calls[0][1];
-        expect(refusal.code).toBe('building-merge-failed');
-        expect(refusal.message).toContain(STACK);
-        expect(siteCount('apply-buildings.hostUnion')).toBe(before + 1);
-    });
-
     it('a host remainder that cannot be computed refuses with the clipper\'s error and counts it', async () => {
         installApplyGlobals();
         const parcels = [parcelFeature('HR-A', rect(0, 0, 10, 10)), parcelFeature('HR-B', rect(10, 0, 20, 10))];

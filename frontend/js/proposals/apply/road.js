@@ -106,6 +106,9 @@
             claims.push({ id: String(p.proposalId), feature: { type: 'Feature', properties: {}, geometry: claim }, box });
         }
         if (!claims.length) return unchanged;
+        // Import order and formation replay order can differ. Use the same geometric clip order
+        // as cadastral arrangement so a formation's remaining ground keeps its agreement hash.
+        const orderedClaims = clipFailureApi().orderClips(claims, claim => claim.feature);
         const area = feature => { try { return turfRef.area(feature) || 0; } catch (_) { return 0; } };
         const disjoint = (a, b) => !!a && !!b && (a[0] > b[2] || b[0] > a[2] || a[1] > b[3] || b[1] > a[3]);
         const corridorIds = new Set();
@@ -113,7 +116,7 @@
             if (!geometry || !/Polygon/.test(String(geometry.type || ''))) return geometry;
             let body = { type: 'Feature', properties: {}, geometry };
             let cut = false;
-            for (const claim of claims) {
+            for (const claim of orderedClaims) {
                 let box = null;
                 try { box = turfRef.bbox(body); } catch (_) { box = null; }
                 if (disjoint(box, claim.box)) continue;

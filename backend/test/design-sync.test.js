@@ -254,6 +254,8 @@ function fakeWindow({ records = [], server = fakeServer(), blocked = null, confi
         }
     };
     if (proposalStorage) win.proposalStorage = proposalStorage;
+    win.ProposalManager = { runParcelMutation: async (_kind, _id, operation) =>
+        operation({ _parcelMutation: { proposals: win.proposalStorage } }) };
     const live = DesignSync.browser(win);
     return { win, sync: live.api, stored, imports, server, saves: () => saves };
 }
@@ -296,7 +298,7 @@ describe('publishDesign', () => {
         const pinned = JSON.parse(Buffer.from(server.calls.find(call => call.pathname === '/pins').body.bytes, 'base64').toString('utf8'));
         expect(structure ? pinned.structureProposal.decorationDesign : pinned.geometry.groundSurface.decorationDesign).toEqual(design);
         const indexRow = server.designs.get(result.cid);
-        const receiver = fakeWindow().sync.importDesign(indexRow);
+        const receiver = await fakeWindow().sync.importDesign(indexRow);
         expect(structure ? receiver.structureProposal.decorationDesign : receiver.geometry.groundSurface.decorationDesign).toEqual(design);
         expect(DesignRecord.cidOf(receiver)).toBe(result.cid);
     });
@@ -357,23 +359,23 @@ describe('publishDesign', () => {
 });
 
 describe('importDesign and the local copy of a listed design', () => {
-    it('stores a parked local record that hashes to the row\'s CID, once', () => {
+    it('stores a parked local record that hashes to the row\'s CID, once', async () => {
         const row = rowOf(road());
         const { sync, imports, stored } = fakeWindow();
-        const record = sync.importDesign(row);
+        const record = await sync.importDesign(row);
         expect(record.proposalId).toBe(`design-${row.cid}`);
         expect(stored.get(record.proposalId)).toBe(record);
-        expect(imports).toEqual([{ id: record.proposalId, options: { overwrite: true, deferSave: false } }]);
+        expect(imports).toEqual([{ id: record.proposalId, options: { overwrite: true, deferSave: true } }]);
         expect(DesignRecord.cidOf(record)).toBe(row.cid);
         expect(sync.publishedCid(record)).toBe(row.cid);
         expect(record.applied).toBeUndefined();
-        expect(sync.importDesign(row)).toBe(record);
-        expect(sync.importDesign(row, { deferSave: true })).toBe(record);
+        expect(await sync.importDesign(row)).toBe(record);
+        expect(await sync.importDesign(row)).toBe(record);
         expect(imports).toHaveLength(1);
         // The copy held here was checked when it came in; a row under the same CID cannot replace it.
-        expect(sync.importDesign({ ...row, content: { ...row.content, title: 'Tampered' } })).toBe(record);
+        expect(await sync.importDesign({ ...row, content: { ...row.content, title: 'Tampered' } })).toBe(record);
         const fresh = fakeWindow();
-        expect(() => fresh.sync.importDesign({ ...row, content: { ...row.content, title: 'Tampered' } })).toThrow(expect.objectContaining({ code: 'cid-mismatch' }));
+        await expect(fresh.sync.importDesign({ ...row, content: { ...row.content, title: 'Tampered' } })).rejects.toThrow(expect.objectContaining({ code: 'cid-mismatch' }));
         expect(fresh.imports).toEqual([]);
     });
 
@@ -401,7 +403,7 @@ describe('importDesign and the local copy of a listed design', () => {
     // design left out (a park's blockName: null, a building's parameters and geometry), so the copy no
     // longer hashed to its CID and read as unpublished here. Imported through the real store, an
     // absent key stays absent.
-    it('imports through the real store without filling in keys the published design leaves out', () => {
+    it('imports through the real store without filling in keys the published design leaves out', async () => {
         const park = road({ proposalId: 'park-1', goal: 'park', title: 'Pocket park', roadProposal: undefined,
             structureProposal: { kind: 'park', geometry: square(15.96, 45.8) } });
         const building = road({ proposalId: 'block-1', goal: 'buildings', title: 'Block', roadProposal: undefined,
@@ -413,7 +415,7 @@ describe('importDesign and the local copy of a listed design', () => {
                 const row = rowOf(design);
                 expect(row.content).not.toHaveProperty('structureProposal.blockName');
                 expect(row.content).not.toHaveProperty('buildingProposal.parameters');
-                const record = sync.importDesign(row);
+                const record = await sync.importDesign(row);
                 expect(storage.getProposal(record.proposalId)).toBe(record);
                 expect(record.structureProposal || {}).not.toHaveProperty('blockName');
                 expect(record.buildingProposal || {}).not.toHaveProperty('parameters');
@@ -424,6 +426,34 @@ describe('importDesign and the local copy of a listed design', () => {
         } finally {
             restore();
         }
+    });
+
+    it.each(['importDesign', 'importDraft'])('%s survives a background mutation finishing during import', async method => {
+        const { storage, restore } = realProposalStorage();
+        const { win, sync } = fakeWindow({ proposalStorage: storage });
+        const { ParcelMutation } = require('../../frontend/js/proposals/apply/transaction.js');
+        const run = operation => ParcelMutation.run({ kind: 'import-race-test' }, operation,
+            { runtime: win, proposalStore: storage, agentStore: null, storage: globalThis.PersistentStorage, fabric: null });
+        win.ProposalManager.runParcelMutation = (_kind, _id, operation) => run(context => operation({ _parcelMutation: context }));
+        let release, started;
+        const gate = new Promise(resolve => { release = resolve; });
+        const begun = new Promise(resolve => { started = resolve; });
+        const background = run(async () => { started(); await gate; return true; });
+        try {
+            await begun;
+            const row = rowOf(road({ goal: 'park', roadProposal: undefined,
+                structureProposal: { kind: 'park', geometry: square(15.96, 45.8) } }));
+            const importing = sync[method](row);
+            expect(storage.getAllProposals()).toHaveLength(0);
+            release();
+            await background;
+            const imported = await importing;
+            expect(storage.getProposal(imported.proposalId)).toMatchObject({ title: 'New lane', applied: false });
+            expect(DesignRecord.cidOf(storage.getProposal(imported.proposalId))).toBe(row.cid);
+            // Another ordinary map update must retain the committed import as well.
+            await run(async () => true);
+            expect(storage.getProposal(imported.proposalId)).toBeTruthy();
+        } finally { release(); await background; restore(); }
     });
 });
 

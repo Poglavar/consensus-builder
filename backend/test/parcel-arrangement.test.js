@@ -590,7 +590,7 @@ describe('a cut that cannot be computed is never silently swallowed', () => {
     it('throws when the union of two takes comes back empty instead of dropping one of them', () => {
         withTurf({ union: () => null }, () => {
             expect(() => arrangement.arrangementOf(PARCEL, PARCEL_ID, [EAST_WEST, NORTH_SOUTH]))
-                .toThrow(/union with take road-b came back empty/);
+                .toThrow(/union with take road-a came back empty/);
         });
     });
 

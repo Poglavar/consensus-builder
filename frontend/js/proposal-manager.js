@@ -3042,10 +3042,13 @@ const ProposalManager = {
         }
         const store = _proposalStore(options);
         const members = ids.map(id => _getProposalRecord(id, options));
-        if (members.some(record => !record || !proposalDisplayStateApi.isApplicable(record))) {
-            this._lastFailedPlanApplySummary = { failed: [{
-                code: 'plan-member-unavailable', reason: 'A plan member is missing or cannot be applied.'
-            }] };
+        const unavailable = members.flatMap((record, index) => {
+            if (record && proposalDisplayStateApi.isApplicable(record)) return [];
+            const failure = _proposalApplyFailure(record ? 'proposal-cancelled' : 'proposal-not-found');
+            return [{ proposalId: ids[index], title: record?.title || null, code: failure.code, reason: failure.message }];
+        });
+        if (unavailable.length) {
+            this._lastFailedPlanApplySummary = { failed: unavailable };
             return false;
         }
         const memberIds = new Set(members.map(record => String(record.proposalId)));

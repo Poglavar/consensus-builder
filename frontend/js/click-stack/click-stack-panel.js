@@ -446,7 +446,7 @@
     async function openPublishedDesign(instance) {
         let key;
         try {
-            const proposal = global.DesignSync.importDesign(await global.DesignSync.fetchDesign(instance.serverId));
+            const proposal = await global.DesignSync.importDesign(await global.DesignSync.fetchDesign(instance.serverId));
             key = global.getProposalKey(proposal) || proposal.proposalId;
         } catch (error) {
             console.error(`[${new Date().toISOString()}] [ClickStack] published proposal ${instance.serverId} could not be loaded`, error);

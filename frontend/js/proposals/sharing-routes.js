@@ -884,28 +884,30 @@ async function handleSharedDesignRoute(cids, options = {}) {
         // Import: a local copy of the CID already applied stands as it is; anything else is stored
         // parked and queued.
         const queue = [];
-        let imported = 0;
-        for (const cid of valid) {
-            const row = fetched.rows.get(cid);
-            if (!row) continue;
-            try {
-                const existing = window.DesignSync.localCopyOf(cid);
-                if (existing && isProposalCurrentlyApplied(existing)) {
-                    result.skipped.push(String(existing.proposalId));
-                    result.localIds.set(cid, String(existing.proposalId));
-                    continue;
+        await ProposalManager.runParcelMutation('import-shared-designs', null, async transactionOptions => {
+            const store = transactionOptions._parcelMutation.proposals;
+            for (const cid of valid) {
+                const row = fetched.rows.get(cid);
+                if (!row) continue;
+                try {
+                    const existing = window.DesignSync.localCopyOf(cid, { store });
+                    if (existing && isProposalCurrentlyApplied(existing)) {
+                        result.skipped.push(String(existing.proposalId));
+                        result.localIds.set(cid, String(existing.proposalId));
+                        continue;
+                    }
+                    const stored = existing || await (options.draftRows
+                        ? window.DesignSync.importDraft(row, transactionOptions)
+                        : window.DesignSync.importDesign(row, transactionOptions));
+                    result.localIds.set(cid, String(stored.proposalId));
+                    queue.push(String(stored.proposalId));
+                } catch (error) {
+                    console.warn(`[${new Date().toISOString()}] [handleSharedDesignRoute] ${cid} could not be imported`, error);
+                    result.failed.push({ id: cid, label: row.title || cid, reason: (error && error.message) || String(error) });
                 }
-                const stored = existing || (options.draftRows ? window.DesignSync.importDraft(row, { deferSave: true }) : window.DesignSync.importDesign(row, { deferSave: true }));
-                if (!existing) imported += 1;
-                result.localIds.set(cid, String(stored.proposalId));
-                queue.push(String(stored.proposalId));
-            } catch (error) {
-                console.warn(`[${new Date().toISOString()}] [handleSharedDesignRoute] ${cid} could not be imported`, error);
-                result.failed.push({ id: cid, label: row.title || cid, reason: (error && error.message) || String(error) });
+                updateProposalLoadOverlay({ progress: { done: result.localIds.size + result.failed.length, total: valid.length } });
             }
-            updateProposalLoadOverlay({ progress: { done: result.localIds.size + result.failed.length, total: valid.length } });
-        }
-        if (imported) proposalStorage.save();
+        }, { _mapMutation: false });
 
         // The cadastral ground of every queued design in one prefetch, then a precheck of the whole
         // set: a design the apply would refuse is reported, and the others still apply.
@@ -979,9 +981,18 @@ async function handleSharedDesignRoute(cids, options = {}) {
                 result.skipped.length = 0;
             } else {
                 const failures = ProposalManager._lastFailedPlanApplySummary?.failed || [];
-                const reason = failures.map(failure => failure.reason || failure.message).filter(Boolean).join('; ')
-                    || t('proposals.share.errors.applyFailed', 'The design could not be applied to the ground here.');
-                result.failed.push({ id: null, label: t('proposals.share.route.title', 'Shared designs'), reason });
+                for (const failure of failures) {
+                    const id = failure.proposalId == null ? null : String(failure.proposalId);
+                    const cid = [...result.localIds].find(([, localId]) => localId === id)?.[0];
+                    const row = fetched.rows.get(cid);
+                    result.failed.push({ id,
+                        label: failure.title || row?.title || row?.content?.title
+                            || labelOf(proposalStorage.getProposal(id), id || t('proposals.share.route.title', 'Shared designs')),
+                        reason: failure.reason || failure.message || t('proposals.share.errors.applyFailed', 'The design could not be applied to the ground here.') });
+                }
+                if (!failures.length) result.failed.push({ id: null,
+                    label: t('proposals.share.route.title', 'Shared designs'),
+                    reason: t('proposals.share.errors.applyFailed', 'The design could not be applied to the ground here.') });
             }
             updateProposalLayer();
             updateShowProposalsButton();

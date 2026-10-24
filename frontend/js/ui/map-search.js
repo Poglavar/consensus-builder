@@ -566,7 +566,7 @@
             status(t('mapSearch.proposalDownloading', 'Downloading…'));
             try {
                 // The index row carries the design itself (GET /designs returns whole rows).
-                proposal = win.DesignSync.importDesign(raw);
+                proposal = await win.DesignSync.importDesign(raw);
             } catch (error) {
                 if (error?.code === 'proposal-in-other-city') {
                     await openInItsCity(error.cityId);

@@ -717,7 +717,7 @@ function resetParcelSelectionForProposalListInteraction() {
 // "Apply to map" belonged. Shared by a list row and its Download button, the map search box's
 // results and the entries that open a design by its CID (activity, globe, bets).
 async function importServerProposal(cid) {
-    const proposal = window.DesignSync.importDesign(await window.DesignSync.fetchDesign(cid));
+    const proposal = await window.DesignSync.importDesign(await window.DesignSync.fetchDesign(cid));
     updateShowProposalsButton();
     return proposal;
 }

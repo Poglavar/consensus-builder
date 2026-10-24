@@ -169,6 +169,17 @@ describe('ProposalManager mutation boundary', () => {
         expect(ProposalManager._lastFailedPlanApplySummary.failed[0].code).toBe('bad-ground');
     });
 
+    it('identifies every unavailable member and distinguishes missing records from withdrawn designs', async () => {
+        store.proposals.set('withdrawn', { proposalId: 'withdrawn', title: 'Withdrawn park', lifecycleStatus: 'Cancelled', applied: false });
+        const before = structuredClone([...store.proposals]);
+        await expect(ProposalManager.applyProposalPlan(['target', 'missing-road', 'withdrawn'])).resolves.toBe(false);
+        expect([...store.proposals]).toEqual(before);
+        expect(ProposalManager._lastFailedPlanApplySummary.failed).toEqual([
+            { proposalId: 'missing-road', title: null, code: 'proposal-not-found', reason: expect.stringContaining('no longer available') },
+            { proposalId: 'withdrawn', title: 'Withdrawn park', code: 'proposal-cancelled', reason: expect.stringContaining('withdrawn') }
+        ]);
+    });
+
     it('restores state and rethrows the original error', async () => {
         const cause = new Error('geometry exploded');
         ProposalManager._applyProposalTransactionBody = async (proposalId, options) => {

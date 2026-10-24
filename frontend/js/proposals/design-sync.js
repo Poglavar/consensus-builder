@@ -385,10 +385,10 @@
 
         // The local record published as `cid` at the current index, or null. A record applied on the
         // map wins over a parked copy of the same design.
-        function localCopyOf(cid) {
+        function localCopyOf(cid, { store = storage() } = {}) {
             if (!cidApi().isCid(cid)) return null;
             const apiBase = currentApiBase();
-            const copies = storage().getAllProposals().filter(record => record && record.published && record.published.cid === cid
+            const copies = store.getAllProposals().filter(record => record && record.published && record.published.cid === cid
                 && publishedCid(record, apiBase) === cid);
             return copies.find(record => typeof win.isProposalCurrentlyApplied === 'function' && win.isProposalCurrentlyApplied(record)) || copies[0] || null;
         }
@@ -397,13 +397,19 @@
          * Imports an index row as a local design (parked: importing never applies). A local copy of
          * the same CID is returned as it is. Throws like localDesignFromRow, and code
          * 'proposal-in-other-city' for another city's design (proposalStorage.importProposal).
-         * @returns the stored local record
+         * Imports share the map mutation queue so an older background snapshot cannot erase them.
+         * @returns a promise for the stored local record
          */
-        function importDesign(row, { deferSave = false } = {}) {
-            const existing = localCopyOf(row && row.cid);
+        async function importDesign(row, options = {}) {
+            if (!options._parcelMutation) {
+                return win.ProposalManager.runParcelMutation('import-design', row?.cid, transactionOptions =>
+                    importDesign(row, transactionOptions), { _mapMutation: false });
+            }
+            const store = options._parcelMutation.proposals;
+            const existing = localCopyOf(row && row.cid, { store });
             if (existing) return existing;
             const record = localDesignFromRow(row, { apiBase: currentApiBase() });
-            const stored = storage().importProposal(record, { overwrite: true, deferSave });
+            const stored = store.importProposal(record, { overwrite: true, deferSave: true });
             if (!stored) throw new Error(`Design ${row.cid} could not be stored locally.`);
             let cid = null;
             try { cid = designRecord().cidOf(stored); } catch (error) { warn(`imported ${row.cid} cannot be hashed again`, error); }
@@ -413,12 +419,16 @@
         }
 
         // A private fragment preview becomes an ordinary local draft, with no publication mark.
-        function importDraft(row, { deferSave = false } = {}) {
+        async function importDraft(row, options = {}) {
+            if (!options._parcelMutation) {
+                return win.ProposalManager.runParcelMutation('import-draft', row?.cid, transactionOptions =>
+                    importDraft(row, transactionOptions), { _mapMutation: false });
+            }
             const record = localDesignFromRow(row, { apiBase: currentApiBase(), proposalId: `draft-${row.cid}` });
             delete record.published;
             record.lifecycleStatus = 'draft';
             record.applied = false;
-            const stored = storage().importProposal(record, { overwrite: true, deferSave });
+            const stored = options._parcelMutation.proposals.importProposal(record, { overwrite: true, deferSave: true });
             if (!stored) throw new Error('The draft could not be imported.');
             return stored;
         }
