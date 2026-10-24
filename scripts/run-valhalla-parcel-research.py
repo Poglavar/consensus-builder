@@ -7,6 +7,7 @@ permanent knowledge. Stage packets, logs and qualification workspaces are tempor
 from __future__ import annotations
 
 import argparse
+import copy
 import fcntl
 import hashlib
 import json
@@ -477,7 +478,20 @@ class Runner:
             path = directory / name
             if path.is_file():
                 records[name] = json_read(path)
-        return ("\nCity knowledge: failed URLs describe unsuccessful attempts, not proof of absent cadastre. "
+        retry = city.get("qualificationRetry")
+        retry_prompt = ""
+        if isinstance(retry, dict):
+            retry_prompt = ("\nEXPLICIT CANDIDATE REQUALIFICATION: the user requested a fresh attempt with the current "
+                            "integration worker for this previously identified parcel-source candidate. "
+                            "Start with the saved evidence and source hints below; refresh only missing or stale evidence. "
+                            "Retry prior failed endpoints when an adapter/configuration repair may address the failure. "
+                            "Known sources and existing city bindings are eligible: a useful source must be classified "
+                            "candidate for a new qualification, never skipped as already-supported. Do not remove existing "
+                            "working settings. Check actual parcel purpose and bounded geometry honestly; a source that "
+                            "is now inaccessible or evidenced non-parcel can still be blocked or rejected with evidence. "
+                            "Missing adapters, CRS handling, paging, or implementation work belong to the integration "
+                            "worker, not source rejection.\n" + json.dumps(retry, ensure_ascii=False) + "\n")
+        return (retry_prompt + "\nCity knowledge: failed URLs describe unsuccessful attempts, not proof of absent cadastre. "
                 "Use working sources/settings and current shared adapter code. Avoid repeating failed routes "
                 "unless fixing their recorded cause. All other evidence is temporary.\n" +
                 json.dumps(records, ensure_ascii=False))
@@ -844,6 +858,8 @@ Before probing a proposed endpoint, check its source ID, endpoint and host again
         if existing is None:
             existing = {"wupIdentity": basis, "attempts": 0, "status": "pending", "lastError": None}
             self.state["cities"][code] = existing
+        if isinstance(queue_city.get("qualificationRetry"), dict):
+            existing["qualificationRetry"] = copy.deepcopy(queue_city["qualificationRetry"])
         return existing
 
     def _build_research_prompt(self, city: dict[str, Any], cohort_dir: Path, attempt: int,
@@ -1390,6 +1406,9 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
             return None
         if self.discovery_workflow() and task_id.startswith("city:"):
             errors = discovery_outcomes.validate_receipt(self.root, receipt)
+            if (receipt.get("decision") == "already-supported"
+                    and self.state.get("cities", {}).get(task_id.split(":", 1)[1], {}).get("qualificationRetry")):
+                errors.append("explicit candidate requalification requires a fresh candidate attempt; already-supported cannot skip qualification")
             if not errors and getattr(self.args, "new_sources_only", False) and receipt.get("decision") == "candidate":
                 try:
                     catalog = json_read(self.root / "frontend/data/source-catalog.json")

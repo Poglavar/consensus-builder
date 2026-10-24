@@ -204,6 +204,24 @@ class DiscoveryPipelineTests(unittest.TestCase):
         self.assertEqual(admit.call_count, 1)
         self.assertEqual(self.instance.state["cities"]["42"]["qualification"]["status"], "integrated")
 
+    def test_explicit_retry_keeps_known_sources_eligible_and_cannot_skip_as_supported(self):
+        self.city["qualificationRetry"] = {"passId": "retry-fixture", "sourceIds": ["known-source"]}
+        entry = self.instance._city_entry(self.city)
+        self.assertEqual(entry["qualificationRetry"]["passId"], "retry-fixture")
+        research = self.instance._build_research_prompt(self.city, self.cohort.resolve(), 1)
+        review = self.instance._build_review_prompt([self.city], [])
+        for prompt in (research, review):
+            self.assertIn("EXPLICIT CANDIDATE REQUALIFICATION", prompt)
+            self.assertIn("known-source", prompt)
+            self.assertIn("never skipped as already-supported", prompt)
+        self.receipt["decision"] = "already-supported"
+        self.path.write_text(json.dumps(self.receipt))
+        with patch.object(outcomes, "validate_receipt", return_value=[]):
+            self.assertIsNone(self.instance._review_receipt("city:42"))
+        self.assertIn("explicit candidate requalification", " ".join(self.instance.receipt_errors["city:42"]))
+        self.accept("candidate")
+        self.assertEqual(entry["discoveryDecision"], "candidate")
+
     def test_admission_context_updates_do_not_restart_review_but_source_packet_changes_do(self):
         catalog = self.root / "frontend/data/source-catalog.json"
         catalog.parent.mkdir(parents=True)
