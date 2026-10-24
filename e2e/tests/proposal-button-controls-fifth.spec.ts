@@ -43,7 +43,7 @@ async function openFreshProposalFromBlock(page: import('@playwright/test').Page)
   // The click stack's parcel section opens on the parcel panel's Info tab.
   await expect(page.locator('#click-stack .click-stack__section[data-kind="parcels"] #parcel-info-panel')).toBeVisible();
   await page.locator('#layers-button').click();
-  const tools = page.locator('#layers-sheet details.layer-actions:has(> summary[data-i18n-key="mapShell.reorg.blockData"])');
+  const tools = page.locator('#layers-sheet details.accordion-section[data-section="blocks"]');
   if (!(await tools.evaluate((element: HTMLDetailsElement) => element.open))) await tools.locator('> summary').click();
   await tools.locator('[onclick="animateFloodfillFromSelected()"]').click();
   await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.selectedParcels.size)).toBeGreaterThan(1);

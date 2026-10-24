@@ -20,12 +20,13 @@ test.beforeEach(async ({ mockApi: page }) => {
 const appliedImports = (page: Page, cids: string[]) => page.evaluate(ids => ids.map(cid => (window as any).proposalStorage.getAllProposals()
   .filter((proposal: any) => proposal.proposalId === `design-${cid}` && (window as any).isApplied(proposal)).length), cids);
 
-// The share panel of the applied plan: Proposals sheet → Proposal tools → Share applied designs.
+// The applied plan share panel lives in the Proposals sheet's Share tab.
 async function openSharePanel(page: Page): Promise<void> {
-  if (!(await page.locator('#proposals-sheet').isVisible())) await page.locator('#proposals-button').click();
-  await expect(page.locator('#proposals-sheet')).toBeVisible();
-  await expect(page.locator('#shareAppliedProposalsButton')).toBeEnabled();
-  await page.locator('#shareAppliedProposalsButton').click();
+  const sheet = page.locator('#proposals-sheet');
+  if (!(await sheet.isVisible())) await page.locator('#proposals-button').click();
+  await expect(sheet).toBeVisible();
+  await sheet.getByRole('tab', { name: 'Share', exact: true }).click();
+  await expect(sheet.locator('#designs-share .share-plan-panel--embedded')).toBeVisible();
 }
 
 test.describe('Sharing the applied plan @core', () => {
@@ -33,6 +34,7 @@ test.describe('Sharing the applied plan @core', () => {
     test.setTimeout(240_000);
     await openCity(sender);
     await sender.evaluate(() => (window as any).i18n.setLanguage('en'));
+    await sender.context().grantPermissions(['clipboard-read', 'clipboard-write'], { origin: new URL(sender.url()).origin });
     await createSpace(sender, 'park');
     const secondParcelId = sampleParcels.features[1].properties.parcelId;
     await sender.evaluate(async (id) => {
@@ -47,11 +49,13 @@ test.describe('Sharing the applied plan @core', () => {
 
     // A share link carries its author: a guest chooses a profile name first.
     await openSharePanel(sender);
-    await sender.locator('.share-plan-panel .close-circle-btn').click();
+    await sender.keyboard.press('Escape');
+    await expect(sender.locator('#proposals-sheet')).toBeHidden();
     await sender.evaluate(() => (window as any).guestPolicyBlocks('publish'));
     await chooseProfileName(sender, 'Plan author');
     await openSharePanel(sender);
-    const panel = sender.locator('.share-plan-panel');
+    const sheet = sender.locator('#proposals-sheet');
+    const panel = sheet.locator('#designs-share .share-plan-panel--embedded');
     await expect(panel.locator('.share-plan-count')).toHaveText('2 of 2 designs included · 0 excluded');
     const park = panel.locator('.share-plan-row').filter({ hasText: /park/i });
     const square = panel.locator('.share-plan-row').filter({ hasText: /square/i });
@@ -85,10 +89,16 @@ test.describe('Sharing the applied plan @core', () => {
       .toEqual(['/pins', '/designs', '/pins', '/designs']);
     const rows = [...index.designs.values()];
     expect(rows.map(row => row.goal).sort()).toEqual(['park', 'square']);
-    rows.forEach(row => expect(cidOfObject(row.content)).toBe(row.cid));
+    rows.forEach(row => {
+      expect(cidOfObject(row.content)).toBe(row.cid);
+      expect(row.content.author).toBe('Plan author');
+    });
     const cids = rows.map(row => row.cid).sort();
     const link = panel.locator('.share-plan-link__input');
     await expect(linkRow).toBeVisible();
+    const fullLink = await link.inputValue();
+    await panel.getByRole('button', { name: 'Copy URL', exact: true }).click();
+    await expect.poll(() => sender.evaluate(() => navigator.clipboard.readText())).toBe(fullLink);
     expect(new URL(await link.inputValue()).pathname).toBe(`/designs/${cids.join(',')}`);
     expect(new URL(await link.inputValue()).searchParams.has('3d')).toBe(false);
 
@@ -99,9 +109,9 @@ test.describe('Sharing the applied plan @core', () => {
     await park.locator('input[type="checkbox"]').check();
     await expect(link).toHaveValue(new RegExp(`/designs/${cids.join(',')}\\?`));
 
-    // Closing the panel ends its pick mode: the map selects again.
-    await panel.locator('.close-circle-btn').first().click();
-    await expect(panel).toHaveCount(0);
+    // Leaving the integrated Share tab closes its sheet and ends map-pick mode.
+    await sender.keyboard.press('Escape');
+    await expect(sheet).toBeHidden();
     await expect(sender.locator('body')).not.toHaveClass(/\bmap-pick-mode\b/);
     expect(await sender.evaluate(() => (window as any).MapPick.active())).toBeNull();
 
@@ -124,15 +134,18 @@ test.describe('Sharing the applied plan @core', () => {
     await applyLayout(page);
     await openSharePanel(page);
 
-    const row = page.locator('.share-plan-panel .share-plan-row');
+    const panel = page.locator('#proposals-sheet #designs-share .share-plan-panel--embedded');
+    const row = panel.locator('.share-plan-row');
     await expect(row).toHaveCount(1);
     await expect(row.locator('.share-plan-row__refusal')).toHaveText('A parcel layout is published with its agreement. Propose an agreement that includes it.');
     await expect(row.locator('input[type="checkbox"]')).toBeEnabled();
     await expect(row.locator('input[type="checkbox"]')).toBeChecked();
     await expect(row.getByRole('button', { name: 'Publish', exact: true })).toBeDisabled();
-    await expect(page.locator('.share-plan-panel .share-plan-link')).toBeHidden();
-    await expect(page.locator('.share-plan-panel .share-plan-create-agreement')).toBeVisible();
+    await expect(panel.locator('.share-plan-link')).toBeHidden();
+    await expect(panel.locator('.share-plan-create-agreement')).toBeVisible();
     expect(pageIndex(page).requests.filter(request => request.method === 'POST')).toEqual([]);
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#proposals-sheet')).toBeHidden();
   });
 
   test('a link to a design the index does not hold, or to something that is not a CID, says so', async ({ browser, baseURL }) => {

@@ -2,7 +2,7 @@
 
 /* One phone sheet interaction for map panels, lists and forms. Desktop keeps its own layout. */
 @media (max-width: 767.98px) {
-    #map-container .mobile-sheet-ready:not(.is-minimized):not(.is-hosted):not([hidden]),
+    #map-container .mobile-sheet-ready:not(.is-minimized):not(.is-hosted):not(.is-folded):not([hidden]),
     .on-map-editor__panel.mobile-sheet-ready:not(.is-minimized):not([hidden]),
     .cb-dialog.mobile-sheet-ready {
         top: auto !important;

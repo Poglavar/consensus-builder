@@ -329,6 +329,8 @@
     border-bottom: 1px solid var(--cb-line);
 }
 
+.proposal-list-toolbar { display: contents; }
+
 .proposal-list-modal-header h2 {
     margin: 0;
     color: var(--cb-text);
@@ -391,16 +393,40 @@
 }
 
 @media (max-width: 767.98px) {
+    .proposal-list-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 8px;
+        border-bottom: 1px solid var(--cb-line);
+        background-color: var(--cb-surface-2);
+        flex: 0 0 auto;
+    }
+
+    .proposal-list-toolbar .proposal-source-toggle {
+        flex: 1 1 auto;
+        min-width: 0;
+        gap: 4px;
+        padding: 0;
+    }
+
+    .proposal-list-toolbar .proposal-source-btn {
+        flex: 1 1 0;
+        min-width: 0;
+        padding-inline: 4px;
+        white-space: nowrap;
+    }
+
     .proposal-filters-toggle-row {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 8px;
-        padding: 8px 14px;
-        background-color: var(--cb-surface-2);
-        border-bottom: 1px solid var(--cb-line);
-        flex-shrink: 0;
+        flex: 0 0 auto;
+        padding: 0;
+        background: transparent;
+        border: 0;
     }
+
+    .proposal-filters-toggle { gap: 4px; padding-inline: 8px; white-space: nowrap; }
 
     .proposal-list-controls {
         gap: 8px;

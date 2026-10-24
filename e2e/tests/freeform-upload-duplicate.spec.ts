@@ -86,8 +86,11 @@ test('Upload .glb imports into the current Freeform session and Done saves its m
   await expect(page.locator(editor)).toHaveCount(0);
   await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().filter((p: any) =>
     p.goal === 'single' && p.geometry?.buildings?.some((f: any) => f.properties.modelUrl === '/uploads/models/direct.glb')).length)).toBe(1);
-  const saved = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((p: any) =>
-    p.geometry?.buildings?.some((f: any) => f.properties.modelUrl === '/uploads/models/direct.glb')));
+  const savedId = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((p: any) =>
+    p.geometry?.buildings?.some((f: any) => f.properties.modelUrl === '/uploads/models/direct.glb'))?.proposalId);
+  expect(savedId).toBeTruthy();
+  await expect.poll(() => page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.applied === true, savedId)).toBe(true);
+  const saved = await page.evaluate(id => (window as any).proposalStorage.getProposal(id), savedId);
   const count = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().length);
   await showProposal(page, saved.proposalId);
   await page.locator('.btn-duplicate-design').click();
@@ -96,8 +99,11 @@ test('Upload .glb imports into the current Freeform session and Done saves its m
   await clickMapPoint(page, 15.9836, 45.8006);
   await expect(page.locator('#design-duplicate-editor')).toHaveCount(0);
   await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().length)).toBe(count + 1);
-  const copy = await page.evaluate(id => (window as any).proposalStorage.getAllProposals().find((p: any) => p.proposalId !== id &&
-    p.geometry?.buildings?.some((f: any) => f.properties.modelUrl === '/uploads/models/direct.glb')), saved.proposalId);
+  const copyId = await page.evaluate(id => (window as any).proposalStorage.getAllProposals().find((p: any) => p.proposalId !== id &&
+    p.geometry?.buildings?.some((f: any) => f.properties.modelUrl === '/uploads/models/direct.glb'))?.proposalId, saved.proposalId);
+  expect(copyId).toBeTruthy();
+  await expect.poll(() => page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.applied === true, copyId)).toBe(true);
+  const copy = await page.evaluate(id => (window as any).proposalStorage.getProposal(id), copyId);
   expect(copy.geometry.buildings[0].properties.modelUrl).toBe('/uploads/models/direct.glb');
   expect(copy.geometry.buildings[0].properties.height).toBe(16);
   expect(copy.geometry.buildings[0].geometry).not.toEqual(saved.geometry.buildings[0].geometry);

@@ -131,7 +131,7 @@ test.describe('Shared proposal editor shell controls @core', () => {
     await geometryEditor.locator('[data-action="save"]').click();
     await expect(geometryEditor).toHaveCount(0);
     await expect(page.locator('.proposal-editor-shell.is-open')).toBeVisible();
-    await expect.poll(() => page.evaluate(id => (window as any).proposalDraftStore.getDraft(id).editorPayload.structureProposal.decorations.trees.length, draftId))
+    await expect.poll(() => page.evaluate(id => (window as any).proposalDraftStore.getDraft(id).editorPayload.structureProposal.decorationDesign.trees.length, draftId))
       .toBeGreaterThan(0);
     expect(await page.evaluate(id => (window as any).proposalStorage.getProposal(id).structureProposal.decorations.trees.length, sourceId))
       .toBe(0);

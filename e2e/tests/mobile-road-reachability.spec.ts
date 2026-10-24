@@ -24,6 +24,24 @@ async function expectCenterHitTarget(page: any, selector: string): Promise<void>
   });
 }
 
+async function dragHandle(page: any, sheet: any, deltaY: number): Promise<void> {
+  const box = await sheet.locator(':scope > .mobile-dock-sheet-handle').boundingBox();
+  expect(box).toBeTruthy();
+  const x = box!.x + box!.width / 2, y = box!.y + box!.height / 2;
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  await page.mouse.move(x, y + deltaY, { steps: 10 });
+  await page.mouse.up();
+}
+
+async function expectRoadHandle(page: any): Promise<void> {
+  const handle = page.locator('#road-info-panel > .mobile-dock-sheet-handle');
+  await expect(handle).toBeVisible();
+  const box = await handle.boundingBox();
+  expect(box!.height).toBeGreaterThanOrEqual(44);
+  await expectCenterHitTarget(page, '#road-info-panel > .mobile-dock-sheet-handle');
+}
+
 async function startRoadDraft(page: any, cityReady = false): Promise<void> {
   if (!cityReady) await openCity(page);
   await openParcel(page, 'proposals');
@@ -39,16 +57,20 @@ async function addSidewalk(page: any, editor: any): Promise<void> {
   await editor.locator('[data-lane-type="sidewalk"]').click();
 }
 
-test('road header and cross-section actions stay reachable at 320px before the first point', async ({ mockApi: page }) => {
+test('road sheet and cross-section actions stay reachable at 320px before the first point', async ({ mockApi: page }) => {
   await page.setViewportSize({ width: 320, height: 640 });
   await startRoadDraft(page);
 
-  const minimize = page.locator('#road-panel-minimize');
-  await expectCenterHitTarget(page, '#road-panel-minimize');
-  await minimize.click();
-  await expect(minimize).toHaveAttribute('aria-expanded', 'false');
-  await minimize.click();
-  await expect(minimize).toHaveAttribute('aria-expanded', 'true');
+  const road = page.locator('#road-info-panel');
+  await expectRoadHandle(page);
+  const initialHeight = (await road.boundingBox())!.height;
+  const handle = road.locator(':scope > .mobile-dock-sheet-handle');
+  await handle.focus();
+  await page.keyboard.press('Home');
+  const compactHeight = (await road.boundingBox())!.height;
+  expect(compactHeight).toBeLessThan(initialHeight - 80);
+  await page.keyboard.press('End');
+  expect((await road.boundingBox())!.height).toBeGreaterThan(compactHeight + 80);
 
   const crossSection = page.locator('#editRoadCrossSectionButton');
   await expectCenterHitTarget(page, '#editRoadCrossSectionButton');
@@ -78,16 +100,16 @@ test('road header and cross-section actions stay reachable at 320px before the f
 
   await addSidewalk(page, editor);
   await expect.poll(() => page.evaluate(() => (window as any).getRoadDrawingProfile().strips.length)).toBe(initialStrips + 1);
-  await expectCenterHitTarget(page, '#corridor-editor-overlay .on-map-editor__header .close-circle-btn');
-  await editor.locator('.on-map-editor__header .close-circle-btn').click();
+  await editor.locator('.on-map-editor__panel > .mobile-dock-sheet-handle').focus();
+  await page.keyboard.press('Escape');
   await expect(editor).toHaveCount(0);
   await expect.poll(() => page.evaluate(() => (window as any).getRoadDrawingProfile().strips.length)).toBe(initialStrips);
 
   await crossSection.click();
   await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
   await addSidewalk(page, editor);
-  await expectCenterHitTarget(page, '#corridor-editor-overlay .on-map-editor__header .close-circle-btn');
-  await editor.locator('.on-map-editor__header .close-circle-btn').click();
+  await editor.locator('.on-map-editor__panel > .mobile-dock-sheet-handle').focus();
+  await page.keyboard.press('Escape');
   await expect(editor).toHaveCount(0);
   await expect.poll(() => page.evaluate(() => (window as any).getRoadDrawingProfile().strips.length)).toBe(initialStrips);
 
@@ -100,10 +122,10 @@ test('road header and cross-section actions stay reachable at 320px before the f
   await expect.poll(() => page.evaluate(() => (window as any).getRoadDrawingProfile().strips.length)).toBe(initialStrips + 1);
   await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().length)).toBe(0);
 
-  // Header Close cancels the still-empty road draft and does not create a proposal.
-  const headerClose = page.locator('#road-info-panel .road-panel-actions .close-button');
-  await expectCenterHitTarget(page, '#road-info-panel .road-panel-actions .close-button');
-  await headerClose.click();
+  // Dragging the shared sheet handle down cancels the still-empty road draft.
+  await expectRoadHandle(page);
+  const roadHeight = (await road.boundingBox())!.height;
+  await dragHandle(page, road, roadHeight - 140);
   await expect(page.locator('#road-info-panel')).toBeHidden();
   await expect(page.locator('#road-drawing-controls')).toBeHidden();
   await expect.poll(() => page.evaluate(() => (window as any).roadDrawingMode)).toBe(false);
@@ -140,9 +162,14 @@ test('mobile mode switching works before drawing; the road draft locks modes unt
   await expect(aerial).toBeDisabled();
   await expect.poll(() => page.evaluate(() => (window as any).roadDrawingMode)).toBe(true);
 
-  // Minimize the phone dock to expose the map, then draw, undo, and discard through visible controls.
-  await page.locator('#road-panel-minimize').click();
-  await expect(page.locator('#road-info-panel')).toHaveClass(/is-minimized/);
+  // Resize the shared phone sheet to expose the map, then draw, undo, and discard through visible controls.
+  const road = page.locator('#road-info-panel');
+  await expectRoadHandle(page);
+  const fullHeight = (await road.boundingBox())!.height;
+  const handle = road.locator(':scope > .mobile-dock-sheet-handle');
+  await handle.focus();
+  await page.keyboard.press('Home');
+  expect((await road.boundingBox())!.height).toBeLessThan(fullHeight - 80);
   await clickMapPoint(page, 15.98195, 45.8001);
   await clickMapPoint(page, 15.98215, 45.8001);
   await clickMapPoint(page, 15.9824, 45.8001);

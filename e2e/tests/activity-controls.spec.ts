@@ -39,6 +39,7 @@ test.describe('Activity and simulation controls @features', () => {
       await openSimulation(page);
       const play = page.locator('#game-play-pause-btn');
       await expect(play).toBeVisible();
+      await page.locator('#gameCheckbox').check();
       for (const running of [false, true, false]) {
         if (running !== (await play.getAttribute('aria-pressed') === 'true')) await play.click();
         await expect(play).toHaveAttribute('aria-pressed', String(running));

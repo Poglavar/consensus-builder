@@ -1,6 +1,6 @@
 // Purpose: verify runtime Leaflet controls by their user-visible map effect, including controls whose DOM is created by Leaflet rather than authored with source IDs.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, clickMapPoint, createSpace, showProposal, drawCorridor, openParcelTabAt } from '../helpers/runtime';
+import { openCity, openParcel, clickMapPoint, createSpace, showProposal, drawCorridor, openParcelTabAt, openBlockEditor } from '../helpers/runtime';
 import type { Page } from '@playwright/test';
 
 async function clickEditorMapPoint(page: Page, xRatio: number, yRatio: number) {
@@ -13,7 +13,7 @@ test.describe('Leaflet runtime control effects @features', () => {
   test('manual building polygon vertex selection and Delete selected vertex change the live outline', async ({ mockApi: page }) => {
     await openCity(page);
     await openParcel(page, 'proposals');
-    await page.locator('.parcel-build-btn--buildings').click();
+    await openBlockEditor(page);
     await expect(page.locator('#btn-blockify-done')).toBeEnabled({ timeout: 20_000 });
     if (!(await page.locator('#blockify-manual-toggle').isVisible())) await page.locator('#blockify-modal .on-map-editor__more-options > summary').click();
     await page.locator('#blockify-manual-toggle').click();
@@ -75,7 +75,7 @@ test.describe('Leaflet runtime control effects @features', () => {
     await expect(marker).toBeVisible();
     await marker.click();
     await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection?.getKey?.())).toBe(stationId);
-    const inspector = page.getByRole('complementary', { name: 'Planning source details' });
+    const inspector = page.locator('#click-stack .click-stack__section[data-kind="designs"] #proposal-details-panel');
     await expect(inspector).toBeVisible();
     if (station?.title) await expect(inspector).toContainText(station.title);
   });

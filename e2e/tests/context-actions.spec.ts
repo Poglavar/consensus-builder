@@ -119,10 +119,10 @@ test.describe('Map context actions @features', () => {
   });
 
   test('editing an unpublished proposal saves in place on the ground beneath it', async ({ mockApi: page }) => {
-    await page.route('**/planning/sources**', route => ['fetch', 'xhr'].includes(route.request().resourceType()) ? route.fulfill({ json: { city: 'zagreb', sources: [{ id: 'editor-massing', city: 'zagreb', default: true, label: 'Editor massing', capabilities: { areas: true, volumes: true } }] } }) : route.fallback());
+    await page.route('**/planning/sources**', route => ['fetch', 'xhr'].includes(route.request().resourceType()) ? route.fulfill({ json: { city: 'zagreb', sources: [{ id: 'zagreb-gup-2025', city: 'zagreb', default: true, label: 'Editor massing', capabilities: { areas: true, volumes: true } }] } }) : route.fallback());
     await page.route('**/planning/representations**', route => ['fetch', 'xhr'].includes(route.request().resourceType()) ? route.fulfill({ json: {
       schemaVersion: 'planning-representations.v1', city: 'zagreb', sources: [], coverage: 'source-results', summaries: [], unavailable: [], omitted: 0, nextCursor: null,
-      items: [{ id: 'editor-massing:parcel', role: 'permitted', title: 'Editor massing', source: { id: 'editor-massing' }, site: sampleParcels.features[0].geometry,
+      items: [{ id: 'zagreb-gup-2025:parcel', role: 'permitted', title: 'Editor massing', source: { id: 'zagreb-gup-2025', recordId: 'parcel', version: 'fixture-v1' }, site: sampleParcels.features[0].geometry,
         spatialReference: { horizontal: 'OGC:CRS84', vertical: 'relative-ground', unit: 'm' },
         volumes: [{ geometry: sampleParcels.features[0].geometry, baseM: 0, topM: 12 }], areas: [],
         assessment: { meaning: 'partial-envelope', status: 'unresolved' } }],

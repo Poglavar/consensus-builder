@@ -161,8 +161,11 @@ export async function closeParcel(page: Page): Promise<void> {
 export async function openParcelAt(page: Page, lng: number, lat: number): Promise<void> {
   await clickMapPoint(page, lng, lat);
   await expect(clickStack(page)).toBeVisible();
-  await expandStackSection(page, 'parcels');
-  await expect(stackSection(page, 'parcels').locator('#parcel-info-panel')).toBeVisible();
+  // A corridor may have replaced the source parcel at this point. Design tools belong to the
+  // current formed remainder when one is present; the cadastral parcel is only the fallback.
+  const kind = await stackSection(page, 'formed').count() ? 'formed' : 'parcels';
+  await expandStackSection(page, kind);
+  await expect(stackSection(page, kind).locator('#parcel-info-panel')).toBeVisible();
 }
 
 // The parcel at a point, then one of the parcel section's actions.
@@ -178,6 +181,17 @@ export async function openParcelTabAt(page: Page, lng: number, lat: number, tabI
   await expect(page.locator(`#${tabId}`)).toBeVisible();
 }
 
+// Opens the ordinary block editor from the current parcel panel, resolving the optional scope
+// prompt the same way createBuilding does.
+export async function openBlockEditor(page: Page): Promise<void> {
+  await page.locator('.parcel-build-btn--buildings').click();
+  const prompt = page.getByRole('alertdialog');
+  const ruleType = page.locator('#blockify-ruletype-select');
+  await expect(prompt.or(ruleType)).toBeVisible();
+  if (await prompt.isVisible()) await prompt.getByRole('button', { name: 'No, just this parcel' }).click();
+  await expect(ruleType).toBeVisible();
+}
+
 // Clicks the parcel's centre and brings up its section in the click stack, with the parcel panel on
 // `tab` (explicitly selects Info, Design, or Tools; the application's default is Design).
 export async function openParcel(page: Page, tab = 'info', id = PARCEL_ID): Promise<void> {
@@ -189,9 +203,18 @@ export async function openParcel(page: Page, tab = 'info', id = PARCEL_ID): Prom
     w.map.panTo(center, { animate: false });
     return { lng: center.lng, lat: center.lat };
   }, id);
-  // A second click on the same spot closes an open stack; start from a closed one.
+  // Leave manual selection first: Escape finishes the mode but retains selected parcels in the
+  // stack, so a second Escape closes that retained stack before the next map click.
+  if (await page.evaluate(() => !!(window as any).multiParcelSelection?.isActive)) {
+    await page.keyboard.press('Escape');
+    await expect.poll(() => page.evaluate(() => !!(window as any).multiParcelSelection?.isActive)).toBe(false);
+  }
   if (await clickStack(page).isVisible()) {
     await page.keyboard.press('Escape');
+    // Closing a design can reveal land retained behind it. Dismiss that separate selection too.
+    if (await page.evaluate(() => (window as any).ClickStack.current()?.topRef === 'selection:current')) {
+      await page.keyboard.press('Escape');
+    }
     await expect(clickStack(page)).toBeHidden();
   }
   await clickMapPoint(page, center.lng, center.lat);
@@ -255,7 +278,7 @@ export async function showProposalTab(page: Page, tab: 'overview' | 'details'): 
 export async function showProposal(page: Page, id: string): Promise<void> {
   await page.evaluate(id => (window as any).showProposalDetails(id), id);
   if (await page.locator('body').evaluate(el => el.classList.contains('three-mode-active'))) {
-    await page.locator('#three-click-stack').getByRole('button', { name: 'Proposal actions', exact: true }).click();
+    await page.locator('#three-click-stack').getByRole('button', { name: 'Design actions', exact: true }).click();
   }
   await expect(stackSection(page, 'designs').locator('#proposal-details-panel')).toBeVisible();
   await expect(page.locator('#planning-inspector')).toBeHidden();
@@ -275,11 +298,7 @@ export async function drawCorridor(page: Page, kind: 'road'|'track'): Promise<st
 
 export async function createBuilding(page: Page, rule: 'exact' | 'max' | 'range' = 'exact'): Promise<string> {
   await openParcel(page, 'proposals');
-  await page.locator('.parcel-build-btn--buildings').click();
-  const scope = page.getByRole('alertdialog');
-  const ruleSelect = page.locator('#blockify-ruletype-select');
-  await expect.poll(async () => await scope.isVisible() || await ruleSelect.isVisible()).toBe(true);
-  if (await scope.isVisible()) await scope.getByRole('button', { name: 'No, just this parcel' }).click();
+  await openBlockEditor(page);
   await selectNativeOption(page.locator('#blockify-ruletype-select'), rule);
   if (rule !== 'exact') {
     await page.locator('#height-slider').focus();

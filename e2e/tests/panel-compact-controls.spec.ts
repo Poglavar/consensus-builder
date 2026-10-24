@@ -31,11 +31,28 @@ async function openProposalFromList(page: import('@playwright/test').Page, propo
   const row = list.locator(`.proposal-list-item[data-proposal-id="${proposalId}"]`);
   await expect(row).toBeVisible();
   await row.locator('.proposal-list-details-btn').click();
-  await expect(page.locator('#planning-inspector')).toBeVisible();
+  await expect(page.locator('#proposal-details-panel')).toBeVisible();
+}
+
+async function expectCompactBounds(page: import('@playwright/test').Page, width: number, height: number): Promise<void> {
+  const stack = page.locator('#click-stack');
+  if (!(await stack.isVisible())) return;
+  const box = await stack.boundingBox();
+  expect(box, '#click-stack has a visible bounding box').not.toBeNull();
+  expect(box!.x).toBeGreaterThanOrEqual(0);
+  expect(box!.y).toBeGreaterThanOrEqual(0);
+  expect(box!.x + box!.width).toBeLessThanOrEqual(width);
+  expect(box!.y + box!.height).toBeLessThanOrEqual(height);
+
+  const horizontalOverflow = await stack.evaluate(element => [element, ...element.querySelectorAll('.is-hosted')]
+    .map(hosted => ({ scrollWidth: hosted.scrollWidth, clientWidth: hosted.clientWidth })));
+  for (const hosted of horizontalOverflow) {
+    expect(hosted.scrollWidth).toBeLessThanOrEqual(hosted.clientWidth + 1);
+  }
 }
 
 for (const viewport of VIEWPORTS) {
-  test(`parcel info panel in the stack copies its section reference and closes with Escape on ${viewport.name} @features`, async ({ mockApi: page }) => {
+  test(`parcel section collapses with its selection retained and Escape closes it on ${viewport.name} @features`, async ({ mockApi: page }) => {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await openCity(page);
     await openParcel(page);
@@ -45,26 +62,42 @@ for (const viewport of VIEWPORTS) {
     // In the stack the section row folds and the stack's × closes: the panel's own − and × are hidden.
     await expect(panel.locator('#parcel-info-minimize')).toBeHidden();
     await expect(panel.locator('.panel-header .close-button')).toBeHidden();
-    await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
-    await page.locator('#click-stack .click-stack__copy-reference').click();
-    await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(PARCEL_ID);
-    // Sections own their surfaces; the shared positioning column has no header or resize bar.
-    await expect(page.locator('#click-stack')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
-    await expect(page.locator('#click-stack > .mobile-dock-sheet-handle')).toHaveCount(0);
+    // The parcel row remains the readable selection caption; it has no section copy action.
+    const row = page.locator('#click-stack .click-stack__section[data-kind=parcels] .click-stack__row');
+    await expect(row.locator('.click-stack__row-detail')).toHaveText(PARCEL_ID);
+    await expect(row.locator('.click-stack__copy-reference')).toHaveCount(0);
+    await expectCompactBounds(page, viewport.width, viewport.height);
+    await row.click();
+    await expect(row).toHaveAttribute('aria-expanded', 'false');
+    await expect(page.locator('#click-stack')).toBeVisible();
+    await expect(page.locator('#click-stack .click-stack__section[data-kind=parcels]')).toHaveClass(/is-selected/);
+    await expect(row.locator('.click-stack__row-detail')).toHaveText(PARCEL_ID);
+    await page.locator('#map').focus();
+    await expect(page.locator('#map')).toBeFocused();
     await page.keyboard.press('Escape');
     await expect(page.locator('#click-stack')).toBeHidden();
     await expect(panel).toBeHidden();
+    // Sections own their surfaces; the shared mobile handle resizes the transparent column.
+    await expect(page.locator('#click-stack')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    const handle = page.locator('#click-stack > .mobile-dock-sheet-handle');
+    await expect(handle).toBeHidden();
   });
 
-  test(`proposal details close control dismisses the real list-opened panel on ${viewport.name} @features`, async ({ mockApi: page }) => {
+  test(`Escape dismisses the list-opened proposal details panel on ${viewport.name} @features`, async ({ mockApi: page }) => {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await openCity(page);
     const proposalId = await addLocalProposal(page, viewport.name.replace(/\W+/g, '-'));
     await openProposalFromList(page, proposalId);
 
-    const inspector = page.locator('#planning-inspector');
-    await expect(inspector).toContainText(`Panel control ${viewport.name.replace(/\W+/g, '-')}`);
-    await inspector.locator('.planning-inspector__header .close-circle-btn').click();
-    await expect(inspector).toBeHidden();
+    const details = page.locator('#proposal-details-panel');
+    await expect(details).toContainText(`Panel control ${viewport.name.replace(/\W+/g, '-')}`);
+    await expectCompactBounds(page, viewport.width, viewport.height);
+    const row = page.locator('#click-stack .click-stack__section[data-kind=designs] .click-stack__row');
+    await expect(row).toHaveAttribute('aria-expanded', 'true');
+    await row.focus();
+    await expect(row).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#click-stack')).toBeHidden();
+    await expect(details).toBeHidden();
   });
 }

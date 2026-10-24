@@ -1,8 +1,13 @@
 import { Page } from '@playwright/test';
+import { createRequire } from 'node:module';
+import path from 'node:path';
 import { sampleParcels } from './parcel-data';
 import { surveyResponse } from './survey-data';
 import { isApiDataRequest } from './api-routes';
 import { ensurePageIndex } from './shared-server';
+
+const backendRequire = createRequire(path.resolve(__dirname, '../../../backend/package.json'));
+const turf = backendRequire('@turf/turf');
 
 export const TEST_PARCEL_ID = 'HR-335754-1234';
 const PARCEL_IDS = ['HR-335754-1234', 'HR-335754-1235', 'HR-335754-1236', 'HR-335754-1237', 'HR-335754-1238'];
@@ -17,6 +22,14 @@ const roadArea = {
 const planArea = {
   type: 'Feature', properties: { plan_name: 'Fixture government road plan', plan_version: '1' },
   geometry: { type: 'Polygon', coordinates: [[[15.9820,45.80015],[15.98255,45.80015],[15.98255,45.80055],[15.9820,45.80055],[15.9820,45.80015]]] },
+};
+
+const existingBuildingFootprint = {
+  type: 'Feature' as const,
+  properties: { id: 'fixture-existing-building', height_m: 12, floors: 4 },
+  // Inside the 387 m² 1237 fixture parcel so the real apply path can place the raised building
+  // without crossing into the neighboring parcel or the road between fixture rows.
+  geometry: { type: 'Polygon' as const, coordinates: [[[15.98207,45.80030],[15.98217,45.80030],[15.98217,45.80042],[15.98207,45.80042],[15.98207,45.80030]]] },
 };
 
 // The street parcel north of the block: the curated road classification names it, so it bounds the
@@ -90,11 +103,35 @@ export async function installLayerDatasets(page: Page): Promise<void> {
   });
 
   await page.route('**/buildings**', async route => {
-    const pathname = new URL(route.request().url()).pathname;
+    const request = route.request();
+    const pathname = new URL(request.url()).pathname;
     // This glob also matches the static /js/buildings*.js modules. Let scripts load normally;
-    // only serve fixtures for the two live API endpoints.
-    if (!/(?:^|\/)buildings(?:\/osm)?$/.test(pathname)) return route.continue();
+    // Only serve fixtures for API data requests.
+    if (!isApiDataRequest(request.url(), request.resourceType(), 'buildings')) return route.continue();
     const path = pathname;
+    if (path.endsWith('/buildings/under') && request.method() === 'POST') {
+      const body = request.postDataJSON() || {};
+      const source = body.source || 'gdi';
+      const footprints = [existingBuildingFootprint].map(feature => ({
+        id: feature.properties.id,
+        geometry: feature.geometry,
+        height_m: feature.properties.height_m,
+        floors: feature.properties.floors,
+      }));
+      const regions = Array.isArray(body.regions) ? body.regions : [];
+      return route.fulfill({ json: {
+        supported: true,
+        source,
+        truncated: false,
+        regions: Object.fromEntries(regions.map((region: any) => [region.key,
+          footprints.filter((footprint: any) => {
+            if (!region?.geometry || !region.key) return false;
+            return turf.booleanIntersects(turf.feature(region.geometry), turf.feature(footprint.geometry));
+          })
+        ])),
+      } });
+    }
+    if (!/(?:^|\/)buildings(?:\/osm)?$/.test(pathname)) return route.continue();
     if (path.endsWith('/buildings/osm')) {
       return route.fulfill({ json: { type: 'FeatureCollection', source: 'osm', features: [{
         type: 'Feature', properties: { osm_id: 9003, building: 'yes' },
@@ -112,10 +149,7 @@ export async function installLayerDatasets(page: Page): Promise<void> {
   });
   await page.route('**/buildings/footprints', route => route.fulfill({ json: {
     supported: true,
-    footprints: [{ type: 'Feature', properties: { id: 'fixture-existing-building', height_m: 12, floors: 4 }, height_m: 12, floors: 4,
-      // Inside the 387 m² 1237 fixture parcel so the real apply path can place the raised building
-      // without crossing into the neighboring parcel or the road between fixture rows.
-      geometry: { type: 'Polygon', coordinates: [[[15.98207,45.80030],[15.98217,45.80030],[15.98217,45.80042],[15.98207,45.80042],[15.98207,45.80030]]] } }],
+    footprints: [{ ...existingBuildingFootprint, height_m: 12, floors: 4 }],
   } }));
 
   // Only the API: the glob also matches the app's own js/osm-roads-source.js.

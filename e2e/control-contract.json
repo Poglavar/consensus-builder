@@ -785,16 +785,21 @@
       "controlType": "button"
     },
     {
-      "id": "control-890d978deb8ea1-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"planning-reroll\" class=\"btn btn-icon planning-reroll\">"
-    },
-    {
       "id": "control-dc7af30c67cb8d-1",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-bd7f2ed239ad8b-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"planning-reroll-permitted\" class=\"btn btn-icon planning-reroll\" data-planning-reroll=\"permitted\">"
+    },
+    {
+      "id": "control-49b2905ce0a369-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"planning-reroll\" class=\"btn btn-icon planning-reroll\" data-planning-reroll=\"proposed\">"
     },
     {
       "id": "control-e3c4389c7e1336-1",
@@ -828,13 +833,6 @@
       "controlType": "button"
     },
     {
-      "id": "control-b7acb6b741eaf3-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"bets-button\" class=\"map-shell-button map-shell-button--labelled\" data-sheet-target=\"bets-sheet\" aria-controls=\"bets-sheet\" aria-expanded=\"false\" title=\"Bets\" data-i18n-key=\"mapShell.bets\" data-i18n-attr=\"title\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-cbcda6bb9a8258-1",
       "source": "index.html",
       "markup": "<button type=\"button\" id=\"activity-button\" class=\"map-shell-button map-shell-button--labelled\" data-sheet-target=\"activity-sheet\" aria-controls=\"activity-sheet\" aria-expanded=\"false\" title=\"Activity\" data-i18n-key=\"mapShell.activity\" data-i18n-attr=\"title\">",
@@ -842,9 +840,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-17424ef3b95bb7-1",
+      "id": "control-b7acb6b741eaf3-1",
       "source": "index.html",
-      "markup": "<button id=\"shareAppliedProposalsButton\" type=\"button\" class=\"map-shell-button map-shell-button--labelled share-map-button\" onclick=\"shareAppliedProposals()\" title=\"Share this map\" data-i18n-key=\"mapShell.shareMap\" data-i18n-attr=\"title\">",
+      "markup": "<button type=\"button\" id=\"bets-button\" class=\"map-shell-button map-shell-button--labelled\" data-sheet-target=\"bets-sheet\" aria-controls=\"bets-sheet\" aria-expanded=\"false\" title=\"Bets\" data-i18n-key=\"mapShell.bets\" data-i18n-attr=\"title\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -1375,9 +1373,28 @@
       "markup": "<button type=\"button\" id=\"sun-now\" class=\"btn btn-sm\" data-i18n-key=\"threeMode.sun.now\">"
     },
     {
+      "id": "control-48bcc8601ff8ab-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"designs-agreements-button\" class=\"btn btn-sm\" data-i18n-key=\"sidebar.proposals.agreementsButton\" onclick=\"window.AgreementList.open()\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-dc7af30c67cb8d-5",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-62f199cc04d2cf-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"designs-browse-tab\" class=\"cb-segmented__option\" role=\"tab\" aria-selected=\"true\" aria-controls=\"designs-browse\" onclick=\"openDesignsTab('browse')\">"
+    },
+    {
+      "id": "control-59606b7caef5ef-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"shareAppliedProposalsButton\" class=\"cb-segmented__option\" role=\"tab\" tabindex=\"-1\" aria-selected=\"false\" aria-controls=\"designs-share\" onclick=\"openDesignsTab('share')\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -1405,23 +1422,11 @@
       "controlType": "button"
     },
     {
-      "id": "control-dc5ea01f530ec8-1",
+      "id": "control-3911781d4db76b-1",
       "source": "index.html",
-      "markup": "<button id=\"roosterScoreButton\" class=\"btn grain-score-button\" type=\"button\" disabled title=\"Summon the urbanist rooster\" data-i18n-key=\"sidebar.proposals.grainScore.buttonLabel\" data-i18n-attr=\"title,aria-label\" aria-label=\"Summon the urbanist rooster\">",
+      "markup": "<button id=\"roosterScoreButton\" class=\"btn grain-score-button\" type=\"button\" disabled title=\"Urban rooster\" data-i18n-key=\"sidebar.proposals.grainScore.buttonLabel\" data-i18n-attr=\"title,aria-label\" aria-label=\"Urban rooster\">",
       "interaction": "click",
       "controlType": "button"
-    },
-    {
-      "id": "control-52edba7ede5172-1",
-      "source": "index.html",
-      "markup": "<button id=\"agreementsButton\" type=\"button\" class=\"btn btn-block agreements-button\" onclick=\"window.AgreementList.open()\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-a44832b5a56bdd-1",
-      "source": "index.html",
-      "markup": "<button id=\"mintedAgreementsButton\" type=\"button\" class=\"btn btn-block minted-agreements-button\" onclick=\"window.AgreementList.openMinted()\">"
     },
     {
       "id": "control-dc7af30c67cb8d-6",
@@ -1510,13 +1515,6 @@
       "controlType": "button"
     },
     {
-      "id": "control-7e75eec60d0ef9-1",
-      "source": "index.html",
-      "markup": "<select id=\"data-source-select\" data-map-modes=\"2d\">",
-      "interaction": "change",
-      "controlType": "select"
-    },
-    {
       "id": "control-ccd18ba64c54d8-1",
       "source": "index.html",
       "markup": "<button type=\"button\" id=\"showParcelCoverageButton\" data-map-modes=\"2d\" class=\"btn\" title=\"Visualize which grid cells are cached locally and how they compare to the current view.\" data-i18n-key=\"sidebar.parcels.coverageTooltip\" data-i18n-attr=\"title\">",
@@ -1573,13 +1571,6 @@
       "controlType": "button"
     },
     {
-      "id": "control-c5282f3e2066e1-1",
-      "source": "index.html",
-      "markup": "<input type=\"checkbox\" id=\"debugModeCheckbox\" onchange=\"toggleDebugMode()\">",
-      "interaction": "change",
-      "controlType": "checkbox"
-    },
-    {
       "id": "control-1adc9fb60177bc-1",
       "source": "index.html",
       "markup": "<input type=\"checkbox\" id=\"gameCheckbox\" data-layer=\"game\" onchange=\"toggleAccordion(this)\">",
@@ -1606,6 +1597,13 @@
       "markup": "<button class=\"btn btn-danger\" onclick=\"resetGameState(true)\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-c5282f3e2066e1-1",
+      "source": "index.html",
+      "markup": "<input type=\"checkbox\" id=\"debugModeCheckbox\" onchange=\"toggleDebugMode()\">",
+      "interaction": "change",
+      "controlType": "checkbox"
     },
     {
       "id": "control-d572c33f597b6d-1",
@@ -2445,6 +2443,11 @@
       "markup": "<button type=\"button\" class=\"btn btn-primary\" data-agreement-action=\"create\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-a996634711f169-1",
+      "source": "js/agreement-list.js",
+      "markup": "<button type=\"button\" class=\"btn btn-secondary\" data-agreement-action=\"minted\">"
     },
     {
       "id": "control-c071f79cfa3db8-1",
@@ -6322,20 +6325,6 @@
       "controlType": "select"
     },
     {
-      "id": "control-be5987fdafb04e-1",
-      "source": "js/proposals/dialog-share.js",
-      "markup": "<select id=\"proposal-filter-applied\" aria-label=\"${escapeHtml(appliedFilterLabel)}\">",
-      "interaction": "change",
-      "controlType": "select"
-    },
-    {
-      "id": "control-fab65de1db07ae-1",
-      "source": "js/proposals/dialog-share.js",
-      "markup": "<input type=\"text\" id=\"proposal-filter-author\" placeholder=\"${escapeHtml(modalStrings.filters.authorPlaceholder)}\" data-i18n-key=\"modal.roadWidth.proposalList.filters.authorPlaceholder\" data-i18n-attr=\"placeholder\" value=\"${escapeHtml(proposalListState.authorFilter)}\">",
-      "interaction": "change",
-      "controlType": "text"
-    },
-    {
       "id": "control-f93014943c10ea-1",
       "source": "js/proposals/dialog-share.js",
       "markup": "<input type=\"text\" id=\"proposal-filter-search\" placeholder=\"${escapeHtml(modalStrings.filters.searchPlaceholder)}\" data-i18n-key=\"modal.roadWidth.proposalList.filters.searchPlaceholder\" data-i18n-attr=\"placeholder\" value=\"${escapeHtml(proposalListState.searchText)}\">",
@@ -6371,11 +6360,6 @@
       "controlType": "button"
     },
     {
-      "id": "control-efca3a1f30a407-1",
-      "source": "js/proposals/dialog-share.js",
-      "markup": "<input class=\"share-plan-link__input\" readonly aria-label=\"${escapeHtml(t('mapShell.shareMap', 'Share this map'))}\" value=\"${escapeHtml(url)}\">"
-    },
-    {
       "id": "control-7cd07576118fe2-1",
       "source": "js/proposals/dialog-share.js",
       "markup": "document.createElement('button')",
@@ -6388,23 +6372,6 @@
           ]
         }
       ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-7cd07576118fe2-2",
-      "source": "js/proposals/dialog-share.js",
-      "markup": "document.createElement('button')",
-      "variants": [
-        {
-          "name": "Close shared plan panel",
-          "label": "Close",
-          "classes": [
-            "close-circle-btn"
-          ]
-        }
-      ],
-      "exhaustiveVariants": true,
       "interaction": "click",
       "controlType": "button"
     },
@@ -6422,6 +6389,23 @@
           "includes": "linkInput.readOnly = true;"
         }
       ]
+    },
+    {
+      "id": "control-7cd07576118fe2-2",
+      "source": "js/proposals/dialog-share.js",
+      "markup": "document.createElement('button')",
+      "variants": [
+        {
+          "name": "Close shared plan panel",
+          "label": "Close",
+          "classes": [
+            "close-circle-btn"
+          ]
+        }
+      ],
+      "exhaustiveVariants": true,
+      "interaction": "click",
+      "controlType": "button"
     },
     {
       "id": "control-7cd07576118fe2-3",

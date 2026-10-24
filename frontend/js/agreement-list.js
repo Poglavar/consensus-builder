@@ -90,6 +90,7 @@
     function bodyHtml(rows, tr = t) {
         return '<div class="agreement-list-actions">'
             + `<button type="button" class="btn btn-primary" data-agreement-action="create"><i class="fas fa-plus" aria-hidden="true"></i> ${esc(tr('agreement.list.create', 'Create agreement'))}</button>`
+            + `<button type="button" class="btn btn-secondary" data-agreement-action="minted">${esc(tr('agreement.minted.title', 'Minted agreements'))}</button>`
             + '</div>'
             + `<div class="agreement-list-rows" data-agreement-list-rows>${rows}</div>`;
     }
@@ -131,6 +132,11 @@
             if (list) list.innerHTML = rows();
         });
         body.addEventListener('click', event => {
+            if (event.target.closest('[data-agreement-action="minted"]')) {
+                dialog.close(null);
+                openMinted(win);
+                return;
+            }
             if (event.target.closest('[data-agreement-action="create"]')) {
                 const designIds = appliedDesignIds(win.proposalStorage.peekAllProposals(), win.isApplied);
                 dialog.close(null);

@@ -96,10 +96,9 @@ test.describe('Mega proposal loading @features', () => {
 
       stop = true;
 
-      // The list action now selects the proposal in the Planning Inspector; the full details
-      // reader is a separate user action. Capture selection here, before opening that reader.
-      const inspector = document.getElementById('planning-inspector');
-      const inspectorVisible = !!inspector && inspector.getClientRects().length > 0 && getComputedStyle(inspector).visibility !== 'hidden';
+      // Capture the selected proposal and its current details panel after the list action settles.
+      const detailsPanel = document.getElementById('proposal-details-panel');
+      const detailsPanelVisible = !!detailsPanel && detailsPanel.getClientRects().length > 0 && getComputedStyle(detailsPanel).visibility !== 'hidden';
       const selectedProposalId = w.currentlyHighlightedProposalId || null;
 
       return {
@@ -108,7 +107,7 @@ test.describe('Mega proposal loading @features', () => {
         totalMs: Math.round(totalMs),
         frameTicks,
         longestFrameGapMs: Math.round(longestFrameGapMs),
-        inspectorVisible,
+        detailsPanelVisible,
         selectedProposalId,
       };
     }, MEGA_PARCEL_COUNT);
@@ -124,9 +123,8 @@ test.describe('Mega proposal loading @features', () => {
     // single sync block held the main thread for several seconds".
     expect(result.longestFrameGapMs, 'longest single-frame gap').toBeLessThan(3500);
 
-    // The list action must select the intended record, then its full details can expose the
-    // ancestor list through the current Planning Inspector → Proposal actions flow.
-    expect(result.inspectorVisible).toBe(true);
+    // The list action must select the intended record and expose its current details panel.
+    expect(result.detailsPanelVisible).toBe(true);
     expect(result.selectedProposalId).toBe('e2e-mega-proposal-load');
     await showProposal(page, 'e2e-mega-proposal-load');
     const panel = page.locator('#proposal-details-panel');

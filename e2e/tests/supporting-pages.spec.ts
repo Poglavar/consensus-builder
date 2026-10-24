@@ -39,20 +39,33 @@ test.describe('Supporting pages @core', () => {
     }));
 
     await page.goto('/actor-explorer.html');
-    await expect(page.locator('.ae-event')).toHaveCount(2);
-    // The standalone page has no map to open them on: each event names its agreement or design.
+    const profiles = page.locator('.ae-profile-grid .cb-option');
+    const ari = profiles.filter({ hasText: 'Ari' });
+    const planner = profiles.filter({ hasText: 'Block planner' });
+    await expect(profiles).toHaveCount(2);
+    await expect(page.locator('.ae-activity')).toContainText('Choose an actor to see its activity.');
+    // The standalone page has no map to open them on: selecting each actor reveals its event subject.
+    await expect(ari).toContainText('1 activity · 1 agreement · 0 transactions');
+    await ari.click();
     const proposed = page.locator('.ae-event').filter({ hasText: 'Proposed the park agreement' });
+    await expect(page.locator('.ae-event')).toHaveCount(1);
     await expect(proposed.locator('strong')).toHaveText('Ari · Proposed agreement');
     await expect(proposed.locator('.ae-meta')).toContainText(`Agreement ${AGREEMENT_CID.slice(0, 12)}…${AGREEMENT_CID.slice(-6)}`);
-    await expect(page.locator('.ae-event').filter({ hasText: 'Published a square design' }).locator('.ae-meta'))
-      .toContainText(`Design ${DESIGN_CID.slice(0, 12)}…`);
-    // Ari's card counts the one agreement Ari proposed.
-    await expect(page.locator('.ae-profile-grid .cb-option').filter({ hasText: 'Ari' })).toContainText('1 activity · 1 agreement · 0 transactions');
+
     await selectNativeOption(page.getByRole('combobox', { name: 'Actor controller' }), 'human');
+    await expect(page.locator('.ae-activity')).toContainText('Choose an actor to see its activity.');
+    await expect(profiles).toHaveCount(1);
+    await profiles.filter({ hasText: 'Ari' }).click();
     await expect(page.locator('.ae-event')).toHaveCount(1);
     await expect(page.locator('.ae-event')).toContainText('Ari');
+
     await page.getByRole('button', { name: 'Clear selection' }).click();
-    await page.getByRole('button', { name: /run run-1/ }).click();
+    await expect(profiles).toHaveCount(2);
+    await planner.click();
+    const designEvent = page.locator('.ae-event').filter({ hasText: 'Published a square design' });
+    await expect(page.locator('.ae-event')).toHaveCount(1);
+    await expect(designEvent.locator('.ae-meta')).toContainText(`Design ${DESIGN_CID.slice(0, 12)}…`);
+    await page.getByRole('button', { name: 'Run run-1', exact: true }).click();
     const run = page.locator('.ae-run-detail');
     await expect(run).toContainText('Preserve open space');
     await expect(run).toContainText(`Agreement ${AGREEMENT_CID} · design ${DESIGN_CID}`);

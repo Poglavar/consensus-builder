@@ -66,9 +66,7 @@
     function currentPlacementSite(buildings = null) {
         const features = buildings ? buildings.slice() : buildingEntries.filter(entry => entry?.feature).map(entry => entry.feature);
         if (singleLandTakeReview?.take) features.unshift(singleLandTakeReview.take);
-        else if (singleGroundBoundary) {
-            features.unshift(singleGroundBoundary);
-        }
+        if (singleGroundBoundary) features.unshift(singleGroundBoundary);
         let combined = null;
         for (const feature of features) combined = combined ? turf.union(combined, feature) : cloneSingleFeature(feature);
         if (!combined?.geometry) return null;
@@ -764,6 +762,15 @@
         }
     }
 
+    // A reviewed take updates land-dependent previews without replacing authored ground surroundings.
+    function refreshSingleLandTakePreview() {
+        updateGroundPreview();
+        refreshSingleBuildingDensityStats();
+        singleSession?.placement?.update(currentPlacementSite());
+        singleSession?.setPreview(singleBuildingPreview());
+        autosaveSingleBuildingDraft();
+    }
+
     function destroySinglePolygonEditor() {
         singlePolygonEditors.forEach(editor => editor.destroy());
         singlePolygonEditors = [];
@@ -1321,7 +1328,7 @@
         if (buildingFeatures.length > 1) {
             const staged = window.stageActiveFreeformBuildings({ buildings: buildingFeatures.map((building, index) => ({
                 building,
-                site: cloneSingleFeature(building.geometry),
+                site: cloneSingleFeature(index === 0 ? singleContext.placement.site : building.geometry),
                 ...(index === 0 ? { surroundings: {
                     groundSurface: singleContext.groundSurface,
                     groundBoundary: singleContext.groundBoundary,
@@ -1679,15 +1686,7 @@
             initialTake: singleBuildingSeedLandTake,
             onHistory: () => ensureSingleBuildingHistory().record(),
             onReview: () => singleSession?.setPreview(singleBuildingPreview()),
-            onChange(take) {
-                if (JSON.stringify(singleGroundBoundary?.geometry) !== JSON.stringify(take.geometry)) currentGroundDecorationDesign = null;
-                singleGroundBoundary = cloneSingleFeature(take);
-                updateGroundPreview();
-                refreshSingleBuildingDensityStats();
-                singleSession?.placement?.update(currentPlacementSite());
-                singleSession?.setPreview(singleBuildingPreview());
-                autosaveSingleBuildingDraft();
-            }
+            onChange: refreshSingleLandTakePreview
         });
         singleBuildingSeedLandTake = null;
         // Frame the editable object once. Later edits leave the user's camera alone.
@@ -1730,7 +1729,7 @@
         singleBuildingSeedBuildings = (Array.isArray(initialBuildings) && initialBuildings.length) ? initialBuildings : null;
         singleBuildingSeedGroundTreatment = initialGroundTreatment;
         singleBuildingSeedDecorationDesign = initialDecorationDesign;
-        singleBuildingSeedGroundBoundary = initialLandTake || initialGroundBoundary;
+        singleBuildingSeedGroundBoundary = initialGroundBoundary;
         singleBuildingSeedLandTake = initialLandTake;
         singleBuildingOverrideContext = context;
         return showSingleBuildingMapEditor();

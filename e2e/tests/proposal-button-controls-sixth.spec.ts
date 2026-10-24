@@ -24,7 +24,7 @@ async function openFreshProposalFromBlock(page: import('@playwright/test').Page)
   await page.evaluate(async ids => (window as any).CadastralParcelRepository.ensureIds(ids), BLOCK_PARCEL_IDS);
   await openParcel(page, 'info', BLOCK_PARCEL_IDS[1]);
   await page.locator('#layers-button').click();
-  const tools = page.locator('#layers-sheet details.layer-actions:has(> summary[data-i18n-key="mapShell.reorg.blockData"])');
+  const tools = page.locator('#layers-sheet details.accordion-section[data-section="blocks"]');
   if (!(await tools.evaluate((element: HTMLDetailsElement) => element.open))) await tools.locator('> summary').click();
   await tools.locator('[onclick="animateFloodfillFromSelected()"]')!.click();
   await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.selectedParcels.size)).toBeGreaterThan(1);

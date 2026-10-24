@@ -308,7 +308,7 @@
         control('showSquaresCheckbox', { id: 'layers.squares', group: 'layers', kind: 'toggle', surfaces: ['layers'],
             labelKey: 'sidebar.blocks.showSquares', fallbackLabel: 'Squares', icon: 'fas fa-square' }),
         control('showBuildings', { id: 'layers.buildings', group: 'layers', kind: 'toggle', surfaces: ['layers'],
-            labelKey: 'sidebar.buildings.showGdi', fallbackLabel: 'GDI buildings (3D model)', icon: 'fas fa-building' }),
+            labelKey: 'sidebar.buildings.showLayer', fallbackLabel: 'Show buildings', icon: 'fas fa-building' }),
         control('showBuildingsDgu', { id: 'layers.buildingsDgu', group: 'layers', kind: 'toggle', surfaces: ['layers'],
             labelKey: 'sidebar.buildings.showDgu', fallbackLabel: 'DGU cadastre (legal reference)', icon: 'fas fa-building' }),
         control('showBuildingsOsm', { id: 'layers.buildingsOsm', group: 'layers', kind: 'toggle', surfaces: ['layers'],
@@ -389,6 +389,8 @@
         // ---- Proposals sheet ----
         { id: 'proposals.list', group: 'proposals', surfaces: ['proposals'], run: callGlobal('showAllProposalsModal'),
             labelKey: 'mapShell.commands.proposalsList', fallbackLabel: 'Open Designs', icon: 'fas fa-list-ul' },
+        control('designs-agreements-button', { id: 'proposals.agreements', group: 'proposals', surfaces: ['proposals'],
+            labelKey: 'sidebar.proposals.agreementsButton', fallbackLabel: 'Agreements', icon: 'fas fa-file-signature' }),
         control('planStatsButton', { id: 'proposals.planStats', group: 'proposals', surfaces: ['proposals'],
             labelKey: 'sidebar.proposals.planStats.buttonLabel', fallbackLabel: 'Applied proposal stats', icon: 'fas fa-chart-pie' }),
         control('roosterScoreButton', { id: 'proposals.grainScore', group: 'proposals', surfaces: ['proposals'],

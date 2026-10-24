@@ -69,6 +69,13 @@ test.describe('Multi-parcel selection @core', () => {
 test('manual mode picks parcels through existing buildings without inspecting building content', async ({ mockApi: page }) => {
   await installLayerDatasets(page);
   await openCity(page);
+  await page.locator('#layers-button').click();
+  const layers = page.locator('#layers-sheet');
+  const buildings = layers.locator('details.accordion-section[data-section="buildings"]');
+  await buildings.locator(':scope > summary').click();
+  await page.locator('#showBuildings').check();
+  await page.locator('#layers-button').click();
+  await expect(layers).toBeHidden();
   await expect.poll(() => page.evaluate(() => (window as any).buildingsAt({ lat: 45.80021, lng: 15.98212 }).length)).toBeGreaterThan(0);
   await openParcel(page);
   const manual = page.locator('#parcel-manual-selection');

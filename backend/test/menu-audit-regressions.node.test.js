@@ -39,12 +39,15 @@ test('OSM block commands use their own section while cadastral block commands re
     assert.equal(commands.isAvailable('urbanBlocks.browse', { ...context, mode: 'model' }), false);
 });
 
-test('source-hidden building labels gate the palette even inside a closed sheet', () => {
+test('NYC palette offers its working buildings and OSM reference, while hiding Zagreb DGU', () => {
     const document = makeDocument();
-    document.body.innerHTML = '<section class="map-sheet" hidden><label data-feature-hidden="true"><input id="showBuildingsDgu"></label><label><input id="showBuildingsOsm"></label></section>';
+    document.body.innerHTML = '<section class="map-sheet" hidden><label><input id="showBuildings"></label><label data-feature-hidden="true"><input id="showBuildingsDgu"></label><label><input id="showBuildingsOsm"></label></section>';
     // The shared fake DOM models parentNode; browser controls expose the same link as parentElement.
     document.querySelectorAll('section, label, input').forEach(el => Object.defineProperty(el, 'parentElement', { get: () => el.parentNode }));
     const context = commands.createBrowserContext({ document });
+    assert.equal(commands.isAvailable('layers.buildings', context), true);
+    assert.equal(commands.findCommand('layers.buildings').labelKey, 'sidebar.buildings.showLayer');
+    assert.equal(commands.findCommand('layers.buildings').fallbackLabel, 'Show buildings');
     assert.equal(commands.isAvailable('layers.buildingsDgu', context), false);
     assert.equal(context.controlUnavailableReason('showBuildingsDgu'), 'hiddenForCity');
     assert.equal(commands.isAvailable('layers.buildingsOsm', context), true);
@@ -207,7 +210,7 @@ test('a replaced cadastral source selects its exact current parcels and opens th
     window.renderParcelProposalActions(sourceId);
     const container = document.getElementById('parcel-proposal-primary-actions');
     assert.equal(container.querySelector('[data-parcel-build-state="replaced"]')?.getAttribute('data-parcel-build-state'), 'replaced');
-    assert.match(container.textContent, /The parcel boundaries on the map have changed\. Select the current parcels to continue\./);
+    assert.match(container.textContent, /This is the original cadastral parcel\. Applied designs have replaced it in the working map\. Select the current parcels to add a design\./);
     assert.equal(container.querySelector('[data-parcel-source-only]'), null);
     const select = container.querySelector('[data-parcel-build-recovery="select-current"]');
     assert.ok(select);

@@ -78,6 +78,23 @@ function closeHarness(options = {}) {
 }
 
 describe('single-building map editor lifecycle', () => {
+    it('includes authored surroundings and the reviewed land take in the placement site', () => {
+        const ground = turf.bboxPolygon([0, 0, 4, 4]);
+        const take = turf.bboxPolygon([3, 0, 5, 2]);
+        const building = turf.bboxPolygon([1, 1, 2, 2]);
+        const review = { take };
+        const placement = extract('currentPlacementSite', '', {
+            buildingEntries: [{ feature: building }], singleLandTakeReview: review,
+            singleGroundBoundary: ground, turf,
+            cloneSingleFeature: value => JSON.parse(JSON.stringify(value))
+        });
+        const site = turf.feature(placement());
+        expect(turf.bbox(site)).toEqual([0, 0, 5, 4]);
+        expect(turf.booleanWithin(ground, site)).toBe(true);
+        expect(turf.booleanWithin(take, site)).toBe(true);
+        expect(review.take).toBe(take);
+    });
+
     it('uses the authored MultiPolygon site as the movable footprint boundary', () => {
         const ring = (west, south, east, north) => [[
             [west, south], [east, south], [east, north], [west, north], [west, south]
@@ -134,6 +151,37 @@ describe('single-building map editor lifecycle', () => {
             draftPreview: { kind: 'buildings', features: [feature] }, boundary: { geometry: {} },
             groundSurface: { treatment: 'green', polygon: {} }
         });
+    });
+
+    it('refreshes land-take effects while preserving the authored ground boundary and decoration', () => {
+        const take = { type: 'Feature', geometry: { type: 'Polygon', coordinates: [[[0, 0], [2, 0], [2, 2], [0, 0]]] } };
+        const boundary = { type: 'Feature', geometry: { type: 'Polygon', coordinates: [[[0, 0], [3, 0], [3, 3], [0, 0]]] } };
+        const decoration = { version: 1, details: [{ kind: 'tree', at: [1, 1] }] };
+        const review = { take };
+        const probe = {};
+        const session = { placement: { update: vi.fn() }, setPreview: vi.fn() };
+        const effects = {
+            updateGroundPreview: vi.fn(), refreshSingleBuildingDensityStats: vi.fn(),
+            currentPlacementSite: vi.fn(() => ({ take: review.take })),
+            singleBuildingPreview: vi.fn(() => ({ take: review.take })), autosaveSingleBuildingDraft: vi.fn()
+        };
+        const refresh = extract('refreshSingleLandTakePreview', `
+            let singleLandTakeReview=this.review, singleGroundBoundary=this.boundary,
+                currentGroundDecorationDesign=this.decoration, singleSession=this.session;
+            this.probe.read=()=>({ singleGroundBoundary, currentGroundDecorationDesign });`,
+            { ...effects, review, boundary, decoration, session, probe });
+
+        refresh();
+
+        expect(probe.read().singleGroundBoundary).toBe(boundary);
+        expect(probe.read().currentGroundDecorationDesign).toBe(decoration);
+        expect(effects.updateGroundPreview).toHaveBeenCalledOnce();
+        expect(effects.refreshSingleBuildingDensityStats).toHaveBeenCalledOnce();
+        expect(effects.currentPlacementSite).toHaveBeenCalledOnce();
+        expect(session.placement.update).toHaveBeenCalledWith({ take });
+        expect(session.setPreview).toHaveBeenCalledWith({ take });
+        expect(effects.autosaveSingleBuildingDraft).toHaveBeenCalledOnce();
+        expect(review.take).toBe(take);
     });
 
     it('does not claim the map lock or replace an incumbent editor when opening is refused', () => {

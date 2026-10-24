@@ -59,12 +59,14 @@ for (const size of [{ name: 'desktop', width: 1440, height: 1000 }, { name: '390
     const handle = map.locator('.map-compare__handle');
     await expect(map.locator('.map-compare__before')).toBeVisible();
     const initial = await handle.evaluate(node => Number.parseFloat((node as HTMLElement).style.left));
-    const handleBox = await handle.boundingBox();
+    const gripBox = await handle.locator('.map-compare__grip').boundingBox();
     const mapBox = await map.boundingBox();
-    if (!handleBox || !mapBox) throw new Error('Compare slider or parcel-layout map has no visible bounds');
-    await page.mouse.move(handleBox.x + handleBox.width / 2, handleBox.y + handleBox.height / 2);
+    if (!gripBox || !mapBox) throw new Error('Compare grip or parcel-layout map has no visible bounds');
+    const gripX = gripBox.x + gripBox.width / 2;
+    const gripY = gripBox.y + gripBox.height / 2;
+    await page.mouse.move(gripX, gripY);
     await page.mouse.down();
-    await page.mouse.move(mapBox.x + mapBox.width * 0.72, handleBox.y + handleBox.height / 2, { steps: 6 });
+    await page.mouse.move(mapBox.x + mapBox.width * 0.72, gripY, { steps: 6 });
     await page.mouse.up();
     await expect.poll(() => handle.evaluate(node => Number.parseFloat((node as HTMLElement).style.left))).not.toBe(initial);
     await attachScreenshot(page, testInfo, `${size.name}-comparison-drag.png`);

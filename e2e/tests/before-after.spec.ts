@@ -224,6 +224,7 @@ test.describe('Before / after on a phone @features', () => {
     await unfoldStack(page);
     await button.click();
     const cdp = await page.context().newCDPSession(page);
+    await expect(page.locator('#click-stack > .mobile-dock-sheet-handle')).toBeHidden();
     const mapBox = (await page.locator('#map').boundingBox())!;
     const originalCenter = await page.evaluate(() => (window as any).map.getCenter());
     const grip = (await divider(page).locator('.map-compare__grip').boundingBox())!;
@@ -247,7 +248,8 @@ test.describe('Before / after on a phone @features', () => {
     await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
     await expect.poll(async () => Number(await divider(page).getAttribute('aria-valuenow'))).toBeCloseTo(25, 1);
     const outside = await page.evaluate(() => {
-      const w = window as any, p = w.map.latLngToContainerPoint([45.80025, 15.9829]);
+      // Tap the exposed northern part of the neighbour, above the folded phone panel.
+      const w = window as any, p = w.map.latLngToContainerPoint([45.80045, 15.9829]);
       const box = w.map.getContainer().getBoundingClientRect();
       return { x: box.left + p.x, y: box.top + p.y };
     });

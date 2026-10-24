@@ -153,6 +153,8 @@ test.describe('Remaining UI controls @features', () => {
   test('parcel coverage header close returns to Settings', async ({ mockApi: page }) => {
     await openCity(page);
     await page.locator('#settings-button').click();
+    const data = page.locator('#settings-sheet details.accordion-section[data-section="data"]');
+    if (!(await data.evaluate((details: HTMLDetailsElement) => details.open))) await data.locator(':scope > summary').click();
     await page.locator('#showParcelCoverageButton').click();
     const modal = page.locator('#parcel-coverage-modal');
     await expect(modal).toBeVisible();
@@ -161,20 +163,20 @@ test.describe('Remaining UI controls @features', () => {
     await expect(page.locator('#settings-sheet')).toBeVisible();
   });
 
-  test('status log header close returns to the Activity sheet', async ({ mockApi: page }) => {
+  test('status log header close returns to Settings', async ({ mockApi: page }) => {
     await openCity(page);
     await page.evaluate(() => (window as any).updateStatus('Status close control fixture'));
-    await page.locator('#activity-button').click();
-    const technical = page.locator('#activity-sheet details:has(> summary[data-i18n-key="mapShell.reorg.statusLog"])');
-    await technical.locator('> summary').click();
-    await technical.locator('.status-bar').click();
-    await expect(technical.locator('#status-log-expanded')).toBeVisible();
-    await technical.locator('[data-status-open-log]').click();
+    await page.locator('#settings-button').click();
+    const diagnostics = page.locator('#settings-sheet details.accordion-section[data-section="diagnostics"]');
+    if (!(await diagnostics.evaluate((details: HTMLDetailsElement) => details.open))) await diagnostics.locator(':scope > summary').click();
+    await diagnostics.locator('.status-bar').click();
+    await expect(diagnostics.locator('#status-log-expanded')).toBeVisible();
+    await diagnostics.locator('[data-status-open-log]').click();
     const modal = page.locator('#status-log-modal');
     await expect(modal).toBeVisible();
     await modal.locator('[data-status-log-close]').click();
     await expect(modal).toBeHidden();
-    await expect(page.locator('#activity-sheet')).toBeVisible();
+    await expect(page.locator('#settings-sheet')).toBeVisible();
   });
 
   test('Activity source, actor, controller, action, and result filters narrow events', async ({ mockApi: page }) => {
@@ -262,22 +264,36 @@ test.describe('Remaining UI controls @features', () => {
       },
     ] } }));
     await page.goto('/actor-explorer.html');
-    await expect(page.locator('.ae-event')).toHaveCount(2);
+    const profiles = page.locator('.ae-profile-grid .cb-option');
+    const events = page.locator('.ae-event');
+    const activity = page.locator('.ae-activity');
+    await expect(profiles).toHaveCount(2);
+    await expect(activity).toContainText('Choose an actor to see its activity.');
     const search = page.getByRole('searchbox', { name: 'Search actor, agreement, run or transaction' });
     await search.fill('Ari');
-    await expect(page.locator('.ae-event')).toHaveCount(1);
-    await expect(page.locator('.ae-event')).toContainText('Proposed a river park');
-    await expect(page.locator('.ae-profile-grid')).toContainText('Ari Steward');
+    await expect(profiles).toHaveCount(1);
+    await expect(profiles).toContainText('Ari Steward');
+    await page.getByRole('button', { name: /Ari Steward/ }).click();
+    await expect(events).toHaveCount(1);
+    await expect(events).toContainText('Proposed a river park');
+
+    await page.getByRole('button', { name: 'Clear selection' }).click();
     await search.fill('search-square');
-    await expect(page.locator('.ae-event')).toHaveCount(1);
-    await expect(page.locator('.ae-event')).toContainText('Created a square design');
-    await search.fill('');
-    await expect(page.locator('.ae-event')).toHaveCount(2);
+    await expect(profiles).toHaveCount(1);
+    await expect(profiles).toContainText('Block Planner');
+    await page.getByRole('button', { name: /Block Planner/ }).click();
+    await expect(events).toHaveCount(1);
+    await expect(events).toContainText('Created a square design');
+    await page.getByRole('button', { name: 'Clear selection' }).click();
+    await expect(profiles).toHaveCount(2);
+    await expect(activity).toContainText('Choose an actor to see its activity.');
   });
 
   test('both watched-area name filters narrow their real lists', async ({ mockApi: page }) => {
     await openCity(page);
     await page.locator('#activity-button').click();
+    await page.locator('#activity-watched-tab').click();
+    await expect(page.locator('#activity-watched-pane')).toBeVisible();
     const inlineList = page.locator('#activity-watched-areas-list');
     const inlineFilter = inlineList.locator('.area-monitor-list-filter');
     await expect(inlineFilter).toBeVisible();
@@ -345,6 +361,8 @@ test.describe('Remaining UI controls @features', () => {
       w.dispatchEvent(new Event('proposedBuildingsUpdated'));
     }, { parcelId: PARCEL_ID, geometry: PARCEL_GEOMETRY });
     await page.locator('#layers-button').click();
+    const buildings = page.locator('#layers-sheet details.accordion-section[data-section="buildings"]');
+    if (!(await buildings.evaluate((details: HTMLDetailsElement) => details.open))) await buildings.locator(':scope > summary').click();
     const checkbox = page.locator('#showSuggestedLayouts');
     await expect(checkbox).toBeVisible();
     await expect(checkbox).not.toBeChecked();

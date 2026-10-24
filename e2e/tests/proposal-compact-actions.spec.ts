@@ -71,7 +71,8 @@ test.describe('compact proposal card actions @features', () => {
     await expect(footer.locator('.btn-duplicate-design')).toBeVisible();
     await expect(footer.locator('.btn-edit-geometry')).toBeVisible();
     await expect(footer.locator('.btn-share-proposal')).toBeVisible();
-    await expect(footer.locator('.btn-proposal-details')).toBeVisible();
+    await expect(panel.locator('[data-proposal-tab="overview"]')).toHaveAttribute('aria-selected', 'true');
+    await expect(panel.locator('[data-proposal-tab="details"]')).toBeVisible();
     const mapButton = footer.locator(`#proposal-action-btn-${proposalId}`);
     await expect(mapButton).toBeVisible();
 
@@ -103,7 +104,7 @@ test.describe('compact proposal card actions @features', () => {
     await expect(reopenedFooter.locator(`#proposal-action-btn-${proposalId}`)).toContainText(/Remove|Unapply/i);
   });
 
-  test('Details expands the compact card and the mobile 320px footer keeps Share and Copy usable', async ({ mockApi: page }) => {
+  test('the Details tab and mobile 320px footer keep Share and Copy usable', async ({ mockApi: page }) => {
     await page.setViewportSize({ width: 320, height: 780 });
     await openCity(page);
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));
@@ -115,25 +116,30 @@ test.describe('compact proposal card actions @features', () => {
     const panel = page.locator('#proposal-details-panel');
     const footer = panel.locator('#proposal-details-footer');
     const share = footer.locator('.btn-share-proposal');
-    const details = footer.locator('.btn-proposal-details');
-    await expect(share).toBeInViewport();
-    await expect(details).toBeInViewport();
+    const detailsTab = panel.locator('[data-proposal-tab="details"]');
+    await share.scrollIntoViewIfNeeded();
+    await expect(share).toBeInViewport({ ratio: 1 });
+    await detailsTab.scrollIntoViewIfNeeded();
+    await expect(detailsTab).toBeInViewport({ ratio: 0.95 });
     const dimensions = await page.evaluate(() => {
       const footer = document.querySelector('#proposal-details-footer') as HTMLElement;
       return { scrollWidth: footer.scrollWidth, clientWidth: footer.clientWidth };
     });
     expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth);
 
+    await share.scrollIntoViewIfNeeded();
     await share.click();
     await expectSharedAsDesign(page, proposalId);
 
-    await details.click();
-    await expect(panel).not.toHaveClass(/is-minimized/);
-    await expect(panel.locator('.panel-body')).toBeVisible();
     await showProposalTab(page, 'details');
-    const record = panel.locator('details[data-proposal-section="record"]');
-    await record.locator('summary').click();
+    await expect(detailsTab).toHaveAttribute('aria-selected', 'true');
+    const record = panel.locator('#proposal-details-content details[data-proposal-section="record"]');
+    await record.scrollIntoViewIfNeeded();
+    if (!(await record.evaluate(element => (element as HTMLDetailsElement).open))) {
+      await record.locator(':scope > summary').click();
+    }
     const copy = record.locator('.proposal-id-copy');
+    await copy.scrollIntoViewIfNeeded();
     await expect(copy).toBeVisible();
     await expect(copy).toHaveAccessibleName('Copy local ID');
     await copy.click();

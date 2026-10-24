@@ -51,7 +51,7 @@ test('selection section Detect block expands its selected seed to the cadastral 
   await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.selectedParcels.size)).toBe(5);
 });
 
-test('global 3D mode opens from a selected parcel and retains parcel picking and isolation', async ({ mockApi: page }) => {
+test('global 3D mode keeps the selected parcel and its design view focused', async ({ mockApi: page }) => {
   await mockBuildingScene(page);
   await openCity(page);
   await page.evaluate(({ id, geometry }) => (window as any).proposalStorage.addProposal({
@@ -80,13 +80,14 @@ test('global 3D mode opens from a selected parcel and retains parcel picking and
     return { x: box.left + (point.x + 1) * box.width / 2, y: box.top + (1 - point.y) * box.height / 2 };
   }, PARCEL_ID);
   await page.mouse.click(point.x, point.y);
-  // The click stack lists the parcel's proposal in its Design section; opening it isolates the proposal.
+  // The click stack keeps the selected parcel context while its Design row opens the design view.
   const design = page.locator('#three-click-stack .click-stack__section[data-kind="designs"]');
   await expect(design.locator('.click-stack__row-detail')).toHaveText('3D parcel proposal');
   await design.locator('[data-action="row"]').click();
   await expect(design.locator('.three-mode-parcel-panel')).toBeVisible();
-  await expect(page.locator('.three-mode-isolation-banner')).toContainText('Proposal view');
+  await expect(page.locator('.three-mode-isolation-banner')).toContainText('Design view');
   await expect.poll(() => page.evaluate(() => (window as any).getThreeSceneSummary().isolatedProposal)).toBe(true);
+  await expect.poll(() => page.evaluate(() => Math.abs((window as any).map.getCenter().lat - 45.80025))).toBeLessThan(0.0001);
 });
 
 test('parcel section Compare opens both proposals and Details follows the chosen side', async ({ mockApi: page }) => {

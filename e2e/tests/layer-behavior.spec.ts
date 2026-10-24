@@ -124,6 +124,7 @@ test.describe('Layers sheet behavior @features', () => {
 
   test('building and road reference layers load real features on checkbox clicks', async ({ mockApi: page }) => {
     await openLayers(page);
+    await openLayerSection(page, 'buildings');
     await page.locator('#showBuildings').check();
     await expect.poll(() => page.evaluate(() => (window as any).buildingFeaturePool.some((feature: any) => feature.properties.object_id === 9001))).toBe(true);
     await expect.poll(() => page.evaluate(() => (window as any).map.hasLayer((window as any).buildingLayer))).toBe(true);
@@ -171,8 +172,7 @@ test.describe('Layers sheet behavior @features', () => {
   });
 
   test('proposed-building visibility follows a real applied building proposal', async ({ mockApi: page }) => {
-    await openLayers(page);
-    await page.locator('#layers-button').click();
+    await openCity(page);
     const proposalId = await createBuilding(page);
     const saved = await proposalState(page, proposalId);
     await expect.poll(() => page.evaluate(() => (window as any).proposedBuildings.length)).toBeGreaterThan(0);

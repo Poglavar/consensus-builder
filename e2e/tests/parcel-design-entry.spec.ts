@@ -36,7 +36,8 @@ test('a Freeform draft on a tiny parcel keeps a usable footprint on a phone', as
   await expect(page.locator('#single-building-confirm')).toBeEnabled();
   await expect(page.locator('#single-building-editor details')).toHaveCount(0);
   await expect(page.locator('#single-ground-treatment')).toBeVisible();
-  await expect(page.locator('#single-parcel-mode')).toBeVisible();
+  const parcelChoice = page.locator('#single-land-take [data-parcel-id]');
+  await expect.poll(() => parcelChoice.count()).toBeGreaterThan(0);
 });
 
 test('Block always offers its scope choice and explains when default settings do not fit', async ({ mockApi: page }) => {

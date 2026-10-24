@@ -876,6 +876,7 @@ body.three-mode-active #agent-bubbles-container {
 }
 
 #click-stack.is-folded .click-stack__body,
+#click-stack.is-folded > .mobile-dock-sheet-handle,
 #click-stack.is-folded .click-stack__choices {
     display: none;
 }
@@ -1508,6 +1509,19 @@ body.three-mode-active #agent-bubbles-container {
 
 .leaflet-container a.cb-link:hover {
     color: var(--cb-link-hover);
+}
+
+/* Keep the comparison grip in the exposed upper map area on phones. */
+@media (max-width: 767.98px) {
+    #map .map-compare__grip {
+        top: var(--map-compare-grip-top, 25%);
+        width: 44px;
+        height: 44px;
+    }
+
+    #map .map-compare__label--divider {
+        top: var(--map-compare-grip-top, 25%);
+    }
 }
 
 /* An invisible positioning column: the individual sections sit directly over the map. */

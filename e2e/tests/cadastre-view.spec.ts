@@ -33,8 +33,10 @@ test('consumed ground remains reachable through proposal breadcrumbs and the cad
   await expect(page.locator('#parcel-info-panel')).toBeVisible();
   await expect(page.locator('#parcel-info-title')).toContainText('1234');
   await expect(page.locator('#proposal-details-panel')).toBeHidden();
-  await page.locator('#parcel-info-panel [data-parcel-tab-id="proposals-tab"]').click();
-  await expect(page.locator('#proposals-content')).toContainText(/park/i);
+  // The consumed cadastral parcel has no proposal tab: its current design is shown as a
+  // contextual relationship in the click stack.
+  const designs = page.locator('#click-stack .click-stack__section[data-kind="designs"]');
+  await expect(designs).toContainText(/park/i);
   await closeParcel(page);
   await toggleCadastreView(page, true);
   await expect(page.locator('body')).toHaveClass(/cadastre-view/);

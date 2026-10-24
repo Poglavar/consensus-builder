@@ -117,7 +117,7 @@ function bootMapShell({ phone = false, editors = null } = {}) {
     if (editors) win.ResizeObserver = class { observe() {} unobserve() {} };
     vm.runInNewContext(fs.readFileSync(path.join(FRONTEND, 'js/ui/map-shell.js'), 'utf8'), { window: win, console });
     win.MapShell.initializeMapShell();
-    return { win, doc, body, modes, measureSheet, activitySheet, settingsSheet, trigger, nav, windowListeners };
+    return { win, doc, body, modes, measureSheet, activitySheet, settingsSheet, trigger, nav, windowListeners, elements };
 }
 
 describe('MapShell mode capabilities', () => {
@@ -196,6 +196,28 @@ describe('MapShell mode capabilities', () => {
         card.getBoundingClientRect = () => ({ top: 464, bottom: 800, left: 60, right: 390, width: 330, height: 336 });
         win.MapShell.syncModeAvailability();
         expect(body.style.values.get('--map-visible-bottom')).toBe('336px');
+    });
+
+    it('reveals a control by activating its hidden tab panel', () => {
+        const { win, doc, activitySheet, elements } = bootMapShell();
+        const tabPanel = new FakeElement({ id: 'activity-watched-pane', attributes: {
+            role: 'tabpanel', 'aria-labelledby': 'activity-watched-tab'
+        }, hidden: true });
+        const tab = new FakeElement({ id: 'activity-watched-tab' });
+        let activations = 0;
+        tab.click = () => { activations += 1; tabPanel.hidden = false; };
+        const control = new FakeElement({ id: 'activity-watched-areas-list' });
+        control.closest = selector => selector === '.map-sheet' ? activitySheet
+            : selector === '[role="tabpanel"]' ? tabPanel : null;
+        elements.set(tab.id, tab);
+        elements.set(tabPanel.id, tabPanel);
+        elements.set(control.id, control);
+
+        win.MapShell.revealControl(control.id);
+
+        expect(win.MapShell.isOpen('activity-sheet')).toBe(true);
+        expect(activations).toBe(1);
+        expect(tabPanel.hidden).toBe(false);
     });
 
     it('never reports a covering sheet on a wide map', () => {

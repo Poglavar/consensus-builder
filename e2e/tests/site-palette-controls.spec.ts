@@ -74,9 +74,10 @@ async function expectFreeformDraftSite(page: import('@playwright/test').Page, au
   expect(state.guideGeometry).toEqual(authoredSite);
   expect(state.insideGuide).toBe(true);
   expect(state.placement?.free).toBe(true);
-  expect(state.groundTreatment).toBe('none');
+  expect(state.groundTreatment).toBe('paved');
   expect(state.takeWholeParcels).toBe(false);
-  expect(state.draftSite).toEqual(state.buildingsSite);
+  // Paving surrounds the footprint within the authored site; the material footprint is smaller.
+  expect(state.draftSite).toEqual(authoredSite);
 }
 
 test.describe('Site proposals already on its parcels @core', () => {

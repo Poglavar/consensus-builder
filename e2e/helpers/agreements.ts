@@ -204,8 +204,8 @@ export async function createFromDetails(page: Page, layoutId: string): Promise<L
   return editor;
 }
 
-// The Agreements button sits in the Proposals sheet, under Proposal tools; so does Minted agreements.
-async function openProposalTools(page: Page): Promise<void> {
+// Agreements opens from the Designs header; Minted agreements is a secondary action in that list.
+async function openDesigns(page: Page): Promise<void> {
   const sheet = page.locator('#proposals-sheet');
   if (!(await sheet.isVisible())) await page.locator('#proposals-button').click();
   await expect(sheet).toBeVisible();
@@ -213,16 +213,16 @@ async function openProposalTools(page: Page): Promise<void> {
 }
 
 export async function openAgreementsList(page: Page): Promise<Locator> {
-  await openProposalTools(page);
-  await page.locator('#agreementsButton').click();
+  await openDesigns(page);
+  await page.locator('#designs-agreements-button').click();
   const list = page.locator('.agreement-list-dialog');
   await expect(list).toBeVisible();
   return list;
 }
 
 export async function openMintedAgreements(page: Page): Promise<Locator> {
-  await openProposalTools(page);
-  await page.locator('#mintedAgreementsButton').click();
+  const agreements = await openAgreementsList(page);
+  await agreements.locator('[data-agreement-action="minted"]').click();
   const list = page.locator('.agreement-minted-dialog');
   await expect(list).toBeVisible();
   return list;

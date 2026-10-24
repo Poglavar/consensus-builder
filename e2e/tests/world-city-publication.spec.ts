@@ -86,10 +86,12 @@ test.describe('Worldwide publication and city routing @core', () => {
     const indexed = posts[1].body;
     expect(indexed.cid).toBe(cid);
     expect(indexed.content.city).toBe('zagreb');
-    // The parcel source is a binding parameter (the city's catalogue source, null for its default),
-    // never part of the design: the CID commits to the drawing only.
-    const citySource = await page.evaluate(() => (window as any).CityConfigManager.getCityConfig('zagreb')?.parcels?.sourceId || null);
-    expect(indexed).toHaveProperty('parcelSourceId', citySource);
+    // The client-selected parcel source is a binding parameter, never part of the design: the CID
+    // commits to the drawing only.
+    const selectedSource = await page.evaluate(() => (window as any).CityConfigManager.getDataContext(null, 'zagreb').parcelSourceId);
+    expect(selectedSource).toEqual(expect.any(String));
+    expect(selectedSource).not.toBe('');
+    expect(indexed).toHaveProperty('parcelSourceId', selectedSource);
     expect(indexed.content).not.toHaveProperty('parcelSourceId');
   });
 

@@ -37,28 +37,33 @@ test.describe('Supporting page button controls @core', () => {
 
     await openCity(page);
     await page.locator('#activity-button').click();
-    const feed = page.locator('#activity-feed');
+    const panel = page.locator('#activity-sheet');
+    const feed = panel.locator('#game-log-content');
+    const controls = panel.locator('#activity-panel-controls');
+    const filterDetails = controls.locator('details');
+    if (!(await filterDetails.evaluate((details: HTMLDetailsElement) => details.open))) await filterDetails.locator(':scope > summary').click();
+    // These fixture events have no cityId, so keep the feed on its explicit all-cities scope.
+    await controls.locator('[data-activity-filter-field="cityScope"]').selectOption('all');
     await expect(feed.locator('.activity-entry')).toHaveCount(2);
     // Each row opens what it is about: the agreement, or the design.
     await expect(feed.locator('.activity-entry').filter({ hasText: 'Proposed a park agreement' })
       .locator(`.activity-entity-link[data-entity-type="agreement"][data-entity-id="${PARK_AGREEMENT}"]`)).toHaveText('Open agreement');
     await expect(feed.locator('.activity-entry').filter({ hasText: 'Published a block design' })
       .locator(`.activity-entity-link[data-entity-type="design"][data-entity-id="${BLOCK_DESIGN}"]`)).toHaveText('Open design');
-    const filters = feed.locator('.activity-feed__filters');
-    const agents = filters.getByRole('button', { name: 'Agents' });
-    await agents.click();
-    await expect(agents).toHaveAttribute('aria-pressed', 'true');
+    const kind = controls.locator('[data-activity-filter-field="kind"]');
+    await kind.selectOption('agent');
+    await expect(kind).toHaveValue('agent');
     await expect(feed.locator('.activity-entry')).toHaveCount(1);
     await expect(feed).toContainText('Published a block design');
     await expect(feed).not.toContainText('Proposed a park agreement');
 
     const beforeRefresh = requests;
-    await filters.getByRole('button', { name: 'Refresh' }).click();
+    await controls.locator('[data-activity-refresh]').click();
     await expect.poll(() => requests).toBeGreaterThan(beforeRefresh);
-    await filters.getByRole('button', { name: 'People' }).click();
+    await kind.selectOption('human');
     await expect(feed.locator('.activity-entry')).toHaveCount(1);
     await expect(feed).toContainText('Proposed a park agreement');
-    await filters.getByRole('button', { name: 'All', exact: true }).click();
+    await kind.selectOption('all');
     await expect(feed.locator('.activity-entry')).toHaveCount(2);
     await expect(feed).toContainText('Proposed a park agreement');
     await expect(feed).toContainText('Published a block design');

@@ -182,7 +182,14 @@
     }
 
     function showParcelInfoPanel(feature) {
-        if (!global.ClickStack.isDriving()) return global.ClickStack.showParcel(feature);
+        const panel = global.document.getElementById('parcel-info-panel');
+        const refreshingHostedParcel = panel?.classList.contains('visible')
+            && !!panel.closest?.('#click-stack')
+            && resolveParcelId(feature) !== null
+            && String(global.selectedParcelId ?? '') === resolveParcelId(feature);
+        if (!global.ClickStack.isDriving() && !refreshingHostedParcel) {
+            return global.ClickStack.showParcel(feature);
+        }
         global.PlanningViews?.select(null);
         bindParcelPanelControls();
         renderParcelHistory(feature);

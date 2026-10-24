@@ -10,6 +10,9 @@ const detail = (id: number, name: string, cityId = 'zagreb') => ({
 // away through its own close button so the map underneath takes the clicks.
 async function startDrawing(page: import('@playwright/test').Page) {
   await page.locator('#activity-button').click();
+  const watched = page.locator('#activity-sheet [data-activity-view="watched"]');
+  await watched.click();
+  await expect(watched).toHaveAttribute('aria-selected', 'true');
   const draw = page.locator('#activity-sheet #areaMonitorDrawButton');
   await draw.click();
   await expect(draw).toHaveAttribute('aria-pressed', 'true');

@@ -402,28 +402,48 @@ test.describe('Whole-site placement editing @features', () => {
     expect(await savedStation()).toEqual(saved);
   });
 
-  test('320px editor folds controls while keeping Done reachable above the layers sheet', async ({ mockApi: page }) => {
+  test('320px shared editor sheet resizes while keeping Done reachable above the layers sheet', async ({ mockApi: page }) => {
     await page.setViewportSize({ width: 320, height: 780 });
     await openCity(page);
     await addEditableStructure(page, 'park', 'mobile');
     const editor = page.locator('#structure-geometry-editor');
-    const toggle = editor.locator('.on-map-editor__toggle');
-    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
-    await toggle.click();
-    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
-    await expect(editor.locator('.on-map-editor__body')).toBeHidden();
+    const panel = editor.locator('.on-map-editor__panel');
+    const handle = panel.locator(':scope > .mobile-dock-sheet-handle');
+    await expect(handle).toBeVisible();
+    const handleBounds = await handle.boundingBox();
+    expect(handleBounds!.height).toBeGreaterThanOrEqual(44);
     const done = editor.locator('[data-action="save"]');
+    const previewBeforeResize = await readRenderedStructure(page);
+    expect(previewBeforeResize.geometry).not.toBeNull();
+    const initialHeight = (await panel.boundingBox())!.height;
+    await handle.focus();
+    await page.keyboard.press('Home');
+    await expect.poll(async () => (await panel.boundingBox())!.height).toBeLessThan(initialHeight - 100);
     await expect(done).toBeVisible();
-    const bounds = await done.boundingBox();
-    expect(bounds && bounds.x + bounds.width).toBeLessThanOrEqual(320);
+    const compactDoneBounds = await done.boundingBox();
+    expect(compactDoneBounds && compactDoneBounds.x + compactDoneBounds.width).toBeLessThanOrEqual(320);
+    expect(compactDoneBounds && compactDoneBounds.y + compactDoneBounds.height).toBeLessThanOrEqual(780);
 
+    await page.keyboard.press('End');
+    await expect.poll(async () => (await panel.boundingBox())!.height).toBeGreaterThan(initialHeight + 100);
+    await expect(done).toBeVisible();
+    const expandedDoneBounds = await done.boundingBox();
+    expect(expandedDoneBounds && expandedDoneBounds.x + expandedDoneBounds.width).toBeLessThanOrEqual(320);
+    expect(expandedDoneBounds && expandedDoneBounds.y + expandedDoneBounds.height).toBeLessThanOrEqual(780);
+    expect(await readRenderedStructure(page)).toEqual(previewBeforeResize);
+
+    // Reduce the full-height editor before reaching the main map controls behind it.
+    await handle.focus();
+    await page.keyboard.press('Home');
     await page.locator('#layers-button').click();
     const layers = page.locator('#layers-sheet');
     await expect(layers).toBeVisible();
     const sheetBox = await layers.boundingBox();
     expect(sheetBox).not.toBeNull();
-    await layers.locator('[data-sheet-close]').click();
+    await page.keyboard.press('Escape');
     await expect(layers).toBeHidden();
+    await expect(done).toBeVisible();
+    expect(await readRenderedStructure(page)).toEqual(previewBeforeResize);
     // Settings starts another task, so it is greyed out (not hidden) until the edit is done.
     const settingsButton = page.locator('#settings-button');
     await expect(settingsButton).toBeVisible();

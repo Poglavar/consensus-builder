@@ -93,8 +93,8 @@ test.describe('Proposal actions @features', () => {
     expect(firstRelatedId).toBeTruthy();
     if (!firstRelatedId) throw new Error('The first related proposal has no local identity.');
     await firstRelated.click();
-    await expect.poll(() => page.evaluate(() => (window as any).PlanningViews.getSelected()?.proposalId)).toBe(firstRelatedId);
-    await expect(page.locator('#planning-inspector').getByRole('heading', { name: 'Reference comparison 0', exact: true })).toBeVisible();
+    await expect.poll(() => page.evaluate(() => (window as any).currentlyHighlightedProposalId)).toBe(firstRelatedId);
+    await expect(page.locator('#proposal-details-panel').getByText('Reference comparison 0', { exact: true })).toBeVisible();
   });
 
   test('unloaded source references are not presented as removed parcels', async ({ mockApi: page }) => {

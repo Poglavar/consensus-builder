@@ -25,7 +25,7 @@ async function openBlockProposalDialog(page: import('@playwright/test').Page): P
   await page.evaluate(async ids => (window as any).CadastralParcelRepository.ensureIds(ids), BLOCK_PARCEL_IDS);
   await openParcel(page, 'info', BLOCK_PARCEL_IDS[1]);
   await page.locator('#layers-button').click();
-  const tools = page.locator('#layers-sheet details.layer-actions:has(> summary[data-i18n-key="mapShell.reorg.blockData"])');
+  const tools = page.locator('#layers-sheet details.accordion-section[data-section="blocks"]');
   if (!(await tools.evaluate((element: HTMLDetailsElement) => element.open))) await tools.locator('> summary').click();
   await tools.locator('[onclick="animateFloodfillFromSelected()"]')!.click();
   await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.selectedParcels.size)).toBeGreaterThan(1);
@@ -102,12 +102,14 @@ test.describe('proposal button controls: modal and alternate states @features', 
     const id = await createSpace(page, 'park');
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write'], { origin: new URL(page.url()).origin });
     await openProposalList(page);
-    const actions = page.locator('#proposal-list-actions');
-    await page.locator('#shareAppliedProposalsButton').click();
+    const sheet = page.locator('#proposals-sheet');
+    const shareTab = sheet.getByRole('tab', { name: 'Share', exact: true });
+    await shareTab.click();
 
-    const plan = page.locator('.share-plan-panel');
+    const plan = sheet.locator('#designs-share .share-plan-panel--embedded');
     await expect(plan).toBeVisible({ timeout: 30000 });
-    await expect(plan.getByRole('heading', { name: 'Share applied designs', exact: true })).toBeVisible();
+    await expect(sheet.getByRole('heading', { name: 'Designs', exact: true })).toBeVisible();
+    await expect(shareTab).toHaveAttribute('aria-selected', 'true');
     await expect(plan.locator('.share-plan-progress')).toHaveCount(0, { timeout: 30000 });
     await test.info().attach('applied-design-sharing', { body: await plan.screenshot(), contentType: 'image/png' });
     const highlightAll = plan.getByRole('button', { name: 'All', exact: true });
@@ -117,6 +119,8 @@ test.describe('proposal button controls: modal and alternate states @features', 
     const status = plan.locator('.share-plan-status');
     const row = plan.locator('.share-plan-row').first();
     const selected = row.locator('input[type="checkbox"]');
+    await selected.focus();
+    await expect(selected).toBeFocused();
     await selected.uncheck();
     await expect(status).toHaveText('Select at least one design to share.');
     await selected.check();
@@ -135,13 +139,16 @@ test.describe('proposal button controls: modal and alternate states @features', 
       const record = w.proposalStorage.getProposal(key);
       return { published: record.published.cid, current: w.DesignSync.publishedCid(record) };
     }, id)).toEqual({ published: cid, current: cid });
-    const url = `${new URL(page.url()).origin}/designs/${cid}?city=zg&3d&lang=en`;
-    await expect(link).toHaveValue(url);
+    const url = new URL(await link.inputValue());
+    expect(url.pathname).toBe(`/designs/${cid}`);
+    expect(url.searchParams.get('city')).toBe('zagreb');
+    expect(url.searchParams.get('lang')).toBe('en');
+    expect(url.searchParams.get('at')).toBe(await page.evaluate(() => (window as any).MapShare.capture(window).at));
     await expect(status).toHaveText('');
     await plan.getByRole('button', { name: 'Copy URL', exact: true }).click();
-    await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(url);
-    await plan.getByRole('button', { name: 'Close', exact: true }).click();
-    await expect(plan).toBeHidden();
+    await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(url.toString());
+    await page.keyboard.press('Escape');
+    await expect(sheet).toBeHidden();
   });
 
   test('proposal list epoch buttons move the cumulative timeline and restore all years', async ({ mockApi: page }) => {

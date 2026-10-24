@@ -278,8 +278,10 @@ function renderProposalListModal() {
 
     modal.innerHTML = `
         <div class="proposal-list-modal-content">
-            ${sourceToggleHtml}
-            ${filtersToggleHtml}
+            <div class="proposal-list-toolbar">
+                ${sourceToggleHtml}
+                ${filtersToggleHtml}
+            </div>
             ${controlsHtml}
             <div class="proposal-list-modal-body">
                 <div id="proposals-list" class="proposal-tab-content">

@@ -4,7 +4,7 @@
 // freezes the rule's stored massing at its maximum height. Geometry is inspected read-only from the
 // rendered Leaflet outline, the active design draft and the stored proposals.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, showProposal, proposalState, clickMapPoint, createBuilding, closeParcel, showSelectionDesignTab } from '../helpers/runtime';
+import { openCity, openParcel, showProposal, proposalState, clickMapPoint, createBuilding, closeParcel, showSelectionDesignTab, openBlockEditor } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import type { Page } from '@playwright/test';
 
@@ -306,7 +306,7 @@ test.describe('Building-family placement @features', () => {
   test('a block dragged off its parcels can be put back; manual vertex edits disable footprint sliders and Undo restores the prior mode', async ({ mockApi: page }) => {
     await openCity(page);
     await openParcel(page, 'proposals');
-    await page.locator('.parcel-build-btn--buildings').click();
+    await openBlockEditor(page);
     await expect(page.locator('#btn-blockify-done')).toBeEnabled({ timeout: 20_000 });
 
     const beforeMove = JSON.parse(await previewGeometry(page)).canonical;

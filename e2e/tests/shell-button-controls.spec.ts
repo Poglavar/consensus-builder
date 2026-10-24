@@ -6,7 +6,9 @@ import { installAreaMonitorSpaFallback } from '../helpers/mocks/area-monitor-ser
 test('Settings opens the command palette through its own button', async ({ mockApi: page }) => {
   await openCity(page);
   await page.locator('#settings-button').click();
-  await page.locator('#command-palette-button').click();
+  const navigation = page.locator('#settings-sheet details[data-section="navigation"]');
+  await navigation.locator('> summary').click();
+  await navigation.locator('#command-palette-button').click();
   await expect(page.locator('.command-palette-backdrop')).toBeVisible();
   await page.locator('.command-palette__input').fill('Measure');
   await page.locator('.command-palette__item').filter({ hasText: /Measure/ }).first().click();
@@ -21,6 +23,7 @@ test('Settings opens the command palette through its own button', async ({ mockA
 test('watched-area Undo and Cancel edit and discard the actual drawn vertices', async ({ mockApi: page }) => {
   await openCity(page);
   await page.locator('#activity-button').click();
+  await page.locator('#activity-watched-tab').click();
   await page.locator('#areaMonitorDrawButton').click();
   await expect(page.locator('#area-monitor-drawing-toolbar')).toBeVisible();
   await clickMapPoint(page, 15.98195, 45.8001);
@@ -44,6 +47,7 @@ test('Cancel on a completed watched area discards the unsaved monitor', async ({
   });
   await openCity(page);
   await page.locator('#activity-button').click();
+  await page.locator('#activity-watched-tab').click();
   await page.locator('#areaMonitorDrawButton').click();
   for (const [lng, lat] of [[15.98195, 45.8001], [15.98245, 45.8001], [15.98245, 45.8004], [15.98195, 45.8001]]) {
     await clickMapPoint(page, lng, lat);
@@ -80,8 +84,8 @@ test('the expanded technical status buttons copy the log and follow a proposal e
   const proposalTitle = await page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.title, proposalId);
   // Seed a real status record using the same boundary used by background proposal events.
   await page.evaluate(id => (window as any).updateStatus('Button coverage park event', { proposalId: id }), proposalId);
-  await page.locator('#activity-button').click();
-  const technical = page.locator('#activity-sheet details:has(> summary[data-i18n-key="mapShell.reorg.statusLog"])');
+  await page.locator('#settings-button').click();
+  const technical = page.locator('#settings-sheet details[data-section="diagnostics"]');
   await technical.locator('> summary').click();
   await technical.locator('.status-bar').click();
   await expect(technical.locator('#status-log-expanded')).toBeVisible();
@@ -93,7 +97,7 @@ test('the expanded technical status buttons copy the log and follow a proposal e
   await dialog.getByRole('button', { name: 'Button coverage park event', exact: true }).click();
   await expect(dialog).toBeHidden();
   await expect.poll(() => page.evaluate(() => (window as any).currentlyHighlightedProposalId)).toBe(proposalId);
-  const inspector = page.locator('#planning-inspector');
-  await expect(inspector.getByRole('heading', { name: proposalTitle, exact: true })).toBeVisible();
+  const details = page.locator('#proposal-details-panel');
+  await expect(details.getByText(proposalTitle, { exact: true })).toBeVisible();
   await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection?.getKey?.())).toBe(proposalId);
 });

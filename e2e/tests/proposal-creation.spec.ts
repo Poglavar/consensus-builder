@@ -52,6 +52,17 @@ test.describe('Proposal creation and map lifecycle @features', () => {
         await showSelectionDesignTab(page);
       }
       await page.locator(`.parcel-build-btn--${type}`).click();
+      if (type === 'buildings') {
+        const prompt = page.getByRole('alertdialog');
+        if (await prompt.isVisible().catch(() => false)) {
+          await prompt.getByRole('button', { name: 'No, just this parcel' }).click();
+        }
+      }
+      if (type === 'single') {
+        const landAcceptance = page.locator('#single-land-take [data-land-accept]');
+        await expect(landAcceptance).toBeEnabled({ timeout: 15_000 });
+        await landAcceptance.check();
+      }
       await expect(page.locator(done)).toBeVisible();
       await expect(page.locator(done)).toBeEnabled({ timeout: 15000 });
       await page.locator(done).click();

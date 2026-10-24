@@ -13,7 +13,7 @@ for (const width of [1280, 390]) {
         host.style.visibility = 'hidden';
         document.querySelector('#map-container')!.append(host);
         const surfaces = [
-          ['cb-dialog', ''], ['click-stack__section', ''], ['info-panel', ''], ['info-panel road-analysis-modal', ''],
+          ['cb-dialog', ''], ['click-stack__card', ''], ['info-panel', ''], ['info-panel road-analysis-modal', ''],
           ['map-sheet', ''], ['map-sheet map-sheet--dock', ''], ['proposal-editor-shell', ''],
           ['on-map-editor__panel', ''], ['site-panel', ''], ['info-panel', 'site-info-panel'],
           ['urban-block-panel', ''], ['planning-inspector', ''], ['parcel-estimate-panel', ''],
@@ -27,6 +27,12 @@ for (const width of [1280, 390]) {
         const expected = getComputedStyle(reference).backgroundColor;
         const blur = `blur(${getComputedStyle(document.documentElement).getPropertyValue('--cb-panel-blur').trim()})`;
         const failures: string[] = [];
+        const sectionWrapper = document.createElement('div');
+        sectionWrapper.className = 'click-stack__section';
+        host.append(sectionWrapper);
+        if (getComputedStyle(sectionWrapper).backgroundColor !== 'rgba(0, 0, 0, 0)') {
+          failures.push('click-stack__section wrapper: ' + getComputedStyle(sectionWrapper).backgroundColor);
+        }
         for (const [className, id] of surfaces) {
           const element = document.createElement('div');
           element.className = className;

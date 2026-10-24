@@ -9,7 +9,7 @@ import vm from 'node:vm';
 
 const source = readFileSync(new URL('../../frontend/js/proposals/drill-ui.js', import.meta.url), 'utf8');
 
-function loadDrill({ blocked = false } = {}) {
+function loadDrill({ blocked = false, pickActive = false } = {}) {
     const mapHandlers = {};
     const feature = { type: 'Feature', properties: { parcelId: 'P-1' }, geometry: { type: 'Polygon', coordinates: [] } };
     const proposal = { kind: 'proposal', key: 'proposal-1', proposal: { proposalId: 'proposal-1', title: 'Proposal' } };
@@ -22,6 +22,7 @@ function loadDrill({ blocked = false } = {}) {
         turf: { booleanPointInPolygon: () => true },
         __drillStack: { buildDrillStack: vi.fn(() => [proposal, parcel]) },
         __mapEditLock: { blocksSelection: () => blocked },
+        MapPick: { active: () => pickActive },
         ClickStack: { handleClick: vi.fn(() => true) },
         selectAndHighlightProposal: vi.fn(),
         selectParcel: vi.fn()
@@ -91,5 +92,9 @@ describe('drill entry points hand map clicks to the click stack', () => {
         const locked = loadDrill({ blocked: true });
         locked.mapHandlers.click({ latlng: { lat: 3, lng: 4 } });
         expect(locked.context.ClickStack.handleClick).not.toHaveBeenCalled();
+
+        const picker = loadDrill({ blocked: true, pickActive: true });
+        picker.mapHandlers.click({ latlng: { lat: 3, lng: 4 } });
+        expect(picker.context.ClickStack.handleClick).toHaveBeenCalledWith({ lat: 3, lng: 4 });
     });
 });

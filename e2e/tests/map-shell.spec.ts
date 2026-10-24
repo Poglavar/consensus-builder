@@ -171,28 +171,35 @@ test.describe('Map shell sheets @features', () => {
     await expect(page.locator(`${selectors.activitySheet} #areaMonitorDrawButton`)).toBeVisible();
   });
 
-  test('the simulation runs from the Activity sheet and marks the Activity button while it runs', async ({ mockApi: page }) => {
+  test('Settings simulation enablement, play/pause and Activity running indicator stay in sync', async ({ mockApi: page }) => {
     const dot = page.locator(selectors.simulationRunningDot);
     await expect(dot).toBeHidden();
 
-    await page.locator(selectors.activityButton).click();
+    await page.locator(selectors.settingsButton).click();
     const section = page.locator(selectors.simulationSection);
     await expect(section).toBeVisible();
-    // The Simulation section is folded (a <details>) since fbe3758d; its settings fold inside it.
+    // Simulation is a top-level Settings section; its controls are a regular content div.
     await expect(section).not.toHaveAttribute('open');
     await page.locator(selectors.simulationSummary).click();
     await expect(section).toHaveAttribute('open', '');
-    await expect(page.locator(selectors.simulationSettings)).not.toHaveAttribute('open');
+    const gameEnabled = page.locator('#gameCheckbox');
+    await gameEnabled.check();
+    await expect(gameEnabled).toBeChecked();
+    await expect(page.locator(selectors.simulationSettings)).toBeVisible();
 
     await page.locator(selectors.simulationPlayPause).click();
     await expect(page.locator(selectors.simulationPlayPause)).toHaveAttribute('aria-pressed', 'true');
     await page.keyboard.press('Escape');
-    await expect(page.locator(selectors.activitySheet)).toBeHidden();
+    await expect(page.locator(selectors.settingsSheet)).toBeHidden();
     await expect(dot).toBeVisible();
     await expect(dot).toHaveAttribute('aria-label', 'Simulation running');
 
-    await page.locator(selectors.activityButton).click();
+    await page.locator(selectors.settingsButton).click();
+    // MapShell intentionally resets Settings accordions on every open.
+    await expect(section).not.toHaveAttribute('open');
+    await page.locator(selectors.simulationSummary).click();
     await expect(section).toHaveAttribute('open', '');
+    await expect(gameEnabled).toBeChecked();
     await page.locator(selectors.simulationPlayPause).click();
     await expect(page.locator(selectors.simulationPlayPause)).toHaveAttribute('aria-pressed', 'false');
     await expect(dot).toBeHidden();

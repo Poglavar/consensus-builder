@@ -863,10 +863,11 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
 
 @media (max-width: 767.98px) {
     /* A full-size tap target on a phone. */
-    .activity-simulation-play.btn-icon {
-        width: var(--cb-control-height);
-        min-width: var(--cb-control-height);
-        min-height: var(--cb-control-height);
+    #settings-sheet .activity-simulation-play.btn-icon {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
     }
 
 }

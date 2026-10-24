@@ -81,7 +81,7 @@ test.describe('Parcel inspector @core', () => {
   test('tabs open the palette and tools; close dismisses the inspector', async ({ mockApi: page }) => {
     await openCity(page);
     await openParcel(page);
-    await page.locator('#parcel-info-panel').getByRole('tab', { name: 'Propose', exact: true }).click();
+    await page.locator('#parcel-info-panel').getByRole('tab', { name: 'Design', exact: true }).click();
     await expect(page.locator('#propose-content .parcel-build-palette')).toBeVisible();
     // 14 tools: the Offer tile left with owner offers (M2).
     await expect(page.locator('.parcel-build-btn')).toHaveCount(14);

@@ -28,6 +28,10 @@ test.describe('Data sources @features', () => {
     await openCity(page);
     await page.locator('#settings-button').click();
 
+    // The parcel source notice lives in the expanded Information section.
+    const info = page.locator('#settings-sheet details.accordion-section[data-section="info"]');
+    if (!(await info.evaluate((details: HTMLDetailsElement) => details.open))) await info.locator(':scope > summary').click();
+    await expect(info).toHaveAttribute('open', '');
     // Where this city's parcels come from (catalog metadata, mocked by the fixture).
     await page.locator('#parcel-source-notice-button').click();
     const notice = page.getByRole('alertdialog');
@@ -59,16 +63,19 @@ test.describe('Data sources @features', () => {
     expect(discoverBodies[1]).toMatchObject({ url: URL_IN, city: 'zagreb', heightUnit: 'ft' });
     await expect(result.getByLabel('Height unit')).toHaveValue('ft');
 
-    // Capture the provider fetch triggered by the source-switch reload, before it can be cached.
+    // Keep the page navigation separate from the first provider fetch on the selected source.
     const reloaded = page.waitForNavigation();
-    const footprints = page.waitForRequest(request => request.url().endsWith('/buildings/footprints') && request.method() === 'POST');
     await dialog.getByRole('button', { name: 'Use this source' }).click();
     await reloaded; await waitForMapReady(page);
     expect(new URL(page.url()).searchParams.get('buildingSource')).toBe(sourceId('ft'));
     expect(await page.evaluate(() => (window as any).CityConfigManager.getBuildingSourceId())).toBe(sourceId('ft'));
     expect(await page.evaluate(() => Object.keys(localStorage).some(key => key.startsWith('cb_building_source:') && key.endsWith(':zagreb')))).toBe(true);
 
-    // The initial provider load uses the visitor's selected source; the place, not a city name, tells the server where
+    // Building footprints are fetched only when their layer is enabled. Trigger the first request
+    // after the source-switch reload so it proves that the selected source is sent.
+    await openLayerSection(page, 'buildings');
+    const footprints = page.waitForRequest(request => request.url().endsWith('/buildings/footprints') && request.method() === 'POST');
+    await page.locator('#showBuildings').check();
     const footprintsBody = (await footprints).postDataJSON();
     expect(footprintsBody).toMatchObject({ source: sourceId('ft') });
     expect(footprintsBody.city).toBeUndefined();
@@ -80,7 +87,7 @@ test.describe('Data sources @features', () => {
     await dialog.getByRole('button', { name: 'Use the city default' }).click();
     await backToDefault; await waitForMapReady(page);
     expect(new URL(page.url()).searchParams.has('buildingSource')).toBe(false);
-    expect(await page.evaluate(() => (window as any).CityConfigManager.getBuildingSourceId())).toBeUndefined();
+    expect(await page.evaluate(() => (window as any).CityConfigManager.getBuildingSourceId())).toBe('gdi-3d');
     expect(await page.evaluate(() => Object.keys(localStorage).some(key => key.startsWith('cb_building_source:') && key.endsWith(':zagreb')))).toBe(false);
   });
 

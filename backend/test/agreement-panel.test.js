@@ -366,6 +366,7 @@ describe('Agreements list rows', () => {
         expect(html).toContain('A &amp; B');
         expect(list.rowsHtml([])).toContain('No agreements yet. Apply designs, then create one.');
         expect(list.bodyHtml('')).toContain('<button type="button" class="btn btn-primary" data-agreement-action="create">');
+        expect(list.bodyHtml('', keys)).toContain('<button type="button" class="btn btn-secondary" data-agreement-action="minted">agreement.minted.title</button>');
     });
 });
 

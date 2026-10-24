@@ -1,4 +1,4 @@
-// Phone regressions: useful list space, direct map sharing, published layouts and absent permitted sources.
+// Phone regressions: useful list space, integrated Designs sharing, published layouts and absent permitted sources.
 import { test, expect } from '../helpers/fixtures';
 import { openCity, stubBasemapTiles, PARCEL_ID, openOnAnotherDevice, chooseProfileName, showProposal } from '../helpers/runtime';
 import { applyLayout, editorOpen, editorSave, editorClosed, landLoaded, agreementPanel, panelStatus } from '../helpers/agreements';
@@ -32,37 +32,46 @@ test('Designs gives most of a phone screen to cards with actions always visible'
   await expect(sheet.locator('.proposal-list-item').last()).toBeInViewport({ ratio: 1 });
 });
 
-test('Share is one tap from an empty map and offers its location without a profile gate', async ({ mockApi: page }) => {
+test('Share tab on an empty map offers its location without a profile gate', async ({ mockApi: page }) => {
   await openCity(page);
   const at = await page.evaluate(() => { const w = window as any; const c = w.map.getCenter(); return [c.lat, c.lng, w.map.getZoom()].join(','); });
-  await page.locator('#shareAppliedProposalsButton').click();
-  const input = page.locator('.share-modal .share-plan-link__input');
+  await page.locator('#proposals-button').click();
+  const sheet = page.locator('#proposals-sheet');
+  await sheet.getByRole('tab', { name: 'Share', exact: true }).click();
+  const share = sheet.locator('#designs-share');
+  await expect(share.locator('.share-plan-panel--embedded')).toBeVisible();
+  const input = share.locator('.share-plan-link__input');
   await expect(input).toBeVisible();
   const url = new URL(await input.inputValue());
   expect(url.searchParams.get('at')).toBe(at);
   expect(url.searchParams.has('3d')).toBe(false);
-  await expect(page.locator('#proposals-sheet')).toBeHidden();
+  await expect(sheet).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(sheet).toBeHidden();
 });
 
 test('a published parcel layout starts checked and produces its existing link; an unpublished layout explains the agreement path', async ({ mockApi: page, browser, baseURL }) => {
   test.setTimeout(120_000);
   const { layoutId } = await applyLayout(page);
-  await page.locator('#shareAppliedProposalsButton').click();
-  const panel = page.locator('.share-plan-panel');
+  await page.locator('#proposals-button').click();
+  const sheet = page.locator('#proposals-sheet');
+  await sheet.getByRole('tab', { name: 'Share', exact: true }).click();
+  const shareTab = sheet.locator('#designs-share');
+  const panel = shareTab.locator('.share-plan-panel--embedded');
   const row = panel.locator('.share-plan-row');
   await expect(row.locator('input')).toBeChecked();
   await expect(row.locator('input')).toBeEnabled();
   await expect(row.locator('.share-plan-row__refusal')).toBeVisible();
   await expect(panel.locator('.share-plan-create-agreement')).toBeVisible();
   await expect(panel.locator('.share-plan-link')).toBeHidden();
-  await panel.locator('.close-circle-btn').click();
+  await sheet.getByRole('tab', { name: 'Designs', exact: true }).click();
   const content = await page.evaluate(id => (window as any).DesignRecord.published((window as any).proposalStorage.getProposal(id)), layoutId);
   const cid = fileDesign(pageIndex(page), content);
   await page.evaluate(({ id, cid }) => {
     const w = window as any;
     w.DesignSync.markPublished(w.proposalStorage.getProposal(id), { cid, apiBase: w.resolveBackendBaseUrl(), publishedAt: new Date().toISOString() });
   }, { id: layoutId, cid });
-  await page.locator('#shareAppliedProposalsButton').click();
+  await sheet.getByRole('tab', { name: 'Share', exact: true }).click();
   await expect(row.locator('input')).toBeChecked();
   await expect(row.locator('input')).toBeEnabled();
   await expect(row.locator('.share-plan-row__published')).toBeVisible();
@@ -80,7 +89,8 @@ test('a published parcel layout starts checked and produces its existing link; a
     }, cid), { timeout: 60_000 }).toBe(true);
   } finally { await receiver.context.close(); }
   expect(pageIndex(page).requests.filter(request => request.method === 'POST' && request.path !== '/designs/batch')).toEqual([]);
-  await panel.locator('.close-circle-btn').click();
+  await page.keyboard.press('Escape');
+  await expect(sheet).toBeHidden();
   await showProposal(page, layoutId);
   await expect(page.locator('#proposal-details-panel .btn-share-proposal')).toBeEnabled();
   await expect(page.locator('#proposal-publish-later-note')).toHaveCount(0);
@@ -108,8 +118,10 @@ test('2D massing puts Permitted first and disables it cleanly when there is no s
 test('a blocked layout can create and publish its agreement, then Share includes it without deselecting', async ({ mockApi: page }) => {
   test.setTimeout(150_000);
   await applyLayout(page);
-  await page.locator('#shareAppliedProposalsButton').click();
-  const share = page.locator('.share-plan-panel');
+  await page.locator('#proposals-button').click();
+  const sheet = page.locator('#proposals-sheet');
+  await sheet.getByRole('tab', { name: 'Share', exact: true }).click();
+  const share = sheet.locator('#designs-share .share-plan-panel--embedded');
   await expect(share.locator('.share-plan-status')).toContainText('or deselect it');
   await share.locator('.share-plan-create-agreement').click();
   const editor = await editorOpen(page, 'Create agreement');
@@ -129,12 +141,16 @@ test('a blocked layout can create and publish its agreement, then Share includes
   await chooseProfileName(page, 'Neighbourhood author');
   await agreement.locator('[data-agreement-action="propose"]').click();
   await expect(agreement.locator('code.agreement-panel-cid')).toBeVisible({ timeout: 30_000 });
-  await agreement.locator('.mobile-dock-sheet-handle').click();
+  await agreement.locator(':scope > .mobile-dock-sheet-handle').focus();
+  await page.keyboard.press('Escape');
   await expect(agreement).toBeHidden();
-  await page.locator('#shareAppliedProposalsButton').click();
+  await page.locator('#proposals-button').click();
+  await sheet.getByRole('tab', { name: 'Share', exact: true }).click();
   await expect(share.locator('.share-plan-row input')).toBeChecked();
   await expect(share.locator('.share-plan-row__published')).toBeVisible();
   await expect(share.locator('.share-plan-link__input')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(sheet).toBeHidden();
 });
 
 test('wrong-city choices have equal touch areas on a phone', async ({ mockApi: page }) => {

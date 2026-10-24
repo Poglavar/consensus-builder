@@ -3,6 +3,7 @@ import { test, expect } from '../helpers/fixtures';
 import { openCity, createSpace, createBuilding, proposalState } from '../helpers/runtime';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
 import { surveyResponse } from '../helpers/mocks/survey-data';
+import { openLayerSection } from '../helpers/layers';
 import { Page } from '@playwright/test';
 
 async function enter3D(page: Page) {
@@ -222,13 +223,15 @@ test.describe('3D rendering and controls @features', () => {
     await expect.poll(async () => Number(await priceSlider.inputValue())).not.toBe(initialPrice);
     await expect.poll(async () => await valueReadout.textContent()).not.toBe(initialValueReadout);
     expect(await camera()).toEqual(before);
-    // The first click puts the parcel in view; a second click on it isolates it and dims the rest.
+    // Repeating the selected parcel retains its focus and scene context; it does not isolate it.
     await page.mouse.click(point.x, point.y);
-    await expect(page.locator('.three-mode-isolation-banner')).toBeVisible();
+    await expect(page.locator('.three-mode-isolation-banner')).toBeHidden();
+    await expect(page.locator('#three-click-stack')).toBeVisible();
+    await expect(parcelPanel).toBeVisible();
     expect(await camera()).toEqual(before);
     const buildings = await sceneBuildings(page);
     expect(buildings).toHaveLength(2);
-    expect(buildings.map(building => building.color)).not.toEqual(originalBuildings.map(building => building.color));
+    expect(buildings.map(building => building.color)).toEqual(originalBuildings.map(building => building.color));
     expect(await page.evaluate(() => {
       let selected = false;
       (window as any).getThreeModeInternals().scene.traverse((o: any) => {
@@ -242,11 +245,9 @@ test.describe('3D rendering and controls @features', () => {
       return count;
     });
     expect(visible).toBe(2);
-    // The banner's × ends the isolation and closes the click stack with it.
-    const banner = page.locator('.three-mode-isolation-banner');
-    await expect(banner).toBeVisible();
-    await banner.locator('.isolation-banner-close').click();
-    await expect(banner).toBeHidden();
+    // Escape clears the retained parcel view and closes its click stack.
+    await page.keyboard.press('Escape');
+    await expect(page.locator('.three-mode-isolation-banner')).toBeHidden();
     await expect(page.locator('#three-click-stack')).toBeHidden();
     expect(await camera()).toEqual(before);
     expect((await sceneBuildings(page)).map(building => building.color)).toEqual(originalBuildings.map(building => building.color));
@@ -285,6 +286,9 @@ test.describe('3D rendering and controls @features', () => {
     await openCity(page);
     await createSpace(page, 'park');
     await enter3D(page);
+    const isolation = page.locator('.three-mode-isolation-banner');
+    if (await isolation.isVisible()) await isolation.locator('.isolation-banner-close').click();
+    await expect(isolation).toBeHidden();
     await openModelLayers(page);
     await openPlanningViews(page);
     const display = page.locator('[data-planning-setting="existing"]');
@@ -491,7 +495,7 @@ test('3D suggested-existing toggle and floor cutaway change rendered floor plans
     }]),
   } }));
   await openCity(page);
-  await page.locator('#layers-button').click();
+  await openLayerSection(page, 'buildings');
   await page.locator('#showBuildings').check();
   await expect.poll(() => page.evaluate(() => (window as any).buildingFeaturePool
     ?.some((feature: any) => feature.properties?.object_id === 91001) ?? false)).toBe(true);
@@ -570,6 +574,9 @@ test('3D trees use real instanced geometry, toggle off and restore their saved p
 test('3D selection isolates a proposal and Show all restores the surrounding scene', async ({ mockApi: page }) => {
   await mockBuildingScene(page);
   await openCity(page);
+  await openLayerSection(page, 'buildings');
+  await page.locator('#showBuildings').check();
+  await closeSheets(page);
   const proposalId = await createSpace(page, 'park');
   await enter3D(page);
   // Aim the real canvas click at this proposal's rendered pick surface. A canvas-center click can
@@ -581,7 +588,7 @@ test('3D selection isolates a proposal and Show all restores the surrounding sce
   const reset = banner.locator('.isolation-banner-close');
   await expect(banner).toBeVisible();
   await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection?.getKey?.())).toBe(proposalId);
-  await expect(banner.locator('.isolation-banner-label')).toContainText(/proposal/i);
+  await expect(banner.locator('.isolation-banner-label')).toHaveText('Design view');
   const visibleBuildings = () => page.evaluate(() => {
     let count = 0;
     (window as any).getThreeModeInternals().scene.traverse((o: any) => { if (o.userData?.isNearbyBuilding3D && o.visible) count++; });

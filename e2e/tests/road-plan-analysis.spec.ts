@@ -49,6 +49,8 @@ test.describe('Government plan and road analysis controls @features', () => {
     await expect.poll(() => page.evaluate(() => (window as any).governmentRoadPlanLayer?.getLayers?.().length || 0)).toBeGreaterThan(0);
     await page.locator('#activity-button').click();
     await expect(page.locator('#activity-sheet')).toBeVisible();
+    await page.locator('#activity-watched-tab').click();
+    await expect(page.locator('#activity-watched-pane')).toBeVisible();
     await expect(page.locator('#areaMonitorFromPlanButton')).toBeEnabled();
     await page.locator('#areaMonitorFromPlanButton').click();
     await expect(page.locator('#areaMonitorFromPlanButton')).toHaveAttribute('aria-pressed', 'true');

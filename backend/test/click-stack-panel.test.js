@@ -46,6 +46,9 @@ function loadPanel({ memory = null, withEditLock = false } = {}) {
     const parcelPanel = panel('parcel-info-panel', 'info-panel right-dock-panel');
     const inspector = panel('planning-inspector', 'planning-inspector');
     inspector.hidden = true;
+    const blockInfo = panel('block-info-panel', 'right-dock-panel');
+    const agreementPanel = panel('agreement-panel', 'right-dock-panel');
+    let agreementOpen = false;
 
     const observers = [];
     class MutationObserver {
@@ -83,7 +86,7 @@ function loadPanel({ memory = null, withEditLock = false } = {}) {
         UiCommands: { commandsFor: () => [], createBrowserContext: () => ({}), labelOf: entry => entry.id, runCommand: vi.fn() },
         PlanningViews: { select: vi.fn(id => { if (id === null) inspector.hidden = true; }), isInspecting: () => !inspector.hidden,
             inspectBuilding: vi.fn(() => { inspector.hidden = false; }), selectAt: vi.fn(() => { inspector.hidden = false; }) },
-        AgreementPanel: { isOpen: () => false, close: vi.fn(), open: vi.fn() }
+        AgreementPanel: { isOpen: () => agreementOpen, close: vi.fn(), open: vi.fn() }
     };
     context.window = context;
     vm.createContext(context);
@@ -96,7 +99,9 @@ function loadPanel({ memory = null, withEditLock = false } = {}) {
         api, context, doc, storage, clock, dock, proposalPanel, parcelPanel, inspector, stackEl, section,
         // One physical click; time moves on so the next one is not the same click reaching a second layer.
         click(latlng) { clock.now += 1000; return api.handleClick(latlng); },
-        observe() { observers.forEach(observer => observer.callback([])); },
+        observe(target = null) { observers.forEach(observer => observer.callback(target ? [{ target }] : [])); },
+        blockInfo, agreementPanel,
+        setAgreementOpen(value) { agreementOpen = value; },
         kinds: () => [...(stackEl()?.querySelectorAll('.click-stack__section') || [])].map(el => el.dataset.kind)
     };
 }
@@ -188,6 +193,50 @@ describe('click stack panel: a click opens, the same click closes', () => {
         change();
         expect(h.api.isOpen()).toBe(false);
     });
+    it('keeps selected parcels aside for agreement details, then restores them when they close', () => {
+        const h = loadPanel();
+        const multi = { isActive: true, selectedParcels: new Set(['p1']),
+            showSelectionInPanel: vi.fn(() => h.parcelPanel.classList.add('visible')) };
+        h.context.multiParcelSelection = multi;
+        const change = () => h.doc.dispatchEvent({ type: 'multi-parcel-selection-change' });
+        change();
+        expect(h.api.isOpen()).toBe(true);
+        expect(multi.showSelectionInPanel).toHaveBeenCalledTimes(1);
+
+        h.setAgreementOpen(true);
+        h.observe(h.agreementPanel);
+        expect(h.api.isOpen()).toBe(false);
+        expect(multi.showSelectionInPanel).toHaveBeenCalledTimes(1);
+
+        h.setAgreementOpen(false);
+        h.observe(h.agreementPanel);
+        expect(h.api.isOpen()).toBe(true);
+        expect(h.api.current().topRef).toBe('selection:current');
+        expect(multi.showSelectionInPanel).toHaveBeenCalledTimes(2);
+    });
+
+    it('keeps selected parcels aside for a docked block panel, then restores them when it closes', () => {
+        const h = loadPanel();
+        const multi = { isActive: true, selectedParcels: new Set(['p1']),
+            showSelectionInPanel: vi.fn(() => h.parcelPanel.classList.add('visible')) };
+        h.context.multiParcelSelection = multi;
+        const change = () => h.doc.dispatchEvent({ type: 'multi-parcel-selection-change' });
+        change();
+        expect(h.api.isOpen()).toBe(true);
+        expect(multi.showSelectionInPanel).toHaveBeenCalledTimes(1);
+
+        h.blockInfo.classList.add('visible');
+        h.observe(h.blockInfo);
+        expect(h.api.isOpen()).toBe(false);
+        expect(multi.showSelectionInPanel).toHaveBeenCalledTimes(1);
+
+        h.blockInfo.classList.remove('visible');
+        h.observe(h.blockInfo);
+        expect(h.api.isOpen()).toBe(true);
+        expect(h.api.current().topRef).toBe('selection:current');
+        expect(multi.showSelectionInPanel).toHaveBeenCalledTimes(2);
+    });
+
     it('manual selection toggles live ground through a design once without opening content', () => {
         const h = loadPanel({ withEditLock: true });
         const layer = { id: 'p1' };
@@ -261,6 +310,14 @@ describe('click stack panel: a click opens, the same click closes', () => {
         expect(h.proposalPanel.parentNode).toBe(h.section('designs').querySelector('.click-stack__body'));
         // No click opened it: the first click on the design shows that spot rather than closing.
         expect(h.api.current().topRef).toBe(null);
+        // An async parcel lookup cannot replace this explicit design with geometry-only hits.
+        const { onPublished } = h.context.ClickStackHits.hitsAt.mock.calls[0][1];
+        onPublished();
+        h.observe();
+        expect(h.api.current()).toMatchObject({ expanded: 'designs', selectedKind: 'designs' });
+        expect(h.api.current().sections.find(section => section.kind === 'designs').instances[0].id).toBe('d9');
+        expect(h.proposalPanel.parentNode).toBe(h.section('designs').querySelector('.click-stack__body'));
+        expect(h.api.isOpen()).toBe(true);
         h.click(SPOT_B);
         expect(h.api.isOpen()).toBe(true);
         // In 3D the model view's own click panel owns the design.

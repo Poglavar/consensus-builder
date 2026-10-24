@@ -43,9 +43,6 @@ for (const origin of ['generated', 'user'] as const) {
       });
       w.showProposalInfo(w.proposalStorage.getProposal('conversion-title-check'));
     }, origin);
-    const inspector = page.locator('#planning-inspector');
-    await expect(inspector).toBeVisible();
-    await inspector.getByRole('button', { name: 'Proposal actions', exact: true }).click();
     await expect(page.locator('#proposal-details-panel')).toBeVisible();
     const convert = page.getByRole('button', { name: 'Convert to freeform building', exact: true });
     await expect(convert).toBeVisible();

@@ -187,7 +187,9 @@
     }
 
     function onMapClick(e) {
-        if (!e || !e.latlng || interactionBlocked()) return;
+        // MapPick owns the surface and ClickStack gives its picker priority over edit locks.
+        const mapPickActive = !!global.MapPick?.active();
+        if (!e || !e.latlng || (interactionBlocked() && !mapPickActive)) return;
         global.ClickStack.handleClick(e.latlng);
     }
 

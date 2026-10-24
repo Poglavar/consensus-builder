@@ -43,6 +43,19 @@
         return { x, clipPath: 'inset(0 ' + Math.max(0, w - x) + 'px 0 0)' };
     }
 
+    // The closest exposed centre for a 44px touch grip, with a small clearance from panels.
+    function exposedGripTop(height, preferred, intervals) {
+        const clearance = 24;
+        const candidates = [];
+        let start = clearance;
+        [...intervals, [height, height]].sort((a, b) => a[0] - b[0]).forEach(([top, bottom]) => {
+            const end = Math.min(height - clearance, top - clearance);
+            if (end >= start) candidates.push(Math.max(start, Math.min(end, preferred)));
+            start = Math.max(start, bottom + clearance);
+        });
+        return candidates.sort((a, b) => Math.abs(a - preferred) - Math.abs(b - preferred))[0] ?? null;
+    }
+
     function tileLayerSpecs(map, L) {
         const specs = [];
         const TileLayer = L && L.TileLayer;
@@ -81,11 +94,32 @@
             return el;
         });
 
+        const occluders = container.id === 'map' ? Array.from(doc.querySelectorAll(
+            '.on-map-editor__tools, .on-map-editor__panel, #click-stack .click-stack__card, #click-stack > .mobile-dock-sheet-handle, .map-shell-slot, .map-shell-cluster, .map-shell-button'
+        )) : [];
+        function positionGrip() {
+            if (container.id !== 'map') return;
+            handleEl.style.removeProperty('--map-compare-grip-top');
+            if (!root.matchMedia('(max-width: 767.98px)').matches) return;
+            const rect = container.getBoundingClientRect();
+            const x = rect.left + rect.width * percent / 100;
+            const intervals = occluders.filter(el => el.getClientRects().length > 0).map(el => el.getBoundingClientRect())
+                .filter(box => box.width > 0 && box.height > 0 && box.left < x + 24 && box.right > x - 24)
+                .map(box => [box.top - rect.top, box.bottom - rect.top]);
+            const top = exposedGripTop(rect.height, rect.height / 4, intervals);
+            // This CSS property is measured map geometry, shared by the grip and its labels.
+            if (top !== null) handleEl.style.setProperty('--map-compare-grip-top', `${top}px`);
+        }
+        const gripObserver = container.id === 'map' && typeof root.ResizeObserver === 'function'
+            ? new root.ResizeObserver(positionGrip) : null;
+        occluders.forEach(el => gripObserver?.observe(el));
+
         function applyClip() {
             if (disposed) return;
             const { x, clipPath } = clipInset(container.clientWidth, percent);
             beforeEl.style.clipPath = clipPath;
             handleEl.style.left = x + 'px';
+            positionGrip();
         }
 
         const divider = control.create({
@@ -104,6 +138,7 @@
                 if (disposed) return;
                 disposed = true;
                 divider.dispose();
+                gripObserver?.disconnect();
                 [handleEl].concat(labelEls).forEach(el => { try { el.remove(); } catch (_) { /* detached */ } });
             }
         };
@@ -181,5 +216,5 @@
         };
     }
 
-    return { FROZEN_HANDLERS, clipInset, tileLayerSpecs, attachDivider, attach };
+    return { FROZEN_HANDLERS, clipInset, exposedGripTop, tileLayerSpecs, attachDivider, attach };
 });

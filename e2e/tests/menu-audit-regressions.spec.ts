@@ -47,7 +47,7 @@ test('NYC coverage reports ground area and fits its dialog at desktop and phone 
   }
 });
 
-test('the NYC command palette respects source-hidden building rows', async ({ mockApi: page }) => {
+test('the NYC command palette respects building-source availability', async ({ mockApi: page }) => {
   await page.goto('/?city=new_york&reduceMotion=1', { waitUntil: 'domcontentloaded' });
   await waitForMapReady(page);
   await page.locator('#settings-button').click();
@@ -56,13 +56,18 @@ test('the NYC command palette respects source-hidden building rows', async ({ mo
   await page.locator('#command-palette-button').click();
   const palette = page.locator('.command-palette-backdrop');
   await expect(palette).toBeVisible();
-  for (const label of ['3D buildings (GDI)', 'Official cadastre (DGU)']) {
-    await palette.locator('input').fill(label);
-    const option = palette.getByRole('option').filter({ hasText: label }).first();
-    await expect(option).toHaveAttribute('aria-disabled', 'true');
-  }
+  await palette.locator('input').fill('Show buildings');
+  const workingProvider = palette.getByRole('option').filter({ hasText: 'Show buildings' }).first();
+  await expect(workingProvider).toBeVisible();
+  await expect(workingProvider).not.toHaveAttribute('aria-disabled', 'true');
+  await palette.locator('input').fill('Official cadastre (DGU)');
+  const dgu = palette.getByRole('option').filter({ hasText: 'Official cadastre (DGU)' }).first();
+  await expect(dgu).toBeVisible();
+  await expect(dgu).toHaveAttribute('aria-disabled', 'true');
   await palette.locator('input').fill('Map buildings (OSM)');
-  await expect(palette.getByRole('option').filter({ hasText: 'Map buildings (OSM)' }).first()).not.toHaveAttribute('aria-disabled', 'true');
+  const osm = palette.getByRole('option').filter({ hasText: 'Map buildings (OSM)' }).first();
+  await expect(osm).toBeVisible();
+  await expect(osm).not.toHaveAttribute('aria-disabled', 'true');
 });
 
 test('OSM block refresh and browsing remain palette commands when parcel blocks are unavailable', async ({ mockApi: page }) => {
@@ -135,25 +140,57 @@ test('downloading a foreign-city design from Activity discloses the reload and l
   expect(await page.evaluate(cid => (window as any).DesignSync.localCopyOf(cid), cid)).toBeNull();
 });
 
-for (const width of [1180, 390]) test(`expanded proposal filters and tools leave reachable cards at ${width}px`, async ({ mockApi: page }) => {
+for (const width of [1180, 390]) test(`Designs Browse keeps filtered draft and published cards reachable at ${width}px`, async ({ mockApi: page }) => {
   await page.setViewportSize({ width, height: 757 });
   await openCity(page);
   await page.evaluate(({ id, geometry }) => {
-    for (const title of ['List option A', 'List option B']) (window as any).proposalStorage.addProposal({ goal: 'park', title, applied: false, cadastreParcelIds: [id], geometry, structureProposal: { kind: 'park', geometry } });
+    (window as any).proposalStorage.addProposal({ goal: 'park', title: 'List option A', applied: true, cadastreParcelIds: [id], geometry, structureProposal: { kind: 'park', geometry } });
+    (window as any).proposalStorage.addProposal({ goal: 'park', title: 'List option B', applied: false, cadastreParcelIds: [id], geometry, structureProposal: { kind: 'park', geometry } });
   }, { id: PARCEL_ID, geometry: PARCEL_GEOMETRY });
+  const publishedContent = await page.evaluate(() => {
+    const w = window as any;
+    const proposal = w.proposalStorage.getAllProposals().find((item: any) => item.title === 'List option B');
+    return w.DesignRecord.published(proposal);
+  });
+  const publishedCid = fileDesign(pageIndex(page), publishedContent);
+  await page.evaluate(({ title, cid }) => {
+    const w = window as any;
+    const proposal = w.proposalStorage.getAllProposals().find((item: any) => item.title === title);
+    w.DesignSync.markPublished(proposal, { cid, apiBase: w.resolveBackendBaseUrl(), publishedAt: new Date().toISOString() });
+  }, { title: 'List option B', cid: publishedCid });
   await page.locator('#proposals-button').click();
   const sheet = page.locator('#proposals-sheet');
+  await expect(sheet.locator('#designs-browse-tab')).toHaveAttribute('aria-selected', 'true');
+  await expect(sheet.locator('#shareAppliedProposalsButton')).toBeVisible();
   await sheet.locator('.proposal-filters-toggle').click();
+  await expect(sheet.locator('#proposal-filter-applied, #proposal-filter-author')).toHaveCount(0);
+  const status = sheet.locator('#proposal-filter-publication');
+  await expect(status).toBeVisible();
+  expect(await status.locator('option').evaluateAll(options => options.map(option => (option as HTMLOptionElement).textContent?.trim())))
+    .toEqual(['Draft & published', 'Draft', 'Published']);
   const list = sheet.locator('.proposal-list-modal-body');
   expect(await list.evaluate(el => el.clientHeight)).toBeGreaterThanOrEqual(100);
-  const details = sheet.locator('.proposal-list-details-btn').first();
+  const rows = sheet.locator('.proposal-list-item');
+  await expect(rows).toHaveCount(2);
+  const draft = rows.filter({ hasText: 'List option A' });
+  const published = rows.filter({ hasText: 'List option B' });
+  await expect(draft.locator('.cb-badge--draft')).toBeVisible();
+  await expect(draft.locator('.cb-badge--applied')).toBeVisible();
+  await expect(published.locator('.cb-badge--published')).toBeVisible();
+  await expect(published.locator('.cb-badge--applied')).toHaveCount(0);
+  await status.selectOption('published');
+  await expect(rows).toHaveCount(1);
+  await expect(rows.first()).toContainText('List option B');
+  await status.selectOption('all');
+  await expect(rows).toHaveCount(2);
+  const details = draft.locator('.proposal-list-details-btn');
   await details.scrollIntoViewIfNeeded();
   await expect(details).toBeInViewport();
   await details.click();
-  await expect(page.locator('#planning-inspector')).toBeVisible();
+  await expect(page.locator('#proposal-details-panel')).toBeVisible();
 });
 
-test('phone menus open, fit the viewport and dismiss; proposal statuses use the current lifecycle', async ({ mockApi: page }) => {
+test('phone menus fit the viewport and dismiss; Designs separates publication from map application', async ({ mockApi: page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await openCity(page);
   for (const id of ['layers', 'settings', 'measurement', 'proposals', 'bets', 'activity']) {
@@ -167,15 +204,17 @@ test('phone menus open, fit the viewport and dismiss; proposal statuses use the 
     expect(box!.y + box!.height).toBeLessThanOrEqual(844);
     if (id === 'proposals') {
       await sheet.locator('.proposal-filters-toggle').click();
+      await expect(sheet.locator('#proposal-filter-applied, #proposal-filter-author')).toHaveCount(0);
       const status = sheet.locator('#proposal-filter-publication');
       await expect(status).toBeVisible();
       expect(await status.locator('option').evaluateAll(options => options.map(option => (option as HTMLOptionElement).value)))
         .toEqual(['all', 'draft', 'published']);
-      const labels = await status.locator('option').allTextContents();
-      expect(new Set(labels).size).toBe(labels.length);
+      expect((await status.locator('option').allTextContents()).map(label => label.trim()))
+        .toEqual(['Draft & published', 'Draft', 'Published']);
     }
-    await page.locator(`#${id}-button`).click();
+    await page.keyboard.press('Escape');
     await expect(sheet).toBeHidden();
+    await expect(page.locator(`#${id}-button`)).toHaveAttribute('aria-expanded', 'false');
   }
 });
 

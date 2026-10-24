@@ -63,57 +63,65 @@ test.describe('proposal button controls follow-up @features', () => {
     expect(new Set(published.map(entry => entry.mark))).toEqual(new Set(index.designs.keys()));
   });
 
-  test('click stack strips switch the cadastral parcel and the design, then the stack closes', async ({ mockApi: page }) => {
+  test('click stack context navigates design to source parcel and back to a related design', async ({ mockApi: page }) => {
     await openCity(page);
     await establishLocalProfile(page);
     await page.evaluate(async parcelId => {
       await (window as any).CadastralParcelRepository.ensureIds([parcelId]);
     }, SECOND_PARCEL_ID);
-    await page.evaluate(({ parcelIds, geometry }) => {
+    const proposalIds = await page.evaluate(({ parcelIds, geometry }) => {
       const storage = (window as any).proposalStorage;
-      // Both proposals stand on both base parcels, so the click stack lists two designs and the
-      // two cadastral parcels under them, each as a strip of chips.
+      // Both proposals stand on both base parcels, making the source/child relationships selectable.
       const footprint = {
         type: 'MultiPolygon',
         coordinates: [geometry.coordinates, (window as any).CadastralParcelRepository.get(parcelIds[1]).geometry.coordinates],
       };
-      for (const [index, goal] of ['park', 'square'].entries()) {
-        storage.addProposal({
-          proposalId: `drill-stack-${index}`,
-          title: `Drill stack ${goal}`,
-          goal,
-          lifecycleStatus: 'Active',
-          applied: true,
-          cadastreParcelIds: parcelIds,
-          geometry: footprint,
-          structureProposal: { kind: goal, geometry: footprint, applied: true },
-        });
-      }
+      const ids = ['park', 'square'].map((goal, index) => storage.addProposal({
+        proposalId: `drill-stack-${index}`,
+        title: `Drill stack ${goal}`,
+        goal,
+        lifecycleStatus: 'Active',
+        applied: true,
+        cadastreParcelIds: parcelIds,
+        geometry: footprint,
+        structureProposal: { kind: goal, geometry: footprint, applied: true },
+      }));
       (window as any).updateProposalLayer();
+      return ids;
     }, { parcelIds: [PARCEL_ID, SECOND_PARCEL_ID], geometry: PARCEL_GEOMETRY });
     await clickMapPoint(page, 15.9822, 45.80025);
 
     const stack = page.locator('#click-stack');
     await expect(stack).toBeVisible();
-    const parcels = stack.locator('.click-stack__section[data-kind="parcels"]');
-    const parcelChips = parcels.locator('.click-stack__chip');
-    await expect(parcelChips).toHaveCount(2);
-    await expect(parcelChips.nth(0)).toHaveAttribute('aria-pressed', 'true');
-    await parcelChips.nth(1).click();
-    await expect(parcelChips.nth(1)).toHaveAttribute('aria-pressed', 'true');
-    await expect(parcels.locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'true');
-    await expect(parcels.locator('#parcel-info-panel')).toBeVisible();
-    await expect(page.locator('#parcel-info-title')).toContainText(SECOND_PARCEL_ID);
-
-    // The designs' strip: choosing the other design expands the designs section on it.
     const designs = stack.locator('.click-stack__section[data-kind="designs"]');
-    await expect(designs.locator('.click-stack__row-title')).toHaveText('Designs (2)');
-    const other = designs.locator('.click-stack__chip[aria-pressed="false"]');
-    const otherId = await other.getAttribute('data-id');
-    await other.click();
-    await expect(designs.locator(`.click-stack__chip[data-id="${otherId}"]`)).toHaveAttribute('aria-pressed', 'true');
-    await expect(designs.locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'true');
-    await expect(parcels.locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'false');
+    await expect(designs).toHaveClass(/is-selected/);
+    await expect(designs.locator('.click-stack__row-title')).toHaveText('Design');
+    const sourceParcels = designs.locator('.click-stack__choices[data-kind="parcels"]');
+    await expect(sourceParcels.locator('.click-stack__choice-count')).toHaveText('(2)');
+    await sourceParcels.locator(`.click-stack__chip[data-id="${SECOND_PARCEL_ID}"]`).click();
+
+    const parcels = stack.locator('.click-stack__section[data-kind="parcels"]');
+    await expect(parcels).toHaveClass(/is-selected/);
+    await expect(parcels.locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'true');
+    await expect(page.locator('#parcel-info-panel')).toBeVisible();
+    await expect(page.locator('#parcel-info-title')).toContainText(SECOND_PARCEL_ID);
+    await expect(page.locator('path.click-stack-map-focus').first()).toBeVisible();
+    // The selected source parcel offers only its related designs above its row.
+    const relatedDesigns = parcels.locator('.click-stack__choices[data-kind="designs"]');
+    await expect(relatedDesigns.locator('.click-stack__choice-count')).toHaveText('(2)');
+    const chosenDesign = relatedDesigns.locator(`.click-stack__chip[data-id="${proposalIds[0]}"]`);
+    await chosenDesign.click();
+
+    await expect(designs).toHaveClass(/is-selected/);
+    await expect(designs.locator('.click-stack__row-title')).toHaveText('Design');
+    await expect(page.locator('#proposal-details-panel')).toBeVisible();
+    await expect(page.locator('#proposal-details-panel')).toContainText('Drill stack park');
+    await expect.poll(() => page.evaluate(() => (window as any).currentlyHighlightedProposalId)).toBe(proposalIds[0]);
+    // The source-to-design strip is gone from the collapsed parcel section after selecting its child.
+    await expect(parcels.locator('.click-stack__choices[data-kind="designs"]')).toHaveCount(0);
+    // The selected design has no sibling-design strip; its source-parcel context remains below it.
+    await expect(designs.locator('.click-stack__choices[data-kind="designs"]')).toHaveCount(0);
+    await expect(designs.locator('.click-stack__choices[data-kind="parcels"] .click-stack__choice-count')).toHaveText('(2)');
     await page.keyboard.press('Escape');
     await expect(stack).toBeHidden();
   });

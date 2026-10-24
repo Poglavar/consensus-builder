@@ -3,11 +3,18 @@ import { selectNativeOption } from '../helpers/controls';
 // Purpose: cover real editor buttons whose effects are not asserted by the broad workflow specs.
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
-import { openCity, openParcel, drawCorridor, showProposal, proposalState, clickMapPoint, createSpace, runParcelCommand, openParcelTabAt, closeParcel, showSelectionDesignTab } from '../helpers/runtime';
+import { openCity, openParcel, drawCorridor, showProposal, proposalState, clickMapPoint, createSpace, runParcelCommand, openParcelTabAt, closeParcel, showSelectionDesignTab, openBlockEditor } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { surveyResponse } from '../helpers/mocks/survey-data';
 
 const BLOCK_PARCEL_IDS = ['HR-335754-1234', 'HR-335754-1235', 'HR-335754-1236', 'HR-335754-1237', 'HR-335754-1238'];
+
+async function acceptSingleLandTake(page: any) {
+  const acceptance = page.locator('#single-land-take [data-land-accept]');
+  await expect(acceptance).toBeVisible();
+  await expect(acceptance).toBeEnabled({ timeout: 20_000 });
+  await acceptance.check();
+}
 
 async function openRowHouseEditor(page: any) {
   await installLayerDatasets(page);
@@ -62,6 +69,7 @@ test.describe('Editor button effects @features', () => {
     await page.locator('.parcel-build-btn--single').click();
     const placement = page.locator('#single-building-editor');
     await expect(placement.locator('.on-map-editor__panel')).toBeVisible();
+    await acceptSingleLandTake(page);
     await page.locator('#single-building-confirm').click();
     const savedId = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().slice(-1)[0]?.proposalId);
     expect(savedId).toBeTruthy();
@@ -95,6 +103,7 @@ test.describe('Editor button effects @features', () => {
     await dialog.locator('#building-upload-confirm').click();
     await expect(dialog).toHaveCount(0);
     await expect(page.locator('#single-building-editor').locator('.on-map-editor__panel')).toBeVisible();
+    await acceptSingleLandTake(page);
     await page.locator('#single-building-confirm').click();
     await expect(page.locator('#single-building-editor')).toHaveCount(0);
     await expect.poll(() => page.evaluate(() => (window as any).pendingBuildingProposalContext?.buildingFeature?.properties?.source)).toBe('upload');
@@ -167,6 +176,7 @@ test.describe('Editor button effects @features', () => {
     await expect(clockwise).toBeEnabled();
     await clockwise.click();
     await expect.poll(() => footprint.getAttribute('d')).not.toBe(counterclockwisePath);
+    await acceptSingleLandTake(page);
     await page.locator('#single-building-confirm').click();
     await expect(modal).toHaveCount(0);
     // Done saved the uploaded footprint, turned both ways, as an applied freeform design: a four-corner
@@ -211,7 +221,7 @@ test.describe('Editor button effects @features', () => {
   test('building and parcel-based builder Close discards, while Regenerate rerolls the shown design', async ({ mockApi: page }) => {
     await openCity(page);
     await openParcel(page, 'proposals');
-    await page.locator('.parcel-build-btn--buildings').click();
+    await openBlockEditor(page);
     const blockify = page.locator('#blockify-modal');
     await expect(blockify.locator('.on-map-editor__panel')).toBeVisible();
     await expect(page.locator('#btn-blockify-done')).toBeEnabled({ timeout: 20_000 });
@@ -220,7 +230,7 @@ test.describe('Editor button effects @features', () => {
     if (await page.locator('#parcel-info-panel').isVisible()) await closeParcel(page);
 
     await openParcel(page, 'proposals');
-    await page.locator('.parcel-build-btn--buildings').click();
+    await openBlockEditor(page);
     await expect(page.locator('#btn-blockify-done')).toBeEnabled({ timeout: 20_000 });
     await selectNativeOption(page.locator('#blockify-ruletype-select'), 'max');
     const blockPreview = page.locator('#blockify-density-footprint');
@@ -272,7 +282,7 @@ test.describe('Editor button effects @features', () => {
   test('manual building Upload GeoJSON routes the footprint into the editable Freeform tool', async ({ mockApi: page }) => {
     await openCity(page);
     await openParcel(page, 'proposals');
-    await page.locator('.parcel-build-btn--buildings').click();
+    await openBlockEditor(page);
     await expect(page.locator('#btn-blockify-done')).toBeEnabled({ timeout: 20_000 });
     const uploaded = {
       type: 'Feature', properties: { name: 'fixture manual footprint', geojsonFixture: 'manual-block' },
@@ -293,6 +303,7 @@ test.describe('Editor button effects @features', () => {
     // The import hands geometry to the ordinary Freeform editor instead of retaining the legacy Block editor.
     await expect(page.locator('#single-building-editor .on-map-editor__panel')).toBeVisible();
     await expect(page.locator('#map-container .polygon-geometry-editor__vertex')).toHaveCount(4);
+    await acceptSingleLandTake(page);
     await page.locator('#single-building-confirm').click();
     await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((p: any) =>
       p.geometry?.buildings?.some((feature: any) => feature.properties?.geojsonFixture === 'manual-block')))).toBe(true);
@@ -304,7 +315,7 @@ test.describe('Editor button effects @features', () => {
   test('building manual Edit disables parametric sliders and confirms before discarding the manual shape', async ({ mockApi: page }) => {
     await openCity(page);
     await openParcel(page, 'proposals');
-    await page.locator('.parcel-build-btn--buildings').click();
+    await openBlockEditor(page);
     const modal = page.locator('#blockify-modal');
     await expect(modal.locator('.on-map-editor__panel')).toBeVisible();
     if (!(await page.locator('#blockify-manual-toggle').isVisible())) await page.locator('#blockify-modal .on-map-editor__more-options > summary').click();

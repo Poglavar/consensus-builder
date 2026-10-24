@@ -53,7 +53,7 @@ test.describe('proposal detail button controls @features', () => {
     await expect(relatedButton).toBeVisible();
     await relatedButton.click();
     await expect.poll(() => page.evaluate(() => (window as any).PlanningViews.getSelected()?.proposalId)).toBe(relatedId);
-    await expect(page.locator('#planning-inspector')).toContainText('Related plan');
+    await expect(page.locator('#proposal-details-panel')).toContainText('Related plan');
     await showExpandedProposal(page, relatedId);
     await openLandSection(page);
     // The related design lists the source design back.
@@ -94,20 +94,32 @@ test.describe('proposal detail button controls @features', () => {
     const [cid] = [...index.designs.keys()];
     const link = `${new URL(page.url()).origin}/designs/${cid}?city=zg&3d&lang=en`;
     await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(link);
+    const individualLink = new URL(link);
+    expect(individualLink.pathname).toBe('/designs/' + cid);
     expect(index.requests.filter(request => request.method === 'POST').map(request => request.path)).toEqual(['/pins', '/designs']);
     await expect(page.locator(`#proposal-details-content [data-proposal-published-cid="${cid}"]`)).toBeAttached();
 
     // The whole applied plan: its row is already published, and the selection's link is the same.
     await page.locator('#proposals-button').click();
-    const actions = page.locator('#proposal-list-actions');
-    await page.locator('#shareAppliedProposalsButton').click();
-    const plan = page.locator('.share-plan-panel');
+    const sheet = page.locator('#proposals-sheet');
+    const currentView = await page.evaluate(() => (window as any).MapShare.capture(window));
+    await sheet.getByRole('tab', { name: 'Share', exact: true }).click();
+    const plan = sheet.locator('#designs-share .share-plan-panel--embedded');
     await expect(plan).toBeVisible({ timeout: 30000 });
     await expect(plan.locator('.share-plan-progress')).toHaveCount(0, { timeout: 30000 });
     const row = plan.locator('.share-plan-row').filter({ hasText: /park/i });
     await expect(row.locator('.share-plan-row__published')).toBeVisible();
     await expect(row.getByRole('button', { name: 'Publish', exact: true })).toBeHidden();
-    await expect(plan.locator('.share-plan-link__input')).toHaveValue(link);
+    const mapShareUrl = new URL(await plan.locator('.share-plan-link__input').inputValue());
+    expect(mapShareUrl.pathname).toBe(individualLink.pathname);
+    expect(mapShareUrl.searchParams.get('at')).toBe(currentView.at);
+    expect(mapShareUrl.searchParams.get('city')).toBe(currentView.city);
+    expect(mapShareUrl.searchParams.get('lang')).toBe(currentView.language);
+    expect(mapShareUrl.searchParams.has('3d')).toBe(currentView.mode === 'model');
+    expect(mapShareUrl.searchParams.has('photo')).toBe(currentView.mode === 'photo');
+    for (const [key, value] of Object.entries(currentView.settings || {})) {
+      expect(mapShareUrl.searchParams.get(key)).toBe(String(value));
+    }
 
     const publishedMode = plan.getByRole('button', { name: 'Published', exact: true });
     await publishedMode.click();
@@ -116,8 +128,8 @@ test.describe('proposal detail button controls @features', () => {
     await pendingMode.click();
     await expect(pendingMode).toHaveAttribute('aria-pressed', 'true');
     await expect(publishedMode).toHaveAttribute('aria-pressed', 'false');
-    await plan.getByRole('button', { name: 'Close', exact: true }).click();
-    await expect(plan).toBeHidden();
+    await page.keyboard.press('Escape');
+    await expect(sheet).toBeHidden();
     // Publishing went through Share alone: the panel sent nothing.
     expect(index.requests.filter(request => request.method === 'POST')).toHaveLength(2);
   });

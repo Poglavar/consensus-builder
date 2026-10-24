@@ -230,6 +230,13 @@
         if (!el) throw new Error(`MapShell: control #${id} is missing`);
         const sheet = el.closest('.map-sheet');
         if (sheet) openSheet(sheet, { focus: false });
+        // A control inside an inactive tab pane cannot be revealed by opening its sheet alone.
+        // Activate the pane's labelled tab before resolving the visible focus target.
+        const tabPanel = el.closest('[role="tabpanel"]');
+        if (tabPanel?.hidden) {
+            const tab = doc.getElementById(tabPanel.getAttribute('aria-labelledby'));
+            if (typeof tab?.click === 'function') tab.click();
+        }
         const folded = el.closest('details');
         if (folded && !folded.open) folded.open = true;
         let target = el;

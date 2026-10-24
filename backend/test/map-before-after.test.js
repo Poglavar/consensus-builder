@@ -82,6 +82,16 @@ function hostMap() {
 }
 
 describe('MapBeforeAfter.clipInset', () => {
+    it('keeps the phone grip between the editor toolbar and bottom sheet as they resize', () => {
+        const top = MapBeforeAfter.exposedGripTop(844, 211, [[10, 50], [68, 313], [363, 784]]);
+        expect(top - 22).toBeGreaterThan(313);
+        expect(top + 22).toBeLessThan(363);
+        expect(MapBeforeAfter.exposedGripTop(844, 211, [[10, 50], [68, 260], [363, 784]]))
+            .toBeLessThan(top);
+        expect(MapBeforeAfter.exposedGripTop(844, 211, [[10, 50], [406, 784]])).toBe(211);
+        expect(MapBeforeAfter.exposedGripTop(844, 211, [[0, 844]])).toBeNull();
+    });
+
     it('clips the before map away from the right edge and clamps the percentage', () => {
         expect(MapBeforeAfter.clipInset(800, 25)).toEqual({ x: 200, clipPath: 'inset(0 600px 0 0)' });
         expect(MapBeforeAfter.clipInset(800, 150)).toEqual({ x: 800, clipPath: 'inset(0 0px 0 0)' });

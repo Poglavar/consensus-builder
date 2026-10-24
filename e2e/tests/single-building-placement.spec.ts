@@ -89,7 +89,22 @@ async function pointerDeltaToEastEdge(page: Page): Promise<number> {
   });
 }
 
+function landTakeAcceptControl(page: Page) {
+  return page.locator('#single-land-take [data-land-accept]');
+}
+
+async function waitForLandTakeReview(page: Page): Promise<void> {
+  await expect(landTakeAcceptControl(page)).toBeEnabled();
+}
+
+async function acknowledgeLandTake(page: Page): Promise<void> {
+  const accept = landTakeAcceptControl(page);
+  await expect(accept).toBeEnabled();
+  if (!(await accept.isChecked())) await accept.check();
+}
+
 async function finishSingle(page: Page): Promise<void> {
+  await acknowledgeLandTake(page);
   await page.locator('#single-building-confirm').click();
   await expect(page.locator(EDITOR)).toHaveCount(0, { timeout: 20000 });
 }
@@ -125,6 +140,7 @@ test.describe('Single-building placement and immutable replacement @features', (
     expect(before.ground).toBeTruthy();
 
     await dragActive(page, -190);
+    await waitForLandTakeReview(page);
     const moved = await editorDesign(page);
     expect(moved.buildings).toHaveLength(2);
     expect(moved.ground).toBeTruthy();
@@ -254,12 +270,14 @@ test.describe('Single-building placement and immutable replacement @features', (
     // Duplicating initially overlaps the original. Separate their land before expecting both
     // independent proposals to remain applied; overlapping proposals replace each other.
     await dragActive(page, 190);
+    await waitForLandTakeReview(page);
     await page.locator('#single-move-together').check();
     const before = await editorDesign(page);
     expect(await page.evaluate(buildings => (window as any).turf.intersect(buildings[0], buildings[1]), before.buildings)).toBeNull();
     const existingIds = await page.evaluate(() => (window as any).proposalStorage.getAllProposals()
       .map((p: any) => p.proposalId));
     await dragActive(page, 190);
+    await waitForLandTakeReview(page);
     const moved = await editorDesign(page);
     expect(moved.buildings.map(feature => feature.geometry)).not.toEqual(before.buildings.map(feature => feature.geometry));
     expect(moved.ground).not.toEqual(before.ground);
@@ -313,10 +331,16 @@ test.describe('Single-building placement and immutable replacement @features', (
   test('failed binding keeps the unsaved design and reopens it for repair', async ({ mockApi: page }) => {
     await openSingleEditor(page);
     await dragActive(page, -190);
+    await waitForLandTakeReview(page);
     const before = await editorDesign(page);
     const draftId = await page.evaluate(() => (window as any).getActiveProposalDesignDraft().id);
     await page.route('**/designs/binding', route => route.fulfill({ status: 503, json: { error: 'binding temporarily unavailable' } }));
+    await acknowledgeLandTake(page);
+    const bindingFailure = page.waitForResponse(response => response.request().method() === 'POST'
+      && new URL(response.url()).pathname.endsWith('/designs/binding'), { timeout: 20000 });
     await page.locator('#single-building-confirm').click();
+    const bindingResponse = await bindingFailure;
+    expect(bindingResponse.status()).toBe(503);
     await expect(page.locator(`${EDITOR} .on-map-editor__panel`)).toBeVisible({ timeout: 20000 });
     expect(await page.evaluate(id => !!(window as any).proposalDraftStore.getDraft(id), draftId)).toBe(true);
     const after = await editorDesign(page);

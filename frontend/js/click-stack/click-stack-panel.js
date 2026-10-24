@@ -53,6 +53,10 @@
         return el.id === 'planning-inspector' ? !el.hidden : el.classList.contains('visible');
     }
 
+    function isDockOccupied() {
+        return DOCKED_ELSEWHERE.some(id => isShown(doc.getElementById(id))) || !!global.AgreementPanel?.isOpen?.();
+    }
+
     function host(slot, id) {
         const el = doc.getElementById(id);
         if (!el || state.hosted?.el === el) return;
@@ -93,8 +97,16 @@
     function observePanels() {
         if (state.observing || typeof global.MutationObserver !== 'function') return;
         state.observing = true;
-        const observer = new global.MutationObserver(() => {
-            if (!isOpen() || state.expanding) return;
+        const observer = new global.MutationObserver(mutations => {
+            if (state.expanding) return;
+            if (!isOpen()) {
+                // A docked panel may have made the stack step aside. When that panel closes,
+                // restore the selected-parcels stack; while it remains open, syncSelection's
+                // guard keeps the two surfaces from reopening each other.
+                const dockChanged = mutations?.some(mutation => [...DOCKED_ELSEWHERE, 'agreement-panel'].some(id => doc.getElementById(id) === mutation.target));
+                if (dockChanged && !isDockOccupied()) syncSelection();
+                return;
+            }
             // The agreement panel (an agreement's Details) is a full dock of its own.
             if (global.AgreementPanel?.isOpen?.()) { close({ keepPanels: true }); return; }
             const expanded = state.stack?.expanded;
@@ -460,12 +472,18 @@
     // shown again with them, keeping the chosen instances and the expanded section.
     function refreshSpot(latlng) {
         if (!isOpen() || state.latlng !== latlng) return;
-        const hits = global.ClickStackHits.hitsAt(latlng);
+        const hits = { ...global.ClickStackHits.hitsAt(latlng) };
+        // A list can open an unapplied design or agreement that is not a geometry hit here.
+        // A background lookup adds choices; it must not discard the object being inspected.
+        const selectedKind = state.stack.selectedKind;
+        const focused = model.selectedInstance(state.stack, selectedKind);
+        if (focused && !(hits[selectedKind] || []).some(item => item.id === focused.id)) {
+            hits[selectedKind] = [focused, ...(hits[selectedKind] || [])];
+        }
         const selected = Object.fromEntries(state.stack.sections.map(section => [section.kind, section.instances[section.selectedIndex].id]));
         const next = model.buildClickStack(hits, { selected });
         const expanded = state.stack.expanded;
         state.hits = hits;
-        const selectedKind = state.stack.selectedKind;
         state.stack = expanded && next.sections.some(section => section.kind === expanded) ? model.expand(next, expanded)
             : { ...next, expanded: null, selectedKind: next.sections.some(section => section.kind === selectedKind) ? selectedKind : next.selectedKind };
         render();
@@ -497,7 +515,8 @@
             return;
         }
         const body = doc.body.classList;
-        if (body.contains('three-mode-active') || body.contains('map-sheet-open') || body.contains('on-map-editing')) return;
+        if (body.contains('three-mode-active') || body.contains('map-sheet-open') || body.contains('on-map-editing')
+            || isDockOccupied()) return;
         const summary = model.summarizeSelection(Array.from(multi.selectedParcels), {
             featureFor: id => global.LiveParcelFabric?.get(String(id)),
             areaOf: feature => global.turf.area(feature)

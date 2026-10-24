@@ -162,7 +162,8 @@ test.describe('Designer controls persist their edits @features', () => {
     const proposal = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((entry: any) => entry.applied && entry.geometry?.buildings?.length));
     expect(proposal.cadastreParcelIds).toEqual(expect.arrayContaining(BLOCK_PARCEL_IDS));
     expect(proposal.geometry.buildings).toHaveLength(1);
-    expect(proposal.geometry.blockMassing.geometry).toEqual(authoredGeometry);
+    // Authored records compact an identical blockMassing into the one saved building feature.
+    expect(proposal.geometry.blockMassing).toBeUndefined();
     expect(proposal.geometry.buildings[0].geometry).toEqual(authoredGeometry);
     expect(proposal.buildingProposal.ineligibleParcels).toHaveLength(3);
     const relevantParcelIds = await page.evaluate(([site, ids]) => {
@@ -273,6 +274,8 @@ test.describe('Designer controls persist their edits @features', () => {
       name: 'building.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(uploaded)),
     });
     await expect(page.locator('#single-building-editor .on-map-editor__panel')).toBeVisible();
+    await expect(page.locator('#single-land-take [data-land-accept]')).toBeEnabled();
+    await page.locator('#single-land-take [data-land-accept]').check();
     await page.locator('#single-building-confirm').click();
     await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
       .some((p: any) => p.applied && p.goal === 'single' && p.geometry?.buildings?.[0]?.properties?.name === 'fixture manual footprint'))).toBe(true);
@@ -335,9 +338,12 @@ test.describe('Designer controls persist their edits @features', () => {
     // This fixture's initial placement is constrained, so exercise the supported height and
     // surface controls without bypassing that real geometry gate.
     await selectNativeOption(page.locator('#single-ground-treatment'), 'green');
-    await selectNativeOption(page.locator('#single-parcel-mode'), 'whole');
+    const parcelTake = page.locator('#single-land-take [data-parcel-id]').first();
+    await selectNativeOption(parcelTake, 'whole');
     await page.locator('#single-building-add').click();
     await expect(selector.locator('option')).toHaveCount(initialBuildings + 1);
+    await expect(page.locator('#single-land-take [data-land-accept]')).toBeEnabled();
+    await page.locator('#single-land-take [data-land-accept]').check();
     await page.locator('#single-building-confirm').click();
     await expect(page.locator('#single-building-editor')).toHaveCount(0);
 
@@ -345,7 +351,11 @@ test.describe('Designer controls persist their edits @features', () => {
     expect(context.parameters.height).toBe(oldHeight + 1);
     expect(context.buildings).toHaveLength(initialBuildings + 1);
     expect(context.groundSurface.treatment).toBe('green');
-    expect(context.takeWholeParcels).toBe(true);
+    expect(context.landTake?.geometry).toBeTruthy();
+    const footprintTake = await page.evaluate(buildings => (window as any).FreeformLandTake.union(buildings, (window as any).turf), context.buildings);
+    // Whole-parcel take is unavailable once the second building is added; the saved take is both
+    // building footprints, which is the land the editor reviewed and accepted.
+    expect(context.landTake).toEqual(footprintTake);
     expect(context.buildings.every((feature: any) => feature.geometry?.type === 'Polygon')).toBe(true);
   });
 

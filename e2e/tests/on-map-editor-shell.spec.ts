@@ -1,7 +1,7 @@
 // Purpose: exercise the shared editor shell where map context, mode changes, and narrow screens
 // used to make controls drift, disappear, or unlock too early.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, clickMapPoint, createBuilding, PARCEL_GEOMETRY, closeParcel, showSelectionDesignTab } from '../helpers/runtime';
+import { openCity, openParcel, openBlockEditor, clickMapPoint, createBuilding, PARCEL_GEOMETRY, closeParcel, showSelectionDesignTab } from '../helpers/runtime';
 import { buildings3D, mockBuildingScene } from '../helpers/mocks/building-data';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import type { Page } from '@playwright/test';
@@ -24,6 +24,13 @@ async function expectEditorDockedRight(page: Page, root: string) {
   expect(viewportWidth - (box.x + box.width)).toBeLessThan(30);
 }
 
+async function enableGdiContext(page: Page) {
+  await page.evaluate(() => (window as any).MapShell.revealControl('showBuildings'));
+  const gdi = page.locator('#showBuildings');
+  if (!(await gdi.isChecked())) await gdi.check();
+  await page.evaluate(() => (window as any).MapShell.closeSheets());
+}
+
 async function openEditor(page: Page, kind: 'block' | 'single' | 'detached' | 'row') {
   if (kind === 'row') {
     const blockParcels = ['HR-335754-1234', 'HR-335754-1235', 'HR-335754-1236', 'HR-335754-1237', 'HR-335754-1238'];
@@ -37,11 +44,12 @@ async function openEditor(page: Page, kind: 'block' | 'single' | 'detached' | 'r
     return { root: '#rowhouse', done: '#btn-rowhouse-done', cancel: '#rowhouse .on-map-editor__header .close-circle-btn' };
   }
 
-  await openParcel(page, 'proposals');
   if (kind === 'block') {
-    await page.locator('.parcel-build-btn--buildings').click();
+    await openParcel(page, 'proposals');
+    await openBlockEditor(page);
     return { root: '#blockify-modal', done: '#btn-blockify-done', cancel: '#blockify-modal .on-map-editor__header .close-circle-btn' };
   }
+  await openParcel(page, 'proposals');
   if (kind === 'single') {
     await page.locator('.parcel-build-btn--single').click();
     return { root: '#single-building-editor', done: '#single-building-confirm', cancel: '#single-building-editor .on-map-editor__header .close-circle-btn' };
@@ -61,13 +69,19 @@ async function nearbyBuildingMeshCount(page: Page) {
 }
 
 async function closeDesignEditor(page: Page, root: string, cancelButton: string) {
-  await page.locator(cancelButton).click();
+  if ((page.viewportSize()?.width || 1280) <= 639) {
+    const handle = page.locator(`${root} .on-map-editor__panel > .mobile-dock-sheet-handle`);
+    await handle.focus();
+    await page.keyboard.press('Escape');
+  } else await page.locator(cancelButton).click();
   const discard = page.getByRole('alertdialog');
   if (await discard.isVisible().catch(() => false)) {
     const discardButton = discard.getByRole('button', { name: /discard|cancel design/i }).first();
     if (await discardButton.isVisible().catch(() => false)) await discardButton.click();
   }
   await expect(page.locator(root)).toHaveCount(0);
+  await expect(page.locator('body')).not.toHaveClass(/on-map-editing/);
+  await expect(page.locator('#mode-3d-toggle')).toBeEnabled();
 }
 
 test.describe('Shared on-map editor shell @features', () => {
@@ -205,9 +219,14 @@ test.describe('Shared on-map editor shell @features', () => {
       // The broad layer fixture must precede the more specific 3D building route.
       const sceneRequests = await mockBuildingScene(page);
       await openCity(page);
+      await enableGdiContext(page);
       const editor = await openEditor(page, kind);
       const root = page.locator(editor.root);
       await expect(page.locator(editor.done)).toBeEnabled({ timeout: 20_000 });
+      if (kind === 'single') {
+        // The freeform land-take review refines its initial placement preview asynchronously.
+        await expect(page.locator('#single-land-take [data-land-accept]')).toBeEnabled({ timeout: 20_000 });
+      }
       await expectEditorDockedRight(page, editor.root);
       const preview = await page.evaluate(() => JSON.parse(JSON.stringify((window as any).OnMapEditor.getPreview())));
       expect(preview).toBeTruthy();
@@ -223,11 +242,12 @@ test.describe('Shared on-map editor shell @features', () => {
     });
   }
 
-  test('320px collapsed block editor keeps its map preview and offers reachable Done and Cancel actions', async ({ mockApi: page }) => {
+  test('320px block editor resizes through its shared handle without moving the preview', async ({ mockApi: page }) => {
     await page.setViewportSize({ width: 320, height: 780 });
     await openCity(page);
+    await enableGdiContext(page);
     await openParcel(page, 'proposals');
-    await page.locator('.parcel-build-btn--buildings').click();
+    await openBlockEditor(page);
     const root = page.locator('#blockify-modal');
     await expect(page.locator('#btn-blockify-done')).toBeEnabled({ timeout: 20_000 });
     const before = await page.evaluate(() => ({
@@ -235,34 +255,43 @@ test.describe('Shared on-map editor shell @features', () => {
       center: (() => { const center = (window as any).map.getCenter(); return { lat: center.lat, lng: center.lng }; })(),
       zoom: (window as any).map.getZoom()
     }));
-    const toggle = root.locator('.on-map-editor__toggle');
-    await toggle.click();
-    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
-    await expect(root.locator('.on-map-editor__body')).toBeHidden();
+    const panel = root.locator('.on-map-editor__panel');
+    const handle = panel.locator(':scope > .mobile-dock-sheet-handle');
+    await expect(handle).toBeVisible();
+    await expect(root.locator('.on-map-editor__toggle')).toBeHidden();
+    await expect(root.locator('.on-map-editor__header .close-circle-btn')).toHaveCSS('clip-path', 'inset(50%)');
+    await expect(root.locator('.on-map-editor__body')).toBeVisible();
+
+    const expandedHeight = (await panel.boundingBox())!.height;
+    await handle.focus();
+    await page.keyboard.press('Home');
+    const compactBox = await panel.boundingBox();
+    expect(compactBox).not.toBeNull();
+    expect(compactBox!.height).toBeLessThan(expandedHeight);
+    await expect(root.locator('.on-map-editor__body')).toBeVisible();
     await expect.poll(() => page.evaluate(() => JSON.stringify((window as any).OnMapEditor.getPreview()))).toBe(JSON.stringify(before.preview));
-    const after = await page.evaluate(() => {
+    const compactState = await page.evaluate(() => {
       const center = (window as any).map.getCenter();
       return { center: { lat: center.lat, lng: center.lng }, zoom: (window as any).map.getZoom() };
     });
-    expect(after.center).toEqual(before.center);
-    expect(after.zoom).toBe(before.zoom);
+    expect(compactState.center).toEqual(before.center);
+    expect(compactState.zoom).toBe(before.zoom);
+
     for (const selector of ['#btn-blockify-done', '#btn-blockify-freeform']) {
+      await expect(page.locator(selector)).toBeInViewport({ ratio: 1 });
       const box = await page.locator(selector).boundingBox();
-      expect(box, `${selector} should remain visible after folding controls`).not.toBeNull();
+      expect(box, `${selector} should remain reachable at compact height`).not.toBeNull();
       expect(box!.x).toBeGreaterThanOrEqual(0);
       expect(box!.y).toBeGreaterThanOrEqual(0);
       expect(box!.x + box!.width).toBeLessThanOrEqual(320);
       expect(box!.y + box!.height).toBeLessThanOrEqual(780);
     }
-    // The header itself folds and unfolds the controls, as the chevron does.
-    await root.locator('.on-map-editor__heading').click();
-    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
-    await expect(root.locator('.on-map-editor__body')).toBeVisible();
-    await expect(toggle).toHaveText('');
-    await root.locator('.on-map-editor__heading').click();
-    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
-    await toggle.click();
-    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+
+    await handle.focus();
+    await page.keyboard.press('End');
+    const fullBox = await panel.boundingBox();
+    expect(fullBox).not.toBeNull();
+    expect(fullBox!.height).toBeGreaterThan(compactBox!.height);
     await expect(root.locator('.on-map-editor__body')).toBeVisible();
     await expect.poll(() => page.evaluate(() => JSON.stringify((window as any).OnMapEditor.getPreview()))).toBe(JSON.stringify(before.preview));
     const expanded = await page.evaluate(() => {

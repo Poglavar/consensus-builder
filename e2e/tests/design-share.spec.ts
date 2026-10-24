@@ -92,11 +92,9 @@ test('Share on an applied park publishes its design object under the CID the bro
       return { published: record.published, cid: w.DesignSync.publishedCid(record), author: record.author, goal: record.goal, count: w.proposalStorage.getAllProposals().length };
     }, localId);
     expect(imported).toMatchObject({ cid, author: 'Share author', goal: 'park', count: 1, published: { cid } });
-    // The link opens the design it applied: its inspector, whose actions are the published design's.
-    const inspector = receiver.page.locator('#planning-inspector');
-    await expect(inspector).toBeVisible({ timeout: 30_000 });
-    await inspector.getByRole('button', { name: 'Proposal actions', exact: true }).click();
+    // The shared-design route opens the current design details inside the click stack.
     const receiverDetails = receiver.page.locator('#proposal-details-panel');
+    await expect(receiverDetails).toBeVisible({ timeout: 30_000 });
     await expect(receiverDetails.locator(`[data-proposal-published-cid="${cid}"]`)).toBeAttached({ timeout: 30_000 });
     await expect(receiverDetails.locator('.cb-badge--published')).toBeVisible();
     // The receiving device sent nothing to the courier or the index.

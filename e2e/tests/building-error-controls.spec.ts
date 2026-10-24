@@ -1,6 +1,6 @@
 // Check dismissal and recovery after a malformed parcel causes the real building generator to fail.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, PARCEL_ID } from '../helpers/runtime';
+import { openCity, openParcel, openBlockEditor, PARCEL_ID } from '../helpers/runtime';
 
 const BROKEN_PARCEL_ID = 'HR-335754-9999';
 
@@ -48,7 +48,7 @@ test.describe('Building generation error recovery @features', () => {
     await page.locator('#blockify-modal .on-map-editor__header .close-circle-btn').click();
     await expect(editor).toHaveCount(0);
     await openParcel(page, 'proposals', PARCEL_ID);
-    await page.locator('.parcel-build-btn--buildings').click();
+    await openBlockEditor(page);
     await expect(page.locator('#btn-blockify-done')).toBeEnabled({ timeout: 20_000 });
     await page.locator('#blockify-modal .on-map-editor__header .close-circle-btn').click();
   });
