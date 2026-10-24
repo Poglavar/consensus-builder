@@ -50,3 +50,26 @@ tunnel edges and grade separation.
 The original published agreement remains immutable. Corrected geometry is available in the private
 revision and needs separate publication to become a new public agreement link. A concurrent session
 included the implementation in commit `53236d3f0` while browser verification was in progress.
+
+## Production deployment verification
+
+Deployed application commit `df6feb784` from `colosseum-worlds-fair` to the frontend, API and
+MCP service. Frontend release `deploy-502` serves the expected commit and the changed JavaScript
+matches the local source byte for byte. Cloudflare purge succeeded. The backend deployment's
+production HTTP smoke check passed its health request, warmup and eight parcel bounding-box reads.
+
+The public MCP service returned a private revision of the original Digbeth agreement: 17 designs,
+three revised roads, two degree-four junctions and unchanged cadastral input. The first verification
+harness expected `content` instead of the hosted response's `untrusted.content`; checking the saved
+response corrected that harness without creating another draft.
+
+Opening its short preview link exposed an nginx failure: the 23,834-character redirect Location
+exceeded the default upstream header buffer and returned HTTP 502. The preview location now has a
+32 KiB header buffer, covering DraftLink's bounded 24,000-character fragment. The production MCP
+POST locations also now use the already-versioned 15 MiB request limit; they still had 32 KiB.
+Only those three locations were updated, retaining unrelated live configuration and a backup.
+`nginx -t` passed before reload. The same preview then returned HTTP 302; decoding its fragment
+confirmed all 17 designs. No agreement or design was published by these checks.
+
+Targeted headless unit tests: `npx vitest run test/mcp-deployment-config.test.js --maxWorkers=1`
+passed all three tests in one file. No full unit or browser suite was run; no run was stopped.
