@@ -334,6 +334,8 @@ The maximum building form derived under an identified rule and its supported ass
 
 The combined extent of the drawable building configurations and their supported interpretations. It bounds possible forms rather than defining one constructible building.
 
+The comparison controls label this **Max envelope**, as they do an authored rule's maximum envelope. This display label does not make alternative configurations simultaneously buildable or remove the source's qualifications.
+
 ### Configuration
 
 One source-recorded building option, such as an allowed housing type, with its own constraints, treatment, derived geometry and availability. Configurations are alternatives, not additive permissions.
@@ -353,6 +355,8 @@ A parcel edge treated as the front for a displayed calculation. It is an explici
 ### Example build-out
 
 One illustrative building realization within an authored urban-rule envelope. It is neither the maximum permitted capacity nor an existing building.
+
+The comparison controls label this **Illustration**. A source's one calculated option or displayed configuration is also labeled Illustration, retaining its own assessment and source qualifications.
 
 ### Zoning area
 

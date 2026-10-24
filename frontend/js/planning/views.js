@@ -417,8 +417,16 @@
         for (const key of ['existingScope', 'proposedForm', 'permittedForm', 'permittedMap', 'zoningAreas']) {
             panel.querySelector(`[data-planning-setting="${key}"]`).setAttribute('aria-label', t(key));
         }
-        // Configured sources choose bound / configuration / both; one-option sources choose the 2D footprint detail.
-        panel.querySelector('[data-planning-setting="permittedForm"]').hidden = !descriptor?.parcelStudy || isPhoto();
+        // Keep the same representation control in every row. A source with one calculated option
+        // offers only Illustration, without replacing the person's preference for richer sources.
+        const permittedForm = panel.querySelector('[data-planning-setting="permittedForm"]');
+        const permittedControl = core.permittedRepresentationControl(descriptor, store.get().permittedForm);
+        if (Array.from(permittedForm.options, option => option.value).join(',') !== permittedControl.values.join(',')) {
+            permittedForm.replaceChildren(...permittedControl.values.map(value => new Option(t(value), value)));
+        }
+        permittedForm.value = permittedControl.value;
+        permittedForm.hidden = false;
+        permittedForm.disabled = permittedControl.disabled || isPhoto();
         panel.querySelector('[data-planning-setting="permittedMap"]').hidden = !descriptor || root.__mapModeState?.desired === 'model' || isPhoto()
             || descriptor?.capabilities.volumes === false;
         panel.querySelector('.planning-view-status').hidden = noPermittedSource;

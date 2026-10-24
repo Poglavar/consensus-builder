@@ -911,3 +911,5 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-24: Shared compositions get cached 2D social images of all included published designs, generated while sharing and recoverable on demand; this creates no separate plan record or agreement.
 
 - 2026-10-24: 3D capture readiness requires complete existing-building evidence, finished mesh/model work and a subsequent rendered frame; a successful empty source is valid, while failed or partial data must not pass as an empty scene.
+
+- 2026-10-24: Comparison choices are Max envelope and Illustration; Permitted always shows its representation selector, fixed to Illustration and disabled for a source with one calculated option.

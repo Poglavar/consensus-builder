@@ -99,6 +99,35 @@ for (const blocksEnabled of [false, true]) test(`planning source, scenario, disp
   await expect(page.locator('#planning-views-button')).toBeFocused();
 });
 
+test('Permitted keeps its Illustration dropdown visible for a single-option source', async ({ mockApi: page }) => {
+  const available = [sources[0], { ...sources[1], parcelStudy: 'direct-dimensions.v1' }];
+  await page.route('**/planning/**', async route => {
+    if (!['xhr', 'fetch'].includes(route.request().resourceType())) return route.fallback();
+    const url = new URL(route.request().url());
+    if (url.pathname.endsWith('/sources')) return route.fulfill({ json: { city: sources[0].city, sources: available } });
+    return route.fulfill({ json: payload([massing()], available) });
+  });
+  await openCity(page);
+  await page.locator('#planning-views-button').click();
+  const panel = page.locator('#planning-views');
+  const form = panel.locator('[data-planning-setting="permittedForm"]');
+  await expect(form).toBeVisible();
+  await expect(form).toBeDisabled();
+  await expect(form).toHaveValue('configuration');
+  expect(await form.locator('option').allTextContents()).toEqual(['Illustration']);
+  expect(await panel.locator('[data-planning-setting="proposedForm"] option').allTextContents())
+    .toEqual(['Max envelope', 'Illustration', 'Both']);
+  await selectNativeOption(panel.locator('.planning-source-select'), available[1].id);
+  await expect(form).toBeEnabled();
+  expect(await form.locator('option').allTextContents()).toEqual(['Max envelope', 'Illustration', 'Both']);
+  await selectNativeOption(form, 'bound');
+  await selectNativeOption(panel.locator('.planning-source-select'), available[0].id);
+  await expect(form).toBeDisabled();
+  await expect(form).toHaveValue('configuration');
+  await selectNativeOption(panel.locator('.planning-source-select'), available[1].id);
+  await expect(form).toHaveValue('bound');
+});
+
 test('saved parcel evidence opens its pinned source without creating a proposal @features', async ({ mockApi: page }) => {
   const result = { ...massing(), id: 'saved-result', title: 'Saved source result', volumes: [],
     sourceEvidence: { sourceReferences: [reference] }, assessment: { meaning: 'public-screen', status: 'unresolved' } };

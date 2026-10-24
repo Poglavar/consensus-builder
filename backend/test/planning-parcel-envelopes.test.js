@@ -240,6 +240,22 @@ describe('configuration display logic', () => {
         expect(store.reroll()).toBe(beforeInvalid);
         expect(store.get()).toBe(beforeInvalid);
     });
+    it('shows a fixed Illustration control for a source with one calculated option', () => {
+        const source = { id: 'cached-option', capabilities: { volumes: true } };
+        expect(scene.permittedRepresentationControl(source, 'both')).toEqual({
+            values: ['configuration'], value: 'configuration', disabled: true
+        });
+        expect(scene.permittedRepresentationControl(null)).toMatchObject({ disabled: true });
+    });
+    it('restores the chosen representation when switching back to a source with alternatives', () => {
+        const source = { parcelStudy: 'direct-dimensions.v1', capabilities: { areas: true, volumes: false } };
+        const store = scene.createStore({ permittedForm: 'bound' });
+        scene.permittedRepresentationControl({ capabilities: { volumes: true } }, store.get().permittedForm);
+        expect(scene.permittedRepresentationControl(source, store.get().permittedForm)).toEqual({
+            values: ['bound', 'configuration', 'both'], value: 'bound', disabled: false
+        });
+        expect(store.get().permittedForm).toBe('bound');
+    });
     it('keeps zoning areas independent of the Permitted display control', () => {
         const sourceArea = {role:'permitted',assessment:{meaning:'zoning-area'}};
         const envelope = {role:'permitted',assessment:{meaning:'outer-bound'}};

@@ -23,6 +23,11 @@
             [key, choices[key].includes(input[key]) ? input[key] : value]));
     }
     function displayPolicy(state) { const values = settings(state); return Object.fromEntries(roles.map(role => [role, values[role]])); }
+    function permittedRepresentationControl(source, preferred = defaults.permittedForm) {
+        const values = source?.parcelStudy ? [...choices.permittedForm] : ['configuration'];
+        return { values, value: values.includes(preferred) ? preferred : values[values.length - 1],
+            disabled: values.length === 1 || !source };
+    }
     function itemAppearance(item, state) {
         const values = settings(state);
         return item.assessment?.meaning === 'zoning-area' ? values.zoningAreas : values[item.role];
@@ -69,5 +74,5 @@
             && (String(item.sourceEvidence?.parcelReference?.parcelId ?? '') === id || String(item.source?.parcel ?? '') === id));
         return ofParcel.find(item => item.parcelEnvelope) || ofParcel[0] || null;
     }
-    return { roles, displayStates, choices, defaults, settings, displayPolicy, itemAppearance, createStore, builtGeometry, queryKey, parcelItemOf };
+    return { roles, displayStates, choices, defaults, settings, displayPolicy, permittedRepresentationControl, itemAppearance, createStore, builtGeometry, queryKey, parcelItemOf };
 });
