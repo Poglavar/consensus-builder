@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 
@@ -86,6 +87,68 @@ class ParcelQualificationWorkspaceTests(unittest.TestCase):
         return workspaces.prepare_workspace(self.parent, self.state_dir, slot,
                                             self.city, self.receipt, self.packet,
                                             base_revision=base_revision)
+
+    def test_ownership_is_persisted_before_git_creates_the_worktree(self):
+        original = workspaces._git
+        checked = []
+
+        def git(root, *args, **kwargs):
+            if args[:2] == ("worktree", "add"):
+                metadata = json.loads((self.state_dir / "qualification-workspaces/slot-1.json").read_text())
+                self.assertEqual(metadata["status"], "preparing")
+                self.assertEqual(metadata["cityCode"], self.city["cityCode"])
+                checked.append(metadata["runId"])
+            return original(root, *args, **kwargs)
+
+        with patch.object(workspaces, "_git", side_effect=git):
+            workspace = self.prepare()
+        self.assertEqual(checked, [workspace["runId"]])
+        self.assertEqual(json.loads(workspace["metadataPath"].read_text())["status"], "prepared")
+
+    def interrupted_copy(self):
+        def interrupt(parent, child, *args):
+            (child / ".env").write_text("PRIVATE_FIXTURE=preserve\n")
+            (child / "backend/parcels/adapter.js").write_text("partial preparation fixture\n")
+            raise KeyboardInterrupt("pause during input copying")
+
+        with patch.object(workspaces, "_copy_inputs", side_effect=interrupt):
+            with self.assertRaises(KeyboardInterrupt):
+                self.prepare()
+        path = self.state_dir / "qualification-workspaces/slot-1.json"
+        return path, json.loads(path.read_text())
+
+    def test_interrupted_preparation_is_preserved_and_slot_can_continue(self):
+        path, before = self.interrupted_copy()
+        workspace = self.prepare()
+        self.assertNotEqual(workspace["runId"], before["runId"])
+        recovery = path.with_name(f"interrupted-{before['runId']}.json")
+        saved = json.loads(recovery.read_text())
+        preserved = Path(saved["root"])
+        self.assertEqual((preserved / ".env").read_text(), "PRIVATE_FIXTURE=preserve\n")
+        self.assertEqual((preserved / "backend/parcels/adapter.js").read_text(), "partial preparation fixture\n")
+        self.assertEqual(run_git(preserved, "branch", "--show-current"), saved["branch"])
+        self.assertEqual((workspace["root"] / "backend/parcels/adapter.js").read_text(),
+                         (self.parent / "backend/parcels/adapter.js").read_text())
+
+    def test_recovery_can_resume_after_move_before_branch_rename(self):
+        path, before = self.interrupted_copy()
+        child = Path(before["root"])
+        preserved = child.with_name(f"{child.name}-interrupted-{before['runId']}")
+        run_git(self.parent, "worktree", "move", str(child), str(preserved))
+        workspace = self.prepare()
+        self.assertTrue(workspace["root"].is_dir())
+        self.assertEqual((preserved / ".env").read_text(), "PRIVATE_FIXTURE=preserve\n")
+        self.assertEqual(json.loads(path.read_text())["status"], "prepared")
+
+    def test_interrupted_finished_slot_reuse_is_also_recoverable(self):
+        workspace = self.prepare()
+        workspaces.finish_workspace(workspace)
+        with patch.object(workspaces, "_apply_parent_overlay", side_effect=KeyboardInterrupt("pause during reuse")):
+            with self.assertRaises(KeyboardInterrupt):
+                self.prepare()
+        self.assertEqual(json.loads(workspace["metadataPath"].read_text())["status"], "preparing")
+        resumed = self.prepare()
+        self.assertEqual(json.loads(resumed["metadataPath"].read_text())["status"], "prepared")
 
     def test_published_new_runtime_helpers_reach_the_isolated_city_worker(self):
         relative = "scripts/lib/city-integration-helper.py"

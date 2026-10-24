@@ -10,6 +10,7 @@ import shutil
 import subprocess
 import uuid
 import copy
+import fcntl
 from pathlib import Path
 from typing import Any
 
@@ -340,6 +341,50 @@ def _read_metadata(path: Path) -> dict[str, Any]:
 def prepare_workspace(root: Path, state_dir: Path, slot: int, city: dict[str, Any],
                       receipt: dict[str, Any], packet: dict[str, Any],
                       base_revision: str | None = None) -> dict[str, Any]:
+    """Serialize slot preparation, including recovery after an interrupted owner."""
+    root = Path(root).resolve()
+    state_dir = Path(state_dir)
+    state_dir = (root / state_dir).resolve() if not state_dir.is_absolute() else state_dir.resolve()
+    if slot not in SLOT_IDS:
+        raise ValueError("qualification workspace slot must be 1 or 2")
+    locks = state_dir / "qualification-workspaces"
+    locks.mkdir(parents=True, exist_ok=True)
+    with (locks / f"slot-{slot}.lock").open("a+") as handle:
+        fcntl.flock(handle, fcntl.LOCK_EX)
+        return _prepare_workspace(root, state_dir, slot, city, receipt, packet, base_revision)
+
+
+def _preserve_interrupted_preparation(root: Path, metadata_path: Path, metadata: dict) -> None:
+    """Preserve partial copies and private files before releasing an owned slot."""
+    run_id = metadata.get("runId", "")
+    if not isinstance(run_id, str) or not re.fullmatch(r"[0-9a-f]{32}", run_id):
+        raise RuntimeError("invalid interrupted preparation identity")
+    child = Path(metadata["root"])
+    branch = metadata["branch"]
+    recovered = child.with_name(f"{child.name}-interrupted-{run_id}")
+    recovered_branch = f"{branch}-interrupted-{run_id}"
+    if child.exists():
+        if recovered.exists() or _git(child, "branch", "--show-current").stdout.strip() != branch:
+            raise RuntimeError("interrupted preparation worktree identity mismatch")
+        _git(root, "worktree", "move", str(child), str(recovered))
+    # The deterministic destination also covers interruption between move and rename.
+    if recovered.exists():
+        actual = _git(recovered, "branch", "--show-current").stdout.strip()
+        if actual == branch:
+            _git(recovered, "branch", "-m", recovered_branch)
+        elif actual != recovered_branch:
+            raise RuntimeError("interrupted preparation branch identity mismatch")
+    elif _git(root, "show-ref", "--verify", f"refs/heads/{branch}", check=False).returncode == 0:
+        _git(root, "branch", "-m", branch, recovered_branch)
+    _write_metadata(metadata_path.with_name(f"interrupted-{run_id}.json"),
+                    {**metadata, "status": "interrupted-preparation", "root": str(recovered),
+                     "branch": recovered_branch})
+    metadata_path.unlink()
+
+
+def _prepare_workspace(root: Path, state_dir: Path, slot: int, city: dict[str, Any],
+                      receipt: dict[str, Any], packet: dict[str, Any],
+                      base_revision: str | None = None) -> dict[str, Any]:
     """Prepare one persistent private worktree and copy the exact reviewed input set."""
     root = Path(root).resolve()
     state_dir = Path(state_dir)
@@ -367,6 +412,17 @@ def prepare_workspace(root: Path, state_dir: Path, slot: int, city: dict[str, An
     tracked_overlay, untracked_overlay = _parent_overlay_paths(root, parent_head)
     run_id = uuid.uuid4().hex
     owned_inputs = {}
+    preparing = {"schemaVersion": 1, "slot": slot, "root": str(child), "branch": branch,
+                 "status": "preparing", "runId": run_id, "parentHead": parent_head,
+                 "cityCode": str(city["cityCode"]), "metadataPath": str(metadata_path)}
+
+    if metadata_path.exists():
+        metadata = _read_metadata(metadata_path)
+        if (metadata.get("slot") != slot or metadata.get("branch") != branch
+                or Path(metadata.get("root", "")).resolve() != child.resolve()):
+            raise RuntimeError("qualification workspace metadata identity mismatch")
+        if metadata.get("status") == "preparing":
+            _preserve_interrupted_preparation(root, metadata_path, metadata)
 
     if metadata_path.exists():
         metadata = _read_metadata(metadata_path)
@@ -389,6 +445,7 @@ def prepare_workspace(root: Path, state_dir: Path, slot: int, city: dict[str, An
         ignored_before = _ignored_snapshot(child)
         parent_paths = tracked_overlay | untracked_overlay | _tracked_paths(root, parent_head)
         _check_path_overlap(parent_paths, ignored)
+        _write_metadata(metadata_path, preparing)
         # Imported worker changes belong to the parent workflow. Reuse resets the
         # finished worktree without creating a permanent rescue archive.
         _git(child, "clean", "-fd")
@@ -403,6 +460,8 @@ def prepare_workspace(root: Path, state_dir: Path, slot: int, city: dict[str, An
         branch_ref = _git(root, "show-ref", "--verify", f"refs/heads/{branch}", check=False)
         if branch_ref.returncode == 0:
             raise RuntimeError("qualification worktree branch exists without owned metadata; refusing reuse")
+        # Persist ownership before Git or copying can leave a partial worktree.
+        _write_metadata(metadata_path, preparing)
         _git(root, "worktree", "add", "-b", branch, str(child), parent_head)
         _apply_parent_overlay(root, child, tracked_overlay, untracked_overlay)
 
