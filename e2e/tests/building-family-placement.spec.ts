@@ -487,45 +487,34 @@ test.describe('Building-family placement @features', () => {
     for (const id of saved.cadastreParcelIds) expect(BLOCK_PARCEL_IDS).toContain(String(id));
   });
 
-  // An L the bar cannot fit (two narrow plots and the long plot beside them): the editor draws the
-  // bar overhanging, and by the same rule a move that keeps it on the L is an ordinary move. Only a
-  // drop where it no longer stands on its parcels asks.
-  test('a row the editor had to draw overhanging an L-shaped site moves on it without asking, and asks only when dropped off it', async ({ mockApi: page }) => {
+  test('a row stays contained in an L-shaped site and refuses dimensions that cannot fit', async ({ mockApi: page }) => {
     await installLayerDatasets(page);
     await openCity(page);
     await page.evaluate(async ids => { await (window as any).CadastralParcelRepository.ensureIds(ids); }, BLOCK_PARCEL_IDS);
     await selectParcelsByHand(page, [FIRST_PLOT, NEXT_PLOT, FOURTH_PLOT]);
     await page.locator('.parcel-build-btn--row').click();
-    await expect(page.locator('#btn-rowhouse-done')).toBeEnabled({ timeout: 20_000 });
-    const onSite = () => page.evaluate(ids => {
+    const done = page.locator('#btn-rowhouse-done');
+    await expect(done).toBeEnabled({ timeout: 20_000 });
+    const within = () => page.evaluate(ids => {
       const w = window as any;
-      const bar = { type: 'Feature', properties: {}, geometry: w.getActiveProposalDesignDraft().editorPayload.context.buildingFeature.geometry };
+      const geometry = w.getActiveProposalDesignDraft().editorPayload.context.buildingFeature.geometry;
       const site = ids.map((id: string) => w.LiveParcelFabric.get(id)).reduce((a: any, b: any) => w.turf.union(a, b));
-      const inside = w.turf.area(bar) - (w.turf.difference(bar, site) ? w.turf.area(w.turf.difference(bar, site)) : 0);
-      return { within: w.SingleBuildingGeometry.footprintWithinBoundary(bar, site, w.turf), insideM2: inside };
+      return w.SingleBuildingGeometry.footprintWithinBoundary({ type: 'Feature', properties: {}, geometry }, site, w.turf);
     }, [FIRST_PLOT, NEXT_PLOT, FOURTH_PLOT]);
-    // Widened past the L's narrow arm, no bar of that size fits it anywhere, so the editor keeps the
-    // wider bar overhanging (the placement rule) rather than snapping Width back.
+    expect(await within()).toBe(true);
     const width = page.locator('#rowhouse-width-slider');
+    const beforeWidth = await width.inputValue();
+    const beforeGeometry = await previewGeometry(page);
     await width.focus();
-    for (let step = 0; step < 40 && (await onSite()).within; step++) await width.press('ArrowRight');
-    const before = await onSite();
-    expect(before.within).toBe(false);
-    expect(before.insideM2).toBeGreaterThan(1);
-
-    const start = JSON.parse(await previewGeometry(page)).canonical;
-    await dragBy(page, await outlineGrab(page, ROW_STROKE), 12, 8);
-    await expect.poll(async () => JSON.stringify(JSON.parse(await previewGeometry(page)).canonical)).not.toBe(JSON.stringify(start));
-    await expect(dropDialog(page)).toHaveCount(0);
-    expect((await onSite()).insideM2).toBeGreaterThan(1);
-
-    const kept = JSON.parse(await previewGeometry(page)).canonical;
-    await dragLargestOutlineAway(page, ROW_STROKE);
-    const dialog = dropDialog(page);
-    await expect(dialog).toBeVisible({ timeout: 20_000 });
-    await dialog.getByRole('button', { name: 'Put it back' }).click();
-    await expect(dialog).toHaveCount(0);
-    await expect.poll(async () => JSON.stringify(JSON.parse(await previewGeometry(page)).canonical)).toBe(JSON.stringify(kept));
+    await width.press('End');
+    // Unfit requests restore the prior dimensions and footprint instead of allowing an overhang.
+    expect(await within()).toBe(true);
+    await expect(width).toHaveValue(beforeWidth);
+    expect(await previewGeometry(page)).toBe(beforeGeometry);
+    await expect(done).toBeEnabled();
+    await width.press('Home');
+    await expect(done).toBeEnabled();
+    expect(await within()).toBe(true);
   });
 
   test('row-house rotation stays generated, and a row dragged off its parcels converts to one Freeform building kept where it was dropped', async ({ mockApi: page }) => {

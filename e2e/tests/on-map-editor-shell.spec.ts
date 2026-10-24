@@ -89,7 +89,7 @@ test.describe('Shared on-map editor shell @features', () => {
     { label: 'desktop', width: 1280, height: 900 },
     { label: '320px mobile', width: 320, height: 780 }
   ]) {
-    test(`3D view hint, live status and bottom navigation do not overlap on ${viewport.label}`, async ({ mockApi: page }) => {
+    test(`3D view hint and live status fit while bottom navigation is hidden on ${viewport.label}`, async ({ mockApi: page }) => {
       await page.setViewportSize({ width: viewport.width, height: viewport.height });
       await mockBuildingScene(page);
       await openCity(page);
@@ -110,15 +110,15 @@ test.describe('Shared on-map editor shell @features', () => {
       await expect(status).toBeVisible();
       await expect(status).not.toHaveClass(/is-idle/);
 
+      await expect(page.locator('#map-shell-bottom-right')).toBeHidden();
       const layout = await page.evaluate(() => {
         const feedback = document.getElementById('map-feedback-stack')!.getBoundingClientRect();
         const hint = document.querySelector('.three-view-hint')!.getBoundingClientRect();
         const status = document.getElementById('floating-status')!.getBoundingClientRect();
-        const dock = document.getElementById('map-shell-bottom-right')!.getBoundingClientRect();
-        return { feedbackBottom: feedback.bottom, hintBottom: hint.bottom, statusTop: status.top, dockTop: dock.top };
+        return { feedbackBottom: feedback.bottom, hintBottom: hint.bottom, statusTop: status.top, viewportHeight: innerHeight };
       });
       expect(layout.hintBottom).toBeLessThanOrEqual(layout.statusTop);
-      expect(layout.feedbackBottom).toBeLessThanOrEqual(layout.dockTop);
+      expect(layout.feedbackBottom).toBeLessThanOrEqual(layout.viewportHeight);
     });
   }
 

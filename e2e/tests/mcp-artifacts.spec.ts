@@ -30,8 +30,11 @@ for (const intent of [
   const actual = await page.evaluate(async input => {
     const w = window as any;
     const design = w.IntentDesign.build(input);
-    const url = await w.DraftLink.build({ origin: 'https://app.example', design });
-    return { design, cid: w.Cid.cidOfObject(design), decoded: (await w.DraftLink.parse(new URL(url).hash)).design };
+    const cid = w.Cid.cidOfObject(design);
+    const url = new URL('https://app.example/designs');
+    url.searchParams.set('draft', 'https://app.example/mcp/previews/' + 'a'.repeat(32));
+    const restored = await w.DraftLink.load(url.href, { fetchImpl: async () => Response.json({ cid, record: design }) });
+    return { design, cid, decoded: restored.design };
   }, input);
   expect(actual.design).toEqual(expected);
   expect(actual.decoded).toEqual(expected);

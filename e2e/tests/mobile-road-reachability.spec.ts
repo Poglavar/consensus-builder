@@ -102,6 +102,9 @@ test('road sheet and cross-section actions stay reachable at 320px before the fi
   await expect.poll(() => page.evaluate(() => (window as any).getRoadDrawingProfile().strips.length)).toBe(initialStrips + 1);
   await editor.locator('.on-map-editor__panel > .mobile-dock-sheet-handle').focus();
   await page.keyboard.press('Escape');
+  const discard = page.getByRole('alertdialog');
+  await expect(discard).toBeVisible();
+  await discard.getByRole('button', { name: 'Discard', exact: true }).click();
   await expect(editor).toHaveCount(0);
   await expect.poll(() => page.evaluate(() => (window as any).getRoadDrawingProfile().strips.length)).toBe(initialStrips);
 
@@ -110,6 +113,8 @@ test('road sheet and cross-section actions stay reachable at 320px before the fi
   await addSidewalk(page, editor);
   await editor.locator('.on-map-editor__panel > .mobile-dock-sheet-handle').focus();
   await page.keyboard.press('Escape');
+  await expect(discard).toBeVisible();
+  await discard.getByRole('button', { name: 'Discard', exact: true }).click();
   await expect(editor).toHaveCount(0);
   await expect.poll(() => page.evaluate(() => (window as any).getRoadDrawingProfile().strips.length)).toBe(initialStrips);
 

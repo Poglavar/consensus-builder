@@ -94,8 +94,9 @@
             return el;
         });
 
+        // The phone stack owns its padding as a hit target too, including gaps between cards.
         const occluders = container.id === 'map' ? Array.from(doc.querySelectorAll(
-            '.on-map-editor__tools, .on-map-editor__panel, #click-stack .click-stack__card, #click-stack > .mobile-dock-sheet-handle, .map-shell-slot, .map-shell-cluster, .map-shell-button'
+            '.on-map-editor__tools, .on-map-editor__panel, #click-stack, .map-shell-slot, .map-shell-cluster, .map-shell-button'
         )) : [];
         function positionGrip() {
             if (container.id !== 'map') return;

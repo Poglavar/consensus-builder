@@ -3333,27 +3333,9 @@
       "markup": "doc.createElement('button')",
       "variants": [
         {
-          "name": "close",
-          "attrs": {
-            "data-action": "close"
-          }
-        },
-        {
           "name": "row",
           "attrs": {
             "data-action": "row"
-          }
-        },
-        {
-          "name": "instance",
-          "attrs": {
-            "data-action": "instance"
-          }
-        },
-        {
-          "name": "openAgreement",
-          "attrs": {
-            "data-action": "open-agreement"
           }
         },
         {
@@ -3481,11 +3463,18 @@
           "attrs": {
             "data-command": "selection.done"
           }
+        },
+        {
+          "name": "Open a related design, agreement or parcel",
+          "attrs": {
+            "data-action": "related"
+          }
         }
       ],
       "exhaustiveVariants": true,
       "interaction": "click",
-      "controlType": "button"
+      "controlType": "button",
+      "dispatchEvidence": "The stack renders row, related, coords and agreement actions, plus commands from UiCommands; related chips replace the old instance/open-agreement buttons."
     },
     {
       "id": "control-d7ec6e346dbca4-1",
@@ -5169,13 +5158,6 @@
           "labelPattern": "^Source: .+ · .+$"
         },
         {
-          "name": "Show proposal actions",
-          "classes": [
-            "btn"
-          ],
-          "labelPattern": "^(?:Proposal actions|Acciones de la propuesta)$"
-        },
-        {
           "name": "Select planning source",
           "classes": [
             "planning-layer-select",
@@ -5260,6 +5242,20 @@
             "data-planning-setting": "zoningAreas"
           },
           "interaction": "change"
+        },
+        {
+          "name": "Change permitted representation",
+          "attrs": {
+            "data-planning-setting": "permittedForm"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Show one planning configuration",
+          "classes": [
+            "planning-configurations__pick"
+          ],
+          "interaction": "click"
         }
       ],
       "exhaustiveVariants": true,
@@ -6365,15 +6361,21 @@
       "markup": "document.createElement('button')",
       "variants": [
         {
-          "name": "Return to 2D from the proposal list",
-          "label": "Open 2D map",
-          "classes": [
-            "cb-link"
-          ]
+          "name": "Highlight all designs",
+          "label": "All"
+        },
+        {
+          "name": "Highlight published designs",
+          "label": "Published"
+        },
+        {
+          "name": "Highlight unpublished designs",
+          "label": "Not published yet"
         }
       ],
       "interaction": "click",
-      "controlType": "button"
+      "controlType": "button",
+      "exhaustiveVariants": true
     },
     {
       "id": "control-a9e7f6ba35b5c1-1",
@@ -6396,11 +6398,8 @@
       "markup": "document.createElement('button')",
       "variants": [
         {
-          "name": "Close shared plan panel",
-          "label": "Close",
-          "classes": [
-            "close-circle-btn"
-          ]
+          "name": "Copy the selected composition link",
+          "label": "Copy URL"
         }
       ],
       "exhaustiveVariants": true,
@@ -6413,16 +6412,12 @@
       "markup": "document.createElement('button')",
       "variants": [
         {
-          "name": "Highlight all designs",
-          "label": "All"
+          "name": "Name a plan",
+          "label": "Name this plan"
         },
         {
-          "name": "Highlight published designs",
-          "label": "Published"
-        },
-        {
-          "name": "Highlight designs not published yet",
-          "label": "Not published yet"
+          "name": "Rename a plan",
+          "label": "Rename plan"
         }
       ],
       "exhaustiveVariants": true,
@@ -6434,14 +6429,32 @@
       "source": "js/proposals/dialog-share.js",
       "markup": "document.createElement('button')",
       "interaction": "click",
-      "controlType": "button"
+      "controlType": "button",
+      "variants": [
+        {
+          "name": "Save a named plan link",
+          "classes": [
+            "share-plan-save-name"
+          ]
+        }
+      ],
+      "exhaustiveVariants": true
     },
     {
       "id": "control-7cd07576118fe2-5",
       "source": "js/proposals/dialog-share.js",
       "markup": "document.createElement('button')",
       "interaction": "click",
-      "controlType": "button"
+      "controlType": "button",
+      "variants": [
+        {
+          "name": "Publish selected designs",
+          "classes": [
+            "share-plan-publish-selected"
+          ]
+        }
+      ],
+      "exhaustiveVariants": true
     },
     {
       "id": "control-a9e7f6ba35b5c1-2",
@@ -6453,7 +6466,16 @@
     {
       "id": "control-7cd07576118fe2-6",
       "source": "js/proposals/dialog-share.js",
-      "markup": "document.createElement('button')"
+      "markup": "document.createElement('button')",
+      "variants": [
+        {
+          "name": "Create an agreement for the selection",
+          "classes": [
+            "share-plan-create-agreement"
+          ]
+        }
+      ],
+      "exhaustiveVariants": true
     },
     {
       "id": "control-5ea11b34e3cfd2-1",
@@ -6884,9 +6906,9 @@
       "controlType": "checkbox"
     },
     {
-      "id": "control-173d4c13390a1a-1",
+      "id": "control-22a5d13256668e-1",
       "source": "js/single-building.js",
-      "markup": "<input type=\"range\" id=\"single-height-slider\" min=\"3\" max=\"250\" step=\"1\" value=\"${DEFAULT_HEIGHT_M}\">",
+      "markup": "<input type=\"range\" id=\"single-height-slider\" aria-label=\"${modalText.heightLabel}\" min=\"3\" max=\"250\" step=\"1\" value=\"${DEFAULT_HEIGHT_M}\">",
       "interaction": "change",
       "controlType": "range"
     },
@@ -7215,9 +7237,11 @@
       "markup": "doc.createElement('button')"
     },
     {
-      "id": "control-48a3d8be2e79e3-1",
+      "id": "control-4b79316039d31f-1",
       "source": "js/three-mode.js",
-      "markup": "<input type=\"range\" class=\"parcel-panel-price-slider\" data-role=\"${role}\" min=\"${price.min}\" max=\"${price.max}\" step=\"${price.step}\" value=\"${price.perSqm}\">"
+      "markup": "<input type=\"range\" class=\"parcel-panel-price-slider\" data-role=\"${role}\" min=\"${price.min}\" max=\"${price.max}\" step=\"${price.step}\" value=\"${price.perSqm ?? price.min}\"${price.perSqm === null ? ' disabled' : ''}>",
+      "interaction": "change",
+      "controlType": "range"
     },
     {
       "id": "control-0f72c2ba2aa79f-1",
@@ -7324,16 +7348,16 @@
       "controlType": "number"
     },
     {
-      "id": "control-99928240be28c4-1",
+      "id": "control-f0d82ee8e8bb48-1",
       "source": "js/transit-stations.js",
-      "markup": "<input type=\"range\" data-station-editor-bearing-range min=\"0\" max=\"359\" step=\"1\" value=\"${stationEditor.bearing}\">",
+      "markup": "<input type=\"range\" data-station-editor-bearing-range aria-label=\"${stationEditorText('rotation', 'Rotation')}\" min=\"0\" max=\"359\" step=\"1\" value=\"${stationEditor.bearing}\">",
       "interaction": "change",
       "controlType": "range"
     },
     {
-      "id": "control-6615bc8475be7f-1",
+      "id": "control-6b56cdfe3e4f55-1",
       "source": "js/transit-stations.js",
-      "markup": "<input type=\"number\" data-station-editor-bearing min=\"0\" max=\"359\" step=\"1\" value=\"${stationEditor.bearing}\">",
+      "markup": "<input type=\"number\" data-station-editor-bearing aria-label=\"${stationEditorText('rotation', 'Rotation')}\" min=\"0\" max=\"359\" step=\"1\" value=\"${stationEditor.bearing}\">",
       "interaction": "change",
       "controlType": "number"
     },
@@ -8745,6 +8769,185 @@
       "markup": "<a class=\"btn btn-primary\" href=\"/\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-fdecca6b7f8e63-1",
+      "source": "index.html",
+      "markup": "<a id=\"source-system-link\" class=\"btn\" href=\"/sources.html\" data-i18n-key=\"sourceSystem.title\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-c05dffa4f74d38-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"economic-source-settings-button\" class=\"btn\" data-i18n-key=\"economicSources.title\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-8b616de27e0e37-1",
+      "source": "js/economic-source-settings.js",
+      "markup": "global.document.createElement(tag)",
+      "interaction": "auto",
+      "controlType": "dynamic",
+      "variants": [
+        {
+          "name": "Close economic sources",
+          "classes": [
+            "close-circle-btn"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Edit economic-source-name",
+          "attrs": {
+            "id": "economic-source-name"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Edit economic-rate-land",
+          "attrs": {
+            "id": "economic-rate-land"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Edit economic-rate-roadLand",
+          "attrs": {
+            "id": "economic-rate-roadLand"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Edit economic-rate-sale",
+          "attrs": {
+            "id": "economic-rate-sale"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Edit economic-rate-construction",
+          "attrs": {
+            "id": "economic-rate-construction"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Use local economic rates",
+          "interaction": "click",
+          "classes": [
+            "btn",
+            "btn-primary"
+          ]
+        },
+        {
+          "name": "Reset local economic source",
+          "label": "Use configured sources",
+          "interaction": "click"
+        }
+      ],
+      "exhaustiveVariants": true,
+      "dispatchEvidence": "The shared append factory renders one close action, five editable rate-table fields, submit and reset. Static descriptions are not controls."
+    },
+    {
+      "id": "control-7cd07576118fe2-7",
+      "source": "js/proposals/dialog-share.js",
+      "markup": "document.createElement('button')",
+      "interaction": "click",
+      "controlType": "button",
+      "variants": [
+        {
+          "name": "Highlight a selected design",
+          "classes": [
+            "share-plan-row__main"
+          ]
+        }
+      ],
+      "exhaustiveVariants": true
+    },
+    {
+      "id": "control-a9e7f6ba35b5c1-3",
+      "source": "js/proposals/dialog-share.js",
+      "markup": "document.createElement('input')",
+      "interaction": "change",
+      "controlType": "input"
+    },
+    {
+      "id": "control-7cd07576118fe2-8",
+      "source": "js/proposals/dialog-share.js",
+      "markup": "document.createElement('button')",
+      "interaction": "click",
+      "controlType": "button",
+      "variants": [
+        {
+          "name": "Publish one design",
+          "label": "Publish"
+        }
+      ],
+      "exhaustiveVariants": true
+    },
+    {
+      "id": "control-65e1fefeca06b6-1",
+      "source": "js/source-explorer.js",
+      "markup": "document.createElement(tag)",
+      "interaction": "auto",
+      "controlType": "dynamic",
+      "exempt": "This factory creates source descriptions, options, schema details and a temporary download anchor without a button role or button styling. Static source controls own all user interactions.",
+      "mustRemainInactive": true,
+      "guards": [
+        {
+          "source": "js/source-explorer.js",
+          "includes": "link.download = 'source-contracts.v1.json';"
+        },
+        {
+          "source": "js/source-explorer.js",
+          "pattern": "\\bnode\\(['\"](?:button|input|select|textarea)['\"]",
+          "occurrences": 0
+        }
+      ]
+    },
+    {
+      "id": "control-1f666d778d2675-1",
+      "source": "sources.html",
+      "markup": "<select id=\"source-language\" class=\"cb-page-header__lang\" aria-label=\"Language\">",
+      "interaction": "change",
+      "controlType": "select"
+    },
+    {
+      "id": "control-ea2fde5d943a47-1",
+      "source": "sources.html",
+      "markup": "<button id=\"source-retry\" class=\"btn\" type=\"button\" hidden data-i18n-key=\"sourceSystem.retry\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-71d80d7e33a4c8-1",
+      "source": "sources.html",
+      "markup": "<button id=\"source-download\" class=\"btn\" type=\"button\" disabled data-i18n-key=\"sourceSystem.download\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-6ae0f4c0e6b7c9-1",
+      "source": "sources.html",
+      "markup": "<select id=\"source-family\">",
+      "interaction": "change",
+      "controlType": "select"
+    },
+    {
+      "id": "control-3719edd6a0355e-1",
+      "source": "sources.html",
+      "markup": "<select id=\"source-adapter\">",
+      "interaction": "change",
+      "controlType": "select"
+    },
+    {
+      "id": "control-3b3a78a7430f92-1",
+      "source": "sources.html",
+      "markup": "<select id=\"source-config\">",
+      "interaction": "change",
+      "controlType": "select"
     }
   ],
   "variantExclusions": [],

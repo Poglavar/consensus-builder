@@ -1,4 +1,4 @@
-// A real app route imports and applies an unpublished MCP fragment without pinning or indexing it.
+// A real app route imports and applies an unpublished MCP object reference without pinning or indexing it.
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
 import { stubBasemapTiles, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
@@ -6,18 +6,18 @@ import { pageIndex } from '../helpers/mocks/shared-server';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 const builder = require('../../frontend/js/intent-design.js');
-const links = require('../../frontend/js/draft-link.js');
+import { privatePreview } from '../helpers/private-preview';
 const turf = require('../../backend/node_modules/@turf/turf');
 const cid = require('../../frontend/js/cid.js');
 const agreementRecord = require('../../frontend/js/agreement-record.js');
 const agreementGround = require('../../frontend/js/agreement-ground.js');
 
-test('MCP draft fragment opens an applied local park with no publication @core', async ({ mockApi: page, baseURL }, testInfo) => {
+test('MCP draft reference opens an applied local park with no publication @core', async ({ mockApi: page, baseURL }, testInfo) => {
   test.setTimeout(120_000);
   await stubBasemapTiles(page);
   const design = builder.build({ kind: 'space', spaceKind: 'park', site: PARCEL_GEOMETRY, city: 'zagreb', title: 'MCP preview park', authoredAt: '2026-10-23T00:00:00.000Z' }, { turf });
   const edited = builder.modify(design, [{ type: 'set_tree_count', count: 25 }], { turf });
-  const url = await links.build({ origin: baseURL, design: edited });
+  const url = await privatePreview(page, baseURL!, { design: edited });
   await page.goto(url, { waitUntil: 'domcontentloaded' });
   await waitForMapReady(page);
   await expect.poll(() => page.evaluate(() => {
@@ -38,7 +38,7 @@ test('MCP granular height and rotation edits reach the live building renderer @c
   const design = JSON.parse(execFileSync(process.execPath, ['--input-type=module', '-e',
     "import{readFileSync}from'node:fs';import{intentDesign,appTurf as turf}from'./agents/mcp-geometry.js';import{editedDesign}from'./agents/mcp-edit.js';import{cidOfObject}from'./cid.js';const d=intentDesign.build(JSON.parse(readFileSync(0,'utf8')),{turf});console.log(JSON.stringify(editedDesign(d,cidOfObject(d),[{op:'replace',path:'/geometry/buildings/0/properties/height',value:18},{op:'transform',path:'/geometry/buildings/0/geometry',degrees:-15}])));"],
     { cwd: path.resolve(__dirname, '../../backend'), encoding: 'utf8', input: JSON.stringify({ kind: 'building', site: PARCEL_GEOMETRY, city: 'zg', title: 'Edited tower', floors: 12, coverage: 0.2 }), stdio: ['pipe', 'pipe', 'pipe'] }));
-  await page.goto(await links.build({ origin: baseURL, design }), { waitUntil: 'domcontentloaded' });
+  await page.goto(await privatePreview(page, baseURL!, { design }), { waitUntil: 'domcontentloaded' });
   await waitForMapReady(page);
   await expect.poll(() => page.evaluate(() => {
     const w = window as any;
@@ -50,7 +50,7 @@ test('MCP granular height and rotation edits reach the live building renderer @c
   expect(pageIndex(page).requests.some(r => r.method === 'POST' && ['/pins', '/designs', '/agreements'].includes(r.path))).toBe(false);
 });
 
-test('MCP agreement fragment imports matching ground as an unpublished local agreement @core', async ({ mockApi: page, baseURL }) => {
+test('MCP agreement reference imports matching ground as an unpublished local agreement @core', async ({ mockApi: page, baseURL }) => {
   test.setTimeout(120_000);
   await stubBasemapTiles(page);
   const design = builder.build({ kind: 'space', spaceKind: 'park', site: PARCEL_GEOMETRY, city: 'zagreb', title: 'Agreement park', authoredAt: '2026-10-23T00:00:00.000Z' }, { turf });
@@ -61,7 +61,7 @@ test('MCP agreement fragment imports matching ground as an unpublished local agr
     outputs: [{ hash: agreementRecord.outputHash(PARCEL_GEOMETRY), pieceId: 'fixture-piece', areaM2, fromParcelIds: [PARCEL_ID], producedBy: designCid, role: 'parcel', holders: [], geometry: PARCEL_GEOMETRY }],
     allocations: [], money: { currency: 'EUR', lines: [] }, rule: { electorate: 'community', binding: false, approvalConfig: null, lens: [] }, deadline: null };
   const agreement = agreementRecord.published(local, (id: string) => id);
-  const url = await links.build({ origin: baseURL, agreement, designs: [design] });
+  const url = await privatePreview(page, baseURL!, { agreement, designs: [design] });
   await page.goto(url, { waitUntil: 'domcontentloaded' });
   await waitForMapReady(page);
   await expect(page.locator('#agreement-panel')).toContainText('MCP preview agreement', { timeout: 60_000 });

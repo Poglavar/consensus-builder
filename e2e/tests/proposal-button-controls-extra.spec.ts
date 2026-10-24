@@ -125,7 +125,7 @@ test.describe('proposal button controls: modal and alternate states @features', 
     await expect(status).toHaveText('Select at least one design to share.');
     await selected.check();
     await expect(status).toHaveText('Publish at least one design to get a link.');
-    const link = plan.locator('.share-plan-link__input');
+    const link = plan.locator('.share-plan-link__input[readonly]');
     await expect(link).toBeHidden();
 
     // Publish pins and indexes this one design; the row says Published and the link names its CID.

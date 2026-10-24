@@ -20,7 +20,7 @@ const server = http.createServer((request, response) => {
     response.end(JSON.stringify(sourceInventory())); return;
   }
   let pathname = decodeURIComponent(url.pathname);
-  if (pathname === '/' || /^\/(?:proposals|designs|agreements|proposal|parcel|bets|monitors)\//.test(pathname)) pathname = '/index.html';
+  if (pathname === '/' || /^\/(?:proposals|designs|plans|agreements|proposal|parcel|bets|monitors)(?:\/|$)/.test(pathname)) pathname = '/index.html';
   const file = path.resolve(frontendRoot, `.${pathname}`);
   if (!file.startsWith(frontendRoot) || !fs.existsSync(file) || !fs.statSync(file).isFile()) {
     response.writeHead(404); response.end('Not found'); return;

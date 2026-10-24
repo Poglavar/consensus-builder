@@ -2,7 +2,7 @@ import { test, expect } from '../helpers/fixtures';
 import type { Page } from '@playwright/test';
 import { openCity } from '../helpers/runtime';
 
-const SECTION_IDS = ['navigation', 'appearance', 'data', 'info', 'game', 'diagnostics'];
+const SECTION_IDS = ['navigation', 'appearance', 'sources', 'economics', 'data', 'info', 'game', 'diagnostics'];
 
 async function verifySettingsSections(page: Page, width: number, height: number): Promise<void> {
   await page.setViewportSize({ width, height });
@@ -30,7 +30,7 @@ async function verifySettingsSections(page: Page, width: number, height: number)
       .filter(box => box.width > 0 && box.height > 0).length);
     expect(contentBoxes, `section ${id} should expose content when expanded`).toBeGreaterThan(0);
     if (id !== 'diagnostics') {
-      await expect(section.locator('button:visible, input:visible, select:visible, [role="button"]:visible').first()).toBeVisible();
+      await expect(section.locator('button:visible, a[href]:visible, input:visible, select:visible, [role="button"]:visible').first()).toBeVisible();
     }
     if (id === 'data') {
       await expect(section.locator('summary')).toHaveText('Local (browser) data');

@@ -227,7 +227,12 @@ test.describe('Before / after on a phone @features', () => {
     await expect(page.locator('#click-stack > .mobile-dock-sheet-handle')).toBeHidden();
     const mapBox = (await page.locator('#map').boundingBox())!;
     const originalCenter = await page.evaluate(() => (window as any).map.getCenter());
-    const grip = (await divider(page).locator('.map-compare__grip').boundingBox())!;
+    const gripControl = divider(page).locator('.map-compare__grip');
+    await expect.poll(() => gripControl.evaluate(el => {
+      const box = el.getBoundingClientRect();
+      return el.contains(document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2));
+    })).toBe(true);
+    const grip = (await gripControl.boundingBox())!;
     const point = { x: grip.x + grip.width / 2, y: grip.y + grip.height / 2, radiusX: 1, radiusY: 1, force: 1, id: 1 };
     await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [point] });
     await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ ...point, x: mapBox.x + mapBox.width * .75 }] });
