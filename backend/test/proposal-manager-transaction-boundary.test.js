@@ -169,6 +169,31 @@ describe('ProposalManager mutation boundary', () => {
         expect(ProposalManager._lastFailedPlanApplySummary.failed[0].code).toBe('bad-ground');
     });
 
+    it('previews and releases the same roads and layouts when choosing replacement ground', async () => {
+        const polygon = turf.bboxPolygon([0, 0, 0.001, 0.001]).geometry;
+        const layout = (proposalId, applied) => ({ proposalId, applied, goal: 'parcel-layout', title: proposalId,
+            parcelLayout: { plots: [{ geometry: polygon }] } });
+        store.proposals.clear();
+        [layout('target', false), layout('old-layout', true),
+            { proposalId: 'old-road', applied: true, goal: 'road-track', roadProposal: { definition: { polygon } } },
+            { proposalId: 'elsewhere', applied: true, goal: 'road-track',
+                roadProposal: { definition: { polygon: turf.bboxPolygon([1, 1, 1.001, 1.001]).geometry } } }
+        ].forEach(record => store.proposals.set(record.proposalId, record));
+        const preview = ProposalManager.validateSharedProposalGround('target', new Set(['target']));
+        expect(preview.blockers.map(record => record.proposalId)).toEqual(['old-layout', 'old-road']);
+        ProposalManager.rebuildAppliedFabric = async options => {
+            const draft = options._parcelMutation.proposals;
+            expect(draft.getAllProposals().filter(record => record.applied).map(record => record.proposalId))
+                .toEqual(['target', 'elsewhere']);
+            return { ok: true, failed: [] };
+        };
+        const result = await ProposalManager.applyProposalPlan(['target']);
+        expect(result.releasedIds).toEqual(preview.blockers.map(record => record.proposalId));
+        expect(store.getProposal('old-layout').applied).toBe(false);
+        expect(store.getProposal('old-road').applied).toBe(false);
+        expect(store.getProposal('elsewhere').applied).toBe(true);
+    });
+
     it('identifies every unavailable member and distinguishes missing records from withdrawn designs', async () => {
         store.proposals.set('withdrawn', { proposalId: 'withdrawn', title: 'Withdrawn park', lifecycleStatus: 'Cancelled', applied: false });
         const before = structuredClone([...store.proposals]);

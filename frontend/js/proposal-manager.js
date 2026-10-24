@@ -3018,7 +3018,8 @@ const ProposalManager = {
                 : _peekProposals(store);
             const alternatives = proposalClaims.appliedRivals(proposalData, records, {
                 planOrder: runtime.__planOrder || null,
-                isApplied: appliedOf
+                isApplied: appliedOf,
+                replaceLayoutGround: options.replaceLayoutGround === true
             });
             // Each alternative is about to be parked (applied=false, re-indexed): hand back the
             // draft's own copy so the edit is journaled, persisted and restorable.
@@ -3058,7 +3059,7 @@ const ProposalManager = {
         for (let i = 0; i < members.length; i += 1) {
             const member = members[i];
             this._clearLastApplyFailure?.(member.proposalId);
-            this._collectAppliedAlternativesForExplicitApply(member, candidates, options)
+            this._collectAppliedAlternativesForExplicitApply(member, candidates, { ...options, replaceLayoutGround: true })
                 .forEach(record => released.set(String(record.proposalId), record));
             _emitProposalProgress(options.onProgress, {
                 phase: 'proposal-apply', label: member.title || member.proposalId,
@@ -3103,7 +3104,7 @@ const ProposalManager = {
         const inPlan = (membership && typeof membership.has === 'function')
             ? id => membership.has(id)
             : () => false;
-        const blockers = this._collectAppliedAlternativesForExplicitApply(proposal, candidateRecords, options)
+        const blockers = this._collectAppliedAlternativesForExplicitApply(proposal, candidateRecords, { ...options, replaceLayoutGround: true })
             .filter(alternative => !inPlan(String(alternative.proposalId || '')));
         if (!blockers.length) return { ok: true, blockers: [] };
 

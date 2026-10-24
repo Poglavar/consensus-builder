@@ -67,3 +67,39 @@ conflict cases. The new browser regression holds a background mutation open, ope
 preview, chooses replacement, then verifies saved state after reload and absence of publication
 requests. Geometry regression checks every permutation of the real three road ribbons, cached
 intersection inputs and renamed local records.
+
+## Independent-plan replacement follow-up
+
+A later report supplied a different public `/designs/…` package containing 17 independently
+authored designs, including layout `bafkreid5b4bzjxygagbddnkuowlq2vxkkf7tfh6l6isw6g4k5vh7hlieca`.
+It opened cleanly on an empty device. Opening it over the original Digbeth agreement and choosing
+“Unapply existing & continue” reproduced all 11 reported failures, including the exact 90% layout
+coverage, 59% park coverage and partial square cuts into the old layout's output pieces.
+
+The conflict policy released the 13 old building/public-space designs but excluded the old layout
+and three old streets. The private replay therefore combined both plans' ground. Its refusal
+correctly rolled back; the defect was the incomplete set of conflicts offered for replacement.
+
+Confirmed shared-plan replacement now includes applied roads, layouts and content overlapping an
+incoming layout's authored plots. The conflict preview and mutation use the same option on the
+existing geometric-rival rule. Disjoint/bordering/parked records are excluded; a building-only
+share retains its host layout, and ordinary layout editing and road crossings keep their existing
+semantics. The working-composition/map-share contract is documented in the vocabulary.
+
+Real headed background Chrome validation against the public API confirmed:
+
+- The warning names the old layout and all three old streets before confirmation.
+- After confirmation, exactly the 17 incoming designs are applied; all 17 old designs remain saved
+  but unapplied. No coverage failures remain.
+- Reloading the actual shared-design route preserves those same 17 applied CIDs, with no conflict
+  prompt or failed-design list. The immutable source is `GB-HMLR-BROWSER-v1-64708982`.
+- The browser was closed. The local review launcher is `/tmp/digbeth-shared-plan.html` on port 8097;
+  it opens the public design CIDs through the local app and explicit public API override.
+
+Additional targeted runs, all completed without stopping:
+
+| Type | Scope | Result |
+| --- | --- | --- |
+| Headless unit | `proposal-ground-conflicts`, `proposal-manager-transaction-boundary`, `shared-plan-import`, `apply-shared-ground-gate` (4 files, one worker) | 83 passed |
+| Headless unit | `proposal-manager-transaction-boundary` after adding the preview/commit agreement regression (1 file, one worker) | 18 passed; 84 distinct final passing tests across the four files |
+| Headless Playwright | `shared-layout-replacement.spec.ts`, 390px and 1280px (2 cases, Chromium, one worker) | Both passed in 14.6 seconds; old ground is released, an unrelated park stays, all records remain saved, and reload preserves the replacement |

@@ -210,6 +210,34 @@ describe('ground is taken by overlap, not by parcel identity', () => {
     });
 });
 
+describe('confirmed plan replacement includes the ground its layout replaces', () => {
+    const ground = west => building('shape', west).geometry.buildings[0].geometry;
+    const layout = (proposalId, west, applied = false) => ({ proposalId, applied, goal: 'parcel-layout',
+        parcelLayout: { plots: [{ geometry: ground(west) }] } });
+    const road = (proposalId, west, applied = true) => ({ proposalId, applied, goal: 'road-track',
+        roadProposal: { definition: { polygon: ground(west) } } });
+    const options = { planOrder, replaceLayoutGround: true };
+
+    it('releases overlapping roads, layouts and content, but keeps disjoint, bordering and parked records', () => {
+        const target = layout('new-layout', 16);
+        const old = [layout('old-layout', 16, true), road('old-road', 16), building('old-building', 16, true),
+            { proposalId: 'old-park', applied: true, structureProposal: { kind: 'park', geometry: ground(16) } }];
+        const keep = [road('separate-road', 16.01), road('bordering-road', 16.001),
+            layout('separate-layout', 16.01, true), road('parked-road', 16, false)];
+        const records = [...old, ...keep, target];
+        const before = structuredClone(records);
+        expect(collectAppliedProposalAlternatives(target, records, options).map(r => r.proposalId))
+            .toEqual(old.map(r => r.proposalId));
+        expect(records).toEqual(before);
+        expect(collectAppliedProposalAlternatives(target, records, { planOrder })).toEqual([]);
+    });
+
+    it('retains a host layout for a building-only share and retains road crossings', () => {
+        expect(collectAppliedProposalAlternatives(building('new-building', 16), [layout('host-layout', 16, true)], options)).toEqual([]);
+        expect(collectAppliedProposalAlternatives(road('new-road', 16, false), [road('crossing', 16)], options)).toEqual([]);
+    });
+});
+
 // The road tool's "Build through": a road crossing an applied park cuts through it (the park keeps
 // the rest), so explicit Apply must not take the park off the map as a rival. Buildings it covers
 // remain rivals.
