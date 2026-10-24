@@ -81,9 +81,18 @@ The submitting GitHub account must star the upstream repository. Fork it, add on
 
 The [submission form](https://mcpservers.org/submit) offers an explicit **Free / $0** review option. The browser form was prepared with the shared name and description, Design category, homepage, official Registry name, remote endpoint, and No authentication. Free remains selected. Submission requires a contact email, which must be supplied by the user rather than guessed or extracted from an unrelated account. Keep that address out of this repository.
 
+## MCP.Directory — submitted for review
+
+Submitted through the [browser form](https://mcp.directory/submit) on **2026-10-24**. The form displayed **“Server Submitted!”** and said it would review the server before publication. This is a submission receipt, not evidence of a live listing.
+
+- Source supplied: https://github.com/Poglavar/consensus-builder/tree/colosseum-worlds-fair
+- Description supplied: “Inspect parcels and edit urban plans. Remote MCP: https://urbangametheory.xyz/mcp”
+- Optional email and package fields: blank; no npm package has been published.
+
+The source branch is intentional: the public MCP implementation is on `colosseum-worlds-fair`, rather than `main`. The service also describes auto-discovery from the official Registry. Do not submit a duplicate while this review is pending.
+
 ## Other directory checks
 
-- [MCP.Directory](https://mcp.directory/submit) currently accepts a GitHub repository, with optional contact email, and also describes auto-discovery from the official Registry. Its source indexing expects repository metadata. The public MCP implementation is on the `colosseum-worlds-fair` branch rather than `main`; do not present the default branch as an installable standalone MCP package.
 - The `wong2/awesome-mcp-servers` README directs submissions to mcpservers.org and explicitly declines pull requests. Use the website form above.
 
 ## Excluded
@@ -97,4 +106,5 @@ The [submission form](https://mcpservers.org/submit) offers an explicit **Free /
 - Public domain proof matched the tracked proof bytes; nginx configuration validation and reload passed.
 - Live MCP initialize succeeded over Streamable HTTP; discovery returned 30 tools, 12 resources and 5 prompts.
 - Official Registry API returned the exact manifest as active, latest version 0.3.0; browser search displayed the published entry.
+- MCP.Directory's browser form confirmed receipt of the submission; publication remains pending review.
 - No paid evaluation, paid listing, application release, or full test suite was run for this metadata-only change.
