@@ -108,12 +108,33 @@
         return moved;
     }
 
-    // Every applied proposal that paves or greens its surroundings, as
+    // Visible ground excludes applied corridors in every renderer. The authored surround stays
+    // intact, so removing a road restores it; treatments never pave or green over standing roads.
+    function surfaceWithoutCorridors(geometry, corridors) {
+        let feature = asFeature(geometry);
+        for (const corridor of corridors) {
+            try {
+                if (!turf.booleanIntersects(feature, corridor)) continue;
+                feature = turf.difference(feature, corridor);
+                if (!feature) return null;
+            } catch (error) {
+                throw clipFailureOf('difference', error, 'building-ground.surfaceWithoutCorridors', [feature, corridor]);
+            }
+        }
+        return feature.geometry;
+    }
+
+    // Every applied proposal that paves or greens its visible surroundings, as
     // { proposalId, treatment, geometry }. `isAppliedFn(proposal, sub)` is the caller's applied
     // predicate (each renderer already has one) so this module stays free of lifecycle knowledge.
     function appliedSurfaces(proposals, isAppliedFn) {
         const out = [];
         if (!Array.isArray(proposals) || typeof isAppliedFn !== 'function') return out;
+        const corridors = proposals.filter(proposal => {
+            if (!proposal?.roadProposal) return false;
+            try { return !!isAppliedFn(proposal, proposal.roadProposal); } catch (_) { return false; }
+        })
+            .map(proposal => asFeature(proposal.roadProposal.definition?.polygon)).filter(Boolean);
         proposals.forEach(function (proposal) {
             if (!proposal || !proposal.buildingProposal) return;
             const surface = surfaceOf(proposal);
@@ -121,11 +142,13 @@
             let applied = false;
             try { applied = !!isAppliedFn(proposal, proposal.buildingProposal); } catch (_) { applied = false; }
             if (!applied) return;
+            const geometry = surfaceWithoutCorridors(surface.polygon, corridors);
+            if (!geometry) return;
             out.push({
                 proposalId: proposal.proposalId != null ? String(proposal.proposalId) : null,
                 treatment: surface.treatment,
                 ...(surface.decorationDesign ? { decorationDesign: surface.decorationDesign } : {}),
-                geometry: surface.polygon
+                geometry
             });
         });
         return out;

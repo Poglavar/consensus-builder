@@ -1405,7 +1405,6 @@
         const group = ensureBuildingGroundLayer();
         try { group.clearLayers(); } catch (_) { }
 
-        const cutters = appliedCorridorCutters();
         const surfaces = appliedBuildingGroundSurfaces();
         const vacant = vacantLayoutPlots();
         let signature = '';
@@ -1416,18 +1415,15 @@
         }).addTo(group));
         surfaces.forEach(surface => {
             try {
-                const geometry = subtractCorridorsFromGeometry(surface.geometry, cutters);
-                if (!geometry) return; // fully paved over by applied roads
                 const paved = surface.treatment === 'paved';
                 const pane = paved ? SQUARES_PANE : PARKS_PANE;
                 // Ground is an overlay on top of parcels; keep parcel clicks working.
-                drawBuildingGroundSurface(group, { ...surface, polygon: geometry }, pane);
+                drawBuildingGroundSurface(group, { ...surface, polygon: surface.geometry }, pane);
             } catch (error) {
                 console.error('[structures] failed to render a building ground surface', surface.proposalId, error);
             }
         });
-        // Corridor cuts are re-derived on every call, so the signature covers the stored surfaces
-        // only; a road change already refreshes parks/squares/lakes and this layer alongside them.
+        // The signature includes the effective surfaces, so a changed road cut also refreshes 3D.
         if (signature !== buildingGroundSignature) {
             buildingGroundSignature = signature;
             try { window.dispatchEvent(new Event('buildingGroundsUpdated')); } catch (_) { }

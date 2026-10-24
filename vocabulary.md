@@ -256,6 +256,8 @@ The modeled full building removals and partial cuts caused by a land take. Accep
 
 An authored paving or green treatment of the land around proposed buildings, represented by `geometry.groundSurface`. Paving is the default for new and edited building designs and uses ordinary sidewalk slabs, distinct from square paving. Its area excludes the stored building footprints and stays within the design’s ground boundary; a surface treatment does not independently determine land take, demolition or transfer rights.
 
+Its visible geometry excludes applied corridor footprints in every map view, including its furniture and planting. The authored surface remains unchanged; removing a corridor restores the surrounding treatment.
+
 ### Corridor
 
 Transport land and its authored road or track design. Its alignment and cross-section describe its form; its footprint describes the land occupied.

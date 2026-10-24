@@ -184,6 +184,36 @@ describe('appliedSurfaces', () => {
         expect(BuildingGround.appliedSurfaces(null, isApplied)).toEqual([]);
         expect(BuildingGround.appliedSurfaces([paved], null)).toEqual([]);
     });
+
+    it.each(['green', 'paved'])('carves applied roads out of %s surrounds without changing authored designs', treatment => {
+        const surface = { ...paved, geometry: { groundSurface: { treatment, polygon: BLOCK.geometry } } };
+        // A road completely crosses the surround, leaving two disconnected visible parts.
+        const corridor = turf.bboxPolygon([15.9704, 45.8099, 15.9705, 45.811]);
+        const road = { roadProposal: { applied: true, definition: { polygon: corridor.geometry } } };
+        const before = JSON.stringify([surface, road]);
+        const [visible] = BuildingGround.appliedSurfaces([surface, road], isApplied);
+        expect(visible.geometry.type).toBe('MultiPolygon');
+        expect(turf.intersect(turf.feature(visible.geometry), corridor)).toBeNull();
+        expect(turf.area(turf.feature(visible.geometry))).toBeCloseTo(
+            turf.area(BLOCK) - turf.area(turf.intersect(BLOCK, corridor)), 3);
+        expect(JSON.stringify([surface, road])).toBe(before);
+        road.roadProposal.applied = false;
+        expect(BuildingGround.appliedSurfaces([surface, road], isApplied)[0].geometry).toEqual(BLOCK.geometry);
+    });
+
+    it('subtracts every applied corridor, retains furniture intent, and omits fully covered ground', () => {
+        const decorationDesign = { trees: [{ coordinate: [15.97045, 45.8103], kind: 'conifer' }] };
+        const surface = { ...paved, geometry: { groundSurface: {
+            treatment: 'green', polygon: BLOCK.geometry, decorationDesign
+        } } };
+        const road = geometry => ({ roadProposal: { applied: true, definition: { polygon: geometry } } });
+        const west = turf.bboxPolygon([15.9699, 45.8099, 15.9705, 45.811]);
+        const east = turf.bboxPolygon([15.9705, 45.8099, 15.971, 45.811]);
+        const [visible] = BuildingGround.appliedSurfaces([surface, road(west.geometry)], isApplied);
+        expect(visible.decorationDesign).toEqual(decorationDesign);
+        expect(turf.intersect(turf.feature(visible.geometry), west)).toBeNull();
+        expect(BuildingGround.appliedSurfaces([surface, road(west.geometry), road(east.geometry)], isApplied)).toEqual([]);
+    });
 });
 
 

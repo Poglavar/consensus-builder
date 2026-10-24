@@ -19,6 +19,13 @@ export function markUntrusted(value) {
 }
 
 export function toolError(error) {
-    return { code: error?.code || 'tool-failed', message: error?.message || String(error),
-        next: error?.next || error?.body?.next || { action: 'Correct the arguments using the tool schema, or retry an unavailable source.' } };
+    const code = error?.code || 'tool-failed';
+    const next = error?.next || error?.body?.next || (code === 'structure-over-road'
+        ? { action: 'Move or resize the structure clear of the applied road, or revise/remove the road design itself.' }
+        : { action: 'Correct the arguments using the tool schema, or retry an unavailable source.' });
+    return { code, message: error?.message || String(error), next,
+        ...(code === 'structure-over-road' ? {
+            roadId: error.roadProposalId || error.roadId || null,
+            ...(Number.isFinite(error.overlapM2) ? { overlapM2: error.overlapM2 } : {})
+        } : {}) };
 }

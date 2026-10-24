@@ -124,6 +124,16 @@ describe('footprint-geometry', () => {
 });
 
 describe('building-ground', () => {
+    it('refuses an uncut visible surround when a road subtraction fails', () => {
+        const ground = require('../../frontend/js/building-ground.js');
+        globalThis.turf = failingTurf('difference');
+        const proposals = [
+            { buildingProposal: {}, geometry: { groundSurface: { treatment: 'green', polygon: WEST.geometry } } },
+            { roadProposal: { definition: { polygon: WEST.geometry } } }
+        ];
+        expectRefusal(() => ground.appliedSurfaces(proposals, () => true), 'building-ground.surfaceWithoutCorridors');
+    });
+
     it('computeSurfacePolygon refuses instead of paving under the building it could not cut', () => {
         const ground = require('../../frontend/js/building-ground.js');
         globalThis.turf = failingTurf('difference');

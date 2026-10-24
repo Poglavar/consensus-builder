@@ -5,6 +5,7 @@ import { previewArtifact } from './mcp-preview.js';
 import { deriveWithApp } from './mcp-ground-runtime.js';
 import { parcelSourceIdOf } from './mcp-read-tools.js';
 import { authorPlanRoads } from './mcp-road-network.js';
+import { describeRoadCuts, roadCutWarning } from './mcp-ground-effects.js';
 const fail = (code, message) => Object.assign(new Error(message), { code, next: { action: 'Review these designs and their ground in the app before proposing an agreement.' } });
 export const deriveAgreementGround = deriveWithApp;
 
@@ -51,6 +52,7 @@ export function createMcpAgreementTools({ read, drafts, appOrigin }) {
             const resolved = await resolveDesigns(values, parcelSourceId);
             createdAt ||= new Date().toISOString();
             const { designs, changes: roadChanges } = authorPlanRoads(resolved.designs, createdAt);
+            const groundEffects = describeRoadCuts(designs);
             const { city } = resolved;
             if (rulePreset !== 'community-vote' && !rights) throw fail('rights-required', 'Owner agreements need a complete rights snapshot.');
             const rule = rulePreset === 'owner-deal' ? ownersRule({ lens, rights })
@@ -61,7 +63,8 @@ export function createMcpAgreementTools({ read, drafts, appOrigin }) {
                 designs: designs.map(d => ({ cid: d.cid, goal: d.content.goal, title: d.content.title })),
                 parcels: land.inputs.parcels.map(parcel => ({ ...parcel, parcelSourceId: source.parcelSourceId })), openGroundM2: land.inputs.openGroundM2, outputs: land.outputs, allocations,
                 money: money || noMoney(currency), rule, deadline });
-            return { agreement: published.content, cid: published.cid, parcelSourceId: source.parcelSourceId, takes: [...ids], roadChanges, ...(includeGround ? { ground: land } : {}), warnings: ['Draft ground is isolated from other local designs. Review the preview before publishing.',
+            return { agreement: published.content, cid: published.cid, parcelSourceId: source.parcelSourceId, takes: [...ids], roadChanges, groundEffects, ...(includeGround ? { ground: land } : {}), warnings: ['Draft ground is isolated from other local designs. Review the preview before publishing.',
+                ...(roadCutWarning(groundEffects) ? [roadCutWarning(groundEffects)] : []),
                 ...(roadChanges.length ? ['Road junctions and their land boundaries were authored together. Use the returned revised designs and CIDs when publishing this agreement.'] : [])],
                 ...await previewArtifact({ origin: appOrigin, agreement: published.content, designs: designs.map(d => d.content), parcelSourceId: source.parcelSourceId }), designs: designs.map(d => ({ cid: d.cid, content: d.content })) };
         }

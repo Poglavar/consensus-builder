@@ -3,6 +3,7 @@
 import { appTurf as turf } from './mcp-geometry.js';
 import { agreementObject, cidOfObject, designObject, holdersFromRights, isCid } from './agreement-objects.js';
 import { previewArtifact } from './mcp-preview.js';
+import { roadCutWarning } from './mcp-ground-effects.js';
 
 const fail = (code, message, next = { action: 'Inspect the current plan, choose explicit object references and retry.' }) => {
     throw Object.assign(new Error(message), { code, next });
@@ -198,9 +199,11 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
             outputs: derived.agreement.outputs, allocations, money: terms.money ?? previous.money, rule });
         const designs = derived.designs;
         const carriesRights = !suppliedRights && (previous.rule.approvalConfig?.rights || inputs.some(p => p.holders.length));
+        const cutWarning = roadCutWarning(derived.groundEffects || []);
         return { agreement: checked.content, cid: checked.cid, previousCid: original.cid, parcelSourceId: derived.parcelSourceId,
-            designs, changes, inputChanged, rightsStatus: suppliedRights ? 'caller-supplied-unverified' : carriesRights ? 'carried-unverified' : 'none',
+            designs, changes, inputChanged, groundEffects: derived.groundEffects || [], rightsStatus: suppliedRights ? 'caller-supplied-unverified' : carriesRights ? 'carried-unverified' : 'none',
             warnings: ['This is a private revision. The original plan, published designs and prior decisions retain their identity. Review this preview before publishing.',
+                ...(cutWarning ? [cutWarning] : []),
                 ...(carriesRights ? ['Existing rights and holders were carried into the draft without refreshing or verifying them. Review them before publication; no prior signature applies to this revision.'] : [])],
             ...await previewArtifact({ origin: appOrigin, agreement: checked.content, designs: designs.map(d => d.content), parcelSourceId: derived.parcelSourceId }) };
     }
