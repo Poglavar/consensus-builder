@@ -53,17 +53,17 @@ mcp-publisher publish server.json
 
 Read the published version back and compare its endpoint, description, version and identity. Publication receipts alone are insufficient.
 
-## Glama — public listing, ownership verification pending
+## Glama — public, ownership verified, healthy
 
 - [Public connector listing](https://glama.ai/mcp/connectors/xyz.urbangametheory/urban-game-theory)
 - [Public badge](https://glama.ai/mcp/connectors/xyz.urbangametheory/urban-game-theory/badges/score.svg)
 - [Submission and ownership requirements](https://glama.ai/mcp/faq)
 
-Verified in the user's existing signed-in Chrome profile on **2026-10-24**. Glama automatically imported the official Registry entry with the correct title, description, Streamable HTTP transport and endpoint; no duplicate submission was made. The connector is public and its badge returns valid SVG. Glama currently reports **Not tested**, so this is not a Glama health-check success claim.
+Verified in the user's existing signed-in Chrome profile on **2026-10-24**. Glama automatically imported the official Registry entry with the correct title, description, Streamable HTTP transport and endpoint; no duplicate submission was made. The connector is public and its badge returns valid SVG. The listing now displays **Ownership verified**, **Healthy**, **MCP 2025-11-25**, and **30 available tools**. Its displayed last-tested time is **2026-10-24 18:46**; the tool-definition score is still being calculated.
 
 The signed-in account's public ownership proof is [`frontend/.well-known/glama.json`](../frontend/.well-known/glama.json), already served at `https://urbangametheory.xyz/.well-known/glama.json` and byte-verified against the file. It is a public claim token, not an account/session credential. Keep it published for verification to remain valid.
 
-The final **Check HTTP file** action has not completed. Automatic approval review rejected it because it grants listing-management access and requires confirmation at action time; an explicit confirmation is pending. After approval, verify the claim in Glama, then configure No Auth and run the connector health check if available. Do not present ownership as claimed until the UI confirms it.
+After the user's explicit approval, **Check HTTP file** completed and the public UI confirmed ownership. The earlier automatic approval rejection is resolved. No private credential, payment, new sign-in, or additional permission change was required. Keep the public claim file published to retain verification.
 
 ## Awesome Remote MCP Servers — submitted for review
 
@@ -114,6 +114,6 @@ The source branch is intentional: the public MCP implementation is on `colosseum
 - Official Registry API returned the exact manifest as active, latest version 0.3.0; browser search displayed the published entry.
 - MCP.Directory's browser form confirmed receipt of the submission; publication remains pending review.
 - mcpservers.org's browser form confirmed successful submission on the Free plan; publication remains pending review.
-- Glama's imported public listing was verified in the user's Chrome profile; ownership remains pending explicit confirmation and Glama health remains Not tested.
+- Glama's public listing confirms ownership verified and Healthy, with all 30 hosted tools indexed; the tool-definition score remains pending calculation.
 - Community directory PR #2810 adds exactly one three-line entry; its automated submission check passed.
 - No paid evaluation, paid listing, application release, or full test suite was run for this metadata-only change.
