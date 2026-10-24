@@ -1,0 +1,18 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "xyz.urbangametheory/urban-game-theory",
+  "title": "Urban Game Theory — Consensus Builder",
+  "description": "Inspect real parcels, create and edit urban plans, compare alternatives, and share 2D/3D designs.",
+  "version": "0.3.0",
+  "websiteUrl": "https://urbangametheory.xyz",
+  "repository": {
+    "url": "https://github.com/Poglavar/consensus-builder",
+    "source": "github"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://urbangametheory.xyz/mcp"
+    }
+  ]
+}

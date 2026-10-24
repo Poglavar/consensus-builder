@@ -917,3 +917,5 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-24: Data readers share abstraction → adapter → default/custom source registration, preserving existing providers and domain identities while exposing adapter preparation and operation contracts in Settings.
 
 - 2026-10-24: The user approved named plans as immutable selections of published designs plus a map view, saved from Designs → Share; agreements alone retain allocation and decision terms. Use “Name this plan” for the action.
+
+- 2026-10-24: MCP directory promotion is free only; publish the existing hosted identity `xyz.urbangametheory/urban-game-theory` and never purchase listings, boosts or subscriptions.
