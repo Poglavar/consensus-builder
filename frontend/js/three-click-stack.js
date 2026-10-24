@@ -61,6 +61,23 @@
         return stack.sections.some(section => section.kind === kind) ? { ...stack, expanded: kind, selectedKind: kind } : stack;
     }
 
+    // Reopen a folded selection first; otherwise advance in the visible top-to-bottom order.
+    function cycle(stack) {
+        if (!stack?.sections.length) return stack;
+        if (!stack.expanded) return expand(stack, stack.selectedKind || stack.sections[0].kind);
+        const index = stack.sections.findIndex(section => section.kind === stack.expanded);
+        return expand(stack, stack.sections[(index + 1) % stack.sections.length].kind);
+    }
+
+    function sameClick(previous, next) {
+        if (!previous?.key || !next?.key) return false;
+        if (previous.key === next.key) return true;
+        // Selecting a design can expose its pick surface over the original parcel. A repeat at
+        // that spot continues the stack, without mistaking a nearby object's click for a repeat.
+        return previous.parcelId === next.parcelId && previous.point && next.point
+            && Math.hypot(previous.point.x - next.point.x, previous.point.y - next.point.y) <= 6;
+    }
+
     function selectInstance(stack, kind, id) {
         return {
             ...stack,
@@ -77,13 +94,13 @@
         return section ? section.instances[section.selectedIndex] : null;
     }
 
-    const pure = { ORDER, buildingLabel, parcelLabel, focusOf, buildThreeStack, expand, selectInstance, selectedInstance };
+    const pure = { ORDER, buildingLabel, parcelLabel, focusOf, buildThreeStack, expand, cycle, sameClick, selectInstance, selectedInstance };
     if (!global || !global.document) return Object.freeze(pure);
 
     // ── the panel ─────────────────────────────────────────────────────────────────────────────
 
     const doc = global.document;
-    const state = { el: null, stack: null, adapter: null, input: null };
+    const state = { el: null, stack: null, adapter: null, input: null, click: null, activationOptions: {} };
 
     function t(key, fallback, params = {}) {
         const value = global.i18n?.t?.(key, params);
@@ -197,13 +214,13 @@
         el.appendChild(list);
     }
 
-    function activate() {
+    function activate(options = state.activationOptions) {
         const kind = state.stack.selectedKind;
         if (!kind) return;
         if (!state.stack.expanded) { state.adapter.focus?.(kind, selectedInstance(state.stack, kind)); return; }
         const body = state.el.querySelector(`.click-stack__section[data-kind="${kind}"] .click-stack__body`);
         try {
-            state.adapter.activate(kind, selectedInstance(state.stack, kind), body);
+            state.adapter.activate(kind, selectedInstance(state.stack, kind), body, options);
         } catch (error) {
             console.error(`[${new Date().toISOString()}] [ThreeClickStack] the ${kind} section could not open`, error);
         }
@@ -217,6 +234,8 @@
         state.adapter?.release?.();
         state.adapter = adapter;
         state.input = input;
+        state.click = options.click || null;
+        state.activationOptions = {};
         state.stack = buildThreeStack(input, options);
         if (!state.stack.sections.length) { close({ silent: true }); return false; }
         render();
@@ -232,6 +251,18 @@
         if (isOpen()) activate();
     }
 
+    function cycleForClick(click) {
+        if (!isOpen() || !sameClick(state.click, click)) return false;
+        const next = cycle(state.stack);
+        if (next.expanded !== state.stack.expanded) {
+            state.stack = next;
+            state.activationOptions = { fromCycle: true };
+            render();
+            activate();
+        }
+        return true;
+    }
+
     // `silent`: the scene closed it (it already cleared its own state); otherwise the person did,
     // and the scene is told so it can leave the views the stack opened.
     function close({ silent = false } = {}) {
@@ -239,6 +270,7 @@
         const adapter = state.adapter;
         adapter?.release?.();
         state.stack = null;
+        state.click = null;
         state.el.hidden = true;
         state.el.classList.remove('visible');
         state.el.textContent = '';
@@ -255,6 +287,7 @@
         if (!target || !state.el.contains(target)) return;
         const { action, kind, id } = target.dataset;
         if (action === 'row') {
+            state.activationOptions = {};
             // The open section's row folds everything to rows; another row opens that section.
             if (state.stack.expanded === kind) {
                 state.stack = { ...state.stack, expanded: null };
@@ -266,6 +299,7 @@
                 activate();
             }
         } else if (action === 'related') {
+            state.activationOptions = {};
             if (kind === 'agreements') {
                 Promise.resolve(global.requestMapMode('2d')).then(() => global.ClickStack.showAgreement(id));
                 return;
@@ -276,6 +310,6 @@
         }
     }
 
-    return Object.freeze({ ...pure, show, refresh, close, isOpen,
+    return Object.freeze({ ...pure, show, refresh, close, isOpen, cycleForClick,
         expanded: () => state.stack?.expanded || null, current: () => state.stack });
 });

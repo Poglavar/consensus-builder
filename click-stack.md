@@ -102,13 +102,21 @@ The 3D model view has its own click stack (`frontend/js/three-click-stack.js`, u
 2026-10-23): the 2D stack's frame and row/strip look (`#click-stack, #three-click-stack` share the
 rules in `css/map.css`), with what a click in the scene stands on. Like 2D it has no panel, header or
 close button: the section cards float over the scene, and the stack closes on Escape, a click on
-nothing, the isolation banner's ×, or another selection. A repeat click retains the selected object. It replaced the floating top-left parcel /
+nothing, the isolation banner's ×, or another selection. It replaced the floating top-left parcel /
 "Proposal info" panel.
 
 - Sections, top to bottom: **Built** (the clicked building, and the existing buildings standing on
   the parcel, as a strip), **Design** (the clicked proposal, or the proposals on the parcel),
   **Permitted** (the clicked massing, or the parcel's cached massing), **Parcel** (the one parcel).
 - The clicked thing's section opens; one section is open at a time.
+- Repeated scene clicks on the same object or map spot advance through the available sections in
+  their displayed order, wrapping from Parcel to the first section. This works independently of
+  double-click speed. A different object starts with its own section; clicking elsewhere or Escape
+  dismisses the stack. A folded selection reopens before advancing. Header clicks still select a
+  section directly. Cycling into Design preserves the camera and keeps the scene in context;
+  refreshes retain that viewing policy. A stack opened from a list or link starts a fresh scene-click sequence.
+- Expanded cards fit their content. Long content scrolls within the available dock height after
+  reserving room for every other section header; a short Built record leaves Parcel visible below.
 - Design open: the proposal is isolated (as before) and the section shows the whole proposal's info
   and Built / Planned / Proposed figures with the price sliders. **Proposal actions** switches to
   the same design in the 2D click panel. Restoring a design or entering through a shared model link

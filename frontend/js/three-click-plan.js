@@ -3,7 +3,7 @@
 // parcel in view (its figures and outline), while the thing the ray hit first keeps its
 // own meaning on top (a massing opens its inspector, an existing building its record, a proposal
 // building selects and isolates the design, and its own parcel slice is the parcel in view).
-// Repeating a click retains the selection. Pure: the caller
+// Repeated-click section cycling is handled by ThreeClickStack before scene selection. Pure: the caller
 // resolves the pick and the ground parcel and passes what it found.
 //
 //   planThreeClick({ picked, groundParcelId, viewedParcelId, isolatedParcelId, isolatedProposalId, proposalKnown })
@@ -20,6 +20,15 @@
     if (root) root.__threeClickPlan = api;
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
+
+    function clickKey({ picked, groundParcelId, builtId, proposalKnown } = {}) {
+        const ground = groundParcelId ? String(groundParcelId) : null;
+        if (picked?.planningId) return JSON.stringify(['permitted', String(picked.planningId), ground]);
+        if (picked?.builtFeature && builtId) return JSON.stringify(['built', String(builtId), ground]);
+        if (picked?.proposalId && proposalKnown) return JSON.stringify(['designs', String(picked.proposalId), String(picked.parcelId || ground || '')]);
+        const parcel = ground || picked?.parcelId;
+        return parcel ? JSON.stringify(['parcels', String(parcel)]) : null;
+    }
 
     function planThreeClick(input) {
         const picked = (input && input.picked) || null;
@@ -43,7 +52,12 @@
         plan.clearSelection = true;
         if (picked && picked.proposalId && input.proposalKnown) {
             const id = String(picked.proposalId);
-            if (isolatedProposal === id) { plan.clearSelection = false; plan.proposal = { id, action: 'retain' }; return plan; }
+            if (isolatedProposal === id) {
+                plan.clearSelection = false;
+                plan.proposal = { id, action: 'retain' };
+                plan.parcel = view(picked.parcelId ? String(picked.parcelId) : ground);
+                return plan;
+            }
             plan.proposal = { id, action: 'isolate' };
             // The proposal's own parcel slice under the point: the slab the ray reaches through a
             // tall or leaning design can be the neighbour's.
@@ -60,5 +74,5 @@
         return plan;
     }
 
-    return { planThreeClick };
+    return { planThreeClick, clickKey };
 });

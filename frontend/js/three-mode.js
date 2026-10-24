@@ -1349,7 +1349,7 @@
 
     // What each section means in the scene, and what fills its body.
     const clickStackAdapter = {
-        activate(kind, instance, body) {
+        activate(kind, instance, body, { fromCycle = false } = {}) {
             if (!instance || !body) return;
             if (kind !== 'designs') withStackDriving(() => {
                 clearIsolation();
@@ -1358,7 +1358,7 @@
             });
             if (kind === 'designs') {
                 body.replaceChildren();
-                if (instance.preserveView) {
+                if (instance.preserveView || fromCycle) {
                     clearIsolation();
                     withStackDriving(() => window.selectAndHighlightProposal?.(instance.id, null, false, false, true));
                 } else if (isolatedProposalId !== instance.id) {
@@ -1445,8 +1445,12 @@
         return { id, label, feature };
     }
 
+    function clickedBuildingId(feature) {
+        return feature ? String((typeof buildingPoolFeatureKey === 'function' && buildingPoolFeatureKey(feature)) || feature.id || 'built') : null;
+    }
+
     // After a click has done its scene work: the stack for what it stood on, the clicked thing open.
-    function showClickStack(picked, plan) {
+    function showClickStack(picked, plan, click = null) {
         const stackApi = window.ThreeClickStack;
         if (!stackApi) return;
         const store = window.proposalStorage;
@@ -1457,7 +1461,7 @@
         const massingIds = [picked?.planningId, parcelId ? parcelMassingItem(parcelId)?.id : null].filter(Boolean);
         const items = window.PlanningViews?.getItems?.() || [];
         const built = picked?.builtFeature || null;
-        const builtId = built ? String((typeof buildingPoolFeatureKey === 'function' && buildingPoolFeatureKey(built)) || built.id || 'built') : null;
+        const builtId = clickedBuildingId(built);
         const builtList = [...(built ? [{ id: builtId, feature: built }] : []), ...buildingsOnParcel(parcelId)];
         const input = {
             built: builtList.map(builtInstance),
@@ -1470,7 +1474,7 @@
         };
         const focus = plan.proposal ? 'designs' : stackApi.focusOf(picked && picked.proposalId ? null : picked);
         const selected = { ...(plan.proposal ? { designs: plan.proposal.id } : {}), ...(builtId ? { built: builtId } : {}) };
-        stackApi.show(input, { focus, selected, container: document.getElementById('map-container') || document.body }, clickStackAdapter);
+        stackApi.show(input, { focus, selected, click, container: document.getElementById('map-container') || document.body }, clickStackAdapter);
     }
 
     function showThreeModeDesign(key, parcelId = null, { preserveView = false } = {}) {
@@ -8806,12 +8810,17 @@
         }
         const picked = pickMapSubjectFromEvent(evt);
         const proposal = picked?.proposalId ? (window.proposalStorage?.getProposal?.(picked.proposalId) || null) : null;
+        const groundParcelId = parcelUnderClick(evt);
+        const click = { key: window.__threeClickPlan.clickKey({ picked, groundParcelId,
+            builtId: clickedBuildingId(picked?.builtFeature), proposalKnown: !!proposal }),
+            parcelId: proposal && picked.parcelId ? String(picked.parcelId) : groundParcelId || picked?.parcelId || null,
+            point: { x: evt.clientX, y: evt.clientY } };
+        if (window.ThreeClickStack?.cycleForClick(click)) return;
         // Every click is also a parcel click (three-click-plan.js): the parcel under the point comes
         // into view, and what the ray hit keeps its own meaning on top.
         const plan = window.__threeClickPlan.planThreeClick({
-            picked, groundParcelId: parcelUnderClick(evt), viewedParcelId, isolatedParcelId, isolatedProposalId, proposalKnown: !!proposal
+            picked, groundParcelId, viewedParcelId, isolatedParcelId, isolatedProposalId, proposalKnown: !!proposal
         });
-        if (plan.proposal?.action === 'retain' || plan.parcel?.action === 'retain') return;
         if (plan.selectMassing) window.PlanningViews.select(plan.selectMassing);
         if (plan.inspectBuilding) window.PlanningViews.inspectBuilding(plan.inspectBuilding);
         if (plan.clearSelection) window.PlanningViews?.select(null);
@@ -8819,7 +8828,7 @@
             const parcelId = picked.parcelId || proposal?.cadastreParcelIds?.[0] || null;
             // The scene presents this selection; no separate 2D details panel is opened.
             window.selectAndHighlightProposal?.(plan.proposal.id, parcelId, false, false, true);
-            isolateProposal(plan.proposal.id);
+            if (plan.proposal.action !== 'retain') isolateProposal(plan.proposal.id);
         }
         if (plan.parcel?.action === 'clear') { endSelectionView(); return; }
         // A parcel's massing is opened from its section, not on every click.
@@ -8829,7 +8838,7 @@
             if (window.ThreeClickStack?.isOpen?.()) endSelectionView();
             return;
         }
-        showClickStack(picked, plan);
+        showClickStack(picked, plan, click);
     }
 
     // The parcel under a click, through whatever stands on it: the ray against the parcel slabs alone.

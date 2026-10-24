@@ -194,12 +194,13 @@ it('leaves photo and model synchronously on a photo-to-2D transition without re-
 
 it('does not reschedule an inactive render frame', () => {
     const scheduled = [];
-    const context = loadInContext(threeModeDeclarations(['invalidateThreeView', 'renderFrame']), {
+    const context = loadInContext(threeModeDeclarations(['invalidateThreeView', 'queueThreeFrame', 'renderFrame']), {
         isActive: false,
         loopRunning: true,
         document: { hidden: false },
         frameId: 17,
         renderInvalidated: false,
+        sceneVisualRevision: 0,
         requestAnimationFrame(callback) { scheduled.push(callback); return scheduled.length; },
         cancelAnimationFrame() {}
     });

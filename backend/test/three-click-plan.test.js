@@ -1,14 +1,26 @@
 // Click resolution in the 3D model view (frontend/js/three-click-plan.js): every click is also a
-// parcel click; what the ray hit keeps its own meaning; isolation is a second click.
+// parcel click; what the ray hit keeps its own meaning. Repeat keys do not depend on click timing.
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { planThreeClick } = require('../../frontend/js/three-click-plan.js');
+const { planThreeClick, clickKey } = require('../../frontend/js/three-click-plan.js');
 
 const idle = { viewedParcelId: null, isolatedParcelId: null, isolatedProposalId: null };
 
 describe('planThreeClick', () => {
+    it('identifies repeated picks by the actual subject and parcel, not timing or feature object identity', () => {
+        expect(clickKey({ picked: { builtFeature: {} }, builtId: 'b1', groundParcelId: 'p1' }))
+            .toBe(clickKey({ picked: { builtFeature: {} }, builtId: 'b1', groundParcelId: 'p1' }));
+        expect(clickKey({ picked: { builtFeature: {} }, builtId: 'b2', groundParcelId: 'p1' }))
+            .not.toBe(clickKey({ picked: { builtFeature: {} }, builtId: 'b1', groundParcelId: 'p1' }));
+        expect(clickKey({ picked: { proposalId: 'd1', parcelId: 'p1' }, groundParcelId: 'neighbour', proposalKnown: true }))
+            .toBe(clickKey({ picked: { proposalId: 'd1', parcelId: 'p1' }, groundParcelId: 'p1', proposalKnown: true }));
+        expect(clickKey({ groundParcelId: 'p1' })).not.toBe(clickKey({ groundParcelId: 'p2' }));
+        expect(clickKey({ picked: { planningId: 'm1' }, groundParcelId: 'p1' })).not.toBe(clickKey({ groundParcelId: 'p1' }));
+        expect(clickKey({ picked: { proposalId: 'gone', parcelId: 'p1' }, proposalKnown: false })).toBe(clickKey({ groundParcelId: 'p1' }));
+        expect(clickKey({})).toBeNull();
+    });
     it('views the parcel under a massing or building click without stealing the inspector', () => {
         const massing = planThreeClick({ ...idle, picked: { planningId: 'gup:HR-1' }, groundParcelId: 'HR-1' });
         expect(massing).toMatchObject({ selectMassing: 'gup:HR-1', clearSelection: false, parcel: { id: 'HR-1', action: 'view' } });
@@ -23,7 +35,7 @@ describe('planThreeClick', () => {
         const first = planThreeClick({ ...idle, picked: { proposalId: 'p-1', parcelId: 'HR-3' }, groundParcelId: 'HR-3', proposalKnown: true });
         expect(first).toMatchObject({ clearSelection: true, proposal: { id: 'p-1', action: 'isolate' }, parcel: { id: 'HR-3', action: 'view' } });
         const again = planThreeClick({ ...idle, isolatedProposalId: 'p-1', viewedParcelId: 'HR-3', picked: { proposalId: 'p-1', parcelId: 'HR-3' }, groundParcelId: 'HR-3', proposalKnown: true });
-        expect(again).toMatchObject({ clearSelection: false, proposal: { id: 'p-1', action: 'retain' }, parcel: null });
+        expect(again).toMatchObject({ clearSelection: false, proposal: { id: 'p-1', action: 'retain' }, parcel: { id: 'HR-3', action: 'view' } });
         // Through a design the ray can reach the neighbour's slab: the design's own slice is the parcel in view.
         expect(planThreeClick({ ...idle, picked: { proposalId: 'p-1', parcelId: 'HR-3' }, groundParcelId: 'HR-2', proposalKnown: true }).parcel)
             .toEqual({ id: 'HR-3', action: 'view' });

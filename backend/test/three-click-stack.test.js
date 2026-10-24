@@ -13,6 +13,31 @@ const stack = require('../../frontend/js/three-click-stack.js');
 const feature = { type: 'Feature', properties: {}, geometry: null };
 
 describe('3D click stack contextual selection', () => {
+    it('cycles repeated scene picks, retains the camera policy on refresh, and resets for a new or closed stack', () => {
+        const document = makeDocument();
+        const context = { document, console };
+        context.window = context;
+        vm.createContext(context);
+        vm.runInContext(readFileSync(new URL('../../frontend/js/three-click-stack.js', import.meta.url), 'utf8'), context);
+        const api = context.ThreeClickStack, activated = [];
+        const adapter = { activate: (kind, _item, _body, options) => activated.push([kind, options.fromCycle === true]) };
+        const input = { built: [{ id: 'b1' }], designs: [{ id: 'd1' }], parcels: [{ id: 'p1' }] };
+        const click = { key: 'building-1' };
+        api.show(input, { focus: 'built', click }, adapter);
+        expect(api.cycleForClick({ key: 'building-2' })).toBe(false);
+        expect(api.cycleForClick(click)).toBe(true);
+        expect(api.expanded()).toBe('designs');
+        api.refresh();
+        api.cycleForClick(click);
+        expect(api.expanded()).toBe('parcels');
+        api.cycleForClick(click);
+        expect(api.expanded()).toBe('built');
+        expect(activated).toEqual([['built', false], ['designs', true], ['designs', true], ['parcels', true], ['built', true]]);
+        api.close({ silent: true });
+        expect(api.cycleForClick(click)).toBe(false);
+        api.show(input, { focus: 'built' }, adapter);
+        expect(api.cycleForClick(click)).toBe(false);
+    });
     it('retains shared-view selection policy through scene refresh and section reopening', () => {
         const document = makeDocument();
         const context = { document, console };
@@ -53,6 +78,24 @@ describe('3D click stack contextual selection', () => {
 });
 
 describe('3D click stack rules', () => {
+    it('continues at the same spot when selection changes the ray hit, but resets on another parcel or object elsewhere', () => {
+        const click = { key: 'parcel-1', parcelId: 'p1', point: { x: 100, y: 100 } };
+        expect(stack.sameClick(click, { ...click, key: 'new-design-surface' })).toBe(true);
+        expect(stack.sameClick(click, { ...click, key: 'building-2', point: { x: 140, y: 100 } })).toBe(false);
+        expect(stack.sameClick(click, { ...click, key: 'parcel-2', parcelId: 'p2' })).toBe(false);
+        expect(stack.sameClick(null, click)).toBe(false);
+    });
+    it('cycles through present sections, wraps, reopens collapsed content and retains instance choices', () => {
+        let current = stack.buildThreeStack({ built: [{ id: 'b1' }, { id: 'b2' }], parcels: [{ id: 'p1' }] }, { focus: 'built', selected: { built: 'b2' } });
+        current = stack.cycle(current);
+        expect(current.expanded).toBe('parcels');
+        current = stack.cycle(current);
+        expect(current.expanded).toBe('built');
+        expect(stack.selectedInstance(current, 'built').id).toBe('b2');
+        expect(stack.cycle({ ...current, expanded: null }).expanded).toBe('built');
+        expect(stack.cycle(stack.buildThreeStack({ parcels: [{ id: 'p1' }] })).expanded).toBe('parcels');
+        expect(stack.cycle(stack.buildThreeStack({})).expanded).toBeNull();
+    });
     it('orders the sections Built, Design, Permitted, Parcel and leaves out empty ones', () => {
         const built = stack.buildThreeStack({
             parcels: [{ id: 'HR-1-2', label: '2' }],
