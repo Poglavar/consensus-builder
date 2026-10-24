@@ -702,6 +702,10 @@ The identified version or content fingerprint of a particular source record. A c
 
 Whether a query has supplied all records promised for its stated source and bounds. A cap, failure, missing requested region or clipped query leaves coverage unresolved; completeness does not assert that the source has captured every real-world object.
 
+### Parcel source proof
+
+A bounded observation used to check a city's cadastral source and its integration, consisting of safe request/result metadata and unchanged sample polygons. Downloaded datasets and extracted archives are disposable inputs, fetched only for a current check and deleted afterward. Source proof is temporary until the city's result is accepted; working source configuration and adapter code preserve a successful integration, and the city's failed-URL list preserves unsuccessful source attempts.
+
 ### Imagery source
 
 A visual map background supplied by an imagery provider. Selecting imagery changes the view, independently of parcel identities, rights and building geometry.

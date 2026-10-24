@@ -197,6 +197,49 @@ class CityStorageTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             storage.remove_owned(self.root / "backend", self.cohort)
 
+    def test_stage_download_cleanup_preserves_proof_settings_and_other_city(self):
+        scratch = storage.city_download_path(self.root, "123")
+        scratch.mkdir(parents=True)
+        (scratch / "download.zip").write_bytes(b"discard source archive")
+        (scratch / "extracted").mkdir()
+        (scratch / "extracted/data.gml").write_text("raw polygons")
+        other = storage.city_download_path(self.root, "456")
+        other.mkdir()
+        (other / "live-download").write_text("other active city")
+        storage.clear_city_downloads(self.root, ["123"])
+        self.assertFalse(scratch.exists())
+        self.assertTrue(self.packet.exists())
+        self.assertTrue(self.receipt.exists())
+        self.assertTrue((self.cohort / "sample.geojson").exists())
+        self.assertTrue((other / "live-download").exists())
+
+    def test_download_limit_counts_extracted_files_and_implicit_tempfiles_together(self):
+        scratch = storage.city_download_path(self.root, "123")
+        scratch.mkdir(parents=True)
+        (scratch / "part-1").write_bytes(b"123456")
+        temporary = self.root / "call-downloads"
+        temporary.mkdir()
+        (temporary / "part-2").write_bytes(b"123456")
+        with patch.object(storage, "MAX_PROBE_SCRATCH_BYTES", 10):
+            self.assertIsNotNone(storage.download_limit_error(self.root, ["123"], temporary))
+        storage.clear_city_downloads(self.root, ["123"])
+        with patch.object(storage, "MAX_PROBE_SCRATCH_BYTES", 10):
+            self.assertIsNone(storage.download_limit_error(self.root, ["123"], temporary))
+
+    def test_download_cleanup_cannot_escape_numeric_city_namespace(self):
+        for code in ("..", "../123", "123/x", "", "١٢٣"):
+            with self.assertRaises(ValueError):
+                storage.clear_city_downloads(self.root, [code])
+        outside = self.root / "outside"
+        outside.mkdir()
+        (outside / "keep").write_text("preserve")
+        scratch = storage.city_download_path(self.root, "123")
+        scratch.parent.mkdir(parents=True)
+        scratch.symlink_to(outside, target_is_directory=True)
+        with self.assertRaises(ValueError):
+            storage.clear_city_downloads(self.root, ["123"])
+        self.assertTrue((outside / "keep").exists())
+
 
 if __name__ == "__main__":
     unittest.main()

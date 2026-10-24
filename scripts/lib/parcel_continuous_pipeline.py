@@ -15,7 +15,7 @@ from pathlib import Path
 import parcel_discovery_coordination as coordination
 import parcel_discovery_outcomes as outcomes
 import parcel_source_stage as source_stage
-from parcel_city_storage import clear_qualification_scratch, forget_histories, finish_city, record_attempts, task_finished
+from parcel_city_storage import clear_city_downloads, clear_qualification_scratch, forget_histories, finish_city, record_attempts, task_finished
 
 
 def _write(path, value):
@@ -83,6 +83,7 @@ def execute_task(runner_class, args):
         error = f"{type(exc).__name__}: {exc}"
     finally:
         child.stop_children()
+        clear_city_downloads(child.root, spec["cityCodes"])
         child.save_state()
         _write(control / "result.json", {"lane": lane, "cities": child.state.get("cities", {}),
             "usage": child.state.get("usage", {}), "failedItems": child.state.get("failedItems", {}),
@@ -270,6 +271,8 @@ class ContinuousPipeline:
         self.runner.log("pipeline task checkpoint", taskId=task_id, lane=lane,
                         cityCodes=spec["cityCodes"], error=bool(result.get("error")))
         self.runner.save_state()
+        # Also covers recovery after a stage was killed before its finally block.
+        clear_city_downloads(self.runner.root, spec["cityCodes"])
         if not result.get("interrupted"):
             for code in spec["cityCodes"]:
                 finish_city(self.runner, self.by_code[code], self.cohort)

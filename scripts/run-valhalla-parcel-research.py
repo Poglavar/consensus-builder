@@ -33,6 +33,7 @@ sys.path.insert(0, str(SCRIPT_DIR / "lib"))
 import parcel_discovery_coordination as discovery_coord
 import parcel_discovery_outcomes as discovery_outcomes
 import parcel_source_novelty as source_novelty
+from parcel_city_storage import clear_city_downloads, download_limit_error, download_policy, remove_owned
 DEFAULT_QUEUE = Path("world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json")
 DEFAULT_SOURCE = Path("tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz")
 HANDOFF = Path("world-parcels/research/valhalla-handoff-2026-10-09.md")
@@ -720,6 +721,8 @@ Before probing a proposed endpoint, check its source ID, endpoint and host again
         call["callId"] = call_id
         call_dir = self.run_dir / call_id
         call_dir.mkdir(parents=True, exist_ok=False)
+        temporary = call_dir / "downloads"
+        temporary.mkdir()
         prompt_path = call_dir / "prompt.md"
         schema_path = call_dir / "output-schema.json"
         answer_path = call_dir / "last-message.json"
@@ -730,9 +733,11 @@ Before probing a proposed endpoint, check its source ID, endpoint and host again
         out_stream = stdout_path.open("w", encoding="utf-8")
         err_stream = stderr_path.open("w", encoding="utf-8")
         try:
+            environment = {**self._subscription_environment(), "TMPDIR": str(temporary.resolve()),
+                           "TMP": str(temporary.resolve()), "TEMP": str(temporary.resolve())}
             proc = self.popen_factory(self._command(call, schema_path, answer_path), cwd=self.root,
                                       stdin=subprocess.PIPE, stdout=out_stream, stderr=err_stream,
-                                      text=True, start_new_session=True, env=self._subscription_environment())
+                                      text=True, start_new_session=True, env=environment)
             try:
                 proc.stdin.write(call["prompt"])
                 proc.stdin.close()
@@ -755,7 +760,8 @@ Before probing a proposed endpoint, check its source ID, endpoint and host again
         return {"call": call, "process": proc, "started": self.clock(), "startedAt": utc_now(),
                 "termSentAt": None, "timedOut": False, "interrupted": False,
                 "out": out_stream, "err": err_stream, "answerPath": answer_path,
-                "stdoutPath": stdout_path, "stderrPath": stderr_path, "callDir": call_dir}
+                "stdoutPath": stdout_path, "stderrPath": stderr_path, "callDir": call_dir,
+                "temporary": temporary}
 
     def run_calls(self, calls: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Run one bounded group concurrently; persist PID/heartbeat and kill exact groups on stop."""
@@ -787,14 +793,19 @@ Before probing a proposed endpoint, check its source ID, endpoint and host again
                     if proc is None or proc.poll() is not None:
                         continue
                     elapsed = now - item["started"]
-                    if item["termSentAt"] is None and elapsed >= self.args.timeout_seconds:
-                        item["timedOut"] = True
+                    storage_error = download_limit_error(self.root, item["call"].get("scratchCodes", []),
+                                                         item.get("temporary"), item["call"].get("probeOutputDirs", [])) if item["termSentAt"] is None else None
+                    if item["termSentAt"] is None and (storage_error or elapsed >= self.args.timeout_seconds):
+                        item["timedOut"] = not bool(storage_error)
+                        if storage_error:
+                            item["error"] = storage_error
+                            item["storageLimitExceeded"] = True
                         item["termSentAt"] = now
                         try:
                             os.killpg(proc.pid, signal.SIGTERM)
                         except ProcessLookupError:
                             pass
-                        self.log("Codex turn reached its timeout; sent SIGTERM to its process group",
+                        self.log(storage_error or "Codex turn reached its timeout; sent SIGTERM to its process group",
                                  role=item["call"]["role"], taskId=item["call"].get("taskId"), pid=proc.pid)
                     elif item["termSentAt"] is not None and now - item["termSentAt"] >= self.args.grace_seconds:
                         try:
@@ -807,10 +818,17 @@ Before probing a proposed endpoint, check its source ID, endpoint and host again
             results = []
             for item in launched:
                 proc = item.get("process")
+                # A short-lived worker may finish between monitor ticks.
+                storage_error = download_limit_error(self.root, item["call"].get("scratchCodes", []),
+                                                     item.get("temporary"), item["call"].get("probeOutputDirs", []))
+                if storage_error:
+                    item.update(error=storage_error, storageLimitExceeded=True)
                 for stream_key in ("out", "err"):
                     if item.get(stream_key):
                         item[stream_key].close()
                 returncode = proc.poll() if proc else 127
+                if item.get("storageLimitExceeded"):
+                    returncode = returncode or 1
                 if item.get("interrupted") and returncode is None:
                     returncode = -signal.SIGTERM
                 answer = None
@@ -821,7 +839,7 @@ Before probing a proposed endpoint, check its source ID, endpoint and host again
                         item["error"] = f"invalid last-message JSON: {exc}"
                 stderr_text = item.get("stderrPath").read_text(errors="replace") if item.get("stderrPath") and item["stderrPath"].exists() else item.get("error", "")
                 stdout_text = item.get("stdoutPath").read_text(errors="replace") if item.get("stdoutPath") and item["stdoutPath"].exists() else ""
-                systemic = systemic_codex_failure(returncode, stdout_text, stderr_text)
+                systemic = False if item.get("storageLimitExceeded") else systemic_codex_failure(returncode, stdout_text, stderr_text)
                 result = {"call": item["call"], "returncode": returncode, "answer": answer,
                           "stdoutPath": str(item.get("stdoutPath", "")), "stderrPath": str(item.get("stderrPath", "")),
                           "answerPath": str(item.get("answerPath", "")), "timedOut": item.get("timedOut", False),
@@ -847,6 +865,10 @@ Before probing a proposed endpoint, check its source ID, endpoint and host again
             for item in launched:
                 if item.get("process") and item["process"].poll() is None and self.stop_requested:
                     self.stop_children()
+                if item.get("process") is None or item["process"].poll() is not None:
+                    clear_city_downloads(self.root, item["call"].get("scratchCodes", []))
+                    if item.get("temporary"):
+                        remove_owned(item["temporary"], item["callDir"])
 
     def _city_entry(self, queue_city: dict[str, Any]) -> dict[str, Any]:
         code = str(queue_city["cityCode"])
@@ -887,7 +909,9 @@ Your single immutable WUP queue record is:
 Attempt {attempt} of {self.args.max_retries}. Cohort directory: `{cohort_dir.relative_to(self.root)}`.
 {novelty_block}
 
-Write only `{city_file}`, `{review_file}`, and at most one sample GeoJSON containing no more than three full parcel polygons in this cohort directory. Scratch/request caches belong only under `tmp/valhalla-parcel-research/{code}/` (ignored); These files are temporary and are deleted when the city finishes. Write an explicit `failedUrls` array of objects with `url` and optional `reason` into the city packet for every unsuccessful parcel-source URL tried. Do not edit registry/catalog/runtime city config, global/generated reports, queue/identity ledgers, or another city's files. Do not commit, push, deploy, email, or contact anyone.
+Write `{city_file}`, `{review_file}`, and at most one sample GeoJSON containing no more than three full parcel polygons in this cohort directory. Store compact safe request/result proof under this cohort's `source-evidence/{code}/`, never in raw download scratch. Write an explicit `failedUrls` array of objects with `url` and optional `reason` into the city packet for every unsuccessful parcel-source URL tried. Do not edit registry/catalog/runtime city config, global/generated reports, queue/identity ledgers, or another city's files. Do not commit, push, deploy, email, or contact anyone.
+
+{download_policy()}
 
 Preserve `cityCode={code}`, rank {city.get('rank')}, country `{city.get('country')}` / `{city.get('iso2')}`, exact WUP point `{city.get('point')}` in latitude/longitude order, `population2025={round(float(city.get('pop2025k')) * 1000)}` persons, `population2025k={city.get('pop2025k')}`, and `populationUnit="persons"`. Do not shift a coordinate to force a parcel hit. A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI is not evidence of citywide absence.
 
@@ -898,7 +922,7 @@ Use the queue's `priorEvidence` and `appBindings` as starting evidence, includin
 Apply these integration lessons explicitly:
 - Search the city's own government/cadastre sites, regional/state/provincial government, national cadastre/geodata portals, and general web results in both English and the actual local language. Record each level checked, actual URLs and outcomes, including why a regional level is inapplicable. Use official portals, viewer JavaScript/configuration, catalog searches and documented download routes rather than stopping at agency prose.
 - Probe promising sources for real parcel polygons. Exclude real-estate ads, offered lots, planning zones, buildings and administrative boundaries. Require first-party evidence that the dataset represents cadastral parcels and at least one bounded city probe that returns a positive parcel polygon with safe IDs. This establishes a useful source lead for qualification, not broad coverage or citywide completeness.
-- Investigate a promising dataset enough to identify its concrete endpoint/layer/download, protocol, safe ID scheme, source purpose and observed geographic scope. Retain request/response evidence in ignored scratch; record bbox, returned count, polygon type and safe sample IDs for every probe. Use additional areas where practical, but do not hold a useful partial source solely because multi-area coverage, CRS alignment, geometry quality, completeness or source binding remains to be checked. Record those as qualification follow-ups and describe partial/bounded scope honestly; never infer 100% completeness from a sample.
+- Investigate a promising dataset enough to identify its concrete endpoint/layer/download, protocol, safe ID scheme, source purpose and observed geographic scope. Save compact safe request/result proof in this cohort's evidence directory; record bbox, returned count, polygon type and safe sample IDs for every probe. Delete raw responses after extracting that proof. Use additional areas where practical, but do not hold a useful partial source solely because multi-area coverage, CRS alignment, geometry quality, completeness or source binding remains to be checked. Record those as qualification follow-ups and describe partial/bounded scope honestly; never infer 100% completeness from a sample.
 - Identify the actual cadastral layer rather than roads, buildings, planning zones, tax tables or a screenshot. A national registry or viewable raster alone does not prove accessible parcel polygons for this city.
 - Check the service extent against the exact WUP city and distinguish centre-point from district or partial-city coverage. Place bounded windows inside the actual city coverage, record each window, and do not claim all-city coverage from a sample.
 - Inspect CRS, coordinate order, paging limits, maximum bbox area, stable IDs, duplicate geometries and overlapping/invalid parcels. Read exact case-sensitive field names from actual responses (for example objectid may differ from OBJECTID). Check WFS version/type names and ArcGIS layer IDs, ID-list/page support, current/historic validity fields and response transfer limits. Filter historic duplicates only with evidenced field semantics; do not suppress genuine overlaps.
@@ -912,7 +936,7 @@ Required city JSON core schema example (include these fields with accurate evide
 {{"cityCode": {code}, "queueRank": {city.get('rank')}, "country": {json.dumps(city.get('country'))}, "countryCode": {json.dumps(city.get('iso2'))}, "point": {json.dumps(city.get('point'))}, "population2025": {round(float(city.get('pop2025k')) * 1000)}, "population2025k": {city.get('pop2025k')}, "populationUnit": "persons", "status": "complete", "freshResearch": {{"queries": [{{"language": "English", "query": "...", "result": "...", "actualResultUrls": ["https://..."]}}, {{"language": "native/local", "query": "...", "result": "...", "actualResultUrls": ["https://..."]}}]}}, "registryFound": null}}
 ```
 
-Perform separate first-party discovery queries in English and the country's local/native language; record the actual query text, search outcome, and URLs in `freshResearch.queries`. Follow the official viewer's current JavaScript/configuration to the public map/API service, inspect schema/CRS and a bounded anonymous ID+geometry response when available. Ordinary public GET/POST is allowed. Never log in, use credentials/private tokens, defeat CAPTCHA/Cloudflare, or request owner, address, contact, titleholder, personal, tax/account, or other unsafe fields. TLS verification is the default; only use a narrow, source-specific certificate exception when the user has already authorized that exact exception, and record its host, reason, and request. Never disable TLS verification globally. Retain full unchanged native geometry only with safe parcel IDs, at most three polygons total; keep larger raw evidence in ignored `tmp/`.
+Perform separate first-party discovery queries in English and the country's local/native language; record the actual query text, search outcome, and URLs in `freshResearch.queries`. Follow the official viewer's current JavaScript/configuration to the public map/API service, inspect schema/CRS and a bounded anonymous ID+geometry response when available. Ordinary public GET/POST is allowed. Never log in, use credentials/private tokens, defeat CAPTCHA/Cloudflare, or request owner, address, contact, titleholder, personal, tax/account, or other unsafe fields. TLS verification is the default; only use a narrow, source-specific certificate exception when the user has already authorized that exact exception, and record its host, reason, and request. Never disable TLS verification globally. Retain full unchanged native geometry only with safe parcel IDs, at most three polygons total; delete larger raw responses immediately after extracting the bounded proof.
 
 Record every attempted route/request and distinguish a city/local registry custodian from general national agency prose. Use `registryFound=true` only when a local registry/cadastre/map/procedure is actually evidenced; otherwise use `null` (never `false`). Do not present packet completion as source integration/admission. Recommend exactly one discovery outcome: candidate (concrete useful source for adapter qualification), blocked (specific promising source with an evidenced access/service blocker and concrete retry action), rejected (search exhausted without an actionable useful parcel source), or already-supported (this same useful source already serves this city in the app). Do not manufacture a vague future follow-up to avoid rejecting an exhausted search. Missing adapter code is work for the next stage, not a source rejection or access blocker.
 
@@ -929,9 +953,10 @@ The paired service review MUST contain `"cityRecord": "{city_file}"` at the top 
             novelty_block = self._source_novelty_prompt()
             novelty_block += "\n".join(self._learning_prompt(city, "review") for city in city_items)
             return f"""You are the serial evidence reviewer for a finite city cadastral discovery queue.
-Review only the city packets listed below. Write durable review receipts and supplemental request/response evidence under `{receipt_dir}`;
+Review only the city packets listed below. Write review receipts under `{receipt_dir}` and compact supplemental proof under `{receipt_dir}/source-evidence/<cityCode>/`;
 do not edit registry, catalog, runtime, generated reports, queue identity or another city's packet.
 Do not perform admission, commit, push, deploy or contact anyone. Do not launch other research jobs.
+{download_policy()}
 {novelty_block}
 
 {city_text or '- (none)'}
@@ -955,7 +980,7 @@ Before adding an exact city:<code> ID to reviewedIds, write and reread its recei
 `{receipt_dir}/city_<code>.json` containing schemaVersion 2, exact taskId, decision (candidate|blocked|rejected|already-supported), nonempty evidenceFiles (repository-relative paths actually read and existing, including both packet and paired review), checkedAt ISO timestamp and substantive reason.
 Required searchCoverage object has exactly municipal, regional, national, web; each is {{"status":"checked","reason":"actual result","evidenceUrls":["https://..."]}}. Only regional may use status not-applicable with a reason. If the old evidence does not cover a level, complete that bounded search before deciding.
 For candidate/blocked/already-supported include source {{"sourceId":"stable-source-id","endpoint":"actual service/download URL","purpose":"cadastral-parcels","purposeEvidenceUrls":["first-party URL"]}}. Use current catalog IDs when the source already exists.
-For candidate include nextAction and coverage {{"scope":"bounded-sample, partial-city, substantial-city or citywide","basis":"first-party evidence of systematic cadastral parcel purpose, with observed limits","evidenceUrls":["https://..."],"distributedAcrossCity":false,"distributionBasis":"where the bounded probe was taken and what geographic coverage remains unknown","probes":[{{"bbox":[minLon,minLat,maxLon,maxLat],"featureCount":1,"geometryType":"Polygon or MultiPolygon","sampleIds":["safe-ID"],"evidenceFile":"repository-relative saved request/response evidence","evidenceSha256":"actual SHA256"}}],"qualificationFollowUp":["repeatable exact-ID reads","CRS alignment","geometry quality","completeness","source binding"]}}. At least one probe must have a positive feature count, polygon type and safe sample ID within this city's actual geographic coverage. Counts and IDs must come from actual responses; preserve raw proof safely in ignored scratch. Include all probe evidence files in evidenceFiles. Do not claim wider scope than the evidence supports.
+For candidate include nextAction and coverage {{"scope":"bounded-sample, partial-city, substantial-city or citywide","basis":"first-party evidence of systematic cadastral parcel purpose, with observed limits","evidenceUrls":["https://..."],"distributedAcrossCity":false,"distributionBasis":"where the bounded probe was taken and what geographic coverage remains unknown","probes":[{{"bbox":[minLon,minLat,maxLon,maxLat],"featureCount":1,"geometryType":"Polygon or MultiPolygon","sampleIds":["safe-ID"],"evidenceFile":"repository-relative saved request/response evidence","evidenceSha256":"actual SHA256"}}],"qualificationFollowUp":["repeatable exact-ID reads","CRS alignment","geometry quality","completeness","source binding"]}}. At least one probe must have a positive feature count, polygon type and safe sample ID within this city's actual geographic coverage. Counts and IDs must come from actual responses; preserve only compact safe proof and at most three unchanged polygons under this receipt directory. Include all probe evidence files in evidenceFiles. Never bind a receipt to raw download scratch. Do not claim wider scope than the evidence supports.
 For blocked include blocker and concrete nextAction. For rejected include rejectionReason and nextAction:null. For already-supported include appCityIds.
 Only blocked decisions belong in heldIds; all completed valid decisions belong in reviewedIds. Return only the supplied JSON schema fields reviewedIds, heldIds, summary and systemicFailure. Never mark an unread task reviewed."""
         return f"""You are the one serial root reviewer for the persistent WUP parcel-research job. You own root review decisions and are the ONLY agent authorized in this job to edit `world-parcels/registry.json`, `frontend/data/source-catalog.json`, `frontend/js/city-config.js`, and generated coverage/report artifacts. Research workers own only their named city packet/review/sample files. Provider-expansion paired city/review/sample files are immutable discovery evidence; put review decisions in separate receipts without rewriting those files. Do not commit, push, deploy, or contact anyone. Preserve the user's paused local-research goal and remote-job authorization; do not start any separate investigation outside these named tasks.
@@ -980,7 +1005,8 @@ Review acceptance metrics from original first-party response/cache artifacts, no
 Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds` (only task IDs fully reviewed), `heldIds` (reviewed items that remain held), `summary`, and `systemicFailure`. The allowed IDs are exactly the IDs listed above. Do not claim a review task completed if you did not inspect and record it."""
 
     def _call(self, role: str, task_id: str, prompt: str, model: str, effort: str) -> dict[str, Any]:
-        return {"role": role, "taskId": task_id, "prompt": prompt, "model": model, "effort": effort}
+        return {"role": role, "taskId": task_id, "prompt": prompt, "model": model, "effort": effort,
+                "scratchCodes": sorted(set(re.findall(r"(?:city|source-qualification):(\d+)", task_id)))}
 
     def _queue_path(self) -> Path:
         if self.state_path.exists():
@@ -1175,7 +1201,10 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                   for city in city_items if f"city:{city['cityCode']}" in self.receipt_errors}
         if errors:
             prompt += "\nThe previous receipts were not accepted for these concrete reasons. Correct the receipt/evidence, do not invent passing evidence:\n" + json.dumps(errors)
-        return self._call("reviewer", task_id, prompt, model["model"], model.get("effort") or "high")
+        call = self._call("reviewer", task_id, prompt, model["model"], model.get("effort") or "high")
+        call["probeOutputDirs"] = [str(self._receipt_dir() / "source-evidence" / str(city["cityCode"]))
+                                   for city in city_items]
+        return call
 
     def _record_city_attempts(self, cities: list[dict[str, Any]], cohort_dir: Path,
                               parallel_reviewer: dict[str, Any] | None = None) -> tuple[list[dict[str, Any]], dict[str, Any] | None, bool]:
@@ -1209,6 +1238,7 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                                         self._build_research_prompt(city, cohort_dir, entry["attempts"],
                                                                     entry.get("lastValidationErrors")),
                                         model["model"], model.get("effort") or "low"))
+                calls[-1]["probeOutputDirs"] = [str(cohort_dir / "source-evidence" / code)]
             if parallel_reviewer is not None and attempt_round == 0:
                 calls.append(parallel_reviewer)
             self.save_state()

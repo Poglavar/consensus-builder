@@ -194,11 +194,15 @@ class PipelineTests(unittest.TestCase):
         self.assertNotIn(self.cities[0], self.pool._select('research', 4))
 
     def test_interrupted_stage_retains_qualification_evidence(self):
+        scratch = self.root / 'tmp/valhalla-parcel-research/1'
+        scratch.mkdir(parents=True)
+        (scratch / 'raw.zip').write_text('discard even on interruption')
         self.accept('qualification', {'cities': {'1': {'qualification': {'status': 'running', 'artifactRoot': 'saved'}}},
                                       'interrupted': True})
         self.assertEqual(self.runner.state['cities']['1']['qualification'],
                          {'status': 'ready-isolated', 'artifactRoot': 'saved'})
         self.runner._record_shared_learning.assert_not_called()
+        self.assertFalse(scratch.exists())
 
     def test_launch_passes_latest_runtime_to_fresh_interpreter(self):
         process = SimpleNamespace(pid=os.getpid())
@@ -244,6 +248,7 @@ class PipelineTests(unittest.TestCase):
     def test_fresh_stage_records_failed_urls_instead_of_findings(self):
         class Child:
             def __init__(child, args):
+                child.root = Path(args.repo_root)
                 child.validated_stages = set()
                 child.stop_requested = False
             def _configure_source_novelty(child, path): pass
@@ -258,7 +263,8 @@ class PipelineTests(unittest.TestCase):
                 row['sharedFindings'] = {lane: 'finding-from-latest-stage-code'}
         control = self.root / 'child'
         spec = control / 'input.json'
-        pipeline._write(spec, {'args': {}, 'lane': 'research', 'cities': [self.cities[0]],
+        pipeline._write(spec, {'args': {'repo_root': str(self.root)}, 'lane': 'research',
+                              'cities': [self.cities[0]], 'cityCodes': ['1'],
                               'cohortDir': str(self.root),
                               'state': {'queuePath': str(self.root / 'queue.json'), 'cities': {'1': {}}}})
         with patch.object(pipeline.signal, 'signal'), patch.object(pipeline, 'record_attempts') as recorded:

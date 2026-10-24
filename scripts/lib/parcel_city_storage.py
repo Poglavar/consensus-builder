@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import subprocess
 import uuid
@@ -11,6 +12,70 @@ from pathlib import Path
 from parcel_city_records import extract_failed_urls, record_failed_urls, urls_from_document
 
 TERMINAL_QUALIFICATIONS = {"integrated", "failed", "blocked-source", "rejected-source", "integration-blocked"}
+MAX_PROBE_SCRATCH_BYTES = 64 * 1024 * 1024
+
+
+def download_policy():
+    return """DOWNLOAD STORAGE POLICY: Fetch only when a live check needs data. Prefer bbox/ID filters,
+feature limits, HTTP ranges or streaming reads; stop after the required parcel samples.
+Keep at most three unchanged parcel polygons as research proof. Never download a national
+dataset, extract a whole archive, or keep duplicate raw/transformed datasets just to prove a source.
+Cap every streamed download at 16 MiB and all downloads/extractions at 64 MiB per active city;
+check actual streamed/extracted bytes, not just Content-Length. Extract only the needed member.
+If no bounded read is possible, record the specific limitation and try another source route.
+All raw downloads and extraction scratch belong under tmp/valhalla-parcel-research/<cityCode>/
+or the provided TMPDIR. Delete them immediately after the check, including on failure.
+Only compact, safe request/result metadata and the required unchanged sample polygons belong
+in the stage's evidence directory. Never reference scratch files as qualification inputs or
+runtime dependencies: scratch is deleted after every model turn and stage, even on interruption.
+Missing old scratch is expected; fetch only the small input needed for the current check.
+Working settings, failed URLs and adapter code preserve the result, never downloaded datasets.
+"""
+
+
+def city_download_path(root, code):
+    code = str(code)
+    if not code.isascii() or not code.isdigit():
+        raise ValueError("download cleanup requires a numeric city code")
+    base = Path(root) / "tmp/valhalla-parcel-research"
+    if base.is_symlink() or (Path(root) / "tmp").is_symlink():
+        raise ValueError("download cleanup refuses a symlink namespace")
+    return base / code
+
+
+def clear_city_downloads(root, codes):
+    for code in codes:
+        path = city_download_path(root, code)
+        if path.exists() or path.is_symlink():
+            remove_owned(path, path.parent)
+
+
+def download_limit_error(root, codes, temporary=None, outputs=()):
+    paths = [city_download_path(root, code) for code in codes]
+    if temporary is not None:
+        paths.append(Path(temporary))
+    for output in outputs:
+        path = Path(output).resolve()
+        path.relative_to(Path(root).resolve())
+        if path == Path(root).resolve():
+            raise ValueError("probe output must be a child directory")
+        paths.append(path)
+    # Bound the entire call, including implicit tempfile downloads. A reviewer
+    # may inspect multiple cities, but never gets a larger download allowance.
+    size = 0
+    for path in paths:
+        if path.is_symlink():
+            return "probe scratch must not be a symlink"
+        for directory, dirs, files in os.walk(path, followlinks=False):
+            dirs[:] = [name for name in dirs if not (Path(directory) / name).is_symlink()]
+            for name in files:
+                try:
+                    size += (Path(directory) / name).lstat().st_size
+                except FileNotFoundError:
+                    continue
+                if size > MAX_PROBE_SCRATCH_BYTES:
+                    return "probe downloads exceeded 64 MiB; use bounded/streaming reads and delete raw data"
+    return None
 
 
 def knowledge_root(runner):
@@ -211,7 +276,11 @@ def finish_city(runner, city, cohort):
             if Path(cohort).resolve() in path.resolve().parents and path.suffix.lower() in {".json", ".geojson"}:
                 remove_owned(path, cohort)
     for path, base in ((runner.state_dir / "qualification/cities" / str(city["cityCode"]), runner.state_dir),
-                       (runner.root / "tmp/valhalla-parcel-research" / str(city["cityCode"]), runner.root / "tmp/valhalla-parcel-research")):
+                       (runner.root / "tmp/valhalla-parcel-research" / str(city["cityCode"]), runner.root / "tmp/valhalla-parcel-research"),
+                       (Path(cohort) / "source-evidence" / str(city["cityCode"]), cohort),
+                       (Path(cohort) / "retry-source-evidence" / str(city["cityCode"]), cohort),
+                       (runner._receipt_path(f"city:{city['cityCode']}").parent / "source-evidence" / str(city["cityCode"]),
+                        runner._receipt_path(f"city:{city['cityCode']}").parent)):
         if path.exists():
             remove_owned(path, base)
     if manifest:

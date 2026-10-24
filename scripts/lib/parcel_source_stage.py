@@ -12,6 +12,8 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
 
+from parcel_city_storage import download_policy
+
 ADMISSION_INPUTS = ("tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",)
 
 
@@ -264,6 +266,8 @@ Input hashes: `{json.dumps(hashes, ensure_ascii=False, sort_keys=True)}`
 Repository: `{root}`
 City artifact root: `{city_root}`
 Attempt directory: `{attempt_dir}`
+
+{download_policy()}
 
 The receipt scope is a source-discovery claim that must be checked against first-party evidence; it is not proof that the qualification samples cover the whole city. Confirm the source's actual cadastral/registry parcel purpose. Exclude sale listings, development-only proposals, and planning overlays that are not cadastral parcel records. Do not claim citywide completeness from the qualifier's 13 bounded cells.
 
@@ -623,6 +627,7 @@ def run_candidate(runner: Any, city: dict[str, Any], receipt: dict[str, Any], pa
         call = runner._call("review", f"source-qualification:{code}", prompt,
                             model["model"], model.get("effort") or "medium")
         call["schema"] = copy.deepcopy(qualification.OUTPUT_SCHEMA)
+        call["probeOutputDirs"] = [str(attempt_dir)]
         calls = runner.run_calls([call])
         if not calls:
             hashes_after = _input_hashes(root, city, receipt, packet)

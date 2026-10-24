@@ -1,11 +1,12 @@
 """Check immutable packet values, durable review receipts, and bounded review retries."""
 import importlib.util
+import io
 import json
 import tempfile
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 
 SCRIPT = Path(__file__).resolve().parents[1] / "run-valhalla-parcel-research.py"
@@ -269,6 +270,35 @@ class ResumeAndReceiptTests(unittest.TestCase):
 
 
 class FailureClassificationAndPromptTests(unittest.TestCase):
+    def test_excessive_download_stops_only_its_worker_and_cleans_tempfiles(self):
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw).resolve()
+            args = runner.build_parser().parse_args(['--repo-root', str(root), '--state-dir', 'state'])
+            stopped = False
+            process = SimpleNamespace(pid=999999, stdin=io.StringIO(),
+                                      poll=lambda: -runner.signal.SIGTERM if stopped else None)
+            spawn = Mock(return_value=process)
+            instance = runner.Runner(args, popen_factory=spawn, sleep=lambda _: None)
+            instance._accounting = Mock(return_value={})
+            instance._subscription_environment = lambda: {}
+            instance.state = runner.new_state('test', 'queue.json', 'queue-hash')
+            scratch = root / 'tmp/valhalla-parcel-research/42'
+            scratch.mkdir(parents=True)
+            (scratch / 'download.zip').write_bytes(b'oversized request')
+            def stop_group(pid, sig):
+                nonlocal stopped
+                self.assertEqual(pid, process.pid)
+                stopped = True
+            call = instance._call('research', 'city:42', 'bounded probe', 'fixture-model', 'low')
+            with patch('parcel_city_storage.MAX_PROBE_SCRATCH_BYTES', 10), patch.object(runner.os, 'killpg', side_effect=stop_group):
+                result = instance.run_calls([call])[0]
+            self.assertNotEqual(result['returncode'], 0)
+            self.assertIn('64 MiB', result['error'])
+            self.assertFalse(result['systemic'])
+            self.assertFalse(scratch.exists())
+            self.assertFalse(Path(spawn.call_args.kwargs['env']['TMPDIR']).exists())
+            self.assertEqual(instance.active_processes, {})
+
     def test_provider_403_in_tool_output_is_not_codex_systemic_failure(self):
         stdout = json.dumps({"type": "item.completed", "item": {"type": "command_execution", "output": "provider HTTP 403"}})
         self.assertFalse(runner.systemic_codex_failure(1, stdout, "command returned HTTP 403 from provider"))
@@ -313,6 +343,9 @@ class FailureClassificationAndPromptTests(unittest.TestCase):
             self.assertNotIn("integration learning files", research)
             self.assertNotIn("valhalla-handoff", research)
             for prompt in (research, review):
+                self.assertIn('DOWNLOAD STORAGE POLICY', prompt)
+                self.assertIn('16 MiB', prompt)
+                self.assertIn('even on interruption', prompt)
                 self.assertRegex(prompt, r"at least one (?:bounded city probe that returns a positive|positive bounded)")
                 self.assertIn("follow-up", prompt)
                 self.assertNotIn("all nine live gates", prompt)
