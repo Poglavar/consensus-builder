@@ -1,0 +1,340 @@
+import { databaseSourceError, isDatabaseSourceError } from './database-source-error.js';
+import { fetchPluto } from '../zoning/pluto.js';
+import { computeEnvelope } from '../zoning/envelope.js';
+import { SITE_REVIEWS } from '../zoning/reviews.js';
+import { getPilotEvidence } from '../zoning/pilot.js';
+import { MAX_CELL_BBOX_KM2, wgs84BboxAreaKm2 } from '../utils/helpers.js';
+import { buildOwnershipSummary } from './oss-database-source.js';
+import { isPlaceholderOwner, isCondoBillingLot } from '../routes/nyc-condo-owners.js';
+import { NYC_GEOMETRY_COLUMN, nycParcelId as buildParcelId, nycParcelIds as extractParcelIds } from '../parcels/nyc-database-source.js';
+
+const MAX_LIMIT = 5000;
+const SRID_WGS84 = 4326;
+const CITY_NAME = 'New York';
+const PARCEL_ID_PREFIX = 'US-NY';
+const GEOM_TABLE = 'parcel_nyc_geom';
+const UNIT_TABLE = 'parcel_nyc_unit';
+const GEOMETRY_TABLE_ALIAS = 'g';
+const UNIT_TABLE_ALIAS = 'u';
+
+const GEOMETRY_REF = `${GEOMETRY_TABLE_ALIAS}.${NYC_GEOMETRY_COLUMN}`;
+
+function parseLimit(rawValue) {
+    if (!rawValue) {
+        return null;
+    }
+
+    const parsed = Number.parseInt(rawValue, 10);
+    if (!Number.isFinite(parsed) || parsed <= 0) {
+        return null;
+    }
+
+    return Math.min(parsed, MAX_LIMIT);
+}
+
+function parseOffset(rawValue) {
+    if (!rawValue) {
+        return null;
+    }
+
+    const parsed = Number.parseInt(rawValue, 10);
+    if (!Number.isFinite(parsed) || parsed < 0) {
+        return null;
+    }
+
+    return parsed;
+}
+
+function parseBbox(rawValue) {
+    if (!rawValue || typeof rawValue !== 'string') {
+        return null;
+    }
+    const parts = rawValue.split(',').map(Number);
+    if (parts.length !== 4 || parts.some(value => !Number.isFinite(value))) {
+        return null;
+    }
+    const [minLon, minLat, maxLon, maxLat] = parts;
+    if (minLon >= maxLon || minLat >= maxLat) {
+        return null;
+    }
+    return { minLon, minLat, maxLon, maxLat };
+}
+
+function normalizeOwnerKey(value) {
+    return (value || '')
+        .toString()
+        .trim()
+        .replace(/\s+/g, ' ')
+        .toUpperCase();
+}
+
+function splitOwners(raw) {
+    if (!raw) return [];
+    if (Array.isArray(raw)) {
+        return raw
+            .map(value => (value || '').toString().trim())
+            .filter(Boolean);
+    }
+    if (typeof raw !== 'string') return [];
+    const trimmed = raw.trim();
+    return trimmed ? [trimmed] : [];
+}
+
+function aggregateOwners(ownerPrimary, ownerSecondary) {
+    const owners = [...splitOwners(ownerPrimary), ...splitOwners(ownerSecondary)];
+    if (!owners.length) {
+        return [];
+    }
+
+    const seen = new Set();
+    const unique = [];
+    owners.forEach(owner => {
+        const normalized = normalizeOwnerKey(owner);
+        if (!normalized || seen.has(normalized)) {
+            return;
+        }
+        seen.add(normalized);
+        unique.push(owner);
+    });
+    return unique;
+}
+
+function normalizeParcelValue(rawParcelId) {
+    const value = (rawParcelId ?? '').toString().trim();
+    if (!value) return '';
+    return value.replace(new RegExp(`^(${PARCEL_ID_PREFIX}-)+`, 'i'), '');
+}
+
+function isValidParcelValue(parcelValue) {
+    return /^[A-Za-z0-9][A-Za-z0-9-]*$/.test(parcelValue);
+}
+
+function buildPossessorsFromOwners(owners) {
+    const normalizedOwners = Array.isArray(owners) ? owners.filter(Boolean) : [];
+    if (!normalizedOwners.length) {
+        return [{
+            name: 'Unknown owner',
+            ownership: '1/1',
+            address: ''
+        }];
+    }
+
+    const shareText = `1/${normalizedOwners.length}`;
+    return normalizedOwners.map(name => ({
+        name,
+        ownership: shareText,
+        address: ''
+    }));
+}
+
+function buildOwnershipPayload(parcelValue, owners) {
+    const parcelId = buildParcelId(parcelValue);
+    const possessors = buildPossessorsFromOwners(owners);
+    return {
+        parcelId,
+        parcelNumber: parcelValue ?? null,
+        cadMunicipalityName: CITY_NAME,
+        possessionSheets: [{
+            possessionSheetId: null,
+            possessionSheetNumber: null,
+            cadMunicipalityName: CITY_NAME,
+            possessors
+        }]
+    };
+}
+
+function buildOwnershipSummaryFromOwners(parcelValue, owners) {
+    const payload = buildOwnershipPayload(parcelValue, owners);
+    const summary = buildOwnershipSummary(payload);
+    return { payload, summary };
+}
+
+function buildFeature(row) {
+    const parcelIds = extractParcelIds(row);
+    const parcelValue = row.swis_sbl_id || parcelIds[0] || null;
+    const owners = aggregateOwners(row.primary_owner, null)
+        .filter(name => !isPlaceholderOwner(name));
+    const { summary } = buildOwnershipSummaryFromOwners(parcelValue, owners);
+    const parcelId = buildParcelId(parcelValue);
+    const calculatedArea = Number.isFinite(Number(row.shape_area)) ? Number(row.shape_area) : undefined;
+    const estimatedMarketPrice = Number.isFinite(calculatedArea) ? calculatedArea * 100 : undefined;
+
+    const properties = {
+        parcelId,
+        parcel: parcelValue,
+        parcel_id: parcelValue,
+        parcelIds: parcelIds.length > 0 ? parcelIds : undefined,
+        calculatedArea,
+        estimatedMarketPrice,
+        estimatedMarketPriceCurrency: estimatedMarketPrice ? 'USD' : undefined
+    };
+
+    if (summary) {
+        properties.ownershipType = summary.ownershipType;
+        // A condo billing lot's only recorded "owner" is the condominium association,
+        // not the individual unit owners. Omit the owner list here so the parcel panel
+        // resolves the real unit owners on demand via /parcel-ownership/parcel-nyc/:id instead
+        // of trusting this single-entity stub from the bulk load. ownershipType is kept
+        // so map colouring still works without a per-parcel lookup.
+        if (!isCondoBillingLot(parcelValue)) {
+            properties.ownershipList = summary.ownershipList;
+        }
+    }
+
+    return {
+        type: 'Feature',
+        properties,
+        geometry: row.geom
+    };
+}
+
+
+export async function lookup(pool, { query = {}, body: bodyInput, params: pathParams = {} } = {}) {
+        const bboxRaw = typeof query.bbox === 'string' ? query.bbox.trim() : '';
+        const parcelIdParam = typeof query.parcel_id === 'string' ? query.parcel_id.trim() :
+            (typeof query.parcelId === 'string' ? query.parcelId.trim() :
+                (typeof query.parcel === 'string' ? query.parcel.trim() : ''));
+        const parcelValue = normalizeParcelValue(parcelIdParam);
+        const limit = parseLimit(query.limit);
+        const offset = parseOffset(query.offset);
+        const bbox = parseBbox(bboxRaw);
+
+        if (bboxRaw && !bbox) {
+            throw databaseSourceError(400, {
+                error: 'Invalid bbox. Expected minLon,minLat,maxLon,maxLat in WGS84.'
+            });
+        }
+        // Callers ask per 500 m grid cell; a bbox the size of a city (or the world) is not the app.
+        if (bbox && wgs84BboxAreaKm2(bbox.minLon, bbox.minLat, bbox.maxLon, bbox.maxLat) > MAX_CELL_BBOX_KM2) {
+            throw databaseSourceError(400, { error: `bbox too large (max ${MAX_CELL_BBOX_KM2} km²).` });
+        }
+
+        if (parcelIdParam && !isValidParcelValue(parcelValue)) {
+            throw databaseSourceError(400, {
+                error: 'Invalid parcel_id format. Expected US-NY-<parcel_id> or <parcel_id>.'
+            });
+        }
+
+        const hasParcel = Boolean(parcelValue);
+        const hasBbox = Boolean(bbox);
+
+        if (!hasParcel && !hasBbox) {
+            throw databaseSourceError(400, {
+                error: 'Provide bbox or parcel_id to query New York parcels.'
+            });
+        }
+
+        let sql = `
+            SELECT
+                g.geom_id,
+                g.shape_length,
+                g.shape_area,
+                ST_AsGeoJSON(${GEOMETRY_REF})::json AS geom,
+                array_remove(array_agg(DISTINCT u.swis_sbl_id ORDER BY u.swis_sbl_id), NULL) AS swis_sbl_ids,
+                array_remove(array_agg(DISTINCT u.primary_owner), NULL) AS primary_owner
+            FROM ${GEOM_TABLE} ${GEOMETRY_TABLE_ALIAS}
+            LEFT JOIN ${UNIT_TABLE} ${UNIT_TABLE_ALIAS}
+              ON ${UNIT_TABLE_ALIAS}.geom_id = ${GEOMETRY_TABLE_ALIAS}.geom_id
+        `;
+        const params = [];
+        const whereClauses = [];
+        let queryType = hasBbox ? 'bbox' : 'parcel';
+
+        if (hasParcel) {
+            params.push(parcelValue);
+            whereClauses.push(`(${UNIT_TABLE_ALIAS}.swis_sbl_id = $${params.length} OR ${UNIT_TABLE_ALIAS}.swis_print_key_id = $${params.length})`);
+            queryType = 'parcel';
+        }
+
+        if (hasBbox) {
+            params.push(bbox.minLon, bbox.minLat, bbox.maxLon, bbox.maxLat);
+            const envelopeExpr = `ST_MakeEnvelope($${params.length - 3}, $${params.length - 2}, $${params.length - 1}, $${params.length}, ${SRID_WGS84})`;
+            whereClauses.push(`${GEOMETRY_REF} && ${envelopeExpr}`);
+            whereClauses.push(`ST_Intersects(${GEOMETRY_REF}, ${envelopeExpr})`);
+            if (!hasParcel) {
+                queryType = 'bbox';
+            }
+        }
+
+        if (whereClauses.length > 0) {
+            sql += ` WHERE ${whereClauses.join(' AND ')}`;
+        }
+
+        sql += ` GROUP BY ${GEOMETRY_TABLE_ALIAS}.geom_id, g.shape_length, g.shape_area, ${GEOMETRY_REF}`;
+
+        if (queryType !== 'parcel') {
+            sql += ` ORDER BY (SELECT MIN(u2.swis_sbl_id) FROM ${UNIT_TABLE} u2 WHERE u2.geom_id = g.geom_id)`;
+        }
+
+        // Always bounded: without ?limit this used to return every matching row (a world bbox or
+        // a bare filter returned the whole table, raw features included). One extra row tells us
+        // whether the answer was cut short.
+        // Key lookups (queryType 'parcel') name their rows and stay unlimited.
+        const effectiveLimit = queryType === 'parcel' ? Infinity : (limit || MAX_LIMIT);
+        if (queryType !== 'parcel') {
+            params.push(effectiveLimit + 1);
+            sql += ` LIMIT $${params.length}`;
+        }
+
+        if (offset && queryType !== 'parcel') {
+            params.push(offset);
+            sql += ` OFFSET $${params.length}`;
+        }
+
+        try {
+            const { rows: fetched } = await pool.query(sql, params);
+            const truncated = fetched.length > effectiveLimit;
+            const rows = truncated ? fetched.slice(0, effectiveLimit) : fetched;
+            const features = rows.map(buildFeature);
+            return {
+                type: 'FeatureCollection',
+                query: {
+                    type: queryType,
+                    parcel_id: parcelIdParam || undefined,
+                    parcel: parcelValue || undefined,
+                    bbox: hasBbox ? `${bbox.minLon},${bbox.minLat},${bbox.maxLon},${bbox.maxLat}` : undefined,
+                    limit: limit || undefined,
+                    offset: offset || undefined
+                },
+                truncated,
+                features
+            };
+        } catch (error) {
+            if (isDatabaseSourceError(error)) throw error;
+            console.error('Error in /parcel-nyc:', error);
+            throw databaseSourceError(500, { error: 'Failed to fetch New York parcels.' });
+        }
+
+}
+
+// Screen the current PLUTO record and publish a bulk envelope only when a
+    // curated site review matches its inputs. Unresolved evidence is returned explicitly.
+export async function envelope(pool, { query = {}, body: bodyInput, params: pathParams = {} } = {}) {
+        const parcelId = normalizeParcelValue((pathParams.parcelId || '').trim());
+        if (!parcelId) {
+            throw databaseSourceError(400, { error: 'parcelId is required.' });
+        }
+        if (!isValidParcelValue(parcelId)) {
+            throw databaseSourceError(400, {
+                error: 'Invalid parcelId format. Expected US-NY-<parcel_id> or <parcel_id>.'
+            });
+        }
+
+        try {
+            const pluto = await fetchPluto(parcelId);
+            if (!pluto) {
+                throw databaseSourceError(404, { error: 'No PLUTO zoning record found for the requested parcelId.' });
+            }
+            return {
+                parcelId: buildParcelId(parcelId),
+                bbl: pluto.bbl,
+                address: pluto.address,
+                envelope: computeEnvelope(pluto, SITE_REVIEWS[pluto.bbl], { publicScreen: getPilotEvidence(pluto) }),
+            };
+        } catch (error) {
+            if (isDatabaseSourceError(error)) throw error;
+            console.error(`Error in /parcel-nyc/${parcelId}/envelope:`, error);
+            throw databaseSourceError(502, { error: 'Failed to fetch zoning data from PLUTO.' });
+        }
+
+}

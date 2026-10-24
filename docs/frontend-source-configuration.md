@@ -1,5 +1,11 @@
 # Frontend-owned source configuration
 
+All data families share the registration and dispatch contract in
+[`source-adapters.md`](source-adapters.md): abstraction → adapter → default or custom source.
+The read-only **Sources & adapters** reference in Settings exposes the running registrations,
+operation contracts and preparation schemas. Provider-specific IDs, configuration formats and
+HTTP routes remain the domain interfaces; the common wrapper does not replace those identities.
+
 The frontend owns city settings and selects every source it requests. Backend services expose named
 resources and validated adapters. They do not select a source from a city, a parcel-ID prefix or
 geographic coverage. A city on a saved record is caller metadata, not a backend routing instruction.

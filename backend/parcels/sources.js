@@ -1,5 +1,6 @@
 // Resolves executable parcel descriptors and adapters for routes and authoritative proposal binding.
 import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { createArcgisParcelSource } from './arcgis-source.js';
 import { createDdaParcelSource } from './dda-source.js';
 import { createWfsParcelSource } from './wfs-source.js';
@@ -31,6 +32,7 @@ import { HttpError } from '../utils/helpers.js';
 import { decodeCustomSource } from './custom-source-config.js';
 import { createPublicSourceFetch } from './public-source-fetch.js';
 import { withSourceCooldown, withSourceConcurrency, withSourceControls } from './source-controls.js';
+const SourceRuntime = createRequire(import.meta.url)('../../frontend/js/source-runtime.js');
 
 export { withSourceCooldown, withSourceConcurrency } from './source-controls.js';
 
@@ -40,12 +42,7 @@ const customFetch = createPublicSourceFetch();
 const runtimeSources = new Map();
 export function clearParcelSourceRuntimeCache() { runtimeSources.clear(); }
 
-export function createParcelSource(descriptor, options = {}) {
-    if (descriptor.id?.startsWith('custom.')) {
-        descriptor = decodeCustomSource(descriptor.id);
-        options = { ...options, fetchImpl: options.fetchImpl || customFetch };
-    }
-    const factory = { 'dda-public-plots': createDdaParcelSource, 'shenzhen-land-certain': (_descriptor, opts) => createShenzhenLandCertainSource(opts), 'dgu-wfs': createDguParcelSource, arcgis: createArcgisParcelSource, wfs: createWfsParcelSource, 'ogc-api': createOgcApiParcelSource,
+const parcelFactories = { 'dda-public-plots': createDdaParcelSource, 'shenzhen-land-certain': (_descriptor, opts) => createShenzhenLandCertainSource(opts), 'dgu-wfs': createDguParcelSource, arcgis: createArcgisParcelSource, wfs: createWfsParcelSource, 'ogc-api': createOgcApiParcelSource,
         'geojson-snapshot': (source, opts) => source.snapshotFormat === 'shapefile-zip'
             ? createShapefileSnapshotParcelSource(source, opts) : createGeojsonSnapshotParcelSource(source, opts),
         'shapefile-snapshot': createShapefileSnapshotParcelSource, 'shapefile-zip': createShapefileSnapshotParcelSource,
@@ -77,8 +74,23 @@ export function createParcelSource(descriptor, options = {}) {
         'pulse-public': createPulsePublicParcelSource,
         'bf-dgi-geojson': createBfDgiParcelSource,
         'divo-ecommunes-xml': createDivoEcommunesSource,
-        socrata: createSocrataParcelSource }[descriptor.adapter];
-    if (!factory) throw new Error(`Unsupported parcel adapter: ${descriptor.adapter}`);
+        socrata: createSocrataParcelSource };
+
+export const parcelSourceRegistry = SourceRuntime.createRegistry({
+    abstraction: 'parcels',
+    adapters: Object.fromEntries(Object.entries(parcelFactories).map(([id, create]) => [id, { create,
+        custom: ['arcgis', 'wfs', 'ogc-api', 'socrata', 'geojson-snapshot'].includes(id)
+    }])),
+    sources: parcelSourceCatalog.sources.map(descriptor => SourceRuntime.source('parcels', descriptor.adapter, descriptor)),
+    required: ['queryBounds', 'queryIds', 'queryGeometry']
+});
+
+export function createParcelSource(descriptor, options = {}) {
+    if (descriptor.id?.startsWith('custom.')) {
+        descriptor = decodeCustomSource(descriptor.id);
+        options = { ...options, fetchImpl: options.fetchImpl || customFetch };
+    }
+    if (!parcelFactories[descriptor.adapter]) throw new Error(`Unsupported parcel adapter: ${descriptor.adapter}`);
     if (descriptor.caCertificate && !options.fetchImpl) {
         if (!certificateFetches.has(descriptor.caCertificate)) {
             const certificate = readFileSync(new URL(descriptor.caCertificate, import.meta.url), 'utf8');
@@ -86,7 +98,13 @@ export function createParcelSource(descriptor, options = {}) {
         }
         options = { ...options, fetchImpl: certificateFetches.get(descriptor.caCertificate) };
     }
-    return factory(descriptor, options);
+    const source = SourceRuntime.source('parcels', descriptor.adapter, descriptor, {
+        kind: /^(custom|building)\./.test(descriptor.id) ? 'custom' : 'default'
+    });
+    // Native descriptors are trusted application configuration. Portable visitor sources are
+    // decoded above and remain custom; they never add or replace configured defaults.
+    if (source.kind === 'default') parcelSourceRegistry.register(source, { replace: true });
+    return parcelSourceRegistry.open(source, options);
 }
 
 export function resolveParcelSourceDescriptor(sourceId) {

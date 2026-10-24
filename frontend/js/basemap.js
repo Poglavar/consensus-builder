@@ -3,25 +3,9 @@
 
     var MAPTILER_API_KEY = 'kps68PDVgfwEhLNACcHe';
     var BASEMAP_STORAGE_KEY = 'cb_base_map';
-    var MAPTILER_BASIC_RASTER_URL = 'https://api.maptiler.com/maps/basic-v2/{z}/{x}/{y}.png?key=' + MAPTILER_API_KEY;
-
     var BASEMAPS = {
-        openstreetmap: {
-            url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-            options: {
-                maxZoom: 19,
-                attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }
-        },
-        maptiler: {
-            url: MAPTILER_BASIC_RASTER_URL,
-            options: {
-                maxZoom: 22,
-                tileSize: 512,
-                zoomOffset: -1,
-                attribution: '© <a href="https://www.maptiler.com/copyright/">MapTiler</a> · © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }
-        }
+        openstreetmap: global.BrowserSources.basemap('openstreetmap'),
+        maptiler: global.BrowserSources.basemap('maptiler', { apiKey: MAPTILER_API_KEY })
     };
 
     var tileErrorTracker = {

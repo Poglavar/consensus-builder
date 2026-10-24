@@ -56,9 +56,10 @@ describe('POST /decor/near', () => {
         expect(labels).toEqual([null]);
     });
 
-    it("reads Split's own ingest first, whatever city the body names", async () => {
+    it('uses the explicit default scope regardless of geometry or a city body field', async () => {
         const { labels } = await treesFor(point(16.4402, 43.5081), { city: 'belgrade' });
-        expect(labels[0]).toBe('split');
+        // The existing provider with no scope configuration queries by geometry with a null label.
+        expect(labels).toEqual([null]);
     });
 
     it('answers explore and New York from the geometry too', async () => {

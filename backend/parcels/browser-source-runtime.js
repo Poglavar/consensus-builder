@@ -29,6 +29,8 @@ import { createUldkPointSource } from './pl-uldk-point-source.js';
 import { knownLimitFor, upstreamError } from './source-contract.js';
 import { withSourceControls } from './source-controls.js';
 
+import SourceRuntime from '../../frontend/js/source-runtime.js';
+
 function expectedEtagForUrl(descriptor, url) {
     const requested = new URL(url).href;
     const resources = [descriptor, ...(Array.isArray(descriptor.snapshots) ? descriptor.snapshots : [])];
@@ -52,6 +54,22 @@ export const browserParcelFactories = Object.freeze({
     'dlrs-sheet': createDlrsSheetParcelSource, 'kerala-entebhoomi': createKeralaParcelSource,
     'nairobi-outlines': createNairobiOutlineSource, 'kazakhstan-pkk': createKazakhstanPkkSource,
     'msda-point': createMsdaPointSource, 'tkgm-point': createTkgmPointSource, 'pl-uldk-point': createUldkPointSource });
+
+// The worker awaits adapter construction before applying its existing controls and cache.
+// Each operation is checked when selected because injected browser readers can implement a
+// subset, including point-only lookup; the native provider operations remain unchanged.
+function createBrowserSourceRegistry(factories) {
+    return SourceRuntime.createRegistry({
+        abstraction: 'parcels',
+        adapters: Object.fromEntries(Object.entries(factories).map(([id, create]) => [id, {
+            custom: factories !== browserParcelFactories || ['arcgis', 'wfs', 'ogc-api', 'socrata', 'geojson-snapshot'].includes(id),
+            create: (descriptor, { options }) => create(descriptor, options)
+        }])),
+        sources: catalog.sources.filter(descriptor => factories[descriptor.adapter])
+            .map(descriptor => SourceRuntime.source('parcels', descriptor.adapter, descriptor))
+    });
+}
+export const browserParcelSourceRegistry = createBrowserSourceRegistry(browserParcelFactories);
 
 // A provider that ignores some networks can leave the direct connection hanging rather than
 // failing it, which would spend the adapter's whole timeout and never reach the relay.
@@ -141,6 +159,7 @@ export function publicSourceInfo(source) {
 
 export function createBrowserParcelRuntime(options = {}) {
     const { factories = browserParcelFactories, ...fetchOptions } = options;
+    const registry = factories === browserParcelFactories ? browserParcelSourceRegistry : createBrowserSourceRegistry(factories);
     const adapters = new Map();
     const pending = new Set();
     const progressListeners = new Map();
@@ -175,8 +194,11 @@ export function createBrowserParcelRuntime(options = {}) {
         pending.add(sourceId);
         let instancePromise;
         instancePromise = Promise.resolve().then(async () => {
-            const created = await factory(source, { fetchImpl, onProgress: detail => reportProgress(sourceId, detail),
-                ...(source.adapter === 'dgu-wfs' ? { token: 'browser-relay' } : {}) });
+            const definition = SourceRuntime.source('parcels', source.adapter, source, { kind: source.id.startsWith('custom.') ? 'custom' : 'default' });
+            const created = await registry.openAsync(definition, { options: {
+                fetchImpl, onProgress: detail => reportProgress(sourceId, detail),
+                ...(source.adapter === 'dgu-wfs' ? { token: 'browser-relay' } : {})
+            } });
             const instance = withSourceControls(created, { maxConcurrentQueries: source.maxConcurrentQueries });
             pending.delete(sourceId);
             trimAdapters();

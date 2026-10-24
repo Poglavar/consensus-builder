@@ -12,7 +12,6 @@
     // no Cesium code runs. Same token + asset as the isochrone sim.
     // Rotated 2026-10-15: this token is scoped to asset 2275207 and to the zagreb.lol / urbangametheory.xyz origins.
     const ION_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6IjByd19iYkpMaW1yWU1aVWciLCJqdGkiOiJiNGU3YWZiMy02YjQ4LTQ3MjQtOWY2YS0yZmM2YTMyZjI5YjEiLCJpZCI6NDI0MDY3LCJzdWIiOiJwb2dsYXZhciIsImlzcyI6Imh0dHBzOi8vYXBpLmNlc2l1bS5jb20iLCJhdWQiOiJ6YWdyZWItbG9sIHBob3RvcmVhbCByZXN0cmljdGVkIDIwMjYtMTAiLCJpYXQiOjE3OTIwNjE2ODF9.ZTMHuX13FJ-HojChWk1Ip7V9gDBkRGHcACC8J_Hwopc';
-    const GOOGLE_PHOTOREALISTIC_ION_ASSET = 2275207;
     const DRACO_DECODER = 'https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/libs/draco/gltf/';
 
     // How far (true metres) the camera may see while the tile layer is up: keeps a tilted view
@@ -2502,10 +2501,7 @@
             if (!isCurrent() || !window.isThreeModeActive?.()) return false;
 
             tiles = new TilesRenderer();
-            tiles.registerPlugin(new CesiumIonAuthPlugin({
-                apiToken: ION_TOKEN,
-                assetId: GOOGLE_PHOTOREALISTIC_ION_ASSET
-            }));
+            tiles.registerPlugin(new CesiumIonAuthPlugin(window.BrowserSources.realityAuthentication({ accessToken: ION_TOKEN }, window)));
             // Anchor the ECEF tileset so the scene origin's lat/lng sits at (0,0,0) in the
             // plugin's local ENU frame; photoreal-frame.js maps that frame into the scene.
             tiles.registerPlugin(new ReorientationPlugin({

@@ -1227,6 +1227,15 @@
                         </div>
                     </div>
                 </details>
+                <details class="accordion-section" data-section="sources">
+                    <summary class="sheet-section-title">
+                        <i class="fas fa-database" aria-hidden="true"></i>
+                        <span data-i18n-key="sourceSystem.title">Sources &amp; adapters</span>
+                    </summary>
+                    <div class="sheet-section-body">
+                        <a id="source-system-link" class="btn" href="/sources.html" data-i18n-key="sourceSystem.title">Sources &amp; adapters</a>
+                    </div>
+                </details>
                 <details class="accordion-section" data-section="economics">
                     <summary class="sheet-section-title">
                         <i class="fas fa-coins" aria-hidden="true"></i>
@@ -1819,6 +1828,9 @@
             'js/persistent-storage.js',
             'js/i18n.js',
             'js/format.js',
+            'js/source-contracts.js',
+            'js/source-runtime.js',
+            'js/browser-source-readers.js',
             'js/uk-land-rates.js',
             'js/economic-sources.js',
             'js/city-money.js',
@@ -2034,6 +2046,7 @@
             'js/parcels/point-map.js?v=20261008-point-parcels',
             'js/parcels/blocks.js',
             'js/parcels/blockchain.js',
+            'js/browser-ownership-source.js',
             'js/parcels/ownership-ui.js',
             'js/parcels/ui/visibility.js',
             'js/parcels/ui/claim.js',

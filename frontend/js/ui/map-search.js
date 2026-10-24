@@ -10,7 +10,6 @@
     const doc = win.document;
     const Model = win.SearchModel;
     const RECENT_KEY = 'cb_map_search_recent';
-    const PHOTON_URL = 'https://photon.komoot.io/api/';
     const PLACE_DEBOUNCE_MS = 350;
     const PROPOSAL_DEBOUNCE_MS = 250;
 
@@ -467,9 +466,8 @@
         const lang = win.i18n && typeof win.i18n.getLanguage === 'function' ? win.i18n.getLanguage() : '';
         // Photon translates names only into a few languages; others get the local names.
         if (['en', 'de', 'fr'].includes(lang)) params.set('lang', lang);
-        const response = await win.fetch(`${PHOTON_URL}?${params}`, { signal });
-        if (!response.ok) throw new Error(`HTTP ${response.status} from Photon`);
-        return Model.parsePhoton(await response.json());
+        const reader = win.BrowserSources.geocoder(win);
+        return Model.parsePhoton(await reader.search(Object.fromEntries(params), { fetchImpl: win.fetch.bind(win), signal }));
     }
 
     // ---- Enter before the remote results arrive ----

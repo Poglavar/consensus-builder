@@ -24,6 +24,7 @@ import { createParcelProviderRelayRouter } from './routes/parcel-provider-relay.
 import { setupBuildingSourcesRoute } from './routes/building-sources.js';
 import { setupPlanningRoutes } from './routes/planning.js';
 import { setupImagerySourcesRoute } from './routes/imagery-sources.js';
+import { setupSourceSystemRoutes } from './routes/source-system.js';
 import { setupBuildingsRoute } from './routes/buildings.js';
 import { setupBuildingFloorModelsRoute } from './routes/building-floor-models.js';
 import { setupDecorRoute } from './routes/decor.js';
@@ -429,6 +430,7 @@ export function createApp({
     setupBuildingSourcesRoute(app);
     setupPlanningRoutes(app, activePool);
     setupImagerySourcesRoute(app);
+    setupSourceSystemRoutes(app);
     setupBuildingsRoute(app, activePool);
     setupBuildingFloorModelsRoute(app, activePool);
     setupDecorRoute(app, activePool);

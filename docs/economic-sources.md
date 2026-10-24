@@ -1,5 +1,8 @@
 # Economic sources
 
+Economics implements the common [source registration and adapter contract](source-adapters.md).
+Its domain-specific rate validation remains at the economic reader boundary.
+
 The frontend selects economic sources just as it selects parcel and building sources. The pure
 `frontend/js/economic-sources.js` registry runs in both browsers and Node. An adapter returns rate
 observations; `CityMoney` is the consumer facade. Backend services do not infer a provider or currency

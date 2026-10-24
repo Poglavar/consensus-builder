@@ -534,13 +534,13 @@
         return request.ownersFromOwnershipRecord(await response.json());
     }
 
-    function buildOssOwnershipRequestUrls(parcelId) {
+    function buildOssOwnershipRequestUrls(parcelId, endpoint = 'https://oss.uredjenazemlja.hr/oss/public/cad/parcel-info') {
         const normalizedParcelId = (parcelId || '').toString().trim();
         if (!normalizedParcelId) {
             return [];
         }
 
-        const base = new URL(global.OSS_OWNERSHIP_ENDPOINT || 'https://oss.uredjenazemlja.hr/oss/public/cad/parcel-info');
+        const base = new URL(global.OSS_OWNERSHIP_ENDPOINT || endpoint);
         base.searchParams.set('parcelId', normalizedParcelId);
         if (global.OSS_PUBLIC_ACCESS_TOKEN) {
             base.searchParams.set('token', global.OSS_PUBLIC_ACCESS_TOKEN);
@@ -560,41 +560,15 @@
     }
 
     async function fetchOwnersFromOss(parcelId) {
-        const candidates = buildOssOwnershipRequestUrls(parcelId);
-        if (!candidates.length) {
-            return [];
-        }
-
-        let payload = null;
-        let lastError = null;
-        for (const url of candidates) {
-            try {
-                const response = await fetchWithRetry(url, {
-                    headers: {
-                        'Accept': 'application/json'
-                    }
-                }, 1, 500);
-
-                if (!response.ok) {
-                    lastError = new Error(`OSS ownership lookup failed (${response.status})`);
-                    continue;
-                }
-
-                payload = await response.json();
-                lastError = null;
-                break;
-            } catch (error) {
-                lastError = error;
-                console.warn('OSS ownership fetch candidate failed', url, error);
+        const source = global.OssOwnershipSource;
+        return source.registry.open(source.sourceId, {
+            buildRequestUrls: buildOssOwnershipRequestUrls,
+            fetchWithRetry,
+            extractOwners(payload) {
+                const fn = global.Parcels?.ownership?.extractOwnersFromOwnershipPayload;
+                return typeof fn === 'function' ? fn(payload) : [];
             }
-        }
-
-        if (!payload) {
-            throw lastError || new Error('OSS ownership lookup failed');
-        }
-
-        const fn = global.Parcels?.ownership?.extractOwnersFromOwnershipPayload;
-        return typeof fn === 'function' ? fn(payload) : [];
+        }).lookup(parcelId);
     }
 
     async function getRealParcelOwners(parcelId) {

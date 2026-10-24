@@ -8,6 +8,7 @@ const require = createRequire(import.meta.url);
 const approvalLink = require('../../frontend/js/approval-link.js');
 const footprintParts = require('../../frontend/js/proposals/footprint-parts.js');
 const search = require('../../frontend/js/ui/search-model.js');
+const browserSources = require('../../frontend/js/browser-source-readers.js');
 const databaseSources = JSON.parse(readFileSync(new URL('../../frontend/data/source-catalog.json', import.meta.url), 'utf8')).databaseSources;
 const vocabulary = () => readFileSync(new URL('../../vocabulary.md', import.meta.url), 'utf8');
 const failure = (code, message, next) => Object.assign(new Error(message), { code, next });
@@ -115,7 +116,8 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
                     parcelSourceId: result.parcelSourceId, bbox: turf.bbox(feature), previewUrl: mapUrl(city, turf.bbox(feature)) })) };
             }
             const [designs, agreements] = await Promise.all([listDesigns({ city, q: query, limit }), request('/agreements', { city, limit: 100 })]);
-            const places = await request('https://photon.komoot.io/api/', { q: query, limit, ...(bbox ? { bbox: bbox.join(',') } : {}) }, undefined, true);
+            const places = await browserSources.geocoder().search({ q: query, limit, ...(bbox ? { bbox: bbox.join(',') } : {}) },
+                { requestJson: url => request(url, {}, undefined, true) });
             return { candidates: [...(designs.designs || []).map(row => ({ kind: 'design', ...row, previewUrl: `${appOrigin}/designs/${row.cid}` })),
                 ...(agreements.agreements || []).filter(row => search.matchRank(row.title || row.content?.title, query) !== null).map(row => ({ kind: 'agreement', ...row, previewUrl: `${appOrigin}/agreements/${row.cid}` })),
                 ...(places.features || []).map(feature => ({ kind: 'place', city: null, requestedCity: city || null, point: feature.geometry.coordinates,

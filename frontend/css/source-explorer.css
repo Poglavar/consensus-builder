@@ -1,0 +1,32 @@
+.source-explorer__main {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: var(--cb-space-5);
+}
+.source-explorer__intro { font-size: var(--cb-text-lg); }
+.source-explorer__note { color: var(--cb-text-muted); font-size: var(--cb-text-sm); }
+.source-explorer__toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: var(--cb-space-3); }
+.source-explorer__toolbar [role="status"] { flex: 1 1 240px; }
+.source-explorer__layout { display: grid; grid-template-columns: minmax(220px, 300px) minmax(0, 1fr); gap: var(--cb-space-4); align-items: start; }
+.source-explorer__layout[hidden], .source-explorer [hidden] { display: none; }
+.source-explorer__panel { min-width: 0; padding: var(--cb-space-4); background: var(--cb-surface); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-lg); }
+.source-explorer__panel h2 { margin-top: 0; font-size: var(--cb-text-lg); }
+.source-explorer__panel h3 { font-size: var(--cb-text-base); }
+.source-explorer__panel label { display: block; margin: var(--cb-space-3) 0 var(--cb-space-1); font-weight: var(--cb-weight-medium); }
+.source-explorer__panel select { display: block; width: 100%; min-width: 0; }
+.source-explorer__details { display: grid; gap: var(--cb-space-4); min-width: 0; }
+.source-explorer pre { margin: var(--cb-space-3) 0; padding: var(--cb-space-3); max-height: 480px; overflow: auto; background: var(--cb-surface-2); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-md); font-size: var(--cb-text-sm); line-height: var(--cb-leading); tab-size: 2; }
+.source-explorer code { overflow-wrap: anywhere; }
+.source-explorer__references { padding-left: var(--cb-space-4); }
+.source-explorer__references li { margin-bottom: var(--cb-space-2); }
+.source-explorer__operation { padding-top: var(--cb-space-3); border-top: 1px solid var(--cb-line); }
+.source-explorer__operation summary { cursor: pointer; font-weight: var(--cb-weight-medium); padding: var(--cb-space-2) 0; }
+.source-explorer__operation summary:focus-visible { outline: 2px solid var(--cb-primary); outline-offset: 2px; }
+.source-explorer__schemas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--cb-space-3); }
+.source-explorer__schemas h4 { margin: var(--cb-space-2) 0; }
+.source-explorer__failure { color: var(--cb-danger); }
+@media (max-width: 767.98px) {
+    .source-explorer__main { padding: var(--cb-space-3); }
+    .source-explorer__layout, .source-explorer__schemas { grid-template-columns: minmax(0, 1fr); }
+    .source-explorer__toolbar .btn { width: 100%; }
+}

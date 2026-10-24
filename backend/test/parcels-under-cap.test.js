@@ -11,18 +11,18 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-const route = readFileSync(fileURLToPath(new URL('../routes/parcels.js', import.meta.url)), 'utf8');
+const route = readFileSync(fileURLToPath(new URL('../parcels/oss-database-source.js', import.meta.url)), 'utf8');
 
 describe('POST /parcels/under refuses cheaply', () => {
     const handler = route.slice(
-        route.indexOf("app.post('/parcels/under'"),
+        route.indexOf("export async function under("),
         route.indexOf("console.error('Error in POST /parcels/under:'")
     );
 
     it('counts before it builds', () => {
         expect(handler).toContain('const countSql = `');
         expect(handler.indexOf('const counted =')).toBeLessThan(handler.indexOf('await pool.query(sql,'));
-        expect(handler.indexOf('res.status(413)')).toBeLessThan(handler.indexOf('await pool.query(sql,'));
+        expect(handler.indexOf('databaseSourceError(413')).toBeLessThan(handler.indexOf('await pool.query(sql,'));
     });
 
     it('counts the same parcels the full query would return', () => {

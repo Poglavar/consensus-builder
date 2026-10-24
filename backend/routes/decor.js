@@ -9,8 +9,7 @@
 // GET /decor/layers tells the frontend which scenery layers an area actually has, so it can render a
 // toggle only for available layers — data-driven from what's ingested, not a hardcoded per-city list.
 
-import { createOvertureTreesProvider } from '../decor/overture-trees.js';
-import { createWaterProvider } from '../decor/openfreemap-water.js';
+import { createDecorSources, NETWORK_ENVIRONMENT_SOURCES } from '../sources/network-environment.js';
 
 // Which osm_decor kinds are renderable scenery toggles in the 3D view. Buildings are not scenery —
 // they render via the Built/Both/Planned controls. Extend as new kinds get a renderer.
@@ -18,9 +17,11 @@ const SCENERY_LAYERS = ['trees'];
 // Layers every city has, whatever is ingested: water comes from OpenFreeMap's worldwide tiles.
 const WORLDWIDE_LAYERS = ['water'];
 
-export function setupDecorRoute(app, pool, { waterProvider = createWaterProvider() } = {}) {
+export function setupDecorRoute(app, pool, options = {}) {
     // Worldwide scenery is scoped by geometry, without city-specific provider selection.
-    const treesProvider = createOvertureTreesProvider(pool);
+    const sources = createDecorSources(pool, options);
+    const treesProvider = sources.trees.open(NETWORK_ENVIRONMENT_SOURCES.trees);
+    const waterProvider = sources.water.open(NETWORK_ENVIRONMENT_SOURCES.water);
 
     // GET /decor/layers?bbox=minLon,minLat,maxLon,maxLat → { layers: ['trees', ...] } — the scenery
     // layers with rows in that box (the 3D scene's area), whatever ingest they came from.
@@ -31,14 +32,7 @@ export function setupDecorRoute(app, pool, { waterProvider = createWaterProvider
                 return res.status(400).json({ error: 'Invalid bbox. Expected minLon,minLat,maxLon,maxLat in EPSG:4326.' });
             }
             // One indexed probe per kind (EXISTS stops at the first row the GIST box finds).
-            const { rows } = await pool.query(
-                `SELECT k AS kind FROM unnest($5::text[]) AS k
-                 WHERE EXISTS (SELECT 1 FROM osm_decor d
-                               WHERE d.kind = k AND d.geom && ST_MakeEnvelope($1, $2, $3, $4, 4326))`,
-                [...bbox, SCENERY_LAYERS]
-            );
-            // Preserve SCENERY_LAYERS order so toggles render in a stable, intentional sequence.
-            const present = new Set(rows.map(r => r.kind));
+            const present = new Set(await treesProvider.layers(bbox, SCENERY_LAYERS));
             const layers = [...SCENERY_LAYERS.filter(l => present.has(l)), ...WORLDWIDE_LAYERS];
             res.json({ layers });
         } catch (err) {
@@ -103,4 +97,5 @@ export function setupDecorRoute(app, pool, { waterProvider = createWaterProvider
             res.status(502).json({ error: 'Water could not be loaded.' });
         }
     });
+    return sources;
 }

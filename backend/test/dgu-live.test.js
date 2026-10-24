@@ -52,6 +52,24 @@ describe('DGU features in our server\'s shape', () => {
 });
 
 describe('createDguLive', () => {
+    it('dispatches the browser fallback through a configured source with public metadata only', async () => {
+        const runtime = require('../../frontend/js/source-runtime.js');
+        const family = runtime.catalogue().abstractions.find(entry => entry.id === 'parcels');
+        const source = family.sources.find(entry => entry.id === 'dgu-live-cadastre');
+        expect(source).toMatchObject({ abstraction: 'parcels', adapter: 'dgu-live', kind: 'default',
+            config: { endpoint: dgu.WFS_URL, typeName: 'oss:DKP_CESTICE', srsName: 'EPSG:3765' } });
+        expect(Object.keys(source.config).sort()).toEqual(['endpoint', 'id', 'srsName', 'typeName']);
+        expect(family.adapters.find(entry => entry.id === source.adapter)).toMatchObject({
+            custom: false, required: ['fetchBbox', 'fetchIds', 'fetchUnder']
+        });
+        const requestJson = vi.fn(async () => ({ features: [raw(1, '1', square(0, 0, 1), 1)] }));
+        const reader = dgu.createDguLive({ requestJson, toWgs84: identity, toDatasetBox: box, turf });
+        expect(Object.keys(reader).sort()).toEqual(['fetchBbox', 'fetchIds', 'fetchUnder']);
+        expect((await reader.fetchIds(['HR-1-1']))[0].properties.parcelId).toBe('HR-1-1');
+        expect(requestJson).toHaveBeenCalledOnce();
+        expect(new URL(requestJson.mock.calls[0][0]).searchParams.get('token')).toBeTruthy();
+    });
+
     it('pages a box until the register says it has given every parcel', async () => {
         const asked = [];
         const pages = [

@@ -1,0 +1,108 @@
+# Source descriptors and adapters
+
+`frontend/js/source-contracts.js` is the machine-readable reference for the source wrapper and each abstraction's normalized operations. It is a pure UMD module: `SourceContracts.abstraction(id)`, `adapter(abstraction, id)`, `all()`, and `schemas()` return detached JSON data and do not read the DOM or perform network requests. The wrapper uses JSON Schema 2020-12:
+
+```json
+{
+  "id": "stable-source-id",
+  "abstraction": "parcels",
+  "adapter": "arcgis",
+  "kind": "default",
+  "label": "Readable source name",
+  "config": { "adapter-specific": "public settings" }
+}
+```
+
+The `SourceRuntime` boundary validates wrapper identity and dispatches to a registered adapter. The registry enforces source identity, adapter allowlisting, custom/default policy and required methods. It does not execute the published JSON Schemas or validate domain output. Domain codecs and readers remain responsible for semantic constraints and upstream data validation. Its operation metadata carries the actual `argumentList`, an input record schema, output schema when the runtime result is JSON, and `runtimeType`. In-process `Map` outputs are marked `runtimeType: "Map"` with `outputSchema: null`; they are not rewritten as invented JSON objects. The operation schemas returned by `schemas().operations` expose standalone `$defs` such as `parcels_queryBounds_input` and `parcels_queryBounds_output`; reference the desired definition with `$ref`. Native adapter variants also have adapter-qualified definitions. These validate operation values, not the descriptive metadata itself. A registry declares required reader methods; adapters may validate their own `config` and construct a reader. `open` checks synchronous factories and `openAsync` awaits factories that construct readers asynchronously. A default descriptor must already be registered by application configuration; callers cannot substitute its config by reusing its id. `register(definition, {replace:true})` is for trusted registry configuration and must not be exposed as an untrusted request operation. `kind: "custom"` is rejected by an adapter registered with `custom: false`. Keep pools, fetch implementations, credentials, and other runtime dependencies in adapter context; they are not portable source metadata. Source selection is explicit and allowlisted. Do not infer a data source from request location or silently change providers after an error.
+
+## Preparing a source
+
+1. Choose the actual abstraction and operation. Similar-looking data may have different meanings: frontage streets are filtered for access, block barriers control subdivision, road reservations are polygons, and road classification returns parcel IDs.
+2. Identify an existing adapter in `SourceContracts.adapter(family, id)`. Follow its config schema and reader in the linked implementation. If no adapter accepts the source, prepare a focused adapter proposal rather than claiming compatibility from a URL alone.
+3. Establish stable identity, coverage and authority. Give source records durable identifiers; state the jurisdiction and actual geographic coverage, including known gaps. Record attribution and licence terms. A successful small-area probe verifies only that sample, not whole-city coverage.
+4. Normalize only at the adapter boundary. Retain source IDs and source properties, label the adapter/source in output, and report `partial`, `truncated`, unavailable or null states distinctly. Never replace missing geometry, unknown heights, NoData elevations or absent ownership with invented values or zero.
+5. State coordinate reference systems, axes and units. Geographic request and normalized feature geometry is WGS84/EPSG:4326 with `[longitude, latitude]`. Projected input must declare its CRS and be transformed deliberately. Distances, buffers, height, elevation, frontage width, floor area and prices require named units; elevation also requires a vertical datum. Keep currency and valuation basis/date with economic observations.
+6. Validate limits and security at the reader boundary: endpoint protocol/host policy, pagination, response bytes, features, geometry validity, bbox/area and timeout. Never embed tokens or credentials in endpoint URLs or source descriptors; use a server-side secret mechanism when a provider requires authentication. A DB-backed source is repository-owned: do not expose a custom SQL/table adapter or mark it user-configurable.
+7. Include a small sanitized fixture and an example descriptor with the preparation. Check the adapter's output against the operation schema and its consumer, including empty, partial, malformed and over-limit responses. Document how attribution reaches the UI.
+
+## Existing contracts and preparation notes
+
+| Abstraction | Current adapter boundary and normalized operation | Preparation constraints |
+| --- | --- | --- |
+| `parcels` | Positional reader methods `queryBounds(bbox)`, `queryIds(ids)`, `queryGeometry(geometry)` and optional `queryPoint(coordinates)`; sources in `backend/parcels/sources.js`, registry in `SourceRuntime`. | Reader results are provider objects commonly containing `features`, `complete`, `sourceId` and `returnsWGS84`; they are not guaranteed to be a GeoJSON FeatureCollection. The point operation is only available on adapters that implement it. Existing custom URL config and guards are in [`backend/parcels/custom-source-config.js`](../backend/parcels/custom-source-config.js) and [`backend/parcels/public-source-fetch.js`](../backend/parcels/public-source-fetch.js). Public custom transports are ArcGIS, WFS, OGC API, Socrata and GeoJSON snapshot. A GeoJSON snapshot needs source-stable feature IDs, valid Polygon/MultiPolygon geometry, closed rings and WGS84 coordinates. Preserve parcel identity and provider completeness; a centroid or bounding box is not replacement parcel geometry. Specialized registered providers have provider-specific configuration and must not be presented as universal custom URL schemas. |
+| `buildings` | Positional reader methods `near(geometry, bufferMeters)`, `footprints(geometry)`, `footprintsUnder(regions)`; [`backend/buildings/index.js`](../backend/buildings/index.js). | `near` returns `{buildings,count,source}` with adapter-specific optional metadata; `footprints` returns `{footprints,count,source,truncated}`; `footprintsUnder` returns `{regions: Map,source,truncated}`. The Map is consumed in-process and has no published JSON projection. Existing custom-source transport validation is shared with parcels. Declare the actual height field and `heightUnit` (`m` or `ft`) when present; storey counts remain distinct from measured heights. Keep source identity stable so attached floor evidence resolves to the same building. |
+| `building-details` | `fetchFloorModels(identities)`; registry in [`backend/buildings/floor-models.js`](../backend/buildings/floor-models.js). | Returns an in-process `Map` keyed by canonical identity JSON to raw database rows. No JSON projection is defined. The active `floor-model-storage` adapter is repository-owned and `custom: false`. Registered details use `consensus-builder.building-floor-plans.v2` and its validator/architecture schema in [`frontend/js/building-floor-plans.js`](../frontend/js/building-floor-plans.js). Registration has four convex WGS84 corners spanning at most 1 km and a stated basis. Layouts retain evidence URL/hash or explicitly mark generated provenance. Generated suggestions are display-only; the registry rejects them. Keep levels, elevations in metres, vertical datum/basis, architectural dimensions and source references explicit. |
+| `planning` | Provider methods `query(pool,query)`, `parcel(pool,query)`, `record(pool,query)`; registered by [`backend/planning/sources.js`](../backend/planning/sources.js). | Runtime adapter IDs are `gup`, `nyc-pilot` and `atlas-url`. `query` returns `{items,nextAfter,omitted,summary?}`; the HTTP layer aggregates providers and adds pagination/envelope fields. Parcel and record methods return item arrays; their HTTP envelopes are also separate. Items use `planning-representations.v1`; preserve capabilities, scenarios, status, units, evidence and provenance from [`frontend/js/planning/representations.js`](../frontend/js/planning/representations.js). Regional adapter metadata is explicitly provider-specific. |
+| `economics` | Frontend adapter method `rates(context)` returns rate rows; underlying normalizer/resolver is [`frontend/js/economic-sources.js`](../frontend/js/economic-sources.js). | Portable snapshots use the existing `rate-table` v1 shape: metrics and units are `land`/`roadLand` per `m2-land`, `sale`/`construction` per `m2-floor`; currency is ISO 4217; `basis` is explicit; non-assumption evidence requires `asOf`. `uk-mhclg-2023` and `scenario-assumptions` adapt into those rate records. Assessed totals are not rates; currencies are not converted implicitly. |
+| `imagery` | Frontend adapter methods `tileUrl(base,coords)` and `basemap()`; source configuration in [`frontend/js/imagery-source.js`](../frontend/js/imagery-source.js). | `tileUrl` returns a protected gateway URL, not bytes. `basemap` returns `{url,options}`. Existing custom formats are XYZ and WMS. Use HTTPS without embedded credentials, identify WMS layers/CRS/version/image format or XYZ zoom bounds, and supply attribution and geographic bounds. Tiles are requested in Web Mercator XYZ through the protected gateway. |
+| `geocoding` | `search(params, options)` in the place-search adapter; [`frontend/js/ui/map-search.js`](../frontend/js/ui/map-search.js) uses Photon. | The adapter returns raw Photon GeoJSON. `SearchModel.parsePhoton` separately normalizes it for the UI. Do not describe adapter output as normalized place rows. A no-match response is not evidence that an address/place does not exist. Do not persist query text or credentials as source config. |
+| `transit-alignments` | Single-source `load({fetchImpl})`; normalized source registry is [`frontend/js/transit-alignments.js`](../frontend/js/transit-alignments.js). | Returns the source FeatureCollection, not a bundle of loaded-source wrappers. Existing configured sources are static GeoJSON in `city-config.js`. Lines use WGS84; mode, station types, `elevationM`, and render class are source descriptor metadata. Do not mix immutable reference alignments with editable proposal corridors. |
+| `terrain-profile` | `profile({coordinates,stepM},{fetchImpl,signal})`; current consumer is `fetchCorridorDguProfile` in [`frontend/js/three-mode.js`](../frontend/js/three-mode.js). | Returns the validated provider response (`source`, `datum`, `points`, optional resolution metadata). Samples use geodesic chainage `dM` in metres and nullable elevation fields such as `elevAslM`, `elevationM`, or `elevation`; preserve provider fields. NoData is null, never zero. The current DGU profile is a constrained provider, not a generic elevation schema. |
+| `road-network`, `frontage-streets`, `block-barriers`, `street-register`, `planned-roads`, `road-classification` | `readNetwork` / `readLiveNetwork`, `near`, `readBarriers`, `readStreets`, `readReservations`, `readIds`; concrete registrations/readers in [`backend/sources/network-environment.js`](../backend/sources/network-environment.js). | Keep these as separate abstractions. Network/frontage/barrier/register outputs are EPSG:4326 line features with provider properties; reservations are polygons and `target_m` is metres; classification returns stable parcel IDs only. Do not treat a bounded query, a partial provider answer, and a complete empty area as equivalent. Current PostGIS and curated sources are not user-configurable SQL endpoints. |
+| `trees`, `water` | Reader methods in [`backend/sources/network-environment.js`](../backend/sources/network-environment.js); HTTP wrappers in [`backend/routes/decor.js`](../backend/routes/decor.js). | `trees.near` returns `{trees,count,source}`; tree points are `[longitude,latitude]`. `trees.layers(bbox,kinds)` returns `string[]`; the route wraps it as `{layers}`. `water.near` returns `{areas,count,source}` with GeoJSON EPSG:4326 geometries. Buffers are metres. Keep reader and HTTP shapes distinct; the current PostGIS decor and OpenFreeMap readers are concrete provider adapters. |
+| `ownership` | `lookup`; registry and normalized record in [`backend/ownership/registry.js`](../backend/ownership/registry.js), [`backend/ownership/contract.js`](../backend/ownership/contract.js). | Null means no answer for a registered source/parcel. Non-null records retain the parcel/source identity, attribution and licence. Do not infer title or rights from a source omission or an unverified claim. |
+
+## Provider-specific source notes
+
+The wrapper schema is intentionally stable while `config` stays adapter-owned. For example, the custom parcel/building transport config is validated by `canonicalConfig` in `backend/parcels/custom-source-config.js`; imagery config is decoded in `frontend/js/imagery-source.js`; economics snapshots are normalized by `rateTable` in `frontend/js/economic-sources.js`. Do not duplicate these validations as a competing universal config format. Update the machine-readable operation contract when a consumer-visible normalized field, unit, null/partial meaning or provenance rule changes; keep implementation findings and change history in separate documents.
+
+## Adapter configuration examples
+
+The model is **abstraction → adapter → source**: an abstraction names the domain, an adapter implements a concrete reader, and a source binds public configuration to that adapter. `kind: "default"` means application-registered configuration; `kind: "custom"` means caller-provided configuration accepted by that particular adapter. It does not select a second reader implementation.
+
+`SourceContracts.adapter(family, id)` publishes `configSchema`, `example`, `preparation`, and the adapter's actual `operations`. Public parcel/building formats, XYZ/WMS imagery, Atlas URL planning, economic rate tables, Photon, static transit GeoJSON and the constrained terrain provider have preparation examples. Provider-owned adapters expose `configSchema: null` rather than claiming a universal public configuration format. A schema describes structural fields; the named domain validator still enforces cross-field rules, public URL policy, semantic units and limits. Browser readers without a config codec must be checked using their real methods and representative responses.
+
+For example, a portable custom parcel configuration is:
+
+```json
+{
+  "adapter": "wfs",
+  "endpoint": "https://data.example.org/wfs",
+  "cityIds": ["sample_city"],
+  "metricSrid": 32630,
+  "outFields": ["record_id"],
+  "idField": "record_id",
+  "typeName": "cadastre:footprints",
+  "version": "2.0.0"
+}
+```
+
+Validate and encode this with `encodeCustomSource`; decode the result before constructing the canonical source wrapper. The codec generates the source id, `idPrefix`, name and reader limits. These resolved descriptor fields are not input fields to copy into a portable config schema. Building configs additionally include `kind: "building"`; the same encoder then produces the separate `building.` identity namespace. Imagery uses `encodeImagerySource`/`decodeImagerySource` with its own `imagery.` namespace. Defaults use trusted, already-registered descriptors. Never forge a default wrapper to override its registered config.
+
+## Native reader variants
+
+The abstraction's operations are a catalogue of available operations, not a promise that every adapter implements them. Check the selected adapter's `methods` and `operations` and the registry's enforced `required` list.
+
+| Adapter | Native methods and shapes |
+| --- | --- |
+| parcels `oss-wfs` | `lookup`, `under`, `parcelIds`, `neighbours` accept one `{query,body,params}` record and return native FeatureCollections. `under` adds area/coverage metadata. Binding methods take their direct binding input objects: `countBindingCandidates` returns a number, `bindingMeasurements` and `declaredParcelSite` return raw SQL rows, including serialized `site_geojson` and area fields. Pools stay in runtime context. |
+| parcels `parcel-ba`, `parcel-bg`, `parcel-lj` | `lookup({query,body,params})` retains each dataset's route selection, properties and native FeatureCollection metadata. |
+| parcels `parcel-nyc` | Adds `envelope({query,body,params})` with `params.parcelId`, returning `{parcelId,bbl,address,envelope}`. Its imported binding reader also implements `queryIds(ids)` and `queryGeometry(geometry)` with `{features,complete,absentIds?}` results. |
+| parcels `dgu-live` | Browser `fetchBbox(bbox)` takes EPSG:3765 bounds; `fetchIds(ids)` takes cadastral identities. Both return WGS84 feature arrays. `fetchUnder(geometry,{parcelsOnly})` takes WGS84 geometry and returns `{features,coverage,footprintM2?}`. Lean mode has `coverage:null`. |
+| buildings `gdi-map`, `dgu-map` | `lookup(query)` takes a comma-separated EPSG:3765 bbox or numeric `cestica_id`. Native geometries remain EPSG:3765; bbox results report `source`/`truncated`, parcel selection reports `cestica_id`/`count` and GDI containment areas. |
+| buildings `osm-reference` | `fetchBbox(bbox)` takes WGS84 bounds and returns the existing staged/Overpass FeatureCollection. |
+| buildings `overture-pmtiles` | Browser `featuresIn(bbox)` returns `{type:"FeatureCollection",features,truncated,partial:false}` from a WGS84 bbox; configuration selects a STAC catalogue and tile zoom. |
+| ownership `hr-oss-public-fallback` | Browser `lookup(parcelId)` returns parsed owner rows or null, with an empty array for an unusable parcel selector. This is a native browser result, distinct from the backend normalized ownership record. Retry and extraction dependencies remain private context. |
+
+These adapters retain their current provider contracts. They do not pretend to implement public URL transport configs or normalize every result into one FeatureCollection/ownership format.
+
+Imagery server readers also expose `tileRequest(z,x,y)` and `image(spec)`; WMS additionally exposes `mapRequest(bbox,width,height)`. Request methods return guarded URL specifications. `image` returns `{bytes:Buffer,contentType,width,height,decoded?}`, marked `runtimeType: "Binary"` and `outputSchema:null`; image bytes and decoded image objects have no published JSON projection. Browser XYZ/WMS `tileUrl` is the gateway URL method for the same selected source. Basemap adapters have their separate `basemap` operation.
+
+The browser `reality-mesh/cesium-ion-3dtiles` adapter receives `authentication({accessToken})` in runtime context and returns `{apiToken,assetId}`. Only public `assetId` belongs in source config. Terrain additionally exposes `url(global)` to resolve its endpoint from configured metadata and runtime host context.
+
+## Verification of this refactor
+
+Only targeted headless unit and Playwright checks were run; no full suites. The final running catalogue had 19 abstractions and 316 registered sources, with a contract for every adapter and required operation. Browser read-back from the local API returned 211 cadastral parcels and 41 GDI buildings, both HTTP 200. The source explorer was visually checked at desktop and 390-pixel mobile widths, with no page overflow or browser runtime errors.
+
+| Targeted check | Result |
+| --- | --- |
+| Main domain/source and economics regression batch | 14 headless unit files, 153 passed |
+| OSM, terrain and browser-reader regression batch | 4 headless unit files, 73 passed |
+| Ownership and metadata regression batch | 4 headless unit files, 47 passed |
+| Final runtime, contracts, explorer, browser runtime, generated bundle and metadata checks | 6 headless unit files, 43 passed |
+| Final preparation, native method display and generated-bundle recheck | 3 headless unit files, 15 passed |
+| Explorer and existing economics settings | 2 headless Playwright specs, 7 passed |
+| Final explorer browser recheck | 2 passed; the navigation case overlapped a local server restart and passed on its isolated rerun |
+| CSS/global-script guard batch | 4 headless unit files: 356 passed, 5 existing style failures in untouched files confirmed identical to HEAD |
+
+Earlier focused checks during extraction covered database routes, source registries, binding, floor evidence, network/environment readers, fallback parcel fetching and typed clipping failures. Sandbox socket failures were rerun with localhost access; one delegated approval-review attempt timed out before running, and the final ownership batch above subsequently passed. Stale fixtures omitting an already-required building source and fixtures loading browser modules without the foundation runtime were corrected. An interim custom-adapter test failure was fixed by retaining explicitly injected test factories' capabilities; the generated parcel bundle was rebuilt after the final metadata changes. Two initial Playwright loader attempts failed before test execution and were corrected to load the pure UMD contract in a VM.

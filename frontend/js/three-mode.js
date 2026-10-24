@@ -3527,7 +3527,7 @@
         };
         const visibleProfile = formation.buildFormation(xy, contextualSample, buildOptions);
         let profile = visibleProfile;
-        if (terrainReference && terrainReference.source === 'dgu-dtm-20m'
+        if (terrainReference && typeof terrainReference.source === 'string'
             && terrainReference.datum === 'EVRF2000'
             && Array.isArray(terrainReference.points)
             && typeof formation.referenceElevationAt === 'function'
@@ -3786,16 +3786,7 @@
     }
 
     function corridorDguTerrainProfileUrl() {
-        const override = window.__CORRIDOR_TERRAIN_PROFILE_URL__;
-        if (typeof override === 'string' && override.trim()) return override.trim();
-        const configuredBase = window.__ZAGREB_RUNTIME_CONFIG__
-            && window.__ZAGREB_RUNTIME_CONFIG__.zagrebApiBaseUrl;
-        if (configuredBase) return String(configuredBase).replace(/\/+$/, '') + '/terrain/profile';
-        const hostname = String(window.location && window.location.hostname || '').toLowerCase();
-        if (hostname === 'localhost' || hostname === '127.0.0.1') {
-            return 'http://localhost:3001/api/terrain/profile';
-        }
-        return String(window.location.origin || '').replace(/\/+$/, '') + '/api/terrain/profile';
+        return window.BrowserSources.terrainReader(window).url(window);
     }
 
     function fetchCorridorDguProfile(points) {
@@ -3804,7 +3795,8 @@
         if (coordinates.length < 2 || coordinates.some(pair => !pair.every(Number.isFinite))) {
             return Promise.resolve(null);
         }
-        const cacheKey = url + '|' + coordinates.map(pair => pair.map(value => value.toFixed(7)).join(',')).join(';');
+        const sourceKey = JSON.stringify(window.BrowserSources.terrainSource(window));
+        const cacheKey = sourceKey + '|' + url + '|' + coordinates.map(pair => pair.map(value => value.toFixed(7)).join(',')).join(';');
         if (corridorDguProfileCache.has(cacheKey)) return corridorDguProfileCache.get(cacheKey);
         const request = (async function () {
             let timeout = null;
@@ -3814,28 +3806,9 @@
                     controller = new AbortController();
                     timeout = setTimeout(function () { controller.abort(); }, 5000);
                 }
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ coordinates: coordinates, stepM: CORRIDOR_DGU_PROFILE_STEP_M }),
-                    signal: controller ? controller.signal : undefined
-                });
-                if (!response.ok) {
-                    console.warn('[three-mode] DGU terrain profile request failed: HTTP '
-                        + response.status + ' from ' + url);
-                    return null;
-                }
-                const result = await response.json();
-                if (!result || result.source !== 'dgu-dtm-20m' || result.datum !== 'EVRF2000'
-                    || !Array.isArray(result.points) || result.points.length < 2) {
-                    console.warn('[three-mode] DGU terrain profile response has an invalid contract', {
-                        source: result && result.source,
-                        datum: result && result.datum,
-                        points: result && Array.isArray(result.points) ? result.points.length : null
-                    });
-                    return null;
-                }
-                return result;
+                return await window.BrowserSources.terrainReader(window).profile({
+                    coordinates, stepM: CORRIDOR_DGU_PROFILE_STEP_M
+                }, { fetchImpl: fetch, signal: controller ? controller.signal : undefined, global: window });
             } catch (error) {
                 console.warn('[three-mode] DGU terrain profile request unavailable; retaining Google profile',
                     error && (error.name || error.message) ? (error.name || error.message) : error);

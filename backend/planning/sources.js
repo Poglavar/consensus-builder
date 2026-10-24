@@ -5,21 +5,40 @@ import { createHash } from 'node:crypto';
 import configuredSources from '../../frontend/data/planning-sources.json' with { type: 'json' };
 import { parseAtlasSources, createAtlasUrlProvider } from './atlas-url-sources.js';
 
-const builtInSources = [zagrebGupSource, zagrebGup2016Source].map(descriptor => ({
-    descriptor,
-    query: (pool, query) => queryZagrebGup(pool, { ...query, edition: descriptor.edition }),
-    parcel: (pool, query) => readZagrebParcel(pool, { ...query, edition: descriptor.edition }),
-    record: (pool, query) => readZagrebParcel(pool, { ...query, parcel: query.recordId, edition: descriptor.edition })
-}));
-builtInSources.push({ descriptor: nycPilotSource, query: queryNycPilot, parcel: readNycPilotParcel,
-    record: (pool, query) => readNycPilotParcel(pool, { ...query, parcel: `US-NY-${query.recordId}` }) });
+import { createRequire } from 'node:module';
+const SourceRuntime = createRequire(import.meta.url)('../../frontend/js/source-runtime.js');
+
+const builtInDefinitions = [zagrebGupSource, zagrebGup2016Source].map(descriptor =>
+    SourceRuntime.source('planning', 'gup', descriptor, { label: descriptor.label }));
+builtInDefinitions.push(SourceRuntime.source('planning', 'nyc-pilot', nycPilotSource, { label: nycPilotSource.label }));
+export const planningSourceRegistry = SourceRuntime.createRegistry({
+    abstraction: 'planning',
+    adapters: {
+        gup: { custom: false, required: ['parcel'], create: descriptor => ({
+            descriptor,
+            query: (pool, query) => queryZagrebGup(pool, { ...query, edition: descriptor.edition }),
+            parcel: (pool, query) => readZagrebParcel(pool, { ...query, edition: descriptor.edition }),
+            record: (pool, query) => readZagrebParcel(pool, { ...query, parcel: query.recordId, edition: descriptor.edition })
+        }) },
+        'nyc-pilot': { custom: false, required: ['parcel'], create: descriptor => ({
+            descriptor, query: queryNycPilot, parcel: readNycPilotParcel,
+            record: (pool, query) => readNycPilotParcel(pool, { ...query, parcel: `US-NY-${query.recordId}` })
+        }) },
+        'atlas-url': { create: createAtlasUrlProvider }
+    },
+    sources: [...builtInDefinitions, ...parseAtlasSources(JSON.stringify(configuredSources.sources))
+        .map(metadata => SourceRuntime.source('planning', 'atlas-url', metadata, { label: metadata.label }))],
+    required: ['query', 'record']
+});
+const builtInSources = builtInDefinitions.map(source => planningSourceRegistry.open(source.id));
 // Public provider definitions are owned by frontend/data/planning-sources.json.
 export function createPlanningSources(config, options) {
     const configured = parseAtlasSources(config);
     if (configured.some(entry => builtInSources.some(source => source.descriptor.id === entry.id))) {
         throw new Error('Atlas source ID conflicts with a built-in planning source.');
     }
-    return [...builtInSources, ...configured.map(metadata => createAtlasUrlProvider(metadata, options))];
+    return [...builtInSources, ...configured.map(metadata => planningSourceRegistry.open(
+        SourceRuntime.source('planning', 'atlas-url', metadata, { label: metadata.label, kind: 'custom' }), options))];
 }
 let planningSources;
 export function getPlanningSources() {

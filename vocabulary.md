@@ -110,6 +110,20 @@ A service's searchable projection of published records, their derived bindings a
 
 A chain location identified by network or cluster, program or contract, and account or token identifier. A bare address or token number is insufficient to identify the same record across deployments.
 
+## Data sources
+
+### Source abstraction
+
+A named data responsibility with documented reader operations, arguments, results, units and missing-data semantics. Parcels, existing buildings, building details and economics are separate abstractions. An abstraction does not choose a provider from the current location.
+
+### Source adapter
+
+An implementation of an abstraction's reader operations for a particular transport or dataset structure. Its configuration contract describes the source format it accepts; its runtime context supplies services such as database pools, fetch functions and credentials. Different adapters may support different optional operations.
+
+### Source definition
+
+A selected dataset described by stable `id`, `abstraction`, `adapter`, `kind`, readable `label` and adapter-specific `config`. A default source is registered by the application; a custom source supplies configuration to an adapter that accepts custom sources. These kinds describe configuration ownership, not legal authority or data quality. Existing domain source IDs and qualified record identities remain authoritative.
+
 ## Land and parcel geometry
 
 ### Cadastral parcel

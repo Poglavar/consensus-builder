@@ -126,7 +126,8 @@ describe('GET /buildings', () => {
             .post('/buildings/near')
             .send({
                 geometry: { type: 'Point', coordinates: [15.9, 45.79] },
-                buffer_meters: 150
+                buffer_meters: 150,
+                source: 'gdi-3d'
             });
 
         expect(res.status).toBe(200);
@@ -224,7 +225,7 @@ describe('POST /buildings/footprints', () => {
         expect(res.body.error).toMatch(/geometry/);
     });
 
-    it('returns footprints with heights for Zagreb (default city)', async () => {
+    it('returns footprints with heights from the selected survey', async () => {
         pool.setResult({
             rows: [
                 { id: 101, height_m: 12.5, geometry: { type: 'MultiPolygon', coordinates: [[[[15.976, 45.813], [15.977, 45.813], [15.977, 45.8135], [15.976, 45.813]]]] } },
@@ -233,7 +234,7 @@ describe('POST /buildings/footprints', () => {
             rowCount: 2
         });
 
-        const res = await request(app).post('/buildings/footprints').send({ geometry });
+        const res = await request(app).post('/buildings/footprints').send({ geometry, source: 'gdi-3d' });
 
         expect(res.status).toBe(200);
         expect(res.body.supported).toBe(true);
@@ -257,25 +258,25 @@ describe('POST /buildings/footprints', () => {
         expect(params[0]).toBe(JSON.stringify(geometry));
     });
 
-    // A box in Manhattan: the place, not a city in the body, picks New York's provider.
+    // A geometry in another location still uses the explicitly selected provider.
     const manhattan = { type: 'Polygon', coordinates: [[[-73.987, 40.748], [-73.984, 40.748], [-73.984, 40.75], [-73.987, 40.75], [-73.987, 40.748]]] };
 
-    it('reports unsupported where the provider has no footprint source', async () => {
-        const res = await request(app).post('/buildings/footprints').send({ geometry: manhattan, city: 'zagreb' });
+    it('uses the explicitly selected footprint source across geometry locations', async () => {
+        const res = await request(app).post('/buildings/footprints').send({ geometry: manhattan, source: 'gdi-3d' });
 
         expect(res.status).toBe(200);
-        expect(res.body).toEqual({ supported: false, footprints: [], count: 0, source: null });
-        expect(pool.getCalls().length).toBe(0);
+        expect(res.body).toMatchObject({ supported: true, footprints: [], count: 0, source: 'zagreb-cadastre' });
+        expect(pool.getCalls().length).toBe(1);
     });
 
-    it('serves a place no city covers from OpenStreetMap instead of falling back to Zagreb', async () => {
+    it('reads the explicitly selected OpenStreetMap source', async () => {
         // Live Overpass is stubbed: a unit test never touches the network.
         const overpass = vi.fn(async () => ({ ok: true, json: async () => ({ elements: [] }) }));
         vi.stubGlobal('fetch', overpass);
         try {
             // Dhaka: no configured city covers it
             const dhaka = { type: 'Polygon', coordinates: [[[90.407, 23.71], [90.409, 23.71], [90.409, 23.712], [90.407, 23.712], [90.407, 23.71]]] };
-            const res = await request(app).post('/buildings/footprints').send({ geometry: dhaka });
+            const res = await request(app).post('/buildings/footprints').send({ geometry: dhaka, source: 'osm' });
 
             expect(res.status).toBe(200);
             expect(res.body).toMatchObject({ supported: true, source: 'osm-footprints' });
@@ -292,7 +293,7 @@ describe('POST /buildings/footprints', () => {
             throw new Error('footprints unavailable');
         };
 
-        const res = await request(app).post('/buildings/footprints').send({ geometry });
+        const res = await request(app).post('/buildings/footprints').send({ geometry, source: 'gdi-3d' });
 
         expect(res.status).toBe(500);
         expect(res.body).toEqual({ error: 'Internal server error' });

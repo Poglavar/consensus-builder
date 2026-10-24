@@ -12,6 +12,10 @@
         layers: ['OI.OrthoimageCoverage'], bounds: DGU_BOUNDS
     }));
     const label = value => typeof value === 'string' && value.trim().length > 0 && value.length <= 300 && !/[<>\r\n]/.test(value);
+    const runtime = typeof window !== 'undefined' ? window.SourceRuntime : require('./source-runtime.js');
+    const registry = runtime.createRegistry({ abstraction: 'imagery', runtime: 'browser', required: ['tileUrl'], adapters: Object.fromEntries(
+        ['xyz', 'wms'].map(adapter => [adapter, source => ({ tileUrl: (base, coords) => base.replace(/\/+$/, '')
+            + '/imagery-sources/' + encodeURIComponent(source.id) + '/tiles/' + coords.z + '/' + coords.x + '/' + coords.y })])) });
     function decode(id, city) {
         try {
             if (typeof id !== 'string' || !/^imagery\.[A-Za-z0-9_-]{1,6500}$/.test(id)) return null;
@@ -51,11 +55,10 @@
     }
     // Both adapters return Web Mercator tiles through the protected imagery gateway.
     function tileUrl(base, source, coords) {
-        return base.replace(/\/+$/, '') + '/imagery-sources/' + encodeURIComponent(source.id)
-            + '/tiles/' + coords.z + '/' + coords.x + '/' + coords.y;
+        return registry.open(runtime.source('imagery', source.adapter, source, { kind: 'custom' })).tileUrl(base, coords);
     }
     function escapeAttribution(text) {
         return String(text || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
     }
-    return Object.freeze({ CATALOG, decode, suggestions, tileUrl, escapeAttribution });
+    return Object.freeze({ CATALOG, decode, suggestions, tileUrl, escapeAttribution, registry });
 });

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sources &amp; adapters · Consensus Builder</title>
+    <link rel="stylesheet" href="css/tokens.css">
+    <link rel="stylesheet" href="css/primitives.css">
+    <link rel="stylesheet" href="css/page-chrome.css">
+    <link rel="stylesheet" href="css/source-explorer.css">
+    <script src="js/persistent-storage.js" defer></script>
+    <script src="js/i18n.js" defer></script>
+    <script src="js/i18n-loader.js" defer></script>
+    <script src="js/source-explorer.js" defer></script>
+</head>
+<body class="cb-page source-explorer">
+    <header class="cb-page-header">
+        <span class="cb-page-header__brand"><img class="cb-page-header__logo" src="images/consensus-builder-logo.png" alt="" width="28" height="28"><span>Consensus Builder</span></span>
+        <div class="cb-page-header__title"><h1 data-i18n-key="sourceSystem.title">Sources &amp; adapters</h1></div>
+        <a id="source-back-link" class="cb-link cb-back-link" href="/" data-i18n-key="sourceSystem.backToMap">Back to the map</a>
+        <select id="source-language" class="cb-page-header__lang" aria-label="Language">
+            <option value="en">English</option><option value="es">Español</option><option value="hr">Hrvatski</option><option value="sr">Srpski</option>
+        </select>
+    </header>
+    <main class="source-explorer__main">
+        <p class="source-explorer__intro" data-i18n-key="sourceSystem.intro">Explore each abstraction, its adapters, configured sources and operation contracts.</p>
+        <p class="source-explorer__note" data-i18n-key="sourceSystem.metadataNote">This is a metadata reference. Registration does not establish coverage, availability, accuracy or permission to use a dataset.</p>
+        <div class="source-explorer__toolbar">
+            <p id="source-status" role="status" aria-live="polite" data-i18n-key="sourceSystem.loading">Loading source metadata…</p>
+            <button id="source-retry" class="btn" type="button" hidden data-i18n-key="sourceSystem.retry">Retry</button>
+            <button id="source-download" class="btn" type="button" disabled data-i18n-key="sourceSystem.download">Download contracts JSON</button>
+        </div>
+        <p class="source-explorer__note"><span data-i18n-key="sourceSystem.api">API</span>: <code id="source-api-base"></code></p>
+        <div id="source-content" class="source-explorer__layout" hidden>
+            <aside class="source-explorer__panel" aria-labelledby="source-selection-title">
+                <h2 id="source-selection-title" data-i18n-key="sourceSystem.selection">Choose a reader</h2>
+                <label for="source-family" data-i18n-key="sourceSystem.abstraction">Abstraction</label>
+                <select id="source-family"></select>
+                <label for="source-adapter" data-i18n-key="sourceSystem.adapter">Adapter</label>
+                <select id="source-adapter"></select>
+                <p id="source-runtime" class="source-explorer__note"></p>
+                <p id="source-custom" class="source-explorer__note"></p>
+                <p id="source-configuration"></p>
+                <h3 data-i18n-key="sourceSystem.references">References</h3>
+                <ul class="source-explorer__references">
+                    <li><a class="cb-link" href="parcel-source-formats.html" data-i18n-key="sourceSystem.formats">Parcel and imagery formats</a></li>
+                    <li><a id="source-contract-link" class="cb-link" data-i18n-key="sourceSystem.familyContract">Abstraction contract JSON</a></li>
+                    <li><a id="source-wrapper-schema" class="cb-link" data-i18n-key="sourceSystem.wrapperSchema">Source wrapper JSON Schema</a></li>
+                    <li><a id="source-operations-schema" class="cb-link" data-i18n-key="sourceSystem.operationsSchema">Operations JSON Schema</a></li>
+                </ul>
+            </aside>
+            <div class="source-explorer__details">
+                <section id="source-adapter-spec" class="source-explorer__panel" hidden>
+                    <h2 data-i18n-key="sourceSystem.adapterPreparation">Adapter configuration</h2>
+                    <p id="source-preparation" class="source-explorer__note"></p>
+                    <div id="source-config-schema-section" hidden>
+                        <h3 data-i18n-key="sourceSystem.configSchema">Configuration schema</h3>
+                        <pre id="source-config-schema-json" tabindex="0"></pre>
+                    </div>
+                    <div id="source-example-section" hidden>
+                        <h3 data-i18n-key="sourceSystem.preparationExample">Preparation example</h3>
+                        <pre id="source-example-json" tabindex="0"></pre>
+                    </div>
+                </section>
+                <section class="source-explorer__panel" aria-labelledby="source-config-title">
+                    <h2 id="source-config-title" data-i18n-key="sourceSystem.sourceConfig">Registered source configuration</h2>
+                    <label for="source-config" data-i18n-key="sourceSystem.source">Source</label>
+                    <select id="source-config"></select>
+                    <p id="source-config-note" class="source-explorer__note"></p>
+                    <pre id="source-config-json" tabindex="0"></pre>
+                </section>
+                <section class="source-explorer__panel" aria-labelledby="source-operations-title">
+                    <h2 id="source-operations-title" data-i18n-key="sourceSystem.operations">Operations</h2>
+                    <p class="source-explorer__note" data-i18n-key="sourceSystem.operationNote">Schemas describe each reader method. Arguments marked as runtime context are injected by the caller and are not source configuration.</p>
+                    <div id="source-operations"></div>
+                </section>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

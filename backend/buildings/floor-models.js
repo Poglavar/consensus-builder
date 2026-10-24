@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
+const SourceRuntime = require('../../frontend/js/source-runtime.js');
 const { validateFloorPlans, buildingSourceId } = require('../../frontend/js/building-floor-plans.js');
 export { buildingSourceId };
 
@@ -99,7 +100,7 @@ export async function saveFloorModel(client, record, { apply = false } = {}) {
 }
 
 // One indexed join for a whole response, including chains of proposals from different cities.
-export async function fetchFloorModels(pool, identities) {
+async function readStoredFloorModels(pool, identities) {
     if (!identities.length) return new Map();
     const queryKeys = identities.map(identity => {
         const valid = validateModelIdentity(identity);
@@ -112,6 +113,22 @@ export async function fetchFloorModels(pool, identities) {
             USING (city, source, owner_id, building_id)
         WHERE m.current`, [JSON.stringify(queryKeys)]);
     return new Map(result.rows.map(row => [canonicalJson([row.city, row.source, row.owner_id, row.building_id]), row]));
+}
+
+// Versioned model storage is the current detail provider. The SQL repository retains ownership
+// of identity, current-version selection and persistence; dispatch only selects the reader.
+export const buildingDetailSourceRegistry = SourceRuntime.createRegistry({
+    abstraction: 'building-details',
+    adapters: { 'floor-model-storage': { custom: false, create: (_config, { pool }) => ({
+        fetchFloorModels: identities => readStoredFloorModels(pool, identities)
+    }) } },
+    sources: [SourceRuntime.source('building-details', 'floor-model-storage', {
+        id: 'building-floor-models', storage: 'consensus.building_floor_model'
+    })],
+    required: ['fetchFloorModels']
+});
+export async function fetchFloorModels(pool, identities) {
+    return buildingDetailSourceRegistry.open('building-floor-models', { pool }).fetchFloorModels(identities);
 }
 
 function attachModel(target, row) {

@@ -6,11 +6,13 @@
 // ownership lives only on our server and is absent. Pure apart from the injected request and
 // projection functions, so it is tested in node (backend/test/dgu-live.test.js).
 (function (root, factory) {
-    const api = factory();
+    const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
     if (root) root.DguLiveCadastre = api;
-})(typeof window !== 'undefined' ? window : null, function () {
+})(typeof window !== 'undefined' ? window : null, function (root) {
     'use strict';
+    const SourceRuntime = root?.SourceRuntime
+        || (typeof require === 'function' ? require('../source-runtime.js') : null);
 
     const WFS_URL = 'https://oss.uredjenazemlja.hr/OssWebServices/wfs';
     const HOST = 'oss.uredjenazemlja.hr';
@@ -91,7 +93,7 @@
 
     // requestJson(url) → parsed JSON or throws; toWgs84(fc) → the collection in WGS84;
     // toDatasetBox([w,s,e,n] WGS84) → "minE,minN,maxE,maxN" in EPSG:3765; turf for the footprint test.
-    function createDguLive({ requestJson, toWgs84, toDatasetBox, turf }) {
+    function createDguLiveReader({ requestJson, toWgs84, toDatasetBox, turf }) {
         async function pagedBbox(bbox) {
             const features = [];
             let startIndex = 0;
@@ -169,6 +171,15 @@
 
         return { fetchBbox, fetchIds, fetchUnder };
     }
+
+    const registry = SourceRuntime.createRegistry({
+        abstraction: 'parcels', runtime: 'browser', required: ['fetchBbox', 'fetchIds', 'fetchUnder'],
+        adapters: { 'dgu-live': { custom: false, create: (_config, context) => createDguLiveReader(context) } },
+        sources: [SourceRuntime.source('parcels', 'dgu-live', {
+            id: 'dgu-live-cadastre', endpoint: WFS_URL, typeName: 'oss:DKP_CESTICE', srsName: 'EPSG:3765'
+        })]
+    });
+    function createDguLive(context) { return registry.open('dgu-live-cadastre', context); }
 
     return Object.freeze({ WFS_URL, HOST, MAX_PARCELS, bboxUrl, idsUrl, idClause, toParcelFeature, shouldFallBack, createDguLive });
 });

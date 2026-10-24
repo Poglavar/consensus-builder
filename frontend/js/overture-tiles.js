@@ -258,16 +258,16 @@
     }
 
     // The newest release's buildings PMTiles URL, from the STAC catalogue's `pmtiles` link.
-    async function latestBuildingsUrl(fetchImpl) {
+    async function latestBuildingsUrl(fetchImpl, catalogUrl = STAC_CATALOG_URL) {
         const json = async url => {
             const response = await fetchImpl(url);
             if (!response.ok) throw Object.assign(new Error(`Overture catalogue ${url} answered ${response.status}`), { status: response.status });
             return response.json();
         };
-        const root = await json(STAC_CATALOG_URL);
+        const root = await json(catalogUrl);
         const release = root.latest;
         if (!release) throw new Error('Overture catalogue names no latest release');
-        const theme = await json(`https://stac.overturemaps.org/${release}/buildings/catalog.json`);
+        const theme = await json(new URL(`${release}/buildings/catalog.json`, new URL('./', catalogUrl)).href);
         const link = (theme.links || []).find(l => l.rel === 'pmtiles');
         if (!link || !link.href) throw new Error(`Overture release ${release} lists no buildings PMTiles`);
         return { release, url: link.href };
@@ -275,12 +275,12 @@
 
     // featuresIn(bbox) over the live tiles, with decoded tiles cached and concurrent reads shared.
     // `openArchive(url)` returns an object with getZxy(z, x, y) → { data } | undefined (pmtiles.PMTiles).
-    function createOvertureTilesSource({ turf, fetchImpl, openArchive, zoom = 14, log = () => {} }) {
+    function createTileReader({ turf, fetchImpl, openArchive, catalogUrl, zoom = 14, log = () => {} }) {
         let archive = null;
         const cache = new Map();
         const archiveFor = () => {
             if (!archive) {
-                archive = latestBuildingsUrl(fetchImpl).then(({ release, url }) => {
+                archive = latestBuildingsUrl(fetchImpl, catalogUrl).then(({ release, url }) => {
                     log(`Overture buildings release ${release}: ${url}`);
                     return { release, tiles: openArchive(url) };
                 });
@@ -328,9 +328,18 @@
         return { featuresIn };
     }
 
+    const runtime = typeof window !== 'undefined' ? window.SourceRuntime : require('./source-runtime.js');
+    const registry = runtime.createRegistry({ abstraction: 'buildings', runtime: 'browser', required: ['featuresIn'],
+        adapters: { 'overture-pmtiles': (config, options) => createTileReader({ ...options,
+            catalogUrl: config.catalogUrl, zoom: options.zoom ?? config.zoom }) },
+        sources: [runtime.source('buildings', 'overture-pmtiles', { id: 'overture-tiles', catalogUrl: STAC_CATALOG_URL, zoom: 14 })] });
+    function createOvertureTilesSource(options) {
+        return registry.open(options.source || 'overture-tiles', options);
+    }
+
     const api = {
         STAC_CATALOG_URL, MAX_SPAN_DEG, decodeTile, decodeRings, ringsToGeometry, buildingId,
-        buildingFeaturesFromTile, tileRange, mergeTileCopies, latestBuildingsUrl, createOvertureTilesSource
+        buildingFeaturesFromTile, tileRange, mergeTileCopies, latestBuildingsUrl, createOvertureTilesSource, registry
     };
     if (typeof window !== 'undefined') window.OvertureTiles = api;
     if (typeof module !== 'undefined' && module.exports) module.exports = api;

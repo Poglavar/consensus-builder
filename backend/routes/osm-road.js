@@ -20,18 +20,13 @@
 // `railways=1` adds railway ways (table rows with a railway_type, and Overpass `way["railway"]`) for
 // the 2D road tools; the 3D life layer leaves it off and gets streets alone. Every feature carries
 // `osm_node_ids`, the shared OSM nodes the road tools rebuild topology from.
-import { parseWgs84Bbox, wgs84BboxFilterSql } from '../utils/helpers.js';
-import {
-    fetchOverpassRoads as defaultFetchOverpassRoads,
-    fetchOverpassRoadsAndRailways as defaultFetchOverpassRoadsAndRailways,
-    roadsBboxTooLarge, clipRoadsBbox
-} from '../roads/osm-road-overpass.js';
-
-const MAX_FEATURES = 8000;
+import { parseWgs84Bbox } from '../utils/helpers.js';
+import { roadsBboxTooLarge, clipRoadsBbox } from '../roads/osm-road-overpass.js';
+import { createRoadNetworkRegistry, NETWORK_ENVIRONMENT_SOURCES, MAX_FEATURES } from '../sources/network-environment.js';
 
 export function setupOsmRoadRoute(app, pool, options = {}) {
-    const fetchOverpassRoads = options.fetchOverpassRoads || defaultFetchOverpassRoads;
-    const fetchOverpassRoadsAndRailways = options.fetchOverpassRoadsAndRailways || defaultFetchOverpassRoadsAndRailways;
+    const sources = createRoadNetworkRegistry(pool, options);
+    const reader = sources.open(NETWORK_ENVIRONMENT_SOURCES.roads);
     app.get('/osm-road', async (req, res) => {
         try {
             const railways = req.query.railways === '1' || req.query.railways === 'true';
@@ -42,48 +37,14 @@ export function setupOsmRoadRoute(app, pool, options = {}) {
                 return res.status(400).json({ error: 'Invalid bbox. Expected bbox=minLon,minLat,maxLon,maxLat&crs=EPSG:4326.' });
             }
 
-            let sql = `
-                SELECT
-                    ST_AsGeoJSON(r.geom)::json AS geometry,
-                    jsonb_build_object(
-                        'osm_id', r.osm_id,
-                        'highway_type', r.highway_type,
-                        'railway_type', r.railway_type,
-                        'name', r.name,
-                        'width_meters', r.width_meters,
-                        'city', r.city,
-                        'tags', r.tags,
-                        'osm_node_ids', r.osm_node_ids,
-                        'source', 'osm_road'
-                    ) AS properties
-                FROM osm_road r
-                WHERE r.current AND r.geom IS NOT NULL
-                  AND ${railways ? '(r.highway_type IS NOT NULL OR r.railway_type IS NOT NULL)' : 'r.highway_type IS NOT NULL'}
-            `;
-
-            const params = [];
-            if (hasBbox) {
-                // Index-backed test on geom (osm_road_geom_gix) in the box's own CRS; no projection.
-                const filter = wgs84BboxFilterSql('r.geom', boxes, 4326);
-                sql += ` AND ${filter.sql}`;
-                params.push(...filter.params);
-            }
-
-            sql += `\n            LIMIT ${MAX_FEATURES}\n        `;
-
-            const { rows } = await pool.query(sql, params);
-            const features = rows.map(row => ({
-                type: 'Feature',
-                properties: row.properties || {},
-                geometry: row.geometry
-            }));
+            const features = await reader.readNetwork(boxes, railways);
 
             const liveBox = !features.length && hasBbox && boxes.length === 1
                 ? (roadsBboxTooLarge(boxes[0]) ? clipRoadsBbox(boxes[0]) : boxes[0]) : null;
             if (liveBox) {
                 const clipped = liveBox !== boxes[0];
                 try {
-                    const live = await (railways ? fetchOverpassRoadsAndRailways : fetchOverpassRoads)(liveBox);
+                    const live = await reader.readLiveNetwork(liveBox, railways);
                     return res.json({
                         type: 'FeatureCollection', features: live.features, source: 'overpass',
                         truncated: !!live.truncated, partial: !!live.partial,
@@ -100,4 +61,5 @@ export function setupOsmRoadRoute(app, pool, options = {}) {
             res.status(500).json({ error: 'Internal server error' });
         }
     });
+    return sources;
 }

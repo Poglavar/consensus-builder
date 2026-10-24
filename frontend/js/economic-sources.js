@@ -86,6 +86,11 @@
         'uk-mhclg-land-2023': Object.freeze({ id: 'uk-mhclg-land-2023', adapter: 'uk-mhclg-2023' }),
         'scenario-assumptions': Object.freeze({ id: 'scenario-assumptions', adapter: 'scenario-assumptions' })
     });
+    const runtime = typeof window !== 'undefined' ? window.SourceRuntime : require('./source-runtime.js');
+    const registry = runtime.createRegistry({ abstraction: 'economics', runtime: 'shared', required: ['rates'],
+        adapters: Object.fromEntries(Object.entries(adapters).map(([id, read]) => [id, {
+            custom: id === 'rate-table', create: (config, context) => ({ rates: () => read(config, context) })
+        }])), sources: Object.values(BUILT_INS).map(source => runtime.source('economics', source.adapter, source)) });
     // Source ordering belongs to the frontend. A local source may override just one metric.
     function defaults(city, ukLandRates) {
         return [ukLandRates?.cities?.[city?.id]?.basis === 'authority' ? BUILT_INS['uk-mhclg-land-2023'] : null,
@@ -96,7 +101,9 @@
         for (const definition of sources) {
             const source = typeof definition === 'string' ? BUILT_INS[definition] : definition;
             if (!source || !Object.hasOwn(adapters, source.adapter)) throw new Error('Unknown economic source adapter.');
-            for (const row of adapters[source.adapter](source, context)) {
+            const canonical = source.abstraction ? source : source.adapter === 'rate-table'
+                ? runtime.source('economics', source.adapter, source, { kind: 'custom' }) : source.id;
+            for (const row of registry.open(canonical, context).rates()) {
                 // A source in another currency remains evidence, but is not an implicit conversion.
                 if (row.currency === context.city?.currency?.code && !Object.hasOwn(result, row.metric)) result[row.metric] = row;
             }
@@ -110,5 +117,5 @@
             min: Math.min(standard.min, observation?.amount ?? standard.min),
             max: Math.max(standard.max, observation?.amount ?? standard.max) };
     }
-    return Object.freeze({ METRICS, BASES, FLOOR_PRICES, BUILT_INS, adapters, rateTable, defaults, resolve, slider });
+    return Object.freeze({ METRICS, BASES, FLOOR_PRICES, BUILT_INS, adapters, registry, rateTable, defaults, resolve, slider });
 });

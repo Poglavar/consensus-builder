@@ -43,10 +43,10 @@ const isRatio = line => /ST_Area[\s\S]*(\/|>=|<=|>|<)[\s\S]*ST_Area/.test(line);
 
 describe('absolute areas served to a client are geodesic', () => {
     it.each([
-        ['routes/parcels.js', 'calculated_area'],
-        ['routes/parcel-lj.js', 'calculated_area'],
+        ['parcels/oss-database-source.js', 'calculated_area'],
+        ['parcels/lj-database-source.js', 'calculated_area'],
         ['routes/road-corridor.js', 'full_area_m2'],
-        ['routes/buildings.js', 'footprint_area']
+        ['buildings/map-source.js', 'footprint_area']
     ])('%s measures %s on the ellipsoid', (path, alias) => {
         const source = read(path);
         const aliased = areaCalls(source).filter(entry => entry.line.includes(alias));
@@ -66,10 +66,10 @@ describe('absolute areas served to a client are geodesic', () => {
 
 describe('projected areas are only ever used as ratios', () => {
     it.each([
-        'routes/parcels.js',
-        'routes/parcel-lj.js',
+        'parcels/oss-database-source.js',
+        'parcels/lj-database-source.js',
         'routes/road-corridor.js',
-        'routes/buildings.js',
+        'buildings/map-source.js',
         'buildings/zagreb-3d.js'
     ])('%s has no projected area escaping as an absolute value', path => {
         const source = read(path);

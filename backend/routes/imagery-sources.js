@@ -5,7 +5,8 @@ import { HttpError } from '../utils/helpers.js';
 import { validateBounds } from '../parcels/source-contract.js';
 import { createPublicSourceFetch, validatePublicSourceUrl } from '../parcels/public-source-fetch.js';
 import { decodeImagerySource, encodeImagerySource } from '../imagery/custom-source.js';
-import { discoverImagerySource, readImageryImage, warpGeographicImage, wmsMapUrl, xyzTileBounds, xyzTileUrl } from '../imagery/discovery.js';
+import { discoverImagerySource, xyzTileBounds } from '../imagery/discovery.js';
+import { imageryReader } from '../imagery/sources.js';
 
 const invalid = message => Object.assign(new HttpError(400, message), { code: 'invalid-imagery-request' });
 const replyError = (res, error) => {
@@ -63,31 +64,29 @@ export function setupImagerySourcesRoute(app, { publicFetch = createPublicSource
     const sendImage = async (req, res, buildRequest) => {
         try {
             const source = decodeImagerySource(req.params.sourceId);
-            const spec = buildRequest(source);
-            const downloaded = await readImageryImage(publicFetch, spec.url,
-                { width: spec.width, height: spec.height });
-            const image = spec.warp ? warpGeographicImage(downloaded, spec.bbox) : downloaded;
+            const reader = imageryReader(source, publicFetch);
+            const spec = buildRequest(source, reader);
+            const image = await reader.image(spec);
             res.set({ 'Content-Type': image.contentType, 'Cache-Control': 'public, max-age=300', 'X-Content-Type-Options': 'nosniff' });
             res.send(image.bytes);
         } catch (error) { replyError(res, error); }
     };
-    app.get('/imagery-sources/:sourceId/tiles/:z/:x/:y', tileLimit, (req, res) => sendImage(req, res, source => {
+    app.get('/imagery-sources/:sourceId/tiles/:z/:x/:y', tileLimit, (req, res) => sendImage(req, res, (source, reader) => {
         const coords = ['z', 'x', 'y'].map(key => req.params[key]);
         if (coords.some(raw => !/^\d+$/.test(raw))) throw invalid('Invalid XYZ tile coordinates.');
         const [z, x, y] = coords.map(Number);
         if (z > 22 || z < (source.minZoom ?? 0) || z > (source.maxZoom ?? 22) || x >= 2 ** z || y >= 2 ** z)
             throw invalid('XYZ tile is outside this source.');
-        if (source.adapter === 'xyz') return { url: xyzTileUrl(source, z, x, y) };
+        if (source.adapter === 'xyz') return reader.tileRequest(z, x, y);
         const bounds = xyzTileBounds(z, x, y);
         if (source.bounds && (bounds[0] >= source.bounds[2] || source.bounds[0] >= bounds[2]
             || bounds[1] >= source.bounds[3] || source.bounds[1] >= bounds[3]))
             throw Object.assign(new HttpError(404, 'Tile lies outside imagery coverage.'), { code: 'imagery-outside-bounds' });
-        return { url: wmsMapUrl(source, bounds), bbox: bounds, width: 256, height: 256,
-            warp: source.crs !== 'EPSG:3857' };
+        return reader.tileRequest(z, x, y);
     }));
-    app.get('/imagery-sources/:sourceId/map', tileLimit, (req, res) => sendImage(req, res, source => {
-        if (source.adapter !== 'wms') throw invalid('This imagery source is not WMS.');
+    app.get('/imagery-sources/:sourceId/map', tileLimit, (req, res) => sendImage(req, res, (source, reader) => {
+        if (typeof reader.mapRequest !== 'function') throw invalid('This imagery source is not WMS.');
         const bbox = parseBbox(req.query.bbox), width = dimension(req.query.width), height = dimension(req.query.height);
-        return { url: wmsMapUrl(source, bbox, width, height), width, height };
+        return reader.mapRequest(bbox, width, height);
     }));
 }

@@ -5,6 +5,7 @@ import * as turf from '@turf/turf';
 
 const source = readFileSync(new URL('../../frontend/js/parcels/fetch.js', import.meta.url), 'utf8');
 const progressSource = readFileSync(new URL('../../frontend/js/parcels/source-progress.js', import.meta.url), 'utf8');
+const runtimeSource = readFileSync(new URL('../../frontend/js/source-runtime.js', import.meta.url), 'utf8');
 const dguSource = readFileSync(new URL('../../frontend/js/parcels/dgu-live.js', import.meta.url), 'utf8');
 
 function bootPage(city, fetch, parcels = { source: 'parcel-bg' }, BrowserParcelSources = {}, globals = {}) {
@@ -26,6 +27,7 @@ function bootPage(city, fetch, parcels = { source: 'parcel-bg' }, BrowserParcelS
         setTimeout,
         AbortController
     });
+    vm.runInContext(runtimeSource, context);
     vm.runInContext(progressSource, context);
     vm.runInContext(dguSource, context);
     vm.runInContext(source, context);

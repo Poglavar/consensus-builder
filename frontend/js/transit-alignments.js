@@ -8,6 +8,7 @@
     'use strict';
 
     const INDEX_CELL_DEGREES = 0.005;
+    const readers = global.BrowserSources || (typeof require === 'function' ? require('./browser-source-readers.js') : null);
     let state = emptyState();
 
     function emptyState() {
@@ -190,9 +191,7 @@
         }
 
         const promise = Promise.all(sources.map(async source => {
-            const response = await fetchImpl(source.url);
-            if (!response?.ok) throw new Error(`${source.id} responded ${response?.status ?? 'without a status'}`);
-            const featureCollection = await response.json();
+            const featureCollection = await readers.loadTransit(source, { fetchImpl });
             return Object.freeze({
                 ...source,
                 featureCollection,
