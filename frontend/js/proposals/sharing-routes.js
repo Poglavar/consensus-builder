@@ -1081,7 +1081,7 @@ function handleStandalone3DModeFromUrl(attempt = 0) {
         // what it opens.
         const pathname = window.location.pathname || '';
         if (/^\/designs\/?$/.test(pathname) && new URLSearchParams(window.location.search).has('draft')) return;
-        if (pathname.startsWith('/proposals/') || pathname.startsWith('/designs/') || pathname.startsWith('/agreements/') || pathname.startsWith('/plans/')) return;
+        if (pathname.startsWith('/proposals/') || pathname.startsWith('/designs/') || pathname.startsWith('/agreements/') || pathname.startsWith('/plans/') || pathname.startsWith('/flights/')) return;
 
         if (typeof map === 'undefined' || !map) {
             if (attempt < 15) {

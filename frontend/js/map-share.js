@@ -20,8 +20,10 @@
     function capture(win) {
         const center = win.map.getCenter();
         const mode = win.__mapModeState?.desired || '2d';
-        const settings = win.PlanningScene?.settings(win.PlanningViews?.getState());
+        let settings = win.PlanningScene?.settings(win.PlanningViews?.getState());
         const source = new URLSearchParams(win.location?.search || '');
+        const interior = win.ThreeViewStateStore?.get();
+        if (interior) Object.assign(settings || (settings = {}), interior);
         if (settings) for (const key of ['planningSource', 'planningScenario']) {
             if (source.has(key)) settings[key] = source.get(key);
         }

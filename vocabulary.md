@@ -242,6 +242,30 @@ When shared designs conflict with the current map, the person chooses whether to
 
 An immutable `plan/v1` snapshot containing a title, a selected set of published design CIDs and a map view. Its canonical content has its own CID and permanent `/plans/<cid>` link. Changing the title, membership or saved view creates a new snapshot and link; existing links keep their original content. It references existing designs without changing their authorship, geometry or publication. It carries no land allocations, money or decision rules; those belong to an agreement. The backend address used to access a plan is transport configuration, not part of its content.
 
+### Interior view
+
+The model view's x-ray visibility, generated-layout visibility for proposed and existing buildings, and floor cutaway. Each saved flag includes an explicit on/off value; cutaway is all floors or an integer floor index. These are presentation settings, independent of authored architectural content.
+
+### Camera flight
+
+An immutable `camera-flight/v1` presentation containing a title, published design CIDs, initial model view, metric frame, route, independent look keys, optional interior snapshots and timed interior-view cues. Its canonical content has its own CID and `/flights/<cid>` link. Editing and publishing creates a new version; a local draft is private browser state. Opening a flight restores its exact design membership and waits for an explicit Play action.
+
+### Flight metric frame
+
+A geographic anchor defining local horizontal east/north positions in metres using the application's transverse Mercator frame. Flight Z is metres above the model's flat ground datum (`model-ground`), not surveyed elevation or sea level. Scene projection scale affects horizontal placement separately from true vertical metres.
+
+### Route point
+
+A stable-ID camera position with travel time from the preceding route point and a hold duration, measured in seconds. The first point has zero travel time. The camera follows the distance-sampled smooth route; obstacles do not constrain flight motion.
+
+### Look key
+
+A stable-ID quaternion orientation at an absolute flight time in seconds, independent of route positions. Full turns retain intermediate orientations; equal endpoint orientations alone do not encode a full turn.
+
+### Flight interior snapshot
+
+Architectural presentation geometry and geographic registration retained with a flight so playback uses the saved layout. Generated layouts remain suggested presentation, outside the authored floor-model registry. An identified source revision retains its own identity. A selectable apartment requires a retained unit boundary and entry in that registered floor; a floor without unit boundaries is identified only as a floor.
+
 ### Applied / unapplied
 
 Whether a design currently contributes to the working composition. Application expresses a modeled map effect, independently of consent, chain execution and physical construction.

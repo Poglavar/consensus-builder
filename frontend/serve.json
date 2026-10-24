@@ -2,6 +2,7 @@
     "cleanUrls": false,
     "directoryListing": false,
     "rewrites": [
+        { "source": "/flights/**", "destination": "/index.html" },
         { "source": "/", "destination": "/index.html" },
         { "source": "/vocabulary", "destination": "/vocabulary/index.html" },
         { "source": "/vocabulary/", "destination": "/vocabulary/index.html" },

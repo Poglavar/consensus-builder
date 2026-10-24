@@ -15,7 +15,7 @@ const DESIGN = 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq';
 const AGREEMENT = 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku';
 const appPaths = [
     '/', '/index.html', '/proposals', '/designs', `/designs/${DESIGN}`, `/designs/${DESIGN},${AGREEMENT}`, `/agreements/${AGREEMENT}`,
-    `/plans/${DESIGN}`, '/parcel/HR-335533-2895',
+    `/flights/${DESIGN}`, `/flights/${DESIGN}/`, `/plans/${DESIGN}`, '/parcel/HR-335533-2895',
     '/bets/5x8hiYo9V6kWpG8eVoyXZf4BHXnKSoCP3r7r3PyMBg4z', '/monitors/3', `/designs/${DESIGN}/monitors/12/`
 ];
 
@@ -26,7 +26,7 @@ describe('isAppPath', () => {
 
     // Row ids and former plan-score routes are gone with the server's proposal writes (M2), and the
     // on-chain proposal location /proposals/<chain>/<id>/<contract>/<token> with the proposal mint (M3).
-    it.each(['/foo', '/how-to-use', '/plans', '/plans/borovje/score', '/proposals/879', '/proposals/12,13',
+    it.each(['/flights', '/flights/example/extra', '/foo', '/how-to-use', '/plans', '/plans/borovje/score', '/proposals/879', '/proposals/12,13',
         '/proposals/borovje-v3', '/proposals/solana/devnet/abc/7', '/proposals/evm/84532/0xabc/5',
         '/agreements', '/parcel', '/monitors', '/admin/login', '/proposalsx'])('%s is not', (path) => {
         expect(isAppPath(path)).toBe(false);

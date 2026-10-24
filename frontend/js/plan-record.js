@@ -10,7 +10,7 @@
     const MAX_TITLE = 160;
     const CID = /^baf(?:krei[a-z2-7]{52}|ybei[a-z2-7]{52})$/;
     const SETTINGS = ['existing', 'permitted', 'proposed', 'existingScope', 'proposedForm', 'permittedForm',
-        'permittedMap', 'zoningAreas', 'planningSource', 'planningScenario'];
+        'permittedMap', 'zoningAreas', 'planningSource', 'planningScenario', 'xray', 'suggested', 'suggestedExisting', 'cutaway'];
     const CAMERA = ['targetLat', 'targetLng', 'headingDeg', 'pitchRad', 'range'];
     const object = value => !!value && typeof value === 'object' && !Array.isArray(value);
     const keys = (value, allowed) => object(value) && Object.keys(value).every(key => allowed.includes(key));
@@ -33,6 +33,11 @@
             || Math.abs(v.camera.targetLat) > 85.0511 || Math.abs(v.camera.targetLng) > 180
             || v.camera.pitchRad < -Math.PI / 2 || v.camera.pitchRad > 0 || v.camera.range < 1)) return 'Invalid saved camera.';
         if (v.settings != null && (!keys(v.settings, SETTINGS) || Object.values(v.settings).some(value => !text(value, 200)))) return 'Invalid saved display settings.';
+        for (const key of ['xray', 'suggested', 'suggestedExisting']) {
+            if (v.settings?.[key] != null && !['0', '1'].includes(v.settings[key])) return 'Invalid saved interior display.';
+        }
+        const cut = v.settings?.cutaway;
+        if (cut != null && cut !== 'all' && (!/^-?\d+$/.test(cut) || Math.abs(Number(cut)) > 100)) return 'Invalid saved floor cutaway.';
         return null;
     }
 

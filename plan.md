@@ -1,10 +1,10 @@
-<!-- Implementation plan for shareable camera flights and reusable apartment interiors; no implementation is authorized by this planning task. -->
+<!-- Implementation plan and progress for shareable camera flights and reusable apartment interiors. -->
 # Flying camera
 
 ## Status and scope
 
-Plan only. The current task creates this branch, worktree and document, then stops.
-No feature implementation, dependency installation, server startup, push or deployment is part of this task.
+Implementation completed on the feature branch after user authorization. The delivery record is in `docs/flying-camera.md`.
+Push and deployment require a separate request.
 
 - Branch: `flying-camera`.
 - Worktree: `../consensus-builder-flying-camera`.
@@ -12,9 +12,8 @@ No feature implementation, dependency installation, server startup, push or depl
 - Planning date: 2026-10-24.
 - Existing uncommitted changes in the source worktree are excluded.
 
-This is a proposed implementation sequence. It does not change current domain definitions.
-Read `vocabulary.md` before implementation and update it alongside any implemented identity,
-state, unit or source-of-truth change. Follow the project's preference for one current contract;
+The sequence below records the accepted implementation scope. Current definitions are in
+`vocabulary.md`, updated alongside the implementation. Follow the project's preference for one current contract;
 record intentional experimental contract breaks instead of adding legacy compatibility paths.
 
 ## Intended outcome
@@ -129,7 +128,7 @@ inspection camera distinct from the recorded flight pose, so inspecting a node c
 silently rewrite the shot. A simple view switch is sufficient initially; multiple live canvases
 are unnecessary. Include **Level horizon** as an explicit reset, not a pitch/roll constraint.
 
-## Proposed implementation boundaries
+## Implementation boundaries
 
 ### Camera and flight core
 
@@ -295,12 +294,14 @@ verification browsers afterward. Full unit or browser suites require explicit ap
 Before sharing a local preview, verify the listening checkout, resolved backend and actual
 source-data capabilities for this flow. Include a verified backend override if no local API runs.
 
-## Follow-up decisions
+## Resolved implementation decisions
 
-- Confirm package location and build/import mechanism when extraction begins.
-- Define the geographic frame and vertical datum from actual renderer behavior before saving poses.
-- Choose the smallest flight publication record/routes consistent with current storage conventions.
-- Revisit optional music only after playback works; leave narration and video export for later.
+- Canonical source is `packages/interior-viewer`; pinned esbuild produces scoped browser artifacts.
+- Flight XY uses the existing local metric frame and Z is true metres above model ground.
+- `camera-flight/v1` is published through `/flights` with canonical CID verification and durable readback.
+- Both consumers use the same full viewer artifact; the companion records its SHA-256 receipt.
+- Playback and editor have separate lazy entry points; walking is a further optional load.
+- Music, narration, video export and photorealistic tile flights remain outside this release.
 
 Rough sizing from inspection: a basic editor prototype is a few focused development days;
 a usable editor with undo, saving and sharing is about a week. Shared-viewer extraction and
@@ -309,4 +310,4 @@ These are planning estimates, not completed work or a delivery commitment.
 
 ## Resume point
 
-Implementation has not started. Resume at milestone 1 after the user asks to proceed.
+All six delivery stages are implemented. See `docs/flying-camera.md` for controls, storage, validation and deployment requirements. Push and deployment have not been requested.

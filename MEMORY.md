@@ -921,3 +921,6 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-24: MCP directory promotion is free only; publish the existing hosted identity `xyz.urbangametheory/urban-game-theory` and never purchase listings, boosts or subscriptions.
 
 - 2026-10-24: Design geometry must never travel in URLs. Private previews reference individual stored objects, and named plans contain design CIDs plus a saved view; combined design geometry must not consume a plan-level size budget.
+
+- 2026-10-25: Camera flights are independent immutable presentations of published designs, with metric positions, absolute-time orientation keys and saved interior snapshots; free flight ignores collisions and playback starts explicitly.
+- 2026-10-25: The shared interior viewer has one maintained package and generated artifacts for both consumers, using caller-owned Three.js and scene hooks; apartment walking loads only when requested.

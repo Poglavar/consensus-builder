@@ -526,6 +526,7 @@
                 if (y1 > block.hallY1 - 0.05) continue;
                 const door = { kind: 'door', a: [wallX, y0], b: [wallX, y1], depthM: rules.coreWallM, sillM: 0, heightM: rules.doorHeightM,
                     hinge: [wallX, y1], openTip: [wallX + (onLeft ? -rules.apartmentDoorM : rules.apartmentDoorM), y1], room: 'apartment' };
+                apartment.entrance = door;
                 apartmentDoors.push(door);
                 apartmentDoorCuts.push(strip(t, door.a, door.b, rules.coreWallM + 0.06));
             }
@@ -579,7 +580,7 @@
                 result.balconySlabs.push(...furnished.balconySlabs);
                 result.railings.push(...furnished.railings);
                 result.rooms += furnished.rooms.length;
-                result.units.push({ apartment, kind: isGround && groundFloorUse === 'commercial' ? 'shop' : 'apartment',
+                result.units.push({ apartment, polygon, kind: isGround && groundFloorUse === 'commercial' ? 'shop' : 'apartment',
                     rooms: furnished.rooms.map(room => ({ kind: room.kind, areaM2: room.areaM2 })) });
             }
             return result;
@@ -640,9 +641,42 @@
                 architecture: architecture(garageWalls, [fp], coreOpenings, [...coreRailings, ...(garage.ramp ? garage.ramp.railings : [])],
                     garage.ramp ? { platforms: garage.ramp.platforms.map(p => ({ rings: polygonData(p.polygon)[0], elevationM: Math.round(p.elevationM * 1000) / 1000 })).filter(p => p.rings) } : {}) });
         }
-        const unitList = (furnished, level) => furnished.units.map((unit, index) => ({
-            id: `core-${unit.apartment.block.k + 1}-${unit.apartment.side}-${level}`, areaM2: Math.round(unit.apartment.areaM2 * 10) / 10, kind: unit.kind, rooms: unit.rooms
-        }));
+        // Entry points must lie inside usable space, including concave apartments and holes.
+        function unitEntry(boundary, preferred) {
+            const shape = t.multiPolygon(boundary.map(rings => rings.map(closed)));
+            const inside = point => t.booleanPointInPolygon(t.point(point), shape, { ignoreBoundary: true });
+            if (preferred && inside(preferred)) return preferred;
+            if (typeof t.pointOnFeature === 'function') {
+                const candidate = t.pointOnFeature(shape).geometry.coordinates;
+                if (inside(candidate)) return candidate;
+            }
+            for (const rings of boundary) {
+                const heights = [...new Set(rings.flat().map(point => point[1]))].sort((a, b) => a - b);
+                for (let i = 1; i < heights.length; i++) {
+                    const y = (heights[i - 1] + heights[i]) / 2, xs = [];
+                    for (const ring of rings) ring.forEach((a, j) => {
+                        const b = ring[(j + 1) % ring.length];
+                        if ((a[1] > y) !== (b[1] > y)) xs.push(a[0] + (b[0] - a[0]) * (y - a[1]) / (b[1] - a[1]));
+                    });
+                    xs.sort((a, b) => a - b);
+                    for (let j = 1; j < xs.length; j += 2) {
+                        const candidate = [(xs[j - 1] + xs[j]) / 2, y];
+                        if (inside(candidate)) return candidate;
+                    }
+                }
+            }
+            throw new Error('Generated apartment has no usable interior entry point.');
+        }
+        const unitList = (furnished, level) => furnished.units.map(unit => {
+            const boundary = polygonData(unit.polygon || unit.apartment.polygon), door = unit.apartment.entrance;
+            const direction = door ? vec(door.hinge, door.openTip) : null;
+            const inward = direction ? direction.map(n => n / len(direction)) : null;
+            const preferred = door ? uv(add(midpoint(door.a, door.b), inward, door.depthM / 2 + 0.4)) : null;
+            return { id: `core-${unit.apartment.block.k + 1}-${unit.apartment.side}-${level}`,
+                areaM2: Math.round(unit.apartment.areaM2 * 10) / 10, kind: unit.kind, rooms: unit.rooms,
+                suggested: true, boundary, entryUv: unitEntry(boundary, preferred),
+                ...(door ? { doorUv: { a: uv(door.a), b: uv(door.b), hinge: uv(door.hinge), openTip: uv(door.openTip) } } : {}) };
+        });
         const floorList = [];
         for (let level = 0 - summary.garageLevels; level < floors; level++) {
             const isGarage = level < 0, isGround = level === 0;

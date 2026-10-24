@@ -90,6 +90,7 @@ DDL_FILES=(
     db/proposal-owner-decision-ddl.sql
     db/design-ddl.sql
     db/plan-ddl.sql
+    db/camera-flight.sql
     db/agreement-ddl.sql
     db/agreement-decision-ddl.sql
     db/building-floor-model.sql

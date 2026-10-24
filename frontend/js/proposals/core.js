@@ -990,9 +990,13 @@ async function handleProposalRouteFromUrl() {
         const designMatch = pathname.match(/^\/designs\/([^/]+)$/);
         const agreementMatch = pathname.match(/^\/agreements\/([^/]+)$/);
         const planMatch = pathname.match(/^\/plans\/([^/]+)$/);
-        if (designMatch || agreementMatch || planMatch) {
+        const flightMatch = pathname.match(/^\/flights\/([^/]+)$/);
+        if (designMatch || agreementMatch || planMatch || flightMatch) {
             try {
-                if (planMatch) {
+                if (flightMatch) {
+                    await window.ensureCameraFlight();
+                    await window.CameraFlightSharing.open();
+                } else if (planMatch) {
                     await window.NamedPlans.open();
                 } else if (designMatch) {
                     const cids = designMatch[1].split(',').map(cid => cid.trim()).filter(Boolean);

@@ -1079,3 +1079,11 @@ body.i18n-loading [data-i18n-key] { visibility: hidden; }
 #proposals-sheet .share-plan-panel-content { position: relative; flex: 1; min-height: 0; box-shadow: none; background: transparent; backdrop-filter: none; }
 body.map-pick-mode #proposals-sheet { pointer-events: auto; opacity: 1; }
 #proposals-sheet .share-plan-link > .btn { width: auto; flex: 0 0 auto; white-space: nowrap; }
+
+/* The optional flight editor action occupies the row below the map menu. */
+.camera-flight-open {
+    position: absolute;
+    left: var(--map-shell-edge);
+    top: calc(var(--map-shell-top-clearance) + var(--map-shell-gap));
+    z-index: var(--cb-z-map-chrome);
+}

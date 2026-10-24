@@ -454,6 +454,7 @@
         <button id="mode-ai-toggle" class="map-shell-button map-mode-ai-btn" title="AI photorealistic render" aria-label="AI photorealistic render" data-i18n-key="threeMode.toggle.ai" data-i18n-attr="title,aria-label" hidden>
             <i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i>
         </button>
+        <button type="button" id="camera-flight-open" class="map-shell-button camera-flight-open" data-i18n-key="cameraFlight.open" data-i18n-attr="title,aria-label" title="Create a camera flight" aria-label="Create a camera flight" hidden><i class="fas fa-video" aria-hidden="true"></i></button>
         <div id="three-container" aria-hidden="true"></div>
 
         <!-- Content is shared across map and model; changing view never applies a source proposal. -->
@@ -1844,9 +1845,12 @@
             'js/version-history.js',
             'js/environment.js',
             // Capture named-link parameters before map-core writes the remembered local view.
+            'js/three-view-state.js',
             'js/map-share.js',
             'js/plan-record.js',
             'js/named-plans.js',
+            'js/camera-flight-share.js',
+            'js/camera-flight-loader.js',
             'js/wipe-local-data.js',
             'js/world/world-entry-model.js?v=20261020-point-destinations',
             'data/boot-coverage.js',
@@ -2179,6 +2183,7 @@
             'js/agreement-panel.js',
             'js/agreement-list.js',
             'js/agreement-sync.js',
+            'vendor/interior-viewer/interior-geometry.js',
             'js/building-floor-plans.js',
             'js/default-floor-plan-rooms.js',
             'js/default-floor-plans.js',

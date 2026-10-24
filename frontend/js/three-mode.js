@@ -54,12 +54,14 @@
         console.error('[3D] Floor-plan renderer is unavailable. Skipping 3D mode initialization.');
         return;
     }
+    let externalCameraOwner = null;
     let xrayEnabled = new URLSearchParams(window.location.search).get('xray') === '1';
     let xrayButton = null;
     let xrayNote = null;
     let floorCutawayControl = null;
     let floorCutawaySelect = null;
-    let floorCutawayLevel = null;
+    let floorCutawayLevel = window.ThreeViewState?.read(window.location.search).cutaway || 'all';
+    floorCutawayLevel = floorCutawayLevel === 'all' ? null : Number(floorCutawayLevel);
     let floorPlanGroup = null;
     let floorPlanErrors = 0;
     const renderedFloorPlanKeys = new Set();
@@ -7284,12 +7286,14 @@
 
     function setSuggestedPlansEnabled(enabled) {
         suggestedPlansEnabled = enabled === true;
+        if (typeof window !== 'undefined') window.ThreeViewStateStore?.set({ suggested: suggestedPlansEnabled ? '1' : '0' });
         rebuild3DBuildingsOnly();
         updateXrayControls();
     }
 
     function setSuggestedExistingEnabled(enabled) {
         suggestedExistingEnabled = enabled === true;
+        if (typeof window !== 'undefined') window.ThreeViewStateStore?.set({ suggestedExisting: suggestedExistingEnabled ? '1' : '0' });
         rebuild3DBuildingsOnly();
         updateXrayControls();
     }
@@ -7369,6 +7373,11 @@
             const group = floorPlanRenderer.createBuildingGroup(THREE, feature,
                 (lng, lat) => latLngToXY(lat, lng), floorPlanGeometry, { proxyMaterial, proxyHeightM });
             if (group) {
+                group.userData.interiorFeature = { type: 'Feature', geometry: feature.geometry, properties: {
+                    floorPlans: plans, proposalId: feature.properties?.proposalId ?? feature.properties?.proposal_id ?? null,
+                    parcelId: feature.properties?.parcelId ?? feature.properties?.parcel_id ?? null,
+                    name: feature.properties?.buildingName || feature.properties?.name || null
+                } };
                 if (inspectionFeature) group.userData.planningBuiltFeature = inspectionFeature;
                 floorPlanRenderer.setCutaway(group, floorCutawayLevel);
                 floorPlanGroup.add(group);
@@ -7383,7 +7392,7 @@
     }
 
     function renderScene() {
-        floorPlanRenderer.renderCutaway(renderer, scene, camera, floorPlanGroup,
+        floorPlanRenderer.renderCutaway(renderer, scene, camera, externalCameraOwner?.floorRoot || floorPlanGroup,
             xrayEnabled && floorCutawayLevel !== null && floorCutawayLevel < 0);
         renderedBuildingDisplaySnapshot = buildingDisplaySnapshot;
         renderedSceneVisualRevision = sceneVisualRevision;
@@ -7392,6 +7401,7 @@
     function setFloorCutaway(level) {
         if (level !== null && !Number.isInteger(level)) return;
         floorCutawayLevel = level;
+        if (typeof window !== 'undefined') window.ThreeViewStateStore?.set({ cutaway: level === null ? 'all' : String(level) });
         (floorPlanGroup?.children || []).forEach(group => floorPlanRenderer.setCutaway(group, level));
         updateXrayControls();
         invalidateThreeView();
@@ -7464,6 +7474,7 @@
 
     function setXrayEnabled(enabled) {
         xrayEnabled = enabled === true;
+        if (typeof window !== 'undefined') window.ThreeViewStateStore?.set({ xray: xrayEnabled ? '1' : '0' });
         rebuild3DBuildingsOnly();
         updateXrayControls();
     }
@@ -8136,9 +8147,9 @@
         const wasInvalidated = renderInvalidated;
         renderInvalidated = false;
         const perfT0 = perfReadout ? performance.now() : 0;
-        stepManualAutoRotate(now);
-        const moving = controls ? controls.update() : false;
-        if (camera) {
+        if (!externalCameraOwner) stepManualAutoRotate(now);
+        const moving = !externalCameraOwner && controls ? controls.update() : false;
+        if (camera && !externalCameraOwner) {
             const dist = controls?.target ? camera.position.distanceTo(controls.target) : camera.position.length();
             if (!lastPlaneDist || Math.abs(dist - lastPlaneDist) > lastPlaneDist * 0.15) {
                 camera.near = Math.max(1, dist * 0.001);
@@ -8228,6 +8239,10 @@
     }
 
     function disposeScene() {
+        if (externalCameraOwner) {
+            window.dispatchEvent(new Event('threecameradispose'));
+            externalCameraOwner?.release();
+        }
         clearTimeout(warmSceneTimer);
         warmSceneTimer = null;
         warmSceneKey = null;
@@ -8786,6 +8801,7 @@
     }
 
     function handleParcelClick(evt) {
+        if (externalCameraOwner) return;
         if (evt.button !== 0) return;
         // An on-map editor owns map clicks while its edit lock is held. OrbitControls remain
         // untouched, so users can still rotate and pan the 3D view around the live design.
@@ -8860,6 +8876,7 @@
     // still pass through; modifier combinations retain their browser/OS default without reaching
     // application-level 2D listeners.
     function handleThreeModeKeyboardContext(evt) {
+        if (externalCameraOwner) return;
         const action = keyboardContext.classifyThreeModeKeydown({
             active: isActive,
             key: evt.key,
@@ -9304,6 +9321,31 @@
     };
     // The photoreal tile layer builds INTO this scene — hand it the live internals rather
     // than letting it run a second renderer (the whole point of retiring Cesium).
+    // A single lease prevents orbit, autorotation and distance-based clipping from writing a
+    // camera controlled by the flight editor or an embedded apartment. Release restores its view.
+    window.claimThreeCamera = function (name) {
+        if (!isActive || !camera || !controls || isTransitioning3D) throw new Error('The 3D scene is not ready.');
+        if (externalCameraOwner) throw new Error('The 3D camera is already in use.');
+        stopIntroAutoRotate();
+        const currentCamera = camera, currentControls = controls;
+        const saved = { position: camera.position.clone(), quaternion: camera.quaternion.clone(), up: camera.up.clone(),
+            target: controls.target.clone(), fov: camera.fov, near: camera.near, far: camera.far,
+            enabled: controls.enabled, damping: controls.enableDamping };
+        controls.enabled = false; controls.autoRotate = false; controls.enableDamping = false;
+        let released = false;
+        const lease = { name, release() {
+            if (released) return; released = true;
+            if (externalCameraOwner === lease) externalCameraOwner = null;
+            if (camera !== currentCamera || controls !== currentControls) return;
+            camera.position.copy(saved.position); camera.quaternion.copy(saved.quaternion); camera.up.copy(saved.up);
+            camera.fov = saved.fov; camera.near = saved.near; camera.far = saved.far; camera.updateProjectionMatrix();
+            controls.target.copy(saved.target); controls.enabled = saved.enabled; controls.enableDamping = saved.damping;
+            controls.update(); invalidateThreeView();
+        } };
+        externalCameraOwner = lease;
+        return lease;
+    };
+    window.getThreeCameraOwner = () => externalCameraOwner?.name || null;
     window.getThreeModeInternals = function () {
         if (!isActive || !scene || !camera || !renderer) return null;
         return {
@@ -9321,6 +9363,18 @@
     window.showThreeModeDesign = showThreeModeDesign;
     window.showThreeModeParcel = showThreeModeParcel;
     window.getThree3DGeoView = getGeoCameraView;
+    window.getThreeInteriorView = () => ({ xray: xrayEnabled ? '1' : '0', suggested: suggestedPlansEnabled ? '1' : '0',
+        suggestedExisting: suggestedExistingEnabled ? '1' : '0', cutaway: floorCutawayLevel === null ? 'all' : String(floorCutawayLevel) });
+    window.applyThreeInteriorView = async function (settings) {
+        const next = window.ThreeViewState.normalize({ ...window.getThreeInteriorView(), ...settings });
+        const changed = xrayEnabled !== (next.xray === '1') || suggestedPlansEnabled !== (next.suggested === '1')
+            || suggestedExistingEnabled !== (next.suggestedExisting === '1');
+        xrayEnabled = next.xray === '1'; suggestedPlansEnabled = next.suggested === '1'; suggestedExistingEnabled = next.suggestedExisting === '1';
+        floorCutawayLevel = next.cutaway === 'all' ? null : Number(next.cutaway);
+        window.ThreeViewStateStore.set(next);
+        if (changed) await rebuild3DBuildingsOnly();
+        setFloorCutaway(floorCutawayLevel);
+    };
     window.setThreeXrayEnabled = setXrayEnabled;
     window.setThreeFloorCutaway = setFloorCutaway;
     window.setThreeSuggestedLayoutsEnabled = setSuggestedPlansEnabled;

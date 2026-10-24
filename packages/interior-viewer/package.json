@@ -1,0 +1,11 @@
+{
+  "name": "@urban-game-theory/interior-viewer",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "main": "src/index.cjs",
+  "scripts": {
+    "build": "node build.cjs"
+  },
+  "description": "Shared architectural geometry, embedded interiors and standalone viewing; caller-supplied Three.js."
+}

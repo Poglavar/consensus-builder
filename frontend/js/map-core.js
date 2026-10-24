@@ -16,7 +16,7 @@ const IS_PROPOSAL_DEEP_LINK = (() => {
         // (/designs/<cid>[,<cid>…]), agreement (/agreements/<cid>) or named plan (/plans/<cid>). They load their own
         // ground, so the boot viewport parcel fetch must stay suppressed: a link left out
         // fetched the DEFAULT city's viewport parcels (Manhattan) while a Zagreb one was loading.
-        if (/^\/(designs|agreements|plans)\/[^/]+\/?$/.test(path)) return true;
+        if (/^\/(designs|agreements|plans|flights)\/[^/]+\/?$/.test(path)) return true;
         if (typeof window.shouldSkipWelcomeForProposalLink === 'function') {
             return window.shouldSkipWelcomeForProposalLink();
         }
