@@ -890,6 +890,9 @@ function showSharePlanPanel(options) {
                 return;
             }
             showLink(window.MapShare.link(window.DesignSync.designLink(cids), shareView));
+            window.DesignSync.prepareMapPreview(cids).catch(() => {
+                console.warn(`[${new Date().toISOString()}] [share-plan] map preview preparation failed`);
+            });
             setStatus('');
         };
 

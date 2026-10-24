@@ -214,6 +214,9 @@ function fakeServer({ answerCid = null, refuseDesigns = null } = {}) {
             designs.set(body.cid, body);
             return json(201, { cid: body.cid, content: body.content, createdAt: '2026-10-21T12:00:01.000Z' });
         }
+        if (init.method === 'POST' && pathname === '/map-previews') {
+            return json(202, { imageUrl: `${API}/map-previews/${body.cids.join(',')}/image.png` });
+        }
         return json(404, { code: 'not-found' });
     }
     return { fetch, calls, designs };
@@ -430,6 +433,30 @@ describe('links, parcel sources and refusals', () => {
         const b = Cid.cidOfObject({ b: 1 });
         const { sync } = fakeWindow();
         expect(sync.designLink([b, a], { city: 'zagreb' })).toBe(`https://app.example.test${DesignSync.designsPath([a, b])}?city=zg&3d&lang=hr`);
+    });
+
+    it('prepares each published CID set once, independent of order, and retries failures', async () => {
+        const a = Cid.cidOfObject({ preview: 'a' });
+        const b = Cid.cidOfObject({ preview: 'b' });
+        const { sync, server } = fakeWindow();
+        const expected = `${API}/map-previews/${[a, b].sort().join(',')}/image.png`;
+        const first = await sync.prepareMapPreview([b, a]);
+        const second = await sync.prepareMapPreview([a, b, a]);
+        expect(first).toBe(expected);
+        expect(second).toBe(expected);
+        expect(server.calls.filter(call => call.pathname === '/map-previews')).toHaveLength(1);
+
+        let attempts = 0;
+        const retrying = fakeServer();
+        const fetch = retrying.fetch;
+        retrying.fetch = async (url, init) => {
+            if (new URL(url).pathname === '/map-previews' && attempts++ === 0) return json(503, { code: 'busy' });
+            return fetch(url, init);
+        };
+        const retrySync = fakeWindow({ server: retrying }).sync;
+        await expect(retrySync.prepareMapPreview([a])).rejects.toThrow();
+        expect(await retrySync.prepareMapPreview([a])).toContain('/map-previews/');
+        expect(attempts).toBe(2);
     });
 
     it('binds a city\'s designs with its catalogue parcel source, else the default', () => {

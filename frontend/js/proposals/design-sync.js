@@ -175,6 +175,7 @@
     function browser(win) {
         const log = (message, ...rest) => console.log(`[${new Date().toISOString()}] [DesignSync] ${message}`, ...rest);
         const warn = (message, ...rest) => console.warn(`[${new Date().toISOString()}] [DesignSync] ${message}`, ...rest);
+        const preparedMapPreviews = new Map();
 
         function t(key, fallback, params = {}) {
             if (typeof win.getProposalI18nHelper === 'function') return win.getProposalI18nHelper()(key, fallback, params);
@@ -358,6 +359,28 @@
                 });
             }
             return { rows, missing: wanted.filter(cid => !rows.has(cid)) };
+        }
+
+        // Starts the lazy map-image render before a shared link is opened. A successful CID set is
+        // remembered for this page; concurrent/repeated selections share one request. Failures are
+        // evicted so a later selection can try again.
+        async function prepareMapPreview(cids) {
+            const wanted = sortedCids(cids);
+            if (!wanted.length) return null;
+            const key = wanted.join(',');
+            if (preparedMapPreviews.has(key)) return preparedMapPreviews.get(key);
+            const pending = request('POST', '/map-previews', { cids: wanted }).then(response => {
+                if (!response.ok || !response.body || typeof response.body.imageUrl !== 'string') {
+                    throw failure((response.body && response.body.code) || `http-${response.status}`, 'The map preview could not be prepared.');
+                }
+                return response.body.imageUrl;
+            }).catch(error => {
+                preparedMapPreviews.delete(key);
+                throw error;
+            });
+            preparedMapPreviews.set(key, pending);
+            if (preparedMapPreviews.size > 100) preparedMapPreviews.delete(preparedMapPreviews.keys().next().value);
+            return pending;
         }
 
         // The local record published as `cid` at the current index, or null. A record applied on the
@@ -561,7 +584,7 @@
         return {
             api: {
                 publishDesign, pinDesign, pinObject, markPublished, fetchDesign, fetchDesigns, importDesign, importDraft, localCopyOf,
-                designLink, copyLink, parcelSourceIdOf, refusalMessage,
+                designLink, copyLink, prepareMapPreview, parcelSourceIdOf, refusalMessage,
                 // A local record's exact CID at the current index, or an index summary's own.
                 publishedCid: record => (isObject(record) && record.indexed === true && cidApi().isCid(record.cid)
                     ? record.cid

@@ -348,7 +348,7 @@ function cloneCanvas(source) {
     return canvas;
 }
 
-function drawPolygons(ctx, frame, polygons) {
+export function drawPolygons(ctx, frame, polygons) {
     const { xMin, yMin, zoom } = frame;
     const traceRing = (ring) => {
         let first = true;

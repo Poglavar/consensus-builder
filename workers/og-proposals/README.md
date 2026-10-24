@@ -13,16 +13,23 @@ Built per `../../OG-IMAGE-PLAN.md`, extended for `?scene`.
 - `GET /designs/<cid>[,<cid>…]?scene=<slug>` (or `/agreements/<cid>?scene=<slug>`) → fetches
   `API_BASE/ai-scene/scene/:slug`, sets `og:image` to the render's hosted PNG + a render-specific
   title/description. Humans still get the normal SPA.
-- `GET /designs/<cid>[,<cid>…]` and `GET /agreements/<cid>` (no scene) → read `API_BASE/designs/<cid>`
-  or `API_BASE/agreements/<cid>` (the first design of a multi-design link), set `og:image` to
-  `SITE_BASE/designs/<cid>/og-image.png` (or `/agreements/…`) and the title/description from the
-  record's content.
-- `GET /designs/<cid>/og-image.png`, `GET /agreements/<cid>/og-image.png` → redirect to the record's
-  hosted before/after pair (`screenshotPairUrl`), else its thumbnail (`screenshotUrl`), else the site card.
+- `GET /designs/<cid>[,<cid>…]` (no scene) → validates every CID and uses the complete ordered list
+  for the canonical URL and `SITE_BASE/designs/<comma-separated-cids>/og-image.png` image URL. The
+  metadata describes the shared plan as a whole and declares the preview dimensions as 1200×630.
+- `GET /designs/<cid>[,<cid>…]/og-image.png` → redirects to
+  `API_BASE/map-previews/<comma-separated-cids>/image.png`, which frames the whole plan.
+- `GET /agreements/<cid>` and `/agreements/<cid>/og-image.png` retain agreement-specific metadata
+  and image behavior.
 
 Scenes need no image proxying — their `imageUrl` is already an absolute hosted PNG.
 
 ## Deploy (NOT done automatically — touches the prod Cloudflare zone)
+
+Deploy the backend map-preview endpoint first. The Share tab automatically warms its selected CID
+set with `POST API_BASE/map-previews` and JSON `{ "cids": ["<cid>", "…"] }`, without blocking the
+share link. Older links generate their image on the first GET. The backend retries transient render
+failures once; a remaining 503 includes Retry-After and is never cached as a generic replacement.
+Keep the API's existing uploads/images and uploads/metadata directories persistent across releases.
 
 ```
 cd workers/og-proposals
@@ -31,7 +38,7 @@ npx wrangler deploy
 ```
 
 `wrangler.toml` pins the routes `urbangametheory.xyz/designs/*` and `urbangametheory.xyz/agreements/*` and the `API_BASE` / `SITE_BASE`
-vars. Free Workers plan is sufficient (100k req/day; Cache API absorbs repeats).
+vars.
 
 ## Verify after deploy
 
@@ -53,7 +60,5 @@ Then run the link through the Facebook Sharing Debugger, X Card Validator, and a
 - **Sub-request loop:** `handleHtml` does `fetch(request)` to get the origin `index.html`. Same-zone
   subrequests should not re-invoke the same Worker — verify on first deploy (add a bypass header or
   fetch a dedicated origin hostname if it does loop).
-- **Fallback image:** `DEFAULTS.image` points at `https://urbangametheory.xyz/og-default.png` — add
-  that asset (1200×630) or change the constant before relying on the no-image path.
-- Provide a real `og-default.png` and confirm scene images are ≥600px on the short side for a
-  large-image card.
+- `DEFAULTS.image` is the existing site globe card. The 1200×630 dimensions apply only to generated
+  design map previews; agreement and scene image dimensions are not declared here.

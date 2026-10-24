@@ -36,6 +36,12 @@ test('one Designs button opens a right-side panel with browsing and empty-map sh
 test('the same panel publishes applied designs, supplies their link and releases map picking on tab change', async ({ mockApi: page }, testInfo) => {
   test.setTimeout(90_000);
   await openCity(page);
+  await page.context().grantPermissions(['clipboard-read', 'clipboard-write'], { origin: new URL(page.url()).origin });
+  let previewRequest: { cids?: string[] } | null = null;
+  await page.route(/\/map-previews$/, async route => {
+    previewRequest = route.request().postDataJSON();
+    await route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ code: 'busy' }) });
+  });
   const id = await createSpace(page, 'park');
   await page.locator('#proposals-button').click();
   const panel = page.locator('#proposals-sheet');
@@ -49,6 +55,14 @@ test('the same panel publishes applied designs, supplies their link and releases
   await expect(panel.locator('.share-plan-row__published')).toBeVisible({ timeout: 30_000 });
   await expect(panel.locator('.share-plan-link__input')).toHaveValue(/\/designs\/bafk/);
   expect(pageIndex(page).requests.filter(request => request.method === 'POST' && request.path === '/designs')).toHaveLength(1);
+  await expect.poll(() => previewRequest).not.toBeNull();
+  const linkValue = await panel.locator('.share-plan-link__input').inputValue();
+  const cidInLink = new URL(linkValue).pathname.split('/').at(-1)!.split(',')[0];
+  expect(previewRequest).toEqual({ cids: [cidInLink] });
+  await expect(panel.locator('.share-plan-link__input')).toBeVisible();
+  await panel.getByRole('button', { name: 'Copy URL', exact: true }).click();
+  await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(linkValue);
+  await expect(panel.locator('.share-plan-link__input')).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath('designs-share-panel.png') });
   await panel.getByRole('tab', { name: 'Designs', exact: true }).click();
   await expect.poll(() => page.evaluate(() => (window as any).MapPick.active())).toBeNull();

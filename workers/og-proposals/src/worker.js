@@ -3,7 +3,7 @@
 // static <head> makes every share look identical. This Worker sits in front of
 // urbangametheory.xyz/designs/* and /agreements/* and injects per-link meta before the crawler sees
 // the HTML, and serves the record's image at a stable URL. Link shapes:
-//   /designs/<cid>[,<cid>…]               -> the (first) design's own preview
+//   /designs/<cid>[,<cid>…]               -> one preview framed around the whole plan
 //   /agreements/<cid>                     -> the agreement's own preview
 //   either, with ?scene=<slug>            -> a shared AI render: card = the AI image itself
 // Humans get the same HTML (SPA still boots); only <head> is augmented.
@@ -48,6 +48,7 @@ class HeadInjector {
             ['og:description', m.description],
             ['og:url', m.canonical || m.url],
             ['og:image', m.image],
+            ...(m.imageDimensions ? [['og:image:width', m.imageDimensions.width], ['og:image:height', m.imageDimensions.height]] : []),
             ['twitter:card', 'summary_large_image'],
             ['twitter:title', m.title],
             ['twitter:description', m.description],
@@ -112,10 +113,17 @@ async function recordMeta(kind, cid, url, env, base) {
     };
 }
 
-// Route 2: serve a record's image at a stable URL: a redirect to its hosted before/after pair (the
-// server-rendered link-preview image), else its thumbnail, else the site card. Scenes don't use
-// this — their imageUrl is already an absolute hosted PNG.
+// Design images redirect to the backend's combined plan preview. Agreement images redirect to the
+// hosted before/after pair, else their thumbnail, else the site card. Scenes already have a hosted PNG.
 async function handleRecordImage(kind, cid, env) {
+    if (kind.api === 'designs') {
+        const cids = cid.split(',');
+        if (!cids.length || cids.some(value => !CID.test(value))) {
+            return Response.redirect(DEFAULTS.image, 302);
+        }
+        const target = `${env.API_BASE}/map-previews/${cids.join(',')}/image.png`;
+        return Response.redirect(target, 302);
+    }
     const record = CID.test(cid) ? await readRecord(kind, cid, env) : null;
     const hosted = record && (record.screenshotPairUrl || record.screenshotUrl);
     if (hosted && /^https?:\/\//.test(hosted)) return Response.redirect(hosted, 302);
@@ -127,8 +135,8 @@ async function handleHtml(kind, url, request, env) {
     const ct = originResp.headers.get('content-type') || '';
     if (!ct.includes('text/html')) return originResp;
 
-    const cids = url.pathname.slice(kind.prefix.length).split(',').map(s => s.trim()).filter(Boolean);
-    const firstCid = cids[0];
+    const cids = url.pathname.slice(kind.prefix.length).split(',');
+    const validDesignList = kind.api !== 'designs' || (cids.length > 0 && cids.every(cid => CID.test(cid)));
     // Canonical drops tracking and debug parameters; only ?scene= names a different page.
     const canonical = new URL(url.origin + url.pathname);
     if (url.searchParams.get('scene')) canonical.searchParams.set('scene', url.searchParams.get('scene'));
@@ -136,7 +144,21 @@ async function handleHtml(kind, url, request, env) {
     try {
         const scene = url.searchParams.get('scene');
         if (scene) meta = await sceneMeta(scene, url, env, meta);
-        else if (firstCid && CID.test(firstCid)) meta = await recordMeta(kind, firstCid, url, env, meta);
+        else if (kind.api === 'designs' && validDesignList) {
+            const count = cids.length;
+            meta = {
+                ...meta,
+                title: count === 1 ? `Design · ${DEFAULTS.siteName}` : `${count} designs · ${DEFAULTS.siteName}`,
+                description: count === 1
+                    ? 'Explore this urban development design.'
+                    : `Explore a shared plan composed of ${count} urban development designs.`,
+                image: `${env.SITE_BASE}/designs/${cids.map(encodeURIComponent).join(',')}/og-image.png`,
+                imageDimensions: { width: 1200, height: 630 },
+                url: canonical.toString()
+            };
+            if (count === 1) meta = await recordMeta(kind, cids[0], url, env, meta);
+        }
+        else if (kind.api === 'agreements' && cids.length === 1 && CID.test(cids[0])) meta = await recordMeta(kind, cids[0], url, env, meta);
     } catch (_) { /* keep defaults on any upstream failure */ }
 
     // Strip the SPA's static social tags so ours are the only ones the crawler can see, then append.

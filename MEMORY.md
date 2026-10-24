@@ -907,3 +907,5 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-24: Designs and map sharing use one Designs button and one right-side panel, with Designs and Share tabs; phones retain one resizable sheet.
 
 - 2026-10-24: Settings has one level of sections, closed whenever opened; data providers are chosen per dataset, with no global source selector or source-switch data wipe. The 2D click stack names Building(s), Proposal(s) and Parcel(s), retaining cadastral references.
+
+- 2026-10-24: Shared compositions get cached 2D social images of all included published designs, generated while sharing and recoverable on demand; this creates no separate plan record or agreement.

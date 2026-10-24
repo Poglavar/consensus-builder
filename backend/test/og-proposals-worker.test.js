@@ -57,6 +57,7 @@ describe('per-link previews of designs and agreements', () => {
         expect(meta(html, 'og:title')).toBe('Riverside deal · Urban Game Theory');
         expect(meta(html, 'og:description')).toBe('Two owners swap land.');
         expect(meta(html, 'og:image')).toBe(`${env.SITE_BASE}/agreements/${AGREEMENT}/og-image.png`);
+        expect(meta(html, 'og:image:width')).toBeUndefined();
         expect(meta(html, 'twitter:card')).toBe('summary_large_image');
         // The canonical link drops tracking parameters, so search engines see one page per record.
         expect(html).toContain(`<link rel="canonical" href="https://site.example/agreements/${AGREEMENT}">`);
@@ -66,15 +67,42 @@ describe('per-link previews of designs and agreements', () => {
         ]));
     });
 
-    it('previews the first design of a several-design link, and its kind when it has no title', async () => {
+    it('uses the full design list for metadata and image URL without fetching one design as representative', async () => {
         const second = 'bafkreid2zzzld3ix5ws24s3qn3ghwqsot7byya2sgrh4txbyjtwy2oabtq';
         const fetchImpl = serve({ [`/designs/${DESIGN}`]: { cid: DESIGN, content: { title: null } } });
         const html = await (await get(`/designs/${DESIGN},${second}`)).text();
-        expect(fetchImpl).toHaveBeenCalledWith(`${env.API_BASE}/designs/${DESIGN}`);
+        expect(fetchImpl.mock.calls.some(([url]) => String(url).startsWith(`${env.API_BASE}/designs/`))).toBe(false);
         expect(fetchImpl).not.toHaveBeenCalledWith(`${env.API_BASE}/designs/${second}`);
-        expect(meta(html, 'og:title')).toBe('Design · Urban Game Theory');
-        expect(meta(html, 'og:description')).toBe('Help communities reach consensus on future land development.');
+        expect(meta(html, 'og:title')).toBe('2 designs · Urban Game Theory');
+        expect(meta(html, 'og:description')).toBe('Explore a shared plan composed of 2 urban development designs.');
+        expect(meta(html, 'og:image')).toBe(`${env.SITE_BASE}/designs/${DESIGN},${second}/og-image.png`);
+        expect(meta(html, 'og:image:width')).toBe('1200');
+        expect(meta(html, 'og:image:height')).toBe('630');
+        expect(html).toContain(`<link rel="canonical" href="https://site.example/designs/${DESIGN},${second}">`);
+    });
+
+    it('preserves the existing single design metadata with the unified image route', async () => {
+        serve({ [`/designs/${DESIGN}`]: { cid: DESIGN, content: { title: 'Single proposal' } } });
+        const html = await (await get(`/designs/${DESIGN}`)).text();
+        expect(meta(html, 'og:title')).toBe('Single proposal · Urban Game Theory');
         expect(meta(html, 'og:image')).toBe(`${env.SITE_BASE}/designs/${DESIGN}/og-image.png`);
+        expect(meta(html, 'og:image:width')).toBe('1200');
+        expect(meta(html, 'og:image:height')).toBe('630');
+    });
+
+    it('keeps a usable title when the single design index lookup is unavailable', async () => {
+        serve({});
+        const html = await (await get(`/designs/${DESIGN}`)).text();
+        expect(meta(html, 'og:title')).toBe('Design · Urban Game Theory');
+        expect(meta(html, 'og:image')).toBe(`${env.SITE_BASE}/designs/${DESIGN}/og-image.png`);
+    });
+
+    it('rejects a design list if any CID is invalid', async () => {
+        const fetchImpl = serve({});
+        const html = await (await get(`/designs/${DESIGN},bad`)).text();
+        expect(meta(html, 'og:title')).toBe('Consensus Builder');
+        expect(meta(html, 'og:image')).toBe(DEFAULT_IMAGE);
+        expect(fetchImpl.mock.calls.some(([url]) => String(url).startsWith(env.API_BASE))).toBe(false);
     });
 
     it('keeps the site card for a link that names no CID, or a record the index does not hold', async () => {
@@ -96,13 +124,28 @@ describe('per-link previews of designs and agreements', () => {
 });
 
 describe('the record image route', () => {
+    it('redirects design lists to the backend plan preview endpoint', async () => {
+        const fetchImpl = serve({});
+        const second = 'bafkreid2zzzld3ix5ws24s3qn3ghwqsot7byya2sgrh4txbyjtwy2oabtq';
+        const res = await get(`/designs/${DESIGN},${second}/og-image.png`);
+        expect(res.status).toBe(302);
+        expect(res.headers.get('location')).toBe(`${env.API_BASE}/map-previews/${DESIGN},${second}/image.png`);
+        expect(fetchImpl).not.toHaveBeenCalledWith(`${env.API_BASE}/designs/${DESIGN}`);
+    });
+
+    it('rejects an image list containing any invalid CID', async () => {
+        const fetchImpl = serve({});
+        const res = await get(`/designs/${DESIGN},bad/og-image.png`);
+        expect(res.headers.get('location')).toBe(DEFAULT_IMAGE);
+        expect(fetchImpl).not.toHaveBeenCalled();
+    });
     it.each([
         [{ screenshotPairUrl: 'https://api.example/uploads/images/pair.png', screenshotUrl: 'https://api.example/uploads/images/after.png' }, 'https://api.example/uploads/images/pair.png'],
         [{ screenshotPairUrl: null, screenshotUrl: 'https://api.example/uploads/images/after.png' }, 'https://api.example/uploads/images/after.png'],
         [{ screenshotPairUrl: '/uploads/images/relative.png', screenshotUrl: null }, DEFAULT_IMAGE]
-    ])('redirects to the hosted before/after pair, else the thumbnail, else the site card', async (record, location) => {
-        serve({ [`/designs/${DESIGN}`]: { cid: DESIGN, ...record } });
-        const res = await get(`/designs/${DESIGN}/og-image.png`);
+    ])('redirects agreement images to the hosted before/after pair, else thumbnail, else site card', async (record, location) => {
+        serve({ [`/agreements/${AGREEMENT}`]: { cid: AGREEMENT, ...record } });
+        const res = await get(`/agreements/${AGREEMENT}/og-image.png`);
         expect(res.status).toBe(302);
         expect(res.headers.get('location')).toBe(location);
     });

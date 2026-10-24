@@ -5,6 +5,7 @@
 import { setupPinsRoute } from './pins.js';
 import { setupDesignsRoute } from './designs.js';
 import { setupAgreementsRoute } from './agreements.js';
+import { setupMapPreviewsRoute } from './map-previews.js';
 import { defaultThumbnailQueue } from '../thumbnails/thumbnail-queue.js';
 import { pinBytes } from '../storage/pinning.js';
 
@@ -23,4 +24,5 @@ export function registerContentRoutes(app, pool, overrides = {}) {
     setupPinsRoute(app, deps);
     setupDesignsRoute(app, deps);
     setupAgreementsRoute(app, deps);
+    setupMapPreviewsRoute(app, deps);
 }
