@@ -149,6 +149,9 @@
     let buildingBuildPending = false;
     let buildingsWorkGeneration = 0;
     let buildingDisplaySnapshot = null;
+    let renderedBuildingDisplaySnapshot = null;
+    let sceneVisualRevision = 0;
+    let renderedSceneVisualRevision = -1;
     let nearbyDataScope = null;
     const WARM_SCENE_TTL_MS = 60000;
     const WARM_SCENE_MAX_BYTES = 128 * 1024 * 1024;
@@ -4973,6 +4976,7 @@
     window.__threeModeDisposeBuildingGeometryCache = () => nearbyBuildingGeometryCache.clear();
 
     async function buildNearbyProposalBuildings3D(targetGroup, buildingMaterial, visibility = {}, isCurrent = () => true) {
+        let failures = 0;
         // Existing buildings in the 3D view are drawn entirely from the `gdi_building_3d` city
         // model fetched via POST /buildings/near — the SAME GDI objects, under the SAME object_id,
         // that the 2D map serves and that cut/tunnel/demolish detection scans. So a demolished or
@@ -5061,12 +5065,17 @@
                         const mesh = buildMeshFromBuilding3D(bld, demolishedMaterial, meshDedupeState);
                         if (mesh) addObserved(mesh);
                     } catch (e) {
+                        failures++;
                         console.warn('Failed to build 3D mesh for building', bld && bld.object_id, e);
                     }
                 }, { isCurrent });
             }
-        } catch (_) { }
+        } catch (error) {
+            failures++;
+            console.warn('Failed to build existing 3D buildings:', error);
+        }
         ensureNearbyProposalBuildings();
+        return { failures };
     }
 
     // Height of a { z_min, z_max, faces[] } building in metres; falls back to scanning face
@@ -5233,8 +5242,9 @@
     let nearbyProposalBuildings = [];
     let nearbyProposalBuildingsKey = null;
     let nearbyProposalBuildingsFetching = false;
-    // How the last /buildings/near ended ('loaded', 'empty', 'failed'): the status line's closing word.
+    // The last /buildings/near result, keeping empty land distinct from incomplete source evidence.
     let nearbyBuildingsOutcome = null;
+    let nearbyBuildingsRevision = 0;
     // How far out (metres) built context is fetched & rendered around the focus. User-adjustable
     // via the Radius slider in the 3D panel; dense cities (e.g. NYC) need a wider radius to look
     // right — at the tighter end a sparse spot like a park can yield only a handful of buildings.
@@ -5458,6 +5468,7 @@
         if (key === nearbyProposalBuildingsKey) return;
 
         nearbyProposalBuildingsFetching = true;
+        nearbyBuildingsOutcome = null;
         updateBuildingsLoader();
         // The 3D building source is that of the city where the geometry lies: resolved server-side,
         // or read in the browser from Overture's tiles (building-source-client.js).
@@ -5468,10 +5479,14 @@
                 if (!current()) return;
                 const rawBuildings = (payload && Array.isArray(payload.buildings)) ? payload.buildings : [];
                 nearbyProposalBuildings = dedupeCoincidentBuildings(rawBuildings);
+                nearbyBuildingsRevision++;
                 nearbyProposalBuildingsKey = key;
                 nearbyProposalBuildingsFetching = false;
                 nearbyBuildingsProvenance = payload ? { source: payload.source, heights: payload.heights || null, partial: payload.partial === true } : null;
-                nearbyBuildingsOutcome = payload && payload.unavailable ? 'failed' : (nearbyProposalBuildings.length ? 'loaded' : 'empty');
+                nearbyBuildingsOutcome = payload?.supported === false ? 'unsupported'
+                    : !payload || payload.unavailable || !Array.isArray(payload.buildings) ? 'failed'
+                        : payload.partial === true || payload.truncated === true ? 'partial'
+                            : nearbyProposalBuildings.length ? 'loaded' : 'empty';
                 updateBuildingsSourceNote();
                 // The upstream failed outright: an empty scene must not pass for a city without buildings.
                 if (payload && payload.unavailable) reportNearbyBuildingsUnavailable(payload.retryAfter);
@@ -7388,6 +7403,8 @@
     function renderScene() {
         floorPlanRenderer.renderCutaway(renderer, scene, camera, floorPlanGroup,
             xrayEnabled && floorCutawayLevel !== null && floorCutawayLevel < 0);
+        renderedBuildingDisplaySnapshot = buildingDisplaySnapshot;
+        renderedSceneVisualRevision = sceneVisualRevision;
     }
 
     function setFloorCutaway(level) {
@@ -7520,6 +7537,8 @@
         const builtPolicy = buildingDisplayPolicy.resolveBuiltDisplayPolicy(builtDisplay, window.PlanningViews?.getState()?.existingScope);
         const showExisting = builtPolicy.visible && !realisticLayerActive;
         const showProposed = realisticLayerActive || plannedDisplay !== 'off';
+        const existingDataRevision = nearbyBuildingsRevision;
+        let existingBuildFailures = rebuildExisting ? 0 : (previous?.existingBuildFailures || 0);
         existingBuildingsGroup.visible = showExisting;
         proposedBuildingsGroup.visible = showProposed;
         if (existingTransitAlignmentGroup) existingTransitAlignmentGroup.visible = builtPolicy.showExistingRail && !realisticLayerActive;
@@ -7527,10 +7546,11 @@
         const proposedMaterial = plannedDisplay === 'solid' ? buildingMaterials.solid : buildingMaterials.ghost;
         try {
             if (showExisting && rebuildExisting) {
-                await buildNearbyProposalBuildings3D(existingBuildingsGroup, existingMaterial, {
+                const result = await buildNearbyProposalBuildings3D(existingBuildingsGroup, existingMaterial, {
                     showSurviving: builtPolicy.showSurviving,
                     showDemolished: builtPolicy.showDemolished
                 }, isCurrent);
+                existingBuildFailures = result?.failures || 0;
                 if (!isCurrent()) return;
             }
             if (showProposed && rebuildProposed) await buildProposedBuildings3D(proposedBuildingsGroup, proposedMaterial, isCurrent);
@@ -7539,6 +7559,8 @@
             if (showIneligibleParcels && rebuildProposed) buildIneligibleParcels3D(ineligibleBuildingsGroup);
             buildingDisplaySnapshot = {
                 builtPolicy,
+                existingDataRevision: rebuildExisting ? existingDataRevision : previous?.existingDataRevision,
+                existingBuildFailures,
                 existingReady: rebuildExisting ? showExisting : !!previous?.existingReady,
                 proposedReady: rebuildProposed ? showProposed : !!previous?.proposedReady
             };
@@ -7722,6 +7744,8 @@
         const dataScope = JSON.stringify([window.CityConfigManager?.getCurrentCityId?.(), window.CityConfigManager?.getBuildingSourceId?.()]);
         if (dataScope !== nearbyDataScope) {
             nearbyProposalBuildings = []; nearbyProposalBuildingsKey = null;
+            nearbyBuildingsOutcome = null; nearbyBuildingsProvenance = null;
+            nearbyBuildingsRevision++;
             nearbyTrees = []; nearbyTreesKey = null;
             nearbyWater = []; nearbyWaterKey = null;
             nearbyDataScope = dataScope;
@@ -7954,7 +7978,7 @@
                     buildingsLoaderRelease();
                     buildingsLoaderRelease = null;
                     // Said only when buildings came: an empty answer or a failure says so instead.
-                    const closing = nearbyBuildingsOutcome === 'failed'
+                    const closing = ['failed', 'partial', 'unsupported'].includes(nearbyBuildingsOutcome)
                         ? threeI18n('threeMode.overlay.buildingsFailed', 'Buildings could not be loaded')
                         : nearbyBuildingsOutcome === 'empty'
                             ? threeI18n('threeMode.overlay.noBuildings', 'No buildings found around here')
@@ -8073,6 +8097,10 @@
     const HOOK_IDLE_FPS = 30;
     let frameTimer = null;
     function invalidateThreeView(delayMs) {
+        sceneVisualRevision++;
+        queueThreeFrame(delayMs);
+    }
+    function queueThreeFrame(delayMs) {
         renderInvalidated = true;
         if (!isActive || !loopRunning || document.hidden || frameId) return;
         if (frameTimer) {
@@ -8148,7 +8176,7 @@
         if (perfReadout) recordPerfFrame(now, perfT0, perfT1, performance.now());
         const hooksOnly = !renderInvalidated && !moving && !controls?.autoRotate && !manualAutoRotateActive && frameHooks.length > 0;
         if (renderInvalidated || moving || controls?.autoRotate || manualAutoRotateActive || frameHooks.length) {
-            invalidateThreeView(hooksOnly ? Math.max(0, Math.round(1000 / HOOK_IDLE_FPS) - 4) : 0);
+            queueThreeFrame(hooksOnly ? Math.max(0, Math.round(1000 / HOOK_IDLE_FPS) - 4) : 0);
         }
     }
     function startLoop() {
@@ -9077,6 +9105,7 @@
 
     function captureSceneDataURL() {
         if (!isActive || !renderer || !scene || !camera) return null;
+        if (!getSceneReadiness({ requireExisting: builtDisplay !== 'off' && !realisticLayerActive }).ready) return null;
         try {
             renderScene();
             // JPEG for the colour view — it is photographic, so this is ~10x smaller than PNG with
@@ -9085,6 +9114,37 @@
         } catch (_) { return null; }
     }
     window.captureThreeSceneDataURL = captureSceneDataURL;
+
+    function getSceneReadiness({ requireExisting = true } = {}) {
+        return window.__threeSceneReadiness.evaluate({
+            active: isActive && !!renderer && !!scene && !!camera,
+            transitioning: isTransitioning3D,
+            requireExisting,
+            existingVisible: builtDisplay !== 'off' && !realisticLayerActive && existingBuildingsGroup?.visible === true,
+            fetching: nearbyProposalBuildingsFetching,
+            outcome: nearbyBuildingsOutcome,
+            existingBuildings: nearbyProposalBuildings.length,
+            existingBuilt: buildingDisplaySnapshot?.existingReady === true,
+            existingDataCurrent: buildingDisplaySnapshot?.existingDataRevision === nearbyBuildingsRevision,
+            existingBuildFailures: buildingDisplaySnapshot?.existingBuildFailures || 0,
+            building: buildingBuildPending,
+            incomplete: buildingWorkIncomplete,
+            dirty: buildingViewDirty,
+            pendingModels: pendingModelLoads,
+            frameCurrent: !!buildingDisplaySnapshot && renderedBuildingDisplaySnapshot === buildingDisplaySnapshot
+                && renderedSceneVisualRevision === sceneVisualRevision
+        });
+    }
+    window.ThreeSceneReady = {
+        getState: getSceneReadiness,
+        wait: options => window.__threeSceneReadiness.wait(() => getSceneReadiness(options), options),
+        async capture(options) {
+            await window.ThreeSceneReady.wait(options);
+            const image = captureSceneDataURL();
+            if (!image) throw new Error('The 3D scene changed before capture.');
+            return image;
+        }
+    };
 
     // Grayscale HEIGHT MAP of the scene for the AI render: every fragment is shaded by its world Z
     // (this scene is Z-up, buildings extrude along +Z), so black = ground and white = the tallest

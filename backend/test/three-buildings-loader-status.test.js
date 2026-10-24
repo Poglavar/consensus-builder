@@ -82,6 +82,8 @@ describe('3D buildings loader on the status line', () => {
     it.each([
         ['loaded', 'Buildings loaded'],
         ['empty', 'No buildings found around here'],
+        ['partial', 'Buildings could not be loaded'],
+        ['unsupported', 'Buildings could not be loaded'],
         ['failed', 'Buildings could not be loaded']
     ])('closes a %s fetch with "%s"', (outcome, word) => {
         const h = harness();

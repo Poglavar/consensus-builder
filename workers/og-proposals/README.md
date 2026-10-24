@@ -23,6 +23,19 @@ Built per `../../OG-IMAGE-PLAN.md`, extended for `?scene`.
 
 Scenes need no image proxying — their `imageUrl` is already an absolute hosted PNG.
 
+## Model 3D capture readiness
+
+The model view exposes `ThreeSceneReady.getState()`, `.wait({ timeoutMs, signal })` and
+`.capture({ timeoutMs, signal })`. Capture resolves to the app's clean JPEG data URL. It requires
+a successful, complete existing-building response (including a valid empty result), the current
+mesh build, completed model loads, and a frame rendered after the latest visual change. A failed,
+unsupported or partial source rejects rather than producing an apparently complete preview.
+An intentional view without existing buildings can opt out with `requireExisting: false`.
+
+Use this API after the model capability has loaded; the earlier `threeModeReady` event only says
+the mode is interactive. It does not certify that background buildings have finished loading.
+This readiness API does not itself enable automated 3D social-image generation.
+
 ## Deploy (NOT done automatically — touches the prod Cloudflare zone)
 
 Deploy the backend map-preview endpoint first. The Share tab automatically warms its selected CID
