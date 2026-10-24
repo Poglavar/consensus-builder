@@ -14,37 +14,11 @@
     // ISO 4217 currency (city-config.js `currency.code`).
     const TOKENS = Object.freeze(['ETH', 'SOL', 'USDC', 'USDT']);
 
-    // Price assumptions per currency, each in that currency per square metre. They are model inputs,
-    // not valuations; a null means there is no defensible figure, and the model says "unavailable"
-    // instead of inventing one.
-    // - landPerSqm: parcel land when the data carries no price (parcel panel, selection, readjustment).
-    // - roadLandPerSqm: land taken by a drawn road (road acquisition model).
-    // - salesPerSqm: the plan statistics' sales price default (the user edits it there).
-    // EUR are the figures the app has used for its Croatian cities all along. GBP land differs tenfold
-    // between councils, so it has no single figure here: each UK city takes its own local authority's
-    // rate (js/uk-land-rates.js, MHCLG appraisal values, scripts/build-uk-land-rates.py), for parcels
-    // and for road land alike. Its sales default is the 3D panel's sale price (below).
-    const ASSUMPTIONS = Object.freeze({
-        EUR: Object.freeze({
-            landPerSqm: 133,
-            roadLandPerSqm: 100,
-            salesPerSqm: 5000
-        }),
-        GBP: Object.freeze({
-            landPerSqm: null,
-            roadLandPerSqm: null,
-            salesPerSqm: 4000
-        })
-    });
-    // A city whose currency has no assumptions of its own keeps the EUR ones, and its figures say EUR.
-    // The 3D value panel's two sliders: the sale price and the construction cost of a m² of floor
-    // area, each with its default and range. The same numbers in every city, in that city's own
-    // currency (the user's call, 2026-10-22: both are invented starting points the viewer moves).
+    // Rate evidence and editable assumptions share one adapter contract, with separate metrics.
+    const economicSources = () => (root && root.EconomicSources)
+        || (typeof require === 'function' ? require('./economic-sources.js') : null);
     const DEFAULT_ASSUMPTION_CURRENCY = 'EUR';
-    const FLOOR_AREA_PRICES = Object.freeze({
-        sale: Object.freeze({ perSqm: 4000, min: 500, max: 15000, step: 100 }),
-        construction: Object.freeze({ perSqm: 2000, min: 500, max: 8000, step: 100 })
-    });
+    const FLOOR_AREA_PRICES = economicSources().FLOOR_PRICES;
 
     function normalizeCode(code) {
         if (typeof code !== 'string') return null;
@@ -64,37 +38,26 @@
         return code && isFiat(code) ? code : null;
     }
 
-    // The price assumptions for a city, with the currency they are expressed in.
+    // The frontend owns selection. No backend infers a rate provider from a currency or city.
     const ukLandRates = () => (root && root.UkLandRates)
         || (typeof require === 'function' ? require('./uk-land-rates.js') : null);
-
-    // A UK city's land rate in £/m²: its authority's, else the England median the table carries.
-    function ukLandRate(cityConfig) {
+    function ratesFor(cityConfig, override = null) {
+        const api = economicSources();
         const table = ukLandRates();
-        if (!table) return null;
-        const own = cityConfig && table.cities[cityConfig.id];
-        return own ? own.perSqm : table.englandMedianPerSqm;
+        const sources = cityConfig?.economics?.sources || api.defaults(cityConfig, table);
+        return api.resolve(override ? [override, ...sources] : sources, { city: cityConfig, ukLandRates: table });
+    }
+    function assumptionsFor(cityConfig, override = null) {
+        const rates = ratesFor(cityConfig, override);
+        return { currency: currencyOf(cityConfig) || DEFAULT_ASSUMPTION_CURRENCY,
+            landPerSqm: rates.land?.amount ?? null, roadLandPerSqm: rates.roadLand?.amount ?? null,
+            salesPerSqm: rates.sale?.amount ?? null, sources: rates };
     }
 
-    function assumptionsFor(cityConfig) {
-        const cityCurrency = currencyOf(cityConfig);
-        const currency = cityCurrency && ASSUMPTIONS[cityCurrency] ? cityCurrency : DEFAULT_ASSUMPTION_CURRENCY;
-        const assumptions = Object.assign({ currency }, ASSUMPTIONS[currency]);
-        if (currency === 'GBP') {
-            const rate = ukLandRate(cityConfig);
-            assumptions.landPerSqm = rate;
-            assumptions.roadLandPerSqm = rate;
-        }
-        return assumptions;
-    }
-
-    // The area-model options ParcelPriceModel.buildEstimate takes (financials.js): a rate in the
-    // assumptions' currency, or no rate at all (the estimate is then "unavailable", never 0).
-    // `kind` is 'land' (a parcel) or 'road' (land a drawn road takes).
-    function landPriceOptions(cityConfig, kind = 'land') {
-        const assumptions = assumptionsFor(cityConfig);
-        const rate = kind === 'road' ? assumptions.roadLandPerSqm : assumptions.landPerSqm;
-        return { areaPricePerSqm: typeof rate === 'number' ? rate : undefined, currency: assumptions.currency };
+    // Parcel and road estimates retain the selected observation, including its unit and provenance.
+    function landPriceOptions(cityConfig, kind = 'land', override = null) {
+        const observation = ratesFor(cityConfig, override)[kind === 'road' ? 'roadLand' : 'land'];
+        return { areaPricePerSqm: observation?.amount, currency: currencyOf(cityConfig), economicSource: observation || null };
     }
 
     // The currencies an offer can be made in: the city's own money first, the general ones, the chain
@@ -107,36 +70,41 @@
 
     // The current-city view of all this: `getCityConfig` returns the city on screen. The browser
     // instance reads CityConfigManager; a test binds its own city.
-    function forCity(getCityConfig) {
+    function forCity(getCityConfig, getOverride = () => null) {
         const city = () => {
             try { return getCityConfig() || null; } catch (_) { return null; }
         };
         return Object.freeze({
             // The city's currency, EUR when it declares none.
             currentCurrency: () => currencyOf(city()) || DEFAULT_ASSUMPTION_CURRENCY,
-            currentAssumptions: () => assumptionsFor(city()),
-            currentLandPriceOptions: kind => landPriceOptions(city(), kind),
+            currentAssumptions: () => assumptionsFor(city(), getOverride(city())),
+            currentEconomicRates: () => ratesFor(city(), getOverride(city())),
+            currentLandPriceOptions: kind => landPriceOptions(city(), kind, getOverride(city())),
             currentOfferCurrencies: current => offerCurrencies(city(), current),
             // The 3D panel's slider prices, in the city's currency.
-            currentFloorAreaPrices: () => ({
-                currency: currencyOf(city()) || DEFAULT_ASSUMPTION_CURRENCY,
-                sale: Object.assign({}, FLOOR_AREA_PRICES.sale),
-                construction: Object.assign({}, FLOOR_AREA_PRICES.construction)
-            })
+            currentFloorAreaPrices: () => {
+                const rates = ratesFor(city(), getOverride(city()));
+                return {
+                    currency: currencyOf(city()) || DEFAULT_ASSUMPTION_CURRENCY,
+                    sourceKey: JSON.stringify(rates), sources: rates,
+                    sale: economicSources().slider('sale', rates.sale),
+                    construction: economicSources().slider('construction', rates.construction)
+                };
+            }
         });
     }
 
     const browserCity = forCity(() => {
         const manager = typeof window !== 'undefined' ? window.CityConfigManager : null;
         return manager && typeof manager.getCurrentCityConfig === 'function' ? manager.getCurrentCityConfig() : null;
-    });
+    }, city => root?.EconomicSourceSettings?.choiceForCity(city?.id, root) || null);
 
     return Object.freeze(Object.assign({
         TOKENS,
-        ASSUMPTIONS,
         FLOOR_AREA_PRICES,
         isFiat,
         currencyOf,
+        ratesFor,
         assumptionsFor,
         landPriceOptions,
         offerCurrencies,

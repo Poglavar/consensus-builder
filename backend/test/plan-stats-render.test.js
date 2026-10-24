@@ -229,7 +229,7 @@ describe('opening the dialog', () => {
         const hr = openDialog(plan, { city: { currency: { code: 'EUR' } } });
         await hr.showPlanStatsModal();
         expect(slot(hr, 'sales-value')).toMatch(/EUR$/);
-        expect(hr.document.getElementById('plan-stats-price').value).toBe('5000');
+        expect(hr.document.getElementById('plan-stats-price').value).toBe('4000');
     });
 
     it('counts the applied proposals and says how many it left out', async () => {

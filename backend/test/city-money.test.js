@@ -33,14 +33,21 @@ describe('price assumptions follow the city currency', () => {
         const a = CityMoney.assumptionsFor(birmingham);
         expect(a).toMatchObject({ currency: 'GBP', landPerSqm: 688, roadLandPerSqm: 688, salesPerSqm: 4000 });
         expect(UkLandRates.cities.birmingham).toMatchObject({ authority: 'E08000025', basis: 'authority' });
+        expect(a.sources.land).toMatchObject({
+            amount: 688, unit: 'm2-land', currency: 'GBP', basis: 'policy-appraisal', asOf: '2023-10-01',
+            sourceId: 'uk-mhclg-land-2023', scope: 'E08000025 · Birmingham'
+        });
     });
 
-    it('falls back to the England median for a UK city the table does not know', () => {
-        expect(CityMoney.assumptionsFor({ id: 'not-in-table', currency: { code: 'GBP' } }).landPerSqm).toBe(UkLandRates.englandMedianPerSqm);
+    it('does not use the England median as an unknown city local rate', () => {
+        const assumptions = CityMoney.assumptionsFor({ id: 'not-in-table', currency: { code: 'GBP' } });
+        expect(assumptions.landPerSqm).toBeNull();
+        expect(assumptions.roadLandPerSqm).toBeNull();
+        expect(assumptions.sources).not.toHaveProperty('land');
     });
 
-    // The table is generated from city-config.js; a UK city added without rebuilding it would
-    // silently take the England median.
+    // The table is generated from city-config.js; rebuilding it keeps each configured authority's
+    // evidence available. Median placeholders are retained as input metadata, not local rates.
     it('has a land rate for every UK city in the config', () => {
         const ukCities = [...cityConfigSource.matchAll(/\n {12}id: '([^']+)'[^\n]*\n {12}label: [^\n]*\n {12}currency: \{ locale: '[^']+', code: 'GBP' \}/g)].map(m => m[1]);
         expect(ukCities.length).toBeGreaterThan(100);
@@ -57,24 +64,30 @@ describe('price assumptions follow the city currency', () => {
         }
     });
 
-    it('keeps the euro figures for a euro city', () => {
-        expect(CityMoney.assumptionsFor(croatian)).toMatchObject({ currency: 'EUR', landPerSqm: 133, roadLandPerSqm: 100, salesPerSqm: 5000 });
+    it('keeps euro land assumptions and uses the 4,000 plan-statistics sales default', () => {
+        expect(CityMoney.assumptionsFor(croatian)).toMatchObject({ currency: 'EUR', landPerSqm: 133, roadLandPerSqm: 100, salesPerSqm: 4000 });
     });
 
-    it('labels borrowed assumptions with the currency they are in', () => {
-        expect(CityMoney.assumptionsFor(mumbai).currency).toBe('EUR');
+    it('does not borrow euro land assumptions for INR and keeps the local currency', () => {
+        const assumptions = CityMoney.assumptionsFor(mumbai);
+        expect(assumptions).toMatchObject({ currency: 'INR', landPerSqm: null, roadLandPerSqm: null, salesPerSqm: 4000 });
+        expect(CityMoney.landPriceOptions(mumbai)).toMatchObject({ currency: 'INR', economicSource: null });
+        expect(buildParcelPriceEstimate({}, 500, CityMoney.landPriceOptions(mumbai)).basis).toBe('unavailable');
+        expect(CityMoney.forCity(() => mumbai).currentFloorAreaPrices()).toMatchObject({ currency: 'INR', sale: { perSqm: 4000 }, construction: { perSqm: 2000 } });
     });
 });
 
 describe('land estimates', () => {
     it('prices a UK parcel by area in pounds at its authority rate', () => {
-        expect(buildParcelPriceEstimate({}, 500, CityMoney.landPriceOptions(birmingham, 'land')))
-            .toEqual({ amount: 344000, currency: 'GBP', basis: 'area-model', rate: 688 });
+        const options = CityMoney.landPriceOptions(birmingham, 'land');
+        expect(buildParcelPriceEstimate({}, 500, options))
+            .toEqual({ amount: 344000, currency: 'GBP', basis: 'area-model', rate: 688, economicSource: options.economicSource });
     });
 
     it('prices a Croatian parcel by area in euros, and road land at its own rate', () => {
-        expect(buildParcelPriceEstimate({}, 500, CityMoney.landPriceOptions(croatian, 'land')))
-            .toEqual({ amount: 66500, currency: 'EUR', basis: 'area-model', rate: 133 });
+        const options = CityMoney.landPriceOptions(croatian, 'land');
+        expect(buildParcelPriceEstimate({}, 500, options))
+            .toEqual({ amount: 66500, currency: 'EUR', basis: 'area-model', rate: 133, economicSource: options.economicSource });
         expect(buildParcelPriceEstimate({}, 500, CityMoney.landPriceOptions(croatian, 'road')).amount).toBe(50000);
     });
 

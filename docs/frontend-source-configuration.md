@@ -15,6 +15,11 @@ provider definitions for explicit-ID resolution and transport validation. Their 
 preferences and per-city metric metadata do not select a backend provider. Credentials, safe URL
 validation, query limits, database schemas and adapter implementation remain server responsibilities.
 
+Economic sources follow the same ownership boundary. `CityMoney` consumes the pure economic adapter
+registry; `economics.sources` and per-city browser overrides select independent land, sale and
+construction rates. The adapter contract, local JSON format and supported consumers are documented
+in [economic-sources.md](economic-sources.md).
+
 ## Requests
 
 - Shared building reads require `source`: `osm`, `gdi-3d`, `nyc-arcgis`, `nyc-socrata`, or a portable

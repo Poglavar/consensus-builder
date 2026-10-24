@@ -109,7 +109,8 @@ function buildParcelPriceEstimate(properties, areaM2, options = {}) {
     if (!Number.isFinite(area) || area <= 0 || typeof rate !== 'number' || !Number.isFinite(rate) || rate < 0 || !currency) {
         return { amount: null, currency: null, basis: 'unavailable', rate: null };
     }
-    return { amount: area * rate, currency, basis: 'area-model', rate };
+    return { amount: area * rate, currency, basis: 'area-model', rate,
+        ...(options.economicSource ? { economicSource: options.economicSource } : {}) };
 }
 
 function aggregateParcelPriceEstimates(estimates, expectedCount = null) {

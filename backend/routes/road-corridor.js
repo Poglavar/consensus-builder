@@ -1,21 +1,20 @@
 // Server-authoritative corridor acquisition stats. The client used to SCRAPE these numbers out of
 // the road info panel's DOM (textContent.replace(/\D/g,'')), store them in proposal_data, and show
 // them to everyone — the server trusted whatever arrived. This recomputes them from PostGIS: buffer
-// the corridor footprint, intersect it with the Zagreb parcel layer, classify each touched parcel's
-// ownership (the shared classifier), and sum the market price + acquisition difficulty.
+// the corridor footprint, intersect it with the supported parcel layer, classify each touched parcel's
+// ownership (the shared classifier), and apply the caller's sourced area model.
 //
-// Zagreb-only: the `parcel` table is the Croatian cadastre. Other cities have no recompute (the
-// endpoint simply finds no parcels), and POST /proposals leaves their client value alone.
+// The query only supports the `oss-wfs` parcel source; callers must name it explicitly.
 
 import { createRequire } from 'node:module';
 import { buildOwnershipType, buildOwnershipSummary } from './parcels.js';
 
 const require = createRequire(import.meta.url);
+const EconomicSources = require('../../frontend/js/economic-sources.js');
 // The road tool's acquisition-difficulty coefficients (frontend/js/road-drawing.js): government and
 // institutions have weight 0 in this illustrative model, companies 1×, individuals/mixed 2×.
 // These coefficients establish neither acquisition cost nor legal availability.
 const OWNERSHIP_COEFFICIENTS = { government: 0, institution: 0, company: 1, individual: 2, mixed: 2 };
-const DEFAULT_PRICE_PER_M2 = 100; // matches the client's area × 100 market-price fallback
 
 // The classifier returns 'private individual' / 'company' / 'government' / 'institution' / 'mixed';
 // map to the coefficient keys the road tool uses.
@@ -30,16 +29,31 @@ export function normalizeCorridorOwnershipType(type) {
 
 // Aggregate per-parcel rows into the acquisition stats. Pure — inject the classifier so it is
 // testable without a DB. rows: [{ parcelId, fullAreaM2, takenAreaM2, ownershipDetails }].
+function normalizeEconomicObservation(value) {
+    if (!value) return null;
+    try {
+        const table = EconomicSources.rateTable({
+            version: 1, id: value.sourceId, name: value.sourceName, adapter: 'rate-table', url: value.sourceUrl,
+            rates: [{ metric: value.metric, unit: value.unit, amount: value.amount, currency: value.currency,
+                basis: value.basis, asOf: value.asOf, scope: value.scope }]
+        });
+        const row = table.rates[0];
+        if (row.metric !== 'roadLand') return null;
+        return { ...row, sourceId: table.id, sourceName: table.name, sourceUrl: table.url };
+    } catch (_) { return null; }
+}
+
 export function computeCorridorAcquisitionStats(rows, opts = {}) {
-    const pricePerM2 = Number.isFinite(opts.pricePerM2) ? opts.pricePerM2 : DEFAULT_PRICE_PER_M2;
+    const economicSource = normalizeEconomicObservation(opts.economicSource);
+    const pricePerM2 = economicSource ? economicSource.amount : null;
     const classify = typeof opts.classify === 'function' ? opts.classify : () => null;
 
     const ownershipCounts = { individual: 0, company: 0, government: 0, institution: 0, mixed: 0 };
-    let totalMarketPrice = 0;
+    let totalMarketPrice = economicSource ? 0 : null;
     let unknownOwnershipParcelCount = 0;
     let knownOwnerEntryCount = 0;
     let missingOwnerEvidenceParcelCount = 0;
-    let totalAcquiringDifficulty = 0;
+    let totalAcquiringDifficulty = economicSource ? 0 : null;
     let areaTakenM2 = 0;
     const parcelIds = [];
 
@@ -53,9 +67,11 @@ export function computeCorridorAcquisitionStats(rows, opts = {}) {
         const summary = buildOwnershipSummary(row.ownershipDetails);
         if (summary) knownOwnerEntryCount += summary.ownershipList.length;
         else missingOwnerEvidenceParcelCount += 1;
-        const marketPrice = fullArea * pricePerM2;
-        totalMarketPrice += marketPrice;
-        if (type) totalAcquiringDifficulty += marketPrice * OWNERSHIP_COEFFICIENTS[type];
+        if (economicSource) {
+            const modeledPrice = fullArea * pricePerM2;
+            totalMarketPrice += modeledPrice;
+            if (type) totalAcquiringDifficulty += modeledPrice * OWNERSHIP_COEFFICIENTS[type];
+        }
         if (row.parcelId) parcelIds.push(row.parcelId);
     }
 
@@ -65,11 +81,12 @@ export function computeCorridorAcquisitionStats(rows, opts = {}) {
         ownershipCounts,
         ownerEntryCount: missingOwnerEvidenceParcelCount ? null : knownOwnerEntryCount,
         knownOwnerEntryCount, missingOwnerEvidenceParcelCount, unknownOwnershipParcelCount,
-        currency: 'EUR',
-        priceBasis: { kind: 'area-model', ratePerM2: pricePerM2, currency: 'EUR' },
+        currency: economicSource?.currency ?? null,
+        priceBasis: { kind: economicSource ? 'area-model' : 'unavailable', ratePerM2: pricePerM2,
+            currency: economicSource?.currency ?? null, economicSource },
         difficultyBasis: 'category-weighted value model',
-        totalMarketPrice: Math.round(totalMarketPrice),
-        totalAcquiringDifficulty: unknownOwnershipParcelCount ? null : Math.round(totalAcquiringDifficulty),
+        totalMarketPrice: Number.isFinite(totalMarketPrice) ? Math.round(totalMarketPrice) : null,
+        totalAcquiringDifficulty: !economicSource || unknownOwnershipParcelCount ? null : Math.round(totalAcquiringDifficulty),
         source: 'server' // marks the stats as recomputed, not client-scraped
     };
 }
@@ -116,7 +133,7 @@ const CORRIDOR_STATS_SQL = `
       AND ST_Intersects(ST_MakeValid(p.geom), c.geom)
 `;
 
-export async function queryCorridorAcquisitionStats(pool, footprintGeoJSON) {
+export async function queryCorridorAcquisitionStats(pool, footprintGeoJSON, opts = {}) {
     const result = await pool.query(CORRIDOR_STATS_SQL, [JSON.stringify(footprintGeoJSON)]);
     const rows = result.rows.map(r => ({
         parcelId: r.parcel_id,
@@ -124,14 +141,27 @@ export async function queryCorridorAcquisitionStats(pool, footprintGeoJSON) {
         takenAreaM2: Number(r.taken_area_m2),
         ownershipDetails: r.ownership_details
     }));
-    return computeCorridorAcquisitionStats(rows, { classify: buildOwnershipType });
+    return computeCorridorAcquisitionStats(rows, { ...opts, classify: buildOwnershipType });
+}
+
+function normalizeRoadLandSource(value) {
+    const table = EconomicSources.rateTable(value);
+    const row = table.rates.find(rate => rate.metric === 'roadLand');
+    if (!row) throw new Error('An economic source with a roadLand rate is required.');
+    return normalizeEconomicObservation({ ...row, sourceId: table.id, sourceName: table.name, sourceUrl: table.url });
 }
 
 export function setupRoadCorridorRoute(app, pool) {
-    // POST /road-corridor/stats { geometry } or { points:[[lng,lat]], width } → acquisition stats.
+    // POST /road-corridor/stats requires the supported parcel source and a roadLand rate source.
     app.post('/road-corridor/stats', async (req, res) => {
         try {
             const body = req.body || {};
+            if (body.parcelSourceId !== 'oss-wfs') {
+                return res.status(400).json({ error: 'parcelSourceId must be the supported source.' });
+            }
+            let economicSource;
+            try { economicSource = normalizeRoadLandSource(body.economicSource); }
+            catch (error) { return res.status(400).json({ error: error.message || 'A valid roadLand economic source is required.' }); }
             let footprint = asGeometry(body.geometry);
             if (!footprint && Array.isArray(body.points) && body.points.length >= 2 && Number(body.width) > 0) {
                 footprint = resolveRoadFootprintGeometry({ roadProposal: { definition: { points: body.points, width: Number(body.width) } } });
@@ -139,7 +169,7 @@ export function setupRoadCorridorRoute(app, pool) {
             if (!footprint) {
                 return res.status(400).json({ error: 'geometry (Polygon/MultiPolygon) or points[]+width is required' });
             }
-            const stats = await queryCorridorAcquisitionStats(pool, footprint);
+            const stats = await queryCorridorAcquisitionStats(pool, footprint, { economicSource });
             res.json(stats);
         } catch (err) {
             console.error('Error in POST /road-corridor/stats:', err);

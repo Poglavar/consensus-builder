@@ -215,8 +215,10 @@
         const notPartOfBlockLabel = tParcel('panel.parcel.block.notPart', {}, 'Not part of a block');
         const areaLabel = tParcel('panel.parcel.metrics.area', {}, 'Area:');
         const marketPriceLabel = estimate.basis === 'area-model'
-            ? `Modeled area estimate (${CbFormat.formatMoney(estimate.rate, estimate.currency, { maxFractionDigits: 2 })}/m²):`
+            ? tParcel('economicSources.modeled', { rate: CbFormat.formatMoney(estimate.rate, estimate.currency, { maxFractionDigits: 2 }) },
+                `Modeled area estimate (${CbFormat.formatMoney(estimate.rate, estimate.currency, { maxFractionDigits: 2 })}/m²):`)
             : tParcel('panel.parcel.metrics.marketPrice', {}, 'Est. Mkt. Price:');
+        const economicEvidence = global.EconomicSourceSettings?.describe(estimate.economicSource, global) || '';
 
         const normalizedParcelId = resolveParcelId(feature);
         const brojCestice = feature.properties.BROJ_CESTICE ?? feature.properties.broj_cestice;
@@ -683,8 +685,8 @@
                 <div class="metric-value">${formattedArea}</div>
             </div>
             <div class="metric-group">
-                <div class="metric-label" data-i18n-key="panel.parcel.metrics.marketPrice">${marketPriceLabel}</div>
-                <div class="metric-value">${formattedPrice}</div>
+                <div class="metric-label">${marketPriceLabel}</div>
+                <div class="metric-value" title="${escapeHtml(economicEvidence)}">${formattedPrice}</div>
             </div>
         </div>
         ${(typeof ensNameLineHtml === 'function' && parcelId) ? ensNameLineHtml(parcelEnsName(parcelId)) : ''}

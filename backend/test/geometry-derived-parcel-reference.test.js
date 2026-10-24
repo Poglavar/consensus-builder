@@ -70,6 +70,7 @@ function renderParcelPanel(properties, { currency = 'EUR', id = 'test-city' } = 
         __openGround: openGround,
         CityMoney: { currentLandPriceOptions: kind => CityMoney.landPriceOptions(cityConfig, kind) },
         ParcelPriceModel,
+        ClickStack: { isDriving: () => true },
         getParcelId: parcelIds.getParcelIdFromFeature,
         getParcelDisplayNumberFromProperties: parcelIds.getParcelDisplayNumberFromProperties,
         getParcelDisplayNumberFromFeature: parcelIds.getParcelDisplayNumberFromFeature,

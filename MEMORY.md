@@ -897,6 +897,7 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-23: Activity uses one dock panel with Events, Actors and Watched areas; Simulation and Technical status live under Settings → Diagnostics. Live activity defaults to All cities so unlocated agent runs remain visible, and contextual scopes restore the visitor’s ordinary filters when cleared.
 
 - Source configuration belongs to the frontend for every pluggable dataset; backend services accept explicit source IDs and do not select sources from app city configuration.
+- Economic sources use independent land, floor-area sale and construction rates with currency, units, valuation date and provenance; local overrides select inputs, while market evidence, policy appraisal and scenario assumptions remain distinct.
 
 - 2026-10-23: The user requested Telegram notifications for incoming feedback; reuse the configured private activity destination and retain delivery state in the private inbox so API restarts do not lose pending reports.
 

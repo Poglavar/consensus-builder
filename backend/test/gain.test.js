@@ -153,4 +153,13 @@ describe('computeValueComparison', () => {
     it('refuses prices without a currency', () => {
         expect(() => computeValueComparison({ floorAreas: { built: 1 }, salePerM2: 4000, constructionPerM2: 2000 })).toThrow(/currency/);
     });
+
+    it('keeps amounts dependent on missing source prices unknown without hiding floor area', () => {
+        const withoutSale = computeValueComparison({ floorAreas: { built: 100, proposed: 300 }, ...prices, salePerM2: null, parcelCount: 2 });
+        expect(withoutSale.columns.built.value).toBeNull();
+        expect(withoutSale.columns.proposed).toMatchObject({ available: true, floorArea: 300, value: null, constructionCost: 600000, profit: null });
+        expect(withoutSale.avgProfitPerParcel).toBeNull();
+        const withoutCost = computeValueComparison({ floorAreas: { built: 100, proposed: 300 }, ...prices, constructionPerM2: null });
+        expect(withoutCost.columns.proposed).toMatchObject({ value: 1200000, constructionCost: null, profit: null });
+    });
 });

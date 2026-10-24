@@ -214,15 +214,19 @@
 
     function computeValueComparison({ floorAreas = {}, salePerM2, constructionPerM2, currency, parcelCount = null, parcelFloorAreas = null } = {}) {
         if (typeof currency !== 'string' || !currency) throw new Error('computeValueComparison needs the currency its prices are in.');
-        if (!finite(salePerM2) || !finite(constructionPerM2)) throw new Error('computeValueComparison needs a sale price and a construction cost per m².');
+        // A source may have no usable rate for one metric. Missing prices keep their dependent
+        // amounts unknown; they do not prevent the geometry or the other metric from being shown.
+        const sale = finite(salePerM2) && salePerM2 >= 0 ? salePerM2 : null;
+        const cost = finite(constructionPerM2) && constructionPerM2 >= 0 ? constructionPerM2 : null;
         const area = value => (finite(value) && value >= 0 ? value : null);
         const builtArea = area(floorAreas.built);
-        const builtValue = builtArea === null ? null : builtArea * salePerM2;
+        const builtValue = builtArea === null || sale === null ? null : builtArea * sale;
         const newBuild = (floorArea, available) => {
             if (!available) return { available: false, floorArea: null, value: null, constructionCost: null, profit: null };
-            const value = floorArea * salePerM2;
-            const constructionCost = floorArea * constructionPerM2;
-            return { available: true, floorArea, value, constructionCost, profit: builtValue === null ? null : value - constructionCost - builtValue };
+            const value = sale === null ? null : floorArea * sale;
+            const constructionCost = cost === null ? null : floorArea * cost;
+            return { available: true, floorArea, value, constructionCost,
+                profit: builtValue === null || value === null || constructionCost === null ? null : value - constructionCost - builtValue };
         };
         const plannedArea = area(floorAreas.planned);
         const proposedArea = area(floorAreas.proposed);
@@ -241,7 +245,7 @@
                 avgProfitPerParcel = (proposedOnParcels * (salePerM2 - constructionPerM2) - builtOnParcels * salePerM2) / parcelCount;
             }
         }
-        return { currency, salePerM2, constructionPerM2, columns, avgProfitPerParcel };
+        return { currency, salePerM2: sale, constructionPerM2: cost, columns, avgProfitPerParcel };
     }
 
     const api = { dedupeCoincidentBuildings, computeParcelMetrics, computeGain, computeValueComparison, needsSiteMetrics, summarizeProposalGround };

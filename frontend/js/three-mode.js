@@ -475,14 +475,14 @@
     // Assumptions for the value panel. GFA (floor area) is derived from the built, planned and
     // proposed volumes by dividing out a typical storey height; value and profit use two prices per
     // m² the user slides, a sale price and a construction cost, in the city's currency, starting from
-    // city-money.js `currentFloorAreaPrices` (4,000 and 2,000).
+    // city-money.js `currentFloorAreaPrices` (selected evidence, else explicit scenario assumptions).
     const FLOOR_HEIGHT_M = 3.5;        // "reasonably high" storey height for GFA estimation
     let panelPrices = null;            // { currency, sale, construction }; each perSqm moves with its slider
 
-    // The city's slider prices, kept while the currency stays the same (the sliders' last positions).
+    // Keep slider positions only while the currency and economic source observations stay the same.
     function currentPanelPrices() {
         const fresh = window.CityMoney.currentFloorAreaPrices();
-        if (!panelPrices || panelPrices.currency !== fresh.currency) panelPrices = fresh;
+        if (!panelPrices || panelPrices.currency !== fresh.currency || panelPrices.sourceKey !== fresh.sourceKey) panelPrices = fresh;
         return panelPrices;
     }
     let parcelClickHandler = null;
@@ -857,7 +857,8 @@
             parcelCount: lastParcelCount,
             parcelFloorAreas: lastParcelFloorAreas
         });
-        const money = value => CbFormat.formatMoney(Math.round(value), prices.currency);
+        const money = value => typeof value === 'number' && Number.isFinite(value)
+            ? CbFormat.formatMoney(Math.round(value), prices.currency) : '—';
         const signedClass = value => (value > 0 ? 'gain-positive' : (value < 0 ? 'gain-negative' : ''));
         ['built', 'planned', 'proposed'].forEach(column => {
             const figures = comparison.columns[column];
@@ -894,9 +895,11 @@
         [['sale-slider', 'sale'], ['construction-slider', 'construction']].forEach(([role, key]) => {
             const slider = panel.querySelector(`[data-role="${role}"]`);
             if (!slider) return;
+            slider.title = window.EconomicSourceSettings?.describe(currentPanelPrices().sources[key], window) || '';
             slider.addEventListener('input', () => {
                 const v = Number(slider.value);
                 if (Number.isFinite(v)) currentPanelPrices()[key].perSqm = v;
+                slider.title = threeI18n('economicSources.assumption', 'Scenario assumption');
                 renderValueComparison(panel);
             });
         });
@@ -917,7 +920,7 @@
         const slider = (role, labelRole, price) => `
             <label class="parcel-panel-slider-label" data-role="${labelRole}"></label>
             <input type="range" class="parcel-panel-price-slider" data-role="${role}"
-                min="${price.min}" max="${price.max}" step="${price.step}" value="${price.perSqm}">`;
+                min="${price.min}" max="${price.max}" step="${price.step}" value="${price.perSqm ?? price.min}"${price.perSqm === null ? ' disabled' : ''}>`;
         return `
             <table class="parcel-panel-table">
                 <tr><th></th>${columns.map(c => `<th${off(c)}>${L[c]}</th>`).join('')}</tr>

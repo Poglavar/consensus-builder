@@ -1976,7 +1976,8 @@ function roadAcquisitionModel(parcels) {
         totalMarketPrice: total.amount,
         totalAcquiringDifficulty: score,
         currency: total.currency,
-        priceBasis: { kind: total.basis, fallbackRatePerM2: fallback.areaPricePerSqm ?? null, fallbackCurrency: fallback.currency },
+        priceBasis: { kind: total.basis, fallbackRatePerM2: fallback.areaPricePerSqm ?? null, fallbackCurrency: fallback.currency,
+            economicSource: fallback.economicSource },
         difficultyBasis: 'category-weighted value model',
         source: 'browser-model'
     };
@@ -1988,6 +1989,8 @@ function updateRoadMarketPrice(parcels) {
     const stats = roadAcquisitionModel(parcels);
     marketEl.textContent = stats.totalMarketPrice !== null && stats.currency
         ? CbFormat.formatMoney(stats.totalMarketPrice, stats.currency, { maxFractionDigits: 0 }) : '—';
+    marketEl.title = stats.priceBasis.kind === 'area-model'
+        ? window.EconomicSourceSettings?.describe(stats.priceBasis.economicSource, window) || '' : '';
 }
 
 async function updateRoadAcquiringDifficulty(parcels) {

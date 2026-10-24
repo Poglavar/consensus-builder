@@ -38,3 +38,6 @@ body.ground-fallback-open #parcel-source-status {
 
 .imagery-source-presets .btn + .btn { margin-left: var(--cb-space-2); }
 .parcel-source-settings__result select { width: 100%; margin-top: var(--cb-space-2); }
+.economic-source-list { margin: var(--cb-space-3) 0; }
+.economic-source-list dt { font-weight: var(--cb-font-weight-semibold, 600); }
+.economic-source-list dd { margin: 0 0 var(--cb-space-3); line-height: var(--cb-leading); overflow-wrap: anywhere; }
