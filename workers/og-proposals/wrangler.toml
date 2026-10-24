@@ -11,6 +11,7 @@ compatibility_date = "2026-07-01"
 # become vars.routes and the Worker would deploy with no routes at all (never invoked).
 routes = [
   { pattern = "urbangametheory.xyz/designs/*", zone_name = "urbangametheory.xyz" },
+  { pattern = "urbangametheory.xyz/plans/*", zone_name = "urbangametheory.xyz" },
   { pattern = "urbangametheory.xyz/agreements/*", zone_name = "urbangametheory.xyz" }
 ]
 

@@ -88,7 +88,8 @@ async function sceneMeta(slug, url, env, base) {
 // The records a link can name, by path prefix, and the API route that serves each by its CID.
 const RECORD_KINDS = Object.freeze([
     { prefix: '/designs/', api: 'designs', label: 'Design' },
-    { prefix: '/agreements/', api: 'agreements', label: 'Agreement' }
+    { prefix: '/agreements/', api: 'agreements', label: 'Agreement' },
+    { prefix: '/plans/', api: 'plans', label: 'Plan' }
 ]);
 // The CID scheme of published records: CIDv1, raw, sha2-256, base32 (`bafkrei…`, 59 characters).
 const CID = /^bafkrei[a-z2-7]{52}$/;
@@ -125,6 +126,12 @@ async function handleRecordImage(kind, cid, env) {
         return Response.redirect(target, 302);
     }
     const record = CID.test(cid) ? await readRecord(kind, cid, env) : null;
+    if (kind.api === 'plans') {
+        const cids = record?.content?.designCids;
+        if (Array.isArray(cids) && cids.length && cids.every(value => CID.test(value))) {
+            return Response.redirect(`${env.API_BASE}/map-previews/${cids.join(',')}/image.png`, 302);
+        }
+    }
     const hosted = record && (record.screenshotPairUrl || record.screenshotUrl);
     if (hosted && /^https?:\/\//.test(hosted)) return Response.redirect(hosted, 302);
     return Response.redirect(DEFAULTS.image, 302);
@@ -158,7 +165,7 @@ async function handleHtml(kind, url, request, env) {
             };
             if (count === 1) meta = await recordMeta(kind, cids[0], url, env, meta);
         }
-        else if (kind.api === 'agreements' && cids.length === 1 && CID.test(cids[0])) meta = await recordMeta(kind, cids[0], url, env, meta);
+        else if ((kind.api === 'agreements' || kind.api === 'plans') && cids.length === 1 && CID.test(cids[0])) meta = await recordMeta(kind, cids[0], url, env, meta);
     } catch (_) { /* keep defaults on any upstream failure */ }
 
     // Strip the SPA's static social tags so ours are the only ones the crawler can see, then append.

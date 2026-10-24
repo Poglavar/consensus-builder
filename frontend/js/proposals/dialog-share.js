@@ -824,6 +824,65 @@ function showSharePlanPanel(options) {
         });
         linkRow.append(linkInput, copyBtn);
         shareArea.appendChild(linkRow);
+        let namedRecord = window.NamedPlans.current;
+        let savingName = false;
+        const namedTitle = document.createElement('strong');
+        namedTitle.className = 'share-plan-saved-name';
+        namedTitle.hidden = true;
+        shareArea.prepend(namedTitle);
+        const nameButton = document.createElement('button');
+        nameButton.type = 'button';
+        nameButton.className = 'btn share-plan-name-button';
+        nameButton.textContent = t('proposals.share.named.name', 'Name this plan');
+        const nameForm = document.createElement('form');
+        nameForm.className = 'share-plan-name-form';
+        nameForm.hidden = true;
+        const nameLabel = document.createElement('label');
+        nameLabel.textContent = t('proposals.share.named.label', 'Plan name');
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.className = 'share-plan-link__input';
+        nameInput.maxLength = window.PlanRecord.MAX_TITLE;
+        nameInput.required = true;
+        nameInput.value = namedRecord?.content.title || '';
+        nameLabel.appendChild(nameInput);
+        const saveName = document.createElement('button');
+        saveName.type = 'submit';
+        saveName.className = 'btn btn-primary share-plan-save-name';
+        saveName.textContent = t('proposals.share.named.save', 'Save plan link');
+        const nameHint = document.createElement('small');
+        nameHint.textContent = t('proposals.share.named.hint', 'Saves the name, selected designs and map view. Changes get a new link.');
+        nameForm.append(nameLabel, saveName, nameHint);
+        shareArea.append(nameButton, nameForm);
+        nameButton.addEventListener('click', () => {
+            nameButton.hidden = true;
+            nameForm.hidden = false;
+            nameInput.focus();
+        });
+        const namedContent = cids => window.PlanRecord.create(nameInput.value, cids, shareView);
+        nameInput.addEventListener('input', () => updateShareUrl());
+        nameForm.addEventListener('submit', async event => {
+            event.preventDefault();
+            if (savingName || saveName.disabled) return;
+            const cids = [...selected].map(key => publishState.get(key)?.cid);
+            savingName = true;
+            updateShareUrl();
+            try {
+                const content = namedContent(cids);
+                namedRecord = await window.BusyControl.track(saveName, () => window.NamedPlans.save(content));
+                nameForm.hidden = true;
+                updateShareUrl();
+                setStatus(t('proposals.share.named.saved', 'Plan saved. Its permanent link is ready to copy.'));
+            } catch (error) {
+                console.error(`[${new Date().toISOString()}] [named-plan] Saving failed`, error);
+                setStatus(t('proposals.share.named.saveFailed', 'The plan could not be saved: {{reason}}', { reason: error.message }));
+            } finally {
+                savingName = false;
+                saveName.disabled = !nameInput.value.trim() || [...selected].some(key => !isPublished(key)) || !selected.size;
+                nameInput.disabled = false;
+                for (const controls of rowControls.values()) controls.checkbox.disabled = false;
+            }
+        });
         const publishSelected = document.createElement('button');
         publishSelected.type = 'button';
         publishSelected.className = 'btn btn-primary share-plan-publish-selected';
@@ -858,6 +917,11 @@ function showSharePlanPanel(options) {
             });
             const pendingKeys = selectedKeys.filter(key => !isPublished(key));
             const blockedKeys = pendingKeys.filter(key => publishRefusals.has(key));
+            saveName.disabled = savingName || !nameInput.value.trim() || !selectedKeys.length || !!pendingKeys.length;
+            nameInput.disabled = savingName;
+            for (const controls of rowControls.values()) controls.checkbox.disabled = savingName;
+            nameButton.hidden = !nameForm.hidden || !selectedKeys.length;
+            namedTitle.hidden = true;
             publishSelected.hidden = !pendingKeys.some(key => !publishRefusals.has(key));
             publishSelected.disabled = selectedKeys.some(key => publishState.get(key)?.publishing);
             agreementAction.hidden = !blockedKeys.some(key => publishRefusals.get(key)?.code === 'layout-needs-agreement');
@@ -881,7 +945,7 @@ function showSharePlanPanel(options) {
                 const blockedKey = blockedKeys[0];
                 const blockedMessage = blockedKey && publishRefusals.get(blockedKey)?.code === 'layout-needs-agreement'
                     ? t('proposals.share.panel.layoutNeedsAgreement', '{{title}} is published with its agreement. Create an agreement that includes it, or deselect it to share the other designs.', {
-                        title: proposalsByHash.get(blockedKey)?.title || t('proposals.share.untitled', 'Untitled design')
+                        title: proposalsByHash.get(blockedKey)?.title || t('modal.roadWidth.proposalList.untitled', 'Untitled design')
                     })
                     : publishRefusals.get(blockedKey)?.message;
                 setStatus(blockedKeys.length ? blockedMessage : cids.length
@@ -889,7 +953,15 @@ function showSharePlanPanel(options) {
                     : t('proposals.share.panel.noPublishedHint', 'Publish at least one design to get a link.'));
                 return;
             }
-            showLink(window.MapShare.link(window.DesignSync.designLink(cids), shareView));
+            let matchingName = false;
+            if (namedRecord && nameInput.value.trim()) {
+                matchingName = window.Cid.cidOfObject(namedContent(cids)) === namedRecord.cid;
+            }
+            namedTitle.hidden = !matchingName;
+            namedTitle.textContent = matchingName ? namedRecord.content.title : '';
+            nameButton.textContent = matchingName ? t('proposals.share.named.rename', 'Rename plan') : t('proposals.share.named.name', 'Name this plan');
+            showLink(matchingName ? window.NamedPlans.link(namedRecord.cid)
+                : window.MapShare.link(window.DesignSync.designLink(cids), shareView));
             window.DesignSync.prepareMapPreview(cids).catch(() => {
                 console.warn(`[${new Date().toISOString()}] [share-plan] map preview preparation failed`);
             });

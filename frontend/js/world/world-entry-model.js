@@ -79,7 +79,7 @@
     // /bets/<account> and ?bets= (bets/bets-link.js) and the view-mode params (?model/?mode3d/?3d,
     // ?photo/?real/?rl/?rw: is3DModeRequestedFromUrl), or a valid shared map view (?at=).
     const SHARED_PATHS = [/^\/proposals\/?$/i, /^\/proposals\/[a-z0-9-]+\/[^/]+\/[^/]+\/./i, /^\/designs\/./i, /^\/agreements\/./i,
-        /^\/parcel\/./i, /^\/bets\/./i, /\/monitors\/\d+\/?$/];
+        /^\/plans\/[^/]+\/?$/i, /^\/parcel\/./i, /^\/bets\/./i, /\/monitors\/\d+\/?$/];
     const SHARED_PARAMS = ['parcel', 'focusProposal', 'activity', 'scene', 'bets', 'model', 'mode3d', '3d', 'photo', 'real', 'rl', 'rw'];
     // The shared routes that open a stored record, which keeps the city it was made in.
     const RECORD_PARAMS = ['parcel', 'focusProposal', 'activity', 'scene', 'bets'];

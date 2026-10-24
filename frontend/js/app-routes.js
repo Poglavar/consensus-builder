@@ -15,6 +15,7 @@
         /^\/proposals\/?$/,       // the proposal list (js/proposals/core.js)
         /^\/designs(?:\/.+)?$/,        // /designs/<cid>[,<cid>…] (js/proposals/sharing-routes.js)
         /^\/agreements\/.+$/,     // /agreements/<cid> (js/agreement-sync.js)
+        /^\/plans\/[^/]+\/?$/,   // /plans/<cid> (js/named-plans.js)
         /^\/parcel\/.+$/,         // /parcel/<id> (js/parcels/route.js)
         /^\/bets\/.+$/            // /bets/<account> (js/bets/bets-link.js; nginx proxies it first)
     ]);

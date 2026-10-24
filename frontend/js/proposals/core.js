@@ -987,9 +987,12 @@ async function handleProposalRouteFromUrl() {
         }
         const designMatch = pathname.match(/^\/designs\/([^/]+)$/);
         const agreementMatch = pathname.match(/^\/agreements\/([^/]+)$/);
-        if (designMatch || agreementMatch) {
+        const planMatch = pathname.match(/^\/plans\/([^/]+)$/);
+        if (designMatch || agreementMatch || planMatch) {
             try {
-                if (designMatch) {
+                if (planMatch) {
+                    await window.NamedPlans.open();
+                } else if (designMatch) {
                     const cids = designMatch[1].split(',').map(cid => cid.trim()).filter(Boolean);
                     console.log(`[${new Date().toISOString()}] [handleProposalRouteFromUrl] design link: ${cids.length} design(s)`, cids);
                     await handleSharedDesignRoute(cids);

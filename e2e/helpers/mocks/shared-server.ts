@@ -31,6 +31,8 @@ export interface SharedIndex {
   designs: Map<string, Record<string, any>>;
   /** Indexed agreement rows by CID, as GET /agreements/:cid answers them. */
   agreements: Map<string, Record<string, any>>;
+  /** Named selections, independent of agreements. */
+  plans: Map<string, Record<string, any>>;
   /** Relayed owner decisions (receipts) by agreement CID. */
   decisions: Map<string, any[]>;
   /** Market pools by agreement account, what GET /markets reads beside the minted agreements. */
@@ -55,7 +57,7 @@ const DEVNET_USDC_MINT = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
 
 export function createSharedIndex(options: { cadastre?: any[] } = {}): SharedIndex {
   return {
-    pins: new Map(), designs: new Map(), agreements: new Map(), decisions: new Map(), markets: new Map(),
+    pins: new Map(), designs: new Map(), agreements: new Map(), plans: new Map(), decisions: new Map(), markets: new Map(),
     lensMembers: [{ key: E2E_LENS_MEMBER_KEY, kind: 'owner-consent', name: 'E2E lens member', serviceUrl: E2E_LENS_SERVICE_URL }],
     lensAttestations: [], requests: [],
     cadastre: options.cadastre || sampleParcels.features,
@@ -272,7 +274,7 @@ function indexEvents(index: SharedIndex): Record<string, any>[] {
 
 // ---- routes ----------------------------------------------------------------------------------------
 
-const INDEX_PATH = /\/(pins|designs|agreements)(?:\/([^?#]*))?$/;
+const INDEX_PATH = /\/(pins|designs|agreements|plans)(?:\/([^?#]*))?$/;
 
 function indexPathOf(request: Request): { root: string; rest: string } | null {
   // A navigation to /designs/<cid> or /agreements/<cid> is the app's own page, served by the frontend.
@@ -339,6 +341,19 @@ export async function attachSharedIndex(page: Page, index: SharedIndex): Promise
     const url = new URL(request.url());
     index.requests.push({ method, path: url.pathname + url.search, body });
     const { root, rest } = target;
+
+    if (root === 'plans') {
+      if (!rest && method === 'POST') {
+        const content = body?.content;
+        const cid = cidOfObject(content);
+        if (content.designCids.some((id: string) => !index.designs.has(id))) return refuse(route, 409, 'missing-designs', 'Publish every selected design before saving the plan.');
+        const record = { cid, content };
+        index.plans.set(cid, record);
+        return json(route, 201, record);
+      }
+      const record = index.plans.get(rest);
+      return record ? json(route, 200, record) : refuse(route, 404, 'missing-plan', 'This named plan was not found.');
+    }
 
     if (root === 'pins' && !rest && method === 'POST') {
       if (!body || !['design', 'agreement'].includes(body.kind)) return refuse(route, 400, 'invalid-kind', 'kind must be design or agreement.');

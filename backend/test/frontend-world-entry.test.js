@@ -53,6 +53,7 @@ describe('shared routes and first visit', () => {
     const shared = [
         { pathname: '/proposals' }, { pathname: '/proposals/' }, { pathname: '/proposals/solana/devnet/abc/7' },
         { pathname: `/designs/${DESIGN_A}` }, { pathname: `/designs/${DESIGN_A},${DESIGN_B}` }, { pathname: `/agreements/${AGREEMENT}` },
+        { pathname: `/plans/${DESIGN_A}` },
         { pathname: '/parcel/HR-335240-1323/2' }, { pathname: '/monitors/4' },
         { pathname: '/', search: '?parcel=HR-1' }, { pathname: '/', search: `?focusProposal=${DESIGN_A}` }, { pathname: '/', search: '?activity=agent:7' },
         { pathname: '/', search: '?scene=slug' }, { pathname: '/', search: '?photo' }, { pathname: '/', search: '?model=1' },
@@ -81,9 +82,10 @@ describe('shared routes and first visit', () => {
         const end = src.indexOf('\n}\n', start);
         expect(start).toBeGreaterThan(-1);
         const appCheck = pathname => new Function('window', `${src.slice(start, end + 2)}; return isProposalDeepLinkPath();`)({ location: { pathname } });
-        // The app's own check recognises the design and agreement links, and nothing else here.
+        // The app's own check recognises design, agreement and named-plan links, and nothing else here.
         expect(appCheck(`/designs/${DESIGN_A},${DESIGN_B}`)).toBe(true);
         expect(appCheck(`/agreements/${AGREEMENT}`)).toBe(true);
+        expect(appCheck(`/plans/${DESIGN_A}`)).toBe(true);
         expect(appCheck('/proposals/12')).toBe(false);
         for (const pathname of [`/designs/${DESIGN_A}`, `/designs/${DESIGN_A},${DESIGN_B}/`, `/agreements/${AGREEMENT}`, '/proposals/12', '/', '/about']) {
             if (appCheck(pathname)) expect(Model.isSharedRoute({ pathname }), pathname).toBe(true);

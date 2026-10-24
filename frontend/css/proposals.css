@@ -1875,6 +1875,12 @@ body.map-pick-highlighting .leaflet-pick-highlight-pane {
     display: none;
 }
 
+.share-plan-name-form { display: flex; flex-wrap: wrap; align-items: end; gap: var(--cb-space-2); }
+.share-plan-name-form[hidden], .share-plan-name-button[hidden], .share-plan-saved-name[hidden] { display: none; }
+.share-plan-name-form label { flex: 1 1 170px; min-width: 0; display: grid; gap: var(--cb-space-1); }
+.share-plan-name-form small { flex-basis: 100%; color: var(--cb-text-muted); }
+.share-plan-saved-name { overflow-wrap: anywhere; }
+
 /* The published design's link when the clipboard refused it: shown selected, to copy by hand. */
 .design-link {
     display: flex;

@@ -12,10 +12,10 @@ const IS_PROPOSAL_DEEP_LINK = (() => {
     try {
         const path = window.location.pathname || '';
         // Mirrors handleProposalRouteFromUrl (js/proposals/core.js): a design link
-        // (/designs/<cid>[,<cid>…]) or an agreement link (/agreements/<cid>). Both load their own
+        // (/designs/<cid>[,<cid>…]), agreement (/agreements/<cid>) or named plan (/plans/<cid>). They load their own
         // ground, so the boot viewport parcel fetch must stay suppressed: a link left out
         // fetched the DEFAULT city's viewport parcels (Manhattan) while a Zagreb one was loading.
-        if (/^\/(designs|agreements)\/[^/]+\/?$/.test(path)) return true;
+        if (/^\/(designs|agreements|plans)\/[^/]+\/?$/.test(path)) return true;
         if (typeof window.shouldSkipWelcomeForProposalLink === 'function') {
             return window.shouldSkipWelcomeForProposalLink();
         }

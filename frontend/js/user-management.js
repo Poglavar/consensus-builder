@@ -17,9 +17,9 @@ function isProposalDeepLinkPath() {
     try {
         if (typeof window !== 'undefined' && /^\/designs\/?$/.test(window.location?.pathname) && window.location.hash.startsWith('#draft=')) return true;
         const path = (typeof window !== 'undefined' && window.location && window.location.pathname) ? window.location.pathname : '';
-        // A design link (/designs/<cid>[,<cid>…]) or an agreement link (/agreements/<cid>) — the
+        // A design, agreement or named-plan link — the
         // same forms handleProposalRouteFromUrl (js/proposals/core.js) routes.
-        return /^\/(designs|agreements)\/[^/]+\/?$/.test(path);
+        return /^\/(designs|agreements|plans)\/[^/]+\/?$/.test(path);
     } catch (_) {
         return false;
     }

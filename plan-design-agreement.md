@@ -2,6 +2,14 @@
 
 # Plan, design, agreement
 
+**Current addition (2026-10-24): named map snapshots.** “Name this plan” in Designs → Share
+saves a `plan/v1` record containing the title, selected published design CIDs and map view.
+Its `/plans/<cid>` link opens those exact designs through the ordinary shared-design flow.
+Renaming or changing the selection or view creates a different snapshot; old links retain their
+content. Agreements still own land allocations, money and decision rules. This is a small new
+record, independent of the former named-plan machinery removed in M2. The milestone descriptions
+below remain the historical implementation record. See [named-plan validation and release notes](docs/named-plans-validation.md).
+
 **Status (2026-10-22): M1, M2 and M3 built and tested; M3 committed, nothing pushed or deployed.**
 "Lay out parcels" (M1 a) and the local agreement with its dialog, panel and list (M1 b) came first.
 M2 (the "M2 build contract" below) publishes designs and agreements as CIDv1 UnixFS files with raw leaves, pinned

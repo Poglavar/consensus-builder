@@ -49,6 +49,14 @@ afterEach(() => {
 });
 
 describe('per-link previews of designs and agreements', () => {
+    it('uses a named plan title and previews its exact design selection', async () => {
+        serve({ [`/plans/${AGREEMENT}`]: { cid: AGREEMENT, content: { title: 'Digbeth Green Quarter', designCids: [DESIGN] } } });
+        const html = await (await get(`/plans/${AGREEMENT}`)).text();
+        expect(meta(html, 'og:title')).toBe('Digbeth Green Quarter · Urban Game Theory');
+        expect(meta(html, 'og:image')).toBe(`${env.SITE_BASE}/plans/${AGREEMENT}/og-image.png`);
+        const image = await get(`/plans/${AGREEMENT}/og-image.png`);
+        expect(image.headers.get('location')).toBe(`${env.API_BASE}/map-previews/${DESIGN}/image.png`);
+    });
     it('gives an agreement link its own card, read from the index by CID', async () => {
         const fetchImpl = serve({ [`/agreements/${AGREEMENT}`]: { cid: AGREEMENT, content: { title: 'Riverside deal', description: 'Two owners   swap\nland.' } } });
         const res = await get(`/agreements/${AGREEMENT}?utm_source=chat`);

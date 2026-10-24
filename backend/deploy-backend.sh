@@ -89,6 +89,7 @@ DDL_FILES=(
     db/agents-ddl.sql
     db/proposal-owner-decision-ddl.sql
     db/design-ddl.sql
+    db/plan-ddl.sql
     db/agreement-ddl.sql
     db/agreement-decision-ddl.sql
     db/building-floor-model.sql
