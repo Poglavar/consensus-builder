@@ -921,3 +921,4 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-24: MCP directory promotion is free only; publish the existing hosted identity `xyz.urbangametheory/urban-game-theory` and never purchase listings, boosts or subscriptions.
 
 - 2026-10-24: Design geometry must never travel in URLs. Private previews reference individual stored objects, and named plans contain design CIDs plus a saved view; combined design geometry must not consume a plan-level size budget.
+- 2026-10-24: Affordabot tries another configured city when its priority city cannot supply eligible parcels/candidates; retain source failures and do not report a clean no-picks result after an exhausted search with errors.

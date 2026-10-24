@@ -59,7 +59,8 @@ import { fetchCandidateParcels } from './parcel-source.js';
 import { chooseArea, contestParcels, parcelsFromSource, pickedParcelIds, rivalAgreementCids, runKeyFor, seedFor, slotLabel, windowIn } from './area-plan.js';
 import { planCandidates } from './planner.js';
 import { cityMoney } from '../scripts/lib/frontend-city-money.mjs';
-import { chooseHousingArea, planHousingCandidates, housingOutreach } from './housing-policy.js';
+import { planHousingCandidates, housingOutreach } from './housing-policy.js';
+import { findHousingPlan } from './housing-area-search.js';
 import { fetchHousingScreen } from './housing-screen.js';
 import { markAgentRunFailed, safeFailureDiagnostic } from './run-failure.js';
 import { fetchSourceParcels } from './source-fetch.js';
@@ -628,21 +629,27 @@ async function main() {
                 entries.push({ persona, runId, day, run, candidates });
                 continue;
             }
-            const area = persona.housingResearch ? chooseHousingArea(persona.areas, day) : chooseArea(persona.areas, runKey, persona.name);
-            const { parcels, city, where } = await parcelsForArea({ pool, apiBase, index, area, persona, runKey, day, runs: allRuns, limit: args.candidates * 6 });
-            // Gains are in the money of the place (London in GBP, Zagreb in EUR), at the app's own
-            // floor-area sale price for that city (frontend-owned money settings).
-            const prices = cityMoney(city).currentFloorAreaPrices();
-            const money = { currency: prices.currency, salePricePerM2: prices.sale.perSqm };
-            const planned = (persona.housingResearch ? planHousingCandidates : planCandidates)(parcels, persona, { turf, money, limit: args.candidates * 2, seed: seedFor(runKey) });
-            // The default envelope for a parcel without a stated rule (5 floors) is taller than anything
-            // the 2025 GUP actually says in this bbox (3), so rule-backed candidates come first and the
-            // default-rule ones are only used when nothing else is on offer.
-            const preflight = await preflightCandidates({
-                db: pool, rankedCandidates: prioritizedPlannedCandidates(planned),
-                limit: args.candidates, scanLimit: args.candidates * 2,
-                persona, city, checkBinding: checkProposalBinding, log
-            });
+            const planArea = async area => {
+                const source = await parcelsForArea({ pool, apiBase, index, area, persona, runKey, day, runs: allRuns, limit: args.candidates * 6 });
+                const { parcels, city } = source;
+                // Gains are in the money of the place (London in GBP, Zagreb in EUR), at the app's own
+                // floor-area sale price for that city (frontend-owned money settings).
+                const prices = cityMoney(city).currentFloorAreaPrices();
+                const money = { currency: prices.currency, salePricePerM2: prices.sale.perSqm };
+                const planned = (persona.housingResearch ? planHousingCandidates : planCandidates)(parcels, persona, { turf, money, limit: args.candidates * 2, seed: seedFor(runKey) });
+                // The default envelope for a parcel without a stated rule (5 floors) is taller than anything
+                // the 2025 GUP actually says in this bbox (3), so rule-backed candidates come first and the
+                // default-rule ones are only used when nothing else is on offer.
+                const preflight = await preflightCandidates({
+                    db: pool, rankedCandidates: prioritizedPlannedCandidates(planned),
+                    limit: args.candidates, scanLimit: args.candidates * 2,
+                    persona, city, checkBinding: checkProposalBinding, log
+                });
+                return { ...source, preflight };
+            };
+            const { parcels, city, where, preflight, areaAttempts = [] } = persona.housingResearch
+                ? await findHousingPlan(persona.areas, day, planArea, { log })
+                : await planArea(chooseArea(persona.areas, runKey, persona.name));
             const candidates = preflight.candidates;
             logCandidatePreflight(persona.name, preflight);
             log(`${persona.name} ${i + 1}/${personas.length} planned in ${where}: ${parcels.length} parcels → ${candidates.length} candidates`);
@@ -653,6 +660,7 @@ async function main() {
             if (args.live) {
                 run = await updateRun(pool, runId, { stage: 'planned', status: 'running', summaryPatch: {
                     candidates, city, area: where, slot, wallet: persona.wallet,
+                    ...(persona.housingResearch ? { areaAttempts } : {}),
                     candidatePreflight: { scanned: preflight.scanned, accepted: candidates.length, rejected: preflight.rejected },
                     controller, ...(model ? { model } : {})
                 } });
