@@ -130,6 +130,10 @@ parcels their runs picked (`--day [--slot] [--persona]`, from the runs' checkpoi
 **Affordabot** (`AFFORDABOT.md`) is a proposer persona with `housingResearch`; its published
 agreements fill `summary.outreach` (drafts linking `/agreements/<cid>`), read with
 `node agents/affordabot-outreach.mjs --list`; `affordabot-outcome.mjs` is its monitor check.
+It starts with the daily priority city, then tries each other configured city once when source
+loading fails or planning/binding yields no eligible candidates. Selected runs retain the city
+attempts in their summary. An exhausted search with source errors fails rather than reporting
+a clean no-picks result.
 
 ## Supporters and a society of agents that disagree
 

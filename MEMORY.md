@@ -917,3 +917,4 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-24: Data readers share abstraction → adapter → default/custom source registration, preserving existing providers and domain identities while exposing adapter preparation and operation contracts in Settings.
 
 - 2026-10-24: The user approved named plans as immutable selections of published designs plus a map view, saved from Designs → Share; agreements alone retain allocation and decision terms. Use “Name this plan” for the action.
+- 2026-10-24: Affordabot tries another configured city when its priority city cannot supply eligible parcels/candidates; retain source failures and do not report a clean no-picks result after an exhausted search with errors.
