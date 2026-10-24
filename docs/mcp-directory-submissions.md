@@ -77,9 +77,11 @@ Prepare the following entry only after the actual Glama connector URL exists. Re
 
 The submitting GitHub account must star the upstream repository. Fork it, add one entry, open the pull request, and verify its handshake and badge checks. Record the pull request URL and distinguish submitted from merged.
 
-## mcpservers.org — prepared, contact email required
+## mcpservers.org — submitted for review
 
-The [submission form](https://mcpservers.org/submit) offers an explicit **Free / $0** review option. The browser form was prepared with the shared name and description, Design category, homepage, official Registry name, remote endpoint, and No authentication. Free remains selected. Submission requires a contact email, which must be supplied by the user rather than guessed or extracted from an unrelated account. Keep that address out of this repository.
+Submitted through the [browser form](https://mcpservers.org/submit) on **2026-10-24** using the explicit **Free / $0** option. The form included the shared name and description, Design category, homepage, official Registry name, remote endpoint, No authentication, and the contact email supplied by the user for this submission. The address remains outside this repository.
+
+The browser displayed **“Submission Successful!”**, identified Urban Game Theory — Consensus Builder, and stated review within two weeks with an email notification on approval. This confirms receipt; the listing is not yet verified as published. Do not submit a duplicate while review is pending.
 
 ## MCP.Directory — submitted for review
 
@@ -107,4 +109,5 @@ The source branch is intentional: the public MCP implementation is on `colosseum
 - Live MCP initialize succeeded over Streamable HTTP; discovery returned 30 tools, 12 resources and 5 prompts.
 - Official Registry API returned the exact manifest as active, latest version 0.3.0; browser search displayed the published entry.
 - MCP.Directory's browser form confirmed receipt of the submission; publication remains pending review.
+- mcpservers.org's browser form confirmed successful submission on the Free plan; publication remains pending review.
 - No paid evaluation, paid listing, application release, or full test suite was run for this metadata-only change.
