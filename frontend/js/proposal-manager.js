@@ -3031,7 +3031,7 @@ const ProposalManager = {
     },
 
     // Choosing a plan is one explicit edit of the working composition. Collect every rival
-    // before changing any flags, then derive the resulting composition once. A refused member
+    // before changing any flags, then derive the affected ground once. A refused member
     // rolls back both the incoming plan and the released rivals through ParcelMutation.
     async applyProposalPlan(proposalIds, options = {}) {
         const ids = Array.from(new Set((proposalIds || []).map(String).filter(Boolean)));
@@ -3077,12 +3077,14 @@ const ProposalManager = {
             setProposalApplied(record, true);
             store._indexProposal?.(record);
         });
-        const summary = await this.rebuildAppliedFabric({
+        // A replacement is local: the incoming records and released rivals name its ground.
+        // The declared-scope resolver accepts corridor ribbons across cadastral gaps, while the
+        // local fold still validates each formation. Its dependency closure preserves surrounding
+        // work without replaying distant designs (including retired experimental records).
+        const affected = [...members, ...released.values()];
+        const scope = await this._corridorScopeSeeds(affected, [], options);
+        const summary = await this._rematerializeResolvedScope(affected, scope, {
             ...options,
-            resetProposalIds: Array.from(new Set([
-                ...(Array.isArray(options.resetProposalIds) ? options.resetProposalIds : []),
-                ...released.keys()
-            ])),
             silent: true,
             statusMode: 'apply'
         });

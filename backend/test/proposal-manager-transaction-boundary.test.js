@@ -141,9 +141,12 @@ describe('ProposalManager mutation boundary', () => {
             expect(candidates.map(record => record.proposalId)).toEqual(['conflict', 'untouched']);
             return [options._parcelMutation.proposals.getProposal('conflict')];
         };
-        ProposalManager.rebuildAppliedFabric = async options => {
+        ProposalManager._loadReplayGround = async () => {};
+        ProposalManager.rebuildAppliedFabric = () => { throw new Error('A local plan replacement must not replay the whole composition'); };
+        ProposalManager._rematerializeResolvedScope = async (records, scope, options) => {
+            expect(records.map(record => record.proposalId)).toEqual(['target', 'second', 'conflict']);
+            expect(scope.cadastreParcelIds).toEqual([]);
             rebuilt.push(options._parcelMutation.proposals.getAllProposals().map(record => [record.proposalId, record.applied]));
-            expect(options.resetProposalIds).toEqual(['conflict']);
             return { ok: true, failed: [] };
         };
         const result = await ProposalManager.applyProposalPlan(['target', 'second', 'target']);
@@ -160,7 +163,8 @@ describe('ProposalManager mutation boundary', () => {
         store.proposals.set('second', { proposalId: 'second', applied: false });
         const before = structuredClone([...store.proposals]);
         ProposalManager._collectAppliedAlternativesForExplicitApply = (_member, _candidates, options) => [options._parcelMutation.proposals.getProposal('conflict')];
-        ProposalManager.rebuildAppliedFabric = async options => {
+        ProposalManager._loadReplayGround = async () => {};
+        ProposalManager._rematerializeResolvedScope = async (_records, _scope, options) => {
             expect(options._parcelMutation.proposals.getProposal('conflict').applied).toBe(false);
             return { ok: false, failed: [{ proposalId: 'second', code: 'bad-ground', reason: 'Ground missing' }] };
         };
@@ -181,7 +185,9 @@ describe('ProposalManager mutation boundary', () => {
         ].forEach(record => store.proposals.set(record.proposalId, record));
         const preview = ProposalManager.validateSharedProposalGround('target', new Set(['target']));
         expect(preview.blockers.map(record => record.proposalId)).toEqual(['old-layout', 'old-road']);
-        ProposalManager.rebuildAppliedFabric = async options => {
+        ProposalManager._loadReplayGround = async () => {};
+        ProposalManager._rematerializeResolvedScope = async (records, _scope, options) => {
+            expect(records.map(record => record.proposalId)).toEqual(['target', 'old-layout', 'old-road']);
             const draft = options._parcelMutation.proposals;
             expect(draft.getAllProposals().filter(record => record.applied).map(record => record.proposalId))
                 .toEqual(['target', 'elsewhere']);

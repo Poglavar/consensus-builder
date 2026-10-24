@@ -3,7 +3,7 @@ import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
 import { stubBasemapTiles, PARCEL_GEOMETRY } from '../helpers/runtime';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
-import { fileDesign, pageIndex } from '../helpers/mocks/shared-server';
+import { cidOfObject, fileDesign, pageIndex } from '../helpers/mocks/shared-server';
 const records = require('../../frontend/js/design-record.js');
 
 for (const width of [390, 1280]) test(`shared plan conflicts offer unapply, skip and cancel at ${width}px @core`, async ({ mockApi: page }, testInfo) => {
@@ -46,8 +46,36 @@ for (const width of [390, 1280]) test(`shared plan conflicts offer unapply, skip
     await expect.poll(applied).toEqual(original);
     for (let i = 1; i <= 4; i++) await expect(warning).toContainText(`Tower ${i}`);
     await expect(warning).not.toContainText('Unrelated saved park');
+    let unrelatedParkSnapshot: { originalGoal: string; proposalId: string; serialized: string } | null = null;
+    if (answer === 'Unapply existing & continue') {
+      unrelatedParkSnapshot = await page.evaluate(cid => {
+        const w = window as any;
+        const record = w.DesignSync.localCopyOf(cid);
+        if (!record) throw new Error('The unrelated park must have a local published record.');
+        const originalGoal = record.goal;
+        record.goal = 'unsupported-retired-layout';
+        return { originalGoal, proposalId: String(record.proposalId), serialized: JSON.stringify(structuredClone(record)) };
+      }, parkCid);
+    }
     await warning.getByRole('button', { name: answer, exact: true }).click();
     await expect(warning).toHaveCount(0);
+    if (unrelatedParkSnapshot) {
+      // Mutating this fixture's goal invalidates its published CID, but it must stay applied.
+      await expect.poll(applied, { timeout: 60_000 }).toEqual([...newCids, null].sort());
+      const afterReplacement = await page.evaluate(id => {
+        const record = (window as any).proposalStorage.getProposal(id);
+        return record ? JSON.stringify(structuredClone(record)) : null;
+      }, unrelatedParkSnapshot.proposalId);
+      expect(afterReplacement).toBe(unrelatedParkSnapshot.serialized);
+      expect(JSON.parse(afterReplacement!)).toMatchObject({ goal: 'unsupported-retired-layout', applied: true });
+      await page.evaluate(({ id, goal }) => {
+        const w = window as any;
+        const record = w.proposalStorage.getProposal(id);
+        if (!record) throw new Error('The unrelated park local record disappeared after replacement.');
+        record.goal = goal;
+        w.proposalStorage.save();
+      }, { id: unrelatedParkSnapshot.proposalId, goal: unrelatedParkSnapshot.originalGoal });
+    }
     await expect.poll(applied, { timeout: 60_000 }).toEqual(answer === 'Unapply existing & continue' ? revised : original);
     await expect(page.locator('.shared-plan-failures')).toHaveCount(0);
   }
@@ -68,9 +96,14 @@ for (const width of [390, 1280]) test(`shared plan conflicts offer unapply, skip
   const privateDesign = structuredClone(index.designs.get(newCids[0])!.content);
   privateDesign.title = 'Private tower revision';
   privateDesign.origin = { cid: newCids[0] };
-  const draftId = await page.evaluate(async content => {
+  const privateDraftToken = 'a'.repeat(32);
+  const privateDraftReference = new URL(`/mcp/previews/${privateDraftToken}`, page.url()).href;
+  await page.route(privateDraftReference, route => route.fulfill({ json: {
+    cid: cidOfObject(privateDesign), record: privateDesign, parcelSourceId: null
+  } }));
+  const draftId = await page.evaluate(async ({ content, reference }) => {
     const w = window as any, manager = w.ProposalManager;
-    const url = await w.DraftLink.build({ origin: location.origin, design: content });
+    const url = `/designs?draft=${encodeURIComponent(reference)}`;
     history.replaceState({}, '', url);
     const run = manager.runParcelMutation.bind(manager);
     let started: () => void;
@@ -88,7 +121,7 @@ for (const width of [390, 1280]) test(`shared plan conflicts offer unapply, skip
       w.__privatePreviewResult = { failed: result.failed, applied: result.applied };
     }).catch((error: Error) => { w.__privatePreviewError = error.message; });
     return `draft-${w.Cid.cidOfObject(content)}`;
-  }, privateDesign);
+  }, { content: privateDesign, reference: privateDraftReference });
   await expect.poll(() => page.evaluate(() => (window as any).__sharedImportQueued)).toBe(true);
   expect(await page.evaluate(id => !!(window as any).proposalStorage.getProposal(id), draftId)).toBe(false);
   await page.evaluate(async () => { const w = window as any; w.__releaseSharedImport(); await w.__sharedBackground; });

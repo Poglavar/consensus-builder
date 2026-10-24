@@ -749,6 +749,83 @@ describe('two proposals on the same open ground', () => {
     });
 });
 
+describe('local shared-plan replacement', () => {
+    it('replaces old output with a mixed road and park plan on shared cadastral ground', async () => {
+        const parcelId = 'HR-330264-7';
+        const ground = { declared: [parcelId], binding: { parcels: [{ parcelId }], coverage: 'complete', source: 'server' } };
+        const old = structureRecord('old-park', 'park', rect(0, 0, 20, 20), ground);
+        const park = structureRecord('new-park', 'park', rect(0, 0, 8, 20), ground);
+        const road = {
+            proposalId: 'new-road', title: 'New road', goal: 'road-track', applied: false,
+            createdAt: '2026-10-02T00:00:00.000Z', cadastreParcelIds: [parcelId], binding: ground.binding,
+            roadProposal: { id: 'new-road', definition: { polygon: rect(10, -5, 12, 25),
+                points: [[LAT - 5 * U, LON + 11 * U], [LAT + 25 * U, LON + 11 * U]], width: 6 } }
+        };
+        const { manager, store, fabric } = await harness({ facts: [parcel(parcelId, rect(0, -10, 30, 30))], records: [old, park, road] });
+        await expect(manager.applyProposal('old-park')).resolves.toBe(true);
+
+        await expect(manager.applyProposalPlan(['new-road', 'new-park'])).resolves.toMatchObject({ ok: true, releasedIds: ['old-park'] });
+
+        expect(store.getProposal('old-park').applied).toBe(false);
+        expect(store.getProposal('new-park').applied).toBe(true);
+        expect(store.getProposal('new-road').applied).toBe(true);
+        expect(fabric.producedBy('old-park')).toHaveLength(0);
+        expect(fabric.producedBy('new-park').length).toBeGreaterThan(0);
+        expect(fabric.producedBy('new-road').length).toBeGreaterThan(0);
+    });
+
+    it('retains the previous records and fabric when an incoming member fails in the local fold', async () => {
+        const ground = { binding: { parcels: [], coverage: 'none' } };
+        const old = structureRecord('old', 'park', rect(0, 0, 20, 20), ground);
+        const incoming = structureRecord('incoming', 'square', rect(0, 0, 20, 20), ground);
+        const { manager, store, fabric } = await harness({ records: [old, incoming] });
+        await expect(manager.applyProposal('old')).resolves.toBe(true);
+        store.getProposal('incoming').goal = 'unsupported-new-member';
+        const beforeRecords = structuredClone([...store.proposals]);
+        const beforeFabric = structuredClone(fabric.list());
+
+        await expect(manager.applyProposalPlan(['incoming'])).resolves.toBe(false);
+
+        expect([...store.proposals]).toEqual(beforeRecords);
+        expect(fabric.list()).toEqual(beforeFabric);
+        expect(manager._lastFailedPlanApplySummary.failed).toEqual([
+            expect.objectContaining({ proposalId: 'incoming', reason: expect.stringContaining('Unsupported proposal goal') })
+        ]);
+    });
+
+    it.each([false, true])('does not replay an unsupported distant design (surveyed ground: %s)', async surveyed => {
+        const localId = 'HR-330264-1', remoteId = 'HR-330264-99';
+        const local = rect(2, 2, 12, 8), remote = rect(502, 2, 512, 8);
+        const ground = id => surveyed
+            ? { declared: [id], binding: { parcels: [{ parcelId: id }], coverage: 'complete', source: 'server' } }
+            : { binding: { parcels: [], coverage: 'none', source: 'client-preview' } };
+        const old = structureRecord('old-local', 'park', local, ground(localId));
+        const incoming = structureRecord('new-local', 'square', local, ground(localId));
+        const distant = structureRecord('distant', 'park', remote, ground(remoteId));
+        const { manager, store, fabric } = await harness({
+            facts: surveyed ? [HR1, parcel(remoteId, rect(500, 0, 520, 10))] : [],
+            records: [old, incoming, distant]
+        });
+        await expect(manager.applyProposal(old.proposalId)).resolves.toBe(true);
+        await expect(manager.applyProposal(distant.proposalId)).resolves.toBe(true);
+        // A previously applied experimental record may no longer have a supported goal.
+        store.getProposal('distant').goal = 'unsupported-retired-layout';
+        const before = structuredClone(store.getProposal('distant'));
+        const distantOutput = structuredClone(fabric.producedBy('distant'));
+        const replay = vi.spyOn(manager, 'applyProposal');
+
+        await expect(manager.applyProposalPlan(['new-local'])).resolves.toMatchObject({ ok: true, releasedIds: ['old-local'] });
+
+        expect(replay.mock.calls.map(([id]) => id)).not.toContain('distant');
+        expect(store.getProposal('old-local').applied).toBe(false);
+        expect(store.getProposal('new-local').applied).toBe(true);
+        expect(store.getProposal('distant')).toEqual(before);
+        expect(fabric.producedBy('distant')).toEqual(distantOutput);
+        expect(fabric.producedBy('old-local')).toHaveLength(0);
+        expect(fabric.producedBy('new-local').length).toBeGreaterThan(0);
+    });
+});
+
 describe('boot replay of a plan on open ground only', () => {
     it('re-derives every applied record when there is no cadastre at all (explore)', async () => {
         const park = structureRecord('park-boot', 'park', rect(0, 0, 10, 10), { applied: true, binding: { parcels: [], coverage: 'none' } });

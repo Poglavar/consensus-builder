@@ -1736,3 +1736,22 @@ stopped and no full suite ran. A headed browser loaded the full
 51-design draft through the reference endpoint: 32 building designs and 812 road meshes were present,
 2D/3D shared the saved location, and no page errors were reported. These are local verification
 results, not evidence of deployment.
+
+### Shared-plan replacement must not replay unrelated designs (2026-10-24)
+
+The confirmed replacement branch called `rebuildAppliedFabric` over every applied design in the
+active city. An unrelated experimental record with a retired goal therefore aborted a new plan's
+replacement and appeared in its failure summary. The local branch now provisions the recorded
+ground of the incoming members and released rivals, then uses the existing transactional local
+materializer and spatial dependency closure. Unrelated applied records and their live output stay
+unchanged. A failure inside the affected scope still rolls the entire replacement back.
+
+The headless unit regression reproduced the original error in both cadastral and open-ground cases
+(2 failures, 72 unrelated cases skipped). The first 3-file targeted headless unit run passed 124/124.
+An additional 4-case targeted run passed 3 and failed one fixture assertion: a road on bare ground
+has no cadastral fabric piece. Moving that mixed road/park fixture onto surveyed ground made its
+output assertion meaningful; the final 3-file headless unit run passed 126/126. The first two headed
+Playwright cases reached the replacement but failed a fixture expectation: intentionally changing
+a published fixture's goal invalidates its CID lookup. After accounting for that fixture state,
+both headed cases passed at 390 px and 1280 px, including unchanged unrelated state, skip/cancel,
+reload and reference-only private import. No full suite ran and no run was stopped.
