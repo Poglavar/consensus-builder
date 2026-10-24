@@ -798,7 +798,9 @@ function ensureProposalLoadOverlay() {
     proposalLoadOverlay.hidden = true;
 
     const card = document.createElement('div');
-    card.className = 'cb-dialog cb-dialog--sm proposal-load-card';
+    // A progress message has no resize/dismiss interaction. A mobile sheet handle would insert
+    // a seventh child into the six-row grid and stretch the progress bar into an implicit row.
+    card.className = 'cb-dialog cb-dialog--sm cb-dialog--message proposal-load-card';
     card.setAttribute('role', 'dialog');
     card.setAttribute('aria-modal', 'true');
     card.setAttribute('aria-labelledby', 'proposal-load-title');

@@ -82,3 +82,17 @@ from `e2e` for headless Playwright tests.
 The completed final checks cover canonical identity, validation, persistence, pin/hash failure,
 membership validation, explicit URL overrides, camera/mode serialization, startup timing,
 social metadata and saved-name UI. No full unit or browser suite was run.
+
+## Mobile loading indicator follow-up
+
+The loading card was accidentally treated as a draggable mobile sheet. Its injected handle
+shifted six fixed grid rows by one child, leaving the progress bar in a 204px implicit row.
+The card now uses the existing message-dialog modifier, which excludes it from sheet resizing.
+In a dedicated headed Chrome at 390 × 844, the bar measured 8px and the card 252px after the fix;
+the before/after screenshots were inspected and the browser was closed.
+
+Headless Playwright, one targeted spec: `BASE_URL=http://localhost:8097 npx playwright test
+tests/shared-plan-loading-layout.spec.ts --project=chromium --reporter=list` with isolated `/tmp`
+output. The initial sandboxed attempt could not reach the local web server and exited before
+tests started. Retried with local-server access: 1 passed, completed. The spec checks 320px,
+390px and 1280px widths, progress-fill ratios, stable height as status text changes, and dismissal.
