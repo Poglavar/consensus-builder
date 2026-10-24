@@ -11,6 +11,7 @@ const IS_PROPOSAL_DEEP_LINK = (() => {
     if (typeof window === 'undefined' || !window.location) return false;
     try {
         const path = window.location.pathname || '';
+        if (/^\/designs\/?$/.test(path) && new URLSearchParams(window.location.search).has('draft')) return true;
         // Mirrors handleProposalRouteFromUrl (js/proposals/core.js): a design link
         // (/designs/<cid>[,<cid>…]), agreement (/agreements/<cid>) or named plan (/plans/<cid>). They load their own
         // ground, so the boot viewport parcel fetch must stay suppressed: a link left out

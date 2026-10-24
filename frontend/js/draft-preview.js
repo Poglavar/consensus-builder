@@ -1,19 +1,24 @@
-// Open private fragment artifacts with the same import/apply flow as shared designs. Nothing is
+// Fetch private referenced artifacts with the same import/apply flow as shared designs. Nothing is
 // published, and no wallet method is called. Imported records are local drafts the person can edit.
 (function (root) {
     'use strict';
     if (!root) return;
     async function open() {
-        const artifact = await root.DraftLink.parse(root.location.hash);
+        const artifact = await root.DraftLink.load(root.location.href);
         if (!artifact) return;
-        const designs = artifact.agreement ? artifact.designs : [artifact.design];
-        if (!Array.isArray(designs) || !designs.length || designs.length > 100) throw new Error('Draft preview needs 1–100 designs');
-        if (artifact.agreement) {
+        if (artifact.plan) {
+            const error = root.PlanRecord.validate(artifact.plan);
+            if (error) throw new Error(error);
+        }
+        const collection = artifact.agreement || artifact.plan;
+        const designs = collection ? artifact.designs : [artifact.design];
+        if (!Array.isArray(designs) || !designs.length) throw new Error('Draft preview needs designs');
+        if (collection) {
             const carried = designs.map(content => root.Cid.cidOfObject(content));
-            const linked = artifact.agreement.designs?.map(design => design.cid);
+            const linked = artifact.plan ? artifact.plan.designCids : artifact.agreement.designs?.map(design => design.cid);
             if (!Array.isArray(linked) || new Set(carried).size !== carried.length || new Set(linked).size !== linked.length
-                || carried.length !== linked.length || linked.some(cid => !carried.includes(cid))) throw new Error('Draft preview designs must exactly match the agreement’s linked CIDs.');
-            // Agreement replay order belongs to the agreement, not the fragment envelope.
+                || carried.length !== linked.length || linked.some(cid => !carried.includes(cid))) throw new Error('Draft preview designs must exactly match the collection’s linked CIDs.');
+            // Replay order belongs to the collection, not its transport envelope.
             const byCid = new Map(designs.map(content => [root.Cid.cidOfObject(content), content]));
             designs.splice(0, designs.length, ...linked.map(cid => byCid.get(cid)));
         }
@@ -30,7 +35,7 @@
             const cid = root.Cid.cidOfObject(content);
             rows.set(cid, { cid, content, city: content.city, binding: binding.binding });
         }
-        const applied = await root.handleSharedDesignRoute([...rows.keys()], { draftRows: rows, enter3D: false, openDetails: !artifact.agreement });
+        const applied = await root.handleSharedDesignRoute([...rows.keys()], { draftRows: rows, enter3D: true, openDetails: !collection });
         if (applied.blocked || applied.omitted?.length) return applied;
         if (applied.failed.length) throw new Error('Some draft designs could not be applied; review the map.');
         if (artifact.agreement) {

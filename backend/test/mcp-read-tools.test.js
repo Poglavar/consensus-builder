@@ -41,6 +41,9 @@ describe('MCP public source reads', () => {
         expect(markUntrusted({ title: 'Public title', content: design, previewUrl: 'https://app.example' })).toEqual({
             untrusted: { title: 'Public title', content: design }, previewUrl: 'https://app.example'
         });
+        const plan = { schema: 'plan/v1', title: 'Exact plan title', designCids: [] };
+        expect(markUntrusted({ draftArtifact: { plan } })).toEqual({ draftArtifact: { untrusted: { plan } } });
+        expect(markUntrusted(plan)).toBe(plan);
     });
     it('derives an exact polygon site from the same footprint parts the index uses', () => {
         const reads = createMcpReadTools({ apiBase: 'https://api.example', appOrigin: 'https://app.example', fetchImpl: vi.fn() });

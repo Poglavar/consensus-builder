@@ -277,16 +277,21 @@ new form/tool requires frontend, API and MCP releases, plus the increased nginx 
 `ugt_find_place`, `ugt_parcel_context`, design/agreement reads, markets and `ugt_explain` discover
 the place and its contract. The intent tools draft roads, buildings, spaces, parcel layouts and
 urban rules with the app's pure modules; `ugt_modify_design` makes a fork with `origin.cid` and typed
-changes. Local stdio previews travel in bounded compressed URL fragments. Hosted HTTP wraps them in short
-unguessable bearer links so agents do not have to reproduce long encoded strings. Up to 256 links
-live in process memory for at most 24 hours; expiration, eviction or a server restart requires a
-fresh preview. Opening one redirects with no-store and no-referrer; the app imports the artifact
-as a local browser draft without a pin or index write. The same bearer URL is returned as
-`draftRef`: pass that value to modify, compare or draft an agreement. It resolves the exact private
-canonical object without copying geometry. A bare CID resolves only indexed designs; local stdio
-clients can pass the canonical object directly. Above the URL limit the canonical artifact and CID are still returned with
-`previewStatus: publication-required`; its recovery has `confirm: false` until the person explicitly
-chooses publication. Agreement drafts run the app's formation handlers in an isolated fabric over
+changes. Local stdio returns canonical `draftArtifact` data. Hosted HTTP stores each draft object
+separately and returns a short `draftRef` plus an app `previewUrl` containing that reference only.
+URLs never carry geometry, compressed content or serialized records; the former fragment format is
+intentionally no longer read. `GET /mcp/previews/<token>` returns one JSON object, with no redirect.
+Collection manifests hold design CIDs and private references, and the browser fetches and checks
+each member separately before applying anything. The individual object budget is 10 MiB; the
+combined geometry of a collection is not measured against a URL or per-object limit.
+
+The temporary bearer cache retains up to 4096 entries/128 MiB for at most 24 hours. Expiration,
+eviction or restart requires a fresh preview; these are service capacity limits, not publication
+authorization. If cache capacity prevents a preview, canonical `draftArtifact` data is retained.
+No preview failure requests or performs publication. The app imports fetched content as local
+drafts without pinning or indexing. Pass `draftRef` to modify, compare or draft an agreement;
+a bare CID resolves only indexed designs. Local stdio clients can pass canonical content directly.
+Agreement drafts run the app's formation handlers in an isolated fabric over
 complete cadastral source ground. Single-building ground follows the app’s footprint-parcel rule; stations remain content on their
 corridor and form no new parcel. Unsurveyed/open-ground agreements still require the app. Exact
 node/browser ground parity passes for the actual Borovje alternatives and Pionir archived sources.

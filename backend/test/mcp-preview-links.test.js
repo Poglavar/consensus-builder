@@ -1,30 +1,96 @@
+// Private draft URLs address stored objects; collection manifests never embed member geometry.
+import { createRequire } from 'node:module';
 import { describe, expect, it } from 'vitest';
 import { createPreviewLinks } from '../agents/mcp-preview-links.js';
+import { previewArtifact } from '../agents/mcp-preview.js';
+import { cidOfObject } from '../cid.js';
+const links = createRequire(import.meta.url)('../../frontend/js/draft-link.js');
+const design = title => ({ schema: 'design/v1', title, geometry: { coordinates: Array.from({ length: 4000 }, (_, i) => [i / 31, i / 71]) } });
+const storeOf = options => createPreviewLinks({ origin: 'https://mcp.example', appOrigin: 'https://app.example', ...options });
+const tokenOf = reference => new URL(reference).pathname.split('/').at(-1);
+const fetchFrom = store => async url => { const row = store.get(tokenOf(url)); return Response.json(row || { code: 'preview-expired' }, { status: row ? 200 : 410 }); };
 
-describe('temporary hosted MCP preview links', () => {
-    it('keeps canonical objects unchanged and shortens every comparison alternative', () => {
-        const store = createPreviewLinks({ origin: 'https://mcp.example', appOrigin: 'https://app.example' });
-        const design = { schema: 'design/v1', previewUrl: 'canonical data, not transport metadata' };
-        const target = 'https://app.example/designs?city=london#draft=encoded';
-        const result = store.decorate({ design, alternatives: [{ cid: 'same', previewUrl: target }, { previewUrl: target }] });
-        expect(result.design).toBe(design);
-        expect(result.alternatives[0].previewStatus).toBe('private-link');
-        const url = new URL(result.alternatives[0].previewUrl);
-        expect(url.pathname).toMatch(/^\/mcp\/previews\/[\w-]{32}$/);
-        expect(store.get(url.pathname.split('/').at(-1))).toBe(target);
-        expect(result.alternatives[1].previewUrl).toBe(url.href);
-        expect(store.get('guessed-token')).toBeNull();
-        expect(store.decorate({ previewUrl: 'https://other.example/designs#draft=encoded' }).previewUrl).toContain('other.example');
+describe('temporary hosted MCP object references', () => {
+    it('stores one object once, keeps URLs short, and loads its exact content without redirect or decoding', async () => {
+        const store = storeOf(), content = design('Private site');
+        const artifact = await previewArtifact({ design: content, parcelSourceId: 'chosen-source' });
+        const result = store.decorate({ cid: cidOfObject(content), design: content, alternatives: [artifact, artifact] });
+        const preview = result.alternatives[0];
+        expect(result.design).toBe(content);
+        expect(preview.previewStatus).toBe('private-link');
+        expect(preview.previewUrl.length).toBeLessThan(250);
+        expect(new URL(preview.previewUrl).hash).toBe('');
+        expect(new URL(preview.previewUrl).searchParams.get('draft')).toBe(preview.draftRef);
+        expect(preview.previewUrl).not.toContain('coordinates');
+        expect(result.alternatives[1].draftRef).toBe(preview.draftRef);
+        const decoded = await links.load(preview.previewUrl, { fetchImpl: fetchFrom(store), cidOf: cidOfObject });
+        expect(decoded).toEqual({ design: content, parcelSourceId: 'chosen-source' });
+        expect(await store.resolve(preview.draftRef)).toEqual(decoded);
+        const copy = store.get(tokenOf(preview.draftRef)); copy.record.title = 'Changed outside store';
+        expect((await store.resolve(preview.draftRef)).design.title).toBe('Private site');
     });
-    it('expires, bounds and clears private state without publication', () => {
+    it('keeps a large plan as references and fetches member objects individually with CID checks', async () => {
+        const store = storeOf(), designs = Array.from({ length: 20 }, (_, i) => design(`Building ${i}`));
+        const plan = { schema: 'plan/v1', title: 'A neighbourhood', designCids: designs.map(cidOfObject).sort(), view: {} };
+        expect(JSON.stringify(designs).length).toBeGreaterThan(1_000_000);
+        const preview = store.create({ plan, designs, parcelSourceId: 'ground' });
+        const manifest = store.get(tokenOf(preview.draftRef));
+        expect(JSON.stringify(manifest).length).toBeLessThan(8000);
+        expect(JSON.stringify(manifest)).not.toContain('coordinates');
+        expect(manifest.designs).toHaveLength(20);
+        expect(manifest.designs.every(member => Object.keys(member).sort().join(',') === 'cid,draftRef')).toBe(true);
+        let requests = 0;
+        const restored = await links.load(preview.previewUrl, { fetchImpl: async url => { requests++; return fetchFrom(store)(url); }, cidOf: cidOfObject });
+        expect(requests).toBe(21);
+        expect(restored).toEqual({ plan, designs, parcelSourceId: 'ground' });
+        expect(await store.resolve(preview.draftRef)).toEqual(restored);
+    });
+    it('rejects changed content and member redirects to another server before importing anything', async () => {
+        const store = storeOf(), content = design('Original');
+        const preview = store.create({ design: content });
+        const changed = store.get(tokenOf(preview.draftRef)); changed.record.title = 'Tampered';
+        await expect(links.load(preview.previewUrl, { cidOf: cidOfObject, fetchImpl: async () => Response.json(changed) })).rejects.toThrow(/content identifier/);
+        const plan = { schema: 'plan/v1', designCids: [cidOfObject(content)] };
+        const collection = store.create({ plan, designs: [content] });
+        const manifest = store.get(tokenOf(collection.draftRef)); manifest.designs[0].draftRef = manifest.designs[0].draftRef.replace('mcp.example', 'other.example');
+        await expect(links.load(collection.previewUrl, { cidOf: cidOfObject, fetchImpl: async () => Response.json(manifest) })).rejects.toThrow(/same preview server/);
+    });
+    it('does not apply the individual object limit to the combined designs of a collection', () => {
+        const store = storeOf();
+        const designs = [0, 1].map(index => ({ schema: 'design/v1', title: `Design ${index}`, description: 'x'.repeat(6 * 1024 * 1024) }));
+        const plan = { schema: 'plan/v1', designCids: designs.map(cidOfObject).sort() };
+        const preview = store.create({ plan, designs });
+        expect(preview.previewStatus).toBe('private-link');
+        const manifest = store.get(tokenOf(preview.draftRef));
+        expect(JSON.stringify(manifest).length).toBeLessThan(1000);
+        expect(manifest.designs.every(member => store.get(tokenOf(member.draftRef)))).toBe(true);
+    });
+    it('expires, bounds and clears private state without publication', async () => {
         let now = 0;
-        const store = createPreviewLinks({ origin: 'http://127.0.0.1:3096', appOrigin: 'https://app.example', ttlMs: 100, maxEntries: 1, now: () => now });
-        const add = value => new URL(store.decorate({ previewUrl: `https://app.example/designs#draft=${value}` }).previewUrl).pathname.split('/').at(-1);
-        const first = add('first'), second = add('second');
-        expect(store.get(first)).toBeNull();
-        expect(store.get(second)).toContain('second');
-        now = 100; expect(store.get(second)).toBeNull();
-        const third = add('third'); store.clear(); expect(store.get(third)).toBeNull();
-        expect(() => createPreviewLinks({ origin: 'http://public.example', appOrigin: 'https://app.example' })).toThrow(/HTTPS/);
+        const store = storeOf({ ttlMs: 100, maxEntries: 1, now: () => now });
+        const first = store.create({ design: design('first') }), second = store.create({ design: design('second') });
+        expect(store.get(tokenOf(first.draftRef))).toBeNull();
+        expect(store.get(tokenOf(second.draftRef)).record.title).toBe('second');
+        await expect(store.resolve(first.draftRef)).rejects.toMatchObject({ code: 'draft-reference-expired' });
+        now = 100; expect(store.get(tokenOf(second.draftRef))).toBeNull();
+        const third = store.create({ design: design('third') }); store.clear();
+        expect(store.get(tokenOf(third.draftRef))).toBeNull();
+        expect(() => storeOf({ origin: 'http://public.example' })).toThrow(/Invalid private draft/);
+        expect(() => links.reference('https://mcp.example/mcp/previews/' + 'a'.repeat(32) + '#geometry')).toThrow();
+    });
+    it('retains an artifact when cache capacity cannot hold its members and never asks for publication', () => {
+        const store = storeOf({ maxEntries: 1 }), content = design('Member');
+        const artifact = { agreement: { schema: 'agreement/v1', designs: [{ cid: cidOfObject(content) }] }, designs: [content] };
+        const result = store.create(artifact);
+        expect(result).toMatchObject({ previewUrl: null, previewStatus: 'private-artifact', draftArtifact: artifact });
+        expect(result.next).toBeUndefined();
+    });
+    it('enforces a generous per-object bound without a compressed-URL limit', () => {
+        const store = storeOf();
+        expect(store.create({ design: { schema: 'design/v1', description: 'x'.repeat(2_000_000) } }).previewStatus).toBe('private-link');
+        expect(() => store.create({ design: { schema: 'design/v1', description: 'x'.repeat(links.MAX_OBJECT_BYTES) } })).toThrow(/10 MiB/);
+        const tightCache = storeOf({ maxBytes: links.MAX_OBJECT_BYTES });
+        const artifact = { design: { schema: 'design/v1', description: 'x'.repeat(links.MAX_OBJECT_BYTES - 50) } };
+        expect(tightCache.create(artifact)).toMatchObject({ previewStatus: 'private-artifact', draftArtifact: artifact });
     });
 });

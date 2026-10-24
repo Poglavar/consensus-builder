@@ -32,6 +32,17 @@ function loadSharedImportHelpers(overrides = {}) {
 }
 
 describe('shared-plan progress labels', () => {
+    it('waits for a private draft import before entering its requested 3D view', () => {
+        const setTimeout = vi.fn(), enterUrlDrivenView = vi.fn();
+        const helpers = loadSharedImportHelpers({ window: { location: { pathname: '/designs', search: '?draft=https%3A%2F%2Fapp.example%2Fmcp%2Fpreviews%2Ftoken&3d' } },
+            url3DModeHandled: false, is3DModeRequestedFromUrl: () => true, map: {}, setTimeout, enterUrlDrivenView });
+        helpers.context.handleStandalone3DModeFromUrl();
+        expect(setTimeout).not.toHaveBeenCalled();
+        expect(enterUrlDrivenView).not.toHaveBeenCalled();
+        helpers.context.window.location = { pathname: '/', search: '?3d' };
+        helpers.context.handleStandalone3DModeFromUrl();
+        expect(setTimeout).toHaveBeenCalledTimes(1);
+    });
     const t = (_key, fallback, params = {}) => String(fallback).replace(/\{\{(\w+)\}\}/g,
         (_match, name) => Object.prototype.hasOwnProperty.call(params, name) ? params[name] : _match);
 

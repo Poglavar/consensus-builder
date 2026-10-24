@@ -22,10 +22,11 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
     assertHostedEnvironment(env);
     const origin = new URL(publicOrigin);
     if (origin.protocol !== 'https:' || origin.username || origin.password || origin.pathname !== '/' || origin.search || origin.hash) throw new Error('MCP_PUBLIC_ORIGIN must be an HTTPS origin');
-    const allowed = ['localhost', '127.0.0.1', '[::1]', origin.hostname, new URL(previewOrigin).hostname];
+    const appOrigin = new URL(env.UGT_APP_ORIGIN || 'https://urbangametheory.xyz').origin;
+    const allowed = ['localhost', '127.0.0.1', '[::1]', origin.hostname, new URL(previewOrigin).hostname, new URL(appOrigin).hostname];
     const hostGuard = hostHeaderValidation(allowed), originGuard = originValidation(allowed);
     let active = 0, count = 0, publishes = 0, start = now();
-    const previews = createPreviewLinks({ origin: previewOrigin, appOrigin: env.UGT_APP_ORIGIN || 'https://urbangametheory.xyz', now, ...(previewTtlMs == null ? {} : { ttlMs: previewTtlMs }) });
+    const previews = createPreviewLinks({ origin: previewOrigin, appOrigin, now, ...(previewTtlMs == null ? {} : { ttlMs: previewTtlMs }) });
     const makeServer = factory || (options => createUrbanGameTheoryMcpServer({ mode: 'hosted', env, fetchImpl, ...options }));
     // Count writes at the tool boundary too: this covers legacy clients without MCP routing headers.
     const guardedFactory = () => {
@@ -51,9 +52,12 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
             resetWindow();
             if (count >= maxPerMinute) return json(429, { code: 'rate-limited' }, { 'Retry-After': '60' });
             count++;
-            const target = previews.get(req.url.split('/').at(-1));
-            if (!target) return json(410, { code: 'preview-expired', message: 'This temporary preview is unavailable. Ask your agent to generate it again.' });
-            res.writeHead(302, { Location: target, 'Referrer-Policy': 'no-referrer' }); return res.end();
+            if (req.headers.origin === appOrigin) res.setHeader('Access-Control-Allow-Origin', appOrigin);
+            res.setHeader('Vary', 'Origin');
+            res.setHeader('Referrer-Policy', 'no-referrer');
+            const record = previews.get(req.url.split('/').at(-1));
+            if (!record) return json(410, { code: 'preview-expired', message: 'This temporary preview is unavailable. Ask your agent to generate it again.' });
+            return json(200, record);
         }
         if (req.url === '/healthz' && req.method === 'GET') return json(200, { service: 'ugt-mcp', status: 'ok', upstreamChecked: false });
         if (req.url === '/mcp/server-card' && req.method === 'GET') return json(200, {

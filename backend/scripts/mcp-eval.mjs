@@ -12,8 +12,11 @@ import { cidOfObject } from '../cid.js';
 
 const require = createRequire(import.meta.url);
 const osm = require('../../frontend/js/corridor-osm-form.js');
-const privatePreview = result => { try { const url = new URL(result.previewUrl); return url.hash.startsWith('#draft=')
-    || (result.previewStatus === 'private-link' && /^\/mcp\/previews\/[\w-]{32}$/.test(url.pathname)); } catch { return false; } };
+const privatePreview = result => { try {
+    const url = new URL(result.previewUrl), ref = new URL(url.searchParams.get('draft'));
+    return result.previewStatus === 'private-link' && url.pathname === '/designs' && !url.hash
+        && /^\/mcp\/previews\/[\w-]{32}$/.test(ref.pathname) && !ref.search && !ref.hash;
+} catch { return false; } };
 
 export function scoreArtifact(task, artifacts) {
     for (const result of artifacts) {

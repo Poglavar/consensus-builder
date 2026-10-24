@@ -8,7 +8,6 @@ import { cidOfObject } from '../cid.js';
 import { restatementFixture } from './fixtures/mcp-restatements.mjs';
 const require = createRequire(import.meta.url);
 const builder = require('../../frontend/js/intent-design.js');
-const links = require('../../frontend/js/draft-link.js');
 const site = { type: 'Polygon', coordinates: [[[-0.1, 51.5], [-0.099, 51.5], [-0.099, 51.501], [-0.1, 51.501], [-0.1, 51.5]]] };
 const parcels = [{ type: 'Feature', id: 'A', properties: { parcelId: 'A' }, geometry: site }];
 const make = (kind, extra = {}) => {
@@ -66,8 +65,8 @@ describe('headless app formation host', () => {
         expect(result.cid).toBe(cidOfObject(result.agreement));
         expect(result.agreement.money).toEqual({ currency: 'GBP', lines: [] });
         expect(result.agreement.rule.binding).toBe(false);
-        const artifact = await links.parse(new URL(result.previewUrl).hash);
-        expect(artifact.agreement).toEqual(result.agreement);
+        expect(result.previewUrl).toBeNull();
+        expect(result.draftArtifact).toMatchObject({ agreement: result.agreement, parcelSourceId: 'selected-source' });
         expect(paths).not.toContain('/pins');
         expect(paths).not.toContain('/agreements');
     });

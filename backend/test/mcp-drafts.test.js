@@ -42,12 +42,15 @@ describe('intent design artifacts', () => {
         { kind: 'space', spaceKind: 'park' }, { kind: 'building', floors: 5, coverage: 0.4 },
         { kind: 'parcel-layout', algorithm: 'equal', count: 4 }, { kind: 'parcel-layout', algorithm: 'schelling' },
         { kind: 'urban-rule', rule: { floors: 6 } }
-    ]) it(`${intent.kind} ${intent.algorithm || ''} yields an index-valid canonical design and reversible preview`, async () => {
+    ]) it(`${intent.kind} ${intent.algorithm || ''} yields an index-valid canonical design and object-reference preview`, async () => {
         const design = builder.build({ ...common, ...intent }, { turf });
         expect(validateDesignContent(design)).toMatchObject({ ok: true });
-        const preview = await links.build({ origin: 'https://app.example', design });
-        expect(new URL(preview).pathname).toBe('/designs');
-        const decoded = await links.parse(new URL(preview).hash);
+        const store = createPreviewLinks({ origin: 'https://mcp.example', appOrigin: 'https://app.example' });
+        const { previewUrl, draftRef } = store.create({ design });
+        expect(new URL(previewUrl).pathname).toBe('/designs');
+        expect(new URL(previewUrl).hash).toBe('');
+        expect(new URL(previewUrl).searchParams.get('draft')).toBe(draftRef);
+        const decoded = await links.load(previewUrl, { fetchImpl: async url => Response.json(store.get(new URL(url).pathname.split('/').at(-1))), cidOf: cidOfObject });
         expect(decoded.design).toEqual(design);
         expect(cidOfObject(decoded.design)).toBe(cidOfObject(design));
     });
@@ -75,7 +78,7 @@ describe('intent design artifacts', () => {
         expect(new Date(result.design.authoredAt).toISOString()).toBe(result.design.authoredAt);
         expect(result.takes).toEqual(['parcel-A']);
         expect(result.parcelSourceId).toBe('selected-source');
-        expect((await links.parse(new URL(result.previewUrl).hash)).parcelSourceId).toBe('selected-source');
+        expect(result.parcelSourceId).toBe('selected-source');
         expect(calls).toEqual([['/designs/binding', 'POST']]);
     });
     it('preserves the indexed non-default parcel source when forking, comparing and drafting an agreement', async () => {

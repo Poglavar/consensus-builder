@@ -1711,3 +1711,28 @@ this audit about backend publication-city placement and default provider selecti
 The current contract and intentional request breaks are documented in
 [frontend-source-configuration.md](frontend-source-configuration.md). Existing source identity and
 completeness findings remain separate; this refactor does not prove a provider's availability.
+
+### Private preview transport correction (2026-10-24)
+
+The former compressed-fragment preview and its redirect wrapper are removed from the current
+implementation. Preview URLs contain only opaque references and normal view parameters. The
+preview endpoint serves one canonical object as JSON; collection manifests hold design CIDs and
+individual private references. The browser verifies every object and exact membership before
+applying it. The 10 MiB object budget is not applied to the collection's combined design geometry.
+Temporary cache expiry/capacity remains a service availability constraint and cannot authorize
+permanent publication. Local stdio returns canonical draft data when no preview host is present.
+Old fragment links are intentionally unsupported; regenerate a preview from the retained records.
+
+A private collection requesting 3D enters that mode after its designs finish applying, so the
+initial scene includes road surfaces as well as buildings. Named plans remain collections of
+design references and a saved view; this change does not create agreement terms or voting rules.
+The earlier fragment-size/header-buffer observations in this audit are historical.
+
+Validation for the transport change: targeted headless unit runs were 73/73 tests in 10 files;
+113 passed and 3 stale assertions failed in an 8-file/116-test run; after correcting those assertions
+and testing private-preview 3D ordering, 99/99 passed in 5 files; the collection-size regression run
+passed 7/7 in one file, with another 7/7 passing after the final cache-capacity guard. No run was
+stopped and no full suite ran. A headed browser loaded the full
+51-design draft through the reference endpoint: 32 building designs and 812 road meshes were present,
+2D/3D shared the saved location, and no page errors were reported. These are local verification
+results, not evidence of deployment.

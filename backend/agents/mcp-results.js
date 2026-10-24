@@ -6,11 +6,11 @@ export function markUntrusted(value) {
     if (!value || typeof value !== 'object') return value;
     if (value.code && value.next) return value;
     // Canonical objects must remain byte-for-byte reusable: mark the entire object, not its fields.
-    if (['design/v1', 'agreement/v1'].includes(value.schema)) return value;
+    if (['design/v1', 'agreement/v1', 'plan/v1'].includes(value.schema)) return value;
     const out = {}, untrusted = {};
     for (const [key, item] of Object.entries(value)) {
         if (PROSE.has(key)) untrusted[key] = item;
-        else if (['content', 'design', 'agreement'].includes(key) && ['design/v1', 'agreement/v1'].includes(item?.schema)) untrusted[key] = item;
+        else if (['content', 'design', 'agreement', 'plan'].includes(key) && ['design/v1', 'agreement/v1', 'plan/v1'].includes(item?.schema)) untrusted[key] = item;
         // JSON Pointer inspection must retain exact editable values, including keys such as title.
         else out[key] = key === 'next' || key === 'untrustedValue' ? item : markUntrusted(item);
     }

@@ -1,11 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { createRequire } from 'node:module';
+import { createPreviewLinks } from '../agents/mcp-preview-links.js';
 import { appTurf as turf, intentDesign } from '../agents/mcp-geometry.js';
 import { editedDesign, patchDocument } from '../agents/mcp-edit.js';
 import { cidOfObject } from '../cid.js';
 import { validateDesignContent } from '../routes/designs.js';
-const require = createRequire(import.meta.url);
-const links = require('../../frontend/js/draft-link.js');
 const site = { type:'Polygon', coordinates:[[[-0.1,51.5],[-0.098,51.5],[-0.098,51.502],[-0.1,51.502],[-0.1,51.5]]] };
 const common = { site, city:'london', title:'Test design', authoredAt:'2026-10-24T00:00:00.000Z' };
 const make = (kind, extra={}) => intentDesign.build({ ...common, kind, ...extra }, { turf });
@@ -20,8 +18,9 @@ describe('granular authored editing', () => {
         expect(next.geometry.buildings[1]).toEqual(before.geometry.buildings[0]);
         expect(design.geometry.buildings[0].properties.height).toBe(36);
         expect(next.origin.cid).toBe(cidOfObject(design));
-        const url=await links.build({origin:'https://app.example',design:next});
-        expect((await links.parse(new URL(url).hash)).design).toEqual(next);
+        const store=createPreviewLinks({origin:'https://mcp.example',appOrigin:'https://app.example'});
+        const preview=store.create({design:next});
+        expect((await store.resolve(preview.draftRef)).design).toEqual(next);
         expect(validateDesignContent(next).ok).toBe(true);
     });
     it('copies, transforms and removes individual buildings without copying the whole record through the client', () => {

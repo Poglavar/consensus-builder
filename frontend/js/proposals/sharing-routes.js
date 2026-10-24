@@ -1080,6 +1080,7 @@ function handleStandalone3DModeFromUrl(attempt = 0) {
         // A record route (a design link, an agreement, a chain proposal) enters 3D itself, framed on
         // what it opens.
         const pathname = window.location.pathname || '';
+        if (/^\/designs\/?$/.test(pathname) && new URLSearchParams(window.location.search).has('draft')) return;
         if (pathname.startsWith('/proposals/') || pathname.startsWith('/designs/') || pathname.startsWith('/agreements/') || pathname.startsWith('/plans/')) return;
 
         if (typeof map === 'undefined' || !map) {

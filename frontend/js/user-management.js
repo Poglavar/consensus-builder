@@ -15,7 +15,7 @@ const ATTESTIFY_BASE_URLS = Object.freeze({
 
 function isProposalDeepLinkPath() {
     try {
-        if (typeof window !== 'undefined' && /^\/designs\/?$/.test(window.location?.pathname) && window.location.hash.startsWith('#draft=')) return true;
+        if (typeof window !== 'undefined' && /^\/designs\/?$/.test(window.location?.pathname) && new URLSearchParams(window.location.search).has('draft')) return true;
         const path = (typeof window !== 'undefined' && window.location && window.location.pathname) ? window.location.pathname : '';
         // A design, agreement or named-plan link — the
         // same forms handleProposalRouteFromUrl (js/proposals/core.js) routes.

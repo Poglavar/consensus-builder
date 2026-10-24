@@ -732,11 +732,11 @@ A recorded execution of an automated workflow, with its inputs, outcomes and any
 
 ### Draft artifact
 
-Canonical design or agreement content returned with its recomputed CID without a pin or index write. Its content address remains meaningful even when its private preview is unavailable.
+Canonical design, named-plan or agreement content returned with its recomputed CID without a pin or index write. Its content address remains meaningful even when its private preview is unavailable.
 
 ### Private preview
 
-A temporary means of inspecting a draft artifact. Its bearer link or compressed fragment conveys access to the draft, independently of permanent publication and wallet approval.
+A temporary means of inspecting a draft artifact. An opaque bearer reference grants access to a stored draft object, independently of permanent publication and wallet approval. Collection previews reference their member designs individually; URLs contain no serialized records or geometry.
 
 ### Agent editing reference
 

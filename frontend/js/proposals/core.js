@@ -983,7 +983,7 @@ async function handleProposalRouteFromUrl() {
 
         // Design and agreement links load their own ground, so the boot's parcel fetch is given
         // back however their route ends.
-        if (pathname === '/designs' && window.location.hash.startsWith('#draft=')) {
+        if (pathname === '/designs' && new URLSearchParams(window.location.search).has('draft')) {
             try { await window.DraftPreview.open(); } finally { releaseDeepLinkParcelFetch(); }
             return;
         }

@@ -7,6 +7,8 @@ import { createMcpHttpService, MCP_MAX_REQUEST_BYTES } from '../agents/mcp-http.
 import { createUrbanGameTheoryMcpServer } from '../agents/mcp-server.mjs';
 import { hostedEnvironment } from '../agents/mcp-launch.mjs';
 import { MCP_HOSTED_TOOLS } from '../agents/mcp-catalog.js';
+import { cidOfObject } from '../cid.js';
+import { previewArtifact } from '../agents/mcp-preview.js';
 import { checkContracts } from '../scripts/mcp-check-contracts.mjs';
 
 const services = [], clients = [];
@@ -17,20 +19,24 @@ async function host(options = {}) {
     return `http://127.0.0.1:${service.http.address().port}`;
 }
 describe('hosted MCP HTTP', () => {
-    it('returns short private links that redirect to the exact fragment and expire', async () => {
+    it('returns geometry-free links to exact JSON objects with no redirect and expires them', async () => {
         let now = 0;
-        const target = 'https://urbangametheory.xyz/designs#draft=unchanged';
+        const design = { schema: 'design/v1', title: 'Private draft', geometry: { coordinates: [1, 2, 3] } };
+        const cid = cidOfObject(design);
         const base = await host({ now: () => now, previewTtlMs: 100, previewOrigin: 'https://preview.example', factory: options => createUrbanGameTheoryMcpServer({ ...options, mode: 'hosted', env: {}, tools: {
-            draftSpace: () => ({ previewUrl: target, previewStatus: 'private-fragment', design: { schema: 'design/v1' }, cid: 'unchanged' })
+            draftSpace: async () => ({ ...await previewArtifact({ design }), design, cid })
         } }) });
         const client = new Client({ name: 'private-link', version: '1' }); clients.push(client);
         await client.connect(new StreamableHTTPClientTransport(new URL(`${base}/mcp`)));
         const result = (await client.callTool({ name: 'ugt_draft_space', arguments: { city: 'london', spaceKind: 'park' } })).structuredContent;
-        expect(result).toMatchObject({ cid: 'unchanged', previewStatus: 'private-link' });
-        expect(new URL(result.previewUrl).origin).toBe('https://preview.example');
-        const path = new URL(result.previewUrl).pathname;
+        expect(result).toMatchObject({ cid, previewStatus: 'private-link' });
+        expect(new URL(result.previewUrl).hash).toBe('');
+        expect(new URL(result.previewUrl).searchParams.get('draft')).toBe(result.draftRef);
+        expect(new URL(result.draftRef).origin).toBe('https://preview.example');
+        const path = new URL(result.draftRef).pathname;
         const response = await fetch(`${base}${path}`, { redirect: 'manual', headers: { host: 'preview.example' } });
-        expect(response.status).toBe(302); expect(response.headers.get('location')).toBe(target);
+        expect(response.status).toBe(200); expect(response.headers.get('location')).toBeNull();
+        expect(await response.json()).toEqual({ cid, record: design, parcelSourceId: null });
         expect(response.headers.get('cache-control')).toBe('no-store');
         expect(response.headers.get('referrer-policy')).toBe('no-referrer');
         now = 100; expect((await fetch(`${base}${path}`, { redirect: 'manual' })).status).toBe(410);

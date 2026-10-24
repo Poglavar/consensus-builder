@@ -1,12 +1,13 @@
 // Guest rules (frontend/js/guest-policy.js): device-local acts are open to guests and acts that leave
 // the device need a profile name. Also checks that the browser gates are wired to the policy at the
-// places acts leave the device: publishing a design (proposals/design-sync.js) and sharing the
-// applied designs (proposals/sharing-routes.js).
+// places acts leave the device: publishing a design or agreement. Opening the share panel only
+// reads/copies existing content; a later publication still requires an author name.
 import { describe, it, expect, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import vm from 'node:vm';
 
 const require = createRequire(import.meta.url);
 const policy = require('../../frontend/js/guest-policy.js');
@@ -102,8 +103,8 @@ describe('browser gates follow the policy', () => {
             for (const m of fs.readFileSync(full, 'utf8').matchAll(/guestPolicyBlocks\('([^']+)'\)/g)) calls.push(m[1]);
         });
         walk(FRONTEND);
-        // Publishing a design, proposing an agreement and sharing the applied designs.
-        expect(calls.length).toBeGreaterThanOrEqual(3);
+        // Publishing a design and proposing an agreement.
+        expect(calls.length).toBeGreaterThanOrEqual(2);
         for (const action of calls) expect(policy.requires(action)).toBe('name');
     });
 
@@ -126,11 +127,13 @@ describe('browser gates follow the policy', () => {
         expect(design.published).toEqual({ cid: result.cid, publishedAt: '2026-10-21T10:00:01.000Z', apiBase: 'https://api.example.test' });
     });
 
-    it('sharing the applied designs asks for a name before the share panel opens', () => {
-        const sharing = read('proposals/sharing-routes.js');
-        const share = sharing.slice(sharing.indexOf('function shareAppliedProposals('));
-        const gate = share.indexOf("guestPolicyBlocks('share')");
-        expect(gate).toBeGreaterThan(-1);
-        expect(gate).toBeLessThan(share.indexOf('showSharePlanPanel('));
+    it('opens the share preview for a guest without publishing or asking for a name', async () => {
+        const showSharePlanPanel = vi.fn(async () => 'panel-ready'), guestPolicyBlocks = vi.fn();
+        const context = vm.createContext({ console, window: {}, URLSearchParams, showSharePlanPanel, guestPolicyBlocks,
+            document: { getElementById: () => null }, requestAnimationFrame: callback => callback() });
+        vm.runInContext(read('proposals/sharing-routes.js'), context);
+        await expect(context.shareAppliedProposals({})).resolves.toBe('panel-ready');
+        expect(showSharePlanPanel).toHaveBeenCalledTimes(1);
+        expect(guestPolicyBlocks).not.toHaveBeenCalled();
     });
 });

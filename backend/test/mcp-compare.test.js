@@ -6,7 +6,6 @@ import { agreementObject, communityRule, cidOfObject, outputHash } from '../agen
 import { authoredAreas } from '../agents/mcp-compare.js';
 const require = createRequire(import.meta.url);
 const builder = require('../../frontend/js/intent-design.js');
-const links = require('../../frontend/js/draft-link.js');
 const site = turf.bboxPolygon([-0.1, 51.5, -0.099, 51.501]).geometry;
 const parcel = { type: 'Feature', id: 'A', properties: { parcelId: 'A' }, geometry: site };
 const park = builder.build({ kind: 'space', spaceKind: 'park', site, city: 'london', authoredAt: '2026-10-23T00:00:00.000Z' }, { turf });
@@ -34,7 +33,8 @@ describe('MCP comparison measurements', () => {
             expect(alternative.buildingsCut).toBe(0);
             expect(alternative.removedFootprintM2).toBeCloseTo(turf.area(stock));
             expect(alternative.measurementErrors).toEqual([]);
-            expect(await links.parse(new URL(alternative.previewUrl).hash)).toBeTruthy();
+            expect(alternative.previewUrl).toBeNull();
+            expect(alternative.draftArtifact.design).toEqual(alternative.cid === cidOfObject(park) ? park : building);
         }
         expect(result.alternatives[1].floorAreaM2).toBeCloseTo(turf.area(building.geometry.buildings[0]) * 4);
         expect(calls).not.toContain('/pins'); expect(calls).not.toContain('/agreements');
@@ -71,7 +71,7 @@ describe('MCP comparison measurements', () => {
         const result = await tools.compare({ buildingSourceId:'osm', targets: [{ agreement: content }, park], parcelSourceId: 'test' });
         expect(result.alternatives[0].ledger).toMatchObject({ currency: 'GBP', parties: [{ ownerKey: 'party-A', contributedM2: areaM2, assignedM2: areaM2, changeM2: 0, cashCents: 12500 }] });
         expect(result.alternatives[0].measurementErrors).toEqual([]);
-        expect((await links.parse(new URL(result.alternatives[0].previewUrl).hash)).agreement).toEqual(content);
+        expect(result.alternatives[0].draftArtifact.agreement).toEqual(content);
     });
     it('reads common building floors and does not invent a zero for an unmaterialized rule', () => {
         const design = structuredClone(building); delete design.geometry.buildings[0].properties.floors;
