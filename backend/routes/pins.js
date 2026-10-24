@@ -81,6 +81,8 @@ export function setupPinsRoute(app, deps = {}) {
             const pinned = await pin({ bytes, name: `${body.kind}-${body.cid}`, cid: body.cid });
             return res.json({ cid: pinned.cid, pinnedAt: pinned.pinnedAt });
         } catch (error) {
+            if (error?.code === 'pinning-quota-exhausted') return refuse(res, 409, error.code, error.message,
+                { next: { action: 'Restore quota on the configured pinning account, then resume publication of the missing CIDs. Repeated retries will not resolve this block.' } });
             if (error?.code === 'cid-mismatch') {
                 return refuse(res, error.status === 400 ? 400 : 409, 'cid-mismatch', error.message,
                     { cid: body.cid, ...(error.pinnedCid ? { pinnedCid: error.pinnedCid } : {}), ...(error.computedCid ? { computedCid: error.computedCid } : {}) });

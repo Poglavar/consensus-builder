@@ -28,6 +28,12 @@ const raw = (kind, text) => {
 };
 
 describe('POST /pins', () => {
+    it('exposes an account quota block with recovery guidance instead of a misleading gateway error', async () => {
+        const { app } = appWith(async () => { throw pinError('pinning-quota-exhausted', 409); });
+        const response = await request(app).post('/pins').send(pinBody('design', designContent()));
+        expect(response.status).toBe(409);
+        expect(response.body).toMatchObject({ code: 'pinning-quota-exhausted', next: { action: expect.stringContaining('Restore quota') } });
+    });
     it('pins a canonical design and an agreement under their CIDs, exactly as sent', async () => {
         const { app, pinBytes } = appWith();
         const design = designContent();
@@ -112,7 +118,7 @@ describe('POST /pins', () => {
         }
         const invalid = await request(app).post('/pins').send(pinBody('design', designContent({ goal: '', origin: { cid: 'x' } })));
         expect(invalid.body.errors.map(error => error.code)).toEqual(expect.arrayContaining(['design-goal', 'design-origin']));
-        const section = await request(app).post('/pins').send(pinBody('agreement', agreementContent([design], { money: { currency: 'USD', lines: [] } })));
+        const section = await request(app).post('/pins').send(pinBody('agreement', agreementContent([design], { money: { currency: 'INVALID', lines: [] } })));
         expect(section.body).toMatchObject({ code: 'invalid-agreement', section: 'money' });
         expect(pinBytes).not.toHaveBeenCalled();
     });

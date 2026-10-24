@@ -94,6 +94,14 @@ describe('pinBytes', () => {
 });
 
 describe('pinFileToPinata', () => {
+    it('distinguishes an exhausted account from a retryable upstream failure', async () => {
+        pinata({ error: { reason: 'FORBIDDEN', details: 'Account blocked due to plan usage limit' } }, { status: 403 });
+        await expect(pinFileToPinata({ bytes, fileName: 'x.json' })).rejects.toMatchObject({
+            code: 'pinning-quota-exhausted', status: 409, upstreamStatus: 403
+        });
+        pinata({ error: { reason: 'FORBIDDEN', details: 'Invalid authorization' } }, { status: 403 });
+        await expect(pinFileToPinata({ bytes, fileName: 'x.json' })).rejects.toMatchObject({ code: 'pin-failed', status: 502 });
+    });
     it('reports an upstream failure as pin-failed (502) with Pinata\'s status', async () => {
         pinata({ error: 'quota' }, { status: 429 });
         await expect(pinFileToPinata({ bytes, fileName: 'x.json' })).rejects.toMatchObject({ code: 'pin-failed', status: 502, upstreamStatus: 429 });

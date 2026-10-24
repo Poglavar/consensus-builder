@@ -30,6 +30,13 @@ function server({ records = new Map(), designs = [a, b], pin = vi.fn(async ({ ci
 }
 
 describe('named plan records and API', () => {
+    it('reports exhausted storage quota without saving a partially published plan', async () => {
+        const { app, records } = server({ pin: async () => { throw Object.assign(new Error('Storage account quota exhausted'), { code: 'pinning-quota-exhausted' }); } });
+        const response = await request(app).post('/plans').send({ content });
+        expect(response.status).toBe(409);
+        expect(response.body).toMatchObject({ code: 'pinning-quota-exhausted', next: { action: expect.stringContaining('Restore quota') } });
+        expect(records.size).toBe(0);
+    });
     it('addresses the exact title, selected versions and view, excluding the backend override', () => {
         expect(PlanRecord.create(' Digbeth Green Quarter ', [b, a, b], { ...view, backend: 'https://api.example' })).toEqual(content);
         for (const changed of [PlanRecord.create('Another name', [a, b], view), PlanRecord.create(content.title, [a], view),

@@ -60,6 +60,12 @@ export async function pinFileToPinata({ bytes, fileName, contentType = 'applicat
     });
     if (!response.ok) {
         const errorBody = await response.text();
+        let refusal;
+        try { refusal = JSON.parse(errorBody)?.error; } catch { /* Non-JSON upstream failures retain their usual error. */ }
+        if (response.status === 403 && refusal?.reason === 'FORBIDDEN' && /plan usage limit/i.test(refusal.details || '')) {
+            throw pinningError('pinning-quota-exhausted',
+                'Publication is blocked because the pinning account has reached its usage limit.', 409, { upstreamStatus: 403 });
+        }
         throw pinningError('pin-failed', `Pinata pinFileToIPFS failed: ${response.status} ${errorBody}`, 502,
             { upstreamStatus: response.status });
     }

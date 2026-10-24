@@ -9,6 +9,8 @@ const PlanRecord = require('../../frontend/js/plan-record.js');
 export function setupPlansRoute(app, { pool, pinBytes = defaultPinBytes, uploadRateLimiter } = {}) {
     const read = async cid => (await pool.query('SELECT cid, content FROM consensus.plan WHERE cid = $1', [cid])).rows[0] || null;
     const fail = (res, error) => {
+        if (error?.code === 'pinning-quota-exhausted') return res.status(409).json({ code: error.code, error: error.message,
+            next: { action: 'Restore quota on the configured pinning account, then retry saving this plan.' } });
         console.error(`[${new Date().toISOString()}] [plans] ${error.message}`);
         return res.status(503).json({ error: 'The plan could not be saved or loaded. Please retry.' });
     };
