@@ -823,6 +823,17 @@
         },
         "inOtherCity": "Esta propuesta pertenece a {{city}}, no a {{current}}: ábrala allí.",
         "share": {
+            "named": {
+                "rename": "Cambiar nombre del plan",
+                "name": "Dar nombre a este plan",
+                "label": "Nombre del plan",
+                "save": "Guardar enlace del plan",
+                "hint": "Guarda el nombre, los diseños seleccionados y la vista del mapa. Los cambios generan un enlace nuevo.",
+                "saved": "Plan guardado. Su enlace permanente está listo para copiar.",
+                "saveFailed": "No se pudo guardar el plan: {{reason}}",
+                "openFailed": "No se pudo abrir el plan con nombre",
+                "opened": "Se abrió «{{title}}»."
+            },
             "shareHint": "Publica este diseño y copia su enlace",
             "publishedAs": "Publicado como:",
             "linkCopied": "Diseño publicado. Se ha copiado su enlace.",
@@ -7417,5 +7428,33 @@
     },
     "mobileSheet": {
         "resize": "Cambia el tamaño del panel. Arrastra arriba o abajo; arrastra hasta abajo para cerrarlo."
+    },
+    "economicSources": {
+        "title": "Valoración y costes",
+        "intro": "Las fuentes aportan tarifas distintas para el suelo, los precios de venta por superficie construida y la construcción. Si faltan datos locales, el valor queda como no disponible; los supuestos editables del escenario no son datos de mercado.",
+        "land": "Suelo",
+        "roadLand": "Suelo para vías",
+        "sale": "Precio de venta",
+        "construction": "Coste de construcción",
+        "landUnit": "{{currency}} por m² de suelo",
+        "floorUnit": "{{currency}} por m² de superficie construida",
+        "current": "Fuentes actuales",
+        "unavailable": "No disponible",
+        "assumption": "Supuesto del escenario",
+        "policy-appraisal": "Valoración para políticas públicas",
+        "market": "Datos de mercado",
+        "construction-cost": "Datos de costes de construcción",
+        "manual": "Supuestos locales de tarifas",
+        "manualNote": "Introduce solo las tarifas que quieras sustituir, en {{currency}}. Los campos vacíos conservan las fuentes configuradas.",
+        "name": "Nombre de la fuente",
+        "use": "Usar estas tarifas",
+        "reset": "Usar las fuentes configuradas",
+        "import": "Importar un archivo JSON de fuentes de tarifas",
+        "invalid": "La fuente no es válida o usa otra moneda. Comprueba sus tarifas, unidades, base y fechas.",
+        "saved": "Fuente guardada. Recargando…",
+        "close": "Cerrar",
+        "modeled": "Estimación del área modelada ({{rate}}/m²):",
+        "evidence": "{{source}} · {{basis}}{{date}}",
+        "date": " · a fecha de {{date}}"
     }
 }

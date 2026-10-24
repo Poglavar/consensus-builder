@@ -823,6 +823,17 @@
         },
         "inOtherCity": "This proposal belongs to {{city}}, not {{current}}: open it there.",
         "share": {
+            "named": {
+                "rename": "Rename plan",
+                "name": "Name this plan",
+                "label": "Plan name",
+                "save": "Save plan link",
+                "hint": "Saves the name, selected designs and map view. Changes get a new link.",
+                "saved": "Plan saved. Its permanent link is ready to copy.",
+                "saveFailed": "The plan could not be saved: {{reason}}",
+                "openFailed": "The named plan could not be opened",
+                "opened": "Opened “{{title}}”."
+            },
             "shareHint": "Publish this design and copy its link",
             "publishedAs": "Published as:",
             "linkCopied": "Design published. Its link is copied.",
@@ -7389,5 +7400,33 @@
     },
     "mobileSheet": {
         "resize": "Resize panel. Drag up or down; drag to the bottom to close."
+    },
+    "economicSources": {
+        "title": "Valuation & costs",
+        "intro": "Sources supply separate rates for land, floor-area sale prices and construction. Missing local evidence stays unavailable; editable scenario assumptions are not market data.",
+        "land": "Land",
+        "roadLand": "Road land",
+        "sale": "Sale price",
+        "construction": "Construction cost",
+        "landUnit": "{{currency}} per m² of land",
+        "floorUnit": "{{currency}} per m² of floor area",
+        "current": "Current sources",
+        "unavailable": "Unavailable",
+        "assumption": "Scenario assumption",
+        "policy-appraisal": "Policy appraisal",
+        "market": "Market evidence",
+        "construction-cost": "Construction cost evidence",
+        "manual": "Local rate assumptions",
+        "manualNote": "Enter only the rates you want to override, in {{currency}}. Empty fields keep the configured sources.",
+        "name": "Source name",
+        "use": "Use these rates",
+        "reset": "Use configured sources",
+        "import": "Import a rate-source JSON file",
+        "invalid": "This source is invalid or uses a different currency. Check its rates, units, basis and dates.",
+        "saved": "Source saved. Reloading…",
+        "close": "Close",
+        "modeled": "Modeled area estimate ({{rate}}/m²):",
+        "evidence": "{{source}} · {{basis}}{{date}}",
+        "date": " · as of {{date}}"
     }
 }

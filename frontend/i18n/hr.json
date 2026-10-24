@@ -825,6 +825,17 @@
         },
         "inOtherCity": "Ovaj prijedlog pripada gradu {{city}}, a ne gradu {{current}}: otvorite ga ondje.",
         "share": {
+            "named": {
+                "rename": "Preimenuj plan",
+                "name": "Imenuj ovaj plan",
+                "label": "Naziv plana",
+                "save": "Spremi poveznicu plana",
+                "hint": "Sprema naziv, odabrane projekte i pogled karte. Izmjene dobivaju novu poveznicu.",
+                "saved": "Plan je spremljen. Trajna poveznica spremna je za kopiranje.",
+                "saveFailed": "Plan nije moguće spremiti: {{reason}}",
+                "openFailed": "Imenovani plan nije moguće otvoriti",
+                "opened": "Otvoren je „{{title}}”."
+            },
             "shareHint": "Objavite ovaj dizajn i kopirajte njegov link",
             "publishedAs": "Objavljeno kao:",
             "linkCopied": "Dizajn je objavljen. Njegov link je kopiran.",
@@ -7441,5 +7452,33 @@
     },
     "mobileSheet": {
         "resize": "Promijeni veličinu panela. Povuci gore ili dolje; povuci do dna za zatvaranje."
+    },
+    "economicSources": {
+        "title": "Procjene vrijednosti i troškovi",
+        "intro": "Izvori daju zasebne stope za zemljište, prodajne cijene po površini zgrade i gradnju. Kad lokalni podaci nedostaju, vrijednost ostaje nedostupna; promjenjive pretpostavke scenarija nisu tržišni podaci.",
+        "land": "Zemljište",
+        "roadLand": "Zemljište za cestu",
+        "sale": "Prodajna cijena",
+        "construction": "Trošak gradnje",
+        "landUnit": "{{currency}} po m² zemljišta",
+        "floorUnit": "{{currency}} po m² površine zgrade",
+        "current": "Trenutačni izvori",
+        "unavailable": "Nedostupno",
+        "assumption": "Pretpostavka scenarija",
+        "policy-appraisal": "Procjena za potrebe javnih politika",
+        "market": "Tržišni podaci",
+        "construction-cost": "Podaci o troškovima gradnje",
+        "manual": "Lokalne pretpostavljene stope",
+        "manualNote": "Unesite samo stope koje želite zamijeniti, u valuti {{currency}}. Prazna polja zadržavaju konfigurirane izvore.",
+        "name": "Naziv izvora",
+        "use": "Upotrijebi ove stope",
+        "reset": "Upotrijebi konfigurirane izvore",
+        "import": "Uvezi JSON datoteku izvora stopa",
+        "invalid": "Izvor nije valjan ili koristi drugu valutu. Provjerite stope, jedinice, osnovu i datume.",
+        "saved": "Izvor je spremljen. Ponovno učitavanje…",
+        "close": "Zatvori",
+        "modeled": "Procjena modelirane površine ({{rate}}/m²):",
+        "evidence": "{{source}} · {{basis}}{{date}}",
+        "date": " · na dan {{date}}"
     }
 }

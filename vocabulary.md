@@ -214,7 +214,7 @@ MCP plan drafting and revision author the included roads as a complete network b
 
 ### Map share
 
-A link naming a selected set of published designs and the current map view, including location and 2D, model 3D or realistic 3D mode. Selection starts with the entire applied working composition; exclusions are explicit. A map share does not create an agreement or a separate plan record. “Designs” names the map's design browser; “Agreements” names arrangements and decision rules over designs.
+A link naming a selected set of published designs and the current map view, including location and 2D, model 3D or realistic 3D mode. Selection starts with the entire applied working composition; exclusions are explicit. An unnamed map share carries its design CIDs and view in the URL. “Name this plan” saves a named plan snapshot instead. Neither form creates an agreement. “Designs” names the map's design browser; “Agreements” names arrangements and decision rules over designs.
 
 Choosing “Unapply existing & continue” replaces the conflicting applied designs. An incoming parcel layout also replaces applied roads, layouts and content occupying its authored plots; designs outside that ground remain applied. Unapplied designs remain saved. The replacement commits together, or retains the previous working composition if any member cannot be applied.
 
@@ -223,6 +223,10 @@ Restoring a saved camera retains the map's display settings and surrounding cont
 Its social preview is a derived 2D image of the included designs' authored map geometry, framed together independently of the interactive camera. The image is cached by the unique set of design CIDs and renderer revision; it is not authored plan content. Missing or failed images can be regenerated from those published records.
 
 When shared designs conflict with the current map, the person chooses whether to unapply the existing conflicting designs and continue, skip the conflicting incoming designs, or cancel. Unapplying existing conflicts and deriving the chosen plan is atomic; failure retains the previous map. Every design remains saved, and unrelated applied designs remain on the map. Overlapping road revisions are conflicts; ordinary roads meeting at a junction remain compatible.
+
+### Named plan
+
+An immutable `plan/v1` snapshot containing a title, a selected set of published design CIDs and a map view. Its canonical content has its own CID and permanent `/plans/<cid>` link. Changing the title, membership or saved view creates a new snapshot and link; existing links keep their original content. It references existing designs without changing their authorship, geometry or publication. It carries no land allocations, money or decision rules; those belong to an agreement. The backend address used to access a plan is transport configuration, not part of its content.
 
 ### Applied / unapplied
 
@@ -561,6 +565,10 @@ A local declaration that funding is considered ready. A boolean readiness flag n
 ### Price estimate
 
 A modeled amount with its currency, source and basis. A source price without a usable amount or explicit currency is unknown; an area-based estimate identifies its rate and area basis.
+
+### Economic rate observation
+
+A source-attributed amount per stated unit, with an explicit currency, basis and, for evidence, valuation date. Land and road-land rates use land area; building sale and construction rates use floor area. Market evidence, policy appraisal and editable scenario assumptions retain separate meanings. An assessed property total is not a unit rate or a market price. Source selection changes model inputs without rewriting authored cash amounts.
 
 ### Modeled gain
 

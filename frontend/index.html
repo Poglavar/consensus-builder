@@ -1227,6 +1227,15 @@
                         </div>
                     </div>
                 </details>
+                <details class="accordion-section" data-section="economics">
+                    <summary class="sheet-section-title">
+                        <i class="fas fa-coins" aria-hidden="true"></i>
+                        <span data-i18n-key="economicSources.title">Valuation &amp; costs</span>
+                    </summary>
+                    <div class="sheet-section-body">
+                        <button type="button" id="economic-source-settings-button" class="btn" data-i18n-key="economicSources.title">Valuation &amp; costs</button>
+                    </div>
+                </details>
                 <details class="accordion-section" data-section="data">
                     <summary class="sheet-section-title">
                         <i class="fas fa-database" aria-hidden="true"></i>
@@ -1811,7 +1820,9 @@
             'js/i18n.js',
             'js/format.js',
             'js/uk-land-rates.js',
+            'js/economic-sources.js',
             'js/city-money.js',
+            'js/economic-source-settings.js',
             'js/multi-tab-guard.js',
             'js/work-slicer.js',
             // bundle:end foundation
@@ -1820,6 +1831,10 @@
             'js/i18n-loader.js',
             'js/version-history.js',
             'js/environment.js',
+            // Capture named-link parameters before map-core writes the remembered local view.
+            'js/map-share.js',
+            'js/plan-record.js',
+            'js/named-plans.js',
             'js/wipe-local-data.js',
             'js/world/world-entry-model.js?v=20261020-point-destinations',
             'data/boot-coverage.js',
@@ -2142,7 +2157,6 @@
             'js/proposals/dialog-create.js?v=20261019-unknown-ownership',
             'js/proposals/ready-signal.js',
             'js/proposals/create-preview.js',
-            'js/map-share.js',
             'js/proposals/dialog-share.js?v=20261019-seller-offer',
             'js/design-record.js',
             'js/agreement-record.js',
