@@ -216,6 +216,8 @@ MCP plan drafting and revision author the included roads as a complete network b
 
 A link naming a selected set of published designs and the current map view, including location and 2D, model 3D or realistic 3D mode. Selection starts with the entire applied working composition; exclusions are explicit. A map share does not create an agreement or a separate plan record. “Designs” names the map's design browser; “Agreements” names arrangements and decision rules over designs.
 
+Restoring a saved camera retains the map's display settings and surrounding context. Its selected design is highlighted without isolating it from the shared composition.
+
 Its social preview is a derived 2D image of the included designs' authored map geometry, framed together independently of the interactive camera. The image is cached by the unique set of design CIDs and renderer revision; it is not authored plan content. Missing or failed images can be regenerated from those published records.
 
 When shared designs conflict with the current map, the person chooses whether to unapply the existing conflicting designs and continue, skip the conflicting incoming designs, or cancel. Unapplying existing conflicts and deriving the chosen plan is atomic; failure retains the previous map. Every design remains saved, and unrelated applied designs remain on the map. Overlapping road revisions are conflicts; ordinary roads meeting at a junction remain compatible.

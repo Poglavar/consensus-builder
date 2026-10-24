@@ -3,10 +3,58 @@
 // imports it as design-<cid> once and then reuses that exact copy (plan-design-agreement.md M2).
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
-import { createSpace, openCity, showProposal, PARCEL_ID } from '../helpers/runtime';
+import { createSpace, openCity, showProposal, stubBasemapTiles, PARCEL_ID } from '../helpers/runtime';
 import { mockAllApiRoutes } from '../helpers/mocks/api-routes';
-import { attachSharedIndex, pageIndex } from '../helpers/mocks/shared-server';
+import { attachSharedIndex, fileDesign, pageIndex } from '../helpers/mocks/shared-server';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
+import { sampleParcels } from '../helpers/mocks/parcel-data';
+
+test('a shared 3D camera retains both designs, existing buildings and the selected section', async ({ mockApi: page }) => {
+  const records = require('../../frontend/js/design-record.js');
+  const index = pageIndex(page);
+  const cids = sampleParcels.features.slice(0, 2).map((parcel, i) => fileDesign(index, records.published({
+    title: `Shared garden ${i + 1}`, goal: 'park', city: 'zg', site: parcel.geometry,
+    structureProposal: { kind: 'park', geometry: parcel.geometry }, createdAt: '2026-10-24T00:00:00.000Z'
+  })));
+  await stubBasemapTiles(page);
+  await mockBuildingScene(page);
+  const id = `design-${cids[0]}`;
+  const query = new URLSearchParams({ city: 'zg', lang: 'en', model: '', reduceMotion: '1',
+    existing: 'solid', permitted: 'off', proposed: 'solid', existingScope: 'all',
+    camera: '45.80025,15.9822,20,-0.65,140', at: '45.80025,15.9822,18',
+    planningSelection: `proposed:${id}` });
+  await page.goto(`/designs/${cids.join(',')}?${query}`, { waitUntil: 'domcontentloaded' });
+  const row = page.locator('#three-click-stack .click-stack__section[data-kind="designs"] .click-stack__row');
+  await expect(row).toHaveAttribute('aria-expanded', 'true', { timeout: 30_000 });
+  const sceneCounts = () => page.evaluate(() => {
+    const scene = (window as any).getThreeModeInternals().scene;
+    let buildings = 0, parks = 0;
+    scene.traverseVisible((object: any) => {
+      if (object.userData.isNearbyBuilding3D) buildings++;
+      if (object.userData.isParkGround) parks++;
+    });
+    return { buildings, parks };
+  });
+  await expect.poll(sceneCounts).toEqual({ buildings: 2, parks: 2 });
+  await expect(page.locator('.three-mode-isolation-banner')).toBeHidden();
+  const view = await page.evaluate(() => (window as any).getThree3DGeoView());
+  expect(view.targetLat).toBeCloseTo(45.80025, 6);
+  expect(view.targetLng).toBeCloseTo(15.9822, 6);
+  expect(view.headingDeg).toBeCloseTo(20, 2);
+  expect(view.pitchRad).toBeCloseTo(-0.65, 2);
+  expect(view.range).toBeCloseTo(140, 0);
+  await row.click();
+  await expect(row).toHaveAttribute('aria-expanded', 'false');
+  await row.click();
+  await expect(row).toHaveAttribute('aria-expanded', 'true');
+  await expect.poll(sceneCounts).toEqual({ buildings: 2, parks: 2 });
+  const after = await page.evaluate(() => (window as any).getThree3DGeoView());
+  for (const key of Object.keys(view)) expect(after[key]).toBeCloseTo(view[key], 9);
+  // Explicitly focusing one design remains a separate action from restoring the shared view.
+  await page.evaluate(id => (window as any).showThreeModeDesign(id), id);
+  await expect(page.locator('.three-mode-isolation-banner')).toBeVisible();
+  await expect.poll(sceneCounts).toEqual({ buildings: 1, parks: 0 });
+});
 
 test('design links ignore a local key equal to the CID and fork ancestry, then reuse the exact imported copy', async ({ mockApi: author, browser, baseURL }) => {
   test.setTimeout(150_000);

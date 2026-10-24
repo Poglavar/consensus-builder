@@ -13,6 +13,23 @@ const stack = require('../../frontend/js/three-click-stack.js');
 const feature = { type: 'Feature', properties: {}, geometry: null };
 
 describe('3D click stack contextual selection', () => {
+    it('retains shared-view selection policy through scene refresh and section reopening', () => {
+        const document = makeDocument();
+        const context = { document, console };
+        context.window = context;
+        vm.createContext(context);
+        vm.runInContext(readFileSync(new URL('../../frontend/js/three-click-stack.js', import.meta.url), 'utf8'), context);
+        const api = context.ThreeClickStack, activated = [];
+        api.show({ designs: [{ id: 'garden', preserveView: true }] }, { focus: 'designs' }, {
+            activate: (_kind, item) => activated.push({ id: item.id, preserveView: item.preserveView })
+        });
+        api.refresh();
+        const row = document.querySelector('.click-stack__row');
+        row.click();
+        document.querySelector('.click-stack__row').click();
+        expect(activated).toEqual(Array(3).fill({ id: 'garden', preserveView: true }));
+    });
+
     it('navigates between design and parcel, keeping collapsed selection focused', () => {
         const document = makeDocument();
         const context = { document, console, __clickStackModel: require('../../frontend/js/click-stack/click-stack-model.js') };

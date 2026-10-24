@@ -1352,7 +1352,10 @@
             });
             if (kind === 'designs') {
                 body.replaceChildren();
-                if (isolatedProposalId !== instance.id) {
+                if (instance.preserveView) {
+                    clearIsolation();
+                    withStackDriving(() => window.selectAndHighlightProposal?.(instance.id, null, false, false, true));
+                } else if (isolatedProposalId !== instance.id) {
                     withStackDriving(() => window.selectAndHighlightProposal?.(instance.id, null, false, false, true));
                     isolateProposal(instance.id);
                 }
@@ -1452,7 +1455,8 @@
         const builtList = [...(built ? [{ id: builtId, feature: built }] : []), ...buildingsOnParcel(parcelId)];
         const input = {
             built: builtList.map(builtInstance),
-            designs: designs.map(p => ({ id: String(proposalIdOf(p)), label: proposalDisplayTitle(p), proposal: p })),
+            designs: designs.map(p => ({ id: String(proposalIdOf(p)), label: proposalDisplayTitle(p), proposal: p,
+                preserveView: plan.preserveView === true })),
             agreements: (window.AgreementStore?.list() || []).filter(agreement => agreement.designs.some(design => designs.some(proposal => String(proposalIdOf(proposal)) === String(design.proposalId))))
                 .map(agreement => ({ id: agreement.id, label: agreement.title || agreement.id, agreement })),
             permitted: massingIds.map(id => ({ id, label: items.find(item => item.id === id)?.title || '' })),
@@ -1463,14 +1467,14 @@
         stackApi.show(input, { focus, selected, container: document.getElementById('map-container') || document.body }, clickStackAdapter);
     }
 
-    function showThreeModeDesign(key, parcelId = null) {
+    function showThreeModeDesign(key, parcelId = null, { preserveView = false } = {}) {
         if (!isActive) return false;
         const proposal = window.proposalStorage?.getProposal?.(key);
         if (!proposal) return false;
         const id = String(proposalIdOf(proposal));
         const parcel = parcelId || [...getProposalParcelIdSet(proposal)][0] || null;
         withStackDriving(() => showClickStack({ proposalId: id }, {
-            proposal: { id }, parcel: parcel ? { id: String(parcel) } : null
+            proposal: { id }, parcel: parcel ? { id: String(parcel) } : null, preserveView
         }));
         return true;
     }
@@ -8516,7 +8520,11 @@
         }
         const selectedDesign = window.ProposalSelection?.getKey?.();
         const focusedDesign = focusProposalIds?.size ? [...focusProposalIds][0] : null;
-        if (focusedDesign || selectedDesign) showThreeModeDesign(focusedDesign || selectedDesign);
+        if (focusedDesign || selectedDesign) {
+            // An exact shared camera describes the whole map, not an isolated view of its first
+            // design. Keep the selected section and outline without filtering or reframing it.
+            showThreeModeDesign(focusedDesign || selectedDesign, null, { preserveView: !!options.restoreView });
+        }
         return true;
     }
 
