@@ -31,6 +31,10 @@
     // ordinary proxy where evidence is absent. Underground intervals never cover the proxy.
     function uncoveredFloorBands(feature, totalHeight) {
         if (!feature?.properties?.floorPlans || !finite(totalHeight) || totalHeight <= 0) return [];
+        // Floor elevations and architectural dimensions are independently rounded to millimetres.
+        // Their joins can differ by up to 2 mm; those are not missing floors to fill with a solid
+        // proxy (whose almost coincident caps would flicker and cover the interior).
+        const joinToleranceM = 0.002;
         const plans = feature.properties.floorPlans;
         const layouts = new Map((Array.isArray(plans.layouts) ? plans.layouts : []).map(layout => [layout.id, layout]));
         const covered = [];
@@ -52,16 +56,16 @@
         const merged = [];
         for (const interval of covered) {
             const previous = merged.at(-1);
-            if (previous && interval[0] <= previous[1]) previous[1] = Math.max(previous[1], interval[1]);
+            if (previous && interval[0] <= previous[1] + joinToleranceM) previous[1] = Math.max(previous[1], interval[1]);
             else merged.push(interval);
         }
         const gaps = [];
         let cursor = 0;
         for (const [start, end] of merged) {
-            if (start > cursor) gaps.push({ baseM: cursor, heightM: start - cursor });
+            if (start - cursor > joinToleranceM) gaps.push({ baseM: cursor, heightM: start - cursor });
             cursor = Math.max(cursor, end);
         }
-        if (cursor < totalHeight) gaps.push({ baseM: cursor, heightM: totalHeight - cursor });
+        if (totalHeight - cursor > joinToleranceM) gaps.push({ baseM: cursor, heightM: totalHeight - cursor });
         return gaps;
     }
 

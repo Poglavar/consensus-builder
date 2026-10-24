@@ -10,9 +10,11 @@ const sceneWork = require('../../frontend/js/three-scene-work.js');
 const source = readFileSync(new URL('../../frontend/js/three-mode.js', import.meta.url), 'utf8');
 const ast = parse(source, { sourceType: 'script', plugins: ['optionalChaining', 'nullishCoalescingOperator'] });
 const declarations = new Map();
+let buildingMaterialInitializer;
 function collectFunctions(node) {
     if (!node || typeof node !== 'object') return;
     if (node.type === 'FunctionDeclaration' && node.id) declarations.set(node.id.name, source.slice(node.start, node.end));
+    if (node.type === 'VariableDeclarator' && node.id.name === 'buildingMaterials') buildingMaterialInitializer = source.slice(node.init.start, node.init.end);
     Object.keys(node).forEach(key => { if (key !== 'loc' && key !== 'start' && key !== 'end') { const value = node[key]; if (Array.isArray(value)) value.forEach(collectFunctions); else collectFunctions(value); } });
 }
 collectFunctions(ast);
@@ -26,6 +28,36 @@ function extracted(name, variables = '', stubs = {}) {
 }
 
 describe('three-mode Xray wiring', () => {
+    it('keeps translucent envelopes behind coincident building surfaces in color and depth passes', () => {
+        class Material {
+            constructor(parameters) { this.userData = {}; Object.assign(this, parameters); }
+            clone() { return new Material({ ...this, userData: { ...this.userData } }); }
+        }
+        const smoothTransparency = require('../../frontend/js/three-smooth-transparency.js');
+        const context = { THREE: { MeshPhongMaterial: Material, LessDepth: 2, EqualDepth: 4 }, smoothTransparency };
+        vm.runInNewContext(`
+            const BUILDING_GHOST_STYLE = 'smooth', BUILDING_OPACITY_KEY = 'cbBuildingOpacity';
+            ${['buildingOpacityOf', 'configureBuildingMaterial', 'makeBuildingMaterial', 'cloneBuildingMaterial'].map(name => declarations.get(name)).join('\n')}
+            this.materials = ${buildingMaterialInitializer};
+            this.clone = cloneBuildingMaterial;
+        `, context);
+        const { massing, flagged, solid } = context.materials;
+        for (const actual of [flagged, solid]) {
+            expect(massing.polygonOffsetFactor).toBeGreaterThan(actual.polygonOffsetFactor);
+            expect(massing.polygonOffsetUnits).toBeGreaterThan(actual.polygonOffsetUnits);
+        }
+        // Parcel slicing clones the material before the invisible depth pass is attached.
+        for (const original of [massing, flagged]) {
+            const color = context.clone(original);
+            const depth = smoothTransparency.createDepthMaterial(color, { lessDepth: 2 });
+            expect(color.polygonOffset).toBe(true);
+            expect(depth.colorWrite).toBe(false);
+            expect(depth.polygonOffsetFactor).toBe(original.polygonOffsetFactor);
+            expect(depth.polygonOffsetUnits).toBe(original.polygonOffsetUnits);
+            expect(color.opacity).toBe(original.opacity);
+        }
+    });
+
     function rebuildHarness(enabled, built = 'ghost', planned = 'solid', isolated = null) {
         const existingBuildingsGroup = { children: [] };
         const proposedBuildingsGroup = { children: [{ id: 'proposal-survives' }] };
@@ -39,12 +71,13 @@ describe('three-mode Xray wiring', () => {
             buildNearbyProposalBuildings3D: vi.fn(async () => {}), buildProposedBuildings3D: vi.fn(async () => {}), appendSuggestedExistingFloorPlans: vi.fn(),
             buildIneligibleParcels3D: vi.fn(), ensureNearbyProposalBuildings: vi.fn(),
             ensureNearbyTrees: vi.fn(), rebuildTreesOnly: vi.fn(), ensureNearbyWater: vi.fn(), rebuildWaterOnly: vi.fn(),
-            applyParcelEmphasis: vi.fn(), isolateProposal: vi.fn(), updateXrayControls: vi.fn(),
+            applyParcelEmphasis: vi.fn(), isolateProposal: vi.fn(), updateXrayControls: vi.fn(), refreshClickStackFigures: vi.fn(),
             invalidateThreeView: vi.fn()
         };
         const [rebuild, context] = extracted('rebuild3DBuildingsOnly', `
             let isActive=true, buildingGroup={};
             let buildingBuildPending=false, buildingDisplaySnapshot=null, buildingsWorkGeneration=0, pendingModelLoads=0;
+            let nearbyBuildingsRevision=0;
             let buildingsRenderGeneration=0, sceneAbort=null;
             let existingBuildingsGroup=this.existingGroup, proposedBuildingsGroup=this.proposedGroup;
             let ineligibleBuildingsGroup=this.ineligibleGroup;
@@ -188,7 +221,7 @@ describe('three-mode Xray wiring', () => {
         expect(modelled.properties).toMatchObject({ name: 'block piece', parcelId: 'A', floorPlans: slices[0].result.floorPlans });
         expect(modelled.geometry).toBe(slices[0].footprint.geometry);
         expect(material).toBe('planned-material');
-        expect(proxyHeight).toBeCloseTo(11.998);
+        expect(proxyHeight).toBe(12);
         expect(feature.properties.floorPlans).toBeUndefined();
         expect(c.polygonFeatureToMeshes).toHaveBeenCalledExactlyOnceWith(slices[1].footprint, 'flagged-material', 0, 12);
         expect(group.add).toHaveBeenCalledOnce();

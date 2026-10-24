@@ -359,11 +359,11 @@
 
     function makeBuildingMaterial(parameters, opacity = 1) {
         const material = new THREE.MeshPhongMaterial({
-            ...parameters,
             depthFunc: THREE.LessDepth,
             polygonOffset: true,
             polygonOffsetFactor: 1,
-            polygonOffsetUnits: 1
+            polygonOffsetUnits: 1,
+            ...parameters
         });
         return configureBuildingMaterial(material, opacity);
     }
@@ -409,7 +409,10 @@
         demolishedGhost: makeBuildingMaterial({ color: 0xa2645a, specular: 0x333333, shininess: 12 }, 0.3),
         // The permitted envelope behind an example build-out: a cool translucent hull, distinct
         // from `ghost` (which means built context) so the two never read as the same thing.
-        massing: makeBuildingMaterial({ color: 0x7f95b3, specular: 0x223344, shininess: 8 }, 0.22),
+        // An example can touch its envelope. Give its actual roof/facades depth priority over
+        // the envelope in BOTH the color and cloned depth passes, without moving either shape.
+        massing: makeBuildingMaterial({ color: 0x7f95b3, specular: 0x223344, shininess: 8,
+            polygonOffsetFactor: 2, polygonOffsetUnits: 2 }, 0.22),
         // A proposed building whose footprint cannot hold even the minimum stair core, shown when
         // suggested layouts are on: the warning IS the colour, so it stays saturated and opaque.
         flagged: makeBuildingMaterial({ color: 0xd9453a, specular: 0x331111, shininess: 10 }, 0.92)
@@ -7258,8 +7261,7 @@
                 const modelled = { type: 'Feature', geometry: slice.footprint.geometry, properties: {
                     ...feature.properties, parcelId: slice.parcelId ?? feature.properties?.parcelId ?? null, floorPlans: result.floorPlans
                 } };
-                // The modelled floors end exactly where the volume ends, so no proxy band remains.
-                if (appendBuildingFloorPlans(modelled, buildingMaterial, Math.max(0.1, result.summary.heightM - 0.002))) {
+                if (appendBuildingFloorPlans(modelled, buildingMaterial, result.summary.heightM)) {
                     suggestedPlanTotals.cores += result.summary.cores;
                     suggestedPlanTotals.apartments += result.summary.apartmentsPerFloor;
                     continue;

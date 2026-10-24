@@ -120,6 +120,37 @@ describe('building floor architecture', () => {
         expect(uncoveredFloorBands(feature, 10)).toEqual([{ baseM: 3, heightM: 3 }]);
     });
 
+    it('does not make wafer-thin proxy roofs at independently rounded floor joins', () => {
+        const plans = data();
+        const storeyHeight = 114 / 35;
+        plans.layouts[0].architecture.wallHeightM = Math.round((storeyHeight - .2) * 1000) / 1000;
+        plans.floors = Array.from({ length: 35 }, (_, level) => ({
+            id: `floor-${level}`, level, layoutId: 'a', elevationM: Math.round(level * storeyHeight * 1000) / 1000
+        }));
+        const feature = { properties: { floorPlans: plans } };
+        expect(uncoveredFloorBands(feature, 114)).toEqual([]);
+
+        // An actually missing storey still needs its proxy, at the recorded bounds.
+        plans.floors.splice(12, 1);
+        const gaps = uncoveredFloorBands(feature, 114);
+        expect(gaps).toHaveLength(1);
+        expect(gaps[0].baseM).toBeCloseTo(39.086);
+        expect(gaps[0].heightM).toBeCloseTo(3.257);
+    });
+
+    it('ignores rounded ground/roof joins but preserves genuine unmodelled bands', () => {
+        const plans = data();
+        plans.floors = [0.001, 3.002, 6.002].map((elevationM, level) => ({
+            id: `floor-${level}`, level, layoutId: 'a', elevationM
+        }));
+        const feature = { properties: { floorPlans: plans } };
+        expect(uncoveredFloorBands(feature, 9.003)).toEqual([]);
+        const gaps = uncoveredFloorBands(feature, 9.022);
+        expect(gaps).toHaveLength(1);
+        expect(gaps[0].baseM).toBeCloseTo(9.002);
+        expect(gaps[0].heightM).toBeCloseTo(.02);
+    });
+
     it('returns the full proxy band for basement-only or unusable evidence, and no band without plans', () => {
         const basement = { properties: { floorPlans: data() } };
         basement.properties.floorPlans.floors = [{ id:'b', level:-1, elevationM:-3, elevationBasis:'documented', layoutId:'a', apartments:[] }];
