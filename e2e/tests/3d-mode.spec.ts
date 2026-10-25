@@ -364,7 +364,7 @@ test.describe('3D rendering and controls @features', () => {
     expect(await page.evaluate(() => {
       let selected = false;
       (window as any).getThreeModeInternals().scene.traverse((o: any) => {
-        if (o.isMesh && o.userData?.parcelId === 'HR-335754-1234' && o.material.color?.getHex() === 0x29c8ff) selected = true;
+        if (o.isMesh && o.userData?.parcelId === 'HR-335754-1234' && o.material.color?.getHex() === 0xffdd00) selected = true;
       });
       return selected;
     })).toBe(false);

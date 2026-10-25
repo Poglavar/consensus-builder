@@ -1,8 +1,8 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, createSpace } from '../helpers/runtime';
+import { openCity, createSpace, createBuilding } from '../helpers/runtime';
 import { mockPhotoTiles } from '../helpers/mocks/photo-data';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
-import { openAndClosePopup } from '../helpers/controls';
+import { openAndClosePopup, selectNativeOption } from '../helpers/controls';
 import { pageIndex } from '../helpers/mocks/shared-server';
 
 test('walk chooses a real 3D ground point, cancels with Escape, and opens the configured walking map', async ({ mockApi: page, context }) => {
@@ -85,6 +85,58 @@ test('Photo view enters the actual tiles renderer and returning to 2D releases i
   await expect(page.locator('body')).not.toHaveClass(/realistic-mode-active/);
   await expect(page.locator('#three-container')).toBeHidden();
   await expect(page.locator('#map')).toBeVisible();
+});
+
+test('Google 3D shares proposed-building layer controls and retains choices in model view', async ({ mockApi: page }) => {
+  test.setTimeout(60_000);
+  await mockBuildingScene(page);
+  const tiles = await mockPhotoTiles(page);
+  await openCity(page);
+  await createBuilding(page);
+  await page.locator('#mode-realistic-toggle').click();
+  await expect.poll(tiles.requests, { timeout: 20_000 }).toBeGreaterThan(0);
+  await expect(page.locator('body')).toHaveClass(/realistic-mode-active/);
+  await page.locator('#layers-button').click();
+  await expect(page.locator('#model-layer-controls')).toBeVisible();
+  await expect(page.locator('#photo-parcels-visible')).toBeVisible();
+  await expect(page.locator('.three-mode-radius-row')).toBeHidden();
+  await expect(page.locator('.three-mode-decor-toggles')).toBeHidden();
+  for (const label of ['People and traffic', 'Streets and pavement']) {
+    const row = page.locator('.three-mode-wide-toggle').filter({ hasText: label });
+    await expect(row).toHaveCount(1);
+    await expect(row).toBeHidden();
+  }
+  await expect(page.getByText('Non-buildable plots', { exact: true })).toBeVisible();
+  const facade = page.locator('#three-mode-facades');
+  await facade.check();
+  await selectNativeOption(page.locator('#three-mode-facade-style'), 'brick');
+  const uniforms = () => page.evaluate(() => (window as any).getThreeModeInternals().renderer.info.programs
+    .map((program: any) => program.getUniforms().map.cbFacadeEnabled?.cache?.[0])
+    .filter((enabled: any) => enabled !== undefined));
+  await expect.poll(async () => (await uniforms()).includes(1)).toBe(true);
+  const xray = page.locator('#three-mode-xray');
+  await xray.click();
+  await page.locator('#three-mode-suggested-layouts').click();
+  const floorPlans = () => page.evaluate(() => (window as any).getThreeModeInternals().scene.getObjectByName('FloorPlans')?.children.length || 0);
+  await expect.poll(floorPlans, { timeout: 15_000 }).toBeGreaterThan(0);
+  await expect(page.locator('#three-mode-suggested-existing')).toBeHidden();
+  await expect(page.locator('#three-mode-floor-cutaway')).toBeVisible();
+  await page.screenshot({ path: '/tmp/google-shared-layer-controls.png' });
+
+  await page.locator('#layers-button').click();
+  await page.locator('#mode-3d-toggle').click();
+  await expect(page.locator('body')).not.toHaveClass(/realistic-mode-active/);
+  await page.locator('#layers-button').click();
+  await expect(page.locator('.three-mode-radius-row')).toBeVisible();
+  await expect(page.locator('#photo-parcels-visible')).toBeHidden();
+  await expect(facade).toBeChecked();
+  await expect(page.locator('#three-mode-facade-style')).toHaveValue('brick');
+  await expect(xray).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#three-mode-suggested-existing')).toBeVisible();
+  await expect.poll(floorPlans).toBeGreaterThan(0);
+  await xray.click();
+  await expect(page.locator('#three-mode-suggested-existing')).toBeHidden();
+  await expect.poll(floorPlans).toBe(0);
 });
 
 test('photo seating diagnostics can be copied from their accessible button', async ({ mockApi: page }) => {

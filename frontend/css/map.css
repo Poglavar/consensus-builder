@@ -235,6 +235,10 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
     gap: var(--cb-space-2);
 }
 
+#model-layer-controls [data-map-modes][hidden] {
+    display: none;
+}
+
 /* Floor-plan toggle and source-accuracy status inside the 3D controls. */
 #model-layer-controls .three-mode-xray-row {
     display: grid;

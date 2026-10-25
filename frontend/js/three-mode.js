@@ -1775,7 +1775,10 @@
             'Also show typical layouts by era for the existing buildings around: a guess from footprint and height, not a survey.');
         suggestedExistingRow.setAttribute('aria-label', suggestedExistingRow.title);
         suggestedExistingRow.append(suggestedExistingCheckbox, suggestedExistingText);
-        xrayRow.appendChild(suggestedExistingRow);
+        const suggestedExistingHost = document.createElement('div');
+        suggestedExistingHost.setAttribute('data-map-modes', '3d');
+        suggestedExistingHost.appendChild(suggestedExistingRow);
+        xrayRow.appendChild(suggestedExistingHost);
         floorCutawayControl = document.createElement('label');
         floorCutawayControl.className = 'three-mode-floor-cutaway';
         const cutawayLabel = document.createElement('span');
@@ -1879,10 +1882,17 @@
         buildingsSourceNoteEl = document.createElement('p');
         buildingsSourceNoteEl.className = 'three-mode-source-note';
         buildingsSourceNoteEl.hidden = true;
-        buildingModeControlsEl.appendChild(buildingsSourceNoteEl);
+        const sourceNoteHost = document.createElement('div');
+        sourceNoteHost.setAttribute('data-map-modes', '3d');
+        sourceNoteHost.appendChild(buildingsSourceNoteEl);
+        buildingModeControlsEl.appendChild(sourceNoteHost);
         updateBuildingsSourceNote();
         // Keep X-ray as a clearly separated final section after scenery and plot diagnostics.
         buildingModeControlsEl.appendChild(xrayRow);
+
+        // These layers describe the flat model context. Google supplies its own ground and
+        // existing scenery; proposed-building appearance and inspection work in both views.
+        [radiusRow, decorTogglesEl, lifeRow, groundRow].forEach(row => row.setAttribute('data-map-modes', '3d'));
 
         layersHost.appendChild(buildingModeControlsEl);
         updateIsolationButton();
@@ -9293,9 +9303,7 @@
         if (waterGroup) waterGroup.visible = waterEnabled && !realisticLayerActive;
         syncLifeVisibility();
         syncGroundVisibility();
-        // Photo mode is view-only: hide the model-mode building controls (radius / built / proposed)
-        // and drop any isolation + the "Proposal info" panel, so the whole cut scene and all its
-        // proposals are shown. Restored on return to model 3D.
+        // Shared proposal controls remain available; flat context controls are model-only.
         window.MapShell?.syncModeAvailability();
         if (realisticLayerActive) {
             stopBuildingRadiusPreview?.();

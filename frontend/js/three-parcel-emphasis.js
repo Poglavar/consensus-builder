@@ -24,8 +24,8 @@
         copy.onBeforeCompile = material.onBeforeCompile;
         copy.customProgramCacheKey = material.customProgramCacheKey;
         if (style === 'selected') {
-            if (copy.color && typeof copy.color.set === 'function') copy.color.set(0x29c8ff);
-            if (copy.emissive && typeof copy.emissive.set === 'function') copy.emissive.set(0x07364a);
+            if (copy.color && typeof copy.color.set === 'function') copy.color.set(0xffdd00);
+            if (copy.emissive && typeof copy.emissive.set === 'function') copy.emissive.set(0x3d3000);
             if ('needsUpdate' in copy) copy.needsUpdate = true;
         } else if (style === 'dimmed') {
             if (copy.color && typeof copy.color.multiplyScalar === 'function') copy.color.multiplyScalar(0.24);
