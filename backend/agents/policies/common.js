@@ -5,6 +5,10 @@
 // society-run.mjs gathers the inputs and executes whatever a policy returns.
 import { stableNumber, isOthersOpen } from '../supporter-picker.js';
 import { isOpen } from '../discovery.js';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+const lmsr = require('../../../frontend/js/bets/lmsr.js');
 
 export { stableNumber, isOthersOpen, isOpen };
 
@@ -23,22 +27,18 @@ export function atomic(value) {
 }
 
 /**
- * YES share of a parimutuel market's pools, or null when there is no market, it is resolved, a pool
- * is unreadable, or nobody has staked. A missing market is "no signal", never 0 or 0.5.
+ * Current YES price in an open LMSR market, as a 0..1 probability, or null when unavailable.
  */
 export function impliedYesProbability(market) {
     if (!market || market.resolved) return null;
-    const yes = atomic(market.yesPool);
-    const no = atomic(market.noPool);
-    if (yes === null || no === null) return null;
-    const total = yes + no;
-    if (total === 0n) return null;
-    return Number(yes) / Number(total);
+    const b = atomic(market.b), yes = atomic(market.qYes), no = atomic(market.qNo);
+    if (b === null || yes === null || no === null || b <= 0n) return null;
+    return lmsr.chance(b, yes, no, 'yes') / 100;
 }
 
 export function totalPool(market) {
-    const yes = atomic(market?.yesPool);
-    const no = atomic(market?.noPool);
+    const yes = atomic(market?.qYes);
+    const no = atomic(market?.qNo);
     return yes === null || no === null ? 0 : Number(yes + no);
 }
 

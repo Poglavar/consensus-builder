@@ -68,10 +68,10 @@ import { bindingRejection, preflightCandidates, prioritizedPlannedCandidates } f
 import { checkProposalBinding } from '../proposals/binding.js';
 import { hash32, selectAlgorithmicPicks } from './algorithmic-picker.js';
 import { buildPickRequests, parsePicks, estimateBatchCostUsd, runPickBatch, pickCustomId, createAgentLlm } from './llm-picker.js';
-import { ensureMarketAndStake, usdcToAtomic } from './bettor.js';
+import { usdcToAtomic } from './bettor.js';
 import { getRun, startRun, updateRun, recordCosts, dailySpendUsd, assertUnderCap, dailyCapUsd, listRuns, failStaleRuns, STALE_RUN_HOURS } from './ledger.js';
 import { createRpcConnection } from '../solana/rpc.js';
-import { ensureBotSolFunding, fundBotAction } from './funding.js';
+import { ensureBotSolFunding } from './funding.js';
 import { sendAndConfirmPolling } from './solana-send.js';
 import {
     assertExecutionPlan, decisionCompletion, executionPolicy, summarizeExecutionPlan,
@@ -94,8 +94,6 @@ const actionEngineApi = require('../../frontend/js/agent-action-engine.js');
 
 export const STAGES = ['planned', 'chosen', 'designed', 'proposed', 'minted', 'recorded', 'staked'];
 const CONTROLLERS = ['algorithm', 'llm'];
-const USDC_DEVNET = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
-const SIDE_YES = 1;
 const CLUSTER = 'devnet';
 const DEFAULT_APP_ORIGIN = 'https://urbangametheory.xyz';
 const PUBLIC_APP_BASE = 'https://urbangametheory.xyz';
@@ -412,11 +410,11 @@ export function parcelLand(candidate) {
 // it leaves the machine, so a rerun resumes at the first unfinished step and never builds a second CID,
 // mints twice or stakes twice. Returns { refusal } when the index binds the design to land other than the
 // candidate's parcel (the caller fails the persona's run); any other failure throws. The chain steps
-// (mintImpl, stakeImpl, fundStake) and the clock are injected so the stages run headless in tests.
+// (mintImpl) and the clock are injected so the stages run headless in tests.
 export async function advancePick({
     pick, candidate, tag, persona, keypair, lens, until = 'staked', city, day, slot = null, seedOwners = false,
-    walletNames = {}, stakeUsdc = '0', state, index, pool, connection, run, save, fundStake = async () => {},
-    mintImpl = mintAgreement, stakeImpl = ensureMarketAndStake, sendAndConfirm = sendAndConfirmPolling,
+    walletNames = {}, stakeUsdc = '0', state, index, pool, connection, run, save,
+    mintImpl = mintAgreement, sendAndConfirm = sendAndConfirmPolling,
     now = () => new Date()
 }) {
     const { designs, owners, agreements, mints, onchain, stakes, bindingFailures } = state;
@@ -538,20 +536,13 @@ export async function advancePick({
     }
     if (stageIndex(until) < stageIndex('staked') || !staking) return {};
 
-    // stake YES on its own agreement's market.
+    // The author is the sponsor and cannot trade its own market. Persist the reason at the normal
+    // checkpoint boundary so resumed runs do not retry an action the protocol forbids.
     if (!stakes[key]) {
         const agreement = agreements[key];
-        await fundStake();
-        const staked = await run({ type: 'stake', agreementCid: agreement.cid, account: mints[key].account, amount: stakeUsdc, side: 'yes', pickId: pick.pickId },
-            () => stakeImpl({
-                connection, ownerKeypair: keypair, subject: mints[key].account,
-                stakeMint: USDC_DEVNET, side: SIDE_YES, amountAtomic: usdcToAtomic(stakeUsdc),
-                sendAndConfirm
-            }),
-            { entity: { type: 'agreement', id: agreement.cid }, message: `${persona.name} staked ${stakeUsdc} USDC YES on "${agreement.title}".` });
-        stakes[key] = { ...staked, amount: stakeUsdc };
+        stakes[key] = { skipped: true, skipReason: 'agreement-sponsor-cannot-trade-own-market', amount: stakeUsdc };
         await save('staked', { stakes });
-        log(`${tag} staked ${stakeUsdc} USDC YES: market ${staked.marketPda}${staked.created ? ' (created)' : ''} tx ${staked.stakeSignature}`);
+        log(`${tag} skipped own-market trade: agreement sponsor cannot trade its market`);
     }
     return {};
 }
@@ -872,7 +863,6 @@ async function main() {
                         pick, candidate, tag, persona, keypair, lens, until, city, day, slot, seedOwners: Boolean(args.seedOwners),
                         walletNames, stakeUsdc, state: { designs, owners, agreements, mints, onchain, stakes, bindingFailures },
                         index, pool, connection, run, save,
-                        fundStake: () => fundBotAction({ connection, pool, persona, runId: e.runId, action: { type: 'stake', amount: stakeUsdc } })
                     });
                     if (refusal) {
                         await updateRun(pool, e.runId, { status: 'failed', summaryPatch: { designs, bindingFailures, activities, outcome: 'failed', error: `binding refused ${refusal.code}` } });
@@ -919,7 +909,9 @@ async function main() {
                     outcome: personaFailed ? 'failed' : (done && until === 'staked' ? 'completed' : 'partial')
                 }
             });
-            report.push(`${persona.name}: ${picks.length} picks · ${Object.keys(designs).length} designs · ${Object.keys(agreements).length} agreements · ${Object.keys(mints).length} minted · ${Object.keys(onchain).length} recorded · ${Object.keys(stakes).length} staked · $${(summary.pickCostUsd ?? 0).toFixed(4)}`);
+            const marketTrades = Object.values(stakes).filter(item => !item.skipped).length;
+            const skippedOwnTrades = Object.values(stakes).filter(item => item.skipped).length;
+            report.push(`${persona.name}: ${picks.length} picks · ${Object.keys(designs).length} designs · ${Object.keys(agreements).length} agreements · ${Object.keys(mints).length} minted · ${Object.keys(onchain).length} recorded · ${marketTrades} market trade(s) · ${skippedOwnTrades} own-market trade(s) skipped · $${(summary.pickCostUsd ?? 0).toFixed(4)}`);
         }
     } catch (error) {
         for (const runId of startedRuns) {

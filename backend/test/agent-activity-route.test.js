@@ -19,7 +19,7 @@ import { cidOfObject } from '../cid.js';
 
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
-const marketClient = require('../../frontend/js/solana/market-client.js').configure({ web3 });
+const marketClient = require('../../frontend/js/solana/lmsr-client.js').configure({ web3 });
 const MARKET_PROGRAM_ID = marketClient.constants.PROGRAM_ID;
 
 const SPONSOR = Keypair.generate().publicKey.toBase58();
@@ -31,7 +31,7 @@ const DESIGN = cidOfObject({ schema: 'design/v1', title: 'Pocket park' });
 const ACCOUNT = agreementAccountOf(AGREEMENT, SPONSOR);
 // A recorded account the index holds for RECORDED (e.g. minted under another program id); it wins over the derived one.
 const RECORDED_ACCOUNT = Keypair.generate().publicKey.toBase58();
-const MARKET = marketClient.getMarketPda(ACCOUNT)[0].toBase58();
+const MARKET = marketClient.getMarketPda(ACCOUNT, SPONSOR)[0].toBase58();
 const BOUNDS = { west: 15.9, south: 45.8, east: 15.92, north: 45.82 };
 
 // consensus.agreement rows as AGREEMENT_ROWS selects them.
@@ -107,14 +107,14 @@ describe('chainEvents', () => {
 
     it('maps market and pledge instructions by their agreement account, or a market PDA, and keeps their side and amount', () => {
         const rows = [
-            { raw: tx('stake-tx', [marketIx('stake', [{ role: 'market', address: MARKET }, { role: 'proposal', address: ACCOUNT }, { role: 'staker', address: HUMAN, signer: true }], { side: 1, amount: '1500000' })]) },
-            { raw: tx('claim-tx', [marketIx('claim', [{ role: 'market', address: MARKET }, { role: 'claimer', address: HUMAN, signer: true }])]) },
+            { raw: tx('stake-tx', [marketIx('buy', [{ role: 'market', address: MARKET }, { role: 'proposal', address: ACCOUNT }, { role: 'buyer', address: HUMAN, signer: true }], { side: 1, shares: '1500000', max_cost: '1200000' })]) },
+            { raw: tx('claim-tx', [marketIx('claim_lmsr', [{ role: 'market', address: MARKET }, { role: 'owner', address: HUMAN, signer: true }])]) },
             { raw: tx('donate-tx', [{ index: 0, inner: false, program: { name: 'proposal_pledge', address: 'pledge-program' }, action: 'donate', args: { amount: '50000' },
                 accounts: [{ role: 'escrow', address: 'escrow' }, { role: 'proposal', address: RECORDED_ACCOUNT }, { role: 'donor', address: HUMAN, signer: true }] }]) }
         ];
         const events = chainEvents(rows, { agreementsByAccount: index, decode: raw => raw, book: { entryFor: () => null } });
         expect(events.map(event => [event.action, event.entity.id])).toEqual([
-            [{ type: 'stake', agreementCid: AGREEMENT, side: 'yes', amount: '1.5' }, AGREEMENT],
+            [{ type: 'stake', agreementCid: AGREEMENT, side: 'yes', maxCost: '1.2', shares: '1500000' }, AGREEMENT],
             [{ type: 'claim', agreementCid: AGREEMENT }, AGREEMENT],
             [{ type: 'donate', agreementCid: RECORDED, amount: '0.05' }, RECORDED]
         ]);
@@ -167,7 +167,7 @@ describe('GET /activity/recent', () => {
                 { raw: tx('fund-tx', [agreementIx('fund', ACCOUNT)], { time: '2026-10-21T13:30:00Z' }), signature: 'fund-tx' },
                 { raw: tx('failed-tx', [agreementIx('cancel', ACCOUNT)], { status: 'failed', time: '2026-10-21T14:00:00Z' }), signature: 'failed-tx' }
             ],
-            marketTransactions: [{ raw: tx('stake-tx', [marketIx('stake', [{ role: 'proposal', address: ACCOUNT }], { side: 0, amount: '20000' })], { time: '2026-10-21T12:30:00Z' }), signature: 'stake-tx' }]
+            marketTransactions: [{ raw: tx('stake-tx', [marketIx('buy', [{ role: 'proposal', address: ACCOUNT }], { side: 0, shares: '20000', max_cost: '18000' })], { time: '2026-10-21T12:30:00Z' }), signature: 'stake-tx' }]
         });
         const response = await request(appFor(pool)).get('/activity/recent?limit=4');
 
@@ -179,7 +179,7 @@ describe('GET /activity/recent', () => {
             action: { type: 'execute', agreementCid: AGREEMENT }, entity: { type: 'agreement', id: AGREEMENT },
             agreementName: 'Pocket park deal', designGoal: 'park', cityId: 'zagreb', location: { lat: 45.81, lon: 15.91 }, transaction: 'execute-tx'
         });
-        expect(response.body.events[1].action).toEqual({ type: 'stake', agreementCid: AGREEMENT, side: 'no', amount: '0.02' });
+        expect(response.body.events[1].action).toEqual({ type: 'stake', agreementCid: AGREEMENT, side: 'no', maxCost: '0.018', shares: '20000' });
         expect(response.body.events.find(event => event.entity.id === RECORDED)).not.toHaveProperty('location');
         expect(pool.calls.find(call => call.sql.includes('ORDER BY a.created_at')).params).toEqual([4]);
         expect(pool.calls.find(call => call.sql.includes('consensus.solana_transaction') && !call.sql.includes('touched_addresses')).params).toEqual([16]);
@@ -282,7 +282,7 @@ describe('agent run events', () => {
 });
 
 describe('GET /agent/activity', () => {
-    const stakeRow = { raw: tx('human-stake-tx', [marketIx('stake', [{ role: 'proposal', address: ACCOUNT }, { role: 'staker', address: HUMAN, signer: true }], { side: 1, amount: '10000' })], { time: '2026-10-21T09:00:00Z' }) };
+    const stakeRow = { raw: tx('human-stake-tx', [marketIx('buy', [{ role: 'proposal', address: ACCOUNT }, { role: 'buyer', address: HUMAN, signer: true }], { side: 1, shares: '10000', max_cost: '9000' })], { time: '2026-10-21T09:00:00Z' }) };
     const mintRow = { raw: tx('create-tx', [agreementIx('create', ACCOUNT)], { time: '2026-10-21T08:03:30Z' }) };
     const pool = () => poolFor({
         runs: [run], transactions: [mintRow, stakeRow], proposed: [agreementRow(AGREEMENT)],
@@ -298,7 +298,7 @@ describe('GET /agent/activity', () => {
         const design = response.body.events.find(event => event.action.type === 'design');
         expect(design).toMatchObject({ designName: 'Pocket park', designGoal: 'park', cityId: agreementRow(AGREEMENT).city, location: { lat: 45.81, lon: 15.91 }, actor: { name: 'densifier-01', controller: 'algorithm' } });
         const chainStake = response.body.events.find(event => event.action.type === 'stake' && !event.runId);
-        expect(chainStake).toMatchObject({ actor: { id: HUMAN }, agreementName: 'Pocket park deal', action: { side: 'yes', amount: '0.01' } });
+        expect(chainStake).toMatchObject({ actor: { id: HUMAN }, agreementName: 'Pocket park deal', action: { side: 'yes', maxCost: '0.009', shares: '10000' } });
         expect(response.body).toMatchObject({ count: 5, source: 'live' });
         expect(response.body).not.toHaveProperty('scanWindow');
     });

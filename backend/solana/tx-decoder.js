@@ -525,22 +525,28 @@ function buildSummary(primary, ctx) {
         const market = marketAddress ? label(marketAddress) : null;
         const inMarket = market ? ` in market ${market}` : '';
         const fromMarket = market ? ` from market ${market}` : '';
-        if (action === 'stake') {
+        if (action === 'buy' || action === 'sell') {
             const inner = innerTokenAmount(primary, rawInner, ctx);
-            const amount = inner?.amount ?? (args.amount != null ? formatAtomicAmount(String(args.amount), 6) : null);
+            const amountRaw = action === 'buy' ? args.max_cost : args.min_return;
+            const amount = inner?.amount ?? (amountRaw != null ? formatAtomicAmount(String(amountRaw), 6) : null);
             const symbol = inner?.symbol ?? 'USDC';
             const side = Number(args.side) === 1 ? 'YES' : 'NO';
-            return `${label(actorAddress(primary, 'staker'))} staked ${amount ?? '?'} ${symbol} on ${side}${inMarket}`;
+            const actor = label(actorAddress(primary, 'trader'));
+            const verb = action === 'buy' ? 'bought' : 'sold';
+            const shares = args.shares == null ? '?' : String(args.shares);
+            const payment = amount == null ? 'at unknown cost' : inner ? `for ${amount} ${symbol}`
+                : action === 'buy' ? `with a maximum cost of ${amount} ${symbol}` : `with a minimum return of ${amount} ${symbol}`;
+            return `${actor} ${verb} ${shares} ${side} shares ${payment}${inMarket}`;
         }
-        if (action === 'create_market') {
+        if (action === 'create_lmsr_market') {
             const vault = accountAddress(primary, 'vault');
             // The IDL still names the market's subject `proposal`; it is the agreement account.
             const agreementAddress = accountAddress(primary, 'proposal');
             const on = agreementAddress ? ` on agreement ${label(agreementAddress)}` : '';
             return `${label(actorAddress(primary, 'creator'))} opened a market${on}${vault ? ` (vault ${label(vault)})` : ''}`;
         }
-        if (action === 'resolve') return market ? `market ${market} resolved` : 'market resolved';
-        if (action === 'claim') {
+        if (action === 'resolve_lmsr') return market ? `market ${market} resolved` : 'market resolved';
+        if (action === 'claim_lmsr') {
             const inner = innerTokenAmount(primary, rawInner, ctx);
             const claimer = label(actorAddress(primary, 'claimer'));
             if (!inner) return `${claimer} claimed${fromMarket}`;

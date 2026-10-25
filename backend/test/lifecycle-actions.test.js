@@ -12,13 +12,14 @@ import {
 import { agreementAccountOf } from '../agents/agreement-minter.js';
 import { donationIdBytes } from '../agents/donor.js';
 import {
-    createAgreementChain, donationEscrowAccount, donationPositionAccount, encodeAgreementAccount, marketAccount, pledgeBookAccount,
+    createAgreementChain, donationEscrowAccount, donationPositionAccount, encodeAgreementAccount, lmsrMarketAccount, lmsrPositionAccount, marketAccount, pledgeBookAccount,
     pledgeCommitmentAccount, positionAccount
 } from './helpers/agent-chain-fakes.js';
 
 const require = createRequire(import.meta.url);
 const pledgeClient = require('../../frontend/js/solana/pledge-client.js');
 const marketClient = require('../../frontend/js/solana/market-client.js');
+const lmsrClient = require('../../frontend/js/solana/lmsr-client.js');
 const Cid = require('../../frontend/js/cid.js');
 
 const CID = Cid.cidOfObject({ schema: 'agreement/v1', title: 'Lifecycle subject' });
@@ -149,31 +150,35 @@ describe('pledges', () => {
 describe('the agreement\'s market', () => {
     it('resolves an open market from the agreement account and reads the outcome back; a resolved one is a replay', async () => {
         const resolve = () => resolveAgreementMarket({ connection: chain.connection, resolverKeypair: actor, subject, sendAndConfirm });
-        await expect(resolve()).rejects.toThrow('agreement market does not exist');
-        chain.put(marketAccount({ agreement: subject, yesPool: 300000n, noPool: 100000n }));
-        // The program resolves it YES from the Executed agreement.
+        setAgreement('Executed');
+        await expect(resolve()).rejects.toThrow('canonical agreement market');
+        chain.put(lmsrMarketAccount({ agreement: subject, sponsor: sponsor.publicKey.toBase58(), closesAt: agreementFields('Executed').deadline, qYes: 300000n, qNo: 100000n }));
         sent = vi.fn(async () => {
-            chain.put(marketAccount({ agreement: subject, yesPool: 300000n, noPool: 100000n, resolved: true, outcome: marketClient.constants.SIDE_YES }));
+            chain.put(lmsrMarketAccount({ agreement: subject, sponsor: sponsor.publicKey.toBase58(), closesAt: agreementFields('Executed').deadline,
+                qYes: 300000n, qNo: 100000n, resolved: true, outcome: 1 }));
             return 'resolve-signature';
         });
         expect(await resolve()).toEqual({ replayed: false, signature: 'resolve-signature', outcome: 'YES' });
-        expect(keysOf(instructionOf(sent.mock.calls[0]))).toEqual([marketClient.getMarketPda(subject)[0].toBase58(), subject]);
-        chain.put(marketAccount({ agreement: subject, resolved: true, outcome: marketClient.constants.SIDE_NO }));
+        const [marketPda] = require('../../frontend/js/solana/lmsr-client.js').getMarketPda(subject, sponsor.publicKey);
+        expect(keysOf(instructionOf(sent.mock.calls[0])).slice(0, 2)).toEqual([marketPda.toBase58(), subject]);
+        chain.put(lmsrMarketAccount({ agreement: subject, sponsor: sponsor.publicKey.toBase58(), closesAt: agreementFields('Executed').deadline, resolved: true, outcome: 0 }));
         expect(await resolve()).toEqual({ replayed: true, signature: null, outcome: 'NO' });
         expect(sent).toHaveBeenCalledTimes(1);
     });
 
     it('claims a resolved market\'s position once, on the side asked', async () => {
         const claim = (side = 'yes') => claimAgreementMarket({ connection: chain.connection, claimerKeypair: actor, subject, side, sendAndConfirm });
-        chain.put(marketAccount({ agreement: subject, yesPool: 300000n }));
+        setAgreement('Active');
+        const deadline = agreementFields('Active').deadline;
+        chain.put(lmsrMarketAccount({ agreement: subject, sponsor: sponsor.publicKey.toBase58(), closesAt: deadline, qYes: 300000n }));
         await expect(claim()).rejects.toThrow('agreement market is not resolved');
-        chain.put(marketAccount({ agreement: subject, yesPool: 300000n, resolved: true, outcome: 1 }));
+        chain.put(lmsrMarketAccount({ agreement: subject, sponsor: sponsor.publicKey.toBase58(), closesAt: deadline, qYes: 300000n, resolved: true, outcome: 1 }));
         await expect(claim()).rejects.toThrow('market position does not exist');
-        chain.put(positionAccount({ agreement: subject, owner: actor.publicKey.toBase58(), side: 1, amount: 300000n }));
+        const [marketPda] = require('../../frontend/js/solana/lmsr-client.js').getMarketPda(subject, sponsor.publicKey);
+        chain.put(lmsrPositionAccount({ market: marketPda, owner: actor.publicKey.toBase58(), side: 1, amount: 300000n }));
         expect(await claim()).toEqual({ replayed: false, signature: 'adapter-signature', claimed: true });
-        const [market] = marketClient.getMarketPda(subject);
-        expect(keysOf(instructionOf(sent.mock.calls[0])).slice(0, 2)).toEqual([market.toBase58(), marketClient.getPositionPda(market, actor.publicKey, 1)[0].toBase58()]);
-        chain.put(positionAccount({ agreement: subject, owner: actor.publicKey.toBase58(), side: 1, amount: 300000n, claimed: true }));
+        expect(keysOf(sent.mock.calls[0][1].instructions[1]).slice(0, 2)).toEqual([marketPda.toBase58(), lmsrClient.getPositionPda(marketPda, actor.publicKey, 1)[0].toBase58()]);
+        chain.put(lmsrPositionAccount({ market: marketPda, owner: actor.publicKey.toBase58(), side: 1, amount: 300000n, claimed: true }));
         expect(await claim('YES')).toEqual({ replayed: true, signature: null, claimed: true });
         await expect(claim('maybe')).rejects.toThrow('side must be yes or no');
         expect(sent).toHaveBeenCalledTimes(1);

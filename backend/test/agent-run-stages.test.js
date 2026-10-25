@@ -70,7 +70,6 @@ function harness({ state = freshState(), owners = [{ parcelUid: PARCEL_ID, owner
     const saves = [];
     const actions = [];
     const fundStake = vi.fn(async () => { journal.push('fundStake'); });
-    const stakeImpl = vi.fn(async ({ subject }) => { journal.push('stake'); return { marketPda: `market-of-${subject}`, created: true, stakeSignature: 'stake-sig' }; });
     const args = {
         pick, candidate: cand, tag: 'densifier-01 1/1 agent-densifier-01-2026-10-22-1',
         persona: { name: 'densifier-01', wallet: WALLET, agreement: { deadlineDays: 7, lamports: '1000' }, ...persona },
@@ -82,9 +81,9 @@ function harness({ state = freshState(), owners = [{ parcelUid: PARCEL_ID, owner
             return outcome;
         },
         save: async (stage, patch) => { journal.push(`save:${stage ?? '-'}`); saves.push({ stage, patch: JSON.parse(JSON.stringify(patch)) }); },
-        fundStake, stakeImpl, sendAndConfirm: chain.sendAndConfirm, now
+        sendAndConfirm: chain.sendAndConfirm, now
     };
-    return { args, pool, saves, actions, fundStake, stakeImpl, state, go: () => advancePick(args) };
+    return { args, pool, saves, actions, fundStake, state, go: () => advancePick(args) };
 }
 
 beforeEach(() => {
@@ -97,13 +96,13 @@ beforeEach(() => {
 });
 
 describe('the stages of one pick', () => {
-    it('designs, proposes, mints, records and stakes, checkpointing each before the next', async () => {
+    it('designs, proposes, mints and records, checkpointing the forbidden own-market trade skip', async () => {
         const h = harness();
         expect(await h.go()).toEqual({});
         expect(h.saves.map(save => save.stage)).toEqual([null, 'designed', null, null, 'proposed', 'minted', 'recorded', 'staked']);
-        // Each CID is checkpointed before the object leaves the machine; funding precedes the stake.
+        // Each CID is checkpointed before the object leaves the machine; the sponsor never self-trades.
         expect(journal).toEqual(['save:-', 'publishDesign', 'save:designed', 'save:-', 'save:-', 'publishAgreement', 'save:proposed',
-            'save:minted', 'recordOnchain', 'save:recorded', 'fundStake', 'stake', 'save:staked']);
+            'save:minted', 'recordOnchain', 'save:recorded', 'save:staked']);
 
         const key = pick.candidateId;
         const design = h.state.designs[key];
@@ -128,12 +127,12 @@ describe('the stages of one pick', () => {
         expect(chain.agreement(account)).toMatchObject({ cid: agreement.cid, authority: WALLET, lens: LENS, requiredLamports: 1000n, escrowLamports: 1000n });
         expect(index.recordOnchain).toHaveBeenCalledWith(agreement.cid, { cluster: 'devnet', account, signature: h.state.mints[key].createSignature });
         expect(h.state.onchain[key]).toMatchObject({ account, signature: h.state.mints[key].createSignature });
-        expect(h.stakeImpl).toHaveBeenCalledWith(expect.objectContaining({ subject: account, side: 1, amountAtomic: 250000n, stakeMint: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU' }));
-        expect(h.state.stakes[key]).toEqual({ marketPda: `market-of-${account}`, created: true, stakeSignature: 'stake-sig', amount: '0.25' });
+        expect(h.state.stakes[key]).toEqual({ skipped: true, skipReason: 'agreement-sponsor-cannot-trade-own-market', amount: '0.25' });
+        expect(h.fundStake).not.toHaveBeenCalled();
 
         expect(h.actions.map(item => [item.type, item.entity])).toEqual([
             ['design', { type: 'design', id: design.cid }], ['propose', { type: 'agreement', id: agreement.cid }],
-            ['mint', { type: 'agreement', id: agreement.cid }], ['stake', { type: 'agreement', id: agreement.cid }]
+            ['mint', { type: 'agreement', id: agreement.cid }]
         ]);
         expect(h.actions[2].action).toMatchObject({ lens: [LENS], lamports: '1000', pickId: pick.pickId });
         expect(h.actions[1].message).toBe(`densifier-01 proposed "${pick.name}" as a binding agreement on its own parcel ${PARCEL_ID}.`);
@@ -157,7 +156,7 @@ describe('the stages of one pick', () => {
         const replay = harness({ state });
         await replay.go();
         expect(replay.saves).toEqual([]);
-        expect(replay.stakeImpl).not.toHaveBeenCalled();
+        expect(replay.state.stakes[pick.candidateId].skipReason).toBe('agreement-sponsor-cannot-trade-own-market');
         expect(chain.signed()).toHaveLength(1);
     });
 
@@ -181,7 +180,6 @@ describe('the stages of one pick', () => {
         await h.go();
         expect(h.saves.at(-1).stage).toBe('recorded');
         expect(h.fundStake).not.toHaveBeenCalled();
-        expect(h.stakeImpl).not.toHaveBeenCalled();
     });
 });
 

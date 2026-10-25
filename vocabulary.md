@@ -604,7 +604,11 @@ Incoming or outgoing balancing money in the deal's explicit fiat currency, repre
 
 ### Token balance
 
-An amount in the atomic units of an identified chain asset. SOL lamports, devnet USDC atomic units and authored fiat cents have different units and cannot be inferred from one another.
+An amount in the atomic units of an identified chain asset. SOL lamports, devnet USDC atomic units and authored fiat cents have different units and cannot be inferred from one another. Betting points are a separate internal unit.
+
+### Betting points
+
+An internal, non-transferable unit in the points betting book. Each points account receives 1,000 points; a point is not cash, a token, or a claim on an on-chain asset. Ordinary points positions and trades share the ordinary points book. Each named simulation run has its own accounts, book and standings.
 
 ### Funding readiness
 
@@ -628,7 +632,7 @@ A modeled value of an agent's assigned land, expressed in a stated currency and 
 
 ### Market
 
-A betting instrument about a qualified binding agreement's execution. Its yes outcome is execution; its no outcome is cancellation or expiry. The subject account, market account, network and stake asset are distinct identities.
+A dated LMSR betting instrument about whether a qualified binding agreement executes by its own recorded deadline. YES means a valid on-chain execution timestamp is at or before that deadline. NO means execution after the deadline, expiry, or an active agreement still unresolved after the market's grace interval. Cancellation resolves VOID, paying half of each share on either side, floored per position. Points and devnet-USDC markets are independent books with the same quote and settlement rules. The market PDA, agreement account, network and asset are distinct identities.
 
 ### Contest
 
@@ -636,19 +640,23 @@ A group of published agreements connected transitively by shared source-qualifie
 
 ### Market deadline
 
-The event cutoff stated in a dated market's question. Execution after that cutoff does not satisfy a bet on execution by the deadline, even if settlement occurs later. A market's deadline and its agreement's own deadline are separate terms.
+The market's last-trading timestamp, copied from the agreement's execution deadline. An execution after it does not satisfy YES, even if observed before settlement. Grace delays a NO-by-absence settlement; it never extends the event deadline.
+
+### LMSR liquidity
+
+The positive parameter `b` in the logarithmic market scoring rule. It controls how much a quote moves as shares are bought or sold; it is not a pool balance or a guaranteed amount of trading volume.
+
+### Share
+
+A quantity in an LMSR market position on YES or NO, with six decimal places. One whole winning share pays one unit of the selected asset; one atomic share pays one atomic asset unit. VOID pays half that amount, rounded down per position.
 
 ### Betting journey event
 
 A browser's report of viewing or acting in the betting flow, with an anonymous visitor identity, session and source occurrence time. It is separate from a verified chain transaction. Simulated visits carry an explicit test-run identity and are excluded from ordinary visitor aggregates; a visitor count does not establish a count of real people.
 
-### Pool share
-
-One side's stakes divided by total stakes in the market's stated asset, usually displayed as a percentage. It is not itself an estimated probability or a payout multiple.
-
 ### Payout multiple
 
-The modeled or contract-defined return per unit stake under a stated market outcome. It is distinct from the side's pool share and from proof that settlement has occurred.
+The user-facing quote for how many fixed-payout shares a budget would buy at the current LMSR price. It is a quote for that budget and current inventory, not a pool share, a guaranteed return, or evidence that settlement occurred. Later trades move prices.
 
 ## Architecture and measurements
 

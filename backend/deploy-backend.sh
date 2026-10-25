@@ -82,6 +82,7 @@ DDL_FILES=(
     routes/lens-member-ddl.sql
     routes/city-requests-ddl.sql
     routes/bets-events-ddl.sql
+    sql/points-ledger.sql
     routes/feedback-ddl.sql
     routes/parcels-ddl.sql
     routes/transactions-ddl.sql

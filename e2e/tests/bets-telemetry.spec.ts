@@ -5,7 +5,7 @@ import { validateBetEvents } from '../../backend/routes/bets-events.js';
 import { openCity } from '../helpers/runtime';
 import { connectWalletByConnectorId, injectMockSolanaWallet, waitForBlockchainRuntime } from '../helpers/blockchain';
 import { pageIndex } from '../helpers/mocks/shared-server';
-import { fileIndexedAgreement, MINTED_ACCOUNT, OPEN_POOL } from '../helpers/agreements';
+import { fileIndexedAgreement, MINTED_ACCOUNT, OPEN_POOL, selectDevnetUsdc } from '../helpers/agreements';
 
 const ACCOUNT = MINTED_ACCOUNT;
 const WALLET = 'Cp886ML2Ja4FF3SMmyUeW16rRGsLrBcRW8kfWS1VfN7W';
@@ -71,6 +71,7 @@ function assertNoWalletPayload(capture: CapturedEvents): void {
 }
 
 test.describe('Betting journey telemetry @features', () => {
+  test.beforeEach(async ({ mockApi: page }) => { await selectDevnetUsdc(page); });
   test('a curious resident discovers a market, shares it, returns, closes, then hits the wallet gate', async ({ mockApi: page }) => {
     fileOpenContest(page);
     const captured = await captureTelemetry(page);
@@ -110,11 +111,11 @@ test.describe('Betting journey telemetry @features', () => {
     expect(events.filter(event => event.name === 'share' && event.result === 'succeeded')).toHaveLength(1);
     expect(events.filter(event => event.name === 'return')).toHaveLength(1);
     expect(events.filter(event => event.name === 'close').length).toBeGreaterThanOrEqual(2);
-    expect(events.filter(event => event.name === 'action_start' && event.action === 'stake' && event.result === 'started')).toHaveLength(1);
-    expect(events.filter(event => event.name === 'action_end' && event.action === 'stake' && event.result === 'failed' && event.errorCode === 'wallet_not_connected')).toHaveLength(1);
+    expect(events.filter(event => event.name === 'action_start' && event.action === 'buy' && event.result === 'started')).toHaveLength(1);
+    expect(events.filter(event => event.name === 'action_end' && event.action === 'buy' && event.result === 'failed' && event.errorCode === 'wallet_not_connected')).toHaveLength(1);
   });
 
-  test('a connected trader quotes a quick stake and records an uncertain confirmation with agreement context', async ({ mockApi: page }) => {
+  test('a connected trader quotes a quick buy and records an uncertain confirmation with agreement context', async ({ mockApi: page }) => {
     fileOpenContest(page);
     await injectMockSolanaWallet(page, { publicKey: WALLET, providerName: 'phantom' });
     const captured = await captureTelemetry(page);
@@ -125,12 +126,12 @@ test.describe('Betting journey telemetry @features', () => {
     await page.evaluate(() => {
       const bridge = (window as any).SolanaMarketBridge;
       bridge.readSummary = async () => ({
-        market: { stakeMint: 'mint', yesPool: 250000n, noPool: 50000n, resolved: false, outcome: 0 },
+        market: { ...OPEN_POOL, resolved: false, outcome: null },
         marketAddress: 'test-market', chainStatus: 'Active',
       });
       bridge.readPositions = async () => ({});
       bridge.readStakeBalance = async () => 12_500_000n;
-      bridge.stake = async (options: any) => {
+      bridge.buy = async (options: any) => {
         options.onStatus?.({ state: 'preparing' });
         options.onStatus?.({ state: 'awaiting_signature' });
         options.onStatus?.({ state: 'submitted', signature: 'tx-signature' });
@@ -150,10 +151,10 @@ test.describe('Betting journey telemetry @features', () => {
     await flushTelemetry(page);
     assertNoWalletPayload(captured);
     const events = captured.events;
-    expect(events.filter(event => event.name === 'quote' && event.action === undefined && event.side === 'yes' && event.agreementAccount === ACCOUNT)).toHaveLength(1);
-    expect(events.filter(event => event.name === 'action_start' && event.action === 'stake' && event.side === 'yes' && event.agreementAccount === ACCOUNT)).toHaveLength(1);
-    expect(events.filter(event => event.name === 'action_status' && event.action === 'stake' && event.result === 'submitted' && event.agreementAccount === ACCOUNT)).toHaveLength(1);
-    expect(events.filter(event => event.name === 'action_end' && event.action === 'stake' && event.result === 'unknown' && event.errorCode === 'confirmation_unknown' && event.agreementAccount === ACCOUNT)).toHaveLength(1);
+    expect(events.filter(event => event.name === 'quote' && event.action === 'buy' && event.side === 'yes' && event.agreementAccount === ACCOUNT)).toHaveLength(2);
+    expect(events.filter(event => event.name === 'action_start' && event.action === 'buy' && event.side === 'yes' && event.agreementAccount === ACCOUNT)).toHaveLength(1);
+    expect(events.filter(event => event.name === 'action_status' && event.action === 'buy' && event.result === 'submitted' && event.agreementAccount === ACCOUNT)).toHaveLength(1);
+    expect(events.filter(event => event.name === 'action_end' && event.action === 'buy' && event.result === 'unknown' && event.errorCode === 'confirmation_unknown' && event.agreementAccount === ACCOUNT)).toHaveLength(1);
     expect(events.filter(event => event.name === 'close' && event.agreementAccount === ACCOUNT)).toHaveLength(1);
   });
 
@@ -171,7 +172,7 @@ test.describe('Betting journey telemetry @features', () => {
       const bridge = (window as any).SolanaMarketBridge;
       let claimed = false;
       bridge.readSummary = async () => ({
-        market: { stakeMint: 'mint', yesPool: 250000n, noPool: 50000n, resolved: true, outcome: 1 },
+        market: { ...OPEN_POOL, resolved: true, outcome: 'yes' },
         marketAddress: 'test-market', chainStatus: 'Executed',
       });
       bridge.readPositions = async () => ({ [account]: { yes: { side: 1, amount: 100000n, claimed }, no: null } });

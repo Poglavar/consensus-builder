@@ -61,6 +61,9 @@ import { setupTransactionsRoute } from './routes/transactions.js';
 import { setupMarketsRoute } from './routes/markets.js';
 import { setupBetsShareRoute } from './routes/bets-share.js';
 import { setupBetsEventsRoute } from './routes/bets-events.js';
+import { setupBetsPointsRoutes } from './routes/bets-points.js';
+import { createAgreementMarketSource } from './markets/agreement-source.js';
+import { setupLmsrRecipesRoute } from './routes/lmsr-recipes.js';
 import { isAgentPath } from './utils/x402-payment.js';
 import { setupRoadCorridorRoute } from './routes/road-corridor.js';
 import { setupCityStatsRoute } from './routes/city-stats.js';
@@ -393,7 +396,7 @@ export function createApp({
             }
             // /agent/* pays per request, so the payment is the limiter (design decision, not an oversight).
             // Betting telemetry has its own bounded-batch limiter and must not consume the authoring budget.
-            if (req.method === 'POST' && (READ_ONLY_POST_PATHS.has(req.path) || isAgentPath(req.path) || req.path === '/bets/events')) {
+            if (req.method === 'POST' && (READ_ONLY_POST_PATHS.has(req.path) || isAgentPath(req.path) || req.path === '/bets/events' || req.path.startsWith('/bets/points/'))) {
                 return next();
             }
             return writeRateLimiter(req, res, next);
@@ -467,6 +470,8 @@ export function createApp({
     setupTransactionsRoute(app, activePool); // devnet transaction explorer, derived from the chain
     setupMarketsRoute(app, activePool, { env }); // contests per city with each proposal's prediction market (Bets sheet)
     setupBetsEventsRoute(app, activePool); // anonymous betting journey, with simulated activity kept separate
+    setupBetsPointsRoutes(app, activePool, { readAgreement: createAgreementMarketSource(activePool, { env }) });
+    setupLmsrRecipesRoute(app, activePool, { env });
     setupBetsShareRoute(app, activePool, { env }); // /bets/<account> must follow the named /bets/metrics route
     setupRoadCorridorRoute(app, activePool);
     setupCityStatsRoute(app, activePool);

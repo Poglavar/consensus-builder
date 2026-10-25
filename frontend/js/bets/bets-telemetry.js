@@ -23,7 +23,8 @@
 })(typeof window !== 'undefined' ? window : null, function betsTelemetryFactory() {
     'use strict';
     const NAMES = new Set(['entry', 'discovery', 'market_open', 'comparison_view', 'agreement_open', 'quote',
-        'action_start', 'action_status', 'action_end', 'position_view', 'share', 'return', 'close']);
+        'action_start', 'action_status', 'action_end', 'position_view', 'share', 'return', 'close',
+        'asset_select', 'standings_view', 'public_positions_view']);
     const FIELDS = ['city', 'agreementAccount', 'agreementCid', 'action', 'side', 'result', 'asset', 'entryPoint', 'errorCode'];
     const MAX_PENDING = 200;
     const SESSION_IDLE_MS = 30 * 60 * 1000;

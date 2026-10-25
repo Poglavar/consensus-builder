@@ -4,9 +4,10 @@ import rateLimit from 'express-rate-limit';
 
 export const BET_EVENT_NAMES = Object.freeze([
     'entry', 'discovery', 'market_open', 'comparison_view', 'agreement_open', 'quote',
-    'action_start', 'action_status', 'action_end', 'position_view', 'share', 'return', 'close'
+    'action_start', 'action_status', 'action_end', 'position_view', 'share', 'return', 'close',
+    'asset_select', 'standings_view', 'public_positions_view'
 ]);
-const ACTIONS = new Set(['create', 'buy', 'sell', 'resolve', 'claim', 'stake']);
+const ACTIONS = new Set(['create', 'buy', 'sell', 'resolve', 'claim', 'stake', 'link-wallet', 'check-receipt']);
 const SIDES = new Set(['yes', 'no']);
 const RESULTS = new Set(['started', 'preparing', 'awaiting_signature', 'submitted', 'confirmed', 'succeeded', 'failed', 'cancelled', 'unknown']);
 const ASSETS = new Set(['points', 'devnet-usdc']);

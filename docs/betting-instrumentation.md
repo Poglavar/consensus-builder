@@ -20,6 +20,12 @@ The response includes distinct browsers and sessions, browsers seen in multiple 
 counts and funnel groups by event, action and result. It exposes no raw browser identities.
 These are client-reported observations, not proof of real people, demand or chain settlement.
 
+Instrumentation is separate from the betting books described in
+[`betting-lmsr-points.md`](betting-lmsr-points.md). A points account authenticates server-side
+trades with its own opaque credential; telemetry uses anonymous browser and session IDs. Neither
+credential is sent with telemetry. A reported action or confirmed points receipt is not evidence of
+a Solana transaction, and simulated visitor metrics do not represent outside-pilot participants.
+
 The browser generates an anonymous visitor ID and a tab-session ID, renewing the session after
 30 minutes without betting activity so a later return in the same tab can be counted. It sends the source event time
 as `occurredAt`; the database also records receipt time. It sends only allowed context fields,
@@ -37,6 +43,14 @@ Targeted checks:
 - Headless unit tests: `test/bets-events.test.js`, `test/bets-telemetry.test.js` from `backend`.
 - Headless Playwright: `tests/bets-telemetry.spec.ts` from `e2e`; its simulated wallet outcomes are
   test fixtures and never evidence of a live transaction.
+- The points journey in `tests/bets-points.spec.ts` uses the real local PostgreSQL ledger and an
+  explicitly simulated agreement source. It covers buys, sales, reloads, settlement, claims and
+  recovery of a committed trade whose HTTP acknowledgement was lost. The local harness refuses
+  ordinary points accounts and keeps all activity in its designated simulation run.
 - A local headed browser can exercise public source records through a preview API which writes
   only the new telemetry events to the local database. Read the stored rows and both metric modes
   afterward; ordinary visitor metrics must exclude those walkthroughs.
+
+Asset selection, opening the standings and inspecting public positions have their own events.
+Wallet linking and pending-receipt checks use the same started/finished action events as trading.
+These events do not include the inspected profile ID or the wallet address.

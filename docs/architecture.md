@@ -57,7 +57,10 @@ flowchart LR
 3. **One paid agent front door.** `POST /agent/proposals` applies x402 payment and payer binding,
    then calls the same proposal-creation handler used by the free human-facing route.
 4. **Three Solana lifecycles.** ProposalNFT owns proposal terminal state; ProposalPledge owns funded
-   donations and soft commitments; ProposalMarket owns parimutuel stake and payout state.
+   donations and soft commitments. The current ProposalMarket LMSR instructions own dated shares,
+   trades and fixed payouts; the points ledger mirrors those terms in PostgreSQL. Historical
+   parimutuel accounts retain their original payouts. See [the current betting contract](betting-lmsr-points.md)
+   for the local implementation and pending devnet release boundary.
 5. **Deterministic evidence.** The current oracle materializes only terminal ProposalNFT state that
    has a matching source transaction. It records source time, transaction, account bytes, and hash.
 6. **Public review surfaces.** The Demo Center and actor explorer read public APIs and chain links;

@@ -39,6 +39,60 @@
     gap: var(--cb-space-3);
 }
 
+/* Betting account controls, notices, standings and receipts reuse the app's semantic buttons,
+   fields and table structure. Palette and spacing come from the shared --cb-* theme tokens. */
+.bets-account {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--cb-space-2);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-lg);
+    padding: var(--cb-space-3);
+    background: var(--cb-surface);
+}
+.bets-account__asset {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--cb-space-2);
+    font-weight: var(--cb-weight-semibold);
+}
+.bets-asset-select {
+    max-width: 100%;
+    min-width: 0;
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-sm);
+    background: var(--cb-surface);
+    color: var(--cb-text);
+    padding: var(--cb-space-2);
+    font: inherit;
+}
+.bets-account__note, .bets-contest__independent {
+    margin: 0;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+    line-height: var(--cb-leading);
+}
+.bets-account__simulation, .bets-account__balance {
+    margin: 0;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-strong);
+}
+.bets-account__simulation { color: var(--cb-warning); }
+.bets-standings__content { display: grid; gap: var(--cb-space-3); padding-block: var(--cb-space-3); }
+.bets-standings__table { width: 100%; border-collapse: collapse; font-size: var(--cb-text-sm); }
+.bets-standings__table th, .bets-standings__table td {
+    padding: var(--cb-space-2);
+    text-align: left;
+    border-bottom: 1px solid var(--cb-line);
+    overflow-wrap: anywhere;
+}
+.bets-standings__table th:last-child, .bets-standings__table td:last-child { text-align: right; }
+.bets-standings__positions { overflow-wrap: anywhere; }
+.bets-receipt-id { overflow-wrap: anywhere; }
+
 .bets-contest {
     border: 1px solid var(--cb-line);
     border-radius: var(--cb-radius-lg);

@@ -6,17 +6,27 @@
 // with its pool, when asked), and one proposed from this device over a park applied here.
 import { expect, Locator, Page } from '@playwright/test';
 import { createSpace, openCity, openParcel, showProposal, PARCEL_ID } from './runtime';
-import { fileAgreement, fileDesign, pageIndex, MarketPool, SharedIndex } from './mocks/shared-server';
+import { fileAgreement, fileDesign, pageIndex, MarketFixture, SharedIndex } from './mocks/shared-server';
 
 export const OWNER = 'Ana Owner';
 
 // ---- agreements the specs start from ------------------------------------------------------------
 
-// The parcel a filed agreement settles, the account it is minted at, its sponsor, and an open pool.
+// The parcel a filed agreement settles, the account it is minted at, and its sponsor.
 export const FILED_PARCEL = 'HR-335614-2311';
 export const MINTED_ACCOUNT = 'Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR';
 export const MINTED_SPONSOR = 'AoVsGaj8MSJ6xwKxfFxo9iZWH3enC8RRTXKH2fx2F8os';
-export const OPEN_POOL: MarketPool = { address: 'HQqbGtviQr5KRs4x8CWSCVhnkrLKDiYqXmVSBY8GZdfw', yesPool: '250000', noPool: '50000' };
+export const OPEN_POOL: MarketFixture = {
+  address: 'HQqbGtviQr5KRs4x8CWSCVhnkrLKDiYqXmVSBY8GZdfw', model: 'lmsr', asset: 'devnet-usdc',
+  creator: MINTED_SPONSOR, b: '100000000', qYes: '250000', qNo: '50000', seed: '69314720',
+  closesAt: Math.floor(Date.parse('2026-12-31T00:00:00.000Z') / 1000), graceSeconds: 0, maxPosition: '0',
+  paidOut: '0', resolved: false, outcome: null,
+};
+
+/** Seed the wallet-backed browser specs into their explicit devnet-USDC book before app startup. */
+export async function selectDevnetUsdc(page: Page): Promise<void> {
+  await page.addInitScript(() => localStorage.setItem('bets-asset-v1', 'devnet-usdc'));
+}
 
 // The chain record the index keeps of a minted agreement (POST /agreements/:cid/onchain): `status`
 // as the index observed it (null: not observed), `decision` the lens's.
@@ -33,8 +43,8 @@ export interface FiledAgreement {
   community?: boolean;
   /** Minted: the index records its chain account (MINTED_ACCOUNT unless given). */
   minted?: MintedRecord | null;
-  /** The market pool the chain holds for its account. */
-  pool?: MarketPool | null;
+  /** The agreement's LMSR market in the mocked index. */
+  pool?: MarketFixture | null;
   /** Fields of the index row itself, such as its rendered pictures. */
   row?: Record<string, any>;
   areaM2?: number;
@@ -50,7 +60,9 @@ const onchainRecord = (minted: MintedRecord) => ({
  * designs filed beside it, its chain record when minted, and its pool when one is open.
  */
 export function fileIndexedAgreement(index: SharedIndex, options: FiledAgreement): { cid: string; designCid: string; designCids: string[] } {
-  const { title, author = 'densifier-01', createdAt = '2026-10-01T09:30:00.000Z', deadline = null, community = false, minted = null, pool = null, row = {}, areaM2 = 120 } = options;
+  const { title, author = 'densifier-01', createdAt = '2026-10-01T09:30:00.000Z', community = false, minted = null, pool = null, row = {}, areaM2 = 120 } = options;
+  // A minted market is dated. Keep its question deadline identical to its market cutoff.
+  const deadline = options.deadline ?? (minted ? '2026-12-31T00:00:00.000Z' : null);
   const designs = (options.designTitles || [`${title} park`]).map(designTitle => ({
     cid: fileDesign(index, {
       schema: 'design/v1', goal: 'park', title: designTitle, description: null, author, city: 'zagreb', site: null, toleranceM: null,
@@ -68,7 +80,9 @@ export function fileIndexedAgreement(index: SharedIndex, options: FiledAgreement
       : { electorate: 'owners', binding: true, approvalConfig: null, lens: [] },
     deadline,
   }, { createdAt, ...(onchain ? { onchain } : {}), ...row });
-  if (onchain && pool) index.markets.set(onchain.account, pool);
+  if (onchain && pool) index.markets.set(onchain.account, {
+    ...pool, closesAt: deadline ? Math.floor(Date.parse(deadline) / 1000) : pool.closesAt,
+  });
   return { cid, designCid: designs[0].cid, designCids: designs.map(design => design.cid) };
 }
 
@@ -80,7 +94,7 @@ export function fileIndexedAgreement(index: SharedIndex, options: FiledAgreement
  * chain account and `pool`.
  */
 export async function proposeOverPark(page: Page, { title, author = 'Fixture author', minted = null, pool = null }:
-  { title: string; author?: string; minted?: MintedRecord | null; pool?: MarketPool | null }): Promise<{ id: string; cid: string; designCid: string; parkId: string; parkTitle: string }> {
+  { title: string; author?: string; minted?: MintedRecord | null; pool?: MarketFixture | null }): Promise<{ id: string; cid: string; designCid: string; parkId: string; parkTitle: string }> {
   const parkId = await createSpace(page, 'park');
   const onchain = minted ? onchainRecord(minted) : null;
   const seeded = await page.evaluate(async ({ parkId, title, author, sponsor }) => {
@@ -105,7 +119,7 @@ export async function proposeOverPark(page: Page, { title, author = 'Fixture aut
       rule: sponsor
         ? { electorate: 'owners', binding: true, approvalConfig: null, lens: [] }
         : { electorate: 'community', binding: false, approvalConfig: null, lens: [] },
-      deadline: null,
+      deadline: sponsor ? '2026-12-31T00:00:00.000Z' : null,
     };
     const content = w.AgreementRecord.published({ ...record, author, sponsor });
     const cid = w.Cid.cidOfObject(content);

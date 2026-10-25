@@ -42,6 +42,15 @@ describe('BetsLink.parse', () => {
 });
 
 describe('BetsLink.build and appHref', () => {
+    it('retains the selected book and isolated preview context through sharing', () => {
+        const context = { asset: 'devnet-usdc', backend: 'http://localhost:4683', betTest: 'curious-resident' };
+        const url = new URL(BetsLink.build({ origin: 'http://localhost:5681', city: 'san_francisco', account: ACCOUNT, ...context }));
+        expect(BetsLink.parse(url)).toEqual({ account: ACCOUNT, city: 'san_francisco', lang: null, ...context });
+        const redirected = new URL(BetsLink.appHref(BetsLink.parse(url)), url.origin);
+        expect(BetsLink.parse(redirected)).toEqual(BetsLink.parse(url));
+        expect(BetsLink.contextOf({ asset: 'cash', backend: 'javascript:alert(1)', betTest: '<script>' })).toEqual({});
+        expect(BetsLink.contextOf({ backend: 'https://token:secret@example.com' })).toEqual({});
+    });
     it('builds the shareable link on an origin', () => {
         expect(BetsLink.build({ origin: 'https://urbangametheory.xyz/', city: 'zg', account: ACCOUNT }))
             .toBe(`https://urbangametheory.xyz/bets/${ACCOUNT}?city=zg`);

@@ -107,20 +107,19 @@ export function decide({ persona, seed, now = Date.now(), wallet = null, agreeme
     const against = new Set((history.againstCids || []).map(String));
     const others = (agreements || []).filter(agreement => isOthersOpen(agreement, { wallet, personaName: persona.name, now }));
     const alreadyAgainst = others.filter(agreement => against.has(agreement.cid)).map(agreement => agreement.cid);
-    const open = others.filter(agreement => !against.has(agreement.cid) && !markets?.[agreement.account]?.resolved);
+    const open = others.filter(agreement => !against.has(agreement.cid)
+        && markets?.[agreement.account] && !markets[agreement.account].resolved);
     const scored = open.map(agreement => ({ agreement, evidence: densityEvidence(agreement) }))
         .filter(item => item.evidence.score > 0)
         .map(item => ({ ...item, tier: item.evidence.source === 'designs' ? 0 : 1, rank: stableNumber(`${seed}:${persona.name}:${item.agreement.cid}`) }))
         .sort((a, b) => a.tier - b.tier || b.evidence.score - a.evidence.score || a.rank - b.rank);
     const options = scored.map(({ agreement, evidence }, index) => {
-        const hasMarket = Boolean(markets?.[agreement.account]);
         return {
             agreementCid: agreement.cid,
             evidence,
             action: {
                 type: 'stake', side: 'no', amount: config.amountUsdc, usdc: Number(config.amountUsdc),
-                // Creating a missing market is a second signature.
-                signedActions: hasMarket ? 1 : 2,
+                signedActions: 1,
                 agreementCid: agreement.cid, account: agreement.account, agreementName: agreementName(agreement),
                 rationale: `Bet NO on ${agreementName(agreement)}: ${evidence.detail}; ${index === 0 ? 'the densest' : `density rank ${index + 1}`} of ${scored.length} open agreement${scored.length === 1 ? '' : 's'} by other actors this persona has not yet opposed${alreadyAgainst.length ? ` (${alreadyAgainst.length} already bet against)` : ''}.`
             }

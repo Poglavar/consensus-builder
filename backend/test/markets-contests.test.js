@@ -31,7 +31,9 @@ const agreement = (overrides = {}) => ({
     account: null, chainStatus: null, ...overrides
 });
 const minted = (cid, account, overrides = {}) => agreement({ cid, account, chainStatus: 'active', ...overrides });
-const market = (address, yesPool, noPool, resolved = false, outcome = 0) => ({ address, market: { yesPool, noPool, resolved, outcome } });
+const market = (address, qYes, qNo, resolved = false, outcome = 0, chainStatus = 'active', deadline = LATER) => ({ address, chainStatus, deadline,
+    market: { b: 100_000_000n, qYes, qNo, seed: 69_314_720n, closesAt: Math.floor(Date.parse(deadline || LATER) / 1000),
+        graceSeconds: 0, maxPosition: 0n, paidOut: 0n, creator: SPONSOR, resolved, outcome } });
 const cidsOf = contest => contest.agreements.map(entry => entry.cid);
 
 describe('subjectAccountOf', () => {
@@ -129,19 +131,19 @@ describe('buildContests', () => {
         });
         expect(out).toMatchObject({ city: 'zagreb', generatedAt: '2026-10-09T00:00:00.000Z' });
         expect(out.contests.map(cidsOf)).toEqual([['minted', 'rival']]);
-        expect(out.summary).toEqual({ contests: 1, agreements: 2, markets: 1, openMarkets: 1, poolAtomic: '300000' });
+        expect(out.summary).toEqual({ contests: 1, agreements: 2, markets: 1, openMarkets: 1, sharesAtomic: '300000' });
         const [contest] = out.contests;
         expect(contest).toMatchObject({
             parcelIds: ['L1'], parcelRefs: [{ ...HR_CADASTRE, parcelId: 'L1' }], agreementCount: 2, mintedCount: 1, marketCount: 1,
-            openMarketCount: 1, poolAtomic: '300000', latestCreatedAt: '2026-10-04T00:00:00.000Z'
+            openMarketCount: 1, sharesAtomic: '300000', latestCreatedAt: '2026-10-04T00:00:00.000Z'
         });
         expect(contest.agreements[0]).toEqual({
             kind: 'agreement', cid: 'minted', account: 'ACCT-A', title: 'One', author: 'a', city: 'zagreb',
             status: 'active', chainStatus: 'active', deadline: LATER, createdAt: '2026-10-03T00:00:00.000Z',
             designTitles: ['Six storeys'], screenshotUrl: null, screenshotBeforeUrl: null, screenshotPairUrl: null,
             parcelIds: ['L1'], parcelRefs: [{ ...HR_CADASTRE, parcelId: 'L1' }],
-            market: { address: 'MKT-A', yesPool: '250000', noPool: '50000', poolAtomic: '300000', resolved: false, outcome: null },
-            bettable: true, canOpenMarket: false, contest: contest.id
+            market: { address: 'MKT-A', model: 'lmsr', asset: 'devnet-usdc', creator: SPONSOR, b: '100000000', qYes: '250000', qNo: '50000', seed: '69314720', closesAt: Math.floor(Date.parse(LATER) / 1000), graceSeconds: 0, maxPosition: '0', paidOut: '0', resolved: false, outcome: null },
+            bettable: true, canOpenMarket: false, canSettle: false, sponsor: null, contest: contest.id
         });
         expect(contest.agreements[1]).toMatchObject({ cid: 'rival', account: null, chainStatus: null, market: null, bettable: false, canOpenMarket: false, status: 'active' });
     });
@@ -153,20 +155,24 @@ describe('buildContests', () => {
         expect(entryOf(minted('a', 'ACCT'), pool)).toMatchObject({ bettable: true, canOpenMarket: false, status: 'active' });
         expect(entryOf(minted('a', 'ACCT'))).toMatchObject({ bettable: false, canOpenMarket: true, market: null });
         // No deadline: still live.
-        expect(entryOf(minted('a', 'ACCT', { deadline: null }), pool)).toMatchObject({ bettable: true, deadline: null });
+        expect(entryOf(minted('a', 'ACCT', { deadline: null }), new Map([['ACCT', market('MKT', 1n, 1n, false, 0, 'active', null)]])))
+            .toMatchObject({ bettable: false, deadline: null });
         // The deadline passed while the account is still Active: the agreement can no longer execute.
-        expect(entryOf(minted('a', 'ACCT', { deadline: PAST }), pool)).toMatchObject({ bettable: false, canOpenMarket: false, status: 'expired', chainStatus: 'active' });
+        expect(entryOf(minted('a', 'ACCT', { deadline: PAST }), new Map([['ACCT', market('MKT', 1n, 1n, false, 0, 'active', PAST)]])))
+            .toMatchObject({ bettable: false, canOpenMarket: false, status: 'expired', chainStatus: 'active' });
         expect(entryOf(minted('a', 'ACCT', { deadline: PAST }))).toMatchObject({ canOpenMarket: false });
         // A status nobody observed is no evidence that a bet can still win.
-        expect(entryOf(minted('a', 'ACCT', { chainStatus: null }), pool)).toMatchObject({ bettable: false, canOpenMarket: false, status: 'active' });
+        expect(entryOf(minted('a', 'ACCT', { chainStatus: null }), new Map([['ACCT', market('MKT', 1n, 1n, false, 0, null)]])))
+            .toMatchObject({ bettable: false, canOpenMarket: false, status: 'active', chainStatus: null });
         // A terminal status is the word shown, whatever the deadline says.
         for (const chainStatus of ['executed', 'cancelled', 'expired']) {
-            expect(entryOf(minted('a', 'ACCT', { chainStatus, deadline: LATER }), pool)).toMatchObject({ status: chainStatus, chainStatus, bettable: false, canOpenMarket: false });
+            expect(entryOf(minted('a', 'ACCT', { chainStatus, deadline: LATER }), new Map([['ACCT', market('MKT', 1n, 1n, false, 0, chainStatus)]])))
+                .toMatchObject({ status: chainStatus, chainStatus, bettable: false, canOpenMarket: false });
         }
         // A resolved pool takes no bets.
         expect(entryOf(minted('a', 'ACCT'), new Map([['ACCT', market('MKT', 1n, 1n, true, 1)]])))
             .toMatchObject({ bettable: false, market: { resolved: true, outcome: 'yes' } });
-        expect(entryOf(minted('a', 'ACCT', { chainStatus: 'cancelled' }), new Map([['ACCT', market('MKT', 1n, 1n, true, 0)]])))
+        expect(entryOf(minted('a', 'ACCT', { chainStatus: 'cancelled' }), new Map([['ACCT', market('MKT', 1n, 1n, true, 0, 'cancelled')]])))
             .toMatchObject({ market: { resolved: true, outcome: 'no' } });
     });
 
@@ -181,9 +187,9 @@ describe('buildContests', () => {
     it('serializes pools as decimal strings so the JSON never loses a u64', () => {
         const big = (1n << 63n) + 7n;
         const out = buildContests({ city: 'zagreb', now: NOW, agreements: [minted('a', 'ACCT')], markets: new Map([['ACCT', market('MKT', big, 1n)]]) });
-        expect(out.contests[0].agreements[0].market.yesPool).toBe(big.toString());
-        expect(out.contests[0].poolAtomic).toBe((big + 1n).toString());
-        expect(out.summary.poolAtomic).toBe((big + 1n).toString());
+        expect(out.contests[0].agreements[0].market.qYes).toBe(big.toString());
+        expect(out.contests[0].sharesAtomic).toBe((big + 1n).toString());
+        expect(out.summary.sharesAtomic).toBe((big + 1n).toString());
         expect(() => JSON.stringify(out)).not.toThrow();
     });
 });
@@ -207,28 +213,27 @@ describe('row order inside a contest and of contests (the Bets sheet\'s order)',
             agreement({ cid: 'not-minted', inputParcelIds: ['R1'], createdAt: '2026-10-03T00:00:00.000Z' })
         ],
         markets: new Map([
-            [accounts[0], market('M0', 0n, 5_000_000n, true, 0)],
-            [accounts[1], market('M1', 9_000_000n, 0n, true, 1)],
-            [accounts[2], market('M2', 1_000_000n, 1_000_000n, true, 0)],
-            [accounts[3], market('M3', 0n, 500_000n, true, 0)],
-            [accounts[4], market('M4', 10_000n, 0n)],
-            [accounts[5], market('M5', 1n, 0n)],
-            [accounts[6], market('M6', 0n, 0n)],
+            [accounts[0], market('M0', 0n, 5_000_000n, true, 0, 'cancelled')],
+            [accounts[1], market('M1', 9_000_000n, 0n, true, 1, 'executed')],
+            [accounts[2], market('M2', 1_000_000n, 1_000_000n, true, 0, 'expired')],
+            [accounts[3], market('M3', 0n, 500_000n, true, 0, 'cancelled')],
+            [accounts[4], market('M4', 10_000n, 0n, false, 0, 'active', null)],
+            [accounts[5], market('M5', 1n, 0n, false, 0, 'active', LATER)],
+            [accounts[6], market('M6', 0n, 0n, false, 0, 'active', SOON)],
             [accounts[7], { address: 'M7', market: null }],
-            [accounts[8], market('M8', 25_000n, 25_000n)]
+            [accounts[8], market('M8', 25_000n, 25_000n, false, 0, 'cancelled', null)]
         ])
     });
 
     it('puts rows in play first, the soonest deadline leading, and settled pools after them however big', () => {
         const [contest] = buildContests(input()).contests;
         expect(cidsOf(contest)).toEqual([
-            'open-soon', 'open-late',                          // in play, dated: soonest deadline first
-            'settling', 'open-undated', 'needs-market',        // in play, no deadline: bigger pool first
-            'settled-bigger', 'settled-big', 'settled-mid', 'settled-small', // settled: bigger pool first
-            'not-minted'                                       // nothing to do
+            'open-soon', 'open-late', 'settling',               // dated cutoff first; an undated terminal still needs settlement
+            'settled-bigger', 'settled-big', 'settled-mid', 'settled-small', // resolved rows
+            'open-undated', 'not-minted', 'needs-market'        // unavailable/closed rows, share count then newest first
         ]);
         expect(contest.agreements[0]).toMatchObject({ bettable: true, deadline: SOON });
-        expect(contest).toMatchObject({ agreementCount: 10, mintedCount: 9, marketCount: 8, openMarketCount: 3 });
+        expect(contest).toMatchObject({ agreementCount: 10, mintedCount: 9, marketCount: 8, openMarketCount: 2 });
     });
 
     it('comes out in the same order from any arrival order', () => {
@@ -244,7 +249,7 @@ describe('row order inside a contest and of contests (the Bets sheet\'s order)',
                 minted('settled-huge', 'ACCT-X', { inputParcelIds: ['X1'], chainStatus: 'executed' }),
                 minted('open-tiny', 'ACCT-Y', { inputParcelIds: ['Y1'] })
             ],
-            markets: new Map([['ACCT-X', market('MA', 90_000_000n, 1n, true, 1)], ['ACCT-Y', market('MB', 1n, 0n)]])
+            markets: new Map([['ACCT-X', market('MA', 90_000_000n, 1n, true, 1, 'executed')], ['ACCT-Y', market('MB', 1n, 0n)]])
         });
         expect(contests.map(contest => contest.agreements[0].cid)).toEqual(['open-tiny', 'settled-huge']);
     });

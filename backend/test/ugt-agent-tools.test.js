@@ -289,18 +289,18 @@ describe('betting on an agreement', () => {
         const unsponsored = agreementOf({ sponsor: null, title: 'Unsponsored' });
         const api = fakeApi({ agreements: [agreement, unsponsored] });
         const readAgreementAccount = vi.fn(async () => state);
-        const ensureMarketAndStake = vi.fn(async () => ({ marketPda: 'market', created: false, stakeSignature: 'stake-tx' }));
-        const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: api.fetchImpl, createConnection: () => ({}), dependencies: { readAgreementAccount, ensureMarketAndStake, sendAndConfirmPolling: vi.fn() } });
-        return { agreement, unsponsored, tools, readAgreementAccount, ensureMarketAndStake };
+        const buyAgreementShares = vi.fn(async () => ({ marketPda: 'market', signature: 'stake-tx' }));
+        const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: api.fetchImpl, createConnection: () => ({}), dependencies: { readAgreementAccount, buyAgreementShares, sendAndConfirmPolling: vi.fn() } });
+        return { agreement, unsponsored, tools, readAgreementAccount, buyAgreementShares };
     }
 
     it('stakes on the agreement account once it is minted, Active and before its deadline', async () => {
         const account = Keypair.generate().publicKey.toBase58();
-        const { agreement, tools, readAgreementAccount, ensureMarketAndStake } = setup({ address: account, status: 'Active', deadline: future });
+        const { agreement, tools, readAgreementAccount, buyAgreementShares } = setup({ address: account, status: 'Active', deadline: future });
         const result = await tools.betOnAgreement({ agreementCid: agreement.cid, side: 'NO', amountUsdc: '0.07', confirm: true });
         expect(readAgreementAccount).toHaveBeenCalledWith(expect.anything(), { cid: agreement.cid, sponsor: AGENT });
-        expect(ensureMarketAndStake).toHaveBeenCalledWith(expect.objectContaining({ subject: account, side: 0, amountAtomic: 70000n, stakeMint: USDC_DEVNET }));
-        expect(result).toMatchObject({ agreementCid: agreement.cid, agreementAccount: account, side: 'no', stakeSignature: 'stake-tx' });
+        expect(buyAgreementShares).toHaveBeenCalledWith(expect.objectContaining({ subject: account, side: 0, amountAtomic: 70000n, stakeMint: USDC_DEVNET }));
+        expect(result).toMatchObject({ agreementCid: agreement.cid, agreementAccount: account, side: 'no', signature: 'stake-tx' });
     });
 
     it('refuses a bet it cannot place before signing anything', async () => {
@@ -315,7 +315,7 @@ describe('betting on an agreement', () => {
         await expect(executed.tools.betOnAgreement({ agreementCid: executed.agreement.cid, side: 'yes', amountUsdc: '0.01', confirm: true })).rejects.toThrow(/is Executed; its market takes no more stakes/);
         const lapsed = setup({ address: account, status: 'Active', deadline: 1_700_000_000 });
         await expect(lapsed.tools.betOnAgreement({ agreementCid: lapsed.agreement.cid, side: 'yes', amountUsdc: '0.01', confirm: true })).rejects.toThrow(/past its deadline/);
-        for (const run of [open, unminted, executed, lapsed]) expect(run.ensureMarketAndStake).not.toHaveBeenCalled();
+        for (const run of [open, unminted, executed, lapsed]) expect(run.buyAgreementShares).not.toHaveBeenCalled();
     });
 });
 

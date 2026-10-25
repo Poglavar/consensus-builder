@@ -1,7 +1,7 @@
 // In-memory courier and index for published designs and agreements (plan-design-agreement.md, M2):
 // POST /pins, POST/GET /designs, /designs/batch, /designs/binding, POST/GET /agreements and the owner
 // decisions relay; and the M3 routes around a minted agreement: POST /agreements/:cid/onchain,
-// GET /agreements?minted=1, GET /markets?city= (contests of the minted agreements, with the pools in
+// GET /agreements?minted=1, GET /markets?city= (contests of the minted agreements, with LMSR markets in
 // `markets`), GET /bets/:account, GET /oracle/recipes/agreement-execution-v1, the lens directory
 // (GET /lenses/members, one member) with that member's GET /lens/attestations, and the activity reads
 // GET /agent/activity and /activity/cities. Every page gets its own index from mockAllApiRoutes;
@@ -21,8 +21,12 @@ const { compareContests, compareRows } = createRequire(__filename)('../../../fro
 
 export interface IndexRequest { method: string; path: string; body: any }
 
-/** A minted agreement's prediction market as the chain holds it: atomic USDC per side. */
-export interface MarketPool { address: string; yesPool: string; noPool: string; resolved?: boolean; outcome?: 'yes' | 'no' | null }
+/** A minted agreement's current LMSR market shape. Quantities are six-decimal atomic strings. */
+export interface MarketFixture {
+  address: string; model: 'lmsr'; asset: 'devnet-usdc'; creator: string; b: string; qYes: string; qNo: string;
+  seed: string; closesAt: number; graceSeconds: 0; maxPosition: '0'; paidOut: string;
+  resolved?: boolean; outcome?: 'yes' | 'no' | 'void' | null;
+}
 
 export interface SharedIndex {
   /** Pinned objects by CID: their kind and canonical bytes as received (base64). */
@@ -35,8 +39,8 @@ export interface SharedIndex {
   plans: Map<string, Record<string, any>>;
   /** Relayed owner decisions (receipts) by agreement CID. */
   decisions: Map<string, any[]>;
-  /** Market pools by agreement account, what GET /markets reads beside the minted agreements. */
-  markets: Map<string, MarketPool>;
+  /** LMSR markets by agreement account, what GET /markets reads beside minted agreements. */
+  markets: Map<string, MarketFixture>;
   /** The lens directory GET /lenses/members lists (one member with a service by default). */
   lensMembers: Array<Record<string, any>>;
   /** What the members' services list at GET <serviceUrl>/lens/attestations (filtered by kind, agreementCid). */
@@ -191,27 +195,25 @@ function agreementRow(cid: string, content: Record<string, any>, designs: Array<
 
 const sortedIds = (ids: unknown): string[] => [...new Set((Array.isArray(ids) ? ids : []).map(id => String(id ?? '').trim()).filter(Boolean))].sort();
 
-// One agreement as GET /markets lists it: its chain status as the index recorded it, and its pool.
+// One agreement as GET /markets lists it: its chain status as the index recorded it, and its market.
 function contestEntry(index: SharedIndex, row: Record<string, any>, contest: string): Record<string, any> {
   const account: string | null = row.onchain?.account ?? null;
-  const pool = account ? index.markets.get(account) : undefined;
-  const yes = BigInt(pool?.yesPool ?? 0);
-  const no = BigInt(pool?.noPool ?? 0);
-  const market = pool ? {
-    address: pool.address, yesPool: yes.toString(), noPool: no.toString(), poolAtomic: (yes + no).toString(),
-    resolved: Boolean(pool.resolved), outcome: pool.resolved ? (pool.outcome === 'yes' ? 'yes' : 'no') : null,
-  } : null;
+  const market = account ? index.markets.get(account) || null : null;
   const chainStatus: string | null = account ? row.onchain.status ?? null : null;
   const deadlinePassed = !!row.deadline && Date.parse(row.deadline) <= Date.now();
-  const live = chainStatus === 'active' && !deadlinePassed;
+  const closesAt = market?.closesAt ?? (row.deadline ? Math.floor(Date.parse(row.deadline) / 1000) : null);
+  const live = chainStatus === 'active' && !deadlinePassed && closesAt !== null && Date.now() < closesAt * 1000;
+  const canSettle = Boolean(market && !market.resolved && ((chainStatus && ['executed', 'cancelled', 'expired'].includes(chainStatus))
+    || (chainStatus && closesAt !== null && Date.now() >= closesAt * 1000 + market.graceSeconds * 1000)));
   return {
     kind: 'agreement', cid: row.cid, account, title: row.title, author: row.author, city: row.city,
     status: ['executed', 'cancelled', 'expired'].includes(chainStatus || '') ? chainStatus : deadlinePassed ? 'expired' : 'active',
     chainStatus, deadline: row.deadline, createdAt: row.createdAt,
     designTitles: (row.content?.designs || []).map((design: any) => design.title ?? null).filter(Boolean),
     screenshotUrl: row.screenshotUrl, screenshotBeforeUrl: row.screenshotBeforeUrl, screenshotPairUrl: row.screenshotPairUrl,
+    sponsor: row.onchain?.sponsor ?? null,
     parcelIds: sortedIds(row.inputParcelIds), parcelRefs: [], market,
-    bettable: Boolean(market && !market.resolved && live), canOpenMarket: Boolean(account && !market && live), contest,
+    bettable: Boolean(market && !market.resolved && live), canSettle, canOpenMarket: Boolean(account && !market && live), contest,
   };
 }
 
@@ -237,7 +239,7 @@ export function marketsPayload(index: SharedIndex, city: string): Record<string,
       id, parcelIds, parcelRefs: [], agreementCount: agreements.length,
       mintedCount: agreements.filter(entry => entry.account).length,
       marketCount: withMarket.length, openMarketCount: agreements.filter(entry => entry.bettable).length,
-      poolAtomic: withMarket.reduce((sum, entry) => sum + BigInt(entry.market.poolAtomic), 0n).toString(),
+      sharesAtomic: withMarket.reduce((sum, entry) => sum + BigInt(entry.market.qYes) + BigInt(entry.market.qNo), 0n).toString(),
       latestCreatedAt: agreements.map(entry => entry.createdAt).sort().at(-1) ?? null,
       agreements,
     };
@@ -246,7 +248,7 @@ export function marketsPayload(index: SharedIndex, city: string): Record<string,
     contests: contests.length, agreements: contests.reduce((sum, contest) => sum + contest.agreementCount, 0),
     markets: contests.reduce((sum, contest) => sum + contest.marketCount, 0),
     openMarkets: contests.reduce((sum, contest) => sum + contest.openMarketCount, 0),
-    poolAtomic: contests.reduce((sum, contest) => sum + BigInt(contest.poolAtomic), 0n).toString(),
+    sharesAtomic: contests.reduce((sum, contest) => sum + BigInt(contest.sharesAtomic), 0n).toString(),
   };
   return {
     city, generatedAt: new Date().toISOString(), summary, contests,

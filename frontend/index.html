@@ -141,7 +141,7 @@
                 'css/activity-feed.css',
                 'css/area-monitor-list.css',
                 'css/map-credits.css',
-                'css/bets-sheet.css',
+                'css/bets-sheet.css?v=20261025-lmsr',
                 'css/site-tool.css',
                 'css/map-search.css',
                 'css/command-palette.css',
@@ -1088,14 +1088,14 @@
             <div class="map-sheet-body bets-sheet-body">
                 <p class="bets-tagline">
                     <strong data-i18n-key="bets.tagline">Bet on cities</strong>
-                    <span data-i18n-key="bets.intro">These pools settle from proposal status on Solana devnet: Executed means yes; Cancelled or Expired means no.</span>
+                    <span data-i18n-key="bets.intro">Bet on whether agreements execute by a deadline. Use points without a wallet, or devnet USDC.</span>
                 </p>
                 <div id="bets-sheet-content" class="bets-content" aria-live="polite"></div>
                 <details class="bets-how">
                     <summary data-i18n-key="bets.how.title">How bets work</summary>
-                    <p data-i18n-key="bets.how.pools">Each proposal has its own yes/no pool. Groups follow shared parcel references; several proposals in a group can execute.</p>
-                    <p data-i18n-key="bets.how.settle">Executed on-chain settles yes; cancelled or expired settles no. The winning side shares the whole pool in proportion to its bets.</p>
-                    <p data-i18n-key="bets.how.devnet">Bets use devnet USDC, which has no value. Get devnet SOL and USDC from the faucets.</p>
+                    <p data-i18n-key="bets.how.pools">Each agreement has its own YES/NO bet. Both, one or neither agreement over the same land can execute.</p>
+                    <p data-i18n-key="bets.how.settle">Each winning share pays 1; losing shares pay 0. Execution must happen by the deadline. Cancellation voids the bet and pays 0.5 per share.</p>
+                    <p data-i18n-key="bets.how.devnet">Points and devnet USDC are play money with no cash value. Each has separate prices and positions.</p>
                     <p class="bets-how-links">
                         <a class="cb-link cb-link--external" href="https://faucet.solana.com" target="_blank" rel="noopener noreferrer" data-i18n-key="bets.how.faucetSol">Solana faucet</a>
                         ·
@@ -1925,7 +1925,8 @@
             'js/solana/agreement-bridge.js?v=20261022-agreement-chain',
             'js/proposals/site-hash.js',
             'js/solana/market-client.js?v=20261020-verified-funding',
-            'js/solana/market-bridge.js?v=20261022-agreement-chain',
+            'js/solana/lmsr-client.js?v=20261025',
+            'js/solana/market-bridge.js?v=20261025-lmsr',
             'js/solana/parcel-mint.js?v=20261022-agreement-chain',
             'js/asset-upload.js',
             'js/contracts-loader.js',
@@ -1982,11 +1983,14 @@
             'js/bets/bets-link.js',
             'js/bets/bets-telemetry.js?v=20261025',
             'js/bets/lmsr.js',
+            'js/bets/betting-contract.js?v=20261025',
+            'js/bets/bets-trading.js?v=20261025',
+            'js/bets/bets-ui.js?v=20261025',
             'js/bets/sha256.js',
             'js/bets/market-question.js',
-            'js/bets/bets-model.js?v=20261019-market-evidence',
-            'js/bets/bets-dialog.js?v=20261025-betting-events',
-            'js/bets/bets-sheet.js?v=20261025-betting-events',
+            'js/bets/bets-model.js?v=20261025-lmsr',
+            'js/bets/bets-dialog.js?v=20261025-lmsr',
+            'js/bets/bets-sheet.js?v=20261025-lmsr',
             'js/mobile-dock-sheet.js',
             'js/ui/simulation-indicator.js',
             'js/ui/parcel-menu-model.js?v=20261020-local-estimates',

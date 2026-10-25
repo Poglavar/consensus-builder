@@ -14,7 +14,7 @@ drifting (`design-tokens.test.js`, `i18n-style.test.js`, `page-chrome.test.js`,
 | The product | **Consensus Builder** | app, guides, every `<title>` ("Page · Consensus Builder"; the landing pages may put the product first) |
 | The organisation | **Urban Game Theory** | one byline per page, the social handles, the API host |
 | The hackathon campaign | **Hyperstition: Markets for Possible Cities** | only `deck.html` and `hackathon-demo.html` |
-| The betting surface | **Bets**, tagline **Bet on cities** | the Bets sheet and every place the pools are sold to a person; "hyperstition" and "prediction market" stay campaign and API words |
+| The betting surface | **Bets**, tagline **Bet on cities** | dated agreement questions, YES/NO shares and buy/sell quotes; "hyperstition" and "prediction market" stay campaign and API words |
 
 Every non-map page carries the same header: logo, "Back to the map", language. No page is a dead end.
 

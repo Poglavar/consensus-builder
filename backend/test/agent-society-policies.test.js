@@ -45,13 +45,14 @@ describe('contrarian policy (preservationist-01)', () => {
         agreement('executed', { chainStatus: 'executed', designContents: [building(40, 30)] }),
         agreement('lapsed', { deadline: '2026-10-22T00:00:00Z', designContents: [building(40, 30)] })
     ];
-    const base = { persona: PRESERVATIONIST, seed: '2026-10-22', now: NOW, wallet: OWN_WALLET, agreements, markets: {}, budget: ROOMY };
+    const markets = Object.fromEntries(['small', 'tower', 'words'].map(id => [`account-${id}`, { model: 'lmsr', b: 100_000_000n, qYes: 0n, qNo: 0n, resolved: false }]));
+    const base = { persona: PRESERVATIONIST, seed: '2026-10-22', now: NOW, wallet: OWN_WALLET, agreements, markets, budget: ROOMY };
 
     it('bets NO on the densest design-measured open agreement by another actor', () => {
         const decision = contrarian.decide(base);
         expect(decision.action).toMatchObject({
             type: 'stake', side: 'no', amount: '0.01', usdc: 0.01, agreementCid: 'cid-tower', account: 'account-tower',
-            agreementName: 'Agreement tower', signedActions: 2
+            agreementName: 'Agreement tower', signedActions: 1
         });
         expect(decision.action.rationale).toMatch(/gross floor area ≈ 48\d\d m²/);
         // Design-measured first (by floor area), then the text heuristic; the park, its own, terminal and lapsed ones never.
@@ -80,15 +81,15 @@ describe('contrarian policy (preservationist-01)', () => {
         expect(all.reason).toMatch(/already bet against/);
         const none = contrarian.decide({ ...base, agreements: [agreements[3], agreements[4], agreement('unminted', { account: null, chainStatus: null })] });
         expect(none).toMatchObject({ action: null, capped: false, eligibleCids: [] });
-        const resolved = contrarian.decide({ ...base, agreements: [agreements[1]], markets: { 'account-tower': { yesPool: 1n, noPool: 0n, resolved: true } } });
+        const resolved = contrarian.decide({ ...base, agreements: [agreements[1]], markets: { 'account-tower': { model: 'lmsr', b: 100_000_000n, qYes: 1n, qNo: 0n, resolved: true } } });
         expect(resolved.action).toBeNull();
     });
 
-    it('reports cap exhaustion instead of acting, and counts a missing market as a second signature', () => {
-        const capped = contrarian.decide({ ...base, agreements: [agreements[1]], budget: { actionsLeft: 1, usdcLeft: 0.05 } });
+    it('reports cap exhaustion instead of acting, and ignores agreements without an open market', () => {
+        const capped = contrarian.decide({ ...base, agreements: [agreements[1]], budget: { actionsLeft: 0, usdcLeft: 0.05 } });
         expect(capped).toMatchObject({ action: null, capped: true });
         expect(capped.reason).toMatch(/Cap reached/);
-        const withMarket = contrarian.decide({ ...base, agreements: [agreements[1]], markets: { 'account-tower': { yesPool: 250000n, noPool: 0n, resolved: false } }, budget: { actionsLeft: 1, usdcLeft: 0.05 } });
+        const withMarket = contrarian.decide({ ...base, agreements: [agreements[1]], markets: { 'account-tower': { model: 'lmsr', b: 100_000_000n, qYes: 0n, qNo: 0n, resolved: false } }, budget: { actionsLeft: 1, usdcLeft: 0.05 } });
         expect(withMarket.action).toMatchObject({ agreementCid: 'cid-tower', signedActions: 1 });
         const noUsdc = contrarian.decide({ ...base, agreements: [agreements[1]], budget: { actionsLeft: 4, usdcLeft: 0 } });
         expect(noUsdc).toMatchObject({ action: null, capped: true });
@@ -97,11 +98,11 @@ describe('contrarian policy (preservationist-01)', () => {
 
 describe('speculator policy (speculator-01)', () => {
     const markets = {
-        'account-hot': { yesPool: 900000n, noPool: 100000n, resolved: false },
-        'account-warm': { yesPool: 700000n, noPool: 300000n, resolved: false },
-        'account-cold': { yesPool: 100000n, noPool: 300000n, resolved: false },
-        'account-old': { yesPool: 900000n, noPool: 0n, resolved: false },
-        'account-mine': { yesPool: 900000n, noPool: 0n, resolved: false }
+        'account-hot': { model: 'lmsr', b: 100_000_000n, qYes: 220_000_000n, qNo: 0n, closesAt: 1_800_000_000, graceSeconds: 0, resolved: false },
+        'account-warm': { model: 'lmsr', b: 100_000_000n, qYes: 174_000_000n, qNo: 0n, closesAt: 1_800_000_000, graceSeconds: 0, resolved: false },
+        'account-cold': { model: 'lmsr', b: 100_000_000n, qYes: 0n, qNo: 174_000_000n, closesAt: 1_800_000_000, graceSeconds: 0, resolved: false },
+        'account-old': { model: 'lmsr', b: 100_000_000n, qYes: 220_000_000n, qNo: 0n, closesAt: 1_800_000_000, graceSeconds: 0, resolved: false },
+        'account-mine': { model: 'lmsr', b: 100_000_000n, qYes: 220_000_000n, qNo: 0n, closesAt: 1_800_000_000, graceSeconds: 0, resolved: false }
     };
     const agreements = [
         agreement('hot'), agreement('warm'), agreement('cold'),
@@ -111,11 +112,11 @@ describe('speculator policy (speculator-01)', () => {
     ];
     const base = { persona: SPECULATOR, seed: '2026-10-22', now: NOW, wallet: OWN_WALLET, agreements, markets, budget: ROOMY };
 
-    it('reads implied YES probability from the pools, no market as no signal, and age from createdAt', () => {
+    it('reads implied YES price from LMSR state, no market as no signal, and age from createdAt', () => {
         expect(impliedYesProbability(markets['account-hot'])).toBeCloseTo(0.9);
         expect(impliedYesProbability(null)).toBeNull();
-        expect(impliedYesProbability({ yesPool: 0n, noPool: 0n })).toBeNull();
-        expect(impliedYesProbability({ yesPool: 5n, noPool: 5n, resolved: true })).toBeNull();
+        expect(impliedYesProbability({ model: 'lmsr', b: 100_000_000n, qYes: 0n, qNo: 0n, closesAt: 1_800_000_000 })).toBe(0.5);
+        expect(impliedYesProbability({ ...markets['account-hot'], resolved: true })).toBeNull();
         expect(agreementAgeDays(agreement('x'), NOW)).toBe(1);
         expect(agreementAgeDays({ createdAt: null }, NOW)).toBeNull();
     });
@@ -130,7 +131,7 @@ describe('speculator policy (speculator-01)', () => {
     it('revokes an active pledge when the probability drops below the threshold, before any new pledge', () => {
         const decision = speculator.decide({ ...base, history: { pledges: { 'cid-cold': { status: 'active' }, 'cid-hot': { status: 'active' } } } });
         expect(decision.action).toMatchObject({ type: 'revokePledge', agreementCid: 'cid-cold', account: 'account-cold', usdc: 0 });
-        expect(decision.action.rationale).toMatch(/fell to 25% \(< 50%\)/);
+        expect(decision.action.rationale).toMatch(/fell to 15% \(< 50%\)/);
     });
 
     it('revokes an active pledge when the agreement ages past maxAgeDays', () => {

@@ -21,7 +21,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { Keypair, PublicKey } from '@solana/web3.js';
 import { ensureDonationEscrowAndDonate } from './donor.js';
-import { ensureMarketAndStake, usdcToAtomic } from './bettor.js';
+import { buyAgreementShares, sellAgreementShares, usdcToAtomic } from './bettor.js';
 import { buyOracleFact, createOracleFactClient, fetchOracleFactChallenge } from './oracle-fact-client.js';
 import { ensurePledgeBookAndSet } from './pledger.js';
 import { createRpcConnection } from '../solana/rpc.js';
@@ -227,7 +227,8 @@ export function createUrbanGameTheoryTools({
         fetchOracleFactChallenge,
         ensurePledgeBookAndSet,
         ensureDonationEscrowAndDonate,
-        ensureMarketAndStake,
+        buyAgreementShares,
+        sellAgreementShares,
         refundDonation,
         revokePledge,
         voidPledge,
@@ -384,7 +385,7 @@ export function createUrbanGameTheoryTools({
             const { keypair, connection } = signer();
             const state = await impl.readAgreementAccount(connection, { account: agreementAccount });
             if (!state || state.status !== AGREEMENT_STATUS.active || state.deadline > 0 && state.deadline * 1000 <= Date.now()) throw new Error('Only an active agreement before its deadline accepts stakes');
-            return impl.ensureMarketAndStake({ connection, ownerKeypair: keypair, subject: agreementAccount, stakeMint: USDC_DEVNET, side: SIDE[side], amountAtomic, sendAndConfirm: impl.sendAndConfirmPolling });
+            return impl.buyAgreementShares({ connection, ownerKeypair: keypair, subject: agreementAccount, stakeMint: USDC_DEVNET, side: SIDE[side], amountAtomic, sendAndConfirm: impl.sendAndConfirmPolling });
         },
 
         // The index row, the chain account its sponsor and CID derive, and that account as the chain
@@ -567,12 +568,32 @@ export function createUrbanGameTheoryTools({
             if (state.deadline > 0 && state.deadline * 1000 <= Date.now()) {
                 throw new Error(`agreement ${state.address} is past its deadline; its market takes no more stakes`);
             }
-            const result = await impl.ensureMarketAndStake({
+            const result = await impl.buyAgreementShares({
                 connection, ownerKeypair: keypair, subject: state.address,
                 stakeMint: USDC_DEVNET, side: SIDE[normalizedSide], amountAtomic,
                 sendAndConfirm: impl.sendAndConfirmPolling
             });
             return { agreementCid, agreementAccount: state.address, side: normalizedSide, amountUsdc, ...result };
+        },
+        buyAgreementSharesOnAgreement(args = {}) { return this.betOnAgreement(args); },
+
+        async sellAgreementSharesOnAgreement({ agreementCid, side, shares, confirm } = {}) {
+            requireLive(confirm);
+            const normalizedSide = String(side || '').toLowerCase();
+            if (!(normalizedSide in SIDE)) throw new Error('side must be yes or no');
+            const sharesAtomic = usdcToAtomic(shares);
+            if (sharesAtomic <= 0n) throw new Error('shares must be positive');
+            const { content } = await indexedAgreement(agreementCid);
+            const sponsor = walletOf(content?.sponsor);
+            if (!sponsor) throw new Error(`agreement ${agreementCid} names no sponsor wallet, so it has no chain account to trade`);
+            const { keypair, connection } = signer();
+            const state = await impl.readAgreementAccount(connection, { cid: agreementCid, sponsor });
+            if (!state || state.status !== AGREEMENT_STATUS.active || state.deadline > 0 && state.deadline * 1000 <= Date.now()) {
+                throw new Error('Only an active agreement before its deadline accepts sales');
+            }
+            const result = await impl.sellAgreementShares({ connection, ownerKeypair: keypair, subject: state.address,
+                stakeMint: USDC_DEVNET, side: SIDE[normalizedSide], sharesAtomic, sendAndConfirm: impl.sendAndConfirmPolling });
+            return { agreementCid, agreementAccount: state.address, side: normalizedSide, shares, ...result };
         },
 
         inspectVerifiedFact: ({ agreementAccount, marketAccount } = {}) => impl.fetchOracleFactChallenge({

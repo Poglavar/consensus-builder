@@ -270,7 +270,11 @@
     async function readMarket(connection, address, id) {
         if (!connection?.getAccountInfo) throw new Error('a Solana connection is required');
         const requested = key(address, 'market'); const info = await connection.getAccountInfo(requested);
+        return readMarketAccount(info, requested, id);
+    }
+    function readMarketAccount(info, address, id) {
         if (!info?.data) return null;
+        const requested = key(address, 'market');
         assertOwner(info, id); const market = decodeMarket(info.data);
         const [expected] = market.kind === 0
             ? getMarketPda(market.proposal, market.creator, id)
@@ -296,6 +300,6 @@
     const api = { constants, IX_DISCRIMINATORS, ACCOUNT_DISCRIMINATORS, MARKET_SIZE, POSITION_SIZE, configure,
         getMarketPda, getExternalMarketPda, getPositionPda, getAssociatedTokenAddress, getVaultAddress,
         buildCreateLmsrMarketIx, buildCreateLmsrExternalMarketIx, buildBuyIx, buildSellIx, buildResolveLmsrIx,
-        buildClaimLmsrIx, buildReclaimSeedIx, decodeMarket, decodePosition, readMarket, readPosition, readPositionAccount };
+        buildClaimLmsrIx, buildReclaimSeedIx, decodeMarket, decodePosition, readMarket, readMarketAccount, readPosition, readPositionAccount };
     return api;
 });

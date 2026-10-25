@@ -16,18 +16,19 @@ describe('action funding wiring', () => {
     const persona = { name: 'supporter-01' };
     const runId = '2026-10-22-supporter-01';
 
-    it('funds a society stake before staking it on the agreement account', async () => {
+    it('checks the market and funds a society buy before signing it', async () => {
         const events = [];
         const action = { type: 'stake', side: 'no', amount: '0.02', usdc: 0.02, agreementCid: CID, account: ACCOUNT };
         const adapters = {
             fundBotAction: vi.fn(async args => { events.push('fund'); expect(args).toEqual({ action, connection, pool, persona, runId }); }),
-            ensureMarketAndStake: vi.fn(async args => { events.push('stake'); return { stakeSignature: 'stake-signature', args }; })
+            readAgreementMarket: vi.fn(async () => ({ market: {} })),
+            buyAgreementShares: vi.fn(async args => { events.push('stake'); return { signature: 'stake-signature', args }; })
         };
         const result = await executeSociety({ action, connection, keypair, caps: { maxUsdc: 0.05 }, pool, persona, runId, adapters });
         expect(events).toEqual(['fund', 'stake']);
-        expect(result.stakeSignature).toBe('stake-signature');
-        expect(adapters.ensureMarketAndStake).toHaveBeenCalledWith(expect.objectContaining({
-            subject: ACCOUNT, side: 0, amountAtomic: 20_000n, targetAmount: true
+        expect(result.signature).toBe('stake-signature');
+        expect(adapters.buyAgreementShares).toHaveBeenCalledWith(expect.objectContaining({
+            subject: ACCOUNT, side: 0, amountAtomic: 20_000n
         }));
     });
 
@@ -52,13 +53,13 @@ describe('action funding wiring', () => {
         const adapters = {
             assertSupportEligibility: vi.fn(async args => { events.push('eligible'); expect(args.decision).toBe(decision); }),
             fundBotAction: vi.fn(async args => { events.push('fund'); expect(args).toEqual({ action: decision, connection, pool, persona, runId }); }),
-            ensureMarketAndStake: vi.fn(async () => { events.push('stake'); return { stakeSignature: 'stake-signature' }; }),
+            buyAgreementShares: vi.fn(async () => { events.push('stake'); return { signature: 'stake-signature' }; }),
             ensureDonationEscrowAndDonate: vi.fn(async () => { events.push('donate'); return { signature: 'donation-signature' }; }),
             ensurePledgeBookAndSet: vi.fn(async () => { events.push('pledge'); return { signature: 'pledge-signature' }; })
         };
         await executeSupport({ decision, connection, keypair, pool, persona, runId, adapters });
         expect(events).toEqual(['eligible', 'fund', type]);
-        const chain = { stake: adapters.ensureMarketAndStake, donate: adapters.ensureDonationEscrowAndDonate, pledge: adapters.ensurePledgeBookAndSet }[type];
+        const chain = { stake: adapters.buyAgreementShares, donate: adapters.ensureDonationEscrowAndDonate, pledge: adapters.ensurePledgeBookAndSet }[type];
         expect(chain).toHaveBeenCalledWith(expect.objectContaining({ subject: ACCOUNT, amountAtomic: 200_000n }));
         if (type === 'stake') expect(chain).toHaveBeenCalledWith(expect.objectContaining({ side: 1 }));
         // A donation's receipt is keyed by the run and the agreement, so a rerun of the run replays it.
@@ -66,29 +67,29 @@ describe('action funding wiring', () => {
     });
 
     it('refuses a target that became terminal before any funding or signing', async () => {
-        const fundBotAction = vi.fn(), ensureMarketAndStake = vi.fn();
+        const fundBotAction = vi.fn(), buyAgreementShares = vi.fn();
         await expect(executeSupport({
             decision: { type: 'stake', amount: '0.10', agreementCid: CID, account: ACCOUNT },
             connection, keypair, pool, persona, runId, adapters: {
                 assertSupportEligibility: async () => { throw new Error('target is Expired on-chain'); },
-                fundBotAction, ensureMarketAndStake
+                fundBotAction, buyAgreementShares
             }
         })).rejects.toThrow('target is Expired on-chain');
         expect(fundBotAction).not.toHaveBeenCalled();
-        expect(ensureMarketAndStake).not.toHaveBeenCalled();
+        expect(buyAgreementShares).not.toHaveBeenCalled();
     });
 
     it('rejects a support action above its USDC cap before the re-check or funding', async () => {
         vi.stubEnv('AGENT_SUPPORT_USDC_CAP', '0.25');
         try {
-            const assertSupportEligibility = vi.fn(), fundBotAction = vi.fn(), ensureMarketAndStake = vi.fn();
+            const assertSupportEligibility = vi.fn(), fundBotAction = vi.fn(), buyAgreementShares = vi.fn();
             await expect(executeSupport({
                 decision: { type: 'stake', amount: '0.26', agreementCid: CID, account: ACCOUNT },
-                connection, keypair, pool, persona, runId, adapters: { assertSupportEligibility, fundBotAction, ensureMarketAndStake }
+                connection, keypair, pool, persona, runId, adapters: { assertSupportEligibility, fundBotAction, buyAgreementShares }
             })).rejects.toThrow(/AGENT_SUPPORT_USDC_CAP/);
             expect(assertSupportEligibility).not.toHaveBeenCalled();
             expect(fundBotAction).not.toHaveBeenCalled();
-            expect(ensureMarketAndStake).not.toHaveBeenCalled();
+            expect(buyAgreementShares).not.toHaveBeenCalled();
         } finally {
             vi.unstubAllEnvs();
         }

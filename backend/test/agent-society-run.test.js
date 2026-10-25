@@ -140,7 +140,8 @@ describe('society execution wiring', () => {
     function recorder() {
         const calls = [];
         const adapters = {
-            ensureMarketAndStake: async args => { calls.push(['stake', args]); return { stakeSignature: 's', replayed: false }; },
+            readAgreementMarket: async () => ({ market: {} }),
+            buyAgreementShares: async args => { calls.push(['stake', args]); return { signature: 's', replayed: false }; },
             ensurePledgeBookAndSet: async args => { calls.push(['pledge', args]); return { signature: 'p', replayed: false }; },
             revokePledge: async args => { calls.push(['revoke', args]); return { signature: 'v', replayed: false }; },
             resolveAgreementMarket: async args => { calls.push(['resolve', args]); return { signature: 'r', replayed: false, outcome: 'NO' }; },
@@ -149,12 +150,12 @@ describe('society execution wiring', () => {
         return { calls, adapters };
     }
 
-    it('stakes YES on side 1 and NO on side 0 on the agreement account, both as a target amount so a retry replays', async () => {
+    it('buys shares on the agreement account using a budget and the existing market', async () => {
         const { calls, adapters } = recorder();
         await execute({ action: { type: 'stake', side: 'yes', amount: '0.02', usdc: 0.02, agreementCid: 'cid-a', account: 'account-a' }, keypair, caps, adapters });
         await execute({ action: { type: 'stake', side: 'no', amount: '0.01', usdc: 0.01, agreementCid: 'cid-b', account: 'account-b' }, keypair, caps, adapters });
-        expect(calls.map(([, args]) => [args.subject, args.side, args.amountAtomic, args.targetAmount])).toEqual([
-            ['account-a', 1, 20000n, true], ['account-b', 0, 10000n, true]
+        expect(calls.map(([, args]) => [args.subject, args.side, args.amountAtomic])).toEqual([
+            ['account-a', 1, 20000n], ['account-b', 0, 10000n]
         ]);
         await expect(execute({ action: { type: 'stake', side: 'yes', amount: '0.06', usdc: 0.06 }, keypair, caps, adapters })).rejects.toThrow(/USDC_CAP/);
         expect(calls).toHaveLength(2);
@@ -183,8 +184,8 @@ describe('society execution wiring', () => {
 
     it('words a YES bet as backing, a NO bet as opposition, and a claim as collecting', () => {
         const persona = { name: 'backer-01' };
-        expect(activityMessage(persona, { type: 'stake', side: 'yes', amount: '0.02', agreementName: 'Pocket park' })).toBe('backer-01 bet YES 0.02 USDC on agreement Pocket park.');
-        expect(activityMessage(persona, { type: 'stake', side: 'no', amount: '0.01', agreementName: 'Tower' })).toBe('backer-01 bet NO 0.01 USDC against agreement Tower.');
+        expect(activityMessage(persona, { type: 'stake', side: 'yes', amount: '0.02', agreementName: 'Pocket park' })).toBe('backer-01 bought YES shares with a budget of 0.02 USDC on agreement Pocket park.');
+        expect(activityMessage(persona, { type: 'stake', side: 'no', amount: '0.01', agreementName: 'Tower' })).toBe('backer-01 bought NO shares with a budget of 0.01 USDC on agreement Tower.');
         expect(activityMessage(persona, { type: 'claim', side: 'no', payout: '0.0125', resolveFirst: true, agreementName: 'Tower' }))
             .toBe('backer-01 collected 0.0125 USDC from its NO bet on agreement Tower after settling its market.');
         expect(activityMessage(persona, { type: 'pledge', amount: '0.05', agreementName: 'Tower' })).toBe('backer-01 pledged 0.05 USDC to agreement Tower.');

@@ -24,7 +24,7 @@ const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
 // The market program's codec (proposal_market): its id and the market PDA of an agreement account. web3
 // is injected because the codec's own require would resolve from frontend/.
-const marketClient = require('../../frontend/js/solana/market-client.js').configure({ web3 });
+const marketClient = require('../../frontend/js/solana/lmsr-client.js').configure({ web3 });
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const MARKET_PROGRAM_ID = marketClient.constants.PROGRAM_ID;
@@ -43,7 +43,7 @@ const AGREEMENT_ACTIONS = Object.freeze({
 // without that role names the market, whose PDA the account index maps as well.
 const SUBJECT_ACTIONS = new Map([
     ['proposal_market', new Map([
-        ['create_market', 'createMarket'], ['stake', 'stake'], ['resolve', 'resolve'], ['claim', 'claim']
+        ['create_lmsr_market', 'createMarket'], ['buy', 'stake'], ['sell', 'sell'], ['resolve_lmsr', 'resolve'], ['claim_lmsr', 'claim']
     ])],
     ['proposal_pledge', new Map([
         ['donate', 'donate'], ['refund_donation', 'refundMyDonations'], ['release_donations', 'releaseDonations'],
@@ -54,10 +54,10 @@ const SUBJECT_ACTIONS = new Map([
 // The chain actions the landing feed shows: outcomes, bets and support. Its agreements arrive as proposed
 // from the index; a mint, a fund or an attestation is detail for the explorer.
 const RECENT_CHAIN_ACTIONS = new Set([
-    'execute', 'cancel', 'expire', 'createMarket', 'stake', 'resolve', 'claim', 'donate', 'pledge', 'fulfillPledge'
+    'execute', 'cancel', 'expire', 'createMarket', 'stake', 'sell', 'resolve', 'claim', 'donate', 'pledge', 'fulfillPledge'
 ]);
 // The bet's own actions; the landing feed keeps room for them and links them to the bet.
-const BET_ACTIONS = new Set(['createMarket', 'stake', 'resolve', 'claim']);
+const BET_ACTIONS = new Set(['createMarket', 'stake', 'sell', 'resolve', 'claim']);
 
 // Agreement rows as the feeds read them, with the goal and site bounds of the agreement's first design.
 const AGREEMENT_ROWS = `
@@ -111,7 +111,7 @@ export function agreementAccountIndex(rows = []) {
         if (!account) continue;
         const entry = { cid: row.cid, account };
         index.set(account, entry);
-        index.set(derived(`market:${account}`, () => marketClient.getMarketPda(account)[0].toBase58()), entry);
+        if (row.sponsor) index.set(derived(`market:${account}:${row.sponsor}`, () => marketClient.getMarketPda(account, row.sponsor)[0].toBase58()), entry);
     }
     return index;
 }
@@ -147,8 +147,14 @@ function agreementStep(instruction) {
     const type = SUBJECT_ACTIONS.get(instruction.program?.name)?.get(instruction.action);
     if (!type) return null;
     const fields = {};
-    if (instruction.action === 'stake') fields.side = Number(instruction.args?.side) === 1 ? 'yes' : 'no';
-    if (instruction.args?.amount != null && ['stake', 'donate', 'set_pledge'].includes(instruction.action)) {
+    if (['buy', 'sell'].includes(instruction.action)) fields.side = Number(instruction.args?.side) === 1 ? 'yes' : 'no';
+    if (instruction.action === 'buy') {
+        if (instruction.args?.shares != null) fields.shares = String(instruction.args.shares);
+        if (instruction.args?.max_cost != null) fields.maxCost = formatAtomicAmount(String(instruction.args.max_cost), USDC_DECIMALS);
+    } else if (instruction.action === 'sell') {
+        if (instruction.args?.shares != null) fields.shares = String(instruction.args.shares);
+        if (instruction.args?.min_return != null) fields.minReturn = formatAtomicAmount(String(instruction.args.min_return), USDC_DECIMALS);
+    } else if (instruction.args?.amount != null && ['donate', 'set_pledge'].includes(instruction.action)) {
         fields.amount = formatAtomicAmount(String(instruction.args.amount), USDC_DECIMALS);
     }
     return {

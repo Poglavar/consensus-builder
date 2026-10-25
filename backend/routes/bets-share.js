@@ -1,21 +1,19 @@
 // GET /bets/:account — the shareable link to one agreement's bet, named by the agreement's chain
 // account (frontend/js/bets/bets-link.js builds it). The page carries Open Graph tags with the bet's
-// question, its chance and its pool and the agreement's thumbnail, so a chat or a timeline unfurls
+// dated question, settlement terms and the agreement's thumbnail, so a chat or a timeline unfurls
 // the bet, and it sends a browser straight on to the app form, /?city=<id>&bets=<account>, which
 // opens the bet's dialog. nginx on the frontend host proxies /bets/ here
 // (backend/nginx/urbangametheory.xyz.nginx.conf); without that proxy the host's fallback serves
 // index.html and the app reads the same path itself, only without a preview.
 
 import { createRequire } from 'node:module';
-import { buildContests } from '../markets/contests.js';
-import { agreementByAccount, defaultMarketReader } from './markets.js';
+import { agreementByAccount } from './markets.js';
 
 const require = createRequire(import.meta.url);
 // The same codecs the sheet renders with, so the preview quotes the numbers the row will show.
 const BetsLink = require('../../frontend/js/bets/bets-link.js');
 const ApprovalLink = require('../../frontend/js/approval-link.js');
 const BetsModel = require('../../frontend/js/bets/bets-model.js');
-const MarketQuestion = require('../../frontend/js/bets/market-question.js');
 
 const DEFAULT_PUBLIC_BASE_URL = 'https://urbangametheory.xyz';
 const DEFAULT_IMAGE_PATH = '/images/og-globe-20261019.jpg';
@@ -32,24 +30,10 @@ export function escapeHtml(value) {
         .replace(/'/g, '&#39;');
 }
 
-// The one line a preview card shows under the title, from the row the sheet would render.
+// Preview terms are independent of the two live price books and remain accurate when cached.
 export function describeRow(row) {
-    if (!row) return `${TAGLINE}: bet on whether an agreement executes on-chain.`;
-    const pool = row.pool === null || row.pool === undefined ? null : `Pool ${row.pool} USDC`;
-    switch (row.state) {
-        case 'open': {
-            const pays = `Yes pays ${row.paysYes.toFixed(2)}×, no pays ${row.paysNo.toFixed(2)}×.`;
-            if (row.chanceYes === null) return `No bets yet · ${pool} · Bet on on-chain execution.`;
-            // One side alone is not a chance worth printing: "100%" on a single 0.25 USDC bet misleads.
-            if (row.oneSided) return `Only ${row.oneSided} bets so far · ${pool} · ${pays}`;
-            return `Yes: ${row.chanceYes}% of pool · ${pool} · ${pays}`;
-        }
-        case 'resolved-yes': return `Settled yes: Executed on-chain · ${pool}.`;
-        case 'resolved-no': return `Settled no: Cancelled or Expired on-chain · ${pool}.`;
-        case 'needs-market': return 'No pool yet · Open the pool and bet on on-chain execution.';
-        case 'settling': return `Decided on-chain · ${pool} · Anyone can settle the pool.`;
-        default: return 'Not open for bets.';
-    }
+    const unit = row?.asset === 'devnet-usdc' ? 'devnet USDC' : 'points';
+    return `Bet with ${unit}: YES if this agreement executes on-chain by its deadline; NO if it expires or misses the deadline. Cancellation pays 0.5 per share. Both agreements can succeed, or neither. Execution does not mean construction.`;
 }
 
 function absoluteImage(screenshotUrl, publicBaseUrl, apiBaseUrl) {
@@ -95,48 +79,43 @@ export function renderPage({ title, description, image, canonical, next }) {
 
 export function setupBetsShareRoute(app, pool, options = {}) {
     const env = options.env || process.env;
-    const readMarkets = options.readMarkets || defaultMarketReader(env);
     const publicBaseUrl = String(options.publicBaseUrl || env.PUBLIC_BASE_URL || DEFAULT_PUBLIC_BASE_URL).replace(/\/+$/, '');
     const apiBaseUrl = String(options.apiBaseUrl || env.PUBLIC_API_BASE_URL || '').replace(/\/+$/, '');
-    const now = typeof options.now === 'function' ? options.now : () => new Date();
 
     app.get('/bets/:account', async (req, res) => {
         const account = BetsLink.accountOf(req.params.account);
         const city = BetsLink.cityOf(req.query.city);
         const lang = typeof req.query.lang === 'string' ? req.query.lang : null;
+        const context = { asset: 'points', ...BetsLink.contextOf(req.query) };
         const generic = {
             title: `${TAGLINE} · ${SITE_NAME}`,
-            description: describeRow(null),
+            description: describeRow(context),
             image: `${publicBaseUrl}${DEFAULT_IMAGE_PATH}`,
             canonical: `${publicBaseUrl}/`,
-            next: BetsLink.appHref({ city, lang })
+            next: BetsLink.appHref({ city, lang, ...context })
         };
         res.type('html');
         if (!account) return res.status(400).send(renderPage(generic));
         try {
             const agreement = await agreementByAccount(pool, account);
             if (!agreement) return res.status(404).send(renderPage(generic));
-            const markets = await readMarkets([account]);
-            const { contests } = buildContests({ city: agreement.city, agreements: [agreement], markets, now: now() });
-            const entry = contests.flatMap(contest => contest.agreements).find(item => item.account === account) || null;
-            const row = entry ? BetsModel.row(entry) : null;
             // The link's own city wins (it is the id the app was opened in); the agreement's is the fallback.
             const linkCity = city || BetsLink.cityOf(agreement.city);
             const label = BetsModel.labelOf(agreement) || 'this agreement';
             const page = {
-                title: `${MarketQuestion.agreementQuestion(label)} · ${TAGLINE}`,
-                description: describeRow(row),
+                title: `${agreement.deadline ? `Will ${label} execute on-chain by ${new Date(agreement.deadline).toISOString()}?` : `Will ${label} execute on-chain?`} · ${TAGLINE}`,
+                description: describeRow(context),
                 // The preview shows before and after side by side when the pair has been rendered.
                 image: absoluteImage(agreement.screenshotPairUrl || agreement.screenshotUrl, publicBaseUrl, apiBaseUrl),
-                canonical: BetsLink.build({ origin: publicBaseUrl, city: linkCity, account }),
-                next: BetsLink.appHref({ city: linkCity, account, lang, approval: ApprovalLink.parse({ pathname: req.path, search: new URLSearchParams(req.query).toString() }) })
+                canonical: BetsLink.build({ origin: publicBaseUrl, city: linkCity, account, asset: context.asset }),
+                next: BetsLink.appHref({ city: linkCity, account, lang, ...context, approval: ApprovalLink.parse({ pathname: req.path, search: new URLSearchParams(req.query).toString() }) })
             };
             res.set('Cache-Control', `public, max-age=${CACHE_SECONDS}`);
             res.send(renderPage(page));
         } catch (error) {
             console.error(`[${new Date().toISOString()}] GET /bets/${account} failed:`, error);
             // People still get to the app; only the preview is lost.
-            res.status(502).send(renderPage({ ...generic, next: BetsLink.appHref({ city, account, lang, approval: ApprovalLink.parse({ pathname: req.path, search: new URLSearchParams(req.query).toString() }) }) }));
+            res.status(502).send(renderPage({ ...generic, next: BetsLink.appHref({ city, account, lang, ...context, approval: ApprovalLink.parse({ pathname: req.path, search: new URLSearchParams(req.query).toString() }) }) }));
         }
     });
 }

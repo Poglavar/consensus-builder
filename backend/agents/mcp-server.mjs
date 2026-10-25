@@ -23,6 +23,7 @@ const agreementCid = z.string().regex(CID).describe('Agreement CID (bafkrei…),
 const designCid = z.string().regex(CID).describe('Design CID (bafkrei…)');
 const lamports = z.string().regex(/^\d+$/).describe('Whole lamports as a decimal string, for example "0" or "10000000" (0.01 SOL)');
 const amountUsdc = z.string().regex(/^\d+(\.\d{1,6})?$/).describe('Exact devnet USDC decimal string, for example "0.05"');
+const shares = z.string().regex(/^\d+(\.\d{1,6})?$/).describe('Share quantity with up to six decimal places, for example "0.05"');
 const confirmation = z.literal(true).describe('Explicitly authorize this write, paid or signed devnet action');
 const pubkey = z.string().regex(BASE58_KEY).describe('base58 Solana public key');
 const recipeHash = z.string().regex(/^(sha256:)?[0-9a-fA-F]{64}$/).describe('Committed 32-byte external-market recipe hash');
@@ -187,7 +188,8 @@ export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.e
     if (mode === 'local') {
     server.registerTool('ugt_chain_agreements', { description: 'Discover agreement program accounts directly from Solana devnet without the UGT API. Returns CIDs, status, escrow and lens. The RPC reads the bounded agreement program; output is capped.', inputSchema: z.object({ limit: z.number().int().min(1).max(100).default(20) }), annotations: READ_ONLY }, handler(args => actions.listChainAgreements(args)));
     server.registerTool('ugt_chain_agreement', { description: 'Read and validate an agreement account directly from Solana devnet, with the UGT API offline.', inputSchema: z.object({ agreementAccount }), annotations: READ_ONLY }, handler(args => actions.getChainAgreement(args)));
-    server.registerTool('ugt_bet_on_account', { description: 'Stake devnet USDC on an active agreement account using only Solana RPC. No UGT API call. Local signing and spend cap apply.', inputSchema: z.object({ agreementAccount, side: z.enum(['yes', 'no']), amountUsdc, confirm: confirmation }), annotations: PAID_NON_IDEMPOTENT }, handler(args => actions.betOnAccount(args)));
+    server.registerTool('ugt_buy_agreement_shares_on_account', { description: 'Buy LMSR shares on an already-open canonical sponsor-bound agreement market using a devnet USDC budget. This does not create the market. Local signing and spend cap apply.', inputSchema: z.object({ agreementAccount, side: z.enum(['yes', 'no']), amountUsdc, confirm: confirmation }), annotations: PAID_NON_IDEMPOTENT }, handler(args => actions.betOnAccount(args)));
+    server.registerTool('ugt_sell_agreement_shares', { description: 'Sell a fixed share quantity from your position on an active canonical agreement market. The quote sets the minimum return; local signing applies.', inputSchema: z.object({ agreementCid, side: z.enum(['yes', 'no']), shares, confirm: confirmation }), annotations: PAID_NON_IDEMPOTENT }, handler(args => actions.sellAgreementSharesOnAgreement(args)));
     server.registerTool('ugt_mint_agreement', {
         title: 'Mint a binding owners\' agreement as its sponsor',
         description: 'Create the agreement\'s account on devnet with UGT_AGENT_KEYPAIR, which must be the agreement\'s sponsor: create(cid, lens, deadline, open_ground, required_lamports, payout) plus fund in one transaction, with the lens (rule.lens must hold exactly one key, not this agent\'s), the deadline and open ground from the agreement, lamports as both the escrow funded now and the escrow execution requires, payout the sponsor. Only a binding owners\' agreement is minted: a community or owner vote is refused, it is a poll in the index. Then records the account in the index (POST /agreements/:cid/onchain). Repeating it signs nothing new.',
@@ -203,11 +205,17 @@ export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.e
     }, handler(args => actions.fundAgreement(args)));
 
     server.registerTool('ugt_bet_on_agreement', {
-        title: 'Bet on whether an agreement executes',
-        description: 'Create the agreement\'s market if needed and stake devnet USDC on YES (its account ends Executed) or NO (Cancelled or Expired). Only a minted, binding owners\' agreement has a market: its subject is the agreement account, which must be Active and before its deadline.',
+        title: 'Buy agreement market shares',
+        description: 'Use a devnet USDC budget to buy YES (execution) or NO (cancellation or expiry) shares on the sponsor\'s already-open canonical LMSR market. The sponsor opens the market separately; this tool never creates it. The agreement must be minted, Active and before its deadline.',
         inputSchema: z.object({ agreementCid, side: z.enum(['yes', 'no']), amountUsdc, confirm: confirmation }),
         annotations: PAID_NON_IDEMPOTENT
     }, handler(args => actions.betOnAgreement(args)));
+    server.registerTool('ugt_buy_agreement_shares', {
+        title: 'Buy agreement market shares',
+        description: 'Buy LMSR shares with a devnet USDC budget on the sponsor\'s already-open canonical market for this minted Active agreement. The tool never creates a market.',
+        inputSchema: z.object({ agreementCid, side: z.enum(['yes', 'no']), amountUsdc, confirm: confirmation }),
+        annotations: PAID_NON_IDEMPOTENT
+    }, handler(args => actions.buyAgreementSharesOnAgreement(args)));
 
     server.registerTool('ugt_buy_verified_fact', {
         title: 'Buy a verified land-change fact',

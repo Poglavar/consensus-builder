@@ -107,6 +107,6 @@ describe('The agreement panel\'s Bet action (window.AgreementBets)', () => {
     expect(await app.root.AgreementBets.open('agreement-2')).toBeNull();
     expect(await app.root.AgreementBets.open('no-such-agreement')).toBeNull();
     expect(app.opened).toEqual([]);
-    expect(app.messages).toEqual(['Not minted yet, so no pool']);
+    expect(app.messages).toEqual(['Agreement not minted yet']);
   });
 });

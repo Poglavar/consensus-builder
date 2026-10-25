@@ -9,6 +9,17 @@ const storage = () => { const data = new Map(); return { getItem: key => data.ge
 const saved = body => ({ ok: true, json: async () => ({ accepted: JSON.parse(body).events.length }) });
 
 describe('betting journey delivery', () => {
+    it('records book selection, public position inspection and account actions without profile identifiers', async () => {
+        const events = [];
+        const client = create({ storage: storage(), sessionStorage: storage(), uuid: randomUUID, baseUrl: () => '',
+            fetch: async (_url, request) => { events.push(...JSON.parse(request.body).events); return saved(request.body); } });
+        for (const name of ['asset_select', 'standings_view', 'public_positions_view']) client.track(name, { asset: 'points', accountId: 'private-profile' });
+        for (const action of ['link-wallet', 'check-receipt']) client.track('action_end', { action, result: 'confirmed', asset: 'points' });
+        await client.flush();
+        expect(events.slice(1).map(item => item.name)).toEqual(['asset_select', 'standings_view', 'public_positions_view', 'action_end', 'action_end']);
+        expect(JSON.stringify(events)).not.toContain('private-profile');
+        expect(validateBetEvents({ events }).error).toBeUndefined();
+    });
     it('keeps unknown confirmation separate from rejection and confirmed failure', () => {
         expect(errorResult({ code: 'CONFIRMATION_UNKNOWN' })).toBe('unknown');
         expect(errorResult({ code: 'CONFIRMATION_FAILED' })).toBe('failed');

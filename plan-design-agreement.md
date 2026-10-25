@@ -21,7 +21,7 @@ program (create, fund, attest, execute, cancel, expire; the lens attests `Agreem
 `satisfied` only; non-binding agreements are never minted and have no markets), the agreement panel's
 Mint / Propose again / Fund / Record decision / Execute / Cancel / Expire and the Minted agreements
 list, `POST /agreements/:cid/onchain` and `GET /agreements?minted=1`, markets, bets and pledges on
-agreement accounts (`agreement-execution-v1`; LMSR cancelled settles void, parimutuel NO), the
+agreement accounts (the original `agreement-execution-v1` contract; LMSR cancelled settles void, parimutuel NO), the
 lifecycle oracle writing `agreement_lifecycle` / `agreement_executed` land events and the observed
 status and end time onto the index row, agents proposing binding owners' agreements as devnet owners
 of their parcels (stages planned → chosen → designed → proposed → minted → recorded → staked, then
@@ -75,8 +75,10 @@ decisions are appended as they are made and the open list shrinks.
 - Several agreements may cover the same designs at once. A counterproposal that changes only the
   terms is a **counter-agreement** over the same design records; one that changes geometry is a
   fork of the design. A design's hash is therefore pure geometry, site and rules; terms never move it.
-- Exclusivity is enforced only at execution, on the input land: two open agreements over the same
-  land are both allowed and form one market contest; only one can execute.
+- Agreements over shared land form one comparison group. Their execution bets are independent:
+  both, one or neither can execute. The group does not impose an exclusive winner or make the
+  agreements' YES prices sum to one. The current deadline and payout contract is described in
+  [Agreement betting: LMSR and points](docs/betting-lmsr-points.md).
 
 ### Consent and execution move to the agreement (pitfall 2, user 2026-10-21)
 

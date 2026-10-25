@@ -104,6 +104,11 @@ mapping lives in `backend/buildings/overture-cities.js`.
 - public.gup_street_line
 - consensus.proposal
 - consensus.bet_event (schema-only)
+- consensus.points_account (schema-only)
+- consensus.points_market (schema-only)
+- consensus.points_position (schema-only)
+- consensus.points_transaction (schema-only)
+- consensus.points_wallet_challenge (schema-only)
 - consensus.building_floor_model
 - public.road_parcel_classification
 - public.street

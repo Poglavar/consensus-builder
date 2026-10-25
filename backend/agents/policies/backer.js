@@ -11,6 +11,10 @@
 //   3. the smaller floor area / score, then a `seed`-stable hash.
 import { agreementName, atomic, firstFitting, isOthersOpen, positiveDecimal, stableNumber } from './common.js';
 import { densityEvidence } from './contrarian.js';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+const lmsr = require('../../../frontend/js/bets/lmsr.js');
 
 export const ROLE = 'backer';
 // What society-run.mjs must gather: the designs' content for density, and the persona's own YES positions.
@@ -23,15 +27,16 @@ export function policyConfig(persona = {}) {
     return { amountUsdc: positiveDecimal(policy.amountUsdc, '0.02', `${persona.name || 'backer'} policy.amountUsdc`) };
 }
 
-const usdc = value => (Number(value) / 1e6).toFixed(2);
+const percent = value => Number(value).toFixed(1);
 
-/** { yes, no } atomic pools when the market's YES pool is strictly smaller than its NO pool, else null. */
+/** Current YES/NO LMSR prices when YES is the underdog, else null. */
 export function underdogPools(market) {
     if (!market || market.resolved) return null;
-    const yes = atomic(market.yesPool);
-    const no = atomic(market.noPool);
-    if (yes === null || no === null || yes >= no) return null;
-    return { yes, no };
+    const b = atomic(market.b), qYes = atomic(market.qYes), qNo = atomic(market.qNo);
+    if (b === null || qYes === null || qNo === null || b <= 0n) return null;
+    const yes = lmsr.chance(b, qYes, qNo, 'yes');
+    const no = lmsr.chance(b, qYes, qNo, 'no');
+    return yes < no ? { yes, no } : null;
 }
 
 function tierOf(evidence) {
@@ -51,7 +56,7 @@ export function decide({ persona, seed, now = Date.now(), wallet = null, agreeme
     const backed = new Set((history.forCids || []).map(String));
     const others = (agreements || []).filter(agreement => isOthersOpen(agreement, { wallet, personaName: persona.name, now }));
     const alreadyBacked = others.filter(agreement => backed.has(agreement.cid)).map(agreement => agreement.cid);
-    const open = others.filter(agreement => !backed.has(agreement.cid) && !markets?.[agreement.account]?.resolved);
+    const open = others.filter(agreement => !backed.has(agreement.cid) && markets?.[agreement.account] && !markets[agreement.account].resolved);
     const scored = open.map(agreement => {
         const evidence = densityEvidence(agreement);
         return {
@@ -62,18 +67,16 @@ export function decide({ persona, seed, now = Date.now(), wallet = null, agreeme
     }).sort((a, b) => a.tier - b.tier || Number(Boolean(b.underdog)) - Number(Boolean(a.underdog))
         || a.evidence.score - b.evidence.score || a.rank - b.rank);
     const options = scored.map(({ agreement, evidence, tier, underdog }, index) => {
-        const hasMarket = Boolean(markets?.[agreement.account]);
         const why = [
             tier === 1 ? 'no density signal in its designs or their text' : evidence.detail,
-            underdog ? `backs the underdog (YES ${usdc(underdog.yes)} < NO ${usdc(underdog.no)} USDC)` : null
+            underdog ? `backs the underdog (YES ${percent(underdog.yes)}% < NO ${percent(underdog.no)}%)` : null
         ].filter(Boolean).join('; ');
         return {
             agreementCid: agreement.cid,
             evidence: { ...evidence, tier: TIER_LABEL[tier], underdog: Boolean(underdog) },
             action: {
                 type: 'stake', side: 'yes', amount: config.amountUsdc, usdc: Number(config.amountUsdc),
-                // Creating a missing market is a second signature.
-                signedActions: hasMarket ? 1 : 2,
+                signedActions: 1,
                 agreementCid: agreement.cid, account: agreement.account, agreementName: agreementName(agreement),
                 rationale: `Bet YES on ${agreementName(agreement)}: ${why}; ranked ${index + 1} of ${scored.length} open agreement${scored.length === 1 ? '' : 's'} by other actors this persona has not yet backed (modest massing first, the underdog first within it)${alreadyBacked.length ? `; ${alreadyBacked.length} already backed` : ''}.`
             }

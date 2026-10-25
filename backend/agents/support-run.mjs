@@ -18,7 +18,7 @@ import {
 import { assertSupportEligibility, readSupportEligibility } from './supporter-state.js';
 import { ensurePledgeBookAndSet } from './pledger.js';
 import { ensureDonationEscrowAndDonate } from './donor.js';
-import { ensureMarketAndStake, usdcToAtomic } from './bettor.js';
+import { buyAgreementShares, usdcToAtomic } from './bettor.js';
 import { failStaleRuns, getRun, startRun, updateRun, STALE_RUN_HOURS } from './ledger.js';
 import { markAgentRunFailed, safeFailureDiagnostic } from './run-failure.js';
 import { createRpcConnection } from '../solana/rpc.js';
@@ -115,7 +115,7 @@ export async function executeSupport({ decision, connection, keypair, runId, poo
         });
     }
     if (decision.type === 'stake') {
-        return (adapters.ensureMarketAndStake || ensureMarketAndStake)({
+        return (adapters.buyAgreementShares || buyAgreementShares)({
             connection, ownerKeypair: keypair, subject: decision.account,
             stakeMint: USDC_DEVNET, side: SIDE_YES, amountAtomic, sendAndConfirm: sendAndConfirmPolling
         });
@@ -194,7 +194,7 @@ async function main() {
                 });
                 const actor = { id: persona.name, name: persona.name, controller: 'algorithm', wallet };
                 const selected = choice.selected;
-                const verb = selected.type === 'stake' ? `staked ${selected.amount} USDC YES on` : selected.type === 'donate' ? `donated ${selected.amount} USDC to` : `pledged ${selected.amount} USDC to`;
+                const verb = selected.type === 'stake' ? `bought YES shares with a budget of ${selected.amount} USDC on` : selected.type === 'donate' ? `donated ${selected.amount} USDC to` : `pledged ${selected.amount} USDC to`;
                 const execution = await runtime.run(actor, {
                     source: 'live',
                     action: {

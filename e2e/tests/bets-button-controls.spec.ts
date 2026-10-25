@@ -4,9 +4,9 @@
 import { test, expect } from '../helpers/fixtures';
 import type { Page } from '@playwright/test';
 import { openCity } from '../helpers/runtime';
-import { connectWalletByConnectorId, injectMockSolanaWallet } from '../helpers/blockchain';
-import { pageIndex, MarketPool } from '../helpers/mocks/shared-server';
-import { fileIndexedAgreement, proposeOverPark, storedAgreements, MINTED_ACCOUNT, OPEN_POOL } from '../helpers/agreements';
+import { connectWalletByConnectorId, injectMockSolanaWallet, waitForBlockchainRuntime } from '../helpers/blockchain';
+import { pageIndex, MarketFixture } from '../helpers/mocks/shared-server';
+import { fileIndexedAgreement, proposeOverPark, storedAgreements, MINTED_ACCOUNT, OPEN_POOL, selectDevnetUsdc } from '../helpers/agreements';
 
 const ACCOUNT = MINTED_ACCOUNT;
 const WALLET = 'Cp886ML2Ja4FF3SMmyUeW16rRGsLrBcRW8kfWS1VfN7W';
@@ -14,8 +14,8 @@ const TITLE = 'Plan-led infill';
 
 // A binding agreement over parcel 2311 proposed in Zagreb, minted at ACCOUNT, as the index holds it:
 // `status` is the account's status the index recorded, `pool` its market (none: no pool opened yet).
-const fileMinted = (page: Page, { status = 'active', pool = OPEN_POOL }: { status?: string; pool?: MarketPool | null } = {}) =>
-  fileIndexedAgreement(pageIndex(page), { title: TITLE, designTitles: ['Infill park'], minted: { status }, pool }).cid;
+const fileMinted = (page: Page, { status = 'active', pool = OPEN_POOL, sponsor }: { status?: string; pool?: MarketFixture | null; sponsor?: string } = {}) =>
+  fileIndexedAgreement(pageIndex(page), { title: TITLE, designTitles: ['Infill park'], minted: { status, sponsor }, pool }).cid;
 
 // Solana reads answered locally: devnet's genesis, no accounts, and an optional stake balance.
 async function routeSolanaReads(page: Page, onBalance?: () => void): Promise<void> {
@@ -53,6 +53,7 @@ async function captureShareAndClipboard(page: Page): Promise<void> {
 }
 
 test.describe('Bets shared button variants @features', () => {
+  test.beforeEach(async ({ mockApi: page }) => { await selectDevnetUsdc(page); });
   test('Try again reloads a failed Bets request and renders the recovered contest', async ({ mockApi: page }) => {
     fileMinted(page);
     let attempts = 0;
@@ -77,8 +78,8 @@ test.describe('Bets shared button variants @features', () => {
     await captureShareAndClipboard(page);
     await page.goto(`/?city=zg&bets=${ACCOUNT}&reduceMotion=1`);
     const dialog = page.locator('#proposalMarketOverlay');
-    await expect(dialog.locator('.cb-dialog__title')).toHaveText(`Will ${TITLE} execute on-chain?`, { timeout: 30_000 });
-    const expected = await page.evaluate(account => `${location.origin}/bets/${account}?city=zagreb`, ACCOUNT);
+    await expect(dialog.locator('.cb-dialog__title')).toContainText(`Will ${TITLE} execute by`, { timeout: 30_000 });
+    const expected = await page.evaluate(account => `${location.origin}/bets/${account}?city=zagreb&asset=devnet-usdc&betTest=local-preview`, ACCOUNT);
     await dialog.getByRole('button', { name: 'Share', exact: true }).click();
     await expect.poll(() => page.evaluate(() => (window as any).__betsShare?.url)).toBe(expected);
     await dialog.getByRole('button', { name: 'Copy link', exact: true }).click();
@@ -103,7 +104,7 @@ test.describe('Bets shared button variants @features', () => {
     const openFromBets = async () => {
       await page.locator('#bets-button').click();
       await page.locator(`#bets-sheet .bets-row[data-cid="${cid}"] .bets-row__title`).click({ timeout: 30_000 });
-      await expect(dialog.locator('.cb-dialog__title')).toHaveText(`Will ${title} execute on-chain?`);
+      await expect(dialog.locator('.cb-dialog__title')).toContainText(`Will ${title} execute by`);
       await dialog.getByRole('button', { name: 'Open the agreement', exact: true }).click();
       await expect(dialog).toHaveCount(0);
       await expect(page.locator('#bets-sheet')).toBeHidden();
@@ -118,7 +119,7 @@ test.describe('Bets shared button variants @features', () => {
     expect(stored.map((agreement: any) => agreement.id)).toEqual([id]);
     // A minted agreement with a pool offers its bet on the panel, back into the same dialog.
     await panel.locator('[data-agreement-action="bet"]').click();
-    await expect(dialog.locator('.cb-dialog__title')).toHaveText(`Will ${title} execute on-chain?`);
+    await expect(dialog.locator('.cb-dialog__title')).toContainText(`Will ${title} execute by`);
     await dialog.locator('.close-circle-btn').click();
     await expect(dialog).toHaveCount(0);
     await panel.locator('[data-agreement-action="close"]').click();
@@ -135,14 +136,16 @@ test.describe('Bets shared button variants @features', () => {
     expect(stored[0].id).not.toBe(id);
   });
 
-  test('the dialog Yes button opens a Yes stake form, and quick stakes set the entered amount', async ({ mockApi: page }) => {
+  test('the dialog Yes button opens a Yes buy form, and quick amounts update the quote', async ({ mockApi: page }) => {
     fileMinted(page);
     await injectMockSolanaWallet(page, { publicKey: WALLET, providerName: 'phantom' });
-    let mockedBalanceRequests = 0;
-    await routeSolanaReads(page, () => { mockedBalanceRequests += 1; });
+    await routeSolanaReads(page);
     await openCity(page);
     await connectWalletByConnectorId(page, 'solana-phantom');
-    await page.goto(`/?city=zg&bets=${ACCOUNT}&reduceMotion=1`);
+    await waitForBlockchainRuntime(page, ['SolanaMarketBridge', 'solanaWeb3']);
+    await page.evaluate(() => { (window as any).SolanaMarketBridge.readStakeBalance = async () => 12_500_000n; });
+    await page.locator('#bets-button').click();
+    await page.locator('#bets-sheet .bets-row__title').click();
     const dialog = page.locator('#proposalMarketOverlay');
     await dialog.locator('.bets-dialog__footer .btn-market-yes').click({ timeout: 30_000 });
     await expect(dialog.locator('.cb-dialog__title')).toHaveText('Bet yes');
@@ -153,23 +156,23 @@ test.describe('Bets shared button variants @features', () => {
     const max = dialog.locator('.bets-dialog__chip').filter({ hasText: /^Max\b/ });
     await expect(max).toBeVisible();
     await max.click();
-    await expect.poll(() => mockedBalanceRequests).toBeGreaterThan(0);
     await expect(dialog.locator('[data-market-amount]')).toHaveValue('12.5');
   });
 
-  test('Submit a Yes stake sends the entered amount to the wallet bridge and shows the receipt', async ({ mockApi: page }) => {
+  test('Submit a Yes buy sends the quoted shares and cost limit to the wallet bridge', async ({ mockApi: page }) => {
     fileMinted(page);
     await injectMockSolanaWallet(page, { publicKey: WALLET, providerName: 'phantom' });
     await routeSolanaReads(page);
     await page.addInitScript(() => {
-      (window as any).__stakeCalls = [];
+      (window as any).__buyCalls = [];
       // Replace only the transaction boundary; the dialog still validates and submits its form.
       const install = () => {
         const bridge = (window as any).SolanaMarketBridge;
-        if (!bridge || typeof bridge.stake !== 'function') return false;
-        bridge.stake = async (args: any) => {
-          (window as any).__stakeCalls.push({ proposal: args.proposal, side: args.side, amount: String(args.amount) });
-          return { explorerUrl: 'https://explorer.solana.com/tx/mock?cluster=devnet' };
+        if (!bridge || typeof bridge.buy !== 'function') return false;
+        bridge.buy = async (args: any) => {
+          (window as any).__buyCalls.push({ proposal: args.proposal, side: args.side, shares: String(args.shares), maxCost: String(args.maxCost) });
+          args.onStatus?.({ state: 'confirmed', signature: 'mock', explorerUrl: 'https://explorer.solana.com/tx/mock?cluster=devnet' });
+          return { transactionHash: 'mock', explorerUrl: 'https://explorer.solana.com/tx/mock?cluster=devnet' };
         };
         return true;
       };
@@ -182,17 +185,15 @@ test.describe('Bets shared button variants @features', () => {
     await dialog.locator('.bets-dialog__footer .btn-market-yes').click({ timeout: 30_000 });
     await dialog.locator('[data-market-amount]').fill('2.5');
     await dialog.locator('[data-market-submit]').click();
-    await expect.poll(() => page.evaluate(() => (window as any).__stakeCalls)).toEqual([
-      { proposal: ACCOUNT, side: 1, amount: '2500000' },
-    ]);
-    await expect(dialog).toContainText('2.5 USDC on yes is in the pool.');
+    await expect.poll(() => page.evaluate(() => (window as any).__buyCalls)).toHaveLength(1);
+    const buy = await page.evaluate(() => (window as any).__buyCalls[0]);
+    expect(buy).toMatchObject({ proposal: ACCOUNT, side: 1, maxCost: '2500000' });
+    expect(BigInt(buy.shares)).toBeGreaterThan(0n);
+    await expect(dialog.locator('.cb-dialog__title')).toHaveText('Bet placed');
   });
 
   for (const action of [
-    // Minted and Active, with no pool yet: anyone can open the one pool.
-    { name: 'Open the pool', status: 'active', pool: null },
-    // Executed on-chain while its pool is still open: anyone can settle it.
-    { name: 'Settle the pool', status: 'executed', pool: OPEN_POOL },
+    { name: 'Settle market', status: 'executed', pool: OPEN_POOL },
   ]) {
     test(`${action.name} requests a wallet before the pool transaction`, async ({ mockApi: page }) => {
       fileMinted(page, { status: action.status, pool: action.pool });
@@ -213,4 +214,21 @@ test.describe('Bets shared button variants @features', () => {
       await expect(page.locator('.wallet-modal-overlay')).toBeVisible();
     });
   }
+
+  test('only the agreement sponsor sees the control to seed its USDC market', async ({ mockApi: page }) => {
+    fileMinted(page, { pool: null, sponsor: WALLET });
+    await injectMockSolanaWallet(page, { publicKey: 'AoVsGaj8MSJ6xwKxfFxo9iZWH3enC8RRTXKH2fx2F8os', providerName: 'phantom' });
+    await openCity(page);
+    await connectWalletByConnectorId(page, 'solana-phantom');
+    await page.locator('#bets-button').click();
+    const action = page.locator('#bets-sheet .bets-row__actions').getByRole('button', { name: 'Seed USDC market', exact: true });
+    await expect(action).toHaveCount(0);
+    await page.evaluate(() => {
+      const manager = (window as any).solanaWalletManager;
+      const original = manager.getState.bind(manager);
+      manager.getState = () => ({ ...original(), accounts: ['Cp886ML2Ja4FF3SMmyUeW16rRGsLrBcRW8kfWS1VfN7W'] });
+      return (window as any).BetsSheet.load({ force: true });
+    });
+    await expect(action).toBeVisible();
+  });
 });

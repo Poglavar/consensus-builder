@@ -11,12 +11,13 @@ CREATE TABLE IF NOT EXISTS consensus.bet_event (
     received_at         timestamptz NOT NULL DEFAULT now(),
     name                text NOT NULL CHECK (name IN (
         'entry', 'discovery', 'market_open', 'comparison_view', 'agreement_open', 'quote',
-        'action_start', 'action_status', 'action_end', 'position_view', 'share', 'return', 'close'
+        'action_start', 'action_status', 'action_end', 'position_view', 'share', 'return', 'close',
+        'asset_select', 'standings_view', 'public_positions_view'
     )),
     city                text,
     agreement_account   text,
     agreement_cid       text,
-    action              text CHECK (action IS NULL OR action IN ('create', 'buy', 'sell', 'resolve', 'claim', 'stake')),
+    action              text CHECK (action IS NULL OR action IN ('create', 'buy', 'sell', 'resolve', 'claim', 'stake', 'link-wallet', 'check-receipt')),
     side                text CHECK (side IS NULL OR side IN ('yes', 'no')),
     result              text CHECK (result IS NULL OR result IN (
         'started', 'preparing', 'awaiting_signature', 'submitted', 'confirmed', 'succeeded',
@@ -28,6 +29,18 @@ CREATE TABLE IF NOT EXISTS consensus.bet_event (
     created_at          timestamptz NOT NULL DEFAULT now(),
     updated_at          timestamptz NOT NULL DEFAULT now(),
     CHECK ((actor_mode = 'simulated' AND simulation_run IS NOT NULL) OR (actor_mode = 'visitor' AND simulation_run IS NULL))
+);
+
+-- The event vocabulary expands with the asset/account controls; existing events still satisfy it.
+ALTER TABLE consensus.bet_event DROP CONSTRAINT IF EXISTS bet_event_name_check;
+ALTER TABLE consensus.bet_event ADD CONSTRAINT bet_event_name_check CHECK (name IN (
+    'entry', 'discovery', 'market_open', 'comparison_view', 'agreement_open', 'quote',
+    'action_start', 'action_status', 'action_end', 'position_view', 'share', 'return', 'close',
+    'asset_select', 'standings_view', 'public_positions_view'
+));
+ALTER TABLE consensus.bet_event DROP CONSTRAINT IF EXISTS bet_event_action_check;
+ALTER TABLE consensus.bet_event ADD CONSTRAINT bet_event_action_check CHECK (
+    action IS NULL OR action IN ('create', 'buy', 'sell', 'resolve', 'claim', 'stake', 'link-wallet', 'check-receipt')
 );
 
 CREATE INDEX IF NOT EXISTS bet_event_received_idx ON consensus.bet_event (received_at DESC);

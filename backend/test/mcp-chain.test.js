@@ -23,20 +23,20 @@ describe('local MCP without the API', () => {
             bytes.writeUInt32LE(cid.length, 228); bytes.write(cid, 232);
             const connection = { getProgramAccounts: vi.fn(async () => [{ pubkey: new PublicKey(address), account: { data: bytes } }]) };
             const fetchImpl = vi.fn(() => { throw new Error('UGT API is offline'); });
-            const ensureMarketAndStake = vi.fn(async () => ({ signature: 'stake-fixture' }));
+            const buyAgreementShares = vi.fn(async () => ({ signature: 'stake-fixture' }));
             const claimAgreementMarket = vi.fn(async () => ({ signature: 'claim-fixture' }));
             const tools = createUrbanGameTheoryTools({ env: { UGT_AGENT_KEYPAIR: keyFile, UGT_MCP_LIVE: '1' }, fetchImpl,
-                createConnection: () => connection, dependencies: { ensureMarketAndStake, claimAgreementMarket,
+                createConnection: () => connection, dependencies: { buyAgreementShares, claimAgreementMarket,
                     readAgreementAccount: vi.fn(async () => ({ address, cid, status: 'Active', deadline: 0 })) } });
             const found = await tools.listChainAgreements();
             expect(found.agreements[0]).toMatchObject({ cid, address, authority: wallet });
             await tools.betOnAccount({ agreementAccount: address, side: 'yes', amountUsdc: '0.05', confirm: true });
             await tools.claim({ agreementAccount: address, side: 'yes', confirm: true });
-            expect(ensureMarketAndStake).toHaveBeenCalledWith(expect.objectContaining({ subject: address, amountAtomic: 50000n }));
+            expect(buyAgreementShares).toHaveBeenCalledWith(expect.objectContaining({ subject: address, amountAtomic: 50000n }));
             expect(claimAgreementMarket).toHaveBeenCalledWith(expect.objectContaining({ subject: address }));
             await expect(tools.betOnAccount({ agreementAccount: address, side: 'yes', amountUsdc: '1', confirm: true })).rejects.toThrow(/exceeds/);
             expect(fetchImpl).not.toHaveBeenCalled();
-            expect(await tools.capabilities()).toMatchObject({ mode: 'local', upstream: { available: false, next: { tool: 'ugt_chain_agreements' } } });
+            expect(await tools.capabilities()).toMatchObject({ mode: 'local', next: { tool: 'ugt_help' } });
         } finally { rmSync(dir, { recursive: true, force: true }); }
     });
 });
