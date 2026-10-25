@@ -1,5 +1,7 @@
 # Memory
 
+- 2026-10-25: The user handles outside-pilot recruitment offline. Complete the LMSR/points betting upgrade and instrumentation before revising the pitch; test with explicitly labelled simulated visitors until outside participants are available. The proposed San Francisco framing is bets on agreements, with the exact passing condition and independence of alternatives still to be settled.
+
 - 2026-10-25: MCP named-plan tools operate on `plan/v1` independently of agreement ground and terms; private drafts persist to disk with explicit expiry and export, and reference publication checks the reviewed CID before returning a verified permanent URL.
 
 - 2026-10-24: Applying a shared plan must warn about conflicts and offer to unapply the existing conflicting designs, skip the conflicting incoming designs, or cancel. Reuse the existing conflict flow; never silently replace the working composition. Keep all saved designs and unrelated applied work.

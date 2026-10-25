@@ -60,6 +60,7 @@ import { setupHackathonOperationsRoute } from './routes/hackathon-operations.js'
 import { setupTransactionsRoute } from './routes/transactions.js';
 import { setupMarketsRoute } from './routes/markets.js';
 import { setupBetsShareRoute } from './routes/bets-share.js';
+import { setupBetsEventsRoute } from './routes/bets-events.js';
 import { isAgentPath } from './utils/x402-payment.js';
 import { setupRoadCorridorRoute } from './routes/road-corridor.js';
 import { setupCityStatsRoute } from './routes/city-stats.js';
@@ -391,7 +392,8 @@ export function createApp({
                 return parcelsUnderRateLimiter(req, res, next);
             }
             // /agent/* pays per request, so the payment is the limiter (design decision, not an oversight).
-            if (req.method === 'POST' && (READ_ONLY_POST_PATHS.has(req.path) || isAgentPath(req.path))) {
+            // Betting telemetry has its own bounded-batch limiter and must not consume the authoring budget.
+            if (req.method === 'POST' && (READ_ONLY_POST_PATHS.has(req.path) || isAgentPath(req.path) || req.path === '/bets/events')) {
                 return next();
             }
             return writeRateLimiter(req, res, next);
@@ -464,7 +466,8 @@ export function createApp({
     setupHackathonOperationsRoute(app, activePool, { env }); // redacted scheduled-job outcomes and freshness
     setupTransactionsRoute(app, activePool); // devnet transaction explorer, derived from the chain
     setupMarketsRoute(app, activePool, { env }); // contests per city with each proposal's prediction market (Bets sheet)
-    setupBetsShareRoute(app, activePool, { env }); // /bets/<account>: link preview for one bet, then on to the app
+    setupBetsEventsRoute(app, activePool); // anonymous betting journey, with simulated activity kept separate
+    setupBetsShareRoute(app, activePool, { env }); // /bets/<account> must follow the named /bets/metrics route
     setupRoadCorridorRoute(app, activePool);
     setupCityStatsRoute(app, activePool);
     setupAreaMonitorsRoute(app, activePool);

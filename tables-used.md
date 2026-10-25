@@ -103,6 +103,7 @@ mapping lives in `backend/buildings/overture-cities.js`.
 - public.road_widening_segment
 - public.gup_street_line
 - consensus.proposal
+- consensus.bet_event (schema-only)
 - consensus.building_floor_model
 - public.road_parcel_classification
 - public.street

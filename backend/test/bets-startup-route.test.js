@@ -42,17 +42,29 @@ describe('Bets startup route', () => {
     const app = boot(`http://localhost/bets/${ACCOUNT}?city=zg`);
     app.root.location = new URL(`http://localhost/bets/${OTHER}?city=zg`);
     await app.load();
-    expect(app.opened).toEqual([{ account: ACCOUNT }]);
+    expect(app.opened).toEqual([{ account: ACCOUNT, entryPoint: 'deep-link' }]);
   });
 
   it('still opens a normal query-form shared link after app boot', async () => {
     const app = boot(`http://localhost/?city=zg&bets=${ACCOUNT}`);
     await app.load();
-    expect(app.opened).toEqual([{ account: ACCOUNT }]);
+    expect(app.opened).toEqual([{ account: ACCOUNT, entryPoint: 'deep-link' }]);
   });
 });
 
 describe('Opening a bet’s published agreement', () => {
+  it.each([true, false])('counts a completed review only when the requested agreement panel is visible: %s', async visible => {
+    const app = boot('http://localhost/?city=sf');
+    const events = [];
+    app.root.BetsTelemetry = { track: (name, properties) => events.push({ name, ...properties }) };
+    app.root.AgreementSync = { handleAgreementRoute: async () => {} };
+    app.root.AgreementPanel = { isOpen: () => visible, current: () => 'local-agreement' };
+    app.root.AgreementStore = { get: () => ({ published: { cid: 'bafy-requested' } }) };
+    await app.root.BetsSheet.openAgreement({ cid: 'bafy-requested' }, { entryPoint: 'dialog' });
+    expect(events.map(event => event.result)).toEqual(['started', visible ? 'succeeded' : 'unknown']);
+    expect(events.every(event => event.entryPoint === 'dialog')).toBe(true);
+  });
+
   it('refreshes a cached agreement through the shared-link path before opening its panel', async () => {
     const app = boot('http://localhost/?city=sf');
     const calls = [];
@@ -84,7 +96,7 @@ describe('The agreement panel\'s Bet action (window.AgreementBets)', () => {
     const app = withStore(boot('http://localhost/?city=zg'));
     expect(app.root.AgreementBets.available(minted)).toBe(true);
     await app.root.AgreementBets.open('agreement-1');
-    expect(app.opened).toEqual([{ account: ACCOUNT, title: 'Courtyard + Tower' }]);
+    expect(app.opened).toEqual([{ account: ACCOUNT, title: 'Courtyard + Tower', entryPoint: 'agreement' }]);
   });
 
   it('offers no bet on an agreement that is not minted on devnet', async () => {

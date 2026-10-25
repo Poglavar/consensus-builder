@@ -425,8 +425,8 @@ pub fn payout_amount(side: u8, amount: u64, yes_pool: u64, no_pool: u64, outcome
 
 /// Read `subject` as an Agreement of the agreement program (owner, discriminator and layout are
 /// agreement::read_agreement_view's checks) and, when `expected` is given, require it to be the
-/// market's own. Returns the sponsor, lens and status byte that resolution, kind 0 trading and the
-/// LMSR insider rule read.
+/// market's own. Returns the sponsor, lens, status and execution time that resolution, kind 0
+/// trading and the LMSR insider rule read.
 pub(crate) fn read_subject(subject: &AccountInfo, expected: Option<&Pubkey>) -> Result<agreement::AgreementView> {
     if let Some(expected_key) = expected {
         require_keys_eq!(subject.key(), *expected_key, MarketError::InvalidProposalAccount);

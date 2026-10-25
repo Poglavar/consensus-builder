@@ -18,7 +18,34 @@
     // readPositions); changed: the account a confirmed transaction just touched, marked on its row
     // after the next render; scrollTo: the contest a dialog sent the person back to;
     // filter: all | open | settled | mine (js/bets/bets-model.js filterRows).
-    const state = { city: null, loadedAt: 0, payload: null, loading: null, positions: {}, changed: null, scrollTo: null, filter: 'all' };
+    const state = { city: null, loadedAt: 0, payload: null, loading: null, positions: {}, changed: null, scrollTo: null, filter: 'all', discoveryPending: false, positionTracked: new Set() };
+
+    function trackBet(name, row = null, properties = {}) {
+        try {
+            root.BetsTelemetry?.track?.(name, {
+                ...(row?.account ? { agreementAccount: row.account } : {}),
+                ...(row?.cid ? { agreementCid: row.cid } : {}),
+                asset: 'devnet-usdc', entryPoint: 'sheet', ...properties
+            });
+        } catch (_) { console.warn(`[${new Date().toISOString()}] [bets] Journey event could not be captured`); }
+    }
+
+    function actionForBridge(method) {
+        return method === 'createMarket' ? 'create' : method === 'claim' ? 'claim' : 'resolve';
+    }
+
+    function finishDiscovery(result) {
+        if (!state.discoveryPending) return;
+        state.discoveryPending = false;
+        trackBet('discovery', null, { result, entryPoint: 'sheet' });
+    }
+
+    function errorCodeOf(error) {
+        const code = typeof error?.code === 'string' ? error.code.toLowerCase().replace(/[^a-z0-9_-]+/g, '_').replace(/^[_-]+|[_-]+$/g, '').slice(0, 80) : '';
+        return code || 'unknown';
+    }
+
+    const ACTION_STATUSES = new Set(['preparing', 'awaiting_signature', 'submitted', 'confirmed']);
 
     function interpolate(text, params) {
         return String(text || '').replace(/\{\{\s*(\w+)\s*\}\}/g, (match, key) => (params && key in params ? params[key] : match));
@@ -175,6 +202,12 @@
         if (!container) return;
         if (state.filter === 'mine') { render(container, payload); return; }
         container.querySelectorAll('.bets-row[data-account]').forEach(li => renderMine(li, { account: li.dataset.account }));
+        container.querySelectorAll('.bets-row__mine').forEach(mine => {
+            const account = mine.closest('.bets-row')?.dataset.account;
+            if (!account || state.positionTracked.has(account)) return;
+            state.positionTracked.add(account);
+            trackBet('position_view', rowFor(account)?.row || { account }, { entryPoint: 'sheet' });
+        });
     }
 
     // The shareable link to one row's bet (js/bets/bets-link.js): this origin, the current city and
@@ -190,15 +223,29 @@
     }
 
     // Put the row's link on the clipboard; the shared helper shows "Copied".
-    async function copyLink(account) {
+    async function copyLink(account, options = {}) {
         const href = linkFor(account);
         if (!href) return false;
-        if (typeof root.copyTextWithFeedback === 'function') return root.copyTextWithFeedback(href);
+        const row = rowFor(account)?.row || { account };
+        const entryPoint = options.entryPoint || 'sheet';
+        const record = result => trackBet('share', row, { entryPoint, result });
+        if (typeof root.copyTextWithFeedback === 'function') {
+            try {
+                const copied = await root.copyTextWithFeedback(href);
+                record(copied ? 'succeeded' : 'failed');
+                return copied;
+            } catch (error) {
+                record('failed');
+                return false;
+            }
+        }
         try {
             await root.navigator.clipboard.writeText(href);
+            record('succeeded');
             return true;
         } catch (error) {
             console.warn(`[${new Date().toISOString()}] [bets] link not copied`, error);
+            record('failed');
             return false;
         }
     }
@@ -257,29 +304,54 @@
     // ---- actions ----------------------------------------------------------------------------
 
     function placeBet(row, side) {
-        if (!walletConnected()) { askForWallet(); return; }
-        if (typeof root.openBetDialog === 'function') root.openBetDialog({ account: row.account, side });
+        if (!walletConnected()) {
+            const context = { action: 'stake', side: side === 1 ? 'yes' : 'no', entryPoint: 'sheet' };
+            trackBet('action_start', row, { ...context, result: 'started' });
+            trackBet('action_end', row, { ...context, result: 'failed', errorCode: 'wallet_not_connected' });
+            askForWallet(); return;
+        }
+        if (typeof root.openBetDialog === 'function') root.openBetDialog({ account: row.account, side, entryPoint: 'sheet' });
     }
 
     function openBet(row) {
-        if (typeof root.openBetDialog === 'function') root.openBetDialog({ account: row.account });
+        if (typeof root.openBetDialog === 'function') root.openBetDialog({ account: row.account, entryPoint: 'sheet' });
     }
 
     // Opening, settling or collecting from a pool is a single wallet transaction through the shared
     // bridge, whose `proposal` option is the market's subject account (here the agreement's); the row
     // shows the lifecycle words and the result, and the human action lands in the activity feed.
     async function marketTransaction(li, row, action, button, side = null) {
-        if (!walletConnected()) { askForWallet(); return; }
+        const context = { entryPoint: 'sheet', action: actionForBridge(action), side: side === null ? null : side === 1 ? 'yes' : 'no' };
+        let finished = false;
+        const finish = (result, errorCode = null) => {
+            if (finished) return;
+            finished = true;
+            trackBet('action_end', row, { ...context, result, ...(errorCode ? { errorCode } : {}) });
+        };
+        if (!walletConnected()) {
+            trackBet('action_start', row, { ...context, result: 'started' });
+            finish('failed', 'wallet_not_connected');
+            askForWallet(); return;
+        }
         const bridge = root.SolanaMarketBridge;
         const view = root.ProposalMarketView;
-        if (!bridge || typeof bridge[action] !== 'function') return;
+        if (!bridge || typeof bridge[action] !== 'function') {
+            trackBet('action_start', row, { ...context, result: 'started' });
+            finish('failed', 'action_unavailable');
+            return;
+        }
+        trackBet('action_start', row, { ...context, result: 'started' });
         button.disabled = true;
         try {
             const result = await bridge[action]({
                 proposal: row.account,
                 ...(side === null ? {} : { side }),
-                onStatus: item => setNote(li, view && typeof view.statusText === 'function' ? view.statusText(item) : '')
+                onStatus: item => {
+                    setNote(li, view && typeof view.statusText === 'function' ? view.statusText(item) : '');
+                    if (ACTION_STATUSES.has(item?.state)) trackBet('action_status', row, { ...context, result: item.state });
+                }
             });
+            finish(result?.replayed ? 'succeeded' : result?.transactionHash || result?.transactionHashes?.length ? 'confirmed' : 'unknown');
             const done = action === 'createMarket' ? t('bets.row.opened', 'Pool opened')
                 : action === 'claim' ? t('panel.proposal.market.collectedMessage', 'Collected {{side}} winnings.', { side: sideWord(side === 1 ? 'yes' : 'no') })
                     : t('bets.row.settled', 'Pool settled');
@@ -290,6 +362,7 @@
             }
             announceChange(row.account);
         } catch (error) {
+            finish(root.BetsTelemetry?.errorResult(error) || 'failed', errorCodeOf(error));
             console.error(`[${new Date().toISOString()}] [bets] ${action} failed`, error);
             setNote(li, view && typeof view.errorText === 'function' ? view.errorText(error) : t('bets.error.transaction', 'The transaction failed.'), 'error');
         } finally {
@@ -299,12 +372,21 @@
 
     // Open the published agreement through the shared-link path, which refreshes its local copy,
     // applies its designs and reconstructs the land before opening the panel.
-    async function openAgreement(row) {
+    async function openAgreement(row, options = {}) {
+        trackBet('agreement_open', row, { entryPoint: options.entryPoint || 'sheet', result: 'started' });
         try {
             if (!row || !row.cid) throw new Error('the row names no agreement');
             if (root.MapShell && typeof root.MapShell.closeSheets === 'function') root.MapShell.closeSheets();
             await root.AgreementSync.handleAgreementRoute(row.cid);
+            // The shared-link handler can catch a load error or cancel navigation. Observe the
+            // requested panel before counting a completed review entrance.
+            const openedId = root.AgreementPanel?.current?.();
+            const opened = root.AgreementStore?.get?.(openedId);
+            const visible = root.AgreementPanel?.isOpen?.()
+                && (opened?.published?.cid === row.cid || openedId === `published-${row.cid}`);
+            trackBet('agreement_open', row, { entryPoint: options.entryPoint || 'sheet', result: visible ? 'succeeded' : 'unknown' });
         } catch (error) {
+            trackBet('agreement_open', row, { entryPoint: options.entryPoint || 'sheet', result: 'failed', errorCode: errorCodeOf(error) });
             console.error(`[${new Date().toISOString()}] [bets] open agreement failed`, error);
             if (typeof root.showEphemeralMessage === 'function') {
                 root.showEphemeralMessage(t('bets.error.openAgreement', 'The agreement could not be opened.'), 6000, 'error');
@@ -392,7 +474,7 @@
             // link in the meta line.
             const share = el('button', 'cb-link cb-link--quiet bets-row__link', t('bets.copyLink', 'Copy link'));
             share.type = 'button';
-            share.addEventListener('click', () => copyLink(row.account));
+            share.addEventListener('click', () => copyLink(row.account, { entryPoint: 'sheet' }));
             meta.append(share);
         }
         if (meta.childElementCount) li.append(meta);
@@ -520,6 +602,7 @@
         container.replaceChildren();
         if (!ordered.length) {
             renderStatus(container, t('bets.emptyAgreements', 'No pools in this city yet. Mint an agreement to open the first one.'));
+            finishDiscovery('succeeded');
             return;
         }
         const articles = ordered.map(renderContest).filter(Boolean);
@@ -527,10 +610,12 @@
             renderStatus(container, state.filter === 'mine' && !walletConnected()
                 ? t('panel.proposal.market.connectPosition', 'Connect a Solana wallet to see your bets.')
                 : t('bets.filter.empty', 'No bets match this filter.'));
+            finishDiscovery('succeeded');
             return;
         }
         articles.forEach(article => container.append(article));
         markChanged(container);
+        finishDiscovery('succeeded');
     }
 
     // ---- loading ----------------------------------------------------------------------------
@@ -559,6 +644,7 @@
             } catch (error) {
                 console.error(`[${new Date().toISOString()}] [bets] load failed`, error);
                 renderStatus(container, t('bets.error.load', 'Bets could not be loaded.'), 'error');
+                finishDiscovery('failed');
                 return null;
             } finally {
                 state.loading = null;
@@ -581,6 +667,9 @@
         if (pill) pill.hidden = seen;
         doc.addEventListener('mapshell:sheetopened', event => {
             if (!event.detail || event.detail.id !== SHEET_ID) return;
+            state.discoveryPending = true;
+            state.positionTracked = new Set();
+            trackBet('entry', null, { entryPoint: 'sheet' });
             if (pill && !pill.hidden) {
                 pill.hidden = true;
                 try { root.localStorage.setItem(SEEN_KEY, '1'); } catch (_) { }
@@ -633,7 +722,10 @@
         if (!link) return;
         try {
             if (typeof root.whenAppBooted === 'function') await root.whenAppBooted();
-            if (typeof root.openBetDialog === 'function') root.openBetDialog({ account: link.account, ...(link.approval ? { side: link.approval.params.side, amount: link.approval.params.amount, approval: true } : {}) });
+            if (typeof root.openBetDialog === 'function') {
+                trackBet('entry', { account: link.account }, { entryPoint: 'deep-link' });
+                root.openBetDialog({ account: link.account, entryPoint: 'deep-link', ...(link.approval ? { side: link.approval.params.side, amount: link.approval.params.amount, approval: true } : {}) });
+            }
             else root.openBetsSheet({ account: link.account });
         } catch (error) {
             console.warn(`[${new Date().toISOString()}] [bets] the bet link could not open`, error);
@@ -691,7 +783,7 @@
         }
         // Named as its row would be (bets-model.js labelOf) while the dialog reads the row.
         const title = root.BetsModel ? root.BetsModel.labelOf({ title: agreement.title, designTitles: (agreement.designs || []).map(design => design.title) }) : agreement.title;
-        return typeof root.openBetDialog === 'function' ? root.openBetDialog({ account, title: title || '' }) : null;
+        return typeof root.openBetDialog === 'function' ? root.openBetDialog({ account, title: title || '', entryPoint: 'agreement' }) : null;
     }
 
     root.AgreementBets = { available, open: openAgreementBet };

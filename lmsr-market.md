@@ -67,7 +67,8 @@ the app lists the market it registered at creation as the canonical one.
   shares to the side and the position, enforces `max_position`.
 - `sell(side, shares, min_return)`. Same checks; requires the position holds the shares; computes
   the sell quote, requires it `≥ min_return`, transfers it from the vault, removes the shares.
-- `resolve_lmsr()` kind 0: Executed → YES; Expired → NO; Cancelled → see below; else, once
+- `resolve_lmsr()` kind 0: Executed with valid `executed_at ≤ closes_at` → YES; execution after
+  `closes_at` → NO; Expired → NO; Cancelled → see below; else, once
   `now ≥ closes_at + grace`, NO. Kind 1: a qualifying attestation whose event time is on or before
   `closes_at` → the committed outcome; else, once `now ≥ closes_at + grace`, NO. Conflicting
   qualifying attestations for both outcomes → VOID (streamline B5).
@@ -128,13 +129,14 @@ postdate close) belongs to its own question shape and stays with the legacy `Ext
 4. Price of a side rises with its own shares and falls with the other side's.
 5. The JavaScript module and the Rust port agree on every vector in `lmsr-vectors.json`.
 
-Two limits of the resolution paths, documented rather than solved: NO-by-absence sees only the
+NO-by-absence for kind 1 sees only the
 attestations passed in, so the attester's service must resolve within the grace window, ideally in
-the same transaction as its attestation; and kind 0 has no execution timestamp, so an `Executed`
-status reached after `closes_at` still counts as YES, which makes the kind 0 deadline effectively
-`closes_at + grace`. The fix for the second is `executed_at` and `cancelled_at` on the proposal
-account, in the proposal program's next version, with the market comparing `executed_at` to
-`closes_at`.
+the same transaction as its attestation. Kind 0 reads the agreement account's existing `executed_at`
+field. A missing, nonpositive or future execution time, or an unrecognized lifecycle status, is
+invalid evidence and fails settlement. The grace period delays the absence decision; it does not
+extend the event cutoff. The account reader's test serializes a real agreement, independently of
+the reader's offsets. This source correction requires a market-program release before deployment
+can be claimed; it does not change the agreement account layout.
 
 ## Insiders (streamline B3)
 

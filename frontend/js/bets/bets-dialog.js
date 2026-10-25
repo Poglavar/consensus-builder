@@ -13,8 +13,32 @@
     const doc = root.document;
     const OVERLAY_ID = 'proposalMarketOverlay';
     const EXPLORER = 'https://explorer.solana.com';
-    const state = { overlay: null, account: null, row: null, contest: null, positions: null, opener: null, unregisterEscape: null, compare: null };
+    const state = { overlay: null, account: null, row: null, contest: null, positions: null, opener: null, unregisterEscape: null, compare: null, entryPoint: 'dialog', positionTrackedAccount: null, quotedAmount: null };
     const inFlight = new Set();
+    const ACTION_STATUSES = new Set(['preparing', 'awaiting_signature', 'submitted', 'confirmed']);
+
+    function trackBet(name, row = state.row, properties = {}) {
+        try {
+            root.BetsTelemetry?.track?.(name, {
+                ...(row?.account ? { agreementAccount: row.account } : {}),
+                ...(row?.cid ? { agreementCid: row.cid } : {}),
+                asset: 'devnet-usdc', entryPoint: state.entryPoint || 'dialog', ...properties
+            });
+        } catch (_) { console.warn(`[${new Date().toISOString()}] [bets] Journey event could not be captured`); }
+    }
+
+    function actionFor(method) { return method === 'createMarket' ? 'create' : method; }
+
+    function errorCodeOf(error) {
+        const code = typeof error?.code === 'string' ? error.code.toLowerCase().replace(/[^a-z0-9_-]+/g, '_').replace(/^[_-]+|[_-]+$/g, '').slice(0, 80) : '';
+        return code || 'unknown';
+    }
+
+    function actionAttempt(name, row, properties, errorCode) {
+        const common = { ...properties, action: name };
+        trackBet('action_start', row, { ...common, result: 'started' });
+        trackBet('action_end', row, { ...common, result: 'failed', errorCode });
+    }
 
     function interpolate(text, params) {
         return String(text || '').replace(/\{\{\s*(\w+)\s*\}\}/g, (match, key) => (params && key in params ? params[key] : match));
@@ -217,11 +241,16 @@
         disposeCompare();
         const overlay = state.overlay;
         if (!overlay) return;
+        const dialogState = overlay.querySelector('.bets-dialog')?.dataset.state;
+        trackBet('close', state.row || { account: state.account }, {
+            entryPoint: dialogState === 'stake' ? 'stake' : state.entryPoint,
+            ...(dialogState === 'stake' ? { action: 'stake' } : {})
+        });
         if (typeof state.unregisterEscape === 'function') state.unregisterEscape();
         overlay.remove();
         showAppAddress();
         const opener = state.opener;
-        state.overlay = null; state.row = null; state.contest = null; state.positions = null; state.opener = null; state.unregisterEscape = null;
+        state.overlay = null; state.row = null; state.contest = null; state.positions = null; state.opener = null; state.unregisterEscape = null; state.positionTrackedAccount = null;
         // Focus goes back where the dialog came from (a Bets row, the agreement panel); the sheet or
         // panel behind stayed open the whole time, so the person lands on the pool, not the bare map.
         const target = opener && opener.isConnected ? opener : doc.querySelector('.map-sheet:not([hidden])');
@@ -346,6 +375,7 @@
                 : t('bets.contest.agreementCount', contest.agreementCount === 1 ? '{{count}} agreement' : '{{count}} agreements', { count: contest.agreementCount });
             const rivals = button('cb-link bets-dialog__contest', t('bets.dialog.onThisLandCount', '{{entries}} on this land', { entries: counted }), () => {
                 const id = contest.id;
+                trackBet('return', row, { entryPoint: 'dialog' });
                 close();
                 if (typeof root.openBetsSheet === 'function') root.openBetsSheet({ contestId: id });
             });
@@ -369,6 +399,7 @@
                     labels: { before: t('mapCompare.before', 'Before'), after: t('mapCompare.after', 'After') },
                     sliderLabel: t('mapCompare.sliderLabel', 'Before and after comparison')
                 });
+                trackBet('comparison_view', row, { entryPoint: state.entryPoint });
             } else {
                 p.body.append(img);
             }
@@ -407,6 +438,10 @@
         else if (walletConnected()) mine.textContent = t('bets.dialog.noBets', 'You have no bets on this agreement.');
         else mine.textContent = t('panel.proposal.market.connectPosition', 'Connect a Solana wallet to see your bets.');
         p.body.append(mine);
+        if (lines.length && state.positionTrackedAccount !== row.account) {
+            state.positionTrackedAccount = row.account;
+            trackBet('position_view', row, { entryPoint: state.entryPoint });
+        }
 
         const claimable = model() ? model().claimSides(row, positions) : [];
         if (claimable.length) {
@@ -434,10 +469,15 @@
 
         // Footer: pass it on, go to the agreement, and the bet itself.
         if (linkFor(row.account)) {
-            p.footer.append(button('btn btn-quiet', t('bets.copyLink', 'Copy link'), () => sheet().copyLink(row.account)));
+            p.footer.append(button('btn btn-quiet', t('bets.copyLink', 'Copy link'), () => sheet().copyLink(row.account, { entryPoint: 'dialog' })));
             if (typeof root.navigator.share === 'function') {
                 p.footer.append(button('btn btn-quiet', t('panel.proposal.actions.share', 'Share'), async () => {
-                    try { await root.navigator.share({ title: questionOf(row), url: linkFor(row.account) }); } catch (_) { /* dismissed */ }
+                    try {
+                        await root.navigator.share({ title: questionOf(row), url: linkFor(row.account) });
+                        trackBet('share', row, { entryPoint: 'dialog', result: 'succeeded' });
+                    } catch (error) {
+                        trackBet('share', row, { entryPoint: 'dialog', result: error?.name === 'AbortError' ? 'cancelled' : 'failed' });
+                    }
                 }));
             }
         }
@@ -445,7 +485,7 @@
             p.footer.append(button('btn', t('bets.dialog.openAgreement', 'Open the agreement'), () => {
                 const target = row;
                 close();
-                sheet().openAgreement(target);
+                sheet().openAgreement(target, { entryPoint: 'dialog' });
             }));
         }
         if (row.state === 'open') {
@@ -478,17 +518,31 @@
     // Opening, settling or collecting from the pool: one wallet transaction, the result in the
     // note under the facts, then the overview re-read.
     async function transact(action, side, trigger) {
-        if (!walletConnected()) { askForWallet(); return; }
+        const row = state.row;
+        const account = state.account;
+        const actionName = actionFor(action);
+        const context = { action: actionName, ...(side === null ? {} : { side: sideName(side) }), entryPoint: state.entryPoint };
+        let finished = false;
+        const finish = (result, errorCode) => {
+            if (finished) return;
+            finished = true;
+            trackBet('action_end', row, { ...context, result, ...(errorCode ? { errorCode } : {}) });
+        };
+        if (!walletConnected()) { actionAttempt(actionName, row || { account }, context, 'wallet_not_connected'); askForWallet(); return; }
         const chain = bridge();
         const v = view();
-        const account = state.account;
-        if (!chain || typeof chain[action] !== 'function') return;
+        if (!chain || typeof chain[action] !== 'function') { actionAttempt(actionName, row || { account }, context, 'action_unavailable'); return; }
         const key = `${action}:${account}:${side ?? ''}`;
         if (inFlight.has(key)) return;
         inFlight.add(key);
         if (trigger) trigger.disabled = true;
+        trackBet('action_start', row, { ...context, result: 'started' });
         try {
-            const result = await chain[action]({ proposal: account, ...(side === null ? {} : { side: sideValue(side) }), onStatus: item => setStatus(v ? v.statusText(item) : '', item.explorerUrl) });
+            const result = await chain[action]({ proposal: account, ...(side === null ? {} : { side: sideValue(side) }), onStatus: item => {
+                setStatus(v ? v.statusText(item) : '', item.explorerUrl);
+                if (ACTION_STATUSES.has(item?.state)) trackBet('action_status', row, { ...context, result: item.state });
+            } });
+            finish(result?.replayed ? 'succeeded' : result?.transactionHash || result?.transactionHashes?.length ? 'confirmed' : 'unknown');
             setStatus(v ? v.confirmedText() : '', result.explorerUrl);
             const wallet = walletAddress();
             const message = action === 'claim' ? t('panel.proposal.market.collectedMessage', 'Collected {{side}} winnings.', { side: sideWord(side) })
@@ -499,6 +553,7 @@
             await refresh();
             setStatus(message, result.explorerUrl);
         } catch (error) {
+            finish(root.BetsTelemetry?.errorResult(error) || 'failed', errorCodeOf(error));
             console.error(`[${new Date().toISOString()}] [bets] ${action} failed`, error);
             setStatus(v ? v.errorText(error) : t('bets.error.transaction', 'The transaction failed.'), error && error.explorerUrl);
         } finally {
@@ -528,6 +583,7 @@
         const row = state.row;
         if (!p || !row) return;
         const yes = sideValue(side) === 1;
+        state.quotedAmount = null;
         const m = model();
         p.dialog.dataset.state = 'stake';
         p.title.textContent = t('panel.proposal.market.dialogTitle', 'Bet {{side}}', { side: sideWord(side) });
@@ -551,8 +607,8 @@
         const chips = el('div', 'cb-segmented bets-dialog__chips');
         chips.setAttribute('role', 'group');
         chips.setAttribute('aria-label', t('bets.dialog.amount', 'Amount'));
-        (m ? m.QUICK_STAKES : ['0.1', '1', '5']).forEach(amount => chips.append(button('cb-segmented__option bets-dialog__chip', amount, () => { input.value = amount; update(); input.focus(); })));
-        const max = button('cb-segmented__option bets-dialog__chip', t('bets.dialog.max', 'Max'), () => { if (max.dataset.amount) { input.value = max.dataset.amount; update(); input.focus(); } });
+        (m ? m.QUICK_STAKES : ['0.1', '1', '5']).forEach(amount => chips.append(button('cb-segmented__option bets-dialog__chip', amount, () => { input.value = amount; update(); recordQuote(); input.focus(); })));
+        const max = button('cb-segmented__option bets-dialog__chip', t('bets.dialog.max', 'Max'), () => { if (max.dataset.amount) { input.value = max.dataset.amount; update(); recordQuote(); input.focus(); } });
         max.hidden = true;
         chips.append(max);
         p.body.append(chips);
@@ -581,7 +637,19 @@
             toWin.append(el('strong', null, t('bets.dialog.toWin', 'To win about {{amount}} if {{side}} wins', { amount: moneyAtomic(prize), side: sideWord(side) })));
             toWin.append(el('span', null, ` (${t('bets.row.pays', 'Pays {{multiple}}×', { multiple: multiple === null ? '—' : multiple.toFixed(2) })}). ${t('bets.dialog.toWinNote', 'The final payout follows the pool at settlement.')}`));
         };
+        const recordQuote = () => {
+            if (!m || !row.marketAddress) return;
+            const quoteView = view();
+            let amount;
+            try { amount = quoteView ? quoteView.parseUsdc(input.value) : null; } catch (_) { amount = null; }
+            if (!amount) return;
+            const key = `${sideName(side)}:${amount}`;
+            if (key === state.quotedAmount) return;
+            state.quotedAmount = key;
+            trackBet('quote', row, { side: sideName(side), entryPoint: state.entryPoint });
+        };
         input.addEventListener('input', update);
+        input.addEventListener('blur', recordQuote);
         input.addEventListener('keydown', event => { if (event.key !== 'Enter') return; event.preventDefault(); submitStake(side); });
 
         const back = button('btn', t('proposalDrafts.actions.back', 'Back'), () => renderOverview());
@@ -613,13 +681,37 @@
         let amount;
         try { amount = v.parseUsdc(rawAmount); } catch (error) { setStatus(error.message); return; }
         const account = state.account;
+        const actionContext = { action: 'stake', side: sideName(side), entryPoint: state.entryPoint };
+        let finished = false;
+        const finish = (result, errorCode) => {
+            if (finished) return;
+            finished = true;
+            trackBet('action_end', row, { ...actionContext, result, ...(errorCode ? { errorCode } : {}) });
+        };
+        const quoteKey = `${sideName(side)}:${amount}`;
+        if (state.quotedAmount !== quoteKey) {
+            state.quotedAmount = quoteKey;
+            trackBet('quote', row, { side: sideName(side), entryPoint: state.entryPoint });
+        }
+        if (!walletConnected()) {
+            const common = { ...actionContext, action: 'stake' };
+            trackBet('action_start', row, { ...common, result: 'started' });
+            trackBet('action_end', row, { ...common, result: 'failed', errorCode: 'wallet_not_connected' });
+            askForWallet();
+            return;
+        }
         const wallet = walletAddress() || 'wallet';
         const key = `stake:${account}:${wallet}:${sideValue(side)}`;
         if (inFlight.has(key)) return;
         inFlight.add(key);
         if (submit) submit.disabled = true;
+        trackBet('action_start', row, { ...actionContext, result: 'started' });
         try {
-            const result = await bridge().stake({ proposal: account, side: sideValue(side), amount, onStatus: item => setStatus(v.statusText(item), item.explorerUrl) });
+            const result = await bridge().stake({ proposal: account, side: sideValue(side), amount, onStatus: item => {
+                setStatus(v.statusText(item), item.explorerUrl);
+                if (ACTION_STATUSES.has(item?.state)) trackBet('action_status', row, { ...actionContext, result: item.state });
+            } });
+            finish(result?.transactionHash || result?.transactionHashes?.length ? 'confirmed' : 'unknown');
             setStatus(v.confirmedText(), result.explorerUrl);
             // The receipt first, then everything behind it: the Bets sheet re-reads its pools, the
             // status bar keeps the line, the activity feed gets the bet.
@@ -629,6 +721,7 @@
             if (typeof root.updateStatus === 'function') root.updateStatus(placedLine);
             await recordSupport({ wallet, action: 'stake', proposalId: account, amount: rawAmount, result, message: `${actorName(wallet)} bet ${rawAmount} USDC on ${sideWord(side)}.` });
         } catch (error) {
+            finish(root.BetsTelemetry?.errorResult(error) || 'failed', errorCodeOf(error));
             setStatus(v.errorText(error), error && error.explorerUrl);
         } finally {
             inFlight.delete(key);
@@ -707,9 +800,15 @@
         const account = options && options.account ? String(options.account) : null;
         if (!account) return null;
         const side = options.side === undefined || options.side === null ? null : sideValue(options.side);
-        if (side !== null && !walletConnected() && !options.approval) { askForWallet(); return null; }
+        if (side !== null && !walletConnected() && !options.approval) {
+            actionAttempt('stake', { account }, { side: sideName(side), entryPoint: options.entryPoint || 'dialog' }, 'wallet_not_connected');
+            askForWallet(); return null;
+        }
         const overlay = mount(options.title || t('panel.proposal.market.historyBet', 'Bet'));
         state.account = account;
+        state.entryPoint = options.entryPoint || 'dialog';
+        state.positionTrackedAccount = null;
+        state.quotedAmount = null;
         state.row = null; state.contest = null; state.positions = null;
         showBetAddress(account);
         const p = parts();
@@ -723,11 +822,14 @@
         if (state.overlay !== overlay) return overlay;
         // Only an open pool takes a new bet: a link with a side to a pool that is settling or settled
         // lands on its overview.
+        trackBet('market_open', state.row, { entryPoint: state.entryPoint });
         if (side !== null && state.row.state === 'open') {
             renderStake(side);
             const input = parts().body.querySelector('[data-market-amount]');
             if (input && options.amount) { input.value = options.amount; input.dispatchEvent(new Event('input', { bubbles: true })); }
-        } else renderOverview();
+        } else {
+            renderOverview();
+        }
         return overlay;
     }
 

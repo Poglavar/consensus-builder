@@ -9,6 +9,14 @@ describe('createApp', () => {
         vi.restoreAllMocks();
     });
 
+    it('serves betting metrics before the generic bet account share route', async () => {
+        const { app } = createApp({ env: { USE_CORS_ALLOWLIST: 'false' }, pool: createMockPool() });
+        const res = await request(app).get('/bets/metrics');
+        expect(res.status).toBe(200);
+        expect(res.type).toBe('application/json');
+        expect(res.body).toMatchObject({ mode: 'visitor', label: 'Anonymous browser activity', funnel: [] });
+    });
+
     it('wires the health route through the full app factory', async () => {
         const { app } = createApp({
             env: { USE_CORS_ALLOWLIST: 'false' },

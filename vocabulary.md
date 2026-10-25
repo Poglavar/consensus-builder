@@ -634,6 +634,14 @@ A betting instrument about a qualified binding agreement's execution. Its yes ou
 
 A group of published agreements connected transitively by shared source-qualified input parcels. Geographic overlap or equal unqualified parcel labels alone does not establish membership.
 
+### Market deadline
+
+The event cutoff stated in a dated market's question. Execution after that cutoff does not satisfy a bet on execution by the deadline, even if settlement occurs later. A market's deadline and its agreement's own deadline are separate terms.
+
+### Betting journey event
+
+A browser's report of viewing or acting in the betting flow, with an anonymous visitor identity, session and source occurrence time. It is separate from a verified chain transaction. Simulated visits carry an explicit test-run identity and are excluded from ordinary visitor aggregates; a visitor count does not establish a count of real people.
+
 ### Pool share
 
 One side's stakes divided by total stakes in the market's stated asset, usually displayed as a percentage. It is not itself an estimated probability or a payout multiple.

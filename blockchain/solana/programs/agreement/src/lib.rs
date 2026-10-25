@@ -471,6 +471,8 @@ pub const LENS_OFFSET: usize = 8 + 32;
 /// Byte offset of `status` (136): the discriminator (8), `authority`, `lens` and `payout`
 /// (3 × 32), then `deadline`, `created_at`, `required_lamports` and `escrow_lamports` (4 × 8).
 pub const STATUS_OFFSET: usize = 8 + 3 * 32 + 4 * 8;
+/// Byte offset of `executed_at`, following the status and decision fields in the fixed header.
+pub const EXECUTED_AT_OFFSET: usize = STATUS_OFFSET + 1 + 1 + 1 + 8 + 8 + 32 + 32;
 
 /// What proposal_market and proposal_pledge read of an Agreement account, without deserializing
 /// it (they depend on this crate with `no-entrypoint`, so the id and layout live only here).
@@ -480,6 +482,8 @@ pub struct AgreementView {
     pub lens: Pubkey,
     /// AgreementStatus code: 0 Active, 1 Executed, 2 Cancelled, 3 Expired.
     pub status: u8,
+    /// Chain time of execution (0 unless Executed).
+    pub executed_at: i64,
 }
 
 /// `account` read as an Agreement of this program: owner, discriminator and length are checked.
@@ -489,7 +493,7 @@ pub fn read_agreement_view(account: &AccountInfo) -> Option<AgreementView> {
         return None;
     }
     let data = account.try_borrow_data().ok()?;
-    if data.len() <= STATUS_OFFSET || data[..8] != Agreement::DISCRIMINATOR {
+    if data.len() < EXECUTED_AT_OFFSET + 8 || data[..8] != Agreement::DISCRIMINATOR {
         return None;
     }
     let key_at = |offset: usize| -> Option<Pubkey> {
@@ -500,6 +504,7 @@ pub fn read_agreement_view(account: &AccountInfo) -> Option<AgreementView> {
         authority: key_at(8)?,
         lens: key_at(LENS_OFFSET)?,
         status: data[STATUS_OFFSET],
+        executed_at: i64::from_le_bytes(data.get(EXECUTED_AT_OFFSET..EXECUTED_AT_OFFSET + 8)?.try_into().ok()?),
     })
 }
 
@@ -738,4 +743,103 @@ fn transfer_program_lamports<'from, 'to>(
         .ok_or(AgreementError::ArithmeticOverflow)?;
 
     Ok(())
+}
+
+#[cfg(test)]
+mod agreement_view_tests {
+    use super::*;
+
+    fn read_view(data: &mut [u8], owner: &Pubkey) -> Option<AgreementView> {
+        let key = Pubkey::new_unique();
+        let mut lamports = 1;
+        let account = AccountInfo::new(&key, false, false, &mut lamports, data, owner, false, 0);
+        read_agreement_view(&account)
+    }
+
+    #[test]
+    fn agreement_view_reads_executed_at_at_its_fixed_offset() {
+        let agreement = Agreement {
+            authority: Pubkey::new_from_array([0x11; 32]),
+            lens: Pubkey::new_from_array([0x22; 32]),
+            payout: Pubkey::new_from_array([0x33; 32]),
+            deadline: 101,
+            created_at: 102,
+            required_lamports: 103,
+            escrow_lamports: 104,
+            status: AgreementStatus::Executed,
+            open_ground: true,
+            decision: Decision::Satisfied,
+            decision_attested_at: 105,
+            decision_observed_at: 106,
+            decision_attestation: Pubkey::new_from_array([0x44; 32]),
+            decision_hash: [0x55; 32],
+            executed_at: 1234,
+            bump: 7,
+            cid: "bafkreiabc".to_owned(),
+        };
+        let mut data = Vec::new();
+        agreement.try_serialize(&mut data).unwrap();
+
+        let view = read_view(&mut data, &crate::ID).unwrap();
+        assert_eq!(view.authority, agreement.authority);
+        assert_eq!(view.lens, agreement.lens);
+        assert_eq!(view.status, AgreementStatus::Executed as u8);
+        assert_eq!(view.executed_at, agreement.executed_at);
+    }
+
+    #[test]
+    fn agreement_view_rejects_missing_execution_timestamp_bytes() {
+        let agreement = Agreement {
+            authority: Pubkey::default(),
+            lens: Pubkey::default(),
+            payout: Pubkey::default(),
+            deadline: 0,
+            created_at: 0,
+            required_lamports: 0,
+            escrow_lamports: 0,
+            status: AgreementStatus::Active,
+            open_ground: false,
+            decision: Decision::Pending,
+            decision_attested_at: 0,
+            decision_observed_at: 0,
+            decision_attestation: Pubkey::default(),
+            decision_hash: [0; 32],
+            executed_at: 0,
+            bump: 0,
+            cid: String::new(),
+        };
+        let mut data = Vec::new();
+        agreement.try_serialize(&mut data).unwrap();
+        data.truncate(EXECUTED_AT_OFFSET + 7);
+        assert!(read_view(&mut data, &crate::ID).is_none());
+    }
+
+    #[test]
+    fn agreement_view_rejects_wrong_owner_and_discriminator() {
+        let agreement = Agreement {
+            authority: Pubkey::default(),
+            lens: Pubkey::default(),
+            payout: Pubkey::default(),
+            deadline: 0,
+            created_at: 0,
+            required_lamports: 0,
+            escrow_lamports: 0,
+            status: AgreementStatus::Active,
+            open_ground: false,
+            decision: Decision::Pending,
+            decision_attested_at: 0,
+            decision_observed_at: 0,
+            decision_attestation: Pubkey::default(),
+            decision_hash: [0; 32],
+            executed_at: 0,
+            bump: 0,
+            cid: String::new(),
+        };
+        let mut data = Vec::new();
+        agreement.try_serialize(&mut data).unwrap();
+        assert!(read_view(&mut data, &Pubkey::new_unique()).is_none());
+
+        data[0] ^= 0xff;
+        assert!(read_view(&mut data, &crate::ID).is_none());
+    }
 }

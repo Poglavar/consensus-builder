@@ -117,15 +117,21 @@ pub fn lmsr_obligation(q_yes: u64, q_no: u64, outcome: u8) -> u64 {
 }
 
 /// Kind 0 settlement policy (lmsr-market.md "Cancellation: decided VOID, with a refinement to
-/// confirm"): Executed → YES, Expired → NO, Cancelled → VOID per the 2026-10-12 decision
-/// (streamline B2). The doc's open alternative, NO with a cancellation notice period, is a change
-/// to the Cancelled arm only. None: not terminal, so only the deadline plus grace can settle it.
-pub fn proposal_outcome(status: u8) -> Option<u8> {
+/// confirm"): Executed → YES only when its valid on-chain time is no later than close, otherwise
+/// NO; Expired → NO; Cancelled → VOID per the 2026-10-12 decision (streamline B2). The doc's open
+/// alternative, NO with a cancellation notice period, is a change to the Cancelled arm only.
+/// Active settles NO after the deadline plus grace.
+pub fn proposal_outcome(status: u8, executed_at: i64, closes_at: i64, grace_ends_at: i64, now: i64) -> Result<Option<u8>> {
     match status {
-        STATUS_EXECUTED => Some(SIDE_YES),
-        STATUS_EXPIRED => Some(SIDE_NO),
-        STATUS_CANCELLED => Some(OUTCOME_VOID),
-        _ => None,
+        STATUS_EXECUTED => {
+            require!(executed_at > 0 && executed_at <= now, MarketError::InvalidProposalAccount);
+            Ok(Some(if executed_at <= closes_at { SIDE_YES } else { SIDE_NO }))
+        }
+        STATUS_EXPIRED => Ok(Some(SIDE_NO)),
+        STATUS_CANCELLED => Ok(Some(OUTCOME_VOID)),
+        STATUS_ACTIVE if now >= grace_ends_at => Ok(Some(SIDE_NO)),
+        STATUS_ACTIVE => Ok(None),
+        _ => err!(MarketError::InvalidProposalAccount),
     }
 }
 
@@ -443,13 +449,10 @@ pub(crate) fn handle_resolve_lmsr(ctx: Context<ResolveLmsr>) -> Result<()> {
         require_keys_eq!(ctx.accounts.proposal.key(), market.proposal, MarketError::InvalidProposalAccount);
         require_keys_eq!(ctx.accounts.schema.key(), market.schema, MarketError::WrongEvidenceSchema);
         if market.kind == KIND_PROPOSAL {
-            let status = read_subject(&ctx.accounts.proposal, Some(&market.proposal))?.status;
-            match proposal_outcome(status) {
+            let agreement = read_subject(&ctx.accounts.proposal, Some(&market.proposal))?;
+            match proposal_outcome(agreement.status, agreement.executed_at, market.closes_at, market.grace_ends_at(), now)? {
                 Some(outcome) => Settlement::without_evidence(outcome),
-                None => {
-                    require!(now >= market.grace_ends_at(), MarketError::GraceNotElapsed);
-                    Settlement::without_evidence(SIDE_NO)
-                }
+                None => return err!(MarketError::GraceNotElapsed),
             }
         } else {
             settle_from_evidence(market, &ctx.accounts.schema, ctx.remaining_accounts, now)?
@@ -937,10 +940,28 @@ mod tests {
     }
 
     #[test]
-    fn settles_kind_0_from_the_proposal_status() {
-        assert_eq!(proposal_outcome(STATUS_EXECUTED), Some(SIDE_YES));
-        assert_eq!(proposal_outcome(STATUS_EXPIRED), Some(SIDE_NO));
-        assert_eq!(proposal_outcome(STATUS_CANCELLED), Some(OUTCOME_VOID));
-        assert_eq!(proposal_outcome(STATUS_ACTIVE), None);
+    fn settles_kind_0_execution_only_when_execution_is_by_close() {
+        let grace_ends_at = CLOSES_AT + 100;
+        assert_eq!(proposal_outcome(STATUS_EXECUTED, CLOSES_AT - 1, CLOSES_AT, grace_ends_at, grace_ends_at).unwrap(), Some(SIDE_YES));
+        assert_eq!(proposal_outcome(STATUS_EXECUTED, CLOSES_AT, CLOSES_AT, grace_ends_at, grace_ends_at).unwrap(), Some(SIDE_YES));
+        assert_eq!(proposal_outcome(STATUS_EXECUTED, CLOSES_AT + 1, CLOSES_AT, grace_ends_at, grace_ends_at).unwrap(), Some(SIDE_NO));
+    }
+
+    #[test]
+    fn kind_0_execution_requires_a_present_valid_nonfuture_timestamp() {
+        let grace_ends_at = CLOSES_AT + 100;
+        assert!(proposal_outcome(STATUS_EXECUTED, 0, CLOSES_AT, grace_ends_at, grace_ends_at).is_err());
+        assert!(proposal_outcome(STATUS_EXECUTED, -1, CLOSES_AT, grace_ends_at, grace_ends_at).is_err());
+        assert!(proposal_outcome(STATUS_EXECUTED, grace_ends_at + 1, CLOSES_AT, grace_ends_at, grace_ends_at).is_err());
+    }
+
+    #[test]
+    fn kind_0_terminal_and_active_statuses_keep_their_outcomes() {
+        let grace_ends_at = CLOSES_AT + 100;
+        assert_eq!(proposal_outcome(STATUS_EXPIRED, 0, CLOSES_AT, grace_ends_at, grace_ends_at).unwrap(), Some(SIDE_NO));
+        assert_eq!(proposal_outcome(STATUS_CANCELLED, 0, CLOSES_AT, grace_ends_at, grace_ends_at).unwrap(), Some(OUTCOME_VOID));
+        assert_eq!(proposal_outcome(STATUS_ACTIVE, 0, CLOSES_AT, grace_ends_at, grace_ends_at - 1).unwrap(), None);
+        assert_eq!(proposal_outcome(STATUS_ACTIVE, 0, CLOSES_AT, grace_ends_at, grace_ends_at).unwrap(), Some(SIDE_NO));
+        assert!(proposal_outcome(255, 0, CLOSES_AT, grace_ends_at, grace_ends_at).is_err());
     }
 }
