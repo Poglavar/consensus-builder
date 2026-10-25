@@ -559,6 +559,14 @@ def retain_workspace(workspace: dict[str, Any], reason: str) -> dict[str, Any]:
             or Path(metadata.get("root", "")).resolve() != Path(workspace["root"]).resolve()
             or metadata_path.name != f"slot-{workspace['slot']}.json"):
         raise RuntimeError("qualification workspace retention identity mismatch")
+    worker_state = Path(workspace["stateDir"]) / "state.json"
+    if worker_state.is_file():
+        for process in _read_metadata(worker_state).get("activeProcesses", []):
+            try:
+                os.kill(int(process["pid"]), 0)
+            except ProcessLookupError:
+                continue
+            raise RuntimeError("qualification worker is still alive; refusing to move its workspace")
     owner = metadata_path.parent.parent.parent.parent
     _preserve_interrupted_preparation(owner, metadata_path, metadata)
     retained_path = metadata_path.with_name(f"interrupted-{metadata['runId']}.json")

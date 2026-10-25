@@ -5,6 +5,7 @@ import importlib.util
 import json
 import shutil
 import ssl
+import sys
 import subprocess
 import tempfile
 import unittest
@@ -13,6 +14,7 @@ from pathlib import Path
 
 
 REPO = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO / "scripts/lib"))
 MODULE = REPO / "scripts/lib/parcel_qualification_workspaces.py"
 spec = importlib.util.spec_from_file_location("parcel_qualification_workspaces_tested", MODULE)
 workspaces = importlib.util.module_from_spec(spec)
@@ -517,6 +519,16 @@ class ParcelQualificationWorkspaceTests(unittest.TestCase):
         self.assertNotEqual(fresh["runId"], retained["runId"])
         self.assertFalse((fresh["root"] / ".env").exists())
         self.assertTrue(Path(retained["root"]).exists())
+
+    def test_retention_refuses_to_move_a_live_workers_workspace(self):
+        workspace = self.prepare()
+        state = workspace["stateDir"] / "state.json"
+        state.write_text(json.dumps({"activeProcesses": [{"pid": 123}]}))
+        with patch.object(workspaces.os, "kill", return_value=None):
+            with self.assertRaisesRegex(RuntimeError, "still alive"):
+                workspaces.retain_workspace(workspace, "worker finalization failed")
+        self.assertTrue(workspace["root"].is_dir())
+        self.assertTrue(workspace["metadataPath"].is_file())
 
     def test_discard_refuses_unowned_ignored_env_file(self):
         workspace = self.prepare()
