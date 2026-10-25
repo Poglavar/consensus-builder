@@ -436,10 +436,25 @@ class SharedRunnerWriteTests(unittest.TestCase):
             return {'valid': True}
         self.runner._packet = packet
         self.runner._reviewed_city_receipt = lambda *args: None
+        def dispatch(pool):
+            self.assertEqual(pool._select('review', 1), [cities[1]])
+            return True
+        with patch.object(pipeline.ContinuousPipeline, 'run', autospec=True, side_effect=dispatch):
+            self.assertTrue(self.runner._process_queue(queue, once=False)[0])
+        self.assertIn('selection', self.runner.state['cities']['42']['storageError'])
+        self.assertNotIn('storageError', self.runner.state['cities']['43'])
+
+    def test_continuous_startup_does_not_sweep_every_city_before_dispatch(self):
+        queue = self.root / 'queue.json'
+        queue.write_text('{}')
+        cities = [{'cityCode': '42', 'rank': 1}, {'cityCode': '43', 'rank': 2}]
+        self.runner._load_queue = lambda path: ({}, cities)
+        self.runner._ensure_root_tasks = Mock()
+        self.runner.discovery_workflow = lambda: True
+        self.runner._packet = Mock(side_effect=AssertionError('unexpected startup sweep'))
         with patch.object(pipeline.ContinuousPipeline, 'run', return_value=True):
             self.assertTrue(self.runner._process_queue(queue, once=False)[0])
-        self.assertIn('startup-inputs', self.runner.state['cities']['42']['storageError'])
-        self.assertNotIn('storageError', self.runner.state['cities']['43'])
+        self.runner._packet.assert_not_called()
 
     def test_success_publishes_adapter_for_the_next_task(self):
         original = self.runtime.current_runtime(self.shared)['generation']

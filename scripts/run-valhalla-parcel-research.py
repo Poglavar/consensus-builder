@@ -1725,6 +1725,16 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
         self.state["currentRankEnd"] = end_rank
         self.state["totalRankCount"] = total_rank_count
         self.save_state()
+        if getattr(self.args, "shared_root", None):
+            from parcel_continuous_pipeline import ContinuousPipeline
+            if not self.discovery_workflow():
+                raise ValueError("--shared-root requires a finite discovery/adapters queue")
+            # Each dispatch validates its city's current packet and receipt. Scanning
+            # every city here delays all lanes and repeats those same disk reads.
+            self.log("queue loaded; city inputs validate at dispatch", count=len(cities),
+                     rankStart=start_rank, rankEnd=end_rank, workers=self.args.workers)
+            return ContinuousPipeline(self, cities, cohort_dir).run(), end_rank
+
         validated_done = 0
         for city in cities:
             entry = self._city_entry(city)
@@ -1744,12 +1754,6 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                 _city_error(self, city["cityCode"], "startup-inputs", exc)
         self.log("queue loaded", count=len(cities), rankStart=start_rank, rankEnd=end_rank,
                  validatedReviewedOnResume=validated_done, workers=self.args.workers)
-
-        if getattr(self.args, "shared_root", None):
-            from parcel_continuous_pipeline import ContinuousPipeline
-            if not self.discovery_workflow():
-                raise ValueError("--shared-root requires a finite discovery/adapters queue")
-            return ContinuousPipeline(self, cities, cohort_dir).run(), end_rank
 
         # Start the existing qualification backlog promptly after a restart.
         if getattr(self.args, "qualification_workers", 1) == 2:
