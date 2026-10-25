@@ -558,8 +558,8 @@
         clearGroupChildren(planningSourcesGroup);
         const view = window.PlanningViews.getPolicy();
         const inspected = window.PlanningViews.getSelected();
-        const builtSelection = inspected?.role === 'existing' && view.existing !== 'off';
-        planningSourcesGroup.visible = hasVisiblePlanningRepresentations() && !realisticLayerActive;
+        const builtSelection = inspected?.role === 'existing' && view.existing !== 'off' && !realisticLayerActive;
+        planningSourcesGroup.visible = hasVisiblePlanningRepresentations();
         if (!planningSourcesGroup.visible) { invalidateThreeView(); return; }
         const selectedId = window.PlanningViews.getState()?.selectedId;
         for (const item of window.PlanningViews.getItems()) {
@@ -700,7 +700,8 @@
     }
 
     function getParcelFeatureById(parcelId) {
-        return window.LiveParcelFabric?.get?.(String(parcelId)) || null;
+        return window.LiveParcelFabric?.get?.(String(parcelId))
+            || window.CadastralParcelRepository?.get?.(String(parcelId)) || null;
     }
 
     function applyParcelEmphasis() {
@@ -1362,7 +1363,7 @@
     }
     // Ground designs show intent across their surface; parcel selection names only the land
     // boundary, even when both objects have exactly the same geometry. Gaps remain transparent.
-    function addStackGroundHatching(group, features) {
+    function addStackGroundHatching(group, features, instance) {
         const material = new THREE.ShaderMaterial({
             uniforms: { pixelRatio: { value: renderer.getPixelRatio() },
                 selectionColor: { value: new THREE.Vector3(...window.MapHighlight.rgb()) },
@@ -1387,6 +1388,17 @@
         let count = 0;
         for (const feature of features) {
             for (const mesh of polygonFeatureToMeshes(feature, material, 0.55)) {
+                if (realisticLayerActive) {
+                    const positions = mesh.geometry.attributes.position;
+                    let complete = true;
+                    for (let i = 0; i < positions.count; i++) {
+                        const height = window.PhotorealMode.selectionHeightAt(positions.getX(i), positions.getY(i), 'designs', instance.id);
+                        if (typeof height !== 'number' || !Number.isFinite(height)) { complete = false; break; }
+                        positions.setZ(i, positions.getZ(i) + height);
+                    }
+                    if (!complete) { mesh.geometry.dispose(); continue; }
+                    mesh.geometry.computeBoundingSphere();
+                }
                 markOwnedMaterial(mesh, material);
                 mesh.userData.selectionHatch = true;
                 mesh.renderOrder = 9997;
@@ -1402,7 +1414,7 @@
     function highlightStackObject(kind, instance) {
         clearStackFocus();
         if (!scene || !instance) return;
-        const segments = stackVolumeSegments(kind, instance);
+        let segments = stackVolumeSegments(kind, instance);
         const representation = segments.length ? 'volume' : 'ground';
         const groundFeatures = representation === 'ground' ? window.ClickStackHits.featuresFor(kind, instance) : [];
         if (!segments.length) {
@@ -1420,6 +1432,11 @@
                 }
             }
             temporaryMaterial.dispose();
+        }
+        if (realisticLayerActive && representation === 'ground') {
+            segments = window.__threeClickPlan.drapeSegments(segments,
+                (x, y) => window.PhotorealMode.selectionHeightAt(x, y, kind, instance.id),
+                8 / Math.cos(xyToLatLng(0, 0).lat * Math.PI / 180));
         }
         if (!segments.length) return;
         stackFocusGroup = new THREE.Group();
@@ -1441,7 +1458,7 @@
             stackFocusGroup.add(outline);
         }
         const hatched = kind === 'designs' && representation === 'ground'
-            && addStackGroundHatching(stackFocusGroup, groundFeatures);
+            && addStackGroundHatching(stackFocusGroup, groundFeatures, instance);
         stackFocusGroup.userData.pattern = hatched ? 'hatch' : 'outline';
         scene.add(stackFocusGroup);
         if (!window.__reducedMotion) frameHooks.push(pulseStackFocus);
@@ -1516,12 +1533,26 @@
         } catch (_) { return null; }
     }
 
+    function observedBuildingFeatures() {
+        const observed = new Map((window.buildingFeaturePool || []).map(feature => [clickedBuildingId(feature), feature]));
+        for (const building of nearbyProposalBuildings) {
+            const feature = window.PlanningRepresentations.observedMeshFeature(building, observed.get(String(building.object_id)));
+            if (['Polygon', 'MultiPolygon'].includes(feature?.geometry?.type)) observed.set(clickedBuildingId(feature), feature);
+        }
+        return [...observed.values()].filter(feature => ['Polygon', 'MultiPolygon'].includes(feature?.geometry?.type));
+    }
+
     // The existing buildings standing on a parcel, by footprint centre (as isolation decides what
     // stays visible), each once: the Built section of a click on the parcel or a design on it.
     function buildingsOnParcel(parcelId) {
         const parcel = parcelId ? getParcelFeatureById(parcelId) : null;
         if (!parcel || !existingBuildingsGroup || typeof turf === 'undefined') return [];
         const found = new Map();
+        if (realisticLayerActive) {
+            for (const feature of observedBuildingFeatures()) {
+                if (turf.booleanPointInPolygon(turf.centroid(feature), parcel)) found.set(clickedBuildingId(feature), feature);
+            }
+        }
         existingBuildingsGroup.traverse(object => {
             const data = object.userData || {};
             if (!data.planningBuiltFeature || !data.footprintLatLng) return;
@@ -1546,7 +1577,7 @@
     }
 
     // After a click has done its scene work: the stack for what it stood on, the clicked thing open.
-    function showClickStack(picked, plan, click = null) {
+    function showClickStack(picked, plan, click = null, hits = null) {
         const stackApi = window.ThreeClickStack;
         if (!stackApi) return;
         const store = window.proposalStorage;
@@ -1554,17 +1585,23 @@
         const designs = [];
         if (plan.proposal) { const clicked = store?.getProposal?.(plan.proposal.id); if (clicked) designs.push(clicked); }
         if (parcelId) designs.push(...getProposalsForParcel(parcelId));
-        const massingIds = [picked?.planningId, parcelId ? parcelMassingItem(parcelId)?.id : null].filter(Boolean);
+        for (const hit of hits?.designs || []) {
+            const proposal = store?.getProposal?.(hit.id);
+            if (proposal) designs.push(proposal);
+        }
+        const massingIds = [picked?.planningId, parcelId ? parcelMassingItem(parcelId)?.id : null,
+            ...(hits?.permitted || []).map(item => item.id)].filter(Boolean);
         const items = window.PlanningViews?.getItems?.() || [];
         const built = picked?.builtFeature || null;
         const builtId = clickedBuildingId(built);
-        const builtList = [...(built ? [{ id: builtId, feature: built }] : []), ...buildingsOnParcel(parcelId)];
+        const builtList = [...(built ? [{ id: builtId, feature: built }] : []), ...buildingsOnParcel(parcelId), ...(hits?.built || [])];
         const input = {
             built: builtList.map(builtInstance),
             designs: designs.map(p => ({ id: String(proposalIdOf(p)), label: proposalDisplayTitle(p), proposal: p,
                 preserveView: plan.preserveView === true })),
             permitted: massingIds.map(id => ({ id, label: items.find(item => item.id === id)?.title || '' })),
-            parcels: parcelId ? [{ id: parcelId, label: stackApi.parcelLabel(parcelId), feature: getParcelFeatureById(parcelId) }] : []
+            parcels: [...(parcelId ? [{ id: parcelId, label: stackApi.parcelLabel(parcelId), feature: getParcelFeatureById(parcelId) }] : []),
+                ...(hits?.parcels || [])]
         };
         const focus = plan.proposal ? 'designs' : stackApi.focusOf(picked && picked.proposalId ? null : picked);
         const selected = { ...(plan.proposal ? { designs: plan.proposal.id } : {}), ...(builtId ? { built: builtId } : {}) };
@@ -1721,7 +1758,7 @@
         facadeStyleSelect.id = 'three-mode-facade-style';
         facadeStyleSelect.className = 'three-mode-display-select';
         facadeStyleSelect.setAttribute('aria-label', threeI18n('threeMode.controls.facadeStyle', 'Facade style'));
-        facadeStyleSelect.title = threeI18n('threeMode.controls.facadeStyleTooltip', 'Choose the illustrative material palette used on proposed building facades');
+        facadeStyleSelect.title = threeI18n('threeMode.controls.facadeStyleTooltip', 'Mixed assigns a style independently to each building; glass is used only at 10+ storeys. Other presets apply to every building.');
         ['mixed', ...buildingFacades.STYLES.map(style => style.id)].forEach(id => {
             const option = document.createElement('option');
             option.value = id;
@@ -2026,7 +2063,9 @@
         };
 
         const outer = toCleanVecs(rings[0]);
-        if (outer.length < 3) return null;
+        // A bent clipping ribbon can survive vertex cleanup and extrude into duplicate walls.
+        const hasArea = points => meshSanitize.hasRenderableArea(points.map(v => [v.x, v.y, 0]), EPS);
+        if (!hasArea(outer)) return null;
         // A self-intersecting outer ring (a bowtie strip from a sharp bend, or a degenerate footprint
         // from a dragged node) triangulates into overlapping faces with degenerate normals — the flat
         // black area + radiating spikes seen in 3D. It renders fine in 2D, so the guard is HERE (3D
@@ -2040,7 +2079,7 @@
         const shape = new THREE.Shape(outer);
         for (let i = 1; i < rings.length; i++) {
             const holePts = toCleanVecs(rings[i]);
-            if (holePts.length >= 3) shape.holes.push(new THREE.Path(holePts));
+            if (hasArea(holePts)) shape.holes.push(new THREE.Path(holePts));
         }
         return shape;
     }
@@ -2986,9 +3025,18 @@
                 } catch (_) { }
 
                 const graphics = lake.properties && lake.properties.lakeGraphics;
-                const shoreGeom = graphics && graphics.shore ? graphics.shore : lake.geometry;
-                const waterGeom = graphics && graphics.water ? graphics.water : null;
-                const transitionGeom = graphics && graphics.transition ? graphics.transition : null;
+                let basin;
+                try {
+                    basin = window.__threeLakeBasin.partitionLakeBasin(lake.geometry, graphics,
+                        (operation, a, b) => window.__parcelArrangement.clip(operation, a, b,
+                            { site: 'three-mode.lakeBasin', proposalId: lake.properties?.proposalId }));
+                } catch (error) {
+                    reportThreeClip('difference', error, 'three-mode.lakeBasin', [lake]);
+                    return;
+                }
+                const shoreGeom = basin.shore;
+                const waterGeom = basin.water;
+                const transitionGeom = basin.transition;
 
                 // RECESSED basin: the parcel ground has the lake footprint cut out (see
                 // buildParcels3D), so the lake digs below grade instead of floating above it.
@@ -3013,17 +3061,10 @@
                 // Open water surface, below grade, over a dark lake bed (the water is slightly
                 // transparent, so the bed is what reads as depth).
                 const bedMat = new THREE.MeshLambertMaterial({ color: 0x14324a });
-                if (waterGeom) {
-                    const waterFeature = { type: 'Feature', geometry: waterGeom, properties: {} };
-                    polygonFeatureToMeshes(waterFeature, bedMat, WATER_Z - 0.2, 0).forEach(m => { markOwnedMaterial(m, bedMat); flatTarget.add(m); });
-                    const waterMeshes = polygonFeatureToMeshes(waterFeature, waterMat, WATER_Z, 0);
-                    waterMeshes.forEach(m => { markOwnedMaterial(m, waterMat); flatTarget.add(m); });
-                } else {
-                    // Fallback: render entire lake as water if no water geometry
-                    polygonFeatureToMeshes(lake, bedMat, WATER_Z - 0.2, 0).forEach(m => { markOwnedMaterial(m, bedMat); flatTarget.add(m); });
-                    const waterMeshes = polygonFeatureToMeshes(lake, waterMat, WATER_Z, 0);
-                    waterMeshes.forEach(m => { markOwnedMaterial(m, waterMat); flatTarget.add(m); });
-                }
+                const waterFeature = { type: 'Feature', geometry: waterGeom, properties: {} };
+                polygonFeatureToMeshes(waterFeature, bedMat, WATER_Z - 0.2, 0).forEach(m => { markOwnedMaterial(m, bedMat); flatTarget.add(m); });
+                const waterMeshes = polygonFeatureToMeshes(waterFeature, waterMat, WATER_Z, 0);
+                waterMeshes.forEach(m => { markOwnedMaterial(m, waterMat); flatTarget.add(m); });
 
                 // Render fish as small decorative elements
                 const fishCoords = (graphics && Array.isArray(graphics.fish)) ? graphics.fish : [];
@@ -3040,7 +3081,9 @@
                         decoTarget.add(fish);
                     } catch (_) { }
                 });
-            } catch (_) { }
+            } catch (error) {
+                console.error('[three-mode] failed to build a lake basin', error);
+            }
         });
     }
 
@@ -6692,9 +6735,10 @@
         targetGroup.add(lines);
     }
 
-    function prepareProceduralFacadeMeshes(meshes, owner, height, floorHeight, metresPerUnit, city, ownsMaterial = false) {
+    function prepareProceduralFacadeMeshes(meshes, owner, height, floorHeight, metresPerUnit, city, ownsMaterial = false, building = owner) {
         if (!owner || !meshes.length) return meshes;
-        const design = buildingFacades.buildingDesign(buildingFacades.buildingKey(owner, city), height, floorHeight);
+        const design = buildingFacades.buildingDesign(buildingFacades.buildingKey(owner, city), height, floorHeight,
+            buildingFacades.buildingIdentityKey(building, city));
         const facadeMaterial = buildingFacades.configureMaterial(
             ownsMaterial ? meshes[0].material : cloneBuildingMaterial(meshes[0].material), design, facadeState, THREE);
         meshes.forEach(mesh => {
@@ -6723,9 +6767,8 @@
                 if (buildingFeature.properties?.proposalId) mesh.userData.proposalId = String(buildingFeature.properties.proposalId);
             }
             if (!hasFacade || !meshes.length) return meshes;
-            // Use the actual intersected parcel, not the source volume's parcel hint. This
-            // changes the skin at ownership seams and keeps separate volumes on one parcel alike.
-            return prepareProceduralFacadeMeshes(meshes, owner, height, floorHeight, metresPerUnit, city, ownsMaterial);
+            // Each building keeps its style and glass tint; ownership seams vary only the shade.
+            return prepareProceduralFacadeMeshes(meshes, owner, height, floorHeight, metresPerUnit, city, ownsMaterial, buildingFeature);
         };
         // A building keeps its own hue; parcel slices vary its shade rather than its planning role.
         const baseColor = new THREE.Color(stringToColor(JSON.stringify(buildingFeature.geometry.coordinates[0][0])));
@@ -6765,7 +6808,12 @@
         const sliceData = [];
         candidateParcels.forEach((parcelFeature) => {
             let intersection = null;
-            try { intersection = turf.intersect(buildingFeature, parcelFeature); } catch (error) {
+            try {
+                // Parcel cuts use this grid too. Raw authored coordinates against a rounded
+                // remainder invent microscopic overlaps along an otherwise shared edge.
+                intersection = window.__parcelArrangement.clip('intersect', buildingFeature, parcelFeature,
+                    { site: 'three-mode.createBuildingSlices', parcelId: parcelFeature.properties?.parcelId });
+            } catch (error) {
                 // That parcel's slice is not drawn.
                 reportThreeClip('intersect', error, 'three-mode.createBuildingSlices', [buildingFeature, parcelFeature]);
             }
@@ -8872,29 +8920,33 @@
         if (flatGroup) targets.push(flatGroup);
         if (plannedFlatGroup) targets.push(plannedFlatGroup);
         if (stationGroup) targets.push(stationGroup);
-        const hits = raycaster.intersectObjects(targets, true);
-        for (const h of hits) {
-            let obj = h.object;
-            if (!obj || obj.visible === false) continue;
-            let proposalId = null;
-            let parcelId = null;
-            let planningId = null;
-            let builtFeature = null;
-            let visible = true;
-            while (obj) {
-                if (obj.visible === false) visible = false;
-                if (obj.userData?.planningRepresentationId) planningId = obj.userData.planningRepresentationId;
-                if (obj.userData?.planningBuiltFeature) builtFeature = obj.userData.planningBuiltFeature;
-                if (!proposalId && obj.userData?.proposalId) proposalId = String(obj.userData.proposalId);
-                if (!parcelId && obj.userData?.parcelId) parcelId = String(obj.userData.parcelId);
-                obj = obj.parent;
-            }
-            if (!visible) continue;
-            if (planningId) return { planningId };
-            if (builtFeature && !proposalId) return { builtFeature, parcelId };
-            if (proposalId || parcelId) return { proposalId, parcelId };
-        }
-        return null;
+        return window.__threeClickPlan.subjectHit(raycaster.intersectObjects(targets, true));
+    }
+
+    // Google tiles identify a visible surface point; source footprints give that point a building
+    // identity. Hidden abstract meshes never act as stand-ins for the Google city.
+    function photoScenePick(evt) {
+        const photo = window.PhotorealMode;
+        const surface = photo.pickSurface(evt);
+        const authored = pickMapSubjectFromEvent(evt);
+        const sourcePoint = surface?.point || authored?.point;
+        if (!sourcePoint) return { picked: null, groundParcelId: null, hits: null };
+        const recordsAt = point => {
+            const latlng = xyToLatLng(point.x, point.y);
+            const hits = window.ClickStackHits.hitsAt(latlng);
+            const location = turf.point([latlng.lng, latlng.lat]);
+            const built = observedBuildingFeatures().filter(feature => turf.booleanPointInPolygon(location, feature))
+                .map(feature => ({ id: clickedBuildingId(feature), feature }));
+            hits.built = [...built, ...hits.built];
+            const source = photo.sourceParcelsAt(point).map(parcel => ({ id: parcel.id,
+                feature: parcel.feature, label: window.ThreeClickStack.parcelLabel(parcel.id), live: false }));
+            hits.parcels = [...(hits.formed || []), ...source, ...hits.parcels];
+            return hits;
+        };
+        let hits = recordsAt(sourcePoint);
+        const hit = window.__threeClickPlan.photoHit({ authored, surface, designs: hits.designs, built: hits.built });
+        if (hit?.point && hit.point !== sourcePoint) hits = recordsAt(hit.point);
+        return { picked: hit?.picked || null, groundParcelId: hits.parcels[0]?.id || null, hits };
     }
 
     function handleParcelClick(evt) {
@@ -8902,10 +8954,6 @@
         // An on-map editor owns map clicks while its edit lock is held. OrbitControls remain
         // untouched, so users can still rotate and pan the 3D view around the live design.
         if (mapSelectionBlockedByEditor()) { clickDownXY = null; return; }
-        // Photo mode is view-only: clicks still pan/tilt the camera (orbit controls), but never
-        // select a parcel or proposal — no isolation, no "Proposal info" panel. Model 3D keeps
-        // full click interaction.
-        if (realisticLayerActive) return;
         if (suppressClickAfterRotateStop) { suppressClickAfterRotateStop = false; return; }
         // Walk-pick owns clicks while it's active.
         if (walkPickActive) return;
@@ -8916,15 +8964,15 @@
             clickDownXY = null;
             if (moved > 6) return;
         }
+        const resolved = realisticLayerActive ? photoScenePick(evt)
+            : { picked: pickMapSubjectFromEvent(evt)?.picked || null, groundParcelId: parcelUnderClick(evt) };
+        const { picked, groundParcelId } = resolved;
         if (window.multiParcelSelection?.isActive) {
-            const id = parcelUnderClick(evt);
-            const layer = id && window.LiveParcelFabric?.get(id) && window.ParcelPresenter?.getLayer(id);
+            const layer = groundParcelId && window.LiveParcelFabric?.get(groundParcelId) && window.ParcelPresenter?.getLayer(groundParcelId);
             if (layer) window.multiParcelSelection.toggleParcel(layer);
             return;
         }
-        const picked = pickMapSubjectFromEvent(evt);
         const proposal = picked?.proposalId ? (window.proposalStorage?.getProposal?.(picked.proposalId) || null) : null;
-        const groundParcelId = parcelUnderClick(evt);
         const click = { key: window.__threeClickPlan.clickKey({ picked, groundParcelId,
             builtId: clickedBuildingId(picked?.builtFeature), proposalKnown: !!proposal }),
             parcelId: proposal && picked.parcelId ? String(picked.parcelId) : groundParcelId || picked?.parcelId || null,
@@ -8951,7 +8999,7 @@
             if (window.ThreeClickStack?.isOpen?.()) endSelectionView();
             return;
         }
-        showClickStack(picked, plan, click);
+        showClickStack(picked, plan, click, resolved.hits);
     }
 
     // The parcel under a click, through whatever stands on it: the ray against the parcel slabs alone.
@@ -9311,8 +9359,7 @@
     // proposals, corridor cross-sections and planned structures stay, standing on the mesh.
     window.setRealisticLayerActive = function (on, options = {}) {
         realisticLayerActive = !!on;
-        if (planningSourcesGroup) planningSourcesGroup.visible = !realisticLayerActive
-            && hasVisiblePlanningRepresentations();
+        rebuildPlanningSources3D();
         if (flatGroup) flatGroup.visible = !realisticLayerActive;
         if (treesGroup) treesGroup.visible = treesEnabled && !realisticLayerActive;
         if (waterGroup) waterGroup.visible = waterEnabled && !realisticLayerActive;
@@ -9325,11 +9372,11 @@
             isolatedParcelId = null;
             isolatedProposalId = null;
             try { updateIsolationButton(); } catch (_) { }
-            try { window.ThreeClickStack?.close({ silent: true }); } catch (_) { }
         }
         if (options.exiting) buildingViewDirty = true;
         else if (isActive && !applyRetainedBuildingDisplay()) rebuild3DBuildingsOnly();
         if (realisticLayerActive) startPendingIntroAutoRotate();
+        if (!options.exiting && window.ThreeClickStack?.isOpen?.()) window.ThreeClickStack.refresh();
         invalidateThreeView();
     };
     window.invalidateThreeView = invalidateThreeView;

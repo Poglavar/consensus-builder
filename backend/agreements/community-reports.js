@@ -45,7 +45,12 @@ export function createMemoryCommunityReportStore() {
 export function createCommunityReportHandlers({ loadAgreement, store, now = () => Date.now(), pinBytes = defaultPinBytes }) {
     const refuse = (res, status, code, error) => res.status(status).json({ code, error });
     async function indexed(cid, res) {
-        const agreement = await loadAgreement(cid);
+        let agreement;
+        try { agreement = await loadAgreement(cid); } catch (error) {
+            if (error?.code !== 'retired-agreement-format') throw error;
+            refuse(res, 410, error.code, error.message);
+            return null;
+        }
         if (!agreement) refuse(res, 404, 'agreement-not-found', 'Agreement not found.');
         return agreement;
     }

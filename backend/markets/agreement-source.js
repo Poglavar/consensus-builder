@@ -2,6 +2,7 @@
 // a trade or a points payout: the CID, sponsor, network, program and deadline must match the account.
 import { PublicKey, SYSVAR_CLOCK_PUBKEY } from '@solana/web3.js';
 import { AgreementClient, AGREEMENT_PROGRAM_ID, createAgreementChain, agreementAccountOf, isPublicKey, ONCHAIN_STATUSES } from '../agreements/onchain.js';
+import { CURRENT_AGREEMENTS_BY_ACCOUNT_SQL } from '../agreements/current-plan-sql.js';
 
 export const MARKET_LIQUIDITY = '100000000';
 export const MARKET_GRACE_SECONDS = 0;
@@ -33,8 +34,7 @@ export function validateAgreementSource(row, observed) {
 export function createAgreementMarketSource(pool, { env = process.env, chain = createAgreementChain({ env }) } = {}) {
     return async function readAgreement(address) {
         if (!isPublicKey(address)) throw Object.assign(new Error('A canonical agreement account is required'), { status: 400 });
-        const { rows } = await pool.query(`SELECT cid, city, deadline, content->>'sponsor' AS sponsor, onchain
-            FROM consensus.agreement WHERE onchain->>'account' = $1`, [address]);
+        const { rows } = await pool.query(CURRENT_AGREEMENTS_BY_ACCOUNT_SQL, [address]);
         const row = rows.find(item => agreementAccountOf(item.cid, item.sponsor) === address);
         if (!row) throw Object.assign(new Error('Published binding agreement not found'), { status: 404 });
         const connection = await chain.connection();

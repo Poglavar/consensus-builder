@@ -66,7 +66,11 @@ const isShare = value => typeof value === 'number' && Number.isFinite(value) && 
 
 /** An agreement row as every /agreements route answers it. */
 export function serializeAgreementRow(row) {
-    if (!isCid(row.content?.planCid) || Object.hasOwn(row.content || {}, 'designs') || Object.hasOwn(row.content || {}, 'designCids')) {
+    if (Object.hasOwn(row.content || {}, 'designs') || Object.hasOwn(row.content || {}, 'designCids')) {
+        const error = new Error(`Agreement ${row.cid} uses a retired experimental format. Recreate it from a published plan.`);
+        error.code = 'retired-agreement-format'; error.status = 410; throw error;
+    }
+    if (!isCid(row.content?.planCid)) {
         const error = new Error(`Agreement ${row.cid} is an invalid indexed record: expected planCid and no inline design membership.`);
         error.code = 'invalid-agreement-record'; error.status = 500; throw error;
     }
@@ -457,6 +461,7 @@ export function setupAgreementsRoute(app, deps) {
             log(`indexed ${cid} (${designs.length} design(s), ${created.length} indexed with it; ${checked.inputParcelIds.length} input parcel(s); ${row.city || 'no city'})`);
             return res.status(201).json(row);
         } catch (error) {
+            if (error?.code === 'retired-agreement-format') return res.status(410).json({ error: error.message, code: error.code });
             console.error(`[${new Date().toISOString()}] Error in POST /agreements:`, error);
             return res.status(500).json({ error: 'Internal server error' });
         }
@@ -574,6 +579,7 @@ export function setupAgreementsRoute(app, deps) {
             log(`${row.onchain ? 'refreshed' : 'recorded'} ${cid} on ${body.cluster} as ${expected}: ${next.status}, ${next.decision}${wrote ? '' : ' (a later observation was already stored)'}`);
             return res.status(row.onchain ? 200 : 201).json(await loadAgreement(pool, cid));
         } catch (error) {
+            if (error?.code === 'retired-agreement-format') return res.status(410).json({ error: error.message, code: error.code });
             console.error(`[${new Date().toISOString()}] Error in POST /agreements/${cid}/onchain:`, error);
             return res.status(500).json({ error: 'Internal server error' });
         }
@@ -588,6 +594,7 @@ export function setupAgreementsRoute(app, deps) {
             if (req.query.format === 'jsonld') return res.type('application/ld+json').json(agreementDocument(row));
             return res.json(row);
         } catch (error) {
+            if (error?.code === 'retired-agreement-format') return res.status(410).json({ error: error.message, code: error.code });
             if (error && (error.code === SEMANTIC_BASE_ERROR || error.code === SEMANTIC_RECORD_ERROR)) {
                 return res.status(error.status || 500).json({ error: error.message, code: error.code });
             }
@@ -615,7 +622,7 @@ export function setupAgreementsRoute(app, deps) {
             return res.status(400).json({ error: 'offset must be an integer from 0 to 1000000.', code: 'bad-request' });
         }
         const offset = rawOffset === undefined ? 0 : Number(rawOffset);
-        // Old inline-membership records stay directly addressable for a clear record error, but
+    // Old inline-membership records stay directly addressable for an explicit Gone response, but
         // they must not poison the current-contract collection response for every caller.
         const clauses = ["content->>'planCid' IS NOT NULL", "NOT (content ? 'designs')", "NOT (content ? 'designCids')"];
         const params = [];

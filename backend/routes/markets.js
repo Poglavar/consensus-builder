@@ -13,7 +13,7 @@ import { AGREEMENT_PROGRAM_ID, AgreementClient, DEVNET_GENESIS_HASH, ONCHAIN_STA
 import { MARKET_LIQUIDITY, MARKET_GRACE_SECONDS } from '../markets/agreement-source.js';
 import { AGREEMENT_EXECUTION_RECIPE_ID, buildAgreementExecutionRecipe, chainStatusOf } from '../oracle/market-recipe.js';
 import { normalizeCityCode } from '../utils/city-code.js';
-import { AGREEMENT_TABLE } from './agreements.js';
+import { currentPlanAgreementSelect, CURRENT_AGREEMENTS_BY_ACCOUNT_SQL } from '../agreements/current-plan-sql.js';
 import { accountsPerRequest, getMultipleAccountsBatched } from '../solana/account-batching.js';
 import { DEVNET_USDC_MINT } from '../solana/address-book.js';
 
@@ -36,28 +36,11 @@ async function assertMarketNetwork(connection) {
     }
 }
 
-// The columns rowToAgreement reads.
-export const AGREEMENT_COLUMNS_SQL = `
-        cid, city, title, author, input_parcel_ids, parcel_source_id, deadline,
-        content->>'sponsor' AS sponsor,
-        ARRAY(SELECT design->>'title' FROM jsonb_array_elements(content->'designs') AS design) AS design_titles,
-        onchain, screenshot_url, screenshot_before_url, screenshot_pair_url, created_at`;
-
-const AGREEMENTS_SQL = `
-    SELECT ${AGREEMENT_COLUMNS_SQL}
-    FROM ${AGREEMENT_TABLE}
-    WHERE city = $1
-    ORDER BY created_at DESC
-    LIMIT $2`;
+export const AGREEMENTS_SQL = currentPlanAgreementSelect({ predicate: 'a.city = $1', orderBy: 'a.created_at DESC', limit: '$2' });
 
 // The agreements whose index pointer names an account; rowToAgreement keeps the account only when it
 // is the one that row's CID and sponsor derive, so at most one row is it.
-const AGREEMENTS_BY_ACCOUNT_SQL = `
-    SELECT ${AGREEMENT_COLUMNS_SQL}
-    FROM ${AGREEMENT_TABLE}
-    WHERE onchain->>'account' = $1
-    ORDER BY created_at DESC
-    LIMIT 20`;
+export const AGREEMENTS_BY_ACCOUNT_SQL = CURRENT_AGREEMENTS_BY_ACCOUNT_SQL;
 
 const iso = value => (value instanceof Date ? value.toISOString() : value || null);
 const text = value => (typeof value === 'string' && value.trim() ? value.trim() : null);

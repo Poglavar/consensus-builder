@@ -127,7 +127,13 @@ describe('fetchCandidateParcels row mapping', () => {
         expect(parcel).toMatchObject({ buildingCount: null, builtFootprintM2: null, builtGfaM2: null,
             builtKnown: false, buildingSourceId: 'gdi-3d', buildingCoverage: 'unknown' });
         expect(parcel.buildingObservations).toEqual({ sourceId: 'gdi-3d', buildingCount: 2,
+            sourceEvidence: { publisher: 'City of Zagreb', sourceId: 'gdi-3d', datasetEdition: 'ZG3D 2022',
+                datasetUrl: 'https://data.zagreb.hr/dataset/zg3d-2022-3d-model-gz',
+                publishedCoverageEvidenceUrl: 'https://www.unin.hr/wp-content/uploads/tj_18_2024_SI.pdf',
+                statedGeographicScope: 'City of Zagreb', captureYears: [2008, 2019, 2020, 2022],
+                captureTemporalBasis: 'mixed capture years; no per-feature capture date', overallInventoryCoverage: 'partial' },
             footprintM2: 102.7, gfaM2: 295.3, missingHeightCount: 0, floorHeightM: 3.5 });
+        expect(parcel).toMatchObject({ buildingSourceId: 'gdi-3d', buildingCoverage: 'unknown', builtGfaM2: null });
     });
 
     it('maps the rule variables to the planner\'s vocabulary and keeps the raw set', async () => {
@@ -158,7 +164,8 @@ describe('fetchCandidateParcels row mapping', () => {
     it('keeps an empty query unknown without complete inventory coverage', async () => {
         const parcel = await mapOne({ building_count: '0', built_footprint_m2: null, built_gfa_m2: null });
         expect(parcel).toMatchObject({ buildingCount: null, builtFootprintM2: null, builtGfaM2: null, builtKnown: false });
-        expect(parcel.buildingObservations).toMatchObject({ buildingCount: 0, footprintM2: null, gfaM2: null });
+        expect(parcel.buildingObservations).toMatchObject({ buildingCount: 0, footprintM2: null, gfaM2: null,
+            sourceEvidence: { overallInventoryCoverage: 'partial' } });
     });
 
     it('preserves a missing-height observation without manufacturing floor area', async () => {

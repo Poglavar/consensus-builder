@@ -19,8 +19,16 @@ const DID = 'did:web:community.example';
 const { publicKey, privateKey } = generateKeyPairSync('ed25519');
 const address = lens.base58Encode(Buffer.from(publicKey.export({ format: 'jwk' }).x, 'base64url'));
 const signer = `solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1:${address}`;
+const DESIGN_CID = cidOfObject({ schema: 'design/v1', title: 'Community plan design' });
+const PLAN_CID = cidOfObject({ schema: 'plan/v1', title: 'Community consultation plan', designCids: [DESIGN_CID], view: { at: '45.8,15.97,15', mode: '2d' } });
+const ownerPlanContent = (overrides = {}) => {
+    const content = ownerContent(overrides);
+    delete content.designs;
+    content.planCid = PLAN_CID;
+    return content;
+};
 const agreementContent = {
-    schema: 'agreement/v1', rule: { electorate: 'community', binding: false },
+    schema: 'agreement/v1', planCid: PLAN_CID, rule: { electorate: 'community', binding: false },
     consultation: { organiser: DID, participationUrl: null }, deadline: '2026-10-01T10:00:00.000Z'
 };
 const AGREEMENT = cidOfObject(agreementContent);
@@ -45,7 +53,8 @@ async function report(overrides = {}) {
 function appFor({ agreement = agreementContent, reportStore = createMemoryCommunityReportStore(), reportPinBytes = vi.fn(async () => ({})), ...overrides } = {}) {
     const pool = createMockPool();
     pool.answer(/FROM consensus\.agreement WHERE cid = \$1/, (_sql, params) => ({ rows: params[0] === AGREEMENT && agreement ? [{
-        cid: AGREEMENT, content: agreement, status: 'expired', deadline: agreement.deadline, design_cids: [], input_parcel_ids: []
+        cid: AGREEMENT, content: agreement, status: 'expired', deadline: agreement.deadline,
+        design_cids: [DESIGN_CID], input_parcel_ids: []
     }] : [] }));
     return { pool, reportStore, reportPinBytes, app: createContentApp(pool, { reportStore, reportPinBytes, now: () => NOW, ...overrides }) };
 }
@@ -54,7 +63,7 @@ afterEach(() => vi.restoreAllMocks());
 
 describe('NGO community report relay', () => {
     it('validates canonical consultation metadata and excludes owner finance and allocations', () => {
-        const community = ownerContent({ rule: { electorate: 'community', binding: false, lens: [] }, consultation: { organiser: DID, participationUrl: 'https://community.example/participate' } });
+        const community = ownerPlanContent({ rule: { electorate: 'community', binding: false, lens: [] }, consultation: { organiser: DID, participationUrl: 'https://community.example/participate' } });
         expect(validateAgreementContent(community).ok).toBe(true);
         expect(validateAgreementContent({ ...community, consultation: null }).ok).toBe(true);
         expect(validateAgreementContent({ ...community, consultation: { organiser: null, participationUrl: null } }).ok).toBe(true);
@@ -67,7 +76,7 @@ describe('NGO community report relay', () => {
             { organiser: null, participationUrl: 'https://community.example/' + 'x'.repeat(2048) },
             { organiser: 42, participationUrl: null }
         ]) expect(validateAgreementContent({ ...community, consultation })).toMatchObject({ ok: false, section: 'consultation' });
-        expect(validateAgreementContent(ownerContent({ consultation: community.consultation }))).toMatchObject({ ok: false, section: 'consultation' });
+        expect(validateAgreementContent(ownerPlanContent({ consultation: community.consultation, rule: { electorate: 'owners', binding: true, approvalConfig: null, lens: [] } }))).toMatchObject({ ok: false, section: 'consultation' });
         expect(validateAgreementContent({ ...community, money: { currency: 'EUR', lines: [{ ownerKey: 'owner-a', amountCents: 1 }] } })).toMatchObject({ ok: false, section: 'money' });
         const hash = 'piece1-sha256:' + 'a'.repeat(64);
         const allocated = { ...community, outputs: [{ hash, areaM2: 10, fromParcelIds: [], role: 'plot' }], allocations: [{ output: hash, to: { kind: 'holders' } }] };

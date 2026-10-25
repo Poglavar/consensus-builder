@@ -81,7 +81,7 @@ passed again with a clean exit. The final focused retry check confirmed that the
 appears directly after reload, without closing and reopening the dialog. No unrelated process or
 database record was removed.
 
-## Release boundary
+## Historical release boundary (25 October)
 
 The new program still requires deployment before public devnet-USDC trading can use this contract.
 The points schema and API also require an application release. Existing public proof receipts retain
@@ -104,3 +104,15 @@ the unpadded local artifact SHA-256 is
 `8404705555feeba6a4f78b942e94d6d9a69d1b699d5229320a403b2cee9d8a4f`.
 The prior deployed binary was saved locally before the upgrade. This is deployment verification;
 no market creation, trade or claim was submitted on public devnet in this follow-up.
+
+## Current release status (26 October 2026)
+
+The frontend release deployed at `2026-10-25T22:30:49Z` (commit `5c8e731e6`), and backend commit
+`79733ecd8` is running with the points schema and API installed. The ProposalMarket program is
+upgraded on devnet at slot `515120833`; its deployment hash is
+`77f9bdc34c8998cd77fa69c9e402c237e297bba471bca2a738204fd10d6c741a`. The live proof endpoint is
+[hackathon/proof.json](https://api.urbangametheory.xyz/hackathon/proof.json).
+
+This confirms deployed code and release identity. The points user journey and browser verification
+remain simulated; no outside human has participated. A first public points trade and complete devnet
+end-to-end trading journey are still pending. The proposed San Francisco pair remains unpublished.

@@ -11,6 +11,20 @@ const PARCEL_ID_PREFIX = 'HR';
 // convention (gdi_building.height_m is a roof height in metres), not the planner's floor height.
 const EXISTING_FLOOR_HEIGHT_M = 3.5;
 
+// Publisher describes this as a City-wide model, but the published coverage literature reports
+// that the model is incomplete and uneven. This is source-level context, not parcel-level proof.
+export const GDI_BUILDING_SOURCE_EVIDENCE = Object.freeze({
+    publisher: 'City of Zagreb',
+    sourceId: 'gdi-3d',
+    datasetEdition: 'ZG3D 2022',
+    datasetUrl: 'https://data.zagreb.hr/dataset/zg3d-2022-3d-model-gz',
+    publishedCoverageEvidenceUrl: 'https://www.unin.hr/wp-content/uploads/tj_18_2024_SI.pdf',
+    statedGeographicScope: 'City of Zagreb',
+    captureYears: [2008, 2019, 2020, 2022],
+    captureTemporalBasis: 'mixed capture years; no per-feature capture date',
+    overallInventoryCoverage: 'partial'
+});
+
 // The app's containment rule for "a building on this parcel": at least 90% of the footprint's area
 // falls inside the parcel (backend/routes/buildings.js, the cestica_id branch). Anything less is a
 // neighbour's building clipping the boundary.
@@ -173,6 +187,7 @@ function rowToParcel(row) {
         ...buildingBaseline({ buildingSourceId: 'gdi-3d', buildingCoverage: 'unknown' }),
         buildingObservations: {
             sourceId: 'gdi-3d',
+            sourceEvidence: GDI_BUILDING_SOURCE_EVIDENCE,
             buildingCount: num(row.building_count),
             footprintM2: num(row.built_footprint_m2),
             gfaM2: num(row.built_gfa_m2),

@@ -198,6 +198,8 @@ The browser-local result of applying a design to the parcel fabric. It includes 
 
 A design's operation that cuts or replaces live ground and produces land pieces. Creating a fabric piece is separate from minting a blockchain account.
 
+A building's formed land take and its subtracted remainders use the same clipping grid (nine decimal places in longitude and latitude). This is derived geometry; the authored land take and building footprint retain their original coordinates. Facade intersections use the same clipper so different coordinate precision cannot create a second ownership slice along that cut.
+
 ### Remainder
 
 The part of parent land left after subtracting a design's land take. A remainder retains its modeled provenance and carried rights rather than belonging automatically to the new design.
@@ -252,7 +254,7 @@ Choosing “Unapply existing & continue” replaces the conflicting applied desi
 
 Replacement re-derives only the affected ground and its spatial dependencies. Applied designs elsewhere are not replayed as part of that local change.
 
-Selecting an object in model 3D, including a design from a list or a click-stack section, retains the camera and surrounding composition. A yellow pulsing outline follows the selected building or massing's drawn volume, or the authored ground boundary for parcels and ground-only designs; reduced-motion views use a steady outline. Ground-only designs also show a transparent yellow hatch across their authored surface; formed and cadastral parcels use an unfilled boundary, including when a formed parcel shares the design's geometry. Selection does not recolor underlying parcel surfaces or isolate the design.
+Selecting an object in model or Google 3D, including a design from a list or a click-stack section, retains the camera and surrounding composition. A yellow pulsing outline follows the selected building or massing's drawn volume, or the authored ground boundary for parcels and ground-only designs; reduced-motion views use a steady outline. Ground-only designs also show a transparent yellow hatch across their authored surface; formed and cadastral parcels use an unfilled boundary, including when a formed parcel shares the design's geometry. Selection does not recolor underlying parcel surfaces or isolate the design. Both 3D views use the same selection sections, inspectors, repeated-click cycling and deselection rules. Google imagery supplies a visible surface position; cadastral and building identities come from source records. Where the Google mesh has no addressable object volume, selection outlines the known source footprint on the loaded surface. Cadastral boundary visibility controls drawing independently of selection.
 
 Restoring a saved camera retains the map's display settings and surrounding context. Its selected design is highlighted without isolating it from the shared composition.
 
@@ -440,7 +442,7 @@ The three planning display roles: observed buildings; source-derived permitted m
 
 ### Illustrative facade
 
-A display-only architectural skin on a proposed building. The view-wide facade setting offers masonry and small-, medium- or large-panel glass curtain walls, or a deterministic mixture. Glass tint varies by building identity and remains stable across camera moves, height edits and parcel slices; parcel ownership can vary its shade. Panel sizes are measured in metres and storeys. These skins are illustrative appearance, not surveyed materials or authored construction specifications.
+A display-only architectural skin on a proposed building. The view-wide facade setting defaults to Mixed, which assigns a deterministic style independently to each building; glass styles are eligible only from ten modelled storeys. Named masonry and small-, medium- or large-panel glass presets override the style for all proposed buildings. Building identity controls the mixed style and glass tint; parcel ownership can vary its shade. Panel sizes are measured in metres and storeys. Glass panels follow each wall and storey; soft sky sheen and specular highlights depend on the viewing angle. These skins are illustrative appearance, not surveyed materials or authored construction specifications.
 
 ### Reconstructed building envelope
 

@@ -65,8 +65,14 @@ Existing-building totals require `buildingSourceId` and `buildingCoverage: 'comp
 finite nonnegative measurements. A documented empty inventory can report zero. Missing or partial
 coverage leaves the baseline unknown; a missing height leaves GFA unknown even if footprints are
 measured. `parcel-source.js` retains GDI query results in `buildingObservations` (including the
-3.5 m storey-height assumption and missing-height count), but the import provides no parcel-wide
-inventory coverage evidence, so its baseline remains unknown.
+3.5 m storey-height assumption, missing-height count, and source evidence). The City of Zagreb
+describes ZG3D 2022 as covering the city, with building models based on mixed capture years
+(2008, 2019, 2020, and 2022); published coverage evidence does not assure a complete inventory.
+Accordingly, source-wide coverage is recorded as `partial`, while every parcel baseline remains
+`unknown`: a source-level caveat cannot prove completeness for a particular parcel. Height-derived
+floor area remains an estimate under the stated storey-height assumption, not surveyed GFA.
+Promoting a parcel baseline to `complete` requires evidence for the relevant area and edition,
+verified import integrity, and sufficient height/floor-area evidence for the claimed quantity.
 
 Unknown stock still permits a geometry preview. Gain, offers and score components that depend on
 unknown quantities remain null. Generic automatic and LLM selection require a complete named

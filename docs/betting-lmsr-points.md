@@ -31,6 +31,13 @@ The ProposalMarket program was upgraded on Solana devnet on 26 October 2026 at s
 See the [release evidence](betting-validation-2026-10-25.md#devnet-release-follow-up).
 This verifies deployment; it does not establish a completed public trade with the new instructions.
 
+The frontend release (`5c8e731e6`, deployed 25 October 2026 at 22:30:49 UTC) and backend
+(`79733ecd8`) are running with the points schema and API installed. The current deployed state is
+reported by the [live proof endpoint](https://api.urbangametheory.xyz/hackathon/proof.json). Browser
+and points user checks so far used simulated users; no outside humans have participated. A first
+public points trade and complete devnet trading journey remain unverified. The proposed San Francisco
+agreement pair is still unpublished.
+
 The LMSR quote begins at 50/50 even with no trades. `b` controls price sensitivity; YES and NO
 inventory move the quoted prices along the scoring rule. A buy quote specifies shares and a maximum
 cost. A sell quote specifies shares and a minimum return. The client quotes the complete trade

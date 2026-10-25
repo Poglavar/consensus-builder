@@ -1,11 +1,11 @@
 <!-- This manifest defines the reviewable scope of the Colosseum World's Fair build. -->
 # Hyperstition: Markets for Possible Cities
 
-Betting update (2026-10-25): the current local build replaces the active pool interface with dated
-agreement LMSR books, buy/sell quotes and fixed share payouts. Points start at 1,000 without a wallet;
-devnet USDC remains a separate book. The new program passed local validator checks but is not yet
-deployed. Existing public receipts document the earlier market contract. Human journeys have been
-simulated; outside participant validation remains open. See [the current contract](docs/betting-lmsr-points.md)
+Betting update (2026-10-26): the points API and schema are deployed, and the ProposalMarket program
+is upgraded on devnet. The live service publishes [release proof](https://api.urbangametheory.xyz/hackathon/proof.json).
+Points and browser journeys have been checked with simulated users; the first public devnet points
+trade and a complete devnet trading journey remain to be verified. No outside humans have participated.
+The San Francisco pair is still an intent, not a published market. See [the current contract](docs/betting-lmsr-points.md)
 and [the two proposed Candlestick agreement bets](docs/sf-agreement-bets.md).
 
 Release update (2026-10-02): the UI regression suite collects 253 headed tests across 64 specs; the complete 250-test run and 30 affected final checks passed, alongside 6,366 fast tests (6 existing skips). The 99-command inventory maps 47 specs. Fixture-backed HTTP/RPC tests cover the app workflows, while a fresh production/human-wallet journey remains a separate next step. Current SEO entry points are a vendor-free planning guide, descriptive metadata and a sitemap. See [TEST.md](TEST.md) and [next-steps.md](next-steps.md).
@@ -101,8 +101,10 @@ git diff 3ee1855...colosseum-worlds-fair
     The current local flow offers 1,000 points without a wallet and a separate devnet-USDC book,
     exact LMSR buy/sell quotes, public positions and points standings. YES requires execution by the
     deadline; expiry or missing it settles NO; cancellation pays half per share. Interrupted points
-    receipts can be reconciled without a second debit. The sponsor seeds the USDC market; trading,
-    settlement and claims use the current program contract, whose devnet release remains pending.
+    receipts can be reconciled without a second debit. The sponsor seeds the USDC market. The points
+    API and schema are deployed, and the program is upgraded on devnet; a first public trade and full
+    devnet trading journey are still pending. User checks so far were simulated, with no outside human
+    participants. The proposed San Francisco pair is not yet published.
 13. **Neutral actor and run explorer** — the former simulation-only agent statistics surface now
     profiles people, algorithmic controllers and LLM controllers from the same activity envelopes.
     It drills into proposal/support/market actions, rationales, exact model-ledger cost, run/batch ids

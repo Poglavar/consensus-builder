@@ -402,12 +402,17 @@ describe('GET /agreements/:cid', () => {
         expect(document.body['@id']).toBe(`https://api.example/agreements/${cidOf(content)}#agreement`);
     });
 
-    it('reports old inline-membership rows as invalid without rewriting them', async () => {
+    it('reports retired inline-membership records as Gone without rewriting their identity', async () => {
         const old = { ...agreementContent([park]), designs: [{ cid: cidOf(park) }] };
         const pool = indexPool({ agreements: [agreementRow(old)] });
         const res = await request(appFor(pool).app).get(`/agreements/${cidOf(old)}`);
-        expect(res.status).toBe(500);
-        expect(res.body).toMatchObject({ code: 'invalid-agreement-record' });
+        expect(res.status).toBe(410);
+        expect(res.body).toMatchObject({ code: 'retired-agreement-format', error: expect.stringContaining('Recreate it from a published plan') });
+        for (const suffix of ['/decisions', '/community-reports']) {
+            const related = await request(appFor(pool).app).get(`/agreements/${cidOf(old)}${suffix}`);
+            expect(related.status).toBe(410);
+            expect(related.body.code).toBe('retired-agreement-format');
+        }
         expect(pool.getCalls().filter(call => /UPDATE|INSERT/.test(call.sql))).toEqual([]);
     });
 });

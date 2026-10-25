@@ -12,13 +12,13 @@ import * as web3 from '@solana/web3.js';
 import {
     AGREEMENT_DECISION_LOCK_NAMESPACE, createAgreementDecisionHandlers, createMemoryAgreementDecisionStore, decisionSubject
 } from '../agreements/decisions.js';
-import { canonicalBytes, cidOf } from '../cid.js';
+import { canonicalBytes, cidOf, cidOfObject } from '../cid.js';
 import { createMockPool } from './helpers/mock-pool.js';
 import { createContentApp } from './helpers/create-app.js';
 import { agreementRow } from './helpers/content-fixtures.js';
 import { serializeAgreementRow } from '../routes/agreements.js';
 import {
-    AGREEMENT_CID, COUNTER_AGREEMENT_CID, agreement, agreementContent, attesterFor, decision, evidenceFor, outsider, wallets
+    AGREEMENT_CID, COUNTER_AGREEMENT_CID, DESIGN_CID, agreement, agreementContent, attesterFor, decision, evidenceFor, outsider, wallets
 } from './helpers/approval-decisions.js';
 
 const require = createRequire(import.meta.url);
@@ -31,8 +31,17 @@ const ACCOUNT = web3.Keypair.generate().publicKey.toBase58();
 const ONCHAIN = { chain: 'solana', cluster: 'devnet', account: ACCOUNT, status: 'active', decision: 'pending' };
 const decisionsPath = (cid = AGREEMENT_CID) => `/agreements/${cid}/decisions`;
 // The agreement as GET /agreements/:cid serves it, and its row in consensus.agreement.
-const ownerDealContent = agreementContent;
-const indexedAgreement = (content = agreementContent(), overrides = {}) => serializeAgreementRow(agreementRow(content, overrides));
+const PLAN_CID = cidOfObject({ schema: 'plan/v1', title: 'Decision fixture plan', designCids: [DESIGN_CID] });
+const ownerDealContent = (overrides = {}) => {
+    const content = agreementContent(overrides);
+    delete content.designs;
+    content.planCid = PLAN_CID;
+    return content;
+};
+const ownerDealRow = (content = ownerDealContent(), overrides = {}) => agreementRow(content, {
+    cid: AGREEMENT_CID, design_cids: [DESIGN_CID], ...overrides
+});
+const indexedAgreement = (content = ownerDealContent(), overrides = {}) => serializeAgreementRow(ownerDealRow(content, overrides));
 
 beforeEach(() => {
     vi.spyOn(console, 'log').mockImplementation(() => {});
@@ -65,7 +74,7 @@ describe('the subject of a decision', () => {
 
 // The relay as the content routes register it, over the in-memory store and a pool that holds the
 // indexed agreements.
-function relayApp({ rows = [agreementRow(ownerDealContent())], store = createMemoryAgreementDecisionStore(), ...overrides } = {}) {
+function relayApp({ rows = [ownerDealRow()], store = createMemoryAgreementDecisionStore(), ...overrides } = {}) {
     const pool = createMockPool();
     pool.answer(/FROM consensus\.agreement WHERE cid = \$1/, (sql, params) => ({ rows: rows.filter(row => row.cid === params[0]) }));
     return { app: createContentApp(pool, { decisionStore: store, thumbnailQueue: { enqueue: vi.fn() }, ...overrides }), pool, store };
@@ -100,7 +109,7 @@ describe('POST and GET /agreements/:cid/decisions', () => {
     it('takes no decision on an agreement that expired, was cancelled, or executed', async () => {
         const receipt = await decision(wallets.c, 'owner-c');
         for (const status of ['expired', 'cancelled', 'executed']) {
-            const { app, store } = relayApp({ rows: [agreementRow(ownerDealContent(), { status })] });
+            const { app, store } = relayApp({ rows: [ownerDealRow(ownerDealContent(), { status })] });
             const res = await request(app).post(decisionsPath()).send({ receipt });
             expect([status, res.status, res.body.code]).toEqual([status, 409, 'agreement_closed']);
             expect(await store.list(AGREEMENT_CID)).toEqual([]);
@@ -118,7 +127,7 @@ describe('POST and GET /agreements/:cid/decisions', () => {
 
     it('locks, reads, inserts and commits through the database store, keyed by the agreement\'s CID', async () => {
         const pool = createMockPool();
-        pool.answer(/FROM consensus\.agreement WHERE cid = \$1/, { rows: [agreementRow(ownerDealContent())] });
+        pool.answer(/FROM consensus\.agreement WHERE cid = \$1/, { rows: [ownerDealRow()] });
         const app = createContentApp(pool, { thumbnailQueue: { enqueue: vi.fn() } });
         const receipt = await decision(wallets.c, 'owner-c');
         const response = await request(app).post(decisionsPath()).send({ receipt });
@@ -139,7 +148,7 @@ describe('POST and GET /agreements/:cid/decisions', () => {
 
     it('rolls back a refused or failed decision and stores nothing', async () => {
         const pool = createMockPool();
-        pool.answer(/FROM consensus\.agreement WHERE cid = \$1/, { rows: [agreementRow(ownerDealContent())] });
+        pool.answer(/FROM consensus\.agreement WHERE cid = \$1/, { rows: [ownerDealRow()] });
         pool.answer(/INSERT INTO consensus\.agreement_decision/, () => { throw new Error('disk full'); });
         const app = createContentApp(pool, { thumbnailQueue: { enqueue: vi.fn() } });
         const error = vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -149,7 +158,7 @@ describe('POST and GET /agreements/:cid/decisions', () => {
         expect(pool.getCalls().map(call => call.sql.trim().split(/\s+/)[0]).at(-1)).toBe('ROLLBACK');
 
         pool.reset();
-        pool.answer(/FROM consensus\.agreement WHERE cid = \$1/, { rows: [agreementRow(ownerDealContent())] });
+        pool.answer(/FROM consensus\.agreement WHERE cid = \$1/, { rows: [ownerDealRow()] });
         const refused = await request(app).post(decisionsPath()).send({ receipt: { ...(await decision(wallets.c, 'owner-c')), ownerId: 'owner-z' } });
         expect(refused.status).toBe(404);
         expect(pool.getCalls().some(call => /INSERT INTO/.test(call.sql))).toBe(false);
@@ -158,7 +167,7 @@ describe('POST and GET /agreements/:cid/decisions', () => {
 });
 
 describe('POST /agreements/:cid/decisions/bundle', () => {
-    const mintedRows = () => [agreementRow(ownerDealContent(), { onchain: ONCHAIN })];
+    const mintedRows = () => [ownerDealRow(ownerDealContent(), { onchain: ONCHAIN })];
     const pinner = () => vi.fn(async ({ cid }) => ({ cid, pinnedAt: '2026-10-21T10:00:00.000Z' }));
 
     it('pins the applying decisions of a minted agreement once, under the CID of the bundle\'s bytes', async () => {
