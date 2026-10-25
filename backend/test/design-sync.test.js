@@ -12,6 +12,7 @@ const DesignSync = require('../../frontend/js/proposals/design-sync.js');
 const DesignRecord = require('../../frontend/js/design-record.js');
 const Cid = require('../../frontend/js/cid.js');
 const PublishTerms = require('../../frontend/js/proposals/publish-terms.js');
+const OpenGround = require('../../frontend/js/proposals/open-ground.js');
 let NodeCid;
 beforeAll(async () => { NodeCid = await import('../cid.js'); });
 afterEach(() => { delete globalThis.DesignRecord; });
@@ -119,6 +120,27 @@ describe('a local record from an index row', () => {
         expect(DesignSync.localDesignFromRow(row, { apiBase: API, proposalId: 'kept-id' }).proposalId).toBe('kept-id');
         const fork = rowOf(road({ origin: { cid: row.cid } }));
         expect(DesignSync.localDesignFromRow(fork, { apiBase: API }).origin).toEqual({ cid: row.cid });
+    });
+
+    it('preserves the server binding observation for an imported partial site without changing its CID', () => {
+        const parcels = Array.from({ length: 118 }, (_, index) => ({ parcelId: `HR-1-${index + 1}`, overlapM2: 20 }));
+        const binding = { coverage: 'partial', parcels, touched: [], unsurveyedM2: 76000, outsideM2: null,
+            unknownM2: 0, source: 'server', parcelSource: { sourceId: 'gb-hmlr-city-of-london', snapshotId: null } };
+        const row = rowOf(road(), { binding });
+        const record = DesignSync.localDesignFromRow(row, { apiBase: API });
+        expect(record.binding).toEqual(binding);
+        expect(OpenGround.hasOpenGround(record)).toBe(true);
+        expect(DesignRecord.cidOf(record)).toBe(row.cid);
+        expect(DesignSync.designSummary(row).binding).toEqual(binding);
+    });
+
+    it('does not synthesize coverage for missing observations or turn unknown into partial', () => {
+        const row = rowOf(road());
+        const missing = DesignSync.localDesignFromRow({ ...row, binding: undefined }, { apiBase: API });
+        const unknown = DesignSync.localDesignFromRow({ ...row, binding: { coverage: 'unknown', parcels: row.binding.parcels } }, { apiBase: API });
+        expect(missing).not.toHaveProperty('binding');
+        expect(unknown.binding.coverage).toBe('unknown');
+        expect(OpenGround.hasOpenGround(unknown)).toBe(false);
     });
 
     it('takes the creation time from the design object alone, so a design authored without one still hashes to its CID', () => {

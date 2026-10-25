@@ -96,6 +96,12 @@
             .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
     }
 
+    // A binding is server evidence about this published site, not authored design content. Keep its
+    // coverage and source facts on an imported local record without letting them affect the CID.
+    function copyBinding(binding) {
+        return isObject(binding) ? JSON.parse(JSON.stringify(binding)) : null;
+    }
+
     // A local design record rebuilt from an index row: the design/v1 content as the record fields
     // DesignRecord.published reads (so the record hashes back to the row's CID), the parcels the index
     // bound as its cadastral declaration, and the publication mark. Throws (code 'cid-mismatch') when
@@ -133,6 +139,8 @@
             cadastreParcelIds: bindingParcelIds(row.binding),
             published: { cid: row.cid, publishedAt: row.createdAt || null, apiBase: base }
         };
+        const binding = copyBinding(row.binding);
+        if (binding) record.binding = binding;
         if (content.origin) record.origin = { cid: content.origin.cid };
         if (row.screenshotUrl) record.screenshotUrl = row.screenshotUrl;
         designRecord().PAYLOAD_KEYS.forEach(key => {
@@ -145,6 +153,7 @@
     // `indexed` says it is the index's row, published by definition (DesignSync.publishedCid).
     function designSummary(row) {
         if (!isObject(row) || !cidApi().isCid(row.cid)) return null;
+        const binding = copyBinding(row.binding);
         return {
             id: row.cid,
             cid: row.cid,
@@ -158,7 +167,8 @@
             createdAt: row.createdAt || null,
             updatedAt: row.createdAt || null,
             screenshotUrl: row.screenshotUrl || null,
-            cadastreParcelIds: bindingParcelIds(row.binding)
+            cadastreParcelIds: bindingParcelIds(row.binding),
+            ...(binding ? { binding } : {})
         };
     }
 
