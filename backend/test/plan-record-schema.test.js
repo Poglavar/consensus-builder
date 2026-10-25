@@ -25,7 +25,7 @@ describe('shared named-plan JSON Schema',()=>{
     });
     it('matches valid omissions, nulls, views and numeric location forms',()=>{
         const basic={schema:'plan/v1',title:'A',designCids:[cids[0]],view:{at:'0,0,3',mode:'model'}};
-        for(const value of [canonical(),basic,{...basic,title:'A\nB',view:{at:'85.0511,180,22',mode:'photo',city:null,language:null,camera:{targetLat:85.0511,targetLng:-180,headingDeg:720,pitchRad:-Math.PI/2,range:1},settings:null}},
+        for(const value of [canonical(),basic,{...basic,view:{...basic.view,rotate:true}},{...basic,title:'A\nB',view:{at:'85.0511,180,22',mode:'photo',city:null,language:null,camera:{targetLat:85.0511,targetLng:-180,headingDeg:720,pitchRad:-Math.PI/2,range:1},settings:null}},
             {...basic,view:{at:'1e1,0x10,3',mode:'2d',settings:{planningSource:'source-one',existing:'off'}}}]){
             expect(PlanRecord.validate(value)).toBeNull();expect(validate(value),JSON.stringify(validate.errors)).toBe(true);
         }
@@ -35,7 +35,7 @@ describe('shared named-plan JSON Schema',()=>{
             p=>{p.designCids=[];},p=>{p.designCids=[cids[0],cids[0]];},p=>{p.designCids=[...cids].reverse();},p=>{p.designCids=['invalid'];},p=>{p.designCids=Array(1001).fill(cids[0]);},
             p=>{p.view.extra=true;},p=>{p.view.mode='3d';},p=>{delete p.view.at;},p=>{p.view.at='85.0512,0,17';},p=>{p.view.at='0,180.1,17';},p=>{p.view.at='0,0,2.9';},p=>{p.view.at='0,0,22.1';},p=>{p.view.at='0,,17';},p=>{p.view.at='0,0,Infinity';},
             p=>{p.view.language='de';},p=>{p.view.city='';},p=>{p.view.city='🌳'.repeat(51);},p=>{p.view.camera={};},p=>{p.view.camera={targetLat:0,targetLng:0,headingDeg:0,pitchRad:.1,range:1};},p=>{p.view.camera={targetLat:0,targetLng:0,headingDeg:Infinity,pitchRad:0,range:1};},
-            p=>{p.view.settings={unsupported:'on'};},p=>{p.view.settings={existing:''};},p=>{p.view.settings={existing:'🌳'.repeat(101)};}];
+            p=>{p.view.rotate='yes';},p=>{p.view.rotate=null;},p=>{p.view.settings={unsupported:'on'};},p=>{p.view.settings={existing:''};},p=>{p.view.settings={existing:'🌳'.repeat(101)};}];
         for(const change of changes){const value=canonical();change(value);expect(PlanRecord.validate(value),JSON.stringify(value)).not.toBeNull();expect(validate(value),JSON.stringify(value)).toBe(false);}
     });
     it('exposes the exact schema through help without moving schema prose into untrusted fields',()=>{
@@ -43,7 +43,8 @@ describe('shared named-plan JSON Schema',()=>{
     });
     it('matches MCP saved-view validation with PlanRecord, including descriptive city text over eighty characters',()=>{
         const viewSchema=createNamedPlanViewSchema();
-        const views=[canonical().view,{at:'0,0,17',mode:'model',city:'c'.repeat(100),settings:null},
+        const views=[canonical().view,{at:'0,0,17',mode:'model',city:'c'.repeat(100),settings:null,rotate:true},
+            {at:'0,0,17',mode:'photo',rotate:'yes'},{at:'0,0,17',mode:'model',rotate:null},
             {at:'85.0512,0,17',mode:'2d'},{at:'0,0,2',mode:'photo'},{at:'0,0,17',mode:'3d'},
             {at:'0,0,17',mode:'2d',camera:{targetLat:0,targetLng:0,headingDeg:0,pitchRad:.1,range:1}},
             {at:'0,0,17',mode:'2d',settings:{unexpected:'on'}},{at:'0,0,17',mode:'2d',city:'c'.repeat(101)}];

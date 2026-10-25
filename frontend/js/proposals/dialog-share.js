@@ -534,7 +534,8 @@ function showSharePlanPanel(options) {
         const t = getProposalI18nHelper();
         const tShare = getShareI18nHelper();
         if (typeof proposalStorage === 'undefined') return;
-        const shareView = window.MapShare.capture(window);
+        const capturedView = window.MapShare.capture(window);
+        let shareView = { ...capturedView };
         const applied = proposalStorage.getAllProposals().filter(isProposalCurrentlyApplied);
         const proposalsByHash = new Map();
         applied.forEach(proposal => {
@@ -827,6 +828,32 @@ function showSharePlanPanel(options) {
         });
         linkRow.append(linkInput, copyBtn);
         shareArea.appendChild(linkRow);
+        const viewOptions = document.createElement('div');
+        viewOptions.className = 'share-plan-view-options';
+        viewOptions.hidden = shareView.mode === '2d';
+        const viewChoice = (id, key, fallback, checked) => {
+            const label = document.createElement('label');
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = id;
+            checkbox.checked = checked;
+            label.append(checkbox, document.createTextNode(t('proposals.share.view.' + key, fallback)));
+            viewOptions.appendChild(label);
+            return checkbox;
+        };
+        const includeCamera = viewChoice('share-include-camera', 'camera', 'Include camera position and angle', !!capturedView.camera);
+        includeCamera.disabled = !capturedView.camera;
+        const rotate = viewChoice('share-rotate', 'rotate', 'Rotate on arrival', capturedView.rotate);
+        const rotateHint = document.createElement('small');
+        rotateHint.textContent = t('proposals.share.view.rotateHint', 'Rotation stops on click, touch, scroll or key input.');
+        viewOptions.appendChild(rotateHint);
+        const updateViewOptions = () => {
+            shareView = { ...capturedView, camera: includeCamera.checked ? capturedView.camera : null, rotate: rotate.checked };
+            updateShareUrl();
+        };
+        includeCamera.addEventListener('change', updateViewOptions);
+        rotate.addEventListener('change', updateViewOptions);
+        shareArea.appendChild(viewOptions);
         let namedRecord = window.NamedPlans.current;
         let savingName = false;
         const namedTitle = document.createElement('strong');
@@ -883,6 +910,8 @@ function showSharePlanPanel(options) {
                 savingName = false;
                 saveName.disabled = !nameInput.value.trim() || [...selected].some(key => !isPublished(key)) || !selected.size;
                 nameInput.disabled = false;
+                includeCamera.disabled = !capturedView.camera;
+                rotate.disabled = false;
                 for (const controls of rowControls.values()) controls.checkbox.disabled = false;
             }
         });
@@ -922,6 +951,8 @@ function showSharePlanPanel(options) {
             const blockedKeys = pendingKeys.filter(key => publishRefusals.has(key));
             saveName.disabled = savingName || !nameInput.value.trim() || !selectedKeys.length || !!pendingKeys.length;
             nameInput.disabled = savingName;
+            includeCamera.disabled = savingName || !capturedView.camera;
+            rotate.disabled = savingName;
             for (const controls of rowControls.values()) controls.checkbox.disabled = savingName;
             nameButton.hidden = !nameForm.hidden || !selectedKeys.length;
             namedTitle.hidden = true;

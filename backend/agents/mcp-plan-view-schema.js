@@ -19,6 +19,7 @@ export function createNamedPlanViewSchema() {
         language: z.enum(fields.language.anyOf[1].enum).nullable().optional(),
         camera: z.object({ targetLat: number(camera.targetLat), targetLng: number(camera.targetLng),
             headingDeg: number(camera.headingDeg), pitchRad: number(camera.pitchRad), range: number(camera.range) }).strict().nullable().optional(),
+        rotate: z.boolean().describe(fields.rotate.description).optional(),
         settings: z.object(Object.fromEntries(Object.entries(settings).map(([key, limits]) =>
             [key, z.string().min(limits.minLength).max(limits.maxLength).optional()]))).strict().nullable().optional()
     }).strict();

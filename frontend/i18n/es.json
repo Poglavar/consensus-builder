@@ -823,6 +823,11 @@
         },
         "inOtherCity": "Esta propuesta pertenece a {{city}}, no a {{current}}: ábrala allí.",
         "share": {
+            "view": {
+                "camera": "Incluir posición y ángulo de la cámara",
+                "rotate": "Girar al abrir",
+                "rotateHint": "El giro se detiene al hacer clic, tocar, desplazar o pulsar una tecla."
+            },
             "named": {
                 "rename": "Cambiar nombre del plan",
                 "name": "Dar nombre a este plan",

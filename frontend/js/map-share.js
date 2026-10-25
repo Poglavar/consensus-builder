@@ -1,4 +1,4 @@
-// A share names the current design selection and view, independently of publication or consent.
+// A public share names published designs and their view; it does not convey consent.
 // The browser captures before any selection panel changes the map; the URL helpers are pure.
 (function (root, factory) {
     const api = factory();
@@ -27,6 +27,7 @@
         }
         return { mode, at: [center.lat, center.lng, win.map.getZoom()].join(','),
             camera: mode === '2d' ? null : win.getThree3DGeoView?.(),
+            rotate: mode !== '2d' && source.get('rotate') === '1',
             language: win.i18n?.getLanguage?.(),
             ...(source.has('backend') ? { backend: source.get('backend') } : {}),
             ...(settings ? { settings } : {}),
@@ -34,7 +35,7 @@
     }
     function link(base, context) {
         const url = new URL(base);
-        for (const key of ['3d', 'photo', 'model', 'mode3d', 'real', 'rl', 'rw', 'camera']) url.searchParams.delete(key);
+        for (const key of ['3d', 'photo', 'model', 'mode3d', 'real', 'rl', 'rw', 'camera', 'rotate', 'draft']) url.searchParams.delete(key);
         url.searchParams.set('at', context.at);
         if (context.city) url.searchParams.set('city', context.city);
         if (context.language) url.searchParams.set('lang', context.language);
@@ -43,7 +44,12 @@
         if (context.mode === 'model') url.searchParams.set('3d', '');
         if (context.mode === 'photo') url.searchParams.set('photo', '');
         if (context.camera) url.searchParams.set('camera', fields.map(key => context.camera[key]).join(','));
+        if (context.mode !== '2d') url.searchParams.set('rotate', context.rotate === true ? '1' : '0');
         return url.toString();
     }
-    return Object.freeze({ readCamera, capture, link });
+    function arrivalOptions(search) {
+        const params = new URLSearchParams(search);
+        return { restoreView: readCamera(params.get('camera')), rotate: params.get('rotate') === '1' };
+    }
+    return Object.freeze({ readCamera, capture, link, arrivalOptions });
 });

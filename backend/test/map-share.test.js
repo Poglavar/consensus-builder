@@ -2,7 +2,7 @@
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
-const { link, capture, readCamera } = require('../../frontend/js/map-share.js');
+const { link, capture, readCamera, arrivalOptions } = require('../../frontend/js/map-share.js');
 const camera = { targetLat: 45, targetLng: 16, headingDeg: 90, pitchRad: -0.6, range: 300 };
 
 describe('current-map sharing', () => {
@@ -23,11 +23,24 @@ describe('current-map sharing', () => {
         expect(capture({ map: { getCenter: () => ({ lat: 45, lng: 16 }), getZoom: () => 18 },
             __mapModeState: { desired: 'photo' }, getThree3DGeoView: () => camera,
             i18n: { getLanguage: () => 'en' }, CityConfigManager: { getCurrentCityId: () => 'example' }
-        })).toEqual({ mode: 'photo', at: '45,16,18', camera, city: 'example', language: 'en' });
+        })).toEqual({ mode: 'photo', at: '45,16,18', camera, rotate: false, city: 'example', language: 'en' });
     });
     it('keeps an explicit backend override so a preview link reads the same publications', () => {
         const context = capture({ map: { getCenter: () => ({ lat: 45, lng: 16 }), getZoom: () => 18 },
             location: { search: '?backend=https%3A%2F%2Fapi.example.test' } });
         expect(new URL(link('https://app.example.test/', context)).searchParams.get('backend')).toBe('https://api.example.test');
+    });
+    it('records camera and arrival rotation independently without carrying a private preview token', () => {
+        const context = { mode: 'model', at: '45,16,18', camera, rotate: true };
+        const base = 'https://app.example.test/designs/published?draft=private&camera=old&rotate=0';
+        const rotating = new URL(link(base, context));
+        expect(rotating.searchParams.has('draft')).toBe(false);
+        expect(arrivalOptions(rotating.search)).toEqual({ restoreView: camera, rotate: true });
+        const noCamera = new URL(link(base, { ...context, camera: null }));
+        expect(arrivalOptions(noCamera.search)).toEqual({ restoreView: null, rotate: true });
+        expect(arrivalOptions(new URL(link(base, { ...context, rotate: false })).search)).toEqual({ restoreView: camera, rotate: false });
+        expect(arrivalOptions('?rotate=yes')).toEqual({ restoreView: null, rotate: false });
+        expect(arrivalOptions('')).toEqual({ restoreView: null, rotate: false });
+        expect(new URL(link(base, { mode: '2d', at: context.at, rotate: true })).searchParams.has('rotate')).toBe(false);
     });
 });

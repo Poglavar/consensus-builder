@@ -7703,6 +7703,7 @@
         disposeScene();
         // Restore the flag after dispose
         pendingIntroAutoRotate = preserveAutoRotate;
+        if (pendingIntroAutoRotate) watchIntroAutoRotateStop(null);
         isTransitioning3D = true;
         sceneAbort = new AbortController();
         const signal = sceneAbort.signal;
@@ -8077,12 +8078,12 @@
         } catch (_) { }
     }
 
-    function stopIntroAutoRotate() {
+    function stopIntroAutoRotate(suppressClick = false) {
         try {
             // The pointerdown that stops an ACTIVE intro rotation must not double as a map
             // click: it isolated whichever proposal sat under the cursor, hiding all others
             // (and, in realistic mode, gaping their carve holes open).
-            if ((controls && controls.autoRotate) || manualAutoRotateActive) {
+            if (suppressClick && ((controls && controls.autoRotate) || manualAutoRotateActive)) {
                 suppressClickAfterRotateStop = true;
             }
             const wasPending = pendingIntroAutoRotate;
@@ -8121,12 +8122,21 @@
             console.warn('[3D] Failed to enable auto-rotate:', err);
         }
 
-        const stop = () => { stopIntroAutoRotate(); };
+        watchIntroAutoRotateStop(controlsInstance);
+    }
+
+    function watchIntroAutoRotateStop(controlsInstance = controls) {
+        const stop = event => {
+            const canvasPress = ['pointerdown', 'mousedown', 'touchstart'].includes(event?.type)
+                && event.target === renderer?.domElement;
+            stopIntroAutoRotate(canvasPress);
+        };
 
         // Stop as soon as the user clicks/touches/presses anywhere.
         try { document.addEventListener('pointerdown', stop, { passive: true, capture: true }); } catch (_) { }
         try { document.addEventListener('mousedown', stop, { passive: true, capture: true }); } catch (_) { }
         try { document.addEventListener('touchstart', stop, { passive: true, capture: true }); } catch (_) { }
+        try { document.addEventListener('wheel', stop, { passive: true, capture: true }); } catch (_) { }
         try {
             if (controlsInstance && typeof controlsInstance.addEventListener === 'function') {
                 controlsInstance.addEventListener('start', stop);
@@ -8137,6 +8147,7 @@
             try { document.removeEventListener('pointerdown', stop, true); } catch (_) { }
             try { document.removeEventListener('mousedown', stop, true); } catch (_) { }
             try { document.removeEventListener('touchstart', stop, true); } catch (_) { }
+            try { document.removeEventListener('wheel', stop, true); } catch (_) { }
             try {
                 if (controlsInstance && typeof controlsInstance.removeEventListener === 'function') {
                     controlsInstance.removeEventListener('start', stop);
@@ -8272,16 +8283,16 @@
         // (e.g. realistic-from-2D) can proceed once the abstract scene is actually up.
         try { window.dispatchEvent(new Event('threeModeReady')); } catch (_) { }
         console.log('[3D] startLoop() called, pendingIntroAutoRotate:', pendingIntroAutoRotate);
-        if (pendingIntroAutoRotate) {
-            pendingIntroAutoRotate = false;
-            // Reduced motion keeps the framed view still: no orbit.
-            if (!window.__reducedMotion) {
-                console.log('[3D] Starting intro auto-rotate');
-                startIntroAutoRotate();
-            }
-        }
+        // Keep the Google view still while tiles refine and the terrain establishes its height.
+        if (window.__mapModeState?.desired !== 'photo') startPendingIntroAutoRotate();
         lastPlaneDist = 0;
         invalidateThreeView();
+    }
+
+    function startPendingIntroAutoRotate() {
+        if (!pendingIntroAutoRotate) return;
+        pendingIntroAutoRotate = false;
+        if (!window.__reducedMotion) startIntroAutoRotate();
     }
 
     function cancelLoop() {
@@ -8576,12 +8587,12 @@
             : null;
         console.log('[3D] enter3D focus ids:', focusProposalIds ? focusProposalIds.size : 0,
             focusProposalIds ? Array.from(focusProposalIds).slice(0, 4) : '(none — framing all applied)');
-        pendingIntroAutoRotate = !!(options && options.fromUrl);
-        // A shared render carries the exact camera pose it was shot from: reproduce it instead of
-        // auto-framing, and suppress the intro spin so the follower lands on the same view.
+        stopIntroAutoRotate();
+        pendingIntroAutoRotate = options.fromUrl === true && options.rotate === true && !window.__reducedMotion;
+        // A saved pose sets the starting view and its orbit target. Rotation is an explicit choice.
         pendingRestoreView = (options && options.restoreView) ? options.restoreView : null;
-        if (pendingRestoreView) pendingIntroAutoRotate = false;
         if (pendingIntroAutoRotate) {
+            watchIntroAutoRotateStop();
             console.log('[3D] URL-driven entry detected, will start auto-rotate after tilt animation');
         }
         try { document.body.classList.add('three-mode-active'); } catch (_) { }
@@ -8958,6 +8969,8 @@
     // still pass through; modifier combinations retain their browser/OS default without reaching
     // application-level 2D listeners.
     function handleThreeModeKeyboardContext(evt) {
+        // This window capture handler can consume keys before document listeners see them.
+        if (pendingIntroAutoRotate || controls?.autoRotate || manualAutoRotateActive) stopIntroAutoRotate();
         const action = keyboardContext.classifyThreeModeKeydown({
             active: isActive,
             key: evt.key,
@@ -9314,6 +9327,7 @@
         }
         if (options.exiting) buildingViewDirty = true;
         else if (isActive && !applyRetainedBuildingDisplay()) rebuild3DBuildingsOnly();
+        if (realisticLayerActive) startPendingIntroAutoRotate();
         invalidateThreeView();
     };
     window.invalidateThreeView = invalidateThreeView;

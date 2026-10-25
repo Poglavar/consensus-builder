@@ -46,6 +46,7 @@
                     camera: nullable(exactObject({ targetLat: { type: 'number', minimum: -LIMITS.latitude, maximum: LIMITS.latitude },
                         targetLng: { type: 'number', minimum: -LIMITS.longitude, maximum: LIMITS.longitude },
                         headingDeg: { type: 'number' }, pitchRad: { type: 'number', minimum: -Math.PI / 2, maximum: 0 }, range: { type: 'number', minimum: 1 } }, CAMERA)),
+                    rotate: { type: 'boolean', description: 'Orbit the saved focal point on arrival until the first user action; reduced motion remains still.' },
                     settings: nullable(exactObject(Object.fromEntries(SETTINGS.map(key => [key, boundedText(LIMITS.setting)]))))
                 }, ['at', 'mode'])
             }, ['schema', 'title', 'designCids', 'view']) };
@@ -58,7 +59,8 @@
         if (!Array.isArray(cids) || !cids.length || cids.length > MAX_DESIGNS || cids.some(cid => typeof cid !== 'string' || !CID.test(cid))
             || !ascending(cids)) return 'Choose between 1 and 1000 published designs, sorted without duplicates.';
         const v = content.view;
-        if (!keys(v, ['at', 'mode', 'city', 'language', 'camera', 'settings']) || !MODES.includes(v.mode)) return 'Invalid saved map view.';
+        if (!keys(v, ['at', 'mode', 'city', 'language', 'camera', 'rotate', 'settings']) || !MODES.includes(v.mode)) return 'Invalid saved map view.';
+        if (v.rotate !== undefined && typeof v.rotate !== 'boolean') return 'Invalid saved camera rotation.';
         if (!location(v.at)) return 'Invalid saved map location.';
         if (v.city != null && !text(v.city, LIMITS.city)) return 'Invalid plan city.';
         if (v.language != null && !LANGUAGES.includes(v.language)) return 'Invalid plan language.';
@@ -72,7 +74,8 @@
     function create(title, designCids, view) {
         const content = { schema: SCHEMA, title: String(title || '').trim(), designCids: [...new Set(designCids)].sort(),
             view: { at: view.at, mode: view.mode, city: view.city || null, language: view.language || null,
-                camera: view.camera || null, settings: Object.fromEntries(SETTINGS.filter(key => view.settings?.[key] != null).map(key => [key, view.settings[key]])) } };
+                camera: view.camera || null, rotate: view.mode !== '2d' && view.rotate === true,
+                settings: Object.fromEntries(SETTINGS.filter(key => view.settings?.[key] != null).map(key => [key, view.settings[key]])) } };
         const error = validate(content);
         if (error) throw new Error(error);
         return content;

@@ -823,6 +823,11 @@
         },
         "inOtherCity": "This proposal belongs to {{city}}, not {{current}}: open it there.",
         "share": {
+            "view": {
+                "camera": "Include camera position and angle",
+                "rotate": "Rotate on arrival",
+                "rotateHint": "Rotation stops on click, touch, scroll or key input."
+            },
             "named": {
                 "rename": "Rename plan",
                 "name": "Name this plan",

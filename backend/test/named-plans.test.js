@@ -43,6 +43,14 @@ describe('named plan records and API', () => {
             PlanRecord.create(content.title, [a, b], { ...view, at: '52,-1,17' })]) expect(cidOf(canonicalBytes(changed))).not.toBe(cid);
         expect(content).not.toHaveProperty('rule');
     });
+    it('saves arrival rotation in the snapshot and restores it unless the link explicitly opts out', () => {
+        const rotating = PlanRecord.create(content.title, [a,b], { ...view, rotate: true });
+        expect(rotating.view.rotate).toBe(true);
+        expect(cidOf(canonicalBytes(rotating))).not.toBe(cid);
+        expect(new URL(NamedPlans.restoreUrl(`https://app.example/plans/${cid}`, rotating.view, MapShare)).searchParams.get('rotate')).toBe('1');
+        expect(new URL(NamedPlans.restoreUrl(`https://app.example/plans/${cid}?rotate=0`, rotating.view, MapShare)).searchParams.get('rotate')).toBe('0');
+        expect(PlanRecord.validate({ ...rotating, view: { ...rotating.view, rotate: 'yes' } })).toBe('Invalid saved camera rotation.');
+    });
     it.each([
         { ...content, title: ' ' }, { ...content, title: 'x'.repeat(161) }, { ...content, designCids: [] },
         { ...content, designCids: [a, a] }, { ...content, rule: {} },

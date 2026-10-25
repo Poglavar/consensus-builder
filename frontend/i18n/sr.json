@@ -825,6 +825,11 @@
         },
         "inOtherCity": "Ovaj predlog pripada gradu {{city}}, a ne gradu {{current}}: otvorite ga tamo.",
         "share": {
+            "view": {
+                "camera": "Uključi položaj i ugao kamere",
+                "rotate": "Rotiraj pri otvaranju",
+                "rotateHint": "Rotacija prestaje na klik, dodir, pomeranje točkića ili pritisak tastera."
+            },
             "named": {
                 "rename": "Preimenuj plan",
                 "name": "Imenuj ovaj plan",
