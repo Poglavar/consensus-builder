@@ -43,6 +43,7 @@ The plugin reuses the hosted server and supplies no authentication credentials. 
 
 - [Website](https://urbangametheory.xyz)
 - [Feedback and bug reports](https://urbangametheory.xyz/feedback.html)
+- [MCP privacy policy](https://urbangametheory.xyz/mcp-privacy.html)
 - [MCP editing guide](https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/docs/mcp-editing.md)
 - [Server source](https://github.com/Poglavar/consensus-builder/tree/colosseum-worlds-fair/backend/agents)
 

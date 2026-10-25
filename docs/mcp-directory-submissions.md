@@ -109,7 +109,7 @@ The PR is open, not approved or published. At the last check no CI results were 
 
 ## Public plugin source — published
 
-[Urban Game Theory plugin repository](https://github.com/Poglavar/urban-game-theory-plugin), latest prepared commit `2b060d9f94e77fe97c4b8df90055c653f479e427`.
+[Urban Game Theory plugin repository](https://github.com/Poglavar/urban-game-theory-plugin), latest prepared commit `1a9056246092b9a74c10f5550499774b51043dfd`, including the published privacy-policy link.
 
 The package in [`plugins/urban-game-theory`](../plugins/urban-game-theory) is a public copy of the existing private planning plugin, with brand-only authorship, the same hosted endpoint, one planning skill and its references, the existing logo, and the project's Apache-2.0 license. The original private installation was not modified. Portable Agent Plugins clients use `mcp.json`; Open Plugins clients use `.mcp.json`. Both configurations identify exactly the same endpoint. No private app bindings, personal contact details, credentials, telemetry or executable hooks are included.
 
@@ -119,22 +119,29 @@ The GitHub file inventory was read back after publication. JSON, relative skill 
 
 The user's existing signed-in account successfully connected to `https://urbangametheory.xyz/mcp` without authentication and discovered **30 tools, 12 resources and five prompts**. The ten-step form is prepared through **Review and submit**, with the listing, categories, three use cases, business contact, authentication, data handling and Inspector evidence entered. The draft is saved in the existing browser tab, not a verified server-side submission. Keep the tab open until submission. Reusable public values are in [`directory-submissions/claude/listing.json`](../directory-submissions/claude/listing.json); account/contact details remain outside this repository.
 
-Remaining required fields shown by the portal:
+The published [MCP privacy policy](https://urbangametheory.xyz/mcp-privacy.html) has been added to the form and the listing step now passes validation. The notice describes actual tool inputs, temporary bearer references, public publication, the private feedback inbox and Telegram notifications, infrastructure processing, retention limits and privacy requests. It does not invent a fixed retention period for operational logs or feedback. It is available in English, Spanish, Croatian and Serbian.
 
-- A real, published privacy-policy URL. None has been supplied or invented; the maintainer was asked about existing privacy/terms URLs and log/feedback retention and deletion rules.
-- The maintainer's seven policy acknowledgements. These remain unchecked; do not attest on the maintainer's behalf. The preparation skill requires the authorized developer to complete legal/policy attestations.
+At the user's request, the existing [submission tab](https://claude.ai/directory/manage/new/connector) is left open at **step 9, Compliance** for the maintainer's seven policy acknowledgements. These remain unchecked. The draft is saved in that tab; use the existing prepared tab rather than assuming the URL alone transfers its state to another browser or a fresh tab. Submission remains pending the maintainer's acknowledgements and final review.
 
 The portal flags `annotations.title` as missing on every hosted tool. A local server change now supplies matching top-level and annotation titles, including names generated for companion tools. Targeted headless unit tests (`test/mcp-server.test.js` and `test/mcp-http.test.js`) passed: **2 files / 18 tests**. This server metadata change has **not been deployed**, so the saved live scan still contains its original suggestions.
 
-## Cursor Marketplace — source and listing prepared, not submitted
+## Cursor Marketplace — submitted for review
 
-The official [publisher application](https://cursor.com/marketplace/publish) is signed in. The public source and reusable listing values are ready in [`directory-submissions/cursor/listing.json`](../directory-submissions/cursor/listing.json). The form became unresponsive before the prepared values were verified as entered. Its final submission accepts the [Publisher Terms](https://cursor.com/marketplace-publisher-terms), which require the maintainer's action-time confirmation. Those terms also require public privacy and service disclosures.
+Submitted on **2026-10-25** through the official [publisher application](https://cursor.com/marketplace/publish), after the user explicitly accepted the [Publisher Terms](https://cursor.com/marketplace-publisher-terms) and authorized the final click. The form used Urban Game Theory, the dedicated public plugin repository, the existing public logo, homepage and the business contact supplied by the user. Reusable listing values are in [`directory-submissions/cursor/listing.json`](../directory-submissions/cursor/listing.json); account/contact details remain outside this repository.
 
-Automatic approval review rejected reloading the stalled form because it could discard unsaved application data and the form had not been proven blank. Preserve the existing tab; do not bypass the rejection by replacing or discarding its state. Reload requires the user's approval.
+The browser displayed **“Thanks for applying”** and **“We've received your submission.”** This confirms receipt, not marketplace approval. The earlier form became responsive again without reloading; the automatic-review rejection of a reload was not bypassed. Do not submit a duplicate while review is pending.
 
-## Cursor Directory community listing — awaiting sign-in authorization
+## Cursor Directory community listing — submitted, security scan pending
 
-The [community submission form](https://cursor.directory/plugins/new) requires sign-in. Its GitHub OAuth screen requests **read-only access to account email addresses** for the Cursor Directory application. That grant was not accepted. The public plugin repository is ready for its importer. The directory's own contribution guide says listings are submitted through the website, not pull requests.
+Submitted on **2026-10-25** through the [community form](https://cursor.directory/plugins/new). The user granted the requested GitHub read-only email access. The expired initial sign-in was restarted through the ordinary sign-in flow; no extra grant was accepted by the agent. The importer detected exactly **one MCP server and one planning skill** from the public plugin repository. The submitted name and description match the shared listing copy.
+
+The resulting [listing](https://cursor.directory/plugins/urban-game-theory-consensus-builder) currently says **“Scanning your plugin… it will appear publicly once the security agent finishes”** and **“This plugin is unpublished and hidden from the directory.”** Treat it as submitted, not publicly published. Optional logo upload was omitted because the Chrome extension requires an additional file-URL access setting; no browser permission setting was changed. Do not submit a duplicate while scanning is pending.
+
+## Privacy-page publication on 2026-10-25
+
+The user authorized creating a policy and adding its live URL to Claude. The three new static files from commit `4cba22ef3` were published to the existing website independently of the application release. The production vhost and served destination were verified first; the live MCP still used temporary server-side previews with the default 24-hour expiry when the notice was prepared. No private draft content or feedback rows were inspected.
+
+Public HTML, CSS and translation JavaScript were read back and matched the committed bytes exactly, with the expected content types. The published page and all four language selections were verified in Chrome. Static checks confirmed translation-key parity, resolved page strings and no inline styles or scripts. This low-impact content change did not add or run a full test suite. The plugin README now links the live notice for reviewers and users.
 
 ## Grok — direct installation documented, catalogue submission unconfirmed
 
@@ -144,7 +151,7 @@ The official [connector documentation](https://docs.x.ai/grok/connectors) allows
 
 - Targeted headless MCP Inspector checks exercised all **30 hosted tools** against the public endpoint. **27 read/draft checks succeeded** and the **three external-write tools refused `confirm:false`**. No public content or feedback report was created.
 - The first verified-fact check used an active agreement and correctly returned that no terminal fact existed. Retesting with an executed agreement returned the x402 challenge successfully, without paying it. This makes 31 Inspector invocations, not 31 distinct tools.
-- No LLM API calls, payments, paid listings, full test suites, application push or application deployment ran. Docker and plugin-source publication used GitHub API operations containing only the prepared public files.
+- No LLM API calls, payments, paid listings or full test suites ran. There was no application push or application release; only the requested privacy-page files were published to the website. Docker and plugin-source publication used GitHub API operations containing only the prepared public files.
 - OpenAI and all Chinese directory submissions are explicitly deferred at the user's request.
 
 ## Excluded
