@@ -349,6 +349,7 @@ describe('the record the form describes', () => {
             allocations: [{ output: 'piece1-sha256:aa', to: { kind: 'party', ownerKey: 'agent-ben' } }],
             money: { currency: 'USD', lines: [{ ownerKey: 'agent-ana', amountCents: -1250 }, { ownerKey: 'agent-ben', amountCents: 1250 }] },
             rule: { electorate: 'owners', binding: true, approvalConfig: formState.approvalConfig, lens: ['lens-key-1'] },
+            consultation: null,
             deadline: Dialog.deadlineFromDate('2026-12-31')
         });
     });
@@ -356,6 +357,9 @@ describe('the record the form describes', () => {
     it('a community vote never binds and carries no owner rule', () => {
         const record = Dialog.recordFromForm(formState, { ...values, electorate: 'community', binding: true });
         expect(record.rule).toEqual({ electorate: 'community', binding: false, approvalConfig: null, lens: [] });
+        expect(record.allocations).toEqual([]);
+        expect(record.money.lines).toEqual([]);
+        expect(record.consultation).toEqual({ organiser: null, participationUrl: null });
     });
 
     it('keeps an unreadable amount for the validation to name, and drops zero and empty lines', () => {
@@ -445,9 +449,21 @@ describe('the sections as HTML (the hooks the browser spec targets)', () => {
         expect(community).toContain('data-agreement-rule-form hidden');
     });
 
-    it('puts the six sections in order, errors and warnings above them', () => {
+    it('shows community consultation fields while hiding settlement terms', () => {
+        const html = Dialog.bodyHtml({ designs: [], selected: new Set(), values: { electorate: 'community', organiser: 'did:web:ngo.example', participationUrl: 'https://ngo.example/join' } });
+        expect(html).toContain('Ask the community');
+        expect(html).toContain('Seek owners’ decisions');
+        expect(html).toContain('data-agreement-section="consultation"><h3');
+        expect(html).toContain('data-agreement-section="allocation" hidden');
+        expect(html).toContain('data-agreement-section="money" hidden');
+        expect(html).toContain('data-agreement-organiser value="did:web:ngo.example"');
+        expect(html).toContain('data-agreement-participation-url value="https://ngo.example/join"');
+        expect(html.indexOf('data-agreement-section="rule"')).toBeLessThan(html.indexOf('data-agreement-section="land"'));
+    });
+
+    it('puts the decision and consultation sections before the design and settlement sections, errors and warnings above them', () => {
         const html = Dialog.bodyHtml({ designs: [], selected: new Set(), missing: [], land: null, values: { electorate: 'owners', binding: true, title: 'T', deadline: '' }, today: '2026-10-21' });
-        expect([...html.matchAll(/data-agreement-section="([a-z]+)"/g)].map(m => m[1])).toEqual(['designs', 'land', 'allocation', 'money', 'rule', 'details']);
+        expect([...html.matchAll(/data-agreement-section="([a-z]+)"/g)].map(m => m[1])).toEqual(['rule', 'consultation', 'designs', 'land', 'allocation', 'money', 'details']);
         expect(html.indexOf('data-agreement-errors')).toBeLessThan(html.indexOf('data-agreement-section="designs"'));
         expect(html).toContain('<input type="text" data-agreement-title value="T" autocomplete="off">');
         expect(html).toContain('<input type="date" data-agreement-deadline value="" min="2026-10-21">');

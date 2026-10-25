@@ -6942,6 +6942,54 @@
         "viewName": "Prikaži ENS naziv",
         "copyName": "Kopiraj ENS naziv"
     },
+    "community": {
+        "pictures": "Prije / poslije",
+        "title": "Savjetovanje sa zajednicom",
+        "errors": {
+            "history": "Povijest izvještaja nije dostupna ili je nije moguće provjeriti. Osvježite za novi pokušaj.",
+            "index": "Poslužitelj je vratio nevaljanu povijest izvješća.",
+            "notStored": "Poslužitelj nije potvrdio ovo izvješće.",
+            "notObserved": "Izvješće je poslano, ali ga nije bilo moguće ponovno pročitati. Pokušajte ponovno radi potvrde.",
+            "declined": "Potpis novčanika je odbijen.",
+            "wallet": "Mrežna stranica organizatora ne navodi ovaj novčanik na ovoj mreži za izvješćivanje.",
+            "url": "Upotrijebite HTTPS adresu izvješća bez vjerodajnica.",
+            "walletRequired": "Povežite Solana novčanik na podržanoj mreži.",
+            "statement": "Unesite izjavu običnim tekstom do 280 znakova.",
+            "failed": "Izvješće nije bilo moguće objaviti: {{reason}}"
+        },
+        "website": {
+            "listed": "Mrežna stranica navodi ovaj novčanik za izvješća",
+            "unlisted": "Novčanik nije naveden na mrežnoj stranici",
+            "unavailable": "Provjera mrežne stranice nije dostupna",
+            "failed": "Mrežnu stranicu organizatora nije bilo moguće provjeriti. Mora dopustiti pristup preglednika svojem DID dokumentu."
+        },
+        "report": {
+            "says": "{{site}} izvješćuje:",
+            "walletSays": "Potpisana izjava novčanika; pripisivanje mrežnoj stranici nije potvrđeno:",
+            "details": "Pročitajte izvješće organizatora",
+            "signed": "Potpisani zapis"
+        },
+        "intro": "Ovo savjetovanje traži neobvezujuću podršku zajednice. Ne daje suglasnost vlasnika i ne prenosi zemljište ni novac.",
+        "takePart": "Sudjelujte",
+        "organiser": "Organizator",
+        "noReports": "Rezultat još nije prijavljen.",
+        "verificationMeaning": "Provjera mrežne stranice potvrđuje samo da stranica trenutačno navodi novčanik potpisnika. Organizator je odgovoran za pravo sudjelovanja, prebrojavanje i izjavu.",
+        "refresh": "Ponovno provjeri",
+        "reportResult": "Prijavi rezultat",
+        "loading": "Provjera izvješća i mrežne stranice organizatora…",
+        "history": "Prethodna izvješća ({{count}})",
+        "statement": "Izjava o rezultatu (do 280 znakova)",
+        "resultUrl": "URL cjelovitog izvješća (neobavezno)",
+        "signHint": "Ovu izjavu potpisuje Solana novčanik naveden na mrežnoj stranici organizatora. Potpisivanje nema transakcijsku naknadu.",
+        "publishing": "Potpisivanje i objava…",
+        "signPublish": "Potpiši i objavi",
+        "published": "Potpisano izvješće objavljeno je i ponovno pročitano.",
+        "setup": {
+            "title": "Postavi izvješćivanje mrežne stranice",
+            "instructions": "Poslužite DID dokument na gornjoj adresi uz Access-Control-Allow-Origin: *. Mora navesti novčanik za izvješća u assertionMethod. Pri dodavanju novčanika zadržite postojeće metode.",
+            "connect": "Povežite novčanik za izvješća da biste vidjeli primjer dokumenta"
+        }
+    },
     "agreement": {
         "dialog": {
             "titleCreate": "Stvori sporazum",
@@ -6950,6 +6998,7 @@
             "save": "Spremi sporazum"
         },
         "sections": {
+            "consultation": "Savjetovanje",
             "designs": "Dizajni",
             "land": "Zemljište",
             "allocation": "Raspodjela",
@@ -6995,8 +7044,8 @@
         },
         "rule": {
             "who": "Tko odlučuje",
-            "owners": "Vlasnici ulaznog zemljišta, prema pravilima",
-            "community": "Bilo tko: glasanje zajednice, nikad obvezujuće",
+            "owners": "Zatraži odluke vlasnika",
+            "community": "Pitaj zajednicu",
             "binding": "Obvezujuće: kad je pravilo ispunjeno, zemljište i novac prenose se pri izvršenju",
             "bindingShort": "Obvezujuće",
             "nonBinding": "Neobvezujuće",
@@ -7005,11 +7054,20 @@
                 "community": "Odlučuje glasanje zajednice"
             }
         },
+        "consultation": {
+            "hint": "Neobavezni identitet organizatora i informacije o sudjelovanju. Savjetovanje sa zajednicom bilježi mišljenja i ne izvršava prijenos zemljišta ni novca.",
+            "organiser": "Mrežna stranica organizatora ili did:web (neobavezno)",
+            "participationUrl": "URL za sudjelovanje (HTTPS, neobavezno)"
+        },
         "details": {
             "title": "Naslov (neobavezno)",
             "deadline": "Rok (neobavezno)"
         },
         "errors": {
+            "consultationOrganiser": "Unesite mrežnu stranicu organizatora ili valjan did:web identifikator.",
+            "consultationParticipationUrl": "Unesite HTTPS URL za sudjelovanje bez vjerodajnica.",
+            "communityAllocations": "Savjetovanje sa zajednicom ne može dodjeljivati zemljište.",
+            "communityMoney": "Savjetovanje sa zajednicom ne može uključivati novčane isplate.",
             "noDesigns": "Odaberite barem jedan dizajn.",
             "designNotApplied": "Svaki dizajn mora biti primijenjen na kartu.",
             "noInputs": "Dizajni ne zauzimaju katastarsko zemljište.",

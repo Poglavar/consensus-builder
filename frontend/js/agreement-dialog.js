@@ -270,7 +270,8 @@
      *   fingerprints (Map proposalId → design CID), land ({ inputs, outputs } from AgreementGround.derive),
      *   approvalConfig, lens, currency (the agreement's city's money) }
      * values: { allocations ({ outputHash: select value }), cash ({ ownerKey: typed amounts }),
-     *   electorate ('owners' | 'community'), binding, title, deadline (the date field's day) }
+     *   electorate ('owners' | 'community'), binding, title, deadline (the date field's day),
+     *   organiser (website or did:web), participationUrl (HTTPS) }
      */
     function recordFromForm(state = {}, values = {}) {
         const land = state.land || emptyLand();
@@ -299,15 +300,16 @@
             })),
             inputs: { parcels: Array.isArray(inputs.parcels) ? inputs.parcels : [], openGroundM2: isNumber(inputs.openGroundM2) ? inputs.openGroundM2 : 0 },
             outputs,
-            allocations: outputs.map(output => ({ output: output.hash, to: allocationTo(chosen[output.hash]) })).filter(line => line.to),
+            allocations: owners ? outputs.map(output => ({ output: output.hash, to: allocationTo(chosen[output.hash]) })).filter(line => line.to) : [],
             money: {
                 currency: state.currency || null,
-                lines: partiesOf(inputs).map(party => ({ ownerKey: party.ownerKey, amountCents: cashCents(cash[party.ownerKey]) }))
+                lines: (owners ? partiesOf(inputs) : []).map(party => ({ ownerKey: party.ownerKey, amountCents: cashCents(cash[party.ownerKey]) }))
                     .filter(line => line.amountCents !== null && line.amountCents !== 0)
             },
             rule: owners
                 ? { electorate: 'owners', binding: values.binding === true, approvalConfig: state.approvalConfig || null, lens: Array.isArray(state.lens) ? state.lens.slice() : [] }
                 : { electorate: 'community', binding: false, approvalConfig: null, lens: [] },
+            consultation: owners ? null : { organiser: values.organiser || null, participationUrl: values.participationUrl || null },
             deadline: deadlineFromDate(values.deadline)
         };
     }
@@ -326,6 +328,10 @@
         'money-currency': () => t('agreement.errors.moneyCurrency', 'Money must be in the currency of the agreement\'s city.'),
         'money-party-unknown': () => t('agreement.errors.moneyPartyUnknown', 'A cash line names a party that holds no input land.'),
         'money-amount-invalid': () => t('agreement.errors.moneyAmountInvalid', 'A cash amount is not a valid amount.'),
+        'community-allocations': () => t('agreement.errors.communityAllocations', 'A community consultation cannot allocate land.'),
+        'community-money': () => t('agreement.errors.communityMoney', 'A community consultation cannot include cash payments.'),
+        'consultation-organiser': () => t('agreement.errors.consultationOrganiser', 'Enter an organiser website or a valid did:web identifier.'),
+        'consultation-participation-url': () => t('agreement.errors.consultationParticipationUrl', 'Enter an HTTPS participation URL without credentials.'),
         'rule-invalid': reason => t('agreement.errors.ruleInvalid', 'The decision rule is incomplete: {{reason}}', { reason }),
         'rule-community-binding': () => t('agreement.errors.ruleCommunityBinding', 'A community vote cannot be binding.'),
         'deadline-invalid': () => t('agreement.errors.deadlineInvalid', 'The deadline must be a date in the future.'),
@@ -366,8 +372,8 @@
 
     // ---- the sections ----------------------------------------------------------------------------
 
-    function sectionHtml(name, title, content) {
-        return `<section class="agreement-section" data-agreement-section="${esc(name)}"><h3 class="agreement-section__title">${esc(title)}</h3>${content}</section>`;
+    function sectionHtml(name, title, content, hidden = false) {
+        return `<section class="agreement-section" data-agreement-section="${esc(name)}"${hidden ? ' hidden' : ''}><h3 class="agreement-section__title">${esc(title)}</h3>${content}</section>`;
     }
 
     // The checklist of applied designs. `missing` are designs the agreement names that are no longer applied.
@@ -458,10 +464,10 @@
         const owners = electorate !== 'community';
         const radio = (value, label) => `<label class="proposal-editor-check"><input type="radio" name="agreement-electorate" value="${value}" data-agreement-electorate${(value === 'owners') === owners ? ' checked' : ''}> ${esc(label)}</label>`;
         return `<fieldset class="agreement-fieldset"><legend>${esc(t('agreement.rule.who', 'Who decides'))}</legend>`
-            + radio('owners', t('agreement.rule.owners', 'The owners of the input land, under rules'))
-            + radio('community', t('agreement.rule.community', 'Anyone: a community vote, never binding'))
+            + radio('owners', t('agreement.rule.owners', 'Seek owners’ decisions'))
+            + radio('community', t('agreement.rule.community', 'Ask the community'))
             + '</fieldset>'
-            + `<label class="proposal-editor-check"><input type="checkbox" data-agreement-binding${owners && binding ? ' checked' : ''}${owners ? '' : ' disabled'}> ${esc(t('agreement.rule.binding', 'Binding: when the rule is met, land and money move at execution'))}</label>`
+            + `<label class="proposal-editor-check" data-agreement-binding-control${owners ? '' : ' hidden'}><input type="checkbox" data-agreement-binding${owners && binding ? ' checked' : ''}${owners ? '' : ' disabled'}> ${esc(t('agreement.rule.binding', 'Binding: when the rule is met, land and money move at execution'))}</label>`
             + `<div class="agreement-rule-form" data-agreement-rule-form${owners ? '' : ' hidden'}></div>`;
     }
 
@@ -470,23 +476,33 @@
             + `<label class="proposal-editor-field"><span>${esc(t('agreement.details.deadline', 'Deadline (optional)'))}</span><input type="date" data-agreement-deadline value="${esc(deadline)}"${today ? ` min="${esc(today)}"` : ''}></label>`;
     }
 
+    function consultationHtml({ organiser = '', participationUrl = '' } = {}) {
+        return `<p class="agreement-hint">${esc(t('agreement.consultation.hint', 'Optional organiser identity and participation information. A community consultation records opinions and does not settle land or money.'))}</p>`
+            + `<label class="proposal-editor-field"><span>${esc(t('agreement.consultation.organiser', 'Organiser website or did:web (optional)'))}</span><input type="text" data-agreement-organiser value="${esc(organiser)}" autocomplete="off"></label>`
+            + `<label class="proposal-editor-field"><span>${esc(t('agreement.consultation.participationUrl', 'Participation URL (HTTPS, optional)'))}</span><input type="url" data-agreement-participation-url value="${esc(participationUrl)}" autocomplete="off"></label>`;
+    }
+
     // The whole body. `view`: { designs, selected, missing, land, loading, landError, values, today }.
     function bodyHtml(view) {
         const values = view.values || {};
-        return `<p class="agreement-intro">${esc(t('agreement.dialog.intro', 'An agreement bundles designs on the map with who decides, who gets which land and what money moves. Nothing leaves this device yet.'))}</p>`
+        const owners = values.electorate !== 'community';
+        return `<p class="agreement-intro">${esc(owners
+            ? t('agreement.dialog.intro', 'An agreement bundles designs on the map with who decides, who gets which land and what money moves. Nothing leaves this device yet.')
+            : t('community.intro', 'This consultation asks for non-binding community support. It gives no owner consent and moves no land or money.'))}</p>`
             + '<ul class="agreement-issues agreement-issues--error" data-agreement-errors aria-live="assertive"></ul>'
             + '<ul class="agreement-issues agreement-issues--warning" data-agreement-warnings aria-live="polite"></ul>'
+            + sectionHtml('rule', t('agreement.sections.rule', 'Decision rule'), ruleHtml(values))
+            + sectionHtml('consultation', t('agreement.sections.consultation', 'Community consultation'), consultationHtml(values), owners)
             + sectionHtml('designs', t('agreement.sections.designs', 'Designs'), designsHtml(view))
             + sectionHtml('land', t('agreement.sections.land', 'Land'),
                 `<div class="agreement-land" data-agreement-land>${landHtml({ land: view.land, loading: view.loading, error: view.landError, selectedCount: Array.from(view.selected || []).length })}</div>`)
             + sectionHtml('allocation', t('agreement.sections.allocation', 'Allocation'),
                 `<p class="agreement-hint">${esc(t('agreement.allocation.hint', 'Who receives each resulting piece. The current holders are what the designs carried over.'))}</p>`
-                + `<div class="agreement-allocations" data-agreement-allocations>${allocationHtml(view.land, values.allocations)}</div>`)
+                + `<div class="agreement-allocations" data-agreement-allocations>${allocationHtml(view.land, values.allocations)}</div>`, !owners)
             + sectionHtml('money', t('agreement.sections.money', 'Money'),
                 `<p class="agreement-hint">${esc(t('agreement.money.hint', 'Cash per party, in {{currency}}: positive receives, negative pays. The sponsor covers the difference.', { currency: view.currency || '' }))}</p>`
                 + `<div class="agreement-money" data-agreement-money>${moneyHtml(view.land, values.cash, view.currency)}</div>`
-                + '<p class="agreement-sponsor" data-agreement-sponsor></p>')
-            + sectionHtml('rule', t('agreement.sections.rule', 'Decision rule'), ruleHtml(values))
+                + '<p class="agreement-sponsor" data-agreement-sponsor></p>', !owners)
             + sectionHtml('details', t('agreement.sections.details', 'Details'), detailsHtml({ title: values.title, deadline: values.deadline, today: view.today }));
     }
 
@@ -552,10 +568,11 @@
     /**
      * Opens the editor on the right dock over the applied designs, in place of the agreement panel
      * while it is open: a new agreement (preselecting `designIds`), or the stored agreement
+     * `electorate` selects the decision flow for a new record; an existing agreement retains its rule.
      * `agreementId` with `designIds` added to its designs. A proposed agreement is refused (an error
      * with code 'agreement-published'). Resolves with the saved record, or null when cancelled.
      */
-    async function open({ agreementId = null, designIds = null } = {}) {
+    async function open({ agreementId = null, designIds = null, electorate = 'owners' } = {}) {
         const doc = root.document;
         const existing = agreementId ? root.AgreementStore.get(agreementId) : null;
         if (agreementId && !existing) throw new Error(`Agreement ${agreementId} is not on this device.`);
@@ -588,7 +605,9 @@
             values: {
                 allocations: terms.allocations,
                 cash: terms.cash,
-                electorate: rule && rule.electorate === 'community' ? 'community' : 'owners',
+                electorate: (rule ? rule.electorate : electorate) === 'community' ? 'community' : 'owners',
+                organiser: existing && existing.consultation && existing.consultation.organiser || '',
+                participationUrl: existing && existing.consultation && existing.consultation.participationUrl || '',
                 // An owners' agreement binds unless it was saved as a vote.
                 binding: rule ? rule.binding === true : true,
                 title: (existing && existing.title) || '',
@@ -714,6 +733,10 @@
             body.querySelectorAll('[data-agreement-electorate]').forEach(input => { input.checked = input.value === state.values.electorate; });
             const binding = part('[data-agreement-binding]');
             binding.disabled = !owners;
+            part('[data-agreement-binding-control]').hidden = !owners;
+            part('[data-agreement-section="consultation"]').hidden = owners;
+            part('[data-agreement-section="allocation"]').hidden = !owners;
+            part('[data-agreement-section="money"]').hidden = !owners;
             binding.checked = owners && state.values.binding === true;
             const container = ruleForm();
             container.hidden = !owners;
@@ -960,7 +983,10 @@
                 keepRule();
                 // Owners decide bindingly unless the author unticks it; a community vote never binds.
                 const electorate = target.value === 'community' ? 'community' : 'owners';
-                state.values = { ...state.values, electorate, binding: electorate === 'owners' };
+                state.values = { ...state.values, electorate, binding: electorate === 'owners', ...(electorate === 'community' ? { allocations: {}, cash: {} } : {}) };
+                part('[data-agreement-allocations]').innerHTML = allocationHtml(state.land, state.values.allocations);
+                part('[data-agreement-money]').innerHTML = moneyHtml(state.land, state.values.cash, state.currency);
+                renderSponsor();
                 renderRule();
                 refreshIssues();
                 return;
@@ -978,7 +1004,11 @@
         body.addEventListener('input', event => {
             const target = event.target;
             if (!target || typeof target.matches !== 'function') return;
-            if (target.matches('[data-agreement-cash]')) {
+            if (target.matches('[data-agreement-organiser], [data-agreement-participation-url]')) {
+                const key = target.matches('[data-agreement-organiser]') ? 'organiser' : 'participationUrl';
+                state.values = { ...state.values, [key]: target.value };
+                refreshIssues();
+            } else if (target.matches('[data-agreement-cash]')) {
                 state.values = { ...state.values, cash: { ...state.values.cash, [target.getAttribute('data-agreement-cash')]: cashInputText(target) } };
                 renderSponsor();
                 refreshIssues();
@@ -1063,6 +1093,6 @@
         appliedDesigns, designTitle, inputParcelIds, originalsById, partiesOf, allocationOptions, allocationValue, allocationTo,
         cashCents, cashInputText, termsOf, keptTerms, sponsorLine, ruleConfigAfterDerive, deadlineFromDate, dateFromDeadline,
         recordFromForm, issueText, holdersText,
-        designsHtml, landHtml, allocationHtml, moneyHtml, ruleHtml, detailsHtml, bodyHtml
+        designsHtml, landHtml, allocationHtml, moneyHtml, ruleHtml, detailsHtml, consultationHtml, bodyHtml
     };
 });

@@ -109,8 +109,8 @@ test('an agreement over an applied parcel layout is created from its details, co
   await expect(page.locator('#agreement-panel-title')).toHaveText(TITLE);
   const body = agreementPanel(page).locator('[data-agreement-region="body"]');
   await expect(body.locator(`[data-agreement-design="${layoutId}"]`)).toBeEnabled();
-  await expect(body.locator(`[data-agreement-piece="${hashes[0]}"]`)).toContainText('Public');
-  await expect(body.locator(`[data-agreement-piece="${hashes[1]}"]`)).toContainText(`Current holders (${OWNER} 100%)`);
+  // Switching to a community consultation clears the settlement terms authored above.
+  await expect(body.locator('[data-agreement-piece]')).toHaveCount(0);
   await expect(body).toContainText('Decided by a community vote · Non-binding');
   await expect(body).toContainText(/Deadline: .*2030/);
 
@@ -120,8 +120,8 @@ test('an agreement over an applied parcel layout is created from its details, co
     schema: 'agreement/v1',
     title: TITLE,
     designs: [{ proposalId: layoutId, goal: 'parcel-layout' }],
-    allocations: [{ output: hashes[0], to: { kind: 'public' } }],
-    money: { currency: 'EUR', lines: [{ ownerKey, amountCents: 250_000 }] },
+    allocations: [],
+    money: { currency: 'EUR', lines: [] },
     rule: { electorate: 'community', binding: false, approvalConfig: null, lens: [] },
   });
   expect(saved.id).toMatch(/^ag-[0-9a-f]{32}$/);
@@ -154,8 +154,10 @@ test('an agreement over an applied parcel layout is created from its details, co
   await landLoaded(editor);
   await expect(editor.locator('[data-agreement-title]')).toHaveValue(TITLE);
   await expect(editor.locator(`input[data-agreement-design="${layoutId}"]`)).toBeChecked();
-  await expect(editor.locator(`select[data-agreement-allocation="${hashes[0]}"]`)).toHaveValue('public');
-  await expect(editor.locator(`input[data-agreement-cash="${ownerKey}"]`)).toHaveValue('2500');
+  await expect(editor.locator(`select[data-agreement-allocation="${hashes[0]}"]`)).toHaveValue('holders');
+  await expect(editor.locator(`select[data-agreement-allocation="${hashes[0]}"]`)).toBeHidden();
+  await expect(editor.locator(`input[data-agreement-cash="${ownerKey}"]`)).toHaveValue('');
+  await expect(editor.locator(`input[data-agreement-cash="${ownerKey}"]`)).toBeHidden();
   await expect(community).toBeChecked();
   await expect(binding).toBeDisabled();
   await expect(deadline).toHaveValue('2030-12-31');

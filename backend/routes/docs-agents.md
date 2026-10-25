@@ -355,7 +355,7 @@ lens member verifies that decision and attests it:
    linked designs the index does not hold yet, indexed in the same transaction: this is the only way a
    parcel layout is published.
 
-Refusals: 400 `invalid-agreement` (with the `section`: designs, land, allocation, money, rule or
+Refusals: 400 `invalid-agreement` (with the `section`: designs, land, allocation, money, rule, consultation or
 details), 422 `design-not-indexed` (`missing`), 422 `inputs-differ-from-binding` (`missing`: parcels the
 designs take that the inputs leave out; `extra`: inputs no design takes), 422 `deadline-past`.
 
@@ -470,6 +470,25 @@ The codec is `frontend/js/solana/pledge-client.js`, the IDL `blockchain/solana/i
   **`expire()`**, accounts `agreement`, `authority` (the sponsor, not a signer): anyone, once the
   deadline has passed; the escrow returns to the sponsor. An agreement without a deadline stays Active
   until it is cancelled or executes.
+
+### NGO consultation reports
+
+An NGO named by a community agreement's `consultation.organiser` can publish an append-only result
+at `POST $(base)/agreements/<cid>/community-reports` with `{ "cid", "content" }`. Content has schema
+`community-result/v1`, agreement CID, attester DID Web identifier, Solana CAIP-10 signer, statement
+(at most 280 characters), HTTPS URL or null, ISO `postedAt`, `didDocumentSha256`, DID document snapshot,
+and `proof: { scheme: "ed25519-wallet/v1", signature }`. The signature covers all fields except proof
+and the document; its SHA-256 digest commits to the document. The CID addresses exact canonical JSON.
+Reports are capped at 96 KiB and pinned before indexing. Success is **201**, or **200** for a duplicate,
+with `{ stored: true, duplicate, cid }`; malformed reports are **400**, unauthorized signatures or
+organisers **403**, missing agreements **404**, pinning unavailable **503**, pin failures **502**.
+Reports can follow the agreement deadline and require no mint or chain account.
+`GET $(base)/agreements/<cid>/community-reports` returns `{ agreementCid, reports: [{ cid, content }] }`
+in `postedAt`, then CID order, with `Cache-Control: no-store`. Read back the exact report after posting.
+The server checks the signature and committed snapshot without fetching the NGO website. Every browser
+must independently resolve that website on every read before showing a report as NGO verified; stored
+content alone never establishes current authorization. A later report adds history without replacing one.
+
 
 ### How the scheduled agents do it
 

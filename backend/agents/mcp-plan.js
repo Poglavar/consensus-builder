@@ -194,7 +194,7 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
             : previous.inputs.parcels.find(old => old.parcelId === p.parcelId)?.holders || [] }));
         const rule = structuredClone(terms.rule ?? previous.rule);
         if (suppliedRights && rule.approvalConfig) rule.approvalConfig.rights = suppliedRights;
-        const checked = agreementObject({ ...previous, ...Object.fromEntries(['title','author','sponsor','deadline'].filter(key => Object.hasOwn(terms, key)).map(key => [key, terms[key]])), createdAt: derived.agreement.createdAt,
+        const checked = agreementObject({ ...previous, ...Object.fromEntries(['title','author','sponsor','deadline','consultation'].filter(key => Object.hasOwn(terms, key)).map(key => [key, terms[key]])), createdAt: derived.agreement.createdAt,
             designs: derived.agreement.designs, parcels: inputs, openGroundM2: derived.agreement.inputs.openGroundM2,
             outputs: derived.agreement.outputs, allocations, money: terms.money ?? previous.money, rule });
         const designs = derived.designs;

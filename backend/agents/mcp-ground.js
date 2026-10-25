@@ -48,7 +48,7 @@ export function createMcpAgreementTools({ read, drafts, appOrigin }) {
             const result = await groundFor(await resolveDesigns(designs, parcelSourceId));
             return result.land;
         },
-        async draftAgreement({ designs: values, rulePreset = 'community-vote', rights, lens, allocations = [], money, currency, deadline = null, sponsor = null, title = null, author = null, createdAt = null, parcelSourceId, includeGround = false }) {
+        async draftAgreement({ designs: values, rulePreset = 'community-vote', rights, lens, allocations = [], money, currency, deadline = null, sponsor = null, title = null, author = null, createdAt = null, consultation = null, parcelSourceId, includeGround = false }) {
             const resolved = await resolveDesigns(values, parcelSourceId);
             createdAt ||= new Date().toISOString();
             const { designs, changes: roadChanges } = authorPlanRoads(resolved.designs, createdAt);
@@ -62,7 +62,7 @@ export function createMcpAgreementTools({ read, drafts, appOrigin }) {
             const published = agreementObject({ title, author, sponsor, city, createdAt,
                 designs: designs.map(d => ({ cid: d.cid, goal: d.content.goal, title: d.content.title })),
                 parcels: land.inputs.parcels.map(parcel => ({ ...parcel, parcelSourceId: source.parcelSourceId })), openGroundM2: land.inputs.openGroundM2, outputs: land.outputs, allocations,
-                money: money || noMoney(currency), rule, deadline });
+                money: money || noMoney(currency), rule, deadline, consultation });
             return { agreement: published.content, cid: published.cid, parcelSourceId: source.parcelSourceId, takes: [...ids], roadChanges, groundEffects, ...(includeGround ? { ground: land } : {}), warnings: ['Draft ground is isolated from other local designs. Review the preview before publishing.',
                 ...(roadCutWarning(groundEffects) ? [roadCutWarning(groundEffects)] : []),
                 ...(roadChanges.length ? ['Road junctions and their land boundaries were authored together. Use the returned revised designs and CIDs when publishing this agreement.'] : [])],

@@ -6901,6 +6901,54 @@
         "viewName": "View ENS name",
         "copyName": "Copy ENS name"
     },
+    "community": {
+        "pictures": "Before / after",
+        "title": "Community consultation",
+        "errors": {
+            "history": "Report history is unavailable or could not be verified. Refresh to try again.",
+            "index": "The server returned an invalid report history.",
+            "notStored": "The server did not confirm this report.",
+            "notObserved": "The report was submitted, but could not be read back. Retry to confirm it.",
+            "declined": "The wallet signature was declined.",
+            "wallet": "The organiser’s website does not list this wallet on this network for reporting.",
+            "url": "Use an HTTPS report address without credentials.",
+            "walletRequired": "Connect a Solana wallet on a supported network.",
+            "statement": "Enter a plain-text statement of up to 280 characters.",
+            "failed": "The report could not be published: {{reason}}"
+        },
+        "website": {
+            "listed": "Website lists this reporting wallet",
+            "unlisted": "Wallet not listed by website",
+            "unavailable": "Website verification unavailable",
+            "failed": "The organiser’s website could not be checked. It must allow browser access to its DID document."
+        },
+        "report": {
+            "says": "{{site}} reports:",
+            "walletSays": "Signed wallet statement; website attribution unverified:",
+            "details": "Read the organiser’s report",
+            "signed": "Signed record"
+        },
+        "intro": "This consultation asks for non-binding community support. It gives no owner consent and moves no land or money.",
+        "takePart": "Take part",
+        "organiser": "Organiser",
+        "noReports": "No result has been reported yet.",
+        "verificationMeaning": "Website verification only confirms that the site currently lists the signing wallet. The organiser is responsible for eligibility, counting and the statement.",
+        "refresh": "Refresh verification",
+        "reportResult": "Report a result",
+        "loading": "Checking reports and the organiser’s website…",
+        "history": "Previous reports ({{count}})",
+        "statement": "Result statement (up to 280 characters)",
+        "resultUrl": "Full report URL (optional)",
+        "signHint": "A Solana wallet listed by the organiser’s website signs this statement. Signing costs no transaction fee.",
+        "publishing": "Signing and publishing…",
+        "signPublish": "Sign and publish",
+        "published": "Signed report published and read back.",
+        "setup": {
+            "title": "Set up website reporting",
+            "instructions": "Serve the DID document at the address above with Access-Control-Allow-Origin: *. It must name the reporting wallet under assertionMethod. Keep existing methods when adding a wallet.",
+            "connect": "Connect reporting wallet to see a document example"
+        }
+    },
     "agreement": {
         "dialog": {
             "titleCreate": "Create agreement",
@@ -6909,6 +6957,7 @@
             "save": "Save agreement"
         },
         "sections": {
+            "consultation": "Consultation",
             "designs": "Designs",
             "land": "Land",
             "allocation": "Allocation",
@@ -6954,8 +7003,8 @@
         },
         "rule": {
             "who": "Who decides",
-            "owners": "The owners of the input land, under rules",
-            "community": "Anyone: a community vote, never binding",
+            "owners": "Seek owners’ decisions",
+            "community": "Ask the community",
             "binding": "Binding: when the rule is met, land and money move at execution",
             "bindingShort": "Binding",
             "nonBinding": "Non-binding",
@@ -6964,11 +7013,20 @@
                 "community": "Decided by a community vote"
             }
         },
+        "consultation": {
+            "hint": "Optional organiser identity and participation information. A community consultation records opinions and does not settle land or money.",
+            "organiser": "Organiser website or did:web (optional)",
+            "participationUrl": "Participation URL (HTTPS, optional)"
+        },
         "details": {
             "title": "Title (optional)",
             "deadline": "Deadline (optional)"
         },
         "errors": {
+            "consultationOrganiser": "Enter an organiser website or a valid did:web identifier.",
+            "consultationParticipationUrl": "Enter an HTTPS participation URL without credentials.",
+            "communityAllocations": "A community consultation cannot allocate land.",
+            "communityMoney": "A community consultation cannot include cash payments.",
             "noDesigns": "Choose at least one design.",
             "designNotApplied": "Every design must be applied to the map.",
             "noInputs": "The designs take no cadastral land.",

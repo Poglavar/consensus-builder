@@ -6,6 +6,7 @@ import { cidOfObject } from '../cid.js';
 import { validateAgreementContent } from '../routes/agreements.js';
 const box=(w,s,e,n)=>({type:'Polygon',coordinates:[[[w,s],[e,s],[e,n],[w,n],[w,s]]]});
 const site=box(-.1,51.5,-.098,51.502), paths=[];
+const consultation={organiser:'did:web:community.example',participationUrl:'https://community.example/participate'};
 async function fixture() {
     paths.length=0;
     const store=createPreviewLinks({origin:'https://mcp.example',appOrigin:'https://app.example'});
@@ -20,7 +21,7 @@ async function fixture() {
     const lake=await tools.draftSpace({...common,title:'Lake',outline:box(-.0998,51.5001,-.0992,51.5007),spaceKind:'lake'});
     const park=await tools.draftSpace({...common,title:'Park',outline:box(-.0998,51.5012,-.0992,51.5019),spaceKind:'park',treeCount:5});
     const road=await tools.draftRoad({...common,title:'Central road',points:[[-.0999,51.501],[-.0981,51.501]],preset:'1+1'});
-    const plan=store.decorate(await tools.draftAgreement({currency:'GBP',designs:[tower.design,lake.design,park.design,road.design],title:'Test plan',...common}));
+    const plan=store.decorate(await tools.draftAgreement({currency:'GBP',designs:[tower.design,lake.design,park.design,road.design],title:'Test plan',consultation,...common}));
     return {tools,store,plan,tower,lake,park,road,common};
 }
 describe('granular plan revisions',()=>{
@@ -46,6 +47,7 @@ describe('granular plan revisions',()=>{
         expect(next.designs.find(d=>d.content.buildingProposal).content.geometry.buildings[0].properties).toMatchObject({floors:6,height:18});
         expect(next.designs.find(d=>d.content.goal==='park').content.structureProposal.decorationDesign.trees).toHaveLength(25);
         expect(next.agreement.designs.some(d=>d.cid===lake.cid)).toBe(false);expect(validateAgreementContent(next.agreement).ok).toBe(true);
+        expect(next.agreement.consultation).toEqual(consultation);
         expect(next.agreement.outputs.reduce((sum,p)=>sum+p.areaM2,0)).toBeCloseTo(turf.area(turf.feature(site)),1);
         const original=await tools.inspectPlan({plan:plan.draftRef,filter:{kind:'design'}});expect(original.items).toHaveLength(4);
         expect(paths.some(p=>p==='/pins'||p==='/agreements'||p==='/designs')).toBe(false);
@@ -96,12 +98,24 @@ describe('granular plan revisions',()=>{
         const {tools,plan,lake}=await fixture();
         const titleOnly=await tools.editPlan({plan,expectedCid:plan.cid,terms:{title:'Revised title'}});
         expect(titleOnly.agreement.title).toBe('Revised title');expect(titleOnly.agreement.rule).toEqual(plan.agreement.rule);expect(titleOnly.agreement.money).toEqual(plan.agreement.money);
+        expect(titleOnly.agreement.consultation).toEqual(consultation);
         const allocated=structuredClone(plan);
         delete allocated.draftRef;delete allocated.cid;
         const piece=allocated.agreement.outputs.find(p=>p.producedBy===lake.cid);
         allocated.agreement.allocations=[{output:piece.hash,to:{kind:'public'}}];
+        allocated.agreement.rule={electorate:'owners',binding:false,approvalConfig:null,lens:[]};
+        allocated.agreement.consultation=null;
         await expect(tools.editPlan({plan:allocated,expectedCid:cidOfObject(allocated.agreement),operations:[{type:'remove',ref:`design:${lake.cid}`}]})).rejects.toMatchObject({code:'allocations-review-required'});
         const next=await tools.editPlan({plan:allocated,expectedCid:cidOfObject(allocated.agreement),operations:[{type:'remove',ref:`design:${lake.cid}`}],terms:{allocations:[]}});
         expect(next.agreement.allocations).toEqual([]);
+    });
+    it('changes the consultation terms through an explicit override and gives the revision another CID',async()=>{
+        const {tools,plan}=await fixture();
+        const updated={...consultation,organiser:'did:web:another.example'};
+        const next=await tools.editPlan({plan,expectedCid:plan.cid,terms:{consultation:updated}});
+        expect(next.agreement.consultation).toEqual(updated);expect(next.cid).not.toBe(plan.cid);
+        expect(plan.agreement.consultation).toEqual(consultation);
+        const cleared=await tools.editPlan({plan:next,expectedCid:next.cid,terms:{consultation:null}});
+        expect(cleared.agreement.consultation).toEqual({organiser:null,participationUrl:null});
     });
 });

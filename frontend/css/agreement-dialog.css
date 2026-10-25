@@ -9,6 +9,9 @@
    form inside keeps its own rules (css/proposal-editor.css). */
 
 /* ---- The panel: under the top-right buttons, as tall as the dock runs ---- */
+.agreement-section[hidden],
+[data-agreement-binding-control][hidden] { display: none; }
+
 #agreement-editor {
     position: absolute;
     top: calc(var(--map-shell-edge) + var(--map-shell-button-size) + var(--map-shell-gap));

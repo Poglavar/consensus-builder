@@ -169,7 +169,7 @@ export function parcelOutputs(parcels) {
  */
 export function agreementObject({
     title = null, author = null, sponsor = null, city = null, createdAt = null,
-    designs, parcels, openGroundM2 = 0, outputs, allocations = [], money, rule, deadline = null
+    designs, parcels, openGroundM2 = 0, outputs, allocations = [], money, rule, deadline = null, consultation = null
 } = {}) {
     if (!Array.isArray(designs) || !designs.length) throw fail('invalid-agreement', 'an agreement links at least one design');
     const designCids = new Set();
@@ -215,6 +215,7 @@ export function agreementObject({
         allocations,
         money,
         rule,
+        consultation,
         deadline
     };
     let checked;

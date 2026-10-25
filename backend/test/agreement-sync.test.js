@@ -96,6 +96,17 @@ describe('recordFromPublished', () => {
     const localIds = new Map([[layoutCid, 'design-layout'], [roadCid, 'design-road']]);
     const localIdOf = cid => localIds.get(cid) || null;
 
+    it('roundtrips consultation metadata through publication and import', () => {
+        const original = agreement({ allocations: [], money: { currency: 'EUR', lines: [] },
+            rule: { electorate: 'community', binding: false, approvalConfig: null, lens: [] },
+            consultation: { organiser: 'https://ngo.example', participationUrl: 'https://ngo.example/join' } });
+        const content = AgreementRecord.published(original);
+        const cid = AgreementRecord.publishedCid(original);
+        const imported = AgreementSync.recordFromPublished({ cid, content }, { id: 'ag-imported', apiBase: API, localIdOf });
+        expect(imported.consultation).toEqual({ organiser: 'did:web:ngo.example', participationUrl: 'https://ngo.example/join' });
+        expect(AgreementRecord.publishedCid(imported)).toBe(cid);
+    });
+
     it('names the designs by their local copies and keeps the pieces derived here when they are the published ones', () => {
         const derived = { outputs: clone(agreement().outputs) };
         const record = AgreementSync.recordFromPublished(row, { id: 'ag-imported', apiBase: API, localIdOf, derived });

@@ -470,7 +470,7 @@
 
     // A proposed agreement: its CID (shortened; the whole one in the title), Copy link, the index's
     // status, and where its parties decide: the owners' card, or the community note.
-    function publishedHtml({ published, remote = null, electorate = 'owners', readOnly = false } = {}, tr = t) {
+    function publishedHtml({ published, remote = null, electorate = 'owners', readOnly = false, consultation = null } = {}, tr = t) {
         if (!published) return '';
         const cid = idOf(published.cid);
         const short = cid.length > 20 ? `${cid.slice(0, 12)}…${cid.slice(-6)}` : cid;
@@ -479,7 +479,7 @@
             ? `<p class="agreement-panel-note" data-agreement-read-only>${esc(tr('agreement.publish.readOnly', 'Read-only published agreement'))}</p>`
             : electorate === 'owners'
             ? '<div class="approval-card-slot" data-approval-card-slot></div>'
-            : `<p class="agreement-panel-note" data-agreement-community-note>${esc(tr('agreement.publish.communityNote', 'Community votes are counted without a blockchain transaction.'))}</p>`;
+            : consultation ? '' : `<p class="agreement-panel-note" data-agreement-community-note>${esc(tr('agreement.publish.communityNote', 'Community votes are counted without a blockchain transaction.'))}</p>`;
         return sectionHtml(tr('threeMode.parcelPanel.proposed', 'Proposed'),
             '<div class="agreement-panel-published">'
             + `<code class="agreement-panel-cid" title="${esc(cid)}">${esc(short)}</code>`
@@ -553,6 +553,9 @@
             token: 0, id: null, agreement: null, check: null, checking: false, error: null, panel: null, wired: false, remote: null,
             chain: null, chainToken: 0, chainBusy: null, readOnlyAgreement: null, readOnlyDesigns: null
         };
+        const community = win.CommunityConsultation?.createController(win, {
+            changed: () => { if (isOpen()) renderPanel(); }
+        });
         const log = (message, ...rest) => console.log(`[${new Date().toISOString()}] [AgreementPanel] ${message}`, ...rest);
         const isOpen = () => !!(state.panel && state.panel.classList.contains('visible'));
         const designOf = id => (state.readOnlyDesigns && state.readOnlyDesigns.get(id))
@@ -654,24 +657,27 @@
                 + byHashOnly
                 + actionsHtml({ canCompare: current, comparing: comparing(state.id), canPropose: current && !published, published, canBet: binding && betAvailable(agreement), readOnly })
                 + (!current && !readOnly ? `<p class="agreement-panel-hint" data-agreement-compare-unavailable>${esc(t('agreement.panel.compareUnavailable', 'Before / after is available when this agreement matches the designs applied on the map.'))}</p>` : '')
-                + publishedHtml({ published: agreement.published, remote: observedRemote(state.remote, chainView(agreement)?.chain), electorate: agreement.rule && agreement.rule.electorate, readOnly })
+                + publishedHtml({ published: agreement.published, remote: observedRemote(state.remote, chainView(agreement)?.chain), electorate: agreement.rule && agreement.rule.electorate, readOnly, consultation: community && agreement.consultation })
+                + (community && agreement.rule?.electorate === 'community' ? '<section class="agreement-panel-section" data-community-consultation></section>' : '')
+                + (community && agreement.rule?.electorate === 'community' ? win.CommunityConsultation.picturesHtml(state.remote) : '')
                 + (binding ? chainHtml({ ...chainView(agreement), readOnly }) : nonBindingChainHtml(agreement.published))
                 + designsHtml(designRows(agreement, { designOf, isApplied: win.isApplied, typeLabel }), t, readOnly)
                 + landHtml(landSummary(agreement))
-                + allocationHtml(allocationLines(agreement))
-                + ledgerHtml(ledger)
+                + (agreement.rule?.electorate === 'community' ? '' : allocationHtml(allocationLines(agreement)) + ledgerHtml(ledger))
                 + ruleHtml(rule, deadline);
         }
 
         function renderPanel() {
             const panel = ensurePanel();
             panel.querySelector('#agreement-panel-title').textContent = state.agreement ? titleOf(state.agreement) : t('agreement.panel.title', 'Agreement');
-            panel.querySelector('.agreement-panel-kind').textContent = t('agreement.panel.title', 'Agreement');
+            panel.querySelector('.agreement-panel-kind').textContent = state.agreement?.rule?.electorate === 'community'
+                ? t('community.title', 'Community consultation') : t('agreement.panel.title', 'Agreement');
             const close = panel.querySelector('[data-agreement-action="close"]');
             const closeLabel = t('modal.common.close', 'Close');
             close.setAttribute('aria-label', closeLabel);
             close.title = closeLabel;
             panel.querySelector('[data-agreement-region="body"]').innerHTML = bodyHtml();
+            community?.render(panel.querySelector('[data-community-consultation]'), state.agreement);
             // The owners' decisions on a proposed agreement (proposals/approval-panel.js).
             const slot = panel.querySelector('[data-approval-card-slot]');
             if (slot && win.ProposalApprovalPanel && !state.readOnlyAgreement) {
@@ -825,7 +831,8 @@
                 const row = await win.AgreementSync.fetchAgreement(cid);
                 if (state.id !== id) return;
                 const onchain = row.onchain && typeof row.onchain === 'object' ? row.onchain : null;
-                state.remote = { cid, loading: false, status: row.status, error: null, onchain };
+                state.remote = { cid, loading: false, status: row.status, error: null, onchain,
+                    screenshotPairUrl: row.screenshotPairUrl, screenshotUrl: row.screenshotUrl };
                 if (!readOnly) reconcileOnchain(id, onchain);
             } catch (error) {
                 if (state.id !== id) return;
@@ -856,6 +863,7 @@
                 state.error = null;
                 renderPanel();
                 readRemote(agreement);
+                community?.load(agreement);
                 syncChain(agreement);
                 if (readOnly) {
                     state.check = null;
@@ -1245,6 +1253,7 @@
             if (!agreementId) throw new Error('AgreementPanel.open: an agreement id is required');
             wire();
             const token = ++state.token;
+            community?.reset();
             // Another agreement's before / after does not belong to this one.
             if (state.id && state.id !== agreementId && comparing(state.id)) win.ProposalBeforeAfter.dispose();
             if (state.id !== agreementId) {
@@ -1282,6 +1291,7 @@
 
         // The before / after lives and dies with the panel.
         function close() {
+            community?.reset();
             state.token += 1;
             if (comparing(state.id)) win.ProposalBeforeAfter.dispose();
             state.id = null;

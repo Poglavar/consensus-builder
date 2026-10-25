@@ -8,6 +8,7 @@ const designInput = z.union([cid, z.string().url().max(300), z.record(z.string()
 const city = z.string().min(1).max(80);
 const bbox = z.tuple([z.number().min(-180).max(180), z.number().min(-85).max(85), z.number().min(-180).max(180), z.number().min(-85).max(85)]);
 const point = z.tuple([z.number().min(-180).max(180), z.number().min(-85).max(85)]);
+const consultation = z.object({ organiser: z.string().max(2048).nullable(), participationUrl: z.string().max(2048).nullable() }).strict().nullable().optional();
 
 export function registerMcpCompanion(server, { actions, handler, readOnly }) {
     const add = (name, description, shape, method) => server.registerTool(name, {
@@ -63,7 +64,7 @@ export function registerMcpCompanion(server, { actions, handler, readOnly }) {
         { targets: z.array(designInput).min(2).max(10), buildingSourceId: z.string().max(3507).optional(), parcelSourceId: z.string().max(3507).optional() }, 'compare');
 
     add('ugt_draft_agreement', 'Author the supplied roads as one connected network, then derive an agreement on isolated complete cadastral ground using the app formation handlers. Same-level crossings become shared junctions; changed roads get revised CIDs and land boundaries, reported in roadChanges. Publish the returned designs. For unpublished inputs pass hosted draftRef values, not CIDs; local clients may pass canonical objects. Supply money or an explicit ISO currency. Owner rules require a rights snapshot; binding owner-deal requires one independent lens. No pin, index write or signature.',
-        { designs: z.array(designInput).min(1).max(100), rulePreset: z.enum(['owner-deal', 'owner-vote', 'community-vote']).default('community-vote'), rights: z.record(z.string(), z.unknown()).optional(), lens: z.string().optional(), allocations: z.array(z.record(z.string(), z.unknown())).default([]), money: z.record(z.string(), z.unknown()).optional(), currency: z.string().regex(/^[A-Z]{3}$/).optional(), deadline: z.iso.datetime().nullable().optional(), sponsor: z.string().nullable().optional(), title: z.string().max(200).optional(), author: z.string().max(100).optional(), createdAt: z.iso.datetime().optional(), parcelSourceId: z.string().max(3507).optional() }, 'draftAgreement');
+        { designs: z.array(designInput).min(1).max(100), rulePreset: z.enum(['owner-deal', 'owner-vote', 'community-vote']).default('community-vote'), rights: z.record(z.string(), z.unknown()).optional(), lens: z.string().optional(), allocations: z.array(z.record(z.string(), z.unknown())).default([]), money: z.record(z.string(), z.unknown()).optional(), currency: z.string().regex(/^[A-Z]{3}$/).optional(), deadline: z.iso.datetime().nullable().optional(), sponsor: z.string().nullable().optional(), title: z.string().max(200).optional(), author: z.string().max(100).optional(), createdAt: z.iso.datetime().optional(), consultation, parcelSourceId: z.string().max(3507).optional() }, 'draftAgreement');
 
     const ref = z.string().min(1).max(200);
     add('ugt_inspect_plan', 'Inventory an agreement plan by published CID/link, private draftRef or canonical agreement plus carried designs. Returns revision-scoped design/building refs, exact JSON paths and derived land pieces. Filter spatially or by title/type, then choose explicit refs; ask the person if ambiguous. Derived land pieces are read-only; edit their source designs.',
@@ -74,7 +75,7 @@ export function registerMcpCompanion(server, { actions, handler, readOnly }) {
             z.object({ type: z.literal('replace'), ref, design: designInput }), z.object({ type: z.literal('edit'), ref, edits: editOperations }),
             z.object({ type: z.literal('modify'), ref, changes: z.array(changes).min(1).max(20) })
         ])).max(100).default([]), terms: z.object({ rights: z.record(z.string(), z.unknown()).optional(), allocations: z.array(z.record(z.string(), z.unknown())).optional(), money: z.record(z.string(), z.unknown()).optional(),
-            title: z.string().max(200).nullable().optional(), author: z.string().max(100).nullable().optional(), sponsor: z.string().nullable().optional(), deadline: z.iso.datetime().nullable().optional(), rule: z.record(z.string(), z.unknown()).optional()
+            title: z.string().max(200).nullable().optional(), author: z.string().max(100).nullable().optional(), sponsor: z.string().nullable().optional(), deadline: z.iso.datetime().nullable().optional(), consultation, rule: z.record(z.string(), z.unknown()).optional()
         }).default({}) }, 'editPlan');
 
     const recipe = JSON.parse(readFileSync(new URL('../routes/agent-recipe-schema.json', import.meta.url), 'utf8'));

@@ -416,3 +416,35 @@
     font-size: var(--cb-text-sm);
     overflow-wrap: anywhere;
 }
+
+/* Consultation statements and setup use the shared sections, badges, form fields and actions. */
+.community-report,
+.community-report-form,
+.community-history,
+.community-setup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-2);
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.community-history,
+.community-setup { display: block; }
+.community-history > *,
+.community-setup > * { margin-block: var(--cb-space-2); }
+.community-pictures { margin: 0; }
+.community-pictures img { display: block; width: 100%; height: auto; border-radius: var(--cb-radius-sm); }
+
+.community-report {
+    padding-block: var(--cb-space-2);
+    border-top: 1px solid var(--cb-line);
+}
+
+.community-report .cb-badge { white-space: normal; align-self: flex-start; }
+.community-report blockquote { margin: 0; white-space: pre-wrap; }
+.community-report-signer { font-family: var(--cb-font-mono); font-size: var(--cb-text-xs); }
+.community-report-form textarea { width: 100%; resize: vertical; }
+.community-setup pre { max-width: 100%; overflow-x: auto; font-size: var(--cb-text-xs); }
+.community-history summary,
+.community-setup summary { cursor: pointer; font-weight: var(--cb-weight-medium); }

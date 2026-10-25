@@ -250,6 +250,33 @@
         };
     }
 
+    const didWeb = () => root.CommunityDidWeb
+        || (typeof require === 'function' ? require('./community/did-web.js') : null);
+
+    function participationUrl(value) {
+        const text = textOf(value);
+        if (!text) return null;
+        if (text.length > 2048) throw new TypeError('Participation URL is too long.');
+        const url = new URL(text);
+        if (url.protocol !== 'https:' || url.username || url.password) throw new TypeError('Participation URL must use HTTPS without credentials.');
+        return url.href;
+    }
+
+    // Invalid typed fields remain visible for section validation; valid fields are canonicalized.
+    function consultationOf(raw, electorate) {
+        if (electorate !== 'community') {
+            if (raw != null) fail('Only a community agreement can have consultation metadata.');
+            return null;
+        }
+        if (raw != null && !isObject(raw)) fail('Consultation must be an object.');
+        if (raw && Object.keys(raw).some(key => key !== 'organiser' && key !== 'participationUrl')) fail('Consultation has unknown fields.');
+        if (raw && ['organiser', 'participationUrl'].some(key => raw[key] != null && typeof raw[key] !== 'string')) fail('Consultation fields must be text or null.');
+        const result = { organiser: textOf(raw && raw.organiser), participationUrl: textOf(raw && raw.participationUrl) };
+        if (result.organiser) { try { result.organiser = didWeb().normalizeDid(result.organiser); } catch (_) { /* validate reports it */ } }
+        if (result.participationUrl) { try { result.participationUrl = participationUrl(result.participationUrl); } catch (_) { /* validate reports it */ } }
+        return result;
+    }
+
     // A readable deadline becomes ISO; an unreadable one is kept as typed for validate to report.
     function deadlineOf(value) {
         if (value === undefined || value === null || value === '') return null;
@@ -284,6 +311,7 @@
 
     function normalize(raw) {
         if (!isObject(raw) || raw.schema !== SCHEMA) fail(`Expected ${SCHEMA}.`);
+        const rule = ruleOf(raw.rule);
         return {
             schema: SCHEMA,
             id: idOf(raw.id, 'The agreement'),
@@ -298,7 +326,8 @@
             outputs: outputsOf(raw.outputs),
             allocations: allocationsOf(raw.allocations),
             money: moneyOf(raw.money),
-            rule: ruleOf(raw.rule),
+            rule,
+            consultation: consultationOf(raw.consultation, rule.electorate),
             deadline: deadlineOf(raw.deadline),
             published: publishedOf(raw.published),
             onchain: onchainOf(raw.onchain)
@@ -406,6 +435,8 @@
         if (!ELECTORATES.includes(electorate)) {
             add(errors, 'rule', 'rule-invalid', 'Choose who decides: the owners or the community.');
         } else if (electorate === 'community') {
+            if (Array.isArray(raw.allocations) && raw.allocations.length) add(errors, 'allocation', 'community-allocations', 'A community consultation cannot allocate land.');
+            if (raw.money && Array.isArray(raw.money.lines) && raw.money.lines.length) add(errors, 'money', 'community-money', 'A community consultation cannot include cash payments.');
             if (binding) add(errors, 'rule', 'rule-community-binding', 'A community vote cannot bind the owners.');
             if (approvalConfig !== null) add(errors, 'rule', 'rule-invalid', 'A community vote has no owner approval rule.');
         } else {
@@ -418,6 +449,20 @@
             // Owners decide through signed decisions that a lens member verifies (approval-providers):
             // without a lens nobody can be verified, so the agreement can never be decided.
             if (!Array.isArray(agreement.rule.lens) || !agreement.rule.lens.length) add(warnings, 'rule', 'rule-lens-missing', 'No lens member is named, so no owner decision can be verified.');
+        }
+
+        if (agreement.consultation) {
+            const consultation = agreement.consultation;
+            if (consultation.organiser) {
+                try { didWeb().normalizeDid(consultation.organiser); } catch (_) {
+                    add(errors, 'consultation', 'consultation-organiser', 'Enter an organiser website or a valid did:web identifier.');
+                }
+            }
+            if (consultation.participationUrl) {
+                try { participationUrl(consultation.participationUrl); } catch (_) {
+                    add(errors, 'consultation', 'consultation-participation-url', 'Enter an HTTPS participation URL without credentials.');
+                }
+            }
         }
 
         const { deadline } = agreement;
@@ -498,6 +543,9 @@
      */
     function published(raw, designCidOf = null) {
         const agreement = normalize(raw);
+        if (agreement.rule.electorate === 'community' && ((raw.allocations && raw.allocations.length) || (raw.money && raw.money.lines && raw.money.lines.length))) {
+            fail('A community consultation cannot allocate land or include cash payments.');
+        }
         const stored = new Map(agreement.designs.map(design => [design.proposalId, design.cid]));
         const lookup = typeof designCidOf === 'function' ? designCidOf : proposalId => (stored.has(proposalId) ? stored.get(proposalId) : null);
         const cidOf = proposalId => {
@@ -540,6 +588,7 @@
             allocations: agreement.allocations,
             money: agreement.money,
             rule: agreement.rule,
+            consultation: agreement.consultation,
             deadline: agreement.deadline
         };
     }
@@ -549,6 +598,6 @@
 
     return {
         SCHEMA, PUBLISHED_SCHEMA, OUTPUT_HASH_PREFIX, ROLES, newId, outputHash, normalize, validate, ledger,
-        rightsFromInputs, approvalSubject, stableStringify, published, publishedCid
+        rightsFromInputs, approvalSubject, stableStringify, published, publishedCid, consultationOf, participationUrl
     };
 });

@@ -22,6 +22,7 @@ import { enqueueDesignThumbnail, insertDesign, loadDesigns, parseListLimit, prep
 import { normalizeCityCode } from '../utils/city-code.js';
 import { agreementDocument, SEMANTIC_BASE_ERROR, SEMANTIC_RECORD_ERROR } from '../semantics/published-records.js';
 import { createAgreementDecisionHandlers, createAgreementDecisionStore } from '../agreements/decisions.js';
+import { createCommunityReportHandlers, createCommunityReportStore } from '../agreements/community-reports.js';
 import {
     AGREEMENT_CLUSTERS, agreementAccountOf, createAgreementChain, isSignature, onchainFromAccount, refreshOnchain, writeOnchain
 } from '../agreements/onchain.js';
@@ -29,6 +30,7 @@ import {
 const require = createRequire(import.meta.url);
 const approval = require('../../frontend/js/proposals/approval.js');
 const agreementRecord = require('../../frontend/js/agreement-record.js');
+const communityDidWeb = require('../../frontend/js/community/did-web.js');
 const cityMoney = require('../../frontend/js/city-money.js');
 const allocation = require('../../frontend/js/reparcellization-allocation.js');
 
@@ -210,6 +212,8 @@ export function validateAgreementContent(content, { now = Date.now() } = {}) {
     if (rule.electorate === 'community') {
         if (rule.binding) return invalid('rule', 'A community vote cannot bind the owners.');
         if (rule.approvalConfig != null) return invalid('rule', 'A community vote has no owner approval rule.');
+        if (content.allocations.length) return invalid('allocation', 'A community consultation has no land allocations.');
+        if (money.lines.length) return invalid('money', 'A community consultation has no financial transfers.');
     } else if (rule.approvalConfig != null) {
         // The rights snapshot and the policy are counted by this engine; one it cannot read is refused here.
         try {
@@ -217,6 +221,30 @@ export function validateAgreementContent(content, { now = Date.now() } = {}) {
         } catch (error) {
             if (error?.code !== 'invalid-proposal-approval') throw error;
             return invalid('rule', error.message);
+        }
+    }
+
+    const consultation = content.consultation;
+    if (consultation != null) {
+        if (rule.electorate !== 'community') return invalid('consultation', 'Only a community agreement has consultation metadata.');
+        if (!isPlainObject(consultation) || Object.keys(consultation).length !== 2
+            || !Object.hasOwn(consultation, 'organiser') || !Object.hasOwn(consultation, 'participationUrl')) {
+            return invalid('consultation', 'Consultation is exactly { organiser, participationUrl }.');
+        }
+        try {
+            if (consultation.organiser !== null && (!isText(consultation.organiser, 2048)
+                || communityDidWeb.normalizeDid(consultation.organiser) !== consultation.organiser)) {
+                return invalid('consultation', 'The organiser is a canonical DID Web identifier or null.');
+            }
+            if (consultation.participationUrl !== null && (!isText(consultation.participationUrl, 2048)
+                || agreementRecord.participationUrl(consultation.participationUrl) !== consultation.participationUrl)) {
+                return invalid('consultation', 'Participation uses a canonical HTTPS URL or null.');
+            }
+            if (!canonicalBytes(consultation).equals(canonicalBytes(agreementRecord.consultationOf(consultation, rule.electorate)))) {
+                return invalid('consultation', 'Consultation metadata must have its canonical shape.');
+            }
+        } catch (error) {
+            return invalid('consultation', error.message);
         }
     }
 
@@ -275,7 +303,7 @@ const send = (res, status, body) => {
  * POST /agreements, GET /agreements/:cid, GET /agreements, the decision relay under
  * /agreements/:cid/decisions and the chain account at POST /agreements/:cid/onchain.
  * @param deps { pool, thumbnailQueue?, baseUrl?, pinBytes?, decisionStore?, now?, uploadRateLimiter?,
- *   agreementChain? } (routes/content-routes.js); agreementChain(cluster) gives the account reader of a
+ *   agreementChain?, reportStore?, reportPinBytes? } (routes/content-routes.js); agreementChain(cluster) gives the account reader of a
  *   cluster (agreements/onchain.js createAgreementChain by default)
  */
 export function setupAgreementsRoute(app, deps) {
@@ -409,6 +437,15 @@ export function setupAgreementsRoute(app, deps) {
     app.post('/agreements/:cid/decisions', decisions.post);
     // Pinning spends the IPFS quota, so it shares the upload routes' per-client limit.
     app.post('/agreements/:cid/decisions/bundle', deps.uploadRateLimiter || createUploadRateLimiter(), decisions.bundle);
+
+    const communityReports = createCommunityReportHandlers({
+        store: deps.reportStore || createCommunityReportStore(pool),
+        loadAgreement: agreementCid => loadAgreement(pool, agreementCid),
+        now,
+        ...(deps.reportPinBytes ? { pinBytes: deps.reportPinBytes } : {})
+    });
+    app.get('/agreements/:cid/community-reports', communityReports.get);
+    app.post('/agreements/:cid/community-reports', deps.uploadRateLimiter || createUploadRateLimiter(), communityReports.post);
 
     // The index learns the chain: { chain: 'solana', cluster, account, signature? } after the sponsor
     // minted the agreement, which must be a binding owners' agreement (rule.binding: only those are

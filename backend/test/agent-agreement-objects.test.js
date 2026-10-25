@@ -166,6 +166,19 @@ describe('the agreement object', () => {
         expect(validateAgreementContent(content, { now: NOW_MS })).toMatchObject({ ok: true });
     });
 
+    it('retains consultation metadata in the immutable agent agreement and addresses changed organisers separately', () => {
+        const consultation = { organiser: 'did:web:community.example', participationUrl: 'https://community.example/participate' };
+        const first = ownersAgreement({ rule: communityRule(), sponsor: null, consultation });
+        expect(first.content.consultation).toEqual(consultation);
+        expect(validateAgreementContent(first.content, { now: NOW_MS }).ok).toBe(true);
+        const changed = ownersAgreement({ rule: communityRule(), sponsor: null, consultation: { ...consultation, organiser: 'did:web:another.example' } });
+        expect(changed.cid).not.toBe(first.cid);
+        expect(first.content.consultation).toEqual(consultation);
+        expect(() => ownersAgreement({ consultation })).toThrow(/community/i);
+        expect(() => ownersAgreement({ rule: communityRule(), consultation: { ...consultation, extra: true } })).toThrow(/consultation/i);
+        expect(() => ownersAgreement({ rule: communityRule(), consultation: { ...consultation, participationUrl: 'http://community.example/' } })).toThrow(/HTTPS/i);
+    });
+
     it('refuses what the agreement dialog refuses', () => {
         const invalid = parts => {
             try { ownersAgreement(parts); } catch (error) { return error; }

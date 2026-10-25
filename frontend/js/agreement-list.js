@@ -90,6 +90,7 @@
     function bodyHtml(rows, tr = t) {
         return '<div class="agreement-list-actions">'
             + `<button type="button" class="btn btn-primary" data-agreement-action="create"><i class="fas fa-plus" aria-hidden="true"></i> ${esc(tr('agreement.list.create', 'Create agreement'))}</button>`
+            + `<button type="button" class="btn btn-secondary" data-agreement-action="community">${esc(tr('agreement.rule.community', 'Ask the community'))}</button>`
             + `<button type="button" class="btn btn-secondary" data-agreement-action="minted">${esc(tr('agreement.minted.title', 'Minted agreements'))}</button>`
             + '</div>'
             + `<div class="agreement-list-rows" data-agreement-list-rows>${rows}</div>`;
@@ -137,10 +138,11 @@
                 openMinted(win);
                 return;
             }
-            if (event.target.closest('[data-agreement-action="create"]')) {
+            const community = event.target.closest('[data-agreement-action="community"]');
+            if (community || event.target.closest('[data-agreement-action="create"]')) {
                 const designIds = appliedDesignIds(win.proposalStorage.peekAllProposals(), win.isApplied);
                 dialog.close(null);
-                Promise.resolve(win.AgreementDialog.open({ designIds })).catch(error => report('the agreement dialog failed', error));
+                Promise.resolve(win.AgreementDialog.open({ designIds, ...(community ? { electorate: 'community' } : {}) })).catch(error => report('the agreement dialog failed', error));
                 return;
             }
             const row = event.target.closest('[data-agreement-id]');

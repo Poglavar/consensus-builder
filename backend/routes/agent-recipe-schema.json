@@ -24,6 +24,56 @@
       "pattern": "\\S",
       "maxLength": 256
     },
+    "organiserDid": {
+      "type": "string",
+      "maxLength": 2048,
+      "pattern": "^did:web:[a-z0-9.-]+(?:%3A[0-9]+)?(?::[A-Za-z0-9._~-]+)*$",
+      "description": "Canonical DID Web identifier with a public DNS hostname, optional encoded port and path; normalize with CommunityDidWeb.normalizeDid. The named website is resolved only in the browser."
+    },
+    "httpsUrl": {
+      "type": "string",
+      "maxLength": 2048,
+      "format": "uri",
+      "pattern": "^https://[^/@?#]+(?:[/?#]|$)",
+      "description": "Canonical HTTPS URL without credentials, exactly as URL.href writes it."
+    },
+    "consultation": {
+      "type": "object",
+      "required": ["organiser", "participationUrl"],
+      "additionalProperties": false,
+      "properties": {
+        "organiser": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/organiserDid" }] },
+        "participationUrl": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/httpsUrl" }] }
+      },
+      "description": "Optional metadata for a nonbinding community consultation; no owner allocations, financial transfers, mint or chain settlement."
+    },
+    "communityReport": {
+      "type": "object",
+      "required": ["schema", "agreementCid", "attester", "signer", "statement", "url", "postedAt", "didDocumentSha256", "didDocument", "proof"],
+      "additionalProperties": false,
+      "properties": {
+        "schema": { "const": "community-result/v1" },
+        "agreementCid": { "$ref": "#/$defs/cid" },
+        "attester": { "$ref": "#/$defs/organiserDid" },
+        "signer": {
+          "type": "string",
+          "pattern": "^solana:(?:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp|EtWTRABZaYq6iMfeYKouRu166VU2xqa1|4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z):[1-9A-HJ-NP-Za-km-z]{32,44}$",
+          "description": "Solana CAIP-10 wallet identifier, including the standard mainnet, devnet or testnet genesis reference."
+        },
+        "statement": { "type": "string", "minLength": 1, "maxLength": 280, "pattern": "\\S", "description": "Plain text without control characters other than tab, newline and carriage return." },
+        "url": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/httpsUrl" }] },
+        "postedAt": { "$ref": "#/$defs/instant" },
+        "didDocumentSha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "didDocument": { "type": "object", "description": "DID document snapshot committed by its canonical JSON SHA-256 digest; not evidence of current website authorization." },
+        "proof": {
+          "type": "object",
+          "required": ["scheme", "signature"],
+          "additionalProperties": false,
+          "properties": { "scheme": { "const": "ed25519-wallet/v1" }, "signature": { "type": "string", "pattern": "^[1-9A-HJ-NP-Za-km-z]+$" } }
+        }
+      },
+      "description": "At most 96 KiB of canonical JSON. The wallet signs CommunityResult.reportMessage: all fields except proof and didDocument; the signed digest commits to the document. postedAt may be historical or at most five minutes ahead. Admission checks signature and snapshot without fetching the website; browsers resolve live DID Web authorization on every read. Reports append after the deadline as well as before it."
+    },
     "site": {
       "type": "object",
       "required": ["type", "coordinates"],
@@ -110,7 +160,7 @@
     },
     "agreement": {
       "type": "object",
-      "description": "agreement/v1: designs linked by CID, the land they take (inputs) and leave (outputs), who receives which piece (allocations), money, the decision rule, a deadline and the sponsor wallet that mints it. It is what is minted, bet on, pledged to, decided and executed. The index refuses it unless every linked design is indexed or sent along, and its input parcels are exactly the union of its designs' server bindings.",
+      "description": "agreement/v1: designs linked by CID, their input land and output pieces, allocations, money, rule and deadline. Binding owners' agreements may be minted and settled on chain. Community agreements are nonbinding consultations, with optional organiser and participation metadata, no allocations or financial transfers, and append-only organiser reports. The index requires every linked design and the union of their server parcel bindings.",
       "required": ["schema", "designs", "inputs", "outputs", "allocations", "money", "rule"],
       "properties": {
         "schema": { "const": "agreement/v1" },
@@ -261,11 +311,20 @@
             }
           ]
         },
+        "consultation": {
+          "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/consultation" }],
+          "description": "Community agreements only; null or absent for an ordinary poll or any owners' agreement."
+        },
         "deadline": {
           "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/instant" }],
           "description": "Must lie ahead when the agreement is indexed. The decision must be recorded before it; after it, anyone may expire the account. null: no deadline."
         }
-      }
+      },
+      "allOf": [{
+        "if": { "properties": { "rule": { "properties": { "electorate": { "const": "community" } } } } },
+        "then": { "properties": { "allocations": { "maxItems": 0 }, "money": { "properties": { "lines": { "maxItems": 0 } } } } },
+        "else": { "properties": { "consultation": { "type": "null" } } }
+      }]
     }
   }
 }

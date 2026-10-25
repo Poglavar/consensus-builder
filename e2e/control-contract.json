@@ -9014,6 +9014,103 @@
       "markup": "<select id=\"source-config\">",
       "interaction": "change",
       "controlType": "select"
+    },
+    {
+      "id": "control-e85c2aec25c5b0-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"text\" data-agreement-organiser value=\"${esc(organiser)}\" autocomplete=\"off\">",
+      "interaction": "change",
+      "controlType": "text"
+    },
+    {
+      "id": "control-f5dcabcb4100a0-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"url\" data-agreement-participation-url value=\"${esc(participationUrl)}\" autocomplete=\"off\">",
+      "interaction": "change",
+      "controlType": "url"
+    },
+    {
+      "id": "control-54217211dcc585-1",
+      "source": "js/agreement-list.js",
+      "markup": "<button type=\"button\" class=\"btn btn-secondary\" data-agreement-action=\"community\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-f4c1140e2687eb-1",
+      "source": "js/community/consultation.js",
+      "markup": "<a class=\"btn btn-sm btn-secondary\" href=\"${esc(report.url)}\" target=\"_blank\" rel=\"noopener noreferrer\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-a108dd8d21cf34-1",
+      "source": "js/community/consultation.js",
+      "markup": "<a class=\"btn btn-sm btn-quiet\" href=\"https://ipfs.io/ipfs/${esc(row.cid)}\" target=\"_blank\" rel=\"noopener noreferrer\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-a7967998fd27c6-1",
+      "source": "js/community/consultation.js",
+      "markup": "<a class=\"btn btn-primary\" data-community-participate href=\"${esc(results().httpsUrl(url))}\" target=\"_blank\" rel=\"noopener noreferrer\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-b5f12974f391d3-1",
+      "source": "js/community/consultation.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm btn-secondary\" data-community-action=\"${action}\"${enabled ? '' : ' disabled'}>",
+      "interaction": "click",
+      "controlType": "button",
+      "exhaustiveVariants": true,
+      "variants": [
+        {
+          "name": "refresh",
+          "attrs": {
+            "data-community-action": "refresh"
+          }
+        },
+        {
+          "name": "compose",
+          "attrs": {
+            "data-community-action": "compose"
+          }
+        },
+        {
+          "name": "cancel",
+          "attrs": {
+            "data-community-action": "cancel"
+          }
+        },
+        {
+          "name": "connect",
+          "attrs": {
+            "data-community-action": "connect"
+          }
+        }
+      ]
+    },
+    {
+      "id": "control-92575c480bd287-1",
+      "source": "js/community/consultation.js",
+      "markup": "<textarea data-community-statement rows=\"3\" required>",
+      "interaction": "change",
+      "controlType": "textarea"
+    },
+    {
+      "id": "control-2740bc1d254811-1",
+      "source": "js/community/consultation.js",
+      "markup": "<input type=\"url\" data-community-url value=\"${esc(state.url || '')}\" placeholder=\"https://\">",
+      "interaction": "change",
+      "controlType": "url"
+    },
+    {
+      "id": "control-3deb8cc83eceb5-1",
+      "source": "js/community/consultation.js",
+      "markup": "<button class=\"btn btn-primary\" type=\"submit\"${enabled ? '' : ' disabled'}>",
+      "interaction": "click",
+      "controlType": "button"
     }
   ],
   "variantExclusions": [

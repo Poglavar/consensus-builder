@@ -92,6 +92,7 @@ DDL_FILES=(
     db/plan-ddl.sql
     db/agreement-ddl.sql
     db/agreement-decision-ddl.sql
+    db/community-report-ddl.sql
     db/building-floor-model.sql
     db/publication-immutability.sql
     ens/parcel-ens-ddl.sql

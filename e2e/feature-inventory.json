@@ -934,6 +934,13 @@
         "tests/proposal-button-controls-followup.spec.ts",
         "tests/context-actions.spec.ts"
       ]
+    },
+    {
+      "id": "community-consultation",
+      "description": "Create a community consultation, follow participation and report links, sign and verify website-attributed results with retained history.",
+      "specs": [
+        "tests/community-consultation.spec.ts"
+      ]
     }
   ],
   "boundaries": [

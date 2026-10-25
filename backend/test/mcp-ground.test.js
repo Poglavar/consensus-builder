@@ -6,6 +6,7 @@ import { deriveAgreementGround } from '../agents/mcp-ground.js';
 import { createUrbanGameTheoryTools } from '../agents/ugt-agent-tools.js';
 import { cidOfObject } from '../cid.js';
 import { restatementFixture } from './fixtures/mcp-restatements.mjs';
+import { registerMcpCompanion } from '../agents/mcp-companion.mjs';
 const require = createRequire(import.meta.url);
 const builder = require('../../frontend/js/intent-design.js');
 const site = { type: 'Polygon', coordinates: [[[-0.1, 51.5], [-0.099, 51.5], [-0.099, 51.501], [-0.1, 51.501], [-0.1, 51.5]]] };
@@ -59,15 +60,32 @@ describe('headless app formation host', () => {
                 ? { parcelSourceId: 'selected-source', binding: { coverage: 'complete', parcels: [{ parcelId: 'A' }], unsurveyedM2: 0, unknownM2: 0 } }
                 : { complete: true, features: parcels }));
         } });
-        const result = await tools.draftAgreement({ currency: 'GBP', designs: [design.content], title: 'A park' });
+        const consultation = { organiser: 'did:web:community.example', participationUrl: 'https://community.example/participate' };
+        const result = await tools.draftAgreement({ currency: 'GBP', designs: [design.content], title: 'A park', consultation });
         expect(paths).toContain('/parcel-sources/selected-source');
         expect(result.agreement.inputs.parcels[0].parcelSourceId).toBe('selected-source');
         expect(result.cid).toBe(cidOfObject(result.agreement));
         expect(result.agreement.money).toEqual({ currency: 'GBP', lines: [] });
         expect(result.agreement.rule.binding).toBe(false);
+        expect(result.agreement.consultation).toEqual(consultation);
         expect(result.previewUrl).toBeNull();
         expect(result.draftArtifact).toMatchObject({ agreement: result.agreement, parcelSourceId: 'selected-source' });
         expect(paths).not.toContain('/pins');
         expect(paths).not.toContain('/agreements');
+    });
+
+    it('keeps strict optional consultation metadata in drafting and revision tool schemas', () => {
+        const tools = new Map();
+        registerMcpCompanion({ registerTool: (name, options) => tools.set(name, options.inputSchema), registerResource() {}, registerPrompt() {} }, { actions: {}, handler: fn => fn, readOnly: {} });
+        const consultation = { organiser: 'did:web:community.example', participationUrl: 'https://community.example/participate' };
+        const design = make('space', { spaceKind: 'park' }).content;
+        const draft = tools.get('ugt_draft_agreement');
+        expect(draft.parse({ designs: [design], consultation }).consultation).toEqual(consultation);
+        expect(draft.parse({ designs: [design] }).consultation).toBeUndefined();
+        expect(draft.safeParse({ designs: [design], consultation: { ...consultation, extra: true } }).success).toBe(false);
+        expect(draft.safeParse({ designs: [design], consultation: { organiser: 'x'.repeat(2049), participationUrl: null } }).success).toBe(false);
+        const edit = tools.get('ugt_edit_plan');
+        expect(edit.parse({ plan: { agreement: {} }, expectedCid: cidOfObject(design), terms: { consultation } }).terms.consultation).toEqual(consultation);
+        expect(edit.safeParse({ plan: {}, expectedCid: cidOfObject(design), terms: { consultation: { organiser: null } } }).success).toBe(false);
     });
 });

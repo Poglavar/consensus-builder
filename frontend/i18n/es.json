@@ -6928,6 +6928,54 @@
         "viewName": "Ver nombre ENS",
         "copyName": "Copiar nombre ENS"
     },
+    "community": {
+        "pictures": "Antes / después",
+        "title": "Consulta comunitaria",
+        "errors": {
+            "history": "El historial de informes no está disponible o no se pudo verificar. Actualiza para volver a intentarlo.",
+            "index": "El servidor devolvió un historial de informes no válido.",
+            "notStored": "El servidor no confirmó este informe.",
+            "notObserved": "El informe se envió, pero no pudo leerse de nuevo. Vuelve a intentarlo para confirmarlo.",
+            "declined": "Se rechazó la firma de la cartera.",
+            "wallet": "El sitio web de la organización no incluye esta cartera en esta red para emitir informes.",
+            "url": "Usa una dirección HTTPS para el informe sin credenciales.",
+            "walletRequired": "Conecta una cartera Solana en una red compatible.",
+            "statement": "Introduce una declaración de texto de hasta 280 caracteres.",
+            "failed": "No se pudo publicar el informe: {{reason}}"
+        },
+        "website": {
+            "listed": "El sitio web incluye esta cartera de informes",
+            "unlisted": "La cartera no figura en el sitio web",
+            "unavailable": "Verificación del sitio web no disponible",
+            "failed": "No se pudo comprobar el sitio web de la organización. Debe permitir el acceso del navegador a su documento DID."
+        },
+        "report": {
+            "says": "{{site}} informa:",
+            "walletSays": "Declaración firmada por la cartera; atribución al sitio web sin verificar:",
+            "details": "Leer el informe de la organización",
+            "signed": "Registro firmado"
+        },
+        "intro": "Esta consulta solicita apoyo comunitario no vinculante. No otorga consentimiento de los propietarios ni transfiere terrenos o dinero.",
+        "takePart": "Participar",
+        "organiser": "Organización",
+        "noReports": "Todavía no se ha comunicado ningún resultado.",
+        "verificationMeaning": "La verificación del sitio web solo confirma que el sitio incluye actualmente la cartera firmante. La organización es responsable de la elegibilidad, el recuento y la declaración.",
+        "refresh": "Actualizar verificación",
+        "reportResult": "Comunicar un resultado",
+        "loading": "Comprobando los informes y el sitio web de la organización…",
+        "history": "Informes anteriores ({{count}})",
+        "statement": "Declaración del resultado (hasta 280 caracteres)",
+        "resultUrl": "URL del informe completo (opcional)",
+        "signHint": "Una cartera Solana incluida en el sitio web de la organización firma esta declaración. La firma no tiene comisión de transacción.",
+        "publishing": "Firmando y publicando…",
+        "signPublish": "Firmar y publicar",
+        "published": "Informe firmado publicado y leído de nuevo.",
+        "setup": {
+            "title": "Configurar informes del sitio web",
+            "instructions": "Sirve el documento DID en la dirección anterior con Access-Control-Allow-Origin: *. Debe identificar la cartera de informes en assertionMethod. Conserva los métodos existentes al añadir una cartera.",
+            "connect": "Conecta la cartera de informes para ver un documento de ejemplo"
+        }
+    },
     "agreement": {
         "dialog": {
             "titleCreate": "Crear acuerdo",
@@ -6936,6 +6984,7 @@
             "save": "Guardar acuerdo"
         },
         "sections": {
+            "consultation": "Consulta",
             "designs": "Diseños",
             "land": "Suelo",
             "allocation": "Asignación",
@@ -6981,8 +7030,8 @@
         },
         "rule": {
             "who": "Quién decide",
-            "owners": "Los propietarios del suelo aportado, según unas reglas",
-            "community": "Cualquiera: un voto vecinal, nunca vinculante",
+            "owners": "Solicitar las decisiones de los propietarios",
+            "community": "Consultar a la comunidad",
             "binding": "Vinculante: cuando se cumple la regla, el suelo y el dinero se transfieren en la ejecución",
             "bindingShort": "Vinculante",
             "nonBinding": "No vinculante",
@@ -6991,11 +7040,20 @@
                 "community": "Lo decide un voto vecinal"
             }
         },
+        "consultation": {
+            "hint": "Identidad de la organización e información de participación opcionales. Una consulta comunitaria recoge opiniones y no transfiere terrenos ni dinero.",
+            "organiser": "Sitio web de la organización o did:web (opcional)",
+            "participationUrl": "URL de participación (HTTPS, opcional)"
+        },
         "details": {
             "title": "Título (opcional)",
             "deadline": "Plazo (opcional)"
         },
         "errors": {
+            "consultationOrganiser": "Introduce el sitio web de la organización o un identificador did:web válido.",
+            "consultationParticipationUrl": "Introduce una URL de participación HTTPS sin credenciales.",
+            "communityAllocations": "Una consulta comunitaria no puede asignar terrenos.",
+            "communityMoney": "Una consulta comunitaria no puede incluir pagos en efectivo.",
             "noDesigns": "Elige al menos un diseño.",
             "designNotApplied": "Todos los diseños deben estar aplicados al mapa.",
             "noInputs": "Los diseños no ocupan suelo catastral.",

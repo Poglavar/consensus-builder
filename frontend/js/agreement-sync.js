@@ -93,6 +93,7 @@
             allocations: content.allocations,
             money: content.money,
             rule: content.rule,
+            consultation: content.consultation,
             deadline: content.deadline,
             published: { cid: row.cid, publishedAt: row.createdAt || null, apiBase, sponsor: content.sponsor || null },
             // The index's record of the agreement's chain account, when it is minted (M3).

@@ -91,12 +91,34 @@ const RECORD_KINDS = Object.freeze([
     { prefix: '/agreements/', api: 'agreements', label: 'Agreement' },
     { prefix: '/plans/', api: 'plans', label: 'Plan' }
 ]);
-// The CID scheme of published records: CIDv1, raw, sha2-256, base32 (`bafkrei…`, 59 characters).
-const CID = /^bafkrei[a-z2-7]{52}$/;
+// CIDv1 UnixFS files: raw single chunks or dag-pb roots, sha2-256, base32 (59 characters).
+const CID = /^baf(?:krei|ybei)[a-z2-7]{52}$/;
 
 async function readRecord(kind, cid, env) {
     const resp = await fetch(`${env.API_BASE}/${kind.api}/${encodeURIComponent(cid)}`);
     return resp.ok ? resp.json() : null;
+}
+
+function consultationDescription(content) {
+    const parts = ['Nonbinding community consultation'];
+    const organiser = content.consultation?.organiser;
+    // Only the immutable agreement is read: naming its organiser never verifies that website.
+    if (typeof organiser === 'string' && organiser.startsWith('did:web:')) {
+        const host = organiser.slice(8).split(':')[0].replace(/%3A/gi, ':');
+        if (host) parts.push(`by ${host}`);
+    }
+    if (Array.isArray(content.designs)) {
+        const count = content.designs.length;
+        parts.push(`about ${count} ${count === 1 ? 'design' : 'designs'}`);
+    }
+    let text = parts.join(' ') + '.';
+    if (typeof content.deadline === 'string') {
+        const deadline = new Date(content.deadline);
+        if (Number.isFinite(deadline.getTime()) && deadline.toISOString() === content.deadline) {
+            text += ` Closes ${new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(deadline)}.`;
+        }
+    }
+    return clip(text);
 }
 
 // The card of a design or agreement: its title and description come from its CID-addressed content.
@@ -104,10 +126,11 @@ async function recordMeta(kind, cid, url, env, base) {
     const record = await readRecord(kind, cid, env);
     if (!record) return base;
     const content = record.content || {};
+    const community = kind.api === 'agreements' && content.rule?.electorate === 'community';
     return {
         ...base,
-        title: `${content.title || kind.label} · ${DEFAULTS.siteName}`,
-        description: content.description ? clip(content.description) : base.description,
+        title: `${content.title || (community ? 'Community consultation' : kind.label)} · ${DEFAULTS.siteName}`,
+        description: community ? consultationDescription(content) : content.description ? clip(content.description) : base.description,
         // Routed through our image endpoint (Route 2), so the card URL is stable and absolute.
         image: `${env.SITE_BASE}/${kind.api}/${encodeURIComponent(cid)}/og-image.png`,
         url: url.toString()

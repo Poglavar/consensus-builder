@@ -261,14 +261,20 @@ describe('validate', () => {
         expect(codes(record.validate(nobody).errors)).toEqual(['rule-invalid']);
 
         const communityWithConfig = fixture();
+        communityWithConfig.allocations = [];
+        communityWithConfig.money.lines = [];
         communityWithConfig.rule = { ...communityWithConfig.rule, electorate: 'community', binding: false };
         expect(codes(record.validate(communityWithConfig).errors)).toEqual(['rule-invalid']);
 
         const bindingVote = fixture();
+        bindingVote.allocations = [];
+        bindingVote.money.lines = [];
         bindingVote.rule = { electorate: 'community', binding: true, approvalConfig: null, lens: [] };
         expect(record.validate(bindingVote).errors).toEqual([expect.objectContaining({ code: 'rule-community-binding', section: 'rule' })]);
 
         const vote = fixture();
+        vote.allocations = [];
+        vote.money.lines = [];
         vote.rule = { electorate: 'community', binding: false, approvalConfig: null, lens: [] };
         expect(record.validate(vote)).toEqual({ valid: true, errors: [], warnings: [] });
     });
@@ -421,6 +427,8 @@ describe('the lens of an owners rule', () => {
         delete raw.rule.lens;
         expect(codes(record.validate(raw).warnings)).toEqual(['rule-lens-missing']);
         const vote = fixture();
+        vote.allocations = [];
+        vote.money.lines = [];
         vote.rule = { electorate: 'community', binding: false, approvalConfig: null, lens: [] };
         expect(record.validate(vote).warnings).toEqual([]);
     });
@@ -499,7 +507,7 @@ describe('published', () => {
         const raw = local();
         raw.inputs.parcels[0].parcelSourceId = 'zagreb-dgu';
         const object = record.published(raw);
-        expect(Object.keys(object).sort()).toEqual(['allocations', 'author', 'city', 'createdAt', 'deadline', 'designs', 'inputs',
+        expect(Object.keys(object).sort()).toEqual(['allocations', 'author', 'city', 'consultation', 'createdAt', 'deadline', 'designs', 'inputs',
             'money', 'outputs', 'rule', 'schema', 'sponsor', 'title']);
         expect(object).toMatchObject({ schema: 'agreement/v1', title: 'Block seven', author: 'Ana', sponsor: SPONSOR, city: 'test-city',
             createdAt: '2026-10-21T10:00:00.000Z', deadline: null });
@@ -582,5 +590,69 @@ describe('publishedCid', () => {
             edit(raw);
             expect(record.publishedCid(raw), edit.toString()).not.toBe(cid);
         });
+    });
+});
+
+
+describe('consultation metadata', () => {
+    function community(consultation = null) {
+        return { ...fixture(), allocations: [], money: { currency: 'EUR', lines: [] },
+            rule: { electorate: 'community', binding: false, approvalConfig: null, lens: [] }, consultation };
+    }
+
+    it('canonicalizes website organisers and participation URLs in the local and published record', () => {
+        const raw = community({ organiser: ' https://NGO.example/branch ', participationUrl: ' https://NGO.example/join ' });
+        const expected = { organiser: 'did:web:ngo.example:branch', participationUrl: 'https://ngo.example/join' };
+        expect(record.normalize(raw).consultation).toEqual(expected);
+        expect(record.published(raw).consultation).toEqual(expected);
+        expect(record.validate(raw).valid).toBe(true);
+        expect(record.normalize(community()).consultation).toEqual({ organiser: null, participationUrl: null });
+    });
+
+    it('commits organiser and participation information to the agreement CID', () => {
+        const raw = community({ organiser: 'did:web:ngo.example', participationUrl: 'https://ngo.example/join' });
+        const original = record.publishedCid(raw);
+        expect(record.publishedCid({ ...raw, consultation: { ...raw.consultation, organiser: 'did:web:other.example' } })).not.toBe(original);
+        expect(record.publishedCid({ ...raw, consultation: { ...raw.consultation, participationUrl: 'https://ngo.example/other' } })).not.toBe(original);
+    });
+
+    it('refuses consultation metadata on owners while normalizing absent metadata to null', () => {
+        expect(record.normalize(fixture()).consultation).toBeNull();
+        expect(record.normalize({ ...fixture(), consultation: null }).consultation).toBeNull();
+        expect(() => record.normalize({ ...fixture(), consultation: { organiser: 'did:web:ngo.example' } })).toThrow(/Only a community/);
+    });
+
+    it('rejects crafted community allocations and cash, even zero or carried-holder lines', () => {
+        const base = community();
+        const samples = [
+            { ...base, allocations: fixture().allocations },
+            { ...base, allocations: [{ output: base.outputs[0].hash, to: { kind: 'holders' } }] },
+            { ...base, money: fixture().money },
+            { ...base, money: { currency: 'EUR', lines: [{ ownerKey: 'agent-ana', amountCents: 0 }] } }
+        ];
+        for (const raw of samples) {
+            const code = raw.allocations.length ? 'community-allocations' : 'community-money';
+            expect(record.validate(raw).errors).toContainEqual(expect.objectContaining({ code, section: code === 'community-allocations' ? 'allocation' : 'money' }));
+            expect(() => record.published(raw)).toThrow(/cannot allocate land or include cash/);
+        }
+    });
+
+    it('rejects unknown consultation metadata rather than silently dropping it', () => {
+        const raw = community({ organiser: 'did:web:ngo.example', participationUrl: null, secretTerm: 'hidden' });
+        expect(() => record.normalize(raw)).toThrow(/unknown fields/);
+        expect(() => record.validate(raw)).toThrow(/unknown fields/);
+        expect(() => record.published(raw)).toThrow(/unknown fields/);
+        for (const consultation of [{ organiser: 42 }, { participationUrl: 42 }]) {
+            expect(() => record.normalize(community(consultation))).toThrow(/text or null/);
+        }
+    });
+
+    it('reports invalid organiser and participation fields by section', () => {
+        for (const organiser of ['not a did', 'http://ngo.example', 'https://user:password@ngo.example', 'did:web:ngo.example:' + 'x'.repeat(2048)]) {
+            expect(record.validate(community({ organiser })).errors).toContainEqual(expect.objectContaining({ code: 'consultation-organiser', section: 'consultation' }));
+        }
+        for (const participationUrl of ['http://ngo.example', 'javascript:alert(1)', '/join', 'https://user:password@ngo.example/join', 'https://ngo.example/' + 'x'.repeat(2048)]) {
+            expect(record.validate(community({ participationUrl })).errors).toContainEqual(expect.objectContaining({ code: 'consultation-participation-url', section: 'consultation' }));
+        }
     });
 });
