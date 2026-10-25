@@ -1,0 +1,16 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "urban-game-theory",
+  "version": "0.1.0",
+  "description": "Inspect real parcels, draft and edit urban plans, compare alternatives, and share 2D/3D designs with Consensus Builder.",
+  "author": {
+    "name": "Urban Game Theory"
+  },
+  "homepage": "https://urbangametheory.xyz/",
+  "keywords": [
+    "urban-planning",
+    "geospatial",
+    "urban-design",
+    "site-planning"
+  ]
+}

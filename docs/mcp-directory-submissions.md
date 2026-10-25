@@ -101,6 +101,52 @@ The source branch is intentional: the public MCP implementation is on `colosseum
 
 - The `wong2/awesome-mcp-servers` README directs submissions to mcpservers.org and explicitly declines pull requests. Use the website form above.
 
+## Docker MCP Catalog — submitted for review
+
+Submitted on **2026-10-25** as [PR #6080](https://github.com/docker/mcp-registry/pull/6080). The dedicated fork branch `add-urban-game-theory-mcp` adds only `servers/urban-game-theory/server.yaml`, `tools.json` and `readme.md`; its contribution commit is `658b9ffb8ee2c178d8f6e4c0eb158321c4bb79d0`. It uses the documented remote-server contract: Streamable HTTP, no OAuth, and no container build. The local source files are in [`directory-submissions/docker/urban-game-theory`](../directory-submissions/docker/urban-game-theory).
+
+The PR is open, not approved or published. At the last check no CI results were attached. A stock MCP client discovered all 30 tools and successfully called `ugt_explain`. The public documentation and actual PNG icon were fetched successfully. The repository Go validator and a Docker gateway import were not run locally; the PR states that limitation rather than claiming they passed.
+
+## Public plugin source — published
+
+[Urban Game Theory plugin repository](https://github.com/Poglavar/urban-game-theory-plugin), latest prepared commit `2b060d9f94e77fe97c4b8df90055c653f479e427`.
+
+The package in [`plugins/urban-game-theory`](../plugins/urban-game-theory) is a public copy of the existing private planning plugin, with brand-only authorship, the same hosted endpoint, one planning skill and its references, the existing logo, and the project's Apache-2.0 license. The original private installation was not modified. Portable Agent Plugins clients use `mcp.json`; Open Plugins clients use `.mcp.json`. Both configurations identify exactly the same endpoint. No private app bindings, personal contact details, credentials, telemetry or executable hooks are included.
+
+The GitHub file inventory was read back after publication. JSON, relative skill links, the square PNG and the identity scan passed. Marketplace installation and acceptance are separate from publishing this source; no Cursor IDE installation is claimed.
+
+## Claude Connectors Directory — prepared, not submitted
+
+The user's existing signed-in account successfully connected to `https://urbangametheory.xyz/mcp` without authentication and discovered **30 tools, 12 resources and five prompts**. The ten-step form is prepared through **Review and submit**, with the listing, categories, three use cases, business contact, authentication, data handling and Inspector evidence entered. The draft is saved in the existing browser tab, not a verified server-side submission. Keep the tab open until submission. Reusable public values are in [`directory-submissions/claude/listing.json`](../directory-submissions/claude/listing.json); account/contact details remain outside this repository.
+
+Remaining required fields shown by the portal:
+
+- A real, published privacy-policy URL. None has been supplied or invented; the maintainer was asked about existing privacy/terms URLs and log/feedback retention and deletion rules.
+- The maintainer's seven policy acknowledgements. These remain unchecked; do not attest on the maintainer's behalf. The preparation skill requires the authorized developer to complete legal/policy attestations.
+
+The portal flags `annotations.title` as missing on every hosted tool. A local server change now supplies matching top-level and annotation titles, including names generated for companion tools. Targeted headless unit tests (`test/mcp-server.test.js` and `test/mcp-http.test.js`) passed: **2 files / 18 tests**. This server metadata change has **not been deployed**, so the saved live scan still contains its original suggestions.
+
+## Cursor Marketplace — source and listing prepared, not submitted
+
+The official [publisher application](https://cursor.com/marketplace/publish) is signed in. The public source and reusable listing values are ready in [`directory-submissions/cursor/listing.json`](../directory-submissions/cursor/listing.json). The form became unresponsive before the prepared values were verified as entered. Its final submission accepts the [Publisher Terms](https://cursor.com/marketplace-publisher-terms), which require the maintainer's action-time confirmation. Those terms also require public privacy and service disclosures.
+
+Automatic approval review rejected reloading the stalled form because it could discard unsaved application data and the form had not been proven blank. Preserve the existing tab; do not bypass the rejection by replacing or discarding its state. Reload requires the user's approval.
+
+## Cursor Directory community listing — awaiting sign-in authorization
+
+The [community submission form](https://cursor.directory/plugins/new) requires sign-in. Its GitHub OAuth screen requests **read-only access to account email addresses** for the Cursor Directory application. That grant was not accepted. The public plugin repository is ready for its importer. The directory's own contribution guide says listings are submitted through the website, not pull requests.
+
+## Grok — direct installation documented, catalogue submission unconfirmed
+
+The official [connector documentation](https://docs.x.ai/grok/connectors) allows users to add a custom public MCP URL at `grok.com/connectors` → New Connector → Custom. No public catalogue-submission route was verified, so no listing or application was submitted. Do not describe a custom personal connection as a public directory listing.
+
+## Verification on 2026-10-25
+
+- Targeted headless MCP Inspector checks exercised all **30 hosted tools** against the public endpoint. **27 read/draft checks succeeded** and the **three external-write tools refused `confirm:false`**. No public content or feedback report was created.
+- The first verified-fact check used an active agreement and correctly returned that no terminal fact existed. Retesting with an executed agreement returned the x402 challenge successfully, without paying it. This makes 31 Inspector invocations, not 31 distinct tools.
+- No LLM API calls, payments, paid listings, full test suites, application push or application deployment ran. Docker and plugin-source publication used GitHub API operations containing only the prepared public files.
+- OpenAI and all Chinese directory submissions are explicitly deferred at the user's request.
+
 ## Excluded
 
 - MCP.so: its submission form currently requires payment; do not submit.

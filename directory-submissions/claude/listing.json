@@ -1,0 +1,36 @@
+{
+  "name": "Urban Game Theory — Consensus Builder",
+  "endpoint": "https://urbangametheory.xyz/mcp",
+  "transport": "streamable-http",
+  "authentication": "none",
+  "website": "https://urbangametheory.xyz",
+  "documentation": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/docs/mcp-editing.md",
+  "support": "https://urbangametheory.xyz/feedback.html",
+  "icon": "https://urbangametheory.xyz/images/consensus-builder-logo-2.png",
+  "oneLiner": "Inspect real parcels, create and edit urban plans, compare alternatives, and share 2D/3D designs.",
+  "slug": "urban-game-theory-consensus-builder",
+  "authorName": "Urban Game Theory",
+  "authorUrl": "https://urbangametheory.xyz",
+  "categories": [
+    "Creative",
+    "Data & Analytics"
+  ],
+  "description": "Create and refine urban plans on real parcels with Consensus Builder. Inspect sites; draft buildings, roads, parks, squares, lakes and parcel layouts; edit authored geometry and building heights; add or remove plan components; compare alternatives; and open private previews or share published designs in the browser. Public publishing requires explicit confirmation. The hosted MCP never signs wallet transactions or makes payments. Data coverage varies by location; a concept is not a planning approval or an ownership action.",
+  "useCases": [
+    {
+      "title": "Inspect places, parcels, buildings, planning sources and existing proposals.",
+      "prompt": "Find Digbeth in Birmingham and show the available parcel context and existing proposals around the site before designing anything."
+    },
+    {
+      "title": "Draft buildings, roads, parks and layouts, then inspect private previews.",
+      "prompt": "Draft a small park with 25 trees on an outline we select, and show its private preview without publishing it."
+    },
+    {
+      "title": "Edit a design or plan and compare its private revision with the original.",
+      "prompt": "Take the park draft, add 15 trees and compare the revised design with the original. Keep both private."
+    }
+  ],
+  "prerequisites": "No Urban Game Theory account, API key, payment or wallet is required. Use a specific site or a returned design/plan reference. Coverage varies by location. Publication and feedback submission require explicit confirmation.",
+  "readWrite": "read-and-write",
+  "testSetup": "Connect https://urbangametheory.xyz/mcp using Streamable HTTP with no authentication or headers. No account or reviewer credentials are required. Start with ugt_capabilities and ugt_explain. For inspect_verified_fact, use a terminal agreement; an active agreement legitimately has no terminal fact. All 30 hosted tools were exercised through official MCP Inspector on 2026-10-25: 27 successful read/draft checks and three expected confirmation refusals for publish_design, propose_agreement and submit_feedback. Do not publish test content or send feedback unless deliberately testing an authorized submission. Hosted tools cannot sign or pay."
+}

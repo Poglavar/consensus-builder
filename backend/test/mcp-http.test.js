@@ -47,6 +47,11 @@ describe('hosted MCP HTTP', () => {
         await client.connect(new StreamableHTTPClientTransport(new URL(`${base}/mcp`)));
         const { tools } = await client.listTools();
         expect(tools.map(t => t.name)).toEqual(MCP_HOSTED_TOOLS);
+        for (const tool of tools) {
+            expect(tool.title).toEqual(expect.any(String));
+            expect(tool.annotations.title).toBe(tool.title);
+            expect(tool.title).not.toMatch(/^ugt_/);
+        }
         expect(tools.map(t => t.name)).toContain('ugt_publish_design');
         expect(tools.map(t => t.name)).toContain('ugt_find_place');
         expect(tools.filter(t => t.annotations?.destructiveHint)).toEqual([]);

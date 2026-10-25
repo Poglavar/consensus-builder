@@ -1,0 +1,8 @@
+{
+  "organizationName": "Urban Game Theory",
+  "organizationHandle": "urban-game-theory",
+  "logoUrl": "https://urbangametheory.xyz/images/consensus-builder-logo-2.png",
+  "description": "Inspect real parcels, draft and edit urban plans, compare alternatives, and share 2D/3D designs with Consensus Builder. Includes a planning skill and the public hosted MCP connection. No Urban Game Theory account or API key required; public publishing requires confirmation.",
+  "repository": "https://github.com/Poglavar/urban-game-theory-plugin",
+  "website": "https://urbangametheory.xyz"
+}
