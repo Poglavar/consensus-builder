@@ -118,14 +118,28 @@ function loadPanel({ memory = null, withEditLock = false } = {}) {
 }
 
 describe('click stack selected objects and contextual navigation', () => {
-    it('names the selected design type prominently in the header, including while collapsed', () => {
+    it('keeps the collapsed design header to Design and restores its count, type, and selector when expanded', () => {
         const h = loadPanel(); h.click(SPOT_A);
-        const pill = () => h.section('designs').querySelector('.click-stack__row .proposal-type-badge');
+        const row = () => h.section('designs').querySelector('.click-stack__row');
+        const title = () => row().querySelector('.click-stack__row-title');
+        const detail = () => row().querySelector('.click-stack__row-detail');
+        const pill = () => row().querySelector('.proposal-type-badge');
+        expect(title().textContent).toBe('Design (2)');
+        expect(detail().textContent).toBe('Park');
         expect(pill().dataset.designGoal).toBe('park');
         expect(pill().classList.contains('cb-badge--success')).toBe(true);
         expect(pill().textContent).toContain('Park');
+        expect(h.section('designs').querySelector('.click-stack__selector')).not.toBeNull();
         h.api.collapse();
+        expect(title().textContent).toBe('Design');
+        expect(detail().textContent).toBe('Park');
+        expect(pill()).toBeNull();
+        expect(h.section('designs').querySelector('.click-stack__selector')).toBeNull();
+        row().click();
+        expect(title().textContent).toBe('Design (2)');
+        expect(detail().textContent).toBe('Park');
         expect(pill().dataset.designGoal).toBe('park');
+        expect(h.section('designs').querySelector('.click-stack__selector')).not.toBeNull();
     });
     it('opens a replaced cadastral source on Info rather than its unavailable design palette', () => {
         const h = loadPanel();

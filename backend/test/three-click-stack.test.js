@@ -15,6 +15,39 @@ const model = require('../../frontend/js/click-stack/click-stack-model.js');
 const feature = { type: 'Feature', properties: {}, geometry: null };
 
 describe('3D click stack contextual selection', () => {
+    it('hides the design count and authored type while collapsed, retaining the selected design name', () => {
+        const document = makeDocument();
+        const context = {
+            document, console, ClickStackRelations: relations,
+            ProposalDesignGoals: require('../../frontend/js/proposals/design-goals.js')
+        };
+        context.window = context;
+        vm.createContext(context);
+        vm.runInContext(readFileSync(new URL('../../frontend/js/three-click-stack.js', import.meta.url), 'utf8'), context);
+        const api = context.ThreeClickStack;
+        api.show({ designs: [
+            { id: 'd1', label: 'Park', proposal: { goal: 'park' } },
+            { id: 'd2', label: 'School', proposal: { goal: 'single' } }
+        ] }, { focus: 'designs' }, { activate: vi.fn() });
+        const section = () => document.querySelector('.click-stack__section[data-kind="designs"]');
+        const row = () => section().querySelector('.click-stack__row');
+        const title = () => row().querySelector('.click-stack__row-title');
+        const detail = () => row().querySelector('.click-stack__row-detail');
+        const badge = () => row().querySelector('.proposal-type-badge');
+
+        expect(title().textContent).toBe('Design (2)');
+        expect(detail().textContent).toBe('Park');
+        expect(badge().dataset.designGoal).toBe('park');
+        row().click();
+        expect(title().textContent).toBe('Design');
+        expect(detail().textContent).toBe('Park');
+        expect(badge()).toBeNull();
+        row().click();
+        expect(title().textContent).toBe('Design (2)');
+        expect(detail().textContent).toBe('Park');
+        expect(badge().dataset.designGoal).toBe('park');
+    });
+
     it('cycles repeated scene picks, retains the camera policy on refresh, and resets for a new or closed stack', () => {
         const document = makeDocument();
         const context = { document, console };

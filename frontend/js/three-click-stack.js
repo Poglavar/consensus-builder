@@ -178,12 +178,12 @@
             const detail = doc.createElement('span');
             detail.className = 'click-stack__row-detail';
             detail.textContent = instance.label || '';
-            if (section.multi) name.textContent += ` (${section.count})`;
+            if (section.multi && (section.kind !== 'designs' || expanded)) name.textContent += ` (${section.count})`;
             const chevron = doc.createElement('i');
             chevron.className = 'click-stack__chevron fas fa-chevron-down';
             chevron.setAttribute('aria-hidden', 'true');
             row.append(icon, name);
-            if (section.kind === 'designs') {
+            if (section.kind === 'designs' && expanded) {
                 const pill = global.ClickStackRelations?.renderDesignType(instance, doc, global);
                 if (pill) row.appendChild(pill);
             }

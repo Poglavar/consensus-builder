@@ -1071,7 +1071,7 @@ body.three-mode-active #agent-bubbles-container {
     color: var(--cb-text-muted);
 }
 
-/* The authored design type stays visible even when its details section is collapsed. */
+/* The authored design type is prominent in the expanded header and design details. */
 .proposal-type-badge {
     height: auto;
     min-height: var(--cb-space-6);
@@ -1082,11 +1082,11 @@ body.three-mode-active #agent-bubbles-container {
     white-space: normal;
 }
 
-.click-stack__section[data-kind="designs"] .click-stack__row {
+.click-stack__section.is-expanded[data-kind="designs"] .click-stack__row {
     flex-wrap: wrap;
 }
 
-.click-stack__section[data-kind="designs"] .click-stack__row-detail {
+.click-stack__section.is-expanded[data-kind="designs"] .click-stack__row-detail {
     order: 1;
     flex-basis: 100%;
 }
@@ -1148,10 +1148,6 @@ body.three-mode-active #agent-bubbles-container {
 }
 
 /* The model view's figures have no title of their own: name the design in the card header. */
-#three-click-stack .click-stack__section.is-expanded[data-kind="designs"] .click-stack__row {
-    flex-wrap: wrap;
-}
-
 #three-click-stack .click-stack__section.is-expanded[data-kind="designs"] .click-stack__row-detail {
     order: 1;
     flex: 1 0 100%;

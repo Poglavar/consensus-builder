@@ -233,12 +233,12 @@
             name.className = 'click-stack__row-title';
             // The selector counts the collection; the card always describes one selected item.
             name.textContent = rowTitle(section.multi ? { ...section, multi: false, count: 1 } : section);
-            if (section.multi) name.textContent += ` (${section.count})`;
+            if (section.multi && (section.kind !== 'designs' || expanded)) name.textContent += ` (${section.count})`;
             const detail = doc.createElement('span');
             detail.className = 'click-stack__row-detail';
             detail.textContent = rowDetail(section);
             row.append(icon, name);
-            if (section.kind === 'designs') {
+            if (section.kind === 'designs' && expanded) {
                 const pill = global.ClickStackRelations?.renderDesignType(instance, doc, global);
                 if (pill) row.appendChild(pill);
             }

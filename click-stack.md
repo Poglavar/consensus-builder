@@ -42,9 +42,10 @@ right-side panels that clicks used to open one at a time.
   section collapses all the others; at most one is expanded.
 - Collapsed headers are one row: the object kind followed by its selected name or parcel ID,
   truncated with an ellipsis. The cadastral header has no copy button.
-- Design headers also show the selected design's authored type as a prominent colored icon
-  pill, retained when collapsed and repeated in its details. A design name may wrap below the
-  type row. Color supplements the type text and icon; it does not indicate publication or approval.
+- A collapsed Design header shows only “Design” and the selected name on one line, with no
+  collection count or type badge. The expanded header shows the authored type as a prominent
+  colored icon pill, repeated in its details; its name may wrap below the type row. Color
+  supplements the type text and icon; it does not indicate publication or approval.
 - Relationship groups are small, explicitly labelled link groups **inside the expanded card body**.
   Their links wrap to fit the card; they do not create horizontal scrolling. A group navigates
   related objects, never siblings of the object already selected:
