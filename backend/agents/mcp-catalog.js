@@ -12,4 +12,8 @@ export const MCP_LOCAL_TOOLS = Object.freeze([
     'ugt_draft_plan', 'ugt_get_plan', 'ugt_validate_plan', 'ugt_inspect_plan', 'ugt_edit_plan', 'ugt_publish_plan', 'ugt_help', 'ugt_list_sources', 'ugt_export_draft',
     'ugt_import_design', 'ugt_import_model', 'ugt_render_preview', 'ugt_submit_feedback'
 ]);
-export const MCP_HOSTED_TOOLS = Object.freeze([...MCP_LOCAL_TOOLS.slice(0, 10), ...MCP_LOCAL_TOOLS.slice(29)]);
+// Wallet-only registrations sit between these named boundaries; additions cannot shift the hosted catalogue.
+export const MCP_HOSTED_TOOLS = Object.freeze([
+    ...MCP_LOCAL_TOOLS.slice(0, MCP_LOCAL_TOOLS.indexOf('ugt_chain_agreements')),
+    ...MCP_LOCAL_TOOLS.slice(MCP_LOCAL_TOOLS.indexOf('ugt_approval_link'))
+]);
