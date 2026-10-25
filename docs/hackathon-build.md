@@ -159,28 +159,39 @@ start from the warning and instructions in [`blockchain/solana/README.md`](../bl
 
 The safest judge path is the deployed [Demo Center](https://urbangametheory.xyz/hackathon-demo.html).
 
-The Demo Center's canonical-case card reads `/hackathon/cases/:proposalId`; the same card code renders
-the completed executed YES counterpart ([proposal](https://urbangametheory.xyz/proposals/hackathon-executed-borovje-2026),
-[aggregate JSON](https://api.urbangametheory.xyz/hackathon/cases/hackathon-executed-borovje-2026)) from the
-manifest's `publicProof.executedCase`. To preview the
-deterministic multi-parcel live-case plan without signing or writing anything:
+The two headline cards read current agreement records at `/hackathon/cases/:cid`. Their CIDs are
+pinned in [`backend/hackathon/proof-cases.json`](../backend/hackathon/proof-cases.json), with explicit
+deployment overrides through `HACKATHON_CASE_ID` and `HACKATHON_EXECUTED_CASE_ID`. Missing, invalid or
+duplicate pointers fail the public audit.
 
-```bash
-cd backend
-npm run demo:case
-```
+| Case | Agreement | Outcome |
+| --- | --- | --- |
+| Devnet cancellation demonstration — London | [Current agreement](https://urbangametheory.xyz/agreements/bafkreigu5t77k6pkgh6gsyezdwrcrygolvkkwzytuoyzszckpuh5wwe47u?city=london) | Cancelled; market resolved NO; winning claim confirmed |
+| 5-storey infill on parcel 48963306, London | [Current agreement](https://urbangametheory.xyz/agreements/bafkreidyb4h3ryq5ughtib3zrqkpuzy7mtr6abtzl7mo74ebjkpuxshpka?city=london) | Executed; market resolved YES; winning claim confirmed |
 
-`npm run demo:case:live` is the explicit devnet execution path. It uses the existing proposer and
-supporter keypairs, database checkpoint ledger, x402 client, donation/pledge adapters and market
-adapter; retries do not mint, pay, donate, pledge or target-stake twice after a recorded checkpoint.
+The cancellation record was created on 2026-10-25 as a labelled devnet demonstration, using the
+existing London design and a new agreement CID. One agent wallet placed 0.01 test USDC on each side,
+cancelled its own new agreement, resolved NO and claimed the winning position. The executed record
+comes from the existing agent workflow and has a one-sided YES pool. These examples demonstrate
+protocol integration. They establish no legal registration, physical construction or independent
+market demand.
 
-The executed case is the YES side of the same loop on a second real parcel set. `npm run
-demo:case:executed` prints its plan; `npm run demo:case:executed:live` sets it up the same way, then
-the supporter persona, which holds the devnet ownership certificate of every listed parcel, accepts
-each parcel, the proposal becomes `Executed` on-chain, the market resolves YES, the donation escrow is
-released, the pledge is fulfilled and the proposer claims the winning position. The land-event
-materializer publishes the `executed` event that completes `/hackathon/cases/:proposalId` and the
-`executed_case_yes` audit check.
+The card's visible transaction path links the decision, resolution and winning claim directly.
+Additional mint, support and stake transactions remain available in its transaction fold. Outcome
+verification requires successful confirmed actions on the same agreement/account and a matching
+source-hashed lifecycle event. Donations, pledges and participation on both forecast sides retain
+separate progress: a winning market claim does not prove those branches complete. Case activity is
+queried by agreement and market account before limiting, so unrelated new transactions cannot push
+an older headline case out of the proof window.
+
+The manifest now observes the active Agreement, ProposalMarket, ProposalPledge and ParcelNFT
+programs through devnet RPC. It records their ProgramData addresses, deployment slots and deployed
+binary SHA-256 hashes. `verifiedAt` is the successful observation time, cached for 15 minutes; a failed
+refresh returns unavailable evidence and no new verification timestamp. This identifies deployed
+bytes without claiming a reproducible source build or an on-chain IDL match. The read-only audit
+rejects missing program identities and observations older than one hour.
+
+The old proposal-id demonstration commands and archived proposal cases do not supply these cards.
 
 For a bounded, read-only command-line walkthrough of the same public evidence:
 

@@ -25,7 +25,7 @@ export function buildJudgeDemo({ audit, manifest, prospective } = {}) {
             { label: 'Pitch', url: manifest?.surfaces?.pitch || null },
             { label: 'Live demo', url: manifest?.surfaces?.demo || null },
             { label: 'Hackathon proof manifest', url: manifest?.publicProof?.manifest || null },
-            { label: 'Canonical multi-parcel agreement', url: manifest?.publicProof?.canonicalCase || null },
+            { label: 'Cancelled agreement (market paid NO)', url: manifest?.publicProof?.canonicalCase || null },
             { label: 'Executed agreement (lens attested, market paid YES)', url: manifest?.publicProof?.executedCase || null },
             { label: 'Lens member directory (who may attest)', url: lensDirectoryUrl(manifest) },
             { label: 'Agent capability and x402 terms', url: manifest?.publicProof?.agentCapabilities || null },

@@ -532,6 +532,10 @@ A declaration of the land a design intends to cede and its destination class or 
 
 The agreement's active, executed, cancelled or expired state, derived from its qualified chain account and deadline where applicable. Missing or unrecognized state is unknown; a design has no agreement lifecycle of its own.
 
+### Proof case
+
+A selected published agreement whose chain lifecycle, market outcome and winning claim are supported by source transactions. Outcome verification is distinct from completion of optional donations or pledges, legal registration and physical construction.
+
 ### Lifecycle evidence
 
 The provenance of a lifecycle claim: an observed matching chain state or event, a deadline-derived conclusion, or unknown evidence. An observation time is distinct from the event's own time.
