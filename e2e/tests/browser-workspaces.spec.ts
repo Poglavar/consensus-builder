@@ -3,51 +3,101 @@ import { openCity, stubBasemapTiles } from '../helpers/runtime';
 import { waitForMapReady } from '../helpers/app';
 import { mockAllApiRoutes } from '../helpers/mocks/api-routes';
 
-for (const width of [390, 1280]) test(`duplicated tabs fork drafts and saved work at ${width}px`, async ({ mockApi: first, context }) => {
+for (const width of [390, 1280]) test(`a duplicate tab waits for the owner and resumes the same saved workspace at ${width}px`, async ({ mockApi: owner, context }, testInfo) => {
   test.setTimeout(90_000);
-  await first.setViewportSize({ width, height: 844 });
-  await stubBasemapTiles(first);
-  await openCity(first);
-  const original = await first.evaluate(async () => {
+  await owner.setViewportSize({ width, height: 844 });
+  await stubBasemapTiles(owner);
+  await openCity(owner);
+  const saved = await owner.evaluate(async () => {
     const w = window as any;
-    const draft = w.proposalDraftStore.createDraft({ goal: 'park', fields: { name: 'Original garden' } });
-    await w.PersistentStorage.atomicWrite({ puts: { workspaceProbe: 'original' } });
+    const draft = w.proposalDraftStore.createDraft({ goal: 'park', fields: { name: 'Saved garden' } });
+    await w.PersistentStorage.atomicWrite({ puts: { workspaceProbe: 'saved' } });
     return { workspace: w.BrowserWorkspace.id, draft: draft.id };
   });
+
   const duplicate = await context.newPage();
   try {
     await duplicate.setViewportSize({ width, height: 844 });
     await mockAllApiRoutes(duplicate);
     await stubBasemapTiles(duplicate);
-    // Browsers duplicate sessionStorage with a tab. Reproduce that inherited identity while the
-    // original document holds its Web Lock, without opening a popup over the user's work.
-    await duplicate.addInitScript(id => {
-      if (!sessionStorage.getItem('cb.workspace.v1')) sessionStorage.setItem('cb.workspace.v1', id);
-    }, original.workspace);
-    await duplicate.goto('/?city=zg&reduceMotion=1', { waitUntil: 'domcontentloaded' });
+    const incomingUrl = '/?city=zg&reduceMotion=1';
+    await duplicate.goto(incomingUrl, { waitUntil: 'domcontentloaded' });
+    await expect.poll(() => duplicate.evaluate(() => (window as any).BrowserWorkspace?.status)).toBe('blocked');
+    const screen = duplicate.locator('#workspace-screen');
+    await expect(screen).toBeVisible();
+    await expect(screen.getByRole('heading', { name: 'Already open in another tab' })).toBeVisible();
+    await duplicate.screenshot({ path: testInfo.outputPath('workspace-blocked.png') });
+    const retry = screen.getByRole('button', { name: 'Try again' });
+    await expect(retry).toHaveAttribute('id', 'workspace-retry');
+    expect(new URL(duplicate.url()).pathname + new URL(duplicate.url()).search).toBe(incomingUrl);
+    await expect(duplicate.locator('#proposal-details-panel')).toBeHidden();
+    expect(await owner.evaluate(() => ({
+      value: (window as any).PersistentStorage.getItem('workspaceProbe'),
+      draft: (window as any).proposalDraftStore.getActiveDraft()?.fields.name,
+    }))).toEqual({ value: 'saved', draft: 'Saved garden' });
+
+    // Closing the owner releases its profile workspace. The blocked page reloads at the same URL
+    // and resumes the saved workspace with its existing ID and state.
+    await owner.close();
+    await retry.click();
+    await expect.poll(() => duplicate.evaluate(() => (window as any).BrowserWorkspace?.status)).toBe('ready');
     await waitForMapReady(duplicate);
-    const forkId = await duplicate.evaluate(() => (window as any).BrowserWorkspace.id);
-    expect(forkId).not.toBe(original.workspace);
-    const state = (page: typeof first) => page.evaluate(() => {
-      const w = window as any;
-      return { saved: w.PersistentStorage.getItem('workspaceProbe'), name: w.proposalDraftStore.getActiveDraft()?.fields.name };
-    });
-    expect(await state(duplicate)).toEqual({ saved: 'original', name: 'Original garden' });
-    await duplicate.evaluate(async draftId => {
-      const w = window as any;
-      w.proposalDraftStore.updateDraft(draftId, { fields: { name: 'Fork garden' } });
-      await w.PersistentStorage.atomicWrite({ puts: { workspaceProbe: 'fork' } });
-    }, original.draft);
-    expect(await state(first)).toEqual({ saved: 'original', name: 'Original garden' });
+    expect(await duplicate.evaluate(() => ({
+      workspace: (window as any).BrowserWorkspace.id,
+      value: (window as any).PersistentStorage.getItem('workspaceProbe'),
+      draft: (window as any).proposalDraftStore.getActiveDraft()?.fields.name,
+    }))).toEqual({ workspace: saved.workspace, value: 'saved', draft: 'Saved garden' });
+    expect(new URL(duplicate.url()).pathname).toBe('/');
+
     await duplicate.reload({ waitUntil: 'domcontentloaded' });
     await waitForMapReady(duplicate);
-    expect(await duplicate.evaluate(() => (window as any).BrowserWorkspace.id)).toBe(forkId);
-    expect(await state(duplicate)).toEqual({ saved: 'fork', name: 'Fork garden' });
-    await first.reload({ waitUntil: 'domcontentloaded' });
-    await waitForMapReady(first);
-    expect(await first.evaluate(() => (window as any).BrowserWorkspace.id)).toBe(original.workspace);
-    expect(await state(first)).toEqual({ saved: 'original', name: 'Original garden' });
-    await expect(first.locator('#cb-multitab-banner')).toHaveCount(0);
-    await expect(duplicate.locator('#cb-multitab-banner')).toHaveCount(0);
+    expect(await duplicate.evaluate(() => (window as any).BrowserWorkspace.id)).toBe(saved.workspace);
+    expect(await duplicate.evaluate(() => (window as any).proposalDraftStore.getActiveDraft()?.fields.name)).toBe('Saved garden');
   } finally { await duplicate.close(); }
+});
+
+test('closing a blocked tab cannot overwrite the owner; a fresh tab reopens the same saved workspace', async ({ mockApi: owner, context }) => {
+  test.setTimeout(90_000);
+  await stubBasemapTiles(owner);
+  await openCity(owner);
+  const saved = await owner.evaluate(async () => {
+    const w = window as any;
+    const draft = w.proposalDraftStore.createDraft({ goal: 'park', fields: { name: 'Initial garden' } });
+    await w.PersistentStorage.atomicWrite({ puts: { workspaceProbe: 'initial' } });
+    return { workspace: w.BrowserWorkspace.id, draft: draft.id };
+  });
+
+  const blocked = await context.newPage();
+  await mockAllApiRoutes(blocked);
+  await stubBasemapTiles(blocked);
+  await blocked.goto('/?city=zg&reduceMotion=1', { waitUntil: 'domcontentloaded' });
+  await expect.poll(() => blocked.evaluate(() => (window as any).BrowserWorkspace?.status)).toBe('blocked');
+  await expect(blocked.locator('#workspace-screen')).toBeVisible();
+
+  await owner.evaluate(async ({ draftId }) => {
+    const w = window as any;
+    w.proposalDraftStore.updateDraft(draftId, { fields: { name: 'Latest garden' } });
+    await w.PersistentStorage.atomicWrite({ puts: { workspaceProbe: 'latest' } });
+  }, { draftId: saved.draft });
+  await blocked.close();
+  expect(await owner.evaluate(draftId => ({
+    workspace: (window as any).BrowserWorkspace.id,
+    draft: (window as any).proposalDraftStore.getDraft(draftId)?.fields.name,
+    probe: (window as any).PersistentStorage.getItem('workspaceProbe'),
+  }), saved.draft)).toEqual({ workspace: saved.workspace, draft: 'Latest garden', probe: 'latest' });
+
+  await owner.close();
+  const reopened = await context.newPage();
+  try {
+    await mockAllApiRoutes(reopened);
+    await stubBasemapTiles(reopened);
+    await reopened.goto('/?city=zg&reduceMotion=1', { waitUntil: 'domcontentloaded' });
+    await expect.poll(() => reopened.evaluate(() => (window as any).BrowserWorkspace?.status)).toBe('ready');
+    await waitForMapReady(reopened);
+    expect(await reopened.evaluate(draftId => ({
+      workspace: (window as any).BrowserWorkspace.id,
+      draft: (window as any).proposalDraftStore.getActiveDraft()?.fields.name,
+      probe: (window as any).PersistentStorage.getItem('workspaceProbe'),
+    }), saved.draft)).toEqual({ workspace: saved.workspace, draft: 'Latest garden', probe: 'latest' });
+  } finally { await reopened.close(); }
 });

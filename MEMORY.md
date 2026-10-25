@@ -933,4 +933,6 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 
 - 2026-10-25: Descriptive city labels must not gate design import, reconstruction or rendering; authored geography and actual cadastral source dependencies determine the required ground context.
 
-- 2026-10-25: Each map tab owns an independent durable workspace; reload restores it, while new or duplicated tabs fork saved work, preventing cross-tab overwrites and replacing secondary-tab recovery mode.
+- 2026-10-25 (SUPERSEDED): Each map tab owns an independent durable workspace; reload restores it, while new or duplicated tabs fork saved work, preventing cross-tab overwrites and replacing secondary-tab recovery mode.
+
+- 2026-10-25: Keep one saved map workspace per browser profile with one editable tab; extra tabs wait, closing preserves the workspace, and automatic or optional independent copies are disabled.

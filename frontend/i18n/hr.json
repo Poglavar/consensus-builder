@@ -1,4 +1,18 @@
 {
+    "workspace": {
+        "blocked": {
+            "title": "Radni prostor već je otvoren u drugoj kartici",
+            "message": "Radni prostor karte otvoren je u drugoj kartici. Zatvorite tu karticu pa pokušajte ponovno ovdje. Spremljeni rad i dalje će biti ovdje."
+        },
+        "unsupported": {
+            "title": "Ažurirajte preglednik za nastavak",
+            "message": "Ažurirajte ovaj preglednik i ponovno otvorite stranicu. Vaš spremljeni rad nije promijenjen."
+        },
+        "error": {
+            "title": "Nije moguće otvoriti spremljeni rad",
+            "message": "Pokušajte ponovno otvoriti ovaj radni prostor. Vaš spremljeni rad nije zamijenjen."
+        }
+    },
     "designDuplicate": {
         "title": "Dupliciranje dizajna",
         "hint": "Pomakni kopiju pa klikni za postavljanje. Escape odustaje."

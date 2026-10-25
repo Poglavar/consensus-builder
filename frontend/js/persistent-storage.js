@@ -1,7 +1,7 @@
 // Per-workspace, per-city key/value storage on IndexedDB.
 //
-// Each tab owns a durable workspace, with a separate database for each geographic context.
-// New tabs snapshot the saved workspace; reload reopens that tab's own data. No cross-tab merge.
+// One durable workspace per browser profile, with separate geographic-context databases.
+// A Web Lock allows only its editing tab to load or write these stores.
 //
 // Which database to open is decided by PersistentStorage.setScope(cityId), called by city-config as
 // soon as it resolves the current city — before anything reads. Callers that never set a scope (the
@@ -129,6 +129,13 @@
         return dbOpenPromise;
     }
 
+    function assertWorkspaceWritable() {
+        if (!workspace || workspace.status === 'loading' || workspace.status === 'ready') return;
+        const error = new Error('This tab no longer owns the saved workspace.');
+        error.code = 'workspace-' + workspace.status;
+        throw error;
+    }
+
     function normalizedAtomicPuts(puts) {
         if (puts instanceof Map) return Array.from(puts.entries());
         if (Array.isArray(puts)) return puts.map(entry => Array.isArray(entry)
@@ -157,6 +164,7 @@
         // Mutations are not allowed to guess a city before city-config binds the store. Await the
         // same readiness barrier used by all proposal boot code.
         await ready;
+        assertWorkspaceWritable();
 
         const leftovers = takeStoredMemoryOnlyKeys();
         const deletes = allDeletes.filter(key => !isMemoryOnlyKey(key)).concat(leftovers);
@@ -174,7 +182,7 @@
         // A failed write leaves the leftover derived-owner rows for the next one.
         const restoreLeftovers = () => leftovers.forEach(key => storedMemoryOnlyKeys.add(key));
         let db;
-        try { db = await openDb(); } catch (error) { restoreLeftovers(); throw error; }
+        try { db = await openDb(); assertWorkspaceWritable(); } catch (error) { restoreLeftovers(); throw error; }
         await new Promise((resolve, reject) => {
             let transaction;
             let failure = null;
@@ -281,8 +289,7 @@
         const manifest = workspace.databaseName('__workspace');
         if ((await readAllFrom(manifest))[WORKSPACE_INITIALIZED_KEY]) return;
         const cities = new Set([scope]);
-        // Freeze every saved city at fork time, rather than inheriting future edits when this tab
-        // first visits another city. Only this workspace's ancestry is eligible; never other tabs.
+        // Initialize the saved workspace from existing per-city data once. No tab creates a copy.
         const token = '__scope';
         const prefixes = workspace.sourceDatabaseNames(token).map(name => name.slice(0, -token.length));
         if (typeof globalScope.indexedDB.databases === 'function') {
@@ -359,6 +366,7 @@
         }
         if (!dbName || !loadStarted) { pendingWrites.push({ type: 'put', key, value }); return; }
         openDb().then(db => {
+            assertWorkspaceWritable();
             const transaction = db.transaction(STORE_NAME, 'readwrite');
             const store = transaction.objectStore(STORE_NAME);
             store.put({ key, value });
@@ -373,6 +381,7 @@
         }
         if (!dbName || !loadStarted) { pendingWrites.push({ type: 'delete', key }); return; }
         openDb().then(db => {
+            assertWorkspaceWritable();
             const transaction = db.transaction(STORE_NAME, 'readwrite');
             const store = transaction.objectStore(STORE_NAME);
             store.delete(key);
@@ -387,6 +396,7 @@
         }
         if (!dbName || !loadStarted) { pendingWrites.push({ type: 'clear' }); return; }
         openDb().then(db => {
+            assertWorkspaceWritable();
             const transaction = db.transaction(STORE_NAME, 'readwrite');
             const store = transaction.objectStore(STORE_NAME);
             store.clear();
@@ -413,6 +423,7 @@
             return null;
         },
         setItem(key, value) {
+            assertWorkspaceWritable();
             const strKey = key != null ? String(key) : '';
             const strValue = value != null ? String(value) : '';
             cache.set(strKey, strValue);
@@ -420,12 +431,14 @@
             else if (storedMemoryOnlyKeys.delete(strKey)) removePair(strKey);
         },
         removeItem(key) {
+            assertWorkspaceWritable();
             const strKey = key != null ? String(key) : '';
             cache.delete(strKey);
             if (!isMemoryOnlyKey(strKey)) removePair(strKey);
             else if (storedMemoryOnlyKeys.delete(strKey)) removePair(strKey);
         },
         clear() {
+            assertWorkspaceWritable();
             cache.clear();
             storedMemoryOnlyKeys.clear();
             clearStore();
@@ -455,7 +468,14 @@
             const scope = cityId && String(cityId).trim();
             if (scopeBinding || dbName) return ready;
             scopeBinding = true;
+            if (globalScope.__CB_WORKSPACE_REQUIRED__ && !workspace) {
+                readyReject(new Error('Workspace ownership is unavailable.'));
+                return ready;
+            }
             Promise.resolve(workspace?.ready).then(async () => {
+                // Keep application startup pending in a refused tab. It must never load or replay
+                // a private cache that could later overwrite the active editor's saved records.
+                if (workspace && workspace.status !== 'ready') return;
                 dbName = workspace ? workspace.databaseName(scope || 'global')
                     : scope ? `${DB_NAME_PREFIX}::${scope}` : LEGACY_DB_NAME;
                 announceDatabase();

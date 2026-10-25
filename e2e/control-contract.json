@@ -3,6 +3,13 @@
   "allowedSkips": [],
   "controls": [
     {
+      "id": "control-156bc1c5231592-1",
+      "source": "js/workspace-screen.js",
+      "markup": "doc.createElement('button')",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-7c855b74f4e1c7-1",
       "source": "deck.html",
       "markup": "<button type=\"button\" id=\"deck-prev\" aria-label=\"Previous slide\">",

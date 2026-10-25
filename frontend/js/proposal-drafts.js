@@ -971,16 +971,21 @@
     global.PROPOSAL_DRAFT_SCHEMA_VERSION = PROPOSAL_DRAFT_SCHEMA_VERSION;
     global.PROPOSAL_DRAFT_STORAGE_KEY = PROPOSAL_DRAFT_STORAGE_KEY;
     global.createProposalDraftStore = createProposalDraftStore;
-    if (!global.proposalDraftStore) global.proposalDraftStore = createProposalDraftStore();
-
-    if (global.addEventListener && global.proposalDraftStore) {
+    function attachDefaultStore() {
+        if (!global.proposalDraftStore) global.proposalDraftStore = createProposalDraftStore();
+        if (!global.addEventListener) return;
         const flush = () => {
+            if (global.BrowserWorkspace && global.BrowserWorkspace.status !== 'ready') return;
             try { global.proposalDraftStore.flush(); } catch (_) { }
         };
         global.addEventListener('pagehide', flush);
         global.addEventListener('beforeunload', flush);
-
     }
+    if (global.BrowserWorkspace) {
+        global.BrowserWorkspace.ready.then(owned => {
+            if (owned) attachDefaultStore();
+        }).catch(() => {}); // The workspace startup screen handles ownership/storage failures.
+    } else attachDefaultStore();
 
     if (typeof module !== 'undefined' && module.exports) {
         module.exports = {

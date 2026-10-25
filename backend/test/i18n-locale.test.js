@@ -71,6 +71,41 @@ describe('picking a locale', () => {
 });
 
 describe('dictionary startup', () => {
+    it('settles from the URL locale when the workspace is blocked without waiting for map storage', async () => {
+        const persistent = fakeStorage();
+        persistent.ready = new Promise(() => {});
+        const win = {
+            location: { search: '?lang=hr' },
+            navigator: { languages: ['en-GB'], language: 'en-GB' },
+            PersistentStorage: persistent,
+            BrowserWorkspace: { ready: Promise.resolve(false) }
+        };
+        new Function('window', 'self', 'globalThis', 'document', src)(win, win, win, undefined);
+        await win.i18n.ready;
+        expect(win.i18n.getLocale()).toBe('hr-HR');
+        expect(persistent.setItem).not.toHaveBeenCalled();
+    });
+
+    it('waits for map storage when the workspace is owned', async () => {
+        let releaseStorage;
+        const persistent = fakeStorage();
+        persistent.ready = new Promise(resolve => { releaseStorage = resolve; });
+        const win = {
+            location: { search: '?lang=hr' },
+            navigator: { languages: ['en-GB'], language: 'en-GB' },
+            PersistentStorage: persistent,
+            BrowserWorkspace: { ready: Promise.resolve(true) }
+        };
+        new Function('window', 'self', 'globalThis', 'document', src)(win, win, win, undefined);
+        let settled = false;
+        win.i18n.ready.then(() => { settled = true; });
+        await Promise.resolve();
+        expect(settled).toBe(false);
+        releaseStorage();
+        await win.i18n.ready;
+        expect(win.i18n.getLocale()).toBe('hr-HR');
+    });
+
     it('preserves readable HTML labels and attributes until their translations exist', async () => {
         const node = { textContent: 'Proposals', title: 'Proposals',
             getAttribute: key => ({ 'data-i18n-key':'mapShell.proposals', 'data-i18n-attr':'text,title' })[key],

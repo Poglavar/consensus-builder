@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { create, isWorkKey, SESSION_KEY, LATEST_KEY } = require('../../frontend/js/browser-workspace.js');
+const api = require('../../frontend/js/browser-workspace.js');
+const { create, isWorkKey, WORKSPACE_KEY } = api;
 
 function memoryStorage(seed = {}) {
     const values = new Map(Object.entries(seed).map(([key, value]) => [key, String(value)]));
@@ -16,15 +17,30 @@ function memoryStorage(seed = {}) {
     };
 }
 
-function browserRoot({ localStorage = memoryStorage(), sessionStorage = memoryStorage(), locks = null, ids = [], visibilityState = 'hidden' } = {}) {
+function fakeLocks() {
+    const held = new Set();
+    return {
+        held,
+        requests: [],
+        request(name, options, callback) {
+            this.requests.push({ name, options });
+            if (held.has(name)) return Promise.resolve(callback(null));
+            held.add(name);
+            let result;
+            try { result = callback({ name }); }
+            catch (error) { held.delete(name); throw error; }
+            return Promise.resolve(result).finally(() => held.delete(name));
+        }
+    };
+}
+
+function browserRoot({ localStorage = memoryStorage(), locks = fakeLocks(), id = 'candidate-workspace-id' } = {}) {
     const listeners = new Map();
-    let idIndex = 0;
     const root = {
         localStorage,
-        sessionStorage,
         navigator: locks ? { locks } : {},
-        crypto: { randomUUID: () => ids[idIndex++] || `workspace-${String(idIndex).padStart(8, '0')}` },
-        document: { visibilityState },
+        crypto: { randomUUID: () => id },
+        document: { visibilityState: 'hidden' },
         location: { reload() { root.reloaded = true; } },
         addEventListener(name, callback) {
             if (!listeners.has(name)) listeners.set(name, []);
@@ -35,34 +51,11 @@ function browserRoot({ localStorage = memoryStorage(), sessionStorage = memorySt
     return root;
 }
 
-// A tiny Web Locks model: leases remain held until the owning document fires pagehide.
-function fakeLocks() {
-    const held = new Set();
-    const locks = {
-        requests: [],
-        request(name, options, callback) {
-            this.requests.push({ name, options });
-            if (held.has(name)) return Promise.resolve(callback(null));
-            held.add(name);
-            let value;
-            try { value = callback({ name }); }
-            catch (error) { held.delete(name); throw error; }
-            return Promise.resolve(value).then(async result => {
-                held.delete(name);
-                return result;
-            }, error => {
-                held.delete(name);
-                throw error;
-            });
-        },
-        release() {}
-    };
-    locks.held = held;
-    return locks;
-}
-
-describe('BrowserWorkspace', () => {
-    it('identifies only local authoring inputs as work keys', () => {
+describe('BrowserWorkspace single owner', () => {
+    it('exports one durable identity key and recognizes workspace authoring keys', () => {
+        expect(WORKSPACE_KEY).toBe('cb.workspace.latest.v1');
+        expect(api).not.toHaveProperty('SESSION_KEY');
+        expect(api).not.toHaveProperty('LATEST_KEY');
         for (const key of [
             'consensus-builder.proposal-drafts.v3', 'cb_current_city', 'cb_explore_at',
             'cb.schelling.settings', 'cb.epoch.lastUsed', 'cb_estimated_parcels:zagreb',
@@ -74,162 +67,173 @@ describe('BrowserWorkspace', () => {
         }
     });
 
-    it('snapshots legacy local work on first entry while leaving preferences shared', async () => {
+    it('lets one tab own the saved workspace and blocks a duplicate without writing', async () => {
         const localStorage = memoryStorage({
-            'consensus-builder.proposal-drafts.v3': '[{"id":"draft"}]',
+            'consensus-builder.proposal-drafts.v3': 'saved-drafts',
             cb_current_city: 'zagreb',
             'cb_parcel_source:zagreb': 'source-a',
             theme: 'dark'
         });
         const locks = fakeLocks();
-        const root = browserRoot({ localStorage, locks, ids: ['first-workspace-id'] });
+        const firstRoot = browserRoot({ localStorage, locks, id: 'saved-workspace-id' });
+        const first = create(firstRoot);
+        await expect(first.ready).resolves.toBe(true);
+        expect(first.status).toBe('ready');
+        expect(localStorage.getItem(WORKSPACE_KEY)).toBe(first.id);
+
+        const snapshotBeforeDuplicate = Object.fromEntries(localStorage.values);
+        const duplicate = create(browserRoot({ localStorage, locks, id: 'must-not-persist-id' }));
+        await expect(duplicate.ready).resolves.toBe(false);
+        expect(duplicate.status).toBe('blocked');
+        expect(duplicate.id).toBe(first.id);
+        expect(Object.fromEntries(localStorage.values)).toEqual(snapshotBeforeDuplicate);
+        expect(() => duplicate.storage.setItem('cb_current_city', 'split')).toThrow();
+        expect(() => duplicate.storage.removeItem('consensus-builder.proposal-drafts.v3')).toThrow();
+        expect(Object.fromEntries(localStorage.values)).toEqual(snapshotBeforeDuplicate);
+        expect(first.storage.getItem('theme')).toBe('dark');
+        first.storage.setItem('theme', 'light');
+        expect(localStorage.getItem('theme')).toBe('light');
+    });
+
+    it('serializes simultaneous first tabs with different candidate identities', async () => {
+        const localStorage = memoryStorage();
+        const locks = fakeLocks();
+        const a = create(browserRoot({ localStorage, locks, id: 'candidate-workspace-a' }));
+        const b = create(browserRoot({ localStorage, locks, id: 'candidate-workspace-b' }));
+        const results = await Promise.all([a.ready, b.ready]);
+
+        expect(results.sort()).toEqual([false, true]);
+        const owner = a.status === 'ready' ? a : b;
+        const blocked = owner === a ? b : a;
+        expect(owner.status).toBe('ready');
+        expect(blocked.status).toBe('blocked');
+        expect(localStorage.getItem(WORKSPACE_KEY)).toBe(owner.id);
+        expect(blocked.id).toBe(localStorage.getItem(WORKSPACE_KEY));
+        expect(new Set(locks.requests.map(request => request.name)).size).toBe(1);
+    });
+
+    it('buffers work writes while loading and publishes them only after lease ownership', async () => {
+        let callback;
+        let release;
+        const locks = {
+            request: (_name, _options, onLock) => {
+                callback = onLock;
+                return new Promise(resolve => { release = resolve; });
+            }
+        };
+        const localStorage = memoryStorage();
+        const workspace = create(browserRoot({ localStorage, locks, id: 'buffered-workspace-id' }));
+        expect(workspace.status).toBe('loading');
+        workspace.storage.setItem('cb_current_city', 'zagreb');
+        expect(localStorage.getItem('cb_current_city')).toBeNull();
+        await Promise.resolve();
+        callback({ name: 'workspace' });
+        await expect(workspace.ready).resolves.toBe(true);
+        expect(workspace.status).toBe('ready');
+        expect(localStorage.getItem(`consensus-builder.workspace:${workspace.id}:cb_current_city`)).toBe('zagreb');
+        release();
+    });
+
+    it('adopts identity and latest saved data when its deferred first lock arrives late', async () => {
+        const localStorage = memoryStorage();
+        let grant;
+        const deferredLocks = {
+            request: (_name, _options, callback) => {
+                grant = callback;
+                return new Promise(() => {});
+            }
+        };
+        const waiting = create(browserRoot({ localStorage, locks: deferredLocks, id: 'waiting-candidate-id' }));
+        await Promise.resolve();
+        expect(waiting.status).toBe('loading');
+
+        const establisherRoot = browserRoot({ localStorage, id: 'established-profile-id' });
+        const establisher = create(establisherRoot);
+        await expect(establisher.ready).resolves.toBe(true);
+        establisher.storage.setItem('consensus-builder.proposal-drafts.v3', 'latest-draft');
+        establisherRoot.fire('pagehide');
+        await new Promise(resolve => setTimeout(resolve, 0));
+
+        grant({ name: 'workspace' });
+        await expect(waiting.ready).resolves.toBe(true);
+        expect(waiting.id).toBe('established-profile-id');
+        expect(waiting.id).not.toBe('waiting-candidate-id');
+        expect(waiting.storage.getItem('consensus-builder.proposal-drafts.v3')).toBe('latest-draft');
+        expect(localStorage.getItem('consensus-builder.workspace:waiting-candidate-id:consensus-builder.proposal-drafts.v3')).toBeNull();
+    });
+
+    it('reads back the durable value after a silent localStorage write loss', async () => {
+        const id = 'readback-workspace-id';
+        const key = `consensus-builder.workspace:${id}:cb_current_city`;
+        const localStorage = memoryStorage({
+            [WORKSPACE_KEY]: id,
+            [key]: 'zagreb'
+        });
+        const setItem = localStorage.setItem.bind(localStorage);
+        localStorage.setItem = (writeKey, value) => {
+            if (String(writeKey) === key) return;
+            setItem(writeKey, value);
+        };
+        const workspace = create(browserRoot({ localStorage, id: 'ignored-candidate-id' }));
+        await expect(workspace.ready).resolves.toBe(true);
+        workspace.storage.setItem('cb_current_city', 'split');
+        expect(workspace.storage.getItem('cb_current_city')).toBe('zagreb');
+        expect(localStorage.getItem(key)).toBe('zagreb');
+    });
+
+    it('reuses the same identity and saved authoring state after close with a new tab session', async () => {
+        const localStorage = memoryStorage();
+        const locks = fakeLocks();
+        const firstRoot = browserRoot({ localStorage, locks, id: 'persistent-profile-id' });
+        const first = create(firstRoot);
+        await first.ready;
+        first.storage.setItem('consensus-builder.proposal-drafts.v3', 'draft-v1');
+        first.storage.setItem('cb_current_city', 'split');
+        first.storage.setItem('cb_parcel_source:split', 'source-split');
+        firstRoot.fire('pagehide');
+        await new Promise(resolve => setTimeout(resolve, 0));
+        expect(first.status).toBe('closed');
+
+        const second = create(browserRoot({ localStorage, locks, id: 'not-the-profile-id' }));
+        await expect(second.ready).resolves.toBe(true);
+        expect(second.id).toBe(first.id);
+        expect(second.storage.getItem('consensus-builder.proposal-drafts.v3')).toBe('draft-v1');
+        expect(second.storage.getItem('cb_current_city')).toBe('split');
+        expect(second.storage.getItem('cb_parcel_source:split')).toBe('source-split');
+        expect(second.databaseName('split')).toBe(first.databaseName('split'));
+    });
+
+    it('does not persist identity or buffered work when the global lease is unavailable', async () => {
+        const locks = fakeLocks();
+        const localStorage = memoryStorage();
+        const owner = create(browserRoot({ localStorage, locks, id: 'owner-profile-id' }));
+        await owner.ready;
+        const before = Object.fromEntries(localStorage.values);
+        const blocked = create(browserRoot({ localStorage, locks, id: 'candidate-only-id' }));
+        blocked.storage.setItem('cb_current_city', 'must-not-save');
+        await expect(blocked.ready).resolves.toBe(false);
+        expect(blocked.status).toBe('blocked');
+        expect(() => blocked.storage.setItem('cb_current_city', 'still-must-not-save')).toThrow();
+        expect(Object.fromEntries(localStorage.values)).toEqual(before);
+    });
+
+    it('fails closed without Web Locks', async () => {
+        const localStorage = memoryStorage({ 'cb_current_city': 'legacy-city' });
+        const root = browserRoot({ localStorage, locks: null, id: 'unsupported-candidate-id' });
+        root.navigator = {};
+        const workspace = create(root);
+        await expect(workspace.ready).resolves.toBe(false);
+        expect(workspace.status).toBe('unsupported');
+        expect(localStorage.getItem(WORKSPACE_KEY)).toBeNull();
+        expect(() => workspace.storage.setItem('cb_current_city', 'split')).toThrow();
+        expect(localStorage.getItem('cb_current_city')).toBe('legacy-city');
+    });
+
+    it('reloads a persisted page when restored from the back-forward cache', async () => {
+        const root = browserRoot({ localStorage: memoryStorage(), id: 'bfcache-workspace-id' });
         const workspace = create(root);
         await workspace.ready;
-
-        expect(workspace.storage.getItem('consensus-builder.proposal-drafts.v3')).toContain('draft');
-        expect(workspace.storage.getItem('cb_current_city')).toBe('zagreb');
-        expect(localStorage.getItem(`consensus-builder.workspace:${workspace.id}:cb_current_city`)).toBe('zagreb');
-        expect(localStorage.getItem('cb_current_city')).toBe('zagreb');
-        expect(workspace.storage.getItem('theme')).toBe('dark');
-        workspace.storage.setItem('theme', 'light');
-        expect(localStorage.getItem('theme')).toBe('light');
-        expect(localStorage.getItem(`consensus-builder.workspace:${workspace.id}:theme`)).toBeNull();
-        expect(root.sessionStorage.getItem(SESSION_KEY)).toBe(workspace.id);
-        expect(localStorage.getItem(LATEST_KEY)).toBe(workspace.id);
-    });
-
-    it('reclaims the same identity and saved work on reload after pagehide releases the lease', async () => {
-        const localStorage = memoryStorage();
-        const sessionStorage = memoryStorage();
-        const locks = fakeLocks();
-        const firstRoot = browserRoot({ localStorage, sessionStorage, locks, ids: ['reload-workspace-id'] });
-        const first = create(firstRoot);
-        await first.ready;
-        first.storage.setItem('cb_current_city', 'split');
-        first.storage.setItem('consensus-builder.proposal-drafts.v3', 'drafts-v1');
-        firstRoot.fire('pagehide');
-        await Promise.resolve();
-        await Promise.resolve();
-
-        const reload = create(browserRoot({ localStorage, sessionStorage, locks, ids: ['should-not-be-used'] }));
-        await reload.ready;
-        expect(reload.id).toBe(first.id);
-        expect(reload.sourceId).toBe(first.id);
-        expect(reload.storage.getItem('cb_current_city')).toBe('split');
-        expect(reload.storage.getItem('consensus-builder.proposal-drafts.v3')).toBe('drafts-v1');
-    });
-
-    it('forks a duplicated session into a distinct workspace copied from its source', async () => {
-        const localStorage = memoryStorage();
-        const firstSession = memoryStorage();
-        const locks = fakeLocks();
-        const firstRoot = browserRoot({ localStorage, sessionStorage: firstSession, locks, ids: ['parent-workspace-id'] });
-        const first = create(firstRoot);
-        await first.ready;
-        first.storage.setItem('cb_current_city', 'zagreb');
-        first.storage.setItem('consensus-builder.proposal-drafts.v3', 'parent-draft');
-
-        const clonedSession = memoryStorage({ [SESSION_KEY]: first.id });
-        const duplicate = create(browserRoot({ localStorage, sessionStorage: clonedSession, locks, ids: ['duplicate-workspace-id'] }));
-        await duplicate.ready;
-        expect(duplicate.id).not.toBe(first.id);
-        expect(duplicate.sourceId).toBe(first.id);
-        expect(duplicate.storage.getItem('cb_current_city')).toBe('zagreb');
-        expect(duplicate.storage.getItem('consensus-builder.proposal-drafts.v3')).toBe('parent-draft');
-        expect(localStorage.getItem(`consensus-builder.workspace:${duplicate.id}:cb_current_city`)).toBe('zagreb');
-        expect(first.storage.getItem('cb_current_city')).toBe('zagreb');
-        expect(first.databaseName('zagreb')).not.toBe(duplicate.databaseName('zagreb'));
-        expect(duplicate.sourceDatabaseName('zagreb')).toBe(`consensus-builder-storage::workspace:${first.id}::zagreb`);
-    });
-
-    it('persists source ancestry so an untouched city can search ancestors after reload', async () => {
-        const localStorage = memoryStorage({
-            'consensus-builder.workspace:source-parent-id:sources': JSON.stringify(['source-grandparent-id'])
-        });
-        const locks = fakeLocks();
-        const parentSession = memoryStorage({ [SESSION_KEY]: 'source-parent-id' });
-        const parentRoot = browserRoot({ localStorage, sessionStorage: parentSession, locks });
-        const parent = create(parentRoot);
-        await parent.ready;
-
-        const duplicateSession = memoryStorage({ [SESSION_KEY]: parent.id });
-        const duplicateRoot = browserRoot({ localStorage, sessionStorage: duplicateSession, locks, ids: ['ancestry-child-id'] });
-        const duplicate = create(duplicateRoot);
-        await duplicate.ready;
-        expect(duplicate.sourceDatabaseNames('split')).toEqual([
-            `consensus-builder-storage::workspace:${parent.id}::split`,
-            'consensus-builder-storage::workspace:source-grandparent-id::split',
-            'consensus-builder-storage::split'
-        ]);
-        const childId = duplicate.id;
-        const childSources = localStorage.getItem(`consensus-builder.workspace:${childId}:sources`);
-        expect(JSON.parse(childSources)).toEqual([parent.id, 'source-grandparent-id']);
-
-        duplicateSession.setItem(SESSION_KEY, childId);
-        // A reload reclaims the same id after its document releases the lease.
-        duplicateRoot.fire('pagehide');
-        await Promise.resolve();
-        await Promise.resolve();
-        const reloaded = create(browserRoot({ localStorage, sessionStorage: duplicateSession, locks, ids: ['ignored-child-id'] }));
-        await reloaded.ready;
-        expect(reloaded.id).toBe(childId);
-        expect(reloaded.sourceDatabaseNames('split')).toEqual(duplicate.sourceDatabaseNames('split'));
-    });
-
-    it('does not let simultaneous documents with one session own the same workspace id', async () => {
-        const localStorage = memoryStorage();
-        const sharedSession = memoryStorage({ [SESSION_KEY]: 'shared-session-id' });
-        const locks = fakeLocks();
-        const a = create(browserRoot({ localStorage, sessionStorage: sharedSession, locks, ids: ['forked-tab-id-a'] }));
-        const b = create(browserRoot({ localStorage, sessionStorage: memoryStorage({ [SESSION_KEY]: 'shared-session-id' }), locks, ids: ['forked-tab-id-b'] }));
-        await Promise.all([a.ready, b.ready]);
-        expect(a.id).not.toBe(b.id);
-        expect(a.databaseName('zagreb')).not.toBe(b.databaseName('zagreb'));
-        expect(locks.requests.filter(request => request.options.ifAvailable === true)).toHaveLength(3);
-        expect(locks.held.size).toBe(2);
-    });
-
-    it('forks and restores work without Web Locks', async () => {
-        const localStorage = memoryStorage({ 'cb_current_city': 'rijeka', theme: 'dark' });
-        const sessionStorage = memoryStorage({ [SESSION_KEY]: 'old-workspace-id' });
-        const original = create(browserRoot({ localStorage, sessionStorage: memoryStorage(), ids: ['old-workspace-id'] }));
-        await original.ready;
-        original.storage.setItem('cb_current_city', 'rijeka');
-
-        const noLockSession = memoryStorage({ [SESSION_KEY]: original.id });
-        const tab = create(browserRoot({ localStorage, sessionStorage: noLockSession, ids: ['no-lock-fork-id'] }));
-        await tab.ready;
-        expect(tab.id).not.toBe(original.id);
-        expect(tab.sourceId).toBe(original.id);
-        expect(tab.storage.getItem('cb_current_city')).toBe('rijeka');
-        expect(localStorage.getItem(`consensus-builder.workspace:${tab.id}:cb_current_city`)).toBe('rijeka');
-        expect(tab.storage.getItem('theme')).toBe('dark');
-    });
-
-    it('isolates drafts, selected city and per-city source choices between workspaces', async () => {
-        const localStorage = memoryStorage();
-        const locks = fakeLocks();
-        const first = create(browserRoot({ localStorage, locks, ids: ['isolation-workspace-one'] }));
-        await first.ready;
-        const second = create(browserRoot({ localStorage, locks, ids: ['isolation-workspace-two'] }));
-        await second.ready;
-
-        first.storage.setItem('consensus-builder.proposal-drafts.v3', 'draft-one');
-        first.storage.setItem('cb_current_city', 'zagreb');
-        first.storage.setItem('cb_parcel_source:zagreb', 'source-one');
-        first.storage.setItem('cb_estimated_parcels:zagreb', 'estimate-one');
-        second.storage.setItem('consensus-builder.proposal-drafts.v3', 'draft-two');
-        second.storage.setItem('cb_current_city', 'split');
-        second.storage.setItem('cb_parcel_source:zagreb', 'source-two');
-        second.storage.setItem('cb_estimated_parcels:zagreb', 'estimate-two');
-
-        expect(first.storage.getItem('consensus-builder.proposal-drafts.v3')).toBe('draft-one');
-        expect(second.storage.getItem('consensus-builder.proposal-drafts.v3')).toBe('draft-two');
-        expect(first.storage.getItem('cb_current_city')).toBe('zagreb');
-        expect(second.storage.getItem('cb_current_city')).toBe('split');
-        expect(first.storage.getItem('cb_parcel_source:zagreb')).toBe('source-one');
-        expect(second.storage.getItem('cb_parcel_source:zagreb')).toBe('source-two');
-        expect(localStorage.getItem('cb_parcel_source:zagreb')).toBeNull();
-        expect(first.databaseName('zagreb')).not.toBe(second.databaseName('zagreb'));
+        root.fire('pageshow', { persisted: true });
+        expect(root.reloaded).toBe(true);
     });
 });

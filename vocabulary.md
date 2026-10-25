@@ -232,11 +232,11 @@ The `unrepresentedGround` marker for open ground excluded from represented owner
 
 ### Working composition
 
-The set of designs currently applied in one tab’s workspace and the land fabric they produce. This local composition is separate from an agreement, a publication selection and a statutory plan.
+The set of designs currently applied in a saved workspace and the land fabric they produce. This local composition is separate from an agreement, a publication selection and a statutory plan.
 
-### Tab workspace
+### Saved workspace
 
-An independent, durable local working copy containing designs, agreements, application state, editor drafts and modeling inputs, partitioned by geographic context. Reload restores the tab’s saved work. A new or duplicated tab starts from a saved snapshot and edits its own copy; later changes never merge between tabs. Account connections and display preferences can remain shared. See the [application and workspace audit](docs/plan-application-tab-workspace-audit-2026-10-25.md) for the boundaries reviewed and unresolved link-loading distinction.
+The durable local working state for this site in one browser profile, containing designs, agreements, application state, editor drafts and modeling inputs, partitioned by geographic context. Its identity and saved work survive closing or reopening a tab. Only one map tab may edit it at a time; another tab waits until the editor closes and the person retries. Opening a tab does not create a copy. Account connections and display preferences can remain shared. See the [single-editor workspace audit](docs/saved-workspace-single-editor-2026-10-25.md) and the [application audit](docs/plan-application-tab-workspace-audit-2026-10-25.md) for verified boundaries and unresolved link-loading semantics.
 
 ### Road junction
 

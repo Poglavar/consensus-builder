@@ -305,7 +305,7 @@ function loadCityConfig(search, stored = {}) {
             setItem: (key, value) => { writes.push([key, value]); store[key] = String(value); }
         },
         PersistentStorage: {
-            setScope: (scope, options) => { scopes.push([scope, options]); },
+            setScope: scope => { scopes.push([scope]); },
             getItem: () => null,
             setItem: () => {}
         },
@@ -383,7 +383,7 @@ describe('the explore city (city-config.js)', () => {
         expect(manager.getAvailableCities().map(c => c.id)).not.toContain('explore');
         expect(manager.findNearestCity(35.68, 139.76).id).not.toBe('explore');
         expect(writes.filter(([key]) => key === 'cb_current_city')).toEqual([]);
-        expect(scopes).toEqual([['explore', { explicit: true }]]);
+        expect(scopes).toEqual([['explore']]);
         expect(store.cb_explore_at).toBe('35.68000,139.76000,12');
         expect(manager.getCityLabel('explore')).toBe('Explore');
     });

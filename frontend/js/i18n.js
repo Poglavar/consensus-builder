@@ -352,10 +352,12 @@
     updateDocumentLanguage(currentLanguage);
 
     const storageReady = (() => {
-        if (globalScope.PersistentStorage && globalScope.PersistentStorage.ready && typeof globalScope.PersistentStorage.ready.then === 'function') {
-            return globalScope.PersistentStorage.ready.catch(() => { });
-        }
-        return Promise.resolve();
+        const stored = globalScope.PersistentStorage?.ready || Promise.resolve();
+        // A blocked workspace never opens its map store. Its standalone notice still needs a
+        // language, using the URL/browser preference without loading or writing map records.
+        return globalScope.BrowserWorkspace
+            ? globalScope.BrowserWorkspace.ready.then(owned => owned ? stored : undefined).catch(() => {})
+            : stored.catch(() => {});
     })();
 
     storageReady.then(() => {

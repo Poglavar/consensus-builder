@@ -1,0 +1,15 @@
+/* This screen replaces a map that cannot acquire its saved workspace. */
+#workspace-screen {
+    box-sizing: border-box;
+    display: grid;
+    align-items: center;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: max(var(--cb-space-5), env(safe-area-inset-top)) max(var(--cb-space-5), env(safe-area-inset-right)) max(var(--cb-space-5), env(safe-area-inset-bottom)) max(var(--cb-space-5), env(safe-area-inset-left));
+    color: var(--cb-text);
+    background: var(--cb-bg);
+}
+#workspace-screen > div { width: min(100%, 32rem); margin: auto; }
+#workspace-screen h1 { margin: 0 0 var(--cb-space-3); font-size: clamp(1.5rem, 5vw, 2rem); line-height: 1.2; }
+#workspace-screen p { margin: 0 0 var(--cb-space-5); color: var(--cb-text-muted); line-height: 1.6; }
+#workspace-retry { min-height: 44px; padding-inline: var(--cb-space-5); }

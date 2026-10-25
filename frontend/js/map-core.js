@@ -120,6 +120,7 @@ const AT_VIEW = (() => {
 // on the address is a plain location (location-first.md), and a stale label can't contradict it.
 let dropCityParam = !!(window.CityConfigManager?.getBootEntry?.()?.dropCityParam);
 map.on('moveend', () => {
+    if (window.BrowserWorkspace && window.BrowserWorkspace.status !== 'ready') return;
     if (!window.WorldEntryModel) return;
     try {
         const center = map.getCenter();
@@ -1072,6 +1073,7 @@ function setupMapEventHandlers() {
     const booted = Promise.all([windowLoaded, mapCoreReady]).then(() => undefined);
     let reported = false;
     const watchdog = setTimeout(() => {
+        if (window.BrowserWorkspace && window.BrowserWorkspace.status !== 'ready') return;
         reported = true;
         console.error(`[${new Date().toISOString()}] [map-core] App boot did not complete within ${APP_BOOT_WATCHDOG_MS} ms (load: ${document.readyState}, map core ready: ${!!window.__mapCoreReady}); URL routes are still waiting.`);
     }, APP_BOOT_WATCHDOG_MS);

@@ -1,7 +1,7 @@
 // Worldwide publication and city routing (projections.md §3, §10 M8, location-first.md phase 4;
 // plan-design-agreement.md M2, M3): a publish sends the design with the parcel source its city binds
 // with, a design or an agreement opened from another city asks and then opens in its own city's
-// store, the address bar follows the map, and same-city tabs have independent durable workspaces.
+// store, the address bar follows the map, and published design routes wait for the profile workspace owner.
 import { Browser, BrowserContext, Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady, panMap } from '../helpers/app';
@@ -178,62 +178,38 @@ test.describe('Worldwide publication and city routing @core', () => {
     })).toEqual({ lat, lon, zoom });
   });
 
-  test('same-city and new-city tabs have independent editable durable workspaces', async ({ mockApi: first, context }) => {
-    test.setTimeout(90_000);
-    await openCity(first);
-    const firstId = await createSpace(first, 'park');
-    await first.evaluate(id => {
-      const record = (window as any).proposalStorage.getProposal(id);
-      record.title = 'Zagreb tab one park';
-      return (window as any).proposalStorage.save();
-    }, firstId);
-
-    const second = await context.newPage();
-    await mockAllApiRoutes(second);
-    await second.goto('/?city=zg&reduceMotion=1');
-    await waitForMapReady(second);
-    await expect(second.locator('#cb-multitab-banner')).toHaveCount(0);
-    await showProposal(second, firstId);
-    await second.locator(`#proposal-action-btn-${firstId}`).click();
-    await expect.poll(() => second.evaluate(id => (window as any).isApplied((window as any).proposalStorage.getProposal(id)), firstId)).toBe(false);
-    await createSpace(second, 'park');
-    const secondId = await second.evaluate(() => (window as any).proposalStorage.getAllProposals().find((p: any) => p.applied && p.structureProposal?.kind === 'park').proposalId);
-    await second.evaluate(id => {
-      const record = (window as any).proposalStorage.getProposal(id);
-      record.title = 'Zagreb tab two park';
-      return (window as any).proposalStorage.save();
-    }, secondId);
-
-    const other = await context.newPage();
-    await mockAllApiRoutes(other);
-    await other.goto('/?city=new_york&reduceMotion=1');
-    await waitForMapReady(other);
-    await expect(other.locator('#cb-multitab-banner')).toHaveCount(0);
-    await other.evaluate(async () => {
+  test('a published design link waits for the workspace owner without losing its URL', async ({ mockApi: owner, context }) => {
+    test.setTimeout(180_000);
+    const cid = await publishPark(owner);
+    const workspace = await owner.evaluate(() => (window as any).BrowserWorkspace.id);
+    const hasPublished = (page: Page) => page.evaluate(value => {
       const w = window as any;
-      w.proposalDraftStore.createDraft({ goal: 'park', fields: { name: 'Other city garden' } });
-      await w.PersistentStorage.atomicWrite({ puts: { workspaceProbe: 'other-city' } });
-    });
+      return { city: w.CityConfigManager.getCurrentCityId(),
+        stored: w.proposalStorage.getAllProposals().some((p: any) => w.DesignSync.publishedCid(p) === value) };
+    }, cid);
+    await expect.poll(() => hasPublished(owner), { timeout: 30_000 }).toEqual({ city: 'zagreb', stored: true });
+    const duplicate = await context.newPage();
+    try {
+      await mockAllApiRoutes(duplicate);
+      await attachSharedIndex(duplicate, pageIndex(owner));
+      const incomingUrl = `/designs/${cid}?city=zg&reduceMotion=1`;
+      await duplicate.goto(incomingUrl, { waitUntil: 'domcontentloaded' });
+      await expect.poll(() => duplicate.evaluate(() => (window as any).BrowserWorkspace?.status)).toBe('blocked');
+      const screen = duplicate.locator('#workspace-screen');
+      await expect(screen).toBeVisible();
+      await expect(screen.getByRole('heading', { name: 'Already open in another tab' })).toBeVisible();
+      await expect(screen.getByRole('button', { name: 'Try again' })).toHaveAttribute('id', 'workspace-retry');
+      expect(new URL(duplicate.url()).pathname + new URL(duplicate.url()).search).toBe(incomingUrl);
+      expect(await hasPublished(owner)).toEqual({ city: 'zagreb', stored: true });
 
-    const hasTitle = (page: Page, title: string) => page.evaluate(value =>
-      (window as any).proposalStorage.getAllProposals().some((p: any) => p.title === value), title);
-    expect(await hasTitle(first, 'Zagreb tab one park')).toBe(true);
-    expect(await hasTitle(first, 'Zagreb tab two park')).toBe(false);
-    expect(await hasTitle(second, 'Zagreb tab two park')).toBe(true);
-    expect(await hasTitle(second, 'Zagreb tab one park')).toBe(true);
-    expect(await other.evaluate(() => (window as any).PersistentStorage.getItem('workspaceProbe'))).toBe('other-city');
-
-    await second.reload({ waitUntil: 'domcontentloaded' });
-    await waitForMapReady(second);
-    expect(await hasTitle(second, 'Zagreb tab two park')).toBe(true);
-    await other.reload({ waitUntil: 'domcontentloaded' });
-    await waitForMapReady(other);
-    expect(await other.evaluate(() => (window as any).PersistentStorage.getItem('workspaceProbe'))).toBe('other-city');
-    expect(await other.evaluate(() => (window as any).proposalDraftStore.getActiveDraft()?.fields.name)).toBe('Other city garden');
-    await expect(other.locator('#cb-multitab-banner')).toHaveCount(0);
-    expect(await first.evaluate(() => (window as any).PersistentStorage.getItem('workspaceProbe'))).toBeNull();
-    expect(await hasTitle(first, 'Zagreb tab two park')).toBe(false);
-    expect(await hasTitle(other, 'Zagreb tab one park')).toBe(false);
-    expect(await hasTitle(other, 'Zagreb tab two park')).toBe(false);
+      await owner.close();
+      await duplicate.locator('#workspace-retry').click();
+      await expect.poll(() => duplicate.evaluate(() => (window as any).BrowserWorkspace?.status)).toBe('ready');
+      await waitForMapReady(duplicate);
+      expect(new URL(duplicate.url()).pathname).toBe(`/designs/${cid}`);
+      expect(await duplicate.evaluate(() => (window as any).BrowserWorkspace.id)).toBe(workspace);
+      await expect.poll(() => hasPublished(duplicate), { timeout: 30_000 })
+        .toEqual({ city: 'zagreb', stored: true });
+    } finally { await duplicate.close(); }
   });
 });

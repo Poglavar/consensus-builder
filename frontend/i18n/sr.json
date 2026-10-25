@@ -1,4 +1,18 @@
 {
+    "workspace": {
+        "blocked": {
+            "title": "Radni prostor je već otvoren u drugoj kartici",
+            "message": "Radni prostor mape otvoren je u drugoj kartici. Zatvorite tu karticu, pa pokušajte ponovo ovde. Sačuvani rad će i dalje biti ovde."
+        },
+        "unsupported": {
+            "title": "Ažurirajte pregledač da biste nastavili",
+            "message": "Ažurirajte ovaj pregledač i ponovo otvorite stranicu. Sačuvani rad nije promenjen."
+        },
+        "error": {
+            "title": "Nije moguće otvoriti sačuvani rad",
+            "message": "Pokušajte ponovo da otvorite ovaj radni prostor. Sačuvani rad nije zamenjen."
+        }
+    },
     "designDuplicate": {
         "title": "Dupliciranje dizajna",
         "hint": "Pomeri kopiju pa klikni za postavljanje. Escape otkazuje."

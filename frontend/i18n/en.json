@@ -1,4 +1,18 @@
 {
+    "workspace": {
+        "blocked": {
+            "title": "Already open in another tab",
+            "message": "Your map workspace is open in another tab. Close that tab, then try again here. Your saved work will still be here."
+        },
+        "unsupported": {
+            "title": "Update your browser to continue",
+            "message": "Update this browser and reopen the page. Your saved work has not been changed."
+        },
+        "error": {
+            "title": "Could not open your saved work",
+            "message": "Try again to reopen this workspace. Your saved work has not been replaced."
+        }
+    },
     "designDuplicate": {
         "title": "Duplicate design",
         "hint": "Move the copy, then click to place it. Escape cancels."

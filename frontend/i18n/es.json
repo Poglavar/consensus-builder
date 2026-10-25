@@ -1,4 +1,18 @@
 {
+    "workspace": {
+        "blocked": {
+            "title": "Ya está abierto en otra pestaña",
+            "message": "Tu espacio de trabajo del mapa está abierto en otra pestaña. Cierra esa pestaña y vuelve a intentarlo aquí. Tu trabajo guardado seguirá aquí."
+        },
+        "unsupported": {
+            "title": "Actualiza el navegador para continuar",
+            "message": "Actualiza este navegador y vuelve a abrir la página. Tu trabajo guardado no se ha modificado."
+        },
+        "error": {
+            "title": "No se pudo abrir tu trabajo guardado",
+            "message": "Vuelve a intentarlo para abrir este espacio de trabajo. Tu trabajo guardado no se ha reemplazado."
+        }
+    },
     "designDuplicate": {
         "title": "Duplicar diseño",
         "hint": "Mueve la copia y haz clic para colocarla. Escape cancela."

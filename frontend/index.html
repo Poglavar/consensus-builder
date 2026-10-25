@@ -115,6 +115,7 @@
             var cssFiles = [
                 'css/tokens.css',
                 'css/primitives.css',
+                'css/workspace.css',
                 'css/base.css',
                 'css/layout.css',
                 'css/map.css',
@@ -1818,6 +1819,7 @@
     </div>
 
     <script>
+        window.__CB_WORKSPACE_REQUIRED__ = true;
         window.writeVersionedLocalScripts([
             'js/optional-tools-loader.js',
             'js/shared-utils.js',
@@ -1826,6 +1828,7 @@
             'js/ui/modal-escape.js',
             'js/ui/dialogs.js',
             'js/browser-workspace.js',
+            'js/workspace-screen.js',
             'js/persistent-storage.js',
             'js/i18n.js',
             'js/format.js',
@@ -2262,6 +2265,11 @@
     <script>
         // Initialize application when page loads
         document.addEventListener('DOMContentLoaded', function () {
+            window.BrowserWorkspace?.ready.then(owned => {
+                if (!owned) Promise.resolve(window.i18n?.translationsReady).then(() => {
+                    window.WorkspaceScreen.show(window.BrowserWorkspace.status);
+                });
+            }).catch(() => { /* PersistentStorage's startup handler reports the failure below. */ });
             const boot = () => {
                 initializeUser();
                 initializeNotifications();
@@ -2282,11 +2290,8 @@
 
             if (typeof PersistentStorage !== 'undefined' && PersistentStorage.ready && typeof PersistentStorage.ready.then === 'function') {
                 PersistentStorage.ready.then(boot).catch(error => {
-                    console.error('Could not open this tab’s saved workspace', error);
-                    const notice = document.createElement('p');
-                    notice.setAttribute('role', 'alert');
-                    notice.textContent = 'This tab’s saved workspace could not be opened. Reload to try again. Your saved work has not been replaced.';
-                    document.body.replaceChildren(notice);
+                    console.error('Could not open the saved workspace', error);
+                    window.WorkspaceScreen.show('error');
                 });
             } else if (typeof PersistentStorage !== 'undefined' && PersistentStorage.ensureReady) {
                 PersistentStorage.ensureReady(boot);

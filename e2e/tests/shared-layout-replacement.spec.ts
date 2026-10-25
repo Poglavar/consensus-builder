@@ -37,17 +37,27 @@ for (const width of [1280, 390]) test(`replacing an occupied road with buildings
   await page.goto(url(original), { waitUntil: 'domcontentloaded' });
   await waitForMapReady(page);
   await expect.poll(() => applied(), { timeout: 30000 }).toEqual(original);
-  // The phone case replaces the independent fork while the original keeps its saved plan.
-  const target = width === 390 ? await page.context().newPage() : page;
+  const originalWorkspace = await page.evaluate(() => (window as any).BrowserWorkspace.id);
+  let target = page;
   try {
-    if (target !== page) {
-      await mockAllApiRoutes(target); await attachSharedIndex(target, index);
-      await target.goto(url(original), { waitUntil: 'domcontentloaded' });
+    if (width === 390) {
+      target = await page.context().newPage();
+      await mockAllApiRoutes(target); await attachSharedIndex(target, index); await stubBasemapTiles(target);
+      const incomingUrl = url([building, park]);
+      await target.goto(incomingUrl, { waitUntil: 'domcontentloaded' });
+      await expect.poll(() => target.evaluate(() => (window as any).BrowserWorkspace?.status)).toBe('blocked');
+      await expect(target.locator('#workspace-screen')).toBeVisible();
+      expect(new URL(target.url()).pathname + new URL(target.url()).search).toBe(incomingUrl);
+      await page.close();
+      await target.locator('#workspace-retry').click();
+      await expect.poll(() => target.evaluate(() => (window as any).BrowserWorkspace?.status)).toBe('ready');
       await waitForMapReady(target);
-      expect(await target.evaluate(() => (window as any).BrowserWorkspace.id)).not.toBe(await page.evaluate(() => (window as any).BrowserWorkspace.id));
-      await expect.poll(() => applied(target)).toEqual(original);
+      expect(await target.evaluate(() => (window as any).BrowserWorkspace.id)).toBe(originalWorkspace);
+      await expect.poll(() => applied(target), { timeout: 30000 }).toEqual(original);
+    } else {
+      await target.goto(url([building, park]), { waitUntil: 'domcontentloaded' });
+      await waitForMapReady(target);
     }
-    await target.goto(url([building, park]), { waitUntil: 'domcontentloaded' });
     const warning = target.getByRole('alertdialog', { name: 'Plan conflicts' });
     await expect(warning).toBeVisible({ timeout: 30000 });
     await expect(warning).toContainText('Old campus road');
@@ -55,17 +65,9 @@ for (const width of [1280, 390]) test(`replacing an occupied road with buildings
     await warning.getByRole('button', { name: 'Unapply existing & continue', exact: true }).click();
     await expect.poll(() => applied(target), { timeout: 30000 }).toEqual(replacement);
     await expect(target.locator('.shared-plan-failures')).toHaveCount(0);
-    if (target === page) {
-      await target.reload({ waitUntil: 'domcontentloaded' });
-      await expect.poll(() => applied(target), { timeout: 30000 }).toEqual(replacement);
-    } else {
-      await expect.poll(() => applied()).toEqual(original);
-      await expect(target.locator('#cb-multitab-banner')).toHaveCount(0);
-      await target.reload({ waitUntil: 'domcontentloaded' });
-      await expect.poll(() => applied(target), { timeout: 30000 }).toEqual(replacement);
-      await page.reload({ waitUntil: 'domcontentloaded' });
-      await expect.poll(() => applied(), { timeout: 30000 }).toEqual(original);
-    }
+    await target.reload({ waitUntil: 'domcontentloaded' });
+    await waitForMapReady(target);
+    await expect.poll(() => applied(target), { timeout: 30000 }).toEqual(replacement);
   } finally { if (target !== page) await target.close(); }
 });
 

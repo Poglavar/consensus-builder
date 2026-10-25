@@ -12,6 +12,7 @@ const INITIALIZED = '__workspace_initialized';
 function memoryStorage(seed = {}) {
     const data = new Map(Object.entries(seed).map(([key, value]) => [key, String(value)]));
     return {
+        values: data,
         get length() { return data.size; },
         key(index) { return Array.from(data.keys())[index] ?? null; },
         getItem(key) { return data.get(String(key)) ?? null; },
@@ -145,10 +146,10 @@ function fakeLocks() {
     };
 }
 
-function makeEnvironment({ fake, localStorage = memoryStorage(), sessionStorage = memoryStorage(), id, locks = fakeLocks() }) {
+function makeEnvironment({ fake, localStorage = memoryStorage(), id = 'test-workspace-id', locks = fakeLocks() }) {
     const listeners = new Map();
     const root = {
-        localStorage, sessionStorage, indexedDB: fake.api, navigator: { locks },
+        localStorage, indexedDB: fake.api, navigator: locks ? { locks } : {},
         crypto: { randomUUID: () => id }, location: { reload() {} },
         document: { visibilityState: 'hidden' },
         addEventListener(name, callback) {
@@ -196,45 +197,20 @@ describe('PersistentStorage workspace snapshots', () => {
         const fake = multiDb();
         fake.seed(`${DB_PREFIX}::zagreb`, { proposals: 'parent-v1' });
         const localStorage = memoryStorage();
-        const sessionStorage = memoryStorage();
-        const first = await scoped({ fake, localStorage, sessionStorage, id: 'stable-workspace-id' });
+        const locks = fakeLocks();
+        const first = await scoped({ fake, localStorage, locks, id: 'stable-workspace-id' });
         first.storage.setItem('proposals', 'workspace-edit');
         await new Promise(resolve => setTimeout(resolve, 10));
         first.root.fire('pagehide');
         await Promise.resolve();
         await Promise.resolve();
 
-        const reload = await scoped({ fake, localStorage, sessionStorage, id: 'ignored-reload-id' });
+        const reload = await scoped({ fake, localStorage, locks, id: 'ignored-reload-id' });
         expect(reload.workspace.id).toBe(first.workspace.id);
         expect(reload.storage.getItem('proposals')).toBe('workspace-edit');
         expect(fake.rows(reload.workspace.databaseName('zagreb')).proposals).toBe('workspace-edit');
         expect(fake.writes.filter(write => write.name === reload.workspace.databaseName('zagreb')))
             .toHaveLength(2); // initial snapshot and the explicit edit; reload adds no copy transaction
-    });
-
-    it('freezes every saved city at fork boot before later source edits', async () => {
-        const fake = multiDb();
-        const parent = 'multi-city-parent-id';
-        const child = 'multi-city-child-id';
-        const zagrebSource = `${DB_PREFIX}::workspace:${parent}::zagreb`;
-        const splitSource = `${DB_PREFIX}::workspace:${parent}::split`;
-        fake.seed(zagrebSource, { proposals: 'zagreb-at-fork' });
-        fake.seed(splitSource, { proposals: 'split-at-fork' });
-        const localStorage = memoryStorage({
-            [`consensus-builder.workspace:${child}:sources`]: JSON.stringify([parent]),
-            [`consensus-builder.workspace:${parent}:sources`]: '[]'
-        });
-        const sessionStorage = memoryStorage({ [browserWorkspace.SESSION_KEY]: child });
-        const first = await scoped({ fake, localStorage, sessionStorage, id: 'unused' }, 'zagreb');
-        const childSplit = first.workspace.databaseName('split');
-        expect(fake.rows(childSplit)).toMatchObject({ proposals: 'split-at-fork', [INITIALIZED]: '1' });
-        expect(fake.rows(first.workspace.databaseName('__workspace'))).toEqual({ [INITIALIZED]: '1' });
-
-        fake.seed(splitSource, { proposals: 'split-edited-after-fork' });
-        const laterCity = await scoped({ fake, localStorage, sessionStorage, id: 'ignored-reload-id' }, 'split');
-        expect(laterCity.workspace.id).toBe(child);
-        expect(laterCity.storage.getItem('proposals')).toBe('split-at-fork');
-        expect(fake.rows(childSplit).proposals).toBe('split-at-fork');
     });
 
     it('rejects ready when reading a source snapshot fails instead of treating it as empty', async () => {
@@ -260,44 +236,59 @@ describe('PersistentStorage workspace snapshots', () => {
         expect(fake.rows(env.workspace.databaseName('zagreb'))).toEqual({});
     });
 
-    it('uses the first initialized ancestor database for an unvisited city, including an intentionally empty one', async () => {
-        const fake = multiDb();
-        const parent = 'ancestor-workspace-id';
-        const child = 'current-workspace-id';
-        const localStorage = memoryStorage({
-            [`consensus-builder.workspace:${child}:sources`]: JSON.stringify([parent]),
-            [`consensus-builder.workspace:${parent}:sources`]: '[]'
-        });
-        const ancestorCity = `${DB_PREFIX}::workspace:${parent}::split`;
-        fake.seed(ancestorCity, { [INITIALIZED]: '1' });
-        fake.seed(`${DB_PREFIX}::split`, { proposals: 'legacy-must-not-return' });
-        const sessionStorage = memoryStorage({ [browserWorkspace.SESSION_KEY]: child });
-        const env = await scoped({ fake, localStorage, sessionStorage, id: 'unused', locks: fakeLocks() }, 'split');
-
-        expect(env.workspace.sourceDatabaseNames('split')).toEqual([ancestorCity, `${DB_PREFIX}::split`]);
-        expect(env.storage.length).toBe(0);
-        expect(fake.rows(env.workspace.databaseName('split'))).toEqual({ [INITIALIZED]: '1' });
-    });
-
     it('does not resurrect a parent snapshot after the child workspace is cleared', async () => {
         const fake = multiDb();
-        const parent = 'parent-clear-id';
-        const child = 'child-clear-id';
         const city = 'zagreb';
-        const parentDb = `${DB_PREFIX}::workspace:${parent}::${city}`;
-        fake.seed(parentDb, { proposals: 'parent-data' });
-        const localStorage = memoryStorage({
-            [`consensus-builder.workspace:${child}:sources`]: JSON.stringify([parent]),
-            [`consensus-builder.workspace:${parent}:sources`]: '[]'
-        });
-        const sessionStorage = memoryStorage({ [browserWorkspace.SESSION_KEY]: child });
-        const first = await scoped({ fake, localStorage, sessionStorage, id: 'ignored' }, city);
-        expect(first.storage.getItem('proposals')).toBe('parent-data');
+        fake.seed(`${DB_PREFIX}::${city}`, { proposals: 'legacy-seed' });
+        const localStorage = memoryStorage();
+        const locks = fakeLocks();
+        const first = await scoped({ fake, localStorage, locks, id: 'clear-workspace-id' }, city);
+        expect(first.storage.getItem('proposals')).toBe('legacy-seed');
         first.storage.clear();
         await new Promise(resolve => setTimeout(resolve, 10));
+        first.root.fire('pagehide');
+        await Promise.resolve();
+        await Promise.resolve();
 
-        const reload = await scoped({ fake, localStorage, sessionStorage, id: 'ignored-again' }, city);
+        const reload = await scoped({ fake, localStorage, locks, id: 'ignored-again' }, city);
         expect(reload.storage.getItem('proposals')).toBeNull();
         expect(fake.rows(reload.workspace.databaseName(city))).toEqual({ [INITIALIZED]: '1' });
+    });
+
+    it('leaves storage startup pending without opening IndexedDB when the workspace is blocked', async () => {
+        const fake = multiDb();
+        const localStorage = memoryStorage();
+        const locks = fakeLocks();
+        const owner = makeEnvironment({ fake, localStorage, locks, id: 'profile-workspace-id' });
+        await owner.workspace.ready;
+        const before = Object.fromEntries(localStorage.values);
+        const blocked = makeEnvironment({ fake, localStorage, locks, id: 'candidate-workspace-id' });
+        await expect(blocked.workspace.ready).resolves.toBe(false);
+        const completed = vi.fn();
+        blocked.storage.ensureReady(completed);
+        const startingOpens = fake.opens.length;
+        const pending = blocked.storage.setScope('zagreb');
+        await new Promise(resolve => setTimeout(resolve, 10));
+        expect(fake.opens).toHaveLength(startingOpens);
+        expect(Object.fromEntries(localStorage.values)).toEqual(before);
+        expect(completed).not.toHaveBeenCalled();
+        let settled = false;
+        pending.then(() => { settled = true; }, () => { settled = true; });
+        await Promise.resolve();
+        expect(settled).toBe(false);
+    });
+
+    it('rejects durable mutations after this tab releases workspace ownership', async () => {
+        const fake = multiDb();
+        const localStorage = memoryStorage();
+        const locks = fakeLocks();
+        const env = await scoped({ fake, localStorage, locks, id: 'released-owner-id' });
+        const writesBefore = fake.writes.length;
+        env.root.fire('pagehide');
+        await new Promise(resolve => setTimeout(resolve, 0));
+        expect(env.workspace.status).toBe('closed');
+        await expect(env.storage.atomicWrite({ puts: { proposals: 'stale-tab-write' } }))
+            .rejects.toThrow(/workspace/i);
+        expect(fake.writes).toHaveLength(writesBefore);
     });
 });
