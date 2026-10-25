@@ -26,8 +26,20 @@ review API using real saved plan and agreement records:
   represented it, including when raw 3D hits reported the same design twice.
 - Parent links retained the configured backend override.
 
-The existing-building source failed in the plan scene. These checks establish authored-plan and
-stack behavior; they do not establish readiness of surrounding existing-building data.
+The initial checks did not establish readiness of surrounding existing-building data. A follow-up
+traced that failure to the local review API: its read-only allowlist omitted spatial reads that use
+POST bodies, so it rejected `/buildings/footprints` and `/buildings/near` with HTTP 405 before they
+reached production. This was not evidence of an upstream rate limit. The corrected local proxy
+permits the four building-query endpoints plus `/decor/near` and `/decor/water`; persistent writes
+remain blocked. The same plan subsequently rendered 292 existing buildings, with the scene's
+data-and-render readiness check passing and no building warning.
+
+The frontend now preserves HTTP failure status through its 2D and 3D banners. Source-specific
+wording identifies unavailable data without inventing a busy public OSM server. The follow-up
+headless unit runs passed 39 tests in `parcel-source-settings.test.js`, then 21 tests across
+`building-failure-reporting.test.js`, `building-source-client.test.js` and
+`three-scene-readiness-wiring.test.js`, all with at most two workers. An initial command using an
+unsupported `--minWorkers` option exited without running tests. No full suite was run.
 
 Real agreement responses exposed a field collision absent from simplified fixtures: lifecycle
 `status: "active"` was mistaken for an empty-state marker. The marker is now

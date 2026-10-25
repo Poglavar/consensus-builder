@@ -224,13 +224,28 @@ describe('building failure banner', () => {
         return { body, createElement: make, getElementById: id => byId.get(id) || null };
     }
 
-    it('says whose data failed and when to try again, and always offers a source of your own', () => {
+    it('uses cautious source wording and defaults to a generic failure', () => {
         const global = {};
         expect(settings.buildingFailureMessage(global, { origin: 'osm', retryAfter: 90 }))
-            .toBe('Building data could not be loaded right now: the OpenStreetMap server is busy. Try again in about 2 min, or plug in your own mirror or source.');
+            .toBe('OpenStreetMap building data could not be loaded through our server. Try again in about 2 min, or plug in your own mirror or source.');
         expect(settings.buildingFailureMessage(global, { origin: 'custom' }))
-            .toBe('Your building source did not answer, so buildings could not be loaded here. Try again later, or plug in your own mirror or source.');
-        expect(settings.buildingFailureMessage(global, { origin: 'other' })).toMatch(/^Building data could not be loaded right now\. Try again later/);
+            .toBe('Building data from your selected source could not be loaded. Try again later, or plug in your own mirror or source.');
+        expect(settings.buildingFailureMessage(global))
+            .toBe('Building data could not be loaded right now. Try again later, or plug in your own mirror or source.');
+    });
+
+    it.each([
+        ['osm', 405], ['custom', 503]
+    ])('reports an %s request failure using HTTP %i', (origin, status) => {
+        expect(settings.buildingFailureMessage({}, { origin, status, retryAfter: 90 }))
+            .toBe(`Our server could not complete the building-data request (HTTP ${status}). Try again in about 2 min, or plug in your own mirror or source.`);
+    });
+
+    it('uses translated HTTP failure wording and interpolates its status', () => {
+        const global = { i18n: { t: (key, params) => key === 'buildingSources.requestFailed'
+            ? `Translated request failed (${params.status})` : key } };
+        expect(settings.buildingFailureMessage(global, { origin: 'osm', status: 405 }))
+            .toBe('Translated request failed (405) Try again later, or plug in your own mirror or source.');
     });
 
     it('keeps one building banner in the corner stack, updates it in place, and retries with the latest callback', () => {

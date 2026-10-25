@@ -6790,8 +6790,9 @@
         "feet": "pies",
         "overpass": "Un espejo de OpenStreetMap: las alturas vienen de OpenStreetMap donde están cartografiadas y se estiman en el resto.",
         "retry": "Reintentar edificios",
-        "osmUnavailable": "No se pudieron cargar los datos de edificios: el servidor de OpenStreetMap está ocupado.",
-        "customUnavailable": "Tu fuente de edificios no respondió, así que no se pudieron cargar los edificios aquí.",
+        "requestFailed": "Nuestro servidor no pudo completar la solicitud de datos de edificios (HTTP {{status}}).",
+        "osmUnavailable": "No se pudieron cargar los datos de edificios de OpenStreetMap a través de nuestro servidor.",
+        "customUnavailable": "No se pudieron cargar los datos de edificios de la fuente seleccionada.",
         "unavailable": "No se pudieron cargar los datos de edificios en este momento.",
         "tryAgainIn": "Inténtalo de nuevo en unos {{minutes}} min, o conecta tu propio espejo o fuente.",
         "tryAgainLater": "Inténtalo más tarde, o conecta tu propio espejo o fuente."

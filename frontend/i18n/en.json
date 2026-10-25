@@ -6763,8 +6763,9 @@
         "feet": "feet",
         "overpass": "An OpenStreetMap mirror: heights come from OpenStreetMap where mapped and are estimated elsewhere.",
         "retry": "Retry buildings",
-        "osmUnavailable": "Building data could not be loaded right now: the OpenStreetMap server is busy.",
-        "customUnavailable": "Your building source did not answer, so buildings could not be loaded here.",
+        "requestFailed": "Our server could not complete the building-data request (HTTP {{status}}).",
+        "osmUnavailable": "OpenStreetMap building data could not be loaded through our server.",
+        "customUnavailable": "Building data from your selected source could not be loaded.",
         "unavailable": "Building data could not be loaded right now.",
         "tryAgainIn": "Try again in about {{minutes}} min, or plug in your own mirror or source.",
         "tryAgainLater": "Try again later, or plug in your own mirror or source."

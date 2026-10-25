@@ -6800,8 +6800,9 @@
         "feet": "stopama",
         "overpass": "OpenStreetMap ogledalo: visine dolaze iz OpenStreetMapa gde su ucrtane, a drugde se procenjuju.",
         "retry": "Ponovo učitaj zgrade",
-        "osmUnavailable": "Podaci o zgradama trenutno ne mogu da se učitaju: OpenStreetMap server je zauzet.",
-        "customUnavailable": "Tvoj izvor zgrada nije odgovorio, pa zgrade ovde nisu mogle da se učitaju.",
+        "requestFailed": "Naš server nije mogao da obradi zahtev za podatke o zgradama (HTTP {{status}}).",
+        "osmUnavailable": "Podaci o zgradama iz OpenStreetMapa nisu mogli da se učitaju preko našeg servera.",
+        "customUnavailable": "Podaci o zgradama iz izabranog izvora nisu mogli da se učitaju.",
         "unavailable": "Podaci o zgradama trenutno ne mogu da se učitaju.",
         "tryAgainIn": "Pokušaj ponovo za oko {{minutes}} min ili dodaj sopstveno ogledalo ili izvor.",
         "tryAgainLater": "Pokušaj ponovo kasnije ili dodaj sopstveno ogledalo ili izvor."

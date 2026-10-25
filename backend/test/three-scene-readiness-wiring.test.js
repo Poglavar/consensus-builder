@@ -80,6 +80,18 @@ async function flushPromises() {
 }
 
 describe('3D readiness wiring', () => {
+    it('retains a backend rejection status through the nearby-building banner and keeps readiness failed', async () => {
+        const request = vi.fn(async () => { throw Object.assign(new Error('HTTP 405'), { status: 405 }); });
+        const h = harness({ request });
+        h.context.console = { warn: vi.fn(), log: vi.fn() };
+        vm.runInContext(declarations.get('reportNearbyBuildingsUnavailable'), h.context);
+        h.context.ensureNearbyProposalBuildings();
+        await flushPromises();
+        expect(h.context.window.reportBuildingsUnavailable).toHaveBeenCalledWith(null, expect.any(Function), false, 405);
+        expect(h.context.nearbyBuildingsOutcome).toBe('failed');
+        expect(h.context.getSceneReadiness().ready).toBe(false);
+    });
+
     it.each([
         [{ buildings: [{ id: 'b1' }] }, 'loaded', true],
         [{ buildings: [] }, 'empty', true],

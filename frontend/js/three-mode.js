@@ -5586,17 +5586,17 @@
                 nearbyProposalBuildingsFetching = false;
                 nearbyBuildingsOutcome = 'failed';
                 updateBuildingsLoader();
-                reportNearbyBuildingsUnavailable(null);
+                reportNearbyBuildingsUnavailable(null, err.status);
                 ensureNearbyWater();
             });
     }
 
     // Said in the building banner (map-core.js), whose Retry asks for this scene's band again.
-    function reportNearbyBuildingsUnavailable(retryAfter) {
+    function reportNearbyBuildingsUnavailable(retryAfter, status = null) {
         window.reportBuildingsUnavailable?.(retryAfter, () => {
             nearbyProposalBuildingsKey = null;
             ensureNearbyProposalBuildings();
-        });
+        }, false, status);
     }
 
     // --- Real-world OSM trees (Overture base/land) ---

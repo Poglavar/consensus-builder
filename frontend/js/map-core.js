@@ -343,7 +343,7 @@ function hasFootprintProvider(bounds) {
 // The GDI bbox layer: EPSG:3765 out of the backend, so it is declared and converted.
 async function loadGdiFootprints(req) {
     const response = await fetch(req.url);
-    if (!response.ok) throw new Error('Failed to fetch building data');
+    if (!response.ok) throw Object.assign(new Error('Failed to fetch building data'), { status: response.status });
     const data = await response.json();
     const converted = typeof convertGeoJSON === 'function' ? convertGeoJSON(data, { sourceSrid: 3765 }) : data;
     return { features: (converted && converted.features) || [], truncated: data && data.truncated === true };
@@ -386,7 +386,7 @@ async function loadProviderFootprints(bounds) {
 // out the upstream's own retry time instead of asking again on every pan.
 let buildingsRetryAt = 0;
 // `fromOsm` marks a failure of the OpenStreetMap reference layer, which is OSM whatever the city uses.
-function reportBuildingsUnavailable(retryAfter, retry, fromOsm = false) {
+function reportBuildingsUnavailable(retryAfter, retry, fromOsm = false, status = null) {
     const seconds = Number(retryAfter);
     if (Number.isFinite(seconds) && seconds > 0) buildingsRetryAt = Date.now() + seconds * 1000;
     console.warn(`[${new Date().toISOString()}] [buildings] building data unavailable${seconds > 0 ? `; retry in ${seconds}s` : ''}`);
@@ -399,7 +399,7 @@ function reportBuildingsUnavailable(retryAfter, retry, fromOsm = false) {
         else if (manager?.getCurrentCityConfig?.()?.buildings?.source === 'custom') origin = 'custom';
         else if (manager?.getCurrentCityConfig?.()?.buildings?.source === 'osm') origin = 'osm';
     } catch (_) { /* the generic wording is still true */ }
-    settings.reportFailure(window, settings.buildingFailureMessage(window, { retryAfter: seconds > 0 ? seconds : null, origin }), 'building', retry);
+    settings.reportFailure(window, settings.buildingFailureMessage(window, { retryAfter: seconds > 0 ? seconds : null, origin, status }), 'building', retry);
 }
 window.reportBuildingsUnavailable = reportBuildingsUnavailable;
 function clearBuildingsUnavailable() {
@@ -544,7 +544,7 @@ async function fetchBuildings(boundsOverride = null, options = {}) {
         reportBuildingsUnavailable(error && error.retryAfter, () => {
             buildingsRetryAt = 0;
             fetchBuildings(boundsOverride, { announce: true });
-        });
+        }, false, error?.status);
     }
 }
 
@@ -643,12 +643,12 @@ async function fetchOsmBuildings(boundsOverride = null) {
             const body = await response.json().catch(() => ({}));
             const seconds = Number(body.retryAfter) > 0 ? Number(body.retryAfter) : 60;
             osmBuildingsRetryAt = Date.now() + seconds * 1000;
-            console.warn(`[buildings] OSM reference is rate-limited upstream; not asking again for ${seconds}s`);
+            console.warn(`[buildings] OSM reference request returned HTTP 503; not asking again for ${seconds}s`);
             showFetchedOsmBuildingLayer();
-            reportBuildingsUnavailable(seconds, () => { osmBuildingsRetryAt = 0; fetchOsmBuildings(boundsOverride); }, true);
+            reportBuildingsUnavailable(seconds, () => { osmBuildingsRetryAt = 0; fetchOsmBuildings(boundsOverride); }, true, response.status);
             return;
         }
-        if (!response.ok) throw new Error(`Failed to fetch OSM building data (HTTP ${response.status})`);
+        if (!response.ok) throw Object.assign(new Error(`Failed to fetch OSM building data (HTTP ${response.status})`), { status: response.status });
         const data = await response.json();
 
         if (osmBuildingLayer) {
@@ -666,7 +666,7 @@ async function fetchOsmBuildings(boundsOverride = null) {
         clearBuildingsUnavailable();
     } catch (error) {
         console.error('Error fetching OSM building data:', error);
-        reportBuildingsUnavailable(null, () => fetchOsmBuildings(boundsOverride), true);
+        reportBuildingsUnavailable(null, () => fetchOsmBuildings(boundsOverride), true, error?.status);
     }
 }
 window.fetchOsmBuildings = fetchOsmBuildings;

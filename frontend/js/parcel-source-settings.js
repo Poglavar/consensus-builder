@@ -326,18 +326,20 @@
     }
     function clearFailure(global, kind = 'parcel') { global.document?.getElementById((BANNERS[kind] || BANNERS.parcel).id)?.remove(); }
     // The building banner's text: whose data failed, and when asking again is worth it.
-    // `origin`: 'custom' (the person's own source), 'osm' (OpenStreetMap) or anything else.
-    function buildingFailureMessage(global, { retryAfter = null, origin = 'osm' } = {}) {
+    // `origin`: 'custom', 'osm' or anything else. HTTP failures describe our request path directly.
+    function buildingFailureMessage(global, { retryAfter = null, origin = 'other', status = null } = {}) {
         const t = (key, fallback, params = {}) => {
             const full = 'buildingSources.' + key, value = global.i18n?.t?.(full, params);
             return (value && value !== full ? value : fallback).replace(/\{\{(\w+)\}\}/g, (_, name) => params[name] ?? '');
         };
         const minutes = Number.isFinite(retryAfter) && retryAfter > 0 ? Math.max(1, Math.ceil(retryAfter / 60)) : null;
-        const head = origin === 'custom'
-            ? t('customUnavailable', 'Your building source did not answer, so buildings could not be loaded here.')
-            : origin === 'osm'
-                ? t('osmUnavailable', 'Building data could not be loaded right now: the OpenStreetMap server is busy.')
-                : t('unavailable', 'Building data could not be loaded right now.');
+        const head = Number.isInteger(status) && status >= 400 && status <= 599
+            ? t('requestFailed', 'Our server could not complete the building-data request (HTTP {{status}}).', { status })
+            : origin === 'custom'
+                ? t('customUnavailable', 'Building data from your selected source could not be loaded.')
+                : origin === 'osm'
+                    ? t('osmUnavailable', 'OpenStreetMap building data could not be loaded through our server.')
+                    : t('unavailable', 'Building data could not be loaded right now.');
         const tail = minutes
             ? t('tryAgainIn', 'Try again in about {{minutes}} min, or plug in your own mirror or source.', { minutes })
             : t('tryAgainLater', 'Try again later, or plug in your own mirror or source.');
