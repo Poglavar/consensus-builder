@@ -59,7 +59,7 @@
           "attribution": "ANGOLA_GGPEN — Lunda_Norte_AGT_gdb / Lunda_Norte_AGT layer 0; AGT property-registration context. Exact IGCA/AGT/GGPEN maintenance responsibilities are unverified."
         },
         "buildings": {
-          "source": "overture-tiles"
+          "source": "osm"
         },
         "sidebar": {
           "disabledSections": [

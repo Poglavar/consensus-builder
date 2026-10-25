@@ -99,3 +99,31 @@ test('foreign and malformed keys fail before network I/O', async () => {
     }
     assert.equal(calls.length, 0);
 });
+
+test('alphanumeric PRCL_KEY values remain exact strings rather than transport OIDs', async () => {
+    const { source, rows } = provider();
+    // This key shape is present in the separated Olympia discovery probe.
+    const key = '000000040000000000310261B0';
+    rows[0].properties.PRCL_KEY = key;
+    const result = await source.queryIds([descriptor.idPrefix + key]);
+    assert.equal(result.complete, true);
+    assert.equal(result.features[0].properties.sourceParcelId, key);
+    assert.deepEqual(result.features[0].geometry, rows[0].geometry);
+});
+
+test('holes and disconnected polygon members survive exact reads without normalization', async () => {
+    // Synthetic geometry exercises shapes absent from the three retained source polygons.
+    const shell = [[17.04,-22.53],[17.041,-22.53],[17.041,-22.529],[17.04,-22.529],[17.04,-22.53]];
+    const hole = [[17.0402,-22.5298],[17.0402,-22.5296],[17.0404,-22.5296],[17.0404,-22.5298],[17.0402,-22.5298]];
+    const other = shell.map(([x,y]) => [x + 0.002, y]);
+    for (const geometry of [
+        { type: 'Polygon', coordinates: [shell, hole] },
+        { type: 'MultiPolygon', coordinates: [[shell, hole], [other]] }
+    ]) {
+        const { source, rows } = provider();
+        rows[0].geometry = structuredClone(geometry);
+        const result = await source.queryIds([ids[0]]);
+        assert.deepEqual(result.features[0].geometry, geometry);
+        assert.deepEqual((await source.queryIds([ids[0]])).features[0].geometry, geometry);
+    }
+});

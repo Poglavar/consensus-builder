@@ -59,7 +59,7 @@
           "attribution": "Commune de Divo / E-Commune; CNTIG platform."
         },
         "buildings": {
-          "source": "overture-tiles"
+          "source": "osm"
         },
         "sidebar": {
           "disabledSections": [

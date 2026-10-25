@@ -7,6 +7,15 @@ import { decodeSnapshotNativeId, encodeSnapshotNativeId } from './geojson-snapsh
 import { sha256Hex } from './portable-hash.js';
 import { SHAPEFILE_CRS, readShapefileZipMembers, indexShapefileSnapshot } from './shapefile-zip-reader.js';
 
+// Only this hash-pinned municipal publication is available over plain HTTP.
+export const TORINO_ARCHIVE_ENDPOINT = 'http://geoportale.comune.torino.it/sec/zip/catasto_urbano.zip';
+export function isTorinoArchive(descriptor, target = descriptor.endpoint) {
+    return descriptor.id === 'it-comune-torino-catasto-urbano'
+        && descriptor.adapter === 'shapefile-snapshot' && descriptor.endpoint === TORINO_ARCHIVE_ENDPOINT
+        && target === TORINO_ARCHIVE_ENDPOINT
+        && descriptor.expectedSnapshotSha256 === '1ae313dd9203f2a6c3e13e77efebdc7f1b9f56ef26327e32435be315699e98f1';
+}
+
 const caches = new WeakMap();
 let retainedState = null, coldLoadTail = Promise.resolve();
 const defaults = { maxSnapshotBytes: 80 * 1024 * 1024, maxDecompressedBytes: 256 * 1024 * 1024,
@@ -17,12 +26,15 @@ export function createShapefileSnapshotParcelSource(input, { fetchImpl = fetch, 
     const descriptor = { ...defaults, ...input }, { id, idPrefix, idFields, outFields, shapefileMembers } = descriptor;
     let url; try { url = new URL(descriptor.endpoint); } catch { /* Validated below. */ }
     const members = shapefileMembers && Object.entries(shapefileMembers);
-    const required = ['shp', 'shx', 'dbf', 'prj'];
+    const publisherCrs = descriptor.projectionMetadata === 'publisher';
+    const shapeIdentity = descriptor.nativeRecordIdentity === 'cadastral-shape-sha256-v1';
+    const wkbIdentity = descriptor.nativeRecordIdentity === 'geometry-sha256-wkb-v1';
+    const required = publisherCrs ? ['shp', 'shx', 'dbf'] : ['shp', 'shx', 'dbf', 'prj'];
     const caps = { maxSnapshotBytes: 80 * 1024 * 1024, maxDecompressedBytes: 512 * 1024 * 1024,
-        maxSnapshotFeatures: 600000, maxFeatures: 10000, maxRecordPoints: 1000000, maxSnapshotPoints: 30000000 };
+        maxSnapshotFeatures: 1000000, maxFeatures: 10000, maxRecordPoints: 1000000, maxSnapshotPoints: 30000000 };
     const field = /^[A-Za-z_][A-Za-z0-9_]*$/;
     const sensitive = /owner|address|account|tax|propriet|titular|shoy|氏名|住所/i;
-    if (!id || !idPrefix || url?.protocol !== 'https:' || url.username || url.password
+    if (!id || !idPrefix || (url?.protocol !== 'https:' && !isTorinoArchive(descriptor)) || url.username || url.password
         || typeof fetchImpl !== 'function' || typeof now !== 'function' || !Object.hasOwn(SHAPEFILE_CRS, descriptor.sourceCrs)
         || !Array.isArray(idFields) || !idFields.length || idFields.length > 8 || new Set(idFields).size !== idFields.length
         || idFields.some(name => typeof name !== 'string' || !field.test(name) || sensitive.test(name))
@@ -30,6 +42,19 @@ export function createShapefileSnapshotParcelSource(input, { fetchImpl = fetch, 
         || outFields.length !== idFields.length || outFields.some(name => !idFields.includes(name))
         || (descriptor.idField !== undefined && !idFields.includes(descriptor.idField))
         || ![undefined, 'integer', 'string'].includes(descriptor.idType)
+        || (publisherCrs && (!shapeIdentity || descriptor.sourceCrs !== 'EPSG:3003'
+            || descriptor.sourceCrsEvidenceUrl !== 'https://dati.lombardia.it/api/views/68w7-gci9' || shapefileMembers?.prj))
+        || (shapeIdentity && !publisherCrs)
+        || (wkbIdentity && (descriptor.sourceCrs !== 'EPSG:2454' || publisherCrs || idFields.length !== 1
+            || descriptor.idType !== 'string' || idPrefix !== `${id}:geometry-sha256-v1:`))
+        || ![undefined, 'cadastral-shape-sha256-v1', 'geometry-sha256-wkb-v1'].includes(descriptor.nativeRecordIdentity)
+        || (descriptor.dbfCharacterSet !== undefined && (!wkbIdentity || descriptor.dbfEncoding !== 'shift_jis'
+            || descriptor.dbfCharacterSet !== 'jis-x-0201-roman'))
+        || (descriptor.dbfEof !== undefined && (!shapeIdentity || descriptor.dbfEof !== 'null'))
+        || (descriptor.integerDecimalFields !== undefined && ((!shapeIdentity && descriptor.idType !== 'integer') || !Array.isArray(descriptor.integerDecimalFields)
+            || descriptor.integerDecimalFields.some(field => !idFields.includes(field))))
+        || (descriptor.attributeFilters !== undefined && (!shapeIdentity || Object.entries(descriptor.attributeFilters).some(([field, value]) =>
+            !idFields.includes(field) || typeof value !== 'string' || !value)))
         || !members || !required.every(kind => typeof shapefileMembers[kind] === 'string')
         || members.some(([kind, name]) => ![...required, 'cpg'].includes(kind) || typeof name !== 'string'
             || !name.endsWith(`.${kind}`) || name.length > 1024 || /[\\\x00-\x1f]/.test(name)
@@ -55,9 +80,9 @@ export function createShapefileSnapshotParcelSource(input, { fetchImpl = fetch, 
         try {
             if (retainedState && retainedState !== state) { retainedState.index = null; retainedState.expires = 0; }
             retainedState = state; state.index = null;
-            response = await fetchImpl(url.href, { signal, headers: { Accept: 'application/zip' } });
+            response = await fetchImpl(url.href, { signal, headers: { Accept: 'application/zip' }, ...(isTorinoArchive(descriptor) ? { redirect: 'error' } : {}) });
             if (response.status !== 200 || !response.ok) throw providerHttpError(response);
-            if (response.url && new URL(response.url).protocol !== 'https:') throw upstreamError('Parcel archive redirected outside HTTPS.');
+            if (response.url && new URL(response.url).protocol !== 'https:' && !isTorinoArchive(descriptor, response.url)) throw upstreamError('Parcel archive redirected outside HTTPS.');
             const declared = response.headers.get('content-length');
             if (declared && (!/^\d+$/.test(declared) || Number(declared) > descriptor.maxSnapshotBytes)) throw upstreamError('Parcel archive exceeds byte limit.');
             reader = response.body?.getReader(); if (!reader) throw upstreamError('Parcel archive returned no readable body.');
@@ -92,7 +117,7 @@ export function createShapefileSnapshotParcelSource(input, { fetchImpl = fetch, 
     }
     function canonical(index, row) {
         const feature = index.feature(row);
-        return canonicalParcelFeature(descriptor, feature, encodeSnapshotNativeId(idFields.map(field => feature.properties[field])));
+        return canonicalParcelFeature(descriptor, feature, index.nativeId ? index.nativeId(row) : encodeSnapshotNativeId(idFields.map(field => feature.properties[field])));
     }
     function collection(features, extra = {}) {
         if (features.length > descriptor.maxFeatures) throw upstreamError('Parcel snapshot query exceeds feature limit.');
@@ -109,7 +134,7 @@ export function createShapefileSnapshotParcelSource(input, { fetchImpl = fetch, 
                 if (features.length > descriptor.maxFeatures) throw upstreamError('Parcel snapshot query exceeds feature limit.');
             }
         } catch (error) { if (error.status) throw error; throw upstreamError('Parcel snapshot intersection failed.'); }
-        return collection(features);
+        return collection(features, index.statistics ? { snapshotStatistics: index.statistics } : {});
     }
     function queryBounds(bounds) {
         validateBounds(bounds, descriptor.maxBboxKm2 ?? 25, descriptor);
@@ -120,13 +145,19 @@ export function createShapefileSnapshotParcelSource(input, { fetchImpl = fetch, 
         const unique = [...new Set(ids)];
         const natives = unique.map(value => {
             if (typeof value !== 'string' || !value.startsWith(idPrefix)) throw new HttpError(400, 'Parcel ID belongs to a different source.');
-            const native = value.slice(idPrefix.length), parts = decodeSnapshotNativeId(native, idFields.length);
+            const native = value.slice(idPrefix.length);
+            if (wkbIdentity) {
+                if (!/^[a-f0-9]{64}$/.test(native)) throw new HttpError(400, 'Invalid native geometry reference.');
+                return native;
+            }
+            const parts = decodeSnapshotNativeId(native, idFields.length + (shapeIdentity ? 1 : 0));
+            if (shapeIdentity && !/^[a-f0-9]{64}$/.test(parts.at(-1))) throw new HttpError(400, 'Invalid native shape reference.');
             if (descriptor.idType === 'integer' && parts.some(part => !/^(0|[1-9]\d*)$/.test(part) || !Number.isSafeInteger(Number(part)))) throw new HttpError(400, 'Invalid integer parcel ID.');
             return native;
         });
         const index = await snapshot(), features = [], absentIds = [];
         natives.forEach((native, i) => { if (index.byId.has(native)) features.push(canonical(index, index.byId.get(native))); else absentIds.push(unique[i]); });
-        return collection(features, { absentIds });
+        return collection(features, { absentIds, ...(index.statistics ? { snapshotStatistics: index.statistics } : {}) });
     }
     function queryGeometry(geometry) {
         if (!validateGeometry(geometry)) throw new HttpError(400, 'Provide valid WGS84 polygon geometry.');

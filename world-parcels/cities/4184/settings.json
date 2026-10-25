@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "4184",
+  "name": "Aguascalientes, Mexico",
+  "point": [
+    21.8879380080795,
+    -102.281544395184
+  ],
+  "bindings": [
+    {
+      "appCityId": "aguascalientes",
+      "runtimeConfig": {
+        "id": "aguascalientes",
+        "wupCityCode": "4184",
+        "label": "Aguascalientes, Mexico",
+        "currency": {
+          "locale": "es-MX",
+          "code": "MXN"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            21.8879380080795,
+            -102.281544395184
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            21.8879380080795,
+            -102.281544395184
+          ],
+          "fallbackDataset": [
+            -102.281544395184,
+            21.8879380080795
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "mx-sedatu-ran-pit01-parcelas-2020-wfs",
+          "idPrefix": "MEX-RAN-PIT01-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Registro Agrario Nacional (RAN) / SEDATU SITU, PIT1 Parcelas Aguascalientes 2020, CC BY 4.0. Historical partial agrarian parcel coverage. Canonical IDs adapted; source geometry unchanged."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "mx-sedatu-ran-pit01-parcelas-2020-wfs",
+      "name": "SEDATU / RAN PIT1 Aguascalientes agrarian parcels (2020)",
+      "adapter": "wfs",
+      "endpoint": "https://ide.sedatu.gob.mx/geoserver/ows",
+      "featureType": "geonode:a__01_PARCELAS_RAN_2020",
+      "version": "1.0.0",
+      "idField": "CLAVE",
+      "idType": "string",
+      "idPrefix": "MEX-RAN-PIT01-",
+      "outFields": [
+        "CLAVE"
+      ],
+      "geometryField": "the_geom",
+      "requestProperties": true,
+      "pageSize": 100,
+      "idBatchSize": 3,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "maxConcurrentQueries": 1,
+      "minRequestIntervalMs": 150,
+      "countryCode": "MX",
+      "metricSrid": 32613,
+      "cityIds": [
+        "aguascalientes"
+      ],
+      "defaultForCity": true,
+      "scope": "Historical statewide RAN social/agrarian parcel extract, with bounded observations in Aguascalientes municipality (Los Negritos and El Guarda/Cobos/Malacate). Partial ejido/community coverage; city locator centre is empty. Ordinary private urban cadastre and citywide completeness are not established.",
+      "attribution": "Registro Agrario Nacional (RAN) / SEDATU SITU, PIT1 Parcelas Aguascalientes 2020, CC BY 4.0. Historical partial agrarian parcel coverage. Canonical IDs adapted; source geometry unchanged.",
+      "catalogueUrl": "https://ide.sedatu.gob.mx/catalogue/csw_to_extra_format/a5f0325a-5468-11ec-88fd-005056b8fa85/a__01_PARCELAS_RAN_2020.html",
+      "metadataUrl": "https://ide.sedatu.gob.mx/catalogue/csw_to_extra_format/a5f0325a-5468-11ec-88fd-005056b8fa85/a__01_PARCELAS_RAN_2020.html",
+      "nativeCrs": "EPSG:4326",
+      "responseCrs": "EPSG:4326",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "geometryQuery": true
+      },
+      "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "license": "CC BY 4.0",
+      "browserTransport": "relay",
+      "ownership": false,
+      "operator": "Registro Agrario Nacional (RAN) / SEDATU SITU",
+      "idPattern": "^[0-9]{8}-[0-9]{19}$",
+      "licenceNote": "CC BY 4.0 per first-party metadata. SEDATU disclaims responsibility for use. Preserve RAN/SEDATU attribution and link to source and licence; canonical identifiers adapted, source coordinates unchanged."
+    }
+  ]
+}

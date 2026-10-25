@@ -1,3 +1,21 @@
+import { createSupermapParcelSource } from './supermap-source.js';
+import { createTaichungBrowserParcelSource } from './taichung-source.js';
+import { createMojMapXmlParcelSource } from './moj-mapxml-source.js';
+import { createUgnlisBrowserParcelSource } from './ugnlis-source.js';
+import { createArcgisWebmapParcelSource } from './arcgis-webmap-source.js';
+import { createKmlKmzParcelSource } from './kml-kmz-source.js';
+import { createGwangjuJijukParcelSource } from './gwangju-jijuk-source.js';
+import { createCadgisParcelSource } from './be-cadgis-source.js';
+import { createGisarWmsParcelSource } from './kg-gisar-wms-source.js';
+import { createDncSnigParcelSource } from './uy-dnc-snig-source.js';
+import { createGeojsonRangeBrowserSource } from './geojson-range-source.js';
+import { createHuainanMapshineParcelSource } from './huainan-mapshine-source.js';
+import { createSofiaBrowserParcelSource } from './sofia-isofmap-source.js';
+import { createSantosBrowserSource } from './santos-lotes-source.js';
+import { createGlisParcelSource } from './pk-glis-source.js';
+import { createInterpiSigefParcelSource } from './interpi-sigef-source.js';
+import { createKartverketParcelSource } from './kartverket-source.js';
+import { createShapefileRangeBrowserSource } from './shapefile-range-source.js';
 // Runs the existing complete-source adapters in a worker, preferring provider fetch over a byte relay.
 import catalog from '../../frontend/data/source-catalog.json' with { type: 'json' };
 import { createArcgisParcelSource } from './arcgis-source.js';
@@ -39,6 +57,25 @@ function expectedEtagForUrl(descriptor, url) {
 }
 
 export const browserParcelFactories = Object.freeze({
+    'supermap-map': createSupermapParcelSource,
+    'taichung-gismap': createTaichungBrowserParcelSource,
+    'moj-mapxml': createMojMapXmlParcelSource,
+    'ugnlis-parcel-search': createUgnlisBrowserParcelSource,
+    'ecommunes-xml': createDivoEcommunesSource,
+    'arcgis-webmap': createArcgisWebmapParcelSource,
+    'kml-kmz': createKmlKmzParcelSource,
+    'gwangju-jijuk': createGwangjuJijukParcelSource,
+    'be-cadgis': createCadgisParcelSource,
+    'kg-gisar-wms': createGisarWmsParcelSource,
+    'uy-dnc-snig': createDncSnigParcelSource,
+    'geojson-range': createGeojsonRangeBrowserSource,
+    'huainan-mapshine': createHuainanMapshineParcelSource,
+    'sofia-isofmap': createSofiaBrowserParcelSource,
+    'santos-lotes': createSantosBrowserSource,
+    'pk-glis': createGlisParcelSource,
+    'interpi-sigef': createInterpiSigefParcelSource,
+    'kartverket-eiendom': createKartverketParcelSource,
+    'shapefile-range': createShapefileRangeBrowserSource,
     'hmlr-browser': async (descriptor, options) => (await import('./hmlr-browser-source.js')).createHmlrBrowserParcelSource(descriptor, options), arcgis: createArcgisParcelSource, wfs: createWfsParcelSource,
     'ogc-api': createOgcApiParcelSource, socrata: createSocrataParcelSource,
     'dda-public-plots': createDdaParcelSource, 'pulse-public': createPulsePublicParcelSource,

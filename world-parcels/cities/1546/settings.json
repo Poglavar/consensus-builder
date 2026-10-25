@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1546",
+  "name": "Edmonton, Canada",
+  "point": [
+    53.5506251257388,
+    -113.526505700218
+  ],
+  "bindings": [
+    {
+      "appCityId": "edmonton",
+      "runtimeConfig": {
+        "id": "edmonton",
+        "wupCityCode": "1546",
+        "label": "Edmonton, Canada",
+        "currency": {
+          "locale": "en-CA",
+          "code": "CAD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            53.5506251257388,
+            -113.526505700218
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            53.5506251257388,
+            -113.526505700218
+          ],
+          "fallbackDataset": [
+            -113.526505700218,
+            53.5506251257388
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ca-ab-edmonton-title-parcels",
+          "idPrefix": "ca-ab-edmonton-title-parcels:ID:",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "City of Edmonton GIS — Title Parcels. Parcel mapping distribution context: Alberta Data Partnerships / AltaLIS. Reuse permission unresolved."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ca-ab-edmonton-title-parcels",
+      "name": "City of Edmonton VertiGIS Title Parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.edmonton.ca/arcgisintegration/rest/services/VertiGIS/ZoningMap/FeatureServer/1",
+      "idField": "ID",
+      "idType": "integer",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "ca-ab-edmonton-title-parcels:ID:",
+      "outFields": [
+        "ID",
+        "OBJECTID"
+      ],
+      "queryFormat": "geojson",
+      "pageSize": 2000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 15000,
+      "countryCode": "CA",
+      "metricSrid": 32612,
+      "scope": "Municipal Title Parcels layer; bounded Edmonton sample only, citywide completeness unverified.",
+      "operator": "City of Edmonton GIS",
+      "attribution": "City of Edmonton GIS — Title Parcels. Parcel mapping distribution context: Alberta Data Partnerships / AltaLIS. Reuse permission unresolved.",
+      "catalogueUrl": "https://data.edmonton.ca/d/dwy4-xicg",
+      "licenceUrl": "https://data.edmonton.ca/d/dwy4-xicg",
+      "licenceStatus": "unresolved-map-service-reuse",
+      "cityIds": [
+        "edmonton"
+      ],
+      "defaultForCity": true
+    }
+  ]
+}

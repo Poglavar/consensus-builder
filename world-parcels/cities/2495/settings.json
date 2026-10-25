@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2495",
+  "name": "Thika, Kenya",
+  "point": [
+    -1.05581885409847,
+    37.0906067272474
+  ],
+  "bindings": [
+    {
+      "appCityId": "thika",
+      "runtimeConfig": {
+        "id": "thika",
+        "wupCityCode": "2495",
+        "label": "Thika, Kenya",
+        "currency": {
+          "locale": "en-KE",
+          "code": "KES"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -1.05581885409847,
+            37.0906067272474
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -1.05581885409847,
+            37.0906067272474
+          ],
+          "fallbackDataset": [
+            37.0906067272474,
+            -1.05581885409847
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ke-arcgis-thika-rim-webmap-plots",
+          "idPrefix": "arcgis-webmap:ea580568a6d84bc7b7e33e03efd1305c/plots:fid=",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Thika_RIM, published by KiplimoC on the gegis-jkuat ArcGIS organization; original RIM authority unverified."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ke-arcgis-thika-rim-webmap-plots",
+      "name": "Thika RIM — Ngoingwa Block 20 plots",
+      "countryCode": "KE",
+      "adapter": "arcgis-webmap",
+      "endpoint": "https://www.arcgis.com/sharing/rest/content/items/ea580568a6d84bc7b7e33e03efd1305c/data?f=json",
+      "cityIds": [
+        "thika"
+      ],
+      "defaultForCity": true,
+      "idPrefix": "arcgis-webmap:ea580568a6d84bc7b7e33e03efd1305c/plots:fid=",
+      "idFields": [
+        "FID"
+      ],
+      "objectIdField": "FID",
+      "outFields": [
+        "FID"
+      ],
+      "webmapLayerName": "plots",
+      "sourceCrs": "EPSG:3857",
+      "metricSrid": 32737,
+      "returnsWGS84": true,
+      "bbox": [
+        37.0435,
+        -1.0497,
+        37.0496,
+        -1.0404
+      ],
+      "maxBboxKm2": 25,
+      "maxSnapshotBytes": 8388608,
+      "maxSnapshotFeatures": 1000,
+      "expectedSnapshotFeatures": 545,
+      "maxFeatures": 1000,
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "queryGeometry": true
+      },
+      "attribution": "Thika_RIM, published by KiplimoC on the gegis-jkuat ArcGIS organization; original RIM authority unverified.",
+      "scope": "Bounded Thika Municipality Block 20 (Ngoingwa) snapshot: 545 plots in western Thika, outside the city locator. Does not establish citywide coverage, currentness or legal title.",
+      "licenceNote": "No explicit cadastral geometry reuse licence is established; generic Esri licence text is not a geometry reuse grant.",
+      "catalogueUrl": "https://www.arcgis.com/home/item.html?id=ea580568a6d84bc7b7e33e03efd1305c",
+      "discovery": {
+        "jurisdiction": {
+          "basis": "Publisher linked THIKA RIM application names Thika Municipality Block 20 (Ngoingwa) and links this exact Web Map. The plots/FID/PIN schema and systematic bounded polygons establish a RIM cadastral block."
+        }
+      }
+    }
+  ]
+}

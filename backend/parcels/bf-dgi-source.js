@@ -2,12 +2,17 @@
 import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import { HttpError } from '../utils/helpers.js';
 import { concatBytes } from './byte-utils.js';
+import { DGI_CITY_LOOKUP_BOUNDS } from './bf-dgi-scopes.js';
 import { canonicalParcelFeature, providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
 
 const ENDPOINT = 'https://ecadastre.dgi.bf/api/locations/geojson';
 const NATIVE_ID = /^[A-Za-z0-9]{1,64}$/;
-const contains = (outer, inner) => outer[0] <= inner[0] && outer[1] <= inner[1]
-    && outer[2] >= inner[2] && outer[3] >= inner[3];
+// Multiplying integer browser grid keys by 0.001 can differ from a literal edge by
+// one floating-point ULP. Tolerate only that scope comparison; never alter the request
+// coordinates or any returned geometry.
+const EDGE_EPSILON = 1e-12;
+const contains = (outer, inner) => outer[0] <= inner[0] + EDGE_EPSILON && outer[1] <= inner[1] + EDGE_EPSILON
+    && outer[2] + EDGE_EPSILON >= inner[2] && outer[3] + EDGE_EPSILON >= inner[3];
 
 export function createBfDgiParcelSource(descriptor, { fetchImpl = globalThis.fetch } = {}) {
     const { id, idPrefix, endpoint } = descriptor;
@@ -19,7 +24,12 @@ export function createBfDgiParcelSource(descriptor, { fetchImpl = globalThis.fet
         || !Number.isFinite(maxBboxKm2) || maxBboxKm2 <= 0 || maxBboxKm2 > 25
         || !Number.isSafeInteger(maxBytes) || maxBytes < 1024 || maxBytes > 16 * 1024 * 1024
         || typeof fetchImpl !== 'function') throw new Error('Invalid DGI parcel source descriptor.');
-    const lookupBounds = descriptor.lookupBounds.map(bbox => [...validateBounds(bbox, maxBboxKm2)]);
+    // Admission preserves existing source settings and adds cityIds. Enable each new city's
+    // checked windows from that binding without removing the existing Bobo-Dioulasso scope.
+    const configuredBounds = [...descriptor.lookupBounds,
+        ...(descriptor.cityIds || []).flatMap(city => DGI_CITY_LOOKUP_BOUNDS[city] || [])];
+    const lookupBounds = [...new Map(configuredBounds.map(bbox =>
+        [JSON.stringify(bbox), [...validateBounds(bbox, maxBboxKm2)]])).values()];
 
     async function readJson(response) {
         if (Number(response.headers.get('content-length')) > maxBytes) throw upstreamError('DGI response exceeds byte limit.');
@@ -42,7 +52,8 @@ export function createBfDgiParcelSource(descriptor, { fetchImpl = globalThis.fet
     }
 
     const result = (features, extra = {}) => ({ type: 'FeatureCollection', features, sourceId: id,
-        returnsWGS84: true, complete: false, completenessReason: 'Provider publishes no total or truncation metadata.', ...extra });
+        returnsWGS84: true, complete: false, areaComplete: false, authoritativeAbsence: false,
+        completenessReason: 'Provider publishes no total or truncation metadata.', ...extra });
 
     async function readBounds(bbox, signal) {
         validateBounds(bbox, maxBboxKm2);
@@ -86,7 +97,33 @@ export function createBfDgiParcelSource(descriptor, { fetchImpl = globalThis.fet
         return result([...found.values()], { apparentCeilingReached: payload.features.length === 1000 });
     }
 
-    function queryBounds(bbox) { return readBounds(bbox, AbortSignal.timeout(45000)); }
+    async function readUncappedBounds(bbox, signal, budget = { remaining: 64 }, depth = 0) {
+        if (--budget.remaining < 0) throw upstreamError('DGI subdivision request limit exceeded.');
+        const response = await readBounds(bbox, signal);
+        if (!response.apparentCeilingReached) return { ...response, complete: true,
+            completenessReason: 'Bounded PLOT transfer below the observed 1000-row ceiling; city coverage and authoritative absence remain unverified.' };
+        // The API exposes no paging/count contract. Never publish its capped response as
+        // a finished transfer. Split sequentially and preserve every returned ring/coordinate.
+        if (depth >= 6) throw upstreamError('DGI response remains capped at the subdivision limit.');
+        const axis = bbox[2] - bbox[0] >= bbox[3] - bbox[1] ? 0 : 1;
+        const middle = (bbox[axis] + bbox[axis + 2]) / 2;
+        const left = [...bbox], right = [...bbox]; left[axis + 2] = middle; right[axis] = middle;
+        const found = new Map();
+        for (const cell of [left, right]) {
+            const part = await readUncappedBounds(cell, signal, budget, depth + 1);
+            for (const parcel of part.features) {
+                const previous = found.get(parcel.id);
+                if (previous && JSON.stringify(previous.geometry) !== JSON.stringify(parcel.geometry)) {
+                    throw upstreamError('DGI returned conflicting geometry across subdivision cells.');
+                }
+                found.set(parcel.id, parcel);
+            }
+        }
+        return result([...found.values()], { complete: true, apparentCeilingReached: true, subdivided: true,
+            completenessReason: 'All subdivision transfers fell below the observed ceiling; city coverage and authoritative absence remain unverified.' });
+    }
+
+    function queryBounds(bbox) { return readUncappedBounds(bbox, AbortSignal.timeout(45000)); }
 
     async function queryIds(ids) {
         if (!Array.isArray(ids) || !ids.length || ids.length > 80 || ids.some(value => typeof value !== 'string'
@@ -97,7 +134,7 @@ export function createBfDgiParcelSource(descriptor, { fetchImpl = globalThis.fet
         // No in-memory ID/geometry index is needed, including after a process restart. The declared
         // windows bound this adapter's support; they are neither a commune boundary nor all-city scope.
         for (const bbox of lookupBounds) {
-            const response = await readBounds(bbox, signal);
+            const response = await readUncappedBounds(bbox, signal);
             for (const parcel of response.features) if (wanted.includes(parcel.id)) {
                 const previous = found.get(parcel.id);
                 if (previous && JSON.stringify(previous.geometry) !== JSON.stringify(parcel.geometry)) {

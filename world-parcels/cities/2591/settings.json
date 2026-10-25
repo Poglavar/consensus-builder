@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2591",
+  "name": "Brisbane, Australia",
+  "point": [
+    -27.489229111187,
+    153.039200356207
+  ],
+  "bindings": [
+    {
+      "appCityId": "brisbane",
+      "runtimeConfig": {
+        "id": "brisbane",
+        "wupCityCode": "2591",
+        "label": "Brisbane, Australia",
+        "currency": {
+          "locale": "en-AU",
+          "code": "AUD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -27.489229111187,
+            153.039200356207
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -27.489229111187,
+            153.039200356207
+          ],
+          "fallbackDataset": [
+            153.039200356207,
+            -27.489229111187
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "au-qld-lppf-base-parcels",
+          "idPrefix": "au-qld-lppf-base-parcels:lotplan:",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "© State of Queensland (Department of Resources) 2024 · Digital Cadastral Database / Land Parcel Property Framework, Base Parcels Only. Provider WGS84 output; indicative boundaries."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "au-qld-lppf-base-parcels",
+      "name": "Queensland DCDB — Brisbane base lot parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://spatial-gis.information.qld.gov.au/arcgis/rest/services/PlanningCadastre/LandParcelPropertyFramework/MapServer/8",
+      "countryCode": "AU",
+      "cityIds": [
+        "brisbane"
+      ],
+      "operator": "Queensland Government Department of Resources",
+      "idField": "lotplan",
+      "idType": "string",
+      "idPrefix": "au-qld-lppf-base-parcels:lotplan:",
+      "objectIdField": "objectid",
+      "parcelNumberField": "lotplan",
+      "outFields": [
+        "objectid",
+        "lotplan",
+        "cover_typ",
+        "parcel_typ",
+        "shire_name"
+      ],
+      "attributeFilters": {
+        "cover_typ": "Base",
+        "parcel_typ": "Lot Type Parcel",
+        "shire_name": "Brisbane City"
+      },
+      "pageSize": 500,
+      "idBatchSize": 40,
+      "maxFeatures": 4000,
+      "maxBboxKm2": 4,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "maxConcurrentQueries": 2,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "queryFormat": "geojson",
+      "sourceCrs": "EPSG:4283",
+      "metricSrid": 32756,
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "scope": "Brisbane City Base / Lot Type Parcel records only, bounded by requested viewport and shire_name. Road Type Parcel and Unlinked parcel or inter records are outside this explicit lot-parcel scope. Bounded checks do not establish citywide completeness.",
+      "attribution": "© State of Queensland (Department of Resources) 2024 · Digital Cadastral Database / Land Parcel Property Framework, Base Parcels Only. Provider WGS84 output; indicative boundaries.",
+      "licenceNote": "Public anonymous Queensland cadastral web service. Exact source-specific reuse licence version and redistribution wording remain second-pass follow-ups; no owner or personal fields are requested.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "AU",
+          "basis": "First-party layer 8 describes Queensland property boundaries from the DCDB, updated nightly; fixed shire_name filter binds this candidate to Brisbane City.",
+          "evidence": [
+            "https://spatial-gis.information.qld.gov.au/arcgis/rest/services/PlanningCadastre/LandParcelPropertyFramework/MapServer/8?f=pjson",
+            "https://www.business.qld.gov.au/running-business/support-services/mapping-data-imagery/data/digital-cadastral/access"
+          ]
+        }
+      },
+      "identityKind": "native-key-geometry-sha256-v1",
+      "objectIdManifestCheck": "id-rows",
+      "defaultForCity": true
+    }
+  ]
+}

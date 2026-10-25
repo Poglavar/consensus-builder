@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "652",
+  "name": "Montevideo, Uruguay",
+  "point": [
+    -34.8665939930456,
+    -56.1700665584851
+  ],
+  "bindings": [
+    {
+      "appCityId": "montevideo",
+      "runtimeConfig": {
+        "id": "montevideo",
+        "wupCityCode": "652",
+        "label": "Montevideo, Uruguay",
+        "currency": {
+          "locale": "es-UY",
+          "code": "UYU"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -34.8665939930456,
+            -56.1700665584851
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -34.8665939930456,
+            -56.1700665584851
+          ],
+          "fallbackDataset": [
+            -56.1700665584851,
+            -34.8665939930456
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "uy-dnc-pais-urbano-shp-2026",
+          "idPrefix": "UY-DNC-SNIG:",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Dirección Nacional de Catastro (MEF), Uruguay · SNIG (MGAP) cadastral map"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "uy-dnc-pais-urbano-shp-2026",
+      "name": "Uruguay DNC urban cadastre — SNIG live companion",
+      "adapter": "uy-dnc-snig",
+      "endpoint": "https://catalogodatos.gub.uy/dataset/9e0dc092-a669-4697-b3ba-88808165c902/resource/3d211675-14a6-4e69-bc0b-6cc549060633/download/paisurbano_shp.zip",
+      "liveEndpoint": "https://web.snig.gub.uy/arcgisserver/rest/services/Uruguay/SNIG_Catastro/MapServer/1",
+      "countryCode": "UY",
+      "cityIds": [
+        "montevideo"
+      ],
+      "defaultForCity": true,
+      "operator": "Dirección Nacional de Catastro (MEF); live cadastral publication by SNIG (MGAP)",
+      "catalogueUrl": "https://catalogodatos.gub.uy/dataset/direccion-nacional-de-catastro-shapes-del-parcelario-rural-y-urbano",
+      "attribution": "Dirección Nacional de Catastro (MEF), Uruguay · SNIG (MGAP) cadastral map",
+      "idPrefix": "UY-DNC-SNIG:",
+      "idField": "Codigo",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^VAA[0-9]{7}$",
+      "identityKind": "native-key-geometry-sha256-v1",
+      "outFields": [
+        "OBJECTID",
+        "Codigo",
+        "codDepto",
+        "codLocCat",
+        "tipo"
+      ],
+      "attributeFilters": {
+        "codDepto": "V",
+        "codLocCat": "AA",
+        "tipo": "U"
+      },
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 100,
+      "idBatchSize": 40,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 2,
+      "maxResponseBytes": 2097152,
+      "timeoutMs": 30000,
+      "maxConcurrentQueries": 1,
+      "browserTransport": "relay",
+      "metricSrid": 32721,
+      "nativeCrs": "EPSG:32721",
+      "sourceCrs": "EPSG:32721",
+      "responseCrs": "EPSG:4326",
+      "coordinateOrder": "longitude,latitude",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true
+      },
+      "scope": "Urban cadastral parcels scoped to Montevideo department V, locality AA; bounded availability established near queue point, no citywide completeness claim. Runtime uses explicit SNIG live companion, not the national archive snapshot.",
+      "identityPolicy": "UY-DNC-SNIG:<native Codigo>-<64-hex SHA256>. Existing native-key-geometry-sha256-v1 hashes minified ECMAScript JSON geometry with recursively sorted object keys, unchanged coordinates/ring order/closure/type and no rounding. Full digest disambiguates native-key variants; identical native/hash rows fail as collisions, including across OID pages. OBJECTID is transport-only. No deduplication and no historic/current inference. Geometry changes create an explicit different reference.",
+      "licenceNote": "DNC archive: Licencia de Datos Abiertos Uruguay (DAG). SNIG anonymous cadastral access observed; independent SNIG reuse terms and snapshot synchronization remain follow-ups."
+    }
+  ]
+}

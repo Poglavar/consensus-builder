@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5157",
+  "name": "Portland, United States",
+  "point": [
+    45.5016258135209,
+    -122.684292174309
+  ],
+  "bindings": [
+    {
+      "appCityId": "portland",
+      "runtimeConfig": {
+        "id": "portland",
+        "wupCityCode": "5157",
+        "label": "Portland, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            45.5016258135209,
+            -122.684292174309
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            45.5016258135209,
+            -122.684292174309
+          ],
+          "fallbackDataset": [
+            -122.684292174309,
+            45.5016258135209
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-or-multnomah-county-taxlot-parcels",
+          "idPrefix": "US-OR-MULTNOMAH-DART-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Multnomah County DART · taxlot parcels · reference use only"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-or-multnomah-county-taxlot-parcels",
+      "name": "Multnomah County Taxlot Parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://services5.arcgis.com/x7DNZL1YqNQVNykA/arcgis/rest/services/Multnomah_County_Taxlot_Parcels/FeatureServer",
+      "layerId": 0,
+      "idField": "MAPTAXLOT",
+      "idType": "string",
+      "objectIdField": "OBJECTID_1",
+      "idPrefix": "US-OR-MULTNOMAH-DART-",
+      "outFields": [
+        "OBJECTID_1",
+        "MAPTAXLOT"
+      ],
+      "queryFormat": "geojson",
+      "pageSize": 2000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 30000,
+      "idBatchSize": 40,
+      "countryCode": "US",
+      "metricSrid": 32610,
+      "sourceCrs": "EPSG:3857",
+      "responseCrs": "EPSG:4326",
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "operator": "Multnomah County Department of Assessment, Recording and Taxation (DART)",
+      "attribution": "Multnomah County DART · taxlot parcels · reference use only",
+      "catalogueUrl": "https://www.arcgis.com/home/item.html?id=13a535596a1f4fe0887b03d14d943229",
+      "licenceNote": "Public anonymous service. Item terms permit reference use only, disclaim accuracy/completeness, and describe an evolving snapshot; no separate open licence grant is established. Boundaries are approximate and not legal property boundaries.",
+      "scope": "Multnomah County assessor taxlots. Exact Portland queue-point and bounded central/east Portland samples; Portland portions in adjacent counties and citywide completeness unverified.",
+      "maxConcurrentQueries": 2,
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "basis": "County DART assessor taxlot extract; public item orgId and service URL match Multnomah County Maps organization x7DNZL1YqNQVNykA. County SAIL discovery corroborated in accepted receipt.",
+          "evidence": [
+            "https://www.arcgis.com/sharing/rest/content/items/13a535596a1f4fe0887b03d14d943229?f=pjson",
+            "https://www.arcgis.com/sharing/rest/portals/x7DNZL1YqNQVNykA?f=pjson",
+            "https://multco.us/info/sail-survey-and-assessor-image-locator"
+          ]
+        }
+      },
+      "cityIds": [
+        "portland"
+      ],
+      "defaultForCity": true
+    }
+  ]
+}

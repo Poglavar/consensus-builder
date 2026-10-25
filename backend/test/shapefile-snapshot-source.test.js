@@ -1,5 +1,6 @@
 // Headless contract tests for bounded archives, native identities and full source geometry.
-import { test } from 'vitest';
+// The qualification verifier uses node --test; npm test uses Vitest.
+const { test } = await import(process.env.VITEST ? 'vitest' : 'node:test');
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { zipSync, strToU8 } from 'fflate';
@@ -8,13 +9,15 @@ import { createShapefileSnapshotParcelSource } from '../parcels/shapefile-snapsh
 import { createParcelSource } from '../parcels/sources.js';
 import { SHAPEFILE_CRS, readShapefileZipMembers, indexShapefileSnapshot } from '../parcels/shapefile-zip-reader.js';
 
-const wkt = crs => crs === 'EPSG:6677'
+const wkt = crs => crs === 'EPSG:3003'
+    ? 'PROJCS["Monte_Mario_Italy_1",GEOGCS["GCS_Monte_Mario",DATUM["D_Monte_Mario",SPHEROID["International_1924",6378388.0,297.0]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Transverse_Mercator"],PARAMETER["False_Easting",1500000.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",9.0],PARAMETER["Scale_Factor",0.9996],PARAMETER["Latitude_Of_Origin",0.0],UNIT["Meter",1.0],AUTHORITY["EPSG",3003]]'
+    : crs === 'EPSG:6677'
     ? 'PROJCS["JGD_2011_Japan_Zone_9",GEOGCS["GCS_JGD_2011",DATUM["D_JGD_2011",SPHEROID["GRS_1980",6378137,298.257222101]],PRIMEM["Greenwich",0],UNIT["Degree",0.0174532925199433]],PROJECTION["Transverse_Mercator"],PARAMETER["False_Easting",0],PARAMETER["False_Northing",0],PARAMETER["Central_Meridian",139.8333333333333],PARAMETER["Scale_Factor",0.9999],PARAMETER["Latitude_Of_Origin",36],UNIT["Meter",1]]'
     : 'PROJCS["RGF_1993_Lambert_93",GEOGCS["GCS_RGF_1993",DATUM["D_RGF_1993",SPHEROID["GRS_1980",6378137,298.257222101]],PRIMEM["Greenwich",0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Conformal_Conic"],PARAMETER["False_Easting",700000],PARAMETER["False_Northing",6600000],PARAMETER["Central_Meridian",3],PARAMETER["Standard_Parallel_1",44],PARAMETER["Standard_Parallel_2",49],PARAMETER["Latitude_Of_Origin",46.5],UNIT["Meter",1]]';
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const square = (x, y, size = 10) => [[x, y], [x, y + size], [x + size, y + size], [x + size, y], [x, y]];
 function fixture({ values = ['340172   BV0156', '340172   BV0151'], type = 'C', crs = 'EPSG:2154', rings, mutate } = {}) {
-    const start = crs === 'EPSG:2154' ? [770000, 6280000] : [-70000, 40000];
+    const start = crs === 'EPSG:2154' ? [770000, 6280000] : crs === 'EPSG:3003' ? [1393500, 4991000] : [-70000, 40000];
     const records = values.map((_, i) => rings || [square(start[0] + i * 30, start[1])]);
     const shapes = records.map(parts => {
         const points = parts.flat(), buffer = Buffer.alloc(44 + 4 * parts.length + 16 * points.length);
@@ -241,4 +244,85 @@ test('failed error-body cancellation preserves the provider denial', async () =>
         ok: false, status: 403, body: { cancel: async () => { throw new Error('stream already failed'); } }
     }) });
     await assert.rejects(s.adapter.queryIds(['TEST-missing']), e => e.upstreamStatus === 403 && e.code === 'parcel-source-blocked');
+});
+
+function agriculturalFixture(options = {}) {
+    const f = fixture({ ...options, crs: 'EPSG:2154',
+        rings: options.rings || [square(1514800, 5041000)] });
+    delete f.files.prj; delete f.files.cpg;
+    f.bytes = zipSync(Object.fromEntries(Object.entries(f.files).map(([kind, bytes]) => [`parcel.${kind}`, bytes])));
+    Object.assign(f.descriptor, { sourceCrs: 'EPSG:3003', projectionMetadata: 'publisher',
+        sourceCrsEvidenceUrl: 'https://dati.lombardia.it/api/views/68w7-gci9',
+        nativeRecordIdentity: 'cadastral-shape-sha256-v1', expectedSnapshotSha256: hash(f.bytes),
+        shapefileMembers: { shp: 'parcel.shp', shx: 'parcel.shx', dbf: 'parcel.dbf' } });
+    return f;
+}
+test('agricultural reference plus exact native shape hash collapses only identical records', async () => {
+    const f = agriculturalFixture({ values: ['F205', 'F205'] }), s = source(f);
+    const read = await s.adapter.queryBounds([9.188, 45.521, 9.191, 45.524]);
+    assert.equal(read.features.length, 1);
+    assert.equal(read.snapshotStatistics.identicalReferenceAndShapeRows, 1);
+    const feature = read.features[0];
+    assert.match(feature.id, /^TEST-F205~[a-f0-9]{64}$/);
+    assert.deepEqual((await source(f).adapter.queryIds([feature.id])).features[0].geometry, feature.geometry);
+    // Independent PROJ EPSG:3003 -> WGS84 (EPSG:1660 approximate Helmert).
+    const point = feature.geometry.coordinates[0][0];
+    assert.ok(Math.abs(point[0] - 9.189151335987653) < 1e-8);
+    assert.ok(Math.abs(point[1] - 45.5221963896661) < 1e-8);
+});
+test('distinct agricultural polygons never overwrite each other at a repeated cadastral key', async () => {
+    const f = agriculturalFixture({ values: ['F205', 'F205'], mutate(files) {
+        // Translate every vertex in the second source polygon, including its closure.
+        const off = files.shx.readUInt32BE(108) * 2 + 8;
+        for (let i = 0; i < 5; i++) files.shp.writeDoubleLE(1514830 + (i === 2 || i === 3 ? 10 : 0), off + 48 + i * 16);
+    } });
+    const read = await source(f).adapter.queryBounds([9.188, 45.521, 9.192, 45.524]);
+    assert.equal(read.features.length, 2); assert.notEqual(read.features[0].id, read.features[1].id);
+    assert.notDeepEqual(read.features[0].geometry, read.features[1].geometry);
+});
+test('zero-only DBF decimal identity normalization is opt-in and does not round fractional values', async () => {
+    const f = agriculturalFixture({ values: ['23.00000'], type: 'N', mutate: files => { files.dbf[49] = 5; } });
+    const r = await source(f, { integerDecimalFields: ['Codeident'] }).adapter.queryBounds([9.188, 45.521, 9.191, 45.524]);
+    assert.match(r.features[0].id, /^TEST-23~/);
+    const bad = agriculturalFixture({ values: ['23.00001'], type: 'N', mutate: files => { files.dbf[49] = 5; } });
+    await assert.rejects(source(bad, { integerDecimalFields: ['Codeident'] }).adapter.queryBounds([9.188, 45.521, 9.191, 45.524]), gateway);
+});
+test('publisher CRS absence requires explicit evidence and hash profile; malformed geometry is never repaired', async () => {
+    const f = agriculturalFixture({ values: ['F205'] });
+    assert.throws(() => source(f, { sourceCrsEvidenceUrl: undefined }), /descriptor/);
+    assert.throws(() => source(f, { nativeRecordIdentity: undefined }), /descriptor/);
+    const bad = agriculturalFixture({ values: ['F205'], rings: [[[1514800, 5041000], [1514800, 5041010], [1514810, 5041010], [1514810, 5041000], [1514801, 5041000]]] });
+    await assert.rejects(source(bad).adapter.queryBounds([9.188, 45.521, 9.191, 45.524]), gateway);
+});
+test('SIARL null DBF terminator is explicit and bounded, never trailing-data tolerance', async () => {
+    const f = agriculturalFixture({ values: ['F205'], mutate: files => { files.dbf[files.dbf.length - 1] = 0; } });
+    await assert.rejects(source(f).adapter.queryBounds([9.188, 45.521, 9.191, 45.524]), gateway);
+    assert.equal((await source(f, { dbfEof: 'null' }).adapter.queryBounds([9.188, 45.521, 9.191, 45.524])).features.length, 1);
+});
+test('municipality scope filters spatial and exact reads consistently', async () => {
+    const f = agriculturalFixture({ values: ['F205', 'OTHER'] });
+    const all = await source(f).adapter.queryBounds([9.188, 45.521, 9.191, 45.524]);
+    const scoped = source(f, { attributeFilters: { Codeident: 'F205' } });
+    const read = await scoped.adapter.queryBounds([9.188, 45.521, 9.191, 45.524]);
+    assert.equal(read.features.length, 1);
+    const foreign = all.features.find(feature => feature.properties.sourceProperties.Codeident === 'OTHER');
+    const exact = await scoped.adapter.queryIds([foreign.id]);
+    assert.equal(exact.features.length, 0); assert.deepEqual(exact.absentIds, [foreign.id]);
+});
+
+// Turin publishes an integer native key in an N(18,11) column, plus a Monte Mario PRJ.
+test('Monte Mario PRJ and zero-decimal native integer IDs preserve exact rings and reject fractions', async () => {
+    const f = fixture({ values: ['95158.00000000000'], type: 'N', crs: 'EPSG:3003', mutate: files => {
+        files.dbf[49] = 11; files.cpg = strToU8('ISO 88591');
+    } });
+    const adapter = source(f, { idType: 'integer', integerDecimalFields: ['Codeident'], dbfEncoding: 'windows-1252' }).adapter;
+    const first = await adapter.queryIds(['TEST-95158']);
+    assert.equal(first.features[0].properties.sourceParcelId, '95158');
+    assert.deepEqual(first.features[0].geometry, (await adapter.queryIds(['TEST-95158'])).features[0].geometry);
+    const expected = square(...f.start).map(point => proj4(SHAPEFILE_CRS['EPSG:3003'], 'EPSG:4326', point));
+    assert.deepEqual(first.features[0].geometry.coordinates[0], expected);
+    const bad = fixture({ values: ['95158.00000000001'], type: 'N', crs: 'EPSG:3003', mutate: files => { files.dbf[49] = 11; } });
+    await assert.rejects(source(bad, { idType: 'integer', integerDecimalFields: ['Codeident'] }).adapter.queryIds(['TEST-95158']), gateway);
+    const wrong = fixture({ crs: 'EPSG:3003', mutate: files => { files.prj = strToU8(wkt('EPSG:3003').replace('1500000.0', '1500100.0')); } });
+    await assert.rejects(source(wrong).adapter.queryIds(['TEST-340172%20%20%20BV0156']), gateway);
 });

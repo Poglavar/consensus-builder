@@ -59,7 +59,7 @@
           "attribution": "Chief Surveyor-General · Property Viewer Erven · adapted"
         },
         "buildings": {
-          "source": "overture-tiles"
+          "source": "osm"
         },
         "sidebar": {
           "disabledSections": [
@@ -114,6 +114,10 @@
       "capabilities": {
         "areaEnumeration": true,
         "exactIds": true
+      },
+      "cityScopes": {
+        "reeston": "Fresh initial qualification on 2026-10-20: 3 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission.",
+        "mohadin": "Fresh initial qualification on 2026-10-20: 1 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission."
       }
     }
   ]

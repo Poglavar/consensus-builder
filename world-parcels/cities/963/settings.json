@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "963",
+  "name": "Bukoba, Tanzania",
+  "point": [
+    -1.32865546759468,
+    31.8092415566566
+  ],
+  "bindings": [
+    {
+      "appCityId": "bukoba",
+      "runtimeConfig": {
+        "id": "bukoba",
+        "wupCityCode": "963",
+        "label": "Bukoba, Tanzania",
+        "currency": {
+          "locale": "sw-TZ",
+          "code": "TZS"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -1.32865546759468,
+            31.8092415566566
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -1.32865546759468,
+            31.8092415566566
+          ],
+          "fallbackDataset": [
+            31.8092415566566,
+            -1.32865546759468
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "tz-mlhh_eardhi-qualified-spatial-units",
+          "idPrefix": "tz-mlhh_eardhi-qualified-spatial-units/uid/",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "United Republic of Tanzania Ministry of Lands, Housing and Human Settlements Development (MLHHSD) / e-Ardhi"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "tz-mlhh_eardhi-qualified-spatial-units",
+      "name": "Tanzania MLHHSD e-Ardhi qualified survey parcels",
+      "adapter": "wfs",
+      "endpoint": "https://eardhi.lands.go.tz/map/geoserver/taspro/ows",
+      "featureType": "taspro:qualified_spatial_units",
+      "version": "1.0.0",
+      "idField": "uid",
+      "idType": "string",
+      "idPattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "idPrefix": "tz-mlhh_eardhi-qualified-spatial-units/uid/",
+      "geometryField": "geom",
+      "requestProperties": true,
+      "outFields": [
+        "uid"
+      ],
+      "pageSize": 100,
+      "idBatchSize": 40,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "TZ",
+      "cityIds": [
+        "bukoba"
+      ],
+      "scope": "Observed partial Mwanza urban parcel coverage only; no city boundary or complete inventory verified.",
+      "operator": "Tanzania Ministry of Lands, Housing and Human Settlements Development (MLHHSD)",
+      "catalogueUrl": "https://eardhi.lands.go.tz/",
+      "attribution": "United Republic of Tanzania Ministry of Lands, Housing and Human Settlements Development (MLHHSD) / e-Ardhi",
+      "licenceNote": "Public anonymous WFS access observed. No explicit reuse licence located; attribution and redistribution terms remain a second-pass follow-up.",
+      "defaultForCity": true,
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "queryGeometry": true
+      },
+      "metricSridByCity": {
+        "bukoba": 32736
+      },
+      "metricSrid": 32736,
+      "timeoutMs": 45000,
+      "maxConcurrentQueries": 2
+    }
+  ]
+}

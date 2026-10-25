@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1767",
+  "name": "George, South Africa",
+  "point": [
+    -33.9918929277208,
+    22.4783828288181
+  ],
+  "bindings": [
+    {
+      "appCityId": "george",
+      "runtimeConfig": {
+        "id": "george",
+        "wupCityCode": "1767",
+        "label": "George, South Africa",
+        "currency": {
+          "locale": "en-ZA",
+          "code": "ZAR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -33.9918929277208,
+            22.4783828288181
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -33.9918929277208,
+            22.4783828288181
+          ],
+          "fallbackDataset": [
+            22.4783828288181,
+            -33.9918929277208
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "za-wc-sg-registered-erven",
+          "idPrefix": "ZA-WC-SG-REGISTERED-ERVEN-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Western Cape Government Spatial Data Warehouse; Surveyor General"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "za-wc-sg-registered-erven",
+      "name": "Western Cape Government Surveyor General Registered Erven",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.westerncape.gov.za/server2/rest/services/SpatialDataWarehouse/SG_PlanningCadastre/MapServer/12",
+      "idField": "PRCL_KEY",
+      "idType": "string",
+      "idPattern": "^[A-Z0-9]{26}$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "ZA-WC-SG-REGISTERED-ERVEN-",
+      "outFields": [
+        "OBJECTID",
+        "PRCL_KEY"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "queryFormat": "geojson",
+      "boundsSrid": 32734,
+      "boundsProjection": "+proj=utm +zone=34 +south +datum=WGS84 +units=m +no_defs",
+      "pageSize": 1000,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 45000,
+      "countryCode": "ZA",
+      "metricSrid": 32734,
+      "sourceCrs": "EPSG:32734",
+      "cityIds": [
+        "george"
+      ],
+      "scope": "Registered Erven cadastral parcels in Western Cape; bounded Paarl coverage including the WUP point, without citywide completeness proof. No undocumented status filters.",
+      "attribution": "Western Cape Government Spatial Data Warehouse; Surveyor General",
+      "licenceUrl": "https://gis.westerncape.gov.za/server2/rest/services/SpatialDataWarehouse/SG_PlanningCadastre/MapServer/12",
+      "licenceNote": "Surveyor General copyright attribution; no separate reuse licence established. Reuse terms remain a follow-up.",
+      "catalogueUrl": "https://gis.westerncape.gov.za/server2/rest/services/SpatialDataWarehouse/SG_PlanningCadastre/MapServer/12",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true
+      },
+      "defaultForCity": true
+    }
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7420",
+  "name": "São Luís, Brazil",
+  "point": [
+    -2.54724343400151,
+    -44.2387814400156
+  ],
+  "bindings": [
+    {
+      "appCityId": "sao_luis",
+      "runtimeConfig": {
+        "id": "sao_luis",
+        "wupCityCode": "7420",
+        "label": "São Luís, Brazil",
+        "currency": {
+          "locale": "pt-BR",
+          "code": "BRL"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -2.54724343400151,
+            -44.2387814400156
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -2.54724343400151,
+            -44.2387814400156
+          ],
+          "fallbackDataset": [
+            -44.2387814400156,
+            -2.54724343400151
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "br-incra-geonode-parcels",
+          "idPrefix": "BR-INCRA-SIGEF-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "INCRA / SIGEF GEO · SERPRO GeoNode · rural cadastral parcels"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "br-incra-geonode-parcels",
+      "name": "INCRA / SIGEF GEO rural cadastral parcels",
+      "adapter": "wfs",
+      "endpoint": "https://geonodeincra.serpro.gov.br/geoserver/ows",
+      "featureType": "geonode:sigef_geo",
+      "version": "1.0.0",
+      "idField": "parcela_codigo",
+      "idType": "string",
+      "idPattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "idPrefix": "BR-INCRA-SIGEF-",
+      "outFields": [
+        "parcela_codigo"
+      ],
+      "geometryField": "geometry",
+      "requestProperties": true,
+      "pageSize": 100,
+      "idBatchSize": 3,
+      "maxFeatures": 1000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 30000,
+      "maxConcurrentQueries": 2,
+      "browserTransport": "relay",
+      "countryCode": "BR",
+      "metricSrid": 32723,
+      "cityIds": [
+        "sao_luis"
+      ],
+      "scope": "Federal rural SIGEF cadastral parcels within São Luís. Verified polygons occupy one cluster about 4 km south of the unchanged city locator. Municipal urban tax-cadastre and citywide completeness are unverified.",
+      "attribution": "INCRA / SIGEF GEO · SERPRO GeoNode · rural cadastral parcels",
+      "catalogueUrl": "https://geonodeincra.serpro.gov.br/catalogue/csw",
+      "licenceUrl": "https://geoportal.incra.gov.br/developer/",
+      "licenceNote": "INCRA developer documentation permits using OGC services in applications; no explicit dataset redistribution licence or refresh cadence established. Attribute INCRA / SIGEF GEO and verify terms for intended reuse.",
+      "defaultForCity": true
+    }
+  ]
+}

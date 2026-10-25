@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "931",
+  "name": "Oslo, Norway",
+  "point": [
+    59.9203877624395,
+    10.7778967030176
+  ],
+  "bindings": [
+    {
+      "appCityId": "oslo",
+      "runtimeConfig": {
+        "id": "oslo",
+        "wupCityCode": "931",
+        "label": "Oslo, Norway",
+        "currency": {
+          "locale": "nb-NO",
+          "code": "NOK"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            59.9203877624395,
+            10.7778967030176
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            59.9203877624395,
+            10.7778967030176
+          ],
+          "fallbackDataset": [
+            10.7778967030176,
+            59.9203877624395
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "no-kartverket-eiendom-api-omrader",
+          "idPrefix": "NO-KARTVERKET-LOKALID:",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Kartverket — Matrikkelen Eiendomskart Teig · CC BY 4.0"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "no-kartverket-eiendom-api-omrader",
+      "name": "Kartverket Matrikkelen Eiendomskart Teig",
+      "adapter": "kartverket-eiendom",
+      "endpoint": "https://api.kartverket.no/eiendom/v1/punkt/omrader",
+      "countryCode": "NO",
+      "cityIds": [
+        "oslo"
+      ],
+      "idPrefix": "NO-KARTVERKET-LOKALID:",
+      "idField": "lokalid",
+      "idType": "integer",
+      "outFields": [
+        "lokalid",
+        "kommunenummer",
+        "gardsnummer",
+        "bruksnummer",
+        "festenummer",
+        "seksjonsnummer",
+        "objekttype"
+      ],
+      "metricSrid": 32632,
+      "sourceCrs": "EPSG:4258",
+      "outputCrs": "EPSG:4326",
+      "maxBboxKm2": 4,
+      "maxFeatures": 10000,
+      "pageSize": 500,
+      "timeoutMs": 30000,
+      "maxConcurrentQueries": 2,
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "operator": "Statens kartverk (Kartverket)",
+      "attribution": "Kartverket — Matrikkelen Eiendomskart Teig · CC BY 4.0",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "scope": "National cadastral Teig location API; bounded Oslo availability tested, no citywide completeness claim.",
+      "identityPolicy": "lokalid@kommunenummer.gardsnummer.bruksnummer.festenummer.seksjonsnummer; provider lokalid is bound to native exact-read tuple. Reject conflicting tuples/geometries for a lokalid within a read. No geometry-derived ID or local index.",
+      "sourceDocs": [
+        "https://api.kartverket.no/eiendom/v1/openapi.json",
+        "https://www.kartverket.no/en/api-and-data/eiendomsdata/apent-tilgjengelige-data-og-tjenester",
+        "https://data.norge.no/nb/data-services/b3b10253-f992-3bfb-b830-05a19a240185/matrikkelen-eiendomskart-teig-eiendom-rest-api-for-lokalisering"
+      ],
+      "defaultForCity": true
+    }
+  ]
+}

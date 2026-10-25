@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "542",
+  "name": "Praha (Prague), Czechia",
+  "point": [
+    50.0728145508303,
+    14.4460466671753
+  ],
+  "bindings": [
+    {
+      "appCityId": "praha_prague",
+      "runtimeConfig": {
+        "id": "praha_prague",
+        "wupCityCode": "542",
+        "label": "Praha (Prague), Czechia",
+        "currency": {
+          "locale": "cs-CZ",
+          "code": "CZK"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            50.0728145508303,
+            14.4460466671753
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            50.0728145508303,
+            14.4460466671753
+          ],
+          "fallbackDataset": [
+            14.4460466671753,
+            50.0728145508303
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "cz-praha-gspub-zakladni-mapa-parcely",
+          "idPrefix": "CZ-PRAHA-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "City of Prague / Prague Geoportal · Základní mapa · Parcely"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "cz-praha-gspub-zakladni-mapa-parcely",
+      "name": "Prague Basic Map Parcely",
+      "adapter": "arcgis",
+      "endpoint": "https://gs-pub.praha.eu/arcgis/rest/services/map/zakladni_mapa/MapServer/14",
+      "idField": "PARCKEY",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[0-9]{16}$",
+      "idPrefix": "CZ-PRAHA-",
+      "outFields": [
+        "PARCKEY",
+        "OBJECTID"
+      ],
+      "queryFormat": "geojson",
+      "pageSize": 1000,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 30000,
+      "countryCode": "CZ",
+      "cityIds": [
+        "praha_prague"
+      ],
+      "metricSrid": 32633,
+      "maxConcurrentQueries": 2,
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "operator": "City of Prague / Prague Geoportal",
+      "attribution": "City of Prague / Prague Geoportal · Základní mapa · Parcely",
+      "scope": "Municipal cadastral parcel layer; bounded central Prague observations only. Coverage across Prague districts, current/historic semantics and citywide completeness remain unverified.",
+      "licenceNote": "Public first-party query service; attribution retained. Layer-specific reuse licence was not established.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "CZ",
+          "basis": "Prague Basic Map explicitly contains parcely; polygon layer 14 is Parcely within Parcelní kresba.",
+          "evidence": [
+            "https://gs-pub.praha.eu/arcgis/rest/services/map/zakladni_mapa/MapServer/14",
+            "https://gs-pub.praha.eu/arcgis/rest/services/map/zakladni_mapa/MapServer"
+          ]
+        },
+        "keepPublishedFields": true
+      },
+      "defaultForCity": true
+    }
+  ]
+}

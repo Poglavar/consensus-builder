@@ -107,6 +107,4470 @@
     })();
 
     const CITY_CONFIGS = {
+        ouagadougou: {
+            id: 'ouagadougou',
+            wupCityCode: '1748',
+            label: 'Ouagadougou, Burkina Faso',
+            currency: {
+                locale: 'fr-BF',
+                code: 'XOF'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [12.363621967135, -1.52961682751207],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [12.363621967135, -1.52961682751207],
+                fallbackDataset: [-1.52961682751207, 12.363621967135]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'bf-dgi-ecadastre-public-geojson',
+                idPrefix: 'BF-ECADASTRE:',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Direction générale des Impôts du Burkina Faso — eCadastre'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        jinan: {
+            id: 'jinan',
+            wupCityCode: '9912',
+            label: 'Jinan, China',
+            currency: {
+                locale: 'zh-CN',
+                code: 'CNY'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [36.6624669903557, 117.021636599086],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [36.6624669903557, 117.021636599086],
+                fallbackDataset: [117.021636599086, 36.6624669903557]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'cn-jinan-nrp-zd0824-dj',
+                idPrefix: 'CN-JINAN-ZD-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Jinan Natural Resources and Planning Bureau / Jinan Real Estate Registration Center · public cadastral-map viewer'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        fortaleza: {
+            id: 'fortaleza',
+            wupCityCode: '8285',
+            label: 'Fortaleza, Brazil',
+            currency: {
+                locale: 'pt-BR',
+                code: 'BRL'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-3.77755534613031, -38.5613197865727],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-3.77755534613031, -38.5613197865727],
+                fallbackDataset: [-38.5613197865727, -3.77755534613031]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'br-fortaleza-sefin-fiscal-lots-maps-wfs',
+                idPrefix: 'BR-FORTALEZA-SEFIN-LF-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Prefeitura Municipal de Fortaleza / SEFIN; Fortaleza em Mapas / IPPLAN.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        mwanza: {
+            id: 'mwanza',
+            wupCityCode: '1868',
+            label: 'Mwanza, Tanzania',
+            currency: {
+                locale: 'sw-TZ',
+                code: 'TZS'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-2.5351793407139, 32.92965227765],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-2.5351793407139, 32.92965227765],
+                fallbackDataset: [32.92965227765, -2.5351793407139]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'tz-mlhh_eardhi-qualified-spatial-units',
+                idPrefix: 'tz-mlhh_eardhi-qualified-spatial-units/uid/',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'United Republic of Tanzania Ministry of Lands, Housing and Human Settlements Development (MLHHSD) / e-Ardhi'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        arusha: {
+            id: 'arusha',
+            wupCityCode: '3133',
+            label: 'Arusha, Tanzania',
+            currency: {
+                locale: 'sw-TZ',
+                code: 'TZS'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-3.37643947086754, 36.6941032162482],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-3.37643947086754, 36.6941032162482],
+                fallbackDataset: [36.6941032162482, -3.37643947086754]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'tz-mlhhds-eardhi-taspro-spatial-units37',
+                idPrefix: 'tz-mlhhds-eardhi-taspro-spatial-units37/uid/',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Tanzania MLHHSD e-Ardhi / TASPRO cadastral spatial units'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        taichung: {
+            id: 'taichung',
+            wupCityCode: '12126',
+            label: 'Taichung, Taiwan',
+            currency: {
+                locale: 'zh-TW',
+                code: 'TWD'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [24.1538291726609, 120.672380870346],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [24.1538291726609, 120.672380870346],
+                fallbackDataset: [120.672380870346, 24.1538291726609]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'tw-taichung-gismap-cadastral-parcels',
+                idPrefix: 'TW-TC-GISMAP-G67:',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Taichung City Government GIS / Land Administration services'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        adama: {
+            id: 'adama',
+            wupCityCode: '7000',
+            label: 'Adama, Ethiopia',
+            currency: {
+                locale: 'am-ET',
+                code: 'ETB'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [8.54130493885564, 39.2731731762384],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [8.54130493885564, 39.2731731762384],
+                fallbackDataset: [39.2731731762384, 8.54130493885564]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'et-ada-eland-registered-parcels',
+                idPrefix: 'ET-ADA-ELAND-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Adama City Administration e-Land / Land Office, registered cadastral parcels'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        mbeya: {
+            id: 'mbeya',
+            wupCityCode: '2187',
+            label: 'Mbeya, Tanzania',
+            currency: {
+                locale: 'sw-TZ',
+                code: 'TZS'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-8.9114119975848, 33.4790065137258],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-8.9114119975848, 33.4790065137258],
+                fallbackDataset: [33.4790065137258, -8.9114119975848]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'tz-taspro-eardhi-survey-spatial-units',
+                idPrefix: 'tz-taspro-eardhi-survey-spatial-units/uid/',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Tanzania Ministry of Lands, Housing and Human Settlements Development / e-Ardhi; taspro surveyed spatial units'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        asuncion: {
+            id: 'asuncion',
+            wupCityCode: '202',
+            label: 'Asunción, Paraguay',
+            currency: {
+                locale: 'es-PY',
+                code: 'PYG'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-25.3178298972871, -57.5499415260112],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-25.3178298972871, -57.5499415260112],
+                fallbackDataset: [-57.5499415260112, -25.3178298972871]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'py-asuncion-municipal-sigasu-lote',
+                idPrefix: 'asuncion-municipal-datos-catastrales/objectid_1/',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Municipalidad de Asunción · Datos Catastrales'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        sendai: {
+            id: 'sendai',
+            wupCityCode: '5593',
+            label: 'Sendai, Japan',
+            currency: {
+                locale: 'ja-JP',
+                code: 'JPY'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [38.2731458211357, 140.907061123702],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [38.2731458211357, 140.907061123702],
+                fallbackDataset: [140.907061123702, 38.2731458211357]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'jp-moj-sendai-miyagino-registered-map-2025',
+                idPrefix: 'JP-MOJ-SENDAI-MIYAGINO-2025-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: '登記所備付地図データ 仙台市宮城野区（法務省）; G-spatial Information Center, 2025 edition (used 2026-10-24). Adapted from Map XML to WGS84. https://www.geospatial.jp/ckan/dataset/908edd07-4618-4631-a69d-c70dc6fbf520'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        kigoma: {
+            id: 'kigoma',
+            wupCityCode: '114',
+            label: 'Kigoma, Tanzania',
+            currency: {
+                locale: 'sw-TZ',
+                code: 'TZS'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-4.88342756153032, 29.6523006847059],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-4.88342756153032, 29.6523006847059],
+                fallbackDataset: [29.6523006847059, -4.88342756153032]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'tz-mlhhds-eardhi-taspro-qualified-spatial-units',
+                idPrefix: 'tz-mlhhds-eardhi-taspro-qualified-spatial-units/uid/',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Tanzania MLHHSD e-Ardhi / TASPRO qualified spatial units'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        moshi: {
+            id: 'moshi',
+            wupCityCode: '3247',
+            label: 'Moshi, Tanzania',
+            currency: {
+                locale: 'sw-TZ',
+                code: 'TZS'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-3.35251428743016, 37.3439049969071],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-3.35251428743016, 37.3439049969071],
+                fallbackDataset: [37.3439049969071, -3.35251428743016]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'tz-mlhhds-eardhi-taspro-qualified-spatial-units',
+                idPrefix: 'tz-mlhhds-eardhi-taspro-qualified-spatial-units/uid/',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Tanzania MLHHSD e-Ardhi / TASPRO qualified spatial units'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        tanga: {
+            id: 'tanga',
+            wupCityCode: '3619',
+            label: 'Tanga, Tanzania',
+            currency: {
+                locale: 'sw-TZ',
+                code: 'TZS'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-5.09096192967613, 39.0986679278526],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-5.09096192967613, 39.0986679278526],
+                fallbackDataset: [39.0986679278526, -5.09096192967613]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'tz-taspro-eardhi-survey-spatial-units',
+                idPrefix: 'tz-taspro-eardhi-survey-spatial-units/uid/',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Tanzania Ministry of Lands, Housing and Human Settlements Development / e-Ardhi; taspro surveyed spatial units'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        paarl: {
+            id: 'paarl',
+            wupCityCode: '1281',
+            label: 'Paarl, South Africa',
+            currency: {
+                locale: 'en-ZA',
+                code: 'ZAR'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-33.6952714688879, 18.9943496682828],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-33.6952714688879, 18.9943496682828],
+                fallbackDataset: [18.9943496682828, -33.6952714688879]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'za-wc-sg-registered-erven',
+                idPrefix: 'ZA-WC-SG-REGISTERED-ERVEN-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Western Cape Government Spatial Data Warehouse; Surveyor General'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        arua: {
+            id: 'arua',
+            wupCityCode: '843',
+            label: 'Arua, Uganda',
+            currency: {
+                locale: 'en-UG',
+                code: 'UGX'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [3.0184197396955, 30.9109543412382],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [3.0184197396955, 30.9109543412382],
+                fallbackDataset: [30.9109543412382, 3.0184197396955]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'ug-mlhud-ugnlis-nalisep-arua-parcel-search',
+                idPrefix: 'UG-UGNLIS-ARUA-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Uganda Ministry of Lands, Housing & Urban Development — Uganda National Land Information System / NaLISEP'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        botshabelo_n: {
+            id: 'botshabelo_n',
+            wupCityCode: '2694',
+            label: 'Botshabelo-N, South Africa',
+            currency: {
+                locale: 'en-ZA',
+                code: 'ZAR'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-29.2462514325934, 26.7023396885052],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-29.2462514325934, 26.7023396885052],
+                fallbackDataset: [26.7023396885052, -29.2462514325934]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'za-csg-csggis-property-viewer-erven',
+                idPrefix: 'ZA-CSG-CSGGIS-ERVEN-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Chief Surveyor-General · Property Viewer Erven · adapted'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        tabora: {
+            id: 'tabora',
+            wupCityCode: '1781',
+            label: 'Tabora, Tanzania',
+            currency: {
+                locale: 'sw-TZ',
+                code: 'TZS'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-5.02184443320171, 32.8110587839918],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-5.02184443320171, 32.8110587839918],
+                fallbackDataset: [32.8110587839918, -5.02184443320171]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'tz-mlhhds-eardhi-taspro-spatial-units',
+                idPrefix: 'tz-mlhhds-eardhi-taspro-spatial-units/uid/',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Tanzania MLHHSD e-Ardhi / TASPRO cadastral spatial units'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        gulu: {
+            id: 'gulu',
+            wupCityCode: '1778',
+            label: 'Gulu, Uganda',
+            currency: {
+                locale: 'en-UG',
+                code: 'UGX'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [2.7704215068283, 32.2973429302325],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [2.7704215068283, 32.2973429302325],
+                fallbackDataset: [32.2973429302325, 2.7704215068283]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'ug-mlhud-ugnlis-nalisep-gulu-parcel-search',
+                idPrefix: 'UG-UGNLIS-GULU-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Uganda Ministry of Lands, Housing & Urban Development — Uganda National Land Information System / NaLISEP'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        george: {
+            id: 'george',
+            wupCityCode: '1767',
+            label: 'George, South Africa',
+            currency: {
+                locale: 'en-ZA',
+                code: 'ZAR'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-33.9918929277208, 22.4783828288181],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-33.9918929277208, 22.4783828288181],
+                fallbackDataset: [22.4783828288181, -33.9918929277208]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'za-wc-sg-registered-erven',
+                idPrefix: 'ZA-WC-SG-REGISTERED-ERVEN-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Western Cape Government Spatial Data Warehouse; Surveyor General'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        wajir: {
+            id: 'wajir',
+            wupCityCode: '3304',
+            label: 'Wajir, Kenya',
+            currency: {
+                locale: 'en-KE',
+                code: 'KES'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [1.75335206188523, 40.052422710595],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [1.75335206188523, 40.052422710595],
+                fallbackDataset: [40.052422710595, 1.75335206188523]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'ke-wajir-county-geonode-municipality-parcels',
+                idPrefix: 'wajir_municipality_parcels.',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Wajir County Government / Wajir County Integrated GIS System, gis.wajir.go.ke'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        bukoba: {
+            id: 'bukoba',
+            wupCityCode: '963',
+            label: 'Bukoba, Tanzania',
+            currency: {
+                locale: 'sw-TZ',
+                code: 'TZS'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-1.32865546759468, 31.8092415566566],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-1.32865546759468, 31.8092415566566],
+                fallbackDataset: [31.8092415566566, -1.32865546759468]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'tz-mlhh_eardhi-qualified-spatial-units',
+                idPrefix: 'tz-mlhh_eardhi-qualified-spatial-units/uid/',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'United Republic of Tanzania Ministry of Lands, Housing and Human Settlements Development (MLHHSD) / e-Ardhi'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        mufulira: {
+            id: 'mufulira',
+            wupCityCode: '1862',
+            label: 'Mufulira, Zambia',
+            currency: {
+                locale: 'en-ZM',
+                code: 'ZMW'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-12.5603415838874, 28.2479184318728],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-12.5603415838874, 28.2479184318728],
+                fallbackDataset: [28.2479184318728, -12.5603415838874]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'zm-mlg-land-portal-mufulira-parcels-wfs',
+                idPrefix: 'ZM-MLG-MUF-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Zambia Ministry of Local Government Land Portal / MLG GeoServer. Informational parcel map; not legal title or survey accuracy.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        motherwell: {
+            id: 'motherwell',
+            wupCityCode: '2330',
+            label: 'Motherwell, South Africa',
+            currency: {
+                locale: 'en-ZA',
+                code: 'ZAR'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-33.7987454080493, 25.590346840885],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-33.7987454080493, 25.590346840885],
+                fallbackDataset: [25.590346840885, -33.7987454080493]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'za-csg-csggis-property-viewer-erven',
+                idPrefix: 'ZA-CSG-CSGGIS-ERVEN-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Chief Surveyor-General · Property Viewer Erven · adapted'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        kahama: {
+            id: 'kahama',
+            wupCityCode: '1508',
+            label: 'Kahama, Tanzania',
+            currency: {
+                locale: 'sw-TZ',
+                code: 'TZS'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-3.83066706677158, 32.602700620422],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-3.83066706677158, 32.602700620422],
+                fallbackDataset: [32.602700620422, -3.83066706677158]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'tz-mlhh_eardhi-qualified-spatial-units',
+                idPrefix: 'tz-mlhh_eardhi-qualified-spatial-units/uid/',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'United Republic of Tanzania Ministry of Lands, Housing and Human Settlements Development (MLHHSD) / e-Ardhi'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        djougou: {
+            id: 'djougou',
+            wupCityCode: '529',
+            label: 'Djougou, Benin',
+            currency: {
+                locale: 'fr-BJ',
+                code: 'XOF'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [9.70492594544747, 1.6649553342533],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [9.70492594544747, 1.6649553342533],
+                fallbackDataset: [1.6649553342533, 9.70492594544747]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'bj-andf-efoncier-geoserver',
+                idPrefix: 'BJ-ANDF-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'ANDF (Agence Nationale du Domaine et du Foncier), e-Foncier cadastral parcels; adapted to WGS84. Verified Cotonou samples only.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        riebeeckstad: {
+            id: 'riebeeckstad',
+            wupCityCode: '2948',
+            label: 'Riebeeckstad, South Africa',
+            currency: {
+                locale: 'en-ZA',
+                code: 'ZAR'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-27.9662344821935, 26.8147489748905],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-27.9662344821935, 26.8147489748905],
+                fallbackDataset: [26.8147489748905, -27.9662344821935]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'za-csg-property-viewer-erven',
+                idPrefix: 'ZA-CSG-PV-ERVEN-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Chief Surveyor-General · Property Viewer Erven · adapted'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        musanze: {
+            id: 'musanze',
+            wupCityCode: '280',
+            label: 'Musanze, Rwanda',
+            currency: {
+                locale: 'en-RW',
+                code: 'RWF'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-1.50199527385739, 29.6398405531819],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-1.50199527385739, 29.6398405531819],
+                fallbackDataset: [29.6398405531819, -1.50199527385739]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'rw-naeb-musanze-parcels-arcgis',
+                idPrefix: 'RW-NAEB-MUSANZE-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Rwanda NAEB GIS, Musanze_Parcels.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        ilaro: {
+            id: 'ilaro',
+            wupCityCode: '925',
+            label: 'Ilaro, Nigeria',
+            currency: {
+                locale: 'en-NG',
+                code: 'NGN'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [6.89029060003692, 3.01207953933757],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [6.89029060003692, 3.01207953933757],
+                fallbackDataset: [3.01207953933757, 6.89029060003692]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'ng-ogun-sdi-geonode-parcels',
+                idPrefix: 'NG-OGUN-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Ogun State Spatial Data Infrastructure / Bureau of Lands and Survey (BLS). Source catalogue declares public_domain and No Constraints. Full geographic response polygons retained unchanged.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        embalenhle: {
+            id: 'embalenhle',
+            wupCityCode: '4728',
+            label: 'eMbalenhle, South Africa',
+            currency: {
+                locale: 'en-ZA',
+                code: 'ZAR'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-26.5505380330907, 29.0792274481313],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-26.5505380330907, 29.0792274481313],
+                fallbackDataset: [29.0792274481313, -26.5505380330907]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'za-csg-dffe-erven',
+                idPrefix: 'ZA-CSG-DFFE-ERVEN-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Chief Surveyor-General · DFFE hosted Erven · adapted'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        seweding: {
+            id: 'seweding',
+            wupCityCode: '2483',
+            label: 'Seweding, South Africa',
+            currency: {
+                locale: 'en-ZA',
+                code: 'ZAR'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-25.8660980158163, 25.6094579612092],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-25.8660980158163, 25.6094579612092],
+                fallbackDataset: [25.6094579612092, -25.8660980158163]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'za-mahikeng-landinformation-cadastre',
+                idPrefix: 'ZA-MAHIKENG-LANDINFORMATION-CADASTRE-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Mahikeng Local Municipality GIS / Land Information System; Chief Surveyor-General cadastral provenance'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        abengourou: {
+            id: 'abengourou',
+            wupCityCode: '3649',
+            label: 'Abengourou, Côte d’Ivoire',
+            currency: {
+                locale: 'fr-CI',
+                code: 'XOF'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [6.73099190007859, -3.49838850498311],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [6.73099190007859, -3.49838850498311],
+                fallbackDataset: [-3.49838850498311, 6.73099190007859]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'ci-abengourou-ecommunes-parcellaire',
+                idPrefix: 'ci-abengourou-ecommunes/Parcellaire_DIOULAKRO_2_(2A)/feature-id/',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Commune d\'Abengourou / E-Commune; CNTIG platform.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        buligenyi: {
+            id: 'buligenyi',
+            wupCityCode: '2700',
+            label: 'Buligenyi, Uganda',
+            currency: {
+                locale: 'en-UG',
+                code: 'UGX'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [1.28060100617235, 34.3348687694403],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [1.28060100617235, 34.3348687694403],
+                fallbackDataset: [34.3348687694403, 1.28060100617235]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'ug-mlhud-ugnlis-nalisep-bulegeni-parcel-search',
+                idPrefix: 'UG-UGNLIS-BULEGENI-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Uganda Ministry of Lands, Housing & Urban Development — Uganda National Land Information System / NaLISEP'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        ga_rankuwa: {
+            id: 'ga_rankuwa',
+            wupCityCode: '4076',
+            label: 'Ga-Rankuwa, South Africa',
+            currency: {
+                locale: 'en-ZA',
+                code: 'ZAR'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-25.6024894237392, 27.9690664592921],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-25.6024894237392, 27.9690664592921],
+                fallbackDataset: [27.9690664592921, -25.6024894237392]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'za-csg-csggis-property-viewer-erven',
+                idPrefix: 'ZA-CSG-CSGGIS-ERVEN-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Chief Surveyor-General · Property Viewer Erven · adapted'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        bombay_heights: {
+            id: 'bombay_heights',
+            wupCityCode: '5106',
+            label: 'Bombay Heights, South Africa',
+            currency: {
+                locale: 'en-ZA',
+                code: 'ZAR'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-29.567660491012, 30.411953219533],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-29.567660491012, 30.411953219533],
+                fallbackDataset: [30.411953219533, -29.567660491012]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'za-kzncogta-surveyor-general-cadastral-2026',
+                idPrefix: 'ZA-KZNCOGTA-SG2026-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'KwaZulu-Natal COGTA · ILIS Land tenure component · Surveyor General cadastral (March 2026)'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        thika: {
+            id: 'thika',
+            wupCityCode: '2495',
+            label: 'Thika, Kenya',
+            currency: {
+                locale: 'en-KE',
+                code: 'KES'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-1.05581885409847, 37.0906067272474],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-1.05581885409847, 37.0906067272474],
+                fallbackDataset: [37.0906067272474, -1.05581885409847]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'ke-arcgis-thika-rim-webmap-plots',
+                idPrefix: 'arcgis-webmap:ea580568a6d84bc7b7e33e03efd1305c/plots:fid=',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Thika_RIM, published by KiplimoC on the gegis-jkuat ArcGIS organization; original RIM authority unverified.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        lucapa: {
+            id: 'lucapa',
+            wupCityCode: '4030',
+            label: 'Lucapa, Angola',
+            currency: {
+                locale: 'pt-AO',
+                code: 'AOA'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-8.44031054049308, 20.7260297443997],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-8.44031054049308, 20.7260297443997],
+                fallbackDataset: [20.7260297443997, -8.44031054049308]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'ao-agt-lunda-norte-agt-layer-0',
+                idPrefix: 'AO-LUNDA-NORTE-AGT-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'ANGOLA_GGPEN — Lunda_Norte_AGT_gdb / Lunda_Norte_AGT layer 0; AGT property-registration context. Exact IGCA/AGT/GGPEN maintenance responsibilities are unverified.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        solwezi: {
+            id: 'solwezi',
+            wupCityCode: '573',
+            label: 'Solwezi, Zambia',
+            currency: {
+                locale: 'en-ZM',
+                code: 'ZMW'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-12.179874493285, 26.3946184624536],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-12.179874493285, 26.3946184624536],
+                fallbackDataset: [26.3946184624536, -12.179874493285]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'zm-szi-zilmis-parcels-wfs',
+                idPrefix: 'ZM-SZI-FID-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Zambia NSDI / Smart Zambia Institute; MLNR Land Cadastre.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        sengerema: {
+            id: 'sengerema',
+            wupCityCode: '1603',
+            label: 'Sengerema, Tanzania',
+            currency: {
+                locale: 'sw-TZ',
+                code: 'TZS'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-2.64955674242765, 32.6443597417617],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-2.64955674242765, 32.6443597417617],
+                fallbackDataset: [32.6443597417617, -2.64955674242765]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'tz-mlhhds-eardhi-taspro-qualified-spatial-units',
+                idPrefix: 'tz-mlhhds-eardhi-taspro-qualified-spatial-units/uid/',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Tanzania MLHHSD e-Ardhi / TASPRO qualified spatial units'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        mtwara: {
+            id: 'mtwara',
+            wupCityCode: '3721',
+            label: 'Mtwara, Tanzania',
+            currency: {
+                locale: 'sw-TZ',
+                code: 'TZS'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-10.2869187959648, 40.1796412441869],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-10.2869187959648, 40.1796412441869],
+                fallbackDataset: [40.1796412441869, -10.2869187959648]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'tz-mlhhds-eardhi-taspro-qualified-spatial-units',
+                idPrefix: 'tz-mlhhds-eardhi-taspro-qualified-spatial-units/uid/',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Tanzania MLHHSD e-Ardhi / TASPRO qualified spatial units'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        idi_iroko: {
+            id: 'idi_iroko',
+            wupCityCode: '56',
+            label: 'Idi-Iroko, Nigeria',
+            currency: {
+                locale: 'en-NG',
+                code: 'NGN'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [6.64250332772369, 2.75421560154201],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [6.64250332772369, 2.75421560154201],
+                fallbackDataset: [2.75421560154201, 6.64250332772369]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'ng-ogun-sdi-geonode-parcels',
+                idPrefix: 'NG-OGUN-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Ogun State Spatial Data Infrastructure / Bureau of Lands and Survey (BLS). Source catalogue declares public_domain and No Constraints. Full geographic response polygons retained unchanged.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        shinyanga: {
+            id: 'shinyanga',
+            wupCityCode: '2264',
+            label: 'Shinyanga, Tanzania',
+            currency: {
+                locale: 'sw-TZ',
+                code: 'TZS'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-3.66540303247698, 33.4206960755592],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-3.66540303247698, 33.4206960755592],
+                fallbackDataset: [33.4206960755592, -3.66540303247698]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'tz-mlhhds-eardhi-taspro-qualified-spatial-units',
+                idPrefix: 'tz-mlhhds-eardhi-taspro-qualified-spatial-units/uid/',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Tanzania MLHHSD e-Ardhi / TASPRO qualified spatial units'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        kandi: {
+            id: 'kandi',
+            wupCityCode: '2680',
+            label: 'Kandi, Benin',
+            currency: {
+                locale: 'fr-BJ',
+                code: 'XOF'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [11.1285399256351, 2.93479418804951],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [11.1285399256351, 2.93479418804951],
+                fallbackDataset: [2.93479418804951, 11.1285399256351]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'bj-andf-efoncier-geoserver',
+                idPrefix: 'BJ-ANDF-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'ANDF (Agence Nationale du Domaine et du Foncier), e-Foncier cadastral parcels; adapted to WGS84. Verified Cotonou samples only.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        paardekraal_ext_2: {
+            id: 'paardekraal_ext_2',
+            wupCityCode: '3401',
+            label: 'Paardekraal Ext 2, South Africa',
+            currency: {
+                locale: 'en-ZA',
+                code: 'ZAR'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-25.6209313148614, 27.2695405341925],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-25.6209313148614, 27.2695405341925],
+                fallbackDataset: [27.2695405341925, -25.6209313148614]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'za-csg-dffe-erven',
+                idPrefix: 'ZA-CSG-DFFE-ERVEN-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Chief Surveyor-General · DFFE hosted Erven · adapted'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        danane: {
+            id: 'danane',
+            wupCityCode: '216',
+            label: 'Danané, Côte d’Ivoire',
+            currency: {
+                locale: 'fr-CI',
+                code: 'XOF'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [7.25889141864977, -8.15101450726094],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [7.25889141864977, -8.15101450726094],
+                fallbackDataset: [-8.15101450726094, 7.25889141864977]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'ci-danane-ecommunes-parcellaire',
+                idPrefix: 'ci-danane-ecommunes/feature-id/',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Commune de Danané / E-Commune; CNTIG platform.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        aplahoue: {
+            id: 'aplahoue',
+            wupCityCode: '670',
+            label: 'Aplahoué, Benin',
+            currency: {
+                locale: 'fr-BJ',
+                code: 'XOF'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [6.94683964645383, 1.71108546167032],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [6.94683964645383, 1.71108546167032],
+                fallbackDataset: [1.71108546167032, 6.94683964645383]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'bj-andf-efoncier-geoserver',
+                idPrefix: 'BJ-ANDF-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'ANDF (Agence Nationale du Domaine et du Foncier), e-Foncier cadastral parcels; adapted to WGS84. Verified Cotonou samples only.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        xangongo: {
+            id: 'xangongo',
+            wupCityCode: '2755',
+            label: 'Xangongo, Angola',
+            currency: {
+                locale: 'pt-AO',
+                code: 'AOA'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-16.7479046011355, 14.9761625433827],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-16.7479046011355, 14.9761625433827],
+                fallbackDataset: [14.9761625433827, -16.7479046011355]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'ao-agt-cunene-agt-layer-0',
+                idPrefix: 'AO-CUNENE-AGT-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'ANGOLA_GGPEN — Cunene_AGT_gdb / Cunene_AGT layer 0; AGT property-registration workflow. IGCA/AGT/GGPEN maintenance responsibilities are unverified.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        kakamega: {
+            id: 'kakamega',
+            wupCityCode: '969',
+            label: 'Kakamega, Kenya',
+            currency: {
+                locale: 'en-KE',
+                code: 'KES'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [0.287014404891848, 34.7488417467106],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [0.287014404891848, 34.7488417467106],
+                fallbackDataset: [34.7488417467106, 0.287014404891848]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'ke-kakamega-arcgis-kmz-parcels',
+                idPrefix: 'ke-kakamega-arcgis-kmz-parcels:OBJECTID_1=',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Kakamega Parcels / Kakamega Land Information, ArcGIS Online publisher Ombuitau. Official county custody unverified.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        nzagi: {
+            id: 'nzagi',
+            wupCityCode: '4158',
+            label: 'Nzagi, Angola',
+            currency: {
+                locale: 'pt-AO',
+                code: 'AOA'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-7.68899761064913, 21.364067681208],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-7.68899761064913, 21.364067681208],
+                fallbackDataset: [21.364067681208, -7.68899761064913]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'ao-agt-lunda-norte-agt-layer-0',
+                idPrefix: 'AO-LUNDA-NORTE-AGT-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'ANGOLA_GGPEN — Lunda_Norte_AGT_gdb / Lunda_Norte_AGT layer 0; AGT property-registration context. Exact IGCA/AGT/GGPEN maintenance responsibilities are unverified.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        daejeon: {
+            id: 'daejeon',
+            wupCityCode: '2214',
+            label: 'Daejeon, South Korea',
+            currency: {
+                locale: 'ko-KR',
+                code: 'KRW'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [36.3461964380978, 127.39195575042],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [36.3461964380978, 127.39195575042],
+                fallbackDataset: [127.39195575042, 36.3461964380978]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'kr-daejeon-city-o2map-cadastral-wfs',
+                idPrefix: 'KR-DAEJEON-PNU-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Daejeon Metropolitan City Spatial Information Portal / 대전광역시 공간정보포털 · LSMD_CONT_LDREG_2024'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        toluca: {
+            id: 'toluca',
+            wupCityCode: '5248',
+            label: 'Toluca, Mexico',
+            currency: {
+                locale: 'es-MX',
+                code: 'MXN'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [19.2890968271045, -99.6265552780563],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [19.2890968271045, -99.6265552780563],
+                fallbackDataset: [-99.6265552780563, 19.2890968271045]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'mx-sedatu-ran-pit15-edomex-parcels-2020',
+                idPrefix: 'MX-RAN-PIT15-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Registro Agrario Nacional (RAN) / SEDATU SITU, PIT15 Parcelas México 2020, CC BY 4.0. Social-property parcels; historical and indicative coverage.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        cordoba: {
+            id: 'cordoba',
+            wupCityCode: '2381',
+            label: 'Cordoba, Argentina',
+            currency: {
+                locale: 'es-AR',
+                code: 'ARS'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-31.3991858994118, -64.2065456865464],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-31.3991858994118, -64.2065456865464],
+                fallbackDataset: [-64.2065456865464, -31.3991858994118]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'ar-cordoba-idecor-wfs-parcelas',
+                idPrefix: 'AR-CORDOBA-IDECOR-PARCELA-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'IDECOR / Dirección General de Catastro de la Provincia de Córdoba, Gobierno de la Provincia de Córdoba · parcelas · CC BY-SA / source terms'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        gwangju: {
+            id: 'gwangju',
+            wupCityCode: '2656',
+            label: 'Gwangju, South Korea',
+            currency: {
+                locale: 'ko-KR',
+                code: 'KRW'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [35.1642250703976, 126.868931753415],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [35.1642250703976, 126.868931753415],
+                fallbackDataset: [126.868931753415, 35.1642250703976]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'kr-jeonnam-gwangju-jijuk-lookup',
+                idPrefix: 'KR-JG-JIJUK-PNU-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Jeonnam-Gwangju integrated spatial-information portal / 전남광주통합특별시 · 국토지리정보원'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        bruxelles_brussels: {
+            id: 'bruxelles_brussels',
+            wupCityCode: '1157',
+            label: 'Bruxelles (Brussels), Belgium',
+            currency: {
+                locale: 'nl-BE',
+                code: 'EUR'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [50.8478596081583, 4.36059490398924],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [50.8478596081583, 4.36059490398924],
+                fallbackDataset: [4.36059490398924, 50.8478596081583]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'be-fps-finances-cadgis-cadastral-parcels',
+                idPrefix: 'BE-FPS-CADGIS:',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'FPS Finance — GAPD, CadGIS cadastral plan · CC BY 4.0 · WGS84 service output'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        portland: {
+            id: 'portland',
+            wupCityCode: '5157',
+            label: 'Portland, United States',
+            currency: {
+                locale: 'en-US',
+                code: 'USD'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [45.5016258135209, -122.684292174309],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [45.5016258135209, -122.684292174309],
+                fallbackDataset: [-122.684292174309, 45.5016258135209]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'us-or-multnomah-county-taxlot-parcels',
+                idPrefix: 'US-OR-MULTNOMAH-DART-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Multnomah County DART · taxlot parcels · reference use only'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        leon: {
+            id: 'leon',
+            wupCityCode: '4456',
+            label: 'León, Mexico',
+            currency: {
+                locale: 'es-MX',
+                code: 'MXN'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [21.1241552910899, -101.66695408078],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [21.1241552910899, -101.66695408078],
+                fallbackDataset: [-101.66695408078, 21.1241552910899]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'mx-leon-implan-predios-piloto-wfs',
+                idPrefix: 'MX-LEON-IMPLAN-PREDIOS_PILOTO-OBJECTID-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Municipio de León / IMPLAN León · Predios_Piloto · bounded northern cadastral pilot · municipal platform citation required'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        cochabamba: {
+            id: 'cochabamba',
+            wupCityCode: '648',
+            label: 'Cochabamba, Bolivia',
+            currency: {
+                locale: 'es-BO',
+                code: 'BOB'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-17.4013891412774, -66.1739561318593],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-17.4013891412774, -66.1739561318593],
+                fallbackDataset: [-66.1739561318593, -17.4013891412774]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'bo-inra-geoserver-sinacar-tierras-clasificacion',
+                idPrefix: 'bo-inra-sinacar-tierras_clasificacion:',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'INRA / SINACAR — agrarian cadastral properties'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        bishkek: {
+            id: 'bishkek',
+            wupCityCode: '987',
+            label: 'Bishkek, Kyrgyzstan',
+            currency: {
+                locale: 'ky-KG',
+                code: 'KGS'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [42.8699221128329, 74.5844330252254],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [42.8699221128329, 74.5844330252254],
+                fallbackDataset: [74.5844330252254, 42.8699221128329]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'kg-bishkek-gisar-eni',
+                idPrefix: 'KG-GISAR-ENI-CODE-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'GISAR · State Cadastre of the Kyrgyz Republic'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        samarinda: {
+            id: 'samarinda',
+            wupCityCode: '8199',
+            label: 'Samarinda, Indonesia',
+            currency: {
+                locale: 'id-ID',
+                code: 'IDR'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-0.495342688995459, 117.146215066518],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-0.495342688995459, 117.146215066518],
+                fallbackDataset: [117.146215066518, -0.495342688995459]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'ID-SAMARINDA-KANTAH-GEOTAS-WFS-BIDANG-TERDAFTAR',
+                idPrefix: 'ID-SAMARINDA-GEOTAS-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Kantor Pertanahan Kota Samarinda / ATR-BPN; GEOTAS; Komputerisasi Kegiatan Pertanahan (downloaded 13 August 2025).'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        managua: {
+            id: 'managua',
+            wupCityCode: '345',
+            label: 'Managua, Nicaragua',
+            currency: {
+                locale: 'es-NI',
+                code: 'NIO'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [12.1262758109836, -86.2552053666942],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [12.1262758109836, -86.2552053666942],
+                fallbackDataset: [-86.2552053666942, 12.1262758109836]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'ni-ineter-dgcf-nc-managua-wfs',
+                idPrefix: 'NI-INETER-NC-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'INETER · Dirección General de Catastro Físico. Public cadastral consultation; publisher conditions apply.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        kharkiv: {
+            id: 'kharkiv',
+            wupCityCode: '3991',
+            label: 'Kharkiv, Ukraine',
+            currency: {
+                locale: 'uk-UA',
+                code: 'UAH'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [49.9875116472834, 36.2663445587846],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [49.9875116472834, 36.2663445587846],
+                fallbackDataset: [36.2663445587846, 49.9875116472834]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'ua-khmr-address-plots',
+                idPrefix: 'UA-KHMR-PLOT-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Kharkiv City Council / Kharkiv municipal geo-portal · municipal address-register land plots'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        sao_luis: {
+            id: 'sao_luis',
+            wupCityCode: '7420',
+            label: 'São Luís, Brazil',
+            currency: {
+                locale: 'pt-BR',
+                code: 'BRL'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-2.54724343400151, -44.2387814400156],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-2.54724343400151, -44.2387814400156],
+                fallbackDataset: [-44.2387814400156, -2.54724343400151]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'br-incra-geonode-parcels',
+                idPrefix: 'BR-INCRA-SIGEF-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'INCRA / SIGEF GEO · SERPRO GeoNode · rural cadastral parcels'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        montevideo: {
+            id: 'montevideo',
+            wupCityCode: '652',
+            label: 'Montevideo, Uruguay',
+            currency: {
+                locale: 'es-UY',
+                code: 'UYU'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-34.8665939930456, -56.1700665584851],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-34.8665939930456, -56.1700665584851],
+                fallbackDataset: [-56.1700665584851, -34.8665939930456]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'uy-dnc-pais-urbano-shp-2026',
+                idPrefix: 'UY-DNC-SNIG:',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Dirección Nacional de Catastro (MEF), Uruguay · SNIG (MGAP) cadastral map'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        torreon: {
+            id: 'torreon',
+            wupCityCode: '4715',
+            label: 'Torreón, Mexico',
+            currency: {
+                locale: 'es-MX',
+                code: 'MXN'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [25.5481572916593, -103.439943151329],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [25.5481572916593, -103.439943151329],
+                fallbackDataset: [-103.439943151329, 25.5481572916593]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'mx-sedatu-ran-pit05-coahuila-parcelas-2020',
+                idPrefix: 'MX-SEDATU-RAN-PIT5-COAH-PAR_ID-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Registro Agrario Nacional (RAN), SEDATU; PIT5 Parcelas Coahuila de Zaragoza 2020. Historical social-property parcels; indicative partial coverage.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        praha_prague: {
+            id: 'praha_prague',
+            wupCityCode: '542',
+            label: 'Praha (Prague), Czechia',
+            currency: {
+                locale: 'cs-CZ',
+                code: 'CZK'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [50.0728145508303, 14.4460466671753],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [50.0728145508303, 14.4460466671753],
+                fallbackDataset: [14.4460466671753, 50.0728145508303]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'cz-praha-gspub-zakladni-mapa-parcely',
+                idPrefix: 'CZ-PRAHA-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'City of Prague / Prague Geoportal · Základní mapa · Parcely'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        hiroshima: {
+            id: 'hiroshima',
+            wupCityCode: '3037',
+            label: 'Hiroshima, Japan',
+            currency: {
+                locale: 'ja-JP',
+                code: 'JPY'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [34.4082401125981, 132.45216492325],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [34.4082401125981, 132.45216492325],
+                fallbackDataset: [132.45216492325, 34.4082401125981]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'jp-moj-hiroshima-asaminami-registered-map-2026',
+                idPrefix: 'jp-moj-hiroshima-asaminami-registered-map-2026/geometry-sha256-v1/',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Japan Ministry of Justice registry-office map data; AIGID / Geospatial Information Center conversion and distribution. Hiroshima Asaminami Ward public-coordinate sheets; 2026 distribution (collection label 2025).'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        shymkent: {
+            id: 'shymkent',
+            wupCityCode: '2354',
+            label: 'Shymkent, Kazakhstan',
+            currency: {
+                locale: 'ru-KZ',
+                code: 'KZT'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [42.3369257073586, 69.5992009029268],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [42.3369257073586, 69.5992009029268],
+                fallbackDataset: [69.5992009029268, 42.3369257073586]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'kz-shymkent-rgis-aisgzk-merge1',
+                idPrefix: 'KZ-SHYMKENT-AISGZK:',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: '<a href="https://geo-shym.kz/">Shymkent RGIS / AISGZK cadastral parcels</a> · bounded coverage verified; currentness unestablished'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        turin: {
+            id: 'turin',
+            wupCityCode: '61',
+            label: 'Turin, Italy',
+            currency: {
+                locale: 'it-IT',
+                code: 'EUR'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [45.0659758665918, 7.64679680623837],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [45.0659758665918, 7.64679680623837],
+                fallbackDataset: [7.64679680623837, 45.0659758665918]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'it-comune-torino-catasto-urbano',
+                idPrefix: 'IT-COMUNE-TORINO-CATASTO-URBANO|CIT_PART|',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Comune di Torino Geoportale · CC BY 4.0'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        baltimore: {
+            id: 'baltimore',
+            wupCityCode: '8172',
+            label: 'Baltimore, United States',
+            currency: {
+                locale: 'en-US',
+                code: 'USD'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [39.3242171668751, -76.6248975263197],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [39.3242171668751, -76.6248975263197],
+                fallbackDataset: [-76.6248975263197, 39.3242171668751]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'us-md-baltimore-city-realproperty-ob',
+                idPrefix: 'US-MD-BALTIMORE-OB-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'City of Baltimore · Real Property Information · CC BY 3.0. Source geometry served in WGS84; indicative parcel cartography.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        al_quds_east_jerusalem: {
+            id: 'al_quds_east_jerusalem',
+            wupCityCode: '1402',
+            label: 'Al-Quds (East Jerusalem), Palestine',
+            currency: {
+                locale: 'ar-PS',
+                code: 'ILS'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [31.8144863306494, 35.2239735997278],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [31.8144863306494, 35.2239735997278],
+                fallbackDataset: [35.2239735997278, 31.8144863306494]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'ps-molg-geomolg-parcelsregistered-withdomain',
+                idPrefix: 'PS-GEOMOLG-WITHDOMAIN-OBJECTID-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Palestinian Ministry of Local Government / GeoMOLG, registered cadastral parcels. Native OBJECTID references; bounded availability only. Wider coverage, currentness, survey alignment and reuse terms remain unverified.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        tianjia_an: {
+            id: 'tianjia_an',
+            wupCityCode: '10770',
+            label: 'Tianjia‘an, China',
+            currency: {
+                locale: 'zh-CN',
+                code: 'CNY'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [32.6391465373332, 116.983100814725],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [32.6391465373332, 116.983100814725],
+                fallbackDataset: [116.983100814725, 32.6391465373332]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'cn-huainan-mapshine-cadastral-parcels',
+                idPrefix: 'CN-HUAINAN-ZD-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: '淮南市地籍图查询系统 / MapShine; 主办单位: 淮南市自然资源和规划局'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        yerevan: {
+            id: 'yerevan',
+            wupCityCode: '451',
+            label: 'Yerevan, Armenia',
+            currency: {
+                locale: 'hy-AM',
+                code: 'AMD'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [40.180088343519, 44.505655051258],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [40.180088343519, 44.505655051258],
+                fallbackDataset: [44.505655051258, 40.180088343519]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'am-yerevan-municipal-cadastral-parcels',
+                idPrefix: 'AM-YEREVAN-GIS-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Yerevan Municipality Geoportal / Yerevan City Management Technologies'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        perth: {
+            id: 'perth',
+            wupCityCode: '330',
+            label: 'Perth, Australia',
+            currency: {
+                locale: 'en-AU',
+                code: 'AUD'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-31.9309765692238, 115.856116711566],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-31.9309765692238, 115.856116711566],
+                fallbackDataset: [115.856116711566, -31.9309765692238]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'au-wa-slip-lgate-001-cadastre',
+                idPrefix: 'au-wa-slip-lgate-001-cadastre:objectid:',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Western Australian Land Information Authority (Landgate), SLIP LGATE-001. Simplified cadastral boundaries; Other (Non-Commercial), Landgate Personal Use Licence unless separately authorised.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        khulna: {
+            id: 'khulna',
+            wupCityCode: '6006',
+            label: 'Khulna, Bangladesh',
+            currency: {
+                locale: 'en-BD',
+                code: 'BDT'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [22.837154971161, 89.5463159905925],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [22.837154971161, 89.5463159905925],
+                fallbackDataset: [89.5463159905925, 22.837154971161]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'bd-kda-geospatialbangladesh-land-parcel',
+                idPrefix: 'BD-KDA-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: '<a href="https://www.geospatialbangladesh.info/">Geospatial Bangladesh | Khulna Development Authority</a> · non-commercial use only · KDA-area parcel observations; citywide completeness unverified'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        brisbane: {
+            id: 'brisbane',
+            wupCityCode: '2591',
+            label: 'Brisbane, Australia',
+            currency: {
+                locale: 'en-AU',
+                code: 'AUD'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-27.489229111187, 153.039200356207],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-27.489229111187, 153.039200356207],
+                fallbackDataset: [153.039200356207, -27.489229111187]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'au-qld-lppf-base-parcels',
+                idPrefix: 'au-qld-lppf-base-parcels:lotplan:',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: '© State of Queensland (Department of Resources) 2024 · Digital Cadastral Database / Land Parcel Property Framework, Base Parcels Only. Provider WGS84 output; indicative boundaries.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        sofia: {
+            id: 'sofia',
+            wupCityCode: '100',
+            label: 'Sofia, Bulgaria',
+            currency: {
+                locale: 'bg-BG',
+                code: 'EUR'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [42.6825011865908, 23.3243038707047],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [42.6825011865908, 23.3243038707047],
+                fallbackDataset: [23.3243038707047, 42.6825011865908]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'bg-sofia-isofmap-cad-immovable-wfs',
+                idPrefix: 'BG-SOFIA-ISOFMAP-CAD-IMMOVABLE|cadnumber|',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'GIS-Sofia EOOD / SOFCAR · Sofia Municipality'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        gaza: {
+            id: 'gaza',
+            wupCityCode: '438',
+            label: 'Gaza, Palestine',
+            currency: {
+                locale: 'ar-PS',
+                code: 'ILS'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [31.5220002081115, 34.4696721940077],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [31.5220002081115, 34.4696721940077],
+                fallbackDataset: [34.4696721940077, 31.5220002081115]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'ps-geomolg-parcelsregistered-11',
+                idPrefix: 'PS-GEOMOLG-PARCELSREGISTERED11-OBJECTID-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'GeoMOLG / Palestinian Ministry of Local Government, registered cadastral parcels. Native OBJECTID references; bounded Gaza availability only. Completeness, currentness, survey alignment and reuse terms remain unverified.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        mendoza: {
+            id: 'mendoza',
+            wupCityCode: '198',
+            label: 'Mendoza, Argentina',
+            currency: {
+                locale: 'es-AR',
+                code: 'ARS'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-32.9044235903811, -68.8275288471433],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-32.9044235903811, -68.8275288471433],
+                fallbackDataset: [-68.8275288471433, -32.9044235903811]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'ar-mendoza-ciudad-webgis-catastro-publico',
+                idPrefix: 'AR-MENDOZA-NC-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Municipalidad de la Ciudad de Mendoza, Catastro público, Parcelario catastral.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        santos: {
+            id: 'santos',
+            wupCityCode: '7505',
+            label: 'Santos, Brazil',
+            currency: {
+                locale: 'pt-BR',
+                code: 'BRL'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-23.960626979388, -46.3330720622846],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-23.960626979388, -46.3330720622846],
+                fallbackDataset: [-46.3330720622846, -23.960626979388]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'br-santos-prefeitura-mapa-lotes-2026',
+                idPrefix: 'BR-SANTOS-MAPA-LOTES-2026:LOTE:',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Prefeitura Municipal de Santos · Mapa de Lotes 2026 · SIRGAS 2000 / UTM 23S converted to WGS84'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        quetta: {
+            id: 'quetta',
+            wupCityCode: '1101',
+            label: 'Quetta, Pakistan',
+            currency: {
+                locale: 'en-PK',
+                code: 'PKR'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [30.1781556040132, 66.9935299290239],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [30.1781556040132, 66.9935299290239],
+                fallbackDataset: [66.9935299290239, 30.1781556040132]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'pk-balochistan-glis-khasra-parcels',
+                idPrefix: 'pk-balochistan-glis-quetta-khasra:',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'GLIS / LandInfo. Balochistan BLRMIS project scope corroborated by Board of Revenue; API operator affiliation unverified.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        abu_zabi_abu_dhabi: {
+            id: 'abu_zabi_abu_dhabi',
+            wupCityCode: '309',
+            label: 'Abū Ẓabī (Abu Dhabi), United Arab Emirates',
+            currency: {
+                locale: 'ar-AE',
+                code: 'AED'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [24.4269862909144, 54.4266088603389],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [24.4269862909144, 54.4266088603389],
+                fallbackDataset: [54.4266088603389, 24.4269862909144]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'ae-abudhabi-dmt-onwani-smarthub-plot',
+                idPrefix: 'AE-AD-DMT-GISID-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Department of Municipalities and Transport (DMT), Abu Dhabi; MyLand/Onwani PLOT layer. Bounded Abu Dhabi availability verified; completeness, historical/current semantics and survey accuracy unverified.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        helsinki_helsingfors: {
+            id: 'helsinki_helsingfors',
+            wupCityCode: '555',
+            label: 'Helsinki (Helsingfors), Finland',
+            currency: {
+                locale: 'fi-FI',
+                code: 'EUR'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [60.2151504892048, 24.9229563703619],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [60.2151504892048, 24.9229563703619],
+                fallbackDataset: [24.9229563703619, 60.2151504892048]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'fi-helsinki-city-kiinteisto-alue-wfs',
+                idPrefix: 'FI-HEL-KIINTEISTO-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Data and maps (c) City of Helsinki, City Survey Services'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        san_luis_potosi: {
+            id: 'san_luis_potosi',
+            wupCityCode: '5218',
+            label: 'San Luis Potosí, Mexico',
+            currency: {
+                locale: 'es-MX',
+                code: 'MXN'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [22.1533233429272, -100.959583790101],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [22.1533233429272, -100.959583790101],
+                fallbackDataset: [-100.959583790101, 22.1533233429272]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'mx-sedatu-ran-pit24-parcelas-2020-wfs',
+                idPrefix: 'MX-SEDATU-RAN-PIT24-2020-PAR_ID-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Registro Agrario Nacional (RAN) / SEDATU SITU, PIT24 Parcelas San Luis Potosí 2020, CC BY 4.0. Historical partial agrarian parcel coverage.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        edmonton: {
+            id: 'edmonton',
+            wupCityCode: '1546',
+            label: 'Edmonton, Canada',
+            currency: {
+                locale: 'en-CA',
+                code: 'CAD'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [53.5506251257388, -113.526505700218],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [53.5506251257388, -113.526505700218],
+                fallbackDataset: [-113.526505700218, 53.5506251257388]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'ca-ab-edmonton-title-parcels',
+                idPrefix: 'ca-ab-edmonton-title-parcels:ID:',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'City of Edmonton GIS — Title Parcels. Parcel mapping distribution context: Alberta Data Partnerships / AltaLIS. Reuse permission unresolved.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        tainan: {
+            id: 'tainan',
+            wupCityCode: '12132',
+            label: 'Tainan, Taiwan',
+            currency: {
+                locale: 'zh-TW',
+                code: 'TWD'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [23.0029454841064, 120.225466132239],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [23.0029454841064, 120.225466132239],
+                fallbackDataset: [120.225466132239, 23.0029454841064]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'tw-tainan-ldmap-tn-measure-parcels',
+                idPrefix: 'TW-TNLD-MEASURE-17:',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Tainan City Government Land Administration Bureau; cadastral reference only'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        omsk: {
+            id: 'omsk',
+            wupCityCode: '7462',
+            label: 'Omsk, Russia',
+            currency: {
+                locale: 'ru-RU',
+                code: 'RUB'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [54.9838341202561, 73.3598446301569],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [54.9838341202561, 73.3598446301569],
+                fallbackDataset: [73.3598446301569, 54.9838341202561]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'ru-omsk-gisogd55-egrn-city-active-parcels',
+                idPrefix: 'ru-omsk-gisogd55-egrn-city-active-parcels:',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'GISOGD Omsk Oblast / Omsk GISOGD; active EGRN land parcels.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        san_miguel_de_tucuman: {
+            id: 'san_miguel_de_tucuman',
+            wupCityCode: '1458',
+            label: 'San Miguel de Tucumán, Argentina',
+            currency: {
+                locale: 'es-AR',
+                code: 'ARS'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-26.8252181813735, -65.2162963375371],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-26.8252181813735, -65.2162963375371],
+                fallbackDataset: [-65.2162963375371, -26.8252181813735]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'ar-tucuman-dgc-wfs-parcelasrubep',
+                idPrefix: 'AR-TUCUMAN-DGC-PARCELASRUBEP-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Dirección General de Catastro de Tucumán; Gobierno de la Provincia de Tucumán'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        teresina: {
+            id: 'teresina',
+            wupCityCode: '7775',
+            label: 'Teresina, Brazil',
+            currency: {
+                locale: 'pt-BR',
+                code: 'BRL'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-5.0961394658762, -42.7913465599766],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-5.0961394658762, -42.7913465599766],
+                fallbackDataset: [-42.7913465599766, -5.0961394658762]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'br-pi-interpi-terras-sigef-privado',
+                idPrefix: 'BR-PI-INTERPI-SIGEF-PRIVADO:',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'INTERPI / Terras.PI · SIGEF–INCRA · rural certification parcels'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        xuchang: {
+            id: 'xuchang',
+            wupCityCode: '9770',
+            label: 'Xuchang, China',
+            currency: {
+                locale: 'zh-CN',
+                code: 'CNY'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [34.0244453311886, 113.813220912291],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [34.0244453311886, 113.813220912291],
+                fallbackDataset: [113.813220912291, 34.0244453311886]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'cn-xuchang-xcbdc-yituchafang',
+                idPrefix: 'CN-XUCHANG-ZD-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: '许昌市不动产登记交易中心 · xcbdc.org.cn · cadastral parcels'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        adelaide: {
+            id: 'adelaide',
+            wupCityCode: '1003',
+            label: 'Adelaide, Australia',
+            currency: {
+                locale: 'en-AU',
+                code: 'AUD'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [-34.8915426977892, 138.599237166828],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [-34.8915426977892, 138.599237166828],
+                fallbackDataset: [138.599237166828, -34.8915426977892]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'au-sa-locationsa-parcel-cadastre',
+                idPrefix: 'AU-SA-PARCEL-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Government of South Australia / Location SA Parcel Cadastre; Land Services SA. Indicative boundaries; legal title and survey accuracy unverified.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        oslo: {
+            id: 'oslo',
+            wupCityCode: '931',
+            label: 'Oslo, Norway',
+            currency: {
+                locale: 'nb-NO',
+                code: 'NOK'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [59.9203877624395, 10.7778967030176],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [59.9203877624395, 10.7778967030176],
+                fallbackDataset: [10.7778967030176, 59.9203877624395]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'no-kartverket-eiendom-api-omrader',
+                idPrefix: 'NO-KARTVERKET-LOKALID:',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Kartverket — Matrikkelen Eiendomskart Teig · CC BY 4.0'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        aguascalientes: {
+            id: 'aguascalientes',
+            wupCityCode: '4184',
+            label: 'Aguascalientes, Mexico',
+            currency: {
+                locale: 'es-MX',
+                code: 'MXN'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [21.8879380080795, -102.281544395184],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [21.8879380080795, -102.281544395184],
+                fallbackDataset: [-102.281544395184, 21.8879380080795]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'mx-sedatu-ran-pit01-parcelas-2020-wfs',
+                idPrefix: 'MEX-RAN-PIT01-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Registro Agrario Nacional (RAN) / SEDATU SITU, PIT1 Parcelas Aguascalientes 2020, CC BY 4.0. Historical partial agrarian parcel coverage. Canonical IDs adapted; source geometry unchanged.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        cucuta: {
+            id: 'cucuta',
+            wupCityCode: '4895',
+            label: 'Cúcuta, Colombia',
+            currency: {
+                locale: 'es-CO',
+                code: 'COP'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [7.88844403833033, -72.5046318038034],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [7.88844403833033, -72.5046318038034],
+                fallbackDataset: [-72.5046318038034, 7.88844403833033]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'co-ns-sit-igac-urbano-u-terreno',
+                idPrefix: 'CO-NS-SIT-URBAN-',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Gobernación de Norte de Santander / SIT; Instituto Geográfico Agustín Codazzi (IGAC)'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        okayama: {
+            id: 'okayama',
+            wupCityCode: '4011',
+            label: 'Okayama, Japan',
+            currency: {
+                locale: 'ja-JP',
+                code: 'JPY'
+            },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [34.6169543575771, 133.865200080945],
+                defaultZoom: 19,
+                parcelZoomRange: {
+                    min: 17,
+                    max: Infinity
+                },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [34.6169543575771, 133.865200080945],
+                fallbackDataset: [133.865200080945, 34.6169543575771]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.001,
+                source: 'parcel-source',
+                sourceId: 'jp-moj-okayama-city-2026',
+                idPrefix: 'jp-moj-okayama-city-2026/native-shape-sha256-v1/',
+                requiresBackend: true,
+                ownership: false,
+                liveRadiusKm: 8,
+                attribution: 'Japan Ministry of Justice registry-office map data; AIGID / G-spatial Information Center conversion, Okayama City public-coordinate sheets, 2026 distribution.'
+            },
+            buildings: {
+                source: 'overture-tiles'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
         porto_novo: {
             id: 'porto_novo', wupCityCode: '2241',
             label: translateCityText('city.labels.porto_novo', 'Porto-Novo, Benin'),

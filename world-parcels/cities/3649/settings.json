@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3649",
+  "name": "Abengourou, Côte d’Ivoire",
+  "point": [
+    6.73099190007859,
+    -3.49838850498311
+  ],
+  "bindings": [
+    {
+      "appCityId": "abengourou",
+      "runtimeConfig": {
+        "id": "abengourou",
+        "wupCityCode": "3649",
+        "label": "Abengourou, Côte d’Ivoire",
+        "currency": {
+          "locale": "fr-CI",
+          "code": "XOF"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            6.73099190007859,
+            -3.49838850498311
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            6.73099190007859,
+            -3.49838850498311
+          ],
+          "fallbackDataset": [
+            -3.49838850498311,
+            6.73099190007859
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ci-abengourou-ecommunes-parcellaire",
+          "idPrefix": "ci-abengourou-ecommunes/Parcellaire_DIOULAKRO_2_(2A)/feature-id/",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Commune d'Abengourou / E-Commune; CNTIG platform."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ci-abengourou-ecommunes-parcellaire",
+      "name": "Commune d'Abengourou — Parcellaire Dioulakro 2 (2A)",
+      "adapter": "ecommunes-xml",
+      "endpoint": "https://abengourou.ecommunes.ci/MapServer/AgentLot.aspx/Query",
+      "layer": "Parcellaire_DIOULAKRO_2_(2A)",
+      "idPrefix": "ci-abengourou-ecommunes/Parcellaire_DIOULAKRO_2_(2A)/feature-id/",
+      "idField": "Feature/@ID",
+      "identityKind": "native-feature-id",
+      "outFields": [],
+      "sourceCrs": "EPSG:32630",
+      "responseSrid": 32630,
+      "boundsSrid": 32630,
+      "metricSrid": 32630,
+      "nativeAxisOrder": "east-north",
+      "outputCrs": "EPSG:4326",
+      "nativeExtent": [
+        440669.874427734,
+        739159.9712,
+        450929.709603648,
+        752104.975200001
+      ],
+      "nativeTileSizeM": 500,
+      "maxNativeQueries": 64,
+      "maxFeatures": 10000,
+      "maxResponseBytes": 16777216,
+      "maxBboxKm2": 4,
+      "maxConcurrentQueries": 1,
+      "timeoutMs": 30000,
+      "idLookupBoundsNative": {
+        "764FC80CCC0648D5A54782DA8D81D98A": [
+          444770.876,
+          743889.199,
+          445070.876,
+          744189.199
+        ],
+        "7BB2C8EC14184CDD978B106B2E660327": [
+          444770.876,
+          743889.199,
+          445070.876,
+          744189.199
+        ],
+        "252B25CF2F6443238C16B74B8E4EBC40": [
+          444770.876,
+          743889.199,
+          445070.876,
+          744189.199
+        ]
+      },
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84",
+        "explicitAbsence": false
+      },
+      "exactIdMethod": "fresh-native-spatial-query-and-feature-id-match",
+      "exactIdScope": "Known GUID locators from configuration or previous bounds queries. Unknown/unmatched GUIDs remain incomplete; no permanent identity or global absence guarantee.",
+      "countryCode": "CI",
+      "cityIds": [
+        "abengourou"
+      ],
+      "defaultForCity": true,
+      "operator": "Commune d'Abengourou / E-Commune, CNTIG platform",
+      "attribution": "Commune d'Abengourou / E-Commune; CNTIG platform.",
+      "licenceNote": "Anonymous municipal viewer access; no explicit reuse licence found. Publisher terms remain a follow-up.",
+      "scope": "Dioulakro 2 (2A) municipal parcel layer only. Nearby bounded polygon observations; no citywide completeness, legal title, survey accuracy or currentness claim.",
+      "catalogueUrl": "https://abengourou.ecommunes.ci/Communication/Index",
+      "metadataUrl": "https://abengourou.ecommunes.ci/MapServer/AgentLot.aspx",
+      "browserTransport": "relay"
+    }
+  ]
+}

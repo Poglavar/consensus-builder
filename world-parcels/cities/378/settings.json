@@ -59,7 +59,7 @@
           "attribution": "Direction générale des Impôts du Burkina Faso — eCadastre"
         },
         "buildings": {
-          "source": "overture-tiles"
+          "source": "osm"
         },
         "sidebar": {
           "disabledSections": [

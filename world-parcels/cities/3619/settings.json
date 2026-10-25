@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3619",
+  "name": "Tanga, Tanzania",
+  "point": [
+    -5.09096192967613,
+    39.0986679278526
+  ],
+  "bindings": [
+    {
+      "appCityId": "tanga",
+      "runtimeConfig": {
+        "id": "tanga",
+        "wupCityCode": "3619",
+        "label": "Tanga, Tanzania",
+        "currency": {
+          "locale": "sw-TZ",
+          "code": "TZS"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -5.09096192967613,
+            39.0986679278526
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -5.09096192967613,
+            39.0986679278526
+          ],
+          "fallbackDataset": [
+            39.0986679278526,
+            -5.09096192967613
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "tz-taspro-eardhi-survey-spatial-units",
+          "idPrefix": "tz-taspro-eardhi-survey-spatial-units/uid/",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Tanzania Ministry of Lands, Housing and Human Settlements Development / e-Ardhi; taspro surveyed spatial units"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "tz-taspro-eardhi-survey-spatial-units",
+      "name": "Tanzania e-Ardhi surveyed cadastral spatial units (Mbeya)",
+      "adapter": "wfs",
+      "endpoint": "https://eardhi.lands.go.tz/map/geoserver/taspro/wfs",
+      "featureType": "taspro:survey_spatial_units",
+      "version": "1.0.0",
+      "idField": "uid",
+      "idType": "string",
+      "idPattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "idPrefix": "tz-taspro-eardhi-survey-spatial-units/uid/",
+      "geometryField": "geom",
+      "requestProperties": true,
+      "outFields": [
+        "uid"
+      ],
+      "sortField": "uid",
+      "pageSize": 100,
+      "idBatchSize": 40,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 45000,
+      "countryCode": "TZ",
+      "cityIds": [
+        "tanga"
+      ],
+      "scope": "Positive bounded surveyed parcel observations in Mbeya only; municipal boundary and citywide completeness are unestablished.",
+      "operator": "Tanzania Ministry of Lands, Housing and Human Settlements Development / e-Ardhi",
+      "catalogueUrl": "https://eardhi.lands.go.tz/",
+      "attribution": "Tanzania Ministry of Lands, Housing and Human Settlements Development / e-Ardhi; taspro surveyed spatial units",
+      "licenceNote": "Public anonymous WFS; Fees=NONE, AccessConstraints=NONE do not establish an explicit reuse licence. Reuse terms remain a follow-up.",
+      "defaultForCity": true,
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "queryGeometry": true
+      },
+      "metricSrid": 32736,
+      "metricSridByCity": {
+        "tanga": 32737
+      },
+      "maxConcurrentQueries": 4
+    }
+  ]
+}

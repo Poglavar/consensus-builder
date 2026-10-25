@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5248",
+  "name": "Toluca, Mexico",
+  "point": [
+    19.2890968271045,
+    -99.6265552780563
+  ],
+  "bindings": [
+    {
+      "appCityId": "toluca",
+      "runtimeConfig": {
+        "id": "toluca",
+        "wupCityCode": "5248",
+        "label": "Toluca, Mexico",
+        "currency": {
+          "locale": "es-MX",
+          "code": "MXN"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            19.2890968271045,
+            -99.6265552780563
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            19.2890968271045,
+            -99.6265552780563
+          ],
+          "fallbackDataset": [
+            -99.6265552780563,
+            19.2890968271045
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "mx-sedatu-ran-pit15-edomex-parcels-2020",
+          "idPrefix": "MX-RAN-PIT15-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Registro Agrario Nacional (RAN) / SEDATU SITU, PIT15 Parcelas México 2020, CC BY 4.0. Social-property parcels; historical and indicative coverage."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "mx-sedatu-ran-pit15-edomex-parcels-2020",
+      "name": "SEDATU / RAN PIT15 Estado de México social-property parcels (2020)",
+      "adapter": "wfs",
+      "endpoint": "https://ide.sedatu.gob.mx/geoserver/ows",
+      "featureType": "geonode:a__15_PARCELAS_RAN_2020",
+      "version": "1.0.0",
+      "idField": "CLAVE",
+      "idType": "string",
+      "idPattern": "^[0-9]{8}-[0-9]{19}$",
+      "idPrefix": "MX-RAN-PIT15-",
+      "outFields": [
+        "CLAVE"
+      ],
+      "geometryField": "the_geom",
+      "requestProperties": true,
+      "pageSize": 100,
+      "idBatchSize": 3,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "maxConcurrentQueries": 1,
+      "minRequestIntervalMs": 150,
+      "countryCode": "MX",
+      "metricSrid": 32614,
+      "cityIds": [
+        "toluca"
+      ],
+      "defaultForCity": true,
+      "scope": "Bounded Toluca-area RAN ejido/community parcel coverage in the Estado de México 2020 extract. Historical social-property parcels; not the complete urban/fiscal cadastre. No municipal-boundary or citywide completeness claim.",
+      "attribution": "Registro Agrario Nacional (RAN) / SEDATU SITU, PIT15 Parcelas México 2020, CC BY 4.0. Social-property parcels; historical and indicative coverage.",
+      "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "catalogueUrl": "https://ide.sedatu.gob.mx/catalogue/csw_to_extra_format/4936b8de-5f6e-11ec-87b2-005056b8fa85/a__15_PARCELAS_RAN_2020.html",
+      "metadataUrl": "https://ide.sedatu.gob.mx/api/v2/datasets/2314",
+      "nativeCrs": "EPSG:4326",
+      "responseCrs": "EPSG:4326",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "geometryQuery": true
+      }
+    }
+  ]
+}

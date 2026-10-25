@@ -59,7 +59,7 @@
           "attribution": "National Land Authority, Rwanda Spatial Data Infrastructure; LAIS Rubavu Parcels."
         },
         "buildings": {
-          "source": "overture-tiles"
+          "source": "osm"
         },
         "sidebar": {
           "disabledSections": [

@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "10770",
+  "name": "Tianjia‘an, China",
+  "point": [
+    32.6391465373332,
+    116.983100814725
+  ],
+  "bindings": [
+    {
+      "appCityId": "tianjia_an",
+      "runtimeConfig": {
+        "id": "tianjia_an",
+        "wupCityCode": "10770",
+        "label": "Tianjia‘an, China",
+        "currency": {
+          "locale": "zh-CN",
+          "code": "CNY"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            32.6391465373332,
+            116.983100814725
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            32.6391465373332,
+            116.983100814725
+          ],
+          "fallbackDataset": [
+            116.983100814725,
+            32.6391465373332
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "cn-huainan-mapshine-cadastral-parcels",
+          "idPrefix": "CN-HUAINAN-ZD-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "淮南市地籍图查询系统 / MapShine; 主办单位: 淮南市自然资源和规划局"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "cn-huainan-mapshine-cadastral-parcels",
+      "name": "Huainan municipal cadastral parcels (MapShine)",
+      "adapter": "huainan-mapshine",
+      "endpoint": "https://mapshine.cn/hnbdc/Zongdi/SpatialQuery",
+      "idPrefix": "CN-HUAINAN-ZD-",
+      "idField": "id",
+      "geometryField": "geom",
+      "outFields": [
+        "id"
+      ],
+      "identityKind": "native",
+      "sourceCrs": "EPSG:4326",
+      "responseSrid": 4326,
+      "boundsSrid": 4326,
+      "nativeAxisOrder": "longitude-latitude",
+      "outputCrs": "EPSG:4326",
+      "metricSrid": 32650,
+      "projection": "EPSG:32650",
+      "countryCode": "CN",
+      "cityIds": [
+        "tianjia_an"
+      ],
+      "defaultForCity": true,
+      "lookupPoint": [
+        116.983100814725,
+        32.6391465373332
+      ],
+      "lookupHalfSizeDegrees": 0.001,
+      "maxResponseBytes": 1048576,
+      "maxFeatures": 500,
+      "maxBboxKm2": 2,
+      "maxConcurrentQueries": 1,
+      "browserTransport": "relay",
+      "operator": "Huainan Municipal Natural Resources and Planning Bureau (named as organizer by viewer); hosted by MapShine",
+      "catalogueUrl": "https://mapshine.cn/hnbdc/zongdi/Index",
+      "licenceUrl": "https://mapshine.cn/hnbdc/Zongdi/Notice",
+      "attribution": "淮南市地籍图查询系统 / MapShine; 主办单位: 淮南市自然资源和规划局",
+      "licenceNote": "Notice clauses 3 and 7 describe eligible rights holders/interested parties and one property per application; the consent checkbox concerns personal information. Those terms and automated reuse remain unresolved. Testing the anonymous preloaded geometry path is not acceptance of the notice or evidence of reuse authorization.",
+      "scope": "Bounded Tianjia‘an parcel observations within the Huainan cadastral viewer. Published geometry is precision-reduced. No citywide completeness, title, survey accuracy or publication-currentness claim. Localized exact-ID reads need learned spatial hints or a near point beyond the city entry.",
+      "capabilities": {
+        "areaEnumeration": true,
+        "authoritativeAbsence": false
+      },
+      "qualificationFollowUps": [
+        "Official bureau-to-host linkage",
+        "Eligibility and reuse authorization",
+        "Cold ID lookup beyond the city entry without near hints",
+        "Native CRS/datum/operation/grid and independent alignment",
+        "Precision-reduced geometry suitability",
+        "Publisher truncation and paging limits",
+        "Current versus historical status and identity continuity"
+      ]
+    }
+  ]
+}

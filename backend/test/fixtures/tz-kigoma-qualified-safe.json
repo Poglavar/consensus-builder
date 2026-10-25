@@ -1,0 +1,163 @@
+{
+  "_comment": "Live Kigoma qualified_spatial_units sample, safe native uid and unchanged geometry; generated WFS fid is deliberately omitted.",
+  "descriptor": {
+    "id": "tz-mlhhds-eardhi-taspro-qualified-spatial-units",
+    "name": "Tanzania MLHHSD e-Ardhi Kigoma qualified survey parcels",
+    "adapter": "wfs",
+    "endpoint": "https://eardhi.lands.go.tz/map/geoserver/taspro/wfs",
+    "featureType": "taspro:qualified_spatial_units",
+    "version": "2.0.0",
+    "idField": "uid",
+    "idType": "string",
+    "idPattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+    "idPrefix": "tz-mlhhds-eardhi-taspro-qualified-spatial-units/uid/",
+    "sortField": "id",
+    "geometryField": "geom",
+    "requestProperties": true,
+    "outFields": [
+      "uid"
+    ],
+    "pageSize": 100,
+    "idBatchSize": 40,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "timeoutMs": 45000,
+    "maxConcurrentQueries": 4,
+    "countryCode": "TZ",
+    "cityIds": [
+      "kigoma"
+    ],
+    "scope": "Bounded partial Kigoma-area surveyed parcel coverage; municipal boundary alignment and citywide completeness are unverified.",
+    "operator": "Tanzania Ministry of Lands, Housing and Human Settlements Development (MLHHSD)",
+    "catalogueUrl": "https://eardhi.lands.go.tz/",
+    "attribution": "Tanzania MLHHSD e-Ardhi / TASPRO qualified spatial units",
+    "licenceNote": "Anonymous public WFS access observed; explicit reuse and redistribution licence remains unverified, for second-pass review.",
+    "defaultForCity": true,
+    "capabilities": {
+      "areaEnumeration": true,
+      "exactIds": true,
+      "queryGeometry": true
+    },
+    "metricSridByCity": {
+      "kigoma": 32735
+    },
+    "metricSrid": 32735
+  },
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:EPSG::4326"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "uid": "9a902711-dcda-4e0a-af2f-8f3ed691882f"
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                29.64207967,
+                -4.8906463
+              ],
+              [
+                29.64219253,
+                -4.89033737
+              ],
+              [
+                29.64229208,
+                -4.89038647
+              ],
+              [
+                29.64233156,
+                -4.89040518
+              ],
+              [
+                29.64219437,
+                -4.89070319
+              ],
+              [
+                29.64207967,
+                -4.8906463
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "uid": "1b30b3b9-2e0a-47a2-bd07-59291ae1e022"
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                29.64200217,
+                -4.89116545
+              ],
+              [
+                29.64218175,
+                -4.89089586
+              ],
+              [
+                29.64231284,
+                -4.89096111
+              ],
+              [
+                29.64213949,
+                -4.89122924
+              ],
+              [
+                29.64200217,
+                -4.89116545
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "uid": "8c0b608c-d0b9-432d-b6cc-2bf85d6c2f0f"
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                29.64219253,
+                -4.89033737
+              ],
+              [
+                29.64230448,
+                -4.89003894
+              ],
+              [
+                29.64240466,
+                -4.89009201
+              ],
+              [
+                29.64229208,
+                -4.89038647
+              ],
+              [
+                29.64219253,
+                -4.89033737
+              ]
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

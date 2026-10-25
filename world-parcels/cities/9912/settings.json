@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "9912",
+  "name": "Jinan, China",
+  "point": [
+    36.6624669903557,
+    117.021636599086
+  ],
+  "bindings": [
+    {
+      "appCityId": "jinan",
+      "runtimeConfig": {
+        "id": "jinan",
+        "wupCityCode": "9912",
+        "label": "Jinan, China",
+        "currency": {
+          "locale": "zh-CN",
+          "code": "CNY"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            36.6624669903557,
+            117.021636599086
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            36.6624669903557,
+            117.021636599086
+          ],
+          "fallbackDataset": [
+            117.021636599086,
+            36.6624669903557
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "cn-jinan-nrp-zd0824-dj",
+          "idPrefix": "CN-JINAN-ZD-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Jinan Natural Resources and Planning Bureau / Jinan Real Estate Registration Center · public cadastral-map viewer"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "cn-jinan-nrp-zd0824-dj",
+      "name": "Jinan official cadastral parcels (ZD0824_Project)",
+      "adapter": "supermap-map",
+      "endpoint": "https://nrp.jinan.gov.cn/geoesb/proxy/services/maps/rest/d64a919b08dd4710bf57fc1bb0b1028e/886e60bb7e014f22a707de23e6f6505d/queryResults.json?returnContent=true",
+      "layer": "ZD0824_Project@地籍数据",
+      "idField": "BDCDYH",
+      "idType": "string",
+      "idPrefix": "CN-JINAN-ZD-",
+      "parcelNumberField": "BDCDYH",
+      "outFields": [
+        "BDCDYH"
+      ],
+      "pageSize": 100,
+      "maxPages": 100,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 2,
+      "maxResponseBytes": 8388608,
+      "timeoutMs": 15000,
+      "countryCode": "CN",
+      "metricSrid": 32650,
+      "cityIds": [
+        "jinan"
+      ],
+      "browserTransport": "relay",
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "scope": "Observed central Jinan cadastral parcels only; service extent and bounded cells do not establish citywide or administrative completeness.",
+      "catalogueUrl": "https://nrp.jinan.gov.cn/map/index.html",
+      "licenceUrl": "https://nrp.jinan.gov.cn/col80660/art/2024/art_80660_4938881.html",
+      "licenceNote": "Official notice provides free public cadastral-map queries. No explicit vector reuse/redistribution licence established.",
+      "attribution": "Jinan Natural Resources and Planning Bureau / Jinan Real Estate Registration Center · public cadastral-map viewer",
+      "nativeCrs": "GCS_China_2000 (viewer label; datum operation unverified)",
+      "coordinateOrder": "xy",
+      "geometryPolicy": "Preserve all original REGION ring coordinates and partTopo islands/holes; no offsets, rounding or fitted transform.",
+      "pagingMode": "smid-keyset",
+      "pagingNote": "Proxy ignores offset startRecord; verified ordered SMID ASC keyset paging with safe row.ID cursor. Canonical identity remains BDCDYH.",
+      "defaultForCity": true
+    }
+  ]
+}

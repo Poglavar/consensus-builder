@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "8199",
+  "name": "Samarinda, Indonesia",
+  "point": [
+    -0.495342688995459,
+    117.146215066518
+  ],
+  "bindings": [
+    {
+      "appCityId": "samarinda",
+      "runtimeConfig": {
+        "id": "samarinda",
+        "wupCityCode": "8199",
+        "label": "Samarinda, Indonesia",
+        "currency": {
+          "locale": "id-ID",
+          "code": "IDR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -0.495342688995459,
+            117.146215066518
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -0.495342688995459,
+            117.146215066518
+          ],
+          "fallbackDataset": [
+            117.146215066518,
+            -0.495342688995459
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ID-SAMARINDA-KANTAH-GEOTAS-WFS-BIDANG-TERDAFTAR",
+          "idPrefix": "ID-SAMARINDA-GEOTAS-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Kantor Pertanahan Kota Samarinda / ATR-BPN; GEOTAS; Komputerisasi Kegiatan Pertanahan (downloaded 13 August 2025)."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ID-SAMARINDA-KANTAH-GEOTAS-WFS-BIDANG-TERDAFTAR",
+      "name": "Samarinda Kantor Pertanahan GEOTAS registered land parcels",
+      "adapter": "wfs",
+      "endpoint": "https://geoserver.atrbpnsamarinda.my.id/geoserver/ows",
+      "version": "2.0.0",
+      "featureType": "ANALISIS_SPASIAL_ATRBPNSMD:MAPS_Bidang_Tanah_Terdaftar",
+      "geometryField": "geometry",
+      "nativeIdMode": "feature-id",
+      "featureIdParameter": "featureID",
+      "idField": null,
+      "idType": "string",
+      "idPattern": "^MAPS_Bidang_Tanah_Terdaftar\\.[0-9]+$",
+      "idPrefix": "ID-SAMARINDA-GEOTAS-",
+      "outFields": [],
+      "requestProperties": true,
+      "pageSize": 250,
+      "idBatchSize": 80,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 1,
+      "maxResponseBytes": 8388608,
+      "minRequestIntervalMs": 250,
+      "countryCode": "ID",
+      "cityIds": [
+        "samarinda"
+      ],
+      "metricSrid": 32750,
+      "sourceCrs": "EPSG:4326",
+      "responseCrs": "CRS:84",
+      "returnsWGS84": true,
+      "scope": "Registered land parcels observed in bounded central Samarinda windows; advertised service extent is not a city boundary, and citywide completeness is unverified.",
+      "attribution": "Kantor Pertanahan Kota Samarinda / ATR-BPN; GEOTAS; Komputerisasi Kegiatan Pertanahan (downloaded 13 August 2025).",
+      "licence": "Uncertain: anonymous public access; no explicit reuse licence established.",
+      "licenceUrl": "https://geotas.atrbpnsamarinda.my.id/",
+      "capabilities": {
+        "exactIds": true,
+        "areaEnumeration": true
+      },
+      "defaultForCity": true
+    }
+  ]
+}

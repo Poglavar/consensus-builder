@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "648",
+  "name": "Cochabamba, Bolivia",
+  "point": [
+    -17.4013891412774,
+    -66.1739561318593
+  ],
+  "bindings": [
+    {
+      "appCityId": "cochabamba",
+      "runtimeConfig": {
+        "id": "cochabamba",
+        "wupCityCode": "648",
+        "label": "Cochabamba, Bolivia",
+        "currency": {
+          "locale": "es-BO",
+          "code": "BOB"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -17.4013891412774,
+            -66.1739561318593
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -17.4013891412774,
+            -66.1739561318593
+          ],
+          "fallbackDataset": [
+            -66.1739561318593,
+            -17.4013891412774
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "bo-inra-geoserver-sinacar-tierras-clasificacion",
+          "idPrefix": "bo-inra-sinacar-tierras_clasificacion:",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "INRA / SINACAR — agrarian cadastral properties"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "bo-inra-geoserver-sinacar-tierras-clasificacion",
+      "name": "INRA SINACAR agrarian cadastral properties",
+      "adapter": "wfs",
+      "endpoint": "https://geoserver.inra.gob.bo/geoserver/sinacar/ows",
+      "featureType": "sinacar:tierras_clasificacion",
+      "version": "1.0.0",
+      "idField": "id",
+      "idType": "integer",
+      "idPrefix": "bo-inra-sinacar-tierras_clasificacion:",
+      "geometryField": "geom",
+      "requestProperties": true,
+      "outFields": [
+        "id"
+      ],
+      "paginationIdentity": "native-id",
+      "pageSize": 25,
+      "maxFeatures": 1000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "sourceCrs": "EPSG:4326",
+      "metricSrid": 32719,
+      "countryCode": "BO",
+      "cityIds": [
+        "cochabamba"
+      ],
+      "defaultForCity": true,
+      "operator": "Instituto Nacional de Reforma Agraria (INRA), Bolivia",
+      "catalogueUrl": "https://sinacar.inra.gob.bo/",
+      "attribution": "INRA / SINACAR — agrarian cadastral properties",
+      "licenceNote": "Public official WFS read access; explicit automated-reuse licence not established.",
+      "scope": "Observed rural agrarian-property polygons in southern Cochabamba municipality. Urban coverage and municipality-wide completeness are unproved.",
+      "browserTransport": "relay"
+    }
+  ]
+}

@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "843",
+  "name": "Arua, Uganda",
+  "point": [
+    3.0184197396955,
+    30.9109543412382
+  ],
+  "bindings": [
+    {
+      "appCityId": "arua",
+      "runtimeConfig": {
+        "id": "arua",
+        "wupCityCode": "843",
+        "label": "Arua, Uganda",
+        "currency": {
+          "locale": "en-UG",
+          "code": "UGX"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            3.0184197396955,
+            30.9109543412382
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            3.0184197396955,
+            30.9109543412382
+          ],
+          "fallbackDataset": [
+            30.9109543412382,
+            3.0184197396955
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ug-mlhud-ugnlis-nalisep-arua-parcel-search",
+          "idPrefix": "UG-UGNLIS-ARUA-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Uganda Ministry of Lands, Housing & Urban Development — Uganda National Land Information System / NaLISEP"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ug-mlhud-ugnlis-nalisep-arua-parcel-search",
+      "name": "UgNLIS — Arua Municipality cadastral parcels",
+      "adapter": "ugnlis-parcel-search",
+      "endpoint": "https://api.mlhud.go.ug/ugnlis-data-api/v1/nalisep-api-data/query-parcelle/query-parcelle/parcel-search",
+      "filterEndpoint": "https://api.mlhud.go.ug/ugnlis-data-api/v1/nalisep-api-data/query-parcelle/query-parcelle/parcel-searchfilter",
+      "selector": {
+        "caddistrict": "cadreg1",
+        "county": "cad_co_ayivu",
+        "city": "cad_mcp_arua"
+      },
+      "municipalityLabel": "Arua Municipality",
+      "idField": "id",
+      "idType": "string",
+      "idPrefix": "UG-UGNLIS-ARUA-",
+      "outFields": [
+        "id"
+      ],
+      "parcelNumberField": "id",
+      "sourceCrs": "EPSG:21096",
+      "projection": "+proj=utm +zone=36 +a=6378249.145 +rf=293.465 +towgs84=-160,-6,-302 +units=m +no_defs",
+      "metricSrid": 32636,
+      "countryCode": "UG",
+      "cityIds": [
+        "arua"
+      ],
+      "maxFeatures": 500,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 2097152,
+      "timeoutMs": 30000,
+      "enumerationConcurrency": 6,
+      "maxConcurrentQueries": 2,
+      "browserTransport": "relay",
+      "scope": "Published parcel boundaries accessible through the Arua Municipality selector (cad_mcp_arua), Ayivu county, Arua cadastral district. Full modern Arua City coverage and currentness are unestablished.",
+      "attribution": "Uganda Ministry of Lands, Housing & Urban Development — Uganda National Land Information System / NaLISEP",
+      "catalogueUrl": "https://mlhud.go.ug/ugnlis/",
+      "licenceNote": "No explicit open reuse licence identified on the checked official pages. Attribution retained; reuse permission needs confirmation.",
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "caveats": [
+        "Enumerates published block/plot selectors and serves their usable boundaries; complete query results describe this published selector scope, never citywide cadastral completeness.",
+        "Records without published geometry are counted and excluded from map results. Exact reads of such records report boundary unavailability.",
+        "Native numeric/UUID IDs are located by selector enumeration, then freshly re-read and checked against the native ID. No owner, address or title details are retained.",
+        "WGS84 coordinates use EPSG:21096 and Arc 1960 to WGS 84 (1), published accuracy 35 m; survey alignment and provider datum realization remain second-pass follow-ups."
+      ],
+      "defaultForCity": true
+    }
+  ]
+}

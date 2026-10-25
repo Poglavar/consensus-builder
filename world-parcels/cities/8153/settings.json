@@ -59,7 +59,7 @@
           "attribution": "AkwaGIS / Akwa Ibom State Government, Ministry of Lands and Office of the State Surveyor-General."
         },
         "buildings": {
-          "source": "overture-tiles"
+          "source": "osm"
         },
         "sidebar": {
           "disabledSections": [

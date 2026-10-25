@@ -1,11 +1,15 @@
 // Adapts fixed WFS 1.0/1.1/2.0 GeoJSON layers with attribute IDs or verified native feature-ID routes.
-import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '@turf/turf';
+import { bbox as geometryBbox, bboxPolygon, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import proj4 from 'proj4';
 import { HttpError } from '../utils/helpers.js';
 import { concatBytes } from './byte-utils.js';
 import { upstreamError, providerHttpError, validateBounds, validateGeometry, canonicalParcelFeature, createParcelAttributeFilter } from './source-contract.js';
 import { geoJsonResponseCrsMatches } from './response-crs.js';
 import { createOgunWfsSchemaGuard } from './ogun-wfs-schema.js';
+import { createO2mapPnuSource } from './o2map-pnu-source.js';
+import { createTasproWfsSource } from './taspro-wfs-source.js';
+import { createWfsLayerFamilySource } from './wfs-layer-family-source.js';
+import { isTucumanWfsSource } from './tucuman-wfs-transport.js';
 
 const sourceRequestQueues = new Map();
 
@@ -30,8 +34,29 @@ function queueSourceRequest(key, minRequestIntervalMs, request) {
 }
 
 export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch } = {}) {
+    if (descriptor.wfsProfile === 'native-feature-id-layers-v1') return createWfsLayerFamilySource(descriptor, { fetchImpl }, createWfsParcelSource);
+    if (descriptor.wfsProfile === 'o2map-pnu-v1') return createO2mapPnuSource(descriptor, { fetchImpl });
+    if (descriptor.wfsProfile === 'taspro-grid-cache-v1') return createTasproWfsSource(descriptor, { fetchImpl }, createWfsParcelSource);
     const { id, endpoint, featureType, idField, idPrefix, outFields } = descriptor;
     const version = descriptor.version ?? '2.0.0';
+    // Municipal viewers can expose WFS through a fixed proxy whose parameter contains
+    // the relative service path and the entire encoded WFS query (Seoul S-MAP).
+    const proxyParameter = descriptor.wfsProxyParameter;
+    const endpointUrl = new URL(endpoint);
+    const proxyPath = proxyParameter === undefined ? null : endpointUrl.searchParams.get(proxyParameter);
+    if (proxyParameter !== undefined && (typeof proxyParameter !== 'string'
+        || !/^[A-Za-z][A-Za-z0-9_]*$/.test(proxyParameter)
+        || endpointUrl.searchParams.getAll(proxyParameter).length !== 1
+        || !/^\/(?!\/)[A-Za-z0-9_/-]+$/.test(proxyPath || ''))) {
+        throw new Error('Invalid WFS proxy configuration.');
+    }
+    function requestUrl(search) {
+        const url = new URL(endpointUrl);
+        if (proxyParameter !== undefined) url.searchParams.set(proxyParameter, `${proxyPath}?${search}`);
+        else for (const [key, value] of search) url.searchParams.set(key, value);
+        return descriptor.proxyEndpoint
+            ? `${descriptor.proxyEndpoint}?${new URLSearchParams({ url: url.href })}` : url.href;
+    }
     const responseSrid = descriptor.responseSrid;
     // Projected responses require a published operation in the descriptor and independent
     // native-coordinate alignment evidence before the source is admitted.
@@ -42,7 +67,13 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
     const idBatchSize = descriptor.idBatchSize ?? 80;
     const idType = descriptor.idType;
     const minRequestIntervalMs = descriptor.minRequestIntervalMs;
+    const timeoutMs = descriptor.timeoutMs ?? 15000;
     const featureIdMode = descriptor.nativeIdMode === 'feature-id';
+    // Some joined cadastral layers reuse a transport FID for distinct native parcel
+    // records. Their verified parcel key, also used for exact reads, proves paging.
+    const nativePagingIdentity = descriptor.paginationIdentity === 'native-id';
+    // A provider's indexed transport order can differ from its durable parcel key.
+    const sortField = descriptor.sortField ?? idField;
     const schemaGuard = descriptor.unfilteredSchemaProfile === undefined ? null
         : createOgunWfsSchemaGuard(descriptor, { fetchImpl });
     const featureIdParameter = descriptor.featureIdParameter ?? (version === '2.0.0' ? 'resourceId' : 'featureID');
@@ -55,6 +86,9 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
         : typeof idField !== 'string' || !identifier.test(idField)) || !['string', 'integer'].includes(idType)
         || (descriptor.nativeIdMode !== undefined && !featureIdMode)
         || (!featureIdMode && descriptor.featureIdParameter !== undefined)
+        || (descriptor.paginationIdentity !== undefined && (!nativePagingIdentity || featureIdMode))
+        || (descriptor.sortField !== undefined && (featureIdMode
+            || typeof descriptor.sortField !== 'string' || !identifier.test(descriptor.sortField)))
         || !['1.0.0', '1.1.0', '2.0.0'].includes(version)
         || (responseSrid !== undefined && responseSrid !== 3857
             && (!Number.isSafeInteger(responseSrid) || responseSrid <= 0 || typeof responseProjection !== 'string'))
@@ -63,14 +97,17 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
         || (responseCoordinatePrecision !== undefined && (responseSrid !== 3857
             || !Number.isInteger(responseCoordinatePrecision) || responseCoordinatePrecision < 0 || responseCoordinatePrecision > 8))
         || (requestProperties !== undefined && typeof requestProperties !== 'boolean')
+        || (descriptor.filterBoundsGeometry !== undefined && typeof descriptor.filterBoundsGeometry !== 'boolean')
         || !Number.isSafeInteger(idBatchSize) || idBatchSize < 1 || idBatchSize > 80
         || (minRequestIntervalMs !== undefined && (!Number.isSafeInteger(minRequestIntervalMs) || minRequestIntervalMs < 100 || minRequestIntervalMs > 5000))
+        || (descriptor.timeoutMs !== undefined && (!Number.isSafeInteger(descriptor.timeoutMs)
+            || timeoutMs < 1000 || timeoutMs > 45000))
         || !/^([\p{L}_][\p{L}\p{N}\p{M}_.-]*):([\p{L}_][\p{L}\p{N}\p{M}_.-]*)$/u.test(featureType)
         || !Array.isArray(outFields) || (!featureIdMode && !outFields.includes(idField))
         || (requestProperties && (typeof descriptor.geometryField !== 'string' || !identifier.test(descriptor.geometryField)
             || outFields.some(field => typeof field !== 'string' || !identifier.test(field))))
         || (descriptor.parcelNumberField && !outFields.includes(descriptor.parcelNumberField))
-        || new URL(endpoint).protocol !== 'https:'
+        || (new URL(endpoint).protocol !== 'https:' && !isTucumanWfsSource(descriptor))
         || (descriptor.proxyEndpoint && new URL(descriptor.proxyEndpoint).protocol !== 'https:')) throw new Error('Invalid WFS parcel source descriptor.');
     const attributeFilter = createParcelAttributeFilter(descriptor);
     const hasFixedAttributeFilter = Boolean(attributeFilter.where);
@@ -82,6 +119,10 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
     const maxFeatures = featureIdMode ? descriptor.maxFeatures ?? 10000 : descriptor.maxFeatures || 10000;
     const maxBboxKm2 = featureIdMode ? descriptor.maxBboxKm2 ?? 25 : descriptor.maxBboxKm2 || 25;
     const maxResponseBytes = descriptor.maxResponseBytes ?? 8 * 1024 * 1024;
+    if (descriptor.maxResponseBytes !== undefined && (!Number.isSafeInteger(maxResponseBytes)
+        || maxResponseBytes < 1 || maxResponseBytes > 20 * 1024 * 1024)) {
+        throw new Error('Invalid WFS parcel source limits.');
+    }
     if (featureIdMode && (!Number.isSafeInteger(pageSize) || pageSize < 1 || pageSize > 10000
         || !Number.isSafeInteger(maxFeatures) || maxFeatures < 1 || maxFeatures > 100000
         || !Number.isFinite(maxBboxKm2) || maxBboxKm2 <= 0
@@ -125,7 +166,9 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
     const unstableIdentity = () => upstreamError('WFS provider has no stable native feature identity.', 502, 'parcel-source-unstable-identity');
 
     async function readPayload(response) {
-        if (!featureIdMode) return response.json();
+        // Attribute-ID services can opt into the same streamed byte budget as native-FID layers.
+        // Check actual chunks, including responses without a truthful Content-Length header.
+        if (!featureIdMode && descriptor.maxResponseBytes === undefined) return response.json();
         const reader = response.body?.getReader();
         if (!reader) throw upstreamError('WFS provider omitted its response body.');
         let bytes = 0;
@@ -157,7 +200,7 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
                 service: 'WFS', version, request: 'GetFeature',
                 ...(version !== '2.0.0' ? { typeName: featureType } : { typeNames: featureType }),
                 outputFormat: 'application/json', srsName: responseSrid ? `EPSG:${responseSrid}` : version === '1.0.0' ? 'EPSG:4326' : 'CRS:84',
-                ...(!featureIdMode ? { sortBy: idField } : {}),
+                ...(!featureIdMode ? { sortBy: sortField } : {}),
                 ...(requestProperties ? { propertyName: [...new Set([descriptor.geometryField, ...outFields])].join(',') } : {}),
                 // GeoServer accepts count beside WFS 1.0 maxFeatures; both advertise the
                 // same observed limit to the qualification request recorder.
@@ -171,12 +214,9 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
             try {
                 payload = await queueSourceRequest(endpoint, minRequestIntervalMs, async () => {
                     // Start the timeout after any provider-specific rate-limit wait.
-                    const signal = AbortSignal.timeout(15000);
+                    const signal = AbortSignal.timeout(timeoutMs);
                     try {
-                        const upstreamUrl = `${endpoint}?${search}`;
-                        const requestUrl = descriptor.proxyEndpoint
-                            ? `${descriptor.proxyEndpoint}?${new URLSearchParams({ url: upstreamUrl })}` : upstreamUrl;
-                        const response = await fetchImpl(requestUrl, { signal, redirect: 'error',
+                        const response = await fetchImpl(requestUrl(search), { signal, redirect: 'error',
                             ...(featureIdMode ? { cache: 'no-store' } : {}),
                             headers: { Accept: 'application/geo+json, application/json' } });
                         if (!response.ok) throw providerHttpError(response);
@@ -220,10 +260,12 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
                 if (featureIdMode ? !routableFeatureId(nativeId) : !validId(nativeId)) throw upstreamError('Parcel provider returned a missing or invalid native parcel ID.');
                 const geometry = wgs84Geometry(feature.geometry);
                 if (!validateGeometry(geometry)) throw upstreamError('Parcel provider returned invalid polygon geometry.');
-                // Attribute mode uses feature IDs only as pagination evidence. Feature-ID
-                // mode also requires an independent native-ID round trip before bounds publish.
-                if (typeof feature.id !== 'string' || !feature.id || seenObjects.has(feature.id)) throw upstreamError('WFS parcel provider repeated or omitted a feature ID.');
-                seenObjects.add(feature.id);
+                // Keep distinct native records sharing a transport FID and geometry.
+                // A repeated native key still fails, including across page boundaries.
+                const pagingIdentity = nativePagingIdentity ? nativeId : feature.id;
+                if (nativePagingIdentity && seenObjects.has(pagingIdentity)) throw upstreamError('WFS parcel provider repeated a native parcel ID.');
+                if (typeof feature.id !== 'string' || !feature.id || (!nativePagingIdentity && seenObjects.has(pagingIdentity))) throw upstreamError('WFS parcel provider repeated or omitted a feature ID.');
+                seenObjects.add(pagingIdentity);
                 const canonical = canonicalParcelFeature(descriptor, { ...feature, geometry }, nativeId);
                 const previous = byId.get(canonical.id);
                 if (previous && JSON.stringify(previous.geometry) !== JSON.stringify(canonical.geometry)) throw upstreamError('Parcel provider returned conflicting geometry for one parcel ID.');
@@ -239,13 +281,23 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
     function queryBounds(bbox) {
         validateBounds(bbox, maxBboxKm2, descriptor);
         // CRS:84 fixes longitude/latitude order for both the spatial filter and GeoJSON response.
+        let result;
         if (hasFixedAttributeFilter) {
             const [west, south, east, north] = bbox;
             const spatial = `BBOX(${descriptor.geometryField},${west},${south},${east},${north},'CRS:84')`;
-            return query({ cql_filter: `(${attributeFilter.where}) AND (${spatial})` });
+            result = query({ cql_filter: `(${attributeFilter.where}) AND (${spatial})` });
+        } else {
+            const pending = query({ bbox: `${bbox.join(',')},${version === '1.0.0' ? 'EPSG:4326' : 'CRS:84'}` });
+            result = featureIdMode ? verifyFeatureIds(pending) : pending;
         }
-        const result = query({ bbox: `${bbox.join(',')},${version === '1.0.0' ? 'EPSG:4326' : 'CRS:84'}` });
-        return featureIdMode ? verifyFeatureIds(result) : result;
+        // Daegu's WFS BBOX uses feature envelopes. Filter only after complete paging;
+        // retain every ring and vertex of intersecting parcels, without clipping.
+        if (descriptor.filterBoundsGeometry) {
+            const footprint = bboxPolygon(bbox);
+            return result.then(complete => ({ ...complete,
+                features: complete.features.filter(parcel => booleanIntersects(parcel, footprint)) }));
+        }
+        return result;
     }
 
     async function verifyFeatureIds(resultPromise) {

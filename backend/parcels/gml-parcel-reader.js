@@ -10,6 +10,13 @@ const GML = new Set(['http://www.opengis.net/gml', 'http://www.opengis.net/gml/3
 const GML32 = 'http://www.opengis.net/gml/3.2';
 const CP = /^https?:\/\/inspire\.ec\.europa\.eu\/schemas\/cp\/(?:3\.0|4\.0)$/;
 const LR = 'www.landregistry.gov.uk';
+// Sofia's public MapServer returns GML 3.1 with native northing/easting axes.
+export const SOFIA_GML_SCHEMA = Object.freeze({
+    featureNamespace: 'http://mapserver.gis.umn.edu/mapserver',
+    featureName: 'cad_immovable', idField: 'cadnumber', geometryField: 'msGeometry',
+    gmlNamespace: 'http://www.opengis.net/gml', sourceCrs: 'EPSG:7801',
+    axisOrder: 'northing-easting', localIdPattern: '^\\d{5}\\.\\d+\\.\\d+$'
+});
 export const MAPSERVER_GML_SCHEMA = Object.freeze({
     featureNamespace: 'http://mapserver.gis.umn.edu/mapserver',
     featureName: 'dzialki',
@@ -132,7 +139,8 @@ export const FINLAND_CP_GML_SCHEMA = Object.freeze({
     sourceCrs: 'EPSG:3067',
     axisOrder: 'easting-northing'
 });
-const CUSTOM_SCHEMAS = [MAPSERVER_GML_SCHEMA, SAXONY_GML_SCHEMA, HESSEN_GML_SCHEMA, POZNAN_GML_SCHEMA, GDANSK_GML_SCHEMA, SOSNOWIEC_GML_SCHEMA, POLAND_EGIB_GML_SCHEMA, NORWAY_TEIG_GML_SCHEMA, FINLAND_CP_GML_SCHEMA, CATASTRO_ATOM_GML_SCHEMA];
+const CUSTOM_SCHEMAS = [SOFIA_GML_SCHEMA, MAPSERVER_GML_SCHEMA, SAXONY_GML_SCHEMA, HESSEN_GML_SCHEMA, POZNAN_GML_SCHEMA, GDANSK_GML_SCHEMA, SOSNOWIEC_GML_SCHEMA, POLAND_EGIB_GML_SCHEMA, NORWAY_TEIG_GML_SCHEMA, FINLAND_CP_GML_SCHEMA, CATASTRO_ATOM_GML_SCHEMA];
+proj4.defs('EPSG:7801', '+proj=lcc +lat_0=42.6678756833333 +lon_0=25.5 +lat_1=42 +lat_2=43.3333333333333 +x_0=500000 +y_0=4725824.3591 +ellps=GRS80 +towgs84=0,0,0 +units=m +no_defs');
 proj4.defs('EPSG:2177', '+proj=tmerc +lat_0=0 +lon_0=18 +k=0.999923 +x_0=6500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
 proj4.defs('EPSG:2180', '+proj=tmerc +lat_0=0 +lon_0=19 +k=0.9993 +x_0=500000 +y_0=-5300000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
 for (const zone of [30,31,32,33]) proj4.defs(`EPSG:258${zone}`, `+proj=utm +zone=${zone} +ellps=GRS80 +towgs84=0,0,0 +units=m +no_defs`);
@@ -213,9 +221,11 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
     const isGdansk = canonicalCustomSchema === GDANSK_GML_SCHEMA;
     const isSosnowiec = canonicalCustomSchema === SOSNOWIEC_GML_SCHEMA;
     const isCatastroAtom = canonicalCustomSchema === CATASTRO_ATOM_GML_SCHEMA;
+    const isSofia = canonicalCustomSchema === SOFIA_GML_SCHEMA;
     const isMunicipalGeometry = isGdansk || isSosnowiec;
-    const strictFlatFields = isHessen || isMunicipalGeometry || isCatastroAtom;
-    const geometryChildren = isMunicipalGeometry || isCatastroAtom ? GDANSK_GEOMETRY_CHILDREN : HESSEN_GEOMETRY_CHILDREN;
+    const strictFlatFields = isHessen || isMunicipalGeometry || isCatastroAtom || isSofia;
+    const geometryChildren = isSofia ? { ...HESSEN_GEOMETRY_CHILDREN, msGeometry: HESSEN_GEOMETRY_CHILDREN.geometrie }
+        : isMunicipalGeometry || isCatastroAtom ? GDANSK_GEOMETRY_CHILDREN : HESSEN_GEOMETRY_CHILDREN;
     const isGmlTag = tag => customSchema ? tag.uri === customSchema.gmlNamespace : GML.has(tag.uri);
     const isFeatureTag = tag => nativeCoordinates
         ? tag.uri === LR && tag.local === 'PREDEFINED'
@@ -231,7 +241,8 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
     parser.on('error', () => fail('Malformed parcel GML.'));
     parser.on('opentag', tag => {
         if (!stack.length) {
-            if (!collectionTag(tag) || (customSchema && tag.uri !== 'http://www.opengis.net/wfs/2.0')) fail('Parcel GML must be a FeatureCollection.');
+            if (!collectionTag(tag) || (customSchema && tag.uri !== 'http://www.opengis.net/wfs/2.0'
+                && !(isSofia && tag.uri === 'http://www.opengis.net/wfs'))) fail('Parcel GML must be a FeatureCollection.');
             collection = true;
             const matchedAttribute = attr(tag,'numberMatched');
             // Only the native HMLR import contract records and validates collection
@@ -261,7 +272,7 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
                 fail('Unexpected Spanish ATOM parcel collection content.');
             }
         }
-        if (current && (isMunicipalGeometry || isCatastroAtom) && [activeIdField, customSchema.geometryField].includes(tag.local)
+        if (current && (isMunicipalGeometry || isCatastroAtom || isSofia) && [activeIdField, customSchema.geometryField].includes(tag.local)
             && tag.uri !== current.namespace) fail('Unexpected municipal parcel field namespace.');
         if (current && strictFlatFields && tag.uri === current.namespace
             && [activeIdField, customSchema.geometryField].includes(tag.local)
@@ -320,7 +331,7 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
         if (current && strictFlatFields && geometryDepth !== null) {
             // Sosnowiec and Spanish ATOM geometry is inline. A nil component, even one carrying
             // coordinates, cannot be reinterpreted as a usable source polygon.
-            if ((isSosnowiec || isCatastroAtom) && namespacedAttr(tag, 'http://www.w3.org/2001/XMLSchema-instance', 'nil') !== undefined) {
+            if ((isSosnowiec || isCatastroAtom || isSofia) && namespacedAttr(tag, 'http://www.w3.org/2001/XMLSchema-instance', 'nil') !== undefined) {
                 const nil = namespacedAttr(tag, 'http://www.w3.org/2001/XMLSchema-instance', 'nil');
                 if (!['false', '0'].includes(nil)) fail('Parcel GML has a nil or invalid geometry component.');
             }
@@ -334,7 +345,7 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
                     fail('Invalid parcel GML geometry structure.');
                 }
                 parentFrame.hessenGeometryChildren++;
-                if ((HESSEN_SINGLE_GEOMETRY_CHILD.has(parent.local) || ((isMunicipalGeometry || isCatastroAtom) && parent.local === 'geometry')) && parentFrame.hessenGeometryChildren > 1) {
+                if ((HESSEN_SINGLE_GEOMETRY_CHILD.has(parent.local) || (isSofia && parent.local === 'msGeometry') || ((isMunicipalGeometry || isCatastroAtom) && parent.local === 'geometry')) && parentFrame.hessenGeometryChildren > 1) {
                     fail('Parcel GML repeats a geometry component.');
                 }
             }

@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3133",
+  "name": "Arusha, Tanzania",
+  "point": [
+    -3.37643947086754,
+    36.6941032162482
+  ],
+  "bindings": [
+    {
+      "appCityId": "arusha",
+      "runtimeConfig": {
+        "id": "arusha",
+        "wupCityCode": "3133",
+        "label": "Arusha, Tanzania",
+        "currency": {
+          "locale": "sw-TZ",
+          "code": "TZS"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -3.37643947086754,
+            36.6941032162482
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -3.37643947086754,
+            36.6941032162482
+          ],
+          "fallbackDataset": [
+            36.6941032162482,
+            -3.37643947086754
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "tz-mlhhds-eardhi-taspro-spatial-units37",
+          "idPrefix": "tz-mlhhds-eardhi-taspro-spatial-units37/uid/",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Tanzania MLHHSD e-Ardhi / TASPRO cadastral spatial units"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "tz-mlhhds-eardhi-taspro-spatial-units37",
+      "name": "Tanzania MLHHSD e-Ardhi Arusha cadastral spatial units",
+      "adapter": "wfs",
+      "endpoint": "https://eardhi.lands.go.tz/map/geoserver/taspro/wfs",
+      "featureType": "taspro:spatial_units37",
+      "version": "1.0.0",
+      "idField": "uid",
+      "idType": "string",
+      "idPattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "idPrefix": "tz-mlhhds-eardhi-taspro-spatial-units37/uid/",
+      "geometryField": "geom",
+      "requestProperties": true,
+      "outFields": [
+        "uid"
+      ],
+      "pageSize": 100,
+      "idBatchSize": 40,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "TZ",
+      "cityIds": [
+        "arusha"
+      ],
+      "scope": "Observed southern Njiro-area Arusha cadastral parcels only. Unchanged WUP point is north of advertised layer extent; municipal completeness and northern coverage are unverified.",
+      "operator": "Tanzania Ministry of Lands, Housing and Human Settlements Development (MLHHSD)",
+      "catalogueUrl": "https://eardhi.lands.go.tz/",
+      "attribution": "Tanzania MLHHSD e-Ardhi / TASPRO cadastral spatial units",
+      "licenceNote": "Anonymous official WFS reads observed. Explicit geometry redistribution/reuse licence not established.",
+      "defaultForCity": true,
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "queryGeometry": true
+      },
+      "metricSridByCity": {
+        "arusha": 32737
+      },
+      "metricSrid": 32737,
+      "sortField": "id",
+      "browserTransport": "relay",
+      "timeoutMs": 45000,
+      "maxConcurrentQueries": 4
+    }
+  ]
+}

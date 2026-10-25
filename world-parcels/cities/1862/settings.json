@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1862",
+  "name": "Mufulira, Zambia",
+  "point": [
+    -12.5603415838874,
+    28.2479184318728
+  ],
+  "bindings": [
+    {
+      "appCityId": "mufulira",
+      "runtimeConfig": {
+        "id": "mufulira",
+        "wupCityCode": "1862",
+        "label": "Mufulira, Zambia",
+        "currency": {
+          "locale": "en-ZM",
+          "code": "ZMW"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -12.5603415838874,
+            28.2479184318728
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -12.5603415838874,
+            28.2479184318728
+          ],
+          "fallbackDataset": [
+            28.2479184318728,
+            -12.5603415838874
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "zm-mlg-land-portal-mufulira-parcels-wfs",
+          "idPrefix": "ZM-MLG-MUF-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Zambia Ministry of Local Government Land Portal / MLG GeoServer. Informational parcel map; not legal title or survey accuracy."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "zm-mlg-land-portal-mufulira-parcels-wfs",
+      "name": "Zambia MLG Land Portal — Mufulira neighborhood parcels",
+      "adapter": "wfs",
+      "wfsProfile": "native-feature-id-layers-v1",
+      "endpoint": "https://gis.mlgzambia.com/geoserver/wfs",
+      "featureType": "zambia:CPB_MUFUL_Chibolya_Parcels_1_1",
+      "featureTypes": [
+        "zambia:CPB_MUFUL_Chibolya_Parcels_1_1",
+        "zambia:CPB_MUFUL_Eaglet_Parcels_1_1",
+        "zambia:CPB_MUFUL_Francis_Mukuka_Parcels_1_1",
+        "zambia:CPB_MUFUL_Kalukanya_Parcels_1_1",
+        "zambia:CPB_MUFUL_Kamuchanga_Extension_Parcels_1_1",
+        "zambia:CPB_MUFUL_Kamuchanga_Parcels_1_1",
+        "zambia:CPB_MUFUL_Kawama_East_Parcels_1_1"
+      ],
+      "version": "1.0.0",
+      "geometryField": "the_geom",
+      "nativeIdMode": "feature-id",
+      "featureIdParameter": "featureID",
+      "idField": null,
+      "idType": "string",
+      "idPrefix": "ZM-MLG-MUF-",
+      "idPattern": "^CPB_MUFUL_[A-Za-z_]+_Parcels_1_1\\.[0-9]+$",
+      "outFields": [],
+      "requestProperties": true,
+      "pageSize": 1000,
+      "idBatchSize": 80,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 4,
+      "maxResponseBytes": 8388608,
+      "timeoutMs": 45000,
+      "countryCode": "ZM",
+      "cityIds": [
+        "mufulira"
+      ],
+      "defaultForCity": true,
+      "metricSrid": 32735,
+      "nativeCrs": "EPSG:32735",
+      "sourceCrs": "EPSG:32735",
+      "responseCrs": "EPSG:4326",
+      "coordinateOrder": "longitude,latitude",
+      "returnsWGS84": true,
+      "capabilities": {
+        "exactIds": true,
+        "areaEnumeration": true
+      },
+      "scope": "Seven accessible, explicitly named Mufulira neighborhood parcel layers. NoRef variants and block layers excluded pending semantics. Partial coverage; no citywide completeness claim. Provider WGS84 coordinates retained unchanged, including four-decimal quantization.",
+      "attribution": "Zambia Ministry of Local Government Land Portal / MLG GeoServer. Informational parcel map; not legal title or survey accuracy.",
+      "licenceNote": "No open redistribution licence established. Discovery records an own-property-use restriction in the public map disclaimer; permission and current terms remain unresolved. Technical integration testing does not establish reuse authorization.",
+      "catalogueUrl": "https://landum.mlgzambia.com/publicmap",
+      "maxConcurrentQueries": 2,
+      "minRequestIntervalMs": 100,
+      "excludedFeatureTypes": [
+        {
+          "featureType": "zambia:CPB_MUFUL_Kantanshi_Extension_Parcels_1_1",
+          "reason": "Advertised first-party layer fails with missing datastore schema; excluded from active family. See live-layer-access evidence."
+        },
+        {
+          "featureType": "zambia:CPB_MUFUL_Kawama_West_Parcels_1_1",
+          "reason": "Advertised first-party layer fails with missing datastore schema; excluded from active family. See live-layer-access evidence."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1402",
+  "name": "Al-Quds (East Jerusalem), Palestine",
+  "point": [
+    31.8144863306494,
+    35.2239735997278
+  ],
+  "bindings": [
+    {
+      "appCityId": "al_quds_east_jerusalem",
+      "runtimeConfig": {
+        "id": "al_quds_east_jerusalem",
+        "wupCityCode": "1402",
+        "label": "Al-Quds (East Jerusalem), Palestine",
+        "currency": {
+          "locale": "ar-PS",
+          "code": "ILS"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            31.8144863306494,
+            35.2239735997278
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            31.8144863306494,
+            35.2239735997278
+          ],
+          "fallbackDataset": [
+            35.2239735997278,
+            31.8144863306494
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ps-molg-geomolg-parcelsregistered-withdomain",
+          "idPrefix": "PS-GEOMOLG-WITHDOMAIN-OBJECTID-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Palestinian Ministry of Local Government / GeoMOLG, registered cadastral parcels. Native OBJECTID references; bounded availability only. Wider coverage, currentness, survey alignment and reuse terms remain unverified."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ps-molg-geomolg-parcelsregistered-withdomain",
+      "name": "GeoMOLG registered cadastral parcels (Withdomain)",
+      "adapter": "arcgis",
+      "endpoint": "https://orthophotos.geomolg.ps/adaptor/rest/services/ParcelsRegistered_Withdomain/MapServer/0",
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "idPrefix": "PS-GEOMOLG-WITHDOMAIN-OBJECTID-",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 2000,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 45000,
+      "maxConcurrentQueries": 2,
+      "countryCode": "PS",
+      "sourceCrs": "EPSG:28191",
+      "metricSrid": 32636,
+      "cityIds": [
+        "al_quds_east_jerusalem"
+      ],
+      "operator": "Palestinian Ministry of Local Government / GeoMOLG",
+      "attribution": "Palestinian Ministry of Local Government / GeoMOLG, registered cadastral parcels. Native OBJECTID references; bounded availability only. Wider coverage, currentness, survey alignment and reuse terms remain unverified.",
+      "licenceNote": "Public anonymous service; no explicit reuse licence in observed first-party layer metadata. Exact PLA publication linkage and permission are second-pass follow-ups.",
+      "scope": "Registered/settled cadastral parcel layer. Three exact-ID samples near northern East Jerusalem; no citywide completeness claim. Geographic extent does not express a political boundary or recognition claim.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "PS",
+          "basis": "Exact first-party GeoMOLG layer declares Parcels-Registered / قطع اراضي التسوية, polygon features and native OBJECTID.",
+          "evidence": []
+        }
+      },
+      "defaultForCity": true
+    }
+  ]
+}
