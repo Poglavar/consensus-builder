@@ -1825,6 +1825,7 @@
             // bundle:start foundation
             'js/ui/modal-escape.js',
             'js/ui/dialogs.js',
+            'js/browser-workspace.js',
             'js/persistent-storage.js',
             'js/i18n.js',
             'js/format.js',
@@ -1835,7 +1836,6 @@
             'js/economic-sources.js',
             'js/city-money.js',
             'js/economic-source-settings.js',
-            'js/multi-tab-guard.js',
             'js/work-slicer.js',
             // bundle:end foundation
             'js/versions.js',
@@ -2281,7 +2281,13 @@
             };
 
             if (typeof PersistentStorage !== 'undefined' && PersistentStorage.ready && typeof PersistentStorage.ready.then === 'function') {
-                PersistentStorage.ready.then(boot);
+                PersistentStorage.ready.then(boot).catch(error => {
+                    console.error('Could not open this tab’s saved workspace', error);
+                    const notice = document.createElement('p');
+                    notice.setAttribute('role', 'alert');
+                    notice.textContent = 'This tab’s saved workspace could not be opened. Reload to try again. Your saved work has not been replaced.';
+                    document.body.replaceChildren(notice);
+                });
             } else if (typeof PersistentStorage !== 'undefined' && PersistentStorage.ensureReady) {
                 PersistentStorage.ensureReady(boot);
             } else {

@@ -37,14 +37,14 @@ for (const width of [1280, 390]) test(`replacing an occupied road with buildings
   await page.goto(url(original), { waitUntil: 'domcontentloaded' });
   await waitForMapReady(page);
   await expect.poll(() => applied(), { timeout: 30000 }).toEqual(original);
-  // The phone case reproduces the affected read-only tab while the primary retains its saved plan.
+  // The phone case replaces the independent fork while the original keeps its saved plan.
   const target = width === 390 ? await page.context().newPage() : page;
   try {
     if (target !== page) {
       await mockAllApiRoutes(target); await attachSharedIndex(target, index);
       await target.goto(url(original), { waitUntil: 'domcontentloaded' });
       await waitForMapReady(target);
-      await expect.poll(() => target.evaluate(() => (window as any).__cbSecondaryTab)).toBe(true);
+      expect(await target.evaluate(() => (window as any).BrowserWorkspace.id)).not.toBe(await page.evaluate(() => (window as any).BrowserWorkspace.id));
       await expect.poll(() => applied(target)).toEqual(original);
     }
     await target.goto(url([building, park]), { waitUntil: 'domcontentloaded' });
@@ -60,7 +60,11 @@ for (const width of [1280, 390]) test(`replacing an occupied road with buildings
       await expect.poll(() => applied(target), { timeout: 30000 }).toEqual(replacement);
     } else {
       await expect.poll(() => applied()).toEqual(original);
-      await expect(target.locator('#cb-multitab-banner')).toBeVisible();
+      await expect(target.locator('#cb-multitab-banner')).toHaveCount(0);
+      await target.reload({ waitUntil: 'domcontentloaded' });
+      await expect.poll(() => applied(target), { timeout: 30000 }).toEqual(replacement);
+      await page.reload({ waitUntil: 'domcontentloaded' });
+      await expect.poll(() => applied(), { timeout: 30000 }).toEqual(original);
     }
   } finally { if (target !== page) await target.close(); }
 });

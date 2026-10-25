@@ -23,13 +23,6 @@ function proposalManifest(nextProposalId) {
     });
 }
 
-// Where a READ-ONLY (secondary) tab parks work it is not allowed to write to the shared rows above.
-// Separate key on purpose: the primary tab's rows stay untouched, so nothing can be clobbered, and
-// the work survives the reload that used to destroy it. Per-city already, since PersistentStorage
-// opens one database per city.
-const PROPOSALS_RECOVERY_KEY = 'cadastre_proposals_recovery';
-const PROPOSALS_RECOVERY_VERSION = 2;
-
 // Copy-on-read view of the authored log for one mutation. Untouched records stay shared with the
 // store (no clone); a record is cloned the first time the mutation reads it; only touched ids are
 // published, persisted and restorable. Profiled on the Šibenik plan, cloning and re-serializing
@@ -60,17 +53,6 @@ class DraftRecordMap extends Map {
     [Symbol.iterator]() { return this.entries(); }
     // Raw entries without cloning: for the coordinator's publish and serialize steps only.
     rawEntries() { return Map.prototype.entries.call(this); }
-}
-
-// The parked recovery blob: every record of a read-only tab, with its id counter.
-function proposalRecoveryState(nextProposalId, records) {
-    return {
-        version: PROPOSALS_RECOVERY_VERSION,
-        nextProposalId: Number.isFinite(Number(nextProposalId)) && Number(nextProposalId) >= 0
-            ? Math.floor(Number(nextProposalId))
-            : 0,
-        records: Array.isArray(records) ? records : []
-    };
 }
 
 function declaredCadastreAnchors(parcelIds) {
@@ -241,7 +223,6 @@ const proposalStorage = {
         return {
             records: new Map(this.proposals),
             nextProposalId: this.nextProposalId,
-            blockedWriteCount: this._blockedWriteCount,
             rollback: null
         };
     },
@@ -355,7 +336,6 @@ const proposalStorage = {
             snapshot.records.forEach((record, id) => { if (!this.proposals.has(id)) this.proposals.set(id, record); });
         }
         this.nextProposalId = snapshot.nextProposalId;
-        this._blockedWriteCount = snapshot.blockedWriteCount;
     },
 
     beginBatch() {
@@ -508,27 +488,6 @@ const proposalStorage = {
 
     _persist() {
         if (typeof PersistentStorage === 'undefined') return;
-        // Secondary tab (app already open elsewhere): skip writes so we don't clobber the primary
-        // tab's data. All tabs share one store with no cross-tab merge — see multi-tab-guard.js.
-        // Say so every time: this used to return in complete silence, so a read-only tab looked
-        // like a working one — proposals could be created, applied and rendered, and then simply
-        // were not there after a reload, with nothing in the console to explain it. The guard's
-        // banner is dismissable, so it cannot be the only signal that work is being dropped.
-        if (typeof window !== 'undefined' && window.__cbSecondaryTab) {
-            this._blockedWriteCount = (this._blockedWriteCount || 0) + 1;
-            // Warning the user that work MIGHT be lost was never a licence to throw it away. The
-            // reason a secondary tab must not write is that all tabs share ONE proposals store with
-            // no cross-tab merge, so saving here would clobber the primary tab's work. That argument
-            // only covers the SHARED key — writing our own is harmless (PersistentStorage is a
-            // key/value store; each key is its own record), so the work is parked under a private
-            // recovery key and offered back the next time this city opens as the primary tab.
-            this._persistRecovery();
-            console.error('[proposalStorage] This tab is read-only because the app is open in another tab,'
-                + ` so nothing here is saved to the shared store (dropped writes: ${this._blockedWriteCount}).`
-                + ' Your work has been parked and will be offered back when you reload with the other tabs closed.');
-            try { window.__cbReportSecondaryWriteBlocked?.(); } catch (_) { }
-            return;
-        }
         // A whole-store save outside the mutation protocol may follow in-place edits anywhere, so
         // every record is projected again — but only the rows whose projection differs from what
         // is on disk are written, plus a delete for every row on disk with no record in memory,
@@ -563,67 +522,6 @@ const proposalStorage = {
             console.error('proposalStorage.save: Failed to persist proposals', error);
             throw error;
         }
-    },
-
-    // Park this read-only tab's proposals under its own key so a reload cannot destroy them. Safe
-    // against the primary: a different key is a different record, so the shared rows are untouched.
-    // Best-effort by construction — a rescue that throws must never break the edit the user is
-    // making, and it is only ever a second chance at work the tab could not save anyway.
-    _persistRecovery() {
-        if (typeof PersistentStorage === 'undefined') return;
-        try {
-            const serialisable = Array.from(this.proposals.values()).map(proposalRecordForPersistence);
-            if (!serialisable.length) return;
-            const state = proposalRecoveryState(this.nextProposalId, serialisable);
-            PersistentStorage.setItem(PROPOSALS_RECOVERY_KEY, JSON.stringify({
-                ...state,
-                savedAt: new Date().toISOString()
-            }));
-        } catch (error) {
-            console.error('[proposalStorage] could not park read-only work for recovery', error);
-        }
-    },
-
-    // What a previous read-only tab parked, or null. Read on load by the PRIMARY tab only — a
-    // secondary tab offering to restore would just park it again on the next keystroke.
-    readRecovery() {
-        if (typeof PersistentStorage === 'undefined') return null;
-        if (typeof window !== 'undefined' && window.__cbSecondaryTab) return null;
-        try {
-            const raw = PersistentStorage.getItem(PROPOSALS_RECOVERY_KEY);
-            if (!raw) return null;
-            const parsed = JSON.parse(raw);
-            const proposals = Array.isArray(parsed && parsed.records) ? parsed.records : null;
-            if (!proposals || !proposals.length) return null;
-            // Only what this store does NOT already have: the usual case is that the user gave up
-            // and redrew the road in the primary tab, and re-adding the parked copy would duplicate it.
-            const missing = proposals.filter(entry => {
-                const id = entry && (entry.proposalId || entry.id);
-                return id && !this.proposals.has(String(id));
-            });
-            return missing.length ? { savedAt: parsed.savedAt || null, proposals: missing } : null;
-        } catch (error) {
-            console.error('[proposalStorage] could not read parked work', error);
-            return null;
-        }
-    },
-
-    // Merge parked work back in and clear the slot. Returns how many were restored.
-    restoreRecovery() {
-        const parked = this.readRecovery();
-        if (!parked) return 0;
-        parked.proposals.forEach(entry => {
-            try { this.addProposal({ ...entry, lifecycleStatus: getLifecycleStatus(entry) }); } catch (error) {
-                console.error('[proposalStorage] could not restore a parked proposal', error);
-            }
-        });
-        this.discardRecovery();
-        return parked.proposals.length;
-    },
-
-    discardRecovery() {
-        if (typeof PersistentStorage === 'undefined') return;
-        try { PersistentStorage.removeItem(PROPOSALS_RECOVERY_KEY); } catch (_) { }
     },
 
     getAllProposals() {
@@ -813,8 +711,8 @@ const proposalStorage = {
         this.proposals.clear();
         this._persistFragments = new Map();
         if (typeof PersistentStorage === 'undefined') return;
-        // Every row, the manifest and the parked recovery blob, in one write.
-        const deletes = [PROPOSALS_MANIFEST_KEY, PROPOSALS_RECOVERY_KEY];
+        // Every row and the manifest, in one write.
+        const deletes = [PROPOSALS_MANIFEST_KEY];
         PersistentStorage.forEach((_value, key) => {
             if (String(key).startsWith(PROPOSAL_ROW_PREFIX)) deletes.push(String(key));
         });

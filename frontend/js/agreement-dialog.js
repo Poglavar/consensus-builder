@@ -335,7 +335,6 @@
         'rule-invalid': reason => t('agreement.errors.ruleInvalid', 'The decision rule is incomplete: {{reason}}', { reason }),
         'rule-community-binding': () => t('agreement.errors.ruleCommunityBinding', 'A community vote cannot be binding.'),
         'deadline-invalid': () => t('agreement.errors.deadlineInvalid', 'The deadline must be a date in the future.'),
-        'secondary-tab': () => t('agreement.errors.secondaryTab', 'Another tab holds this city’s data; agreements can be edited there only.'),
         'rule-not-ready': reason => t('agreement.warnings.ruleNotReady', 'The rule cannot be evaluated yet: {{reason}}', { reason }),
         'rule-lens-missing': () => t('agreement.warnings.ruleLensMissing', 'No lens member is named, so no owner decision can be verified.'),
         'open-ground': () => t('agreement.warnings.openGround', 'Part of the land is open ground with no recorded owner.')
@@ -944,12 +943,10 @@
             try {
                 saved = root.AgreementStore.save(record);
             } catch (error) {
-                const secondary = !!(error && error.code === 'secondary-tab');
-                state.saveIssue = secondary ? { code: 'secondary-tab' } : { code: idOf(error && error.code), message: error && error.message || String(error) };
+                state.saveIssue = { code: idOf(error && error.code), message: error && error.message || String(error) };
                 renderIssues([state.saveIssue], result.warnings || []);
                 body.scrollTop = 0;
-                if (!secondary) throw error;
-                return;
+                throw error;
             }
             finish(saved);
         }

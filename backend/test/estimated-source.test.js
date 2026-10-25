@@ -46,6 +46,19 @@ describe('estimated parcel local source', () => {
         expect(createStore(storage).save('fixture-city', input([feature('plot-1', 16)])).collection.features[0].id).not.toBe(parcel.id);
     });
 
+    it('defaults to workspace storage when no store is injected', () => {
+        const previous = globalThis.BrowserWorkspace;
+        const workspace = memoryStorage();
+        globalThis.BrowserWorkspace = { storage: workspace };
+        try {
+            createStore().save('fixture-city', input([feature('workspace-plot')]));
+            expect(workspace.getItem('cb_estimated_parcels:fixture-city')).toContain('workspace-plot');
+        } finally {
+            if (previous === undefined) delete globalThis.BrowserWorkspace;
+            else globalThis.BrowserWorkspace = previous;
+        }
+    });
+
     it('serves defensive GeoJSON by cell, identity and geometry bbox, with active control', () => {
         const storage = memoryStorage();
         const store = createStore(storage);

@@ -396,7 +396,7 @@
     }
 
     function createProposalDraftStore(options = {}) {
-        const storage = options.storage || global.localStorage || null;
+        const storage = options.storage || global.BrowserWorkspace?.storage || global.localStorage || null;
         const storageKey = options.storageKey || PROPOSAL_DRAFT_STORAGE_KEY;
         const now = options.now || (() => new Date());
         const idFactory = options.idFactory || defaultDraftId;
@@ -979,13 +979,7 @@
         };
         global.addEventListener('pagehide', flush);
         global.addEventListener('beforeunload', flush);
-        global.addEventListener('storage', event => {
-            // key === null means another tab cleared ALL of localStorage (a wipe) — re-read then too,
-            // so this tab's in-memory drafts don't get re-persisted by its own unload flush.
-            if (event && (event.key === PROPOSAL_DRAFT_STORAGE_KEY || event.key === null)) {
-                try { global.proposalDraftStore.reload(); } catch (_) { }
-            }
-        });
+
     }
 
     if (typeof module !== 'undefined' && module.exports) {

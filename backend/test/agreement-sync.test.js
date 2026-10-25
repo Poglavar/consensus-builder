@@ -519,7 +519,7 @@ describe('proposeAgain', () => {
 });
 
 describe('opening an /agreements link', () => {
-    it('opens a published agreement and fetched designs as a read-only view in a secondary tab without writes or apply', async () => {
+    it('opens an agreement normally when a secondary-tab marker is present', async () => {
         const content = AgreementRecord.published(agreement());
         const cid = Cid.cidOfObject(content);
         const row = { cid, content, createdAt: '2026-10-21T12:00:05.000Z', city: content.city, status: 'active', onchain: null };
@@ -535,27 +535,21 @@ describe('opening an /agreements link', () => {
         const { win, sync, agreements } = fakeWindow({ server });
         win.__cbSecondaryTab = true;
         win.CityConfigManager.foreignGroundContextFor = () => null;
-        const openReadOnly = vi.fn(async () => {});
-        const handleSharedDesignRoute = vi.fn(async () => { throw new Error('must not import or apply in a secondary tab'); });
-        win.AgreementPanel = { openReadOnly };
+        const handleSharedDesignRoute = vi.fn(async cids => ({ blocked: false, failed: [],
+            localIds: new Map(cids.map((designCid, index) => [designCid, ['layout-1', 'road-1'][index]])) }));
+        const opened = vi.fn(async () => {});
+        win.AgreementPanel = { open: opened };
         win.handleSharedDesignRoute = handleSharedDesignRoute;
         const save = vi.spyOn(win.AgreementStore, 'save');
 
         await sync.handleAgreementRoute(cid);
 
-        expect(server.calls.map(call => `${call.method} ${call.pathname}`)).toEqual([
-            `GET /agreements/${cid}`, 'POST /designs/batch'
-        ]);
-        expect(handleSharedDesignRoute).not.toHaveBeenCalled();
-        expect(save).not.toHaveBeenCalled();
-        expect(agreements.size).toBe(1);
-        expect(openReadOnly).toHaveBeenCalledOnce();
-        const [view, { designs }] = openReadOnly.mock.calls[0];
-        expect(view).toMatchObject({ id: `published-${cid}`, published: { cid }, title: content.title });
-        expect(view.designs.map(design => design.proposalId)).toEqual([layoutCid, roadCid]);
-        expect(view.outputs.every(output => output.geometry === null)).toBe(true);
-        expect(designs.get(layoutCid)).toMatchObject({ proposalId: layoutCid, goal: 'parcel-layout', title: 'Lay out k9', parcelLayout: layoutContent.parcelLayout });
-        expect(designs.get(roadCid)).toMatchObject({ proposalId: roadCid, goal: 'road', title: 'New lane', roadProposal: roadContent.roadProposal });
+        expect(server.calls.map(call => `${call.method} ${call.pathname}`)).toEqual([`GET /agreements/${cid}`]);
+        expect(handleSharedDesignRoute).toHaveBeenCalledOnce();
+        expect(save).toHaveBeenCalledOnce();
+        expect(agreements.size).toBe(2);
+        expect(opened).toHaveBeenCalledOnce();
+        expect(agreements.get(save.mock.results[0].value.id)).toMatchObject({ published: { cid }, title: content.title });
     });
 
     it('keeps a mint this device made that the index has not recorded, and takes the index\'s once it has', async () => {

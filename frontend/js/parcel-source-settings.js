@@ -30,6 +30,7 @@
         const param = new URLSearchParams(global.location?.search || '').get('backend');
         return String(global.getBackendBase?.() || param || 'https://api.urbangametheory.xyz').replace(/\/+$/, '');
     }
+    function storage(global) { return global.BrowserWorkspace?.storage || global.localStorage; }
     function storageKey(city, global, kind = 'parcel') { return kindOf(kind).storage + backend(global) + ':' + city; }
     function decodeChoice(sourceId, city, kind = 'parcel') {
         const spec = kindOf(kind);
@@ -61,18 +62,18 @@
         if (requested) return decodeChoice(requested, city, kind);
         if (resolvingChoice) return null;
         resolvingChoice = true;
-        try { return decodeChoice(global.localStorage.getItem(storageKey(city, global, kind)) || '', city, kind); }
+        try { return decodeChoice(storage(global).getItem(storageKey(city, global, kind)) || '', city, kind); }
         catch (_) { return null; }
         finally { resolvingChoice = false; }
     }
     function saveChoice(city, source, global, kind = 'parcel') {
         if (!decodeChoice(source.id, city, kind)) throw new Error('Invalid source choice.');
-        global.localStorage.setItem(storageKey(city, global, kind), source.id);
-        if (global.localStorage.getItem(storageKey(city, global, kind)) !== source.id) throw new Error('Source choice could not be saved.');
+        storage(global).setItem(storageKey(city, global, kind), source.id);
+        if (storage(global).getItem(storageKey(city, global, kind)) !== source.id) throw new Error('Source choice could not be saved.');
     }
     function recentChecks(city, global, kind = 'parcel') {
         try {
-            const value = JSON.parse(global.localStorage.getItem(storageKey(city, global, kind) + ':checks') || '[]');
+            const value = JSON.parse(storage(global).getItem(storageKey(city, global, kind) + ':checks') || '[]');
             return Array.isArray(value) ? value.slice(-10) : [];
         } catch (_) { return []; }
     }
@@ -85,7 +86,7 @@
             checks.push({ url: parsed.href, at: new Date().toISOString(), code: data.code || 'verified',
                 attempts: Array.isArray(data.attempts) ? data.attempts.map(item => ({ adapter: item.adapter,
                     status: item.status, code: item.error?.code, message: item.error?.message })) : [] });
-            global.localStorage.setItem(storageKey(city, global, kind) + ':checks', JSON.stringify(checks.slice(-10)));
+            storage(global).setItem(storageKey(city, global, kind) + ':checks', JSON.stringify(checks.slice(-10)));
         } catch (_) { /* Source availability does not depend on optional audit storage. */ }
     }
     function smallProbeBounds(map) {
@@ -268,7 +269,7 @@
         const reset = global.document.createElement('button'); reset.textContent = t('default', 'Use the city default');
         reset.type = 'button'; reset.className = 'btn'; footer.prepend(reset);
         reset.addEventListener('click', () => {
-            try { global.localStorage.removeItem(storageKey(city.id, global, kind)); reloadWithChoice(global, null, kind); }
+            try { storage(global).removeItem(storageKey(city.id, global, kind)); reloadWithChoice(global, null, kind); }
             catch (_) { result.textContent = t('storageFailed', 'The source choice could not be saved in this browser.'); }
         });
         dialog.addEventListener('close', () => { controller?.abort(); dialog.remove(); });

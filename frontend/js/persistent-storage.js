@@ -1,8 +1,7 @@
-// Per-city key/value storage on IndexedDB.
+// Per-workspace, per-city key/value storage on IndexedDB.
 //
-// Each city gets its own database, so the data of one city can never be mistaken for another's.
-// That is what lets switching cities be a navigation rather than a demolition: nothing has to be
-// erased, and the city you leave is still there when you come back.
+// Each tab owns a durable workspace, with a separate database for each geographic context.
+// New tabs snapshot the saved workspace; reload reopens that tab's own data. No cross-tab merge.
 //
 // Which database to open is decided by PersistentStorage.setScope(cityId), called by city-config as
 // soon as it resolves the current city — before anything reads. Callers that never set a scope (the
@@ -12,11 +11,11 @@
     const hasIndexedDB = typeof globalScope.indexedDB !== 'undefined';
 
     const DB_NAME_PREFIX = 'consensus-builder-storage';
-    // Everything written before cities had their own database. Migrated once, into whichever city
-    // it belonged to, then left in place rather than deleted.
+    // Standalone pages without workspace bootstrap retain their unscoped store.
     const LEGACY_DB_NAME = DB_NAME_PREFIX;
-    const LEGACY_MIGRATED_KEY = '__migrated_to_city_scope';
-    const CITY_POINTER_KEY = 'cb_current_city';
+    const WORKSPACE_INITIALIZED_KEY = '__workspace_initialized';
+    const workspace = globalScope.BrowserWorkspace;
+    let scopeBinding = false;
     const DB_VERSION = 1;
     const STORE_NAME = 'kv';
 
@@ -25,10 +24,11 @@
     let dbOpenPromise = null;
     let dbName = null;           // resolved by setScope(), or lazily to the legacy name
     let loadStarted = false;
-    let readyResolve;
-    const ready = new Promise(resolve => {
-        readyResolve = resolve;
+    let readyResolve, readyReject;
+    const ready = new Promise((resolve, reject) => {
+        readyResolve = resolve; readyReject = reject;
     });
+    ready.catch(() => {});
 
     // Owner rows of derived live pieces (parcel_<piece id with #>_owner) are rebuilt by every replay
     // of the applied plan, so they live in this cache only: the browser stores no part of the built
@@ -60,12 +60,11 @@
         return dbName;
     }
 
-    // Which database this page uses, once known: tabs on the SAME database must not both write it
-    // (multi-tab-guard.js keys its channel by this); tabs on different cities' databases do not meet.
+    // Expose the resolved name for diagnostics; each tab's workspace has its own database.
     function announceDatabase() {
         try {
             globalScope.dispatchEvent(new CustomEvent('persistentstoragedatabase', { detail: { name: dbName } }));
-        } catch (_) { /* no event support: the guard stays inactive, as on an unsupported browser */ }
+        } catch (_) { /* no event support */ }
     }
 
     function flushPendingWrites() {
@@ -215,121 +214,100 @@
         });
     }
 
-    // Read every row of an arbitrary database without disturbing the module's own connection.
-    // Resolves to a plain object; resolves empty when the database does not exist or cannot be read.
+    // Read a complete committed snapshot. A failed read must never become an empty workspace.
     function readAllFrom(name) {
         if (!hasIndexedDB) return Promise.resolve({});
-        return new Promise(resolve => {
-            let request;
-            try {
-                request = globalScope.indexedDB.open(name, DB_VERSION);
-            } catch (_) {
-                resolve({});
-                return;
-            }
-            let created = false;
-            request.onupgradeneeded = event => {
-                // The database did not exist. Create the store so the open succeeds, note that we
-                // created it, and return nothing — there is no legacy data to migrate.
-                created = true;
-                const db = event.target.result;
-                if (!db.objectStoreNames.contains(STORE_NAME)) {
-                    db.createObjectStore(STORE_NAME, { keyPath: 'key' });
+        return new Promise((resolve, reject) => {
+            const request = globalScope.indexedDB.open(name, DB_VERSION);
+            let failed = false;
+            request.onupgradeneeded = () => {
+                if (!request.result.objectStoreNames.contains(STORE_NAME)) {
+                    request.result.createObjectStore(STORE_NAME, { keyPath: 'key' });
                 }
             };
-            request.onerror = () => resolve({});
-            request.onblocked = () => resolve({});
+            request.onerror = () => { failed = true; reject(request.error || new Error('Workspace snapshot open failed')); };
+            request.onblocked = () => { failed = true; reject(new Error('Workspace snapshot is blocked')); };
             request.onsuccess = () => {
                 const db = request.result;
-                if (created) {
-                    try { db.close(); } catch (_) { }
-                    resolve({});
-                    return;
-                }
+                if (failed) { db.close(); return; }
                 try {
                     const out = {};
-                    const transaction = db.transaction(STORE_NAME, 'readonly');
-                    const cursorRequest = transaction.objectStore(STORE_NAME).openCursor();
+                    const tx = db.transaction(STORE_NAME, 'readonly');
+                    const cursorRequest = tx.objectStore(STORE_NAME).openCursor();
                     cursorRequest.onsuccess = event => {
                         const cursor = event.target.result;
-                        if (cursor) {
-                            const record = cursor.value;
-                            if (record && typeof record.key === 'string') {
-                                out[record.key] = typeof record.value === 'string' ? record.value : JSON.stringify(record.value);
-                            }
-                            cursor.continue();
-                        } else {
-                            try { db.close(); } catch (_) { }
-                            resolve(out);
+                        if (!cursor) return;
+                        const record = cursor.value;
+                        if (record && typeof record.key === 'string') {
+                            out[record.key] = typeof record.value === 'string' ? record.value : JSON.stringify(record.value);
                         }
+                        cursor.continue();
                     };
-                    cursorRequest.onerror = () => { try { db.close(); } catch (_) { } resolve({}); };
-                } catch (_) {
-                    try { db.close(); } catch (_) { }
-                    resolve({});
-                }
+                    tx.oncomplete = () => { db.close(); resolve(out); };
+                    tx.onabort = tx.onerror = () => { db.close(); reject(tx.error || new Error('Workspace snapshot read failed')); };
+                } catch (error) { db.close(); reject(error); }
             };
         });
     }
 
-    function writeAllTo(name, entries) {
-        if (!hasIndexedDB || !entries || !Object.keys(entries).length) return Promise.resolve();
-        return new Promise(resolve => {
+    function writeSnapshot(name, entries) {
+        return new Promise((resolve, reject) => {
             const request = globalScope.indexedDB.open(name, DB_VERSION);
-            request.onupgradeneeded = event => {
-                const db = event.target.result;
-                if (!db.objectStoreNames.contains(STORE_NAME)) {
-                    db.createObjectStore(STORE_NAME, { keyPath: 'key' });
-                }
+            let failed = false;
+            request.onupgradeneeded = () => {
+                if (!request.result.objectStoreNames.contains(STORE_NAME)) request.result.createObjectStore(STORE_NAME, { keyPath: 'key' });
             };
-            request.onerror = () => resolve();
-            request.onblocked = () => resolve();
+            request.onerror = () => { failed = true; reject(request.error || new Error('Workspace copy open failed')); };
+            request.onblocked = () => { failed = true; reject(new Error('Workspace copy is blocked')); };
             request.onsuccess = () => {
                 const db = request.result;
+                if (failed) { db.close(); return; }
                 try {
-                    const transaction = db.transaction(STORE_NAME, 'readwrite');
-                    const store = transaction.objectStore(STORE_NAME);
-                    Object.keys(entries).forEach(key => store.put({ key, value: entries[key] }));
-                    transaction.oncomplete = () => { try { db.close(); } catch (_) { } resolve(); };
-                    transaction.onerror = () => { try { db.close(); } catch (_) { } resolve(); };
-                } catch (_) {
-                    try { db.close(); } catch (_) { }
-                    resolve();
-                }
+                    const tx = db.transaction(STORE_NAME, 'readwrite');
+                    const store = tx.objectStore(STORE_NAME);
+                    for (const [key, value] of Object.entries(entries)) {
+                        if (!isMemoryOnlyKey(key)) store.put({ key, value });
+                    }
+                    store.put({ key: WORKSPACE_INITIALIZED_KEY, value: '1' });
+                    tx.oncomplete = () => { db.close(); resolve(); };
+                    tx.onabort = tx.onerror = () => { db.close(); reject(tx.error || new Error('Workspace snapshot copy failed')); };
+                } catch (error) { db.close(); reject(error); }
             };
         });
     }
 
-    // One-time move of the old single database into the city it actually belonged to — the city it
-    // recorded as current. Runs before the cache is primed, so the app never sees the gap. The
-    // legacy database is marked and left alone rather than deleted; it costs nothing and a botched
-    // migration should not be the thing that loses someone's proposals.
-    //
-    // Returns the city the legacy data belongs to, or null. That matters because an upgrading user's
-    // last city was recorded *only* in this database, which cannot be read synchronously — so the
-    // boot before this ran had to guess, and may have guessed the default.
-    async function migrateLegacyDatabase() {
-        if (!hasIndexedDB) return null;
-        try {
-            const legacy = await readAllFrom(LEGACY_DB_NAME);
-            const keys = Object.keys(legacy);
-            if (!keys.length || legacy[LEGACY_MIGRATED_KEY]) return null;
-
-            const legacyCity = legacy[CITY_POINTER_KEY];
-            if (!legacyCity) return null; // nothing tells us whose data this is; leave it untouched
-
-            const target = `${DB_NAME_PREFIX}::${legacyCity}`;
-            const existing = await readAllFrom(target);
-            if (Object.keys(existing).length) return legacyCity; // already populated; never overwrite
-
-            await writeAllTo(target, legacy);
-            await writeAllTo(LEGACY_DB_NAME, { [LEGACY_MIGRATED_KEY]: '1' });
-            console.info(`[PersistentStorage] Migrated legacy local data into ${target}`);
-            return legacyCity;
-        } catch (error) {
-            console.warn('[PersistentStorage] Legacy migration failed; leaving data in place', error);
-            return null;
+    async function initializeWorkspace(scope) {
+        if (!hasIndexedDB) return;
+        const manifest = workspace.databaseName('__workspace');
+        if ((await readAllFrom(manifest))[WORKSPACE_INITIALIZED_KEY]) return;
+        const cities = new Set([scope]);
+        // Freeze every saved city at fork time, rather than inheriting future edits when this tab
+        // first visits another city. Only this workspace's ancestry is eligible; never other tabs.
+        const token = '__scope';
+        const prefixes = workspace.sourceDatabaseNames(token).map(name => name.slice(0, -token.length));
+        if (typeof globalScope.indexedDB.databases === 'function') {
+            for (const { name } of await globalScope.indexedDB.databases()) {
+                for (const prefix of prefixes) {
+                    if (!name?.startsWith(prefix)) continue;
+                    const city = name.slice(prefix.length);
+                    if (city && !city.includes('::') && city !== '__workspace') cities.add(city);
+                }
+            }
+        } else {
+            for (const city of globalScope.CityConfigManager?.getAvailableCities?.() || []) cities.add(city.id);
         }
+        for (const city of cities) {
+            const target = workspace.databaseName(city);
+            // Marker and copied records commit together; failed copies retry on reload.
+            if ((await readAllFrom(target))[WORKSPACE_INITIALIZED_KEY]) continue;
+            let snapshot = {};
+            for (const name of workspace.sourceDatabaseNames(city)) {
+                snapshot = await readAllFrom(name);
+                if (Object.keys(snapshot).length) break;
+            }
+            await writeSnapshot(target, snapshot);
+        }
+        await writeSnapshot(manifest, {});
     }
 
     function loadCache() {
@@ -349,7 +327,9 @@
                     const record = cursor.value;
                     // Never clobber a value already in the cache: it was written before the scope
                     // was bound and is newer than what the database holds.
-                    if (record && typeof record.key === 'string' && isMemoryOnlyKey(record.key)) {
+                    if (record && record.key === WORKSPACE_INITIALIZED_KEY) {
+                        // Private initialization marker, never application state.
+                    } else if (record && typeof record.key === 'string' && isMemoryOnlyKey(record.key)) {
                         storedMemoryOnlyKeys.add(record.key);
                     } else if (record && typeof record.key === 'string' && !cache.has(record.key)) {
                         cache.set(record.key, typeof record.value === 'string' ? record.value : JSON.stringify(record.value));
@@ -361,11 +341,13 @@
                 }
             };
             request.onerror = () => {
+                if (workspace) { readyReject(request.error || new Error('Workspace load failed')); return; }
                 console.warn('Failed to prime storage cache from IndexedDB', request.error);
                 flushPendingWrites();
                 readyResolve();
             };
         }).catch(err => {
+            if (workspace) { readyReject(err); return; }
             console.warn('IndexedDB unavailable for persistence, falling back to in-memory cache only', err);
             readyResolve();
         });
@@ -375,7 +357,7 @@
         if (!hasIndexedDB) {
             return;
         }
-        if (!dbName) { pendingWrites.push({ type: 'put', key, value }); return; }
+        if (!dbName || !loadStarted) { pendingWrites.push({ type: 'put', key, value }); return; }
         openDb().then(db => {
             const transaction = db.transaction(STORE_NAME, 'readwrite');
             const store = transaction.objectStore(STORE_NAME);
@@ -389,7 +371,7 @@
         if (!hasIndexedDB) {
             return;
         }
-        if (!dbName) { pendingWrites.push({ type: 'delete', key }); return; }
+        if (!dbName || !loadStarted) { pendingWrites.push({ type: 'delete', key }); return; }
         openDb().then(db => {
             const transaction = db.transaction(STORE_NAME, 'readwrite');
             const store = transaction.objectStore(STORE_NAME);
@@ -403,11 +385,12 @@
         if (!hasIndexedDB) {
             return;
         }
-        if (!dbName) { pendingWrites.push({ type: 'clear' }); return; }
+        if (!dbName || !loadStarted) { pendingWrites.push({ type: 'clear' }); return; }
         openDb().then(db => {
             const transaction = db.transaction(STORE_NAME, 'readwrite');
             const store = transaction.objectStore(STORE_NAME);
             store.clear();
+            if (workspace) store.put({ key: WORKSPACE_INITIALIZED_KEY, value: '1' });
         }).catch(err => {
             console.warn('Failed to clear IndexedDB store', err);
         });
@@ -467,36 +450,18 @@
         isDerivedParcelId,
         isMemoryOnlyKey,
 
-        // Bind this browser session to one city's database. Called once by city-config, before
-        // anything reads. Migrates the pre-city-scope database on first run.
-        //
-        // `explicit` says whether the city was actually chosen (a ?city= param, or a pointer this
-        // browser had already saved) rather than merely defaulted to. On the very first load after
-        // the upgrade an existing user has no saved pointer — their last city is locked inside the
-        // legacy database, which only becomes readable here. If it turns out they were somewhere
-        // other than the default, adopt it and reload once, so they land where they left off instead
-        // of staring at an empty New York.
-        setScope(cityId, options) {
-            const explicit = !!(options && options.explicit);
-            const scope = (cityId && String(cityId).trim()) ? String(cityId).trim() : null;
-            if (!scope || dbName) {
-                // Either no city to scope by, or a scope is already bound: prime whatever we have.
+        // Bind once, after the tab has exclusively claimed its own durable workspace.
+        setScope(cityId) {
+            const scope = cityId && String(cityId).trim();
+            if (scopeBinding || dbName) return ready;
+            scopeBinding = true;
+            Promise.resolve(workspace?.ready).then(async () => {
+                dbName = workspace ? workspace.databaseName(scope || 'global')
+                    : scope ? `${DB_NAME_PREFIX}::${scope}` : LEGACY_DB_NAME;
+                announceDatabase();
+                if (workspace) await initializeWorkspace(scope || 'global');
                 loadCache();
-                return ready;
-            }
-            dbName = `${DB_NAME_PREFIX}::${scope}`;
-            announceDatabase();
-            migrateLegacyDatabase().then(legacyCity => {
-                if (!explicit && legacyCity && legacyCity !== scope) {
-                    try {
-                        globalScope.localStorage.setItem(CITY_POINTER_KEY, legacyCity);
-                        console.info(`[PersistentStorage] Recovered last city "${legacyCity}"; reloading.`);
-                        globalScope.location.reload();
-                        return;
-                    } catch (_) { /* fall through and just prime the default city */ }
-                }
-                loadCache();
-            });
+            }).catch(readyReject);
             return ready;
         },
 
@@ -522,6 +487,6 @@
     // Anything that reads before then sees the same empty cache it always did.
     // Safety net for any page that loads this without city-config: never leave `ready` unresolved.
     if (globalScope.addEventListener) {
-        globalScope.addEventListener('DOMContentLoaded', () => { if (!loadStarted) loadCache(); });
+        globalScope.addEventListener('DOMContentLoaded', () => { if (!loadStarted && !scopeBinding) PersistentStorage.setScope(null); });
     }
 })();

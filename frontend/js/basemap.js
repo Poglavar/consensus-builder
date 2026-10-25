@@ -161,7 +161,7 @@
             select.addEventListener('change', function () {
                 if (select.value !== 'imagery') {
                     var city = global.CityConfigManager?.getCurrentCityId?.();
-                    try { global.localStorage.removeItem(global.ParcelSourceSettings.storageKey(city, global, 'imagery')); } catch (_) {}
+                    try { (global.BrowserWorkspace?.storage || global.localStorage).removeItem(global.ParcelSourceSettings.storageKey(city, global, 'imagery')); } catch (_) {}
                     var url = new URL(global.location.href); url.searchParams.delete('imagerySource'); global.history.replaceState(null, '', url.href);
                     select.querySelector('option[value="imagery"]')?.remove();
                 }

@@ -232,7 +232,11 @@ The `unrepresentedGround` marker for open ground excluded from represented owner
 
 ### Working composition
 
-The set of designs currently applied in one browser and the land fabric they produce. This local composition is separate from an agreement, a publication selection and a statutory plan.
+The set of designs currently applied in one tab’s workspace and the land fabric they produce. This local composition is separate from an agreement, a publication selection and a statutory plan.
+
+### Tab workspace
+
+An independent, durable local working copy containing designs, agreements, application state, editor drafts and modeling inputs, partitioned by geographic context. Reload restores the tab’s saved work. A new or duplicated tab starts from a saved snapshot and edits its own copy; later changes never merge between tabs. Account connections and display preferences can remain shared. See the [application and workspace audit](docs/plan-application-tab-workspace-audit-2026-10-25.md) for the boundaries reviewed and unresolved link-loading distinction.
 
 ### Road junction
 
@@ -252,6 +256,8 @@ Selecting an object in model 3D, including a design from a list or a click-stack
 
 Restoring a saved camera retains the map's display settings and surrounding context. Its selected design is highlighted without isolating it from the shared composition.
 
+In 3D, sharing can include the captured camera position and angle, independently of the optional “Rotate on arrival” choice. Rotation defaults off, orbits the view's focal point and starts when the view is ready, after terrain alignment in Google 3D. The first click, touch, scroll or key input stops rotation or cancels it while the scene loads. Reduced-motion views remain still. Unnamed links carry these choices in `camera` and `rotate` URL parameters; named plans save them in their view.
+
 Its social preview is a derived 2D image of the included designs' authored map geometry, framed together independently of the interactive camera. The image is cached by the unique set of design CIDs and renderer revision; it is not authored plan content. Missing or failed images can be regenerated from those published records.
 
 When shared designs conflict with the current map, the person chooses whether to unapply the existing conflicting designs and continue, skip the conflicting incoming designs, or cancel. Unapplying existing conflicts and deriving the chosen plan is atomic; failure retains the previous map. Every design remains saved, and unrelated applied designs remain on the map. Overlapping road revisions are conflicts; ordinary roads meeting at a junction remain compatible.
@@ -265,6 +271,8 @@ A private named-plan draft can reference unpublished design revisions carried wi
 ### Private draft reference
 
 An expiring bearer URL resolving to an immutable unpublished design, agreement or named plan and its exact member revisions. It persists independently of an MCP client session; its stated expiry limits retention. Exported canonical content can restore it after expiry. A private preview is not publication, application, consent or a permanent share link.
+
+The MCP preview flow carries this reference in the `draft` URL parameter for review before publication. The Designs sharing panel requires publication for every included design and does not carry a private draft reference into a permanent link.
 
 ### Applied / unapplied
 

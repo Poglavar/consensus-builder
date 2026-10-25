@@ -53,6 +53,16 @@ describe('recent custom source checks', () => {
 });
 
 describe('browser-owned portable source choices', () => {
+    it('uses workspace storage for source choices when available', () => {
+        const global = globalFor();
+        const workspace = storage();
+        global.BrowserWorkspace = { storage: workspace };
+        const selected = choice('test_city');
+        settings.saveChoice('test_city', { id: selected.id }, global);
+        expect(global.localStorage.getItem(settings.storageKey('test_city', global))).toBeNull();
+        expect(settings.choiceForCity('test_city', global)).toMatchObject({ id: selected.id });
+    });
+
     // In the app getBackendBase() reads the city config, and the city config asks for this choice, so
     // the key lookup re-enters choiceForCity. That once spun every page load without ?backend= (the
     // try/catch swallowed each stack overflow and the callers retried).
@@ -184,7 +194,7 @@ describe('building source choices', () => {
         expect(manager.getCityConfig('zagreb').buildings).toMatchObject({ source: 'custom', sourceId: id, defaultSource: 'gdi' });
         expect(manager.getBuildingSourceId()).toBe(id);
         const plain = bootCity('zagreb', globalFor()).manager;
-        expect(plain.getBuildingSourceId()).toBeUndefined();
+        expect(plain.getBuildingSourceId()).toBe('gdi-3d');
     });
 });
 

@@ -17,6 +17,7 @@
     const ZOOM = Object.freeze({ arterials: 11, streets: 15, plots: 17 });
     const state = { enabled: false, settings: null, planAt: null, layer: null, renderer: null, wired: false };
     const el = id => doc.getElementById(id);
+    const storage = () => win.BrowserWorkspace?.storage || win.localStorage;
 
     function t(key, fallback, params) {
         const text = win.i18n?.t?.(`schellingPlan.${key}`, params);
@@ -27,10 +28,10 @@
         ?? new Intl.NumberFormat(doc.documentElement.lang || 'en', { maximumFractionDigits: digits }).format(value);
 
     function readStored() {
-        try { return JSON.parse(win.localStorage.getItem(STORAGE_KEY) || 'null'); } catch (_) { return null; }
+        try { return JSON.parse(storage().getItem(STORAGE_KEY) || 'null'); } catch (_) { return null; }
     }
     function writeStored(settings) {
-        try { win.localStorage.setItem(STORAGE_KEY, JSON.stringify(settings)); } catch (_) { /* storage blocked: settings stay for this page */ }
+        try { storage().setItem(STORAGE_KEY, JSON.stringify(settings)); } catch (_) { /* storage blocked: settings stay for this page */ }
     }
 
     function writeAddress() {

@@ -34,6 +34,31 @@ function boot(city = 'explore', globals = {}) {
 }
 
 describe('session ground on the World’s Fair branch', () => {
+    it('restores and deactivates estimated parcels through workspace storage', () => {
+        const mapStorage = () => {
+            const values = new Map();
+            return {
+                values,
+                getItem: key => values.get(key) ?? null,
+                setItem: (key, value) => values.set(key, String(value)),
+                removeItem: key => values.delete(key)
+            };
+        };
+        const workspace = mapStorage();
+        const localStorage = mapStorage();
+        const geometry = { type: 'Polygon', coordinates: [[[15.97,44],[15.971,44],[15.971,44.001],[15.97,44.001],[15.97,44]]] };
+        EstimatedParcelSource.createStore(workspace).save('explore', {
+            collection: { type: 'FeatureCollection', features: [{ type: 'Feature', id: 'workspace-plot', properties: { estimated: true }, geometry }] },
+            bounds: [15.96, 43.99, 15.98, 44.01]
+        });
+        const { window } = boot('explore', { localStorage, BrowserWorkspace: { storage: workspace }, EstimatedParcelSource });
+        expect(window.ParcelGroundFallback.restoreFromSession('explore').kind).toBe('estimated-local');
+        expect(workspace.getItem('cb_estimated_parcels:explore')).toContain('workspace-plot');
+        window.ParcelGroundFallback.clearSource('explore');
+        expect(JSON.parse(workspace.getItem('cb_estimated_parcels:explore')).active).toBe(false);
+        expect(localStorage.values.size).toBe(0);
+    });
+
     it('restores saved estimates in a fresh tab and serves IDs, cells and proposal footprints locally', async () => {
         const entries = new Map();
         const localStorage = { getItem: key => entries.get(key) ?? null, setItem: (key, value) => entries.set(key, value) };

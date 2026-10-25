@@ -14,7 +14,7 @@
         return value;
     };
     const cityId = () => String(global.CityConfigManager.getCurrentCityId());
-    const store = () => global.EstimatedParcelSource.createStore(global.localStorage);
+    const store = () => global.EstimatedParcelSource.createStore(global.BrowserWorkspace?.storage || global.localStorage);
     function persist(collection, imageUrl, bounds) {
         const proposals = global.proposalStorage.getAllProposals();
         const referencedIds = proposals.flatMap(proposal => proposal.cadastreParcelIds || []);

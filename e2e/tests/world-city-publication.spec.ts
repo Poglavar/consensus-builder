@@ -1,7 +1,7 @@
 // Worldwide publication and city routing (projections.md §3, §10 M8, location-first.md phase 4;
 // plan-design-agreement.md M2, M3): a publish sends the design with the parcel source its city binds
 // with, a design or an agreement opened from another city asks and then opens in its own city's
-// store, the address bar follows the map, and the read-only guard for a second tab applies per city.
+// store, the address bar follows the map, and same-city tabs have independent durable workspaces.
 import { Browser, BrowserContext, Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady, panMap } from '../helpers/app';
@@ -178,41 +178,62 @@ test.describe('Worldwide publication and city routing @core', () => {
     })).toEqual({ lat, lon, zoom });
   });
 
-  test('a second tab of the same city is read-only, a tab of another city stays editable', async ({ mockApi: first, context }) => {
-    // Four full app loads: 30 s is not enough on a busy machine.
+  test('same-city and new-city tabs have independent editable durable workspaces', async ({ mockApi: first, context }) => {
     test.setTimeout(90_000);
     await openCity(first);
-    const banner = (page: Page) => page.locator('#cb-multitab-banner');
-    const readOnly = (page: Page) => page.evaluate(() => !!(window as any).__cbSecondaryTab);
+    const firstId = await createSpace(first, 'park');
+    await first.evaluate(id => {
+      const record = (window as any).proposalStorage.getProposal(id);
+      record.title = 'Zagreb tab one park';
+      return (window as any).proposalStorage.save();
+    }, firstId);
 
     const second = await context.newPage();
     await mockAllApiRoutes(second);
     await second.goto('/?city=zg&reduceMotion=1');
     await waitForMapReady(second);
-    await expect(banner(second)).toBeVisible({ timeout: 15_000 });
-    await expect(banner(second)).toContainText('already open in another tab');
-    expect(await readOnly(second)).toBe(true);
-    await expect(banner(first)).toHaveCount(0);
-    expect(await readOnly(first)).toBe(false);
+    await expect(second.locator('#cb-multitab-banner')).toHaveCount(0);
+    await showProposal(second, firstId);
+    await second.locator(`#proposal-action-btn-${firstId}`).click();
+    await expect.poll(() => second.evaluate(id => (window as any).isApplied((window as any).proposalStorage.getProposal(id)), firstId)).toBe(false);
+    await createSpace(second, 'park');
+    const secondId = await second.evaluate(() => (window as any).proposalStorage.getAllProposals().find((p: any) => p.applied && p.structureProposal?.kind === 'park').proposalId);
+    await second.evaluate(id => {
+      const record = (window as any).proposalStorage.getProposal(id);
+      record.title = 'Zagreb tab two park';
+      return (window as any).proposalStorage.save();
+    }, secondId);
 
     const other = await context.newPage();
     await mockAllApiRoutes(other);
     await other.goto('/?city=new_york&reduceMotion=1');
     await waitForMapReady(other);
-    // "Nobody answered" has no event of its own: a second New York tab going read-only is the proof
-    // that this one became New York's editable tab instead of a read-only copy of Zagreb's.
-    const otherAgain = await context.newPage();
-    await mockAllApiRoutes(otherAgain);
-    await otherAgain.goto('/?city=new_york&reduceMotion=1');
-    await waitForMapReady(otherAgain);
-    await expect(banner(otherAgain)).toBeVisible({ timeout: 15_000 });
-    expect(await readOnly(other)).toBe(false);
-    await expect(banner(other)).toHaveCount(0);
-    expect(await readOnly(first)).toBe(false);
+    await expect(other.locator('#cb-multitab-banner')).toHaveCount(0);
+    await other.evaluate(async () => {
+      const w = window as any;
+      w.proposalDraftStore.createDraft({ goal: 'park', fields: { name: 'Other city garden' } });
+      await w.PersistentStorage.atomicWrite({ puts: { workspaceProbe: 'other-city' } });
+    });
 
-    await banner(second).getByRole('button', { name: 'Close' }).click();
-    await expect(banner(second)).toHaveCount(0);
-    // Dismiss only hides the warning; the secondary tab remains read-only.
-    expect(await readOnly(second)).toBe(true);
+    const hasTitle = (page: Page, title: string) => page.evaluate(value =>
+      (window as any).proposalStorage.getAllProposals().some((p: any) => p.title === value), title);
+    expect(await hasTitle(first, 'Zagreb tab one park')).toBe(true);
+    expect(await hasTitle(first, 'Zagreb tab two park')).toBe(false);
+    expect(await hasTitle(second, 'Zagreb tab two park')).toBe(true);
+    expect(await hasTitle(second, 'Zagreb tab one park')).toBe(true);
+    expect(await other.evaluate(() => (window as any).PersistentStorage.getItem('workspaceProbe'))).toBe('other-city');
+
+    await second.reload({ waitUntil: 'domcontentloaded' });
+    await waitForMapReady(second);
+    expect(await hasTitle(second, 'Zagreb tab two park')).toBe(true);
+    await other.reload({ waitUntil: 'domcontentloaded' });
+    await waitForMapReady(other);
+    expect(await other.evaluate(() => (window as any).PersistentStorage.getItem('workspaceProbe'))).toBe('other-city');
+    expect(await other.evaluate(() => (window as any).proposalDraftStore.getActiveDraft()?.fields.name)).toBe('Other city garden');
+    await expect(other.locator('#cb-multitab-banner')).toHaveCount(0);
+    expect(await first.evaluate(() => (window as any).PersistentStorage.getItem('workspaceProbe'))).toBeNull();
+    expect(await hasTitle(first, 'Zagreb tab two park')).toBe(false);
+    expect(await hasTitle(other, 'Zagreb tab one park')).toBe(false);
+    expect(await hasTitle(other, 'Zagreb tab two park')).toBe(false);
   });
 });

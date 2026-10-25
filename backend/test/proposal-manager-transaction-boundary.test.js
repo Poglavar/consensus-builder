@@ -200,6 +200,37 @@ describe('ProposalManager mutation boundary', () => {
         expect(store.getProposal('elsewhere').applied).toBe(true);
     });
 
+    it('uses occupied-ground replacement for explicit Apply and rolls it back when derivation fails', async () => {
+        const polygon = turf.bboxPolygon([0, 0, 0.001, 0.001]).geometry;
+        const target = { proposalId: 'target', applied: false, goal: 'building', title: 'New building',
+            buildingProposal: { geometry: polygon }, geometry: { buildings: [{ geometry: polygon }] } };
+        const oldRoad = { proposalId: 'conflict', applied: true, goal: 'road-track',
+            roadProposal: { definition: { polygon } } };
+        store.proposals.clear();
+        store.proposals.set(target.proposalId, target);
+        store.proposals.set(oldRoad.proposalId, oldRoad);
+
+        let observedOptions;
+        ProposalManager._collectAppliedAlternativesForExplicitApply = (_proposal, _records, options) => {
+            observedOptions = options;
+            return [options._parcelMutation.proposals.getProposal('conflict')];
+        };
+        ProposalManager.deriveForNewProposal = async () => ({ ok: true });
+
+        await expect(ProposalManager.applyProposal('target')).resolves.toBe(true);
+        expect(observedOptions.replaceOccupiedGround).toBe(true);
+        expect(store.getProposal('target').applied).toBe(true);
+        expect(store.getProposal('conflict').applied).toBe(false);
+
+        // A failed derivation must restore both the chosen proposal and the parked road.
+        store.getProposal('target').applied = false;
+        store.getProposal('conflict').applied = true;
+        const before = structuredClone([...store.proposals]);
+        ProposalManager.deriveForNewProposal = async () => null;
+        await expect(ProposalManager.applyProposal('target')).resolves.toBe(false);
+        expect([...store.proposals]).toEqual(before);
+    });
+
     it('identifies every unavailable member and distinguishes missing records from withdrawn designs', async () => {
         store.proposals.set('withdrawn', { proposalId: 'withdrawn', title: 'Withdrawn park', lifecycleStatus: 'Cancelled', applied: false });
         const before = structuredClone([...store.proposals]);

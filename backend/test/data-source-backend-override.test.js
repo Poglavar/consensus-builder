@@ -44,7 +44,8 @@ function bootWithOverride(cityConfig, options = {}) {
             requiresBackendDataSource: () => true,
             getCurrentCityConfig: () => cityConfig
         },
-        localStorage: storage
+        localStorage: storage,
+        BrowserWorkspace: options.workspaceStorage ? { storage: options.workspaceStorage } : undefined
     };
     const context = vm.createContext({
         window,
@@ -71,6 +72,18 @@ function bootWithOverride(cityConfig, options = {}) {
 }
 
 describe('data source backend override', () => {
+    it('persists and restores the backend override inside the tab workspace', () => {
+        const values = new Map([['cb_dev_backend_base', 'https://tab-api.example']]);
+        const workspaceStorage = { getItem: key => values.get(key) ?? null, setItem: (key, value) => values.set(key, value) };
+        const options = { stored: { cb_dev_backend_base: 'https://shared-api.example' }, workspaceStorage, search: '' };
+        const first = bootWithOverride({}, options);
+        expect(first.window.getBackendBase()).toBe('https://tab-api.example');
+        const second = bootWithOverride({}, { ...options, search: '?backend=https%3A%2F%2Freplacement-api.example' });
+        expect(second.window.getBackendBase()).toBe('https://replacement-api.example');
+        expect(values.get('cb_dev_backend_base')).toBe('https://replacement-api.example');
+        expect(second.stored.get('cb_dev_backend_base')).toBe('https://shared-api.example');
+    });
+
     it.each(['oss.uredjenazemlja.hr', 'api.urbangametheory.xyz', 'localhost'])(
         'ignores the obsolete stored global choice %s and preserves saved data on startup', choice => {
             const initial = {

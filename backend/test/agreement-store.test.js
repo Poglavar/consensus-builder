@@ -1,6 +1,5 @@
 // agreement-store.js and the pure helpers of agreement-dialog.js (plan-design-agreement.md, M1 (b)):
-// the local agreement rows on a fake storage (save, list, get, remove, clear, the secondary-tab
-// refusal, subscribers) and the editor's record, allocation, money, rule and section helpers, without
+// the local agreement rows on a fake storage (save, list, get, remove, clear, subscribers) and the editor's record, allocation, money, rule and section helpers, without
 // a DOM; and what the editor decides before it docks (M3): "Add to agreement" choosing a new agreement
 // or one not proposed yet, and the refusal to edit a proposed one. AgreementRecord and AgreementGround
 // are stubbed: this file tests the store and the editor only.
@@ -35,12 +34,11 @@ const normalize = vi.fn(raw => {
     return { ...raw, title: raw.title ? String(raw.title).trim() : null };
 });
 
-function setup({ seed, secondary = false } = {}) {
+function setup({ seed } = {}) {
     const storage = fakeStorage(seed);
     let clock = new Date('2026-10-21T10:00:00.000Z');
-    const tab = { secondary };
-    const store = Store.create({ storage, isSecondaryTab: () => tab.secondary, normalize, now: () => clock });
-    return { storage, store, tab, tick: iso => { clock = new Date(iso); } };
+    const store = Store.create({ storage, normalize, now: () => clock });
+    return { storage, store, tick: iso => { clock = new Date(iso); } };
 }
 
 const agreement = (id, extra = {}) => ({ schema: 'agreement/v1', id, title: ` ${id} title `, designs: [], ...extra });
@@ -99,19 +97,6 @@ describe('AgreementStore', () => {
         expect(store.clear()).toBe(2);
         expect(store.list()).toEqual([]);
         expect(Array.from(storage.rows.keys())).toEqual(['proposal:p1']);
-    });
-
-    it('refuses every write in a secondary tab and writes nothing', () => {
-        const { storage, store, tab } = setup();
-        store.save(agreement('ag-1'));
-        tab.secondary = true;
-        const before = new Map(storage.rows);
-        expect(() => store.save(agreement('ag-2'))).toThrow(expect.objectContaining({ code: 'secondary-tab' }));
-        expect(() => store.remove('ag-1')).toThrow(expect.objectContaining({ code: 'secondary-tab' }));
-        expect(() => store.clear()).toThrow(expect.objectContaining({ code: 'secondary-tab' }));
-        expect(storage.rows).toEqual(before);
-        // Reading stays possible: the other tab's data is shown, only not changed here.
-        expect(store.get('ag-1').id).toBe('ag-1');
     });
 
     it('writes nothing and tells nobody when the record does not normalize', () => {
@@ -382,7 +367,6 @@ describe('the record the form describes', () => {
 describe('errors and warnings in words', () => {
     it('words every code by its key, with the engine\'s readiness reason or the validator\'s own words', () => {
         expect(Dialog.issueText({ code: 'no-designs', message: 'x' })).toBe('Choose at least one design.');
-        expect(Dialog.issueText({ code: 'secondary-tab' })).toBe('Another tab holds this city’s data; agreements can be edited there only.');
         expect(Dialog.issueText({ code: 'rule-not-ready', reason: 'missing-owners' })).toBe('The rule cannot be evaluated yet: No owners are declared for the selected parcels.');
         expect(Dialog.issueText({ code: 'rule-invalid', message: 'Invalid owner/area threshold.' })).toBe('The decision rule is incomplete: Invalid owner/area threshold.');
         expect(Dialog.issueText({ code: 'rule-invalid' })).toBe('The decision rule is incomplete');

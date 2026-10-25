@@ -3965,13 +3965,6 @@
       "controlType": "button"
     },
     {
-      "id": "control-f7b05fe7c314db-1",
-      "source": "js/multi-tab-guard.js",
-      "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-b15fed2f1fa164-1",
       "source": "js/on-map-editor.js",
       "markup": "doc.createElement(tag)",

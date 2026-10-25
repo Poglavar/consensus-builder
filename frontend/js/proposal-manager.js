@@ -3172,7 +3172,12 @@ const ProposalManager = {
 
         // Standing rivals down is what an explicit Apply click means: "this design, not that one".
         // Shared-plan application validates with validateSharedProposalGround instead.
-        const switchedAlternatives = this._standDownAppliedRivals(proposal, applyOptions);
+        const switchedAlternatives = this._standDownAppliedRivals(proposal, {
+            ...applyOptions,
+            // An explicit Apply chooses this proposal's occupied ground, just like a confirmed
+            // plan replacement. Replay and edit derivation do not enter this branch.
+            replaceOccupiedGround: true
+        });
         setProposalApplied(proposal, true);
         store._indexProposal?.(proposal);
         const derived = await this.deriveForNewProposal(proposal, {

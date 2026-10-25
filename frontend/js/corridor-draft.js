@@ -46,7 +46,7 @@
 
     function resolveDraftStore(storage) {
         if (!storage && global.proposalDraftStore) return global.proposalDraftStore;
-        const target = storage || global.localStorage || null;
+        const target = storage || global.BrowserWorkspace?.storage || global.localStorage || null;
         if (!target || typeof createStore !== 'function') return null;
         if (injectedStores && injectedStores.has(target)) return injectedStores.get(target);
         const store = createStore({ storage: target });

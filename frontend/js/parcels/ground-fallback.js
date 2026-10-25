@@ -181,7 +181,7 @@
         if (!source || typeof source.fetchCell !== 'function') throw new TypeError('A ground source needs fetchCell().');
         clearWithoutParcels(city);
         if (source.kind !== 'estimated-local' && global.EstimatedParcelSource) {
-            global.EstimatedParcelSource.createStore(global.localStorage).setActive(city, false);
+            global.EstimatedParcelSource.createStore(global.BrowserWorkspace?.storage || global.localStorage).setActive(city, false);
         }
         sources.set(city, source);
         const descriptor = typeof source.describe === 'function' ? source.describe() : null;
@@ -192,7 +192,7 @@
 
     function clearSource(cityId) {
         const city = String(cityId || currentCityId());
-        if (global.EstimatedParcelSource) global.EstimatedParcelSource.createStore(global.localStorage).setActive(city, false);
+        if (global.EstimatedParcelSource) global.EstimatedParcelSource.createStore(global.BrowserWorkspace?.storage || global.localStorage).setActive(city, false);
         sources.delete(city);
         writeSession(SESSION_KEY_PREFIX + city, null);
     }
@@ -407,7 +407,7 @@
                 return source;
             }
             if ((!descriptor || descriptor.kind === 'estimated-local') && global.EstimatedParcelSource) {
-                const source = global.EstimatedParcelSource.createStore(global.localStorage).readSource(city);
+                const source = global.EstimatedParcelSource.createStore(global.BrowserWorkspace?.storage || global.localStorage).readSource(city);
                 if (source) { sources.set(city, source); return source; }
             }
         } catch (error) { console.error('[GroundFallback] saved parcel source could not be restored', error); }

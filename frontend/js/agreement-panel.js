@@ -891,12 +891,10 @@
             }
         }
 
-        // A failed action surfaces as a notice; a write in a secondary tab says where it can be made.
+        // A failed action surfaces as a notice.
         function report(what, error) {
             console.error(`[${new Date().toISOString()}] [AgreementPanel] ${what}`, error);
-            const text = error && error.code === 'secondary-tab'
-                ? t('agreement.errors.secondaryTab', 'Another tab holds this city\'s data; agreements can be edited there only.')
-                : (error && error.message) || String(error);
+            const text = (error && error.message) || String(error);
             if (typeof win.showEphemeralMessage === 'function') win.showEphemeralMessage(text, 6000, 'error');
         }
 

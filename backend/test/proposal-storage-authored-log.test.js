@@ -33,7 +33,6 @@ afterEach(() => {
 function bootStore() {
     const persisted = new Map();
     install('window', globalThis);
-    install('__cbSecondaryTab', false);
     install('__formationDepth', formationDepth);
     install('__planOrder', planOrder);
     install('ProposalOrigin', require('../../frontend/js/proposals/origin.js'));
@@ -97,15 +96,6 @@ describe('proposalStorage authored-log persistence', () => {
         persisted.set('proposal:stored-record', JSON.stringify({ ...record, proposalId: 'stored-record' }));
         storage.load();
         expect(storage.getProposal('stored-record').lifecycleStatus).toBe('Unknown');
-    });
-
-    it('restores parked records without assigning them a new initial lifecycle', () => {
-        const { storage, persisted } = bootStore();
-        persisted.set('cadastre_proposals_recovery', JSON.stringify({ records: [
-            { proposalId: 'parked-record', goal: 'as-is', cadastreParcelIds: ['HR-1'] }
-        ] }));
-        expect(storage.restoreRecovery()).toBe(1);
-        expect(storage.getProposal('parked-record').lifecycleStatus).toBe('Unknown');
     });
 
     it('keeps an imported record\'s creation time as it arrives and invents none', () => {

@@ -410,34 +410,6 @@
                 log(`opening ${cid}: ${row.content.designs.length} design(s), status ${row.status}`);
                 const cityManager = win.CityConfigManager;
                 const designCids = row.content.designs.map(design => design.cid);
-                if (win.__cbSecondaryTab === true) {
-                    const fetched = await win.DesignSync.fetchDesigns(designCids);
-                    const foreignContext = [...fetched.rows.values()].map(design => cityManager.foreignGroundContextFor(design)).find(Boolean);
-                    if (foreignContext && await win.promptCityMismatchForProposal(foreignContext)) {
-                        log('an agreement design belongs to another city; the link was dropped or reloads there');
-                        return;
-                    }
-                    const designs = new Map();
-                    fetched.rows.forEach((design, designCid) => {
-                        const content = design.content || {};
-                        designs.set(designCid, {
-                            ...content,
-                            proposalId: designCid,
-                            title: content.title || '',
-                            name: content.title || '',
-                            createdAt: content.authoredAt || null,
-                            published: { cid: designCid, publishedAt: design.createdAt || null, apiBase: win.DesignSync.apiBase() }
-                        });
-                    });
-                    const agreement = recordFromPublished(row, {
-                        id: `published-${cid}`,
-                        apiBase: win.DesignSync.apiBase(),
-                        localIdOf: designCid => designCid
-                    });
-                    await win.AgreementPanel.openReadOnly(agreement, { designs });
-                    log(`opened ${cid} as a read-only published agreement`);
-                    return;
-                }
                 const opened = await win.handleSharedDesignRoute(designCids, { openDetails: false, enter3D: false, summary: false });
                 if (opened.blocked) return;
                 if (opened.failed.length) {

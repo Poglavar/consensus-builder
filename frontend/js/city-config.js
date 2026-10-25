@@ -1,4 +1,5 @@
 (function () {
+    const localStorage = window.BrowserWorkspace?.storage || window.localStorage;
     const STORAGE_KEY = 'cb_current_city';
     const DEFAULT_CITY_ID = 'new_york';
     const LANGUAGE_STORAGE_KEY = 'cb_language';
@@ -25703,7 +25704,7 @@
     // been read yet: PersistentStorage deliberately does not open a database until told which one.
     try {
         if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.setScope === 'function') {
-            PersistentStorage.setScope(currentCityId, { explicit: cityWasExplicitlyChosen || currentCityId === EXPLORE_CITY_ID });
+            PersistentStorage.setScope(currentCityId);
         }
     } catch (_) { /* ignore */ }
     // The city's default language applies only once the city's stored values are read: before that a
@@ -26338,7 +26339,7 @@
     function localSimUrl() {
         try {
             const override = (typeof window !== 'undefined'
-                && (window.__CB_SIM_URL__ || (window.localStorage && window.localStorage.getItem('cb_sim_url')))) || '';
+                && (window.__CB_SIM_URL__ || (localStorage && localStorage.getItem('cb_sim_url')))) || '';
             if (override) return String(override);
         } catch (_e) { /* localStorage can throw in locked-down contexts */ }
         const host = (typeof window !== 'undefined' && window.location && window.location.hostname) || 'localhost';

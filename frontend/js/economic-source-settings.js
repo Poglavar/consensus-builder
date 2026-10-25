@@ -10,9 +10,10 @@
 })(typeof window !== 'undefined' ? window : null, function () {
     'use strict';
     const key = cityId => 'cb_economic_source:' + cityId;
+    const storage = global => global.BrowserWorkspace?.storage || global.localStorage;
     const contract = global => global.EconomicSources || (typeof require === 'function' ? require('./economic-sources.js') : null);
     function choiceForCity(cityId, global) {
-        const raw = global.localStorage?.getItem(key(cityId));
+        const raw = storage(global)?.getItem(key(cityId));
         if (!raw) return null;
         // Invalid evidence is surfaced to the caller rather than silently replaced by a default.
         return contract(global).rateTable(JSON.parse(raw));
@@ -22,11 +23,11 @@
         if (Object.hasOwn(contract(global).BUILT_INS, source.id)) throw new Error('A local source needs its own identity.');
         if (source.rates.some(row => row.currency !== city.currency?.code)) throw new Error('Economic source currency differs from the place.');
         const json = JSON.stringify(source);
-        global.localStorage.setItem(key(city.id), json);
-        if (global.localStorage.getItem(key(city.id)) !== json) throw new Error('Economic source could not be saved.');
+        storage(global).setItem(key(city.id), json);
+        if (storage(global).getItem(key(city.id)) !== json) throw new Error('Economic source could not be saved.');
         return source;
     }
-    function resetChoice(cityId, global) { global.localStorage.removeItem(key(cityId)); }
+    function resetChoice(cityId, global) { storage(global).removeItem(key(cityId)); }
     function text(global, name, params = {}) {
         const result = global.i18n?.t?.('economicSources.' + name, params);
         return result && result !== 'economicSources.' + name ? result : name;

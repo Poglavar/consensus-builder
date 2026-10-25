@@ -38,6 +38,16 @@ describe('economic source settings storage', () => {
         expect(EconomicSourceSettings.choiceForCity('bristol', global).rates[0].amount).toBe(820);
     });
 
+    it('uses workspace storage when available', () => {
+        const global = store();
+        const workspace = store().localStorage;
+        global.BrowserWorkspace = { storage: workspace };
+        const city = { id: 'birmingham', currency: { code: 'GBP' } };
+        EconomicSourceSettings.saveChoice(city, descriptor('workspace-rates'), global);
+        expect(global.localStorage.getItem('cb_economic_source:birmingham')).toBeNull();
+        expect(EconomicSourceSettings.choiceForCity(city.id, global).id).toBe('workspace-rates');
+    });
+
     it('refuses a currency mismatch before replacing the saved choice', () => {
         const global = store();
         const city = { id: 'birmingham', currency: { code: 'GBP' } };
