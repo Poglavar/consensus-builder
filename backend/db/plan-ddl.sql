@@ -5,3 +5,4 @@ CREATE TABLE IF NOT EXISTS consensus.plan (
     content jsonb NOT NULL,
     created_at timestamptz NOT NULL DEFAULT now()
 );
+CREATE INDEX IF NOT EXISTS plan_design_cids_idx ON consensus.plan USING gin ((content->'designCids'));

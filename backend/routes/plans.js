@@ -8,6 +8,18 @@ const PlanRecord = require('../../frontend/js/plan-record.js');
 
 export function setupPlansRoute(app, { pool, pinBytes = defaultPinBytes, uploadRateLimiter } = {}) {
     const read = async cid => (await pool.query('SELECT cid, content FROM consensus.plan WHERE cid = $1', [cid])).rows[0] || null;
+    const listLimit = raw => {
+        if (raw === undefined) return 20;
+        if (typeof raw !== 'string' || !/^[1-9]\d*$/.test(raw)) return null;
+        const value = Number(raw);
+        return Number.isSafeInteger(value) && value <= 50 ? value : null;
+    };
+    const listOffset = raw => {
+        if (raw === undefined) return 0;
+        if (typeof raw !== 'string' || !/^(0|[1-9]\d*)$/.test(raw)) return null;
+        const value = Number(raw);
+        return Number.isSafeInteger(value) && value <= 1000000 ? value : null;
+    };
     const fail = (res, error) => {
         if (error?.code === 'pinning-quota-exhausted') return res.status(409).json({ code: error.code, error: error.message,
             next: { action: 'Restore quota on the configured pinning account, then retry saving this plan.' } });
@@ -31,6 +43,24 @@ export function setupPlansRoute(app, { pool, pinBytes = defaultPinBytes, uploadR
             if (pinned.cid !== cid) throw new Error('The pinned plan did not match its content identifier.');
             await pool.query('INSERT INTO consensus.plan (cid, content) VALUES ($1, $2::jsonb) ON CONFLICT (cid) DO NOTHING', [cid, JSON.stringify(content)]);
             return res.status(201).json(await read(cid));
+        } catch (error) { return fail(res, error); }
+    });
+    app.get('/plans', async (req, res) => {
+        const { design, limit: rawLimit, offset: rawOffset } = req.query;
+        if (!isCid(design)) return res.status(400).json({ error: 'design must be a design CID.', code: 'invalid-cid' });
+        const limit = listLimit(rawLimit), offset = listOffset(rawOffset);
+        if (limit === null || offset === null) return res.status(400).json({ error: 'limit must be an integer from 1 to 50 and offset an integer from 0 to 1000000.', code: 'bad-request' });
+        try {
+            const { rows } = await pool.query(`
+                SELECT cid, content->>'title' AS title, jsonb_array_length(content->'designCids') AS design_count
+                FROM consensus.plan
+                WHERE content->'designCids' @> jsonb_build_array($1::text)
+                ORDER BY cid
+                LIMIT $2 OFFSET $3`, [design, limit + 1, offset]);
+            const hasMore = rows.length > limit;
+            const plans = rows.slice(0, limit).map(row => ({ cid: row.cid, title: row.title, designCount: Number(row.design_count) }));
+            const nextOffset = hasMore ? offset + plans.length : null;
+            return res.json({ plans, count: plans.length, hasMore, nextOffset });
         } catch (error) { return fail(res, error); }
     });
     app.get('/plans/:cid', async (req, res) => {

@@ -178,7 +178,8 @@
             wrap.dataset.kind = section.kind;
             wrap.classList.toggle('is-expanded', expanded);
             wrap.classList.toggle('is-selected', stack.selectedKind === section.kind);
-            const context = expanded ? global.__clickStackModel?.contextFor(section.kind, instance, state.input) || [] : [];
+            const context = expanded ? (global.__clickStackModel?.contextFor(section.kind, instance, state.input) || [])
+                .filter(group => section.kind !== 'designs' || group.kind !== 'agreements') : [];
             context.filter(group => group.position === 'above').forEach(group => wrap.appendChild(renderChoices(group)));
             const card = doc.createElement('div');
             card.className = 'click-stack__card';

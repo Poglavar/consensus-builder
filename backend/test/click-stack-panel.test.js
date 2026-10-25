@@ -137,7 +137,7 @@ describe('click stack selected objects and contextual navigation', () => {
         expect(h.context.highlightFeaturesForHover).toHaveBeenLastCalledWith([]);
     });
 
-    it("moves from agreement designs to the selected design's agreement links", () => {
+    it('navigates agreement designs without duplicating the design body membership list', () => {
         const h = loadPanel();
         const agreement = { id: 'a1', title: 'Neighbourhood', designs: [{ proposalId: 'd1', title: 'Park' }, { proposalId: 'd2', title: 'School' }] };
         h.context.ClickStackHits.hitsAt.mockReturnValue({ ...HITS_A, agreements: [{ id: 'a1', label: agreement.title, agreement, designIds: ['d1', 'd2'] }] });
@@ -149,11 +149,9 @@ describe('click stack selected objects and contextual navigation', () => {
         expect(h.api.current()).toMatchObject({ selectedKind: 'designs', expanded: 'designs' });
         expect(h.context.selectAndHighlightProposal).toHaveBeenLastCalledWith('d2', null, false, true, false, DESIGN_PANEL);
         expect(h.section('agreements').querySelector('.click-stack__choices')).toBeNull();
-        const parent = h.section('designs').querySelector('.click-stack__choices');
-        expect(parent.dataset.kind).toBe('agreements');
-        expect(parent.nextSibling).toBe(h.section('designs').querySelector('.click-stack__card'));
+        expect(h.section('designs').querySelector('.click-stack__choices[data-kind="agreements"]')).toBeNull();
         expect(h.section('designs').querySelector('.click-stack__choices[data-kind="designs"]')).toBeNull();
-        parent.querySelector('[data-id="a1"]').click();
+        h.section('agreements').querySelector('.click-stack__row').click();
         expect(h.api.current().selectedKind).toBe('agreements');
     });
 });

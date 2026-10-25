@@ -239,7 +239,9 @@
             wrap.classList.toggle('is-expanded', expanded);
             wrap.classList.toggle('is-selected', stack.selectedKind === section.kind);
             const instance = section.instances[section.selectedIndex];
-            const context = expanded ? model.contextFor(section.kind, instance, state.hits) : [];
+            // The design body lists complete memberships, including agreements absent from these map hits.
+            const context = expanded ? model.contextFor(section.kind, instance, state.hits)
+                .filter(group => section.kind !== 'designs' || group.kind !== 'agreements') : [];
             context.filter(group => group.position === 'above').forEach(group => wrap.appendChild(renderChoices(group)));
             const card = doc.createElement('div');
             card.className = 'click-stack__card';

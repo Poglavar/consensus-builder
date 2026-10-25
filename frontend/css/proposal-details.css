@@ -1,4 +1,16 @@
 /* The proposal reader: a summary, disclosures and a compact persistent action bar. */
+.design-memberships { padding: 8px 0; margin-bottom: 10px; border-bottom: 1px solid var(--cb-line); }
+.design-memberships__title { margin: 0 0 6px; font-size: 13px; color: var(--cb-text); }
+.design-memberships__group { display: grid; grid-template-columns: 80px minmax(0, 1fr); gap: 4px 8px; margin: 5px 0; align-items: baseline; }
+.design-memberships__label { margin: 0; grid-column: 1; font-size: 12px; font-weight: 500; color: var(--cb-text-muted); }
+.design-memberships__list { margin: 0; padding: 0; grid-column: 2; list-style: none; min-width: 0; }
+.design-memberships__item { display: flex; align-items: baseline; gap: 6px; min-width: 0; }
+.design-memberships__link { padding: 3px 0; border: 0; background: transparent; color: var(--cb-text); text-align: start; font: inherit; font-size: 13px; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; overflow-wrap: anywhere; }
+.design-memberships__draft, .design-memberships__note { color: var(--cb-text-muted); font-size: 12px; }
+.design-memberships__draft { flex-shrink: 0; }
+.design-memberships__group > .design-memberships__note, .design-memberships__group > button { grid-column: 2; justify-self: start; }
+.design-memberships > .design-memberships__note { margin: 6px 0 0; }
+
 #proposal-details-panel {
     padding: 0;
     /* A little of the map shows through (user rule 2026-10-16), on desktop as on phones. */

@@ -375,20 +375,32 @@ describe('GET /agreements', () => {
         expect(res.body.count).toBe(1);
         expect(res.body.agreements[0]).toMatchObject({ designCids: [cidOf(park)], status: 'active' });
         expect(call.sql).toMatch(/WHERE city = \$1 AND design_cids @> ARRAY\[\$2\]::text\[\] AND input_parcel_ids @> ARRAY\[\$3\]::text\[\]/);
-        expect(call.sql).toMatch(/ORDER BY created_at DESC, cid\s+LIMIT \$4/);
-        expect(call.params).toEqual(['zagreb', cidOf(park), 'HR-335649-100', 20]);
+        expect(call.sql).toMatch(/ORDER BY created_at DESC, cid\s+LIMIT \$4 OFFSET \$5/);
+        expect(call.params).toEqual([park.city, cidOf(park), 'HR-335649-100', 21, 0]);
         const { call: all } = await listed('');
         expect(all.sql).not.toMatch(/WHERE/);
-        expect(all.params).toEqual([100]);
+        expect(all.params).toEqual([101, 0]);
     });
 
     it('refuses a malformed filter before querying', async () => {
         for (const [query, code] of [['?design=park', 'invalid-cid'], [`?parcel=${'p'.repeat(257)}`, 'bad-request'],
-            ['?parcel=%20', 'bad-request'], ['?city=a&city=b', 'bad-request']]) {
+            ['?parcel=%20', 'bad-request'], ['?city=a&city=b', 'bad-request'], ['?offset=-1', 'bad-request'], ['?offset=1.5', 'bad-request'], ['?offset=1000001', 'bad-request']]) {
             const { res, call } = await listed(query);
             expect([res.status, res.body.code], query).toEqual([400, code]);
             expect(call).toBeUndefined();
         }
+    });
+
+    it('returns a page and exposes whether another page exists', async () => {
+        const pool = createMockPool();
+        const rows = [agreementRow(agreementContent([park])), agreementRow(agreementContent([park], { title: 'Second' }))];
+        pool.answer(/FROM consensus\.agreement/, { rows });
+        const res = await request(appFor(pool).app).get('/agreements?limit=1&offset=1');
+        expect(res.status).toBe(200);
+        expect(res.body).toMatchObject({ count: 1, hasMore: true, nextOffset: 2 });
+        const call = pool.getCalls()[0];
+        expect(call.sql).toMatch(/LIMIT \$1 OFFSET \$2/);
+        expect(call.params).toEqual([2, 1]);
     });
 });
 

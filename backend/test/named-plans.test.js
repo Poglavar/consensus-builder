@@ -19,6 +19,10 @@ const cid = cidOf(canonicalBytes(content));
 
 function server({ records = new Map(), designs = [a, b], pin = vi.fn(async ({ cid }) => ({ cid })) } = {}) {
     const pool = { query: vi.fn(async (sql, params) => {
+        if (sql.includes('FROM consensus.plan') && sql.includes("content->'designCids'")) {
+            const matching = [...records.values()].filter(row => row.content.designCids.includes(params[0])).sort((x, y) => x.cid.localeCompare(y.cid));
+            return { rows: matching.slice(params[2], params[2] + params[1]).map(row => ({ cid: row.cid, title: row.content.title, design_count: row.content.designCids.length })) };
+        }
         if (sql.startsWith('SELECT cid, content')) return { rows: records.has(params[0]) ? [records.get(params[0])] : [] };
         if (sql.startsWith('SELECT cid FROM consensus.design')) return { rows: designs.map(cid => ({ cid })) };
         if (sql.startsWith('INSERT INTO consensus.plan')) { records.set(params[0], { cid: params[0], content: JSON.parse(params[1]) }); return { rows: [] }; }
@@ -85,6 +89,31 @@ describe('named plan records and API', () => {
         const { app } = server();
         expect((await request(app).get('/plans/invalid')).status).toBe(400);
         expect((await request(app).get(`/plans/${cid}`)).status).toBe(404);
+    });
+    it('lists exact design membership with compact summaries and bounded pagination', async () => {
+        const other = PlanRecord.create('Other design', [b], view);
+        const third = PlanRecord.create('Third member', [a], view);
+        const records = new Map([content, other, third].map(item => {
+            const id = cidOf(canonicalBytes(item)); return [id, { cid: id, content: item }];
+        }));
+        const { app, pool } = server({ records });
+        const first = await request(app).get(`/plans?design=${a}&limit=1&offset=0`);
+        expect(first.status).toBe(200);
+        expect(first.body).toEqual({ plans: [{ cid: [...records.values()].filter(row => row.content.designCids.includes(a)).map(row => row.cid).sort()[0], title: expect.any(String), designCount: expect.any(Number) }], count: 1, hasMore: true, nextOffset: 1 });
+        expect(pool.query.mock.calls[0][0]).toMatch(/content->'designCids' @> jsonb_build_array\(\$1::text\)/);
+        expect(pool.query.mock.calls[0][1]).toEqual([a, 2, 0]);
+        const second = await request(app).get(`/plans?design=${a}&limit=1&offset=1`);
+        expect(second.body).toMatchObject({ count: 1, hasMore: false, nextOffset: null });
+        expect(second.body.plans[0].cid).not.toBe(first.body.plans[0].cid);
+        expect((await request(app).get(`/plans?design=${b}&limit=20`)).body.count).toBe(2);
+        expect((await request(app).get(`/plans?design=${cidOf(Buffer.from('no match'))}`)).body).toEqual({ plans: [], count: 0, hasMore: false, nextOffset: null });
+    });
+    it('rejects missing or malformed design and pagination before querying', async () => {
+        const { app, pool } = server();
+        for (const query of ['', '?design=bad', `?design=${a}&limit=0`, `?design=${a}&limit=51`, `?design=${a}&limit=1.5`, `?design=${a}&offset=-1`, `?design=${a}&offset=1000001`]) {
+            expect((await request(app).get(`/plans${query}`)).status).toBe(400);
+        }
+        expect(pool.query).not.toHaveBeenCalled();
     });
 });
 

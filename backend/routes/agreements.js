@@ -560,10 +560,10 @@ export function setupAgreementsRoute(app, deps) {
         }
     });
 
-    // ?city=&design=<cid>&parcel=<id>&minted=1&limit= → { agreements, count }, newest first. minted=1 keeps
+    // ?city=&design=<cid>&parcel=<id>&minted=1&limit=&offset= → { agreements, count, hasMore, nextOffset }, newest first. minted=1 keeps
     // the agreements the index has recorded a chain account for (a non-null `onchain`).
     app.get('/agreements', async (req, res) => {
-        const { city: rawCity, design, parcel, minted, limit } = req.query;
+        const { city: rawCity, design, parcel, minted, limit, offset: rawOffset } = req.query;
         if (rawCity !== undefined && !(typeof rawCity === 'string' && rawCity.length <= MAX_TEXT.city)) {
             return res.status(400).json({ error: `city must be a string of at most ${MAX_TEXT.city} characters.`, code: 'bad-request' });
         }
@@ -572,6 +572,11 @@ export function setupAgreementsRoute(app, deps) {
             return res.status(400).json({ error: 'parcel must be a parcel id.', code: 'bad-request' });
         }
         if (minted !== undefined && minted !== '1') return res.status(400).json({ error: 'minted must be 1.', code: 'bad-request' });
+        if (rawOffset !== undefined && (typeof rawOffset !== 'string' || !/^(0|[1-9]\d*)$/.test(rawOffset)
+            || !Number.isSafeInteger(Number(rawOffset)) || Number(rawOffset) > 1000000)) {
+            return res.status(400).json({ error: 'offset must be an integer from 0 to 1000000.', code: 'bad-request' });
+        }
+        const offset = rawOffset === undefined ? 0 : Number(rawOffset);
         const clauses = [];
         const params = [];
         const city = normalizeCityCode(rawCity);
@@ -588,14 +593,17 @@ export function setupAgreementsRoute(app, deps) {
             clauses.push(`input_parcel_ids @> ARRAY[$${params.length}]::text[]`);
         }
         if (minted === '1') clauses.push('onchain IS NOT NULL');
-        params.push(parseListLimit(limit));
+        const pageLimit = parseListLimit(limit);
+        params.push(pageLimit + 1, offset);
         try {
             const { rows } = await pool.query(`
                 SELECT ${COLUMNS} FROM ${AGREEMENT_TABLE}
                 ${clauses.length ? `WHERE ${clauses.join(' AND ')}` : ''}
                 ORDER BY created_at DESC, cid
-                LIMIT $${params.length}`, params);
-            return res.json({ agreements: rows.map(serializeAgreementRow), count: rows.length });
+                LIMIT $${params.length - 1} OFFSET $${params.length}`, params);
+            const hasMore = rows.length > pageLimit;
+            const agreements = rows.slice(0, pageLimit).map(serializeAgreementRow);
+            return res.json({ agreements, count: agreements.length, hasMore, nextOffset: hasMore ? offset + agreements.length : null });
         } catch (error) {
             console.error(`[${new Date().toISOString()}] Error in GET /agreements:`, error);
             return res.status(500).json({ error: 'Internal server error' });
