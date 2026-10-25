@@ -1,10 +1,31 @@
-// Derived vacant-plot scenery and ordinary sidewalk paving for building surroundings.
+// Derived site scenery and ordinary sidewalk paving for building surroundings.
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
     if (root) root.__threeSiteGround = api;
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
+
+    // Observed trees belong to the existing context. An applied corridor replaces that context
+    // within its authoritative surface footprint, including junctions. Keep the source points
+    // intact so unapplying the corridor restores them; crown overhang outside it is natural.
+    function contextTreesOutsideCorridors(trees, proposals, { isAppliedCorridor, featureSets, turf }) {
+        const footprints = [];
+        for (const proposal of proposals) {
+            if (!isAppliedCorridor(proposal)) continue;
+            for (const feature of featureSets(proposal, { includeBuildingGeometry: false }).primaryFeatures) {
+                if (feature.properties?.source !== 'road-definition'
+                    || !['Polygon', 'MultiPolygon'].includes(feature.geometry?.type)) continue;
+                footprints.push({ feature, bbox: turf.bbox(feature) });
+            }
+        }
+        return trees.filter(point => {
+            if (!Array.isArray(point) || !Number.isFinite(point[0]) || !Number.isFinite(point[1])) return false;
+            return !footprints.some(({ feature, bbox: [west, south, east, north] }) =>
+                point[0] >= west && point[0] <= east && point[1] >= south && point[1] <= north
+                && turf.booleanPointInPolygon(point, feature));
+        });
+    }
 
     function sidewalkMaterial(THREE, ground, metresPerUnit) {
         return ground.paveTexture(new THREE.MeshLambertMaterial({
@@ -64,5 +85,5 @@
         });
     }
 
-    return { sidewalkMaterial, fencePositions, buildVacantPlots };
+    return { contextTreesOutsideCorridors, sidewalkMaterial, fencePositions, buildVacantPlots };
 });

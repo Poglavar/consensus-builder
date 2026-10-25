@@ -5642,14 +5642,19 @@
 
     function buildTreesGroup() {
         if (!treesGroup || !Array.isArray(nearbyTrees) || nearbyTrees.length === 0 || !origin3857) return;
+        const visibleTrees = window.__threeSiteGround.contextTreesOutsideCorridors(nearbyTrees,
+            proposalStorage.getAllProposals(), {
+                isAppliedCorridor: isAppliedCorridorProposal, featureSets: collectProposalFeatureSets, turf
+            });
+        if (!visibleTrees.length) return;
         ensureTreeAssets();
-        const n = nearbyTrees.length;
+        const n = visibleTrees.length;
         const trunkMesh = new THREE.InstancedMesh(treeTrunkGeo, treeTrunkMat, n);
         const crownMesh = new THREE.InstancedMesh(treeCrownGeo, treeCrownMat, n);
         const dummy = new THREE.Object3D();
         let placed = 0;
         for (let i = 0; i < n; i++) {
-            const t = nearbyTrees[i];
+            const t = visibleTrees[i];
             if (!t || t.length < 2) continue;
             const [x, y] = latLngToXY(t[1], t[0]);
             const r = treeRng(t[0], t[1]);
@@ -8691,6 +8696,8 @@
     for (const event of ['parcelFabricCommitted', 'buildingsLayerUpdated', 'proposedBuildingsUpdated', 'parksUpdated', 'squaresUpdated', 'lakesUpdated', 'stationsUpdated', 'buildingGroundsUpdated']) {
         window.addEventListener(event, () => { sceneRevision++; });
     }
+
+    window.addEventListener('parcelFabricCommitted', rebuildTreesOnly);
 
     window.addEventListener('buildingsLayerUpdated', () => {
         if (!isActive) return;
