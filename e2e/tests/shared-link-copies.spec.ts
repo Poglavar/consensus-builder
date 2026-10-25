@@ -50,10 +50,10 @@ test('a shared 3D camera retains both designs, existing buildings and the select
   await expect.poll(sceneCounts).toEqual({ buildings: 2, parks: 2 });
   const after = await page.evaluate(() => (window as any).getThree3DGeoView());
   for (const key of Object.keys(view)) expect(after[key]).toBeCloseTo(view[key], 9);
-  // Explicitly focusing one design remains a separate action from restoring the shared view.
+  // Selecting one design keeps the shared composition in context.
   await page.evaluate(id => (window as any).showThreeModeDesign(id), id);
-  await expect(page.locator('.three-mode-isolation-banner')).toBeVisible();
-  await expect.poll(sceneCounts).toEqual({ buildings: 1, parks: 0 });
+  await expect(page.locator('.three-mode-isolation-banner')).toBeHidden();
+  await expect.poll(sceneCounts).toEqual({ buildings: 2, parks: 2 });
 });
 
 test('design links ignore a local key equal to the CID and fork ancestry, then reuse the exact imported copy', async ({ mockApi: author, browser, baseURL }) => {

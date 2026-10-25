@@ -78,6 +78,28 @@ function replayHarness(records) {
 }
 
 describe('replay presentation', () => {
+    it('rebuilds accepted parcel-free designs across city labels while excluding foreign cadastral contexts', async () => {
+        const records = [
+            { ...building(0), cadastreParcelIds: [], city: 'site-label', goal: 'park' },
+            { ...building(1), cadastreParcelIds: [], city: 'same-source-city', goal: 'square' },
+            { ...building(2), cadastreParcelIds: [], city: 'foreign-city', goal: 'lake' },
+            { ...building(3), cadastreParcelIds: ['foreign-p1'], city: 'site-label' },
+            { ...building(4), cadastreParcelIds: ['here-p1'], city: 'foreign-city' }
+        ];
+        installGlobal('isInCity', (id, city) => id.startsWith(city + '-'));
+        const foreignCityFor = vi.fn(city => city === 'foreign-city' ? city : null);
+        const CityConfigManager = { getCurrentCityId: () => 'here', foreignCityFor };
+        installGlobal('CityConfigManager', CityConfigManager);
+        installGlobal('window', { CityConfigManager });
+        const { manager, context } = replayHarness(records);
+        const result = await manager.rebuildAppliedFabric({ silent: true, _parcelMutation: context });
+        expect(result.ok).toBe(true);
+        expect(manager.applyProposal.mock.calls.map(([id]) => id)).toEqual(['b-0', 'b-1', 'b-4']);
+        expect(foreignCityFor).toHaveBeenCalledWith('site-label');
+        expect(foreignCityFor).toHaveBeenCalledWith('same-source-city');
+        expect(records.every(record => record.applied)).toBe(true);
+    });
+
     it('replays every member with deferPresentation and refreshes the UI once after commit', async () => {
         const records = [building(0), building(1), building(2), building(3)];
         const { manager, context, afterCommit, applyOptions, presentation } = replayHarness(records);

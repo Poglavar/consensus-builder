@@ -725,7 +725,12 @@ function _recordInCity(record, currentCityId) {
     const ids = proposalClaims.cadastreParcelIdsOf(record);
     if (ids.length) return ids.some(id => isInCity(id, currentCityId));
     const authoredCity = record && record.city ? String(record.city) : '';
-    return !authoredCity || authoredCity === String(currentCityId);
+    if (!authoredCity || authoredCity === String(currentCityId)) return true;
+    // Parcel-free records are admitted by the same source-context guard on import. City labels
+    // without a configured jurisdiction, and places sharing this ground source, must not become
+    // applied records with no live output after reload. Bound cadastral ids remain decisive above.
+    const cityManager = typeof window !== 'undefined' ? window.CityConfigManager : globalThis.CityConfigManager;
+    return typeof cityManager?.foreignCityFor === 'function' && cityManager.foreignCityFor(authoredCity) === null;
 }
 
 function _flatGroundCoverageIsComplete(declaredCount, resolvedCount, coverage, footprintArea) {
@@ -1089,7 +1094,7 @@ const ProposalManager = {
 
                 if (!applied.length) return undefined;
 
-                // Only reapply proposals belonging to the active city. Applied proposals are
+                // Only reapply proposals eligible for the active ground context. Applied proposals are
                 // stored globally (not per-city), so without this an NYC session would try to
                 // reapply Zagreb proposals — fetching HR-* ids from the NYC parcel endpoint (400)
                 // and poisoning the nearby-3D-buildings query with cross-city geometry (→ "loaded
