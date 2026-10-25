@@ -2,8 +2,68 @@ import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
 import { stubBasemapTiles, PARCEL_GEOMETRY } from '../helpers/runtime';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
-import { fileDesign, pageIndex } from '../helpers/mocks/shared-server';
+import { attachSharedIndex, fileDesign, pageIndex } from '../helpers/mocks/shared-server';
+import { mockAllApiRoutes } from '../helpers/mocks/api-routes';
 const records = require('../../frontend/js/design-record.js');
+
+for (const width of [1280, 390]) test(`replacing an occupied road with buildings and spaces without a layout at ${width}px`, async ({ mockApi: page }) => {
+  test.setTimeout(120000);
+  await page.setViewportSize({ width, height: 844 });
+  await stubBasemapTiles(page);
+  const index = pageIndex(page), ring = PARCEL_GEOMETRY.coordinates[0];
+  const west = Math.min(...ring.map(p => p[0])), east = Math.max(...ring.map(p => p[0]));
+  const south = Math.min(...ring.map(p => p[1])), north = Math.max(...ring.map(p => p[1]));
+  const dx = east - west, dy = north - south;
+  const box = (w: number, s: number, e: number, n: number) => ({ type: 'Polygon', coordinates: [[[w,s],[e,s],[e,n],[w,n],[w,s]]] });
+  const put = (record: any) => fileDesign(index, records.published({ city: 'zg', ...record }));
+  const ribbon = box(west + dx * .44, south, west + dx * .56, north);
+  const oldRoad = put({ title: 'Old campus road', goal: 'road-track', site: ribbon,
+    roadProposal: { definition: { polygon: ribbon } }, createdAt: '2026-10-23T10:00:00Z' });
+  const outside = put({ title: 'Unrelated park', goal: 'park', site: sampleParcels.features[1].geometry,
+    structureProposal: { kind: 'park', geometry: sampleParcels.features[1].geometry }, createdAt: '2026-10-23T11:00:00Z' });
+  const footprint = box(west + dx * .2, south + dy * .1, west + dx * .8, south + dy * .45);
+  const building = put({ title: 'New campus building', goal: 'single', site: footprint,
+    geometry: { buildings: [{ type: 'Feature', geometry: footprint, properties: { floors: 4, height: 12, type: 'proposedBuilding' } }] },
+    buildingProposal: { typologyType: 'single', parameters: { floors: 4, height: 12 } }, createdAt: '2026-10-24T10:00:00Z' });
+  const parkGeometry = box(west + dx * .2, south + dy * .55, west + dx * .8, north - dy * .1);
+  const park = put({ title: 'New campus garden', goal: 'park', site: parkGeometry,
+    structureProposal: { kind: 'park', geometry: parkGeometry }, createdAt: '2026-10-24T11:00:00Z' });
+  const url = (cids: string[]) => `/designs/${cids.join(',')}?city=zg&lang=en&reduceMotion=1`;
+  const applied = (target = page) => target.evaluate(() => {
+    const w = window as any;
+    return w.proposalStorage.getAllProposals().filter(w.isApplied).map((p: any) => w.DesignSync.publishedCid(p)).sort();
+  });
+  const original = [oldRoad, outside].sort(), replacement = [building, park, outside].sort();
+  await page.goto(url(original), { waitUntil: 'domcontentloaded' });
+  await waitForMapReady(page);
+  await expect.poll(() => applied(), { timeout: 30000 }).toEqual(original);
+  // The phone case reproduces the affected read-only tab while the primary retains its saved plan.
+  const target = width === 390 ? await page.context().newPage() : page;
+  try {
+    if (target !== page) {
+      await mockAllApiRoutes(target); await attachSharedIndex(target, index);
+      await target.goto(url(original), { waitUntil: 'domcontentloaded' });
+      await waitForMapReady(target);
+      await expect.poll(() => target.evaluate(() => (window as any).__cbSecondaryTab)).toBe(true);
+      await expect.poll(() => applied(target)).toEqual(original);
+    }
+    await target.goto(url([building, park]), { waitUntil: 'domcontentloaded' });
+    const warning = target.getByRole('alertdialog', { name: 'Plan conflicts' });
+    await expect(warning).toBeVisible({ timeout: 30000 });
+    await expect(warning).toContainText('Old campus road');
+    await expect(warning).not.toContainText('Unrelated park');
+    await warning.getByRole('button', { name: 'Unapply existing & continue', exact: true }).click();
+    await expect.poll(() => applied(target), { timeout: 30000 }).toEqual(replacement);
+    await expect(target.locator('.shared-plan-failures')).toHaveCount(0);
+    if (target === page) {
+      await target.reload({ waitUntil: 'domcontentloaded' });
+      await expect.poll(() => applied(target), { timeout: 30000 }).toEqual(replacement);
+    } else {
+      await expect.poll(() => applied()).toEqual(original);
+      await expect(target.locator('#cb-multitab-banner')).toBeVisible();
+    }
+  } finally { if (target !== page) await target.close(); }
+});
 
 for (const width of [390, 1280]) test(`replacing shared layout releases old streets and ground at ${width}px @core`, async ({ mockApi: page }) => {
   test.setTimeout(120_000);

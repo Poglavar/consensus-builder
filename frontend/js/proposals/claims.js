@@ -167,11 +167,13 @@
         if (!targetId) return [];
         const isApplied = appliedAccessor(options);
         const planOrder = planOrderApi(options);
-        // Confirming a shared plan's replacement chooses its authored plots as the new ground.
-        // Existing roads and layouts occupying those plots must be released too; leaving their
-        // cuts standing makes otherwise complete incoming designs look partly unsupported.
-        // Ordinary layout editing still reshapes ground without choosing different content.
-        const replacesLayoutGround = options.replaceLayoutGround === true && !!proposal.parcelLayout;
+        // A confirmed plan chooses the land taken by its layouts, buildings and surface spaces.
+        // Old corridors on that land must leave too, or their cuts strand incoming footprints.
+        // Buildings still stand on host layouts, and distinct road junctions remain compatible.
+        const replacesLayoutGround = options.replaceOccupiedGround === true && !!proposal.parcelLayout;
+        const replacesCorridorGround = options.replaceOccupiedGround === true
+            && (!!proposal.parcelLayout || (!proposal.roadProposal
+                && (isBuildingContentProposal(proposal) || !!proposal.structureProposal)));
         const minimumOverlapM2 = Number.isFinite(Number(options.minimumOverlapM2))
             ? Math.max(0, Number(options.minimumOverlapM2))
             : 2;
@@ -204,8 +206,9 @@
                 (proposal.origin?.cid && proposal.origin.cid === candidate.published?.cid)
                 || (candidate.origin?.cid && candidate.origin.cid === proposal.published?.cid)
                 || (proposal.origin?.cid && proposal.origin.cid === candidate.origin?.cid));
-            const layoutGroundRival = replacesLayoutGround && (candidate.parcelLayout || candidate.roadProposal);
-            if (!isBuildingContentProposal(candidate) && !candidate.structureProposal && !roadRevision && !layoutGroundRival) return false;
+            const occupiedGroundRival = (replacesLayoutGround && candidate.parcelLayout)
+                || (replacesCorridorGround && candidate.roadProposal);
+            if (!isBuildingContentProposal(candidate) && !candidate.structureProposal && !roadRevision && !occupiedGroundRival) return false;
             // A road or track does not displace a park, square or lake it crosses: it cuts through
             // and the rest of the structure stays (the road tool's "Build through"; the carve is
             // apply/road.js _groundAfterLaterCorridors). Buildings it covers still go.

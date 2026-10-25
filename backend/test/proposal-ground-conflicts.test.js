@@ -210,13 +210,13 @@ describe('ground is taken by overlap, not by parcel identity', () => {
     });
 });
 
-describe('confirmed plan replacement includes the ground its layout replaces', () => {
+describe('confirmed plan replacement includes occupied ground', () => {
     const ground = west => building('shape', west).geometry.buildings[0].geometry;
     const layout = (proposalId, west, applied = false) => ({ proposalId, applied, goal: 'parcel-layout',
         parcelLayout: { plots: [{ geometry: ground(west) }] } });
     const road = (proposalId, west, applied = true) => ({ proposalId, applied, goal: 'road-track',
         roadProposal: { definition: { polygon: ground(west) } } });
-    const options = { planOrder, replaceLayoutGround: true };
+    const options = { planOrder, replaceOccupiedGround: true };
 
     it('releases overlapping roads, layouts and content, but keeps disjoint, bordering and parked records', () => {
         const target = layout('new-layout', 16);
@@ -230,6 +230,15 @@ describe('confirmed plan replacement includes the ground its layout replaces', (
             .toEqual(old.map(r => r.proposalId));
         expect(records).toEqual(before);
         expect(collectAppliedProposalAlternatives(target, records, { planOrder })).toEqual([]);
+    });
+
+    it.each(['building', 'park', 'square', 'lake'])('releases an old corridor under incoming %s ground without a layout design', kind => {
+        const target = kind === 'building' ? building('new-building', 16)
+            : { proposalId: `new-${kind}`, structureProposal: { kind, geometry: ground(16) } };
+        const old = road('old-road', 16);
+        const keep = [road('outside', 16.01), road('touches-boundary', 16.001), road('parked', 16, false)];
+        expect(collectAppliedProposalAlternatives(target, [old, ...keep], options).map(record => record.proposalId)).toEqual(['old-road']);
+        expect(collectAppliedProposalAlternatives(target, [old], { planOrder })).toEqual([]);
     });
 
     it('retains a host layout for a building-only share and retains road crossings', () => {
