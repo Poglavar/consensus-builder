@@ -127,6 +127,9 @@
             container, handle: handleEl, value: percent, label: options.sliderLabel || 'Before and after comparison',
             onChange: next => { percent = clampPercent(next); applyClip(); }
         });
+        // Image dimensions arrive after mount; dialogs and maps can also resize while open.
+        const sizeObserver = typeof root.ResizeObserver === 'function' ? new root.ResizeObserver(applyClip) : null;
+        sizeObserver?.observe(container);
         applyClip();
 
         return {
@@ -139,6 +142,7 @@
                 if (disposed) return;
                 disposed = true;
                 divider.dispose();
+                sizeObserver?.disconnect();
                 gripObserver?.disconnect();
                 [handleEl].concat(labelEls).forEach(el => { try { el.remove(); } catch (_) { /* detached */ } });
             }

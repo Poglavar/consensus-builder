@@ -297,18 +297,13 @@
         }
     }
 
-    // The agreement itself: its panel from the local copy when this device has one (the record
-    // published as this CID), else read from the index, its designs applied and its panel opened.
+    // Open the published agreement through the shared-link path, which refreshes its local copy,
+    // applies its designs and reconstructs the land before opening the panel.
     async function openAgreement(row) {
         try {
             if (!row || !row.cid) throw new Error('the row names no agreement');
             if (root.MapShell && typeof root.MapShell.closeSheets === 'function') root.MapShell.closeSheets();
-            const store = root.AgreementStore;
-            const local = store && typeof store.list === 'function'
-                ? store.list().find(agreement => agreement && agreement.published && agreement.published.cid === row.cid) || null
-                : null;
-            if (local) await root.AgreementPanel.open(local.id);
-            else await root.AgreementSync.handleAgreementRoute(row.cid);
+            await root.AgreementSync.handleAgreementRoute(row.cid);
         } catch (error) {
             console.error(`[${new Date().toISOString()}] [bets] open agreement failed`, error);
             if (typeof root.showEphemeralMessage === 'function') {

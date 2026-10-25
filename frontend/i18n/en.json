@@ -7005,7 +7005,7 @@
             "who": "Who decides",
             "owners": "Seek owners’ decisions",
             "community": "Ask the community",
-            "binding": "Binding: when the rule is met, land and money move at execution",
+            "binding": "Binding: owner approvals can authorize on-chain settlement",
             "bindingShort": "Binding",
             "nonBinding": "Non-binding",
             "electorate": {
@@ -7140,6 +7140,7 @@
             "heading": "On chain",
             "cluster": "Solana {{cluster}}",
             "notMinted": "Not minted. Minting commits this agreement to Solana at its sponsor’s address; its lens then attests the decision, and executing it releases the escrow.",
+            "bindingExecutionNote": "On-chain execution records settlement and pays the configured escrow. Legal registration and construction are separate.",
             "nonBinding": "A vote is not minted; its decisions are counted off-chain.",
             "reading": "Reading the chain…",
             "readFailed": "The chain account could not be read: {{reason}}",

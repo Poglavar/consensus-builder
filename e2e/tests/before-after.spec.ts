@@ -293,6 +293,45 @@ test.describe('Before / after on a phone @features', () => {
 });
 
 test.describe('Before / after in the bet dialog @features', () => {
+  for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 }]) {
+    test(`keeps the complete portrait image inside its comparison frame at ${viewport.width}px`, async ({ mockApi: page }) => {
+      await page.setViewportSize(viewport);
+      const portrait = await page.evaluate(() => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 512; canvas.height = 768;
+        const ctx = canvas.getContext('2d')!;
+        ctx.fillStyle = '#dddddd'; ctx.fillRect(0, 0, 512, 768);
+        ctx.fillStyle = '#ff0000'; ctx.fillRect(0, 0, 512, 80);
+        ctx.fillStyle = '#0000ff'; ctx.fillRect(0, 688, 512, 80);
+        return canvas.toDataURL();
+      });
+      fileBet(page, { screenshotUrl: portrait, screenshotBeforeUrl: portrait });
+      await page.goto(`/bets/${AGREEMENT_ACCOUNT}?city=zg&reduceMotion=1`);
+      const compare = page.locator('#proposalMarketOverlay .bets-dialog__compare');
+      await expect(compare).toBeVisible({ timeout: 30_000 });
+      await expect.poll(() => compare.locator('img').evaluateAll(images => images.every(image => (image as HTMLImageElement).naturalHeight === 768))).toBe(true);
+      const sizes = await compare.locator('img').evaluateAll(images => images.map(image => {
+        const box = image.getBoundingClientRect(); return { width: box.width, height: box.height };
+      }));
+      for (const size of sizes) expect(size.width / size.height).toBeCloseTo(512 / 768, 2);
+      expect((await compare.boundingBox())!.width).toBeLessThanOrEqual(sizes[0].width + 2);
+      await expect.poll(() => compare.getByRole('slider').evaluate(el => parseFloat((el as HTMLElement).style.left))).toBeCloseTo(sizes[0].width / 4, 0);
+      // The phone sheet scrolls: inspect each end where it is exposed, above its fixed footer.
+      const pixels = [];
+      for (const end of ['start', 'end'] as const) {
+        await compare.evaluate((el, block) => el.scrollIntoView({ block, behavior: 'instant' }), end);
+        const png = await compare.screenshot();
+        pixels.push(await page.evaluate(async ({ dataUrl, end }) => {
+          const img = new Image(); img.src = dataUrl; await img.decode();
+          const canvas = document.createElement('canvas'); canvas.width = img.width; canvas.height = img.height;
+          const ctx = canvas.getContext('2d')!; ctx.drawImage(img, 0, 0);
+          return Array.from(ctx.getImageData(Math.floor(img.width / 2), end === 'start' ? 12 : img.height - 5, 1, 1).data).slice(0, 3);
+        }, { dataUrl: `data:image/png;base64,${png.toString('base64')}`, end }));
+      }
+      expect(pixels).toEqual([[255, 0, 0], [0, 0, 255]]);
+    });
+  }
+
   test('the dialog puts the thumbnail and the same ground without the agreement under one divider', async ({ mockApi: page }) => {
     fileBet(page, { screenshotUrl: PIXEL_PNG, screenshotBeforeUrl: PIXEL_PNG });
     await page.goto(`/?city=zg&bets=${AGREEMENT_ACCOUNT}&reduceMotion=1`);
@@ -304,7 +343,7 @@ test.describe('Before / after in the bet dialog @features', () => {
     await expect(compare.locator('img.map-compare__before')).toHaveCount(1);
     const handle = compare.locator('.map-compare__handle');
     await expect(handle).toHaveAttribute('role', 'slider');
-    await expect(handle).toHaveAttribute('aria-valuenow', '50');
+    await expect(handle).toHaveAttribute('aria-valuenow', '25');
     await expect(compare.locator('.map-compare__label--before')).toHaveText('Before');
     await expect(compare.locator('.map-compare__label--after')).toHaveText('After');
 
@@ -334,7 +373,7 @@ test.describe('Before / after in the bet dialog @features', () => {
     expect(Math.abs(sizes[0] - sizes[1])).toBeLessThan(1);
     expect((await compare.boundingBox())!.height).toBeGreaterThanOrEqual(sizes[0]);
     const slider = compare.getByRole('slider');
-    await expect(slider).toHaveAttribute('aria-valuenow', '50');
+    await expect(slider).toHaveAttribute('aria-valuenow', '25');
     await slider.focus();
     await page.keyboard.press('Home');
     await expect(slider).toHaveAttribute('aria-valuenow', '0');

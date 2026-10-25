@@ -365,6 +365,7 @@
                 compare.append(img, before);
                 p.body.append(compare);
                 state.compare = root.__MapBeforeAfter.attachDivider(compare, before, {
+                    percent: 25,
                     labels: { before: t('mapCompare.before', 'Before'), after: t('mapCompare.after', 'After') },
                     sliderLabel: t('mapCompare.sliderLabel', 'Before and after comparison')
                 });

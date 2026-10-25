@@ -10,6 +10,7 @@ const ground = require('../../frontend/js/agreement-ground.js');
 const record = require('../../frontend/js/agreement-record.js');
 const approval = require('../../frontend/js/proposals/approval.js');
 const Cid = require('../../frontend/js/cid.js');
+const { createLiveParcelFabric } = require('../../frontend/js/parcels/live-fabric.js');
 
 // Rectangles in units of 1e-3 degree from the test origin (≈ 78 m east, 111 m north).
 function rect(x0, y0, x1, y1) {
@@ -66,6 +67,41 @@ const ownerOf = id => holders[id] || [];
 const area = feature => turf.area(feature);
 
 describe('derive', () => {
+    it('keeps the source commitment of an unchanged one-part MultiPolygon after the fabric connects it', async () => {
+        const polygon = rect(0, 0, 3, 2);
+        const source = piece('k9', { type: 'MultiPolygon', coordinates: [polygon.coordinates] });
+        const fabric = createLiveParcelFabric();
+        const mutation = fabric.beginMutation({ kind: 'seed' });
+        mutation.seedCadastre([source]);
+        await mutation.prepare();
+        mutation.publish();
+        expect(fabric.get('k9').geometry.type).toBe('Polygon');
+
+        const design = { proposalId: 'building-1', cadastreParcelIds: ['k9'] };
+        const context = { designs: [design], fabric, originals: new Map([['k9', source]]), ownerOf, area };
+        const derived = ground.derive(context);
+        expect(derived.outputs[0]).toMatchObject({ hash: record.outputHash(source.geometry), role: 'parcel', geometry: source.geometry });
+        const stored = { ...derived, designs: [{ proposalId: design.proposalId, cid: 'unchanged-design' }] };
+        const checkContext = { ...context, designOf: () => design, isApplied: () => true, fingerprintOf: () => 'unchanged-design' };
+        expect(ground.check(stored, checkContext)).toEqual({ current: true, reasons: [] });
+
+        const moved = fabric.get('k9');
+        moved.geometry.coordinates[0][2][0] += 1e-5;
+        expect(ground.check(stored, { ...checkContext, fabric: fakeFabric([moved]) }))
+            .toEqual({ current: false, reasons: [{ code: 'ground-changed' }] });
+    });
+
+    it('does not substitute source geometry for designed or split pieces', () => {
+        const polygon = rect(0, 0, 3, 2);
+        const originals = new Map([['k9', piece('k9', { type: 'MultiPolygon', coordinates: [polygon.coordinates] })]]);
+        for (const properties of [{ producedByProposalId: 'design-1' }, { cadastralPart: true }]) {
+            const fabric = fakeFabric([piece('k9', polygon, { cadastreParcelIds: ['k9'], ...properties })]);
+            const { outputs } = ground.derive({ designs: [{ proposalId: 'design-1', cadastreParcelIds: ['k9'] }], fabric, originals, ownerOf, area });
+            expect(outputs[0].hash).toBe(record.outputHash(polygon));
+            expect(outputs[0].geometry).toEqual(polygon);
+        }
+    });
+
     it('commits geographic areas deterministically without native trigonometry', () => {
         const feature = piece('k9', rect(0, 0, 3, 2));
         expect(ground.areaOf(feature)).toBeCloseTo(turf.area(feature), 4);

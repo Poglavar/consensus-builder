@@ -212,7 +212,7 @@
                 ? tr('agreement.rule.electorate.owners', 'Decided by the owners')
                 : tr('agreement.rule.electorate.community', 'Decided by a community vote'),
             binding: rule && rule.binding === true
-                ? tr('agreement.rule.binding', 'Binding: when the rule is met, land and money move at execution')
+                ? tr('agreement.rule.binding', 'Binding: owner approvals can authorize on-chain settlement')
                 : tr('agreement.rule.nonBinding', 'Non-binding'),
             detail: owners && typeof summaryText === 'function' ? summaryText(rule.approvalConfig, rule.lens) : ''
         };
@@ -382,12 +382,14 @@
         const busy = view.busy ? `<p class="agreement-panel-hint" role="status" data-agreement-chain-busy="${esc(view.busy.action)}">${esc((CHAIN_PHASE[view.busy.phase] || CHAIN_PHASE.preparing)(tr))}</p>` : '';
         const locked = !!view.busy;
         const title = tr('agreement.chain.heading', 'On chain');
+        const executionNote = `<p class="agreement-panel-note" data-agreement-chain="binding-note">${esc(tr('agreement.chain.bindingExecutionNote', 'On-chain execution records settlement and pays the configured escrow. Legal registration and construction are separate.'))}</p>`;
         if (!view.ref) {
             const ready = mintReadiness(view, tr);
             const button = view.readOnly ? '' : ready.repropose
                 ? chainButton('repropose', 'fas fa-paper-plane', tr('agreement.chain.actions.repropose', 'Propose again with this wallet'), { tone: 'primary', disabled: locked || !ready.canRepropose })
                 : chainButton('mint', 'fas fa-cube', tr('agreement.chain.actions.mint', 'Mint'), { tone: 'primary', disabled: locked || !ready.canMint });
             return sectionHtml(title, '<div class="agreement-chain" data-agreement-chain="unminted">'
+                + executionNote
                 + `<p class="agreement-panel-meta">${esc(tr('agreement.chain.notMinted', 'Not minted. Minting commits this agreement to Solana at its sponsor’s address; its lens then attests the decision, and executing it releases the escrow.'))}</p>`
                 + (button ? `<div class="agreement-panel-actions">${button}</div>` : '') + `${view.readOnly ? '' : hintsHtml(ready.hints)}${busy}</div>`);
         }
@@ -397,14 +399,14 @@
             + `<a class="cb-link cb-link--external agreement-chain-account" href="${esc(link)}" target="_blank" rel="noopener noreferrer" title="${esc(ref.account)}">${esc(shortKey(ref.account))}</a>`
             + `<span class="agreement-panel-meta">${esc(tr('agreement.chain.cluster', 'Solana {{cluster}}', { cluster: ref.cluster }))}</span></div>`;
         const chain = view.chain || { loading: true };
-        if (chain.loading) return sectionHtml(title, `<div class="agreement-chain" data-agreement-chain="loading">${head}<p class="agreement-panel-hint" role="status">${esc(tr('agreement.chain.reading', 'Reading the chain…'))}</p>${busy}</div>`);
+        if (chain.loading) return sectionHtml(title, `<div class="agreement-chain" data-agreement-chain="loading">${head}${executionNote}<p class="agreement-panel-hint" role="status">${esc(tr('agreement.chain.reading', 'Reading the chain…'))}</p>${busy}</div>`);
         if (chain.error) {
-            return sectionHtml(title, `<div class="agreement-chain" data-agreement-chain="error">${head}`
+            return sectionHtml(title, `<div class="agreement-chain" data-agreement-chain="error">${head}${executionNote}`
                 + `<p class="agreement-panel-note agreement-panel-note--danger" role="alert">${esc(tr('agreement.chain.readFailed', 'The chain account could not be read: {{reason}}', { reason: chain.error }))}</p>${busy}</div>`);
         }
         const value = chain.value;
         if (!value) {
-            return sectionHtml(title, `<div class="agreement-chain" data-agreement-chain="missing">${head}`
+            return sectionHtml(title, `<div class="agreement-chain" data-agreement-chain="missing">${head}${executionNote}`
                 + `<p class="agreement-panel-note agreement-panel-note--danger" role="alert">${esc(tr('agreement.chain.missing', 'The account is not on Solana {{cluster}}.', { cluster: ref.cluster }))}</p>${busy}</div>`);
         }
         const status = CHAIN_STATUS[value.status];
@@ -445,7 +447,7 @@
             if (value.decision === 'Satisfied' && !actions.funded) hints.push(tr('agreement.chain.hints.awaitingFunds', 'Execution waits until the escrow holds {{required}}.', { required: solText(value.requiredLamports) }));
             if (actions.deadlinePassed) hints.push(tr('agreement.chain.hints.expired', 'Its deadline has passed: anyone can expire it, which returns the escrow to the sponsor.'));
         }
-        return sectionHtml(title, `<div class="agreement-chain" data-agreement-chain="minted">${head}${factsHtml}`
+        return sectionHtml(title, `<div class="agreement-chain" data-agreement-chain="minted">${head}${executionNote}${factsHtml}`
             + (buttons.length ? `<div class="agreement-panel-actions">${buttons.join('')}</div>` : '')
             + `${hintsHtml(hints)}${busy}</div>`);
     }

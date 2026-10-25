@@ -294,9 +294,13 @@
 .bets-dialog__thumb {
     display: block;
     flex-shrink: 0;
-    width: 100%;
-    max-height: 180px;
-    object-fit: cover;
+    align-self: center;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 240px;
+    object-fit: contain;
+    background: var(--cb-bg);
     border-radius: var(--cb-radius-md);
     border: 1px solid var(--cb-line);
 }
@@ -306,6 +310,8 @@
 .bets-dialog__compare {
     position: relative;
     flex-shrink: 0;
+    align-self: center;
+    max-width: 100%;
     overflow: hidden;
     border-radius: var(--cb-radius-md);
     border: 1px solid var(--cb-line);

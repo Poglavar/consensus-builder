@@ -75,6 +75,21 @@
         return props.cadastralPart === true ? 'part' : 'parcel';
     }
 
+    // The fabric displays a one-part cadastral MultiPolygon as a connected Polygon. An untouched
+    // parcel still commits to its source geometry, just as server-authored agreements do. Only
+    // restore that representation when the actual coordinates match; changed land stays changed.
+    function outputGeometry(feature, original, role) {
+        const geometry = feature.geometry;
+        const source = original?.type === 'Feature' ? original.geometry : original;
+        if (role === 'parcel' && !feature.properties?.producedByProposalId
+            && source?.type === 'MultiPolygon' && source.coordinates.length === 1
+            && geometry?.type === 'Polygon'
+            && record().outputHash({ type: 'Polygon', coordinates: source.coordinates[0] }) === record().outputHash(geometry)) {
+            return source;
+        }
+        return geometry;
+    }
+
     /**
      * The land the designs take and what stands on it once they are applied.
      * @param designs applied design records ({ proposalId, cadastreParcelIds?, parcelLayout?, … })
@@ -117,15 +132,17 @@
             seen.add(pieceId);
             const areaM2 = area(feature);
             if (!finite(areaM2) || areaM2 < 0) throw new Error(`Piece ${pieceId} could not be measured.`);
+            const role = roleOf(props);
+            const geometry = outputGeometry(feature, originals?.get?.(pieceId), role);
             outputs.push({
-                hash: record().outputHash(feature.geometry),
+                hash: record().outputHash(geometry),
                 pieceId,
                 areaM2: committedArea(areaM2),
                 fromParcelIds: sortedUnique(idsOf(props.cadastreParcelIds)),
                 producedBy: props.producedByProposalId ? String(props.producedByProposalId) : null,
-                role: roleOf(props),
+                role,
                 holders: holdersOf(ownerOf, pieceId),
-                geometry: feature.geometry
+                geometry
             });
         });
         outputs.sort((a, b) => numeric(a.fromParcelIds.join(','), b.fromParcelIds.join(','))

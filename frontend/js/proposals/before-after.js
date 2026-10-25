@@ -226,7 +226,8 @@
         // map after. Refused unless every one of its designs is applied here.
         async function startAgreement(agreement, key) {
             if (!canCompareAgreement(agreement, resolveDependencies())) return false;
-            return startWith({ key, affectedIds: agreementInputIds(agreement) });
+            const ids = agreementInputIds(agreement);
+            return startWith({ key, affectedIds: ids, focusParcelIds: ids });
         }
 
         // The comparison itself, over the cadastral parcels `affectedIds` names. `previous` is the
@@ -264,7 +265,7 @@
                     hostLayer = L.geoJSON({ type: 'FeatureCollection', features: plots }, { interactive: false, style: () => FOCUS_AFTER_STYLE }).addTo(deps.map);
                 }
             }
-            // A focused comparison (one owner, or one parcel) is about that land: frame it in the part
+            // A focused comparison (an agreement, one owner, or one parcel) is about that land: frame it in the part
             // of the map the panel leaves free, and start the divider through its middle so "before"
             // shows the old parcel and "after" the new plots.
             let percent;

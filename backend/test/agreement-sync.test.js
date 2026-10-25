@@ -118,8 +118,40 @@ describe('recordFromPublished', () => {
             { proposalId: 'design-road', title: 'New lane', goal: 'road', cid: roadCid }
         ]);
         expect(record.inputs).toEqual(row.content.inputs);
-        expect(record.outputs).toBe(derived.outputs);
+        expect(record.outputs).toEqual(derived.outputs.map(output => ({
+            ...output, producedBy: output.producedBy === 'road-1' ? 'design-road' : 'design-layout'
+        })));
         expect(AgreementRecord.normalize(record).outputs.every(piece => piece.geometry)).toBe(true);
+        expect(AgreementRecord.publishedCid(record)).toBe(row.cid);
+    });
+
+    it('keeps published output terms and the CID when local measurements have different precision', () => {
+        const published = clone(content);
+        published.outputs[0].areaM2 = 300.849715663882;
+        const cid = Cid.cidOfObject(published);
+        const derived = { outputs: clone(agreement().outputs) };
+        derived.outputs.find(output => output.hash === published.outputs[0].hash).areaM2 = 300.849716;
+        const imported = AgreementSync.recordFromPublished({ ...row, cid, content: published }, { id: 'ag-imported', apiBase: API, localIdOf, derived });
+        expect(imported.outputs[0].areaM2).toBe(300.849715663882);
+        expect(imported.outputs.every(output => output.geometry)).toBe(true);
+        expect(AgreementRecord.publishedCid(imported)).toBe(cid);
+    });
+
+    it('carries unchanged land holdings from the published inputs regardless of this browser’s owner cache', () => {
+        const raw = agreement();
+        raw.outputs = raw.inputs.parcels.map((parcel, index) => output(parcel.parcelId, rect(index * 3, 0, index * 3 + 3, 2),
+            parcel.areaM2, [parcel.parcelId], null, 'parcel', parcel.holders));
+        raw.allocations = [];
+        const content = AgreementRecord.published(raw);
+        const cid = Cid.cidOfObject(content);
+        const foreign = raw.outputs.map(piece => ({ ...piece, holders: [holder('unrelated-local-owner')] }));
+        for (const derived of [null, { outputs: raw.outputs.map(piece => ({ ...piece, holders: [] })) }, { outputs: foreign }]) {
+            const imported = AgreementSync.recordFromPublished({ cid, content }, { id: 'ag-imported', apiBase: API, localIdOf, derived });
+            const parties = AgreementRecord.ledger(imported).parties;
+            expect(parties.map(party => [party.ownerKey, party.contributedM2, party.assignedM2, party.changeM2]))
+                .toEqual([['agent-ana', 1000, 1000, 0], ['agent-ben', 800, 800, 0]]);
+            expect(AgreementRecord.publishedCid(imported)).toBe(cid);
+        }
     });
 
     it('keeps the published pieces by hash alone when the ground here makes other pieces', () => {

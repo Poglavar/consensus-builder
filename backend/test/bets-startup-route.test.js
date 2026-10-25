@@ -52,6 +52,21 @@ describe('Bets startup route', () => {
   });
 });
 
+describe('Opening a bet’s published agreement', () => {
+  it('refreshes a cached agreement through the shared-link path before opening its panel', async () => {
+    const app = boot('http://localhost/?city=sf');
+    const calls = [];
+    const cid = 'bafkrei-published-agreement';
+    app.root.MapShell = { closeSheets: () => calls.push('close-sheets') };
+    app.root.AgreementStore = { list: () => [{ id: 'cached', published: { cid }, outputs: [{ geometry: null }] }] };
+    app.root.AgreementPanel = { open: id => calls.push(['open-cached', id]) };
+    app.root.AgreementSync = { handleAgreementRoute: async value => calls.push(['refresh-published', value]) };
+    await app.root.BetsSheet.openAgreement({ cid });
+    expect(calls).toEqual(['close-sheets', ['refresh-published', cid]]);
+    expect(app.messages).toEqual([]);
+  });
+});
+
 describe('The agreement panel\'s Bet action (window.AgreementBets)', () => {
   // Local agreements (js/agreement-record.js) as the panel's store holds them.
   const minted = {

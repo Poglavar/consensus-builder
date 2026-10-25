@@ -5,6 +5,8 @@
 // schemes keep their hashes.
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
 import { Keypair } from '@solana/web3.js';
 import * as turf from '@turf/turf';
 import { createApprovalAttester, fileRegistry, normalizeRegistry } from '../lens/approval.js';
@@ -19,6 +21,42 @@ const review = require('../../frontend/js/proposals/approval-review.js');
 const relay = require('../../frontend/js/proposals/approval-relay.js');
 const proof = require('../../frontend/js/proposals/approval-proof.js');
 const validation = require('../../frontend/js/reparcellization-validation.js');
+const approvalPanelSource = readFileSync(new URL('../../frontend/js/proposals/approval-panel.js', import.meta.url), 'utf8');
+const approval = require('../../frontend/js/proposals/approval.js');
+const approvalRegimes = require('../../frontend/js/proposals/approval-regimes.js');
+const approvalReview = require('../../frontend/js/proposals/approval-review.js');
+const approvalText = require('../../frontend/js/proposals/approval-text.js');
+const format = require('../../frontend/js/format.js');
+const escape = require('../../frontend/js/shared-utils.js').escapeHtml;
+
+function loadApprovalPanel() {
+    const window = {
+        ProposalApproval: approval,
+        ProposalApprovalRegimes: approvalRegimes,
+        ProposalApprovalReview: approvalReview,
+        ProposalApprovalRuntime: {
+            inspect: approval.inspect,
+            validIds: () => [],
+            label: (id, rights) => approval.partyLabel(id, rights)
+        },
+        ProposalApprovalText: approvalText,
+        ProposalApprovalLensAuthority: { browserWallet: () => null },
+        solanaWalletManager: { on() {} },
+        CbFormat: format,
+        addEventListener() {}, removeEventListener() {}
+    };
+    const context = vm.createContext({
+        window, console, Date, Math, Number, String, Array, Object, Set, Map, Promise,
+        escapeHtml: escape,
+        getProposalI18nHelper: () => (_key, fallback, params = {}) => String(fallback).replace(/\{\{(\w+)\}\}/g, (_, name) => params[name] ?? ''),
+        getCurrentUserAgent: () => null,
+        getParcelDisplayNumberFromProperties: (_properties, id) => id,
+        ProposalDisplayText: { parcelLabel: value => value },
+        LiveParcelFabric: { get: () => null }, CadastralParcelRepository: { get: () => null }
+    });
+    vm.runInNewContext(approvalPanelSource, context, { filename: 'approval-panel.js' });
+    return window.ProposalApprovalPanel;
+}
 
 const t = (key, fallback, params = {}) => String(fallback).replace(/\{\{(\w+)\}\}/g, (_, name) => params[name]);
 const owner = (ownerId, share = '1/1') => ({ ownerId, share });
@@ -34,6 +72,24 @@ const rules = (tests, authorities = []) => ({ type: 'rules', tests, authorities:
 const test = (measure, of, scope, numerator, denominator, strict = false) => ({ measure, of, scope, numerator, denominator, strict });
 const pin = id => ({ id, version: R.latest(id).version });
 const testsOf = tally => tally.tests.map(row => [`${row.measure}/${row.of}/${row.scope}`, row.support, row.total, row.met]);
+
+describe('approval card area meters', () => {
+    const subject = policy => ({
+        agreementId: 'missing-area-card', cadastreParcelIds: ['parcel-1'],
+        approvalConfig: config(v1([{ parcelId: 'parcel-1', complete: true, areaM2: null, owners: [owner('owner-1')] }]), policy),
+        ownerApprovals: {}, ownerApprovalHistory: []
+    });
+    const card = policy => loadApprovalPanel().cardHtml(subject(policy));
+
+    it('does not show an unresolved-area warning for unanimous or head-count rules', () => {
+        expect(card({ type: 'unanimous' })).not.toContain('Parcel areas are unresolved.');
+        expect(card(threshold([1, 1], null))).not.toContain('Parcel areas are unresolved.');
+    });
+
+    it('keeps the unresolved-area warning when a threshold counts area', () => {
+        expect(card(threshold(null, [1, 2]))).toContain('Parcel areas are unresolved.');
+    });
+});
 
 // Owners A, B; C and D co-own c; the city owns d; tenant T leases 100 of a's 300 m².
 const parcels = [

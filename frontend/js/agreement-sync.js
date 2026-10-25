@@ -64,18 +64,26 @@
         const derivedOutputs = derived && Array.isArray(derived.outputs) ? derived.outputs : null;
         const matches = !!derivedOutputs && derivedOutputs.length === published.size
             && derivedOutputs.every(output => published.has(output.hash));
-        const outputs = matches
-            ? derivedOutputs
-            : content.outputs.map(output => ({
+        const localOutputs = new Map((matches ? derivedOutputs : []).map(output => [output.hash, output]));
+        const inputHolders = new Map(content.inputs.parcels.map(parcel => [String(parcel.parcelId), parcel.holders]));
+        // Geometry and local piece ids are reconstructed, not the published terms. In particular,
+        // a fresh area measurement must not silently change the agreement's committed content.
+        const outputs = content.outputs.map(output => {
+            const local = localOutputs.get(output.hash);
+            const unchangedParcel = output.role === 'parcel' && !output.producedBy && output.fromParcelIds.length === 1;
+            return {
                 hash: output.hash,
-                pieceId: output.hash,
+                pieceId: local?.pieceId || output.hash,
                 areaM2: output.areaM2,
                 fromParcelIds: output.fromParcelIds,
                 producedBy: output.producedBy ? localIdOf(output.producedBy) || null : null,
                 role: output.role,
-                holders: [],
-                geometry: null
-            }));
+                // No allocation on unchanged land means the published input holding carries over;
+                // an unrelated receiving browser's owner cache does not define that agreement.
+                holders: unchangedParcel ? inputHolders.get(String(output.fromParcelIds[0])) || [] : local?.holders || [],
+                geometry: local?.geometry || null
+            };
+        });
         return {
             schema: content.schema,
             id,

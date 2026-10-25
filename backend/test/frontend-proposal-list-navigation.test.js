@@ -255,6 +255,20 @@ describe('proposal panel fit padding', () => {
         expect(pad(box(0, 505, 390, 786), phone)).toEqual({ paddingTopLeft: [40, 40], paddingBottomRight: [40, 379] });
     });
 
+    it('uses the visible agreement panel when fitting its comparison on desktop and phone', () => {
+        for (const [viewport, rect, expected] of [
+            [desktop, box(870, 58, 1270, 802), [450, 40]],
+            [phone, box(0, 362, 390, 784), [40, 522]]
+        ]) {
+            const panel = { classList: { contains: () => true }, getBoundingClientRect: () => rect };
+            const { context } = loadListUi({
+                window: { innerWidth: viewport.width, innerHeight: viewport.height },
+                document: { addEventListener() {}, querySelector: () => null, getElementById: id => id === 'agreement-panel' ? panel : null }
+            });
+            expect(context.getProposalPanelFitPadding(40)).toEqual({ paddingTopLeft: [40, 40], paddingBottomRight: expected });
+        }
+    });
+
     it('pads nothing for a sheet covering the whole map: the framing is for when it closes', () => {
         expect(pad(box(0, 0, 390, 784), phone)).toEqual({ paddingTopLeft: [40, 40], paddingBottomRight: [40, 40] });
     });

@@ -988,7 +988,7 @@ function proposalPanelFitPadding(rect, viewport, margin = 40) {
 
 // fitBounds padding that keeps content in the VISIBLE map, clear of whichever proposal panel is
 // currently covering it: the share-plan panel, the list sheet while browsing, or the details panel
-// once a proposal is selected (proposalPanelFitPadding decides which side). Returns a plain
+// once a proposal or agreement is selected (proposalPanelFitPadding decides which side). Returns a plain
 // {paddingTopLeft, paddingBottomRight} for fitBounds — a symmetric margin when no panel is open.
 // Shared by fit-all-on-open, the preview zoom, and proposal selection.
 function getProposalPanelFitPadding(margin = 40) {
@@ -1003,8 +1003,9 @@ function getProposalPanelFitPadding(margin = 40) {
         } else if (listModal && window.MapShell?.isOpen?.('proposals-sheet') && listPanel) {
             rect = listPanel.getBoundingClientRect();
         } else {
-            const details = document.getElementById('proposal-details-panel');
-            if (details && details.classList.contains('visible')) rect = details.getBoundingClientRect();
+            const details = ['agreement-panel', 'proposal-details-panel'].map(id => document.getElementById(id))
+                .find(panel => panel && panel.classList.contains('visible'));
+            if (details) rect = details.getBoundingClientRect();
         }
     } catch (_) { rect = null; }
     return proposalPanelFitPadding(rect, { width: window.innerWidth, height: window.innerHeight }, margin);

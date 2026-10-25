@@ -7032,7 +7032,7 @@
             "who": "Quién decide",
             "owners": "Solicitar las decisiones de los propietarios",
             "community": "Consultar a la comunidad",
-            "binding": "Vinculante: cuando se cumple la regla, el suelo y el dinero se transfieren en la ejecución",
+            "binding": "Vinculante: las aprobaciones de los propietarios pueden autorizar la liquidación en la cadena",
             "bindingShort": "Vinculante",
             "nonBinding": "No vinculante",
             "electorate": {
@@ -7168,6 +7168,7 @@
             "heading": "En la cadena",
             "cluster": "Solana {{cluster}}",
             "notMinted": "Sin acuñar. Acuñarlo registra este acuerdo en Solana en la dirección de su promotor; después su lente atestigua la decisión y, al ejecutarlo, se libera el depósito.",
+            "bindingExecutionNote": "La ejecución en la cadena registra la liquidación y paga el depósito configurado. La inscripción legal y la construcción son trámites distintos.",
             "nonBinding": "Una votación no se acuña; sus decisiones se cuentan fuera de la cadena.",
             "reading": "Leyendo la cadena…",
             "readFailed": "No se pudo leer la cuenta en la cadena: {{reason}}",

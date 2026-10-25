@@ -163,10 +163,10 @@
                 t('proposalApproval.ownersCount', '{{accepted}} of {{total}} accepted', { accepted: progress.acceptedOwners, total: progress.totalOwners }),
                 progress.acceptedOwners, progress.totalOwners, t('proposalApproval.rules.heard', 'Heard, not counted')));
         }
-        if (!counts('area', 'owners')) {
-            html.push(progress.totalAreaM2 == null
-                ? `<p class="approval-card__note">${esc(t('proposalApproval.areaUnknown', 'Parcel areas are unresolved.'))}</p>`
-                : meter('area', t('proposalApproval.meterArea', 'Area'),
+        // Area may be absent from a rights registry even when the agreement's land is measured.
+        // It is a missing requirement only for a rule that counts area (handled above).
+        if (!counts('area', 'owners') && progress.totalAreaM2 != null) {
+            html.push(meter('area', t('proposalApproval.meterArea', 'Area'),
                     t('proposalApproval.amountOf', '{{amount}} of {{total}}', { amount: area(progress.acceptedAreaM2), total: area(progress.totalAreaM2) }),
                     progress.acceptedAreaM2, progress.totalAreaM2, unanimous
                         ? t('proposalApproval.areaNeededAll', 'Needs every parcel: {{area}}', { area: area(progress.totalAreaM2) }) : null));

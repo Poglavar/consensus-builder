@@ -7046,7 +7046,7 @@
             "who": "Tko odlučuje",
             "owners": "Zatraži odluke vlasnika",
             "community": "Pitaj zajednicu",
-            "binding": "Obvezujuće: kad je pravilo ispunjeno, zemljište i novac prenose se pri izvršenju",
+            "binding": "Obvezujuće: odobrenja vlasnika mogu ovlastiti namirenje na lancu",
             "bindingShort": "Obvezujuće",
             "nonBinding": "Neobvezujuće",
             "electorate": {
@@ -7186,6 +7186,7 @@
             "heading": "Na lancu",
             "cluster": "Solana {{cluster}}",
             "notMinted": "Nije iskovan. Kovanjem se ovaj sporazum upisuje na Solanu na adresi njegova investitora; njegova leća zatim potvrđuje odluku, a izvršenjem se oslobađa polog.",
+            "bindingExecutionNote": "Izvršenje na lancu bilježi namirenje i isplaćuje ugovoreni polog. Pravni upis i gradnja zasebni su postupci.",
             "nonBinding": "Glasanje se ne kuje; njegove se odluke broje izvan lanca.",
             "reading": "Čitanje lanca…",
             "readFailed": "Račun na lancu nije bilo moguće pročitati: {{reason}}",

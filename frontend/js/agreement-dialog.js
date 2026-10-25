@@ -467,7 +467,7 @@
             + radio('owners', t('agreement.rule.owners', 'Seek owners’ decisions'))
             + radio('community', t('agreement.rule.community', 'Ask the community'))
             + '</fieldset>'
-            + `<label class="proposal-editor-check" data-agreement-binding-control${owners ? '' : ' hidden'}><input type="checkbox" data-agreement-binding${owners && binding ? ' checked' : ''}${owners ? '' : ' disabled'}> ${esc(t('agreement.rule.binding', 'Binding: when the rule is met, land and money move at execution'))}</label>`
+            + `<label class="proposal-editor-check" data-agreement-binding-control${owners ? '' : ' hidden'}><input type="checkbox" data-agreement-binding${owners && binding ? ' checked' : ''}${owners ? '' : ' disabled'}> ${esc(t('agreement.rule.binding', 'Binding: owner approvals can authorize on-chain settlement'))}</label>`
             + `<div class="agreement-rule-form" data-agreement-rule-form${owners ? '' : ' hidden'}></div>`;
     }
 
