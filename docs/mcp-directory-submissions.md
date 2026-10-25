@@ -115,13 +115,15 @@ The package in [`plugins/urban-game-theory`](../plugins/urban-game-theory) is a 
 
 The GitHub file inventory was read back after publication. JSON, relative skill links, the square PNG and the identity scan passed. Marketplace installation and acceptance are separate from publishing this source; no Cursor IDE installation is claimed.
 
-## Claude Connectors Directory — prepared, not submitted
+## Claude Connectors Directory — submitted, user confirmed
 
-The user's existing signed-in account successfully connected to `https://urbangametheory.xyz/mcp` without authentication and discovered **30 tools, 12 resources and five prompts**. The ten-step form is prepared through **Review and submit**, with the listing, categories, three use cases, business contact, authentication, data handling and Inspector evidence entered. The draft is saved in the existing browser tab, not a verified server-side submission. Keep the tab open until submission. Reusable public values are in [`directory-submissions/claude/listing.json`](../directory-submissions/claude/listing.json); account/contact details remain outside this repository.
+On **2026-10-25**, the user confirmed that they submitted the prepared application. This records the user's confirmation; an agent-observed receipt or public approval has not been verified. Do not resubmit.
+
+Before submission, the user's existing signed-in account connected to `https://urbangametheory.xyz/mcp` without authentication and discovered **30 tools, 12 resources and five prompts**. The ten-step form was prepared with the listing, categories, three use cases, business contact, authentication, data handling and Inspector evidence entered. Reusable public values are in [`directory-submissions/claude/listing.json`](../directory-submissions/claude/listing.json); account/contact details remain outside this repository.
 
 The published [MCP privacy policy](https://urbangametheory.xyz/mcp-privacy.html) has been added to the form and the listing step now passes validation. The notice describes actual tool inputs, temporary bearer references, public publication, the private feedback inbox and Telegram notifications, infrastructure processing, retention limits and privacy requests. It does not invent a fixed retention period for operational logs or feedback. It is available in English, Spanish, Croatian and Serbian.
 
-At the user's request, the existing [submission tab](https://claude.ai/directory/manage/new/connector) is left open at **step 9, Compliance** for the maintainer's seven policy acknowledgements. These remain unchecked. The draft is saved in that tab; use the existing prepared tab rather than assuming the URL alone transfers its state to another browser or a fresh tab. Submission remains pending the maintainer's acknowledgements and final review.
+The agent handed the existing [submission form](https://claude.ai/directory/manage/new/connector) to the maintainer at **step 9, Compliance** for seven policy acknowledgements and final review. The user's subsequent confirmation supersedes that earlier pending state.
 
 The portal flags `annotations.title` as missing on every hosted tool. A local server change now supplies matching top-level and annotation titles, including names generated for companion tools. Targeted headless unit tests (`test/mcp-server.test.js` and `test/mcp-http.test.js`) passed: **2 files / 18 tests**. This server metadata change has **not been deployed**, so the saved live scan still contains its original suggestions.
 
@@ -152,7 +154,18 @@ The official [connector documentation](https://docs.x.ai/grok/connectors) allows
 - Targeted headless MCP Inspector checks exercised all **30 hosted tools** against the public endpoint. **27 read/draft checks succeeded** and the **three external-write tools refused `confirm:false`**. No public content or feedback report was created.
 - The first verified-fact check used an active agreement and correctly returned that no terminal fact existed. Retesting with an executed agreement returned the x402 challenge successfully, without paying it. This makes 31 Inspector invocations, not 31 distinct tools.
 - No LLM API calls, payments, paid listings or full test suites ran. There was no application push or application release; only the requested privacy-page files were published to the website. Docker and plugin-source publication used GitHub API operations containing only the prepared public files.
-- OpenAI and all Chinese directory submissions are explicitly deferred at the user's request.
+- OpenAI remains explicitly deferred. The user resumed free Chinese directory submissions later on this date; see the checks below.
+
+## Chinese directories — preparation and account requirements
+
+The user authorized continuing free Chinese submissions on **2026-10-25**. No Chinese application has been submitted yet. Reusable Simplified Chinese copy is in [`directory-submissions/chinese/listing.json`](../directory-submissions/chinese/listing.json); this is preparation, not a receipt or a claim of Chinese cadastral coverage.
+
+- **ModelScope / 魔搭:** the live [MCP Plaza](https://modelscope.cn/mcp) exposes **Create MCP**, which opens a sign-in dialog in the intended Chrome profile. The embedded login panel was blank during inspection. Publication fields and any account-verification requirements remain unverified until sign-in; do not invent a phone-number or real-name requirement. The previously known direct create URL redirected to the homepage. Use the visible Create MCP control after signing in.
+- **Baidu Qianfan / 百度千帆:** the official [MCP server centre](https://console.bce.baidu.com/ai_apaas/mcpServerCenter) redirects to Baidu Cloud sign-in and a Qianfan tools-centre destination. The live form offers SMS/account and QR-code sign-in. No phone number, OTP or agreement acceptance was entered. Existing remote-endpoint publication eligibility and any subsequent verification remain unverified behind login.
+- **Tencent:** its [official MCP documentation](https://cloud.tencent.com/document/product/1212/123193), updated 2026-08-13, explicitly says third-party MCP listing and update services are currently unavailable. No application or account was created.
+- **Higress:** its [marketplace contribution route](https://github.com/higress-group/higress/issues/2113) requests gateway configuration and documentation under `plugins/wasm-go/mcp-servers`, rather than a simple endpoint-listing form. The [current upstream agent-assisted contribution policy](https://github.com/higress-group/higress/blob/main/docs/developers/agent-assisted-contributions.md) requires maintainer approval of Proposal and Design issues before substantive implementation. No configuration, fork, issue or PR has been submitted. Do not describe this route as an already submitted listing.
+
+Only existing public endpoint and listing material may be submitted. Do not purchase hosting, activate paid plans, duplicate the backend, claim unsupported geographic coverage, or treat account creation and legal attestations as completed. Account sign-in is the next dependency for ModelScope and Baidu.
 
 ## Excluded
 

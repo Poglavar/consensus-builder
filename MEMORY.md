@@ -921,7 +921,7 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-24: The user approved named plans as immutable selections of published designs plus a map view, saved from Designs → Share; agreements alone retain allocation and decision terms. Use “Name this plan” for the action.
 
 - 2026-10-24: MCP directory promotion is free only; publish the existing hosted identity `xyz.urbangametheory/urban-game-theory` and never purchase listings, boosts or subscriptions.
-- 2026-10-25: Defer OpenAI and Chinese MCP directories; continue free submissions to Claude, Cursor and Docker first.
+- 2026-10-25: OpenAI MCP submission remains deferred; after confirming Claude submitted, the user resumed free Chinese directory submissions.
 
 - 2026-10-24: Design geometry must never travel in URLs. Private previews reference individual stored objects, and named plans contain design CIDs plus a saved view; combined design geometry must not consume a plan-level size budget.
 - 2026-10-24: Affordabot tries another configured city when its priority city cannot supply eligible parcels/candidates; retain source failures and do not report a clean no-picks result after an exhausted search with errors.
