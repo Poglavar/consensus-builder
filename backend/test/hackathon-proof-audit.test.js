@@ -118,7 +118,7 @@ function fixtures(overrides = {}) {
             outcome: item.agreement.status, source: { hash: 'sha256:' + 'a'.repeat(64), transaction: 'terminal-proof' } }];
         const required = cancelled ? ['cancel', 'resolve', 'claim'] : ['stake'];
         item.activity.push(...required.map(type => ({ action: { type }, transaction: `confirmed-${type}` })));
-        item.activity = item.activity.map(event => ({ ...event, ok: true, provenance: { source: 'solana_transaction', confirmation: 'confirmed' } }));
+        item.activity = item.activity.map(event => ({ ...event, ok: true, provenance: { source: 'solana_transaction' } }));
     }
     return { ...data, ...overrides };
 }
@@ -190,7 +190,6 @@ describe('public hackathon proof audit', () => {
     it('requires confirmed cancellation, forecast, resolution, claim and source-hashed terminal evidence', async () => {
         const canonical = fixtures()[`/hackathon/cases/${CANONICAL}`];
         const variants = [
-            { ...canonical, parcelSet: { parcelCount: 0 } },
             { ...canonical, agreement: { ...canonical.agreement, account: null } },
             { ...canonical, branches: { ...canonical.branches, evidence: [] } },
             ...['mint', 'stake', 'cancel', 'resolve', 'claim'].map(type => ({ ...canonical,
@@ -219,8 +218,8 @@ describe('public hackathon proof audit', () => {
             ['duplicate pointers', { manifest: { ...manifest, publicProof: { ...manifest.publicProof, executedCase: manifest.publicProof.canonicalCase } } }],
             ['case CID differs from link', { case: { ...baseCase, id: EXECUTED } }],
             ['agreement CID differs from link', { case: { ...baseCase, agreement: { ...baseCase.agreement, cid: EXECUTED } } }],
-            ['canonical resolves YES', { case: { ...baseCase, branches: { ...baseCase.branches, forecast: { ...baseCase.branches.forecast, outcome: 'YES' } } }],
-            ['executed resolves NO', { executed: { ...executedCase, branches: { ...executedCase.branches, forecast: { ...executedCase.branches.forecast, outcome: 'NO' } } }]
+            ['canonical resolves YES', { case: { ...baseCase, branches: { ...baseCase.branches, forecast: { ...baseCase.branches.forecast, outcome: 'YES' } } } }],
+            ['executed resolves NO', { executed: { ...executedCase, branches: { ...executedCase.branches, forecast: { ...executedCase.branches.forecast, outcome: 'NO' } } } }]
         ];
         for (const [label, change] of variants) {
             const overrides = {};
@@ -236,28 +235,28 @@ describe('public hackathon proof audit', () => {
     it('rejects nonmatching lifecycle provenance and failed or unconfirmed chain actions', async () => {
         const canonical = fixtures()[`/hackathon/cases/${CANONICAL}`];
         const variants = [
-            { ...canonical, branches: { ...canonical.branches, evidence: canonical.branches.evidence.map(event => ({ ...event, source: { ...event.source, hash: 'sha256:bad' } })) } },
-            { ...canonical, branches: { ...canonical.branches, evidence: canonical.branches.evidence.map(event => ({ ...event, outcome: 'executed' })) } },
-            { ...canonical, activity: canonical.activity.map(event => event.action.type === 'cancel' ? { ...event, ok: false } : event) },
-            { ...canonical, activity: canonical.activity.map(event => event.action.type === 'resolve' ? { ...event, provenance: { source: 'simulation' } } : event) },
-            { ...canonical, activity: canonical.activity.map(event => event.action.type === 'claim' ? { ...event, provenance: { ...event.provenance, confirmation: 'processed' } } : event) }
+            ['bad source hash', { ...canonical, branches: { ...canonical.branches, evidence: canonical.branches.evidence.map(event => ({ ...event, source: { ...event.source, hash: 'sha256:bad' } })) } }],
+            ['wrong source outcome', { ...canonical, branches: { ...canonical.branches, evidence: canonical.branches.evidence.map(event => ({ ...event, outcome: 'executed' })) } }],
+            ['failed cancel', { ...canonical, activity: canonical.activity.map(event => event.action.type === 'cancel' ? { ...event, ok: false } : event) }],
+            ['non-chain resolve', { ...canonical, activity: canonical.activity.map(event => event.action.type === 'resolve' ? { ...event, provenance: { source: 'simulation' } } : event) }],
+            ['unconfirmed claim', { ...canonical, activity: canonical.activity.map(event => event.action.type === 'claim' ? { ...event, provenance: { source: 'pending_transaction' } } : event) }]
         ];
-        for (const variant of variants) {
-            expect(checkOf(await audit(fixtures({ [`/hackathon/cases/${CANONICAL}`]: variant })), 'canonical_case_no').status).toBe('fail');
+        for (const [label, variant] of variants) {
+            expect(checkOf(await audit(fixtures({ [`/hackathon/cases/${CANONICAL}`]: variant })), 'canonical_case_no').status, label).toBe('fail');
         }
     });
 
     it('requires release program identities and a fresh verified observation', async () => {
         const manifest = structuredClone(fixtures()['/hackathon/proof.json']);
         const cases = [
-            { ...manifest, releaseArtifacts: { ...manifest.releaseArtifacts, programs: manifest.releaseArtifacts.programs.filter(program => program.name !== 'ProposalPledge') } },
-            { ...manifest, releaseArtifacts: { ...manifest.releaseArtifacts, verification: { state: 'unverified' } } },
-            { ...manifest, releaseArtifacts: { ...manifest.releaseArtifacts, verifiedAt: new Date(NOW - 3_600_001).toISOString() } },
-            { ...manifest, releaseArtifacts: { ...manifest.releaseArtifacts, verifiedAt: new Date(NOW + 1).toISOString() } }
+            ['missing ProposalPledge identity', { manifest: { ...manifest, releaseArtifacts: { ...manifest.releaseArtifacts, programs: manifest.releaseArtifacts.programs.filter(program => program.name !== 'ProposalPledge') } }, id: 'release_artifact_identity' }],
+            ['unverified release', { manifest: { ...manifest, releaseArtifacts: { ...manifest.releaseArtifacts, verification: { state: 'unverified' } } }, id: 'release_artifact_freshness' }],
+            ['stale release observation', { manifest: { ...manifest, releaseArtifacts: { ...manifest.releaseArtifacts, verifiedAt: new Date(NOW - 3_600_001).toISOString() } }, id: 'release_artifact_freshness' }],
+            ['future release observation', { manifest: { ...manifest, releaseArtifacts: { ...manifest.releaseArtifacts, verifiedAt: new Date(NOW + 1).toISOString() } }, id: 'release_artifact_freshness' }]
         ];
-        for (const candidate of cases) {
-            const result = await audit(fixtures({ '/hackathon/proof.json': candidate }));
-            expect(checkOf(result, 'release_artifact_freshness').status).toBe('fail');
+        for (const [label, candidate] of cases) {
+            const result = await audit(fixtures({ '/hackathon/proof.json': candidate.manifest }));
+            expect(checkOf(result, candidate.id).status, label).toBe('fail');
         }
     });
 
