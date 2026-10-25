@@ -1,11 +1,11 @@
 // The 3D model view's click stack (click-stack.md, "3D model view"): what one click in the scene
 // stands on, as section cards floating over the scene down the right side, top to bottom Built →
 // Design → Permitted → Parcel; no panel or header around them. It closes the way the 2D stack does:
-// Escape, a click on nothing, the isolation banner's ×. The 2D stack's look (its
+// Escape or a click on nothing. The 2D stack's look (its
 // frame and .click-stack__* classes) with the 3D view's own contents: the
 // Design section holds the whole proposal's figures across all its parcels, the Parcel section the
 // one parcel's. Expanding a section collapses the others. The scene (three-mode.js) supplies an
-// adapter that does what a section means in 3D (isolate the proposal, outline the parcel, inspect a
+// adapter that does what a section means in 3D (select the design, outline the parcel, inspect a
 // building) and fills or hosts its body. Pure rules first (node tests), the panel after.
 (function (root, factory) {
     const api = factory(root);

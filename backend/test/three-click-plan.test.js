@@ -31,9 +31,9 @@ describe('planThreeClick', () => {
         expect(planThreeClick({ ...idle, picked: { builtFeature: feature }, groundParcelId: null }).parcel).toBeNull();
     });
 
-    it('selects and isolates a proposal, viewing the parcel under the click; a second click retains it', () => {
+    it('selects a proposal without isolation, viewing the parcel under the click; a second click retains it', () => {
         const first = planThreeClick({ ...idle, picked: { proposalId: 'p-1', parcelId: 'HR-3' }, groundParcelId: 'HR-3', proposalKnown: true });
-        expect(first).toMatchObject({ clearSelection: true, proposal: { id: 'p-1', action: 'isolate' }, parcel: { id: 'HR-3', action: 'view' } });
+        expect(first).toMatchObject({ clearSelection: true, proposal: { id: 'p-1', action: 'select' }, parcel: { id: 'HR-3', action: 'view' } });
         const again = planThreeClick({ ...idle, isolatedProposalId: 'p-1', viewedParcelId: 'HR-3', picked: { proposalId: 'p-1', parcelId: 'HR-3' }, groundParcelId: 'HR-3', proposalKnown: true });
         expect(again).toMatchObject({ clearSelection: false, proposal: { id: 'p-1', action: 'retain' }, parcel: { id: 'HR-3', action: 'view' } });
         // Through a design the ray can reach the neighbour's slab: the design's own slice is the parcel in view.

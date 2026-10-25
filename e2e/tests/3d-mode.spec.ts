@@ -145,6 +145,52 @@ async function rayVerifiedPickPoint(page: Page, target: 'parcel' | 'proposal', i
 }
 
 test.describe('3D rendering and controls @features', () => {
+  for (const width of [1280, 390]) {
+    test(`first design pick preserves camera and outlines its volume at ${width}px`, async ({ mockApi: page }) => {
+      test.setTimeout(60000);
+      await page.setViewportSize({ width, height: 844 });
+      await mockBuildingScene(page);
+      await openCity(page);
+      const id = await createBuilding(page);
+      await enter3D(page);
+      await closeSheets(page);
+      await page.keyboard.press('Escape');
+      const camera = () => page.evaluate(() => {
+        const { camera, controls } = (window as any).getThreeModeInternals();
+        return { position: camera.position.toArray().map((n: number) => +n.toFixed(6)), target: controls.target.toArray().map((n: number) => +n.toFixed(6)), zoom: camera.zoom };
+      });
+      const before = await camera();
+      const point = await rayVerifiedPickPoint(page, 'proposal', id);
+      await page.mouse.click(point.x, point.y);
+      const design = page.locator('#three-click-stack .click-stack__section[data-kind="designs"]');
+      await expect(design).toHaveClass(/is-expanded/);
+      const focus = () => page.evaluate(() => {
+        const group = (window as any).getThreeModeInternals().scene.getObjectByName('click-stack-focus');
+        if (!group) return null;
+        const geometry = group.children[1].geometry;
+        const start = geometry.attributes.instanceStart;
+        const end = geometry.attributes.instanceEnd;
+        const z = [...Array(start.count)].flatMap((_, i) => [start.getZ(i), end.getZ(i)]);
+        return { ...group.userData, height: Math.max(...z) - Math.min(...z),
+          color: group.children[1].material.color.getHex(), width: group.children[1].material.linewidth };
+      });
+      await expect.poll(focus).toMatchObject({ kind: 'designs', id, representation: 'volume', color: 0xffdd00, width: 4 });
+      expect((await focus())!.height).toBeGreaterThan(3);
+      expect(await camera()).toEqual(before);
+      await expect(page.locator('.three-mode-isolation-banner')).toBeHidden();
+      // Collapse, reopen and refresh all retain the same selection and view.
+      await design.locator('.click-stack__row').click();
+      await expect(design).toHaveClass(/is-selected/);
+      await expect(design.locator('.click-stack__body')).toHaveCount(0);
+      expect(await camera()).toEqual(before);
+      await expect.poll(focus).toMatchObject({ representation: 'volume', id });
+      await design.locator('.click-stack__row').click();
+      await page.evaluate(() => (window as any).ThreeClickStack.refresh());
+      expect(await camera()).toEqual(before);
+      await page.screenshot({ path: `/private/tmp/selection-volume-${width}.png` });
+    });
+  }
+
   test('repeated scene picks cycle into Design without moving the camera, including after refresh', async ({ mockApi: page }) => {
     await mockBuildingScene(page);
     await openCity(page);
@@ -162,7 +208,7 @@ test.describe('3D rendering and controls @features', () => {
     const point = await rayVerifiedPickPoint(page, 'parcel', 'HR-335754-1234');
     const camera = () => page.evaluate(() => {
       const { camera, controls } = (window as any).getThreeModeInternals();
-      return { position: camera.position.toArray(), target: controls.target.toArray(), zoom: camera.zoom };
+      return { position: camera.position.toArray().map((n: number) => +n.toFixed(6)), target: controls.target.toArray().map((n: number) => +n.toFixed(6)), zoom: camera.zoom };
     });
     const before = await camera();
     const expanded = () => page.evaluate(() => (window as any).ThreeClickStack.expanded());
@@ -170,6 +216,7 @@ test.describe('3D rendering and controls @features', () => {
     await expect.poll(expanded).toBe('parcels');
     await page.mouse.click(point.x, point.y);
     await expect.poll(expanded).toBe('built');
+    await expect.poll(() => page.evaluate(() => (window as any).getThreeModeInternals().scene.getObjectByName('click-stack-focus')?.userData.representation)).toBe('volume');
     await page.mouse.click(point.x, point.y);
     await expect.poll(expanded).toBe('designs');
     expect(await camera()).toEqual(before);
@@ -225,7 +272,7 @@ test.describe('3D rendering and controls @features', () => {
     });
   }
 
-  test('mode buttons stay lower left and parcel clicks preserve the camera while dimming context', async ({ mockApi: page }) => {
+  test('mode buttons stay lower left and parcel clicks preserve camera and materials with a yellow boundary', async ({ mockApi: page }) => {
     await mockBuildingScene(page); await openCity(page);
     // The strip stays lower-left; 3D releases the space formerly reserved for bottom navigation.
     // (The original-cadastre toggle moved into the 2D Layers sheet in fbe3758d.)
@@ -248,7 +295,7 @@ test.describe('3D rendering and controls @features', () => {
     });
     const camera = () => page.evaluate(() => {
       const { camera, controls } = (window as any).getThreeModeInternals();
-      return { position: camera.position.toArray(), target: controls.target.toArray(), zoom: camera.zoom };
+      return { position: camera.position.toArray().map((n: number) => +n.toFixed(6)), target: controls.target.toArray().map((n: number) => +n.toFixed(6)), zoom: camera.zoom };
     });
     const point = await rayVerifiedPickPoint(page, 'parcel', 'HR-335754-1234');
     const before = await camera();
@@ -297,7 +344,12 @@ test.describe('3D rendering and controls @features', () => {
         if (o.isMesh && o.userData?.parcelId === 'HR-335754-1234' && o.material.color?.getHex() === 0x29c8ff) selected = true;
       });
       return selected;
-    })).toBe(true);
+    })).toBe(false);
+    const selection = await page.evaluate(() => {
+      const group = (window as any).getThreeModeInternals().scene.getObjectByName('click-stack-focus');
+      return { ...group.userData, strokes: group.children.map((o: any) => ({ color: o.material.color.getHex(), width: o.material.linewidth })) };
+    });
+    expect(selection).toMatchObject({ kind: 'parcels', representation: 'ground', strokes: [{ color: 0x292000, width: 7 }, { color: 0xffdd00, width: 4 }] });
     const visible = await page.evaluate(() => {
       let count = 0;
       (window as any).getThreeModeInternals().scene.traverse((o: any) => { if (o.userData?.isNearbyBuilding3D && o.visible && o.parent.visible) count++; });

@@ -706,7 +706,7 @@
     function applyParcelEmphasis() {
         const emphasis = window.ThreeParcelEmphasis;
         if (!emphasis || !scene) return;
-        parcelEmphasisOriginals = emphasis.apply(scene, isolatedParcelId || viewedParcelId, parcelEmphasisOriginals,
+        parcelEmphasisOriginals = emphasis.apply(scene, isolatedParcelId, parcelEmphasisOriginals,
             { dimOthers: isolatedParcelId !== null });
     }
 
@@ -1311,8 +1311,13 @@
 
     let stackFocusGroup = null;
     function pulseStackFocus(now) {
-        const opacity = 0.55 + 0.45 * (1 + Math.cos(now * Math.PI * 2 / 1400)) / 2;
-        stackFocusGroup?.traverse(object => { if (object.material) object.material.opacity = opacity; });
+        const strength = (1 + Math.cos(now * Math.PI * 2 / 1400)) / 2;
+        stackFocusGroup?.traverse(object => {
+            if (object.material?.isLineMaterial && object.userData.selectionStroke === 'yellow') {
+                object.material.opacity = 0.75 + 0.25 * strength;
+                object.material.linewidth = 3 + strength;
+            }
+        });
     }
     function clearStackFocus() {
         const index = frameHooks.indexOf(pulseStackFocus);
@@ -1323,28 +1328,78 @@
         stackFocusGroup = null;
         invalidateThreeView();
     }
+    // Use the drawn volume, including its roof and vertical edges. Parcel provenance is not
+    // the building's shape. Ground-only designs fall back to their authored boundary instead.
+    function stackVolumeSegments(kind, instance) {
+        if (!['built', 'designs', 'permitted'].includes(kind)) return [];
+        const segments = [];
+        scene.updateMatrixWorld(true);
+        scene.traverseVisible(object => {
+            if (!object.isMesh || !object.geometry || object.isInstancedMesh) return;
+            let matches = false;
+            for (let owner = object; owner && owner !== scene; owner = owner.parent) {
+                const data = owner.userData || {};
+                if (kind === 'designs' && String(data.proposalId || '') === String(instance.id)) matches = true;
+                if (kind === 'permitted' && data.planningRepresentationId === instance.id) matches = true;
+                if (kind === 'built' && data.planningBuiltFeature
+                    && clickedBuildingId(data.planningBuiltFeature) === String(instance.id)) matches = true;
+            }
+            if (!matches) return;
+            object.geometry.computeBoundingBox();
+            const box = object.geometry.boundingBox;
+            // Ignore the interaction slab and flat ground surfaces, even for a building design.
+            if (!box || box.max.z - box.min.z < 0.5) return;
+            const edges = new THREE.EdgesGeometry(object.geometry, 25);
+            const positions = edges.attributes.position;
+            const point = new THREE.Vector3();
+            for (let i = 0; i < positions.count; i++) {
+                point.fromBufferAttribute(positions, i).applyMatrix4(object.matrixWorld);
+                segments.push(point.x, point.y, point.z);
+            }
+            edges.dispose();
+        });
+        return segments;
+    }
     function highlightStackObject(kind, instance) {
         clearStackFocus();
-        const features = window.ClickStackHits.featuresFor(kind, instance);
-        if (!scene || !features.length) return;
+        if (!scene || !instance) return;
+        const segments = stackVolumeSegments(kind, instance);
+        const representation = segments.length ? 'volume' : 'ground';
+        if (!segments.length) {
+            const temporaryMaterial = new THREE.LineBasicMaterial();
+            for (const feature of window.ClickStackHits.featuresFor(kind, instance)) {
+                const lines = ['Polygon', 'MultiPolygon'].includes(feature.geometry.type)
+                    ? polygonFeatureToBorderLines(feature, temporaryMaterial, 0.6)
+                    : [lineFeatureToLine(feature, temporaryMaterial, 0.6)].filter(Boolean);
+                for (const line of lines) {
+                    const positions = line.geometry.attributes.position;
+                    for (let i = 1; i < positions.count; i++) {
+                        for (const index of [i - 1, i]) segments.push(positions.getX(index), positions.getY(index), positions.getZ(index));
+                    }
+                    line.geometry.dispose();
+                }
+            }
+            temporaryMaterial.dispose();
+        }
+        if (!segments.length) return;
         stackFocusGroup = new THREE.Group();
         stackFocusGroup.name = 'click-stack-focus';
-        stackFocusGroup.userData = { kind, id: instance.id };
-        const material = new THREE.LineBasicMaterial({ color: 0x0284c7, linewidth: 3,
-            transparent: true, opacity: 1, depthTest: false, depthWrite: false });
-        for (const feature of features) {
-            const objects = ['Polygon', 'MultiPolygon'].includes(feature.geometry.type)
-                ? polygonFeatureToBorderLines(feature, material, 0.6) : [lineFeatureToLine(feature, material, 0.6)].filter(Boolean);
-            for (const object of objects) {
-                object.traverse(child => {
-                    if (child.material) markOwnedMaterial(child, material);
-                    child.renderOrder = 9999;
-                    child.raycast = () => {};
-                });
-                stackFocusGroup.add(object);
-            }
+        stackFocusGroup.userData = { kind, id: instance.id, representation };
+        // Screen-space widths work on phones and at any zoom, unlike WebGL linewidth on
+        // LineBasicMaterial. The dark halo keeps yellow legible over bright roofs and paving.
+        for (const [stroke, color, linewidth] of [['halo', 0x292000, 7], ['yellow', 0xffdd00, 4]]) {
+            const geometry = new THREE.LineSegmentsGeometry();
+            geometry.setPositions(segments);
+            const material = new THREE.LineMaterial({ color, linewidth, transparent: true,
+                opacity: 1, depthTest: false, depthWrite: false, toneMapped: false });
+            const outline = new THREE.LineSegments2(geometry, material);
+            markOwnedGeometry(outline, geometry);
+            markOwnedMaterial(outline, material);
+            outline.userData.selectionStroke = stroke;
+            outline.renderOrder = stroke === 'halo' ? 9998 : 9999;
+            outline.raycast = () => {};
+            stackFocusGroup.add(outline);
         }
-        if (!stackFocusGroup.children.length) { material.dispose(); stackFocusGroup = null; return; }
         scene.add(stackFocusGroup);
         if (!window.__reducedMotion) frameHooks.push(pulseStackFocus);
         invalidateThreeView();
@@ -1352,7 +1407,7 @@
 
     // What each section means in the scene, and what fills its body.
     const clickStackAdapter = {
-        activate(kind, instance, body, { fromCycle = false } = {}) {
+        activate(kind, instance, body) {
             if (!instance || !body) return;
             if (kind !== 'designs') withStackDriving(() => {
                 clearIsolation();
@@ -1361,13 +1416,8 @@
             });
             if (kind === 'designs') {
                 body.replaceChildren();
-                if (instance.preserveView || fromCycle) {
-                    clearIsolation();
-                    withStackDriving(() => window.selectAndHighlightProposal?.(instance.id, null, false, false, true));
-                } else if (isolatedProposalId !== instance.id) {
-                    withStackDriving(() => window.selectAndHighlightProposal?.(instance.id, null, false, false, true));
-                    isolateProposal(instance.id);
-                }
+                clearIsolation();
+                withStackDriving(() => window.selectAndHighlightProposal?.(instance.id, null, false, false, true));
                 const proposal = window.proposalStorage?.getProposal?.(instance.id);
                 if (proposal && updateProposalInfoPanel(proposal, getProposalParcelIdSet(proposal))) body.appendChild(parcelInfoPanelEl);
                 // Editing actions use the same Design section in the map view, never a second
@@ -8798,7 +8848,7 @@
         // Walk-pick owns clicks while it's active.
         if (walkPickActive) return;
         // Ignore the click that ends a camera drag (orbit/tilt) — only a near-stationary
-        // press-and-release should isolate.
+        // press-and-release should select.
         if (clickDownXY) {
             const moved = Math.hypot(evt.clientX - clickDownXY.x, evt.clientY - clickDownXY.y);
             clickDownXY = null;
@@ -8830,7 +8880,6 @@
             const parcelId = picked.parcelId || proposal?.cadastreParcelIds?.[0] || null;
             // The scene presents this selection; no separate 2D details panel is opened.
             window.selectAndHighlightProposal?.(plan.proposal.id, parcelId, false, false, true);
-            if (plan.proposal.action !== 'retain') isolateProposal(plan.proposal.id);
         }
         if (plan.parcel?.action === 'clear') { endSelectionView(); return; }
         // A parcel's massing is opened from its section, not on every click.

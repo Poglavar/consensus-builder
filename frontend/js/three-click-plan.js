@@ -2,7 +2,7 @@
 // a parcel click: the parcel under the click point, through whatever stands on it, becomes the
 // parcel in view (its figures and outline), while the thing the ray hit first keeps its
 // own meaning on top (a massing opens its inspector, an existing building its record, a proposal
-// building selects and isolates the design, and its own parcel slice is the parcel in view).
+// building selects the design without isolating or reframing it, and its own parcel slice is the parcel in view).
 // Repeated-click section cycling is handled by ThreeClickStack before scene selection. Pure: the caller
 // resolves the pick and the ground parcel and passes what it found.
 //
@@ -12,7 +12,7 @@
 //     groundParcelId    the parcel slab under the click point, or null off the loaded ground
 //     proposalKnown     whether picked.proposalId resolves to a stored proposal
 //   -> { selectMassing, inspectBuilding, clearSelection, proposal, parcel }
-//     proposal          null | { id, action: 'isolate' | 'retain' }
+//     proposal          null | { id, action: 'select' | 'retain' }
 //     parcel            null | { id, action: 'view' | 'retain' | 'clear' }   (id null for 'clear')
 (function (root, factory) {
     const api = factory();
@@ -58,7 +58,7 @@
                 plan.parcel = view(picked.parcelId ? String(picked.parcelId) : ground);
                 return plan;
             }
-            plan.proposal = { id, action: 'isolate' };
+            plan.proposal = { id, action: 'select' };
             // The proposal's own parcel slice under the point: the slab the ray reaches through a
             // tall or leaning design can be the neighbour's.
             plan.parcel = view(picked.parcelId ? String(picked.parcelId) : ground);

@@ -49,6 +49,13 @@
     }
     root.__ensure3DModeStack = async () => {
         if (!await root.whenThreeReady()) return false;
+        const [lines, geometry, material] = await Promise.all([
+            import('three/addons/lines/LineSegments2.js'),
+            import('three/addons/lines/LineSegmentsGeometry.js'),
+            import('three/addons/lines/LineMaterial.js')
+        ]);
+        Object.assign(root.THREE, { LineSegments2: lines.LineSegments2,
+            LineSegmentsGeometry: geometry.LineSegmentsGeometry, LineMaterial: material.LineMaterial });
         await loadGroup('model');
         root.__threeModeStackReady = true;
         return true;

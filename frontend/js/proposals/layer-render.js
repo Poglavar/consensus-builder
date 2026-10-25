@@ -675,6 +675,8 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
     // selection, so the card is not asked for and the no-visible-UI safety net below stands down.
     const in3D = typeof window.isThreeModeActive === 'function' && window.isThreeModeActive();
     const detailsWanted = showDetails && !in3D;
+    // Selection in the model view never changes its camera; links navigate explicitly.
+    if (in3D) shouldCenter = false;
 
     const proposal = getProposalByIdOrHash(resolvedId);
     if (!proposal) {
@@ -750,12 +752,7 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
         updateProposalLayer();
     }
 
-    if (shouldCenter && in3D && typeof window.focusThreeModeOnProposals === 'function') {
-        // The 2D map is frozen under the scene; a Leaflet fit would move nothing the reader sees.
-        window.isApplyingProposalHighlights = false;
-        window.focusThreeModeOnProposals([proposalKey]);
-        applyProposalHighlights();
-    } else if (shouldCenter) {
+    if (shouldCenter) {
         // Center map first, then apply overlays when movement is complete
         const parcelIdsForCentering = (() => {
             // Use only this formation's current derived parcels; records have no proposal family.

@@ -1,6 +1,6 @@
 // Opening a proposal while the 3D model is up (from the Proposals list, a search, the status log or
-// a share link): the camera goes to it when its ground is in the scene, the scene is rebuilt around
-// it when not, the proposal stays selected, and no collapsed 2D parcel row is left behind
+// a share link): ordinary selection preserves the current camera and scene, the proposal stays
+// selected, and no collapsed 2D parcel row is left behind
 // (three-focus-plan.js, three-mode.js focusThreeModeOnProposals, layer-render.js).
 import { test, expect } from '../helpers/fixtures';
 import type { Page } from '@playwright/test';
@@ -74,7 +74,7 @@ test.describe('Opening a proposal while 3D is up @features', () => {
     await expect.poll(focus).toBeNull();
   });
 
-  test('frames the camera on a proposal whose ground the scene has, keeps it selected and opens no parcel row', async ({ mockApi: page }) => {
+  test('selects a proposal without moving the camera or opening a 2D parcel row', async ({ mockApi: page }) => {
     await mockBuildingScene(page);
     await openCity(page);
     await page.evaluate(id => (window as any).CadastralParcelRepository.ensureIds([id]), OTHER_ID);
@@ -89,16 +89,16 @@ test.describe('Opening a proposal while 3D is up @features', () => {
     expect(distanceM(before!, target)).toBeGreaterThan(25);
 
     await chooseProposal(page, other);
-    await expect.poll(async () => distanceM((await cameraTarget(page))!, target)).toBeLessThan(15);
+    expect(await cameraTarget(page)).toEqual(before);
     await expect(page.locator('body')).toHaveClass(/three-mode-active/);
-    // The 2D map under the scene did not move: the camera did.
+    // Selection leaves both the 3D camera and the underlying 2D map in place.
     expect(await page.evaluate(() => Math.abs((window as any).map.getCenter().lat - 45.80025))).toBeLessThan(0.0001);
     expect(await page.evaluate(() => (window as any).ProposalSelection.getKey())).toBe(other);
     await expect(page.locator('#parcel-info-panel')).toBeHidden();
     await expect(page.locator('#proposal-details-panel')).toBeHidden();
   });
 
-  test('rebuilds the scene around a proposal whose ground is not loaded', async ({ mockApi: page }) => {
+  test('selecting a distant proposal preserves the current scene and camera', async ({ mockApi: page }) => {
     await mockBuildingScene(page);
     await openCity(page);
     await addProposal(page, 'Here', PARCEL_ID, PARCEL_GEOMETRY);
@@ -109,12 +109,7 @@ test.describe('Opening a proposal while 3D is up @features', () => {
     const originBefore = await page.evaluate(() => (window as any).getThreeModeInternals().originLatLng());
 
     await chooseProposal(page, far);
-    const target = centreOf(farGeometry);
-    await expect.poll(async () => {
-      const origin = await page.evaluate(() => { const i = (window as any).getThreeModeInternals(); return i ? i.originLatLng() : null; });
-      return origin ? distanceM(origin, target) : Infinity;
-    }, { timeout: 20000 }).toBeLessThan(40);
-    expect(distanceM(originBefore, target)).toBeGreaterThan(1000);
+    expect(await page.evaluate(() => (window as any).getThreeModeInternals().originLatLng())).toEqual(originBefore);
     await expect(page.locator('body')).toHaveClass(/three-mode-active/);
     await expect(page.locator('#three-container canvas')).toBeVisible();
     await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection.getKey())).toBe(far);

@@ -102,7 +102,7 @@ The 3D model view has its own click stack (`frontend/js/three-click-stack.js`, u
 2026-10-23): the 2D stack's frame and row/strip look (`#click-stack, #three-click-stack` share the
 rules in `css/map.css`), with what a click in the scene stands on. Like 2D it has no panel, header or
 close button: the section cards float over the scene, and the stack closes on Escape, a click on
-nothing, the isolation banner's ×, or another selection. It replaced the floating top-left parcel /
+nothing, or another selection. It replaced the floating top-left parcel /
 "Proposal info" panel.
 
 - Sections, top to bottom: **Built** (the clicked building, and the existing buildings standing on
@@ -113,11 +113,11 @@ nothing, the isolation banner's ×, or another selection. It replaced the floati
   their displayed order, wrapping from Parcel to the first section. This works independently of
   double-click speed. A different object starts with its own section; clicking elsewhere or Escape
   dismisses the stack. A folded selection reopens before advancing. Header clicks still select a
-  section directly. Cycling into Design preserves the camera and keeps the scene in context;
+  section directly. All selections preserve the camera and keep the scene in context;
   refreshes retain that viewing policy. A stack opened from a list or link starts a fresh scene-click sequence.
 - Expanded cards fit their content. Long content scrolls within the available dock height after
   reserving room for every other section header; a short Built record leaves Parcel visible below.
-- Design open: the proposal is isolated (as before) and the section shows the whole proposal's info
+- Design open: the composition stays visible and the section shows the whole design's info
   and Built / Planned / Proposed figures with the price sliders. **Proposal actions** switches to
   the same design in the 2D click panel. Restoring a design or entering through a shared model link
   opens this section; authored selections never open the Buildings and massing inspector.
@@ -126,7 +126,9 @@ nothing, the isolation banner's ×, or another selection. It replaced the floati
 - A proposal click's parcel is the proposal's own parcel slice under the point, not the slab the ray
   reaches beside a tall design (`three-click-plan.js`).
 - Selection and expansion are independent here too. Collapsing retains the selected header and
-  scene outline; switching sections replaces the previous object's emphasis. The shared contextual
+  scene outline; switching sections replaces the previous object's emphasis. A thick yellow pulsing
+  outline follows actual drawn volumes for Built, Permitted and building designs, and the ground
+  boundary for parcels and ground-only designs. No parcel fill changes; reduced motion keeps the outline steady. The shared contextual
   relationship rules connect designs, agreements and parcels; the model view keeps its own section order.
 - The pure rules (order, focus, strips, labels) are in the module's first half and unit tested
   (`backend/test/three-click-stack.test.js`); the 2D model (`click-stack-model.js`) is not shared,
