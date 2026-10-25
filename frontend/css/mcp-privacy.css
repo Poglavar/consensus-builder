@@ -1,0 +1,10 @@
+/* The privacy notice reuses the site header and theme tokens in a readable single column. */
+.privacy-page {
+    max-width: 72ch;
+    margin: var(--cb-space-6) auto;
+    padding: 0 var(--cb-space-4) var(--cb-space-6);
+    overflow-wrap: anywhere;
+}
+.privacy-page section { margin-top: var(--cb-space-6); }
+.privacy-page h2 { color: var(--cb-text-strong); font-size: var(--cb-text-lg); }
+.privacy-page__date { color: var(--cb-text-muted); font-size: var(--cb-text-sm); }
