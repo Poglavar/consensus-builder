@@ -21759,6 +21759,22 @@
         return key && key === getCadastreKey(currentCityId) ? null : cityId;
     }
 
+    // A record label cannot choose its ground source. Only designs with bound cadastral
+    // dependencies can require switching source context; locate that source by authored geometry.
+    // Accepts the current published index row or its local authored record.
+    function foreignGroundContextFor(record) {
+        const bound = record?.binding?.parcels || record?.cadastreParcelIds || [];
+        if (!bound.length) return null;
+        const body = record.content || record;
+        const geometry = body.site || window.__planOrder?.footprintOf?.(body)?.geometry;
+        // Import can retain a definition before cadastral facts/geometry are available. Its ids
+        // still determine eligibility during reconstruction; there is no label-based destination.
+        if (!geometry) return null;
+        const context = getParcelContext(geometry);
+        return context.parcelSourceId && context.parcelSourceId !== 'none'
+            && context.parcelSourceId !== getCadastreKey(currentCityId) ? context.city : null;
+    }
+
     // Which cadastre a city's parcels come from, for "is that the same parcel data?" (the search
     // box's in-place moves, the globe's countrywide picks): the source id when the city reads a
     // catalogue or custom source, else its own provider ('oss-wfs': Croatia's countrywide cadastre).
@@ -21915,6 +21931,7 @@
         getPlaceDataKey,
         resolveCityId,
         foreignCityFor,
+        foreignGroundContextFor,
         datasetToLatLng,
         latLngToDataset,
         formatCurrency,

@@ -27,4 +27,17 @@ describe('frontend data context',()=>{
         expect(manager.getParcelContext({type:'Point',coordinates:[-74.006,40.7128]},'zagreb'))
             .toEqual({city:'new_york',parcelSourceId:'parcel-nyc'});
     });
+    it('routes cadastral dependencies by geometry and coverage, never by city text',()=>{
+        const manager=frontend();
+        const current=manager.getCurrentCityId();
+        const elsewhere=current==='new_york' ? {city:'zagreb',point:[15.9706,45.81305],id:'HR-1'}
+            : {city:'new_york',point:[-74.006,40.7128],id:'US-NY-1'};
+        const site={type:'Point',coordinates:elsewhere.point};
+        for(const city of [current,elsewhere.city,'misleading-label',null]) {
+            expect(manager.foreignGroundContextFor({city,site,cadastreParcelIds:[elsewhere.id]})).toBe(elsewhere.city);
+            expect(manager.foreignGroundContextFor({city,site,cadastreParcelIds:[]})).toBeNull();
+            expect(manager.foreignGroundContextFor({city,content:{city,site},binding:{parcels:[{parcelId:elsewhere.id}]}})).toBe(elsewhere.city);
+        }
+        expect(manager.foreignGroundContextFor({city:'new_york',site:{type:'Point',coordinates:[35,35]},cadastreParcelIds:[]})).toBeNull();
+    });
 });

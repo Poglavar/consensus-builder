@@ -502,7 +502,7 @@ describe('opening an /agreements link', () => {
         const server = fakeServer({ rows: new Map([[cid, row]]), designs: designRows });
         const { win, sync, agreements } = fakeWindow({ server });
         win.__cbSecondaryTab = true;
-        win.CityConfigManager.foreignCityFor = () => false;
+        win.CityConfigManager.foreignGroundContextFor = () => null;
         const openReadOnly = vi.fn(async () => {});
         const handleSharedDesignRoute = vi.fn(async () => { throw new Error('must not import or apply in a secondary tab'); });
         win.AgreementPanel = { openReadOnly };
@@ -538,7 +538,7 @@ describe('opening an /agreements link', () => {
         const opened = [];
         const messages = [];
         Object.assign(win, {
-            CityConfigManager: { ...win.CityConfigManager, foreignCityFor: () => false },
+            CityConfigManager: { ...win.CityConfigManager, foreignGroundContextFor: () => null },
             handleSharedDesignRoute: async cids => ({ blocked: false, failed: [], localIds: new Map(cids.map((designCid, index) => [designCid, ['layout-1', 'road-1'][index]])) }),
             AgreementPanel: { open: async id => { opened.push(id); } },
             showEphemeralMessage: message => { messages.push(message); }

@@ -926,3 +926,5 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-25: Parcel source checks download only bounded inputs on demand and delete raw downloads/extractions after each turn or stage, including failure/interruption; queued cities must not retain bulk datasets.
 
 - 2026-10-25: Model 3D selections retain the camera and composition; volume outlines identify buildings, while hatched ground designs and unfilled parcel boundaries distinguish design intent from coincident land.
+
+- 2026-10-25: Descriptive city labels must not gate design import, reconstruction or rendering; authored geography and actual cadastral source dependencies determine the required ground context.

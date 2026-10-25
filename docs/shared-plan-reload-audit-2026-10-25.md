@@ -11,7 +11,7 @@ the shared-route boot used its default city context. Import accepts that label t
 route then reused the already-applied records without reconstructing their missing live output.
 The tree-rendering changes present in the checkout were separate from this startup filtering bug.
 
-Startup replay now uses the same existing source-context eligibility rule for parcel-free
+The initial repair used the same existing source-context eligibility rule for parcel-free
 records as import. Explicit cadastral references still determine eligibility first, and designs
 from incompatible configured cadastral contexts remain excluded. No records, CIDs or applied
 flags are rewritten to repair the display.
@@ -36,3 +36,27 @@ flags are rewritten to repair the display.
 
 No full test suite or deployment was run. The glossary was updated locally and remains mixed
 with another session's consultation definitions, so it is excluded from this scoped commit.
+
+## Geographic eligibility supersedes the initial repair
+
+The city-label shortcut itself is removed from reconstruction. Parcel-free applied designs
+reconstruct from their authored geography regardless of city text. Bound designs retain the
+source check on their explicit cadastral references. Import stores a definition independently
+of the current viewing context and never refuses it because of a descriptive city label.
+
+Shared-design routing derives a required cadastral context from bound dependencies and the
+source coverage at the authored geometry. An agreement's city text does not route its designs;
+its included designs supply the same ground-based decision. Definitions and CIDs are unchanged.
+The new CityConfigManager.foreignGroundContextFor helper does not read the record's city field.
+
+Follow-up checks: 82 targeted headless Vitest tests passed in five files (replay presentation,
+proposal storage rows, shared-plan import, frontend source context and agreement sync). Two
+headed Playwright cases passed at 1280/390 pixels, each loading a plan and reloading twice.
+The members deliberately use conflicting configured city labels, an unknown label and null;
+all five members and their park, square, lake and building geometry remain present. The source
+context unit test separately checks that bound records route according to geography with every
+one of those label variants. No full suite or deployment was run.
+
+Syntax checks were initially issued from the backend directory with frontend-relative paths;
+those path checks failed, then passed when run from the repository root. This did not change the
+82-test headless unit result.

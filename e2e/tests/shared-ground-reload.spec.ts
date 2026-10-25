@@ -19,7 +19,7 @@ for (const width of [1280, 390]) {
       const geometry = { type: 'Polygon', coordinates: [[[x, y], [x + 0.0004, y],
         [x + 0.0004, y + 0.0004], [x, y + 0.0004], [x, y]]] };
       return fileDesign(index, records.published({ title: `Courtyard ${goal} ${i}`, goal,
-        city: 'courtyard-place-label', site: geometry, createdAt: '2026-10-25T00:00:00Z',
+        city: ['new_york', 'paris', null, 'zagreb', 'courtyard-place-label'][i], site: geometry, createdAt: '2026-10-25T00:00:00Z',
         ...(goal === 'single' ? {
           geometry: { buildings: [{ type: 'Feature', geometry,
             properties: { floors: 2, height: 6, type: 'proposedBuilding' } }] },

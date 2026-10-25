@@ -78,7 +78,7 @@ function replayHarness(records) {
 }
 
 describe('replay presentation', () => {
-    it('rebuilds accepted parcel-free designs across city labels while excluding foreign cadastral contexts', async () => {
+    it('rebuilds parcel-free geometry regardless of city text and scopes bound designs by cadastral references', async () => {
         const records = [
             { ...building(0), cadastreParcelIds: [], city: 'site-label', goal: 'park' },
             { ...building(1), cadastreParcelIds: [], city: 'same-source-city', goal: 'square' },
@@ -87,16 +87,15 @@ describe('replay presentation', () => {
             { ...building(4), cadastreParcelIds: ['here-p1'], city: 'foreign-city' }
         ];
         installGlobal('isInCity', (id, city) => id.startsWith(city + '-'));
-        const foreignCityFor = vi.fn(city => city === 'foreign-city' ? city : null);
+        const foreignCityFor = vi.fn(() => { throw new Error('Descriptive city labels must not gate replay'); });
         const CityConfigManager = { getCurrentCityId: () => 'here', foreignCityFor };
         installGlobal('CityConfigManager', CityConfigManager);
         installGlobal('window', { CityConfigManager });
         const { manager, context } = replayHarness(records);
         const result = await manager.rebuildAppliedFabric({ silent: true, _parcelMutation: context });
         expect(result.ok).toBe(true);
-        expect(manager.applyProposal.mock.calls.map(([id]) => id)).toEqual(['b-0', 'b-1', 'b-4']);
-        expect(foreignCityFor).toHaveBeenCalledWith('site-label');
-        expect(foreignCityFor).toHaveBeenCalledWith('same-source-city');
+        expect(manager.applyProposal.mock.calls.map(([id]) => id)).toEqual(['b-0', 'b-1', 'b-2', 'b-4']);
+        expect(foreignCityFor).not.toHaveBeenCalled();
         expect(records.every(record => record.applied)).toBe(true);
     });
 

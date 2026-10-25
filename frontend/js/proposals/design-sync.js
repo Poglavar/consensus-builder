@@ -395,8 +395,8 @@
 
         /**
          * Imports an index row as a local design (parked: importing never applies). A local copy of
-         * the same CID is returned as it is. Throws like localDesignFromRow, and code
-         * 'proposal-in-other-city' for another city's design (proposalStorage.importProposal).
+         * the same CID is returned as it is. Validates the published content and stored definition.
+         * Import retains the definition independently of the map context.
          * Imports share the map mutation queue so an older background snapshot cannot erase them.
          * @returns a promise for the stored local record
          */

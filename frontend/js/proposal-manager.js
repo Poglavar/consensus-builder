@@ -717,20 +717,12 @@ function _assignSyntheticChildIdentitiesImpl(proposalId, childFeatures, options 
 // epsilon. A percentage threshold rejects tiny valid footprints more harshly than large ones.
 const FLAT_GROUND_AREA_EPSILON_M2 = 0.01;
 
-// Whether a record belongs to the city being shown. Cadastral ids name their city; a record on open
-// ground only (no ids) is matched by the city it was authored in. A record with neither is shown
-// everywhere, as before.
-function _recordInCity(record, currentCityId) {
+// Bound cadastral references determine the source needed for reconstruction. Parcel-free
+// designs carry their own geography; their descriptive city text never gates live output.
+function _recordInGroundContext(record, currentCityId) {
     if (!currentCityId || typeof isInCity !== 'function') return true;
     const ids = proposalClaims.cadastreParcelIdsOf(record);
-    if (ids.length) return ids.some(id => isInCity(id, currentCityId));
-    const authoredCity = record && record.city ? String(record.city) : '';
-    if (!authoredCity || authoredCity === String(currentCityId)) return true;
-    // Parcel-free records are admitted by the same source-context guard on import. City labels
-    // without a configured jurisdiction, and places sharing this ground source, must not become
-    // applied records with no live output after reload. Bound cadastral ids remain decisive above.
-    const cityManager = typeof window !== 'undefined' ? window.CityConfigManager : globalThis.CityConfigManager;
-    return typeof cityManager?.foreignCityFor === 'function' && cityManager.foreignCityFor(authoredCity) === null;
+    return !ids.length || ids.some(id => isInCity(id, currentCityId));
 }
 
 function _flatGroundCoverageIsComplete(declaredCount, resolvedCount, coverage, footprintArea) {
@@ -1103,7 +1095,7 @@ const ProposalManager = {
                         && typeof window.CityConfigManager.getCurrentCityId === 'function')
                     ? window.CityConfigManager.getCurrentCityId()
                     : null;
-                const appliedInCity = applied.filter(p => _recordInCity(p, currentCityId));
+                const appliedInCity = applied.filter(p => _recordInGroundContext(p, currentCityId));
 
                 if (!appliedInCity.length) return undefined;
 
@@ -1202,7 +1194,7 @@ const ProposalManager = {
                     && typeof window.CityConfigManager.getCurrentCityId === 'function')
                 ? window.CityConfigManager.getCurrentCityId()
                 : null;
-            const inCity = p => _recordInCity(p, currentCityId);
+            const inCity = p => _recordInGroundContext(p, currentCityId);
             // §15c derivation order = the immutable record order. An edit is a new proposal, so
             // replay cannot change merely because a record was opened on this browser.
             const appliedNow = () => {
@@ -1349,7 +1341,7 @@ const ProposalManager = {
             ? window.CityConfigManager.getCurrentCityId()
             : null;
         const records = proposalStorage.getAllProposals().filter(record => (
-            !!record && isProposalCurrentlyApplied(record) && _recordInCity(record, currentCityId)
+            !!record && isProposalCurrentlyApplied(record) && _recordInGroundContext(record, currentCityId)
         ));
         const order = (typeof window !== 'undefined') ? window.__planOrder : null;
         if (order && typeof order.orderFormations === 'function') return order.orderFormations(records);

@@ -850,12 +850,12 @@ async function handleSharedDesignRoute(cids, options = {}) {
             result.failed.push({ id: cid, label: cid, reason: t('proposals.share.errors.notFound', 'This design is not on the server.') });
         });
 
-        // The designs know their city. The first one that belongs to another city's store asks to
-        // switch there; staying drops the link.
+        // A bound design may need another cadastral source at its geometry. City text is
+        // descriptive metadata and cannot trigger a context switch or block a shared plan.
         const cityManager = window.CityConfigManager;
-        const foreign = [...fetched.rows.values()].find(row => cityManager.foreignCityFor(row.city));
-        if (foreign && await promptCityMismatchForProposal(String(foreign.city))) {
-            log('the designs belong to another city; the link was dropped or reloads there');
+        const foreignContext = [...fetched.rows.values()].map(row => cityManager.foreignGroundContextFor(row)).find(Boolean);
+        if (foreignContext && await promptCityMismatchForProposal(foreignContext)) {
+            log('the designs need another ground source; the link was dropped or reloads there');
             hideProposalLoadOverlay();
             result.blocked = true;
             return result;

@@ -401,15 +401,11 @@
                 const row = await fetchAgreement(cid);
                 log(`opening ${cid}: ${row.content.designs.length} design(s), status ${row.status}`);
                 const cityManager = win.CityConfigManager;
-                if (row.city && cityManager.foreignCityFor(row.city) && await win.promptCityMismatchForProposal(String(row.city))) {
-                    log('the agreement belongs to another city; the link was dropped or reloads there');
-                    return;
-                }
                 const designCids = row.content.designs.map(design => design.cid);
                 if (win.__cbSecondaryTab === true) {
                     const fetched = await win.DesignSync.fetchDesigns(designCids);
-                    const foreignDesign = [...fetched.rows.values()].find(design => cityManager.foreignCityFor(design.city));
-                    if (foreignDesign && await win.promptCityMismatchForProposal(String(foreignDesign.city))) {
+                    const foreignContext = [...fetched.rows.values()].map(design => cityManager.foreignGroundContextFor(design)).find(Boolean);
+                    if (foreignContext && await win.promptCityMismatchForProposal(foreignContext)) {
                         log('an agreement design belongs to another city; the link was dropped or reloads there');
                         return;
                     }

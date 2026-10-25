@@ -324,8 +324,7 @@ describe('proposal rows: whole-store save and clear', () => {
 });
 
 describe('proposal rows: a record is stored only in its own city', () => {
-    // projections.md §10 M8: storage refuses another city's record (CityConfigManager.foreignCityFor);
-    // every link and list route catches the refusal and opens the record in its city instead.
+    // Storage retains definitions independently of the viewing context and descriptive city text.
     function bootInCity(foreign, current = 'zagreb') {
         const storage = fakeStorage();
         const store = bootStore(storage);
@@ -341,14 +340,13 @@ describe('proposal rows: a record is stored only in its own city', () => {
         return { storage, store };
     }
 
-    it('refuses a record of a city with other parcel data, writing nothing', () => {
-        const { storage, store } = bootInCity(['paris']);
-        let refusal = null;
-        try { store.importProposal(record('p1', { city: 'paris' })); } catch (error) { refusal = error; }
-        expect(refusal).toMatchObject({ code: 'proposal-in-other-city', cityId: 'paris' });
-        expect(refusal.message).toMatch(/Paris/);
-        expect(store.getProposal('p1')).toBeFalsy();
-        expect(rowKeys(storage)).toEqual([]);
+    it('imports the same ground definition regardless of its descriptive city label', () => {
+        const { store } = bootInCity(['paris']);
+        for (const city of ['paris', 'new_york', 'zagreb', 'place-label', null]) {
+            const id = `p-${city}`;
+            expect(store.importProposal(record(id, { city }))).toBeTruthy();
+            expect(store.getProposal(id)).toMatchObject({ city, cadastreParcelIds: ['HR-1'], applied: false });
+        }
     });
 
     // A cancelled server record used to be rewritten to Active on import, so a link to it applied it.
@@ -367,12 +365,10 @@ describe('proposal rows: a record is stored only in its own city', () => {
         expect(store.importProposal(record('n1'))).toBeTruthy();
     });
 
-    it('places a record naming no city by its parcels: a Croatian one is not New York\'s', () => {
-        const { storage, store } = bootInCity(['zagreb'], 'new_york');
-        let refusal = null;
-        try { store.importProposal(record('legacy', { city: 'city', cadastreParcelIds: ['HR-335649-100'] })); } catch (error) { refusal = error; }
-        expect(refusal).toMatchObject({ code: 'proposal-in-other-city', cityId: 'zagreb' });
-        expect(rowKeys(storage)).toEqual([]);
+    it('stores foreign cadastral references without changing them or applying the definition', () => {
+        const { store } = bootInCity(['zagreb'], 'new_york');
+        const imported = store.importProposal(record('ground-definition', { city: 'city', cadastreParcelIds: ['HR-335649-100'] }));
+        expect(imported).toMatchObject({ city: 'city', cadastreParcelIds: ['HR-335649-100'], applied: false });
     });
 });
 

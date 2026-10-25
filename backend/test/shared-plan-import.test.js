@@ -515,8 +515,8 @@ const row = (name, { goal = 'park', authoredAt = '2026-10-10T10:00:00.000Z', cit
 // A /designs link opened against stubs of everything the route calls. `designs` are the rows the index
 // holds; `local` the local copies DesignSync.localCopyOf finds, by CID; `refused` the local ids the
 // apply precheck refuses, with its message; `failing` the local ids whose apply fails, with the stored
-// failure; `foreignCity` a city whose rows belong to another city's store.
-function designLink({ designs = [], local = {}, refused = {}, failing = {}, held = {}, conflictChoice = 'cancel', planFailure = null, foreignCity = null, leaveForCity = true,
+// failure. A row's groundContext fixture represents a geometry-derived source switch.
+function designLink({ designs = [], local = {}, refused = {}, failing = {}, held = {}, conflictChoice = 'cancel', planFailure = null, leaveForCity = true,
     wants3D = false, replayDone = true, tookOver = false, fetchError = null } = {}) {
     const records = new Map(Object.values(local).map(record => [record.proposalId, record]));
     const rows = new Map(designs.map(design => [design.cid, design]));
@@ -543,7 +543,7 @@ function designLink({ designs = [], local = {}, refused = {}, failing = {}, held
                 return record;
             })
         },
-        CityConfigManager: { foreignCityFor: city => (foreignCity && city === foreignCity ? foreignCity : null) },
+        CityConfigManager: { foreignGroundContextFor: design => design.groundContext || null },
         shouldSkipWelcomeForProposalLink: () => true,
         ReplayStatus: { watchUserTakeover: vi.fn(() => takeover), statusReporter: vi.fn(() => vi.fn()) },
         __claims: { cadastreParcelIdsOf: record => (record && record.cadastreParcelIds) || [] },
@@ -791,9 +791,9 @@ describe('opening a /designs link', () => {
         expect(link.focusProposalDetails).toHaveBeenCalledExactlyOnceWith('local-park', { centerOnProposal: false, showDetails: true });
     });
 
-    it('asks to go to the city a design belongs to, and imports nothing here when it goes', async () => {
-        const split = row('Riva', { city: 'split' });
-        const link = designLink({ designs: [park, split], foreignCity: 'split' });
+    it('switches to the ground source required by geometry, independently of the city label', async () => {
+        const split = { ...row('Riva', { city: 'wrong-label' }), groundContext: 'split' };
+        const link = designLink({ designs: [park, split] });
 
         const result = await link.open([park.cid, split.cid]);
 

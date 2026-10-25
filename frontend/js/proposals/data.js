@@ -189,41 +189,8 @@ const proposalListTranslationsHydrated = new Set();
 // Persist only authored fields + applied/order state. Child ids, formation receipts, parent feature
 // snapshots and demolition scans are disposable materialization output and are regenerated from
 // cadastre on boot. Keeping them in the durable blob is how dead generations became prerequisites.
-// The configured city a record belongs to: the one it names, else — a legacy record naming none (or
-// the old placeholder 'city') — the one its parcels identify (parcels/route.js parcelIdToCityId), so
-// it is still placed. null only when neither says (a site-only record without a city).
-function proposalCityOf({ city, cadastreParcelIds } = {}) {
-    const root = typeof window !== 'undefined' ? window : globalThis;
-    const manager = root.CityConfigManager || null;
-    const named = manager && typeof manager.resolveCityId === 'function' ? manager.resolveCityId(city) : null;
-    if (named) return named;
-    const byParcel = typeof root.parcelIdToCityId === 'function' ? root.parcelIdToCityId : null;
-    for (const id of Array.isArray(cadastreParcelIds) ? cadastreParcelIds : []) {
-        // A Croatian id names the country, not a city (one countrywide cadastre): this city when it
-        // reads it, else the first city that does.
-        if (/^HR-/i.test(String(id)) && manager && typeof manager.getCitiesByParcelSource === 'function') {
-            const croatian = manager.getCitiesByParcelSource('oss-wfs').map(config => config.id);
-            const current = manager.getCurrentCityId();
-            if (croatian.length) return croatian.includes(current) ? current : croatian[0];
-        }
-        const placed = byParcel ? byParcel(String(id)) : null;
-        if (placed && manager && manager.resolveCityId(placed)) return placed;
-    }
-    return null;
-}
-
-// Refuses another city's record for this city's store: proposal-in-other-city, naming its city.
-function refuseForeignProposal(cityId) {
-    const manager = (typeof window !== 'undefined' && window.CityConfigManager) || null;
-    const foreignCity = manager && typeof manager.foreignCityFor === 'function' ? manager.foreignCityFor(cityId) : null;
-    if (!foreignCity) return;
-    const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper()
-        : (key, fallback, params = {}) => String(fallback).replace(/\{\{\s*(\w+)\s*\}\}/g, (m, name) => (name in params ? params[name] : m));
-    const label = id => t(`city.labels.${id}`, manager.getCityLabel(id));
-    throw Object.assign(new Error(t('proposals.inOtherCity', 'This proposal belongs to {{city}}, not {{current}}: open it there.',
-        { city: label(foreignCity), current: label(manager.getCurrentCityId()) })), { code: 'proposal-in-other-city', cityId: foreignCity });
-}
-
+// Import stores an authored definition independently of the map's current source context.
+// Ground/source eligibility is checked when deriving its effect, never from a city label.
 function proposalRecordForPersistence(record) {
     if (!record || typeof record !== 'object') return record;
     const root = typeof window !== 'undefined' ? window : globalThis;
@@ -781,7 +748,6 @@ const proposalStorage = {
         // A record is stored only where its parcels are: one whose city reads other parcel data
         // belongs to that city's store, which every link and list route opens it in (projections.md
         // §10 M8). Importing it here would apply it over this city's cadastre — or none, in explore.
-        refuseForeignProposal(proposalCityOf({ city: proposal.city ?? proposal.proposal_data?.city, cadastreParcelIds: proposal.cadastreParcelIds }));
 
         const { overwrite = true, deferSave = false } = options;
         const normalized = this._normalizeProposal({ ...proposal });
