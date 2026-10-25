@@ -451,4 +451,13 @@ describe('hackathon demo API base', () => {
         expect(withLocation({ hostname: 'localhost', search: '?backend=https://evil.example' }, demo.backendBase)).toBe('http://localhost:3000');
         expect(withLocation({ hostname: 'urbangametheory.xyz', search: '?backend=http://localhost:4680' }, demo.backendBase)).toBe('https://api.urbangametheory.xyz');
     });
+
+    it('honours the explicit local preview backend even when the page declares its production API', () => {
+        const previous = globalThis.document;
+        globalThis.document = { querySelector: () => ({ content: 'https://api.urbangametheory.xyz' }) };
+        try {
+            expect(withLocation({ hostname: 'localhost', search: '?backend=http://localhost:4682' }, demo.backendBase)).toBe('http://localhost:4682');
+            expect(withLocation({ hostname: 'urbangametheory.xyz', search: '?backend=http://localhost:4682' }, demo.backendBase)).toBe('https://api.urbangametheory.xyz');
+        } finally { globalThis.document = previous; }
+    });
 });

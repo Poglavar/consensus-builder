@@ -4,6 +4,7 @@
 // lifecycle events. GET never manufactures a completed stage.
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
+import fs from 'node:fs';
 import { buildHackathonCase } from '../hackathon/case-model.js';
 import { eventFromRow } from './land-events.js';
 import { agreementAccountIndex, agreementEvents, chainEvents, mergeEvents, runEvents } from './agent-activity.js';
@@ -51,7 +52,8 @@ async function loadCaseAgreement(pool, cid) {
 }
 
 let caseIdls;
-async function loadActivity(pool, cid, { decode, book = buildAddressBook() } = {}) {
+const caseBook = buildAddressBook({ personas: JSON.parse(fs.readFileSync(new URL('../agents/personas.json', import.meta.url), 'utf8')) });
+async function loadActivity(pool, cid, { decode, book = caseBook } = {}) {
     const [runs, agreements] = await Promise.all([
         pool.query(`
             SELECT run_id, persona, mode, status, stage, summary, started_at, updated_at

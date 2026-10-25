@@ -38,6 +38,7 @@ a.is-external::after { content:" ↗"; }
 .hd-case>.hd-muted { margin:0; font-size:14px; }
 .hd-case__head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
 .hd-case__head h3 { margin:0; font-size:1.1rem; line-height:1.25; }
+.hd-outcome-path { display:flex; flex-wrap:wrap; gap:8px 24px; margin:0; padding-left:22px; font-size:14px; }
 .hd-pill { flex:0 0 auto; padding:4px 9px; border:1px solid currentColor; border-radius:999px; color:var(--amber); font:700 11px/1 var(--mono); text-transform:uppercase; white-space:nowrap; }
 .is-success .hd-pill { color:var(--green); }
 .is-error .hd-pill { color:var(--red); }

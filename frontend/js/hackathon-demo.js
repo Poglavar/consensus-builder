@@ -335,12 +335,12 @@
 
     function backendBase() {
         const configured = root?.document?.querySelector?.('meta[name="consensus-api-base"]')?.content;
-        if (configured) return String(configured).replace(/\/$/, '');
         const host = root?.location?.hostname || '';
         const local = host === 'localhost' || host === '127.0.0.1';
         // dev.sh starts each worktree's backend on its own port and passes it as ?backend=; localhost only.
         const override = local ? new URLSearchParams(root?.location?.search || '').get('backend') : null;
         if (override && /^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(override)) return override;
+        if (configured) return String(configured).replace(/\/$/, '');
         return local ? 'http://localhost:3000' : 'https://api.urbangametheory.xyz';
     }
 
