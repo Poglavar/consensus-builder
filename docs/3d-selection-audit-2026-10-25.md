@@ -33,3 +33,18 @@ centered on the authored site. A garden click produced a ground outline with zer
 no isolation and no cyan fill. The animated yellow stroke changed width across live frames.
 Desktop and mobile building screenshots showed volume edges rather than a parcel footprint.
 The dedicated browser was closed after verification. No deployment was performed.
+
+## Ground design versus parcel
+
+Ground-only Design selections now add fine diagonal yellow hatching inside their authored
+polygon, with transparent gaps and a dark edge on each stripe. The pattern is clipped to the
+polygon (including holes), remains legible at different zoom levels and pixel densities, and
+never replaces the surface material. Selecting the coincident formed or cadastral parcel removes
+the hatching and retains only its boundary. Collapsing the selected Design retains the hatching;
+volume designs keep their volume outline without a hatch.
+
+Follow-up verification: 20 targeted headless Vitest tests passed across the click plan, click
+stack and parcel-emphasis files. Four targeted headed Playwright cases passed: first building
+picks at 1280/390 pixels, a mobile park-design/coincident-parcel switch, and ground-design
+collapse/parcel-switch/Escape behavior. Mobile screenshots were visually inspected: the park
+surface stays visible between the stripes and has no interior pattern when Parcel is selected.

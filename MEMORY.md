@@ -923,3 +923,5 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-24: Design geometry must never travel in URLs. Private previews reference individual stored objects, and named plans contain design CIDs plus a saved view; combined design geometry must not consume a plan-level size budget.
 - 2026-10-24: Affordabot tries another configured city when its priority city cannot supply eligible parcels/candidates; retain source failures and do not report a clean no-picks result after an exhausted search with errors.
 - 2026-10-25: Parcel source checks download only bounded inputs on demand and delete raw downloads/extractions after each turn or stage, including failure/interruption; queued cities must not retain bulk datasets.
+
+- 2026-10-25: Model 3D selections retain the camera and composition; volume outlines identify buildings, while hatched ground designs and unfilled parcel boundaries distinguish design intent from coincident land.

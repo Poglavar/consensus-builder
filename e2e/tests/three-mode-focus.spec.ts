@@ -50,7 +50,7 @@ const cameraTarget = (page: Page) => page.evaluate(() => {
 const chooseProposal = (page: Page, id: string) => page.evaluate(id => (window as any).selectAndHighlightProposal(id, null, true, true), id);
 
 test.describe('Opening a proposal while 3D is up @features', () => {
-  test('section changes move the model outline and collapsing retains the selected object', async ({ mockApi: page }) => {
+  test('section changes distinguish hatched ground designs from unfilled parcels and retain collapsed selection', async ({ mockApi: page }) => {
     await mockBuildingScene(page);
     await openCity(page);
     const design = await addProposal(page, 'Garden design', PARCEL_ID, PARCEL_GEOMETRY);
@@ -58,17 +58,20 @@ test.describe('Opening a proposal while 3D is up @features', () => {
     await chooseProposal(page, design);
     const focus = () => page.evaluate(() => {
       const group = (window as any).getThreeModeInternals()?.scene.getObjectByName('click-stack-focus');
-      return group ? { ...group.userData, count: group.children.length } : null;
+      return group ? { ...group.userData, count: group.children.length, hatchCount: group.children.filter((o: any) => o.userData.selectionHatch).length } : null;
     });
-    await expect.poll(focus).toMatchObject({ kind: 'designs', id: design });
+    await expect.poll(focus).toMatchObject({ kind: 'designs', id: design, pattern: 'hatch', hatchCount: 1 });
     const stack = page.locator('#three-click-stack');
+    await stack.locator('.click-stack__section[data-kind="designs"] .click-stack__row').click();
+    await expect.poll(focus).toMatchObject({ kind: 'designs', pattern: 'hatch', hatchCount: 1 });
+    await expect(stack.locator('.click-stack__body')).toHaveCount(0);
     await stack.locator('.click-stack__section[data-kind="parcels"] .click-stack__row').click();
-    await expect.poll(focus).toMatchObject({ kind: 'parcels', id: PARCEL_ID });
+    await expect.poll(focus).toMatchObject({ kind: 'parcels', id: PARCEL_ID, pattern: 'outline', hatchCount: 0 });
     expect(await page.evaluate(() => (window as any).ProposalSelection.getKey())).toBeNull();
     await stack.locator('.click-stack__section[data-kind="parcels"] .click-stack__row').click();
     await expect(stack.locator('.click-stack__section[data-kind="parcels"]')).toHaveClass(/is-selected/);
     await expect(stack.locator('.click-stack__body')).toHaveCount(0);
-    await expect.poll(focus).toMatchObject({ kind: 'parcels', id: PARCEL_ID });
+    await expect.poll(focus).toMatchObject({ kind: 'parcels', id: PARCEL_ID, pattern: 'outline', hatchCount: 0 });
     await page.keyboard.press('Escape');
     await expect(stack).toBeHidden();
     await expect.poll(focus).toBeNull();

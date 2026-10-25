@@ -174,7 +174,7 @@ test.describe('3D rendering and controls @features', () => {
         return { ...group.userData, height: Math.max(...z) - Math.min(...z),
           color: group.children[1].material.color.getHex(), width: group.children[1].material.linewidth };
       });
-      await expect.poll(focus).toMatchObject({ kind: 'designs', id, representation: 'volume', color: 0xffdd00, width: 4 });
+      await expect.poll(focus).toMatchObject({ kind: 'designs', id, representation: 'volume', pattern: 'outline', color: 0xffdd00, width: 4 });
       expect((await focus())!.height).toBeGreaterThan(3);
       expect(await camera()).toEqual(before);
       await expect(page.locator('.three-mode-isolation-banner')).toBeHidden();
@@ -190,6 +190,29 @@ test.describe('3D rendering and controls @features', () => {
       await page.screenshot({ path: `/private/tmp/selection-volume-${width}.png` });
     });
   }
+
+  test('mobile park design hatches its surface while the coincident parcel stays unfilled', async ({ mockApi: page }) => {
+    test.setTimeout(60000);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await mockBuildingScene(page);
+    await openCity(page);
+    const id = await createSpace(page, 'park');
+    await enter3D(page);
+    await closeSheets(page);
+    await page.evaluate(id => (window as any).showThreeModeDesign(id), id);
+    const selection = () => page.evaluate(() => {
+      const group = (window as any).getThreeModeInternals().scene.getObjectByName('click-stack-focus');
+      return group ? { ...group.userData, hatches: group.children.filter((o: any) => o.userData.selectionHatch).length } : null;
+    });
+    await expect.poll(selection).toMatchObject({ kind: 'designs', representation: 'ground', pattern: 'hatch', hatches: 1 });
+    const stack = page.locator('#three-click-stack');
+    await page.screenshot({ path: '/private/tmp/selection-ground-design-390.png' });
+    await stack.locator('.click-stack__section[data-kind="parcels"] .click-stack__row').click();
+    await expect.poll(selection).toMatchObject({ kind: 'parcels', representation: 'ground', pattern: 'outline', hatches: 0 });
+    await page.screenshot({ path: '/private/tmp/selection-ground-parcel-390.png' });
+    await page.keyboard.press('Escape');
+    await expect.poll(selection).toBeNull();
+  });
 
   test('repeated scene picks cycle into Design without moving the camera, including after refresh', async ({ mockApi: page }) => {
     await mockBuildingScene(page);

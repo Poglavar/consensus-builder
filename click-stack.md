@@ -128,7 +128,9 @@ nothing, or another selection. It replaced the floating top-left parcel /
 - Selection and expansion are independent here too. Collapsing retains the selected header and
   scene outline; switching sections replaces the previous object's emphasis. A thick yellow pulsing
   outline follows actual drawn volumes for Built, Permitted and building designs, and the ground
-  boundary for parcels and ground-only designs. No parcel fill changes; reduced motion keeps the outline steady. The shared contextual
+  boundary for parcels and ground-only designs. Ground designs additionally carry a transparent
+  yellow hatch; formed and cadastral parcel selections remain unfilled, even where their geometry
+  is identical to the design. No parcel material changes; reduced motion keeps the outline steady. The shared contextual
   relationship rules connect designs, agreements and parcels; the model view keeps its own section order.
 - The pure rules (order, focus, strips, labels) are in the module's first half and unit tested
   (`backend/test/three-click-stack.test.js`); the 2D model (`click-stack-model.js`) is not shared,

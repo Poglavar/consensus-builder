@@ -1360,14 +1360,50 @@
         });
         return segments;
     }
+    // Ground designs show intent across their surface; parcel selection names only the land
+    // boundary, even when both objects have exactly the same geometry. Gaps remain transparent.
+    function addStackGroundHatching(group, features) {
+        const material = new THREE.ShaderMaterial({
+            uniforms: { pixelRatio: { value: renderer.getPixelRatio() } },
+            vertexShader: `void main() {
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }`,
+            fragmentShader: `uniform float pixelRatio;
+                void main() {
+                    float phase = mod((gl_FragCoord.x + gl_FragCoord.y) / pixelRatio, 12.0);
+                    float distanceToStripe = min(phase, 12.0 - phase);
+                    float halo = 1.0 - smoothstep(1.6, 2.4, distanceToStripe);
+                    if (halo < 0.01) discard;
+                    float stripe = 1.0 - smoothstep(0.6, 1.2, distanceToStripe);
+                    gl_FragColor = vec4(mix(vec3(0.16, 0.125, 0.0), vec3(1.0, 0.867, 0.0), stripe), halo * 0.7);
+                }`,
+            transparent: true, depthTest: false, depthWrite: false,
+            side: THREE.DoubleSide, toneMapped: false
+        });
+        let count = 0;
+        for (const feature of features) {
+            for (const mesh of polygonFeatureToMeshes(feature, material, 0.55)) {
+                markOwnedMaterial(mesh, material);
+                mesh.userData.selectionHatch = true;
+                mesh.renderOrder = 9997;
+                mesh.raycast = () => {};
+                mesh.onBeforeRender = () => { material.uniforms.pixelRatio.value = renderer.getPixelRatio(); };
+                group.add(mesh);
+                count++;
+            }
+        }
+        if (!count) material.dispose();
+        return count > 0;
+    }
     function highlightStackObject(kind, instance) {
         clearStackFocus();
         if (!scene || !instance) return;
         const segments = stackVolumeSegments(kind, instance);
         const representation = segments.length ? 'volume' : 'ground';
+        const groundFeatures = representation === 'ground' ? window.ClickStackHits.featuresFor(kind, instance) : [];
         if (!segments.length) {
             const temporaryMaterial = new THREE.LineBasicMaterial();
-            for (const feature of window.ClickStackHits.featuresFor(kind, instance)) {
+            for (const feature of groundFeatures) {
                 const lines = ['Polygon', 'MultiPolygon'].includes(feature.geometry.type)
                     ? polygonFeatureToBorderLines(feature, temporaryMaterial, 0.6)
                     : [lineFeatureToLine(feature, temporaryMaterial, 0.6)].filter(Boolean);
@@ -1400,6 +1436,9 @@
             outline.raycast = () => {};
             stackFocusGroup.add(outline);
         }
+        const hatched = kind === 'designs' && representation === 'ground'
+            && addStackGroundHatching(stackFocusGroup, groundFeatures);
+        stackFocusGroup.userData.pattern = hatched ? 'hatch' : 'outline';
         scene.add(stackFocusGroup);
         if (!window.__reducedMotion) frameHooks.push(pulseStackFocus);
         invalidateThreeView();
