@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2700",
+  "name": "Buligenyi, Uganda",
+  "point": [
+    1.28060100617235,
+    34.3348687694403
+  ],
+  "bindings": [
+    {
+      "appCityId": "buligenyi",
+      "runtimeConfig": {
+        "id": "buligenyi",
+        "wupCityCode": "2700",
+        "label": "Buligenyi, Uganda",
+        "currency": {
+          "locale": "en-UG",
+          "code": "UGX"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            1.28060100617235,
+            34.3348687694403
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            1.28060100617235,
+            34.3348687694403
+          ],
+          "fallbackDataset": [
+            34.3348687694403,
+            1.28060100617235
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ug-mlhud-ugnlis-nalisep-bulegeni-parcel-search",
+          "idPrefix": "UG-UGNLIS-BULEGENI-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Uganda Ministry of Lands, Housing & Urban Development — Uganda National Land Information System / NaLISEP"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ug-mlhud-ugnlis-nalisep-bulegeni-parcel-search",
+      "name": "UgNLIS — Bulegeni Town Council cadastral parcels",
+      "adapter": "ugnlis-parcel-search",
+      "endpoint": "https://api.mlhud.go.ug/ugnlis-data-api/v1/nalisep-api-data/query-parcelle/query-parcelle/parcel-search",
+      "filterEndpoint": "https://api.mlhud.go.ug/ugnlis-data-api/v1/nalisep-api-data/query-parcelle/query-parcelle/parcel-searchfilter",
+      "selector": {
+        "caddistrict": "cadreg12",
+        "county": "cad_co_bulambuli",
+        "city": "cad_twc_bulegeni"
+      },
+      "municipalityLabel": "Bulegeni Town Council",
+      "idField": "id",
+      "idType": "string",
+      "idPrefix": "UG-UGNLIS-BULEGENI-",
+      "outFields": [
+        "id"
+      ],
+      "parcelNumberField": "id",
+      "sourceCrs": "EPSG:21096",
+      "projection": "+proj=utm +zone=36 +a=6378249.145 +rf=293.465 +towgs84=-160,-6,-302 +units=m +no_defs",
+      "metricSrid": 32636,
+      "countryCode": "UG",
+      "cityIds": [
+        "buligenyi"
+      ],
+      "maxFeatures": 500,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 2097152,
+      "timeoutMs": 30000,
+      "enumerationConcurrency": 1,
+      "maxConcurrentQueries": 1,
+      "browserTransport": "relay",
+      "scope": "Published parcel boundaries accessible through Bulegeni Town Council (cad_twc_bulegeni), Bulambuli county, Mbale cadastral district. Observed parcels are 1–2 km northwest of the immutable Buligenyi queue point. Partial bounded coverage; exact-point and citywide completeness, currentness and Buligenyi/Bulegeni naming/boundary alignment remain unestablished.",
+      "attribution": "Uganda Ministry of Lands, Housing & Urban Development — Uganda National Land Information System / NaLISEP",
+      "catalogueUrl": "https://mlhud.go.ug/ugnlis/",
+      "licenceNote": "No explicit open reuse licence identified on the checked official pages. Attribution retained; reuse permission needs confirmation.",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "queryGeometry": true
+      },
+      "caveats": [
+        "Enumerates published block/plot selectors and serves their usable boundaries; complete query results describe this published selector scope, never citywide cadastral completeness.",
+        "Records without published geometry are counted and excluded from map results. Exact reads of such records report boundary unavailability.",
+        "Native numeric/UUID IDs are located by selector enumeration, then freshly re-read and checked against the native ID. No owner, address or title details are retained.",
+        "WGS84 coordinates use EPSG:21096 and Arc 1960 to WGS 84 (1), published accuracy 35 m; survey alignment and provider datum realization remain second-pass follow-ups.",
+        "The portal build declares EPSG:21096 and native metre coordinates are consistent with easting,northing; independent survey alignment and provider datum realization remain unestablished. No fitted offsets, geometry repair, clipping or rounding are applied."
+      ],
+      "defaultForCity": true
+    }
+  ]
+}

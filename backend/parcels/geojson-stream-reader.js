@@ -76,7 +76,7 @@ export async function readGeojsonFeatureStream(chunks, { maxRecordBytes, onFeatu
                     }
                     state = 'member-end';
                 }
-                else { await onFeature(t.value, count++); state = 'feature-end'; }
+                else { await onFeature(t.value, count++, metadata); state = 'feature-end'; }
             } else if (state === 'feature-end') {
                 if (c === ',') state = 'feature'; else if (c === ']') state = 'member-end'; else fail(); position++;
             } else if (state === 'member-end') {

@@ -1,6 +1,17 @@
+import { createShapefileRangeParcelSource } from './shapefile-range-source.js';
+import { KARTVERKET_ENDPOINT, KARTVERKET_EXACT_ENDPOINT } from './kartverket-source.js';
+import { createSantosLotesSource } from './santos-lotes-source.js';
+import { isTorinoArchive, TORINO_ARCHIVE_ENDPOINT } from './shapefile-snapshot-source.js';
+import { createGeojsonRangeParcelSource } from './geojson-range-source.js';
+import { isDncSnigCompanion, SNIG_CADASTRAL_LAYER } from './uy-dnc-snig-source.js';
+import { isCadgisCompanion, CADGIS_LIVE_LAYER } from './be-cadgis-source.js';
+import { GWANGJU_AREA_ENDPOINT, GWANGJU_PNU_ENDPOINT } from './gwangju-jijuk-source.js';
 // Fixed-source relay transport. Every URL is matched against a registered descriptor before DNS.
 import { lookup } from 'node:dns/promises';
-import { request } from 'node:https';
+import { Agent, request } from 'node:https';
+import { request as httpRequest } from 'node:http';
+import { GISAR_ENDPOINT, GISAR_SOURCE_ID, isGisarParcelUrl } from './kg-gisar-wms-source.js';
+import { SOFIA_ENDPOINT, SOFIA_SOURCE_ID, isSofiaParcelUrl, createSofiaParcelSource, parseSofiaRelayOperation } from './sofia-isofmap-source.js';
 import { Readable } from 'node:stream';
 import { isIP } from 'node:net';
 import { readFile } from 'node:fs/promises';
@@ -9,6 +20,11 @@ import { createPublicSourceFetch, isPublicSourceAddress, validatePublicSourceUrl
 import { decodeCustomSource } from './custom-source-config.js';
 import { officialArchiveFetch } from './gml-snapshot-source.js';
 import { AKWAGIS_PUBLIC_TOKEN_URL } from './akwagis-public-fetch.js';
+import { isTainanPublicSource, TAINAN_PUBLIC_TOKEN_URL } from './tainan-public-fetch.js';
+import { createUgnlisParcelSource, UGN_SOURCE_ENDPOINT, UGN_FILTER_ENDPOINT } from './ugnlis-source.js';
+import { createTaichungParcelSource, TAICHUNG_ENDPOINT } from './taichung-source.js';
+import { isTucumanWfsSource, isTucumanWfsUrl } from './tucuman-wfs-transport.js';
+import { isXuchangSource, isXuchangQueryUrl } from './xuchang-transport.js';
 
 const HMLR = 'https://use-land-property-data.service.gov.uk';
 const HMLR_ROOT = `${HMLR}/datasets/inspire/download`;
@@ -23,6 +39,11 @@ const BEV_ORIGIN = 'https://kataster.bev.gv.at';
 const MAX_REQUEST_BYTES = 16 * 1024;
 const NO_REDIRECT = new Set(['error', 'manual', 'follow']);
 const safeManualRedirects = new WeakMap();
+// Cache the bounded directory per immutable catalog descriptor. Exact-ID methods
+// still re-fetch the record and verify its native ID on every call.
+const ugnlisRelaySources = new WeakMap();
+const geojsonRangeRelaySources = new WeakMap();
+const santosRelaySources = new WeakMap();
 
 export const HMLR_BROWSER_DESCRIPTOR = Object.freeze({
     id: 'gb-hmlr-browser-v1', name: 'HM Land Registry INSPIRE archive', adapter: 'gml-snapshot',
@@ -43,6 +64,15 @@ function exactResource(url, resource) {
 
 function descriptorResources(descriptor) {
     const resources = [];
+    if (descriptor.id === 'no-kartverket-eiendom-api-omrader' && descriptor.adapter === 'kartverket-eiendom'
+        && descriptor.endpoint === KARTVERKET_ENDPOINT) resources.push(KARTVERKET_EXACT_ENDPOINT);
+    if (isTainanPublicSource(descriptor)) resources.push(TAINAN_PUBLIC_TOKEN_URL);
+    if (isDncSnigCompanion(descriptor)) resources.push(`${SNIG_CADASTRAL_LAYER}/query`);
+    if (descriptor.adapter === 'gwangju-jijuk' && descriptor.endpoint === GWANGJU_AREA_ENDPOINT
+        && descriptor.exactEndpoint === GWANGJU_PNU_ENDPOINT) resources.push(GWANGJU_PNU_ENDPOINT);
+    if (descriptor.adapter === 'ugnlis-parcel-search' && descriptor.endpoint === UGN_SOURCE_ENDPOINT
+        && descriptor.filterEndpoint === UGN_FILTER_ENDPOINT) resources.push(UGN_FILTER_ENDPOINT);
+    if (isCadgisCompanion(descriptor)) resources.push(`${CADGIS_LIVE_LAYER}/query`);
     if (typeof descriptor.endpoint === 'string') resources.push(descriptor.endpoint);
     if (typeof descriptor.catalogueUrl === 'string') resources.push(descriptor.catalogueUrl);
     if (typeof descriptor.manifestUrl === 'string') resources.push(descriptor.manifestUrl);
@@ -65,6 +95,9 @@ function descriptorResources(descriptor) {
             }
             resources.push(`${KERALA_MAP}/bhunaksha_v5_emaps/core/v2/map/export/geojson/${code}`);
         }
+    }
+    if (descriptor.adapter === 'taichung-gismap' && descriptor.endpoint === 'https://gismap.taichung.gov.tw/gismap/CFM/locate_land.cfm') {
+        resources.push('https://gismap.taichung.gov.tw/gismap/CFM/queryparcel.cfm');
     }
     if (descriptor.adapter === 'catastro-wfs') resources.push('https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx');
     if (isHmlr(descriptor)) resources.push(HMLR_ROOT);
@@ -106,6 +139,16 @@ function adapterDynamicResourceAllowed(url, descriptor) {
     try { endpoint = new URL(descriptor.endpoint); } catch { return false; }
     if (url.origin !== endpoint.origin || url.username || url.password || url.hash) return false;
     const basePath = endpoint.pathname.replace(/\/$/, '');
+    if (descriptor.adapter === 'vector-tiles' && Number.isSafeInteger(descriptor.zoom)
+        && descriptor.zoom >= 10 && descriptor.zoom <= 18 && !url.search) {
+        // Permit only this catalogued XYZ template at its fixed production zoom.
+        const template = new URL(descriptor.endpoint.replace('{z}', descriptor.zoom)
+            .replace('{x}', '123456789').replace('{y}', '987654321')).pathname;
+        const pattern = template.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+            .replace('123456789', '(0|[1-9][0-9]*)').replace('987654321', '(0|[1-9][0-9]*)');
+        const tile = new RegExp(`^${pattern}$`).exec(url.pathname);
+        return Boolean(tile && tile.slice(1).every(value => Number.isSafeInteger(Number(value)) && Number(value) < 2 ** descriptor.zoom));
+    }
     if (descriptor.adapter === 'msda-point') {
         return new RegExp(`^${basePath.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}/(?:search-by-xy|unified-search)$`).test(url.pathname);
     }
@@ -149,6 +192,13 @@ function resourceAllowed(url, descriptor, sourceId) {
         && bevResourceAllowed(url)) return true;
     if (ogcItemResourceAllowed(url, descriptor)) return true;
     if (adapterDynamicResourceAllowed(url, descriptor)) return true;
+    // CKAN issues a temporary signed download to this fixed public S3 resource. Its
+    // generated query stays in transport memory; only the pinned resource path is allowed.
+    if (descriptor.adapter === 'moj-mapxml') {
+        const resource = /^https:\/\/www\.geospatial\.jp\/ckan\/dataset\/[a-f0-9-]+\/resource\/([a-f0-9-]+)\/download\/(\d{5}-\d{4}-\d{4}\.zip)$/.exec(descriptor.endpoint);
+        if (resource && url.origin === 'https://ckan-storage.s3.amazonaws.com'
+            && url.pathname === `/ckan/resources/${resource[1]}/${resource[2]}`) return true;
+    }
     const resources = descriptorResources(descriptor);
     return resources.some(resource => {
         if (isHmlr(descriptor) && resource === HMLR_ROOT) return url.origin === HMLR
@@ -183,7 +233,14 @@ function normalizeTarget(sourceId, descriptor, input) {
     if (typeof input?.url !== 'string' || input.url.length > 16384) throw relayError(400);
     let target;
     try { target = new URL(input.url); } catch { throw relayError(400); }
-    if (target.protocol !== 'https:' || target.username || target.password || target.hash || !resourceAllowed(target, descriptor, sourceId)) {
+    const gisarHttp = sourceId === GISAR_SOURCE_ID && descriptor.adapter === 'kg-gisar-wms'
+        && descriptor.endpoint === GISAR_ENDPOINT && isGisarParcelUrl(target);
+    const sofiaHttp = sourceId === SOFIA_SOURCE_ID && descriptor.adapter === 'sofia-isofmap'
+        && descriptor.endpoint === SOFIA_ENDPOINT && (isSofiaParcelUrl(target)
+            || (target.href === SOFIA_ENDPOINT && input.method === 'POST'));
+    const tucumanHttp = isTucumanWfsSource(descriptor) && isTucumanWfsUrl(target);
+    const xuchangHttp = isXuchangSource(descriptor) && isXuchangQueryUrl(target);
+    if ((target.protocol !== 'https:' && !gisarHttp && !sofiaHttp && !tucumanHttp && !xuchangHttp && !isTorinoArchive(descriptor, target.href)) || target.username || target.password || target.hash || !resourceAllowed(target, descriptor, sourceId)) {
         throw relayError(403, 'Parcel provider URL is outside this source.');
     }
     if (sourceId.startsWith('custom.')) {
@@ -211,7 +268,8 @@ function relayRequestHeaders(input, descriptor, target, method) {
     const special = descriptor.adapter;
     const permitted = new Set(shared);
     if (isHmlr(descriptor) && target.origin === HMLR) permitted.add('if-match');
-    if (special === 'dlrs-sheet') permitted.add('referer');
+    if (special === 'dlrs-sheet' || special === 'bd-bhumi-naksha') permitted.add('referer');
+    if (special === 'bd-bhumi-naksha') permitted.add('cookie');
     if (['dda-public-plots', 'pulse-public', 'shenzhen-land-certain', 'kerala-entebhoomi'].includes(special)) {
         permitted.add('referer'); permitted.add('origin');
     }
@@ -228,6 +286,7 @@ function relayRequestHeaders(input, descriptor, target, method) {
                 : special === 'pulse-public' ? value === 'https://lis.pulse.gop.pk/'
                 : special === 'shenzhen-land-certain' ? value === SHENZHEN_VIEWER
                 : special === 'dlrs-sheet' ? value === 'https://settlement.gov.bd/'
+                : special === 'bd-bhumi-naksha' ? value === 'https://map.land.gov.bd/'
                 : special === 'kerala-entebhoomi' ? keralaReferrers.has(value) : false;
             if (!valid || referrer.protocol !== 'https:') throw relayError(400);
         }
@@ -237,7 +296,9 @@ function relayRequestHeaders(input, descriptor, target, method) {
             if (!valid) throw relayError(400);
         }
         if (key === 'x-openapi-subscriptiontoken' && special !== 'shenzhen-land-certain') throw relayError(400);
-        if ((key === 'cookie' || key === 'x-csrf-token') && special !== 'kerala-entebhoomi') throw relayError(400);
+        if (key === 'x-csrf-token' && special !== 'kerala-entebhoomi') throw relayError(400);
+        if (key === 'cookie' && special !== 'kerala-entebhoomi' && special !== 'bd-bhumi-naksha') throw relayError(400);
+        if (key === 'cookie' && special === 'bd-bhumi-naksha' && target.origin !== 'https://map.land.gov.bd') throw relayError(400);
         headers.set(key, value);
     }
     const contentType = headers.get('content-type')?.split(';', 1)[0].trim().toLowerCase();
@@ -259,17 +320,28 @@ export function validateParcelProviderRelayRequest(sourceId, input, { sources = 
     const method = input.method ?? 'GET';
     if (!['GET', 'POST'].includes(method) || (input.redirect !== undefined && !NO_REDIRECT.has(input.redirect))) throw relayError(400);
     const target = normalizeTarget(sourceId, descriptor, input);
+    if (isTorinoArchive(descriptor, target.href) && input.redirect && input.redirect !== 'error') throw relayError(400);
+    const sofiaOperation = sourceId === SOFIA_SOURCE_ID && descriptor.adapter === 'sofia-isofmap'
+        && descriptor.endpoint === SOFIA_ENDPOINT && target.href === SOFIA_ENDPOINT && method === 'POST';
+    if (target.protocol === 'http:' && method !== 'GET' && !sofiaOperation) throw relayError(400);
     const headers = relayRequestHeaders(input.headers, descriptor, target, method);
     const body = input.body;
     if (method === 'GET' && body !== undefined && body !== null || method === 'POST' && typeof body !== 'string') throw relayError(400);
     if (method === 'POST' && Buffer.byteLength(body, 'utf8') > MAX_REQUEST_BYTES) throw relayError(413);
+    if (sofiaOperation) {
+        if (headers.get('content-type') !== 'application/json') throw relayError(400);
+        parseSofiaRelayOperation(body);
+    }
     if (sourceId.startsWith('custom.') && method === 'POST' && headers.get('content-type')?.split(';', 1)[0].trim().toLowerCase() !== 'application/x-www-form-urlencoded') {
         throw relayError(400);
     }
     return { sourceId, descriptor, target, method, headers, body: body ?? undefined, redirect: input.redirect,
         hmlr: isHmlr(descriptor) && target.origin === HMLR, custom: sourceId.startsWith('custom.'),
         maxResponseBytes: responseByteLimit(descriptor, target),
-        timeoutMs: isHmlr(descriptor) || descriptor.snapshotFormat === 'shapefile-zip' ? 60000 : 15000 };
+        timeoutMs: isHmlr(descriptor) || descriptor.adapter === 'moj-mapxml' || descriptor.adapter === 'shapefile-range' || descriptor.adapter === 'ugnlis-parcel-search' || sofiaOperation || descriptor.snapshotFormat === 'shapefile-zip' || descriptor.adapter === 'santos-lotes' ? 60000
+            : ['bd-bhumi-naksha', 'taichung-gismap'].includes(descriptor.adapter) ? 45000
+                : ['wfs', 'arcgis'].includes(descriptor.adapter) && Number.isSafeInteger(descriptor.timeoutMs)
+                    && descriptor.timeoutMs >= 1000 && descriptor.timeoutMs <= 45000 ? descriptor.timeoutMs : 15000 };
 }
 
 function responseByteLimit(descriptor, target) {
@@ -282,10 +354,16 @@ function responseByteLimit(descriptor, target) {
     return 16 * 1024 * 1024;
 }
 
-export function createProviderRelayFetch({ lookupImpl = lookup, requestImpl = request } = {}) {
+export function createProviderRelayFetch({ lookupImpl = lookup, requestImpl = request, httpRequestImpl = httpRequest, keepAlive = false } = {}) {
+    // UgNLIS's serial directory otherwise opens a TLS connection for every plot.
+    // DNS/public-address checks still run before each request; new sockets use the
+    // validated lookup below, and pooled sockets already passed that same check.
+    const agent = keepAlive ? new Agent({ keepAlive: true, maxSockets: 8, maxFreeSockets: 1, timeout: 10000 }) : false;
     return async function providerRelayFetch(target, { method = 'GET', headers = new Headers(), body, signal,
         userAgent = 'consensus-builder/1.0 (+https://urbangametheory.xyz)' } = {}) {
-        if (!(target instanceof URL) || target.protocol !== 'https:' || target.username || target.password || target.hash
+        const permittedHttp = target instanceof URL && method === 'GET'
+            && (isGisarParcelUrl(target) || isSofiaParcelUrl(target) || isTucumanWfsUrl(target) || isXuchangQueryUrl(target) || target.href === TORINO_ARCHIVE_ENDPOINT);
+        if (!(target instanceof URL) || (target.protocol !== 'https:' && !permittedHttp) || target.username || target.password || target.hash
             || !['GET', 'POST'].includes(method) || (method === 'GET' && body !== undefined)
             || (method === 'POST' && (typeof body !== 'string' || Buffer.byteLength(body, 'utf8') > MAX_REQUEST_BYTES))) throw relayError(400);
         const host = target.hostname.replace(/^\[|\]$/g, '');
@@ -306,8 +384,8 @@ export function createProviderRelayFetch({ lookupImpl = lookup, requestImpl = re
                 out['Accept-Encoding'] = 'identity';
                 out['User-Agent'] = userAgent;
                 if (method === 'POST') out['Content-Length'] = String(Buffer.byteLength(body, 'utf8'));
-                req = requestImpl({ protocol: 'https:', hostname: host, port: target.port || 443,
-                    path: `${target.pathname}${target.search}`, method, agent: false, servername: isIP(host) ? undefined : host,
+                req = (permittedHttp ? httpRequestImpl : requestImpl)({ protocol: target.protocol, hostname: host, port: target.port || (permittedHttp ? 80 : 443),
+                    path: `${target.pathname}${target.search}`, method, agent: permittedHttp ? false : agent, servername: isIP(host) ? undefined : host,
                     rejectUnauthorized: true, headers: out, lookup: (_hostname, options, callback) => {
                         if (typeof options === 'function') { callback = options; options = {}; }
                         if (options?.all) callback(null, [{ ...address }]); else callback(null, address.address, address.family);
@@ -365,8 +443,84 @@ export async function fetchParcelProviderRelay(request, options = {}) {
                 ? 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36'
                 : undefined;
     if (!transport) {
-        const providerFetch = options.providerFetch || createProviderRelayFetch();
+        const providerFetch = options.providerFetch || createProviderRelayFetch({ keepAlive: ['ugnlis-parcel-search', 'geojson-range', 'shapefile-range', 'santos-lotes'].includes(descriptor.adapter) });
         transport = (url, init) => providerFetch(url, { ...init, ...(userAgent ? { userAgent } : {}) }, { timeoutMs });
+    }
+    if (descriptor.id === SOFIA_SOURCE_ID && descriptor.adapter === 'sofia-isofmap'
+        && descriptor.endpoint === SOFIA_ENDPOINT && target.href === SOFIA_ENDPOINT && method === 'POST') {
+        const envelope = parseSofiaRelayOperation(body);
+        const adapter = createSofiaParcelSource(descriptor, { fetchImpl: (url, init) => transport(new URL(url),
+            { ...init, headers: new Headers(init.headers) }) });
+        const data = await adapter[envelope._sofiaOperation](envelope.input, { signal: options.signal });
+        return new Response(JSON.stringify(data), { headers: { 'content-type': 'application/json' } });
+    }
+    if (descriptor.adapter === 'santos-lotes' && target.href === descriptor.endpoint && method === 'POST') {
+        let envelope;
+        try { envelope = JSON.parse(body); } catch { throw relayError(400); }
+        if (!envelope || !['queryBounds', 'queryIds', 'queryGeometry'].includes(envelope._santosOperation)
+            || Object.keys(envelope).some(key => !['_santosOperation', 'input'].includes(key))) throw relayError(400);
+        let adapter = options.providerFetch ? null : santosRelaySources.get(descriptor);
+        if (!adapter) {
+            adapter = createSantosLotesSource(descriptor, { fetchImpl: (url, init) => transport(new URL(url),
+                { ...init, headers: new Headers(init.headers) }) });
+            if (!options.providerFetch) santosRelaySources.set(descriptor, adapter);
+        }
+        const data = await adapter[envelope._santosOperation](envelope.input);
+        return new Response(JSON.stringify(data), { headers: { 'content-type': 'application/json' } });
+    }
+    if (['geojson-range', 'shapefile-range'].includes(descriptor.adapter) && target.href === descriptor.endpoint && method === 'POST') {
+        let envelope;
+        try { envelope = JSON.parse(body); } catch { throw relayError(400); }
+        if (!envelope || !['queryBounds', 'queryIds', 'queryGeometry'].includes(envelope._geojsonRangeOperation)
+            || Object.keys(envelope).some(key => !['_geojsonRangeOperation', 'input'].includes(key))) throw relayError(400);
+        let adapter = options.providerFetch ? null : geojsonRangeRelaySources.get(descriptor);
+        if (!adapter) {
+            adapter = (descriptor.adapter === 'shapefile-range' ? createShapefileRangeParcelSource : createGeojsonRangeParcelSource)(descriptor, { fetchImpl: (url, init) => transport(new URL(url),
+                { ...init, headers: new Headers(init.headers) }) });
+            if (!options.providerFetch) geojsonRangeRelaySources.set(descriptor, adapter);
+        }
+        const data = await adapter[envelope._geojsonRangeOperation](envelope.input);
+        return new Response(JSON.stringify(data), { headers: { 'content-type': 'application/json' } });
+    }
+    if (descriptor.adapter === 'ugnlis-parcel-search' && target.href === UGN_SOURCE_ENDPOINT && method === 'POST') {
+        let envelope;
+        try { envelope = JSON.parse(body); } catch { throw relayError(400); }
+        if (envelope && Object.hasOwn(envelope, '_ugnlisOperation')) {
+            const operation = { bounds: 'queryBounds', ids: 'queryIds', geometry: 'queryGeometry' }[envelope._ugnlisOperation];
+            if (!operation || Object.keys(envelope).some(key => !['_ugnlisOperation', 'input'].includes(key))) throw relayError(400);
+            let adapter = options.providerFetch ? null : ugnlisRelaySources.get(descriptor);
+            if (!adapter) {
+                adapter = createUgnlisParcelSource(descriptor, { fetchImpl: (url, init) => transport(new URL(url),
+                    { ...init, headers: new Headers(init.headers) }) });
+                if (!options.providerFetch) ugnlisRelaySources.set(descriptor, adapter);
+            }
+            // A superseded viewport must release its relay slot immediately. The
+            // single shared, bounded directory load can still serve the next viewport.
+            const work = adapter[operation](envelope.input);
+            let cancel;
+            const cancelled = new Promise((_, reject) => {
+                cancel = () => reject(relayError(499, 'Parcel provider request was cancelled.'));
+                options.signal?.addEventListener('abort', cancel, { once: true });
+                if (options.signal?.aborted) cancel();
+            });
+            try {
+                const data = await Promise.race([work, cancelled]);
+                return new Response(JSON.stringify(data), { headers: { 'content-type': 'application/json' } });
+            } finally { options.signal?.removeEventListener('abort', cancel); }
+        }
+    }
+    if (descriptor.adapter === 'taichung-gismap' && descriptor.endpoint === TAICHUNG_ENDPOINT
+        && target.href === TAICHUNG_ENDPOINT && method === 'POST') {
+        const form = new URLSearchParams(body);
+        if (form.has('_parcelIds')) {
+            if ([...form.keys()].length !== 1) throw relayError(400);
+            let ids;
+            try { ids = JSON.parse(form.get('_parcelIds')); } catch { throw relayError(400); }
+            const adapter = createTaichungParcelSource(descriptor, { fetchImpl: (url, init) => transport(new URL(url),
+                { ...init, headers: new Headers(init.headers) }) });
+            const data = await adapter.queryNativeIds(ids, { signal: options.signal });
+            return new Response(JSON.stringify(data), { headers: { 'content-type':'application/json' } });
+        }
     }
     let current = target, currentMethod = method, currentHeaders = new Headers(headers), currentBody = body;
     const redirectMode = redirect ?? 'none';

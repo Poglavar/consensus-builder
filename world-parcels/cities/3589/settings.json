@@ -59,7 +59,7 @@
           "attribution": "CAL FIRE, California Statewide Parcels Public View (county assessor parcel data). Adapted to WGS84."
         },
         "buildings": {
-          "source": "overture-tiles"
+          "source": "osm"
         },
         "sidebar": {
           "disabledSections": [

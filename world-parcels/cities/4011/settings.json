@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "4011",
+  "name": "Okayama, Japan",
+  "point": [
+    34.6169543575771,
+    133.865200080945
+  ],
+  "bindings": [
+    {
+      "appCityId": "okayama",
+      "runtimeConfig": {
+        "id": "okayama",
+        "wupCityCode": "4011",
+        "label": "Okayama, Japan",
+        "currency": {
+          "locale": "ja-JP",
+          "code": "JPY"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            34.6169543575771,
+            133.865200080945
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            34.6169543575771,
+            133.865200080945
+          ],
+          "fallbackDataset": [
+            133.865200080945,
+            34.6169543575771
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "jp-moj-okayama-city-2026",
+          "idPrefix": "jp-moj-okayama-city-2026/native-shape-sha256-v1/",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Japan Ministry of Justice registry-office map data; AIGID / G-spatial Information Center conversion, Okayama City public-coordinate sheets, 2026 distribution."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "jp-moj-okayama-city-2026",
+      "name": "Japan MOJ registry-map parcels — Okayama City (2026 public-coordinate distribution)",
+      "adapter": "shapefile-range",
+      "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/33/aigid-moj-33201/33201_%E5%B2%A1%E5%B1%B1%E5%B8%82_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%995%E7%B3%BB_%E7%AD%86R_2026.geojson",
+      "geometryEndpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/33/aigid-moj-33201/33201_%E5%B2%A1%E5%B1%B1%E5%B8%82_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%995%E7%B3%BB_%E7%AD%86R_2026.shp.zip",
+      "geometryEtag": "\"c53a1ea464bd8143019c54b70d1c6afc-3\"",
+      "geometryArchiveBytes": 18814200,
+      "geometryMember": {
+        "name": "33201_岡山市_公共座標5系_筆R_2026.shp",
+        "dataStart": 1119103,
+        "compressedBytes": 17455204,
+        "uncompressedBytes": 27800548,
+        "crc32": 4040828538,
+        "records": 57566
+      },
+      "idPrefix": "jp-moj-okayama-city-2026/native-shape-sha256-v1/",
+      "outFields": [],
+      "operator": "Japan Ministry of Justice; AIGID / G-spatial Information Center conversion and distribution",
+      "countryCode": "JP",
+      "cityIds": [
+        "okayama"
+      ],
+      "defaultForCity": true,
+      "metricSrid": 32653,
+      "sourceCrs": "EPSG:6673",
+      "nativeCrs": "EPSG:6673",
+      "returnsWGS84": true,
+      "geometryType": "Polygon",
+      "browserTransport": "relay",
+      "maxConcurrentQueries": 1,
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "geometryQuery": true
+      },
+      "rangeBytes": 65536,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "catalogueUrl": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-33201",
+      "licenceUrl": "https://www.geospatial.jp/ckan/organization/moj-mapdata",
+      "licenceNote": "CKAN package reports CC Zero. Original MOJ source terms and mechanical conversion caveats also apply; no legal-boundary or title guarantee.",
+      "attribution": "Japan Ministry of Justice registry-office map data; AIGID / G-spatial Information Center conversion, Okayama City public-coordinate sheets, 2026 distribution.",
+      "dataVersion": "2026 resource distribution; accepted GeoJSON collection is internally labelled 2025; currentness remains follow-up.",
+      "scope": "Published public-coordinate registry-map sheets for Okayama City (33201), not citywide completeness. SHP is the paired 2026 format in the same official CKAN package as the frozen GeoJSON endpoint. Geometry-only member is read live, attributes are never requested. Missing public-coordinate sheets remain gaps.",
+      "identityKind": "native-shape-sha256-v1",
+      "identity": {
+        "scheme": "native-shape-sha256-v1",
+        "recipe": "Lowercase SHA-256 of the unchanged little-endian SHP geometry record content, excluding its 8-byte record framing. This includes geometry type, source-derived bbox, ring indices and every native double coordinate, with no row number or byte offset in the identity. Prefix with source ID + /native-shape-sha256-v1/. Identical native geometries deduplicate; source corrections/reordering of coordinates change references.",
+        "native": false,
+        "reason": "Native ID repeats across sheets; geometry-derived references avoid reading any DBF attributes. These are source geometry references, not legal parcel identifiers."
+      },
+      "projection": {
+        "nativeAxes": "easting,northing",
+        "operation": "JGD2011 Japan Plane Rectangular CS V inverse Transverse Mercator to longitude,latitude on GRS80, used as geographic WGS84 display coordinates without fitted offset.",
+        "definition": "+proj=tmerc +lat_0=36 +lon_0=134.333333333333 +k=0.9999 +x_0=0 +y_0=0 +ellps=GRS80 +units=m +no_defs",
+        "uncertainty": "JGD2011 epoch/datum transformation to WGS84 and external basemap alignment are not independently surveyed; second-pass follow-up."
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "JP",
+          "city": "Okayama",
+          "basis": "First-party CKAN package aigid-moj-33201 is 岡山県-岡山市 and describes conversion of MOJ registry-office cadastral maps, public-coordinate sheets only."
+        },
+        "sourcePurpose": "cadastral-parcels",
+        "evidenceUrls": [
+          "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-33201",
+          "https://front.geospatial.jp/moj-chizu-xml-readme/"
+        ]
+      }
+    }
+  ]
+}

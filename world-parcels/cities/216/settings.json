@@ -1,0 +1,161 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "216",
+  "name": "Danané, Côte d’Ivoire",
+  "point": [
+    7.25889141864977,
+    -8.15101450726094
+  ],
+  "bindings": [
+    {
+      "appCityId": "danane",
+      "runtimeConfig": {
+        "id": "danane",
+        "wupCityCode": "216",
+        "label": "Danané, Côte d’Ivoire",
+        "currency": {
+          "locale": "fr-CI",
+          "code": "XOF"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            7.25889141864977,
+            -8.15101450726094
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            7.25889141864977,
+            -8.15101450726094
+          ],
+          "fallbackDataset": [
+            -8.15101450726094,
+            7.25889141864977
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ci-danane-ecommunes-parcellaire",
+          "idPrefix": "ci-danane-ecommunes/feature-id/",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Commune de Danané / E-Commune; CNTIG platform."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ci-danane-ecommunes-parcellaire",
+      "name": "Commune de Danané — E-Commune municipal parcel layers",
+      "adapter": "ecommunes-xml",
+      "endpoint": "https://danane.ecommunes.ci/MapServer/AgentLot.aspx/Query",
+      "idPrefix": "ci-danane-ecommunes/feature-id/",
+      "idField": "Feature/@ID",
+      "identityKind": "native-feature-id-namespaced-by-layer",
+      "outFields": [],
+      "sourceCrs": "EPSG:32629",
+      "responseSrid": 32629,
+      "boundsSrid": 32629,
+      "metricSrid": 32629,
+      "nativeAxisOrder": "east-north",
+      "outputCrs": "EPSG:4326",
+      "nativeExtent": [
+        586603.591,
+        793912.6709,
+        602825.5484,
+        809532.085200001
+      ],
+      "nativeTileSizeM": 1000,
+      "maxNativeQueries": 300,
+      "maxFeatures": 10000,
+      "maxResponseBytes": 16777216,
+      "maxBboxKm2": 4,
+      "maxConcurrentQueries": 1,
+      "timeoutMs": 30000,
+      "idLookupBoundsNative": {
+        "PARCELLAIRE_PETIT_DANANE:C5EC6977A91541C2A1FF234EC2F4D988": [
+          593672,
+          802406,
+          593772,
+          802506
+        ],
+        "PARCELLAIRE_BLESSALEU:DD1481426FCC4A6A9A2DC01034C71D55": [
+          593672,
+          802406,
+          593772,
+          802506
+        ],
+        "PARCELLAIRE_BLESSALEU:976797F01D4B45D5A4471A3A36834498": [
+          593672,
+          802406,
+          593772,
+          802506
+        ]
+      },
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84",
+        "explicitAbsence": false
+      },
+      "exactIdMethod": "fresh-native-spatial-query-and-feature-id-match",
+      "exactIdScope": "Native layer:GUID keys; fresh source spatial queries in configured or observed locator windows. Unknown/unmatched IDs remain unresolved. Long-term ID continuity unverified.",
+      "countryCode": "CI",
+      "cityIds": [
+        "danane"
+      ],
+      "defaultForCity": true,
+      "operator": "Commune de Danané / E-Commune, CNTIG platform",
+      "attribution": "Commune de Danané / E-Commune; CNTIG platform.",
+      "licenceNote": "Anonymous municipal viewer access; no explicit reuse licence found. Publisher terms remain a follow-up.",
+      "scope": "Nine named municipal parcel layers in Danané. Positive bounded source observations around the unchanged city point; no citywide completeness, legal title, survey accuracy or currentness claim. Additional publisher parcel layers are outside this initial source profile.",
+      "catalogueUrl": "https://danane.ecommunes.ci/Communication/Index",
+      "metadataUrl": "https://danane.ecommunes.ci/MapServer/AgentLot.aspx",
+      "browserTransport": "relay",
+      "layers": [
+        "PARCELLAIRE_PETIT_DANANE",
+        "PARCELLAIRE_BLESSALEU",
+        "PARCELLAIRE_COMMERCE",
+        "PARCELLAIRE_AIR_FRANCE",
+        "PARCELLAIRE_CYNTHIAPLEU",
+        "PARCELLAIRE_HOUPHOUETVILLE",
+        "PARCELLAIRE_STADE",
+        "PARCELLAIRE_TP",
+        "PARCELLAIRE_WOUANVILLE"
+      ],
+      "geometryOrdinates": "Preserve full XY rings and source Z. M is lexically validated and excluded from GeoJSON because the provider uses a non-finite-double no-data sentinel."
+    }
+  ]
+}

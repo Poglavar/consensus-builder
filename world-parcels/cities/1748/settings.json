@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1748",
+  "name": "Ouagadougou, Burkina Faso",
+  "point": [
+    12.363621967135,
+    -1.52961682751207
+  ],
+  "bindings": [
+    {
+      "appCityId": "ouagadougou",
+      "runtimeConfig": {
+        "id": "ouagadougou",
+        "wupCityCode": "1748",
+        "label": "Ouagadougou, Burkina Faso",
+        "currency": {
+          "locale": "fr-BF",
+          "code": "XOF"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            12.363621967135,
+            -1.52961682751207
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            12.363621967135,
+            -1.52961682751207
+          ],
+          "fallbackDataset": [
+            -1.52961682751207,
+            12.363621967135
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "bf-dgi-ecadastre-public-geojson",
+          "idPrefix": "BF-ECADASTRE:",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Direction générale des Impôts du Burkina Faso — eCadastre"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "bf-dgi-ecadastre-public-geojson",
+      "name": "Burkina Faso DGI eCadastre public cadastral map GeoJSON",
+      "adapter": "bf-dgi-geojson",
+      "endpoint": "https://ecadastre.dgi.bf/api/locations/geojson",
+      "countryCode": "BF",
+      "cityIds": [
+        "ouagadougou"
+      ],
+      "idPrefix": "BF-ECADASTRE:",
+      "idField": "FID",
+      "idType": "string",
+      "idPattern": "^[A-Za-z0-9]{1,64}$",
+      "geometryField": "geometry",
+      "outFields": [
+        "FID"
+      ],
+      "sourceCrs": "EPSG:4326",
+      "responseSrid": 4326,
+      "metricSrid": 32630,
+      "maxBboxKm2": 2,
+      "maxResponseBytes": 8388608,
+      "maxFeatures": 1000,
+      "maxConcurrentQueries": 1,
+      "lookupBounds": [
+        [
+          -4.29474790525362,
+          11.1797197779143,
+          -4.28474790525362,
+          11.1897197779143
+        ],
+        [
+          -4.34,
+          11.175,
+          -4.334,
+          11.181
+        ],
+        [
+          -4.248,
+          11.18,
+          -4.242,
+          11.186
+        ],
+        [
+          -4.292,
+          11.137,
+          -4.286,
+          11.143
+        ]
+      ],
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "authoritativeAbsence": false,
+        "areaCompleteness": false
+      },
+      "operator": "Direction générale des Impôts du Burkina Faso (DGI)",
+      "catalogueUrl": "https://ecadastre.dgi.bf/",
+      "attribution": "Direction générale des Impôts du Burkina Faso — eCadastre",
+      "licenceNote": "Public anonymous map access observed. Explicit redistribution/reuse permission and required attribution terms remain unverified.",
+      "scope": "Native-ID parcel availability in four declared Bobo-Dioulasso diagnostic windows only. Three distributed west/east/south reads support spatial spread; they and the near-WUP window are not a municipal boundary, coverage manifest, or citywide-completeness proof.",
+      "identityPolicy": "Native feature.id must equal properties.FID; canonical BF-ECADASTRE:<native-id>. Exact reads independently scan the declared lookup windows and return only requested full polygons. No process-local cache, geometry-derived ID or false absent-ID claim.",
+      "defaultForCity": true
+    }
+  ]
+}

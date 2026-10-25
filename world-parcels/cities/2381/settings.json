@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2381",
+  "name": "Cordoba, Argentina",
+  "point": [
+    -31.3991858994118,
+    -64.2065456865464
+  ],
+  "bindings": [
+    {
+      "appCityId": "cordoba",
+      "runtimeConfig": {
+        "id": "cordoba",
+        "wupCityCode": "2381",
+        "label": "Cordoba, Argentina",
+        "currency": {
+          "locale": "es-AR",
+          "code": "ARS"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -31.3991858994118,
+            -64.2065456865464
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -31.3991858994118,
+            -64.2065456865464
+          ],
+          "fallbackDataset": [
+            -64.2065456865464,
+            -31.3991858994118
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ar-cordoba-idecor-wfs-parcelas",
+          "idPrefix": "AR-CORDOBA-IDECOR-PARCELA-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "IDECOR / Dirección General de Catastro de la Provincia de Córdoba, Gobierno de la Provincia de Córdoba · parcelas · CC BY-SA / source terms"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ar-cordoba-idecor-wfs-parcelas",
+      "name": "IDECOR / DGC Córdoba — Parcelario: Parcelas",
+      "adapter": "wfs",
+      "endpoint": "https://idecor-ws.mapascordoba.gob.ar/geoserver/idecor/parcelas/wfs",
+      "version": "1.0.0",
+      "featureType": "idecor:parcelas",
+      "geometryField": "geom",
+      "idField": "par_idparcela",
+      "idType": "integer",
+      "idPrefix": "AR-CORDOBA-IDECOR-PARCELA-",
+      "outFields": [
+        "par_idparcela"
+      ],
+      "requestProperties": true,
+      "pageSize": 1000,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 8388608,
+      "timeoutMs": 45000,
+      "maxConcurrentQueries": 2,
+      "countryCode": "AR",
+      "metricSrid": 32720,
+      "nativeCrs": "EPSG:22174",
+      "responseCrs": "EPSG:4326",
+      "returnsWGS84": true,
+      "scope": "Bounded Cordoba parcel availability; published extent and sample cells do not establish citywide completeness.",
+      "attribution": "IDECOR / Dirección General de Catastro de la Provincia de Córdoba, Gobierno de la Provincia de Córdoba · parcelas · CC BY-SA / source terms",
+      "licenceUrl": "https://www.idecor.gob.ar/terminos-y-condiciones/",
+      "catalogueUrl": "https://www.catastrocordoba.gob.ar/ca/idecor/",
+      "homepage": "https://www.mapascordoba.gob.ar/",
+      "cityIds": [
+        "cordoba"
+      ],
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true
+      },
+      "limitations": [
+        "Independent native-to-WGS84 datum/operation/grid alignment and wire-axis proof",
+        "Municipal boundary and broader coverage/completeness",
+        "Historic/current parcel validity semantics and ID persistence across republishes",
+        "Layer metadata for any producer-specific reuse conditions",
+        "Investigate spatial-filter false positives without clipping source polygons"
+      ],
+      "paginationIdentity": "native-id",
+      "defaultForCity": true
+    }
+  ]
+}

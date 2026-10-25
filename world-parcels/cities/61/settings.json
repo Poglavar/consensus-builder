@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "61",
+  "name": "Turin, Italy",
+  "point": [
+    45.0659758665918,
+    7.64679680623837
+  ],
+  "bindings": [
+    {
+      "appCityId": "turin",
+      "runtimeConfig": {
+        "id": "turin",
+        "wupCityCode": "61",
+        "label": "Turin, Italy",
+        "currency": {
+          "locale": "it-IT",
+          "code": "EUR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            45.0659758665918,
+            7.64679680623837
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            45.0659758665918,
+            7.64679680623837
+          ],
+          "fallbackDataset": [
+            7.64679680623837,
+            45.0659758665918
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "it-comune-torino-catasto-urbano",
+          "idPrefix": "IT-COMUNE-TORINO-CATASTO-URBANO|CIT_PART|",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Comune di Torino Geoportale · CC BY 4.0"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "it-comune-torino-catasto-urbano",
+      "name": "Comune di Torino Catasto Urbano 1:1500",
+      "adapter": "shapefile-snapshot",
+      "endpoint": "http://geoportale.comune.torino.it/sec/zip/catasto_urbano.zip",
+      "countryCode": "IT",
+      "country": "Italy",
+      "cityIds": [
+        "turin"
+      ],
+      "idPrefix": "IT-COMUNE-TORINO-CATASTO-URBANO|CIT_PART|",
+      "idField": "CIT_PART",
+      "idFields": [
+        "CIT_PART"
+      ],
+      "outFields": [
+        "CIT_PART"
+      ],
+      "idType": "integer",
+      "integerDecimalFields": [
+        "CIT_PART"
+      ],
+      "sourceLayer": "catasto_urbano",
+      "sourceCrs": "EPSG:3003",
+      "returnsWGS84": true,
+      "snapshotFormat": "shapefile-zip",
+      "snapshotScope": "archive",
+      "expectedSnapshotSha256": "1ae313dd9203f2a6c3e13e77efebdc7f1b9f56ef26327e32435be315699e98f1",
+      "expectedSnapshotFeatures": 67587,
+      "shapefileMembers": {
+        "shp": "catasto_urbano.shp",
+        "shx": "catasto_urbano.shx",
+        "dbf": "catasto_urbano.dbf",
+        "prj": "catasto_urbano.prj",
+        "cpg": "catasto_urbano.cpg"
+      },
+      "maxSnapshotBytes": 8388608,
+      "maxDecompressedBytes": 20971520,
+      "maxSnapshotFeatures": 70000,
+      "maxSnapshotPoints": 2000000,
+      "maxRecordPoints": 100000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "zipEncoding": "utf-8",
+      "dbfEncoding": "windows-1252",
+      "browserTransport": "relay",
+      "attribution": "Comune di Torino Geoportale · CC BY 4.0",
+      "license": "CC-BY-4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by/4.0/deed.it",
+      "metadataUrl": "https://www.geoportale.piemonte.it/geonetwork/geonetwork/api/records/c_l219%3A85cea270-4304-4ccb-922a-a20095f27f94",
+      "metricSrid": 32632,
+      "ownership": false,
+      "scope": "Municipal urban cadastral snapshot; source archive dated 2016, HTTP Last-Modified 2020-12-14. Coverage/currentness unverified. Repeated sheet/parcel labels are retained as separate native CIT_PART records.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "IT",
+          "level": "municipality",
+          "name": "Turin",
+          "basis": "Comune di Torino-owned regional catalogue record describes municipal urban cadastre."
+        }
+      },
+      "defaultForCity": true
+    }
+  ]
+}

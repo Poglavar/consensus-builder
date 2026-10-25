@@ -1,0 +1,162 @@
+{
+  "provenance": {
+    "endpoint": "https://csggis.dlrrd.gov.za/server/rest/services/CSGSearch/MapServer/2",
+    "recordedAt": "2026-10-24",
+    "fields": [
+      "OBJECTID",
+      "PRCL_KEY"
+    ],
+    "geometry": "Unchanged WGS84 Esri rings from retained first-party exact-ID response."
+  },
+  "descriptor": {
+    "id": "za-csggis-erven",
+    "adapter": "arcgis",
+    "endpoint": "https://csggis.dlrrd.gov.za/server/rest/services/CSGSearch/MapServer/2",
+    "idPrefix": "ZA-CSGGIS-ERVEN-",
+    "idField": "PRCL_KEY",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "outFields": [
+      "OBJECTID",
+      "PRCL_KEY"
+    ],
+    "queryFormat": "esri-json",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "pageSize": 100,
+    "idBatchSize": 40,
+    "maxFeatures": 2000,
+    "maxBboxKm2": 2,
+    "maxConcurrentQueries": 1,
+    "name": "Chief Surveyor General CSGSearch Erven",
+    "operator": "Office of the Chief Surveyor General, Department of Land Reform and Rural Development",
+    "countryCode": "ZA",
+    "cityIds": [
+      "diepsloot"
+    ],
+    "metricSrid": 32735,
+    "sourceCrs": "EPSG:4148",
+    "catalogueUrl": "https://csg.dlrrd.gov.za/data.htm",
+    "attribution": "Office of the Chief Surveyor General (CSG); Department of Land Reform and Rural Development",
+    "scope": "National surveyed urban cadastral-reference layer; initial qualification concerns five exact parcel reads in distributed Diepsloot windows only. Discovery windows and any later 13-cell sample do not establish citywide completeness. No legal title, survey accuracy or currentness claim.",
+    "licenceNote": "Anonymous public service. Saved first-party portal metadata gives attribution and a disclaimer, but no explicit reusable licence was established. Redistribution permission remains a second-pass question.",
+    "defaultForCity": true
+  },
+  "response": {
+    "geometryType": "esriGeometryPolygon",
+    "spatialReference": {
+      "wkid": 4326,
+      "latestWkid": 4326
+    },
+    "features": [
+      {
+        "attributes": {
+          "OBJECTID": 182775,
+          "PRCL_KEY": "GJHBT0JR040800002760000000"
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                28.00824125800006,
+                -25.93132410299995
+              ],
+              [
+                28.00812157200005,
+                -25.931729543999943
+              ],
+              [
+                28.00806414700003,
+                -25.931752797999938
+              ],
+              [
+                28.007742282000038,
+                -25.931605809999947
+              ],
+              [
+                28.007965879000036,
+                -25.93133481599994
+              ],
+              [
+                28.00801040500005,
+                -25.931280851999933
+              ],
+              [
+                28.00824125800006,
+                -25.93132410299995
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "attributes": {
+          "OBJECTID": 756088,
+          "PRCL_KEY": "GJHBT0JR040800002757000000"
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                28.00789472400004,
+                -25.931016566999972
+              ],
+              [
+                28.007966347000036,
+                -25.930929760999952
+              ],
+              [
+                28.008292749000073,
+                -25.931149954999967
+              ],
+              [
+                28.008259446000068,
+                -25.93126261199995
+              ],
+              [
+                28.00789472400004,
+                -25.931016566999972
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "attributes": {
+          "OBJECTID": 828886,
+          "PRCL_KEY": "GJHBT0JR040800002758000000"
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                28.007823101000042,
+                -25.931103371999935
+              ],
+              [
+                28.00789472400004,
+                -25.931016566999972
+              ],
+              [
+                28.008259446000068,
+                -25.93126261199995
+              ],
+              [
+                28.00824903000006,
+                -25.931297892999957
+              ],
+              [
+                28.008058542000068,
+                -25.931262203999943
+              ],
+              [
+                28.007823101000042,
+                -25.931103371999935
+              ]
+            ]
+          ]
+        }
+      }
+    ]
+  }
+}

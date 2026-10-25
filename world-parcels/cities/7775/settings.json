@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7775",
+  "name": "Teresina, Brazil",
+  "point": [
+    -5.0961394658762,
+    -42.7913465599766
+  ],
+  "bindings": [
+    {
+      "appCityId": "teresina",
+      "runtimeConfig": {
+        "id": "teresina",
+        "wupCityCode": "7775",
+        "label": "Teresina, Brazil",
+        "currency": {
+          "locale": "pt-BR",
+          "code": "BRL"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -5.0961394658762,
+            -42.7913465599766
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -5.0961394658762,
+            -42.7913465599766
+          ],
+          "fallbackDataset": [
+            -42.7913465599766,
+            -5.0961394658762
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "br-pi-interpi-terras-sigef-privado",
+          "idPrefix": "BR-PI-INTERPI-SIGEF-PRIVADO:",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "INTERPI / Terras.PI · SIGEF–INCRA · rural certification parcels"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "br-pi-interpi-terras-sigef-privado",
+      "name": "INTERPI / Terras.PI — SIGEF private rural certification parcels",
+      "adapter": "interpi-sigef",
+      "endpoint": "https://sig.interpi.pi.gov.br/geojson_data/",
+      "table": "SIGEF Privado",
+      "sourceTable": "outros_sigef_privado",
+      "municipality": "Teresina",
+      "idField": "id",
+      "idType": "integer",
+      "idPrefix": "BR-PI-INTERPI-SIGEF-PRIVADO:",
+      "outFields": [
+        "id"
+      ],
+      "parcelNumberField": "id",
+      "sourceCrs": "EPSG:4674",
+      "responseSrid": 4674,
+      "metricSrid": 32723,
+      "countryCode": "BR",
+      "cityIds": [
+        "teresina"
+      ],
+      "pageSize": 500,
+      "maxMunicipalityFeatures": 5000,
+      "maxFeatures": 1000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "browserTransport": "relay",
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "boundsQueryMode": "municipality-pagination-local-intersection",
+      "idsQueryMode": "term-search-exact-native-id",
+      "operator": "Instituto de Regularização Fundiária e Patrimônio Imobiliário do Piauí (INTERPI)",
+      "attribution": "INTERPI / Terras.PI · SIGEF–INCRA · rural certification parcels",
+      "catalogueUrl": "https://terras.pi.gov.br/",
+      "scope": "Published SIGEF Privado rural certification records returned for municipio=Teresina. Bounded positive parcel coverage; urban IPTU/CTM coverage and citywide completeness are unestablished.",
+      "licenceNote": "Public anonymous viewer-backed access. No explicit vector reuse licence found; INTERPI/INCRA terms require follow-up.",
+      "caveats": [
+        "Rural certification subset, not the municipal urban IPTU/CTM cadastre. No hit at the frozen city locator was observed in discovery.",
+        "Complete query results mean complete enumeration of this published municipality selector, not complete city cadastral coverage. No server bbox filter is established.",
+        "Historical discovery observed 901 records and 55 centroid/boundary mismatches. These counts were not rerun during initial qualification; edge records are preserved unchanged, never clipped.",
+        "Native geometry explicitly declares EPSG:4674 and has Z coordinates. Wire axes are observed longitude, latitude. Coordinates and Z are preserved without fitted shifts. Precise SIRGAS2000/WGS84 realization, epoch and operation accuracy need second-pass review.",
+        "Current/historic validity, wider overlaps, exact-ID long-term stability, licensing and survey alignment remain follow-ups.",
+        "The term parameter is a search. Adapter exhausts pages and requires exact properties.id equality; unsolicited display attributes are discarded."
+      ],
+      "discovery": {
+        "jurisdiction": {
+          "basis": "Official INTERPI Terras.PI rural land platform integrates SIGEF/SNCI–INCRA; observed SIGEF Privado polygons via Teresina municipality selector."
+        }
+      },
+      "defaultForCity": true
+    }
+  ]
+}

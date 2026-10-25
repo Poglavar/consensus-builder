@@ -1,0 +1,183 @@
+{
+  "descriptor": {
+    "id": "za-csg-dffe-erven",
+    "adapter": "arcgis",
+    "endpoint": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2",
+    "idPrefix": "ZA-CSG-DFFE-ERVEN-",
+    "idField": "PRCL_KEY",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "outFields": [
+      "OBJECTID",
+      "PRCL_KEY"
+    ],
+    "queryFormat": "esri-json",
+    "pageSize": 1000,
+    "maxFeatures": 2000,
+    "maxBboxKm2": 2,
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "name": "Chief Surveyor-General public Erven polygons",
+    "operator": "Chief Surveyor-General; Department of Forestry, Fisheries and the Environment service host",
+    "catalogueUrl": "https://csg.dlrrd.gov.za/data.htm",
+    "attribution": "Chief Surveyor-General · DFFE hosted Erven · adapted",
+    "countryCode": "ZA",
+    "metricSrid": 32735,
+    "cityIds": [
+      "middelburg"
+    ],
+    "scope": "Official CSG Erven cadastral reference polygons, freshly checked in a bounded central Middelburg sample. Citywide completeness, currentness, legal title, survey accuracy, reuse permission and independent datum alignment remain unverified.",
+    "licenceNote": "Public government cadastral/reference map polygons; source notices informational. Legal survey accuracy and title are unverified.",
+    "cityScopes": {
+      "middelburg": "Official CSG Erven cadastral reference polygons, freshly checked in a bounded central Middelburg sample. Citywide completeness, currentness, legal title, survey accuracy, reuse permission and independent datum alignment remain unverified."
+    },
+    "metricSridByCity": {
+      "middelburg": 32735
+    },
+    "defaultForCity": true
+  },
+  "response": {
+    "displayFieldName": "SS_NAME",
+    "fieldAliases": {
+      "OBJECTID": "OBJECTID",
+      "PRCL_KEY": "PRCL_KEY"
+    },
+    "geometryType": "esriGeometryPolygon",
+    "spatialReference": {
+      "wkid": 4326,
+      "latestWkid": 4326
+    },
+    "fields": [
+      {
+        "name": "OBJECTID",
+        "type": "esriFieldTypeOID",
+        "alias": "OBJECTID"
+      },
+      {
+        "name": "PRCL_KEY",
+        "type": "esriFieldTypeString",
+        "alias": "PRCL_KEY",
+        "length": 50
+      }
+    ],
+    "features": [
+      {
+        "attributes": {
+          "OBJECTID": 7302649,
+          "PRCL_KEY": "M312T0JS002300002016000000"
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                29.439819990000043,
+                -25.767959132999973
+              ],
+              [
+                29.439540820000047,
+                -25.768088292999945
+              ],
+              [
+                29.43925382300006,
+                -25.767582479999934
+              ],
+              [
+                29.439533026000046,
+                -25.76745325899999
+              ],
+              [
+                29.439819990000043,
+                -25.767959132999973
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "attributes": {
+          "OBJECTID": 7302650,
+          "PRCL_KEY": "M312T0JS002300002017000001"
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                29.439570244000034,
+                -25.767435995999957
+              ],
+              [
+                29.439812445000033,
+                -25.767322635999964
+              ],
+              [
+                29.43997561200007,
+                -25.767611236999986
+              ],
+              [
+                29.439774096000065,
+                -25.76770499899993
+              ],
+              [
+                29.439720349000027,
+                -25.76770046699993
+              ],
+              [
+                29.439570244000034,
+                -25.767435995999957
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "attributes": {
+          "OBJECTID": 7302651,
+          "PRCL_KEY": "M312T0JS002300002017000010"
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                29.439533026000046,
+                -25.76745325899999
+              ],
+              [
+                29.439570244000034,
+                -25.767435995999957
+              ],
+              [
+                29.439720349000027,
+                -25.76770046699993
+              ],
+              [
+                29.439774096000065,
+                -25.76770499899993
+              ],
+              [
+                29.43997561200007,
+                -25.767611236999986
+              ],
+              [
+                29.44009932800003,
+                -25.767829210999935
+              ],
+              [
+                29.439819990000043,
+                -25.767959132999973
+              ],
+              [
+                29.439533026000046,
+                -25.76745325899999
+              ]
+            ]
+          ]
+        }
+      }
+    ]
+  },
+  "expectedIds": [
+    "ZA-CSG-DFFE-ERVEN-M312T0JS002300002016000000",
+    "ZA-CSG-DFFE-ERVEN-M312T0JS002300002017000001",
+    "ZA-CSG-DFFE-ERVEN-M312T0JS002300002017000010"
+  ]
+}

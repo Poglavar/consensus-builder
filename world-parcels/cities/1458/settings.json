@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1458",
+  "name": "San Miguel de Tucumán, Argentina",
+  "point": [
+    -26.8252181813735,
+    -65.2162963375371
+  ],
+  "bindings": [
+    {
+      "appCityId": "san_miguel_de_tucuman",
+      "runtimeConfig": {
+        "id": "san_miguel_de_tucuman",
+        "wupCityCode": "1458",
+        "label": "San Miguel de Tucumán, Argentina",
+        "currency": {
+          "locale": "es-AR",
+          "code": "ARS"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -26.8252181813735,
+            -65.2162963375371
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -26.8252181813735,
+            -65.2162963375371
+          ],
+          "fallbackDataset": [
+            -65.2162963375371,
+            -26.8252181813735
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ar-tucuman-dgc-wfs-parcelasrubep",
+          "idPrefix": "AR-TUCUMAN-DGC-PARCELASRUBEP-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Dirección General de Catastro de Tucumán; Gobierno de la Provincia de Tucumán"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ar-tucuman-dgc-wfs-parcelasrubep",
+      "name": "Dirección General de Catastro de Tucumán — PARCELASRUBEP",
+      "adapter": "wfs",
+      "endpoint": "http://200.49.89.203/geoserver/dgct/wfs",
+      "version": "1.1.0",
+      "featureType": "dgct:PARCELASRUBEP",
+      "idField": "KEY",
+      "idType": "string",
+      "idPrefix": "AR-TUCUMAN-DGC-PARCELASRUBEP-",
+      "idPattern": "^[A-Za-z0-9_-]+$",
+      "outFields": [
+        "KEY"
+      ],
+      "geometryField": "GEOMETRY",
+      "requestProperties": true,
+      "paginationIdentity": "native-id",
+      "pageSize": 100,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 1048576,
+      "timeoutMs": 25000,
+      "browserTransport": "relay",
+      "countryCode": "AR",
+      "countryName": "Argentina",
+      "cityIds": [
+        "san_miguel_de_tucuman"
+      ],
+      "attribution": "Dirección General de Catastro de Tucumán; Gobierno de la Provincia de Tucumán",
+      "catalogueUrl": "https://catastrotucuman.gov.ar/gestiones/servicio-wms-wfs/",
+      "homepage": "https://aplicaciones.catastrotucuman.gov.ar/publicmaprube1.html",
+      "licence": "No explicit reuse licence found on the official public-service publication.",
+      "licenceNote": "Retain attribution. Public cadastral geometry is indicative; legal accuracy, currentness and reuse terms remain follow-ups.",
+      "nativeCrs": "EPSG:5345",
+      "responseCrs": "OGC CRS84",
+      "coverage": {
+        "type": "bbox",
+        "bbox": [
+          -65.27208609217483,
+          -26.89256683025398,
+          -65.16324700469362,
+          -26.78674005328321
+        ]
+      },
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "metricSrid": 32720,
+      "scope": "Published DGC parcel layer extent in San Miguel de Tucumán. Three bounded city-core parcels verified; legal municipal alignment and citywide completeness are unestablished.",
+      "defaultForCity": true
+    }
+  ]
+}

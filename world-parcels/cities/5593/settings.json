@@ -1,0 +1,457 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5593",
+  "name": "Sendai, Japan",
+  "point": [
+    38.2731458211357,
+    140.907061123702
+  ],
+  "bindings": [
+    {
+      "appCityId": "sendai",
+      "runtimeConfig": {
+        "id": "sendai",
+        "wupCityCode": "5593",
+        "label": "Sendai, Japan",
+        "currency": {
+          "locale": "ja-JP",
+          "code": "JPY"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            38.2731458211357,
+            140.907061123702
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            38.2731458211357,
+            140.907061123702
+          ],
+          "fallbackDataset": [
+            140.907061123702,
+            38.2731458211357
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "jp-moj-sendai-miyagino-registered-map-2025",
+          "idPrefix": "JP-MOJ-SENDAI-MIYAGINO-2025-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "登記所備付地図データ 仙台市宮城野区（法務省）; G-spatial Information Center, 2025 edition (used 2026-10-24). Adapted from Map XML to WGS84. https://www.geospatial.jp/ckan/dataset/908edd07-4618-4631-a69d-c70dc6fbf520"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "jp-moj-sendai-miyagino-registered-map-2025",
+      "name": "Sendai Miyagino Ward Ministry of Justice registry-map parcels (2025 public-coordinate sheets)",
+      "adapter": "moj-mapxml",
+      "endpoint": "https://www.geospatial.jp/ckan/dataset/908edd07-4618-4631-a69d-c70dc6fbf520/resource/2eeff73b-3b0e-45d6-81a2-6c06a7c73b18/download/04102-3700-2025.zip",
+      "catalogueUrl": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=908edd07-4618-4631-a69d-c70dc6fbf520",
+      "countryCode": "JP",
+      "cityIds": [
+        "sendai"
+      ],
+      "idPrefix": "JP-MOJ-SENDAI-MIYAGINO-2025-",
+      "idField": "id",
+      "idFields": [
+        "id"
+      ],
+      "outFields": [
+        "id"
+      ],
+      "idType": "string",
+      "identityRecipe": "Literal inner XML filename + ASCII # + native parcel m:筆/@id, prefixed by JP-MOJ-SENDAI-MIYAGINO-2025-. No normalization, zero-padding changes, geometry hash or response-order counter.",
+      "identityStabilityLimit": "Edition-scoped native IDs; annual continuity unverified. No identity merging across sheets or geometry overlaps.",
+      "archiveSha256": "8d477cf88213438e4b69ddfc70740c81e5f790cd71087af770771e2a10f1f22b",
+      "sheetIndex": [
+        {
+          "zip": "04102-3700-100.zip",
+          "xml": "04102-3700-100.xml",
+          "bbox": [
+            140.92196910532772,
+            38.29158311009547,
+            140.9288302701737,
+            38.29429139710709
+          ]
+        },
+        {
+          "zip": "04102-3700-101.zip",
+          "xml": "04102-3700-101.xml",
+          "bbox": [
+            140.95566588135782,
+            38.275786483422216,
+            140.96481970891546,
+            38.285249165937444
+          ]
+        },
+        {
+          "zip": "04102-3700-102.zip",
+          "xml": "04102-3700-102.xml",
+          "bbox": [
+            140.95566360250925,
+            38.2744350027901,
+            140.96481729428527,
+            38.27984090739364
+          ]
+        },
+        {
+          "zip": "04102-3700-103.zip",
+          "xml": "04102-3700-103.xml",
+          "bbox": [
+            140.95563019252154,
+            38.25145973868004,
+            140.97164719085268,
+            38.26632374671197
+          ]
+        },
+        {
+          "zip": "04102-3700-104.zip",
+          "xml": "04102-3700-104.xml",
+          "bbox": [
+            140.89392966522436,
+            38.25286270460405,
+            140.90078675274475,
+            38.258271034210225
+          ]
+        },
+        {
+          "zip": "04102-3700-105.zip",
+          "xml": "04102-3700-105.xml",
+          "bbox": [
+            140.9511376940296,
+            38.30146890280715,
+            140.95571810424903,
+            38.30687933099105
+          ]
+        },
+        {
+          "zip": "04102-3700-106.zip",
+          "xml": "04102-3700-106.xml",
+          "bbox": [
+            140.92823996668196,
+            38.271754543565585,
+            140.93967409718147,
+            38.28257407706896
+          ]
+        },
+        {
+          "zip": "04102-3700-107.zip",
+          "xml": "04102-3700-107.xml",
+          "bbox": [
+            140.91338084723148,
+            38.279350061838635,
+            140.91738407786616,
+            38.28160533637453
+          ]
+        },
+        {
+          "zip": "04102-3700-108.zip",
+          "xml": "04102-3700-108.xml",
+          "bbox": [
+            140.96023658392812,
+            38.27444097799975,
+            140.96481327350278,
+            38.277148947517055
+          ]
+        },
+        {
+          "zip": "04102-3700-109.zip",
+          "xml": "04102-3700-109.xml",
+          "bbox": [
+            140.95342449462103,
+            38.302815571114564,
+            140.9648729517806,
+            38.310929103495226
+          ]
+        },
+        {
+          "zip": "04102-3700-118.zip",
+          "xml": "04102-3700-118.xml",
+          "bbox": [
+            140.97133700510665,
+            38.26126286950614,
+            141.01135168145723,
+            38.283784534512925
+          ]
+        },
+        {
+          "zip": "04102-3700-120.zip",
+          "xml": "04102-3700-120.xml",
+          "bbox": [
+            140.88132650824298,
+            38.25797198206708,
+            140.90132367752574,
+            38.265863473204874
+          ]
+        },
+        {
+          "zip": "04102-3700-121.zip",
+          "xml": "04102-3700-121.xml",
+          "bbox": [
+            140.95336252112656,
+            38.282699751839225,
+            140.96136249136242,
+            38.29058958237572
+          ]
+        },
+        {
+          "zip": "04102-3700-122.zip",
+          "xml": "04102-3700-122.xml",
+          "bbox": [
+            140.97526479404786,
+            38.231983748866966,
+            140.9892556070742,
+            38.23988510159055
+          ]
+        },
+        {
+          "zip": "04102-3700-123.zip",
+          "xml": "04102-3700-123.xml",
+          "bbox": [
+            140.95730029547386,
+            38.233109974489956,
+            141.00329577058625,
+            38.263540548506114
+          ]
+        },
+        {
+          "zip": "04102-3700-124.zip",
+          "xml": "04102-3700-124.xml",
+          "bbox": [
+            140.9893085247404,
+            38.253350707179145,
+            141.0173096505975,
+            38.2635180043513
+          ]
+        },
+        {
+          "zip": "04102-3700-125.zip",
+          "xml": "04102-3700-125.xml",
+          "bbox": [
+            140.93514891859584,
+            38.30819461033804,
+            141.0060706458869,
+            38.343847264921905
+          ]
+        },
+        {
+          "zip": "04102-3700-85.zip",
+          "xml": "04102-3700-85.xml",
+          "bbox": [
+            140.98767207994726,
+            38.27709984005588,
+            140.99225287175528,
+            38.281160244034524
+          ]
+        },
+        {
+          "zip": "04102-3700-86.zip",
+          "xml": "04102-3700-86.xml",
+          "bbox": [
+            140.95790873965402,
+            38.232505000875044,
+            141.00132193484657,
+            38.25686336105838
+          ]
+        },
+        {
+          "zip": "04102-3700-87.zip",
+          "xml": "04102-3700-87.xml",
+          "bbox": [
+            140.98539463695622,
+            38.28115723046593,
+            140.99226176817564,
+            38.28521751686699
+          ]
+        },
+        {
+          "zip": "04102-3700-88.zip",
+          "xml": "04102-3700-88.xml",
+          "bbox": [
+            140.9648074801084,
+            38.27442515360134,
+            140.97168330239188,
+            38.28388792286825
+          ]
+        },
+        {
+          "zip": "04102-3700-89.zip",
+          "xml": "04102-3700-89.xml",
+          "bbox": [
+            140.96705871955686,
+            38.255499256327155,
+            140.97391963064902,
+            38.25956141733204
+          ]
+        },
+        {
+          "zip": "04102-3700-90.zip",
+          "xml": "04102-3700-90.xml",
+          "bbox": [
+            140.98081151087902,
+            38.27440297622657,
+            140.9899638854185,
+            38.28116609754568
+          ]
+        },
+        {
+          "zip": "04102-3700-91.zip",
+          "xml": "04102-3700-91.xml",
+          "bbox": [
+            140.96707844825292,
+            38.26495692373455,
+            140.97851472701845,
+            38.275774088941084
+          ]
+        },
+        {
+          "zip": "04102-3700-92.zip",
+          "xml": "04102-3700-92.xml",
+          "bbox": [
+            140.9213834888324,
+            38.281224511586025,
+            140.9259590558009,
+            38.2839309680833
+          ]
+        },
+        {
+          "zip": "04102-3700-93.zip",
+          "xml": "04102-3700-93.xml",
+          "bbox": [
+            140.93052957230805,
+            38.28257017926758,
+            140.9373976241951,
+            38.28932738912151
+          ]
+        },
+        {
+          "zip": "04102-3700-94.zip",
+          "xml": "04102-3700-94.xml",
+          "bbox": [
+            140.95113334594663,
+            38.30011977294586,
+            140.95342452605468,
+            38.302824971393996
+          ]
+        },
+        {
+          "zip": "04102-3700-95.zip",
+          "xml": "04102-3700-95.xml",
+          "bbox": [
+            140.92369780233736,
+            38.30284554291704,
+            140.92827499104277,
+            38.30690352021499
+          ]
+        },
+        {
+          "zip": "04102-3700-96.zip",
+          "xml": "04102-3700-96.xml",
+          "bbox": [
+            140.90078308768088,
+            38.252857435195274,
+            140.9122191662198,
+            38.26231636670425
+          ]
+        },
+        {
+          "zip": "04102-3700-97.zip",
+          "xml": "04102-3700-97.xml",
+          "bbox": [
+            140.9305403404263,
+            38.29067880254592,
+            140.93283042605273,
+            38.2933836233589
+          ]
+        },
+        {
+          "zip": "04102-3700-98.zip",
+          "xml": "04102-3700-98.xml",
+          "bbox": [
+            140.95796578672272,
+            38.27848459843058,
+            140.96711081257655,
+            38.285249165937444
+          ]
+        },
+        {
+          "zip": "04102-3700-99.zip",
+          "xml": "04102-3700-99.xml",
+          "bbox": [
+            140.92139802376903,
+            38.29338911363882,
+            140.92368784479973,
+            38.296093746849564
+          ]
+        }
+      ],
+      "sourceCrs": "EPSG:6678",
+      "nativeAxisOrder": "northing-easting",
+      "responseCrs": "EPSG:4326",
+      "returnsWGS84": true,
+      "metricSrid": 32654,
+      "dataVersion": "2025",
+      "browserTransport": "relay",
+      "maxSnapshotBytes": 41943040,
+      "maxResponseBytes": 41943040,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "capabilities": {
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "defaultForCity": true,
+      "scope": "Partial Sendai: 32 Public Coordinate System Zone 10 sheets in the 2025 Miyagino Ward (04102) registry-map package. The 93 arbitrary-coordinate sheets cannot be globally placed and are outside this georeferenced source scope. No complete ward or city coverage claim; exact WUP locator coverage unverified. Registry map accuracy and age vary.",
+      "attribution": "登記所備付地図データ 仙台市宮城野区（法務省）; G-spatial Information Center, 2025 edition (used 2026-10-24). Adapted from Map XML to WGS84. https://www.geospatial.jp/ckan/dataset/908edd07-4618-4631-a69d-c70dc6fbf520",
+      "licenceUrl": "https://www.geospatial.jp/ckan/dataset/fc3b0593-ce9e-40d1-aa33-94382d5f0da1/resource/47871bf1-4c85-48f7-a8fe-b27c6643c1c5/download/license.pdf",
+      "licenceNote": "MOJ custom terms permit reuse/adaptation and commercial use with attribution. Do not collect personal information or identify individuals by matching data. Source map age and accuracy vary; no boundary, title or ownership guarantee.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "JP",
+          "basis": "Official CKAN identifies Sendai Miyagino Ward / Ministry of Justice Article 14 registry-attached map and map-equivalent drawings.",
+          "evidence": [
+            "https://www.geospatial.jp/ckan/api/3/action/package_show?id=908edd07-4618-4631-a69d-c70dc6fbf520",
+            "https://front.geospatial.jp/moj-chizu-xml-readme/"
+          ]
+        }
+      }
+    }
+  ]
+}

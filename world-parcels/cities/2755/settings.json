@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2755",
+  "name": "Xangongo, Angola",
+  "point": [
+    -16.7479046011355,
+    14.9761625433827
+  ],
+  "bindings": [
+    {
+      "appCityId": "xangongo",
+      "runtimeConfig": {
+        "id": "xangongo",
+        "wupCityCode": "2755",
+        "label": "Xangongo, Angola",
+        "currency": {
+          "locale": "pt-AO",
+          "code": "AOA"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -16.7479046011355,
+            14.9761625433827
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -16.7479046011355,
+            14.9761625433827
+          ],
+          "fallbackDataset": [
+            14.9761625433827,
+            -16.7479046011355
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ao-agt-cunene-agt-layer-0",
+          "idPrefix": "AO-CUNENE-AGT-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "ANGOLA_GGPEN — Cunene_AGT_gdb / Cunene_AGT layer 0; AGT property-registration workflow. IGCA/AGT/GGPEN maintenance responsibilities are unverified."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ao-agt-cunene-agt-layer-0",
+      "adapter": "arcgis",
+      "name": "ANGOLA_GGPEN Cunene AGT property-registration polygons",
+      "endpoint": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Cunene_AGT_gdb/FeatureServer/0",
+      "idField": "ID_GGPEN",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "AO-CUNENE-AGT-",
+      "idType": "string",
+      "idPattern": "^[0-9a-f]{36}$",
+      "outFields": [
+        "OBJECTID",
+        "ID_GGPEN"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 500,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "AO",
+      "metricSrid": 32733,
+      "cityIds": [
+        "xangongo"
+      ],
+      "scope": "Cunene AGT property-registration parcels. Reviewed positive reads span central, northwest and southeast Ondjiva; full city coverage and legal-title authority are unestablished.",
+      "catalogueUrl": "https://www.arcgis.com/sharing/rest/content/items/c93d6a26dd4b49b689719523f0723c0d?f=pjson",
+      "licenceNote": "Public query access is verified; publisher metadata has no explicit parcel-data reuse licence. Redistribution and attribution terms require second-pass review.",
+      "attribution": "ANGOLA_GGPEN — Cunene_AGT_gdb / Cunene_AGT layer 0; AGT property-registration workflow. IGCA/AGT/GGPEN maintenance responsibilities are unverified.",
+      "defaultForCity": true
+    }
+  ]
+}

@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2214",
+  "name": "Daejeon, South Korea",
+  "point": [
+    36.3461964380978,
+    127.39195575042
+  ],
+  "bindings": [
+    {
+      "appCityId": "daejeon",
+      "runtimeConfig": {
+        "id": "daejeon",
+        "wupCityCode": "2214",
+        "label": "Daejeon, South Korea",
+        "currency": {
+          "locale": "ko-KR",
+          "code": "KRW"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            36.3461964380978,
+            127.39195575042
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            36.3461964380978,
+            127.39195575042
+          ],
+          "fallbackDataset": [
+            127.39195575042,
+            36.3461964380978
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "kr-daejeon-city-o2map-cadastral-wfs",
+          "idPrefix": "KR-DAEJEON-PNU-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Daejeon Metropolitan City Spatial Information Portal / 대전광역시 공간정보포털 · LSMD_CONT_LDREG_2024"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "kr-daejeon-city-o2map-cadastral-wfs",
+      "name": "Daejeon municipal continuous cadastral map 2024",
+      "adapter": "wfs",
+      "wfsProfile": "o2map-pnu-v1",
+      "endpoint": "https://gis.daejeon.go.kr/proxy/proxy.jsp?url=o2map/services/wfs",
+      "version": "1.1.0",
+      "featureType": "LSMD_CONT_LDREG_2024",
+      "geometryField": "THE_GEOM",
+      "idField": "PNU",
+      "idType": "string",
+      "idPattern": "^[0-9]{19}$",
+      "idPrefix": "KR-DAEJEON-PNU-",
+      "parcelNumberField": "PNU",
+      "outFields": [
+        "PNU"
+      ],
+      "requestProperties": true,
+      "sourceCrs": "EPSG:5186",
+      "responseCrs": "EPSG:4326",
+      "metricSrid": 32652,
+      "countryCode": "KR",
+      "cityIds": [
+        "daejeon"
+      ],
+      "metricSridByCity": {
+        "daejeon": 32652
+      },
+      "operator": "Daejeon Metropolitan City",
+      "homepage": "https://gis.daejeon.go.kr/",
+      "attribution": "Daejeon Metropolitan City Spatial Information Portal / 대전광역시 공간정보포털 · LSMD_CONT_LDREG_2024",
+      "licenceNote": "Municipal reuse terms are unverified; no licence is inferred from the separate national API. Retain municipal attribution.",
+      "scope": "Bounded Daejeon municipal continuous-cadastre observations; the 2024 layer and advertised extent do not establish citywide completeness or current legal title.",
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "browserTransport": "relay",
+      "maxConcurrentQueries": 1,
+      "pageSize": 200,
+      "idBatchSize": 20,
+      "maxFeatures": 5000,
+      "maxPages": 100,
+      "maxBboxKm2": 1,
+      "maxResponseBytes": 2097152,
+      "timeoutMs": 20000,
+      "defaultForCity": true
+    }
+  ]
+}

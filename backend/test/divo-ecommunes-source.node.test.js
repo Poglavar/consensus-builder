@@ -62,12 +62,35 @@ test('unknown or locally missing GUIDs remain unresolved; empty XML never proves
     assert.equal(reads, 1);
 });
 
-test('bounded observations do not claim complete area coverage, and supply locators for fresh ID reads', async () => {
+test('partition-checked bounded transfers do not claim complete area coverage, and supply locators for fresh ID reads', async () => {
     const source = createDivoEcommunesSource({ ...descriptor, idLookupBoundsNative: {} }, { fetchImpl: async () => new Response(xml()) });
     const result = await source.queryBounds([-5.376,5.847,-5.375,5.848]);
-    assert.equal(result.complete, false);
+    assert.equal(result.complete, true);
+    assert.equal(result.areaComplete, false);
+    assert.equal(result.authoritativeAbsence, false);
+    assert.equal(result.nativeQueries, 3);
     assert.ok(result.features.length);
     assert.equal((await source.queryIds([id])).complete, true);
+});
+
+test('partition disagreement retains every observed polygon but leaves the transfer incomplete', async () => {
+    let reads = 0;
+    const source = createDivoEcommunesSource(descriptor, { fetchImpl: async () => new Response(++reads === 1 ? '<result/>' : xml()) });
+    const result = await source.queryBounds([-5.376,5.847,-5.375,5.848]);
+    assert.equal(result.complete, false);
+    assert.equal(result.features.length, 1);
+});
+
+test('retries a transient server failure once and never retries an access denial', async () => {
+    let reads = 0;
+    const source = createDivoEcommunesSource(descriptor, { fetchImpl: async () => ++reads === 1
+        ? new Response('', { status: 500 }) : new Response(xml()) });
+    assert.equal((await source.queryIds([id])).complete, true);
+    assert.equal(reads, 2);
+    reads = 0;
+    const denied = createDivoEcommunesSource(descriptor, { fetchImpl: async () => { reads++; return new Response('', { status: 403 }); } });
+    await assert.rejects(denied.queryIds([id]));
+    assert.equal(reads, 1);
 });
 
 test('parser retains holes and ring order without closing, simplifying or repairing polygons', () => {

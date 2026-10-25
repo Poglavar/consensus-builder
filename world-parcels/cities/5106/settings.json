@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5106",
+  "name": "Bombay Heights, South Africa",
+  "point": [
+    -29.567660491012,
+    30.411953219533
+  ],
+  "bindings": [
+    {
+      "appCityId": "bombay_heights",
+      "runtimeConfig": {
+        "id": "bombay_heights",
+        "wupCityCode": "5106",
+        "label": "Bombay Heights, South Africa",
+        "currency": {
+          "locale": "en-ZA",
+          "code": "ZAR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -29.567660491012,
+            30.411953219533
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -29.567660491012,
+            30.411953219533
+          ],
+          "fallbackDataset": [
+            30.411953219533,
+            -29.567660491012
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "za-kzncogta-surveyor-general-cadastral-2026",
+          "idPrefix": "ZA-KZNCOGTA-SG2026-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "KwaZulu-Natal COGTA · ILIS Land tenure component · Surveyor General cadastral (March 2026)"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "za-kzncogta-surveyor-general-cadastral-2026",
+      "adapter": "arcgis",
+      "endpoint": "https://giswebmaps1.kzncogta.gov.za/server/rest/services/Land_tenure_component_2026/MapServer/0",
+      "name": "KZN COGTA ILIS Surveyor General cadastral (March 2026)",
+      "operator": "KwaZulu-Natal COGTA; Surveyor-General cadastral data",
+      "countryCode": "ZA",
+      "stateCode": "KZN",
+      "catalogueUrl": "https://giswebmaps1.kzncogta.gov.za/server/rest/services/Land_tenure_component_2026/MapServer/0",
+      "attribution": "KwaZulu-Natal COGTA · ILIS Land tenure component · Surveyor General cadastral (March 2026)",
+      "idPrefix": "ZA-KZNCOGTA-SG2026-",
+      "idField": "SGKEY",
+      "objectIdField": "OBJECTID_1",
+      "idType": "string",
+      "idPattern": "^[A-Z0-9]{21}$",
+      "identityKind": "native-key-geometry-sha256-v1",
+      "outFields": [
+        "OBJECTID_1",
+        "SGKEY"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 500,
+      "idBatchSize": 80,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 2,
+      "timeoutMs": 45000,
+      "metricSrid": 32736,
+      "cityIds": [
+        "bombay_heights"
+      ],
+      "defaultForCity": true,
+      "scope": "Bounded parcel observations near the unchanged Bombay Heights point within The Msunduzi. No citywide completeness claim; duplicate-key lifecycle and overlaps remain unverified.",
+      "licenceNote": "KZN COGTA copyright/provider is declared. Explicit geometry reuse/redistribution licence remains unestablished.",
+      "nativeCrs": "EPSG:4148",
+      "responseCrs": "EPSG:4326",
+      "coordinateOrder": "longitude,latitude",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true
+      },
+      "browserTransport": "relay"
+    }
+  ]
+}

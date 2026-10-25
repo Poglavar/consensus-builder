@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "6006",
+  "name": "Khulna, Bangladesh",
+  "point": [
+    22.837154971161,
+    89.5463159905925
+  ],
+  "bindings": [
+    {
+      "appCityId": "khulna",
+      "runtimeConfig": {
+        "id": "khulna",
+        "wupCityCode": "6006",
+        "label": "Khulna, Bangladesh",
+        "currency": {
+          "locale": "en-BD",
+          "code": "BDT"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            22.837154971161,
+            89.5463159905925
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            22.837154971161,
+            89.5463159905925
+          ],
+          "fallbackDataset": [
+            89.5463159905925,
+            22.837154971161
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "bd-kda-geospatialbangladesh-land-parcel",
+          "idPrefix": "BD-KDA-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "<a href=\"https://www.geospatialbangladesh.info/\">Geospatial Bangladesh | Khulna Development Authority</a> · non-commercial use only · KDA-area parcel observations; citywide completeness unverified"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "bd-kda-geospatialbangladesh-land-parcel",
+      "name": "Khulna KDA land parcels (Geospatial Bangladesh)",
+      "adapter": "wfs",
+      "endpoint": "https://www.geospatialbangladesh.info/geoserver/KDA/wfs",
+      "featureType": "KDA:kda_land_parcel",
+      "version": "1.0.0",
+      "geometryField": "geom",
+      "nativeIdMode": "feature-id",
+      "featureIdParameter": "featureID",
+      "idField": null,
+      "idType": "string",
+      "idPrefix": "BD-KDA-",
+      "idPattern": "^kda_land_parcel\\.[0-9]+$",
+      "outFields": [],
+      "requestProperties": true,
+      "pageSize": 200,
+      "idBatchSize": 40,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 4,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "minRequestIntervalMs": 200,
+      "country": "BD",
+      "coverage": {
+        "type": "bbox",
+        "bbox": [
+          89.34716579390775,
+          22.74450340585812,
+          89.64209168483701,
+          23.08074454976677
+        ]
+      },
+      "operator": "Geospatial Bangladesh; dataset labelled Khulna Development Authority",
+      "attribution": "<a href=\"https://www.geospatialbangladesh.info/\">Geospatial Bangladesh | Khulna Development Authority</a> · non-commercial use only · KDA-area parcel observations; citywide completeness unverified",
+      "license": "Public viewer states non-commercial use only; commercial reuse and government-to-publisher legal relationship require follow-up.",
+      "scope": "KDA-area parcels with bounded central Khulna evidence; advertised extent includes other localities. No citywide completeness or exact queue-point parcel claim.",
+      "cityIds": [
+        "khulna"
+      ],
+      "defaultForCity": true,
+      "countryCode": "BD",
+      "metricSridByCity": {
+        "khulna": 32645
+      },
+      "metricSrid": 32645
+    }
+  ]
+}

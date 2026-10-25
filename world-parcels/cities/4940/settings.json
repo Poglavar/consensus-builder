@@ -59,7 +59,7 @@
           "attribution": "Chief Surveyor-General · DFFE hosted Erven · adapted"
         },
         "buildings": {
-          "source": "overture-tiles"
+          "source": "osm"
         },
         "sidebar": {
           "disabledSections": [
@@ -92,6 +92,8 @@
       ],
       "queryFormat": "esri-json",
       "pageSize": 1000,
+      "idBatchSize": 80,
+      "maxConcurrentQueries": 1,
       "maxFeatures": 2000,
       "maxBboxKm2": 2,
       "boundsQueryMode": "object-ids",
@@ -125,7 +127,10 @@
         "matsulu": "199 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32736) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
         "khuma": "57 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
         "lenasia": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Lenasia. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
-        "vosman": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Vosman. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established."
+        "vosman": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Vosman. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "bloemfontein_za": "Fresh initial qualification on 2026-10-20: 3 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission.",
+        "edendale": "Fresh initial qualification on 2026-10-20: 3 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission. The current sample has 1 material overlap(s), maximum 2730.421 square metres; retain unchanged and investigate source quality.",
+        "kanyamazane": "Fresh initial qualification on 2026-10-20: 3 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission."
       },
       "metricSridByCity": {
         "middelburg": 32735

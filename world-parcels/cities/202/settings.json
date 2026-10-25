@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "202",
+  "name": "Asunción, Paraguay",
+  "point": [
+    -25.3178298972871,
+    -57.5499415260112
+  ],
+  "bindings": [
+    {
+      "appCityId": "asuncion",
+      "runtimeConfig": {
+        "id": "asuncion",
+        "wupCityCode": "202",
+        "label": "Asunción, Paraguay",
+        "currency": {
+          "locale": "es-PY",
+          "code": "PYG"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -25.3178298972871,
+            -57.5499415260112
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -25.3178298972871,
+            -57.5499415260112
+          ],
+          "fallbackDataset": [
+            -57.5499415260112,
+            -25.3178298972871
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "py-asuncion-municipal-sigasu-lote",
+          "idPrefix": "asuncion-municipal-datos-catastrales/objectid_1/",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Municipalidad de Asunción · Datos Catastrales"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "py-asuncion-municipal-sigasu-lote",
+      "name": "Municipalidad de Asunción — Datos Catastrales",
+      "adapter": "arcgis",
+      "endpoint": "https://www.asuncion.gov.py/arcgis/rest/services/Mapa_Web/Mapa_General/MapServer/32/query",
+      "idField": "catastro.sigasu.Lote.objectid_1",
+      "objectIdField": "catastro.sigasu.Lote.objectid_1",
+      "idType": "integer",
+      "idPrefix": "asuncion-municipal-datos-catastrales/objectid_1/",
+      "outFields": [
+        "catastro.sigasu.Lote.objectid_1"
+      ],
+      "queryFormat": "esri-json",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "objectIdManifestCheck": "id-rows",
+      "pageSize": 80,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 45000,
+      "maxConcurrentQueries": 2,
+      "countryCode": "PY",
+      "metricSrid": 32721,
+      "sourceCrs": "EPSG:32721",
+      "browserTransport": "relay",
+      "cityIds": [
+        "asuncion"
+      ],
+      "defaultForCity": true,
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "operator": "Municipalidad de Asunción",
+      "attribution": "Municipalidad de Asunción · Datos Catastrales",
+      "scope": "Municipal cadastral lot layer; bounded central and southeastern Asunción observations. WUP locator is not a parcel hit. Legal boundary alignment, all-city completeness and currentness remain unverified.",
+      "licenceNote": "Anonymous municipal parcel queries are public; no explicit open-data licence or reuse grant has been established.",
+      "catalogueUrl": "https://www.asuncion.gov.py/mapa-descargable-de-la-ciudad-de-asuncion",
+      "metadataUrl": "https://www.asuncion.gov.py/arcgis/rest/services/Mapa_Web/Mapa_General/MapServer/32?f=pjson",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "PY",
+          "basis": "First-party Municipality of Asunción cadastral lot layer Datos Catastrales, table catastro.sigasu.Lote; bounded full lot polygons verified in central Asunción.",
+          "evidence": [
+            "https://www.asuncion.gov.py/mapa-descargable-de-la-ciudad-de-asuncion",
+            "https://www.asuncion.gov.py/arcgis/rest/services/Mapa_Web/Mapa_General/MapServer/32?f=pjson"
+          ]
+        }
+      }
+    }
+  ]
+}

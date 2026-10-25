@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1101",
+  "name": "Quetta, Pakistan",
+  "point": [
+    30.1781556040132,
+    66.9935299290239
+  ],
+  "bindings": [
+    {
+      "appCityId": "quetta",
+      "runtimeConfig": {
+        "id": "quetta",
+        "wupCityCode": "1101",
+        "label": "Quetta, Pakistan",
+        "currency": {
+          "locale": "en-PK",
+          "code": "PKR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            30.1781556040132,
+            66.9935299290239
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            30.1781556040132,
+            66.9935299290239
+          ],
+          "fallbackDataset": [
+            66.9935299290239,
+            30.1781556040132
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "pk-balochistan-glis-khasra-parcels",
+          "idPrefix": "pk-balochistan-glis-quetta-khasra:",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "GLIS / LandInfo. Balochistan BLRMIS project scope corroborated by Board of Revenue; API operator affiliation unverified."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "pk-balochistan-glis-khasra-parcels",
+      "name": "Quetta GLIS cadastral khasra parcels (Ward-9 and Ward-10)",
+      "adapter": "pk-glis",
+      "endpoint": "https://api.ssbacha.net/api/parcels/filtered",
+      "countryCode": "PK",
+      "cityIds": [
+        "quetta"
+      ],
+      "idPrefix": "pk-balochistan-glis-quetta-khasra:",
+      "idField": "khasra_uid",
+      "outFields": [
+        "khasra_uid"
+      ],
+      "metricSrid": 32642,
+      "returnsWGS84": true,
+      "maxBboxKm2": 2,
+      "maxFeatures": 1000,
+      "maxResponseBytes": 1048576,
+      "timeoutMs": 20000,
+      "maxConcurrentQueries": 2,
+      "browserTransport": "relay",
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "scopes": [
+        {
+          "district": "Quetta",
+          "tehsil": "Quetta City",
+          "mauza": "Ward-9",
+          "uidPrefix": "20-01-31-570-0365-",
+          "extent": [
+            66.99152048,
+            30.1738829,
+            66.99845223,
+            30.18347053
+          ]
+        },
+        {
+          "district": "Quetta",
+          "tehsil": "Quetta City",
+          "mauza": "Ward-10",
+          "uidPrefix": "20-01-31-570-0366-",
+          "extent": [
+            66.99829107,
+            30.18184477,
+            67.0046452,
+            30.18771798
+          ]
+        }
+      ],
+      "scope": "Available digitized khasra records in central Quetta Ward-9 and Ward-10 only. Other mauzas and citywide completeness are unverified.",
+      "attribution": "GLIS / LandInfo. Balochistan BLRMIS project scope corroborated by Board of Revenue; API operator affiliation unverified.",
+      "catalogueUrl": "https://glis.ssbacha.net/",
+      "licenceNote": "No explicit reuse licence verified; public anonymous technical availability does not establish licence or title.",
+      "sourceDate": null,
+      "defaultForCity": true
+    }
+  ]
+}

@@ -1,3 +1,21 @@
+import { createSupermapParcelSource } from './supermap-source.js';
+import { createTaichungParcelSource } from './taichung-source.js';
+import { createMojMapXmlParcelSource } from './moj-mapxml-source.js';
+import { createUgnlisParcelSource } from './ugnlis-source.js';
+import { createArcgisWebmapParcelSource } from './arcgis-webmap-source.js';
+import { createKmlKmzParcelSource } from './kml-kmz-source.js';
+import { createGwangjuJijukParcelSource } from './gwangju-jijuk-source.js';
+import { createCadgisParcelSource } from './be-cadgis-source.js';
+import { createGisarWmsParcelSource } from './kg-gisar-wms-source.js';
+import { createDncSnigParcelSource } from './uy-dnc-snig-source.js';
+import { createGeojsonRangeParcelSource } from './geojson-range-source.js';
+import { createHuainanMapshineParcelSource } from './huainan-mapshine-source.js';
+import { createSofiaParcelSource } from './sofia-isofmap-source.js';
+import { createSantosLotesSource } from './santos-lotes-source.js';
+import { createGlisParcelSource } from './pk-glis-source.js';
+import { createInterpiSigefParcelSource } from './interpi-sigef-source.js';
+import { createKartverketParcelSource } from './kartverket-source.js';
+import { createShapefileRangeParcelSource } from './shapefile-range-source.js';
 // Resolves executable parcel descriptors and adapters for routes and authoritative proposal binding.
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -42,7 +60,26 @@ const customFetch = createPublicSourceFetch();
 const runtimeSources = new Map();
 export function clearParcelSourceRuntimeCache() { runtimeSources.clear(); }
 
-const parcelFactories = { 'dda-public-plots': createDdaParcelSource, 'shenzhen-land-certain': (_descriptor, opts) => createShenzhenLandCertainSource(opts), 'dgu-wfs': createDguParcelSource, arcgis: createArcgisParcelSource, wfs: createWfsParcelSource, 'ogc-api': createOgcApiParcelSource,
+const parcelFactories = {
+    'supermap-map': createSupermapParcelSource,
+    'taichung-gismap': createTaichungParcelSource,
+    'moj-mapxml': createMojMapXmlParcelSource,
+    'ugnlis-parcel-search': createUgnlisParcelSource,
+    'ecommunes-xml': createDivoEcommunesSource,
+    'arcgis-webmap': createArcgisWebmapParcelSource,
+    'kml-kmz': createKmlKmzParcelSource,
+    'gwangju-jijuk': createGwangjuJijukParcelSource,
+    'be-cadgis': createCadgisParcelSource,
+    'kg-gisar-wms': createGisarWmsParcelSource,
+    'uy-dnc-snig': createDncSnigParcelSource,
+    'geojson-range': createGeojsonRangeParcelSource,
+    'huainan-mapshine': createHuainanMapshineParcelSource,
+    'sofia-isofmap': createSofiaParcelSource,
+    'santos-lotes': createSantosLotesSource,
+    'pk-glis': createGlisParcelSource,
+    'interpi-sigef': createInterpiSigefParcelSource,
+    'kartverket-eiendom': createKartverketParcelSource,
+    'shapefile-range': createShapefileRangeParcelSource, 'dda-public-plots': createDdaParcelSource, 'shenzhen-land-certain': (_descriptor, opts) => createShenzhenLandCertainSource(opts), 'dgu-wfs': createDguParcelSource, arcgis: createArcgisParcelSource, wfs: createWfsParcelSource, 'ogc-api': createOgcApiParcelSource,
         'geojson-snapshot': (source, opts) => source.snapshotFormat === 'shapefile-zip'
             ? createShapefileSnapshotParcelSource(source, opts) : createGeojsonSnapshotParcelSource(source, opts),
         'shapefile-snapshot': createShapefileSnapshotParcelSource, 'shapefile-zip': createShapefileSnapshotParcelSource,

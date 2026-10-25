@@ -1,0 +1,229 @@
+{
+  "descriptor": {
+    "id": "py-asuncion-municipal-sigasu-lote",
+    "name": "Municipalidad de Asunción — Datos Catastrales",
+    "adapter": "arcgis",
+    "endpoint": "https://www.asuncion.gov.py/arcgis/rest/services/Mapa_Web/Mapa_General/MapServer/32/query",
+    "idField": "catastro.sigasu.Lote.objectid_1",
+    "objectIdField": "catastro.sigasu.Lote.objectid_1",
+    "idType": "integer",
+    "idPrefix": "asuncion-municipal-datos-catastrales/objectid_1/",
+    "outFields": [
+      "catastro.sigasu.Lote.objectid_1"
+    ],
+    "queryFormat": "esri-json",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "objectIdManifestCheck": "id-rows",
+    "pageSize": 80,
+    "idBatchSize": 80,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "timeoutMs": 45000,
+    "maxConcurrentQueries": 2,
+    "countryCode": "PY",
+    "metricSrid": 32721,
+    "sourceCrs": "EPSG:32721",
+    "browserTransport": "relay",
+    "cityIds": [
+      "asuncion"
+    ],
+    "defaultForCity": true,
+    "capabilities": {
+      "bbox": true,
+      "exactId": true,
+      "areaEnumeration": true,
+      "geometry": "full-wgs84"
+    },
+    "operator": "Municipalidad de Asunción",
+    "attribution": "Municipalidad de Asunción · Datos Catastrales",
+    "scope": "Municipal cadastral lot layer; bounded central and southeastern Asunción observations. WUP locator is not a parcel hit. Legal boundary alignment, all-city completeness and currentness remain unverified.",
+    "licenceNote": "Anonymous municipal parcel queries are public; no explicit open-data licence or reuse grant has been established.",
+    "catalogueUrl": "https://www.asuncion.gov.py/mapa-descargable-de-la-ciudad-de-asuncion",
+    "metadataUrl": "https://www.asuncion.gov.py/arcgis/rest/services/Mapa_Web/Mapa_General/MapServer/32?f=pjson",
+    "discovery": {
+      "jurisdiction": {
+        "countryCode": "PY",
+        "basis": "First-party Municipality of Asunción cadastral lot layer Datos Catastrales, table catastro.sigasu.Lote; bounded full lot polygons verified in central Asunción.",
+        "evidence": [
+          "https://www.asuncion.gov.py/mapa-descargable-de-la-ciudad-de-asuncion",
+          "https://www.asuncion.gov.py/arcgis/rest/services/Mapa_Web/Mapa_General/MapServer/32?f=pjson"
+        ]
+      }
+    }
+  },
+  "response": {
+    "displayFieldName": "catastro.sigasu.Lote.cuenta",
+    "fieldAliases": {
+      "catastro.sigasu.Lote.objectid_1": "objectid_1"
+    },
+    "geometryType": "esriGeometryPolygon",
+    "spatialReference": {
+      "wkid": 4326
+    },
+    "fields": [
+      {
+        "name": "catastro.sigasu.Lote.objectid_1",
+        "type": "esriFieldTypeOID",
+        "alias": "objectid_1"
+      }
+    ],
+    "features": [
+      {
+        "attributes": {
+          "catastro.sigasu.Lote.objectid_1": 105808
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                -57.635925202902136,
+                -25.286641124279477
+              ],
+              [
+                -57.63613448124025,
+                -25.28696441293316
+              ],
+              [
+                -57.636260034176026,
+                -25.287155586609053
+              ],
+              [
+                -57.636334235456395,
+                -25.28711833229834
+              ],
+              [
+                -57.63620886696039,
+                -25.286924448774514
+              ],
+              [
+                -57.63604313308099,
+                -25.286665900985476
+              ],
+              [
+                -57.63600255974127,
+                -25.286599521948567
+              ],
+              [
+                -57.635925202902136,
+                -25.286641124279477
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "attributes": {
+          "catastro.sigasu.Lote.objectid_1": 23914
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                -57.6357295176455,
+                -25.28675304140208
+              ],
+              [
+                -57.635906436062456,
+                -25.28702319053868
+              ],
+              [
+                -57.63592626568973,
+                -25.28705444050631
+              ],
+              [
+                -57.635999559438105,
+                -25.287014571462624
+              ],
+              [
+                -57.63579904591153,
+                -25.286714904457607
+              ],
+              [
+                -57.6357295176455,
+                -25.28675304140208
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "attributes": {
+          "catastro.sigasu.Lote.objectid_1": 27846
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                -57.63592626568973,
+                -25.28705444050631
+              ],
+              [
+                -57.635906436062456,
+                -25.28702319053868
+              ],
+              [
+                -57.63580866800949,
+                -25.28707445299891
+              ],
+              [
+                -57.635725267079046,
+                -25.287118970999764
+              ],
+              [
+                -57.635787190992055,
+                -25.287203499478803
+              ],
+              [
+                -57.635960192371186,
+                -25.287103329260745
+              ],
+              [
+                -57.63592626568973,
+                -25.28705444050631
+              ]
+            ]
+          ]
+        }
+      }
+    ]
+  },
+  "idRows": {
+    "displayFieldName": "catastro.sigasu.Lote.cuenta",
+    "fieldAliases": {
+      "catastro.sigasu.Lote.objectid_1": "objectid_1"
+    },
+    "fields": [
+      {
+        "name": "catastro.sigasu.Lote.objectid_1",
+        "type": "esriFieldTypeOID",
+        "alias": "objectid_1"
+      }
+    ],
+    "features": [
+      {
+        "attributes": {
+          "catastro.sigasu.Lote.objectid_1": 23914
+        }
+      },
+      {
+        "attributes": {
+          "catastro.sigasu.Lote.objectid_1": 27846
+        }
+      },
+      {
+        "attributes": {
+          "catastro.sigasu.Lote.objectid_1": 105808
+        }
+      }
+    ]
+  },
+  "manifest": {
+    "objectIdFieldName": "catastro.sigasu.Lote.objectid_1",
+    "objectIds": [
+      23914,
+      27846,
+      105808
+    ]
+  }
+}

@@ -61,6 +61,14 @@ export function createOgunWfsSchemaGuard(descriptor, { fetchImpl }) {
                 if (tag.local === 'complexType' && attr('name') === 'parcelsType') parcelType = true;
                 if (tag.local !== 'element') return;
                 const name = attr('name'), type = attr('type');
+                // QName spelling alone does not identify a type: a schema can
+                // rebind its prefixes while leaving every field name unchanged.
+                const prefix = type?.split(':')[0];
+                const typeNamespace = parser.resolve(prefix);
+                const expectedNamespace = prefix === 'xsd' ? XSD
+                    : prefix === 'gml' ? 'http://www.opengis.net/gml/3.2'
+                        : prefix === 'geonode' ? 'http://www.geonode.org/' : null;
+                if (!expectedNamespace || typeNamespace !== expectedNamespace) throw changed();
                 if (name === 'parcels' && type === 'geonode:parcelsType') { parcelElement = true; return; }
                 if (!Object.hasOwn(FIELDS, name) || FIELDS[name] !== type || fields.has(name)) throw changed();
                 fields.set(name, type);

@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "330",
+  "name": "Perth, Australia",
+  "point": [
+    -31.9309765692238,
+    115.856116711566
+  ],
+  "bindings": [
+    {
+      "appCityId": "perth",
+      "runtimeConfig": {
+        "id": "perth",
+        "wupCityCode": "330",
+        "label": "Perth, Australia",
+        "currency": {
+          "locale": "en-AU",
+          "code": "AUD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -31.9309765692238,
+            115.856116711566
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -31.9309765692238,
+            115.856116711566
+          ],
+          "fallbackDataset": [
+            115.856116711566,
+            -31.9309765692238
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "au-wa-slip-lgate-001-cadastre",
+          "idPrefix": "au-wa-slip-lgate-001-cadastre:objectid:",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Western Australian Land Information Authority (Landgate), SLIP LGATE-001. Simplified cadastral boundaries; Other (Non-Commercial), Landgate Personal Use Licence unless separately authorised."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "au-wa-slip-lgate-001-cadastre",
+      "name": "Landgate SLIP Cadastre (No Attributes) (LGATE-001)",
+      "adapter": "arcgis",
+      "endpoint": "https://token.slip.wa.gov.au/public/rest/services/SLIP_Public_Services/Property_and_Planning/MapServer/2/query",
+      "idField": "objectid",
+      "objectIdField": "objectid",
+      "idPrefix": "au-wa-slip-lgate-001-cadastre:objectid:",
+      "outFields": [
+        "objectid"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "queryFormat": "geojson",
+      "pageSize": 200,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "countryCode": "AU",
+      "metricSrid": 32750,
+      "sourceCrs": "EPSG:7844",
+      "scope": "Western Australia simplified cadastral parcel boundaries (LGATE-001). Perth is bound at its unchanged WUP metropolitan locator; not restricted to the narrower City of Perth LGA. Only bounded samples are verified, not metropolitan completeness, survey accuracy, legal parcel numbering or currentness. Native objectid identifies service rows; continuity across future republishes remains unverified.",
+      "attribution": "Western Australian Land Information Authority (Landgate), SLIP LGATE-001. Simplified cadastral boundaries; Other (Non-Commercial), Landgate Personal Use Licence unless separately authorised.",
+      "licenceUrl": "https://www0.landgate.wa.gov.au/__data/assets/pdf_file/0009/19890/SLIP-Transaction-Personal-Use-Licence.pdf",
+      "catalogueUrl": "https://catalogue.data.wa.gov.au/dataset/cadastre-no-attributes-lgate-001",
+      "operator": "Western Australian Land Information Authority (Landgate) / SLIP",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "AU",
+          "admin1": [
+            "AU-WA"
+          ],
+          "basis": "First-party LGATE-001 layer description covers Western Australian land parcel boundaries, including Perth.",
+          "evidence": [
+            "https://token.slip.wa.gov.au/public/rest/services/SLIP_Public_Services/Property_and_Planning/MapServer/2?f=pjson"
+          ]
+        }
+      },
+      "cityIds": [
+        "perth"
+      ],
+      "defaultForCity": true
+    }
+  ]
+}
