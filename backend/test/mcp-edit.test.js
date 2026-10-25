@@ -61,6 +61,20 @@ describe('granular authored editing', () => {
         expect(()=>edit(design,[{op:'remove',path:'/roadProposal/definition/osm/elements/0'}])).toThrow(/nodes/);
         expect(()=>edit(design,[{op:'transform',path:'/roadProposal/definition/polygon',eastM:1}])).toThrow(/derived/);
     });
+    it('prepares a new construction frame when canonical road nodes move to another city', () => {
+        const design=make('road',{points:[[-.1,51.5],[-.099,51.5]],preset:'1+1'}), before=structuredClone(design);
+        const next=edit(design,[
+            {op:'replace',path:'/roadProposal/definition/osm/elements/0/lon',value:78.474},
+            {op:'replace',path:'/roadProposal/definition/osm/elements/0/lat',value:17.36},
+            {op:'replace',path:'/roadProposal/definition/osm/elements/1/lon',value:78.475},
+            {op:'replace',path:'/roadProposal/definition/osm/elements/1/lat',value:17.361}
+        ]);
+        expect(next.roadProposal.definition.constructionFrame.anchor).toEqual([78.4745,17.3605]);
+        expect(next.site).toEqual(next.roadProposal.definition.polygon);
+        expect(validateDesignContent(next).ok).toBe(true);
+        expect(next.origin.cid).toBe(cidOfObject(design));
+        expect(design).toEqual(before);
+    });
     it('patches park trees, paths and furniture while preserving other authored decorations', () => {
         const design=make('space',{spaceKind:'park',treeCount:5}), saved=structuredClone(design.structureProposal.decorationDesign);
         const next=edit(design,[{op:'copy',from:'/structureProposal/decorationDesign/trees/0',path:'/structureProposal/decorationDesign/trees/-'},
