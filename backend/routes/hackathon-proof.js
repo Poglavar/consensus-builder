@@ -3,34 +3,34 @@
 
 import fs from 'node:fs';
 import { isCid } from '../cid.js';
+import { createProgramEvidenceReader } from '../hackathon/program-evidence.js';
 import { readProspectiveMarketStatus } from '../oracle/prospective-market-public.js';
 
 const ADDRESSES = JSON.parse(fs.readFileSync(
     new URL('../../frontend/contracts/addresses.json', import.meta.url), 'utf8'
 ))['solana-devnet'];
 
+const CASES = JSON.parse(fs.readFileSync(new URL('../hackathon/proof-cases.json', import.meta.url), 'utf8'));
+
 function baseUrl(req, env) {
     return (env.PUBLIC_API_BASE_URL || `${req.protocol}://${req.get('host')}`).replace(/\/$/, '');
 }
 
-// A judge case is an agreement (GET /hackathon/cases/:cid): its link only when the env names its CID.
+// Each headline case names a current agreement CID; invalid configuration remains explicitly missing.
 function caseLink(base, cid) {
     return isCid(cid) ? `${base}/hackathon/cases/${cid}` : null;
 }
 
-export function buildHackathonProofManifest({ apiBase, env = process.env } = {}) {
+export function buildHackathonProofManifest({ apiBase, env = process.env, deploymentEvidence = null } = {}) {
     const base = String(apiBase || '').replace(/\/$/, '');
     const repository = 'https://github.com/Poglavar/consensus-builder';
-    // The canonical case: a minted multi-parcel agreement with support, both forecast sides and its
-    // settlement. The executed case is its YES counterpart: executed on its lens's attestation. Each is
-    // an agreement CID; a case the env does not name is left out (the public audit checks the ones listed).
-    const canonicalCase = caseLink(base, env.HACKATHON_CASE_ID);
-    const executedCase = caseLink(base, env.HACKATHON_EXECUTED_CASE_ID);
+    const canonicalCase = caseLink(base, env.HACKATHON_CASE_ID ?? CASES.canonicalCase);
+    const executedCase = caseLink(base, env.HACKATHON_EXECUTED_CASE_ID ?? CASES.executedCase);
     return {
-        version: 1,
+        version: 2,
         title: 'Hyperstition: Markets for Possible Cities',
         product: 'Urban Game Theory by Consensus Builder',
-        thesis: 'Humans and agents propose, fund and forecast changes to real parcels, while public records resolve what actually happened.',
+        thesis: 'People and agents propose agreements over real parcels, fund them and forecast their execution. These markets settle from the agreement’s recorded chain status.',
         social: {
             x: { handle: '@UrbanGameTheory', url: 'https://x.com/UrbanGameTheory' }
         },
@@ -51,61 +51,13 @@ export function buildHackathonProofManifest({ apiBase, env = process.env } = {})
                 component: 'urbangametheory-frontend',
                 manifest: 'https://urbangametheory.xyz/release.json'
             },
-            programs: [{
-                name: 'ProposalPledge',
-                network: 'solana:devnet',
-                address: ADDRESSES.ProposalPledge,
-                programDataAddress: 'EtV7ufG6U5SSPsdhQe1TByPJR8mqPpFgV15KQNbNSyZQ',
-                lastDeployedSlot: 503098918,
-                binarySha256: '649c6fda6c9cc2bd5e224772ca562dfb6576a2f46ca46498ad271f5bf39d053c',
-                // On-chain Anchor IDL account. Since 2026-10-22 the checked-in idl/proposal_pledge.json is the
-                // agreement-reading source (plan-design-agreement.md M3), not yet deployed, so no checked-in
-                // file equals the deployed IDL and no hash is pinned to one; the note keeps the deployed one.
-                idlAddress: '4PJBp5KWgY1S55dCLAHqzD2jSmFwZFWUTZBj9JYVZb7X',
-                idlSha256: null,
-                upgradeAuthority: 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ',
-                note: 'The on-chain IDL (sha256 5a76b112e55762a3dc7e555ea69caf880c7569e7c09b36deade36d72d0a891e9) is the deployed proposal-reading interface; the checked-in idl/proposal_pledge.json is the agreement-reading source, not deployed yet.'
-            }, {
-                name: 'ProposalMarket',
-                network: 'solana:devnet',
-                address: ADDRESSES.ProposalMarket,
-                programDataAddress: 'AGmZusPm3FuiPkgMBY5dG1ZMfXKptqDjG3aMrgTpqhx7',
-                lastDeployedSlot: 506423834,
-                binarySha256: '3b797f63e285bdd4df953e55b4a9217c65d0d7fe1c1aeaf34ce3ceaa37fee62c',
-                // On-chain Anchor IDL account. Since 2026-10-22 the checked-in idl/proposal_market.json is the
-                // agreement-reading source with the LMSR instructions (plan-design-agreement.md M3), not yet
-                // deployed, so no checked-in file equals the deployed IDL; the note keeps the deployed hash.
-                idlAddress: '66R6QbYprREJcxd2saTTEWmMUPpyx6ixx2KtBCDYGMJZ',
-                idlSha256: null,
-                upgradeAuthority: 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ',
-                note: 'The on-chain IDL (sha256 952bc83dab15ecf55135be9eea87fda258ed440ca3a0aae873ce9739903145a5) is the deployed proposal-reading interface; the checked-in idl/proposal_market.json is the agreement-reading source, not deployed yet.'
-            }, {
-                // Programs pinned from the 2026-10-01 devnet upgrade (`solana program show`, then
-                // `solana program dump` + SHA-256; the two above re-read unchanged that day).
-                name: 'ProposalNFT',
-                network: 'solana:devnet',
-                address: ADDRESSES.ProposalNFT,
-                programDataAddress: 'GS6Tjof9kJCSUPLGJU2qDQH7VA1rTmJi6TdF1Fnn9RMP',
-                lastDeployedSlot: 506424114,
-                binarySha256: '14b0a11546bca4d0df55a0f903513eaed3e1e6578a0505f0e00960cc2033623d',
-                // On-chain Anchor IDL account matches the checked-in v3 interface.
-                idlAddress: 'EXYuUatUDNoa2TMXYGmnEWWJMxrhDxbetT3AR33Xw3zq',
-                idlSha256: '6e2688cd8a07be8f91ac38cb99bd6390b1a27cc04735be15a7d2d8666bf14a2e',
-                upgradeAuthority: 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ',
-                note: 'Deployed v3: site-first proposals, attested owner consent, open-ground verdict clearance and recorded payouts.'
-            }, {
-                name: 'ParcelNFT',
-                network: 'solana:devnet',
-                address: ADDRESSES.ParcelNFT,
-                programDataAddress: '6FghjCzxbcwxeAFfDTQcUzk8RzJCQXS6d5fZMLxfJbTn',
-                lastDeployedSlot: 506424160,
-                binarySha256: '80e3bd056f96eeafc381aa1a13624cc08a27684f4b40516143bb622f197d1719',
-                // On-chain Anchor IDL account; its decoded JSON equals blockchain/solana/idl/parcel_nft.json.
-                idlAddress: 'EjG4tuNWepkUJZmpFkLT4jdPn7S6n4NZkqduF2RJRRSL',
-                idlSha256: 'd648c176ad3469f4d9ed5af9c51c806d953331b13cc1313315fec763cc97c1c6',
-                upgradeAuthority: 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ'
-            }],
-            verifiedAt: '2026-10-01'
+            programs: deploymentEvidence?.programs || [],
+            verifiedAt: deploymentEvidence?.verifiedAt || null,
+            verification: {
+                state: deploymentEvidence?.state || 'unavailable',
+                method: deploymentEvidence?.method || null,
+                error: deploymentEvidence?.error || null
+            }
         },
         surfaces: {
             pitch: 'https://urbangametheory.xyz/deck.html',
@@ -130,8 +82,8 @@ export function buildHackathonProofManifest({ apiBase, env = process.env } = {})
             },
             courtOracle: `${base}/oracle/public-records/summary`,
             prospectiveMarket: `${base}/oracle/markets/prospective/status`,
-            ...(canonicalCase ? { canonicalCase } : {}),
-            ...(executedCase ? { executedCase } : {}),
+            canonicalCase,
+            executedCase,
             lensMembers: `${base}/lenses/members`,
             operations: `${base}/hackathon/operations.json`,
             activity: `${base}/agent/activity?limit=200`,
@@ -151,16 +103,25 @@ export function buildHackathonProofManifest({ apiBase, env = process.env } = {})
             'public judge surfaces, machine-readable proof and a read-only audit command'
         ],
         trustBoundary: {
-            live: ['proposal account state', 'Croatian court SAS attestations', 'declared recipe hashes', 'permissionless Solana verification'],
+            live: ['agreement account state', 'Croatian court SAS attestations', 'declared recipe hashes', 'permissionless Solana verification'],
             notClaimed: ['court evidence for all land changes', 'independent imagery corroboration', 'permit ingestion', 'LLM authority over outcomes'],
             network: 'Solana devnet; assets have no monetary value'
         }
     };
 }
 
-export function setupHackathonProofRoute(app, { env = process.env, statusReader = readProspectiveMarketStatus } = {}) {
-    app.get('/hackathon/proof.json', (req, res) => {
-        res.json(buildHackathonProofManifest({ apiBase: baseUrl(req, env), env }));
+export function setupHackathonProofRoute(app, {
+    env = process.env, statusReader = readProspectiveMarketStatus,
+    programReader = createProgramEvidenceReader({ env })
+} = {}) {
+    app.get('/hackathon/proof.json', async (req, res) => {
+        let deploymentEvidence;
+        try { deploymentEvidence = await programReader(); } catch {
+            // Do not expose a provider URL or recycle an old timestamp after a failed observation.
+            deploymentEvidence = { state: 'unavailable', error: 'Current devnet deployments could not be verified.' };
+        }
+        res.set('Cache-Control', 'no-store');
+        res.json(buildHackathonProofManifest({ apiBase: baseUrl(req, env), env, deploymentEvidence }));
     });
     app.get('/oracle/markets/prospective/status', (_req, res) => {
         res.json(statusReader({ env }));

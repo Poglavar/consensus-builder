@@ -92,7 +92,8 @@ describe('hackathon case model', () => {
                 pledges: { activeUsdc: '0', fulfilledUsdc: '0', revokedUsdc: '0', pledgeCount: '1' }
             },
             market: { state: 'available', exists: true, account: 'market', yesUsdc: '0.01', noUsdc: '0.01', resolved: true, outcome: 'NO' },
-            oracleEvents: [{ eventType: 'agreement_lifecycle', outcome: 'cancelled', source: { transaction: 'cancel' } }]
+            oracleEvents: [{ eventType: 'agreement_lifecycle', subject: { type: 'agreement', id: ACCOUNT },
+                outcome: 'cancelled', source: { hash: 'sha256:' + 'a'.repeat(64), transaction: 'cancel' } }]
         });
         expect(result.stages.find(item => item.id === 'support')).toMatchObject({
             state: 'complete', detail: '0.05 devnet USDC donated and later refunded; 0.1 devnet USDC pledged and later voided.'

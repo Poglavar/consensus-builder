@@ -81,9 +81,16 @@ function decisionStage(agreement, activity) {
         terminal ? `The agreement is ${status}.` : `The agreement is ${status}; no terminal decision has been recorded.`, evidence);
 }
 
-function evidenceStage(oracleEvents) {
+export function lifecycleEvidence(agreement, oracleEvents) {
+    return oracleEvents?.find(event => event.eventType === 'agreement_lifecycle'
+        && event.subject?.type === 'agreement' && event.subject.id === agreement.account
+        && event.outcome === agreement.status && TERMINAL_LIFECYCLES.has(event.outcome)
+        && /^sha256:[a-f0-9]{64}$/.test(event.source?.hash || '') && event.source?.transaction) || null;
+}
+
+function evidenceStage(agreement, oracleEvents) {
     if (!Array.isArray(oracleEvents)) return stage('evidence', 'Public evidence', 'unavailable', 'Oracle event state is unavailable.');
-    const event = oracleEvents[0];
+    const event = lifecycleEvidence(agreement, oracleEvents);
     if (!event) return stage('evidence', 'Public evidence', 'pending', 'No source-hashed terminal event exists for this agreement yet.');
     return stage('evidence', 'Public evidence', 'complete', `${event.eventType} recorded outcome ${event.outcome}.`, [
         event.source?.transactionUrl || transactionLink(event.source?.transaction),
@@ -91,18 +98,18 @@ function evidenceStage(oracleEvents) {
     ]);
 }
 
-function resolutionStage(market, oracleEvents) {
+function resolutionStage(market, evidence) {
     if (!market || market.state === 'unavailable') {
         return stage('resolution', 'Permissionless resolution', 'unavailable', market?.error || 'On-chain market state is unavailable.');
     }
     if (!market.exists) return stage('resolution', 'Permissionless resolution', 'blocked', 'A market must exist before it can resolve.');
     if (market.resolved) return stage('resolution', 'Permissionless resolution', 'complete', `Market resolved ${market.outcome}.`, [accountLink(market.account)]);
-    if (oracleEvents?.length) return stage('resolution', 'Permissionless resolution', 'ready', 'Qualifying evidence exists; any wallet may submit resolution.', [accountLink(market.account)]);
-    return stage('resolution', 'Permissionless resolution', 'pending', 'Market is open and waits for a terminal source-hashed event.', [accountLink(market.account)]);
+    if (evidence) return stage('resolution', 'Permissionless resolution', 'ready', 'Terminal agreement state is recorded; any wallet may submit resolution.', [accountLink(market.account)]);
+    return stage('resolution', 'Permissionless resolution', 'pending', 'Market is open and waits for a terminal agreement state.', [accountLink(market.account)]);
 }
 
 function settlementStage(market, activity) {
-    const terminal = activity.filter(event => [
+    const terminal = activity.filter(event => event.ok !== false && event.transaction && [
         'claim', 'refund', 'refundMyDonations', 'release', 'releaseDonations', 'fulfil', 'fulfill', 'fulfillPledge'
     ].includes(event.action?.type));
     if (terminal.length) {
@@ -112,7 +119,7 @@ function settlementStage(market, activity) {
     return stage('settlement', 'Payout or refund', 'pending', 'The market is resolved, but no claim or refund activity is recorded yet.');
 }
 
-export function buildHackathonCase({ agreement, activity = [], support = null, market = null, oracleEvents = [], links = {}, generatedAt } = {}) {
+export function buildHackathonCase({ agreement, activity = [], activityError = null, support = null, market = null, oracleEvents = [], links = {}, generatedAt } = {}) {
     if (!agreement?.cid) throw new Error('an agreement with its cid is required');
     const parcelSet = parcelSetIdentity(agreement);
     const minted = Boolean(agreement.onchain?.account);
@@ -127,8 +134,8 @@ export function buildHackathonCase({ agreement, activity = [], support = null, m
         supportStage(support, activity),
         forecastStage(market),
         decisionStage(agreement, activity),
-        evidenceStage(oracleEvents),
-        resolutionStage(market, oracleEvents),
+        evidenceStage(agreement, oracleEvents),
+        resolutionStage(market, lifecycleEvidence(agreement, oracleEvents)),
         settlementStage(market, activity)
     ];
     const transactions = unique(activity.map(event => event.transaction)).map(signature => ({
@@ -137,11 +144,32 @@ export function buildHackathonCase({ agreement, activity = [], support = null, m
     const actors = Array.from(new Map(activity.filter(event => event.actor?.id)
         .map(event => [event.actor.wallet || event.actor.id, event.actor])).values());
     const complete = stages.filter(item => item.state === 'complete').length;
+    // The headline proves the outcome. Optional support branches retain their own progress; a market
+    // payout does not imply that every pledge was fulfilled or that there were stakes on both sides.
+    const expectedOutcome = agreement.status === 'executed' ? 'YES'
+        : ['cancelled', 'expired'].includes(agreement.status) ? 'NO' : null;
+    const confirmed = type => activity.some(event => event.ok === true && event.transaction
+        && event.provenance?.source === 'solana_transaction' && event.action?.type === type);
+    const requirements = {
+        mint: minted && confirmed('mint'),
+        forecast: Boolean(market?.exists && (number(market.yesUsdc) > 0 || number(market.noUsdc) > 0) && confirmed('stake')),
+        decision: Boolean(expectedOutcome && confirmed(agreement.status === 'executed' ? 'execute' : agreement.status === 'cancelled' ? 'cancel' : 'expire')
+            && (agreement.status !== 'executed' || confirmed('attest'))),
+        evidence: Boolean(lifecycleEvidence(agreement, oracleEvents)),
+        resolution: Boolean(expectedOutcome && market?.resolved && market.outcome === expectedOutcome && confirmed('resolve')),
+        claim: confirmed('claim')
+    };
     return {
         version: 2,
         id: agreement.cid,
         generatedAt: generatedAt || new Date().toISOString(),
         state: complete === stages.length ? 'complete' : complete > 1 ? 'in_progress' : 'early',
+        outcomeProof: {
+            state: !activityError && Object.values(requirements).every(Boolean) ? 'verified' : 'incomplete',
+            outcome: expectedOutcome,
+            missing: Object.entries(requirements).filter(([, passed]) => !passed).map(([key]) => key),
+            activityError
+        },
         agreement: {
             cid: agreement.cid,
             name: agreement.title || agreement.cid,
@@ -166,7 +194,7 @@ export function buildHackathonCase({ agreement, activity = [], support = null, m
             { from: 'agreement', to: 'decision', kind: 'can_progress_in_parallel' },
             { from: 'decision', to: 'evidence', kind: 'materializes' },
             { from: 'forecast', to: 'resolution', kind: 'awaits' },
-            { from: 'evidence', to: 'resolution', kind: 'authorizes' },
+            { from: 'decision', to: 'resolution', kind: 'authorizes' },
             { from: 'resolution', to: 'settlement', kind: 'unlocks' }
         ],
         actors,

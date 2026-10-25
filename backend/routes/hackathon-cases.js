@@ -3,9 +3,12 @@
 // (the recorded onchain account, else PDA(sponsor, CID)) is the subject of its market, pledges and
 // lifecycle events. GET never manufactures a completed stage.
 import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
 import { buildHackathonCase } from '../hackathon/case-model.js';
 import { eventFromRow } from './land-events.js';
-import { agreementEvents, mergeEvents, runEvents } from './agent-activity.js';
+import { agreementAccountIndex, agreementEvents, chainEvents, mergeEvents, runEvents } from './agent-activity.js';
+import { loadIdls } from '../solana/tx-decoder.js';
+import { buildAddressBook } from '../solana/address-book.js';
 import { loadAgreement } from './agreements.js';
 import { agreementAccountOf } from '../agreements/onchain.js';
 import { isCid } from '../cid.js';
@@ -47,20 +50,36 @@ async function loadCaseAgreement(pool, cid) {
     };
 }
 
-async function loadActivity(pool, cid) {
+let caseIdls;
+async function loadActivity(pool, cid, { decode, book = buildAddressBook() } = {}) {
     const [runs, agreements] = await Promise.all([
         pool.query(`
             SELECT run_id, persona, mode, status, stage, summary, started_at, updated_at
               FROM consensus.agent_run
+             WHERE EXISTS (
+                 SELECT 1 FROM jsonb_array_elements(COALESCE(summary->'activities', '[]'::jsonb)) activity
+                  WHERE activity->'entity'->>'id' = $1 OR activity->'action'->>'agreementCid' = $1
+             )
              ORDER BY updated_at DESC
              LIMIT 250
-        `),
-        pool.query('SELECT cid, title, created_at FROM consensus.agreement WHERE cid = $1', [cid])
+        `, [cid]),
+        pool.query("SELECT cid, title, created_at, onchain, content->>'sponsor' AS sponsor FROM consensus.agreement WHERE cid = $1", [cid])
     ]);
+    const agreementsByAccount = agreementAccountIndex(agreements.rows);
+    // Scope before limiting: unrelated new activity must never age a headline case out of its proof.
+    const transactions = agreementsByAccount.size ? await pool.query(`
+        SELECT signature, slot, block_time, raw, created_at FROM consensus.solana_transaction
+         WHERE cluster = 'devnet' AND touched_addresses && $1::text[]
+         ORDER BY block_time DESC NULLS LAST, slot DESC LIMIT 1000
+    `, [[...agreementsByAccount.keys()]]) : { rows: [] };
+    caseIdls ??= loadIdls(fileURLToPath(new URL('../../blockchain/solana/idl', import.meta.url)));
+    const confirmed = chainEvents(transactions.rows, { book, idls: caseIdls, agreementsByAccount, ...(decode ? { decode } : {}) })
+        .filter(event => event.ok === true);
     return mergeEvents(
-        runs.rows.flatMap(runEvents),
-        agreementEvents(agreements.rows)
-    ).filter(event => String(event.entity?.id || event.action?.agreementCid || '') === cid);
+        agreementEvents(agreements.rows),
+        runs.rows.flatMap(row => runEvents(row, book)),
+        confirmed
+    ).filter(event => event.ok !== false && String(event.entity?.id || event.action?.agreementCid || '') === cid);
 }
 
 // The agreement's land events: its terminal lifecycle event (subject its account) and the per-parcel
@@ -167,10 +186,12 @@ export function setupHackathonCasesRoute(app, pool, {
             const city = agreement.city ? `?city=${encodeURIComponent(agreement.city)}` : '';
             return res.json(buildHackathonCase({
                 agreement, activity, support, market, oracleEvents,
+                activityError: activityResult.status === 'rejected' ? 'Confirmed activity could not be read.' : null,
                 links: {
                     self: `${api}/hackathon/cases/${encodeURIComponent(agreement.cid)}`,
                     agreement: `${api}/agreements/${encodeURIComponent(agreement.cid)}`,
                     map: `${site}/agreements/${encodeURIComponent(agreement.cid)}${city}`,
+                    market: account ? `${site}/bets/${encodeURIComponent(account)}${city}` : null,
                     activity: `${api}/agent/activity?agreement=${encodeURIComponent(agreement.cid)}&limit=200`,
                     support: account ? `${api}/agent/pledges/${encodeURIComponent(account)}` : null,
                     events: `${api}/oracle/events?agreement=${encodeURIComponent(agreement.cid)}`

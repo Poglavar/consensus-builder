@@ -58,6 +58,18 @@ An agreement whose owners' decision rule is binding. This is the agreement kind 
 
 An owners' or community agreement whose decisions are counted without binding chain settlement. A poll can be published and receive signed decisions; it is not minted.
 
+### Community consultation
+
+A community agreement asking for non-binding support for its referenced designs. It carries no land allocations, cash transfers or owner approval rule. Its optional `consultation` metadata names an organiser by a canonical `did:web` identifier and an HTTPS participation page. Changing the designs or consultation metadata creates a new agreement CID; reporting results does not change the agreement.
+
+### Consultation organiser
+
+The website identified by a community agreement's `consultation.organiser`. Its DID document lists wallets under `assertionMethod` that may report on its behalf, qualified by network and address using CAIP-10. Live website verification confirms only that the site currently lists the signing wallet; it establishes neither organisational legitimacy nor the correctness of a consultation procedure or result.
+
+### Community result report
+
+An immutable `community-result/v1` record containing the agreement CID, organiser DID, signing wallet, a plain-text statement, optional HTTPS report link, signing time and a committed DID-document snapshot, with a wallet signature over those fields. Reports are content-addressed, pinned and indexed append-only; later statements retain earlier reports as history. Reports may follow the consultation deadline and require no mint or chain transaction. Readers reverify both the signed record and the website's current wallet list. Solana message signatures are the implemented signing method.
+
 ### Agreement input
 
 Land consumed by the included designs, with its source-qualified cadastral references and holder snapshot. Inputs can also include modeled open ground.
@@ -65,6 +77,8 @@ Land consumed by the included designs, with its source-qualified cadastral refer
 ### Agreement output
 
 A land piece standing on the input land after the included designs are applied. Its committed identity is a `piece1-sha256:` hash of the defined output projection, not a permanent cadastral identifier.
+
+An unchanged whole cadastral parcel commits to its source geometry, including its Polygon or MultiPolygon type. Splits and designed pieces commit to their resulting geometry. An unchanged whole parcel without a different allocation retains the holders named in the agreement's published inputs.
 
 ### Allocation
 
@@ -224,7 +238,7 @@ The set of designs currently applied in one browser and the land fabric they pro
 
 A shared same-level centerline node and its incident street arms, with the cross-sections and corner land needed to connect them. Each participating road design records its split stretches and the neighbouring arms needed to rebuild its own footprint. A crossing at different levels or through a protected bridge/tunnel span is not a road junction.
 
-MCP plan drafting and revision author the included roads as a complete network before parcel binding and agreement output calculation. Changed junctions produce revised road designs and CIDs. Reading, applying or comparing published records does not rewrite their topology.
+MCP agreement drafting and revision author the included roads as a complete network before parcel binding and agreement output calculation. Changed junctions produce revised road designs and CIDs. Reading, applying or comparing published records does not rewrite their topology.
 
 ### Map share
 
@@ -233,6 +247,8 @@ A link naming a selected set of published designs and the current map view, incl
 Choosing “Unapply existing & continue” replaces the conflicting applied designs. An incoming parcel layout also replaces applied roads, layouts and content occupying its authored plots; designs outside that ground remain applied. Unapplied designs remain saved. The replacement commits together, or retains the previous working composition if any member cannot be applied.
 
 Replacement re-derives only the affected ground and its spatial dependencies. Applied designs elsewhere are not replayed as part of that local change.
+
+Selecting an object in model 3D, including a design from a list or a click-stack section, retains the camera and surrounding composition. A yellow pulsing outline follows the selected building or massing's drawn volume, or the authored ground boundary for parcels and ground-only designs; reduced-motion views use a steady outline. Ground-only designs also show a transparent yellow hatch across their authored surface; formed and cadastral parcels use an unfilled boundary, including when a formed parcel shares the design's geometry. Selection does not recolor underlying parcel surfaces or isolate the design.
 
 Restoring a saved camera retains the map's display settings and surrounding context. Its selected design is highlighted without isolating it from the shared composition.
 
@@ -244,9 +260,17 @@ When shared designs conflict with the current map, the person chooses whether to
 
 An immutable `plan/v1` snapshot containing a title, a selected set of published design CIDs and a map view. Its canonical content has its own CID and permanent `/plans/<cid>` link. Changing the title, membership or saved view creates a new snapshot and link; existing links keep their original content. It references existing designs without changing their authorship, geometry or publication. It carries no land allocations, money or decision rules; those belong to an agreement. The backend address used to access a plan is transport configuration, not part of its content.
 
+A private named-plan draft can reference unpublished design revisions carried with it. Publishing that draft first publishes its missing designs, then the named snapshot, and verifies the same content identifiers. Drafting and editing a named plan do not derive agreement ground or reconnect roads.
+
+### Private draft reference
+
+An expiring bearer URL resolving to an immutable unpublished design, agreement or named plan and its exact member revisions. It persists independently of an MCP client session; its stated expiry limits retention. Exported canonical content can restore it after expiry. A private preview is not publication, application, consent or a permanent share link.
+
 ### Applied / unapplied
 
 Whether a design currently contributes to the working composition. Application expresses a modeled map effect, independently of consent, chain execution and physical construction.
+
+Import retains a design definition independently of the currently viewed ground context. Reconstruction uses its authored geography and actual cadastral source references; descriptive city text does not determine eligibility.
 
 ### Replay
 
@@ -684,7 +708,7 @@ An evidence-qualified association between a source or project record and a real-
 
 ### City
 
-The application's geographic context for filing records, selecting sources and expressing local assumptions such as currency. The published city is resolved from the design's place; it is not a parcel-source identity or legal authority.
+The application's geographic context for filing records, selecting sources and expressing local assumptions such as currency. The published city is resolved from the design's place; it is not a parcel-source identity or legal authority. Descriptive city text on a design or agreement does not gate import, reconstruction or rendering. A required cadastral source context is resolved from the design's ground geometry and source coverage, independently of that text.
 
 ### Jurisdiction
 

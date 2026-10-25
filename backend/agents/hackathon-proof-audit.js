@@ -1,6 +1,8 @@
 // Read-only audit of the public hackathon proof surface. This deliberately consumes the same HTTP
 // contracts a judge or outside agent sees; it does not query the database or trust local fixtures.
 
+import { isCid } from '../cid.js';
+
 // The land event an agreement account's terminal status is recorded as (oracle/agreement-lifecycle.js).
 const AGREEMENT_LIFECYCLE_EVENT_TYPE = 'agreement_lifecycle';
 
@@ -81,12 +83,37 @@ function validateProspectiveSettlement(status) {
 
 // Whether a case's activity holds an action of this type (and side) with a transaction behind it.
 function caseAction(caseGraph, type, side = null) {
-    return (caseGraph?.activity || []).some(event => event.action?.type === type
+    return (caseGraph?.activity || []).some(event => event.ok === true
+        && event.provenance?.source === 'solana_transaction' && event.action?.type === type
         && (side === null || String(event.action?.side || '').toLowerCase() === side)
         && Boolean(event.transaction));
 }
 
-const stagesComplete = (caseGraph, ids) => ids.every(id => caseGraph?.stages?.find(item => item.id === id)?.state === 'complete');
+function casePointer(value, base) {
+    try {
+        const url = new URL(value);
+        const prefix = `${base}/hackathon/cases/`;
+        return url.href.startsWith(prefix) && isCid(url.href.slice(prefix.length)) ? url.href.slice(prefix.length) : null;
+    } catch { return null; }
+}
+
+// Independently check the linked agreement, source event, successful confirmed actions and pool.
+// Optional donation/pledge branches and multi-parcel assembly are not claims of these outcome cards.
+function caseOutcome(caseGraph, cid, status, outcome) {
+    const account = caseGraph?.agreement?.account;
+    const market = caseGraph?.branches?.forecast;
+    const evidence = caseGraph?.branches?.evidence?.some(event => event.eventType === AGREEMENT_LIFECYCLE_EVENT_TYPE
+        && event.subject?.type === 'agreement' && event.subject.id === account && event.outcome === status
+        && /^sha256:[a-f0-9]{64}$/.test(event.source?.hash || '') && Boolean(event.source?.transaction));
+    return Boolean(cid && caseGraph?.id === cid && caseGraph.agreement?.cid === cid && account
+        && caseGraph.agreement.status === status && caseGraph.parcelSet?.parcelCount > 0
+        && evidence && caseAction(caseGraph, 'mint') && caseAction(caseGraph, 'stake')
+        && caseAction(caseGraph, status === 'executed' ? 'execute' : 'cancel')
+        && (status !== 'executed' || caseAction(caseGraph, 'attest'))
+        && market?.resolved === true && market.outcome === outcome
+        && Number(market.yesUsdc) + Number(market.noUsdc) > 0
+        && caseAction(caseGraph, 'resolve') && caseAction(caseGraph, 'claim'));
+}
 
 async function readJson(fetchImpl, url) {
     const response = await fetchImpl(url, { headers: { accept: 'application/json' } });
@@ -128,15 +155,11 @@ export async function auditHackathonProof({
         if (result.status === 'fulfilled') values[key] = result.value;
         else errors[key] = result.reason instanceof Error ? result.reason.message : String(result.reason);
     });
-    // The agreement cases the proof manifest declares (GET /hackathon/cases/:cid); each is checked only
-    // when declared.
-    const declaredCases = ['canonicalCase', 'executedCase'].filter(key => values.proofManifest?.publicProof?.[key]);
-    await Promise.all(declaredCases.map(async key => {
-        try {
-            values[key] = await readJson(fetchImpl, values.proofManifest.publicProof[key]);
-        } catch (error) {
-            errors[key] = error instanceof Error ? error.message : String(error);
-        }
+    const caseIds = Object.fromEntries(['canonicalCase', 'executedCase'].map(key =>
+        [key, casePointer(values.proofManifest?.publicProof?.[key], base)]));
+    await Promise.all(Object.entries(caseIds).filter(([, cid]) => cid).map(async ([key]) => {
+        try { values[key] = await readJson(fetchImpl, values.proofManifest.publicProof[key]); }
+        catch (error) { errors[key] = error instanceof Error ? error.message : String(error); }
     }));
 
     const expectedFact = `${base}/agent/oracle/facts`;
@@ -173,54 +196,18 @@ export async function auditHackathonProof({
     const chronology = externalProof.chronology;
     const prospectiveSettlement = validateProspectiveSettlement(values.prospectiveStatus);
 
-    // The canonical case: one minted multi-parcel agreement with a donation, a pledge and both forecast
-    // sides, then its decision, public evidence, resolution and settlement.
     const canonical = values.canonicalCase;
-    const canonicalSetup = Boolean(
-        canonical?.parcelSet?.parcelCount >= 2
-        && canonical?.agreement?.account
-        && Number(canonical.branches?.support?.donations?.totalUsdc) > 0
-        && (Number(canonical.branches?.support?.pledges?.pledgeCount) > 0 || caseAction(canonical, 'pledge'))
-        && Number(canonical.branches?.forecast?.yesUsdc) > 0
-        && Number(canonical.branches?.forecast?.noUsdc) > 0
-        && (canonical.activity || []).some(event => event.action?.type === 'propose')
-        && caseAction(canonical, 'mint') && caseAction(canonical, 'donate') && caseAction(canonical, 'pledge')
-        && caseAction(canonical, 'stake', 'yes') && caseAction(canonical, 'stake', 'no')
-    );
-    const terminalStages = ['decision', 'evidence', 'resolution', 'settlement'];
-    // The executed case is the YES side: the lens's decision recorded (attest), the agreement executed,
-    // its market resolved YES, the escrowed donations released, the pledge fulfilled and the YES claimed.
     const executed = values.executedCase;
-    const executedYes = Boolean(
-        executed?.agreement?.account
-        && String(executed.agreement.status || '').toLowerCase() === 'executed'
-        && caseAction(executed, 'attest') && caseAction(executed, 'execute')
-        && executed.branches?.forecast?.resolved === true
-        && String(executed.branches?.forecast?.outcome || '').toUpperCase() === 'YES'
-        && caseAction(executed, 'resolve') && caseAction(executed, 'releaseDonations') && caseAction(executed, 'fulfillPledge')
-        && caseAction(executed, 'claim', 'yes')
-        && stagesComplete(executed, terminalStages)
-    );
     const caseChecks = [
-        ...(declaredCases.includes('canonicalCase') ? [
-            check('canonical_case_setup', canonicalSetup,
-                'One multi-parcel agreement proves its mint, a donation, a pledge and both forecast sides',
-                canonical ? {
-                    id: canonical.id, parcelCount: canonical.parcelSet?.parcelCount || 0,
-                    progress: canonical.progress, transactions: canonical.transactions?.length || 0
-                } : errors.canonicalCase || null),
-            check('canonical_case_terminal', stagesComplete(canonical, terminalStages),
-                'The canonical agreement also proves decision, evidence, resolution and settlement',
-                canonical ? { id: canonical.id, state: canonical.state, stages: canonical.stages } : errors.canonicalCase || null)
-        ] : []),
-        ...(declaredCases.includes('executedCase') ? [
-            check('executed_case_yes', executedYes,
-                'An agreement executed on its lens attestation and its market resolved YES and paid the winner',
-                executed ? {
-                    id: executed.id, status: executed.agreement?.status || null,
-                    outcome: executed.branches?.forecast?.outcome || null, stages: executed.stages
-                } : errors.executedCase || null)
-        ] : [])
+        check('case_evidence_pointers', Boolean(caseIds.canonicalCase && caseIds.executedCase
+            && caseIds.canonicalCase !== caseIds.executedCase),
+        'Both headline outcomes declare distinct current agreement evidence URLs', caseIds),
+        check('canonical_case_no', caseOutcome(canonical, caseIds.canonicalCase, 'cancelled', 'NO'),
+            'The cancelled agreement proves its mint, forecast, cancellation, source record, NO resolution and winning claim',
+            canonical ? { id: canonical.id, outcome: canonical.branches?.forecast?.outcome, progress: canonical.progress } : errors.canonicalCase || 'Missing cancelled case'),
+        check('executed_case_yes', caseOutcome(executed, caseIds.executedCase, 'executed', 'YES'),
+            'The executed agreement proves its mint, forecast, lens decision, execution, source record, YES resolution and winning claim',
+            executed ? { id: executed.id, outcome: executed.branches?.forecast?.outcome, progress: executed.progress } : errors.executedCase || 'Missing executed case')
     ];
 
     // Attester diversity: ownership attestations from at least two distinct lens members.
@@ -241,7 +228,6 @@ export async function auditHackathonProof({
                 agreementCid: supporter.support?.agreementCid || null, account: supporter.support?.account || null,
                 transaction: supporterSignature, ageHours: Math.round(supporterAge * 10) / 10, maxAgeHours: maxRunAgeHours
             } : errors.runs || 'no completed supporter run carries a transaction'),
-        // Advisory until the agreement program is deployed on devnet and an agreement reaches a terminal state.
         check('agreement_lifecycle_oracle', Boolean(lifecycle),
             'A source-hashed terminal agreement event is publicly auditable',
             lifecycle ? { eventId: lifecycle.id, outcome: lifecycle.outcome, transaction: lifecycle.source.transaction } : errors.oracleEvents || null,
@@ -275,7 +261,8 @@ export async function auditHackathonProof({
         check('release_artifact_identity', Boolean(
             values.proofManifest?.releaseArtifacts?.backend?.commit
             && values.proofManifest?.releaseArtifacts?.frontend?.manifest
-            && values.proofManifest?.releaseArtifacts?.programs?.length >= 2
+            && ['Agreement', 'ProposalMarket', 'ProposalPledge'].every(name =>
+                values.proofManifest?.releaseArtifacts?.programs?.some(program => program.name === name))
             && values.proofManifest.releaseArtifacts.programs.every(program =>
                 Number.isSafeInteger(program.lastDeployedSlot)
                 && /^[a-f0-9]{64}$/.test(program.binarySha256 || '')
@@ -284,6 +271,11 @@ export async function auditHackathonProof({
         ),
         'Backend, frontend build and mutable Solana deployments have distinct public identities',
         values.proofManifest?.releaseArtifacts || errors.proofManifest || null),
+        check('release_artifact_freshness', values.proofManifest?.releaseArtifacts?.verification?.state === 'verified'
+            && time(values.proofManifest.releaseArtifacts.verifiedAt) > 0
+            && Number(now) - time(values.proofManifest.releaseArtifacts.verifiedAt) >= 0
+            && Number(now) - time(values.proofManifest.releaseArtifacts.verifiedAt) <= 3_600_000,
+        'Current devnet deployments were observed within the last hour', values.proofManifest?.releaseArtifacts?.verifiedAt || null),
         ...caseChecks,
         check('human_agent_activity_matrix', Object.values(activityMatrix).every(Boolean),
             'Humans, deterministic and LLM agents, and a resolver share one transaction-backed activity stream',
