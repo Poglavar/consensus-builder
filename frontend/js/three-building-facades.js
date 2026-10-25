@@ -35,8 +35,8 @@
 
     function buildingKey(feature, city = '') {
         const p = feature.properties || {};
-        // Ownership is the design unit: every volume on a parcel shares its facade identity.
-        // Building/proposal IDs and regenerated geometry must not change an owner's design.
+        // Parcel ownership shares its shade and window details across volumes. Mixed style
+        // and glass tint use the independent building identity below.
         const parcelId = p.parcelId == null ? '' : String(p.parcelId).trim();
         if (parcelId) return JSON.stringify([city, 'parcel', parcelId]);
         return buildingIdentityKey(feature, city);
@@ -66,10 +66,13 @@
             throw new TypeError('Facade height must be a positive number.');
         }
         const seed = hashKey(key);
+        const appearanceSeed = hashKey(identityKey + ':style');
         const glassSeed = hashKey(identityKey + ':glass');
+        const storeys = Math.max(1, Math.round(height / storeyHeight));
+        const eligibleStyles = STYLES.filter(style => !style.panelWidth || storeys >= 10);
         return {
             seed,
-            style: seed % STYLES.length,
+            style: STYLES.indexOf(eligibleStyles[appearanceSeed % eligibleStyles.length]),
             bayWidth: 2.8 + ((seed >>> 8) % 9) * 0.1,
             tone: 0.94 + ((seed >>> 16) % 13) * 0.01,
             windowStyle: hashKey(key + ':windows') % WINDOW_STYLES.length,
@@ -77,7 +80,7 @@
             shutterColor: hashKey(key + ':shutter-color') % SHUTTER_COLORS.length,
             glassColor: glassSeed % GLASS_COLORS.length,
             glassTone: 0.85 + ((glassSeed >>> 8) % 31) * 0.01,
-            floorHeight: height / Math.max(1, Math.round(height / storeyHeight)),
+            floorHeight: height / storeys,
             height
         };
     }
@@ -154,6 +157,7 @@ uniform vec3 cbFacadeWindowStyles[3];
 uniform vec3 cbFacadeWindows;
 uniform vec3 cbFacadeShutterColor;
 uniform vec3 cbFacadeGlassColor;
+float cbFacadeGlazing = 0.0;
 float cbFacadeBox(vec2 p, vec2 halfSize, vec2 aa) {
     vec2 edge = smoothstep(halfSize - aa, halfSize + aa, abs(p));
     return (1.0 - edge.x) * (1.0 - edge.y);
@@ -181,13 +185,40 @@ vec3 cbFacadeCurtainWall(int style) {
     vec2 gap = min(vec2(0.055, 0.065) / size, vec2(0.2));
     float pane = cbFacadeJointCoverage(grid.x, footprint.x, gap.x)
         * cbFacadeJointCoverage(grid.y, footprint.y, gap.y);
+    cbFacadeGlazing = pane;
     float detail = 1.0 - smoothstep(0.35, 1.3, max(footprint.x, footprint.y));
     float variation = cbFacadeNoise(floor(grid) + vec2(cbFacadeBuilding.z, floor(vCbFacadeFace * 100.0)));
     // A restrained sky gradient and pane-to-pane reflectance keep the glazing legible.
     float sky = smoothstep(0.0, max(24.0, cbFacadeBuilding.x), vCbFacade.y);
     vec3 glass = cbFacadeGlassColor * cbFacadeDesign.z * mix(0.72, 1.2, sky);
-    glass *= 1.0 + (variation - 0.5) * 0.24 * detail;
+    glass *= 1.0 + (variation - 0.5) * 0.06 * detail;
     return mix(cbFacadeTrims[style] * 0.65, glass, pane);
+}
+// An illustrative sky and skyline reflected in the surface normal. The reflection moves
+// with the camera and strengthens at grazing angles; no scene capture or extra draw pass.
+vec3 cbFacadeReflection(vec3 lit, vec3 viewDirection, vec3 surfaceNormal) {
+    if (cbFacadeGlazing <= 0.0) return lit;
+    vec3 ray = normalize(vec3(vec4(reflect(-viewDirection, surfaceNormal), 0.0) * viewMatrix));
+    float elevation = ray.z;
+    vec3 sky = mix(vec3(0.72, 0.82, 0.94), vec3(0.16, 0.38, 0.72), smoothstep(0.0, 0.8, elevation));
+    float clouds = smoothstep(0.2, 0.8, sin(ray.x * 7.0 + sin(ray.y * 8.0)) * 0.25
+        + sin(ray.y * 13.0 + ray.x * 4.0) * 0.15 + 0.5);
+    sky = mix(sky, vec3(0.92, 0.95, 1.0), clouds * 0.55);
+    float azimuth = atan(ray.y, ray.x) * 24.0;
+    float skyline = -0.04 + cbFacadeNoise(vec2(floor(azimuth), 1.7)) * 0.18;
+    float city = 1.0 - smoothstep(skyline - 0.015, skyline + 0.015, elevation);
+    vec2 windows = vec2(azimuth * 5.0, elevation * 42.0);
+    vec2 windowFootprint = max(fwidth(windows), vec2(0.0001));
+    float reflectedWindows = cbFacadeJointCoverage(windows.x, windowFootprint.x, 0.16)
+        * cbFacadeJointCoverage(windows.y, windowFootprint.y, 0.22);
+    float towerTone = cbFacadeNoise(vec2(floor(azimuth), 4.1));
+    vec3 buildings = mix(vec3(0.12, 0.16, 0.19), vec3(0.42, 0.52, 0.61), towerTone);
+    buildings *= 0.58 + reflectedWindows * 0.62;
+    vec3 environment = mix(sky, buildings, city);
+    float fresnel = pow(1.0 - clamp(dot(viewDirection, surfaceNormal), 0.0, 1.0), 5.0);
+    vec3 tint = mix(vec3(1.0), clamp(cbFacadeGlassColor * 2.0, 0.15, 1.0), 0.35);
+    vec3 reflection = environment * tint;
+    return mix(lit, mix(lit * 0.45, reflection, 0.58 + 0.36 * fresnel), cbFacadeGlazing);
 }
 // A shallow segmental arch, clipped to the same rectangle as ordinary windows.
 float cbFacadeOpening(vec2 p, vec2 halfSize, vec2 aa, float arched) {
@@ -314,13 +345,16 @@ vec3 cbFacadeColor(vec3 original) {
 
     function patchShader(shader) {
         if (!shader.vertexShader.includes('#include <begin_vertex>')
-            || !shader.fragmentShader.includes('#include <color_fragment>')) {
+            || !shader.fragmentShader.includes('#include <color_fragment>')
+            || !shader.fragmentShader.includes('#include <opaque_fragment>')) {
             throw new Error('Procedural facades require the Three.js building material shader chunks.');
         }
         shader.vertexShader = 'attribute vec3 cbFacadeCoord;\nvarying vec3 vCbFacade;\nvarying float vCbFacadeFace;\n' + shader.vertexShader.replace(
             '#include <begin_vertex>', '#include <begin_vertex>\nvCbFacade = cbFacadeCoord;\nvCbFacadeFace = dot(normal.xy, vec2(17.13, 47.71));');
         shader.fragmentShader = FRAGMENT_HEADER + shader.fragmentShader.replace(
-            '#include <color_fragment>', '#include <color_fragment>\ndiffuseColor.rgb = cbFacadeColor(diffuseColor.rgb);');
+            '#include <color_fragment>', '#include <color_fragment>\ndiffuseColor.rgb = cbFacadeColor(diffuseColor.rgb);')
+            .replace('#include <opaque_fragment>', 'outgoingLight = cbFacadeReflection(outgoingLight, normalize(vViewPosition), normal);\n#include <opaque_fragment>')
+            .replace('#include <lights_phong_fragment>', '#include <lights_phong_fragment>\nmaterial.specularColor = mix(material.specularColor, vec3(0.7), cbFacadeGlazing);\nmaterial.specularShininess = mix(material.specularShininess, 180.0, cbFacadeGlazing);');
         return shader;
     }
 
@@ -339,7 +373,7 @@ vec3 cbFacadeColor(vec3 original) {
             });
             patchShader(shader);
         };
-        material.customProgramCacheKey = () => priorKey + '|cb-facades-v5';
+        material.customProgramCacheKey = () => priorKey + '|cb-facades-v6';
         material.needsUpdate = true;
         return material;
     }

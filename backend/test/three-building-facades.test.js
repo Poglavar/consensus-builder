@@ -16,7 +16,7 @@ const THREE = {
 const polygon = points => ({ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [points] } });
 const rectangle = polygon([[15, 44], [15.001, 44], [15.001, 44.001], [15, 44.001], [15, 44]]);
 const shader = () => ({ uniforms: {}, vertexShader: 'void main() {\n#include <begin_vertex>\n}',
-    fragmentShader: 'void main() {\n#include <color_fragment>\n#include <alphatest_fragment>\n}' });
+    fragmentShader: 'void main() {\n#include <color_fragment>\n#include <alphatest_fragment>\n#include <lights_phong_fragment>\n#include <opaque_fragment>\n}' });
 const material = () => ({ userData: {}, onBeforeCompile() {}, customProgramCacheKey() { return 'phong'; } });
 
 function declarationSource(name) {
@@ -74,10 +74,19 @@ describe('procedural building facades', () => {
 
     it('varies within the style grammar and rejects missing heights', () => {
         const designs = Array.from({ length: 50 }, (_, i) => facades.buildingDesign('building-' + i, 10));
-        expect(new Set(designs.map(d => d.style)).size).toBe(6);
+        expect(new Set(designs.map(d => d.style)).size).toBe(3);
         expect(new Set(designs.map(d => d.bayWidth)).size).toBeGreaterThan(3);
         expect(designs.every(d => d.bayWidth >= 2.8 && d.bayWidth <= 3.6)).toBe(true);
         for (const height of [null, undefined, NaN, 0, -1]) expect(() => facades.buildingDesign('x', height)).toThrow();
+    });
+
+    it('reserves glass in Mixed for ten or more modelled storeys', () => {
+        for (const storeyHeight of [3.3, 3.5, 4]) {
+            const low = Array.from({ length: 100 }, (_, i) => facades.buildingDesign('tower-' + i, 9 * storeyHeight, storeyHeight));
+            const tall = Array.from({ length: 100 }, (_, i) => facades.buildingDesign('tower-' + i, 10 * storeyHeight, storeyHeight));
+            expect(low.every(d => !facades.STYLES[d.style].panelWidth)).toBe(true);
+            expect(new Set(tall.map(d => facades.STYLES[d.style].id))).toEqual(new Set(facades.STYLES.map(s => s.id)));
+        }
     });
 
     it('varies window families and shutter palettes without changing a building when its neighbours change', () => {
@@ -98,6 +107,7 @@ describe('procedural building facades', () => {
             facades.buildingIdentityKey(building));
         const designs = buildings.map(building => designFor(building));
         expect(new Set(designs.map(d => d.seed)).size).toBe(1);
+        expect(new Set(designs.map(d => d.style)).size).toBe(6);
         expect(new Set(designs.map(d => d.glassColor)).size).toBeGreaterThan(4);
         expect(new Set(designs.map(d => `${d.glassColor}:${d.glassTone}`)).size).toBeGreaterThan(25);
         for (const [index, building] of buildings.entries()) {
@@ -163,6 +173,8 @@ describe('procedural building facades', () => {
         expect(s1.uniforms.cbScreenDoorCoverage.value).toBe(0.5);
         expect(s1.vertexShader).toContain('vCbFacade = cbFacadeCoord;');
         expect(s1.fragmentShader).toContain('diffuseColor.rgb = cbFacadeColor(diffuseColor.rgb);');
+        expect(s1.fragmentShader).toContain('outgoingLight = cbFacadeReflection(outgoingLight, normalize(vViewPosition), normal);');
+        expect(s1.fragmentShader).toContain('material.specularShininess = mix(material.specularShininess, 180.0, cbFacadeGlazing);');
         expect(s1.uniforms.cbFacadeEnabled).toBe(s2.uniforms.cbFacadeEnabled);
         const firstDesign = facades.buildingDesign('a', 20);
         expect(s1.uniforms.cbFacadeWindows.value).toMatchObject({ x: firstDesign.windowStyle, y: firstDesign.shutters ? 1 : 0 });

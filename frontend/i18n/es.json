@@ -5880,7 +5880,7 @@
             "facades": "Fachadas",
             "facadeStyle": "Estilo de fachada",
             "facadesTooltip": "Ejemplos de ventanas y materiales en los edificios propuestos. Cada edificio conserva su diseño.",
-            "facadeStyleTooltip": "Elige la paleta ilustrativa de materiales para las fachadas previstas",
+            "facadeStyleTooltip": "Mixto asigna un estilo independiente a cada edificio; el vidrio solo se usa en edificios de 10 plantas o más. Los demás estilos se aplican a todos.",
             "facadesNote": "Diseños ilustrativos para los edificios propuestos.",
             "xray": "X-ray",
             "xrayTooltip": "Mostrar plantas, paredes, puertas y ventanas modeladas.",
@@ -5906,7 +5906,7 @@
             "suggestedExistingTooltip": "Mostrar también distribuciones típicas por época para los edificios existentes del entorno: una estimación a partir de la huella y la altura, no un levantamiento.",
             "suggestedExistingCount": "Existentes: {{count}} edificios con una distribución típica por época.",
             "facadeStyles": {
-                "mixed": "Paleta mixta",
+                "mixed": "Mixto",
                 "brick": "Ladrillo",
                 "stone": "Piedra clara",
                 "plaster": "Revoco",

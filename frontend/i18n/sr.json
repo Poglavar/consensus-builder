@@ -5887,7 +5887,7 @@
             "facades": "Fasade",
             "facadeStyle": "Stil fasade",
             "facadesTooltip": "Primeri prozora i materijala na planiranim zgradama. Svaka zgrada zadržava isti izgled.",
-            "facadeStyleTooltip": "Izaberite ilustrativnu paletu materijala za fasade predloženih zgrada",
+            "facadeStyleTooltip": "Mešovito dodeljuje stil svakoj zgradi zasebno; staklo se koristi samo za zgrade sa 10 ili više spratova. Ostali stilovi se primenjuju na sve zgrade.",
             "facadesNote": "Ilustrativni prikaz fasada planiranih zgrada.",
             "xray": "X-ray",
             "xrayTooltip": "Prikaži modelovane etaže, zidove, vrata i prozore.",
@@ -5913,7 +5913,7 @@
             "suggestedExistingTooltip": "Prikaži i tipične tlocrte po periodu gradnje za postojeće zgrade u okolini: procena iz osnove i visine, a ne snimak.",
             "suggestedExistingCount": "Postojeće: {{count}} zgrada sa tipičnim tlocrtom po periodu.",
             "facadeStyles": {
-                "mixed": "Mešovita paleta",
+                "mixed": "Mešovito",
                 "brick": "Opeka",
                 "stone": "Svetli kamen",
                 "plaster": "Malter",

@@ -5853,7 +5853,7 @@
             "facades": "Facades",
             "facadeStyle": "Facade style",
             "facadesTooltip": "Illustrative windows and materials on proposed buildings. Each building keeps its design.",
-            "facadeStyleTooltip": "Choose the illustrative material palette used on proposed building facades",
+            "facadeStyleTooltip": "Mixed assigns a style independently to each building; glass is used only at 10+ storeys. Other presets apply to every building.",
             "facadesNote": "Illustrative designs for proposed buildings.",
             "xray": "X-ray",
             "xrayTooltip": "Show modelled floors, walls, doors and windows.",
@@ -5879,7 +5879,7 @@
             "suggestedExistingTooltip": "Also show typical layouts by era for the existing buildings around: a guess from footprint and height, not a survey.",
             "suggestedExistingCount": "Existing: {{count}} buildings with a typical layout by era.",
             "facadeStyles": {
-                "mixed": "Mixed palette",
+                "mixed": "Mixed",
                 "brick": "Brick",
                 "stone": "Pale stone",
                 "plaster": "Plaster",
