@@ -106,7 +106,7 @@ function caseOutcome(caseGraph, cid, status, outcome) {
         && event.subject?.type === 'agreement' && event.subject.id === account && event.outcome === status
         && /^sha256:[a-f0-9]{64}$/.test(event.source?.hash || '') && Boolean(event.source?.transaction));
     return Boolean(cid && caseGraph?.id === cid && caseGraph.agreement?.cid === cid && account
-        && caseGraph.agreement.status === status
+        && caseGraph.agreement.status === status && caseGraph.parcelSet?.parcelCount > 0
         && evidence && caseAction(caseGraph, 'mint') && caseAction(caseGraph, 'stake')
         && caseAction(caseGraph, status === 'executed' ? 'execute' : 'cancel')
         && (status !== 'executed' || caseAction(caseGraph, 'attest'))

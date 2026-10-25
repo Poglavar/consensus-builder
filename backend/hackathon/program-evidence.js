@@ -2,9 +2,10 @@
 // ProgramData accounts; generating a manifest never advances it. Hashes cover deployed bytes, not a
 // claim that a local source tree reproduced that binary.
 import { createHash } from 'node:crypto';
-import { Connection, PublicKey } from '@solana/web3.js';
+import { PublicKey } from '@solana/web3.js';
 import { DEVNET_GENESIS_HASH } from '../agreements/onchain.js';
 import { OUR_PROGRAMS } from '../solana/address-book.js';
+import { createRpcConnection } from '../solana/rpc.js';
 
 const LOADER = 'BPFLoaderUpgradeab1e11111111111111111111111';
 const NAMES = { agreement: 'Agreement', proposal_market: 'ProposalMarket', proposal_pledge: 'ProposalPledge', parcel_nft: 'ParcelNFT' };
@@ -14,6 +15,7 @@ export const PROGRAM_EVIDENCE_TTL_MS = 15 * 60 * 1000;
 export async function readProgramEvidence(connection, { now = () => Date.now(), programs = PROOF_PROGRAMS } = {}) {
     if (await connection.getGenesisHash() !== DEVNET_GENESIS_HASH) throw new Error('Expected Solana devnet');
     const programAccounts = await connection.getMultipleAccountsInfo(programs.map(program => new PublicKey(program.address)), 'confirmed');
+    if (programAccounts.length !== programs.length) throw new Error('Incomplete program account response');
     const dataAddresses = programAccounts.map((account, index) => {
         if (!account?.executable || account.owner.toBase58() !== LOADER || account.data.length < 36 || account.data.readUInt32LE(0) !== 2) {
             throw new Error(`${programs[index].name} is not an upgradeable executable program`);
@@ -21,6 +23,7 @@ export async function readProgramEvidence(connection, { now = () => Date.now(), 
         return new PublicKey(account.data.subarray(4, 36));
     });
     const dataAccounts = await connection.getMultipleAccountsInfo(dataAddresses, 'confirmed');
+    if (dataAccounts.length !== programs.length) throw new Error('Incomplete ProgramData response');
     const observed = dataAccounts.map((account, index) => {
         if (!account || account.owner.toBase58() !== LOADER || account.data.length <= 45 || account.data.readUInt32LE(0) !== 3) {
             throw new Error(`${programs[index].name} has no valid ProgramData account`);
@@ -48,7 +51,7 @@ export function createProgramEvidenceReader({ env = process.env, connection, now
     return async () => {
         if (cached && now() - Date.parse(cached.verifiedAt) < PROGRAM_EVIDENCE_TTL_MS) return cached;
         if (!pending) {
-            connection ??= new Connection(env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
+            connection ??= createRpcConnection(env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
             pending = readProgramEvidence(connection, { now }).then(result => (cached = result))
                 .finally(() => { pending = null; });
         }

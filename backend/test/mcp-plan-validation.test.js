@@ -48,7 +48,11 @@ describe('named plan validation without cadastral reads',()=>{
         const revised=await plans.editPlan({plan:original,expectedCid:original.cid,operations:[{type:'modify',ref:`design:${cidOfObject(first)}`,changes:[{type:'retitle',value:'Revised'}]}]});
         const result=await createMcpValidationTools({plans}).validatePlan({plan:revised});
         expect(result.cid).toBe(revised.cid);expect(result.cid).not.toBe(original.cid);
-        expect(result.issues).toEqual(expect.arrayContaining([expect.objectContaining({code:'authored-building-overlap',ref:`building:${revised.designs[0].cid}:0`,otherRef:`building:${revised.designs[1].cid}:0`})]));
+        const overlaps=result.issues.filter(issue=>issue.code==='authored-building-overlap');
+        expect(overlaps).toHaveLength(1);
+        expect([overlaps[0].ref,overlaps[0].otherRef].sort())
+            .toEqual(revised.designs.map(row=>`building:${row.cid}:0`).sort());
+        expect([overlaps[0].ref,overlaps[0].otherRef]).not.toContain(`building:${cidOfObject(first)}:0`);
         expect(Object.fromEntries(revised.designs.map(row=>[row.content.title,row.parcelSourceId]))).toEqual({Revised:'source-a',Neighbour:'source-b'});
         expect(read.request).not.toHaveBeenCalled();
     });

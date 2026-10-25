@@ -204,7 +204,7 @@ describe('public hackathon proof audit', () => {
         const optionalSupport = { ...canonical, parcelSet: { parcelCount: 1 },
             activity: canonical.activity.filter(event => !['donate', 'pledge'].includes(event.action.type)) };
         expect(checkOf(await audit(fixtures({ [`/hackathon/cases/${CANONICAL}`]: optionalSupport })), 'canonical_case_no').status).toBe('pass');
-        const noAssemblyClaim = { ...canonical, parcelSet: undefined,
+        const noAssemblyClaim = { ...canonical, parcelSet: { parcelCount: 1 },
             activity: canonical.activity.filter(event => !['donate', 'pledge', 'assemble'].includes(event.action.type)) };
         expect(checkOf(await audit(fixtures({ [`/hackathon/cases/${CANONICAL}`]: noAssemblyClaim })), 'canonical_case_no').status).toBe('pass');
     });
