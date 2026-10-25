@@ -48,13 +48,15 @@ One account type for both resolution paths; `kind` selects the path at resolutio
 | `paid_out` | u64 | claims paid so far, for the creator's reclaim |
 | `bump` | u8 | |
 
-PDA seeds, as built on 2026-10-12: `["lmsr", proposal]` for kind 0 and `["lmsr", recipe_hash]` for
-kind 1, positions under `["lmsr_position", market, owner, side]`. `Position` keeps its layout
-(`amount` holds shares). **To change before any deploy:** those seeds let anyone squat the single
-address with useless terms (b = 1, closing in a second), and a kind 1 creator can pass a proposal's
-key as `recipe_hash` and take a kind 0 address. The seeds become `["lmsr", proposal, creator]` and
-`["lmsr_recipe", recipe_hash, creator]`: anyone can still open a market, nobody can block one, and
-the app lists the market it registered at creation as the canonical one.
+PDA seeds are `["lmsr", proposal, creator]` for kind 0 and
+`["lmsr_recipe", recipe_hash, creator]` for kind 1, with positions under
+`["lmsr_position", market, owner, side]`. `Position` keeps its layout (`amount` holds shares).
+Separate namespaces prevent a recipe hash from taking an agreement market's address; the creator
+signature prevents another wallet from reserving that creator's address with unusable terms.
+Vault payouts sign with the full namespace, subject and creator seeds. The browser and Node codec
+is `frontend/js/solana/lmsr-client.js`; tests compare its bytes and account ordering with the IDL and
+independent Anchor serialization. Earlier unscoped experimental LMSR addresses are intentionally
+not read by this codec. These changes still require a market-program release.
 
 ## Instructions
 

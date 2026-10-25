@@ -16,8 +16,11 @@ use crate::{
     SIDE_NO, SIDE_YES, STATUS_ACTIVE, STATUS_CANCELLED, STATUS_EXECUTED, STATUS_EXPIRED,
 };
 
-/// LmsrMarket PDA: ["lmsr", agreement] for kind 0, ["lmsr", recipe_hash] for kind 1.
+/// LmsrMarket PDA: ["lmsr", agreement, creator] for kind 0, ["lmsr_recipe", recipe_hash,
+/// creator] for kind 1.
 pub const LMSR_SEED: &[u8] = b"lmsr";
+/// Kind 1 market PDAs use a separate namespace and bind the creator.
+pub const LMSR_RECIPE_SEED: &[u8] = b"lmsr_recipe";
 /// LMSR positions reuse the Position layout under their own prefix, so they can never collide
 /// with a parimutuel position: ["lmsr_position", market, owner, [side]].
 pub const LMSR_POSITION_SEED: &[u8] = b"lmsr_position";
@@ -79,7 +82,7 @@ pub struct LmsrMarket {
 }
 
 impl LmsrMarket {
-    /// The second PDA seed: the agreement for kind 0, the recipe hash for kind 1.
+    /// The identity seed: agreement for kind 0, recipe hash for kind 1.
     pub fn seed_key(&self) -> [u8; 32] {
         if self.kind == KIND_PROPOSAL {
             self.proposal.to_bytes()
@@ -184,9 +187,13 @@ fn pay_from_vault<'info>(
     token_program: &Program<'info, Token>,
     amount: u64,
 ) -> Result<()> {
-    let key = market.seed_key();
     let bump = [market.bump];
-    let seeds: &[&[u8]] = &[LMSR_SEED, key.as_ref(), &bump];
+    let identity = market.seed_key();
+    let seeds: &[&[u8]] = if market.kind == KIND_PROPOSAL {
+        &[LMSR_SEED, identity.as_ref(), market.creator.as_ref(), &bump]
+    } else {
+        &[LMSR_RECIPE_SEED, identity.as_ref(), market.creator.as_ref(), &bump]
+    };
     token::transfer(
         CpiContext::new_with_signer(
             token_program.to_account_info(),
@@ -657,7 +664,7 @@ pub struct CreateLmsrMarket<'info> {
         init,
         payer = creator,
         space = 8 + LmsrMarket::INIT_SPACE,
-        seeds = [LMSR_SEED, proposal.key().as_ref()],
+        seeds = [LMSR_SEED, proposal.key().as_ref(), creator.key().as_ref()],
         bump
     )]
     pub market: Box<Account<'info, LmsrMarket>>,
@@ -690,7 +697,7 @@ pub struct CreateLmsrExternalMarket<'info> {
         init,
         payer = creator,
         space = 8 + LmsrMarket::INIT_SPACE,
-        seeds = [LMSR_SEED, recipe_hash.as_ref()],
+        seeds = [LMSR_RECIPE_SEED, recipe_hash.as_ref(), creator.key().as_ref()],
         bump
     )]
     pub market: Box<Account<'info, LmsrMarket>>,

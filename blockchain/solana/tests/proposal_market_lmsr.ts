@@ -147,9 +147,10 @@ describe("proposal_market LMSR", () => {
         expect(await statusByte(provider.connection, agreement)).to.equal(STATUS.expired);
     }
 
-    function marketPda(key: PublicKey | Buffer): PublicKey {
+    function marketPda(key: PublicKey | Buffer, creatorKey: PublicKey = creator.publicKey, kind: 0 | 1 = 0): PublicKey {
         const bytes = Buffer.isBuffer(key) ? key : key.toBuffer();
-        return PublicKey.findProgramAddressSync([Buffer.from("lmsr"), bytes], program.programId)[0];
+        const namespace = kind === 0 ? "lmsr" : "lmsr_recipe";
+        return PublicKey.findProgramAddressSync([Buffer.from(namespace), bytes, creatorKey.toBuffer()], program.programId)[0];
     }
 
     function positionPda(market: PublicKey, owner: PublicKey, side: number): PublicKey {
@@ -183,8 +184,8 @@ describe("proposal_market LMSR", () => {
     type MarketTerms = { b?: bigint; closesIn?: number; closesAt?: number; grace?: number; maxPosition?: bigint; wallet?: Wallet };
 
     async function createAgreementMarket(agreement: PublicKey, t: MarketTerms = {}): Promise<PublicKey> {
-        const market = marketPda(agreement);
         const wallet = t.wallet ?? creator;
+        const market = marketPda(agreement, wallet.publicKey);
         const closesAt = t.closesAt ?? (await chainNow(provider.connection)) + (t.closesIn ?? 3600);
         await program.methods
             .createLmsrMarket(bn(t.b ?? B), bn(closesAt), t.grace ?? 0, bn(t.maxPosition ?? 0n))
@@ -218,7 +219,7 @@ describe("proposal_market LMSR", () => {
     }
 
     async function createRecipeMarket(r: Recipe, t: MarketTerms & { attester?: PublicKey; bound?: PublicKey } = {}): Promise<PublicKey> {
-        const market = marketPda(r.recipeHash);
+        const market = marketPda(r.recipeHash, creator.publicKey, 1);
         const closesAt = t.closesAt ?? (await chainNow(provider.connection)) + (t.closesIn ?? 3600);
         await program.methods
             .createLmsrExternalMarket(
@@ -444,7 +445,7 @@ describe("proposal_market LMSR", () => {
         it("refuses a creator who cannot fund the seed, max_loss(b)", async () => {
             const poor = await fundWallet(Keypair.generate(), 1n * USDC);
             await expectFailure(() => createAgreementMarket(agreement, { wallet: poor }), "SeedTooSmall");
-            expect(await program.account.lmsrMarket.fetchNullable(marketPda(agreement))).to.be.null;
+            expect(await program.account.lmsrMarket.fetchNullable(marketPda(agreement, poor.publicKey))).to.be.null;
             expect(await balance(poor.tokenAccount)).to.equal(1n * USDC);
         });
 
