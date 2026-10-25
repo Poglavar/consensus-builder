@@ -3487,7 +3487,7 @@
                 return refuseOpen(built && built.error === 'missing'
                     ? t('reparcellization.modal.siteParcelsMissing', 'The parcels under this site could not be loaded: {{ids}}.', { ids: built.missing.join(', ') })
                     : (built && built.error === 'taken'
-                        ? t('reparcellization.modal.siteGroundTaken', 'This site covers ground another proposal already formed: {{names}}. Draw the site off it, or unapply that proposal first.', { names: built.names.map(name => `"${name}"`).join(', ') })
+                        ? t('reparcellization.modal.siteGroundTaken', 'This site covers ground already formed by another design: {{names}}. Draw the site off it, or unapply that design first.', { names: built.names.map(name => `"${name}"`).join(', ') })
                         : t('reparcellization.modal.siteUnavailable', 'This site cannot be subdivided here.')));
             }
             state.sitePool = built;

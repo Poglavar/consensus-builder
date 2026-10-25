@@ -26,6 +26,8 @@
         || (typeof require === 'function' ? require('./reparcellization-deal.js') : null);
     const allocation = () => root.ReparcellizationAllocation
         || (typeof require === 'function' ? require('./reparcellization-allocation.js') : null);
+    const planRecord = () => root.PlanRecord
+        || (typeof require === 'function' ? require('./plan-record.js') : null);
     const cid = () => {
         const api = root.Cid || (typeof require === 'function' ? require('./cid.js') : null);
         if (!api) throw new Error('Cid (js/cid.js) is not loaded.');
@@ -265,12 +267,12 @@
     // Invalid typed fields remain visible for section validation; valid fields are canonicalized.
     function consultationOf(raw, electorate) {
         if (electorate !== 'community') {
-            if (raw != null) fail('Only a community agreement can have consultation metadata.');
+            if (raw != null) fail('Only a community agreement can have agreement participation metadata.');
             return null;
         }
-        if (raw != null && !isObject(raw)) fail('Consultation must be an object.');
-        if (raw && Object.keys(raw).some(key => key !== 'organiser' && key !== 'participationUrl')) fail('Consultation has unknown fields.');
-        if (raw && ['organiser', 'participationUrl'].some(key => raw[key] != null && typeof raw[key] !== 'string')) fail('Consultation fields must be text or null.');
+        if (raw != null && !isObject(raw)) fail('Participation metadata must be an object.');
+        if (raw && Object.keys(raw).some(key => key !== 'organiser' && key !== 'participationUrl')) fail('Participation metadata has unknown fields.');
+        if (raw && ['organiser', 'participationUrl'].some(key => raw[key] != null && typeof raw[key] !== 'string')) fail('Participation fields must be text or null.');
         const result = { organiser: textOf(raw && raw.organiser), participationUrl: textOf(raw && raw.participationUrl) };
         if (result.organiser) { try { result.organiser = didWeb().normalizeDid(result.organiser); } catch (_) { /* validate reports it */ } }
         if (result.participationUrl) { try { result.participationUrl = participationUrl(result.participationUrl); } catch (_) { /* validate reports it */ } }
@@ -309,6 +311,23 @@
         return clone(raw);
     }
 
+    // The plan owns membership. Local design references are an editing/replay projection;
+    // publication commits only this verified immutable plan's CID.
+    function planReference(value) {
+        if (!isObject(value) || !cid().isCid(value.cid)) fail('Choose a plan for this agreement.');
+        const error = planRecord().validate(value.content);
+        if (error) fail(error);
+        if (cid().cidOfObject(value.content) !== value.cid) fail('The plan does not match its content identifier.');
+        return { cid: value.cid, content: clone(value.content) };
+    }
+
+    function matchesPlan(plan, designCids) {
+        const members = plan?.content?.designCids;
+        const unique = new Set(designCids);
+        return Array.isArray(members) && unique.size === designCids.length
+            && members.length === unique.size && members.every(value => unique.has(value));
+    }
+
     function normalize(raw) {
         if (!isObject(raw) || raw.schema !== SCHEMA) fail(`Expected ${SCHEMA}.`);
         const rule = ruleOf(raw.rule);
@@ -321,6 +340,7 @@
             city: textOf(raw.city),
             createdAt: timestampOf(raw.createdAt, 'createdAt'),
             updatedAt: timestampOf(raw.updatedAt, 'updatedAt'),
+            plan: raw.plan == null ? null : planReference(raw.plan),
             designs: designsOf(raw.designs),
             inputs: inputsOf(raw.inputs),
             outputs: outputsOf(raw.outputs),
@@ -435,8 +455,8 @@
         if (!ELECTORATES.includes(electorate)) {
             add(errors, 'rule', 'rule-invalid', 'Choose who decides: the owners or the community.');
         } else if (electorate === 'community') {
-            if (Array.isArray(raw.allocations) && raw.allocations.length) add(errors, 'allocation', 'community-allocations', 'A community consultation cannot allocate land.');
-            if (raw.money && Array.isArray(raw.money.lines) && raw.money.lines.length) add(errors, 'money', 'community-money', 'A community consultation cannot include cash payments.');
+            if (Array.isArray(raw.allocations) && raw.allocations.length) add(errors, 'allocation', 'community-allocations', 'A nonbinding agreement cannot allocate land.');
+            if (raw.money && Array.isArray(raw.money.lines) && raw.money.lines.length) add(errors, 'money', 'community-money', 'A nonbinding agreement cannot include cash payments.');
             if (binding) add(errors, 'rule', 'rule-community-binding', 'A community vote cannot bind the owners.');
             if (approvalConfig !== null) add(errors, 'rule', 'rule-invalid', 'A community vote has no owner approval rule.');
         } else {
@@ -529,8 +549,8 @@
     }
 
     /**
-     * The published agreement/v1 object (plan-design-agreement.md, M2): the designs linked by CID in
-     * stored order, the input land with its holders snapshot, the output pieces without geometry
+     * The published agreement/v1 object: one exact plan CID, the input land with its holders
+     * snapshot, the output pieces without geometry
      * (each hash commits to it, and a reader re-derives the pieces by applying the designs), the
      * allocations, money and rule as stored, and the details. No local id, update time, piece ids,
      * output holders or fingerprints. Builds without judging: validate the record first.
@@ -544,7 +564,7 @@
     function published(raw, designCidOf = null) {
         const agreement = normalize(raw);
         if (agreement.rule.electorate === 'community' && ((raw.allocations && raw.allocations.length) || (raw.money && raw.money.lines && raw.money.lines.length))) {
-            fail('A community consultation cannot allocate land or include cash payments.');
+            fail('A nonbinding agreement cannot allocate land or include cash payments.');
         }
         const stored = new Map(agreement.designs.map(design => [design.proposalId, design.cid]));
         const lookup = typeof designCidOf === 'function' ? designCidOf : proposalId => (stored.has(proposalId) ? stored.get(proposalId) : null);
@@ -557,6 +577,10 @@
             const value = lookup(proposalId);
             return value === null || value === undefined ? null : cidOf(proposalId);
         };
+        const plan = planReference(agreement.plan);
+        if (!matchesPlan(plan, agreement.designs.map(design => cidOf(design.proposalId)))) {
+            fail('The selected designs differ from the referenced plan. Save a new plan revision first.');
+        }
         // normalize keeps the input parcels in their order, one for one.
         const sourceOf = index => keyOf(raw.inputs.parcels[index].parcelSourceId);
         return {
@@ -568,7 +592,7 @@
             sponsor: textOf(raw.sponsor),
             city: agreement.city,
             createdAt: agreement.createdAt,
-            designs: agreement.designs.map(design => ({ cid: cidOf(design.proposalId), goal: design.goal, title: design.title })),
+            planCid: plan.cid,
             inputs: {
                 parcels: agreement.inputs.parcels.map((parcel, index) => {
                     const parcelSourceId = sourceOf(index);
@@ -598,6 +622,7 @@
 
     return {
         SCHEMA, PUBLISHED_SCHEMA, OUTPUT_HASH_PREFIX, ROLES, newId, outputHash, normalize, validate, ledger,
-        rightsFromInputs, approvalSubject, stableStringify, published, publishedCid, consultationOf, participationUrl
+        rightsFromInputs, approvalSubject, stableStringify, published, publishedCid, consultationOf, participationUrl,
+        planReference, matchesPlan
     };
 });

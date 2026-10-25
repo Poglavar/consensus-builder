@@ -8,11 +8,11 @@ The canonical definitions of concepts in Consensus Builder. Names in backticks i
 
 ### Design
 
-An authored instruction proposing a change to land, buildings, infrastructure or rules. A `design/v1` record contains intent and applicable geometry; an agreement supplies the affected parties, allocations, money and decision rule. One design may describe multiple physical objects and participate in multiple agreements.
+An authored instruction proposing a change to land, buildings, infrastructure or rules. A `design/v1` record contains intent and applicable geometry; an agreement supplies the affected parties, allocations, money and decision rule. One design may describe multiple physical objects and belong to multiple plans. Its agreement memberships follow those plans.
 
-### Proposal
+### Local design record
 
-The application's local working record for a design, commonly named `Proposal` in code. It combines authored content with browser-local application and presentation state. Its local identity is `proposalId`; its published design identity is a CID.
+The application’s working record for a design, still named `Proposal` in internal code. It combines authored content with browser-local application and presentation state. Its local identity is `proposalId`; its published design identity is a CID. The interface calls this a Design; “proposal” is informal language, not another domain entity.
 
 ### Draft
 
@@ -48,7 +48,7 @@ A new authored version of a design or agreement. Published content retains its o
 
 ### Agreement
 
-A proposed arrangement containing one or more designs in authored order, input land and holders, output pieces, allocations, money, a decision rule and a deadline. Published `agreement/v1` content identifies its designs by CID and its outputs by piece hash.
+An arrangement referencing exactly one immutable plan revision, with input land and holders, output pieces, allocations, money, a decision rule and a deadline. Published `agreement/v1` content names the plan with `planCid` and its outputs by piece hash. The plan supplies all design membership; the agreement has no independently authored spatial layout or design list. Several agreements can reference the same plan. A local editing record can cache design references for replay and preparation, but publication must match the referenced plan exactly.
 
 ### Binding owners' agreement
 
@@ -58,17 +58,17 @@ An agreement whose owners' decision rule is binding. This is the agreement kind 
 
 An owners' or community agreement whose decisions are counted without binding chain settlement. A poll can be published and receive signed decisions; it is not minted.
 
-### Community consultation
+### Nonbinding community agreement
 
-A community agreement asking for non-binding support for its referenced designs. It carries no land allocations, cash transfers or owner approval rule. Its optional `consultation` metadata names an organiser by a canonical `did:web` identifier and an HTTPS participation page. Changing the designs or consultation metadata creates a new agreement CID; reporting results does not change the agreement.
+An agreement asking for nonbinding community support for its referenced plan. It carries no land allocations, cash transfers or owner approval rule. Its optional `consultation` metadata names an organiser by a canonical `did:web` identifier and an HTTPS participation page. Changing the referenced plan or participation metadata creates a new agreement CID; reporting results does not change the agreement.
 
-### Consultation organiser
+### Agreement organiser
 
-The website identified by a community agreement's `consultation.organiser`. Its DID document lists wallets under `assertionMethod` that may report on its behalf, qualified by network and address using CAIP-10. Live website verification confirms only that the site currently lists the signing wallet; it establishes neither organisational legitimacy nor the correctness of a consultation procedure or result.
+The website identified by a community agreement's `consultation.organiser`. Its DID document lists wallets under `assertionMethod` that may report on its behalf, qualified by network and address using CAIP-10. Live website verification confirms only that the site currently lists the signing wallet; it establishes neither organisational legitimacy nor the correctness of an agreement’s decision procedure or result.
 
 ### Community result report
 
-An immutable `community-result/v1` record containing the agreement CID, organiser DID, signing wallet, a plain-text statement, optional HTTPS report link, signing time and a committed DID-document snapshot, with a wallet signature over those fields. Reports are content-addressed, pinned and indexed append-only; later statements retain earlier reports as history. Reports may follow the consultation deadline and require no mint or chain transaction. Readers reverify both the signed record and the website's current wallet list. Solana message signatures are the implemented signing method.
+An immutable `community-result/v1` record containing the agreement CID, organiser DID, signing wallet, a plain-text statement, optional HTTPS report link, signing time and a committed DID-document snapshot, with a wallet signature over those fields. Reports are content-addressed, pinned and indexed append-only; later statements retain earlier reports as history. Reports may follow the agreement deadline and require no mint or chain transaction. Readers reverify both the signed record and the website's current wallet list. Solana message signatures are the implemented signing method.
 
 ### Agreement input
 
@@ -246,7 +246,7 @@ MCP agreement drafting and revision author the included roads as a complete netw
 
 ### Map share
 
-A link naming a selected set of published designs and the current map view, including location and 2D, model 3D or realistic 3D mode. Selection starts with the entire applied working composition; exclusions are explicit. Exclusions persist while switching Designs panel tabs and reset when the panel closes. An unnamed map share carries its design CIDs and view in the URL. “Name this plan” saves a named plan snapshot instead. Neither form creates an agreement. “Designs” names the map's design browser; “Agreements” names arrangements and decision rules over designs.
+A link naming a selected set of published designs and the current map view, including location and 2D, model 3D or realistic 3D mode. Selection starts with the entire applied working composition; exclusions are explicit. Exclusions persist while switching Designs panel tabs and reset when the panel closes. An unnamed map share carries its design CIDs and view in the URL. “Name this plan” saves a named plan snapshot instead. Neither form creates an agreement. “Designs” names the map's design browser; “Agreements” names arrangements and decision rules concerning exact plan revisions.
 
 Choosing “Unapply existing & continue” replaces the conflicting applied designs. Incoming buildings and surface spaces replace conflicting applied roads occupying their authored footprints. An incoming parcel layout also replaces applied roads, layouts and content occupying its authored plots; designs outside that ground remain applied. Compatible road junctions and host parcel layouts remain. Unapplied designs remain saved. The replacement commits together, or retains the previous working composition if any member cannot be applied.
 
@@ -262,13 +262,13 @@ Its social preview is a derived 2D image of the included designs' authored map g
 
 When shared designs conflict with the current map, the person chooses whether to unapply the existing conflicting designs and continue, skip the conflicting incoming designs, or cancel. Unapplying existing conflicts and deriving the chosen plan is atomic; failure retains the previous map. Every design remains saved, and unrelated applied designs remain on the map. Overlapping road revisions are conflicts; ordinary roads meeting at a junction remain compatible.
 
-### Named plan
+### Plan
 
 An immutable `plan/v1` snapshot containing a title, a selected set of published design CIDs and a map view. Its canonical content has its own CID and permanent `/plans/<cid>` link. Changing the title, membership or saved view creates a new snapshot and link; existing links keep their original content. It references existing designs without changing their authorship, geometry or publication. It carries no land allocations, money or decision rules; those belong to an agreement. The backend address used to access a plan is transport configuration, not part of its content.
 
 A private named-plan draft can reference unpublished design revisions carried with it. Publishing that draft first publishes its missing designs, then the named snapshot, and verifies the same content identifiers. Drafting and editing a named plan do not derive agreement ground or reconnect roads.
 
-Plans and agreements independently reference designs; neither record directly references the other. One design can belong to multiple plans and agreements. Sharing a design does not establish that an agreement covers every design in a plan, and there is no one-to-one plan–agreement constraint.
+A plan contains one or more designs and can exist without an agreement. Each agreement references one exact plan revision; any number of agreements may reference that revision. Editing a plan never changes an existing agreement’s subject. Plans and agreements have separate share links. The map click stack contains spatial Plan and Design sections: parcels link to designs, designs link to plans, and plans link to their agreements. Agreement links open a separate dialog rather than another spatial section.
 
 ### Private draft reference
 
@@ -806,7 +806,7 @@ A design or building reference scoped to one inspected immutable revision. A bui
 
 ### Agent plan revision
 
-A private revision of an agreement's ordered design composition and terms. It rederives input land and output pieces from the revised designs. It has a new CID and carries no prior decisions or execution state; retained rights and holders remain explicitly unverified snapshots. A map share and a person's unsaved working composition remain separate from an agreement plan.
+A private revision of an agreement’s referenced plan and terms. It rederives input land and output pieces from the revised designs. It has a new CID and carries no prior decisions or execution state; retained rights and holders remain explicitly unverified snapshots. A map share and a person's unsaved working composition remain separate from an agreement plan.
 
 ### Approval link
 

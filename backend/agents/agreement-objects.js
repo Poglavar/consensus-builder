@@ -10,6 +10,7 @@ const designRecord = require('../../frontend/js/design-record.js');
 const agreementRecord = require('../../frontend/js/agreement-record.js');
 const cidApi = require('../../frontend/js/cid.js');
 const approval = require('../../frontend/js/proposals/approval.js');
+const planRecord = require('../../frontend/js/plan-record.js');
 
 export const DESIGN_SCHEMA = designRecord.SCHEMA;
 export const AGREEMENT_SCHEMA = agreementRecord.PUBLISHED_SCHEMA;
@@ -32,6 +33,32 @@ const fail = (code, message, extra = {}) => Object.assign(new Error(message), { 
 export const cidOfObject = object => cidApi.cidOfObject(object);
 export const isCid = value => cidApi.isCid(value);
 export const outputHash = geometry => agreementRecord.outputHash(geometry);
+
+export function mapViewFromGeometry(values, city = null, message = 'A map view needs real geometry.') {
+    let west = Infinity, east = -Infinity, south = Infinity, north = -Infinity;
+    const collect = value => {
+        if (Array.isArray(value)) {
+            if (value.length >= 2 && finite(value[0]) && finite(value[1])) {
+                west = Math.min(west, value[0]); east = Math.max(east, value[0]);
+                south = Math.min(south, value[1]); north = Math.max(north, value[1]);
+            } else value.forEach(collect);
+        } else if (value && typeof value === 'object') Object.values(value).forEach(collect);
+    };
+    (values || []).forEach(collect);
+    if (west === Infinity) throw fail('invalid-plan', message);
+    const latitude = Number(((south + north) / 2).toFixed(6));
+    const longitude = Number(((west + east) / 2).toFixed(6));
+    return { at: `${latitude},${longitude},17`, mode: '2d', city: city || null };
+}
+
+/** Build the verified plan snapshot carried by a local agreement draft. */
+export function planForDesigns(title, designs, view) {
+    const rows = designs || [];
+    const designCids = rows.map(row => row.cid || cidApi.cidOfObject(row.content));
+    if (!view) view = mapViewFromGeometry(rows.map(row => row.content?.site), rows[0]?.content?.city, 'A plan needs a map view derived from its designs.');
+    const plan = planRecord.create(String(title || 'Agreement plan').slice(0, 160).trim(), designCids, view);
+    return { cid: cidApi.cidOfObject(plan), content: plan };
+}
 
 /**
  * The design/v1 object of a local design record and its CID. The record has the local design shape
@@ -159,7 +186,8 @@ export function parcelOutputs(parcels) {
  * what the app publishes for the same agreement. Refuses (code 'invalid-agreement') what the
  * agreement dialog would refuse, and outputs produced by a design the agreement does not link.
  * @param {object} parts
- *   designs   [{ cid, goal, title }] in authored order
+ *   plan      { cid, content: plan/v1 } the exact selected plan; when omitted, a plan is built from the output geometry and design CIDs
+ *   designs   [{ cid, goal, title }] local projection used to validate output producers
  *   parcels   [{ parcelId, parcelSourceId?, areaM2 (number | null), holders? }] the input parcels
  *   outputs   [{ hash, areaM2, fromParcelIds, role, producedBy (a linked design CID | null), geometry? }]
  *   rule      { electorate, binding, approvalConfig, lens } (ownersRule() for a binding owners' agreement, communityRule() for a poll)
@@ -169,7 +197,7 @@ export function parcelOutputs(parcels) {
  */
 export function agreementObject({
     title = null, author = null, sponsor = null, city = null, createdAt = null,
-    designs, parcels, openGroundM2 = 0, outputs, allocations = [], money, rule, deadline = null, consultation = null
+    designs, plan, parcels, openGroundM2 = 0, outputs, allocations = [], money, rule, deadline = null, consultation = null
 } = {}) {
     if (!Array.isArray(designs) || !designs.length) throw fail('invalid-agreement', 'an agreement links at least one design');
     const designCids = new Set();
@@ -191,6 +219,9 @@ export function agreementObject({
         updatedAt: null,
         author,
         sponsor,
+        plan: agreementRecord.planReference(plan || planForDesigns(title || city || 'Agreement plan',
+            designs.map(design => ({ cid: design.cid, content: null })),
+            mapViewFromGeometry((outputs || []).map(output => output?.geometry), city, 'An agreement needs its exact plan or geometry for a saved map view.'))),
         // The local record names a design by a local id; here the CID is that id.
         designs: designs.map(design => ({ proposalId: design.cid, title: design.title ?? null, goal: design.goal ?? null, cid: design.cid })),
         inputs: {
@@ -228,5 +259,5 @@ export function agreementObject({
         throw fail('invalid-agreement', `invalid ${AGREEMENT_SCHEMA}: ${checked.errors.map(error => `${error.section}: ${error.message}`).join('; ')}`, { errors: checked.errors });
     }
     const content = agreementRecord.published(record, cid => cid);
-    return { content, cid: cidApi.cidOfObject(content) };
+    return { content, cid: cidApi.cidOfObject(content), plan: record.plan };
 }

@@ -204,7 +204,7 @@ function openProposalFromList(proposalIdOrHash, options = {}) {
     const proposal = normalized.proposal || getProposalByIdOrHash(proposalIdOrHash);
     if (!proposal) {
         const t = getProposalI18nHelper();
-        updateStatus(t('status.messages.proposal_not_found', 'Proposal not found'));
+        updateStatus(t('status.messages.proposal_not_found', 'Design not found'));
         return false;
     }
 
@@ -519,7 +519,7 @@ async function handleProposalDownloadClick(event) {
         // another city's proposal is not stored here: say where it belongs
         const message = error?.code === 'proposal-in-other-city'
             ? error.message
-            : t('modal.roadWidth.proposalList.downloadError', 'Failed to download proposal');
+            : t('modal.roadWidth.proposalList.downloadError', 'Failed to download design');
         try {
             updateStatus(message);
         } catch (_) {
@@ -584,7 +584,7 @@ function formatAreaMetric(area) {
 function showProposalDownloadConfirm() {
     const t = getProposalI18nHelper();
     return window.CbDialog.confirm(
-        t('modal.roadWidth.proposalList.downloadConfirm', 'Proposal is not in local storage yet. Download?'),
+        t('modal.roadWidth.proposalList.downloadConfirm', 'Design is not in local storage yet. Download?'),
         { okText: t('common.download', 'Download'), cancelText: t('common.cancel', 'Cancel') }
     );
 }
@@ -810,8 +810,8 @@ function ensureProposalLoadOverlay() {
     proposalLoadTitleEl.id = 'proposal-load-title';
     proposalLoadTitleEl.className = 'proposal-load-title';
     const initialTitle = (typeof tShare === 'function')
-        ? tShare('plan.fetchingPlanTitle', 'Fetching proposal')
-        : 'Fetching proposal';
+        ? tShare('plan.fetchingPlanTitle', 'Fetching design')
+        : 'Fetching design';
     proposalLoadTitleEl.textContent = initialTitle;
 
     const spinner = document.createElement('div');
@@ -1045,7 +1045,7 @@ function selectProposalFromList(proposalIdOrHash, parcelId) {
     if (!proposal) {
         console.error('Proposal not found:', proposalIdOrHash);
         const t = getProposalI18nHelper();
-        updateStatus(t('status.messages.error_proposal_not_found', 'Error: Proposal not found'));
+        updateStatus(t('status.messages.error_proposal_not_found', 'Error: Design not found'));
         return;
     }
 

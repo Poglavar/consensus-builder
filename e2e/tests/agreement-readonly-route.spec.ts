@@ -1,41 +1,48 @@
 import { test, expect } from '../helpers/fixtures';
 import { openCity, stubBasemapTiles } from '../helpers/runtime';
 import { agreementPanel } from '../helpers/agreements';
-import { mockAllApiRoutes } from '../helpers/mocks/api-routes';
-import { attachSharedIndex, fileAgreement, fileDesign, pageIndex } from '../helpers/mocks/shared-server';
+import { fileAgreement, fileDesign, filePlan, pageIndex } from '../helpers/mocks/shared-server';
 
-test('a same-context secondary tab opens a published agreement without applying or storing it', async ({ mockApi: primary }) => {
+test('a Plan agreement link opens terms without applying or storing designs', async ({ mockApi: primary }) => {
   await stubBasemapTiles(primary);
   await openCity(primary);
   const city = await primary.evaluate(() => (window as any).CityConfigManager.getCurrentCityId());
   const index = pageIndex(primary);
   const designCid = fileDesign(index, {
     schema: 'design/v1', goal: 'park', title: 'Shared read-only agreement park', description: null, author: 'fixture',
-    city, site: null, toleranceM: null, geometry: null, origin: null, authoredAt: new Date().toISOString(),
+    city, site: { type: 'Polygon', coordinates: [[[15.96,45.8],[15.9601,45.8],[15.9601,45.8001],[15.96,45.8001],[15.96,45.8]]] }, toleranceM: null, geometry: null, origin: null, authoredAt: new Date().toISOString(),
     structureProposal: { kind: 'park', blockName: null },
   });
+  const planCid = filePlan(index, { schema: 'plan/v1', title: 'Shared read-only agreement', designCids: [designCid],
+    view: { at: '45.8,15.96,16', mode: '2d', city, language: 'en' } });
   const cid = fileAgreement(index, {
     schema: 'agreement/v1', title: 'Shared read-only agreement', author: 'fixture', sponsor: null, city,
-    createdAt: new Date().toISOString(), designs: [{ cid: designCid, goal: 'park', title: 'Shared read-only agreement park' }],
+    createdAt: new Date().toISOString(), planCid,
     inputs: { parcels: [{ parcelId: 'HR-335614-2311', areaM2: 120, holders: [] }], openGroundM2: 0 },
     outputs: [], allocations: [], money: { currency: 'EUR', lines: [] },
     rule: { electorate: 'community', binding: false, approvalConfig: null, lens: [] }, deadline: null,
   });
-  const secondary = await primary.context().newPage();
-  await mockAllApiRoutes(secondary);
-  await attachSharedIndex(secondary, index);
-  await stubBasemapTiles(secondary);
-  await secondary.goto(`/agreements/${cid}?city=${encodeURIComponent(city)}&reduceMotion=1`, { waitUntil: 'domcontentloaded' });
-  await expect.poll(() => secondary.evaluate(() => (window as any).__cbSecondaryTab)).toBe(true);
+  await primary.evaluate(async planCid => {
+    const w = window as any;
+    await w.ensureOptionalTool('designMemberships');
+    const host = document.createElement('section');
+    host.id = 'test-plan-agreements';
+    host.style.cssText = 'position:fixed;top:100px;right:20px;z-index:10000';
+    document.body.appendChild(host);
+    w.DesignMemberships.mountAgreements(host, { cid: planCid }, w);
+  }, planCid);
+  await primary.locator('#test-plan-agreements').getByRole('link', { name: 'Shared read-only agreement', exact: true }).click();
 
-  const panel = agreementPanel(secondary);
+  const panel = agreementPanel(primary);
   await expect(panel).toBeVisible({ timeout: 90_000 });
   await expect(panel.locator('code.agreement-panel-cid')).toHaveAttribute('title', cid);
   await expect(panel.locator('.agreement-panel-designs')).toContainText('Shared read-only agreement park');
   await expect(panel.locator('[data-agreement-read-only-status]')).toContainText('Local map status is not evaluated');
   await expect(panel.locator('[data-agreement-status], [data-agreement-action="edit"], [data-agreement-action="delete"], [data-agreement-action="propose"]')).toHaveCount(0);
   await expect(panel.locator('[data-agreement-design]')).toBeDisabled();
-  expect(await secondary.evaluate(() => (window as any).AgreementStore.list())).toEqual([]);
+  expect(await primary.evaluate(() => (window as any).AgreementStore.list())).toEqual([]);
+  expect(await primary.evaluate(() => (window as any).proposalStorage.getAllProposals())).toEqual([]);
+  await expect(panel.locator(`a[href*='/plans/${planCid}']`)).toBeVisible();
 
   const requests = index.requests;
   expect(requests.some(request => request.method === 'GET' && request.path === `/agreements/${cid}`)).toBe(true);

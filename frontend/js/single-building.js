@@ -1436,7 +1436,7 @@
                     <button id="single-rotate-counterclockwise" class="btn" type="button" title="${modalText.rotateCounterclockwiseLabel}" aria-label="${modalText.rotateCounterclockwiseLabel}"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> 5°</button>
                     <button id="single-rotate-clockwise" class="btn" type="button" title="${modalText.rotateClockwiseLabel}" aria-label="${modalText.rotateClockwiseLabel}"><i class="fa-solid fa-rotate-right" aria-hidden="true"></i> 5°</button>
                 `,
-                content: `                        <label class="on-map-editor__placement-option"><input id="single-move-together" type="checkbox" checked><span>${translateSingleBuildingText('modal.singleBuilding.moveTogether', 'Move whole proposal')}</span></label>
+                content: `                        <label class="on-map-editor__placement-option"><input id="single-move-together" type="checkbox" checked><span>${translateSingleBuildingText('modal.singleBuilding.moveTogether', 'Move whole design')}</span></label>
                         <div class="on-map-building__height">
                             <label for="single-height-slider">${modalText.heightLabel} <strong id="single-height-value">${DEFAULT_HEIGHT_M}</strong></label>
                             <input type="range" id="single-height-slider" aria-label="${modalText.heightLabel}" min="3" max="250" step="1" value="${DEFAULT_HEIGHT_M}">

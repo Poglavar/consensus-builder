@@ -25,8 +25,8 @@ describe('click stack relationship rendering', () => {
 
         const label = group.querySelector('.click-stack__relation-label');
         const button = group.querySelector('.click-stack__chip');
-        expect(label.textContent).toBe('Član planova:');
-        expect(group.getAttribute('aria-label')).toBe('Član planova:');
+        expect(label.textContent).toBe('Uključeno u planove:');
+        expect(group.getAttribute('aria-label')).toBe('Uključeno u planove:');
         expect(group.querySelectorAll('img')).toHaveLength(0);
         expect(button.textContent).toBe('<img src=x onerror=alert(1)>');
         expect(button.getAttribute('data-action')).toBe('related');

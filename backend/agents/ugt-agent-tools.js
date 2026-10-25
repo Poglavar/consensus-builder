@@ -173,7 +173,7 @@ function publishedDesign(content, label = 'design') {
  * agreementObject (AgreementRecord.validate, then published), which refuses what the agreement dialog
  * would refuse, and refused unless the rebuilt object has the same CID.
  */
-function publishedAgreement(content) {
+function publishedAgreement(content, plan) {
     if (!isPlainObject(content) || content.schema !== AGREEMENT_SCHEMA) throw new Error(`agreement must be an ${AGREEMENT_SCHEMA} object`);
     if (content.sponsor != null && !walletOf(content.sponsor)) {
         throw new Error('agreement.sponsor must be the base58 wallet that will mint it, or null');
@@ -185,7 +185,8 @@ function publishedAgreement(content) {
         sponsor: content.sponsor ?? null,
         city: content.city ?? null,
         createdAt: content.createdAt ?? null,
-        designs: content.designs,
+        plan,
+        designs: (plan?.content?.designCids || []).map(cid => ({ cid })),
         parcels: inputs.parcels,
         openGroundM2: inputs.openGroundM2,
         outputs: content.outputs,
@@ -312,7 +313,15 @@ export function createUrbanGameTheoryTools({
             next });
     }
     async function agreementSource(value, expectedCid) {
-        if (!referenceInput(value)) return { ...publishedAgreement(value), designs: [] };
+        if (!referenceInput(value)) {
+            const artifact = value?.draftArtifact || value;
+            const content = artifact.agreement || artifact.content || artifact;
+            let plan = artifact.plan || (content.planCid ? await companion.request(`/plans/${content.planCid}`) : null);
+            if (plan?.schema === 'plan/v1') plan = { cid: cidOfObject(plan), content: plan };
+            if (plan?.content == null && plan?.plan) plan = { cid: plan.cid, content: plan.plan };
+            return { ...publishedAgreement(content, plan), designs: artifact.designs || [], plan,
+                designSources: artifact.designSources || {}, parcelSourceId: artifact.parcelSourceId };
+        }
         if (!expectedCid) checkRevision(null, expectedCid, true);
         const reference = typeof value === 'string' ? value : value.draftRef;
         let cid = isCid(reference) ? reference : null;
@@ -328,10 +337,14 @@ export function createUrbanGameTheoryTools({
             if (!resolveDraftReference) throw Object.assign(new Error('Private agreement references require their hosting server.'), { code: 'draft-reference-unavailable' });
             artifact = await resolveDraftReference(reference);
         }
-        const checked = publishedAgreement(artifact.agreement || artifact.content);
+        const content = artifact.agreement || artifact.content;
+        let plan = artifact.plan || (content?.planCid ? await companion.request(`/plans/${content.planCid}`) : null);
+        if (plan?.schema === 'plan/v1') plan = { cid: cidOfObject(plan), content: plan };
+        if (plan?.content == null && plan?.plan) plan = { cid: plan.cid, content: plan.plan };
+        const checked = publishedAgreement(content, plan);
         checkRevision(checked.cid, expectedCid, true);
         if ((cid && cid !== checked.cid) || (value?.cid && value.cid !== checked.cid) || (artifact.cid && artifact.cid !== checked.cid)) throw Object.assign(new Error('The agreement reference content differs from its CID.'), { code: 'cid-mismatch' });
-        return { ...checked, designs: artifact.designs || [], designSources: artifact.designSources || {}, parcelSourceId: artifact.parcelSourceId };
+        return { ...checked, plan, designs: artifact.designs || [], designSources: artifact.designSources || {}, parcelSourceId: artifact.parcelSourceId };
     }
 
     const actions = {
@@ -477,7 +490,9 @@ export function createUrbanGameTheoryTools({
             try {
                 const source = await agreementSource(agreement, expectedCid), { content, cid } = source;
                 state.cid = cid; checkRevision(cid, expectedCid, referenceInput(agreement));
-                const linked = new Set(content.designs.map(entry => entry.cid));
+                const plan = source.plan;
+                if (!plan || cidOfObject(plan.content) !== plan.cid || plan.cid !== content.planCid) throw Object.assign(new Error('The agreement plan does not match its plan CID.'), { code: 'plan-cid-mismatch' });
+                const linked = new Set(plan.content.designCids);
                 const carried = [];
                 for (const input of [...source.designs, ...designs]) {
                     const resolved = await drafts.resolveDesignSource(input);
@@ -498,7 +513,7 @@ export function createUrbanGameTheoryTools({
                         state.pinnedCids.push(entry.cid);
                     }
                     state.stage = 'pin-agreement';
-                    const published = await client.publishAgreement(content, { designs: carried });
+                    const published = await client.publishAgreement(content, { plan, designs: carried });
                     if (published.cid !== cid) throw Object.assign(new Error(`the index filed agreement ${published.cid}, not ${cid}`), { code: 'cid-mismatch' });
                     state.pinnedCids.push(cid); state.indexed = true; state.stage = 'readback';
                     row = verifiedRow(await client.getAgreement(cid), cid, 'agreement'); created = published.created;

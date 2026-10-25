@@ -43,10 +43,10 @@ describe('granular plan revisions',()=>{
             {type:'remove',ref:`design:${lake.cid}`},
             {type:'modify',ref:`design:${park.cid}`,changes:[{type:'add_trees',count:20}]}
         ]}));
-        expect(next.previousCid).toBe(plan.cid);expect(next.cid).not.toBe(plan.cid);expect(next.agreement.designs).toHaveLength(3);
+        expect(next.previousCid).toBe(plan.cid);expect(next.cid).not.toBe(plan.cid);expect(next.plan.content.designCids).toHaveLength(3);
         expect(next.designs.find(d=>d.content.buildingProposal).content.geometry.buildings[0].properties).toMatchObject({floors:6,height:18});
         expect(next.designs.find(d=>d.content.goal==='park').content.structureProposal.decorationDesign.trees).toHaveLength(25);
-        expect(next.agreement.designs.some(d=>d.cid===lake.cid)).toBe(false);expect(validateAgreementContent(next.agreement).ok).toBe(true);
+        expect(next.plan.content.designCids).not.toContain(lake.cid);expect(validateAgreementContent(next.agreement).ok).toBe(true);
         expect(next.agreement.consultation).toEqual(consultation);
         expect(next.agreement.outputs.reduce((sum,p)=>sum+p.areaM2,0)).toBeCloseTo(turf.area(turf.feature(site)),1);
         const original=await tools.inspectAgreement({plan:plan.draftRef,filter:{kind:'design'}});expect(original.items).toHaveLength(4);
@@ -58,7 +58,8 @@ describe('granular plan revisions',()=>{
         const row=await tools.draftUrbanRule({...common,outline:tower.design.site,title:'Three-storey terrace',rule:{typology:'row',floors:3}});
         const smallPark=await tools.draftSpace({...common,outline:lake.design.site,spaceKind:'park',treeCount:8});
         const next=await tools.editAgreement({plan,expectedCid:plan.cid,operations:[{type:'replace',ref:`design:${tower.cid}`,design:row.design},{type:'remove',ref:`design:${lake.cid}`},{type:'add',design:smallPark.design}]});
-        expect(next.agreement.designs[0].cid).toBe(row.cid);expect(next.agreement.designs.at(-1).cid).toBe(smallPark.cid);
+        expect(next.plan.content.designCids).toEqual(next.designs.map(d => d.cid).sort());
+        expect(next.plan.content.designCids).toEqual(expect.arrayContaining([row.cid, smallPark.cid]));
         expect(row.design.geometry.buildings[0].properties).toMatchObject({height:9,floors:3});
         expect(next.agreement.outputs.reduce((sum,p)=>sum+p.areaM2,0)).toBeCloseTo(turf.area(turf.feature(site)),1);
     });
@@ -109,7 +110,7 @@ describe('granular plan revisions',()=>{
         const next=await tools.editAgreement({plan:allocated,expectedCid:cidOfObject(allocated.agreement),operations:[{type:'remove',ref:`design:${lake.cid}`}],terms:{allocations:[]}});
         expect(next.agreement.allocations).toEqual([]);
     });
-    it('changes the consultation terms through an explicit override and gives the revision another CID',async()=>{
+    it('changes participation metadata through an explicit override and gives the revision another CID',async()=>{
         const {tools,plan}=await fixture();
         const updated={...consultation,organiser:'did:web:another.example'};
         const next=await tools.editAgreement({plan,expectedCid:plan.cid,terms:{consultation:updated}});

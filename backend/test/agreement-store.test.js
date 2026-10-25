@@ -13,6 +13,7 @@ const Panel = require('../../frontend/js/agreement-panel.js');
 // The real money schedule the agreement ledger hands back (AgreementRecord.ledger(...).money).
 const Deal = require('../../frontend/js/reparcellization-deal.js');
 const Cid = require('../../frontend/js/cid.js');
+const PlanRecord = require('../../frontend/js/plan-record.js');
 
 // A PersistentStorage-shaped map; like the real one, forEach swallows what its iterator throws.
 function fakeStorage(seed = {}) {
@@ -324,10 +325,11 @@ describe('the record the form describes', () => {
             city: 'ny',
             createdAt: null,
             updatedAt: null,
+            plan: null,
             designs: [
                 { proposalId: 'layout', title: 'Courtyard plots', goal: 'parcel-layout', cid: LAYOUT_CID },
                 { proposalId: 'road', title: 'New lane', goal: 'road-track', cid: ROAD_CID },
-                { proposalId: 'untitled', title: 'Untitled proposal', goal: null, cid: null }
+                { proposalId: 'untitled', title: 'Untitled design', goal: null, cid: null }
             ],
             inputs: land.inputs,
             outputs: land.outputs,
@@ -361,6 +363,33 @@ describe('the record the form describes', () => {
         expect(record).toMatchObject({ id: 'ag-2', designs: [], inputs: { parcels: [], openGroundM2: 0 }, outputs: [], allocations: [], money: { currency: null, lines: [] } });
         expect(record.rule.electorate).toBe('owners');
         expect(record.rule.binding).toBe(false);
+    });
+
+    it('keeps the saved view in a plan and creates a new revision when membership changes', () => {
+        const view = { at: '45.8,15.96,16', mode: '2d', city: 'zagreb', language: 'hr' };
+        const originalContent = PlanRecord.create('Original plan', [LAYOUT_CID], view);
+        const originalPlan = { cid: Cid.cidOfObject(originalContent), content: originalContent };
+        const state = { ...formState, designs: designs.slice(0, 1), plan: originalPlan, view,
+            fingerprints: new Map([['layout', LAYOUT_CID]]) };
+        const titled = Dialog.recordFromForm(state, { ...values, planTitle: 'Courtyard plan' });
+        expect(titled.plan).toMatchObject({ content: { title: 'Courtyard plan', designCids: [LAYOUT_CID], view } });
+        expect(titled.plan.cid).not.toBe(originalPlan.cid);
+
+        const expanded = Dialog.recordFromForm({ ...state, designs: designs.slice(0, 2), plan: titled.plan,
+            fingerprints: new Map([['layout', LAYOUT_CID], ['road', ROAD_CID]]) }, { ...values, planTitle: 'Courtyard plan' });
+        expect(expanded.plan).toMatchObject({ content: { title: 'Courtyard plan', designCids: [LAYOUT_CID, ROAD_CID].sort(), view } });
+        expect(expanded.plan.cid).not.toBe(titled.plan.cid);
+        expect(originalPlan.content.designCids).toEqual([LAYOUT_CID]);
+    });
+
+    it('keeps the exact plan when only agreement terms or the current map view change', () => {
+        const content = PlanRecord.create('Courtyard plan', [LAYOUT_CID], { at: '45.8,15.96,16', mode: '2d' });
+        const plan = { cid: Cid.cidOfObject(content), content };
+        const state = { ...formState, designs: designs.slice(0, 1), plan,
+            view: { at: '52.4,-1.9,18', mode: '3d' }, fingerprints: new Map([['layout', LAYOUT_CID]]) };
+        const agreement = Dialog.recordFromForm(state, { ...values, title: 'Different terms', electorate: 'community' });
+        expect(agreement.plan).toEqual(plan);
+        expect(agreement.title).toBe('Different terms');
     });
 });
 

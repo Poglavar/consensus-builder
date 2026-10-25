@@ -70,7 +70,8 @@ describe('3D click stack contextual selection', () => {
         expect(section('designs').querySelector('.click-stack__choices')).toBeNull();
         section('parcels').querySelector('.click-stack__row').click();
         expect(api.current()).toMatchObject({ selectedKind: 'parcels', expanded: 'parcels' });
-        expect(section('parcels').querySelector('.click-stack__choices')).toBeNull();
+        expect(section('parcels').querySelector('.click-stack__choices').textContent).toContain('Designs on this parcel:');
+        expect(section('parcels').querySelector('[data-action="related"]').dataset.id).toBe('a');
         section('parcels').querySelector('.click-stack__row').click();
         expect(api.current()).toMatchObject({ selectedKind: 'parcels', expanded: null });
         expect(section('parcels').classList.contains('is-selected')).toBe(true);
@@ -104,12 +105,13 @@ describe('3D click stack contextual selection', () => {
             cid: 'cid-d1', dispose: vi.fn(),
             instances(kind) { return kind === 'plans'
                 ? [{ id: 'plan-1', label: 'Spatial plan', designCids: ['cid-d1'] }, { id: 'plan-2', label: 'Plan option', designCids: ['cid-d1'] }]
-                : [{ id: 'agreement-1', label: 'Agreement', designCids: ['cid-d1'] }]; }
+                : []; }
         };
         pending[0].callback(session);
         pending[0].resolve(session);
         await Promise.resolve();
-        expect(api.current().sections.map(section => section.kind)).toEqual(['agreements', 'plans', 'designs', 'parcels']);
+        expect(api.current().sections.map(section => section.kind)).toEqual(['plans', 'designs', 'parcels']);
+        expect(document.querySelector('.click-stack__section[data-kind="agreements"]')).toBeNull();
         expect(api.current()).toMatchObject({ selectedKind: 'designs', expanded: null });
 
         document.querySelector('.click-stack__section[data-kind="plans"] .click-stack__row').click();
@@ -160,13 +162,13 @@ describe('3D click stack contextual selection', () => {
         api.show({ designs: [{ id: 'd1', label: 'Road', proposal }] }, { focus: 'designs' }, { activate: vi.fn(), focus: vi.fn() });
         expect(pending).toHaveLength(1);
         proposal.cid = 'revised';
-        const stale = { cid: 'current', dispose: vi.fn(), instances: () => [{ id: 'stale-plan' }] };
+        const stale = { cid: 'current', dispose: vi.fn(), instances: kind => kind === 'plans' ? [{ id: 'stale-plan' }] : [{ id: 'stale-agreement' }] };
         pending[0].callback(stale);
         pending[0].resolve(stale);
         expect(stale.dispose).toHaveBeenCalled();
         expect(pending).toHaveLength(2);
         expect(api.current().sections.map(section => section.kind)).toEqual(['designs']);
-        const current = { cid: 'revised', dispose: vi.fn(), instances: kind => kind === 'plans' ? [{ id: 'current-plan', label: 'Current', membershipDesignCid: 'revised' }] : [] };
+        const current = { cid: 'revised', dispose: vi.fn(), instances: kind => kind === 'plans' ? [{ id: 'current-plan', label: 'Current', membershipDesignCid: 'revised' }] : [{ id: 'current-agreement' }] };
         pending[1].callback(current);
         expect(api.current().sections.map(section => section.kind)).toEqual(['plans', 'designs']);
     });
@@ -191,13 +193,15 @@ describe('3D click stack rules', () => {
         expect(stack.cycle(stack.buildThreeStack({ parcels: [{ id: 'p1' }] })).expanded).toBe('parcels');
         expect(stack.cycle(stack.buildThreeStack({})).expanded).toBeNull();
     });
-    it('orders the sections Built, Design, Permitted, Parcel and leaves out empty ones', () => {
+    it('orders Built, Plans, Design, Permitted, Parcel and ignores agreement memberships', () => {
         const built = stack.buildThreeStack({
             parcels: [{ id: 'HR-1-2', label: '2' }],
             designs: [{ id: 'd1', label: 'Park' }],
-            built: [{ id: 'b1', label: '', feature }]
+            built: [{ id: 'b1', label: '', feature }],
+            plans: [{ id: 'pl1', label: 'Plan' }],
+            agreements: [{ id: 'ag1', label: 'Agreement' }]
         }, { focus: 'designs' });
-        expect(built.sections.map(section => section.kind)).toEqual(['built', 'designs', 'parcels']);
+        expect(built.sections.map(section => section.kind)).toEqual(['built', 'plans', 'designs', 'parcels']);
         expect(built.expanded).toBe('designs');
     });
 

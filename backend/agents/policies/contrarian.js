@@ -84,8 +84,7 @@ export function densityEvidence(agreement = {}) {
         const floorAreaM2 = Math.round(floorArea);
         return { source: 'designs', score: floorAreaM2, floorAreaM2, detail: `proposed gross floor area ≈ ${floorAreaM2} m² (${measured} building footprint${measured === 1 ? '' : 's'} × floors in its designs)` };
     }
-    const text = [agreement.name, ...designs.flatMap(design => [design.title, design.description, design.goal]),
-        ...(agreement.designs || []).flatMap(design => [design.title, design.goal])].filter(Boolean).join(' ').toLowerCase();
+    const text = [agreement.name, ...designs.flatMap(design => [design.title, design.description, design.goal])].filter(Boolean).join(' ').toLowerCase();
     const floorsMatch = text.match(FLOORS_RE);
     const floorsMentioned = floorsMatch ? Number(floorsMatch[1]) : 0;
     const dense = DENSE_WORDS.filter(word => text.includes(word));

@@ -9,40 +9,40 @@
     let selectorId = 0;
     const strings = {
         en: {
-            memberPlans: 'Member of plans:', memberAgreements: 'Member of agreements:',
+            memberPlans: 'Included in plans:',
             includedDesigns: 'Designs:', createdBy: 'Created by design:', formedFrom: 'Formed from cadastral parcels:',
             formedParcels: 'Forms parcels:', affectsParcels: 'Uses cadastral parcels:', designsOnParcel: 'Designs on this parcel:',
             chooseInstance: 'Choose item', chooseDesign: 'Location you clicked has multiple designs. Select which to inspect:', chooseBuilding: 'Building to inspect',
-            chooseParcel: 'Parcel to inspect', choosePlan: 'Plan to inspect', chooseAgreement: 'Agreement to inspect',
+            chooseParcel: 'Parcel to inspect', choosePlan: 'Plan to inspect',
             choosePermitted: 'Permitted form to inspect'
         },
         hr: {
-            memberPlans: 'Član planova:', memberAgreements: 'Član sporazuma:',
+            memberPlans: 'Uključeno u planove:',
             includedDesigns: 'Dizajni:', createdBy: 'Izradio dizajn:', formedFrom: 'Nastalo od katastarskih čestica:',
             formedParcels: 'Oblikuje čestice:', affectsParcels: 'Koristi katastarske čestice:', designsOnParcel: 'Dizajni na ovoj čestici:',
             chooseInstance: 'Odaberite stavku', chooseDesign: 'Na mjestu koje ste kliknuli nalazi se više dizajna. Odaberite koji želite pregledati:', chooseBuilding: 'Zgrada za pregled',
-            chooseParcel: 'Čestica za pregled', choosePlan: 'Plan za pregled', chooseAgreement: 'Sporazum za pregled',
+            chooseParcel: 'Čestica za pregled', choosePlan: 'Plan za pregled',
             choosePermitted: 'Dopušteni oblik za pregled'
         },
         sr: {
-            memberPlans: 'Član planova:', memberAgreements: 'Član sporazuma:',
+            memberPlans: 'Uvršteno u planove:',
             includedDesigns: 'Dizajni:', createdBy: 'Izradio dizajn:', formedFrom: 'Nastalo od katastarskih parcela:',
             formedParcels: 'Oblikuje parcele:', affectsParcels: 'Koristi katastarske parcele:', designsOnParcel: 'Dizajni na ovoj parceli:',
             chooseInstance: 'Izaberite stavku', chooseDesign: 'Na mestu koje ste kliknuli nalazi se više dizajna. Izaberite koji želite da pregledate:', chooseBuilding: 'Zgrada za pregled',
-            chooseParcel: 'Parcela za pregled', choosePlan: 'Plan za pregled', chooseAgreement: 'Sporazum za pregled',
+            chooseParcel: 'Parcela za pregled', choosePlan: 'Plan za pregled',
             choosePermitted: 'Dozvoljeni oblik za pregled'
         },
         es: {
-            memberPlans: 'Miembro de planes:', memberAgreements: 'Miembro de acuerdos:',
+            memberPlans: 'Incluido en planes:',
             includedDesigns: 'Diseños:', createdBy: 'Creado por el diseño:', formedFrom: 'Formado a partir de parcelas catastrales:',
             formedParcels: 'Forma parcelas:', affectsParcels: 'Usa parcelas catastrales:', designsOnParcel: 'Diseños en esta parcela:',
             chooseInstance: 'Elegir elemento', chooseDesign: 'En la ubicación donde has hecho clic hay varios diseños. Selecciona cuál consultar:', chooseBuilding: 'Edificio a consultar',
-            chooseParcel: 'Parcela a consultar', choosePlan: 'Plan a consultar', chooseAgreement: 'Acuerdo a consultar',
+            chooseParcel: 'Parcela a consultar', choosePlan: 'Plan a consultar',
             choosePermitted: 'Volumen permitido a consultar'
         }
     };
     const keys = Object.freeze({
-        memberPlans: 'memberPlans', memberAgreements: 'memberAgreements', includedDesigns: 'includedDesigns',
+        memberPlans: 'memberPlans', includedDesigns: 'includedDesigns',
         createdBy: 'createdBy', formedFrom: 'formedFrom', formedParcels: 'formedParcels',
         affectsParcels: 'affectsParcels', designsOnParcel: 'designsOnParcel'
     });
@@ -132,7 +132,7 @@
         caption.id = `${id}-label`;
         caption.className = 'click-stack__selector-label';
         const captions = { designs: 'chooseDesign', built: 'chooseBuilding', parcels: 'chooseParcel', formed: 'chooseParcel',
-            plans: 'choosePlan', agreements: 'chooseAgreement', permitted: 'choosePermitted' };
+            plans: 'choosePlan', permitted: 'choosePermitted' };
         caption.textContent = translate(captions[section.kind] || 'chooseInstance', win);
         const select = doc.createElement('select');
         select.id = id;

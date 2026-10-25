@@ -7,7 +7,7 @@ import { createRequire } from 'node:module';
 import { Keypair } from '@solana/web3.js';
 import {
     AGREEMENT_SCHEMA, DESIGN_SCHEMA, noMoney, REGISTRY_RIGHTS_PROVIDER, agreementObject, boundParcelIds, cidOfObject, communityRule,
-    deadlineAfterDays, designObject, holdersFromRights, isParcelLayout, ownersRule, parcelOutputs, registryRights
+    deadlineAfterDays, designObject, holdersFromRights, isParcelLayout, mapViewFromGeometry, ownersRule, parcelOutputs, registryRights
 } from '../agents/agreement-objects.js';
 import { buildDesignRecord } from '../agents/record-builder.js';
 import { validateDesignContent } from '../routes/designs.js';
@@ -26,6 +26,14 @@ const coOwner = Keypair.generate().publicKey.toBase58();
 const lensKeypair = Keypair.generate();
 const LENS = lensKeypair.publicKey.toBase58();
 const NOW_MS = Date.parse('2026-10-22T09:00:00.000Z');
+
+describe('geometry-derived plan views', () => {
+    it('uses real coordinate bounds without spreading large coordinate collections', () => {
+        const points = Array.from({ length: 200_000 }, (_, index) => [15 + index / 1_000_000, 45 + index / 1_000_000]);
+        expect(mapViewFromGeometry(points, 'zagreb')).toEqual({ at: '45.099999,15.099999,17', mode: '2d', city: 'zagreb' });
+        expect(() => mapViewFromGeometry([], 'zagreb')).toThrow(/real geometry/);
+    });
+});
 
 const design = designObject(buildDesignRecord({
     candidate: { parcelId: 'HR-335550-1234/1', massing: { type: 'Feature', properties: { floors: 6, height: 19.5 }, geometry: MASSING }, normalizedRule: null },
@@ -144,16 +152,17 @@ describe('land', () => {
 
 describe('the agreement object', () => {
     it('is agreement/v1 that the index accepts, without output geometry, under the CID of its bytes', () => {
-        const { content, cid } = ownersAgreement();
+        const { content, cid, plan } = ownersAgreement();
         expect(content.schema).toBe(AGREEMENT_SCHEMA);
         expect(validateAgreementContent(content, { now: NOW_MS })).toMatchObject({ ok: true });
         expect(cid).toBe(cidOf(canonicalBytes(content)));
         expect(content).toMatchObject({
             sponsor: owner, deadline: '2026-10-29T09:00:00.000Z', money: noMoney('EUR'), allocations: [],
-            designs: [{ cid: design.cid, goal: 'buildings', title: 'Six storeys on the corner lot' }],
             inputs: { parcels: [{ parcelId: 'HR-335550-1234/1', areaM2: 612.4, holders: [{ ownerKey: owner, displayName: 'densifier-01', share: 1 }] }], openGroundM2: 0 },
             rule: { electorate: 'owners', binding: true, lens: [LENS] }
         });
+        expect(content.planCid).toBe(plan.cid);
+        expect(content).not.toHaveProperty('designs');
         expect(content.outputs).toEqual([{ hash: agreementRecord.outputHash(PARCEL), areaM2: 612.4, fromParcelIds: ['HR-335550-1234/1'], role: 'parcel', producedBy: null }]);
         // The same parts are the same agreement; other terms are another one over the same design.
         expect(ownersAgreement().cid).toBe(cid);
@@ -175,7 +184,7 @@ describe('the agreement object', () => {
         expect(changed.cid).not.toBe(first.cid);
         expect(first.content.consultation).toEqual(consultation);
         expect(() => ownersAgreement({ consultation })).toThrow(/community/i);
-        expect(() => ownersAgreement({ rule: communityRule(), consultation: { ...consultation, extra: true } })).toThrow(/consultation/i);
+        expect(() => ownersAgreement({ rule: communityRule(), consultation: { ...consultation, extra: true } })).toThrow(/participation/i);
         expect(() => ownersAgreement({ rule: communityRule(), consultation: { ...consultation, participationUrl: 'http://community.example/' } })).toThrow(/HTTPS/i);
     });
 

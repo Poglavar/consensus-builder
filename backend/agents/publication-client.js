@@ -99,7 +99,7 @@ export function createIndexClient({
 
     /** POST /pins: { cid, pinnedAt } of exactly these canonical bytes. */
     async function pin(kind, object) {
-        if (!['design', 'agreement'].includes(kind)) throw new Error('kind must be design or agreement');
+        if (!['design', 'plan', 'agreement'].includes(kind)) throw new Error('kind must be design, plan or agreement');
         const { cid, bytes } = addressOf(object);
         if (pinned.has(cid)) return pinned.get(cid);
         const result = await call('POST', '/pins', { kind, cid, bytes: bytes.toString('base64') });
@@ -167,9 +167,9 @@ export function createIndexClient({
      * POST /agreements: { row, created }. `designs` carries [{ cid, content }] of linked designs the index
      * does not hold yet (a parcel layout is indexed only with its agreement).
      */
-    async function indexAgreement(cid, content, { designs = [] } = {}) {
+    async function indexAgreement(cid, content, { plan, designs = [] } = {}) {
         requireCid(cid);
-        const body = designs.length ? { cid, content, designs } : { cid, content };
+        const body = { cid, content, ...(plan ? { plan } : {}), ...(designs.length ? { designs } : {}) };
         const result = await call('POST', '/agreements', body);
         if (result.status !== 201 && result.status !== 409) throw refusal(`index agreement ${cid}`, result);
         if (result.body?.cid !== cid) throw mismatch('index agreement', cid, result.body?.cid);
@@ -177,12 +177,19 @@ export function createIndexClient({
     }
 
     /** Pin and index one agreement/v1 object: { cid, row, created }. */
-    async function publishAgreement(content, { designs = [] } = {}) {
+    async function publishAgreement(content, { plan, designs = [] } = {}) {
         const { cid } = addressOf(content);
-        let stage = 'pin-agreement'; const pinnedCids = [];
+        let stage = plan ? 'pin-plan' : 'pin-agreement'; const pinnedCids = [];
         try {
+            if (plan) {
+                if (!plan.content || plan.cid !== content.planCid || addressOf(plan.content).cid !== plan.cid) {
+                    throw mismatch('agreement plan', content.planCid, plan.cid);
+                }
+                await pin('plan', plan.content); pinnedCids.push(plan.cid);
+            }
+            stage = 'pin-agreement';
             await pin('agreement', content); pinnedCids.push(cid); stage = 'index-agreement';
-            const { row, created } = await indexAgreement(cid, content, { designs });
+            const { row, created } = await indexAgreement(cid, content, { plan, designs });
             return { cid, row, created };
         } catch (error) { throw Object.assign(error, { cid, stage, pinnedCids, indexed: false }); }
     }

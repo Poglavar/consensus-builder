@@ -51,14 +51,17 @@
      * @param row the index row ({ cid, content, createdAt })
      * @param options { id, apiBase, localIdOf(cid) → local proposal id, derived: { outputs } | null }
      */
-    function recordFromPublished(row, { id, apiBase, localIdOf, derived = null } = {}) {
+    function recordFromPublished(row, { id, apiBase, localIdOf, designOf = () => null, derived = null } = {}) {
         if (!isObject(row) || !cidApi().isCid(row.cid) || !isObject(row.content)) throw new TypeError('recordFromPublished needs an agreement row.');
         if (typeof localIdOf !== 'function') throw new TypeError('recordFromPublished needs localIdOf(cid).');
         const content = row.content;
-        const designs = content.designs.map(design => {
-            const proposalId = localIdOf(design.cid);
-            if (!proposalId) throw Object.assign(new Error(`Design ${design.cid} of the agreement is not held here.`), { code: 'design-missing' });
-            return { proposalId, title: design.title, goal: design.goal, cid: design.cid };
+        const plan = recordApi().planReference(row.plan);
+        if (content.planCid !== plan.cid || Object.hasOwn(content, 'designs')) throw new Error('The agreement must reference this exact plan.');
+        const designs = plan.content.designCids.map(cid => {
+            const proposalId = localIdOf(cid);
+            if (!proposalId) throw Object.assign(new Error(`Design ${cid} of the plan is not held here.`), { code: 'design-missing' });
+            const design = designOf(proposalId);
+            return { proposalId, title: design?.title || null, goal: design?.goal || null, cid };
         });
         const published = new Set(content.outputs.map(output => output.hash));
         const derivedOutputs = derived && Array.isArray(derived.outputs) ? derived.outputs : null;
@@ -92,6 +95,7 @@
             sponsor: content.sponsor,
             city: content.city,
             createdAt: content.createdAt,
+            plan,
             designs,
             inputs: {
                 parcels: content.inputs.parcels.map(parcel => ({ parcelId: parcel.parcelId, ...(parcel.parcelSourceId ? { parcelSourceId: parcel.parcelSourceId } : {}), areaM2: parcel.areaM2, holders: parcel.holders })),
@@ -202,7 +206,11 @@
             if (!isObject(row.content) || cidApi().cidOfObject(row.content) !== cid) {
                 throw failure('cid-mismatch', t('agreement.publish.errors.cidMismatch', 'The server computed a different identity for this agreement, so it was not proposed.'));
             }
-            return row;
+            if (!cidApi().isCid(row.content.planCid) || Object.hasOwn(row.content, 'designs')) {
+                throw failure('invalid-agreement-record', t('agreement.publish.errors.planRequired', 'This agreement has no valid plan reference. Recreate it with a plan.'));
+            }
+            const plan = await win.NamedPlans.fetchPlan(row.content.planCid);
+            return { ...row, plan, designCids: plan.content.designCids };
         }
 
         /**
@@ -245,6 +253,18 @@
                 agreement = store().save({ ...agreement, designs: agreement.designs.map(design => ({ ...design, cid: cids.get(design.proposalId) })) });
             }
 
+            // A plan owns the exact membership. Reuse its revision when unchanged; a new
+            // membership gets a new plan before any agreement can refer to it.
+            let plan = agreement.plan;
+            if (!win.AgreementRecord.matchesPlan(plan, [...cids.values()])) {
+                const planContent = win.PlanRecord.create(plan?.content.title || agreement.title
+                    || agreement.designs[0]?.title || t('agreement.plan.untitled', 'Untitled plan'), [...cids.values()],
+                    plan?.content.view || win.MapShare.capture(win));
+                plan = { cid: cidApi().cidOfObject(planContent), content: planContent };
+            }
+            await win.DesignSync.pinObject('plan', plan.content);
+            agreement = store().save({ ...agreement, plan });
+
             const parcelSourceId = win.DesignSync.parcelSourceIdOf(agreement.city);
             const content = win.AgreementRecord.published({
                 ...agreement,
@@ -265,7 +285,7 @@
                 }
                 throw error;
             }
-            const response = await request('POST', '/agreements', carried.length ? { cid, content, designs: carried } : { cid, content });
+            const response = await request('POST', '/agreements', { cid, content, plan, ...(carried.length ? { designs: carried } : {}) });
             if (!response.ok && response.status !== 409) {
                 const code = (response.body && response.body.code) || `http-${response.status}`;
                 throw failure(code, refusalMessage(response.status, response.body), { status: response.status, body: response.body });
@@ -407,9 +427,9 @@
             const cid = idOf(rawCid);
             try {
                 const row = await fetchAgreement(cid);
-                log(`opening ${cid}: ${row.content.designs.length} design(s), status ${row.status}`);
+                log(`opening ${cid}: plan ${row.plan.cid}, ${row.plan.content.designCids.length} design(s), status ${row.status}`);
                 const cityManager = win.CityConfigManager;
-                const designCids = row.content.designs.map(design => design.cid);
+                const designCids = row.plan.content.designCids;
                 const opened = await win.handleSharedDesignRoute(designCids, { openDetails: false, enter3D: false, summary: false });
                 if (opened.blocked) return;
                 if (opened.failed.length) {
@@ -432,6 +452,7 @@
                     id: existing ? existing.id : win.AgreementRecord.newId(),
                     apiBase: win.DesignSync.apiBase(),
                     localIdOf,
+                    designOf,
                     derived
                 });
                 // A mint this device made but the index has not recorded yet stays on the record.
@@ -444,6 +465,28 @@
                 console.error(`[${new Date().toISOString()}] [AgreementSync] the agreement ${cid} could not be opened`, error);
                 win.showEphemeralMessage((error && error.message) || t('agreement.publish.route.failed', 'The agreement could not be opened.'), 8000, 'error');
             }
+        }
+
+        async function createForPlan(plan) {
+            const checked = win.AgreementRecord.planReference(plan);
+            const opened = await win.handleSharedDesignRoute(checked.content.designCids, { openDetails: false, enter3D: false, summary: false });
+            if (opened.blocked || opened.failed.length || opened.omitted?.length) return;
+            return win.AgreementDialog.open({ plan: checked, designIds: checked.content.designCids.map(cid => opened.localIds.get(cid)) });
+        }
+
+        // Inspect terms without applying a plan or replacing unrelated local work.
+        async function openDetails(cid) {
+            const local = localCopyOf(cid);
+            if (local) return win.AgreementPanel.open(local.id);
+            const row = await fetchAgreement(cid);
+            const downloaded = await win.DesignSync.fetchDesigns(row.plan.content.designCids);
+            if (downloaded.missing.length) throw failure('design-missing', t('agreement.publish.errors.designMissing', 'A design of this plan could not be loaded.'));
+            const designs = row.plan.content.designCids.map(cid => ({ ...win.DesignSync.localDesignFromRow(downloaded.rows.get(cid),
+                { apiBase: backendBase() }), proposalId: cid }));
+            const byId = new Map(designs.map(design => [design.proposalId, design]));
+            const record = recordFromPublished(row, { id: cid, apiBase: backendBase(), localIdOf: cid => cid,
+                designOf: id => byId.get(id) });
+            return win.AgreementPanel.openReadOnly(record, { designs });
         }
 
         // The agreements of a city the index lists as minted (GET /agreements?city=&minted=1), newest first.
@@ -460,7 +503,7 @@
 
         return {
             publishAgreement, proposeAgain, fetchAgreement, fetchMinted, handleAgreementRoute, agreementLink, localCopyOf,
-            refusalMessage, recordOnchain, adoptOnchain
+            refusalMessage, recordOnchain, adoptOnchain, createForPlan, openDetails
         };
     }
 

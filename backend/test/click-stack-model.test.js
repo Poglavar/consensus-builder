@@ -5,58 +5,54 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const model = require('../../frontend/js/click-stack/click-stack-model.js');
 
-it('navigates agreement → design → formed parcel → source parcel without offering selected peers', () => {
+it('navigates parcel → design → plan relationships without exposing agreements as spatial hits', () => {
     const parcel = { id: 'p1' };
     const formed = { id: 'piece', designId: 'd1', designLabel: 'Street', feature: { properties: { cadastreParcelIds: ['p1'] } } };
     const designs = [{ id: 'd1', label: 'Street', proposal: { cadastreParcelIds: ['p1'] }, createdAt: 1 }, { id: 'd2', label: 'Park', createdAt: 2 }];
-    const agreement = { id: 'a1', agreement: { designs: [{ proposalId: 'd1' }, { proposalId: 'd2' }] } };
-    const hits = { agreements: [agreement], designs, formed: [formed], parcels: [parcel] };
+    const plan = { id: 'pl1', content: { designs: [{ proposalId: 'd1' }, { proposalId: 'd2' }] } };
+    const hits = { agreements: [{ id: 'a1' }], plans: [plan], designs, formed: [formed], parcels: [parcel] };
     const links = (kind, item) => model.contextFor(kind, item, hits).map(group => [group.position, group.kind, group.instances.map(item => item.id)]);
-    expect(links('agreements', agreement)).toEqual([['below', 'designs', ['d1', 'd2']]]);
-    expect(links('designs', designs[0])).toEqual([['above', 'agreements', ['a1']], ['below', 'formed', ['piece']]]);
+    expect(links('plans', plan)).toEqual([['below', 'designs', ['d1', 'd2']]]);
+    expect(links('designs', designs[0])).toEqual([['above', 'plans', ['pl1']], ['below', 'formed', ['piece']]]);
     expect(links('formed', formed)).toEqual([['above', 'designs', ['d1']], ['below', 'parcels', ['p1']]]);
-    expect(links('parcels', parcel)).toEqual([['above', 'formed', ['piece']]]);
+    expect(links('parcels', parcel)).toEqual([['above', 'formed', ['piece']], ['above', 'designs', ['d1']]]);
     expect(model.contextFor('formed', formed, { ...hits, designs: [] })[0].instances).toEqual([{ id: 'd1', label: 'Street' }]);
 });
 
 const kinds = stack => stack.sections.map(section => section.kind);
 
 describe('click stack model', () => {
-    it('orders agreements, plans, designs, built, permitted, formed parcel, cadastral parcels, showing only what is there', () => {
+    it('orders plans, designs, built, permitted, formed parcel, cadastral parcels, showing only what is there', () => {
         expect(kinds(model.buildClickStack({ built: [{ id: 'b1' }], parcels: [{ id: 'p1' }] }))).toEqual(['built', 'parcels']);
         expect(kinds(model.buildClickStack({ parcels: [{ id: 'p1' }], permitted: [{ id: 'm1' }], built: [{ id: 'b1' }], formed: [{ id: 'f1' }] })))
             .toEqual(['built', 'permitted', 'formed', 'parcels']);
         expect(kinds(model.buildClickStack({ parcels: [{ id: 'p1' }], designs: [{ id: 'd1' }], built: [{ id: 'b1' }], permitted: [{ id: 'm1' }], plans: [{ id: 'pl1' }], agreements: [{ id: 'a1' }] })))
-            .toEqual(['agreements', 'plans', 'designs', 'built', 'permitted', 'parcels']);
+            .toEqual(['plans', 'designs', 'built', 'permitted', 'parcels']);
+        expect(kinds(model.buildClickStack({ agreements: [{ id: 'a1' }], plans: [{ id: 'pl1' }], designs: [{ id: 'd1' }] })))
+            .toEqual(['plans', 'designs']);
         expect(model.buildClickStack({}).sections).toEqual([]);
         expect(kinds(model.buildClickStack({ ground: [{ id: 'here' }] }))).toEqual(['ground']);
         expect(model.buildClickStack({ ground: [{ id: 'here' }] }).expanded).toBe('ground');
     });
 
-    it('relates plans and agreements to exact design identities and labels missing members', () => {
+    it('relates plans to exact design identities and labels missing members', () => {
         const d1 = { id: 'local-1', cid: 'bafy-design-one', label: 'Road' };
         const d2 = { id: 'local-2', serverId: 'server-2', label: 'Park' };
         const plan = { id: 'pl', content: { designCids: ['bafy-design-one', 'bafy-missing'] } };
-        const agreement = { id: 'ag', agreement: { designs: [{ proposalId: 'local-2', title: 'Park' }] } };
-        const hits = { plans: [plan], agreements: [agreement], designs: [d1, d2] };
+        const hits = { plans: [plan], agreements: [{ id: 'ag' }], designs: [d1, d2] };
         expect(model.contextFor('plans', plan, hits).map(group => [group.relation, group.instances.map(item => item.id)]))
             .toEqual([['includedDesigns', ['local-1', 'bafy-missing']]]);
-        expect(model.contextFor('agreements', agreement, hits)[0].relation).toBe('includedDesigns');
         expect(model.contextFor('designs', d1, hits).map(group => [group.relation, group.instances.map(item => item.id)]))
             .toEqual([['memberPlans', ['pl']]]);
-        expect(model.contextFor('designs', d2, hits).map(group => [group.relation, group.instances.map(item => item.id)]))
-            .toEqual([['memberAgreements', ['ag']]]);
+        expect(model.contextFor('designs', d2, hits)).toEqual([]);
     });
 
     it('keeps published CID membership separate from an edited local design with the same local id', () => {
         const edited = { id: 'local-1', cid: 'bafy-new-version', label: 'Edited road' };
         const plan = { id: 'pl-old', designCids: ['bafy-old-version'] };
-        const agreement = { id: 'ag-old', agreement: { designs: [{ proposalId: 'local-1', cid: 'bafy-old-version' }] } };
-        const hits = { plans: [plan], agreements: [agreement], designs: [edited] };
+        const hits = { plans: [plan], agreements: [{ id: 'ag-old' }], designs: [edited] };
         const planMember = model.contextFor('plans', plan, hits)[0].instances[0];
-        const agreementMember = model.contextFor('agreements', agreement, hits)[0].instances[0];
         expect(planMember).toMatchObject({ id: 'bafy-old-version', serverId: 'bafy-old-version' });
-        expect(agreementMember).toMatchObject({ id: 'bafy-old-version', serverId: 'bafy-old-version' });
         expect(model.contextFor('designs', edited, hits).map(group => group.kind)).toEqual([]);
     });
 
@@ -70,20 +66,20 @@ describe('click stack model', () => {
         expect(model.contextFor('designs', stale, { designs: [current, stale], plans: [planSummary] })).toEqual([]);
     });
 
-    it('hides only a redundant singleton relationship to the sole identical visible target', () => {
+    it('keeps the design-to-plan navigation visible even for a single plan', () => {
         const design = { id: 'd1', label: 'Road' };
-        const agreement = { id: 'a1', agreement: { designs: [{ proposalId: 'd1' }] } };
-        const hits = { designs: [design], agreements: [agreement] };
-        expect(model.contextFor('designs', design, hits).map(group => group.kind)).toEqual(['agreements']);
-        expect(model.visibleContextFor('designs', design, hits)).toEqual([]);
-        expect(model.visibleContextFor('designs', design, { designs: [design], agreements: [{ id: 'a2' }, agreement] }))
+        const plan = { id: 'pl1', content: { designs: [{ proposalId: 'd1' }] } };
+        const hits = { designs: [design], plans: [plan] };
+        expect(model.contextFor('designs', design, hits).map(group => group.kind)).toEqual(['plans']);
+        expect(model.visibleContextFor('designs', design, hits)[0].instances).toEqual([plan]);
+        expect(model.visibleContextFor('designs', design, { designs: [design], plans: [{ id: 'pl2' }, plan] }))
             .toHaveLength(1);
         // The relationship still navigates when its target isn't represented in the current stack.
-        expect(model.visibleContextFor('agreements', agreement, { designs: [] })[0].instances)
+        expect(model.visibleContextFor('plans', plan, { designs: [] })[0].instances)
             .toEqual([{ id: 'd1', label: 'd1' }]);
     });
 
-    it('counts instances, selects the newest design and agreement first, and drops duplicates', () => {
+    it('counts instances, selects the newest design, and drops duplicates', () => {
         const stack = model.buildClickStack({
             designs: [{ id: 'old', createdAt: '2026-01-01' }, { id: 'new', createdAt: '2026-10-01' }, { id: 'old', createdAt: '2026-01-01' }],
             parcels: [{ id: 'p2' }, { id: 'p1' }]

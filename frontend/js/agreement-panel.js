@@ -235,7 +235,7 @@
             const record = typeof designOf === 'function' ? designOf(proposalId) : null;
             return {
                 proposalId,
-                title: (design && design.title) || (record && (record.title || record.name)) || t('modal.roadWidth.proposalList.untitled', 'Untitled proposal'),
+                title: (design && design.title) || (record && (record.title || record.name)) || t('modal.roadWidth.proposalList.untitled', 'Untitled design'),
                 type: typeof typeLabel === 'function' ? typeLabel(record || design) || '' : '',
                 missing: !record,
                 applied: !!record && typeof isApplied === 'function' && !!isApplied(record)
@@ -497,7 +497,7 @@
             + (row.type ? `<span class="agreement-panel-design__type">${esc(row.type)}</span>` : '') + '</span>'
             + (row.applied ? `<span class="cb-badge cb-badge--applied">${esc(tr('agreement.designs.onMap', 'Applied'))}</span>` : '')
             + '</button></li>').join('');
-        return sectionHtml(tr('agreement.sections.designs', 'Designs'), `<ul class="agreement-panel-designs">${items}</ul>`);
+        return sectionHtml(tr('agreement.panel.designs', 'Designs in this plan'), `<ul class="agreement-panel-designs">${items}</ul>`);
     }
 
     function landHtml(summary, tr = t) {
@@ -656,6 +656,9 @@
                     : t('agreement.publish.rederive', 'Its pieces are known here by their hashes only: apply its designs on the same ground to re-derive them and compare.'))}</p>`
                 : '';
             return status
+                + (agreement.plan ? sectionHtml(t('plan.label', 'Plan'), published
+                    ? `<a class="btn btn-sm" href="${esc(win.NamedPlans.link(agreement.plan.cid))}">${esc(agreement.plan.content.title)}</a>`
+                    : `<p class="agreement-panel-hint">${esc(agreement.plan.content.title)}</p>`) : '')
                 + byHashOnly
                 + actionsHtml({ canCompare: current, comparing: comparing(state.id), canPropose: current && !published, published, canBet: binding && betAvailable(agreement), readOnly })
                 + (!current && !readOnly ? `<p class="agreement-panel-hint" data-agreement-compare-unavailable>${esc(t('agreement.panel.compareUnavailable', 'Before / after is available when this agreement matches the designs applied on the map.'))}</p>` : '')
@@ -673,7 +676,7 @@
             const panel = ensurePanel();
             panel.querySelector('#agreement-panel-title').textContent = state.agreement ? titleOf(state.agreement) : t('agreement.panel.title', 'Agreement');
             panel.querySelector('.agreement-panel-kind').textContent = state.agreement?.rule?.electorate === 'community'
-                ? t('community.title', 'Community consultation') : t('agreement.panel.title', 'Agreement');
+                ? t('community.title', 'Nonbinding agreement') : t('agreement.panel.title', 'Agreement');
             const close = panel.querySelector('[data-agreement-action="close"]');
             const closeLabel = t('modal.common.close', 'Close');
             close.setAttribute('aria-label', closeLabel);

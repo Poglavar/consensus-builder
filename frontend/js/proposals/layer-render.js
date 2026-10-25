@@ -232,7 +232,7 @@ function highlightFeatureGroupsForHover(featureGroups) {
         if (!group || !Array.isArray(group.features)) return;
         const {
             features,
-            color = '#FFB300',
+            color = window.MapHighlight.color,
             weight = 5,
             dashArray = '4 4',
             // Outlines are hollow unless a caller asks for a fill. A filled shape reads as "this
@@ -381,7 +381,7 @@ function highlightParcelHover(parcelId, options = {}) {
     const features = getParcelFeaturesForHighlight(parcelId, proposal, options);
     if (features.length) {
         highlightFeaturesForHover(features, {
-            color: '#FFEB3B',
+            color: window.MapHighlight.color,
             weight: 6,
             dashArray: '10 8',
             // Labels are opt-in per surface: panel-driven hovers pass true (the label answers
@@ -397,7 +397,7 @@ function selectedProposalStatusText(proposal) {
     const count = (proposal.cadastreParcelIds || []).length;
     const title = proposal.title || '';
     const tProposal = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
-    const fallback = `Selected proposal "{{title}}" (contains {{count}} ${count === 1 ? 'parcel' : 'parcels'})`;
+    const fallback = `Selected design "{{title}}" (contains {{count}} ${count === 1 ? 'parcel' : 'parcels'})`;
     return tProposal
         ? tProposal('status.messages.selected_proposal_summary', fallback, { title, count })
         : fallback.replace('{{title}}', title).replace('{{count}}', String(count));
@@ -524,8 +524,8 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
     // with a body are drawn from that body below; their cadastral source parcels are provenance,
     // not part of the visual selection.
     const parcelStyle = {
-        color: '#2563EB',
-        fillColor: '#2563EB',
+        color: window.MapHighlight.color,
+        fillColor: window.MapHighlight.color,
         weight: 3,
         opacity: 0.9,
         dashArray: standsOnMap ? null : '10 5',
@@ -540,7 +540,7 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
         // corridor itself (rails included, when it has rail lanes), and shading every parent parcel
         // blue only buried the selection. A track takes this path like any other corridor.
         const roadSelectedStyle = {
-            color: '#ff3300',
+            color: window.MapHighlight.color,
             weight: 3,
             opacity: 1,
             dashArray: null,
@@ -555,14 +555,14 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
         // a parcel layout taken off — is drawn as a proposal: dashed lines and no fill. Only a
         // proposal that IS on the map gets the solid, filled primary outline.
         const primaryStyle = (isRoadProposal || !standsOnMap) ? {
-            color: '#2563EB',
+            color: window.MapHighlight.color,
             weight: 4,
             opacity: 1,
             dashArray: '10 5',
             fillOpacity: 0,
             className: isRoadProposal ? 'proposal-road-outline' : 'proposal-primary-outline'
         } : {
-            color: '#2563EB',
+            color: window.MapHighlight.color,
             weight: 4,
             opacity: 1,
             dashArray: null,
@@ -683,8 +683,8 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
         console.error('[selectAndHighlightProposal] Proposal not found:', proposalIdOrHash);
         const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
         updateStatus(t
-            ? t('status.messages.error_proposal_not_found', 'Error: Proposal not found')
-            : 'Error: Proposal not found');
+            ? t('status.messages.error_proposal_not_found', 'Error: Design not found')
+            : 'Error: Design not found');
         return;
     }
 
@@ -975,7 +975,7 @@ async function removeProposalFromMap(proposalId, options = {}) {
         if (typeof reportProposalMapActionFailure === 'function') {
             reportProposalMapActionFailure(proposalId, String(error?.message || error || ''), 'unapplyFailedUnknown', 'unapply');
         } else if (typeof showEphemeralMessage === 'function') {
-            showEphemeralMessage(String(error?.message || error || 'Could not remove this proposal from the map.'), 8000, 'error');
+            showEphemeralMessage(String(error?.message || error || 'Could not remove this design from the map.'), 8000, 'error');
         }
         return false;
     } finally {
@@ -986,8 +986,8 @@ async function removeProposalFromMap(proposalId, options = {}) {
         reconcileProposalMapActionButton(proposalId, original || '');
         if (succeeded) {
             const message = t
-                ? t('panel.proposal.actions.unappliedStatus', 'Unapplied “{{name}}”. The proposal remains in your proposals list.', { name: proposalLabel })
-                : `Unapplied “${proposalLabel}”. The proposal remains in your proposals list.`;
+                ? t('panel.proposal.actions.unappliedStatus', 'Unapplied “{{name}}”. The design remains in your designs list.', { name: proposalLabel })
+                : `Unapplied “${proposalLabel}”. The design remains in your designs list.`;
             try { if (typeof updateStatus === 'function') updateStatus(message, { proposalId: String(proposalId) }); } catch (_) { }
         }
     }

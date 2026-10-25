@@ -19,11 +19,12 @@ function row(n, { sponsor = sponsors[n % sponsors.length], createdAt = `2026-10-
     const designCid = cidOfObject({ schema: 'design/v1', title: `Design ${n}` });
     return {
         cid: cidOf(n), city: 'zagreb', title: `Agreement ${n}`, author: `author-${n}`,
+        planCid: cidOfObject({ schema: 'plan/v1', title: `Plan ${n}`, designCids: [designCid] }),
         designCids: [designCid], inputParcelIds: [`HR-1-${n}`], parcelSourceId: null,
         deadline: '2026-11-01T00:00:00.000Z', status: 'active', onchain: null, createdAt,
         content: {
             schema: 'agreement/v1', title: `Agreement ${n}`, author: `author-${n}`, sponsor, createdAt,
-            designs: [{ cid: designCid, goal: 'buildings', title: `Design ${n}` }],
+            planCid: cidOfObject({ schema: 'plan/v1', title: `Plan ${n}`, designCids: [designCid] }),
             rule: { electorate: 'owners', binding: true, approvalConfig: null, lens: [] }
         },
         ...extra
@@ -47,8 +48,8 @@ describe('agreementSummary', () => {
         expect(agreementSummary(row(1, { content: { ...row(1).content, sponsor: null } }))).toMatchObject({ sponsor: null, account: null });
         expect(agreementSummary(row(1, { content: { ...row(1).content, sponsor: 'not-a-wallet' } })).account).toBeNull();
         expect(() => agreementSummary({ ...row(1), cid: null })).toThrow(/missing its CID/);
-        // Design CIDs come from the content when the row does not list them.
-        expect(agreementSummary({ ...row(2), designCids: undefined }).designCids).toEqual(row(2).designCids);
+        expect(agreementSummary({ ...row(2), designCids: undefined }).designCids).toEqual([]);
+        expect(agreementSummary(row(1)).planCid).toBe(row(1).planCid);
     });
 });
 

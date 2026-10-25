@@ -757,7 +757,7 @@
             return;
         }
         if (result?.cancelled) return;
-        setRowHouseInfo('', result?.reason || translateRowHouseText('proposalDrafts.freeform.noBuildings', 'This proposal has no buildings to keep.'));
+        setRowHouseInfo('', result?.reason || translateRowHouseText('proposalDrafts.freeform.noBuildings', 'This design has no buildings to keep.'));
     }
 
     function commitRowHousePolygonRing(ring) {
@@ -1795,7 +1795,7 @@
         closeRowHouseModal({ preservePending: true });
 
         if (typeof updateStatus === 'function') {
-            updateStatus('Row house design saved. Add proposal details to submit.');
+            updateStatus('Row house design saved. Add design details to submit.');
         }
 
         const description = document.getElementById('proposalDescription');
@@ -1803,7 +1803,7 @@
             if (!description.value.trim()) {
                 description.value = translateRowHouseText(
                     'rowHouses.modal.messages.defaultProposalDescription',
-                    'Row house proposal for {{blockName}}',
+                    'Row house design for {{blockName}}',
                     { blockName: context.blockName || 'selected parcels' }
                 );
             }

@@ -55,7 +55,7 @@
         "compactness": "Compactness",
         "parcels": "Loaded parcels",
         "measurementNote": "Measured between OSM road centrelines, including street space. Walking time is a perimeter estimate, not a routed walk.",
-        "proposedStreetsNote": "Bounded in part by streets from applied proposals.",
+        "proposedStreetsNote": "Bounded in part by streets from applied designs.",
         "rateLimited": "OSM is busy. Retry in {{seconds}} seconds.",
         "loadError": "Could not load OSM roads (HTTP {{status}}). Please retry.",
         "invalidData": "The road source returned invalid data.",
@@ -401,11 +401,11 @@
             "submit": "Verify with wallet",
             "working": "Waiting for your wallet…",
             "noService": "No member of this lens offers owner verification.",
-            "notAuthorized": "This lens member does not recognize this wallet as acting for any owner of this proposal.",
-            "rightsMismatch": "This lens member’s records do not match the proposal’s ownership snapshot, so it will not confirm them.",
-            "unknownParcel": "This lens member has no record of one of the proposal’s parcels.",
-            "notInLens": "That member is not in this proposal’s lens.",
-            "rightsIncomplete": "The proposal’s ownership snapshot is incomplete.",
+            "notAuthorized": "This lens member does not recognize this wallet as acting for any owner of this design.",
+            "rightsMismatch": "This lens member’s records do not match the design’s ownership snapshot, so it will not confirm them.",
+            "unknownParcel": "This lens member has no record of one of the design’s parcels.",
+            "notInLens": "That member is not in this design’s lens.",
+            "rightsIncomplete": "The design’s ownership snapshot is incomplete.",
             "badChallenge": "The lens member asked the wallet to sign something unexpected; nothing was signed.",
             "badEvidence": "The lens member’s answer did not verify, so it was not used.",
             "failed": "Verification failed: {{message}}"
@@ -448,9 +448,9 @@
         }
     },
     "proposalGroundRebase": {
-        "fork": "New proposal with same geometry",
-        "forkHint": "Copy this proposal with the parcels its geometry covers on the ground shown now. The published proposal stays unchanged.",
-        "forkFailed": "Could not start the new proposal: {{reason}}",
+        "fork": "New design with same geometry",
+        "forkHint": "Copy this design with the parcels its geometry covers on the ground shown now. The published design stays unchanged.",
+        "forkFailed": "Could not start the new design: {{reason}}",
         "noParcels": "This geometry covers no parcels on the ground in view.",
         "rederived": "The cadastre changed under this draft: its parcels now follow its geometry ({{count}})."
     },
@@ -458,32 +458,32 @@
         "waitingForReplay": "Waiting for the applied composition to finish rebuilding…"
     },
     "proposalApplyFailures": {
-        "outsideCadastre": "The proposal geometry extends beyond its selected cadastral parcels. Keep it within the selected land, or create a proposal that includes the additional parcels.",
-        "outsideSite": "The proposal geometry extends beyond its site. Keep it inside the site, or edit the site before applying.",
+        "outsideCadastre": "The design geometry extends beyond its selected cadastral parcels. Keep it within the selected land, or create a design that includes the additional parcels.",
+        "outsideSite": "The design geometry extends beyond its site. Keep it inside the site, or edit the site before applying.",
         "groundUnavailable": "Cadastral parcel data could not be loaded. Check your connection and try applying again.",
-        "groundMissing": "Cadastral parcel data is unavailable for: {{parcels}}. This proposal cannot be applied until those parcels can be loaded.",
-        "needsParcels": "This proposal acts on cadastral parcels or has no geometry of its own. Load its parcels before applying.",
-        "undeclared": "This proposal has no cadastral parcels or open-ground site. Define its site before applying.",
-        "invalidGeometry": "The proposal geometry is missing or invalid. Edit its geometry before applying.",
-        "applyFailed": "The proposal could not be placed on the map because its geometry could not be derived from the selected land.",
+        "groundMissing": "Cadastral parcel data is unavailable for: {{parcels}}. This design cannot be applied until those parcels can be loaded.",
+        "needsParcels": "This design acts on cadastral parcels or has no geometry of its own. Load its parcels before applying.",
+        "undeclared": "This design has no cadastral parcels or open-ground site. Define its site before applying.",
+        "invalidGeometry": "The design geometry is missing or invalid. Edit its geometry before applying.",
+        "applyFailed": "The design could not be placed on the map because its geometry could not be derived from the selected land.",
         "busy": "Another map update is still running. Wait for it to finish and try again.",
-        "storeUnavailable": "Proposals are not loaded yet. Wait for the city to finish loading and try again.",
-        "notFound": "This proposal is no longer available. Refresh the proposals list and try again.",
-        "cancelled": "This proposal was withdrawn, so it cannot be applied to the map."
+        "storeUnavailable": "Designs are not loaded yet. Wait for the city to finish loading and try again.",
+        "notFound": "This design is no longer available. Refresh the designs list and try again.",
+        "cancelled": "This design was withdrawn, so it cannot be applied to the map."
     },
     "proposalDrafts": {
         "title": "Drafts",
-        "entryAria": "Open {{count}} saved proposal draft(s)",
-        "editorAria": "Proposal draft editor",
+        "entryAria": "Open {{count}} saved design draft(s)",
+        "editorAria": "Design draft editor",
         "unknownCity": "Unknown city",
-        "proposal": "Proposal",
+        "proposal": "Design",
         "untitled": "Untitled draft",
         "source": "Source: {{id}}",
-        "newDraft": "New proposal draft",
+        "newDraft": "New design draft",
         "noParcels": "No parcels in this draft",
         "yes": "Yes",
         "no": "No",
-        "empty": "No saved proposal drafts yet.",
+        "empty": "No saved design drafts yet.",
         "confirmDiscard": "Discard this locally saved draft? This cannot be undone.",
         "discardDesign": {
             "title": "Discard this design?",
@@ -508,9 +508,9 @@
             "parcelsCopy": "Use the current map selection, or edit the parcel IDs directly.",
             "designTitle": "Design details",
             "designCopy": "Edit canonical geometry and parameters in the existing map-aware design tool.",
-            "detailsCopyNew": "Describe what this proposal does, so others can follow it.",
-            "detailsCopyEdit": "Describe what this proposal does. Saving updates it in place; it keeps its id.",
-            "detailsCopyCounterproposal": "Describe how this counterproposal differs. The published proposal stays as it is."
+            "detailsCopyNew": "Describe what this design does, so others can follow it.",
+            "detailsCopyEdit": "Describe what this design does. Saving updates it in place; it keeps its id.",
+            "detailsCopyCounterproposal": "Describe how this alternative design differs. The published design stays as it is."
         },
         "approval": {
             "title": "Ownership and approval",
@@ -547,7 +547,7 @@
             "authorityId": "Authority (an abstract id; a lens member confirms who acts for it)",
             "customAuthority": "An authority must also approve",
             "unknownRegime": "Unknown agreement rules.",
-            "explainer": "Upload abstract parcel-owner rights and set who must approve. This data is separate from parcel geometry; missing rights do not block the geometric proposal. Rights describe declared ownership and do not prove authorization.",
+            "explainer": "Upload abstract parcel-owner rights and set who must approve. This data is separate from parcel geometry; missing rights do not block the geometric design. Rights describe declared ownership and do not prove authorization.",
             "rightsTitle": "Parcel-owner rights",
             "importHelp": "Import a parcel-rights JSON file, or load it from a registered source. The previous dataset stays in place if import fails.",
             "source": "Rights source",
@@ -557,7 +557,7 @@
             "import": "Import and preview",
             "template": "Download template",
             "remove": "Remove rights",
-            "noRights": "No uploaded ownership dataset. Geometry and proposal review remain available.",
+            "noRights": "No uploaded ownership dataset. Geometry and design review remain available.",
             "noOwners": "No owners listed",
             "complete": "Complete",
             "incomplete": "Incomplete",
@@ -595,7 +595,7 @@
         },
         "fields": {
             "name": "Name",
-            "type": "Proposal type",
+            "type": "Design type",
             "corridorKind": "Corridor type",
             "description": "Description",
             "parcelIds": "Parcel IDs"
@@ -617,7 +617,7 @@
             "parcelSummary": "{{count}} affected parcel(s)",
             "road": "Road",
             "track": "Track",
-            "parcelOnly": "This proposal has no separate design geometry. Parcel highlighting remains live while you edit its other facets.",
+            "parcelOnly": "This design has no separate design geometry. Parcel highlighting remains live while you edit its other facets.",
             "unavailable": "This design editor is unavailable.",
             "editorBusy": "Another geometry editor is already using the map. Close it before starting this site design.",
             "siteUnavailable": "The selected site is unavailable. Select a valid site and try again.",
@@ -627,7 +627,7 @@
             "handoffFailedReason": "The design editor could not open: {{reason}}. Your site is unchanged, and the design draft was preserved locally."
         },
         "placement": {
-            "fixedSite": "This proposal type has a fixed site and cannot be moved.",
+            "fixedSite": "This design type has a fixed site and cannot be moved.",
             "invalidSite": "A free placement needs a valid polygon site.",
             "freshBinding": "A free placement needs a fresh authoritative site binding.",
             "unknownCoverage": "The server cannot verify this site against a supported cadastre. Move it into a supported area or contact the city data team.",
@@ -636,30 +636,30 @@
             "bindingUnavailable": "The authoritative site binding service is unavailable. Your moved draft is saved locally.",
             "geometryChanged": "The moved geometry changed while its site was being bound. Retry the save.",
             "buildingOutsideSite": "The moved building geometry must fit entirely inside its new site.",
-            "surroundingsOutsideSite": "The moved surroundings must fit entirely inside the new site. Move the whole proposal or adjust its ground boundary before saving."
+            "surroundingsOutsideSite": "The moved surroundings must fit entirely inside the new site. Move the whole design or adjust its ground boundary before saving."
         },
         "review": {
             "title": "Review changes",
-            "newProposal": "New proposal",
-            "noSource": "No source proposal",
+            "newProposal": "New design",
+            "noSource": "No source design",
             "details": "Details",
             "noFacetChanges": "No metadata changes",
             "parcels": "Parcels",
             "geometry": "Geometry",
             "changed": "Changed",
             "unchanged": "Unchanged",
-            "inPlaceNotice": "Saving updates this proposal in place. It keeps its id.",
-            "counterproposalNotice": "Saving creates a counterproposal. The published proposal is not changed or removed."
+            "inPlaceNotice": "Saving updates this design in place. It keeps its id.",
+            "counterproposalNotice": "Saving creates a alternative design. The published design is not changed or removed."
         },
         "validation": {
             "valid": "Ready to review",
             "errors": "{{count}} error(s)",
             "warnings": "{{count}} warning(s)",
             "issues": {
-                "missing-name": "Add a proposal name.",
+                "missing-name": "Add a design name.",
                 "missing-parcels": "Select at least one parcel.",
-                "missing-description": "A description will help others understand this proposal.",
-                "missing-goal": "Choose a proposal type or an ownership change.",
+                "missing-description": "A description will help others understand this design.",
+                "missing-goal": "Choose a design type or an ownership change.",
                 "invalid-centerline": "The corridor needs a valid two-point segment.",
                 "invalid-width": "Set a corridor width greater than zero.",
                 "preview-pending": "The corridor footprint will be rebuilt when Design opens.",
@@ -698,8 +698,8 @@
             "review": "Review changes",
             "back": "Back",
             "saveChanges": "Save changes",
-            "createCounterproposal": "Create counterproposal",
-            "createProposal": "Create proposal",
+            "createCounterproposal": "Create alternative design",
+            "createProposal": "Create design",
             "resume": "Resume",
             "new": "New draft",
             "closeList": "Close drafts"
@@ -711,24 +711,24 @@
             "valid": "Ready"
         },
         "errors": {
-            "draftFailed": "Could not open this proposal for editing.",
+            "draftFailed": "Could not open this design for editing.",
             "instantCreateFailed": "Could not save the new object.",
             "designSaveFailed": "Your changes could not be saved. Try again.",
             "designSaveFailedReason": "Your changes could not be saved ({{reason}}). Try again.",
             "structureGeometryFailed": "Geometry could not be built from the selected parcels.",
             "designEditorReopenFailed": "The design editor could not be reopened.",
             "siteRestoreFailed": "The site could not be restored. Try again.",
-            "noAdapter": "No editor is registered for this proposal type.",
-            "notReshapeable": "This proposal type cannot be reshaped.",
+            "noAdapter": "No editor is registered for this design type.",
+            "notReshapeable": "This design type cannot be reshaped.",
             "parcelsNotContiguous": "The selected parcels must form one connected area.",
             "parcelsUnavailable": "The draft parcels are not available in the current city.",
-            "readOnly": "This proposal is view-only.",
-            "sourceMissing": "Proposal source not found.",
+            "readOnly": "This design is view-only.",
+            "sourceMissing": "Design source not found.",
             "layoutWithoutPlots": "This parcel layout has no plots.",
             "subdivisionWithoutSite": "This subdivision has no site."
         },
         "publish": {
-            "alreadyCreated": "This draft already created proposal {{id}}.",
+            "alreadyCreated": "This draft already created design {{id}}.",
             "geometryReady": "Geometry attached from the draft"
         },
         "mapTooltip": "Draft — click to continue",
@@ -739,21 +739,21 @@
         "revertFailed": "Could not restore the previous version.",
         "geometryUpdated": "Geometry updated.",
         "dependents": {
-            "title": "Proposals built on this one",
-            "message": "Saving this edit changes the ground {{count}} proposal(s) stand on: {{names}}. They will be taken off the map.",
+            "title": "Designs built on this one",
+            "message": "Saving this edit changes the ground {{count}} design(s) stand on: {{names}}. They will be taken off the map.",
             "confirm": "Save and take them off",
             "cancel": "Keep editing",
             "notSaved": "The edit was not saved. The design has been reopened."
         },
-        "builtButParked": "The object was created but could not be placed on the map (a conflict blocked it). It is parked in your proposals list — select it there to see and apply it.",
-        "builtButParkedBecause": "The object was created but could not be placed on the map: {{reason}} It is parked in your proposals list — select it there to see and apply it.",
+        "builtButParked": "The object was created but could not be placed on the map (a conflict blocked it). It is parked in your designs list — select it there to see and apply it.",
+        "builtButParkedBecause": "The object was created but could not be placed on the map: {{reason}} It is parked in your designs list — select it there to see and apply it.",
         "freeform": {
             "title": "Convert to freeform building",
             "convert": "Convert",
             "keepRule": "Keep the rule",
             "confirmLocal": "“{{name}}” becomes one Freeform building: its {{rule}} rule's massing at the greatest height the rule allows. The rule's parameters no longer apply afterwards: you edit the building, and lower it, directly.",
-            "confirmPublished": "“{{name}}” is published, so a Freeform counterproposal is made: one building, its {{rule}} rule's massing at the greatest height the rule allows. The rule's parameters do not apply to it: you edit the building directly. The published proposal stays as it is.",
-            "noBuildings": "This proposal has no buildings to keep.",
+            "confirmPublished": "“{{name}}” is published, so a Freeform alternative design is made: one building, its {{rule}} rule's massing at the greatest height the rule allows. The rule's parameters do not apply to it: you edit the building directly. The published design stays as it is.",
+            "noBuildings": "This design has no buildings to keep.",
             "notContiguous": "Its buildings do not touch each other, so they cannot become one Freeform building.",
             "dropTitle": "Moved off its parcels",
             "dropMessage": "The {{rule}} rule builds on its own parcels, so the design cannot simply move. What should happen here?",
@@ -765,9 +765,9 @@
             "noParcelsHere": "No parcel lies mostly inside the dropped outline.",
             "dropConvertMeaning": "Converting keeps the rule's massing at the greatest height it allows; the rule's parameters no longer apply to it.",
             "titleMany": "Convert to freeform buildings",
-            "dropConvertMeaningMany": "Converting makes each of the {{count}} houses one Freeform proposal: its parcel's massing at the greatest height the rule allows. The rule's parameters no longer apply to them.",
-            "confirmLocalMany": "“{{name}}” becomes {{count}} Freeform proposals, one building per house: each parcel's massing at the greatest height its {{rule}} rule allows. The first keeps this proposal; the rule's parameters no longer apply afterwards.",
-            "confirmPublishedMany": "“{{name}}” is published, so {{count}} Freeform counterproposals are made, one building per house: each parcel's massing at the greatest height its {{rule}} rule allows. The published proposal stays as it is.",
+            "dropConvertMeaningMany": "Converting makes each of the {{count}} houses one Freeform design: its parcel's massing at the greatest height the rule allows. The rule's parameters no longer apply to them.",
+            "confirmLocalMany": "“{{name}}” becomes {{count}} Freeform designs, one building per house: each parcel's massing at the greatest height its {{rule}} rule allows. The first keeps this design; the rule's parameters no longer apply afterwards.",
+            "confirmPublishedMany": "“{{name}}” is published, so {{count}} Freeform alternative designs are made, one building per house: each parcel's massing at the greatest height its {{rule}} rule allows. The published design stays as it is.",
             "siblingsDropped": "The other houses were not converted, because the first one could not be saved."
         }
     },
@@ -812,7 +812,7 @@
                 "other": "{{count}} parcels"
             }
         },
-        "contiguityDisabledReason": "Disabled because the parcels in the proposal are not contiguous",
+        "contiguityDisabledReason": "Disabled because the parcels in the design are not contiguous",
         "roadDesignation": {
             "statusUnavailable": "Road designation is not available yet.",
             "statusSelectParcels": "Select the parcels to designate as road land.",
@@ -820,7 +820,7 @@
             "statusBoundaryFailed": "Could not build a boundary from the selected parcels.",
             "statusGeometryFailed": "Could not resolve the selected parcels.",
             "statusMapUnavailable": "Map library unavailable.",
-            "statusMissing": "Open the road designation tool and click Done before creating the proposal.",
+            "statusMissing": "Open the road designation tool and click Done before creating the design.",
             "designationAriaLabel": "Designate as road land",
             "designationTitle": "Designate as road land",
             "designationHint": "The selected parcels, merged, become road land. Nothing is designed — to lay out a road with lanes, draw it with the road tool instead.",
@@ -829,13 +829,13 @@
             "done": "Done"
         },
         "copy": {
-            "wrongCity": "This proposal was created in another city. Switch to that city, then try again.",
-            "parcelsUnavailable": "Could not load this proposal's cadastral ground. Try again once it is on the map."
+            "wrongCity": "This design was created in another city. Switch to that city, then try again.",
+            "parcelsUnavailable": "Could not load this design's cadastral ground. Try again once it is on the map."
         },
         "recovery": {
-            "offer": "Proposals you made {{when}} could not be saved, because the app was open in another tab at the time ({{count}}).\n\nRestore them now?"
+            "offer": "Designs you made {{when}} could not be saved, because the app was open in another tab at the time ({{count}}).\n\nRestore them now?"
         },
-        "inOtherCity": "This proposal belongs to {{city}}, not {{current}}: open it there.",
+        "inOtherCity": "This design belongs to {{city}}, not {{current}}: open it there.",
         "share": {
             "view": {
                 "camera": "Include camera position and angle",
@@ -845,7 +845,6 @@
             "named": {
                 "rename": "Rename plan",
                 "name": "Name this plan",
-                "label": "Plan name",
                 "save": "Save plan link",
                 "hint": "Saves the name, selected designs and map view. Changes get a new link.",
                 "saved": "Plan saved. Its permanent link is ready to copy.",
@@ -946,11 +945,11 @@
             },
             "walletChoice": {
                 "title": "Choose how to create",
-                "body": "No wallet is connected. You can connect to mint on-chain or continue with an in-memory proposal.",
+                "body": "No wallet is connected. You can connect to mint on-chain or continue with an in-memory design.",
                 "connect": "Connect a wallet",
                 "useConnected": "Use connected wallet",
                 "memory": "Create in memory",
-                "bodyConnected": "A wallet is connected. Use it to mint on-chain or create an in-memory proposal?"
+                "bodyConnected": "A wallet is connected. Use it to mint on-chain or create an in-memory design?"
             }
         },
         "selectNetwork": "Select network"
@@ -962,7 +961,7 @@
         "explainerIntroPrefix": "The city has",
         "explainerIntroToken": "its own token",
         "explainerIntroSuffix": "of course.",
-        "explainerBody": "Every registered citizen address has a right to 1 token per hour, forever. You can pledge these tokens to proposals. Think of it as a form of voting for those you like.",
+        "explainerBody": "Every registered citizen address has a right to 1 token per hour, forever. You can pledge these tokens to designs. Think of it as a form of voting for those you like.",
         "currentBalance": "Current balance",
         "currentAllotment": "Current allotment",
         "register": "Register",
@@ -1019,21 +1018,20 @@
         "proposals": {
             "title": "Designs",
             "listButton": "Designs ({{count}})",
-            "shareButton": "Share applied proposals",
-            "shareButtonEmpty": "No applied proposals. Apply some first",
-            "shareButtonPreparing": "Preparing proposals…",
+            "shareButtonEmpty": "No applied designs. Apply some first",
+            "shareButtonPreparing": "Preparing designs…",
             "agreementsButton": "Agreements",
             "mintedAgreementsButton": "On-chain agreements",
-            "clearButton": "Reset proposals (this browser)",
+            "clearButton": "Reset designs (this browser)",
             "planStats": {
                 "buttonLabel": "Map stats",
                 "calculating": "Calculating…",
-                "modalTitle": "Applied proposal stats",
+                "modalTitle": "Applied design stats",
                 "resultingParcels": "Resulting parcels (avg m²)",
                 "floorArea": "Gross floor area (m²)",
                 "salesSuffix": "{{currency}} per m²",
                 "housingShareSuffix": "% housing share",
-                "closeAria": "Close applied proposal stats",
+                "closeAria": "Close applied design stats",
                 "buildings": "Buildings (footprint m²)",
                 "openSpace": "Open space — parks, squares, water (m²)",
                 "apartments": "Apartments",
@@ -1048,13 +1046,13 @@
                 "viewAdded": "Added",
                 "viewCumulative": "Standing",
                 "colPeriod": "period",
-                "colProposals": "proposals",
+                "colProposals": "designs",
                 "colBuildings": "buildings",
                 "colFloorArea": "GFA m²",
                 "colApartments": "apartments",
                 "colPeople": "people",
                 "noEpoch": "no period",
-                "scope": "{{counted}} applied proposals counted of {{total}} on this map.",
+                "scope": "{{counted}} applied designs counted of {{total}} on this map.",
                 "noteUnmeasured": "{{n}} of {{total}} buildings state no height — their floor area is not counted.",
                 "noteParcelArea": "The average parcel size is over the {{measured}} parcels whose shape is loaded; {{missing}} are counted but not measured.",
                 "unavailable": "Statistics are unavailable. Reload and try again."
@@ -1062,15 +1060,15 @@
             "grainScore": {
                 "buttonLabel": "Urban rooster",
                 "buttonHint": "Let him inspect every resulting parcel",
-                "buttonEmpty": "Apply a proposal first",
+                "buttonEmpty": "Apply a design first",
                 "institute": "Institut za zrnatost",
                 "title": "Urban grain score",
                 "appliedComposition": "Applied composition",
                 "localScope": "Local composition · score stays in this browser",
                 "closeAria": "Close grain score",
-                "loading": "Preparing proposals for inspection…",
-                "unavailable": "The grain score is unavailable for these proposals.",
-                "noApplied": "Apply at least one proposal before summoning the rooster.",
+                "loading": "Preparing designs for inspection…",
+                "unavailable": "The grain score is unavailable for these designs.",
+                "noApplied": "Apply at least one design before summoning the rooster.",
                 "noGeometry": "The resulting parcel shapes could not be measured.",
                 "verdictFine": "Fine grain",
                 "verdictGood": "A good direction",
@@ -1110,7 +1108,7 @@
                     "other": "Inspection complete · {{eaten}} of {{total}} parcels eaten"
                 }
             },
-            "listButtonLoading": "Loading proposals…"
+            "listButtonLoading": "Loading designs…"
         },
         "gameDialogs": {
             "log": {
@@ -1125,8 +1123,8 @@
                 "name": "Name",
                 "ethBalance": "ETH balance",
                 "parcelsOwned": "Parcels owned",
-                "proposalsCreated": "Proposals created",
-                "proposalsApplied": "Proposals applied",
+                "proposalsCreated": "Designs created",
+                "proposalsApplied": "Designs applied",
                 "you": "(You)"
             }
         },
@@ -1138,7 +1136,7 @@
             "forSale": "For sale",
             "showParcelNumbers": "Show parcel ids",
             "showOwnerCounts": "Show number of owners (O)",
-            "showProposalCounts": "Show proposals count (P)",
+            "showProposalCounts": "Show designs count (P)",
             "showClaimsCounts": "Show claims count (C)",
             "markMinted": "Mark minted",
             "selectMultiple": "Select multiple parcels",
@@ -1203,7 +1201,7 @@
             "showOsm": "Map buildings (OSM)",
             "showProposed": "Show proposed buildings",
             "showSuggestedLayouts": "Suggested layouts (ground floor)",
-            "showSuggestedLayoutsTooltip": "Draw a suggested ground-floor layout inside each proposed building without a modelled interior. Red dashed outlines are too small for a minimum stair core. A suggestion, not part of the proposal.",
+            "showSuggestedLayoutsTooltip": "Draw a suggested ground-floor layout inside each proposed building without a modelled interior. Red dashed outlines are too small for a minimum stair core. A suggestion, not part of the design.",
             "showOverture": "Overture buildings (3D model)",
             "showCustom": "Your building source",
             "showCadastre": "Cadastre buildings"
@@ -1242,7 +1240,7 @@
             "detectDguTooltip": "Mark parcels as roads using uredjenazemlja.hr data",
             "clearButton": "Reset roads (this browser)",
             "clearTooltip": "Clear detected road markings from this browser",
-            "plansTitle": "Plans and proposals",
+            "plansTitle": "Plans and designs",
             "govPlanTooltip": "Show the city road plan overlay",
             "govPlanToggle": "Official road plan",
             "applyGovPlan": "Apply the official road plan",
@@ -1328,13 +1326,13 @@
             "telegramLabel": "Telegram",
             "xLabel": "X",
             "aboutTitle": "About",
-            "aboutParagraph": "<strong>Consensus Builder</strong> is Urban Game Theory's free, map-based urban planning tool. Hyperstition: Markets for Possible Cities is its hackathon project. Explore real parcels, compare community zoning and development proposals, and build support with the people affected. Read about the <a class=\"cb-link\" href=\"/urban-planning.html\">open city planning workflow</a>, open the <a class=\"cb-link\" href=\"/hackathon-demo.html\">live hackathon demo</a>, read the <a class=\"cb-link\" href=\"/deck.html\">pitch deck</a>, or see <a class=\"cb-link\" href=\"roadmap.html\" target=\"_blank\" rel=\"noopener noreferrer\">the roadmap</a>.",
+            "aboutParagraph": "<strong>Consensus Builder</strong> is Urban Game Theory's free, map-based urban planning tool. Hyperstition: Markets for Possible Cities is its hackathon project. Explore real parcels, compare community zoning and development designs, and build support with the people affected. Read about the <a class=\"cb-link\" href=\"/urban-planning.html\">open city planning workflow</a>, open the <a class=\"cb-link\" href=\"/hackathon-demo.html\">live hackathon demo</a>, read the <a class=\"cb-link\" href=\"/deck.html\">pitch deck</a>, or see <a class=\"cb-link\" href=\"roadmap.html\" target=\"_blank\" rel=\"noopener noreferrer\">the roadmap</a>.",
             "instructionsTitle": "Start here",
-            "instructionsParagraph": "<strong>Draw the change, then build consent.</strong> Finishing a design creates an applied local proposal. Inspect it, edit its geometry, duplicate movable designs, or share it. Decision rules, participants and funding belong in a separate agreement over the designs. <a class=\"cb-link\" href=\"how-to-use.html\" target=\"_blank\" rel=\"noopener noreferrer\">Guide</a> · <a class=\"cb-link\" href=\"roadmap.html\" target=\"_blank\" rel=\"noopener noreferrer\">Roadmap</a>.",
+            "instructionsParagraph": "<strong>Draw the change, then build consent.</strong> Finishing a design creates an applied local design. Inspect it, edit its geometry, duplicate movable designs, or share it. Decision rules, participants and funding belong in a separate agreement over the designs. <a class=\"cb-link\" href=\"how-to-use.html\" target=\"_blank\" rel=\"noopener noreferrer\">Guide</a> · <a class=\"cb-link\" href=\"roadmap.html\" target=\"_blank\" rel=\"noopener noreferrer\">Roadmap</a>.",
             "advancedTitle": "Advanced options",
             "debugToggle": "Enable debug mode",
             "wipeDataButton": "Reset everything (this browser)",
-            "wipeDataTooltip": "Clear all locally stored data (parcels, roads, proposals, settings)"
+            "wipeDataTooltip": "Clear all locally stored data (parcels, roads, designs, settings)"
         }
     },
     "agentDialog": {
@@ -1347,16 +1345,16 @@
         "totalWealth": "Modeled total",
         "portfolioBasis": "Land model: USD {{pricePerSqmUsd}}/m², converted at USD {{usdPerEth}} per ETH.",
         "ownedParcels": "Linked parcels ({{count}})",
-        "proposalsCreated": "Proposals created ({{count}})",
-        "localProposalUnavailable": "Local proposal record unavailable",
+        "proposalsCreated": "Designs created ({{count}})",
+        "localProposalUnavailable": "Local design record unavailable",
         "localProposalKey": "Local ID {{id}}",
         "localParcelsBasis": "Parcels assigned to this agent in the local model.",
         "walletParcelsBasis": "Local model assignments and parcel NFTs observed in the connected wallet; these do not establish registered land ownership.",
         "agentLog": "Agent log",
         "parcelLabel": "Parcel {{number}}",
         "proposalCount": {
-            "one": "{{count}} proposal",
-            "other": "{{count}} proposals"
+            "one": "{{count}} design",
+            "other": "{{count}} designs"
         },
         "logoutButton": "Log out"
     },
@@ -1371,7 +1369,7 @@
         "statusLogCount": "{{count}} lines",
         "statusLogClose": "Close",
         "statusLogEmpty": "No status messages yet",
-        "showThisProposal": "Show this proposal"
+        "showThisProposal": "Show this design"
     },
     "panel": {
         "parcel": {
@@ -1389,8 +1387,8 @@
                 "totalOwners": "Total owners:",
                 "parcelLabel": "Parcel {{number}}",
                 "roadTag": "Road",
-                "proposalsLabel": "Proposals:",
-                "proposalsHint": "Create a proposal that includes all the selected parcels."
+                "proposalsLabel": "Designs:",
+                "proposalsHint": "Create a design that includes all the selected parcels."
             },
             "idLabel": "ID:",
             "geometryReferenceNote": "Application reference derived from geometry. Source registry number unavailable; boundary changes create a new reference.",
@@ -1404,11 +1402,11 @@
                 "source": "Source parcel {{number}}",
                 "sourcePart": "Source parcel part {{number}}",
                 "formed": "Formed ground piece {{number}}",
-                "formedNote": "Ground formed by the applied proposals. This reference identifies the current piece, not a registered parcel or an authored plot.",
+                "formedNote": "Ground formed by the applied designs. This reference identifies the current piece, not a registered parcel or an authored plot.",
                 "sourcePartNote": "One connected part of a source parcel. This reference identifies the displayed part; the source parcel can contain other parts."
             },
             "tabInfo": "Info",
-            "tabProposals": "Proposals",
+            "tabProposals": "Designs",
             "tabTools": "Tools",
             "historySection": "History",
             "selectMultiple": "Select multiple parcels",
@@ -1464,7 +1462,7 @@
                 "block": "Block:",
                 "area": "Area:",
                 "marketPrice": "Est. price:",
-                "proposalsWithCount": "Proposals ({{count}}):",
+                "proposalsWithCount": "Designs ({{count}}):",
                 "areaUnit": "m²"
             },
             "ownershipType": {
@@ -1489,9 +1487,9 @@
             },
             "proposalsSection": {
                 "producerPill": "Parcel source",
-                "create": "Create proposal",
-                "empty": "No proposals on this parcel yet.",
-                "fallbackTitle": "Proposal",
+                "create": "Create design",
+                "empty": "No designs on this parcel yet.",
+                "fallbackTitle": "Design",
                 "roadSuffix": " (Road)",
                 "badges": {
                     "applied": "Applied"
@@ -1508,16 +1506,16 @@
                 }
             },
             "setProposals": {
-                "empty": "No proposals on these parcels yet.",
+                "empty": "No designs on these parcels yet.",
                 "summary": {
-                    "one": "{{count}} proposal on these parcels",
-                    "other": "{{count}} proposals on these parcels"
+                    "one": "{{count}} design on these parcels",
+                    "other": "{{count}} designs on these parcels"
                 },
                 "covers": {
                     "other": "On {{covered}} of {{count}} parcels"
                 },
-                "loading": "Checking published proposals…",
-                "unavailable": "Published proposals could not be loaded: {{reason}}",
+                "loading": "Checking published designs…",
+                "unavailable": "Published designs could not be loaded: {{reason}}",
                 "publishedHeading": "Also published here"
             },
             "actions": {
@@ -1580,9 +1578,9 @@
             },
             "parcelSet": {
                 "eyebrow": "Declared cadastral references",
-                "title": "Proposals sharing references",
+                "title": "Designs sharing references",
                 "summary": "{{count}} declared cadastral references. Of {{total}} loaded matches, {{exact}} use the same references and {{overlap}} share some. Showing {{shown}}.",
-                "noRelated": "{{count}} declared cadastral references. No other loaded proposal shares these references.",
+                "noRelated": "{{count}} declared cadastral references. No other loaded design shares these references.",
                 "hash": "Recorded set hash",
                 "relationSame": "Same references",
                 "relationContains": "Includes all these references",
@@ -1597,7 +1595,7 @@
                 "unapplying": "Unapplying…",
                 "restoringGround": "Restoring local terrain…",
                 "saving": "Saving…",
-                "unappliedStatus": "The proposal “{{name}}” was unapplied and remains in your proposals list.",
+                "unappliedStatus": "The design “{{name}}” was unapplied and remains in your designs list.",
                 "remove": "Unapply",
                 "includedInRoad": "Included in combined road",
                 "includedInRoadHint": "Remove {{name}} from the map to restore this road.",
@@ -1605,27 +1603,27 @@
                 "copy": "Edit",
                 "edit": "Edit",
                 "resumeDraft": "Resume draft",
-                "editUnavailable": "This proposal cannot be edited safely.",
+                "editUnavailable": "This design cannot be edited safely.",
                 "drive": "Drive",
                 "delete": "Delete",
                 "deleteHint": "Deletes the object and its idea entirely.",
                 "editGeometry": "Edit geometry",
-                "editGeometryUnavailable": "This proposal type cannot be reshaped (or it is minted and immutable).",
+                "editGeometryUnavailable": "This design type cannot be reshaped (or it is minted and immutable).",
                 "details": "Design details",
                 "propose": "Propose",
                 "editDetails": "Details",
                 "duplicateDesign": "Duplicate",
                 "duplicateDesignHint": "Move a copy with the pointer and click to place a new design.",
-                "apply_disabled_for_type": "Apply is disabled for this proposal type.",
-                "applyFailed": "Could not apply this proposal: {{reason}}",
-                "applyFailedUnknown": "Could not apply this proposal. Please try again.",
-                "applyUnavailable": "This proposal cannot be applied to the map.",
-                "applyUnsupported": "This proposal type does not support map application.",
-                "proposalNotLoaded": "This proposal is not loaded in this browser. Open it from the proposals list, then try again.",
-                "missingProposal": "No proposal was selected to apply.",
-                "unapplyFailed": "Could not remove this proposal from the map: {{reason}}",
-                "unapplyFailedUnknown": "Could not remove this proposal from the map. Please try again.",
-                "unapplyUnavailable": "This proposal cannot be removed from the map.",
+                "apply_disabled_for_type": "Apply is disabled for this design type.",
+                "applyFailed": "Could not apply this design: {{reason}}",
+                "applyFailedUnknown": "Could not apply this design. Please try again.",
+                "applyUnavailable": "This design cannot be applied to the map.",
+                "applyUnsupported": "This design type does not support map application.",
+                "proposalNotLoaded": "This design is not loaded in this browser. Open it from the designs list, then try again.",
+                "missingProposal": "No design was selected to apply.",
+                "unapplyFailed": "Could not remove this design from the map: {{reason}}",
+                "unapplyFailedUnknown": "Could not remove this design from the map. Please try again.",
+                "unapplyUnavailable": "This design cannot be removed from the map.",
                 "addToAgreement": "Add to agreement",
                 "convertToFreeformHint": "Keep the rule's massing at the greatest height it allows, as one building you edit directly. The rule's parameters no longer apply afterwards."
             },
@@ -1643,7 +1641,7 @@
                 "created": "Created:"
             },
             "boost": {
-                "buttonLabel": "Pledge USDC to this proposal",
+                "buttonLabel": "Pledge USDC to this design",
                 "copy": "Publish a revocable USDC commitment. No USDC leaves your wallet until you fulfil it after execution."
             },
             "market": {
@@ -1688,12 +1686,12 @@
                 "awaitingFunding": "Awaiting funding",
                 "viewOnExplorer": "View on explorer"
             },
-            "loading": "Loading proposal details…",
-            "rendering": "Rendering proposal details…",
+            "loading": "Loading design details…",
+            "rendering": "Rendering design details…",
             "sections": {
                 "cadastralParcels": "Cadastral parcels:",
                 "generatedParcels": "Generated parcels:",
-                "proposalTypeFallback": "proposal",
+                "proposalTypeFallback": "design",
                 "ownershipStats": "Modeled ownership and acquisition"
             },
             "parcels": {
@@ -1711,20 +1709,20 @@
             "descendantRoadNamedSuffix": " • Road: {{name}}",
             "basedOn": "Based on",
             "lineage": {
-                "untitled": "Untitled proposal",
-                "openFailed": "That proposal could not be opened."
+                "untitled": "Untitled design",
+                "openFailed": "That design could not be opened."
             },
             "agent": {
-                "badge": "Agent proposal",
+                "badge": "Agent design",
                 "sectionLabel": "Agent provenance",
                 "verified": "Verified x402 submission",
                 "payer": "Paying wallet",
                 "run": "Agent run",
                 "settlement": "Settlement",
-                "flowLabel": "How this proposal was created",
+                "flowLabel": "How this design was created",
                 "flowDiscover": "Discoverable API",
                 "flowPay": "x402 payment",
-                "flowStore": "Stored proposal"
+                "flowStore": "Stored design"
             },
             "landFork": {
                 "forkedFrom": "Forked on different land from",
@@ -1735,7 +1733,7 @@
                 "relationDisjoint": "No parcels in common with the original"
             },
             "stats": {
-                "summaryScope": "Estimates from proposal metadata; owner entries may repeat across parcels and include assumed owners.",
+                "summaryScope": "Estimates from design metadata; owner entries may repeat across parcels and include assumed owners.",
                 "individualOwners": "Listed owner entries:",
                 "ownerEntryCount": "Listed owner entries:",
                 "ownedByIndividuals": "Parcels classed as individually owned:",
@@ -1782,7 +1780,7 @@
                 "landHintDesign": "Declared references: {{count}} · designs on the same parcels",
                 "verification": "Verification & history",
                 "verificationHint": "Lens, evidence and activity",
-                "record": "Proposal record",
+                "record": "Design record",
                 "recordHint": "Created date, local ID and links",
                 "actions": "More actions",
                 "actionsHint": "Inspect this design, duplicate movable geometry, or explore its land."
@@ -1797,7 +1795,7 @@
             "title": "Block info",
             "titleWithName": "Block info — {{name}}",
             "tabInfo": "Info",
-            "tabProposals": "Proposals (0)",
+            "tabProposals": "Designs (0)",
             "tabTools": "Tools",
             "metrics": {
                 "name": "Block name:",
@@ -1813,25 +1811,25 @@
                 "landlockedParcels": "Landlocked parcels:",
                 "landlockedArea": "Landlocked area:",
                 "loadingParcels": "Loading parcels…",
-                "loadingProposals": "Loading proposals…"
+                "loadingProposals": "Loading designs…"
             },
             "parcelsHeading": "Parcels ({{count}})",
             "parcelLabel": "Parcel {{number}}",
             "proposals": {
-                "create": "Create proposal",
+                "create": "Create design",
                 "blockNotFound": "Block not found",
                 "noParcels": "No parcels in this block",
                 "multiSelectUnavailable": "Multi-parcel selection is not available",
-                "parcelsSelected": "{{count}} parcels selected for proposal",
-                "noProposals": "No proposals for this block yet.",
+                "parcelsSelected": "{{count}} parcels selected for design",
+                "noProposals": "No designs for this block yet.",
                 "applyButton": "Apply to map",
                 "removeButton": "Remove from map",
-                "roadApplyTooltip": "Apply this road proposal",
-                "roadRemoveTooltip": "Unapply this road proposal",
-                "buildingApplyTooltip": "Apply this building proposal",
-                "buildingRemoveTooltip": "Unapply this building proposal",
-                "structureApplyTooltip": "Apply this structure proposal",
-                "structureRemoveTooltip": "Unapply this structure proposal"
+                "roadApplyTooltip": "Apply this road design",
+                "roadRemoveTooltip": "Unapply this road design",
+                "buildingApplyTooltip": "Apply this building design",
+                "buildingRemoveTooltip": "Unapply this building design",
+                "structureApplyTooltip": "Apply this structure design",
+                "structureRemoveTooltip": "Unapply this structure design"
             }
         },
         "road": {
@@ -1861,7 +1859,7 @@
             "importGeoJsonHint": "Road centrelines as LineStrings (.geojson) from QGIS or any GIS.",
             "importShapefile": "Shapefile",
             "importShapefileHint": "Road centrelines as an Esri shapefile (.zip holding .shp, .shx and .dbf).",
-            "crossSectionHint": "Edit this road's lanes and widths. An edit of a published road is saved as a counterproposal; the published version stays unchanged.",
+            "crossSectionHint": "Edit this road's lanes and widths. An edit of a published road is saved as a alternative design; the published version stays unchanged.",
             "finishButton": "Finish road (F)",
             "cancelButton": "Cancel road (Esc)",
             "widthLabel": "Road width:",
@@ -1900,7 +1898,7 @@
             "edgeActionsProtectedHint": "A node cannot be added on a ramp, tunnel, or grade-separated stretch · × Bulldoze this stretch",
             "addNodeProtectedStatus": "A node cannot be added on a ramp, tunnel, or grade-separated stretch.",
             "editRevertedStatus": "Could not complete that road change — reverted.",
-            "splitIntoStretches": "The edit disconnected the road — it was split into {{count}} separate road proposals.",
+            "splitIntoStretches": "The edit disconnected the road — it was split into {{count}} separate road designs.",
             "applyingEdit": "Applying…",
             "buildingRoad": "Building the road…",
             "closeDrawnRoadPrompt": "This road has not been built yet. Build it, or discard the drawing?",
@@ -1934,8 +1932,8 @@
             "conflictsRecordedStatus": "{{list}} in the way — you decide at Finish.",
             "finishBlockedStatus": "Not built — {{list}} in the way. Undo or reroute around the red rings, then finish again.",
             "conflictPlots": {
-                "one": "plots of {{count}} proposal",
-                "other": "plots of {{count}} proposals"
+                "one": "plots of {{count}} design",
+                "other": "plots of {{count}} designs"
             },
             "conflictParks": {
                 "one": "{{count}} park",
@@ -1955,8 +1953,8 @@
             },
             "snapsToStreet": "Snaps to {{name}}",
             "snapsToUnnamedStreet": "Snaps to an existing street",
-            "editNotFound": "This road is not among the proposals of the city on the map. Switch to the city it was created in, then try again.",
-            "savedAsCounterproposal": "The published road stays as it is; your edit was saved as a counterproposal."
+            "editNotFound": "This road is not among the designs of the city on the map. Switch to the city it was created in, then try again.",
+            "savedAsCounterproposal": "The published road stays as it is; your edit was saved as a alternative design."
         },
         "roadAnalysis": {
             "title": "Road width analysis",
@@ -1978,7 +1976,7 @@
     "modal": {
         "walletChoice": {
             "title": "Choose how to create",
-            "body": "No wallet is connected. You can connect to mint on-chain or continue with an in-memory proposal.",
+            "body": "No wallet is connected. You can connect to mint on-chain or continue with an in-memory design.",
             "connect": "Connect a wallet",
             "memory": "Create in memory"
         },
@@ -2020,21 +2018,21 @@
                     "hint": "Open the city picker to travel. Use Layers to choose what you see."
                 },
                 "propose": {
-                    "eyebrow": "From idea to proposal",
+                    "eyebrow": "From idea to design",
                     "title": "Make change visible",
-                    "body": "Turn an idea into a proposal: reshape parcels, sketch streets and parks, or add buildings. Apply a draft to see how it changes the map.",
-                    "hint": "Start in Tools, then compare your proposals on the map."
+                    "body": "Turn an idea into a design: reshape parcels, sketch streets and parks, or add buildings. Apply a draft to see how it changes the map.",
+                    "hint": "Start in Tools, then compare your designs on the map."
                 },
                 "consent": {
                     "eyebrow": "People make the difference",
-                    "title": "A proposal starts a conversation",
+                    "title": "A design starts a conversation",
                     "body": "Share a plan, gather votes and financial support, and seek acceptance from attested owners. Wallet and identity requirements apply to on-chain actions.",
-                    "hint": "Open a proposal to inspect its support and acceptance."
+                    "hint": "Open a design to inspect its support and acceptance."
                 },
                 "activity": {
                     "eyebrow": "A city in motion",
                     "title": "See how decisions unfold",
-                    "body": "Follow proposals and agent activity around the world. Where Simulation is available, play or pause turns to explore how proposals and support evolve.",
+                    "body": "Follow designs and agent activity around the world. Where Simulation is available, play or pause turns to explore how designs and support evolve.",
                     "hint": "Open Activity to follow events, actors and watched areas. Simulation controls are in Settings > Diagnostics."
                 },
                 "sources": {
@@ -2117,7 +2115,7 @@
             "parcelFootprint": "Footprint parcel",
             "parcelWhole": "Take the whole parcels",
             "parcelInfo": "By default the building forms its own parcel from its footprint and the rest of the land stays with its owner. Taking whole parcels makes them the building’s parcel as they are.",
-            "moveTogether": "Move whole proposal",
+            "moveTogether": "Move whole design",
             "uploadInvalid": "The uploaded geometry is invalid or outside the locked site."
         },
         "buildingUpload": {
@@ -2171,12 +2169,12 @@
             "triggerTitle": "Open lens modal",
             "triggerDescription": "Lens for viewing the world",
             "iconLabel": "Lens icon",
-            "readOnlyTitle": "Proposal lens",
-            "readOnlySubtitle": "Saved with this proposal; editing is disabled.",
-            "readOnlyNote": "This lens is baked into the proposal and cannot be edited.",
+            "readOnlyTitle": "Design lens",
+            "readOnlySubtitle": "Saved with this design; editing is disabled.",
+            "readOnlyNote": "This lens is baked into the design and cannot be edited.",
             "picker": {
-                "title": "Lens for this proposal",
-                "subtitle": "Pick the lens members whose ownership attestations this proposal will accept. The lens is fixed at mint.",
+                "title": "Lens for this design",
+                "subtitle": "Pick the lens members whose ownership attestations this design will accept. The lens is fixed at mint.",
                 "loading": "Loading lens members…",
                 "loadFailed": "Could not load the lens member directory: {{error}}",
                 "emptyDirectory": "No lens members are known yet. Paste a member key below.",
@@ -2200,21 +2198,21 @@
                     "one": "{{count}} lens member chosen",
                     "other": "{{count}} lens members chosen"
                 },
-                "required": "Choose at least one lens member; a Solana proposal cannot be minted without one.",
+                "required": "Choose at least one lens member; a Solana design cannot be minted without one.",
                 "done": "Done"
             }
         },
         "dataSource": {
-            "changeWarning": "Changing the data source will CLEAR all locally saved data (parcels, roads, proposals, plans, user settings, etc.).\n\nDo you want to proceed?"
+            "changeWarning": "Changing the data source will CLEAR all locally saved data (parcels, roads, designs, plans, user settings, etc.).\n\nDo you want to proceed?"
         },
         "dataManagement": {
-            "wipeWarning": "This will erase ALL locally stored data (parcels, roads, proposals, proposal drafts, settings). Continue?"
+            "wipeWarning": "This will erase ALL locally stored data (parcels, roads, designs, design drafts, settings). Continue?"
         },
         "corridor": {
             "title": "Cross-section",
             "openError": "The cross-section editor could not open.",
             "subtitle": "The total width is the sum of the lanes — add or remove a lane and the road widens or narrows",
-            "drawingSubtitle": "Changes update the road on the map before you create the proposal",
+            "drawingSubtitle": "Changes update the road on the map before you create the design",
             "proposalSubtitle": "Preview changes here, then save them to this road",
             "discardBody": "Closing the cross-section editor throws away your changes.",
             "totalWidth": "Total width",
@@ -2355,11 +2353,11 @@
             "takeApply": "Apply",
             "keepEditing": "Keep editing",
             "saveFailed": "The cross-section could not be saved. Your changes are still here.",
-            "saveCounterproposal": "Save as counterproposal"
+            "saveCounterproposal": "Save as alternative design"
         },
         "corridorDraft": {
             "title": "Unsaved drawing draft",
-            "cancelBody": "This drawing has changes that are not in a proposal yet.",
+            "cancelBody": "This drawing has changes that are not in a design yet.",
             "cityBody": "Switching cities will close this drawing. You can keep it and resume it when you return.",
             "replaceBody": "Starting another drawing will replace the current draft.",
             "wipeBody": "Wiping local data will permanently delete this drawing draft.",
@@ -2386,7 +2384,7 @@
             },
             "road": "road",
             "track": "track",
-            "proposalImpact": "This road is later than these building proposals; a surface crossing takes their ground during replay:",
+            "proposalImpact": "This road is later than these building designs; a surface crossing takes their ground during replay:",
             "proposalImpactTunnel": "A tunnel changes the authored road presentation, not the parcel-taking footprint.",
             "surface": "Continue at surface level",
             "sameGround": "The full corridor takes the same cadastral ground either way; replay derives the surface impact.",
@@ -2430,14 +2428,14 @@
                 "alley": "Alley ~7.5 m"
             },
             "roadProposal": {
-                "title": "Create road proposal",
+                "title": "Create road design",
                 "authorLabel": "Author:",
                 "authorPlaceholder": "Your name",
                 "nameLabel": "Road name:",
                 "namePlaceholder": "e.g. Sunset Boulevard",
                 "offerPlaceholder": "0",
                 "descriptionLabel": "Description:",
-                "descriptionPlaceholder": "Describe your road proposal…",
+                "descriptionPlaceholder": "Describe your road design…",
                 "summary": {
                     "parcels": "Parcels affected:",
                     "area": "Total area:",
@@ -2446,23 +2444,23 @@
                 },
                 "parcelLabel": "Parcel {{number}}",
                 "parcelArea": "({{area}} m²)",
-                "submit": "Create proposal",
+                "submit": "Create design",
                 "previewUnavailable": "Preview unavailable",
                 "defaultDescription": {
-                    "one": "Manual road proposal affecting {{count}} parcel.",
-                    "few": "Manual road proposal affecting {{count}} parcels.",
-                    "other": "Manual road proposal affecting {{count}} parcels."
+                    "one": "Manual road design affecting {{count}} parcel.",
+                    "few": "Manual road design affecting {{count}} parcels.",
+                    "other": "Manual road design affecting {{count}} parcels."
                 }
             },
             "trackProposal": {
-                "title": "Create track proposal",
+                "title": "Create track design",
                 "authorLabel": "Author:",
                 "authorPlaceholder": "Your name",
                 "nameLabel": "Track name:",
                 "namePlaceholder": "e.g. Main Railway Line",
                 "offerPlaceholder": "0",
                 "descriptionLabel": "Description:",
-                "descriptionPlaceholder": "Describe your track proposal…",
+                "descriptionPlaceholder": "Describe your track design…",
                 "summary": {
                     "parcels": "Parcels affected:",
                     "area": "Total area:",
@@ -2474,12 +2472,12 @@
                 },
                 "parcelLabel": "Parcel {{number}}",
                 "parcelArea": "({{area}} m²)",
-                "submit": "Create proposal",
+                "submit": "Create design",
                 "previewUnavailable": "Preview unavailable",
                 "defaultDescription": {
-                    "one": "Manual track proposal affecting {{count}} parcel.",
-                    "few": "Manual track proposal affecting {{count}} parcels.",
-                    "other": "Manual track proposal affecting {{count}} parcels."
+                    "one": "Manual track design affecting {{count}} parcel.",
+                    "few": "Manual track design affecting {{count}} parcels.",
+                    "other": "Manual track design affecting {{count}} parcels."
                 }
             },
             "polygonError": {
@@ -2506,7 +2504,7 @@
             },
             "proposalList": {
                 "title": "Designs",
-                "closeAria": "Close proposals list",
+                "closeAria": "Close designs list",
                 "tabs": {
                     "active": "Active",
                     "executed": "Executed"
@@ -2534,7 +2532,7 @@
                         "square": "Squares",
                         "structure": "Other structures",
                         "parcel-layout": "Parcel layouts",
-                        "parcel": "Parcel proposals",
+                        "parcel": "Parcel designs",
                         "other": "Other"
                     },
                     "toggle": "Filters",
@@ -2568,10 +2566,10 @@
                     "downloaded": "Downloaded",
                     "details": "Details"
                 },
-                "loadingServer": "Loading server proposals…",
-                "serverError": "Failed to load server proposals.",
+                "loadingServer": "Loading server designs…",
+                "serverError": "Failed to load server designs.",
                 "retry": "Retry",
-                "downloadError": "Failed to download proposal",
+                "downloadError": "Failed to download design",
                 "sort": {
                     "createdDesc": "Created (newest first)",
                     "createdAsc": "Created (oldest first)",
@@ -2634,9 +2632,9 @@
                 },
                 "detailsLabel": "Details",
                 "detailsTooltip": "View details",
-                "deleteTooltip": "Delete proposal",
+                "deleteTooltip": "Delete design",
                 "empty": "No designs match the current filters.",
-                "untitled": "Untitled proposal",
+                "untitled": "Untitled design",
                 "lifecycle": {
                     "executed": "Executed",
                     "expired": "Expired",
@@ -2646,7 +2644,7 @@
                     "inMemory": "In-memory",
                     "awaitingFunding": "Awaiting funding"
                 },
-                "downloadConfirm": "Proposal is not in local storage yet. Download?",
+                "downloadConfirm": "Design is not in local storage yet. Download?",
                 "epoch": {
                     "rowLabel": "Plan epoch",
                     "none": "No epoch",
@@ -2661,8 +2659,8 @@
                 }
             },
             "proposalChoice": {
-                "title": "Choose proposal",
-                "description": "Parcel {{parcel}} is part of {{count}} proposals. Choose which one to view:",
+                "title": "Choose design",
+                "description": "Parcel {{parcel}} is part of {{count}} designs. Choose which one to view:",
                 "author": "Author",
                 "offer": "Offer",
                 "parcels": "Parcels"
@@ -2672,14 +2670,14 @@
                 "title": "Share current plan",
                 "copySuccess": "Share link copied to clipboard!",
                 "untitled": "(Untitled)",
-                "uploadError": "Failed to upload proposal. Please try again.",
+                "uploadError": "Failed to upload design. Please try again.",
                 "copyUrlButton": "Copy URL",
                 "plan": {
                     "applyingNamed": "Applying {{label}} ({{done}}/{{total}})…",
-                    "materializing": "Starting proposal materialization…",
-                    "applyingAllTitle": "Applying shared proposals",
-                    "loadFailed": "The linked plan or proposal could not be loaded. Please try again.",
-                    "fetchingPlanTitle": "Shared proposal import",
+                    "materializing": "Starting design materialization…",
+                    "applyingAllTitle": "Applying shared designs",
+                    "loadFailed": "The linked plan or design could not be loaded. Please try again.",
+                    "fetchingPlanTitle": "Shared design import",
                     "rebuildingStatus": "Rebuilding the applied composition…",
                     "rebuildingStatusCount": "Rebuilding the applied composition {{done}}/{{total}}…",
                     "progress": {
@@ -2695,7 +2693,7 @@
                         },
                         "corridorCounts": "{{roads}} and {{tracks}}",
                         "corridorCountNone": "corridors",
-                        "groundCheck": "Checking cadastral ground for {{count}} proposals…",
+                        "groundCheck": "Checking cadastral ground for {{count}} designs…",
                         "groundIdCheck": "Checking {{count}} declared cadastral parcels…",
                         "groundIdLoad": "Loading {{requested}} missing cadastral parcels; {{cached}} already cached…",
                         "groundIdLoadProgress": "Loading cadastral parcels ({{done}}/{{total}})…",
@@ -2703,10 +2701,10 @@
                         "groundFootprintWait": "Waiting for an existing footprint-ground request…",
                         "groundIdsMissing": "Cadastral parcel check finished: {{missing}} unavailable.",
                         "groundIdsReady": "Cadastral parcels ready: {{cached}} cached, {{loaded}} loaded.",
-                        "groundFootprintLoad": "Loading footprint ground for {{members}} proposals in {{batches}} batches…",
+                        "groundFootprintLoad": "Loading footprint ground for {{members}} designs in {{batches}} batches…",
                         "groundFootprintProgress": "Loading footprint ground (batch {{done}}/{{total}}, {{parcels}} parcels)…",
-                        "groundReady": "Cadastral ground ready: {{cachedMembers}} proposals reused loaded ground; {{loadedMembers}} needed loading.",
-                        "groundIncomplete": "Ground check finished: {{unavailableMembers}} proposals still have unavailable parcels.",
+                        "groundReady": "Cadastral ground ready: {{cachedMembers}} designs reused loaded ground; {{loadedMembers}} needed loading.",
+                        "groundIncomplete": "Ground check finished: {{unavailableMembers}} designs still have unavailable parcels.",
                         "buildingGroundLoad": "Loading buildings in {{regions}} affected areas ({{batches}} batches)…",
                         "buildingGroundProgress": "Loading affected buildings (batch {{done}}/{{total}}, {{covered}} areas covered)…",
                         "buildingGroundReady": "Affected-building data ready: {{covered}} areas loaded; {{fallback}} will be checked individually.",
@@ -2716,15 +2714,15 @@
                         "fabricArrange": "Cutting affected cadastral parcels ({{done}}/{{total}})…",
                         "mapUpdate": "Updating the map: {{added}} parcel pieces added, {{removed}} removed…",
                         "fabricReady": "Parcel fabric ready across {{parcels}} cadastral parcels.",
-                        "saving": "Saving applied proposals…",
+                        "saving": "Saving applied designs…",
                         "corridorReady": "Finished applying {{corridors}}.",
                         "rollback": "Restoring the parcel fabric after an error…",
-                        "presentation": "Refreshing the map and proposal list…",
+                        "presentation": "Refreshing the map and design list…",
                         "corridorStrips": "Refreshing road and track surfaces…"
                     },
                     "picked": "Selected {{title}}",
                     "pickedOnMap": "Selected {{title}} — {{parcel}}",
-                    "pickedNotInPlan": "That proposal is not in this plan.",
+                    "pickedNotInPlan": "That design is not in this plan.",
                     "filterLabel": "Highlight on the map",
                     "filterAll": "All"
                 }
@@ -2733,7 +2731,7 @@
                 "author": "Author:",
                 "version": "Version:",
                 "generated": "Generated:",
-                "count": "Proposals:",
+                "count": "Designs:",
                 "payload": "Payload:",
                 "viewJson": "View full decoded payload JSON",
                 "parcelIds": "Parcel IDs:",
@@ -2741,7 +2739,7 @@
                 "roadParents": "Road parents:",
                 "buildingParents": "Building parents:",
                 "details": "Details",
-                "title": "Review shared proposals",
+                "title": "Review shared designs",
                 "loading": "Parcels still loading…",
                 "applySelected": "Apply selected"
             },
@@ -2761,16 +2759,16 @@
             "summaryCoverage": "Approximate coverage of view: {{percent}}%"
         },
         "createProposal": {
-            "title": "Create proposal",
-            "editTitle": "Proposal",
-            "titlePark": "Create park proposal",
-            "titleSquare": "Create square proposal",
-            "closeAria": "Close proposal dialog",
+            "title": "Create design",
+            "editTitle": "Design",
+            "titlePark": "Create park design",
+            "titleSquare": "Create square design",
+            "closeAria": "Close design dialog",
             "authorLabel": "Author",
             "authorPlaceholder": "Your name",
             "authorAvatarAlt": "Author avatar",
-            "proposalTypeLabel": "Proposal type",
-            "proposalGoalLabel": "Proposal goal",
+            "proposalTypeLabel": "Design type",
+            "proposalGoalLabel": "Design goal",
             "typologyLabel": "Typology",
             "acquisitionLabel": "Acquisition strategy",
             "ownershipLabel": "Ownership",
@@ -2851,44 +2849,44 @@
                 }
             },
             "descriptionLabel": "Description",
-            "descriptionPlaceholder": "Describe your proposal…",
+            "descriptionPlaceholder": "Describe your design…",
             "descriptionPlaceholderStructure": "Describe your {{kind}}…",
             "summary": {
-                "title": "Proposal summary",
+                "title": "Design summary",
                 "parcels": "Parcels selected:",
                 "area": "Total area:",
                 "owners": "Total owners:",
                 "selected": "Selected parcels:"
             },
             "similar": {
-                "title": "Similar proposals:",
-                "unknownTitle": "Untitled proposal",
+                "title": "Similar designs:",
+                "unknownTitle": "Untitled design",
                 "unknownAuthor": "Unknown"
             },
             "unknownParcel": "Unknown",
             "ownerTooltip": "Owner: {{name}}",
             "ownerUnknown": "Unknown",
             "lensTooltip": "Open lens modal",
-            "submit": "Create proposal",
+            "submit": "Create design",
             "creating": "Creating…",
             "waiting": "Waiting for transaction…",
             "rejected": "Transaction rejected",
             "nameLabel": "Name",
-            "namePlaceholderProposal": "Proposal name",
-            "defaultDescription": "A new {{type}} proposal by {{author}}",
+            "namePlaceholderProposal": "Design name",
+            "defaultDescription": "A new {{type}} design by {{author}}",
             "namePlaceholder": "Name your {{kind}}",
             "typeLabel": "Type",
             "typePark": "Park",
             "typeSquare": "Square",
             "errors": {
                 "missingFields": "Please provide author, name, and a valid offer.",
-                "missingParcels": "Missing parcels or geometry for this proposal.",
+                "missingParcels": "Missing parcels or geometry for this design.",
                 "couldNotDetermineParcels": "Could not determine parcels for this block.",
                 "parcelsNotContiguous": "Parcels not contiguous",
-                "undeclaredParcels": "This proposal's geometry lies on {{count}} parcel(s) you did not select: {{list}}. Select them too, or keep the geometry inside the selected parcels."
+                "undeclaredParcels": "This design's geometry lies on {{count}} parcel(s) you did not select: {{list}}. Select them too, or keep the geometry inside the selected parcels."
             },
             "optionsSectionTitle": "Options",
-            "titleLake": "Create lake proposal",
+            "titleLake": "Create lake design",
             "typeLake": "Lake",
             "site": {
                 "bound": "Site of {{area}} m², bound parcels: {{count}}. Publishing checks the binding against the full cadastre.",
@@ -2896,15 +2894,15 @@
             },
             "tolerance": {
                 "label": "Parcel intrusion tolerance (m)",
-                "help": "A parcel joins the proposal when the site reaches into it by more than this width (linear, not area). In cities keep 0: you cannot take any of a neighbour's parcel. Use it only for measurement error; max 1 m."
+                "help": "A parcel joins the design when the site reaches into it by more than this width (linear, not area). In cities keep 0: you cannot take any of a neighbour's parcel. Use it only for measurement error; max 1 m."
             }
         },
         "unapplyTour": {
             "titleUnapply": "Unapply “{{title}}”",
             "titleDelete": "Delete “{{title}}”",
-            "message": "This proposal has dependent items. The following will be removed from the map and storage. Click an item to see it.",
-            "counts": "{{proposals}} proposal(s) · {{parcels}} parcel slice(s)",
-            "badgeProposal": "proposal",
+            "message": "This design has dependent items. The following will be removed from the map and storage. Click an item to see it.",
+            "counts": "{{proposals}} design(s) · {{parcels}} parcel slice(s)",
+            "badgeProposal": "design",
             "badgeParcel": "parcel",
             "cancel": "Cancel",
             "confirmUnapply": "Unapply",
@@ -2915,10 +2913,10 @@
             "messageRecut": "Changing this footprint re-cuts the ground under it. The following stand on that ground and will be re-derived. Click an item to see it.",
             "confirmRecut": "Re-cut",
             "titleOccupied": "Ground taken by “{{title}}”",
-            "messageOccupied": "This takes ground the following applied proposals hold. A proposal is never cut in half, so they have to be unapplied first. Click an item to see it.",
+            "messageOccupied": "This takes ground the following applied designs hold. A design is never cut in half, so they have to be unapplied first. Click an item to see it.",
             "confirmOccupied": "Unapply and continue",
             "titleReform": "Re-forming “{{title}}”",
-            "messageReform": "Saving this layout changes the shape of plots that other proposals already stand on. Those proposals will be unapplied — plots you did not change keep theirs. Click an item to see it.",
+            "messageReform": "Saving this layout changes the shape of plots that other designs already stand on. Those designs will be unapplied — plots you did not change keep theirs. Click an item to see it.",
             "confirmReform": "Unapply and save"
         },
         "common": {
@@ -2937,7 +2935,7 @@
             "blockedNote": "A {{kind}} is never built through a standing building, so it would be refused. Choose another route, or unapply the house first.",
             "blockedBuilding": "It would run through a proposed building:",
             "blockedBuildingLine": "“{{name}}”",
-            "blockedBuildingNote": "A {{kind}} is never built through a standing building, at surface or in a tunnel, so it would be refused. Choose another route, or unapply that proposal first."
+            "blockedBuildingNote": "A {{kind}} is never built through a standing building, at surface or in a tunnel, so it would be refused. Choose another route, or unapply that design first."
         }
     },
     "blockify": {
@@ -2999,7 +2997,7 @@
                 "generateBeforeFinishing": "Generate a building before finishing.",
                 "blockHasNoParcels": "Block has no parcels.",
                 "unableToMapParcels": "Unable to map parcels for this block.",
-                "defaultProposalDescription": "Building proposal for {{blockName}}",
+                "defaultProposalDescription": "Building design for {{blockName}}",
                 "selectedParcels": "Selected parcels",
                 "singleParcelLabel": "Parcel {{id}}",
                 "multiParcelLabel": "{{count}} parcels",
@@ -3103,7 +3101,7 @@
                 "generateBeforeFinishing": "Generate row houses before finishing.",
                 "blockHasNoParcels": "Block has no parcels.",
                 "unableToMapParcels": "Unable to map parcels for this block.",
-                "defaultProposalDescription": "Row houses proposal for {{blockName}}",
+                "defaultProposalDescription": "Row houses design for {{blockName}}",
                 "selectedParcels": "Selected parcels",
                 "singleParcelLabel": "Parcel {{id}}",
                 "multiParcelLabel": "{{count}} parcels",
@@ -3152,7 +3150,7 @@
                 "generateBeforeFinishing": "Generate buildings before finishing.",
                 "blockHasNoParcels": "Block has no parcels.",
                 "unableToMapParcels": "Unable to map parcels for this block.",
-                "defaultProposalDescription": "Parcel-based proposal for {{blockName}}",
+                "defaultProposalDescription": "Parcel-based design for {{blockName}}",
                 "selectedParcels": "Selected parcels",
                 "singleParcelLabel": "Parcel {{id}}",
                 "multiParcelLabel": "{{count}} parcels",
@@ -3306,7 +3304,7 @@
             "siteParcelsMissing": "The parcels under this site could not be loaded: {{ids}}.",
             "siteUnavailable": "This site cannot be subdivided here.",
             "poolClipFailed": "The ground of this plan could not be computed: {{reason}}",
-            "siteGroundTaken": "This site covers ground another proposal already formed: {{names}}. Draw the site off it, or unapply that proposal first."
+            "siteGroundTaken": "This site covers ground another design already formed: {{names}}. Draw the site off it, or unapply that design first."
         }
     },
     "mapCompare": {
@@ -3325,15 +3323,15 @@
             "block_has_no_parcels_with_name": "Block {{name}} has no parcels",
             "block_not_found_with_name": "Block {{name}} not found",
             "blockify_created_proposed_building_block": "Created proposed building block for {{block}} (width: {{width}}m, setback: {{setback}}m)",
-            "building_design_saved_add_proposal_details_to_submit": "Building design saved. Add proposal details to submit.",
+            "building_design_saved_add_proposal_details_to_submit": "Building design saved. Add design details to submit.",
             "building_generator_is_unavailable": "Building generator is unavailable.",
-            "building_proposal_missing_geometry": "Building proposal missing geometry; cannot apply.",
-            "cannot_apply_building_proposal_no_ancestor_parcels_found": "Cannot apply building proposal: no ancestor parcels found.",
-            "cannot_apply_building_proposal_missing_prerequisites": "Can't apply building proposal, prerequisite parcels are missing: {{missingList}}",
-            "cannot_apply_proposal_missing_parent_parcel_geometries": "Cannot apply proposal: missing parent parcel geometries.",
-            "cannot_apply_proposal_missing_prerequisites": "Can't apply proposal, prerequisite parcels are missing: {{missingList}}",
-            "cannot_apply_reparcellization_proposal_missing_generated_slices": "Cannot apply reparcellization proposal: missing generated slices.",
-            "cannot_apply_structure_proposal_missing_geometry": "Cannot apply structure proposal: missing geometry.",
+            "building_proposal_missing_geometry": "Building design missing geometry; cannot apply.",
+            "cannot_apply_building_proposal_no_ancestor_parcels_found": "Cannot apply building design: no ancestor parcels found.",
+            "cannot_apply_building_proposal_missing_prerequisites": "Can't apply building design, prerequisite parcels are missing: {{missingList}}",
+            "cannot_apply_proposal_missing_parent_parcel_geometries": "Cannot apply design: missing parent parcel geometries.",
+            "cannot_apply_proposal_missing_prerequisites": "Can't apply design, prerequisite parcels are missing: {{missingList}}",
+            "cannot_apply_reparcellization_proposal_missing_generated_slices": "Cannot apply reparcellization design: missing generated slices.",
+            "cannot_apply_structure_proposal_missing_geometry": "Cannot apply structure design: missing geometry.",
             "city_change_cancelled": "City change cancelled",
             "clearing_local_parcel_data": "Clearing local parcel data…",
             "cleared_blocks_from_storage": "Cleared {{count}} blocks from storage",
@@ -3363,8 +3361,8 @@
             "draw_the_single_building_inside_the_selected_block_first": "Draw the single building inside the selected block first.",
             "enable_multi_parcel_selection_to_use_this_action": "Enable multi-parcel selection to use this action.",
             "error_calculating_road_measurements": "Error calculating road measurements.",
-            "error_clearing_proposal_data_please_try_again": "Error clearing proposal data. Please try again.",
-            "error_deleting_proposal_please_try_again": "Error deleting proposal. Please try again.",
+            "error_clearing_proposal_data_please_try_again": "Error clearing design data. Please try again.",
+            "error_deleting_proposal_please_try_again": "Error deleting design. Please try again.",
             "error_detecting_existing_roads_using_all_sources": "Error detecting existing roads using all sources.",
             "error_detecting_roads_from_dgu": "Error detecting roads from DGU.",
             "error_detecting_roads_using_gup_data": "Error detecting roads using GUP data.",
@@ -3378,7 +3376,7 @@
             "error_occurred_while_counting_blocks_please_try_again": "Error occurred while counting blocks. Please try again.",
             "error_while_forming_block_from_selected_parcel": "Error while forming block from selected parcel.",
             "error_in_road_detection_with_reason": "Error in road detection: {{reason}}",
-            "error_proposal_not_found": "Error: Proposal not found",
+            "error_proposal_not_found": "Error: Design not found",
             "failed_to_compute_mbr": "Failed to compute MBR",
             "failed_to_compute_block_hull_for_mbr": "Failed to compute block hull for MBR",
             "failed_to_compute_split_road_geometry": "Failed to compute split road geometry",
@@ -3437,11 +3435,11 @@
                 "other": "Added {{count}} new parcels ({{total}} total in layer)"
             },
             "applying_shared_proposals_progress": {
-                "one": "Applying {{count}} shared proposal…",
-                "few": "Applying {{count}} shared proposals…",
-                "other": "Applying {{count}} shared proposals…"
+                "one": "Applying {{count}} shared design…",
+                "few": "Applying {{count}} shared designs…",
+                "other": "Applying {{count}} shared designs…"
             },
-            "applying_specific_shared_proposal": "Applying shared proposal {{title}} #{{id}}…",
+            "applying_specific_shared_proposal": "Applying shared design {{title}} #{{id}}…",
             "no_new_parcels_to_load_summary": {
                 "one": "No new parcels to load ({{count}} parcel visible)",
                 "few": "No new parcels to load ({{count}} parcels visible)",
@@ -3453,9 +3451,9 @@
                 "other": "Cleared {{count}} parcel-related items from local storage"
             },
             "cleared_local_proposals_summary": {
-                "one": "Cleared {{count}} proposal from local storage",
-                "few": "Cleared {{count}} proposals from local storage",
-                "other": "Cleared {{count}} proposals from local storage"
+                "one": "Cleared {{count}} design from local storage",
+                "few": "Cleared {{count}} designs from local storage",
+                "other": "Cleared {{count}} designs from local storage"
             },
             "game_initialized_summary": "Game initialized: {{agents}} agents created, {{parcels}} parcels assigned",
             "game_state_reset_agent_preserved": "Game state has been reset. Your agent has been preserved with fresh data.",
@@ -3519,43 +3517,43 @@
             "parcel_not_minted_yet_opening_mint_attest_flow": "Parcel not minted yet. Opening Mint & Attest flow…",
             "checking_parcel_nft_status": "Checking NFT status…",
             "unable_to_check_parcel_nft_status": "Unable to check NFT status.",
-            "parcel_selection_tools_are_unavailable_cannot_prepare_proposal": "Parcel selection tools are unavailable, cannot prepare proposal.",
+            "parcel_selection_tools_are_unavailable_cannot_prepare_proposal": "Parcel selection tools are unavailable, cannot prepare design.",
             "parcels_disabled_at_this_zoom": "Parcels disabled at this zoom",
-            "please_select_at_least_one_parcel_to_create_a_proposal": "Please select at least one parcel to create a proposal.",
-            "please_use_the_main_create_proposal_button_when_multiple_parcels_are_selected": "Please use the main \"Create Proposal\" button when multiple parcels are selected.",
-            "proposal_not_found": "Proposal not found.",
+            "please_select_at_least_one_parcel_to_create_a_proposal": "Please select at least one parcel to create a design.",
+            "please_use_the_main_create_proposal_button_when_multiple_parcels_are_selected": "Please use the main \"Create Design\" button when multiple parcels are selected.",
+            "proposal_not_found": "Design not found.",
             "proposal_created_with_parcel_count": {
-                "one": "Proposal \"{{type}}\" created successfully with {{count}} parcel.",
-                "few": "Proposal \"{{type}}\" created successfully with {{count}} parcels.",
-                "other": "Proposal \"{{type}}\" created successfully with {{count}} parcels."
+                "one": "Design \"{{type}}\" created successfully with {{count}} parcel.",
+                "few": "Design \"{{type}}\" created successfully with {{count}} parcels.",
+                "other": "Design \"{{type}}\" created successfully with {{count}} parcels."
             },
-            "proposal_created_review_details_and_apply_when_ready": "Proposal \"{{title}}\" created. Review details and apply it to the map when ready.",
-            "proposal_deleted": "Proposal \"{{title}}\" deleted",
-            "applied_structure_proposal": "Applied structure proposal \"{{title}}\"",
-            "applied_reparcellization_proposal": "Applied reparcellization proposal \"{{title}}\"",
-            "applied_building_proposal": "Applied building proposal \"{{title}}\"",
-            "removed_reparcellization_proposal": "Removed reparcellization proposal \"{{title}}\" from the map.",
+            "proposal_created_review_details_and_apply_when_ready": "Design \"{{title}}\" created. Review details and apply it to the map when ready.",
+            "proposal_deleted": "Design \"{{title}}\" deleted",
+            "applied_structure_proposal": "Applied structure design \"{{title}}\"",
+            "applied_reparcellization_proposal": "Applied reparcellization design \"{{title}}\"",
+            "applied_building_proposal": "Applied building design \"{{title}}\"",
+            "removed_reparcellization_proposal": "Removed reparcellization design \"{{title}}\" from the map.",
             "resolving_parcel_claim_details": "Resolving parcel claim details…",
-            "review_proposal_before_applying": "Review proposal before applying.",
+            "review_proposal_before_applying": "Review design before applying.",
             "revoked_acceptance_for_owner_on_parcel": "Revoked acceptance for {{owner}} on parcel {{parcelId}}.",
             "analyzed_roads_summary": "Analyzed {{count}} roads. {{summary}}",
             "road_measurements_calculated_and_added_to_panel": "Road measurements calculated and added to panel.",
-            "road_proposal_created_and_applied": "Road proposal \"{{name}}\" created and applied.",
+            "road_proposal_created_and_applied": "Road design \"{{name}}\" created and applied.",
             "road_plan_applied_to_current_map_view": "Road plan applied to current map view.",
             "analyzed_osm_road_segments_summary": "Analyzed OSM road segments. {{summary}}",
             "gup_detection_complete": "GUP detection complete. Marked {{count}} parcels as roads.",
             "road_detection_complete_with_names": "Road detection complete. Found {{count}} road parcels and assigned names.",
             "selected_proposal_summary": {
-                "one": "Selected proposal \"{{title}}\" (contains {{count}} parcel)",
-                "few": "Selected proposal \"{{title}}\" (contains {{count}} parcels)",
-                "other": "Selected proposal \"{{title}}\" (contains {{count}} parcels)"
+                "one": "Selected design \"{{title}}\" (contains {{count}} parcel)",
+                "few": "Selected design \"{{title}}\" (contains {{count}} parcels)",
+                "other": "Selected design \"{{title}}\" (contains {{count}} parcels)"
             },
             "selected_parcel_with_number": "Selected parcel {{number}}",
             "select_a_block_first": "Select a block first",
             "parcels_could_not_be_merged": "Could not merge the selected parcels into one site: {{reason}}",
             "select_a_parcel_before_attempting_to_claim_it": "Select a parcel before attempting to claim it.",
-            "select_a_parcel_block_before_creating_a_proposal": "Select a parcel block before creating a proposal.",
-            "select_at_least_one_parcel_to_create_a_proposal": "Select at least one parcel to create a proposal.",
+            "select_a_parcel_block_before_creating_a_proposal": "Select a parcel block before creating a design.",
+            "select_at_least_one_parcel_to_create_a_proposal": "Select at least one parcel to create a design.",
             "select_parcels_before_applying_the_government_road_plan": "Select parcels before applying the government road plan.",
             "select_at_least_one_parcel_to_apply_the_government_road_plan": "Select at least one parcel to apply the government road plan.",
             "select_parcels_before_launching_the_buildings_tool": "Select parcels before launching the buildings tool.",
@@ -3570,10 +3568,10 @@
             "highlighted_neighboring_parcels_count": "Highlighted {{count}} neighboring parcels",
             "showing_all_parcels": "Showing all parcels",
             "showing_vertices_for_parcel": "Showing {{count}} vertices for parcel {{parcel}}",
-            "single_building_design_saved_complete_the_proposal_form_to_submit": "Single building design saved. Complete the proposal form to submit.",
-            "single_building_proposal_created_use_apply_when_ready": "Proposal \"{{title}}\" created. Use Apply to map from the proposal details when ready.",
+            "single_building_design_saved_complete_the_proposal_form_to_submit": "Single building design saved. Complete the design form to submit.",
+            "single_building_proposal_created_use_apply_when_ready": "Design \"{{title}}\" created. Use Apply to map from the design details when ready.",
             "single_building_tool_is_unavailable": "Single building tool is unavailable.",
-            "structure_proposal_dialog_is_unavailable": "Structure proposal dialog is unavailable.",
+            "structure_proposal_dialog_is_unavailable": "Structure design dialog is unavailable.",
             "unable_to_compute_bounds_for_this_block": "Unable to compute bounds for this block.",
             "unable_to_determine_map_bounds_for_analysis": "Unable to determine map bounds for analysis.",
             "unable_to_determine_map_bounds_for_government_plans": "Unable to determine map bounds for government plans.",
@@ -3581,7 +3579,7 @@
             "unable_to_determine_parcel_identifier_for_claims": "Unable to determine parcel identifier for claims.",
             "unable_to_open_parcel_builder_please_try_again": "Unable to open Parcel Builder. Please try again.",
             "unable_to_open_claim_portal_please_try_again": "Unable to open claim portal. Please try again.",
-            "unable_to_prepare_building_geometry_for_proposal": "Unable to prepare building geometry for proposal.",
+            "unable_to_prepare_building_geometry_for_proposal": "Unable to prepare building geometry for design.",
             "using_cached_osm_road_data": "Using cached OSM road data",
             "waiting_for_parcel_merge_to_complete_before_applying_the_government_road_plan": "Waiting for parcel merge to complete before applying the government road plan…",
             "parcel_data_still_merging_before_government_plan": "Parcel data is still merging. We will apply the government road plan as soon as the map finishes updating.",
@@ -3607,7 +3605,7 @@
             "no_parcel_at_point": "No registered parcel returned at this point.",
             "parcel_lookup_failed": "Parcel could not be loaded. Tap again to retry.",
             "parcel_boundary_loaded": "Parcel boundary loaded.",
-            "waiting_for_proposal_before_parcels": "Waiting for proposal to load before fetching parcels…",
+            "waiting_for_proposal_before_parcels": "Waiting for design to load before fetching parcels…",
             "debug_mode_enabled": "Debug mode enabled - dangerous actions are now visible",
             "debug_mode_disabled": "Debug mode disabled - dangerous actions are hidden",
             "zoom_in_to_see_buildings": "Zoom in closer to see buildings."
@@ -5482,7 +5480,7 @@
             "cancelled": "City change cancelled"
         },
         "switchPrompt": {
-            "title": "This proposal is in {requested} — you are viewing {current}",
+            "title": "This design is in {requested} — you are viewing {current}",
             "body": "Opening it switches the map to {requested} and reloads. Your work in {current} is kept and will be here when you come back.",
             "stay": "Stay in {current}",
             "switch": "Open in {requested}"
@@ -5491,76 +5489,76 @@
     "alerts": {
         "messages": {
             "community_vote_has_no_owner_action": "A community vote is decided by residents through its organiser; owners have nothing to accept.",
-            "owner_vote_not_on_solana": "Owner votes cannot be minted on Solana yet. Choose another kind, or keep the proposal off-chain.",
-            "a_proposal_with_the_same_parcels_already_exists": "A proposal with the same parcels already exists.",
-            "an_identical_proposal_already_exists": "An identical proposal already exists.",
-            "building_proposal_workflow_is_unavailable": "Building proposal workflow is unavailable.",
-            "cannot_undo_acceptance_from_an_executed_proposal_that_has_descendant_parcels": "Cannot undo acceptance from an executed proposal that has descendant parcels.",
-            "could_not_prepare_building_data_for_the_proposal_please_try_again": "Could not prepare building data for the proposal. Please try again.",
-            "proposal_lifecycle_unknown": "The proposal status is unknown. Reload it before accepting.",
-            "proposal_terms_unavailable": "The current proposal terms could not be verified. Reload the proposal before accepting.",
-            "acceptance_confirmed_status_unavailable": "Acceptance was confirmed on-chain, but the proposal status could not be refreshed. The previous status is still shown. Reload the proposal to check it.",
-            "proposal_terms_invalid": "Correct the proposal terms before accepting.",
-            "error_accepting_proposal_please_try_again": "Error accepting proposal. Please try again.",
-            "error_rejecting_proposal_please_try_again": "Error rejecting proposal. Please try again.",
+            "owner_vote_not_on_solana": "Owner votes cannot be minted on Solana yet. Choose another kind, or keep the design off-chain.",
+            "a_proposal_with_the_same_parcels_already_exists": "A design with the same parcels already exists.",
+            "an_identical_proposal_already_exists": "An identical design already exists.",
+            "building_proposal_workflow_is_unavailable": "Building design workflow is unavailable.",
+            "cannot_undo_acceptance_from_an_executed_proposal_that_has_descendant_parcels": "Cannot undo acceptance from an executed design that has descendant parcels.",
+            "could_not_prepare_building_data_for_the_proposal_please_try_again": "Could not prepare building data for the design. Please try again.",
+            "proposal_lifecycle_unknown": "The design status is unknown. Reload it before accepting.",
+            "proposal_terms_unavailable": "The current design terms could not be verified. Reload the design before accepting.",
+            "acceptance_confirmed_status_unavailable": "Acceptance was confirmed on-chain, but the design status could not be refreshed. The previous status is still shown. Reload the design to check it.",
+            "proposal_terms_invalid": "Correct the design terms before accepting.",
+            "error_accepting_proposal_please_try_again": "Error accepting design. Please try again.",
+            "error_rejecting_proposal_please_try_again": "Error rejecting design. Please try again.",
             "failed_to_wipe_local_data": "Failed to wipe local data:",
             "geolocation_is_not_supported_by_this_browser": "Geolocation is not supported by this browser.",
             "invalid_parcel_identifier": "Invalid parcel identifier.",
             "invalid_road_shape_please_try_drawing_the_road_again": "Invalid road shape. Please try drawing the road again.",
-            "missing_parcels_or_geometry_for_this_proposal": "Missing parcels or geometry for this proposal.",
+            "missing_parcels_or_geometry_for_this_proposal": "Missing parcels or geometry for this design.",
             "no_agents_exist_yet_start_the_game_to_create_agents": "No agents exist yet. Start the game to create agents.",
             "no_building_geometry_prepared_please_create_the_building_again": "No building geometry prepared. Please create the building again.",
             "no_parcels_affected_by_this_road_please_try_drawing_the_road_again": "No parcels affected by this road. Please try drawing the road again.",
-            "no_parcels_selected_for_this_proposal": "No parcels selected for this proposal.",
-            "no_parcels_selected_please_select_parcels_before_creating_a_proposal": "No parcels selected. Please select parcels before creating a proposal.",
+            "no_parcels_selected_for_this_proposal": "No parcels selected for this design.",
+            "no_parcels_selected_please_select_parcels_before_creating_a_proposal": "No parcels selected. Please select parcels before creating a design.",
             "no_recorded_owner_acceptance_to_undo": "No recorded owner acceptance to undo.",
             "only_the_user_who_recorded_this_acceptance_can_undo_it": "Only the user who recorded this acceptance can undo it.",
-            "open_the_buildings_tool_design_your_block_and_click_done_before_creating_this_proposal": "Open the Buildings tool, design your block, and click Done before creating this proposal.",
-            "open_the_row_houses_tool_design_your_row_and_click_done_before_creating_this_proposal": "Open the Row Houses tool, design your row, and click Done before creating this proposal.",
-            "open_the_parcel_based_tool_generate_buildings_and_click_done_before_creating_this_proposal": "Open the Parcel-based tool, generate buildings, and click Done before creating this proposal.",
+            "open_the_buildings_tool_design_your_block_and_click_done_before_creating_this_proposal": "Open the Buildings tool, design your block, and click Done before creating this design.",
+            "open_the_row_houses_tool_design_your_row_and_click_done_before_creating_this_proposal": "Open the Row Houses tool, design your row, and click Done before creating this design.",
+            "open_the_parcel_based_tool_generate_buildings_and_click_done_before_creating_this_proposal": "Open the Parcel-based tool, generate buildings, and click Done before creating this design.",
             "please_choose_which_owner_share_you_are_accepting_for": "Please choose which owner share you are accepting for.",
             "please_initialize_the_game_state_first": "Please initialize the game state first.",
             "please_provide_author_name_and_a_valid_offer": "Please provide author, name, and a valid offer.",
             "please_select_a_parcel_first": "Please select a parcel first",
             "please_specify_which_owner_acceptance_to_undo": "Please specify which owner acceptance to undo.",
             "proposal_type_no_longer_available": "Merge / Decide Later is no longer available. Use Lay out parcels.",
-            "proposal_not_found": "Proposal not found.",
-            "proposal_storage_is_unavailable": "Proposal storage is unavailable.",
-            "select_a_proposal_goal_before_creating_a_proposal": "Select a proposal goal before creating a proposal.",
+            "proposal_not_found": "Design not found.",
+            "proposal_storage_is_unavailable": "Design storage is unavailable.",
+            "select_a_proposal_goal_before_creating_a_proposal": "Select a design goal before creating a design.",
             "select_which_owner_share_you_are_accepting_for": "Select which owner share you are accepting for.",
             "single_building_workflow_is_unavailable": "Single building workflow is unavailable.",
-            "this_exact_proposal_already_exists": "This exact proposal already exists",
-            "this_exact_proposal_already_exists_2": "This exact proposal already exists.",
-            "this_owner_has_already_accepted_the_proposal": "This owner has already accepted the proposal.",
-            "this_owner_has_not_accepted_the_proposal_yet": "This owner has not accepted the proposal yet.",
+            "this_exact_proposal_already_exists": "This exact design already exists",
+            "this_exact_proposal_already_exists_2": "This exact design already exists.",
+            "this_owner_has_already_accepted_the_proposal": "This owner has already accepted the design.",
+            "this_owner_has_not_accepted_the_proposal_yet": "This owner has not accepted the design yet.",
             "this_parcel_has_invalid_geometry_and_cannot_be_analyzed": "This parcel has invalid geometry and cannot be analyzed",
-            "this_parcel_has_not_accepted_the_proposal_yet": "This parcel has not accepted the proposal yet.",
-            "this_parcel_is_not_part_of_the_proposal": "This parcel is not part of the proposal.",
+            "this_parcel_has_not_accepted_the_proposal_yet": "This parcel has not accepted the design yet.",
+            "this_parcel_is_not_part_of_the_proposal": "This parcel is not part of the design.",
             "unable_to_detect_your_location": "Unable to detect your location.",
             "unable_to_determine_owner_shares_for_this_parcel": "Unable to determine owner shares for this parcel.",
             "unable_to_determine_the_nearest_city": "Unable to determine the nearest city.",
             "unable_to_determine_which_acceptance_to_undo": "Unable to determine which acceptance to undo.",
-            "proposal_with_id_not_found": "Proposal with ID {{id}} not found.",
-            "unable_to_open_proposal_details": "Unable to open proposal details.",
+            "proposal_with_id_not_found": "Design with ID {{id}} not found.",
+            "unable_to_open_proposal_details": "Unable to open design details.",
             "unable_to_show_parcel": "Unable to show parcel {{id}}. Parcel selection functionality not available.",
             "please_enter_a_valid_boost_amount": "Please enter a valid boost amount.",
             "please_enter_a_valid_boost_expiry": "Please enter a valid boost expiry timestamp.",
-            "proposal_boost_success": "Success! Thank you for supporting this proposal with {{amount}} {{currency}}. See transaction {{txLink}}",
-            "proposal_boost_not_minted": "This proposal is not on-chain yet. Mint it before boosting.",
-            "proposal_boost_wallet_required": "Connect a wallet to boost this proposal.",
+            "proposal_boost_success": "Success! Thank you for supporting this design with {{amount}} {{currency}}. See transaction {{txLink}}",
+            "proposal_boost_not_minted": "This design is not on-chain yet. Mint it before boosting.",
+            "proposal_boost_wallet_required": "Connect a wallet to boost this design.",
             "proposal_boost_missing_token": "City Meme Token address is not configured for the connected network.",
-            "proposal_boost_contract_missing": "Proposal contract address is not configured for this network.",
-            "proposal_boost_switch_network": "Please switch your wallet to chain {{chainId}} to boost this proposal.",
+            "proposal_boost_contract_missing": "Design contract address is not configured for this network.",
+            "proposal_boost_switch_network": "Please switch your wallet to chain {{chainId}} to boost this design.",
             "proposal_boost_failed": "Boost transaction failed: {{reason}}",
-            "you_can_only_accept_proposals_for_parcels_you_own": "You can only accept proposals for parcels you own.",
-            "you_must_be_logged_in_to_accept_proposals": "You must be logged in to accept proposals.",
+            "you_can_only_accept_proposals_for_parcels_you_own": "You can only accept designs for parcels you own.",
+            "you_must_be_logged_in_to_accept_proposals": "You must be logged in to accept designs.",
             "you_must_be_logged_in_to_undo_an_acceptance": "You must be logged in to undo an acceptance.",
-            "please_choose_a_proposal_type": "Please choose a proposal type.",
-            "please_enter_a_description_for_the_proposal": "Please enter a description for the proposal.",
+            "please_choose_a_proposal_type": "Please choose a design type.",
+            "please_enter_a_description_for_the_proposal": "Please enter a description for the design.",
             "please_enter_a_description": "Please enter a description.",
             "please_enter_a_valid_offer_amount": "Please enter a valid offer amount.",
             "please_enter_an_author_name": "Please enter an author name.",
-            "copy_proposal_parcels_unavailable": "Could not load this proposal's parcels. Switch to the city it was created in, then try again.",
+            "copy_proposal_parcels_unavailable": "Could not load this design's parcels. Switch to the city it was created in, then try again.",
             "road_source_incorporated": "Applied the combined road and removed ‘{{name}}’ from the map.",
             "road_source_included_in_replacement": "This road is included in ‘{{name}}’. Remove the combined road from the map before applying this one.",
             "block_needs_a_seed_parcel": "Select a parcel first — block detection grows outwards from the parcel you are on.",
@@ -5572,11 +5570,11 @@
             "block_seed_unresolved": "Could not read the selected parcel’s id, so there is nothing to grow a block from.",
             "block_multiselect_unavailable": "Multi-select is unavailable, and a block is delivered as a multi-parcel selection.",
             "block_multiselect_off": "Multi-select could not be turned on, and a block is delivered as a multi-parcel selection.",
-            "activity_no_parcel_set": "This proposal has no canonical parcel set loaded.",
-            "blockchain_mint_wallet_prompt": "Blockchain minting is available but no wallet is connected. Would you like to connect a wallet to mint this proposal on-chain?",
-            "failed_to_create_proposal": "Failed to create proposal.",
+            "activity_no_parcel_set": "This design has no canonical parcel set loaded.",
+            "blockchain_mint_wallet_prompt": "Blockchain minting is available but no wallet is connected. Would you like to connect a wallet to mint this design on-chain?",
+            "failed_to_create_proposal": "Failed to create design.",
             "solana_lens_required": "Choose at least one lens member (the lens button) before minting on Solana.",
-            "solana_accept_in_lens_card": "On Solana, owners say yes in the proposal's Lens card: a lens member attests your ownership, then your wallet signs.",
+            "solana_accept_in_lens_card": "On Solana, owners say yes in the design's Lens card: a lens member attests your ownership, then your wallet signs.",
             "owner_offer_not_attested": "An owner offer can only name parcels your wallet is attested to own by a member of your lens. {{detail}}"
         }
     },
@@ -5757,8 +5755,8 @@
             "name": "Name",
             "ethBalance": "ETH balance",
             "parcelsOwned": "Parcels owned",
-            "proposalsCreated": "Proposals created",
-            "proposalsApplied": "Proposals applied",
+            "proposalsCreated": "Designs created",
+            "proposalsApplied": "Designs applied",
             "you": "(You)"
         },
         "newGameConfirm": "Are you sure you want to start a NEW game? This will delete all agents, game progress, and parcel ownership data.",
@@ -5769,16 +5767,16 @@
             "unknown_path": "There is no page at this address. Showing the map instead.",
             "agent_location_unavailable": "Cannot go to {{agent}}'s {{action}}: the parcel data is not loaded yet.",
             "minted_parcels_failed": "Minted parcels could not be loaded: {{error}}",
-            "cannot_apply_building_proposal_missing_parents": "Can't apply building proposal, prerequisite parcels are missing: {{missing}}",
-            "cannot_apply_proposal_missing_parents": "Can't apply proposal, prerequisite parcels are missing: {{missing}}",
-            "proposal_conflict_title": "Proposal conflict — same geography",
+            "cannot_apply_building_proposal_missing_parents": "Can't apply building design, prerequisite parcels are missing: {{missing}}",
+            "cannot_apply_proposal_missing_parents": "Can't apply design, prerequisite parcels are missing: {{missing}}",
+            "proposal_conflict_title": "Design conflict — same geography",
             "proposal_conflict_missing_title": "Some parcels are missing",
             "proposal_conflict_intro": "Applying \"{{title}}\" needs parcels that aren't available:",
-            "proposal_conflict_overlaps": "Overlaps applied proposal \"{{title}}\"",
+            "proposal_conflict_overlaps": "Overlaps applied design \"{{title}}\"",
             "proposal_conflict_shares": {
-                "one": "Shares {{count}} parcel with this proposal.",
-                "few": "Shares {{count}} parcels with this proposal.",
-                "other": "Shares {{count}} parcels with this proposal."
+                "one": "Shares {{count}} parcel with this design.",
+                "few": "Shares {{count}} parcels with this design.",
+                "other": "Shares {{count}} parcels with this design."
             },
             "proposal_conflict_shares_blocked": {
                 "one": "Shares {{count}} parcel, but it can't be unapplied on its own — these are built on top of it:",
@@ -5796,25 +5794,25 @@
             "proposal_conflict_apply_anyway": "Apply anyway",
             "proposal_conflict_cancel": "Cancel",
             "proposal_conflict_close": "Close",
-            "cannot_share_this_proposal_right_now": "Cannot share this proposal right now.",
-            "failed_to_apply_road_proposal_review_proposals_for_details": "Failed to apply road proposal. Review proposals for details.",
+            "cannot_share_this_proposal_right_now": "Cannot share this design right now.",
+            "failed_to_apply_road_proposal_review_proposals_for_details": "Failed to apply road design. Review designs for details.",
             "failed_to_encode_share_data": "Failed to encode share data.",
-            "failed_to_encode_shared_proposal_data": "Failed to encode shared proposal data.",
+            "failed_to_encode_shared_proposal_data": "Failed to encode shared design data.",
             "failed_to_generate_share_link": "Failed to generate share link.",
-            "no_applied_proposals_to_share_yet": "No applied proposals to share yet.",
-            "road_proposal_already_exists_or_could_not_be_saved_review_proposals_for_details": "Road proposal already exists or could not be saved. Review proposals for details.",
-            "onchain_proposal_mint_failed": "On-chain proposal mint failed.",
-            "onchain_proposal_mint_failed_with_reason": "On-chain proposal mint failed: {{error}}.",
+            "no_applied_proposals_to_share_yet": "No applied designs to share yet.",
+            "road_proposal_already_exists_or_could_not_be_saved_review_proposals_for_details": "Road design already exists or could not be saved. Review designs for details.",
+            "onchain_proposal_mint_failed": "On-chain design mint failed.",
+            "onchain_proposal_mint_failed_with_reason": "On-chain design mint failed: {{error}}.",
             "logged_out_ai_controls": "Logged out. AI will control your agent.",
             "logged_out_agent_inactive": "Logged out. Agent is now inactive.",
-            "proposal_executed_all_parcels": "Proposal {{hash}} executed! All {{count}} parcels accepted.",
-            "proposal_executed": "Proposal {{hash}} executed!",
-            "unable_to_prepare_proposal_for_sharing": "Unable to prepare proposal for sharing.",
-            "unable_to_prepare_proposals_for_sharing": "Unable to prepare proposals for sharing.",
+            "proposal_executed_all_parcels": "Design {{hash}} executed! All {{count}} parcels accepted.",
+            "proposal_executed": "Design {{hash}} executed!",
+            "unable_to_prepare_proposal_for_sharing": "Unable to prepare design for sharing.",
+            "unable_to_prepare_proposals_for_sharing": "Unable to prepare designs for sharing.",
             "welcome_back_user": "Welcome back, {{name}}! You've taken control of your agent.",
             "welcome_new_user": "Welcome, {{name}}! You're now part of the consensus building community.",
             "profile_personalized": "Great, {{name}}! Your profile is now personalized.",
-            "name_to_publish": "Choose a profile name to publish: published proposals carry their author. Everything kept on this device works without one.",
+            "name_to_publish": "Choose a profile name to publish: published designs carry their author. Everything kept on this device works without one.",
             "name_to_share": "Choose a profile name to share: a share link carries its author. Everything kept on this device works without one.",
             "all_parcels_in_block_selected": "All parcels in the block selected!"
         }
@@ -5827,7 +5825,7 @@
             "streamingTiles": "Streaming 3D tiles…",
             "noCoverage": "No photorealistic coverage here — staying in abstract 3D.",
             "loadFailed": "Photo view could not load. Try again or switch to 2D.",
-            "carveUnderProposals": "Hide real buildings under proposals",
+            "carveUnderProposals": "Hide real buildings under designs",
             "stateSolid": "Solid",
             "stateGhost": "Transparent",
             "stateSurviving": "Surviving",
@@ -5872,8 +5870,8 @@
             "floorLevel": "Floor {{level}}",
             "xrayError": "Some floor plans could not be displayed.",
             "suggestedLayouts": "Suggested layouts",
-            "suggestedLayoutsTooltip": "Generate a default layout for proposed buildings without a modelled interior: a stair and lift core entered from the street side, two apartments per core. A suggestion, not part of the proposal.",
-            "suggestedNote": "Suggested layouts are generated defaults, not part of the proposal.",
+            "suggestedLayoutsTooltip": "Generate a default layout for proposed buildings without a modelled interior: a stair and lift core entered from the street side, two apartments per core. A suggestion, not part of the design.",
+            "suggestedNote": "Suggested layouts are generated defaults, not part of the design.",
             "suggestedCount": "Suggested: {{buildings}} buildings · {{apartments}} apartments per floor",
             "suggestedFlagged": "{{count}} in red: too small for a minimum stair core.",
             "suggestedPendingStreets": "Street data is loading; entrances face the longest facade until it arrives.",
@@ -5887,7 +5885,7 @@
                 "plaster": "Plaster"
             },
             "representationMassing": "Max envelope",
-            "representationMassingTooltip": "Max envelope — the outer permitted volume asserted by the proposal",
+            "representationMassingTooltip": "Max envelope — the outer permitted volume asserted by the design",
             "representationBuildOut": "Illustration",
             "representationBuildOutTooltip": "Illustration — one example of what could be built under the rule",
             "representationBoth": "Both",
@@ -5939,14 +5937,14 @@
             "salePrice": "Sale price {{price}}/m²",
             "constructionPrice": "Construction cost {{price}}/m²",
             "amountsIn": "amounts in {{currency}}",
-            "proposalLabel": "Proposal",
+            "proposalLabel": "Design",
             "show": "show",
             "suggestedLayout": "Suggested layout",
             "suggestedSummary": "{{cores}} core(s) · {{apartments}} apartments per floor · {{rooms}} rooms",
             "suggestedFlagged": "No default layout fits: {{reason}}"
         },
         "proposalPanel": {
-            "title": "Proposal info",
+            "title": "Design info",
             "parcelsLabel": "Parcels",
             "suggestedTotals": "Suggested layouts: {{buildings}} buildings · {{apartmentsPerFloor}} apartments per floor · {{apartments}} in total",
             "avgPerParcel": "Avg / parcel"
@@ -5980,7 +5978,7 @@
             "copyLink": "Copy link",
             "share": "Share",
             "tweet": "Share on X",
-            "tweetText": "Photorealistic view of my urban proposal",
+            "tweetText": "Photorealistic view of my urban design",
             "shareTitle": "Urban Game Theory",
             "savingShare": "Preparing share link…",
             "linkCopied": "Link copied",
@@ -6263,25 +6261,25 @@
                 "pointText": "Tap the map to load and select an individual parcel. Loading every parcel in an area is unavailable for this source.",
                 "datedStreamText": "Parcels load as you zoom in and pan. This source is a {{version}} dataset; current boundaries may differ.",
                 "streamText": "Parcels load from the local source as you zoom in and pan. Nearby municipalities may use different data.",
-                "text": "Parcels, proposals and 3D are ready here."
+                "text": "Parcels, designs and 3D are ready here."
             },
             "source": {
                 "short": "Open data found",
-                "text": "Open parcel data exists here, but it is not in the app yet. You can still draw a site and propose here — without parcels, a proposal executes only through an authority's verdict — or ask for this place to be added."
+                "text": "Open parcel data exists here, but it is not in the app yet. You can still draw a site and propose here — without parcels, a design executes only through an authority's verdict — or ask for this place to be added."
             },
             "none": {
                 "short": "No open data",
-                "text": "We looked and found no open parcel data here. You can still draw a site and propose here; without parcels, a proposal executes only through an authority's verdict."
+                "text": "We looked and found no open parcel data here. You can still draw a site and propose here; without parcels, a design executes only through an authority's verdict."
             },
             "unknown": {
                 "short": "Unconfirmed",
-                "text": "Open parcel data has not been confirmed here; this place is unchecked or the check was inconclusive. You can still draw a site and propose here; without parcels, a proposal executes only through an authority's verdict."
+                "text": "Open parcel data has not been confirmed here; this place is unchecked or the check was inconclusive. You can still draw a site and propose here; without parcels, a design executes only through an authority's verdict."
             }
         },
         "popup": {
             "coverageSource": "Coverage source",
             "location": "Selected location",
-            "locationText": "Open this exact location at street level to view or create proposals."
+            "locationText": "Open this exact location at street level to view or create designs."
         },
         "action": {
             "open": "Open {{city}}",
@@ -6296,7 +6294,7 @@
         },
         "explore": {
             "chip": "Explore · {{place}}",
-            "banner": "No parcels here: you can draw a site and propose, but a proposal can only execute through an authority's verdict.",
+            "banner": "No parcels here: you can draw a site and propose, but a design can only execute through an authority's verdict.",
             "worldView": "World view",
             "dismiss": "Close",
             "status": "No parcel data here: click the map to draw a site and propose."
@@ -6323,7 +6321,7 @@
                 "yes": "Bet {{amount}} on yes",
                 "no": "Bet {{amount}} on no"
             },
-            "openError": "Could not open this proposal. Please try again.",
+            "openError": "Could not open this design. Please try again.",
             "openAgreementError": "Could not open this agreement. Please try again.",
             "location": {
                 "near": "near {{place}}",
@@ -6425,8 +6423,8 @@
         }
     },
     "mapSearch": {
-        "placeholder": "Search places, parcels, proposals…",
-        "placeholderNoParcels": "Search places, proposals…",
+        "placeholder": "Search places, parcels, designs…",
+        "placeholderNoParcels": "Search places, designs…",
         "label": "Search the map",
         "open": "Search",
         "close": "Close search",
@@ -6436,7 +6434,7 @@
             "recent": "Recent searches",
             "cities": "Cities",
             "parcels": "Parcels",
-            "proposals": "Proposals",
+            "proposals": "Designs",
             "places": "Places",
             "commands": "Commands"
         },
@@ -6446,11 +6444,11 @@
         "parcelHint": "Find this parcel on the map",
         "parcelNeedsMunicipality": "Add the cadastral municipality: HR-<number>-{{id}}",
         "parcelNeedsMunicipalityHint": "Or move the map to where the parcel is, so its ids are loaded",
-        "untitledProposal": "Proposal {{id}}",
+        "untitledProposal": "Design {{id}}",
         "localProposal": "On this device",
         "inCity": "In {{city}}",
-        "proposalsLoading": "Searching proposals…",
-        "proposalsError": "Could not search proposals",
+        "proposalsLoading": "Searching designs…",
+        "proposalsError": "Could not search designs",
         "proposalDownloading": "Downloading…",
         "placesLoading": "Searching places…",
         "placesError": "Could not reach the address search",
@@ -6484,7 +6482,7 @@
             "stations": "Stations",
             "roads": "Roads",
             "areaMonitor": "Area monitor",
-            "proposals": "Proposals",
+            "proposals": "Designs",
             "game": "Simulation",
             "activity": "Activity",
             "settings": "Settings",
@@ -6505,7 +6503,7 @@
         },
         "facts": {
             "bare": "Unsurveyed ground or a gap between parcels: ownership not established.",
-            "noCadastre": "No parcel data here. A proposal can only execute through an authority's verdict."
+            "noCadastre": "No parcel data here. A design can only execute through an authority's verdict."
         },
         "notLoaded": "Parcels are not loaded here yet — zoom in or wait for them to load.",
         "actions": {
@@ -6603,10 +6601,10 @@
             "longestNoData": "Frontage: the longest edge (street data is unavailable here)."
         },
         "proposals": {
-            "none": "No proposals on this site's parcels yet.",
+            "none": "No designs on this site's parcels yet.",
             "existing": {
-                "one": "{{count}} proposal already on these parcels",
-                "other": "{{count}} proposals already on these parcels"
+                "one": "{{count}} design already on these parcels",
+                "other": "{{count}} designs already on these parcels"
             },
             "show": "Show"
         }
@@ -6616,14 +6614,14 @@
         "siteAreaValue": "Site: {{area}} m²",
         "openGroundValue": "Open ground: {{area}} m²",
         "openGroundNote": "Open ground: {{area}} m² of the sites has no cadastral parcels; parcel figures cover the bound parcels only.",
-        "grainNoParcels": "No parcels here: these proposals stand on open ground, so there are no resulting parcels to score."
+        "grainNoParcels": "No parcels here: these designs stand on open ground, so there are no resulting parcels to score."
     },
     "parcelCompare": {
         "title": "Compare designs on parcel {{number}}",
-        "needTwo": "At least two proposals must touch this parcel to compare them.",
-        "pick": "Proposal {{side}}",
+        "needTwo": "At least two designs must touch this parcel to compare them.",
+        "pick": "Design {{side}}",
         "openDetails": "Details",
-        "previewLabel": "Parcel outline with each proposal’s ground on it",
+        "previewLabel": "Parcel outline with each design’s ground on it",
         "tableLabel": "Comparison for this parcel",
         "intrusion": "reaches {{width}} m in",
         "none": "None",
@@ -6677,7 +6675,7 @@
             "status": "Status"
         },
         "bar": {
-            "hint": "Tick two proposals to compare them on this parcel",
+            "hint": "Tick two designs to compare them on this parcel",
             "ready": "Two selected",
             "compare": "Compare",
             "tick": "Select to compare"
@@ -6804,7 +6802,7 @@
             "summary": "{{blocks}} · {{streets}} ({{arterial}} km arterial, {{local}} km local) · {{roads}}",
             "empty": "No blocks chosen.",
             "zoomIn": "Zoom in to paint blocks.",
-            "limit": "At most {{max}} blocks per proposal for now.",
+            "limit": "At most {{max}} blocks per design for now.",
             "roadName": "Schelling roads {{code}}",
             "roadNameNumbered": "Schelling roads {{code}} ({{number}})",
             "description": "Streets of the Schelling plan {{code}} (meridians and parallels) around {{blocks}}.",
@@ -6819,8 +6817,8 @@
                 "other": "{{count}} streets"
             },
             "roadCount": {
-                "one": "{{count}} road proposal",
-                "other": "{{count}} road proposals"
+                "one": "{{count}} road design",
+                "other": "{{count}} road designs"
             }
         }
     },
@@ -6846,7 +6844,7 @@
         "result": "{count} illustrative plots · {coverage}% of eligible ground covered · {unassigned} buildings unassigned · {removed} removed. Coverage describes generation before removals.",
         "errors": {
             "storage": "Could not save the parcels in this browser. Free some browser storage and try again.",
-            "inUse": "A local proposal uses a parcel this change would remove. Keep that parcel or remove the proposal before replacing these estimates.",
+            "inUse": "A local design uses a parcel this change would remove. Keep that parcel or remove the design before replacing these estimates.",
             "map": "The map is not ready. Please try again.",
             "extent": "Zoom in to an area no wider or taller than 2 km, or choose a fixed area size.",
             "area": "Choose a valid area between 80°S and 80°N, away from the date line.",
@@ -7090,7 +7088,7 @@
     },
     "community": {
         "pictures": "Before / after",
-        "title": "Community consultation",
+        "title": "Nonbinding community agreement",
         "errors": {
             "history": "Report history is unavailable or could not be verified. Refresh to try again.",
             "index": "The server returned an invalid report history.",
@@ -7115,7 +7113,7 @@
             "details": "Read the organiser’s report",
             "signed": "Signed record"
         },
-        "intro": "This consultation asks for non-binding community support. It gives no owner consent and moves no land or money.",
+        "intro": "This nonbinding agreement asks for non-binding community support. It gives no owner consent and moves no land or money.",
         "takePart": "Take part",
         "organiser": "Organiser",
         "noReports": "No result has been reported yet.",
@@ -7140,12 +7138,11 @@
         "dialog": {
             "titleCreate": "Create agreement",
             "titleEdit": "Edit agreement",
-            "intro": "An agreement bundles designs on the map with who decides, who gets which land and what money moves. Nothing leaves this device yet.",
+            "intro": "An agreement refers to one plan and sets who decides, who gets which land and what money moves. Nothing leaves this device yet.",
             "save": "Save agreement"
         },
         "sections": {
-            "consultation": "Consultation",
-            "designs": "Designs",
+            "consultation": "Nonbinding agreement",
             "land": "Land",
             "allocation": "Allocation",
             "money": "Money",
@@ -7153,7 +7150,7 @@
             "details": "Details"
         },
         "designs": {
-            "hint": "Only designs applied to the map can be part of an agreement.",
+            "hint": "Choose the designs for this plan. Changing them creates a new plan revision; existing agreements keep their original plan.",
             "empty": "No applied designs. Apply a design first.",
             "onMap": "Applied",
             "mapHint": "Click a design on the map to add or remove it",
@@ -7201,7 +7198,7 @@
             }
         },
         "consultation": {
-            "hint": "Optional organiser identity and participation information. A community consultation records opinions and does not settle land or money.",
+            "hint": "Optional organiser identity and participation information. A nonbinding community agreement records opinions and does not settle land or money.",
             "organiser": "Organiser website or did:web (optional)",
             "participationUrl": "Participation URL (HTTPS, optional)"
         },
@@ -7212,8 +7209,8 @@
         "errors": {
             "consultationOrganiser": "Enter an organiser website or a valid did:web identifier.",
             "consultationParticipationUrl": "Enter an HTTPS participation URL without credentials.",
-            "communityAllocations": "A community consultation cannot allocate land.",
-            "communityMoney": "A community consultation cannot include cash payments.",
+            "communityAllocations": "A nonbinding community agreement cannot allocate land.",
+            "communityMoney": "A nonbinding community agreement cannot include cash payments.",
             "noDesigns": "Choose at least one design.",
             "designNotApplied": "Every design must be applied to the map.",
             "noInputs": "The designs take no cadastral land.",
@@ -7263,7 +7260,8 @@
             },
             "collapse": "Close agreement",
             "removeLocalConfirm": "Remove this agreement from this device? Its designs stay on the map. Any published agreement remains available through its link.",
-            "compareUnavailable": "Before / after is available when this agreement matches the designs applied on the map."
+            "compareUnavailable": "Before / after is available when this agreement matches the designs applied on the map.",
+            "designs": "Designs in this plan"
         },
         "list": {
             "create": "Create agreement",
@@ -7308,7 +7306,8 @@
                 "notACid": "This is not an agreement link.",
                 "notFound": "This agreement is not on the server.",
                 "missing": "The agreement is no longer on this device.",
-                "designMissing": "A design of this agreement is no longer on this device."
+                "designMissing": "A design of this agreement is no longer on this device.",
+                "planRequired": "This agreement has no valid plan reference. Recreate it with a plan."
             },
             "route": {
                 "designsFailed": {
@@ -7436,6 +7435,9 @@
             "failed": "The minted agreements could not be read: {{reason}}",
             "refresh": "Refresh",
             "empty": "No agreement of this city is minted yet."
+        },
+        "plan": {
+            "untitled": "Untitled plan"
         }
     },
     "planningViews": {
@@ -7508,7 +7510,7 @@
         },
         "sourceProposal": "Permitted massing",
         "close": "Close source details",
-        "obligatory": "Obligatory source proposal",
+        "obligatory": "Obligatory source design",
         "sourceEvidenceBadge": "Source evidence",
         "approximate": "Approximate",
         "oneOption": "One calculated option under the source rules. It is not the full range of possible designs.",
@@ -7616,8 +7618,8 @@
         "permittedMany": "Permitted ({{count}})",
         "building": "Building",
         "buildings": "Buildings ({{count}})",
-        "proposal": "Proposal",
-        "proposals": "Proposals ({{count}})",
+        "proposal": "Design",
+        "proposals": "Designs ({{count}})",
         "parcelReference": "Cadastral parcel {{reference}}",
         "title": "At this spot",
         "agreements": "Agreements ({{count}})",
@@ -7727,5 +7729,9 @@
         "input": "Input",
         "output": "Output",
         "noContract": "No operation contract has been published for this abstraction."
+    },
+    "plan": {
+        "name": "Plan name",
+        "label": "Plan"
     }
 }

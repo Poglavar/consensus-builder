@@ -1,5 +1,5 @@
 // The agreement index (plan-design-agreement.md, M2 "Courier and index"). POST /agreements takes an
-// agreement/v1 object the browser addressed itself, { cid, content, designs? }, and indexes it once the
+// agreement/v1 object the browser addressed itself, { cid, content, plan?, designs? }, and indexes it once the
 // server has checked what it can: the CID is the content's; the shape is agreement/v1; every design it
 // links is indexed (one not yet indexed, such as a parcel layout, which publishes only with its
 // agreement, comes along in `designs` and is indexed in the same transaction as the agreement); its
@@ -19,6 +19,7 @@ import { publicApiBaseUrl } from '../utils/public-base-url.js';
 import { createUploadRateLimiter } from '../utils/nft-asset-upload.js';
 import { defaultThumbnailQueue } from '../thumbnails/thumbnail-queue.js';
 import { enqueueDesignThumbnail, insertDesign, loadDesigns, parseListLimit, prepareDesign } from './designs.js';
+import { validatePlanContent } from './plans.js';
 import { normalizeCityCode } from '../utils/city-code.js';
 import { agreementDocument, SEMANTIC_BASE_ERROR, SEMANTIC_RECORD_ERROR } from '../semantics/published-records.js';
 import { createAgreementDecisionHandlers, createAgreementDecisionStore } from '../agreements/decisions.js';
@@ -38,6 +39,7 @@ export const AGREEMENT_TABLE = 'consensus.agreement';
 export const AGREEMENT_SCHEMA = agreementRecord.PUBLISHED_SCHEMA;
 // Designs one agreement may link (and index in one publish): each is a PostGIS binding when new.
 export const MAX_AGREEMENT_DESIGNS = 200;
+export const PLAN_TABLE = 'consensus.plan';
 // An output piece's content hash (AgreementRecord.outputHash): the prefix, then 64 hex digits.
 const isOutputHash = value => typeof value === 'string' && value.startsWith(agreementRecord.OUTPUT_HASH_PREFIX)
     && /^[0-9a-f]{64}$/.test(value.slice(agreementRecord.OUTPUT_HASH_PREFIX.length));
@@ -64,11 +66,16 @@ const isShare = value => typeof value === 'number' && Number.isFinite(value) && 
 
 /** An agreement row as every /agreements route answers it. */
 export function serializeAgreementRow(row) {
+    if (!isCid(row.content?.planCid) || Object.hasOwn(row.content || {}, 'designs') || Object.hasOwn(row.content || {}, 'designCids')) {
+        const error = new Error(`Agreement ${row.cid} is an invalid indexed record: expected planCid and no inline design membership.`);
+        error.code = 'invalid-agreement-record'; error.status = 500; throw error;
+    }
     return {
         cid: row.cid,
         city: row.city ?? null,
         title: row.title ?? null,
         author: row.author ?? null,
+        planCid: row.content.planCid,
         designCids: row.design_cids,
         inputParcelIds: row.input_parcel_ids,
         parcelSourceId: row.parcel_source_id ?? null,
@@ -96,7 +103,7 @@ export async function loadAgreement(db, cid) {
  * @returns {{ ok: true, designCids, inputParcelIds, parcelSourceId, deadline }
  *   | { ok: false, status, code, section, error }}
  */
-export function validateAgreementContent(content, { now = Date.now() } = {}) {
+export function validateAgreementContent(content, { now = Date.now(), designCids } = {}) {
     const invalid = (section, error) => ({ ok: false, status: 400, code: 'invalid-agreement', section, error });
     if (!isPlainObject(content) || content.schema !== AGREEMENT_SCHEMA) return invalid('details', `Expected ${AGREEMENT_SCHEMA}.`);
     for (const [field, max] of Object.entries(MAX_TEXT)) {
@@ -106,15 +113,10 @@ export function validateAgreementContent(content, { now = Date.now() } = {}) {
     }
     if (content.createdAt != null && !isInstant(content.createdAt)) return invalid('details', 'createdAt is an ISO instant or null.');
 
-    const { designs } = content;
-    if (!Array.isArray(designs) || !designs.length) return invalid('designs', 'An agreement links at least one design.');
-    if (designs.length > MAX_AGREEMENT_DESIGNS) return invalid('designs', `An agreement links at most ${MAX_AGREEMENT_DESIGNS} designs.`);
-    const designCids = [];
-    for (const design of designs) {
-        if (!isPlainObject(design) || !isCid(design.cid)) return invalid('designs', 'Every design is linked by its CID.');
-        if (designCids.includes(design.cid)) return invalid('designs', `Design ${design.cid} is linked twice.`);
-        designCids.push(design.cid);
-    }
+    if (!isCid(content.planCid)) return invalid('designs', 'planCid must name a published plan/v1 CID.');
+    if (Object.hasOwn(content, 'designs') || Object.hasOwn(content, 'designCids')) return invalid('designs', 'Agreement membership is declared by planCid; inline designs and designCids are not allowed.');
+    if (designCids !== undefined && (!Array.isArray(designCids) || !designCids.length)) return invalid('designs', 'The referenced plan links at least one design.');
+    if (designCids?.length > MAX_AGREEMENT_DESIGNS) return invalid('designs', `A plan used by an agreement links at most ${MAX_AGREEMENT_DESIGNS} designs.`);
 
     const { inputs } = content;
     if (!isPlainObject(inputs) || !Array.isArray(inputs.parcels)) return invalid('land', 'The agreement lists its input parcels.');
@@ -156,8 +158,8 @@ export function validateAgreementContent(content, { now = Date.now() } = {}) {
             return invalid('land', `Output ${output.hash} lists the parcels it stands on.`);
         }
         if (!agreementRecord.ROLES.includes(output.role)) return invalid('land', `Output ${output.hash} has an unknown role.`);
-        if (output.producedBy != null && !designCids.includes(output.producedBy)) {
-            return invalid('land', `Output ${output.hash} is produced by a design the agreement does not link.`);
+        if (output.producedBy != null && (!isCid(output.producedBy) || (designCids && !designCids.includes(output.producedBy)))) {
+            return invalid('land', `Output ${output.hash} is produced by a design the referenced plan does not link.`);
         }
     }
 
@@ -256,7 +258,7 @@ export function validateAgreementContent(content, { now = Date.now() } = {}) {
     }
     return {
         ok: true,
-        designCids,
+        designCids: designCids ?? [],
         inputParcelIds: [...parcelIds].sort(),
         parcelSourceId: sources.size ? [...sources][0] : null,
         deadline: content.deadline ?? null
@@ -315,11 +317,20 @@ export function setupAgreementsRoute(app, deps) {
         return chains.get(cluster);
     });
 
-    // { cid, content, designs?: [{ cid, content }] } → 201 the row; 409 the row when already indexed.
+    const readPlan = async cid => (await pool.query(`SELECT cid, content FROM ${PLAN_TABLE} WHERE cid = $1`, [cid])).rows[0] || null;
+    const checkedPlan = (record, expectedCid) => {
+        if (!record || record.cid !== expectedCid || !isPlainObject(record.content)) return null;
+        if (validatePlanContent(record.content)) return null;
+        const bytes = canonicalBytes(record.content);
+        if (cidOf(bytes) !== expectedCid) return null;
+        return { cid: expectedCid, content: record.content };
+    };
+
+    // { cid, content, plan?: { cid, content }, designs?: [{ cid, content }] } → 201; 409 if already indexed.
     app.post('/agreements', async (req, res) => {
         const body = req.body;
-        if (!isPlainObject(body) || Object.keys(body).some(key => !['cid', 'content', 'designs'].includes(key))) {
-            return send(res, 400, { error: 'Body must be { cid, content, designs? }.', code: 'bad-request' });
+        if (!isPlainObject(body) || Object.keys(body).some(key => !['cid', 'content', 'plan', 'designs'].includes(key))) {
+            return send(res, 400, { error: 'Body must be { cid, content, plan?, designs? }.', code: 'bad-request' });
         }
         const { cid, content } = body;
         if (!isCid(cid)) return send(res, 400, { error: 'cid must be a CIDv1 UnixFS sha2-256 base32 CID.', code: 'invalid-cid' });
@@ -339,17 +350,38 @@ export function setupAgreementsRoute(app, deps) {
             const existing = await loadAgreement(pool, cid);
             if (existing) return res.status(409).json(existing);
 
-            const checked = validateAgreementContent(content, { now: now() });
+            if (!isCid(content.planCid)) return send(res, 400, { error: 'Agreement content must name a plan/v1 with planCid; inline designs are not accepted.', code: 'plan-required' });
+            if (Object.hasOwn(content, 'designs') || Object.hasOwn(content, 'designCids')) return send(res, 400, { error: 'Agreement membership is declared by planCid; remove inline designs/designCids.', code: 'inline-designs-forbidden' });
+
+            let carriedPlan = null;
+            if (body.plan !== undefined) {
+                if (!isPlainObject(body.plan) || Object.keys(body.plan).some(key => !['cid', 'content'].includes(key))
+                    || body.plan.cid !== content.planCid || !isPlainObject(body.plan.content)) {
+                    return send(res, 400, { error: 'plan must be { cid, content } matching agreement.planCid.', code: 'bad-request' });
+                }
+                carriedPlan = checkedPlan(body.plan, content.planCid);
+                if (!carriedPlan) return send(res, 400, { error: 'The carried plan is invalid or does not hash to its CID.', code: 'invalid-plan' });
+            }
+            const storedPlanRow = await readPlan(content.planCid);
+            const storedPlan = checkedPlan(storedPlanRow, content.planCid);
+            if (storedPlanRow && !storedPlan) return send(res, 500, { error: `Indexed plan ${content.planCid} is invalid; it was left unchanged.`, code: 'invalid-plan-record' });
+            if (!carriedPlan && !storedPlan) return send(res, 422, { error: `Plan ${content.planCid} is not indexed; send its verified content in plan.`, code: 'plan-not-indexed', planCid: content.planCid });
+            if (carriedPlan && storedPlan && cidOf(canonicalBytes(carriedPlan.content)) !== cidOf(canonicalBytes(storedPlan.content))) {
+                return send(res, 409, { error: 'The indexed plan content does not match the carried plan.', code: 'plan-content-mismatch' });
+            }
+            const plan = storedPlan || carriedPlan;
+            const planDesignCids = plan.content.designCids;
+            const checked = validateAgreementContent(content, { now: now(), designCids: planDesignCids });
             if (!checked.ok) {
                 const { ok: _ok, status, ...refused } = checked;
                 return send(res, status, refused);
             }
             const carried = body.designs ?? [];
-            if (!Array.isArray(carried) || carried.length > checked.designCids.length
+            if (!Array.isArray(carried) || carried.length > planDesignCids.length
                 || carried.some(entry => !isPlainObject(entry) || Object.keys(entry).some(key => !['cid', 'content'].includes(key)))) {
                 return send(res, 400, { error: 'designs must be a list of { cid, content } of designs the agreement links.', code: 'bad-request' });
             }
-            const stray = carried.find(entry => !checked.designCids.includes(entry.cid));
+            const stray = carried.find(entry => !planDesignCids.includes(entry.cid));
             if (stray) return send(res, 400, { error: `Design ${stray.cid} is not linked by the agreement.`, code: 'design-not-in-agreement', design: stray.cid });
             if (new Set(carried.map(entry => entry.cid)).size !== carried.length) {
                 return send(res, 400, { error: 'A design is sent twice.', code: 'bad-request' });
@@ -362,9 +394,9 @@ export function setupAgreementsRoute(app, deps) {
                 if (outcome.refusal) return send(res, outcome.refusal.status, { ...outcome.refusal.body, design: entry.cid });
                 if (outcome.prepared) prepared.set(entry.cid, outcome.prepared);
             }
-            const indexed = await loadDesigns(pool, checked.designCids.filter(designCid => !prepared.has(designCid)));
-            const designs = checked.designCids.map(designCid => prepared.get(designCid) || indexed.get(designCid) || null);
-            const missing = checked.designCids.filter((designCid, index) => !designs[index]);
+            const indexed = await loadDesigns(pool, planDesignCids.filter(designCid => !prepared.has(designCid)));
+            const designs = planDesignCids.map(designCid => prepared.get(designCid) || indexed.get(designCid) || null);
+            const missing = planDesignCids.filter((designCid, index) => !designs[index]);
             if (missing.length) {
                 return send(res, 422, {
                     error: `The agreement links ${missing.length} design(s) the index does not hold: publish them first, or send them in designs.`,
@@ -387,6 +419,10 @@ export function setupAgreementsRoute(app, deps) {
             let row = null;
             try {
                 await client.query('BEGIN');
+                if (carriedPlan && !storedPlan) {
+                    await client.query(`INSERT INTO ${PLAN_TABLE} (cid, content) VALUES ($1, $2::jsonb) ON CONFLICT (cid) DO NOTHING`,
+                        [carriedPlan.cid, JSON.stringify(carriedPlan.content)]);
+                }
                 for (const design of prepared.values()) {
                     if ((await insertDesign(client, design)).created) created.push(design);
                 }
@@ -555,19 +591,21 @@ export function setupAgreementsRoute(app, deps) {
             if (error && (error.code === SEMANTIC_BASE_ERROR || error.code === SEMANTIC_RECORD_ERROR)) {
                 return res.status(error.status || 500).json({ error: error.message, code: error.code });
             }
+            if (error?.code === 'invalid-agreement-record') return res.status(500).json({ error: error.message, code: error.code });
             console.error(`[${new Date().toISOString()}] Error in GET /agreements/${cid}:`, error);
             return res.status(500).json({ error: 'Internal server error' });
         }
     });
 
-    // ?city=&design=<cid>&parcel=<id>&minted=1&limit=&offset= → { agreements, count, hasMore, nextOffset }, newest first. minted=1 keeps
+    // ?city=&plan=<cid>&design=<cid>&parcel=<id>&minted=1&limit=&offset= → { agreements, count, hasMore, nextOffset }, newest first. minted=1 keeps
     // the agreements the index has recorded a chain account for (a non-null `onchain`).
     app.get('/agreements', async (req, res) => {
-        const { city: rawCity, design, parcel, minted, limit, offset: rawOffset } = req.query;
+        const { city: rawCity, plan, design, parcel, minted, limit, offset: rawOffset } = req.query;
         if (rawCity !== undefined && !(typeof rawCity === 'string' && rawCity.length <= MAX_TEXT.city)) {
             return res.status(400).json({ error: `city must be a string of at most ${MAX_TEXT.city} characters.`, code: 'bad-request' });
         }
         if (design !== undefined && !isCid(design)) return res.status(400).json({ error: 'design must be a design CID.', code: 'invalid-cid' });
+        if (plan !== undefined && !isCid(plan)) return res.status(400).json({ error: 'plan must be a plan CID.', code: 'invalid-cid' });
         if (parcel !== undefined && !isText(parcel, MAX_ID_LENGTH)) {
             return res.status(400).json({ error: 'parcel must be a parcel id.', code: 'bad-request' });
         }
@@ -577,7 +615,9 @@ export function setupAgreementsRoute(app, deps) {
             return res.status(400).json({ error: 'offset must be an integer from 0 to 1000000.', code: 'bad-request' });
         }
         const offset = rawOffset === undefined ? 0 : Number(rawOffset);
-        const clauses = [];
+        // Old inline-membership records stay directly addressable for a clear record error, but
+        // they must not poison the current-contract collection response for every caller.
+        const clauses = ["content->>'planCid' IS NOT NULL", "NOT (content ? 'designs')", "NOT (content ? 'designCids')"];
         const params = [];
         const city = normalizeCityCode(rawCity);
         if (city) {
@@ -587,6 +627,10 @@ export function setupAgreementsRoute(app, deps) {
         if (design !== undefined) {
             params.push(design);
             clauses.push(`design_cids @> ARRAY[$${params.length}]::text[]`);
+        }
+        if (plan !== undefined) {
+            params.push(plan);
+            clauses.push(`content->>'planCid' = $${params.length}`);
         }
         if (parcel !== undefined) {
             params.push(parcel);
@@ -598,13 +642,14 @@ export function setupAgreementsRoute(app, deps) {
         try {
             const { rows } = await pool.query(`
                 SELECT ${COLUMNS} FROM ${AGREEMENT_TABLE}
-                ${clauses.length ? `WHERE ${clauses.join(' AND ')}` : ''}
+                WHERE ${clauses.join(' AND ')}
                 ORDER BY created_at DESC, cid
                 LIMIT $${params.length - 1} OFFSET $${params.length}`, params);
             const hasMore = rows.length > pageLimit;
             const agreements = rows.slice(0, pageLimit).map(serializeAgreementRow);
             return res.json({ agreements, count: agreements.length, hasMore, nextOffset: hasMore ? offset + agreements.length : null });
         } catch (error) {
+            if (error?.code === 'invalid-agreement-record') return res.status(500).json({ error: error.message, code: error.code });
             console.error(`[${new Date().toISOString()}] Error in GET /agreements:`, error);
             return res.status(500).json({ error: 'Internal server error' });
         }

@@ -98,20 +98,31 @@ export function designRow(content, { binding = bindingOf(['HR-335649-100', 'HR-3
 /** An output piece hash (AgreementRecord.outputHash form) for a readable seed. */
 export const pieceHash = seed => `piece1-sha256:${createHash('sha256').update(String(seed)).digest('hex')}`;
 
+const agreementPlans = new Map();
+export function planContent(designs, overrides = {}) {
+    return {
+        schema: 'plan/v1', title: 'Riverside composition',
+        designCids: [...new Set(designs.map(cidOfObject))].sort(),
+        view: { at: '45.8,15.97,15', mode: '2d' }, ...overrides
+    };
+}
+export function planForAgreement(content) { return agreementPlans.get(content.planCid); }
+
 /**
  * An owner deal over the parcels two designs take, one output per design, owners as holders.
  * @param designs design/v1 objects (linked by CID in this order)
  */
 export function agreementContent(designs, overrides = {}) {
     const cids = designs.map(design => cidOfObject(design));
-    return {
+    const plan = planContent(designs);
+    const content = {
         schema: 'agreement/v1',
+        planCid: cidOfObject(plan),
         title: 'Riverside deal',
         author: 'Studio North',
         sponsor: null,
         city: 'zagreb',
         createdAt: '2026-10-21T09:00:00.000Z',
-        designs: designs.map((design, index) => ({ cid: cids[index], goal: design.goal, title: design.title })),
         inputs: {
             parcels: [
                 { parcelId: 'HR-335649-100', parcelSourceId: 'oss-wfs', areaM2: 600, holders: [{ ownerKey: 'owner-a', displayName: 'Ana', share: 1 }] },
@@ -128,13 +139,16 @@ export function agreementContent(designs, overrides = {}) {
         deadline: '2099-01-01T00:00:00.000Z',
         ...overrides
     };
+    agreementPlans.set(content.planCid, plan);
+    return content;
 }
 
 /** A consensus.agreement row as its SELECT returns it. */
 export function agreementRow(content, overrides = {}) {
+    const plan = planForAgreement(content);
     return {
         cid: cidOfObject(content), city: 'zagreb', title: content.title ?? null, author: content.author ?? null,
-        design_cids: content.designs.map(design => design.cid),
+        design_cids: plan?.designCids || [],
         input_parcel_ids: content.inputs.parcels.map(parcel => parcel.parcelId).sort(),
         parcel_source_id: null, deadline: content.deadline ? new Date(content.deadline) : null, status: 'active',
         content, onchain: null, screenshot_url: null, screenshot_before_url: null, screenshot_pair_url: null,

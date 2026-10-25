@@ -179,7 +179,7 @@ export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.e
             agreement: z.union([agreement, z.string().min(1).max(3507), z.object({ draftRef: z.string().url(), cid: agreementCid.optional() }).strict()]),
             expectedCid: agreementCid.optional().describe('Required for a reference; retain the CID from the reviewed revision.'),
             designs: z.array(z.object({ content: design })).max(200).default([])
-                .describe('Only unpublished linked designs to index with this agreement, such as parcel layouts. Omit already indexed designs: agreement.designs references them by CID; do not upload the whole plan twice.'),
+                .describe('Only unpublished designs from the referenced plan that the index does not yet hold, such as parcel layouts. Omit already indexed designs; the plan lists the complete design selection.'),
             confirm: confirmation
         }),
         annotations: PUBLISH

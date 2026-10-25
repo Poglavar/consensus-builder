@@ -1231,7 +1231,7 @@ function showBlockInfo(blockName, deferStats = false) {
 
     const proposalsContent = document.getElementById('block-proposals-content');
     if (proposalsContent) {
-        const loadingText = tBlock('panel.block.metrics.loadingProposals', {}, 'Loading proposals…');
+        const loadingText = tBlock('panel.block.metrics.loadingProposals', {}, 'Loading designs…');
         proposalsContent.innerHTML = `<p class="block-proposals-empty" data-i18n-key="panel.block.metrics.loadingProposals">${loadingText}</p>`;
     }
 
@@ -1604,10 +1604,10 @@ function buildBlockProposalListItem(proposal) {
     // details hold the rest). proposal-action-btn stays as the hook the specs find it by.
     const appliedOnMap = isRoadProposal ? roadApplied : isBuildingProposal ? buildingApplied : structureApplied;
     const actionTitle = isRoadProposal
-        ? (appliedOnMap ? tBlock('panel.block.proposals.roadRemoveTooltip', {}, 'Unapply this road proposal') : tBlock('panel.block.proposals.roadApplyTooltip', {}, 'Apply this road proposal'))
+        ? (appliedOnMap ? tBlock('panel.block.proposals.roadRemoveTooltip', {}, 'Unapply this road design') : tBlock('panel.block.proposals.roadApplyTooltip', {}, 'Apply this road design'))
         : isBuildingProposal
-            ? (appliedOnMap ? tBlock('panel.block.proposals.buildingRemoveTooltip', {}, 'Unapply this building proposal') : tBlock('panel.block.proposals.buildingApplyTooltip', {}, 'Apply this building proposal'))
-            : (appliedOnMap ? tBlock('panel.block.proposals.structureRemoveTooltip', {}, 'Unapply this structure proposal') : tBlock('panel.block.proposals.structureApplyTooltip', {}, 'Apply this structure proposal'));
+            ? (appliedOnMap ? tBlock('panel.block.proposals.buildingRemoveTooltip', {}, 'Unapply this building design') : tBlock('panel.block.proposals.buildingApplyTooltip', {}, 'Apply this building design'))
+            : (appliedOnMap ? tBlock('panel.block.proposals.structureRemoveTooltip', {}, 'Unapply this structure design') : tBlock('panel.block.proposals.structureApplyTooltip', {}, 'Apply this structure design'));
     // Apply / Unapply is offered as proposals/display-state.js decides for every list: a cancelled
     // proposal is withdrawn and gets neither, whatever this browser's applied flag says.
     const mapAction = window.__proposalDisplayState.of(proposal, { applied: appliedOnMap }).mapAction;
@@ -1752,7 +1752,7 @@ function createProposalFromBlock(blockName) {
 
     // Notify user
     if (typeof updateStatus === 'function') {
-        updateStatus(tBlock('panel.block.proposals.parcelsSelected', { count: addedCount }, `${addedCount} parcels selected for proposal`));
+        updateStatus(tBlock('panel.block.proposals.parcelsSelected', { count: addedCount }, `${addedCount} parcels selected for design`));
     }
 }
 
@@ -1771,7 +1771,7 @@ function renderBlockProposalsTab(blockName) {
     if (!proposalsContainer) return;
 
     // Build the create proposal button HTML
-    const createButtonLabel = tBlock('panel.block.proposals.create', {}, 'Create Proposal');
+    const createButtonLabel = tBlock('panel.block.proposals.create', {}, 'Create Design');
     const createButtonHtml = blockName ? `
         <div class="block-proposals-actions">
             <button type="button" class="btn btn-primary btn-block" onclick="createProposalFromBlock(${inlineJsArg(blockName)})">
@@ -1782,13 +1782,13 @@ function renderBlockProposalsTab(blockName) {
 
     if (!blockName) {
         setBlockProposalsTabCount(0);
-        proposalsContainer.innerHTML = '<p class="block-proposals-empty">Select a block to see proposals.</p>';
+        proposalsContainer.innerHTML = '<p class="block-proposals-empty">Select a block to see designs.</p>';
         return;
     }
 
     if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') {
         setBlockProposalsTabCount(0);
-        proposalsContainer.innerHTML = createButtonHtml + '<p class="block-proposals-empty">Proposal data is unavailable.</p>';
+        proposalsContainer.innerHTML = createButtonHtml + '<p class="block-proposals-empty">Design data is unavailable.</p>';
         return;
     }
 
@@ -1805,7 +1805,7 @@ function renderBlockProposalsTab(blockName) {
     setBlockProposalsTabCount(proposals.length);
 
     if (proposals.length === 0) {
-        proposalsContainer.innerHTML = createButtonHtml + `<p class="block-proposals-empty">${tBlock('panel.block.proposals.noProposals', {}, 'No proposals for this block yet.')}</p>`;
+        proposalsContainer.innerHTML = createButtonHtml + `<p class="block-proposals-empty">${tBlock('panel.block.proposals.noProposals', {}, 'No designs for this block yet.')}</p>`;
         return;
     }
 

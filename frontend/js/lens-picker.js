@@ -203,7 +203,7 @@
             ${parcelsHtml}
             <p class="${entries.length ? 'lens-picker-note' : 'lens-picker-error'}" data-lens-summary>${escapeText(entries.length
                 ? t('modal.lens.picker.chosenCount', '{{count}} lens member(s) chosen', { count: entries.length })
-                : t('modal.lens.picker.required', 'Choose at least one lens member; a Solana proposal cannot be minted without one.'))}</p>`;
+                : t('modal.lens.picker.required', 'Choose at least one lens member; a Solana design cannot be published without one.'))}</p>`;
     }
 
     function wire(container, rerender) {
@@ -255,12 +255,12 @@
         if (pickerDialog) pickerDialog.close();
         const subtitle = document.createElement('p');
         subtitle.className = 'lens-modal-subtitle';
-        subtitle.textContent = t('modal.lens.picker.subtitle', 'Pick the lens members whose ownership attestations this proposal will accept. The lens is fixed at mint.');
+        subtitle.textContent = t('modal.lens.picker.subtitle', 'Pick the lens members whose ownership attestations this design will accept. The lens is fixed at publication.');
         const body = document.createElement('div');
         body.className = 'lens-picker-body';
         body.setAttribute('data-lens-picker-body', '');
         const dialogApi = root.CbDialog.open({
-            title: t('modal.lens.picker.title', 'Lens for this proposal'),
+            title: t('modal.lens.picker.title', 'Lens for this design'),
             size: 'lg',
             top: true,
             className: 'lens-modal lens-picker',

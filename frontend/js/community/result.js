@@ -55,7 +55,7 @@
     function reportMessage(raw) {
         const statement = statementOf(raw);
         return ['Urban Game Theory community result', `Agreement: ${statement.agreementCid}`,
-            `Reported by: ${statement.attester}`, 'This statement reports a non-binding consultation; it gives no owner consent.',
+            `Reported by: ${statement.attester}`, 'This statement reports a nonbinding agreement; it gives no owner consent.',
             '', new TextDecoder().decode(cid().canonicalBytes(statement))].join('\n');
     }
 
@@ -76,7 +76,7 @@
     async function verifyReport(raw, { agreementCid, organiser, now = Date.now() } = {}) {
         try {
             const report = normalizeReport(raw);
-            if (report.agreementCid !== agreementCid || report.attester !== organiser) return { ok: false, code: 'wrong-consultation', error: 'This report belongs to a different consultation or organiser.' };
+            if (report.agreementCid !== agreementCid || report.attester !== organiser) return { ok: false, code: 'wrong-consultation', error: 'This report belongs to a different agreement or organiser.' };
             if (Date.parse(report.postedAt) > now + CLOCK_SKEW_MS) return { ok: false, code: 'future-report', error: 'The report signing time is in the future.' };
             if (await did().documentHash(report.didDocument) !== report.didDocumentSha256) return { ok: false, code: 'document-hash-mismatch', error: 'The signed website document has changed.' };
             if (!did().authorizedWallet(report.didDocument, organiser, report.signer)) return { ok: false, code: 'wallet-not-listed', error: 'The signed website document does not list this reporting wallet.' };

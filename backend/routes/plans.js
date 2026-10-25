@@ -6,6 +6,8 @@ import { createUploadRateLimiter } from '../utils/nft-asset-upload.js';
 const require = createRequire(import.meta.url);
 const PlanRecord = require('../../frontend/js/plan-record.js');
 
+export function validatePlanContent(content) { return PlanRecord.validate(content); }
+
 export function setupPlansRoute(app, { pool, pinBytes = defaultPinBytes, uploadRateLimiter } = {}) {
     const read = async cid => (await pool.query('SELECT cid, content FROM consensus.plan WHERE cid = $1', [cid])).rows[0] || null;
     const listLimit = raw => {

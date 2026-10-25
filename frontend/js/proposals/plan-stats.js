@@ -224,7 +224,7 @@
     ];
 
     const EPOCH_COLUMNS = [
-        { i18nKey: 'sidebar.proposals.planStats.colProposals', label: 'proposals', get: b => formatNumber(b.proposals) },
+        { i18nKey: 'sidebar.proposals.planStats.colProposals', label: 'designs', get: b => formatNumber(b.proposals) },
         { i18nKey: 'sidebar.proposals.planStats.colBuildings', label: 'buildings', get: b => formatNumber(b.buildings) },
         { i18nKey: 'sidebar.proposals.planStats.colFloorArea', label: 'GFA m²', get: b => formatNumber(b.grossFloorAreaM2) },
         { i18nKey: 'sidebar.proposals.planStats.colApartments', label: 'apartments', get: b => formatNumber(b.apartments) },

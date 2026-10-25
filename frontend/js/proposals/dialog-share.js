@@ -81,8 +81,8 @@ function renderProposalListModal() {
     const t = getProposalI18nHelper();
 
     const modalStrings = {
-        title: t('modal.roadWidth.proposalList.title', 'Proposals'),
-        closeAria: t('modal.roadWidth.proposalList.closeAria', 'Close proposals list'),
+        title: t('modal.roadWidth.proposalList.title', 'Designs'),
+        closeAria: t('modal.roadWidth.proposalList.closeAria', 'Close designs list'),
         tabs: {
             active: t('modal.roadWidth.proposalList.tabs.active', 'Active'),
             executed: t('modal.roadWidth.proposalList.tabs.executed', 'Executed')
@@ -868,7 +868,7 @@ function showSharePlanPanel(options) {
         nameForm.className = 'share-plan-name-form';
         nameForm.hidden = true;
         const nameLabel = document.createElement('label');
-        nameLabel.textContent = t('proposals.share.named.label', 'Plan name');
+        nameLabel.textContent = t('plan.name', 'Plan name');
         const nameInput = document.createElement('input');
         nameInput.type = 'text';
         nameInput.className = 'share-plan-link__input';

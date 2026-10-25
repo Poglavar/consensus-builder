@@ -810,18 +810,18 @@ async function executeAgentAction(agent, action) {
                 const fabric = (typeof window !== 'undefined') ? window.LiveParcelFabric : null;
                 if (!fabric || typeof fabric.cadastreIdsForParcelIds !== 'function') {
                     return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button>`
-                        + ' failed to create a proposal because cadastral ground is unavailable.';
+                        + ' failed to create a design because cadastral ground is unavailable.';
                 }
                 let cadastreParcelIds;
                 try {
                     cadastreParcelIds = fabric.cadastreIdsForParcelIds(action.parcelIds);
                 } catch (_) {
                     return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button>`
-                        + ' failed to create a proposal because its selected ground is no longer current.';
+                        + ' failed to create a design because its selected ground is no longer current.';
                 }
                 if (!cadastreParcelIds.length || !action.geometry?.type) {
                     return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button>`
-                        + ' failed to create a proposal because its authored geometry is incomplete.';
+                        + ' failed to create a design because its authored geometry is incomplete.';
                 }
 
                 const proposal = {
@@ -845,7 +845,7 @@ async function executeAgentAction(agent, action) {
                 if (proposalId === null) {
                     // console.log('Attempt failed:This exact proposal already exists');
                     return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button>`
-                        + ` failed to create a proposal because it already exists.`;
+                        + ` failed to create a design because it already exists.`;
                 }
 
                 // Update agent's created proposals list
@@ -865,7 +865,7 @@ async function executeAgentAction(agent, action) {
                             objectType: 'proposal',
                             objectId: proposalId,
                             objectPosition: proposalPosition,
-                            action: `created ${action.goal || action.proposalType || 'proposal'} proposal`
+                            action: `created ${action.goal || action.proposalType || 'design'} design`
                         });
                     }
                 }
@@ -875,9 +875,9 @@ async function executeAgentAction(agent, action) {
                     : null;
                 const proposalLink = buildProposalLogLinkAgent(proposalId, storedProposal);
 
-                return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> created a ${(action.goal || action.proposalType || 'proposal')} proposal (${proposalLink}) for ${action.parcelIds.length} parcel(s).`;
+                return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> created a ${(action.goal || action.proposalType || 'design')} design (${proposalLink}) for ${action.parcelIds.length} parcel(s).`;
             }
-            return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> tried to create a proposal but failed.`;
+            return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> tried to create a design but failed.`;
 
         default:
             return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> performed an unknown action.`;
@@ -980,7 +980,7 @@ async function showAgentDialog(agentId, options = {}) {
     const labelTotalWealth = translateText('agentDialog.totalWealth', 'Modeled total (ETH)');
     const portfolioBasisLabel = translateText('agentDialog.portfolioBasis',
         'Area-based land model: USD {{pricePerSqmUsd}}/m², converted at USD {{usdPerEth}}/ETH. Portfolio estimate and total are modeled ETH amounts.', portfolioBasis);
-    const labelProposalsCreated = translateText('agentDialog.proposalsCreated', 'Proposals Created ({{count}})', { count: createdProposals.length });
+    const labelProposalsCreated = translateText('agentDialog.proposalsCreated', 'Designs created ({{count}})', { count: createdProposals.length });
     const labelOwnedParcels = translateText('agentDialog.ownedParcels', 'Linked parcels ({{count}})', { count: initialParcels.length });
     const parcelBasisKey = isUserAgent ? 'agentDialog.walletParcelsBasis' : 'agentDialog.localParcelsBasis';
     const parcelBasisLabel = translateText(parcelBasisKey, isUserAgent
@@ -1341,7 +1341,7 @@ function getAgentProposalTypeLabel(proposal) {
 }
 
 function getAgentProposalTitle(proposal, fallbackId = '') {
-    const fallbackTitle = fallbackId ? `Proposal ${fallbackId}` : 'Proposal';
+    const fallbackTitle = fallbackId ? `Design ${fallbackId}` : 'Design';
     const candidates = [
         proposal && typeof proposal.title === 'string' ? proposal.title : null,
         proposal && typeof proposal.name === 'string' ? proposal.name : null,
@@ -1778,7 +1778,7 @@ function loadMoreItems(listType, listInfo) {
 function renderParcelItem(parcel) {
     const parcelLabel = translateText('agentDialog.parcelLabel', 'Parcel {{number}}', { number: parcel.number });
     // The i18n plural lookup picks the form per language (Croatian has three), not a one/other guess.
-    const countLabel = translateText('agentDialog.proposalCount', parcel.proposalCount === 1 ? '{{count}} proposal' : '{{count}} proposals', { count: parcel.proposalCount });
+    const countLabel = translateText('agentDialog.proposalCount', parcel.proposalCount === 1 ? '{{count}} design' : '{{count}} designs', { count: parcel.proposalCount });
     const proposalBadge = parcel.proposalCount > 0
         ? `<span class="cb-badge">${countLabel}</span>`
         : '';
@@ -1799,7 +1799,7 @@ function renderAgentProposalLink(link) {
     const linkData = escapeHtml(JSON.stringify(link));
     if (!proposal) {
         return `<div class="proposal-item agent-dialog-proposal-item" data-proposal-link="${linkData}">
-            <span class="agent-dialog-proposal-primary">${escapeHtml(translateText('agentDialog.localProposalUnavailable', 'Local proposal record unavailable'))}</span>
+            <span class="agent-dialog-proposal-primary">${escapeHtml(translateText('agentDialog.localProposalUnavailable', 'Local design record unavailable'))}</span>
             <span class="agent-dialog-proposal-meta">${escapeHtml(translateText('agentDialog.localProposalKey', 'Local ID {{id}}', { id: link.localProposalId }))}</span>
         </div>`;
     }

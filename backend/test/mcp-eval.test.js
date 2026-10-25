@@ -116,6 +116,7 @@ describe('MCP agent evaluation artifacts', () => {
         const fetchImpl=async(url,init={})=>{
             const path=new URL(url).pathname;paths.push(path);
             if(path.startsWith('/agreements/'))return Response.json({cid:agreement.cid,content:agreement.content,parcelSourceId:sourceId,onchain:{account:'fixture-account'}});
+            if(path===`/plans/${agreement.content.planCid}`)return Response.json(agreement.plan);
             if(path===`/parcel-sources/${sourceId}`)return Response.json({complete:true,features:[parcel]});
             if(path==='/designs/binding')return Response.json({parcelSourceId:sourceId,binding:{coverage:'complete',parcels:[{parcelId:'A'}],unknownM2:0,unsurveyedM2:0}});
             throw new Error(`Unexpected source or publication request ${init.method||'GET'} ${path}`);
@@ -129,7 +130,7 @@ describe('MCP agent evaluation artifacts', () => {
             const result=previews.decorate(await tools[methods[test.tool]](test.arguments));
             expect(assertContractResult(test.tool,result,test.arguments),test.id).toBe(true);
         }
-        expect(paths).not.toContain('/pins');expect(paths).not.toContain('/plans');expect(paths).not.toContain('/designs');
+        expect(paths).toContain(`/plans/${agreement.content.planCid}`);expect(paths).not.toContain('/pins');expect(paths).not.toContain('/designs');
     });
     it('scores verified published design receipts from their canonical index row',()=>{
         const design=builder.build({kind:'road',points:[[0,0],[.001,0]]},{turf}),cid=cidOfObject(design);

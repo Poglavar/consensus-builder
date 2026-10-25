@@ -1167,7 +1167,7 @@
         closeParcelBasedModal({ preservePending: true });
 
         if (typeof updateStatus === 'function') {
-            updateStatus('Parcel-based buildings saved. Add proposal details to submit.');
+            updateStatus('Parcel-based buildings saved. Add design details to submit.');
         }
 
         const description = document.getElementById('proposalDescription');
@@ -1175,7 +1175,7 @@
             if (!description.value.trim()) {
                 description.value = translateParcelBasedText(
                     'parcelBased.modal.messages.defaultProposalDescription',
-                    'Parcel-based proposal for {{blockName}}',
+                    'Parcel-based design for {{blockName}}',
                     { blockName: context.blockName || 'selected parcels' }
                 );
             }

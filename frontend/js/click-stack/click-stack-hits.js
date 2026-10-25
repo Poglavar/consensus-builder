@@ -1,7 +1,7 @@
 // Everything under one map point, by geometry rather than by which layer is drawn on top
 // (click-stack.md): designs and parcels from the drill stack, buildings from the drawn building
-// layers, permitted massing from the planning views, agreements from the agreement store. With
-// no design under the point, the parcel there adds its buildings and proposals.
+// layers, permitted massing from the planning views. With no design under the point, the parcel
+// there adds its buildings and designs.
 // Returns the hits object the pure click-stack model orders.
 (function (global) {
     'use strict';
@@ -51,18 +51,6 @@
     function isFragment(entry) {
         const ids = entry.feature?.properties?.cadastreParcelIds;
         return Array.isArray(ids) && ids.length > 0 && !ids.map(String).includes(String(entry.id));
-    }
-
-    function agreementsWith(designs) {
-        const store = global.AgreementStore;
-        if (!store || !designs.length) return [];
-        const keys = new Set(designs.flatMap(design => [design.id, design.proposal?.proposalId].filter(Boolean).map(String)));
-        let agreements = [];
-        try { agreements = store.list(); } catch (error) { console.error('[ClickStack] agreements could not be read', error); return []; }
-        return agreements.filter(agreement => agreement.city === global.CityConfigManager?.getCurrentCityId?.()
-            && agreement.designs.some(design => keys.has(String(design.proposalId))))
-            .map(agreement => ({ id: agreement.id, label: agreement.title || agreement.id, createdAt: agreement.createdAt, agreement,
-                designIds: agreement.designs.map(design => String(design.proposalId)) }));
     }
 
     // What stands on the parcel under the point when no design is there (click-stack.md): its
@@ -126,7 +114,6 @@
                 .filter(item => item.role === 'permitted')
                 .map(item => ({ id: item.id, label: item.source?.parcel || item.title || item.id, item }));
         } catch (error) { console.error('[ClickStack] massing could not be hit-tested', error); }
-        const agreements = agreementsWith(designs);
         const ground = designs.length ? null : [...formed, ...parcels].find(parcel => parcel.live !== false && parcel.feature);
         if (ground) {
             const extra = onParcel(ground, onPublished);
@@ -134,7 +121,7 @@
             designs.push(...extra.designs.filter(item => !has(designs, item.id)));
             built.push(...extra.built.filter(item => !has(built, item.id)));
         }
-        const hits = { agreements, designs, built, permitted, formed, parcels, ground: [] };
+        const hits = { designs, built, permitted, formed, parcels, ground: [] };
         // Nothing at all here: bare ground offers what can be drawn on it, when the place has no
         // register to wait for (ui/ground-menu-model.js decides).
         if (!designs.length && !built.length && !permitted.length && !formed.length && !parcels.length
@@ -154,8 +141,7 @@
             return footprint ? [footprint] : [];
         };
         let features = [];
-        if (kind === 'agreements' || kind === 'plans') features = instance.features
-            || (!instance.cid ? (instance.agreement?.designs || []).flatMap(design => designFeatures(design.proposalId)) : []);
+        if (kind === 'plans') features = instance.features || [];
         else if (kind === 'designs') features = designFeatures(instance.id);
         else if (kind === 'permitted') {
             const item = instance.item || global.PlanningViews?.getItems?.().find(item => item.id === instance.id);

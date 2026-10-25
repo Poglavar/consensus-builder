@@ -11,6 +11,8 @@ const ORIGIN = 'https://urbangametheory.xyz';
 const design = { schema: 'design/v1', goal: 'park', title: 'Riverside park', site: null };
 const layout = { schema: 'design/v1', goal: 'parcel-layout', title: 'Two plots', parcelLayout: { plots: [] } };
 const agreement = { schema: 'agreement/v1', title: 'Riverside deal', designs: [{ cid: cidOf(canonicalBytes(design)) }] };
+const planContent = { schema: 'plan/v1', title: 'Riverside plan', designCids: [cidOf(canonicalBytes(design))], view: { at: '45,15,17', mode: '2d' } };
+const plan = { cid: cidOf(canonicalBytes(planContent)), content: planContent };
 const ACCOUNT = '9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin';
 
 // The index as an in-memory emulator of the routes the client calls.
@@ -133,7 +135,7 @@ describe('publishing designs and agreements', () => {
             .rejects.toMatchObject({ code: 'cid-mismatch', expected: addressOf(design).cid, received: otherCid });
         const index = fakeIndex();
         await expect(clientOver(index).publishDesign(layout)).rejects.toMatchObject({ status: 422, code: 'layout-needs-agreement' });
-        await expect(clientOver(index).pin('plan', design)).rejects.toThrow(/kind must be design or agreement/);
+        await expect(clientOver(index).pin('invalid', design)).rejects.toThrow(/kind must be design, plan or agreement/);
         await expect(clientOver(index).indexDesign('not-a-cid', design)).rejects.toThrow(/must be a CIDv1/);
     });
 
@@ -149,6 +151,16 @@ describe('publishing designs and agreements', () => {
         const plain = { ...agreement, title: 'Plain' };
         await client.publishAgreement(plain);
         expect(index.calls.at(-1).body).toEqual({ cid: addressOf(plain).cid, content: plain });
+    });
+
+    it('pins the exact linked plan before pinning and indexing its agreement', async () => {
+        const index = fakeIndex();
+        const client = clientOver(index);
+        const linkedAgreement = { ...agreement, planCid: plan.cid };
+        const published = await client.publishAgreement(linkedAgreement, { plan });
+        expect(published.cid).toBe(addressOf(linkedAgreement).cid);
+        expect(index.calls.filter(call => call.path === '/pins').map(call => call.body.kind)).toEqual(['plan', 'agreement']);
+        expect(index.calls.at(-1).body.plan).toEqual(plan);
     });
 
     it('asks what a site binds without storing anything, and reads designs back', async () => {

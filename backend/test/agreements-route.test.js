@@ -9,7 +9,7 @@ import request from 'supertest';
 import { createMockPool } from './helpers/mock-pool.js';
 import { createContentApp } from './helpers/create-app.js';
 import {
-    agreementContent, agreementRow, bindingOf, cidOf, designContent, designRow, layoutContent, pieceHash, scriptedCadastre, SPILL
+    agreementContent, agreementRow, bindingOf, cidOf, designContent, designRow, layoutContent, pieceHash, planForAgreement, scriptedCadastre, SPILL
 } from './helpers/content-fixtures.js';
 import { validateAgreementContent, MAX_AGREEMENT_DESIGNS } from '../routes/agreements.js';
 
@@ -18,6 +18,7 @@ const DESIGN_ONE = /FROM consensus\.design WHERE cid = \$1/;
 const DESIGN_MANY = /FROM consensus\.design WHERE cid = ANY/;
 const INSERT_DESIGN = /INSERT INTO consensus\.design/;
 const INSERT_AGREEMENT = /INSERT INTO consensus\.agreement/;
+const INSERT_PLAN = /INSERT INTO consensus\.plan/;
 const NOW = Date.parse('2026-10-21T12:00:00.000Z');
 
 const park = designContent();
@@ -40,7 +41,10 @@ function indexPool({ indexed = [park], agreements = [], cadastre = {} } = {}) {
     const pool = createMockPool();
     pool.bindingAnswer = scriptedCadastre(cadastre);
     const rows = new Map(indexed.map(content => [cidOf(content), designRow(content)]));
+    const plans = new Map();
     pool.answer(AGREEMENT_ONE, (sql, params) => ({ rows: agreements.filter(row => row.cid === params[0]) }));
+    pool.answer(/FROM consensus\.plan WHERE cid = \$1/, (sql, params) => ({ rows: plans.has(params[0]) ? [plans.get(params[0])] : [] }));
+    pool.answer(INSERT_PLAN, (sql, params) => { plans.set(params[0], { cid: params[0], content: JSON.parse(params[1]) }); return { rows: [] }; });
     pool.answer(DESIGN_ONE, (sql, params) => ({ rows: rows.has(params[0]) ? [rows.get(params[0])] : [] }));
     pool.answer(DESIGN_MANY, (sql, params) => ({ rows: params[0].filter(cid => rows.has(cid)).map(cid => rows.get(cid)) }));
     pool.answer(INSERT_DESIGN, (sql, params) => ({ rows: [insertedDesign(params)] }));
@@ -53,8 +57,8 @@ function appFor(pool, overrides = {}) {
 }
 const sqlOf = pool => pool.getCalls().map(call => call.sql.trim().split(/\s+/).slice(0, 3).join(' '));
 const writes = pool => pool.getCalls().filter(call => /^\s*(INSERT|BEGIN|COMMIT)/.test(call.sql));
-const post = (app, content, designs) => request(app).post('/agreements')
-    .send(designs ? { cid: cidOf(content), content, designs } : { cid: cidOf(content), content });
+const post = (app, content, designs, includePlan = true) => request(app).post('/agreements')
+    .send({ cid: cidOf(content), content, ...(includePlan ? { plan: { cid: content.planCid, content: planForAgreement(content) } } : {}), ...(designs ? { designs } : {}) });
 
 beforeEach(() => {
     vi.spyOn(console, 'log').mockImplementation(() => {});
@@ -80,7 +84,7 @@ describe('POST /agreements', () => {
         // The layout was bound now, and written with the agreement or not at all.
         expect(pool.getBindingCalls().length).toBeGreaterThan(0);
         const order = writes(pool).map(call => call.sql.trim().split(/\s+/).slice(0, 3).join(' '));
-        expect(order).toEqual(['BEGIN', 'INSERT INTO consensus.design', 'INSERT INTO consensus.agreement', 'COMMIT']);
+        expect(order).toEqual(['BEGIN', 'INSERT INTO consensus.plan', 'INSERT INTO consensus.design', 'INSERT INTO consensus.agreement', 'COMMIT']);
         const designInsert = pool.getCalls().find(call => INSERT_DESIGN.test(call.sql));
         expect(designInsert.params[0]).toBe(cidOf(layout));
         expect(JSON.parse(designInsert.params[7]).parcels.map(hit => hit.parcelId)).toEqual(['HR-335649-100', 'HR-335649-101']);
@@ -88,6 +92,7 @@ describe('POST /agreements', () => {
         expect(agreementInsert.params.slice(0, 8)).toEqual([cidOf(content), 'zagreb', 'Riverside deal', 'Studio North',
             [cidOf(park), cidOf(layout)], ['HR-335649-100', 'HR-335649-101'], 'oss-wfs', '2099-01-01T00:00:00.000Z']);
         expect(JSON.parse(agreementInsert.params[8])).toEqual(content);
+        expect(pool.getCalls().find(call => INSERT_PLAN.test(call.sql)).params).toEqual([content.planCid, JSON.stringify(planForAgreement(content))]);
 
         expect(thumbnailQueue.enqueue).toHaveBeenCalledTimes(2);
         const [designJob, agreementJob] = thumbnailQueue.enqueue.mock.calls.map(([job]) => job);
@@ -107,6 +112,38 @@ describe('POST /agreements', () => {
         expect(res.status).toBe(201);
         expect(pool.getBindingCalls()).toEqual([]);
         expect(pool.getCalls().filter(call => INSERT_DESIGN.test(call.sql))).toEqual([]);
+    });
+
+    it('requires a verified referenced plan and rejects old inline membership', async () => {
+        const content = agreementContent([park]);
+        const pool = indexPool();
+        const { app } = appFor(pool);
+        expect((await post(app, content, undefined, false)).body).toMatchObject({ code: 'plan-not-indexed' });
+        const tampered = { ...planForAgreement(content), title: 'Tampered' };
+        const bad = await request(app).post('/agreements').send({ cid: cidOf(content), content, plan: { cid: content.planCid, content: tampered } });
+        expect(bad.body.code).toBe('invalid-plan');
+        const mismatched = await request(app).post('/agreements').send({ cid: cidOf(content), content,
+            plan: { cid: content.planCid, content: { ...planForAgreement(content), title: 'Different bytes' } } });
+        expect(mismatched.body.code).toBe('invalid-plan');
+        const legacy = { ...content, designs: [{ cid: cidOf(park) }] };
+        const old = await request(app).post('/agreements').send({ cid: cidOf(legacy), content: legacy });
+        expect(old.body.code).toBe('inline-designs-forbidden');
+        expect(writes(pool)).toEqual([]);
+    });
+
+    it('uses plan membership for output provenance and lets two agreements share one plan', async () => {
+        const content = agreementContent([park]);
+        const pool = indexPool();
+        const { app } = appFor(pool);
+        const badContent = { ...content, outputs: content.outputs.map(output => ({ ...output, producedBy: cidOf(layout) })) };
+        const bad = await post(app, badContent);
+        expect(bad.status).toBe(400);
+        expect(bad.body).toMatchObject({ code: 'invalid-agreement', section: 'land' });
+        const first = await post(app, content);
+        const secondContent = { ...agreementContent([park]), title: 'Another deal' };
+        const second = await post(app, secondContent, undefined, false);
+        expect([first.status, second.status]).toEqual([201, 201]);
+        expect(pool.getCalls().filter(call => INSERT_PLAN.test(call.sql))).toHaveLength(1);
     });
 
     it('refuses an agreement linking a design the index does not hold, naming it', async () => {
@@ -178,9 +215,9 @@ describe('POST /agreements', () => {
             [{ cid: cidOf(content), content, extra: 1 }, 'bad-request'],
             [{ cid: 'bafy', content }, 'invalid-cid'],
             [{ cid: cidOf(content), content: 'agreement' }, 'invalid-agreement'],
-            [{ cid: cidOf(content), content, designs: { cid: cidOf(park) } }, 'bad-request'],
-            [{ cid: cidOf(content), content, designs: [{ cid: cidOf(park), content: park, extra: 1 }] }, 'bad-request'],
-            [{ cid: cidOf(content), content, designs: [{ cid: cidOf(layout), content: layout }] }, 'design-not-in-agreement']
+            [{ cid: cidOf(content), content, plan: { cid: content.planCid, content: planForAgreement(content) }, designs: { cid: cidOf(park) } }, 'bad-request'],
+            [{ cid: cidOf(content), content, plan: { cid: content.planCid, content: planForAgreement(content) }, designs: [{ cid: cidOf(park), content: park, extra: 1 }] }, 'bad-request'],
+            [{ cid: cidOf(content), content, plan: { cid: content.planCid, content: planForAgreement(content) }, designs: [{ cid: cidOf(layout), content: layout }] }, 'design-not-in-agreement']
         ]) {
             const res = await request(app).post('/agreements').send(sent);
             expect([res.status, res.body.code], code).toEqual([400, code]);
@@ -248,12 +285,12 @@ describe('POST /agreements', () => {
 
 describe('validateAgreementContent', () => {
     const valid = agreementContent([park, layout]);
-    const refused = (patch) => validateAgreementContent({ ...valid, ...patch }, { now: NOW });
+    const refused = (patch) => validateAgreementContent({ ...valid, ...patch }, { now: NOW, designCids: planForAgreement(valid).designCids });
     const withInputs = parcels => refused({ inputs: { parcels, openGroundM2: 0 } });
     const holder = (ownerKey, share = 1) => ({ ownerKey, share });
 
     it('accepts the fixture and copies out what the index looks things up by', () => {
-        expect(validateAgreementContent(valid, { now: NOW })).toEqual({
+        expect(validateAgreementContent(valid, { now: NOW, designCids: planForAgreement(valid).designCids })).toEqual({
             ok: true, designCids: [cidOf(park), cidOf(layout)], inputParcelIds: ['HR-335649-100', 'HR-335649-101'],
             parcelSourceId: 'oss-wfs', deadline: '2099-01-01T00:00:00.000Z'
         });
@@ -320,6 +357,11 @@ describe('validateAgreementContent', () => {
         }
     });
 
+    it('requires planCid and forbids agreement-owned membership', () => {
+        expect(validateAgreementContent({ ...valid, planCid: null }, { now: NOW }).section).toBe('designs');
+        expect(validateAgreementContent({ ...valid, designs: [] }, { now: NOW }).section).toBe('designs');
+    });
+
     it('refuses a deadline at or before now with 422, and is not fooled by a valid shape', () => {
         expect(refused({ deadline: new Date(NOW).toISOString() })).toMatchObject({ ok: false, status: 422, code: 'deadline-past' });
         expect(refused({ deadline: new Date(NOW + 1000).toISOString() }).ok).toBe(true);
@@ -359,6 +401,15 @@ describe('GET /agreements/:cid', () => {
         expect(document.headers['content-type']).toMatch(/^application\/ld\+json/);
         expect(document.body['@id']).toBe(`https://api.example/agreements/${cidOf(content)}#agreement`);
     });
+
+    it('reports old inline-membership rows as invalid without rewriting them', async () => {
+        const old = { ...agreementContent([park]), designs: [{ cid: cidOf(park) }] };
+        const pool = indexPool({ agreements: [agreementRow(old)] });
+        const res = await request(appFor(pool).app).get(`/agreements/${cidOf(old)}`);
+        expect(res.status).toBe(500);
+        expect(res.body).toMatchObject({ code: 'invalid-agreement-record' });
+        expect(pool.getCalls().filter(call => /UPDATE|INSERT/.test(call.sql))).toEqual([]);
+    });
 });
 
 describe('GET /agreements', () => {
@@ -369,21 +420,39 @@ describe('GET /agreements', () => {
         return { res, call: pool.getCalls()[0] };
     };
 
-    it('filters by city, design and parcel, newest first', async () => {
-        const { res, call } = await listed(`?city=zagreb&design=${cidOf(park)}&parcel=HR-335649-100&limit=20`);
+    it('filters by city, plan, design and parcel, newest first', async () => {
+        const content = agreementContent([park]);
+        const { res, call } = await listed(`?city=zagreb&plan=${content.planCid}&design=${cidOf(park)}&parcel=HR-335649-100&limit=20`);
         expect(res.status).toBe(200);
         expect(res.body.count).toBe(1);
         expect(res.body.agreements[0]).toMatchObject({ designCids: [cidOf(park)], status: 'active' });
-        expect(call.sql).toMatch(/WHERE city = \$1 AND design_cids @> ARRAY\[\$2\]::text\[\] AND input_parcel_ids @> ARRAY\[\$3\]::text\[\]/);
-        expect(call.sql).toMatch(/ORDER BY created_at DESC, cid\s+LIMIT \$4 OFFSET \$5/);
-        expect(call.params).toEqual([park.city, cidOf(park), 'HR-335649-100', 21, 0]);
+        expect(call.sql).toMatch(/WHERE content->>'planCid' IS NOT NULL AND NOT \(content \? 'designs'\) AND NOT \(content \? 'designCids'\) AND city = \$1 AND design_cids @> ARRAY\[\$2\]::text\[\] AND content->>'planCid' = \$3 AND input_parcel_ids @> ARRAY\[\$4\]::text\[\]/);
+        expect(call.sql).toMatch(/ORDER BY created_at DESC, cid\s+LIMIT \$5 OFFSET \$6/);
+        expect(call.params).toEqual([park.city, cidOf(park), content.planCid, 'HR-335649-100', 21, 0]);
         const { call: all } = await listed('');
-        expect(all.sql).not.toMatch(/WHERE/);
+        expect(all.sql).toMatch(/WHERE content->>'planCid' IS NOT NULL AND NOT \(content \? 'designs'\) AND NOT \(content \? 'designCids'\)/);
         expect(all.params).toEqual([101, 0]);
     });
 
+    it('excludes old inline-membership records from the collection query', async () => {
+        const current = agreementRow(agreementContent([park]));
+        const pool = createMockPool();
+        pool.answer(/FROM consensus\.agreement/, (sql) => {
+            expect(sql).toMatch(/content->>'planCid' IS NOT NULL/);
+            expect(sql).toMatch(/NOT \(content \? 'designs'\)/);
+            expect(sql).toMatch(/NOT \(content \? 'designCids'\)/);
+            return { rows: [current] };
+        });
+        const res = await request(appFor(pool).app).get('/agreements');
+        expect(res.status).toBe(200);
+        expect(res.body.agreements).toHaveLength(1);
+        expect(res.body.agreements[0].planCid).toBe(current.content.planCid);
+        // The legacy row remains invalid when requested directly (tested above); the SQL filter
+        // keeps it out of the collection page so it cannot turn that whole response into a 500.
+    });
+
     it('refuses a malformed filter before querying', async () => {
-        for (const [query, code] of [['?design=park', 'invalid-cid'], [`?parcel=${'p'.repeat(257)}`, 'bad-request'],
+        for (const [query, code] of [['?design=park', 'invalid-cid'], ['?plan=plan', 'invalid-cid'], [`?parcel=${'p'.repeat(257)}`, 'bad-request'],
             ['?parcel=%20', 'bad-request'], ['?city=a&city=b', 'bad-request'], ['?offset=-1', 'bad-request'], ['?offset=1.5', 'bad-request'], ['?offset=1000001', 'bad-request']]) {
             const { res, call } = await listed(query);
             expect([res.status, res.body.code], query).toEqual([400, code]);

@@ -42,7 +42,7 @@ export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDra
         const alternatives = [], warnings = [];
         for (const target of targets) {
             const supplied = target?.draftArtifact || target;
-            let privateArtifact = null, content = supplied?.untrusted?.plan || supplied?.untrusted?.agreement || supplied?.untrusted?.design || supplied?.plan || supplied?.agreement || supplied?.design || supplied;
+            let privateArtifact = null, content = supplied?.untrusted?.agreement || supplied?.untrusted?.design || supplied?.untrusted?.plan || supplied?.agreement || supplied?.design || supplied?.plan || supplied;
             let sourceId = supplied?.parcelSourceId || target?.parcelSourceId || parcelSourceId, published = false, explicitKind, lookup = target;
             const reference = typeof target === 'string' && !isCid(target) ? target : target?.draftRef;
             if (reference) {
@@ -53,7 +53,7 @@ export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDra
                 else {
                     if (!resolveDraftReference) throw fail('draft-reference-unavailable', 'Use canonical draft objects here; hosted references belong to their HTTP server.');
                     privateArtifact = await resolveDraftReference(reference);
-                    content = privateArtifact.plan || privateArtifact.agreement || privateArtifact.design;
+                    content = privateArtifact.agreement || privateArtifact.design || privateArtifact.plan;
                     sourceId = privateArtifact.parcelSourceId || sourceId;
                     if (target?.cid && target.cid !== cidOfObject(content)) throw fail('cid-mismatch', 'The draftRef does not identify the supplied CID.');
                 }
@@ -82,8 +82,30 @@ export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDra
             const carriedRows = privateArtifact?.designs || target?.designs || target?.draftArtifact?.designs || [];
             const carried = new Map(carriedRows.map(row => { const d = row.content || row.untrusted?.content || row; return [cidOfObject(d), d]; }));
             const designRows = isPlan ? planResult.designs : null;
+            let agreementPlan = null;
+            if (isAgreement) {
+                agreementPlan = privateArtifact?.plan || target?.plan || target?.draftArtifact?.plan;
+                if (!agreementPlan && content.planCid) agreementPlan = await read.request(`/plans/${content.planCid}`);
+                if (agreementPlan?.schema === 'plan/v1') agreementPlan = { cid: cidOfObject(agreementPlan), content: agreementPlan };
+                if (agreementPlan?.content == null && agreementPlan?.plan) agreementPlan = { cid: agreementPlan.cid, content: agreementPlan.plan };
+                if (!agreementPlan || agreementPlan.cid !== content.planCid || cidOfObject(agreementPlan.content) !== content.planCid) {
+                    throw fail('plan-cid-mismatch', 'The agreement does not resolve to its exact plan revision.');
+                }
+            }
+            const agreementDesignCids = agreementPlan?.content?.designCids || [];
+            if (isAgreement && carriedRows.length && agreementDesignCids.some(cid => !carried.has(cid))) {
+                throw fail('plan-members-invalid', 'A carried design does not match the exact plan membership.');
+            }
+            if (isAgreement && carriedRows.length) for (const cid of agreementDesignCids) {
+                if (carried.get(cid)?.schema !== 'design/v1') throw fail('plan-members-invalid', `The carried member for ${cid} is not design/v1.`);
+            }
+            if (isAgreement && plans?.getPlan) {
+                planResult = await plans.getPlan({ plan: { plan: agreementPlan.content, cid: agreementPlan.cid,
+                    designs: carriedRows, parcelSourceId: sourceId } });
+            }
             const designs = isPlan ? designRows.map(row => row.content) : isAgreement
-                ? await Promise.all(content.designs.map(d => resolveDesign(carried.get(d.cid) || d.cid))) : [await resolveDesign(content)];
+                ? planResult ? planResult.designs.map(row => row.content)
+                    : await Promise.all(agreementDesignCids.map(cid => resolveDesign(carried.get(cid) || cid))) : [await resolveDesign(content)];
             if (!isAgreement && !isPlan) content = designs[0];
             const unknownPlanSource = isPlan && designRows.some(row => !row.parcelSourceId && !sourceId);
             const knownSources = new Set((designRows || []).map(row => row.parcelSourceId || sourceId).filter(Boolean));
@@ -112,7 +134,8 @@ export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDra
                 if (isAgreement) {
                     if (JSON.stringify([...content.inputs.parcels.map(p => p.parcelId)].sort()) !== JSON.stringify(takes)
                         || ground.outputs.length !== content.outputs.length || ground.outputs.some(o => !content.outputs.some(p => p.hash === o.hash))) throw fail('agreement-ground-changed', 'This agreement no longer matches the current source ground.');
-                    ledger = records.ledger({ ...content, id: cid, designs: content.designs.map(d => ({ ...d, proposalId: d.cid })), outputs: ground.outputs });
+                    ledger = records.ledger({ ...content, id: cid, plan: agreementPlan,
+                        designs: agreementDesignCids.map(cid => ({ cid, proposalId: cid })), outputs: ground.outputs });
                 }
             } catch (error) {
                 measurementErrors.push({ code: error.code || 'ground-unavailable', message: error.message,
@@ -151,7 +174,7 @@ export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDra
             }
             const designSources = isPlan ? Object.fromEntries(designRows.filter(row => row.parcelSourceId).map(row => [row.cid, row.parcelSourceId])) : null;
             const preview = published ? { previewUrl: `${appOrigin}/${isPlan ? 'plans' : isAgreement ? 'agreements' : 'designs'}/${cid}`, previewStatus: 'published' }
-                : await previewArtifact({ origin: appOrigin, ...(isPlan ? { plan: content, designs } : isAgreement ? { agreement: content, designs } : { design: content }), parcelSourceId: sourceId });
+                : await previewArtifact({ origin: appOrigin, ...(isPlan ? { plan: content, designs } : isAgreement ? { agreement: content, plan: agreementPlan, designs } : { design: content }), parcelSourceId: sourceId });
             if (isPlan && preview.draftArtifact) preview.draftArtifact.designSources = designSources;
             alternatives.push({ cid, title: content.title, ...authoredAreas(designs), areaBasis: 'authored-geometry',
                 parcelsTaken: takes, buildingsRemoved, buildingsCut, removedFootprintM2, ledger,

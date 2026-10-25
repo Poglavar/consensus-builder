@@ -112,7 +112,7 @@ function statusLogRow(entry, isCurrent) {
     if (entry.proposalId) {
         message.type = 'button';
         message.classList.add('is-linked');
-        message.title = window.i18n?.t ? window.i18n.t('hud.showThisProposal') : 'Show this proposal';
+        message.title = window.i18n?.t ? window.i18n.t('hud.showThisProposal') : 'Show this design';
         message.addEventListener('click', (event) => {
             event.stopPropagation();   // the bar's own click toggles the log; this is not that click
             goToProposalFromStatusLog(entry.proposalId);

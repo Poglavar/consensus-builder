@@ -88,7 +88,7 @@
     }
 
     function designTitle(record) {
-        return (record && (record.title || record.name)) || t('modal.roadWidth.proposalList.untitled', 'Untitled proposal');
+        return (record && (record.title || record.name)) || t('modal.roadWidth.proposalList.untitled', 'Untitled design');
     }
 
     function typeLabelOf(record) {
@@ -283,6 +283,17 @@
         const cash = values.cash || {};
         const owners = values.electorate !== 'community';
         const title = String(values.title ?? '').trim();
+        const designCids = records.map(record => fingerprints.get(idOf(record.proposalId)));
+        const planTitle = String(values.planTitle || state.plan?.content.title || title || designTitle(records[0])).trim();
+        let plan = state.plan || null;
+        const recordApi = root.AgreementRecord || (typeof require === 'function' ? require('./agreement-record.js') : null);
+        if (state.view && designCids.length && designCids.every(Boolean)
+            && (!recordApi.matchesPlan(plan, designCids) || plan.content.title !== planTitle)) {
+            const plans = root.PlanRecord || (typeof require === 'function' ? require('./plan-record.js') : null);
+            const cidApi = root.Cid || (typeof require === 'function' ? require('./cid.js') : null);
+            const content = plans.create(planTitle, designCids, state.view);
+            plan = { cid: cidApi.cidOfObject(content), content };
+        }
         return {
             schema: SCHEMA,
             id: idOf(state.id),
@@ -292,6 +303,7 @@
             city: (records[0] && records[0].city) || state.city || null,
             createdAt: state.createdAt || null,
             updatedAt: state.updatedAt || null,
+            plan,
             designs: records.map(record => ({
                 proposalId: idOf(record.proposalId),
                 title: designTitle(record),
@@ -328,8 +340,8 @@
         'money-currency': () => t('agreement.errors.moneyCurrency', 'Money must be in the currency of the agreement\'s city.'),
         'money-party-unknown': () => t('agreement.errors.moneyPartyUnknown', 'A cash line names a party that holds no input land.'),
         'money-amount-invalid': () => t('agreement.errors.moneyAmountInvalid', 'A cash amount is not a valid amount.'),
-        'community-allocations': () => t('agreement.errors.communityAllocations', 'A community consultation cannot allocate land.'),
-        'community-money': () => t('agreement.errors.communityMoney', 'A community consultation cannot include cash payments.'),
+        'community-allocations': () => t('agreement.errors.communityAllocations', 'A nonbinding agreement cannot allocate land.'),
+        'community-money': () => t('agreement.errors.communityMoney', 'A nonbinding agreement cannot include cash payments.'),
         'consultation-organiser': () => t('agreement.errors.consultationOrganiser', 'Enter an organiser website or a valid did:web identifier.'),
         'consultation-participation-url': () => t('agreement.errors.consultationParticipationUrl', 'Enter an HTTPS participation URL without credentials.'),
         'rule-invalid': reason => t('agreement.errors.ruleInvalid', 'The decision rule is incomplete: {{reason}}', { reason }),
@@ -376,9 +388,10 @@
     }
 
     // The checklist of applied designs. `missing` are designs the agreement names that are no longer applied.
-    function designsHtml({ designs = [], selected = [], missing = [] } = {}) {
+    function designsHtml({ designs = [], selected = [], missing = [], values = {} } = {}) {
         const chosen = new Set(Array.from(selected || [], idOf));
-        const hint = `<p class="agreement-hint">${esc(t('agreement.designs.hint', 'Only designs applied to the map can be part of an agreement.'))}</p>`;
+        const hint = `<label class="agreement-field">${esc(t('plan.name', 'Plan name'))}<input type="text" data-agreement-plan-title maxlength="160" value="${esc(values.planTitle || '')}"></label>`
+            + `<p class="agreement-hint">${esc(t('agreement.designs.hint', 'Choose the designs for this plan. Changing them creates a new plan revision; existing agreements keep their original plan.'))}</p>`;
         const gone = missing && missing.length
             ? `<p class="agreement-notice" data-agreement-designs-missing>${esc(t('agreement.errors.designNotApplied', 'Every design must be applied to the map.'))}</p>`
             : '';
@@ -476,7 +489,7 @@
     }
 
     function consultationHtml({ organiser = '', participationUrl = '' } = {}) {
-        return `<p class="agreement-hint">${esc(t('agreement.consultation.hint', 'Optional organiser identity and participation information. A community consultation records opinions and does not settle land or money.'))}</p>`
+        return `<p class="agreement-hint">${esc(t('agreement.consultation.hint', 'Optional organiser identity and participation information. A nonbinding agreement records opinions and does not settle land or money.'))}</p>`
             + `<label class="proposal-editor-field"><span>${esc(t('agreement.consultation.organiser', 'Organiser website or did:web (optional)'))}</span><input type="text" data-agreement-organiser value="${esc(organiser)}" autocomplete="off"></label>`
             + `<label class="proposal-editor-field"><span>${esc(t('agreement.consultation.participationUrl', 'Participation URL (HTTPS, optional)'))}</span><input type="url" data-agreement-participation-url value="${esc(participationUrl)}" autocomplete="off"></label>`;
     }
@@ -486,13 +499,13 @@
         const values = view.values || {};
         const owners = values.electorate !== 'community';
         return `<p class="agreement-intro">${esc(owners
-            ? t('agreement.dialog.intro', 'An agreement bundles designs on the map with who decides, who gets which land and what money moves. Nothing leaves this device yet.')
-            : t('community.intro', 'This consultation asks for non-binding community support. It gives no owner consent and moves no land or money.'))}</p>`
+            ? t('agreement.dialog.intro', 'An agreement refers to one plan and sets who decides, who gets which land and what money moves. Nothing leaves this device yet.')
+            : t('community.intro', 'This agreement asks for non-binding community support. It gives no owner consent and moves no land or money.'))}</p>`
             + '<ul class="agreement-issues agreement-issues--error" data-agreement-errors aria-live="assertive"></ul>'
             + '<ul class="agreement-issues agreement-issues--warning" data-agreement-warnings aria-live="polite"></ul>'
             + sectionHtml('rule', t('agreement.sections.rule', 'Decision rule'), ruleHtml(values))
-            + sectionHtml('consultation', t('agreement.sections.consultation', 'Community consultation'), consultationHtml(values), owners)
-            + sectionHtml('designs', t('agreement.sections.designs', 'Designs'), designsHtml(view))
+            + sectionHtml('consultation', t('agreement.sections.consultation', 'Nonbinding agreement'), consultationHtml(values), owners)
+            + sectionHtml('designs', t('plan.label', 'Plan'), designsHtml(view))
             + sectionHtml('land', t('agreement.sections.land', 'Land'),
                 `<div class="agreement-land" data-agreement-land>${landHtml({ land: view.land, loading: view.loading, error: view.landError, selectedCount: Array.from(view.selected || []).length })}</div>`)
             + sectionHtml('allocation', t('agreement.sections.allocation', 'Allocation'),
@@ -571,7 +584,7 @@
      * `agreementId` with `designIds` added to its designs. A proposed agreement is refused (an error
      * with code 'agreement-published'). Resolves with the saved record, or null when cancelled.
      */
-    async function open({ agreementId = null, designIds = null, electorate = 'owners' } = {}) {
+    async function open({ agreementId = null, designIds = null, electorate = 'owners', plan = null } = {}) {
         const doc = root.document;
         const existing = agreementId ? root.AgreementStore.get(agreementId) : null;
         if (agreementId && !existing) throw new Error(`Agreement ${agreementId} is not on this device.`);
@@ -587,6 +600,8 @@
         const rule = existing && existing.rule ? existing.rule : null;
         const terms = termsOf(existing);
         const state = {
+            plan: existing?.plan || plan || root.NamedPlans?.current || null,
+            view: root.MapShare.capture(root),
             id: existing ? existing.id : root.AgreementRecord.newId(),
             createdAt: existing ? existing.createdAt : null,
             updatedAt: existing ? existing.updatedAt : null,
@@ -610,6 +625,7 @@
                 // An owners' agreement binds unless it was saved as a vote.
                 binding: rule ? rule.binding === true : true,
                 title: (existing && existing.title) || '',
+                planTitle: (existing?.plan || plan || root.NamedPlans?.current)?.content.title || '',
                 deadline: dateFromDeadline(existing && existing.deadline)
             },
             attempted: false, saveIssue: null, closed: false
@@ -618,6 +634,7 @@
         const formState = () => ({
             id: state.id, createdAt: state.createdAt, updatedAt: state.updatedAt, city: state.city,
             designs: selectedDesigns(), fingerprints: state.fingerprints, land: state.land,
+            plan: state.plan, view: state.view,
             approvalConfig: state.approvalConfig, lens: state.lens, currency: state.currency
         });
         const draft = () => recordFromForm(formState(), state.values);
@@ -1011,6 +1028,9 @@
                 refreshIssues();
             } else if (target.matches('[data-agreement-title]')) {
                 state.values = { ...state.values, title: target.value };
+            } else if (target.matches('[data-agreement-plan-title]')) {
+                state.values = { ...state.values, planTitle: target.value };
+                refreshIssues();
             } else if (target.matches('[data-agreement-deadline]')) {
                 state.values = { ...state.values, deadline: target.value };
                 refreshIssues();

@@ -477,7 +477,7 @@ async function convertBlockifyToFreeform() {
         return;
     }
     if (result?.cancelled) return;
-    setBlockifyInfo(null, result?.reason || translateBuildingText('proposalDrafts.freeform.noBuildings', 'This proposal has no buildings to keep.'));
+    setBlockifyInfo(null, result?.reason || translateBuildingText('proposalDrafts.freeform.noBuildings', 'This design has no buildings to keep.'));
 }
 
 async function finishBlockifyMassMove() {
@@ -3556,7 +3556,7 @@ async function saveBlockifyDesignForProposal() {
     closeBlockifyModal({ preservePending: true });
 
     if (typeof updateStatus === 'function') {
-        updateStatus(translateBuildingText('status.messages.building_design_saved_add_proposal_details_to_submit', 'Building design saved. Add proposal details to submit.'));
+        updateStatus(translateBuildingText('status.messages.building_design_saved_add_proposal_details_to_submit', 'Building design saved. Add design details to submit.'));
     }
 
     const description = document.getElementById('proposalDescription');
@@ -3565,7 +3565,7 @@ async function saveBlockifyDesignForProposal() {
             const selectedLabel = translateBuildingText('blockify.modal.messages.selectedParcels', 'selected parcels');
             description.value = translateBuildingText(
                 'blockify.modal.messages.defaultProposalDescription',
-                'Building proposal for {{blockName}}',
+                'Building design for {{blockName}}',
                 { blockName: context.blockName || selectedLabel }
             );
         }
@@ -3586,7 +3586,7 @@ function createProposalWithBuilding() {
     } else {
         console.error('createProposal function not available');
         if (typeof showBuildingAlert === 'function') {
-            showBuildingAlert('proposal_workflow_unavailable', 'Proposal workflow is unavailable.');
+            showBuildingAlert('proposal_workflow_unavailable', 'Design workflow is unavailable.');
         }
     }
 }

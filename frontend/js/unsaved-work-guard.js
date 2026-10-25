@@ -31,7 +31,7 @@
         // preventDefault() + a NON-EMPTY returnValue is what reliably arms the native prompt across
         // browsers (an empty string does not trigger it in some). The text itself is ignored.
         event.preventDefault();
-        event.returnValue = 'You have local proposals that are not uploaded.';
+        event.returnValue = 'You have local designs that are not published.';
     });
 
     // Exposed so a future in-app "you have N un-uploaded proposals" banner can reuse the same check.

@@ -7,6 +7,9 @@ import { parcelSourceIdOf } from './mcp-read-tools.js';
 import { editedDesign, valueAt } from './mcp-edit.js';
 import { buildTypedDesign, validateTrackDesign } from './mcp-constructors.js';
 import { trustedMetadata } from './mcp-results.js';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+const DesignRecord = require('../../frontend/js/design-record.js');
 const fail = (code, message, next) => Object.assign(new Error(message), { code, next });
 const geometry = value => value?.type === 'Feature' ? value.geometry : value;
 function union(features) {
@@ -86,6 +89,13 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference }) 
         }
         const row = isCid(value) ? await read.getDesign({ designCid: value }) : value;
         const content = row?.untrusted?.design || row?.untrusted?.content || row?.design || row?.content || row;
+        if (content?.schema === 'design/v1') {
+            const checked = DesignRecord.validate(content);
+            if (!checked.valid) throw fail('invalid-design', `Invalid published design: ${checked.errors.map(error => error.message).join('; ')}`, { action: 'Use a valid published design.' });
+            const cid = cidOfObject(content);
+            if (row?.cid && row.cid !== cid) throw fail('cid-mismatch', 'The supplied canonical design differs from its claimed CID.');
+            return { content, parcelSourceId: row?.parcelSourceId };
+        }
         const rebuilt = designObject({ ...content, createdAt: content?.authoredAt });
         if (cidOfObject(content) !== rebuilt.cid) throw fail('invalid-design', 'Draft is not a canonical design/v1 object.', { action: 'Use a design returned by a draft tool.' });
         if (row?.cid && row.cid !== rebuilt.cid) throw fail('cid-mismatch', 'The supplied canonical design differs from its claimed CID.');

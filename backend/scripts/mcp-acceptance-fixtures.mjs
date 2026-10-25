@@ -11,6 +11,13 @@ import { cidOfObject } from '../cid.js';
 export async function acceptanceFixtures({ apiBase, appOrigin, agreementCid, fetchImpl = fetch }) {
     const read = createMcpReadTools({ apiBase, appOrigin, fetchImpl });
     const row = await read.getAgreement({ agreementCid });
+    const referencedPlan = await read.request(`/plans/${encodeURIComponent(row.content.planCid)}`);
+    if (referencedPlan.cid !== row.content.planCid || !referencedPlan.content || cidOfObject(referencedPlan.content) !== referencedPlan.cid
+        || referencedPlan.content.schema !== PlanRecord.SCHEMA || PlanRecord.validate(referencedPlan.content)) {
+        throw new Error('The selected agreement does not resolve to its exact valid indexed plan');
+    }
+    const firstDesignCid = referencedPlan.content.designCids[0];
+    if (!firstDesignCid) throw new Error('The selected agreement plan has no designs');
     const city = row.content.city, parcelId = row.content.inputs.parcels[0]?.parcelId;
     if (!city || !parcelId) throw new Error('Choose an indexed agreement over cadastral parcels in a configured city');
     const source = await read.parcels({ city, parcelSourceId: row.parcelSourceId, parcelIds: [parcelId] });
@@ -36,8 +43,8 @@ export async function acceptanceFixtures({ apiBase, appOrigin, agreementCid, fet
         ugt_publish_design: { design, parcelSourceId, confirm: false },
         ugt_propose_agreement: { agreement: row.content, confirm: false },
         ugt_approval_link: { action: 'bet', target: account, params: { side: 'yes', amount: '0.05', city } },
-        ugt_find_place: { query: row.content.designs[0].cid, city }, ugt_parcel_context: { city, parcelSourceId, parcelId },
-        ugt_list_designs: { city, limit: 1 }, ugt_get_design: { designCid: row.content.designs[0].cid },
+        ugt_find_place: { query: firstDesignCid, city }, ugt_parcel_context: { city, parcelSourceId, parcelId },
+        ugt_list_designs: { city, limit: 1 }, ugt_get_design: { designCid: firstDesignCid },
         ugt_markets: { city }, ugt_explain: { term: 'Parcel binding' },
         ugt_draft_road: { city, parcelSourceId, points: streetPoints, preset: '1+1', authoredAt },
         ugt_draft_building: { ...scope, floors: 4, authoredAt },

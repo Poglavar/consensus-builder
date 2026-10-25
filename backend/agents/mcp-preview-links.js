@@ -6,6 +6,7 @@ import { isTrustedMetadata } from './mcp-results.js';
 const require = createRequire(import.meta.url);
 const links = require('../../frontend/js/draft-link.js');
 const mapShare = require('../../frontend/js/map-share.js');
+const PlanRecord = require('../../frontend/js/plan-record.js');
 const unavailable = message => Object.assign(new Error(message), { code: 'draft-reference-expired' });
 
 export function createPreviewLinks({ origin, appOrigin, storeDirectory, now = Date.now, ttlMs = 86_400_000, maxEntries = 4096, maxBytes = 128 * 1024 * 1024 }) {
@@ -20,7 +21,18 @@ export function createPreviewLinks({ origin, appOrigin, storeDirectory, now = Da
         const { design, agreement, plan, designs = [], parcelSourceId = null, designSources } = artifact;
         const record = design || agreement || plan;
         if (!record || !['design/v1', 'agreement/v1', 'plan/v1'].includes(record.schema)) throw new Error('A preview needs a canonical draft record');
-        if (!design && !draftMembersMatch(record, designs.map(content => ({ cid: cidOfObject(content) }))))
+        let verifiedPlan = plan;
+        if (agreement) {
+            const content = plan?.content || plan;
+            const planCid = plan?.content ? plan.cid : content ? cidOfObject(content) : null;
+            if (Object.hasOwn(agreement, 'designs') || Object.hasOwn(agreement, 'designCids')
+                || !content || planCid !== agreement.planCid || cidOfObject(content) !== planCid
+                || content.schema !== PlanRecord.SCHEMA || PlanRecord.validate(content)) {
+                throw Object.assign(new Error('An agreement preview needs its exact valid plan/v1 matching planCid and no inline membership.'), { code: 'invalid-draft-plan' });
+            }
+            verifiedPlan = { cid: planCid, content };
+        }
+        if (!design && !draftMembersMatch(record, designs.map(content => ({ cid: cidOfObject(content) })), verifiedPlan))
             throw Object.assign(new Error('Private collection members must exactly match its canonical design CIDs.'), { code: 'invalid-draft-members' });
         let stored;
         try {
@@ -28,7 +40,8 @@ export function createPreviewLinks({ origin, appOrigin, storeDirectory, now = Da
                 const save = (content, source, members) => {
                     if (canonicalBytes(content).length > links.MAX_OBJECT_BYTES) throw new Error('A private draft object exceeds 10 MiB');
                     const cid = cidOfObject(content);
-                    const row = { cid, record: content, parcelSourceId: source, ...(members ? { designs: members } : {}), ...(members && designSources ? { designSources } : {}) };
+                    const agreementPlan = content === agreement ? verifiedPlan : null;
+                    const row = { cid, record: content, parcelSourceId: source, ...(agreementPlan ? { plan: agreementPlan } : {}), ...(members ? { designs: members } : {}), ...(members && designSources ? { designSources } : {}) };
                     const key = JSON.stringify([cid, source, members?.map(member => member.draftRef) || null]);
                     return add(key, row);
                 };
@@ -43,7 +56,8 @@ export function createPreviewLinks({ origin, appOrigin, storeDirectory, now = Da
                 previewWarning: 'Private draft storage is full. Keep or export this draft artifact; existing unexpired references are retained.' };
             throw error;
         }
-        const url = new URL(record.view?.at ? mapShare.link(new URL('/designs', app).href, record.view) : new URL('/designs', app));
+        const view = record.view || (record.schema === 'agreement/v1' ? verifiedPlan.content.view : null);
+        const url = new URL(view?.at ? mapShare.link(new URL('/designs', app).href, view) : new URL('/designs', app));
         url.searchParams.set('draft', ref(stored.token));
         if (record.city) url.searchParams.set('city', record.city);
         return { previewUrl: url.href, draftRef: ref(stored.token), previewStatus: 'private-link', previewExpiresAt: new Date(stored.expiresAt).toISOString() };
@@ -74,7 +88,8 @@ export function createPreviewLinks({ origin, appOrigin, storeDirectory, now = Da
                 || (row.designSources && child.parcelSourceId !== row.designSources[member.cid])) throw unavailable('A private draft member is unavailable or expired. Recover the collection from its exported artifact, or draft it again.');
             designs.push(child.record);
         }
-        return { [row.record.schema === 'plan/v1' ? 'plan' : 'agreement']: row.record, designs, parcelSourceId: row.parcelSourceId,
+        return { [row.record.schema === 'plan/v1' ? 'plan' : 'agreement']: row.record,
+            ...(row.plan ? { plan: row.plan.content } : {}), designs, parcelSourceId: row.parcelSourceId,
             ...(row.designSources ? { designSources: row.designSources } : {}) };
     }
     return { decorate, create, get, resolve, exportDraft: resolve, dispose: () => store.dispose(), clear: () => store.clear() };

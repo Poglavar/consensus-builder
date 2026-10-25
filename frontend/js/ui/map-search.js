@@ -263,7 +263,7 @@
                 kind: 'proposal',
                 rank: Number.isFinite(raw.searchRank) ? raw.searchRank : 2,
                 icon: 'fas fa-file-signature',
-                label: raw.title || raw.name || t('mapSearch.untitledProposal', 'Proposal {{id}}', { id }),
+                label: raw.title || raw.name || t('mapSearch.untitledProposal', 'Design {{id}}', { id }),
                 sublabel: [raw.author, raw.localOnly ? t('mapSearch.localProposal', 'On this device') : '',
                     otherCity ? t('mapSearch.inCity', 'In {{city}}', { city: shortCityLabel(manager().getCityLabel(raw.cityId)) }) : '']
                     .filter(Boolean).join(' · '),
@@ -271,9 +271,9 @@
             });
         });
         const status = statusOf(source, query,
-            t('mapSearch.proposalsLoading', 'Searching proposals…'),
-            t('mapSearch.proposalsError', 'Could not search proposals'));
-        return { id: 'proposals', label: t('mapSearch.groups.proposals', 'Proposals'), items, status: items.length ? null : status };
+            t('mapSearch.proposalsLoading', 'Searching designs…'),
+            t('mapSearch.proposalsError', 'Could not search designs'));
+        return { id: 'proposals', label: t('mapSearch.groups.proposals', 'Designs'), items, status: items.length ? null : status };
     }
 
     function localProposals(query) {
@@ -571,7 +571,7 @@
                     return;
                 }
                 console.error('[map-search] could not download design', cid, error);
-                status(t('modal.roadWidth.proposalList.downloadError', 'Failed to download proposal'));
+                status(t('modal.roadWidth.proposalList.downloadError', 'Failed to download design'));
                 return;
             }
         }
@@ -861,8 +861,8 @@
         const config = manager();
         const parcels = !(config && typeof config.hasParcelData === 'function') || config.hasParcelData();
         state.input.placeholder = parcels
-            ? t('mapSearch.placeholder', 'Search places, parcels, proposals…')
-            : t('mapSearch.placeholderNoParcels', 'Search places, proposals…');
+            ? t('mapSearch.placeholder', 'Search places, parcels, designs…')
+            : t('mapSearch.placeholderNoParcels', 'Search places, designs…');
         state.input.setAttribute('aria-label', t('mapSearch.label', 'Search the map'));
         state.searchButton.setAttribute('aria-label', t('mapSearch.open', 'Search'));
         state.searchButton.title = t('mapSearch.open', 'Search');

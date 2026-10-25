@@ -68,7 +68,7 @@
     function mintedRowLabel(row, tr = t) {
         const panel = panelApi();
         const content = (row && row.content) || {};
-        const count = Array.isArray(content.designs) ? content.designs.length : 0;
+        const count = Array.isArray(row?.designCids) ? row.designCids.length : 0;
         const designs = tr('agreement.list.designs', count === 1 ? '{{count}} design' : '{{count}} designs', { count });
         const onchain = (row && row.onchain) || {};
         return {

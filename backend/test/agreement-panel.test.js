@@ -15,6 +15,8 @@ const record = require('../../frontend/js/agreement-record.js');
 const format = require('../../frontend/js/format.js');
 const bridge = require('../../frontend/js/solana/agreement-bridge.js');
 const client = require('../../frontend/js/solana/agreement-client.js');
+const PlanRecord = require('../../frontend/js/plan-record.js');
+const Cid = require('../../frontend/js/cid.js');
 
 // A translator that shows which key was asked for, and with what count.
 const keys = (key, _fallback, params = {}) => (params.count === undefined ? key : `${key}#${params.count}`);
@@ -39,6 +41,8 @@ function agreement(overrides = {}) {
         output('k10-p1', rect(3, 0, 4, 2), 200, [boris], ['k10']),
         output('k10-p2', rect(4, 0, 5, 2), 100, [], ['k10'])
     ];
+    const designCids = ['bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku'];
+    const planContent = PlanRecord.create('Courtyard plan', designCids, { at: '45.8,15.96,16', mode: '2d' });
     return {
         schema: 'agreement/v1',
         id: 'ag-1',
@@ -47,6 +51,7 @@ function agreement(overrides = {}) {
         createdAt: '2026-10-21T10:00:00.000Z',
         updatedAt: '2026-10-21T10:00:00.000Z',
         designs: [{ proposalId: 'layout-1', title: 'Courtyard layout', goal: 'parcel-layout', cid: 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku' }],
+        plan: { cid: Cid.cidOfObject(planContent), content: planContent },
         inputs: {
             parcels: [{ parcelId: 'k9', areaM2: 700, holders: [ana] }, { parcelId: 'k10', areaM2: 300, holders: [boris] }],
             openGroundM2: 12.5
@@ -185,7 +190,7 @@ describe('the rule, the title and the designs', () => {
         ] }), { designOf: id => held[id] || null, isApplied: r => r.applied === true, typeLabel: r => `type:${r.goal}` });
         expect(rows).toEqual([
             { proposalId: 'layout-1', title: 'Courtyard layout', type: 'type:parcel-layout', missing: false, applied: true },
-            { proposalId: 'road-9', title: 'Untitled proposal', type: 'type:road-track', missing: true, applied: false }
+            { proposalId: 'road-9', title: 'Untitled design', type: 'type:road-track', missing: true, applied: false }
         ]);
     });
 
@@ -269,6 +274,7 @@ describe('panel HTML', () => {
             AgreementStore: store,
             AgreementRecord: record,
             AgreementDialog: { sponsorLine: () => null, inputParcelIds: () => [], originalsById: () => [] },
+            NamedPlans: { link: cid => `/plans/${cid}` },
             AgreementGround: {
                 check: async () => ({ current: false, reasons: [] }), localHolders: () => () => null, areaOf: () => null
             },
@@ -296,6 +302,8 @@ describe('panel HTML', () => {
         expect(title.textContent).toBe('Read-only view');
         expect(panelBody.innerHTML).toContain('data-agreement-read-only');
         expect(panelBody.innerHTML).toContain('data-agreement-read-only-status');
+        expect(panelBody.innerHTML).toContain(`/plans/${viewRecord.plan.cid}`);
+        expect(panelBody.innerHTML).toContain('Designs in this plan');
         expect(panelBody.innerHTML).not.toContain('Reading the land under the designs');
         expect(panelBody.innerHTML).not.toContain('data-agreement-action="edit"');
         expect(panelBody.innerHTML).not.toContain('data-agreement-action="delete"');
@@ -558,14 +566,14 @@ describe('Minted agreements rows', () => {
     // A row of GET /agreements?minted=1: the index's agreement with its chain account.
     const minted = (extra = {}) => ({
         cid: CID, title: 'Block 7', createdAt: '2026-10-21T12:00:00.000Z',
-        content: { title: 'Block 7', createdAt: '2026-10-21T10:00:00.000Z', designs: [{ cid: CID }, { cid: CID }] },
+        content: { title: 'Block 7', createdAt: '2026-10-21T10:00:00.000Z', planCid: CID }, designCids: [CID, 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku'],
         onchain: { chain: 'solana', cluster: 'devnet', account: ACCOUNT, status: 'active' },
         ...extra
     });
 
     it('words a minted agreement: its title, its designs, its status on chain and its account', () => {
         expect(list.mintedRowLabel(minted())).toEqual({ title: 'Block 7', meta: `2 designs · Active · ${panel.shortKey(ACCOUNT)}` });
-        const untitled = minted({ title: null, content: { title: null, createdAt: '2026-10-21T10:00:00.000Z', designs: [{ cid: CID }] },
+        const untitled = minted({ title: null, content: { title: null, createdAt: '2026-10-21T10:00:00.000Z', planCid: CID }, designCids: [CID],
             onchain: { ...minted().onchain, status: 'executed' } });
         expect(list.mintedRowLabel(untitled)).toEqual({
             title: `Agreement of ${format.formatDate('2026-10-21T10:00:00.000Z')}`, meta: `1 design · Executed · ${panel.shortKey(ACCOUNT)}`

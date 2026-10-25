@@ -63,6 +63,7 @@ function loadPanel({ memory = null, withEditLock = false } = {}) {
     // The real collaborators find their panel by id, as the browser does.
     const byId = id => doc.getElementById(id);
     const context = {
+        MapHighlight: require('../../frontend/js/shared-utils.js').MapHighlight,
         console: { info: () => {}, error: console.error, warn: console.warn, log: () => {} },
         Date: ClockDate,
         document: doc,
@@ -72,6 +73,7 @@ function loadPanel({ memory = null, withEditLock = false } = {}) {
         navigator: {},
         __clickStackModel: model,
         ClickStackRelations: relations,
+        MapHighlight: { style: vi.fn(options => ({ ...options, color: '#0284c7', dashArray: null, fillOpacity: 0 })) },
         ProposalDesignGoals: require('../../frontend/js/proposals/design-goals.js'),
         DesignSync: { publishedCid: proposal => proposal?.cid || null },
         DesignMemberships: { mountSection: (body, kind, instance, _session, win, options) => {
@@ -155,26 +157,19 @@ describe('click stack selected objects and contextual navigation', () => {
         expect(h.context.highlightFeaturesForHover).toHaveBeenLastCalledWith([]);
     });
 
-    it('navigates agreement designs without duplicating the design body membership list', () => {
+    it('keeps agreements out of spatial sections and shows parcel designs directly', () => {
         const h = loadPanel();
-        const agreement = { id: 'a1', title: 'Neighbourhood', designs: [{ proposalId: 'd1', title: 'Park' }, { proposalId: 'd2', title: 'School' }] };
-        h.context.ClickStackHits.hitsAt.mockReturnValue({ ...HITS_A, agreements: [{ id: 'a1', label: agreement.title, agreement, designIds: ['d1', 'd2'] }] });
+        h.context.ClickStackHits.hitsAt.mockReturnValue({ ...HITS_A, agreements: [{ id: 'a1', label: 'Neighbourhood' }],
+            designs: HITS_A.designs.map(item => ({ ...item, proposal: { ...item.proposal, cadastreParcelIds: ['p1'] } })) });
         h.click(SPOT_A);
-        const child = h.section('agreements').querySelector('.click-stack__choices');
-        expect(child.dataset.kind).toBe('designs');
-        expect(child.querySelectorAll('.click-stack__chip')).toHaveLength(2);
-        expect(h.section('designs').querySelector('.click-stack__row-title').textContent).toContain('(2)');
-        child.querySelector('[data-id="d2"]').click();
-        expect(h.api.current()).toMatchObject({ selectedKind: 'designs', expanded: 'designs' });
-        expect(h.context.selectAndHighlightProposal).toHaveBeenLastCalledWith('d2', null, false, true, false, DESIGN_PANEL);
-        expect(h.section('agreements').querySelector('.click-stack__choices')).toBeNull();
-        expect(h.section('designs').querySelector('.click-stack__choices[data-kind="agreements"]')).toBeNull();
-        expect(h.section('designs').querySelector('.click-stack__choices[data-kind="designs"]')).toBeNull();
-        h.section('agreements').querySelector('.click-stack__row').click();
-        expect(h.api.current().selectedKind).toBe('agreements');
+        expect(h.kinds()).toEqual(['designs', 'parcels']);
+        expect(h.section('agreements')).toBeNull();
+        h.section('parcels').querySelector('.click-stack__row').click();
+        const parcelBody = h.section('parcels').querySelector('.click-stack__body');
+        expect(parcelBody.querySelector('.click-stack__choices[data-kind="designs"]')).not.toBeNull();
     });
 
-    it('adds loaded plan and agreement sections above the design without stealing focus, and keeps the multi-design selector working', async () => {
+    it('adds loaded plans above the design without stealing focus, and keeps the multi-design selector working', async () => {
         const h = loadPanel();
         const pending = [];
         const mounted = [];
@@ -193,17 +188,17 @@ describe('click stack selected objects and contextual navigation', () => {
             cid: 'cid-d1', proposalId: 'd1', dispose: vi.fn(),
             instances(kind) { return kind === 'plans'
                 ? [{ id: 'plan-1', label: 'Shared plan', designCids: ['cid-d1'] }, { id: 'plan-2', label: 'Alternative plan', designCids: ['cid-d1'] }]
-                : [{ id: 'agreement-1', label: 'Owner agreement', designCids: ['cid-d1'] }]; }
+                : []; }
         };
         pending[0].callback(session);
         pending[0].resolve(session);
         await Promise.resolve();
-        expect(h.kinds()).toEqual(['agreements', 'plans', 'designs', 'parcels']);
+        expect(h.kinds()).toEqual(['plans', 'designs', 'parcels']);
         expect(h.api.current()).toMatchObject({ expanded: 'designs', selectedKind: 'designs' });
         expect(h.context.selectAndHighlightProposal).toHaveBeenCalledTimes(1);
         expect(h.section('designs').querySelector('.click-stack__choices[data-kind="plans"]')).not.toBeNull();
-        // The sole agreement is already visible as a section, so its duplicate relationship is omitted.
-        expect(h.section('designs').querySelector('.click-stack__choices[data-kind="agreements"]')).toBeNull();
+        expect(h.section('designs').querySelector('.click-stack__choices[data-kind="plans"]')).not.toBeNull();
+        expect(h.section('agreements')).toBeNull();
 
         h.section('plans').querySelector('.click-stack__row').click();
         expect(h.context.DesignMemberships.mountSection).toHaveBeenCalled();
@@ -318,7 +313,7 @@ describe('click stack panel: a click opens, the same click closes', () => {
         change();
         expect(h.api.isOpen()).toBe(false);
     });
-    it('keeps selected parcels aside for agreement details, then restores them when they close', () => {
+    it('keeps selected parcels aside for the Agreement dialog, then restores them when it closes', () => {
         const h = loadPanel();
         const multi = { isActive: true, selectedParcels: new Set(['p1']),
             showSelectionInPanel: vi.fn(() => h.parcelPanel.classList.add('visible')) };

@@ -188,7 +188,7 @@
     async function nativeShare(url) {
         const shareData = {
             title: t('threeMode.ai.shareTitle', 'Urban Game Theory'),
-            text: t('threeMode.ai.tweetText', 'Photorealistic view of my urban proposal'),
+            text: t('threeMode.ai.tweetText', 'Photorealistic view of my urban design'),
             url
         };
         // Attach the PNG itself where supported (mobile share sheets) — nicer than a bare link.
@@ -237,7 +237,7 @@
             if (!resp.ok) throw new Error(data.error || ('HTTP ' + resp.status));
 
             currentShareUrl = buildShareUrl(data.slug, cap.appliedCids || []);
-            tweetBtn.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(t('threeMode.ai.tweetText', 'Photorealistic view of my urban proposal'))}&url=${encodeURIComponent(currentShareUrl)}`;
+            tweetBtn.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(t('threeMode.ai.tweetText', 'Photorealistic view of my urban design'))}&url=${encodeURIComponent(currentShareUrl)}`;
             copyBtn.hidden = tweetBtn.hidden = false;
             shareBtn.hidden = !navigator.share; // native share only where supported
             setShareStatus('');

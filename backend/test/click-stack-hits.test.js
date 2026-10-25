@@ -10,7 +10,7 @@ const POINT = { lat: 45.8, lng: 15.97 };
 const parcelFeature = (props = {}) => ({ type: 'Feature', properties: props, geometry: { type: 'Polygon', coordinates: [] } });
 
 // stack: what __drillUi.stackAt finds (topmost first). Everything else is optional per test.
-function loadHits({ stack = [], buildings = [], planning = null, agreements = [], city = 'zagreb', bareGround = false,
+function loadHits({ stack = [], buildings = [], planning = null, bareGround = false,
     registry = {}, proposals = {}, parcelProposals = [], parcelBuildings = [] } = {}) {
     const context = {
         console,
@@ -20,8 +20,7 @@ function loadHits({ stack = [], buildings = [], planning = null, agreements = []
         ParcelSetProposals: { lookup: vi.fn(() => ({ entries: parcelProposals })) },
         getProposalKey: proposal => proposal.proposalId,
         PlanningViews: planning ? { isReady: () => true, itemsAt: vi.fn(() => planning) } : undefined,
-        AgreementStore: { list: vi.fn(() => agreements) },
-        CityConfigManager: { getCurrentCityId: () => city },
+        AgreementStore: { list: vi.fn(() => []) },
         GroundMenu: { isBareGround: vi.fn(() => bareGround) },
         CadastralParcelRepository: { get: id => registry[id] || null },
         proposalStorage: { getProposal: id => proposals[id] || null },
@@ -38,14 +37,13 @@ const formedEntry = (id, producerId, props = {}) => ({ kind: 'parcel', id, depth
 const bareEntry = (id, props = {}) => ({ kind: 'parcel', id, depth: 0, feature: parcelFeature(props) });
 
 describe('click stack hits', () => {
-    it('focuses the selected design geometry, its agreement designs, and the exact selected parcel', () => {
+    it('focuses the selected design geometry and the exact selected parcel', () => {
         const source = parcelFeature({ parcelId: 'source' });
         const shapeA = parcelFeature({ design: 'a' }), shapeB = parcelFeature({ design: 'b' });
         const { context } = loadHits({ registry: { source }, proposals: { a: { proposalId: 'a' }, b: { proposalId: 'b' } } });
         context.collectProposalFeatureSets = proposal => ({ primaryFeatures: [proposal.proposalId === 'a' ? shapeA : shapeB] });
         const focus = context.ClickStackHits.featuresFor;
         expect(focus('designs', { id: 'a' })).toEqual([shapeA]);
-        expect(focus('agreements', { agreement: { designs: [{ proposalId: 'a' }, { proposalId: 'b' }] } })).toEqual([shapeA, shapeB]);
         expect(focus('parcels', { id: 'source' })).toEqual([source]);
         // A replaced source keeps its immutable original outline, even if the hit held a fragment.
         expect(focus('parcels', { id: 'source', live: false, feature: shapeB })).toEqual([source]);
@@ -56,20 +54,23 @@ describe('click stack hits', () => {
         expect(focus('designs', { id: 'missing' })).toEqual([]);
     });
 
-    it('uses inspected parent features for published plans and agreements without falling back to mutable local designs', () => {
+    it('uses only inspected plan features without falling back to mutable local designs', () => {
         const mutable = parcelFeature({ design: 'mutable-local-copy' });
         const inspected = parcelFeature({ design: 'inspected-canonical-revision' });
         const { context } = loadHits({ proposals: { 'local-design': { proposalId: 'local-design' } } });
         context.collectProposalFeatureSets = vi.fn(() => ({ primaryFeatures: [mutable] }));
         const focus = context.ClickStackHits.featuresFor;
         const plan = { id: 'plan-cid', cid: 'plan-cid', features: [inspected] };
-        const agreement = { id: 'agreement-cid', cid: 'agreement-cid', features: [inspected],
-            agreement: { designs: [{ proposalId: 'local-design' }] } };
         expect(focus('plans', plan)).toEqual([inspected]);
-        expect(focus('agreements', agreement)).toEqual([inspected]);
         expect(focus('plans', { id: 'plan-cid', cid: 'plan-cid', plan: { designCids: ['published-design'] } })).toEqual([]);
-        expect(focus('agreements', { id: 'agreement-cid', cid: 'agreement-cid', agreement: { designs: [{ proposalId: 'local-design' }] } })).toEqual([]);
+        expect(focus('plans', { id: 'plan-cid', cid: 'plan-cid', designCids: ['local-design'] })).toEqual([]);
         expect(context.collectProposalFeatureSets).not.toHaveBeenCalled();
+    });
+
+    it('does not project agreements into hits or read the agreement store', () => {
+        const { hits, context } = loadHits({ stack: [proposalEntry('d1')] });
+        expect(hits).not.toHaveProperty('agreements');
+        expect(context.AgreementStore.list).not.toHaveBeenCalled();
     });
 
     it('adds the buildings and proposals of the parcel under the point when no design is there', () => {
@@ -90,7 +91,7 @@ describe('click stack hits', () => {
             ['local-1', 'Row houses', null, true], ['bafy-published', 'Park', 'bafy-published', true]]);
         // The building under the point is listed once, as a point hit; the parcel adds the other.
         expect(hits.built.map(b => [b.id, b.label, !!b.onParcel])).toEqual([['b1', 'House', false], ['b2', 'Shed', true]]);
-        expect(hits.agreements).toEqual([]);
+        expect(hits).not.toHaveProperty('agreements');
     });
 
     it('lists only the point\'s own hits when a design is under it', () => {
@@ -148,20 +149,9 @@ describe('click stack hits', () => {
         expect(hits.parcels.map(p => p.id)).toEqual(['HR-1-12']);
     });
 
-    it('finds the agreements of this city that contain a design at the point', () => {
-        const agreements = [
-            { id: 'a-in', city: 'zagreb', title: 'Block deal', createdAt: '2026-10-02', designs: [{ proposalId: 'd1' }, { proposalId: 'elsewhere' }] },
-            { id: 'a-other-city', city: 'split', designs: [{ proposalId: 'd1' }] },
-            { id: 'a-unrelated', city: 'zagreb', designs: [{ proposalId: 'elsewhere' }] }
-        ];
-        const { hits } = loadHits({ stack: [proposalEntry('d1')], agreements });
-        expect(hits.agreements.map(a => a.id)).toEqual(['a-in']);
-        expect(hits.agreements[0]).toMatchObject({ label: 'Block deal', designIds: ['d1', 'elsewhere'] });
-    });
-
-    it('reads no agreements when no design is at the point', () => {
-        const { hits, context } = loadHits({ stack: [bareEntry('HR-1-1')], agreements: [{ id: 'a', city: 'zagreb', designs: [{ proposalId: 'x' }] }] });
-        expect(hits.agreements).toEqual([]);
+    it('does not read the agreement store when there is no design at the point either', () => {
+        const { hits, context } = loadHits({ stack: [bareEntry('HR-1-1')] });
+        expect(hits).not.toHaveProperty('agreements');
         expect(context.AgreementStore.list).not.toHaveBeenCalled();
     });
 

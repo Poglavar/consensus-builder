@@ -6,7 +6,7 @@
 // with its pool, when asked), and one proposed from this device over a park applied here.
 import { expect, Locator, Page } from '@playwright/test';
 import { createSpace, openCity, openParcel, showProposal, PARCEL_ID } from './runtime';
-import { fileAgreement, fileDesign, pageIndex, MarketFixture, SharedIndex } from './mocks/shared-server';
+import { fileAgreement, fileDesign, filePlan, pageIndex, MarketFixture, SharedIndex } from './mocks/shared-server';
 
 export const OWNER = 'Ana Owner';
 
@@ -70,9 +70,12 @@ export function fileIndexedAgreement(index: SharedIndex, options: FiledAgreement
     }, { createdAt }),
     goal: 'park', title: designTitle,
   }));
+  const planContent = { schema: 'plan/v1', title: title || 'Untitled plan', designCids: designs.map(design => design.cid).sort(),
+    view: { at: '45.8,15.96,16', mode: '2d', city: 'zagreb', language: 'en' } };
+  const planCid = filePlan(index, planContent);
   const onchain = minted ? onchainRecord(minted) : null;
   const cid = fileAgreement(index, {
-    schema: 'agreement/v1', title, author, sponsor: onchain ? onchain.sponsor : null, city: 'zagreb', createdAt, designs,
+    schema: 'agreement/v1', title, author, sponsor: onchain ? onchain.sponsor : null, city: 'zagreb', createdAt, planCid,
     inputs: { parcels: [{ parcelId: FILED_PARCEL, areaM2, holders: [] }], openGroundM2: 0 },
     outputs: [], allocations: [], money: { currency: 'EUR', lines: [] },
     rule: community
@@ -101,6 +104,8 @@ export async function proposeOverPark(page: Page, { title, author = 'Fixture aut
     const w = window as any;
     const design = w.proposalStorage.getProposal(parkId);
     const designCid = w.DesignRecord.cidOf(design);
+    const planContent = w.PlanRecord.create(title, [designCid], w.MapShare.capture(w));
+    const plan = { cid: w.Cid.cidOfObject(planContent), content: planContent };
     const createdAt = new Date().toISOString();
     const apiBase = w.DesignSync.apiBase();
     w.DesignSync.markPublished(design, { cid: designCid, publishedAt: createdAt, apiBase });
@@ -114,6 +119,7 @@ export async function proposeOverPark(page: Page, { title, author = 'Fixture aut
     });
     const record = {
       schema: 'agreement/v1', id: w.AgreementRecord.newId(), title, city: w.CityConfigManager.getCurrentCityId(), createdAt,
+      plan,
       designs: [{ proposalId: parkId, title: design.title, goal: design.goal, cid: designCid }],
       inputs: land.inputs, outputs: land.outputs, allocations: [], money: { currency: 'EUR', lines: [] },
       rule: sponsor
@@ -124,11 +130,12 @@ export async function proposeOverPark(page: Page, { title, author = 'Fixture aut
     const content = w.AgreementRecord.published({ ...record, author, sponsor });
     const cid = w.Cid.cidOfObject(content);
     const saved = w.AgreementStore.save({ ...record, published: { cid, publishedAt: createdAt, apiBase, sponsor } });
-    return { id: String(saved.id), cid, designCid, content, parkTitle: String(design.title), design: JSON.parse(JSON.stringify(w.DesignRecord.published(design))) };
+    return { id: String(saved.id), cid, designCid, content, plan, parkTitle: String(design.title), design: JSON.parse(JSON.stringify(w.DesignRecord.published(design))) };
   }, { parkId, title, author, sponsor: onchain ? onchain.sponsor : null });
   const index = pageIndex(page);
   // The browser's CIDs are the CIDs of the objects' canonical bytes (node's own computation).
   expect(fileDesign(index, seeded.design)).toBe(seeded.designCid);
+  expect(filePlan(index, seeded.plan.content)).toBe(seeded.plan.cid);
   expect(fileAgreement(index, seeded.content, onchain ? { onchain } : {})).toBe(seeded.cid);
   if (onchain && pool) index.markets.set(onchain.account, pool);
   return { id: seeded.id, cid: seeded.cid, designCid: seeded.designCid, parkId, parkTitle: seeded.parkTitle };

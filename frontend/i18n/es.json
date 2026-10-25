@@ -55,7 +55,7 @@
         "compactness": "Compacidad",
         "parcels": "Parcelas cargadas",
         "measurementNote": "Medido entre los ejes de las calles OSM, incluido el espacio vial. El tiempo a pie es una estimación del perímetro, no una ruta calculada.",
-        "proposedStreetsNote": "Delimitada en parte por calles de propuestas aplicadas.",
+        "proposedStreetsNote": "Delimitada en parte por calles de diseños aplicados.",
         "rateLimited": "OSM está ocupado. Reintenta en {{seconds}} segundos.",
         "loadError": "No se pudieron cargar las calles OSM (HTTP {{status}}). Reintenta.",
         "invalidData": "La fuente de calles devolvió datos no válidos.",
@@ -360,7 +360,7 @@
         "deals": {
             "title": "Aportaciones y asignaciones propuestas a los propietarios",
             "dealOf": "Acuerdo de {{owner}}",
-            "contributes": "Aportación propuesta de {{owner}}",
+            "contributes": "Aportación diseño de {{owner}}",
             "share": "Cuota {{share}}",
             "withOwner": "Con la aceptación de {{owner}}: {{progress}}",
             "passesWithOwner": "La aceptación de {{owner}} satisfaría las reglas de aprobación configuradas.",
@@ -401,11 +401,11 @@
             "submit": "Verificar con la billetera",
             "working": "Esperando a tu billetera…",
             "noService": "Ningún miembro de esta lente ofrece verificación de propietarios.",
-            "notAuthorized": "Este miembro de la lente no reconoce esta billetera como representante de ningún propietario de esta propuesta.",
-            "rightsMismatch": "Los registros de este miembro de la lente no coinciden con la declaración de propiedad de la propuesta, así que no la confirmará.",
-            "unknownParcel": "Este miembro de la lente no tiene registro de una de las parcelas de la propuesta.",
-            "notInLens": "Ese miembro no está en la lente de esta propuesta.",
-            "rightsIncomplete": "La declaración de propiedad de la propuesta está incompleta.",
+            "notAuthorized": "Este miembro de la lente no reconoce esta billetera como representante de ningún propietario de este diseño.",
+            "rightsMismatch": "Los registros de este miembro de la lente no coinciden con la declaración de propiedad del diseño, así que no la confirmará.",
+            "unknownParcel": "Este miembro de la lente no tiene registro de una de las parcelas del diseño.",
+            "notInLens": "Ese miembro no está en la lente de este diseño.",
+            "rightsIncomplete": "La declaración de propiedad del diseño está incompleta.",
             "badChallenge": "El miembro de la lente pidió a la billetera firmar algo inesperado; no se firmó nada.",
             "badEvidence": "La respuesta del miembro de la lente no se pudo verificar, así que no se usó.",
             "failed": "La verificación falló: {{message}}"
@@ -416,7 +416,7 @@
             "rightsSource": "Fuente declarada de los derechos: {{source}}",
             "rightsSourceUnknown": "Este registro no especifica una fuente de los derechos.",
             "acceptAs": "Aceptar como {{owner}}",
-            "contributes": "Su aportación propuesta",
+            "contributes": "Su aportación diseño",
             "conditions": "Condiciones",
             "progress": "Progreso",
             "yourShare": "Tu cuota {{share}}",
@@ -448,9 +448,9 @@
         }
     },
     "proposalGroundRebase": {
-        "fork": "Nueva propuesta con la misma geometría",
-        "forkHint": "Copia esta propuesta con las parcelas que su geometría cubre en el terreno que se muestra ahora. La propuesta publicada no cambia.",
-        "forkFailed": "No se pudo iniciar la nueva propuesta: {{reason}}",
+        "fork": "Nueva diseño con la misma geometría",
+        "forkHint": "Copia este diseño con las parcelas que su geometría cubre en el terreno que se muestra ahora. El diseño publicado no cambia.",
+        "forkFailed": "No se pudo iniciar la nueva diseño: {{reason}}",
         "noParcels": "Esta geometría no cubre ninguna parcela en el terreno visible.",
         "rederived": "El catastro cambió bajo este borrador: sus parcelas ahora siguen su geometría ({{count}})."
     },
@@ -458,32 +458,32 @@
         "waitingForReplay": "Esperando a que termine la reconstrucción de la composición aplicada…"
     },
     "proposalApplyFailures": {
-        "outsideCadastre": "La geometría de la propuesta se extiende más allá de las parcelas catastrales seleccionadas. Mantenla dentro del terreno seleccionado o crea una propuesta que incluya las parcelas adicionales.",
-        "outsideSite": "La geometría de la propuesta se extiende más allá de su emplazamiento. Mantenla dentro del emplazamiento o edítalo antes de aplicarla.",
+        "outsideCadastre": "La geometría del diseño se extiende más allá de las parcelas catastrales seleccionadas. Mantenla dentro del terreno seleccionado o crea un diseño que incluya las parcelas adicionales.",
+        "outsideSite": "La geometría del diseño se extiende más allá de su emplazamiento. Mantenla dentro del emplazamiento o edítalo antes de aplicarla.",
         "groundUnavailable": "No se pudieron cargar los datos de las parcelas catastrales. Comprueba tu conexión e inténtalo de nuevo.",
-        "groundMissing": "No hay datos catastrales disponibles para: {{parcels}}. No se puede aplicar esta propuesta hasta que se carguen esas parcelas.",
-        "needsParcels": "Esta propuesta actúa sobre parcelas catastrales o no tiene geometría propia. Carga sus parcelas antes de aplicarla.",
-        "undeclared": "Esta propuesta no tiene parcelas catastrales ni un emplazamiento de terreno libre. Define su emplazamiento antes de aplicarla.",
-        "invalidGeometry": "La geometría de la propuesta falta o no es válida. Edítala antes de aplicarla.",
-        "applyFailed": "No se pudo colocar la propuesta en el mapa porque no fue posible derivar su geometría del terreno seleccionado.",
+        "groundMissing": "No hay datos catastrales disponibles para: {{parcels}}. No se puede aplicar este diseño hasta que se carguen esas parcelas.",
+        "needsParcels": "Este diseño actúa sobre parcelas catastrales o no tiene geometría propia. Carga sus parcelas antes de aplicarla.",
+        "undeclared": "Este diseño no tiene parcelas catastrales ni un emplazamiento de terreno libre. Define su emplazamiento antes de aplicarla.",
+        "invalidGeometry": "La geometría del diseño falta o no es válida. Edítala antes de aplicarla.",
+        "applyFailed": "No se pudo colocar el diseño en el mapa porque no fue posible derivar su geometría del terreno seleccionado.",
         "busy": "Hay otra actualización del mapa en curso. Espera a que termine e inténtalo de nuevo.",
-        "storeUnavailable": "Las propuestas aún no se han cargado. Espera a que termine la carga de la ciudad e inténtalo de nuevo.",
-        "notFound": "Esta propuesta ya no está disponible. Actualiza la lista de propuestas e inténtalo de nuevo.",
-        "cancelled": "Esta propuesta fue retirada, por lo que no se puede aplicar al mapa."
+        "storeUnavailable": "Los diseños aún no se han cargado. Espera a que termine la carga de la ciudad e inténtalo de nuevo.",
+        "notFound": "Este diseño ya no está disponible. Actualiza la lista de diseños e inténtalo de nuevo.",
+        "cancelled": "Este diseño fue retirada, por lo que no se puede aplicar al mapa."
     },
     "proposalDrafts": {
         "title": "Borradores",
-        "entryAria": "Abrir {{count}} borrador(es) de propuesta guardados",
-        "editorAria": "Editor de borradores de propuestas",
+        "entryAria": "Abrir {{count}} borrador(es) de diseño guardados",
+        "editorAria": "Editor de borradores de diseños",
         "unknownCity": "Ciudad desconocida",
-        "proposal": "Propuesta",
+        "proposal": "Diseño",
         "untitled": "Borrador sin título",
         "source": "Origen: {{id}}",
-        "newDraft": "Borrador de propuesta nueva",
+        "newDraft": "Borrador de diseño nueva",
         "noParcels": "No hay parcelas en este borrador",
         "yes": "Sí",
         "no": "No",
-        "empty": "Todavía no hay borradores de propuestas guardados.",
+        "empty": "Todavía no hay borradores de diseños guardados.",
         "confirmDiscard": "¿Descartar este borrador guardado localmente? Esta acción no se puede deshacer.",
         "discardDesign": {
             "title": "¿Descartar este diseño?",
@@ -508,9 +508,9 @@
             "parcelsCopy": "Usa la selección actual del mapa o edita directamente los ID de parcela.",
             "designTitle": "Detalles del diseño",
             "designCopy": "Edita la geometría y los parámetros canónicos en la herramienta de diseño vinculada al mapa.",
-            "detailsCopyNew": "Describe qué hace esta propuesta para que otros puedan seguirla.",
-            "detailsCopyEdit": "Describe qué hace esta propuesta. Al guardar se actualiza en el mismo lugar; conserva su id.",
-            "detailsCopyCounterproposal": "Describe en qué se diferencia esta contrapropuesta. La propuesta publicada se queda como está."
+            "detailsCopyNew": "Describe qué hace este diseño para que otros puedan seguirla.",
+            "detailsCopyEdit": "Describe qué hace este diseño. Al guardar se actualiza en el mismo lugar; conserva su id.",
+            "detailsCopyCounterproposal": "Describe en qué se diferencia este diseño alternativo. El diseño publicado se queda como está."
         },
         "approval": {
             "title": "Propiedad y aprobación",
@@ -547,7 +547,7 @@
             "authorityId": "Autoridad (un ID abstracto; un miembro de la lente confirma quién actúa por ella)",
             "customAuthority": "También debe aprobar una autoridad",
             "unknownRegime": "Reglas de acuerdo desconocidas.",
-            "explainer": "Carga derechos abstractos de propietarios de parcelas y define quién debe aprobar. Estos datos son independientes de la geometría; su ausencia no impide revisar la propuesta geométrica. Los derechos describen la propiedad declarada, pero no demuestran autorización.",
+            "explainer": "Carga derechos abstractos de propietarios de parcelas y define quién debe aprobar. Estos datos son independientes de la geometría; su ausencia no impide revisar el diseño geométrica. Los derechos describen la propiedad declarada, pero no demuestran autorización.",
             "rightsTitle": "Derechos de propietarios",
             "importHelp": "Importa un archivo JSON de derechos de parcelas o carga los datos desde una fuente registrada. Si falla la importación, se conserva el conjunto anterior.",
             "source": "Fuente de derechos",
@@ -557,7 +557,7 @@
             "import": "Importar y previsualizar",
             "template": "Descargar plantilla",
             "remove": "Quitar derechos",
-            "noRights": "No hay datos de propiedad cargados. La geometría y la revisión de la propuesta siguen disponibles.",
+            "noRights": "No hay datos de propiedad cargados. La geometría y la revisión del diseño siguen disponibles.",
             "noOwners": "No hay propietarios indicados",
             "complete": "Completo",
             "incomplete": "Incompleto",
@@ -595,7 +595,7 @@
         },
         "fields": {
             "name": "Nombre",
-            "type": "Tipo de propuesta",
+            "type": "Tipo de diseño",
             "corridorKind": "Tipo de corredor",
             "description": "Descripción",
             "parcelIds": "ID de parcelas"
@@ -617,7 +617,7 @@
             "parcelSummary": "{{count}} parcela(s) afectadas",
             "road": "Calle",
             "track": "Vía",
-            "parcelOnly": "Esta propuesta no tiene una geometría de diseño independiente. El resaltado de parcelas sigue activo mientras editas las demás facetas.",
+            "parcelOnly": "Este diseño no tiene una geometría de diseño independiente. El resaltado de parcelas sigue activo mientras editas las demás facetas.",
             "unavailable": "Este editor de diseño no está disponible.",
             "editorBusy": "Otro editor de geometría ya está usando el mapa. Ciérralo antes de iniciar este diseño del emplazamiento.",
             "siteUnavailable": "El emplazamiento seleccionado no está disponible. Selecciona un emplazamiento válido e inténtalo de nuevo.",
@@ -627,7 +627,7 @@
             "handoffFailedReason": "No se pudo abrir el editor de diseño: {{reason}}. El emplazamiento no ha cambiado y el borrador de diseño se conservó localmente."
         },
         "placement": {
-            "fixedSite": "Este tipo de propuesta tiene un emplazamiento fijo y no se puede mover.",
+            "fixedSite": "Este tipo de diseño tiene un emplazamiento fijo y no se puede mover.",
             "invalidSite": "La ubicación libre necesita un emplazamiento poligonal válido.",
             "freshBinding": "La ubicación libre necesita una nueva vinculación del emplazamiento calculada por el servidor.",
             "unknownCoverage": "El servidor no puede verificar este emplazamiento con un catastro compatible. Muévelo a una zona compatible o contacta con el equipo de datos municipales.",
@@ -636,30 +636,30 @@
             "bindingUnavailable": "El servicio de vinculación autoritativa del emplazamiento no está disponible. El borrador movido se guardó localmente.",
             "geometryChanged": "La geometría cambió mientras se vinculaba el emplazamiento. Vuelve a guardar.",
             "buildingOutsideSite": "La geometría del edificio movido debe quedar completamente dentro del nuevo emplazamiento.",
-            "surroundingsOutsideSite": "El entorno movido debe quedar completamente dentro del nuevo emplazamiento. Mueve toda la propuesta o ajusta el límite del terreno antes de guardar."
+            "surroundingsOutsideSite": "El entorno movido debe quedar completamente dentro del nuevo emplazamiento. Mueve toda el diseño o ajusta el límite del terreno antes de guardar."
         },
         "review": {
             "title": "Revisar cambios",
-            "newProposal": "Propuesta nueva",
-            "noSource": "Sin propuesta de origen",
+            "newProposal": "Diseño nueva",
+            "noSource": "Sin diseño de origen",
             "details": "Detalles",
             "noFacetChanges": "Sin cambios de metadatos",
             "parcels": "Parcelas",
             "geometry": "Geometría",
             "changed": "Modificada",
             "unchanged": "Sin cambios",
-            "inPlaceNotice": "Al guardar, esta propuesta se actualiza en el mismo lugar. Conserva su id.",
-            "counterproposalNotice": "Al guardar se crea una contrapropuesta. La propuesta publicada no se cambia ni se elimina."
+            "inPlaceNotice": "Al guardar, este diseño se actualiza en el mismo lugar. Conserva su id.",
+            "counterproposalNotice": "Al guardar se crea un diseño alternativo. El diseño publicado no se cambia ni se elimina."
         },
         "validation": {
             "valid": "Lista para revisar",
             "errors": "{{count}} error(es)",
             "warnings": "{{count}} advertencia(s)",
             "issues": {
-                "missing-name": "Añade un nombre de propuesta.",
+                "missing-name": "Añade un nombre de diseño.",
                 "missing-parcels": "Selecciona al menos una parcela.",
-                "missing-description": "Una descripción ayudará a otros a entender esta propuesta.",
-                "missing-goal": "Elige un tipo de propuesta o un cambio de propiedad.",
+                "missing-description": "Una descripción ayudará a otros a entender este diseño.",
+                "missing-goal": "Elige un tipo de diseño o un cambio de propiedad.",
                 "invalid-centerline": "El corredor necesita un segmento válido de dos puntos.",
                 "invalid-width": "Define un ancho de corredor mayor que cero.",
                 "preview-pending": "La huella del corredor se reconstruirá al abrir Diseño.",
@@ -698,8 +698,8 @@
             "review": "Revisar cambios",
             "back": "Atrás",
             "saveChanges": "Guardar cambios",
-            "createCounterproposal": "Crear contrapropuesta",
-            "createProposal": "Crear propuesta",
+            "createCounterproposal": "Crear diseño alternativo",
+            "createProposal": "Crear diseño",
             "resume": "Continuar",
             "new": "Nuevo borrador",
             "closeList": "Cerrar borradores"
@@ -711,24 +711,24 @@
             "valid": "Lista"
         },
         "errors": {
-            "draftFailed": "No se pudo abrir esta propuesta para editarla.",
+            "draftFailed": "No se pudo abrir este diseño para editarla.",
             "instantCreateFailed": "No se pudo guardar el nuevo objeto.",
             "designSaveFailed": "No se pudieron guardar tus cambios. Inténtalo de nuevo.",
             "designSaveFailedReason": "No se pudo guardar este diseño: {{reason}}. El borrador sigue disponible; resuelve el problema e inténtalo de nuevo.",
             "structureGeometryFailed": "No se pudo generar la geometría de las parcelas seleccionadas.",
             "designEditorReopenFailed": "No se pudo volver a abrir el editor de diseño.",
             "siteRestoreFailed": "No se pudo restaurar el sitio. Inténtalo de nuevo.",
-            "noAdapter": "No hay un editor registrado para este tipo de propuesta.",
-            "notReshapeable": "Este tipo de propuesta no se puede remodelar.",
+            "noAdapter": "No hay un editor registrado para este tipo de diseño.",
+            "notReshapeable": "Este tipo de diseño no se puede remodelar.",
             "parcelsNotContiguous": "Las parcelas seleccionadas deben formar una sola superficie continua.",
             "parcelsUnavailable": "Las parcelas del borrador no están disponibles en la ciudad actual.",
-            "readOnly": "Esta propuesta es de solo lectura.",
-            "sourceMissing": "No se encontró la propuesta de origen.",
+            "readOnly": "Este diseño es de solo lectura.",
+            "sourceMissing": "No se encontró el diseño de origen.",
             "layoutWithoutPlots": "Este trazado de parcelas no tiene parcelas.",
             "subdivisionWithoutSite": "Esta parcelación no tiene sitio."
         },
         "publish": {
-            "alreadyCreated": "Este borrador ya creó la propuesta {{id}}.",
+            "alreadyCreated": "Este borrador ya creó el diseño {{id}}.",
             "geometryReady": "Geometría adjuntada desde el borrador"
         },
         "mapTooltip": "Borrador — haz clic para continuar",
@@ -739,21 +739,21 @@
         "revertFailed": "No se pudo restaurar la versión anterior.",
         "geometryUpdated": "Geometría actualizada.",
         "dependents": {
-            "title": "Propuestas construidas sobre esta",
-            "message": "Guardar este cambio modifica el terreno sobre el que se apoyan {{count}} propuesta(s): {{names}}. Se retirarán del mapa.",
+            "title": "Diseños construidas sobre esta",
+            "message": "Guardar este cambio modifica el terreno sobre el que se apoyan {{count}} diseño(s): {{names}}. Se retirarán del mapa.",
             "confirm": "Guardar y retirarlas",
             "cancel": "Seguir editando",
             "notSaved": "El cambio no se guardó. El diseño se ha reabierto."
         },
-        "builtButParked": "El objeto se creó pero no se pudo colocar en el mapa (un conflicto lo bloqueó). Está aparcado en tu lista de propuestas — selecciónalo allí para verlo y aplicarlo.",
-        "builtButParkedBecause": "El objeto se creó pero no se pudo colocar en el mapa: {{reason}} Está aparcado en tu lista de propuestas — selecciónalo allí para verlo y aplicarlo.",
+        "builtButParked": "El objeto se creó pero no se pudo colocar en el mapa (un conflicto lo bloqueó). Está aparcado en tu lista de diseños — selecciónalo allí para verlo y aplicarlo.",
+        "builtButParkedBecause": "El objeto se creó pero no se pudo colocar en el mapa: {{reason}} Está aparcado en tu lista de diseños — selecciónalo allí para verlo y aplicarlo.",
         "freeform": {
             "title": "Convertir en edificio libre",
             "convert": "Convertir",
             "keepRule": "Mantener la regla",
             "confirmLocal": "«{{name}}» se convierte en un edificio libre: el volumen de su regla {{rule}} a la mayor altura que la regla permite. Después los parámetros de la regla ya no se aplican: editas el edificio, y lo bajas, directamente.",
-            "confirmPublished": "«{{name}}» está publicada, así que se crea una contrapropuesta de edificio libre: un edificio, el volumen de su regla {{rule}} a la mayor altura que la regla permite. Los parámetros de la regla no se le aplican: editas el edificio directamente. La propuesta publicada queda como está.",
-            "noBuildings": "Esta propuesta no tiene edificios que conservar.",
+            "confirmPublished": "«{{name}}» está publicada, así que se crea un diseño alternativo de edificio libre: un edificio, el volumen de su regla {{rule}} a la mayor altura que la regla permite. Los parámetros de la regla no se le aplican: editas el edificio directamente. El diseño publicado queda como está.",
+            "noBuildings": "Este diseño no tiene edificios que conservar.",
             "notContiguous": "Sus edificios no se tocan entre sí, así que no pueden convertirse en un solo edificio libre.",
             "dropTitle": "Fuera de sus parcelas",
             "dropMessage": "La regla {{rule}} construye sobre sus propias parcelas, así que el diseño no puede moverse sin más. ¿Qué debe pasar aquí?",
@@ -765,9 +765,9 @@
             "noParcelsHere": "Ninguna parcela queda mayormente dentro del contorno soltado.",
             "dropConvertMeaning": "Convertir conserva el volumen de la regla a la mayor altura que permite; los parámetros de la regla ya no se le aplican.",
             "titleMany": "Convertir en edificios libres",
-            "dropConvertMeaningMany": "Convertir hace de cada una de las {{count}} casas una propuesta de edificio libre: el volumen de su parcela a la mayor altura que la regla permite. Los parámetros de la regla ya no se les aplican.",
-            "confirmLocalMany": "«{{name}}» se convierte en {{count}} propuestas de edificio libre, un edificio por casa: el volumen de cada parcela a la mayor altura que su regla {{rule}} permite. La primera conserva esta propuesta; después los parámetros de la regla ya no se aplican.",
-            "confirmPublishedMany": "«{{name}}» está publicada, así que se crean {{count}} contrapropuestas de edificio libre, un edificio por casa: el volumen de cada parcela a la mayor altura que su regla {{rule}} permite. La propuesta publicada queda como está.",
+            "dropConvertMeaningMany": "Convertir hace de cada una de las {{count}} casas un diseño de edificio libre: el volumen de su parcela a la mayor altura que la regla permite. Los parámetros de la regla ya no se les aplican.",
+            "confirmLocalMany": "«{{name}}» se convierte en {{count}} diseños de edificio libre, un edificio por casa: el volumen de cada parcela a la mayor altura que su regla {{rule}} permite. La primera conserva este diseño; después los parámetros de la regla ya no se aplican.",
+            "confirmPublishedMany": "«{{name}}» está publicada, así que se crean {{count}} diseños alternativoss de edificio libre, un edificio por casa: el volumen de cada parcela a la mayor altura que su regla {{rule}} permite. El diseño publicado queda como está.",
             "siblingsDropped": "Las demás casas no se convirtieron, porque la primera no se pudo guardar."
         }
     },
@@ -812,7 +812,7 @@
                 "other": "{{count}} parcelas"
             }
         },
-        "contiguityDisabledReason": "Deshabilitado porque las parcelas de la propuesta no son contiguas",
+        "contiguityDisabledReason": "Deshabilitado porque las parcelas del diseño no son contiguas",
         "roadDesignation": {
             "statusUnavailable": "La designación de suelo viario aún no está disponible.",
             "statusSelectParcels": "Selecciona las parcelas que quieres designar como suelo viario.",
@@ -820,7 +820,7 @@
             "statusBoundaryFailed": "No se pudo generar el límite a partir de las parcelas seleccionadas.",
             "statusGeometryFailed": "No se pudieron resolver las parcelas seleccionadas.",
             "statusMapUnavailable": "La librería de mapas no está disponible.",
-            "statusMissing": "Abre la herramienta de designación y haz clic en Listo antes de crear la propuesta.",
+            "statusMissing": "Abre la herramienta de designación y haz clic en Listo antes de crear el diseño.",
             "designationAriaLabel": "Designar como suelo viario",
             "designationTitle": "Designar como suelo viario",
             "designationHint": "Las parcelas seleccionadas, fusionadas, se convierten en suelo viario. No se diseña nada: para trazar una carretera con carriles, dibújala con la herramienta de carreteras.",
@@ -829,13 +829,13 @@
             "done": "Listo"
         },
         "copy": {
-            "wrongCity": "Esta propuesta se creó en otra ciudad. Cambia a esa ciudad e inténtalo de nuevo.",
-            "parcelsUnavailable": "No se pudo cargar el terreno catastral de esta propuesta. Inténtalo de nuevo cuando esté en el mapa."
+            "wrongCity": "Este diseño se creó en otra ciudad. Cambia a esa ciudad e inténtalo de nuevo.",
+            "parcelsUnavailable": "No se pudo cargar el terreno catastral de este diseño. Inténtalo de nuevo cuando esté en el mapa."
         },
         "recovery": {
-            "offer": "Las propuestas que hiciste {{when}} no se pudieron guardar porque la aplicación estaba abierta en otra pestaña ({{count}}).\n\n¿Restaurarlas ahora?"
+            "offer": "Los diseños que hiciste {{when}} no se pudieron guardar porque la aplicación estaba abierta en otra pestaña ({{count}}).\n\n¿Restaurarlas ahora?"
         },
-        "inOtherCity": "Esta propuesta pertenece a {{city}}, no a {{current}}: ábrala allí.",
+        "inOtherCity": "Este diseño pertenece a {{city}}, no a {{current}}: ábrala allí.",
         "share": {
             "view": {
                 "camera": "Incluir posición y ángulo de la cámara",
@@ -845,7 +845,6 @@
             "named": {
                 "rename": "Cambiar nombre del plan",
                 "name": "Dar nombre a este plan",
-                "label": "Nombre del plan",
                 "save": "Guardar enlace del plan",
                 "hint": "Guarda el nombre, los diseños seleccionados y la vista del mapa. Los cambios generan un enlace nuevo.",
                 "saved": "Plan guardado. Su enlace permanente está listo para copiar.",
@@ -946,8 +945,8 @@
                 "connectFailed": "No se pudo conectar a la billetera."
             },
             "walletChoice": {
-                "body": "No hay ninguna billetera conectada. Puedes conectar una para acuñar en cadena o continuar con una propuesta en memoria.",
-                "bodyConnected": "Hay una billetera conectada. ¿Usarla para acuñar en cadena o crear una propuesta en memoria?",
+                "body": "No hay ninguna billetera conectada. Puedes conectar una para acuñar en cadena o continuar con un diseño en memoria.",
+                "bodyConnected": "Hay una billetera conectada. ¿Usarla para acuñar en cadena o crear un diseño en memoria?",
                 "connect": "Conectar una billetera",
                 "memory": "Crear en memoria",
                 "title": "Elige cómo crear",
@@ -963,7 +962,7 @@
         "explainerIntroPrefix": "La ciudad tiene",
         "explainerIntroToken": "su propio token",
         "explainerIntroSuffix": "por supuesto.",
-        "explainerBody": "Cada dirección ciudadana registrada tiene derecho a 1 token por hora, para siempre. Puedes comprometer estos tokens con propuestas. Piénsalo como una forma de votar por las que te gustan.",
+        "explainerBody": "Cada dirección ciudadana registrada tiene derecho a 1 token por hora, para siempre. Puedes comprometer estos tokens con diseños. Piénsalo como una forma de votar por las que te gustan.",
         "currentBalance": "Saldo actual",
         "currentAllotment": "Asignación actual",
         "register": "Registrar",
@@ -1030,8 +1029,8 @@
                 "name": "Nombre",
                 "ethBalance": "Saldo en ETH",
                 "parcelsOwned": "Parcelas en propiedad",
-                "proposalsCreated": "Propuestas creadas",
-                "proposalsApplied": "Propuestas aplicadas",
+                "proposalsCreated": "Diseños creadas",
+                "proposalsApplied": "Diseños aplicadas",
                 "you": "(Tú)"
             }
         },
@@ -1043,7 +1042,7 @@
             "forSale": "En venta",
             "showParcelNumbers": "Mostrar IDs de parcela",
             "showOwnerCounts": "Mostrar número de propietarios (O)",
-            "showProposalCounts": "Mostrar cantidad de propuestas (P)",
+            "showProposalCounts": "Mostrar cantidad de diseños (P)",
             "showClaimsCounts": "Mostrar cantidad de reclamaciones (C)",
             "markMinted": "Marcar acuñadas",
             "selectMultiple": "Seleccionar múltiples parcelas",
@@ -1130,7 +1129,7 @@
             "showOsm": "Edificios del mapa (OSM)",
             "showProposed": "Mostrar edificios propuestos",
             "showSuggestedLayouts": "Distribuciones sugeridas (planta baja)",
-            "showSuggestedLayoutsTooltip": "Dibuja una distribución sugerida de la planta baja dentro de cada edificio propuesto sin interior modelado. Los contornos rojos discontinuos son demasiado pequeños para un núcleo de escalera mínimo. Es una sugerencia, no parte de la propuesta.",
+            "showSuggestedLayoutsTooltip": "Dibuja una distribución sugerida de la planta baja dentro de cada edificio propuesto sin interior modelado. Los contornos rojos discontinuos son demasiado pequeños para un núcleo de escalera mínimo. Es una sugerencia, no parte del diseño.",
             "showOverture": "Edificios de Overture (modelo 3D)",
             "showCustom": "Tu fuente de edificios",
             "showCadastre": "Edificios del catastro"
@@ -1152,7 +1151,7 @@
             "detectDguTooltip": "Marcar parcelas como carreteras usando datos de uredjenazemlja.hr",
             "clearButton": "Restablecer carreteras (este navegador)",
             "clearTooltip": "Eliminar las marcas de carreteras detectadas en este navegador",
-            "plansTitle": "Planes y propuestas",
+            "plansTitle": "Planes y diseños",
             "govPlanTooltip": "Mostrar la superposición del plan vial municipal",
             "govPlanToggle": "Plan vial oficial",
             "applyGovPlan": "Aplicar el plan vial oficial",
@@ -1199,21 +1198,20 @@
         "proposals": {
             "title": "Diseños",
             "listButton": "Diseños ({{count}})",
-            "shareButton": "Compartir propuestas aplicadas",
-            "shareButtonEmpty": "No hay propuestas aplicadas. Aplica algunas primero",
-            "shareButtonPreparing": "Preparando propuestas…",
+            "shareButtonEmpty": "No hay diseños aplicados. Aplica algunas primero",
+            "shareButtonPreparing": "Preparando diseños…",
             "agreementsButton": "Acuerdos",
             "mintedAgreementsButton": "Acuerdos en cadena",
-            "clearButton": "Restablecer propuestas (este navegador)",
+            "clearButton": "Restablecer diseños (este navegador)",
             "planStats": {
                 "buttonLabel": "Estadísticas",
                 "calculating": "Calculando…",
-                "modalTitle": "Estadísticas de propuestas aplicadas",
+                "modalTitle": "Estadísticas de diseños aplicados",
                 "resultingParcels": "Parcelas resultantes (media m²)",
                 "floorArea": "Superficie construida bruta (m²)",
                 "salesSuffix": "{{currency}} por m²",
                 "housingShareSuffix": "% de vivienda",
-                "closeAria": "Cerrar estadísticas de propuestas aplicadas",
+                "closeAria": "Cerrar estadísticas de diseños aplicados",
                 "buildings": "Edificios (huella m²)",
                 "openSpace": "Espacio libre — parques, plazas, agua (m²)",
                 "apartments": "Viviendas",
@@ -1228,13 +1226,13 @@
                 "viewAdded": "Añadido",
                 "viewCumulative": "Acumulado",
                 "colPeriod": "periodo",
-                "colProposals": "propuestas",
+                "colProposals": "diseños",
                 "colBuildings": "edificios",
                 "colFloorArea": "sup. m²",
                 "colApartments": "viviendas",
                 "colPeople": "habitantes",
                 "noEpoch": "sin periodo",
-                "scope": "{{counted}} propuestas aplicadas contadas de {{total}} en este mapa.",
+                "scope": "{{counted}} diseños aplicados contadas de {{total}} en este mapa.",
                 "noteUnmeasured": "{{n}} de {{total}} edificios no indican altura — su superficie no se contabiliza.",
                 "noteParcelArea": "El tamaño medio de parcela se calcula sobre las {{measured}} parcelas cuya forma está cargada; {{missing}} se cuentan pero no se miden.",
                 "unavailable": "Las estadísticas no están disponibles. Recarga la página e inténtalo de nuevo."
@@ -1242,15 +1240,15 @@
             "grainScore": {
                 "buttonLabel": "Gallo urbano",
                 "buttonHint": "Que pruebe cada parcela resultante",
-                "buttonEmpty": "Aplica primero al menos una propuesta",
+                "buttonEmpty": "Aplica primero al menos un diseño",
                 "institute": "Institut za zrnatost",
                 "title": "Puntuación de grano urbano",
                 "appliedComposition": "Composición aplicada",
                 "localScope": "Composición local · la puntuación queda en este navegador",
                 "closeAria": "Cerrar puntuación de grano",
-                "loading": "Preparando propuestas para la revisión…",
-                "unavailable": "La puntuación de grano no está disponible para estas propuestas.",
-                "noApplied": "Aplica al menos una propuesta antes de invocar al gallo.",
+                "loading": "Preparando diseños para la revisión…",
+                "unavailable": "La puntuación de grano no está disponible para estas diseños.",
+                "noApplied": "Aplica al menos un diseño antes de invocar al gallo.",
                 "noGeometry": "No se pudieron medir las formas de las parcelas resultantes.",
                 "verdictFine": "Grano fino",
                 "verdictGood": "Buena dirección",
@@ -1290,7 +1288,7 @@
                     "other": "Revisión terminada · {{eaten}} de {{total}} parcelas comidas"
                 }
             },
-            "listButtonLoading": "Cargando propuestas…"
+            "listButtonLoading": "Cargando diseños…"
         },
         "areaMonitor": {
             "title": "Monitor de zona",
@@ -1351,13 +1349,13 @@
             "telegramLabel": "Telegram",
             "xLabel": "X",
             "aboutTitle": "Acerca de",
-            "aboutParagraph": "<strong>Consensus Builder</strong> es una herramienta gratuita de planificación urbana en el mapa, creada por Urban Game Theory. Hyperstition: Markets for Possible Cities es su proyecto de hackathon. Explora parcelas reales, compara propuestas comunitarias de zonificación y desarrollo, y suma apoyo de las personas afectadas. Descubre el <a class=\"cb-link\" href=\"/urban-planning.html\">proceso de planificación urbana abierta</a>, abre la <a class=\"cb-link\" href=\"/hackathon-demo.html\">demo en vivo del hackathon</a>, lee la <a class=\"cb-link\" href=\"/deck.html\">presentación</a> o consulta <a class=\"cb-link\" href=\"roadmap.html\" target=\"_blank\" rel=\"noopener noreferrer\">la hoja de ruta</a>.",
+            "aboutParagraph": "<strong>Consensus Builder</strong> es una herramienta gratuita de planificación urbana en el mapa, creada por Urban Game Theory. Hyperstition: Markets for Possible Cities es su proyecto de hackathon. Explora parcelas reales, compara diseños comunitarias de zonificación y desarrollo, y suma apoyo de las personas afectadas. Descubre el <a class=\"cb-link\" href=\"/urban-planning.html\">proceso de planificación urbana abierta</a>, abre la <a class=\"cb-link\" href=\"/hackathon-demo.html\">demo en vivo del hackathon</a>, lee la <a class=\"cb-link\" href=\"/deck.html\">presentación</a> o consulta <a class=\"cb-link\" href=\"roadmap.html\" target=\"_blank\" rel=\"noopener noreferrer\">la hoja de ruta</a>.",
             "instructionsTitle": "Empieza aquí",
-            "instructionsParagraph": "<strong>Dibuja el cambio y después reúne el consentimiento.</strong> Al terminar un diseño se crea una propuesta local aplicada. Puedes inspeccionarla, editar su geometría, duplicar los diseños que se pueden mover o compartirla. Las reglas de decisión, los participantes y la financiación pertenecen a un acuerdo separado sobre los diseños. <a class=\"cb-link\" href=\"how-to-use.html\" target=\"_blank\" rel=\"noopener noreferrer\">Guía</a> · <a class=\"cb-link\" href=\"roadmap.html\" target=\"_blank\" rel=\"noopener noreferrer\">Hoja de ruta</a>.",
+            "instructionsParagraph": "<strong>Dibuja el cambio y después reúne el consentimiento.</strong> Al terminar un diseño se crea un diseño local aplicado. Puedes inspeccionarla, editar su geometría, duplicar los diseños que se pueden mover o compartirla. Las reglas de decisión, los participantes y la financiación pertenecen a un acuerdo separado sobre los diseños. <a class=\"cb-link\" href=\"how-to-use.html\" target=\"_blank\" rel=\"noopener noreferrer\">Guía</a> · <a class=\"cb-link\" href=\"roadmap.html\" target=\"_blank\" rel=\"noopener noreferrer\">Hoja de ruta</a>.",
             "advancedTitle": "Opciones avanzadas",
             "debugToggle": "Habilitar modo depuración",
             "wipeDataButton": "Restablecer todo (este navegador)",
-            "wipeDataTooltip": "Limpiar todos los datos guardados localmente (parcelas, carreteras, propuestas, ajustes)"
+            "wipeDataTooltip": "Limpiar todos los datos guardados localmente (parcelas, carreteras, diseños, ajustes)"
         }
     },
     "agentDialog": {
@@ -1370,16 +1368,16 @@
         "totalWealth": "Total modelado",
         "portfolioBasis": "Modelo del terreno: USD {{pricePerSqmUsd}}/m², convertido al tipo de cambio de USD {{usdPerEth}} por ETH.",
         "ownedParcels": "Parcelas vinculadas ({{count}})",
-        "proposalsCreated": "Propuestas creadas ({{count}})",
-        "localProposalUnavailable": "Registro de propuesta local no disponible",
+        "proposalsCreated": "Diseños creadas ({{count}})",
+        "localProposalUnavailable": "Registro de diseño local no disponible",
         "localProposalKey": "ID local {{id}}",
         "localParcelsBasis": "Parcelas asignadas a este agente en el modelo local.",
         "walletParcelsBasis": "Asignaciones del modelo local y NFT de parcelas observados en la cartera conectada; no acreditan la titularidad registral del terreno.",
         "agentLog": "Registro del agente",
         "parcelLabel": "Parcela {{number}}",
         "proposalCount": {
-            "one": "{{count}} propuesta",
-            "other": "{{count}} propuestas"
+            "one": "{{count}} diseño",
+            "other": "{{count}} diseños"
         },
         "logoutButton": "Cerrar sesión"
     },
@@ -1394,7 +1392,7 @@
         "statusLogCount": "{{count}} líneas",
         "statusLogClose": "Cerrar",
         "statusLogEmpty": "Aún no hay mensajes de estado",
-        "showThisProposal": "Mostrar esta propuesta"
+        "showThisProposal": "Mostrar este diseño"
     },
     "panel": {
         "parcel": {
@@ -1412,8 +1410,8 @@
                 "totalOwners": "Propietarios totales:",
                 "parcelLabel": "Parcela {{number}}",
                 "roadTag": "Carretera",
-                "proposalsLabel": "Propuestas:",
-                "proposalsHint": "Crea una propuesta que incluya todas las parcelas seleccionadas."
+                "proposalsLabel": "Diseños:",
+                "proposalsHint": "Crea un diseño que incluya todas las parcelas seleccionadas."
             },
             "idLabel": "ID:",
             "geometryReferenceNote": "Referencia de la aplicación derivada de la geometría. No hay número registral de origen; un cambio en el límite genera una nueva referencia.",
@@ -1427,11 +1425,11 @@
                 "source": "Parcela de origen {{number}}",
                 "sourcePart": "Parte de la parcela de origen {{number}}",
                 "formed": "Porción de terreno resultante {{number}}",
-                "formedNote": "Terreno formado por las propuestas aplicadas. Esta referencia identifica la porción actual, no una parcela registrada ni una parcela diseñada.",
+                "formedNote": "Terreno formado por los diseños aplicados. Esta referencia identifica la porción actual, no una parcela registrada ni una parcela diseñada.",
                 "sourcePartNote": "Una parte conexa de una parcela de origen. Esta referencia identifica la parte mostrada; la parcela de origen puede contener otras partes."
             },
             "tabInfo": "Info",
-            "tabProposals": "Propuestas",
+            "tabProposals": "Diseños",
             "tabTools": "Herramientas",
             "historySection": "Historial",
             "selectMultiple": "Seleccionar múltiples parcelas",
@@ -1487,7 +1485,7 @@
                 "block": "Bloque:",
                 "area": "Área:",
                 "marketPrice": "Precio de mercado estimado:",
-                "proposalsWithCount": "Propuestas ({{count}}):",
+                "proposalsWithCount": "Diseños ({{count}}):",
                 "areaUnit": "m²"
             },
             "ownershipType": {
@@ -1512,9 +1510,9 @@
             },
             "proposalsSection": {
                 "producerPill": "Origen de la parcela",
-                "create": "Crear propuesta",
-                "empty": "Aún no hay propuestas en esta parcela.",
-                "fallbackTitle": "Propuesta",
+                "create": "Crear diseño",
+                "empty": "Aún no hay diseños en esta parcela.",
+                "fallbackTitle": "Diseño",
                 "roadSuffix": " (Carretera)",
                 "badges": {
                     "applied": "Aplicada"
@@ -1531,16 +1529,16 @@
                 }
             },
             "setProposals": {
-                "empty": "Aún no hay propuestas en estas parcelas.",
+                "empty": "Aún no hay diseños en estas parcelas.",
                 "summary": {
-                    "one": "{{count}} propuesta en estas parcelas",
-                    "other": "{{count}} propuestas en estas parcelas"
+                    "one": "{{count}} diseño en estas parcelas",
+                    "other": "{{count}} diseños en estas parcelas"
                 },
                 "covers": {
                     "other": "En {{covered}} de {{count}} parcelas"
                 },
-                "loading": "Buscando propuestas publicadas…",
-                "unavailable": "No se pudieron cargar las propuestas publicadas: {{reason}}",
+                "loading": "Buscando diseños publicados…",
+                "unavailable": "No se pudieron cargar los diseños publicados: {{reason}}",
                 "publishedHeading": "También publicadas aquí"
             },
             "actions": {
@@ -1587,8 +1585,8 @@
                     "carryOver": "sigue con sus propietarios"
                 },
                 "takes": "Toma {{area}} m² de esta parcela → {{destination}}",
-                "remainder": "Las formaciones propuestas toman {{taken}} m²; usted conserva {{kept}} m².",
-                "remainderSplit": "Las formaciones propuestas toman {{taken}} m²; usted conserva {{kept}} m² en {{count}} piezas separadas ({{pieces}} m²)."
+                "remainder": "Las formaciones diseños toman {{taken}} m²; usted conserva {{kept}} m².",
+                "remainderSplit": "Las formaciones diseños toman {{taken}} m²; usted conserva {{kept}} m² en {{count}} piezas separadas ({{pieces}} m²)."
             },
             "mintTooltip": "Acuñar el NFT de la parcela",
             "closeAria": "Cerrar el panel de información de la parcela"
@@ -1603,9 +1601,9 @@
             },
             "parcelSet": {
                 "eyebrow": "Referencias catastrales declaradas",
-                "title": "Propuestas con referencias compartidas",
+                "title": "Diseños con referencias compartidas",
                 "summary": "{{count}} referencias catastrales declaradas. De {{total}} coincidencias cargadas, {{exact}} usan las mismas referencias y {{overlap}} comparten algunas. Se muestran {{shown}}.",
-                "noRelated": "{{count}} referencias catastrales declaradas. Ninguna otra propuesta cargada comparte estas referencias.",
+                "noRelated": "{{count}} referencias catastrales declaradas. Ninguna otra diseño cargada comparte estas referencias.",
                 "hash": "Hash registrado del conjunto",
                 "relationSame": "Mismas referencias",
                 "relationContains": "Incluye todas estas referencias",
@@ -1620,7 +1618,7 @@
                 "unapplying": "Retirando del mapa…",
                 "restoringGround": "Restaurando el terreno local…",
                 "saving": "Guardando…",
-                "unappliedStatus": "La propuesta «{{name}}» se retiró del mapa y permanece en la lista.",
+                "unappliedStatus": "El diseño «{{name}}» se retiró del mapa y permanece en la lista.",
                 "remove": "Retirar del mapa",
                 "includedInRoad": "Incluida en la vía combinada",
                 "includedInRoadHint": "Quita {{name}} del mapa para restaurar esta vía.",
@@ -1628,27 +1626,27 @@
                 "copy": "Editar",
                 "edit": "Editar",
                 "resumeDraft": "Continuar borrador",
-                "editUnavailable": "Esta propuesta no se puede editar de forma segura.",
+                "editUnavailable": "Este diseño no se puede editar de forma segura.",
                 "drive": "Conducir",
                 "delete": "Eliminar",
                 "deleteHint": "Elimina el objeto y su idea por completo.",
                 "editGeometry": "Editar geometría",
-                "editGeometryUnavailable": "Este tipo de propuesta no se puede remodelar (o está minteada y es inmutable).",
+                "editGeometryUnavailable": "Este tipo de diseño no se puede remodelar (o está minteada y es inmutable).",
                 "details": "Detalles del diseño",
                 "propose": "Proponer",
                 "editDetails": "Detalles",
                 "duplicateDesign": "Duplicar",
                 "duplicateDesignHint": "Mueve una copia con el puntero y haz clic para colocar un nuevo diseño.",
-                "apply_disabled_for_type": "Aplicar está desactivado para este tipo de propuesta.",
-                "applyFailed": "No se pudo aplicar esta propuesta: {{reason}}",
-                "applyFailedUnknown": "No se pudo aplicar esta propuesta. Inténtalo de nuevo.",
-                "applyUnavailable": "Esta propuesta no se puede aplicar al mapa.",
-                "applyUnsupported": "Este tipo de propuesta no admite su aplicación al mapa.",
-                "proposalNotLoaded": "Esta propuesta no está cargada en este navegador. Ábrela desde la lista de propuestas y vuelve a intentarlo.",
-                "missingProposal": "No se seleccionó ninguna propuesta para aplicar.",
-                "unapplyFailed": "No se pudo quitar esta propuesta del mapa: {{reason}}",
-                "unapplyFailedUnknown": "No se pudo quitar esta propuesta del mapa. Inténtalo de nuevo.",
-                "unapplyUnavailable": "Esta propuesta no se puede quitar del mapa.",
+                "apply_disabled_for_type": "Aplicar está desactivado para este tipo de diseño.",
+                "applyFailed": "No se pudo aplicar este diseño: {{reason}}",
+                "applyFailedUnknown": "No se pudo aplicar este diseño. Inténtalo de nuevo.",
+                "applyUnavailable": "Este diseño no se puede aplicar al mapa.",
+                "applyUnsupported": "Este tipo de diseño no admite su aplicación al mapa.",
+                "proposalNotLoaded": "Este diseño no está cargada en este navegador. Ábrela desde la lista de diseños y vuelve a intentarlo.",
+                "missingProposal": "No se seleccionó ningun diseño para aplicar.",
+                "unapplyFailed": "No se pudo quitar este diseño del mapa: {{reason}}",
+                "unapplyFailedUnknown": "No se pudo quitar este diseño del mapa. Inténtalo de nuevo.",
+                "unapplyUnavailable": "Este diseño no se puede quitar del mapa.",
                 "addToAgreement": "Añadir a un acuerdo",
                 "convertToFreeformHint": "Conserva el volumen de la regla a la mayor altura que permite, como un edificio que editas directamente. Después los parámetros de la regla ya no se aplican."
             },
@@ -1666,8 +1664,8 @@
                 "created": "Creada:"
             },
             "boost": {
-                "buttonLabel": "Aportar USDC a esta propuesta",
-                "copy": "Aporta USDC de devnet a un depósito en garantía. Solo se libera al propietario de la propuesta tras su ejecución, o se te reembolsa si se cancela o expira."
+                "buttonLabel": "Aportar USDC a este diseño",
+                "copy": "Aporta USDC de devnet a un depósito en garantía. Solo se libera al propietario del diseño tras su ejecución, o se te reembolsa si se cancela o expira."
             },
             "market": {
                 "yesSide": "Sí · ejecutada en la cadena",
@@ -1711,12 +1709,12 @@
                 "awaitingFunding": "A la espera de financiación",
                 "viewOnExplorer": "Ver en el explorador"
             },
-            "loading": "Cargando detalles de la propuesta…",
-            "rendering": "Renderizando detalles de la propuesta…",
+            "loading": "Cargando detalles del diseño…",
+            "rendering": "Renderizando detalles del diseño…",
             "sections": {
                 "cadastralParcels": "Parcelas catastrales:",
                 "generatedParcels": "Parcelas generadas:",
-                "proposalTypeFallback": "propuesta",
+                "proposalTypeFallback": "diseño",
                 "ownershipStats": "Propiedad y adquisición modeladas"
             },
             "parcels": {
@@ -1734,20 +1732,20 @@
             "descendantRoadNamedSuffix": " • Carretera: {{name}}",
             "basedOn": "Basado en",
             "lineage": {
-                "untitled": "Propuesta sin título",
-                "openFailed": "No se pudo abrir esa propuesta."
+                "untitled": "Diseño sin título",
+                "openFailed": "No se pudo abrir esa diseño."
             },
             "agent": {
-                "badge": "Propuesta de agente",
-                "sectionLabel": "Procedencia de la propuesta",
+                "badge": "Diseño de agente",
+                "sectionLabel": "Procedencia del diseño",
                 "verified": "Envío x402 verificado",
                 "payer": "Cartera pagadora",
                 "run": "Ejecución del agente",
                 "settlement": "Liquidación",
-                "flowLabel": "Cómo se creó esta propuesta",
+                "flowLabel": "Cómo se creó este diseño",
                 "flowDiscover": "API detectable",
                 "flowPay": "Pago x402",
-                "flowStore": "Propuesta almacenada"
+                "flowStore": "Diseño almacenada"
             },
             "landFork": {
                 "forkedFrom": "Duplicada en otro terreno a partir de",
@@ -1758,7 +1756,7 @@
                 "relationDisjoint": "Ninguna parcela en común con la original"
             },
             "stats": {
-                "summaryScope": "Estimaciones de los datos de la propuesta; las entradas de propietarios pueden repetirse entre parcelas e incluir propietarios supuestos.",
+                "summaryScope": "Estimaciones de los datos del diseño; las entradas de propietarios pueden repetirse entre parcelas e incluir propietarios supuestos.",
                 "individualOwners": "Entradas de titulares registradas:",
                 "ownerEntryCount": "Entradas de titulares registradas:",
                 "ownedByIndividuals": "Parcelas clasificadas como propiedad particular:",
@@ -1805,7 +1803,7 @@
                 "landHintDesign": "Referencias declaradas: {{count}} · diseños en las mismas parcelas",
                 "verification": "Verificación e historial",
                 "verificationHint": "Lente, pruebas y actividad",
-                "record": "Registro de la propuesta",
+                "record": "Registro del diseño",
                 "recordHint": "Fecha de creación, ID local y enlaces",
                 "actions": "Más acciones",
                 "actionsHint": "Inspecciona este diseño, duplica su geometría si se puede mover o explora su terreno."
@@ -1820,7 +1818,7 @@
             "title": "Información del bloque",
             "titleWithName": "Información del bloque — {{name}}",
             "tabInfo": "Info",
-            "tabProposals": "Propuestas (0)",
+            "tabProposals": "Diseños (0)",
             "tabTools": "Herramientas",
             "metrics": {
                 "name": "Nombre del bloque:",
@@ -1836,25 +1834,25 @@
                 "landlockedParcels": "Parcelas sin acceso:",
                 "landlockedArea": "Área de parcelas sin acceso:",
                 "loadingParcels": "Cargando parcelas…",
-                "loadingProposals": "Cargando propuestas…"
+                "loadingProposals": "Cargando diseños…"
             },
             "parcelsHeading": "Parcelas ({{count}})",
             "parcelLabel": "Parcela {{number}}",
             "proposals": {
-                "create": "Crear propuesta",
+                "create": "Crear diseño",
                 "blockNotFound": "Bloque no encontrado",
                 "noParcels": "No hay parcelas en este bloque",
                 "multiSelectUnavailable": "Selección múltiple no disponible",
-                "parcelsSelected": "{{count}} parcelas seleccionadas para la propuesta",
-                "noProposals": "No hay propuestas para este bloque todavía.",
+                "parcelsSelected": "{{count}} parcelas seleccionadas para el diseño",
+                "noProposals": "No hay diseños para este bloque todavía.",
                 "applyButton": "Aplicar al mapa",
                 "removeButton": "Quitar del mapa",
-                "roadApplyTooltip": "Aplicar esta propuesta de carretera",
-                "roadRemoveTooltip": "Quitar esta propuesta de carretera del mapa",
-                "buildingApplyTooltip": "Aplicar esta propuesta de edificio",
-                "buildingRemoveTooltip": "Quitar esta propuesta de edificio del mapa",
-                "structureApplyTooltip": "Aplicar esta propuesta de estructura",
-                "structureRemoveTooltip": "Quitar esta propuesta de estructura del mapa"
+                "roadApplyTooltip": "Aplicar este diseño de carretera",
+                "roadRemoveTooltip": "Quitar este diseño de carretera del mapa",
+                "buildingApplyTooltip": "Aplicar este diseño de edificio",
+                "buildingRemoveTooltip": "Quitar este diseño de edificio del mapa",
+                "structureApplyTooltip": "Aplicar este diseño de estructura",
+                "structureRemoveTooltip": "Quitar este diseño de estructura del mapa"
             }
         },
         "road": {
@@ -1884,7 +1882,7 @@
             "importGeoJsonHint": "Ejes de calles como LineString (.geojson) desde QGIS o cualquier SIG.",
             "importShapefile": "Shapefile",
             "importShapefileHint": "Ejes de calles como shapefile de Esri (.zip con .shp, .shx y .dbf).",
-            "crossSectionHint": "Edita los carriles y anchos de esta calle. El cambio de una calle publicada se guarda como contrapropuesta; la versión publicada no cambia.",
+            "crossSectionHint": "Edita los carriles y anchos de esta calle. El cambio de una calle publicada se guarda como diseño alternativo; la versión publicada no cambia.",
             "finishButton": "Terminar carretera (F)",
             "cancelButton": "Cancelar carretera (Esc)",
             "widthLabel": "Ancho de la carretera:",
@@ -1923,7 +1921,7 @@
             "edgeActionsProtectedHint": "No se puede añadir un nodo en una rampa, un túnel o un tramo a distinto nivel · × Demoler este tramo",
             "addNodeProtectedStatus": "No se puede añadir un nodo en una rampa, un túnel o un tramo a distinto nivel.",
             "editRevertedStatus": "No se pudo completar ese cambio de la vía — revertido.",
-            "splitIntoStretches": "La edición desconectó la vía — se dividió en {{count}} propuestas de vía separadas.",
+            "splitIntoStretches": "La edición desconectó la vía — se dividió en {{count}} diseños de vía separadas.",
             "applyingEdit": "Aplicando…",
             "buildingRoad": "Construyendo la vía…",
             "closeDrawnRoadPrompt": "Esta vía aún no se ha construido. ¿Construirla o descartar el trazado?",
@@ -1957,8 +1955,8 @@
             "conflictsRecordedStatus": "En el camino: {{list}} — decides al terminar.",
             "finishBlockedStatus": "Sin construir — en el camino: {{list}}. Deshaz o rodea los círculos rojos y vuelve a terminar.",
             "conflictPlots": {
-                "one": "lotes de {{count}} propuesta",
-                "other": "lotes de {{count}} propuestas"
+                "one": "lotes de {{count}} diseño",
+                "other": "lotes de {{count}} diseños"
             },
             "conflictParks": {
                 "one": "{{count}} parque",
@@ -1978,8 +1976,8 @@
             },
             "snapsToStreet": "Se une a {{name}}",
             "snapsToUnnamedStreet": "Se une a una calle existente",
-            "editNotFound": "Esta vía no está entre las propuestas de la ciudad del mapa. Cambia a la ciudad donde se creó y vuelve a intentarlo.",
-            "savedAsCounterproposal": "La vía publicada queda como está; tu cambio se guardó como contrapropuesta."
+            "editNotFound": "Esta vía no está entre los diseños de la ciudad del mapa. Cambia a la ciudad donde se creó y vuelve a intentarlo.",
+            "savedAsCounterproposal": "La vía publicada queda como está; tu cambio se guardó como diseño alternativo."
         },
         "roadAnalysis": {
             "title": "Análisis del ancho vial",
@@ -2001,11 +1999,11 @@
     "modal": {
         "walletChoice": {
             "title": "Elige cómo crear",
-            "body": "No hay una billetera conectada. Puedes conectarte para acuñar on-chain o continuar con una propuesta en memoria.",
+            "body": "No hay una billetera conectada. Puedes conectarte para acuñar on-chain o continuar con un diseño en memoria.",
             "connect": "Conectar una billetera",
             "useConnected": "Usar la billetera conectada",
             "memory": "Crear en memoria",
-            "bodyConnected": "Hay una billetera conectada. ¿Usarla para acuñar on-chain o crear una propuesta en memoria?"
+            "bodyConnected": "Hay una billetera conectada. ¿Usarla para acuñar on-chain o crear un diseño en memoria?"
         },
         "track": {
             "curvature": {
@@ -2030,7 +2028,7 @@
             "open": "Cómo funciona",
             "close": "Cerrar introducción",
             "before": "Parcelas existentes",
-            "after": "Manzana propuesta",
+            "after": "Manzana diseño",
             "cta": "Explorar el mapa",
             "tour": {
                 "next": "Siguiente función",
@@ -2045,21 +2043,21 @@
                     "hint": "Abre el selector de ciudades para viajar. Usa Capas para elegir qué quieres ver."
                 },
                 "propose": {
-                    "eyebrow": "De la idea a la propuesta",
+                    "eyebrow": "De la idea a el diseño",
                     "title": "Haz visible el cambio",
-                    "body": "Convierte una idea en una propuesta: rediseña parcelas, traza calles y parques o añade edificios. Aplica un borrador para ver cómo cambia el mapa.",
-                    "hint": "Empieza en Herramientas y después compara tus propuestas en el mapa."
+                    "body": "Convierte una idea en un diseño: rediseña parcelas, traza calles y parques o añade edificios. Aplica un borrador para ver cómo cambia el mapa.",
+                    "hint": "Empieza en Herramientas y después compara tus diseños en el mapa."
                 },
                 "consent": {
                     "eyebrow": "Las personas marcan la diferencia",
-                    "title": "Una propuesta inicia una conversación",
+                    "title": "Un diseño inicia una conversación",
                     "body": "Comparte un plan, reúne votos y apoyo financiero, y busca la aceptación de propietarios acreditados. Para las acciones en cadena se aplican requisitos de cartera e identidad.",
-                    "hint": "Abre una propuesta para consultar su apoyo y aceptación."
+                    "hint": "Abre un diseño para consultar su apoyo y aceptación."
                 },
                 "activity": {
                     "eyebrow": "Una ciudad en movimiento",
                     "title": "Sigue cómo avanzan las decisiones",
-                    "body": "Sigue las propuestas y la actividad de agentes de todo el mundo. Cuando haya una simulación disponible, reproduce o pausa los turnos para ver cómo evolucionan las propuestas y el apoyo.",
+                    "body": "Sigue los diseños y la actividad de agentes de todo el mundo. Cuando haya una simulación disponible, reproduce o pausa los turnos para ver cómo evolucionan los diseños y el apoyo.",
                     "hint": "Abre Actividad para seguir eventos, actores y zonas observadas. Los controles de simulación están en Ajustes > Diagnósticos."
                 },
                 "sources": {
@@ -2144,7 +2142,7 @@
             "parcelFootprint": "Parcela según la huella",
             "parcelWhole": "Tomar las parcelas enteras",
             "parcelInfo": "Por defecto el edificio forma su propia parcela según su huella y el resto del terreno queda con su propietario. Al tomar parcelas enteras, estas pasan a ser la parcela del edificio tal como están.",
-            "moveTogether": "Mover toda la propuesta",
+            "moveTogether": "Mover toda el diseño",
             "uploadInvalid": "La geometría subida no es válida o está fuera de la ubicación fijada."
         },
         "buildingUpload": {
@@ -2198,12 +2196,12 @@
             "triggerTitle": "Abrir modal de lente",
             "triggerDescription": "Lente para ver el mundo",
             "iconLabel": "Ícono de lente",
-            "readOnlyTitle": "Lente de la propuesta",
-            "readOnlySubtitle": "Guardada con esta propuesta; no se puede editar.",
-            "readOnlyNote": "Esta lente viene incluida en la propuesta y no se puede editar.",
+            "readOnlyTitle": "Lente del diseño",
+            "readOnlySubtitle": "Guardada con este diseño; no se puede editar.",
+            "readOnlyNote": "Esta lente viene incluida en el diseño y no se puede editar.",
             "picker": {
-                "title": "Lente de esta propuesta",
-                "subtitle": "Elige los miembros de la lente cuyas atestaciones de propiedad aceptará esta propuesta. La lente queda fijada al acuñar.",
+                "title": "Lente de este diseño",
+                "subtitle": "Elige los miembros de la lente cuyas atestaciones de propiedad aceptará este diseño. La lente queda fijada al acuñar.",
                 "loading": "Cargando miembros de la lente…",
                 "loadFailed": "No se pudo cargar el directorio de miembros de la lente: {{error}}",
                 "emptyDirectory": "Aún no se conoce ningún miembro de la lente. Pega abajo la clave de un miembro.",
@@ -2227,21 +2225,21 @@
                     "one": "{{count}} miembro de la lente elegido",
                     "other": "{{count}} miembros de la lente elegidos"
                 },
-                "required": "Elige al menos un miembro de la lente; una propuesta de Solana no se puede acuñar sin él.",
+                "required": "Elige al menos un miembro de la lente; un diseño de Solana no se puede acuñar sin él.",
                 "done": "Listo"
             }
         },
         "dataSource": {
-            "changeWarning": "Cambiar la fuente de datos BORRARÁ todos los datos guardados localmente (parcelas, carreteras, propuestas, planes, configuraciones de usuario, etc.).\n\n¿Quieres continuar?"
+            "changeWarning": "Cambiar la fuente de datos BORRARÁ todos los datos guardados localmente (parcelas, carreteras, diseños, planes, configuraciones de usuario, etc.).\n\n¿Quieres continuar?"
         },
         "dataManagement": {
-            "wipeWarning": "Esto borrará TODOS los datos guardados localmente (parcelas, carreteras, propuestas, borradores de propuestas, ajustes). ¿Continuar?"
+            "wipeWarning": "Esto borrará TODOS los datos guardados localmente (parcelas, carreteras, diseños, borradores de diseños, ajustes). ¿Continuar?"
         },
         "corridor": {
             "title": "Sección transversal",
             "openError": "No se pudo abrir el editor de sección transversal.",
             "subtitle": "El ancho total es la suma de los carriles: añade o quita un carril y la vía se ensancha o se estrecha",
-            "drawingSubtitle": "Los cambios se muestran en el mapa antes de crear la propuesta",
+            "drawingSubtitle": "Los cambios se muestran en el mapa antes de crear el diseño",
             "proposalSubtitle": "Previsualiza los cambios aquí y luego guárdalos en esta vía",
             "discardBody": "Al cerrar el editor de sección transversal se descartarán tus cambios.",
             "totalWidth": "Ancho total",
@@ -2382,11 +2380,11 @@
             "takeApply": "Aplicar",
             "keepEditing": "Seguir editando",
             "saveFailed": "No se pudo guardar la sección transversal. Tus cambios siguen aquí.",
-            "saveCounterproposal": "Guardar como contrapropuesta"
+            "saveCounterproposal": "Guardar como diseño alternativo"
         },
         "corridorDraft": {
             "title": "Borrador de trazado sin guardar",
-            "cancelBody": "Este trazado contiene cambios que todavía no forman parte de una propuesta.",
+            "cancelBody": "Este trazado contiene cambios que todavía no forman parte de un diseño.",
             "cityBody": "Cambiar de ciudad cerrará este trazado. Puedes conservarlo y retomarlo al volver.",
             "replaceBody": "Iniciar otro trazado reemplazará el borrador actual.",
             "wipeBody": "Borrar los datos locales eliminará permanentemente este borrador.",
@@ -2413,7 +2411,7 @@
             },
             "road": "camino",
             "track": "vía férrea",
-            "proposalImpact": "Esta carretera es posterior a estas propuestas de edificios; un cruce en superficie ocupa su suelo durante la repetición:",
+            "proposalImpact": "Esta carretera es posterior a estas diseños de edificios; un cruce en superficie ocupa su suelo durante la repetición:",
             "proposalImpactTunnel": "Un túnel cambia la representación diseñada de la carretera, no la huella de suelo que ocupa.",
             "surface": "Continuar en superficie",
             "sameGround": "El corredor completo ocupa el mismo suelo catastral en ambos casos; la repetición deriva el impacto en superficie.",
@@ -2457,14 +2455,14 @@
                 "alley": "Pasaje ~7,5 m"
             },
             "roadProposal": {
-                "title": "Crear propuesta de carretera",
+                "title": "Crear diseño de carretera",
                 "authorLabel": "Autor:",
                 "authorPlaceholder": "Tu nombre",
                 "nameLabel": "Nombre de la carretera:",
                 "namePlaceholder": "p. ej. Paseo del Sol",
                 "offerPlaceholder": "0",
                 "descriptionLabel": "Descripción:",
-                "descriptionPlaceholder": "Describe tu propuesta de carretera…",
+                "descriptionPlaceholder": "Describe tu diseño de carretera…",
                 "summary": {
                     "parcels": "Parcelas afectadas:",
                     "area": "Área total:",
@@ -2473,12 +2471,12 @@
                 },
                 "parcelLabel": "Parcela {{number}}",
                 "parcelArea": "({{area}} m²)",
-                "submit": "Crear propuesta",
+                "submit": "Crear diseño",
                 "previewUnavailable": "Vista previa no disponible",
                 "defaultDescription": {
-                    "one": "Propuesta manual de carretera que afecta a {{count}} parcela.",
-                    "few": "Propuesta manual de carretera que afecta a {{count}} parcelas.",
-                    "other": "Propuesta manual de carretera que afecta a {{count}} parcelas."
+                    "one": "Diseño manual de carretera que afecta a {{count}} parcela.",
+                    "few": "Diseño manual de carretera que afecta a {{count}} parcelas.",
+                    "other": "Diseño manual de carretera que afecta a {{count}} parcelas."
                 }
             },
             "polygonError": {
@@ -2505,7 +2503,7 @@
             },
             "proposalList": {
                 "title": "Diseños",
-                "closeAria": "Cerrar lista de propuestas",
+                "closeAria": "Cerrar lista de diseños",
                 "tabs": {
                     "active": "Activas",
                     "executed": "Ejecutadas"
@@ -2533,7 +2531,7 @@
                         "square": "Plazas",
                         "structure": "Otras estructuras",
                         "parcel-layout": "Trazados de parcelas",
-                        "parcel": "Propuestas de parcela",
+                        "parcel": "Diseños de parcela",
                         "other": "Otros"
                     },
                     "toggle": "Filtros",
@@ -2567,10 +2565,10 @@
                     "downloaded": "Descargada",
                     "details": "Detalles"
                 },
-                "loadingServer": "Cargando propuestas del servidor…",
-                "serverError": "Error al cargar las propuestas del servidor.",
+                "loadingServer": "Cargando diseños del servidor…",
+                "serverError": "Error al cargar los diseños del servidor.",
                 "retry": "Reintentar",
-                "downloadError": "No se pudo descargar la propuesta",
+                "downloadError": "No se pudo descargar el diseño",
                 "sort": {
                     "createdDesc": "Creación (más recientes primero)",
                     "createdAsc": "Creación (más antiguas primero)",
@@ -2633,9 +2631,9 @@
                 },
                 "detailsLabel": "Detalles",
                 "detailsTooltip": "Ver detalles",
-                "deleteTooltip": "Eliminar propuesta",
+                "deleteTooltip": "Eliminar diseño",
                 "empty": "Ningún diseño coincide con los filtros.",
-                "untitled": "Propuesta sin título",
+                "untitled": "Diseño sin título",
                 "lifecycle": {
                     "executed": "Ejecutada",
                     "expired": "Expirada",
@@ -2645,7 +2643,7 @@
                     "inMemory": "En memoria",
                     "awaitingFunding": "A la espera de financiación"
                 },
-                "downloadConfirm": "La propuesta no está en el almacenamiento local. ¿Descargar?",
+                "downloadConfirm": "El diseño no está en el almacenamiento local. ¿Descargar?",
                 "epoch": {
                     "rowLabel": "Época del plan",
                     "none": "Sin época",
@@ -2660,8 +2658,8 @@
                 }
             },
             "proposalChoice": {
-                "title": "Elegir propuesta",
-                "description": "La parcela {{parcel}} forma parte de {{count}} propuestas. Elige cuál ver:",
+                "title": "Elegir diseño",
+                "description": "La parcela {{parcel}} forma parte de {{count}} diseños. Elige cuál ver:",
                 "author": "Autor",
                 "offer": "Oferta",
                 "parcels": "Parcelas"
@@ -2671,14 +2669,14 @@
                 "title": "Compartir plan actual",
                 "copySuccess": "¡Enlace de compartición copiado al portapapeles!",
                 "untitled": "(Sin título)",
-                "uploadError": "No se pudo subir la propuesta. Por favor, inténtalo de nuevo.",
+                "uploadError": "No se pudo subir el diseño. Por favor, inténtalo de nuevo.",
                 "copyUrlButton": "Copiar URL",
                 "plan": {
                     "applyingNamed": "Aplicando {{label}} ({{done}}/{{total}})…",
-                    "materializing": "Iniciando la materialización de las propuestas…",
-                    "applyingAllTitle": "Aplicando propuestas compartidas",
-                    "loadFailed": "No se pudo cargar el plan o la propuesta del enlace. Inténtalo de nuevo.",
-                    "fetchingPlanTitle": "Obteniendo propuestas compartidas",
+                    "materializing": "Iniciando la materialización de los diseños…",
+                    "applyingAllTitle": "Aplicando diseños compartidas",
+                    "loadFailed": "No se pudo cargar el plan o el diseño del enlace. Inténtalo de nuevo.",
+                    "fetchingPlanTitle": "Obteniendo diseños compartidas",
                     "rebuildingStatus": "Reconstruyendo la composición aplicada…",
                     "rebuildingStatusCount": "Reconstruyendo la composición aplicada {{done}}/{{total}}…",
                     "progress": {
@@ -2694,7 +2692,7 @@
                         },
                         "corridorCounts": "{{roads}} y {{tracks}}",
                         "corridorCountNone": "corredores",
-                        "groundCheck": "Comprobando el terreno catastral de {{count}} propuestas…",
+                        "groundCheck": "Comprobando el terreno catastral de {{count}} diseños…",
                         "groundIdCheck": "Comprobando {{count}} parcelas catastrales declaradas…",
                         "groundIdLoad": "Cargando {{requested}} parcelas catastrales que faltan; {{cached}} ya están en caché…",
                         "groundIdLoadProgress": "Cargando parcelas catastrales ({{done}}/{{total}})…",
@@ -2702,10 +2700,10 @@
                         "groundFootprintWait": "Esperando una solicitud del terreno de la huella ya en curso…",
                         "groundIdsMissing": "Comprobación catastral terminada: {{missing}} no disponibles.",
                         "groundIdsReady": "Parcelas catastrales listas: {{cached}} en caché, {{loaded}} cargadas.",
-                        "groundFootprintLoad": "Cargando el terreno de {{members}} propuestas en {{batches}} lotes…",
+                        "groundFootprintLoad": "Cargando el terreno de {{members}} diseños en {{batches}} lotes…",
                         "groundFootprintProgress": "Cargando el terreno (lote {{done}}/{{total}}, {{parcels}} parcelas)…",
-                        "groundReady": "Terreno catastral listo: {{cachedMembers}} propuestas reutilizaron terreno cargado; {{loadedMembers}} necesitaron carga.",
-                        "groundIncomplete": "Comprobación terminada: {{unavailableMembers}} propuestas aún tienen parcelas no disponibles.",
+                        "groundReady": "Terreno catastral listo: {{cachedMembers}} diseños reutilizaron terreno cargado; {{loadedMembers}} necesitaron carga.",
+                        "groundIncomplete": "Comprobación terminada: {{unavailableMembers}} diseños aún tienen parcelas no disponibles.",
                         "buildingGroundLoad": "Cargando edificios en {{regions}} áreas afectadas ({{batches}} lotes)…",
                         "buildingGroundProgress": "Cargando edificios afectados (lote {{done}}/{{total}}, {{covered}} áreas cubiertas)…",
                         "buildingGroundReady": "Datos de edificios afectados listos: {{covered}} áreas cargadas; {{fallback}} se comprobarán individualmente.",
@@ -2715,15 +2713,15 @@
                         "fabricArrange": "Cortando las parcelas catastrales afectadas ({{done}}/{{total}})…",
                         "mapUpdate": "Actualizando el mapa: {{added}} piezas añadidas, {{removed}} eliminadas…",
                         "fabricReady": "Tejido parcelario listo en {{parcels}} parcelas catastrales.",
-                        "saving": "Guardando las propuestas aplicadas…",
+                        "saving": "Guardando los diseños aplicados…",
                         "corridorReady": "Aplicación terminada: {{corridors}}.",
                         "rollback": "Restaurando el tejido parcelario tras un error…",
-                        "presentation": "Actualizando el mapa y la lista de propuestas…",
+                        "presentation": "Actualizando el mapa y la lista de diseños…",
                         "corridorStrips": "Actualizando las superficies de carreteras y vías…"
                     },
                     "picked": "Seleccionado: {{title}}",
                     "pickedOnMap": "Seleccionado: {{title}} — {{parcel}}",
-                    "pickedNotInPlan": "Esa propuesta no está en este plan.",
+                    "pickedNotInPlan": "Esa diseño no está en este plan.",
                     "filterLabel": "Resaltar en el mapa",
                     "filterAll": "Todos"
                 }
@@ -2732,7 +2730,7 @@
                 "author": "Autor:",
                 "version": "Versión:",
                 "generated": "Generado:",
-                "count": "Propuestas:",
+                "count": "Diseños:",
                 "payload": "Contenido:",
                 "viewJson": "Ver JSON decodificado completo",
                 "parcelIds": "IDs de parcela:",
@@ -2740,7 +2738,7 @@
                 "roadParents": "Carreteras anteriores:",
                 "buildingParents": "Edificios anteriores:",
                 "details": "Detalles",
-                "title": "Revisar propuestas compartidas",
+                "title": "Revisar diseños compartidas",
                 "loading": "Parcelas aún cargando…",
                 "applySelected": "Aplicar seleccionadas"
             },
@@ -2748,19 +2746,19 @@
                 "authorLabel": "Autor:",
                 "authorPlaceholder": "Tu nombre",
                 "defaultDescription": {
-                    "one": "Propuesta de vía manual que afecta a {{count}} parcela.",
-                    "few": "Propuesta de vía manual que afecta a {{count}} parcelas.",
-                    "other": "Propuesta de vía manual que afecta a {{count}} parcelas."
+                    "one": "Diseño de vía manual que afecta a {{count}} parcela.",
+                    "few": "Diseño de vía manual que afecta a {{count}} parcelas.",
+                    "other": "Diseño de vía manual que afecta a {{count}} parcelas."
                 },
                 "descriptionLabel": "Descripción:",
-                "descriptionPlaceholder": "Describe tu propuesta de vía…",
+                "descriptionPlaceholder": "Describe tu diseño de vía…",
                 "nameLabel": "Nombre de la vía:",
                 "namePlaceholder": "p. ej. Línea ferroviaria principal",
                 "offerPlaceholder": "0",
                 "parcelArea": "({{area}} m²)",
                 "parcelLabel": "Parcela {{number}}",
                 "previewUnavailable": "Vista previa no disponible",
-                "submit": "Crear propuesta",
+                "submit": "Crear diseño",
                 "summary": {
                     "area": "Área total:",
                     "curvature": "Radio mín. de curvatura:",
@@ -2770,7 +2768,7 @@
                     "speed": "Velocidad de vía:",
                     "width": "Ancho de vía:"
                 },
-                "title": "Crear propuesta de vía"
+                "title": "Crear diseño de vía"
             },
             "editLaterNote": "Puedes editar el perfil de la carretera más tarde — también su ancho."
         },
@@ -2788,16 +2786,16 @@
             "summaryCoverage": "Cobertura aproximada de la vista: {{percent}}%"
         },
         "createProposal": {
-            "title": "Crear propuesta",
-            "editTitle": "Propuesta",
-            "titlePark": "Crear propuesta de parque",
-            "titleSquare": "Crear propuesta de plaza",
-            "closeAria": "Cerrar diálogo de propuesta",
+            "title": "Crear diseño",
+            "editTitle": "Diseño",
+            "titlePark": "Crear diseño de parque",
+            "titleSquare": "Crear diseño de plaza",
+            "closeAria": "Cerrar diálogo de diseño",
             "authorLabel": "Autor",
             "authorPlaceholder": "Tu nombre",
             "authorAvatarAlt": "Avatar del autor",
-            "proposalTypeLabel": "Tipo de propuesta",
-            "proposalGoalLabel": "Objetivo de la propuesta",
+            "proposalTypeLabel": "Tipo de diseño",
+            "proposalGoalLabel": "Objetivo del diseño",
             "typologyLabel": "Tipología",
             "acquisitionLabel": "Estrategia de adquisición",
             "ownershipLabel": "Propiedad",
@@ -2878,44 +2876,44 @@
                 }
             },
             "descriptionLabel": "Descripción",
-            "descriptionPlaceholder": "Describe tu propuesta…",
+            "descriptionPlaceholder": "Describe tu diseño…",
             "descriptionPlaceholderStructure": "Describe tu {{kind}}…",
             "summary": {
-                "title": "Resumen de la propuesta",
+                "title": "Resumen del diseño",
                 "parcels": "Parcelas seleccionadas:",
                 "area": "Área total:",
                 "owners": "Propietarios totales:",
                 "selected": "Parcelas seleccionadas:"
             },
             "similar": {
-                "title": "Propuestas similares:",
-                "unknownTitle": "Propuesta sin título",
+                "title": "Diseños similares:",
+                "unknownTitle": "Diseño sin título",
                 "unknownAuthor": "Desconocido"
             },
             "unknownParcel": "Desconocido",
             "ownerTooltip": "Propietario: {{name}}",
             "ownerUnknown": "Desconocido",
             "lensTooltip": "Abrir modal de lentes",
-            "submit": "Crear propuesta",
+            "submit": "Crear diseño",
             "creating": "Creando…",
             "waiting": "Esperando la transacción…",
             "rejected": "Transacción rechazada",
             "nameLabel": "Nombre",
-            "namePlaceholderProposal": "Nombre de la propuesta",
-            "defaultDescription": "{{type}} — nueva propuesta de {{author}}",
+            "namePlaceholderProposal": "Nombre del diseño",
+            "defaultDescription": "{{type}} — nueva diseño de {{author}}",
             "namePlaceholder": "Ponle nombre a tu {{kind}}",
             "typeLabel": "Tipo",
             "typePark": "Parque",
             "typeSquare": "Plaza",
             "errors": {
                 "missingFields": "Proporciona autor, nombre y una oferta válida.",
-                "missingParcels": "Faltan parcelas o geometría para esta propuesta.",
+                "missingParcels": "Faltan parcelas o geometría para este diseño.",
                 "couldNotDetermineParcels": "No se pudieron determinar las parcelas para este bloque.",
                 "parcelsNotContiguous": "Las parcelas no son contiguas",
-                "undeclaredParcels": "La geometría de esta propuesta ocupa {{count}} parcela(s) que no seleccionaste: {{list}}. Selecciónalas también o mantén la geometría dentro de las parcelas seleccionadas."
+                "undeclaredParcels": "La geometría de este diseño ocupa {{count}} parcela(s) que no seleccionaste: {{list}}. Selecciónalas también o mantén la geometría dentro de las parcelas seleccionadas."
             },
             "optionsSectionTitle": "Opciones",
-            "titleLake": "Crear propuesta de lago",
+            "titleLake": "Crear diseño de lago",
             "typeLake": "Lago",
             "site": {
                 "bound": "Sitio de {{area}} m², parcelas vinculadas: {{count}}. Al publicar se comprueba el vínculo con el catastro completo.",
@@ -2923,15 +2921,15 @@
             },
             "tolerance": {
                 "label": "Tolerancia de intrusión en parcelas (m)",
-                "help": "Una parcela entra en la propuesta cuando el sitio entra en ella más que este ancho (lineal, no por superficie). En ciudades deja 0: no puedes tomar nada de la parcela del vecino. Úsala solo para errores de medición; máximo 1 m."
+                "help": "Una parcela entra en el diseño cuando el sitio entra en ella más que este ancho (lineal, no por superficie). En ciudades deja 0: no puedes tomar nada de la parcela del vecino. Úsala solo para errores de medición; máximo 1 m."
             }
         },
         "unapplyTour": {
             "titleUnapply": "Desaplicar «{{title}}»",
             "titleDelete": "Eliminar «{{title}}»",
-            "message": "Esta propuesta tiene elementos dependientes. Lo siguiente se eliminará del mapa y del almacenamiento. Haga clic en un elemento para verlo.",
-            "counts": "{{proposals}} propuesta(s) · {{parcels}} fracción(es) de parcela",
-            "badgeProposal": "propuesta",
+            "message": "Este diseño tiene elementos dependientes. Lo siguiente se eliminará del mapa y del almacenamiento. Haga clic en un elemento para verlo.",
+            "counts": "{{proposals}} diseño(s) · {{parcels}} fracción(es) de parcela",
+            "badgeProposal": "diseño",
             "badgeParcel": "parcela",
             "cancel": "Cancelar",
             "confirmUnapply": "Desaplicar",
@@ -2942,10 +2940,10 @@
             "messageRecut": "Cambiar esta huella vuelve a cortar el terreno debajo. Lo siguiente se asienta en ese terreno y se volverá a derivar. Haga clic en un elemento para verlo.",
             "confirmRecut": "Recortar",
             "titleOccupied": "Suelo ocupado por «{{title}}»",
-            "messageOccupied": "Esto ocupa suelo que tienen las siguientes propuestas aplicadas. Una propuesta nunca se parte por la mitad, así que primero hay que desaplicarlas. Haz clic en un elemento para verlo.",
+            "messageOccupied": "Esto ocupa suelo que tienen las siguientes diseños aplicados. Un diseño nunca se parte por la mitad, así que primero hay que desaplicarlas. Haz clic en un elemento para verlo.",
             "confirmOccupied": "Desaplicar y continuar",
             "titleReform": "Reformando «{{title}}»",
-            "messageReform": "Guardar este trazado cambia la forma de parcelas sobre las que ya se apoyan otras propuestas. Esas propuestas se desaplicarán; las parcelas que no cambiaste conservan las suyas. Haz clic en un elemento para verlo.",
+            "messageReform": "Guardar este trazado cambia la forma de parcelas sobre las que ya se apoyan otras diseños. Esas diseños se desaplicarán; las parcelas que no cambiaste conservan las suyas. Haz clic en un elemento para verlo.",
             "confirmReform": "Desaplicar y guardar"
         },
         "common": {
@@ -2964,7 +2962,7 @@
             "blockedNote": "Un {{kind}} nunca se construye a través de un edificio existente, así que sería rechazado. Elige otra ruta o quita primero la casa del mapa.",
             "blockedBuilding": "Atravesaría un edificio propuesto:",
             "blockedBuildingLine": "“{{name}}”",
-            "blockedBuildingNote": "Un {{kind}} nunca se construye a través de un edificio existente, ni en superficie ni en túnel, así que sería rechazado. Elige otra ruta o quita primero esa propuesta del mapa."
+            "blockedBuildingNote": "Un {{kind}} nunca se construye a través de un edificio existente, ni en superficie ni en túnel, así que sería rechazado. Elige otra ruta o quita primero esa diseño del mapa."
         }
     },
     "blockify": {
@@ -3026,7 +3024,7 @@
                 "generateBeforeFinishing": "Genera un edificio antes de finalizar.",
                 "blockHasNoParcels": "El bloque no tiene parcelas.",
                 "unableToMapParcels": "No se pudieron mapear las parcelas para este bloque.",
-                "defaultProposalDescription": "Propuesta de edificio para {{blockName}}",
+                "defaultProposalDescription": "Diseño de edificio para {{blockName}}",
                 "selectedParcels": "Parcelas seleccionadas",
                 "singleParcelLabel": "Parcela {{id}}",
                 "multiParcelLabel": "{{count}} parcelas",
@@ -3049,10 +3047,10 @@
             },
             "existing": {
                 "toggle": "Basado en edificios existentes",
-                "proposedHeight": "Altura propuesta (plantas):",
+                "proposedHeight": "Altura diseño (plantas):",
                 "additionalFloors": "Plantas adicionales:",
                 "floorHeight": "Altura de planta (m):",
-                "helper": "Elige una regla: la altura propuesta dibuja cada edificio exactamente a esa altura; las plantas adicionales añaden plantas sobre la altura actual de cada edificio (requiere alturas conocidas).",
+                "helper": "Elige una regla: la altura diseño dibuja cada edificio exactamente a esa altura; las plantas adicionales añaden plantas sobre la altura actual de cada edificio (requiere alturas conocidas).",
                 "summaryExact": {
                     "one": "Se propone {{count}} edificio de {{height}} m.",
                     "other": "Se proponen {{count}} edificios de {{height}} m."
@@ -3130,7 +3128,7 @@
                 "generateBeforeFinishing": "Genera las viviendas en hilera antes de finalizar.",
                 "blockHasNoParcels": "El bloque no tiene parcelas.",
                 "unableToMapParcels": "No se pudieron mapear las parcelas para este bloque.",
-                "defaultProposalDescription": "Propuesta de viviendas en hilera para {{blockName}}",
+                "defaultProposalDescription": "Diseño de viviendas en hilera para {{blockName}}",
                 "selectedParcels": "Parcelas seleccionadas",
                 "singleParcelLabel": "Parcela {{id}}",
                 "multiParcelLabel": "{{count}} parcelas",
@@ -3171,7 +3169,7 @@
                 "minPlotArea": "Superficie mínima de parcela (m²):"
             },
             "helper": {
-                "ruleType": "Estas son reglas de edificación propuestas; no se ha verificado su cumplimiento con la normativa urbanística vigente. Elige un máximo, un rango o una forma exacta.",
+                "ruleType": "Estas son reglas de edificación diseños; no se ha verificado su cumplimiento con la normativa urbanística vigente. Elige un máximo, un rango o una forma exacta.",
                 "minPlotArea": "Las parcelas menores que el mínimo propuesto se muestran rayadas. Fusiónalas o cambia la regla."
             },
             "messages": {
@@ -3179,14 +3177,14 @@
                 "generateBeforeFinishing": "Genera los edificios antes de finalizar.",
                 "blockHasNoParcels": "El bloque no tiene parcelas.",
                 "unableToMapParcels": "No se pudieron mapear las parcelas para este bloque.",
-                "defaultProposalDescription": "Propuesta por parcela para {{blockName}}",
+                "defaultProposalDescription": "Diseño por parcela para {{blockName}}",
                 "selectedParcels": "Parcelas seleccionadas",
                 "singleParcelLabel": "Parcela {{id}}",
                 "multiParcelLabel": "{{count}} parcelas",
                 "generatedSummaryExcluded": "Se generaron {{count}} edificio(s) · {{excluded}} parcela(s) excluidas por la norma",
-                "excludedBelowMinPlot": "Menor que la superficie mínima de esta regla propuesta; fusiónala con una parcela vecina o cambia la regla.",
+                "excludedBelowMinPlot": "Menor que la superficie mínima de esta regel diseño; fusiónala con una parcela vecina o cambia la regla.",
                 "excludedNoRoom": "Este retiro propuesto no deja espacio para un edificio.",
-                "excludedCannotMeet": "La parcela no puede cumplir el mínimo de esta regla propuesta."
+                "excludedCannotMeet": "La parcela no puede cumplir el mínimo de esta regel diseño."
             }
         }
     },
@@ -3333,7 +3331,7 @@
             "siteParcelsMissing": "No se pudieron cargar las parcelas bajo este sitio: {{ids}}.",
             "siteUnavailable": "Este sitio no se puede parcelar aquí.",
             "poolClipFailed": "No se pudo calcular el terreno de este plan: {{reason}}",
-            "siteGroundTaken": "Este sitio cubre terreno que otra propuesta ya formó: {{names}}. Dibuje el sitio fuera de él o retire primero esa propuesta."
+            "siteGroundTaken": "Este sitio cubre terreno que otra diseño ya formó: {{names}}. Dibuje el sitio fuera de él o retire primero esa diseño."
         }
     },
     "mapCompare": {
@@ -3352,15 +3350,15 @@
             "block_has_no_parcels_with_name": "El bloque {{name}} no tiene parcelas",
             "block_not_found_with_name": "Bloque {{name}} no encontrado",
             "blockify_created_proposed_building_block": "Bloque de edificio propuesto creado para {{block}} (ancho: {{width}} m, retiro: {{setback}} m)",
-            "building_design_saved_add_proposal_details_to_submit": "Diseño del edificio guardado. Agrega los detalles de la propuesta para enviarla.",
+            "building_design_saved_add_proposal_details_to_submit": "Diseño del edificio guardado. Agrega los detalles del diseño para enviarla.",
             "building_generator_is_unavailable": "El generador de edificios no está disponible.",
-            "building_proposal_missing_geometry": "La propuesta de edificio no tiene geometría; no se puede aplicar.",
-            "cannot_apply_building_proposal_no_ancestor_parcels_found": "No se puede aplicar la propuesta de edificio: no se encontraron parcelas ancestras.",
-            "cannot_apply_building_proposal_missing_prerequisites": "No se puede aplicar la propuesta de edificio, faltan parcelas necesarias: {{missingList}}",
-            "cannot_apply_proposal_missing_parent_parcel_geometries": "No se puede aplicar la propuesta: faltan geometrías de las parcelas padre.",
-            "cannot_apply_proposal_missing_prerequisites": "No se puede aplicar la propuesta, faltan parcelas necesarias: {{missingList}}",
-            "cannot_apply_reparcellization_proposal_missing_generated_slices": "No se puede aplicar la propuesta de reparcelación: faltan los cortes generados.",
-            "cannot_apply_structure_proposal_missing_geometry": "No se puede aplicar la propuesta de estructura: falta la geometría.",
+            "building_proposal_missing_geometry": "El diseño de edificio no tiene geometría; no se puede aplicar.",
+            "cannot_apply_building_proposal_no_ancestor_parcels_found": "No se puede aplicar el diseño de edificio: no se encontraron parcelas ancestras.",
+            "cannot_apply_building_proposal_missing_prerequisites": "No se puede aplicar el diseño de edificio, faltan parcelas necesarias: {{missingList}}",
+            "cannot_apply_proposal_missing_parent_parcel_geometries": "No se puede aplicar el diseño: faltan geometrías de las parcelas padre.",
+            "cannot_apply_proposal_missing_prerequisites": "No se puede aplicar el diseño, faltan parcelas necesarias: {{missingList}}",
+            "cannot_apply_reparcellization_proposal_missing_generated_slices": "No se puede aplicar el diseño de reparcelación: faltan los cortes generados.",
+            "cannot_apply_structure_proposal_missing_geometry": "No se puede aplicar el diseño de estructura: falta la geometría.",
             "city_change_cancelled": "Cambio de ciudad cancelado",
             "clearing_local_parcel_data": "Borrando datos locales de parcelas…",
             "cleared_blocks_from_storage": "Se limpiaron {{count}} bloques del almacenamiento",
@@ -3388,8 +3386,8 @@
             "draw_the_single_building_inside_the_selected_block_first": "Dibuja primero el edificio único dentro del bloque seleccionado.",
             "enable_multi_parcel_selection_to_use_this_action": "Activa la selección multi-parcela para usar esta acción.",
             "error_calculating_road_measurements": "Error al calcular las mediciones de carretera.",
-            "error_clearing_proposal_data_please_try_again": "Error al borrar los datos de propuestas. Inténtalo de nuevo.",
-            "error_deleting_proposal_please_try_again": "Error al eliminar la propuesta. Inténtalo de nuevo.",
+            "error_clearing_proposal_data_please_try_again": "Error al borrar los datos de diseños. Inténtalo de nuevo.",
+            "error_deleting_proposal_please_try_again": "Error al eliminar el diseño. Inténtalo de nuevo.",
             "error_detecting_existing_roads_using_all_sources": "Error al detectar carreteras existentes con todas las fuentes.",
             "error_detecting_roads_from_dgu": "Error al detectar carreteras desde DGU.",
             "error_detecting_roads_using_gup_data": "Error al detectar carreteras usando datos GUP.",
@@ -3400,7 +3398,7 @@
             "error_fetching_data_please_try_again": "Error al obtener datos. Inténtalo de nuevo.",
             "error_occurred_while_counting_blocks_please_try_again": "Se produjo un error al contar los bloques. Inténtalo de nuevo.",
             "error_while_forming_block_from_selected_parcel": "Error al formar el bloque desde la parcela seleccionada.",
-            "error_proposal_not_found": "Error: propuesta no encontrada",
+            "error_proposal_not_found": "Error: diseño no encontrada",
             "failed_to_compute_mbr": "No se pudo calcular el MBR",
             "failed_to_compute_block_hull_for_mbr": "No se pudo calcular el envolvente del bloque para el MBR",
             "failed_to_compute_split_road_geometry": "No se pudo calcular la geometría de la carretera divisoria",
@@ -3458,11 +3456,11 @@
                 "other": "Se agregaron {{count}} parcelas nuevas ({{total}} en la capa)"
             },
             "applying_shared_proposals_progress": {
-                "one": "Aplicando {{count}} propuesta compartida…",
-                "few": "Aplicando {{count}} propuestas compartidas…",
-                "other": "Aplicando {{count}} propuestas compartidas…"
+                "one": "Aplicando {{count}} diseño compartida…",
+                "few": "Aplicando {{count}} diseños compartidas…",
+                "other": "Aplicando {{count}} diseños compartidas…"
             },
-            "applying_specific_shared_proposal": "Aplicando la propuesta compartida {{title}} #{{id}}…",
+            "applying_specific_shared_proposal": "Aplicando el diseño compartida {{title}} #{{id}}…",
             "no_new_parcels_to_load_summary": {
                 "one": "No hay parcelas nuevas para cargar ({{count}} parcela visible)",
                 "few": "No hay parcelas nuevas para cargar ({{count}} parcelas visibles)",
@@ -3474,9 +3472,9 @@
                 "other": "Se borraron {{count}} elementos relacionados con parcelas del almacenamiento local"
             },
             "cleared_local_proposals_summary": {
-                "one": "Se borró {{count}} propuesta del almacenamiento local",
-                "few": "Se borraron {{count}} propuestas del almacenamiento local",
-                "other": "Se borraron {{count}} propuestas del almacenamiento local"
+                "one": "Se borró {{count}} diseño del almacenamiento local",
+                "few": "Se borraron {{count}} diseños del almacenamiento local",
+                "other": "Se borraron {{count}} diseños del almacenamiento local"
             },
             "game_initialized_summary": "Juego inicializado: {{agents}} agentes creados, {{parcels}} parcelas asignadas",
             "game_state_reset_agent_preserved": "El estado del juego se restableció. Tu agente se conservó con datos nuevos.",
@@ -3538,41 +3536,41 @@
             "parcel_not_minted_yet_opening_mint_attest_flow": "La parcela aún no está acuñada. Abriendo el flujo Mint & Attest…",
             "checking_parcel_nft_status": "Comprobando el estado NFT…",
             "unable_to_check_parcel_nft_status": "No se pudo comprobar el estado NFT.",
-            "parcel_selection_tools_are_unavailable_cannot_prepare_proposal": "Las herramientas de selección de parcelas no están disponibles, no se puede preparar la propuesta.",
+            "parcel_selection_tools_are_unavailable_cannot_prepare_proposal": "Las herramientas de selección de parcelas no están disponibles, no se puede preparar el diseño.",
             "parcels_disabled_at_this_zoom": "Las parcelas están deshabilitadas en este zoom",
-            "please_select_at_least_one_parcel_to_create_a_proposal": "Selecciona al menos una parcela para crear una propuesta.",
-            "please_use_the_main_create_proposal_button_when_multiple_parcels_are_selected": "Usa el botón principal \"Crear propuesta\" cuando haya varias parcelas seleccionadas.",
-            "proposal_not_found": "Propuesta no encontrada",
+            "please_select_at_least_one_parcel_to_create_a_proposal": "Selecciona al menos una parcela para crear un diseño.",
+            "please_use_the_main_create_proposal_button_when_multiple_parcels_are_selected": "Usa el botón principal \"Crear diseño\" cuando haya varias parcelas seleccionadas.",
+            "proposal_not_found": "Diseño no encontrada",
             "proposal_created_with_parcel_count": {
-                "one": "Propuesta \"{{type}}\" creada con éxito con {{count}} parcela.",
-                "few": "Propuesta \"{{type}}\" creada con éxito con {{count}} parcelas.",
-                "other": "Propuesta \"{{type}}\" creada con éxito con {{count}} parcelas."
+                "one": "Diseño \"{{type}}\" creada con éxito con {{count}} parcela.",
+                "few": "Diseño \"{{type}}\" creada con éxito con {{count}} parcelas.",
+                "other": "Diseño \"{{type}}\" creada con éxito con {{count}} parcelas."
             },
-            "proposal_created_review_details_and_apply_when_ready": "Propuesta \"{{title}}\" creada. Revisa los detalles y aplícala al mapa cuando esté lista.",
-            "proposal_deleted": "Propuesta \"{{title}}\" eliminada",
-            "applied_structure_proposal": "Se aplicó la propuesta de estructura \"{{title}}\"",
-            "applied_reparcellization_proposal": "Se aplicó la propuesta de reparcelación \"{{title}}\"",
-            "applied_building_proposal": "Se aplicó la propuesta de edificio \"{{title}}\"",
-            "removed_reparcellization_proposal": "Se quitó la propuesta de reparcelación \"{{title}}\" del mapa.",
+            "proposal_created_review_details_and_apply_when_ready": "Diseño \"{{title}}\" creada. Revisa los detalles y aplícala al mapa cuando esté lista.",
+            "proposal_deleted": "Diseño \"{{title}}\" eliminada",
+            "applied_structure_proposal": "Se aplicó el diseño de estructura \"{{title}}\"",
+            "applied_reparcellization_proposal": "Se aplicó el diseño de reparcelación \"{{title}}\"",
+            "applied_building_proposal": "Se aplicó el diseño de edificio \"{{title}}\"",
+            "removed_reparcellization_proposal": "Se quitó el diseño de reparcelación \"{{title}}\" del mapa.",
             "resolving_parcel_claim_details": "Resolviendo los detalles del reclamo de la parcela…",
-            "review_proposal_before_applying": "Revisa la propuesta antes de aplicarla.",
+            "review_proposal_before_applying": "Revisa el diseño antes de aplicarla.",
             "revoked_acceptance_for_owner_on_parcel": "Se revocó la aceptación de {{owner}} en la parcela {{parcelId}}.",
             "analyzed_roads_summary": "Se analizaron {{count}} carreteras. {{summary}}",
             "road_measurements_calculated_and_added_to_panel": "Mediciones de carretera calculadas y añadidas al panel.",
-            "road_proposal_created_and_applied": "La propuesta vial \"{{name}}\" se creó y aplicó.",
+            "road_proposal_created_and_applied": "El diseño vial \"{{name}}\" se creó y aplicó.",
             "road_plan_applied_to_current_map_view": "Plan vial aplicado en la vista actual del mapa.",
             "analyzed_osm_road_segments_summary": "Se analizaron los segmentos viales de OSM. {{summary}}",
             "selected_proposal_summary": {
-                "one": "Propuesta \"{{title}}\" seleccionada (contiene {{count}} parcela)",
-                "few": "Propuesta \"{{title}}\" seleccionada (contiene {{count}} parcelas)",
-                "other": "Propuesta \"{{title}}\" seleccionada (contiene {{count}} parcelas)"
+                "one": "Diseño \"{{title}}\" seleccionada (contiene {{count}} parcela)",
+                "few": "Diseño \"{{title}}\" seleccionada (contiene {{count}} parcelas)",
+                "other": "Diseño \"{{title}}\" seleccionada (contiene {{count}} parcelas)"
             },
             "selected_parcel_with_number": "Parcela seleccionada {{number}}",
             "select_a_block_first": "Selecciona primero un bloque",
             "parcels_could_not_be_merged": "No se pudieron unir las parcelas seleccionadas en un solo emplazamiento: {{reason}}",
             "select_a_parcel_before_attempting_to_claim_it": "Selecciona una parcela antes de intentar reclamarla.",
-            "select_a_parcel_block_before_creating_a_proposal": "Selecciona un bloque de parcelas antes de crear una propuesta.",
-            "select_at_least_one_parcel_to_create_a_proposal": "Selecciona al menos una parcela para crear una propuesta.",
+            "select_a_parcel_block_before_creating_a_proposal": "Selecciona un bloque de parcelas antes de crear un diseño.",
+            "select_at_least_one_parcel_to_create_a_proposal": "Selecciona al menos una parcela para crear un diseño.",
             "select_at_least_one_parcel_to_apply_the_government_road_plan": "Selecciona al menos una parcela para aplicar el plan vial gubernamental.",
             "select_parcels_before_applying_the_government_road_plan": "Selecciona parcelas antes de aplicar el plan vial gubernamental.",
             "select_parcels_before_launching_the_buildings_tool": "Selecciona parcelas antes de abrir la herramienta de edificios.",
@@ -3587,10 +3585,10 @@
             "highlighted_neighboring_parcels_count": "Se resaltaron {{count}} parcelas vecinas",
             "showing_all_parcels": "Mostrando todas las parcelas",
             "showing_vertices_for_parcel": "Mostrando {{count}} vértices de la parcela {{parcel}}",
-            "single_building_design_saved_complete_the_proposal_form_to_submit": "Diseño de edificio único guardado. Completa el formulario de propuesta para enviarlo.",
-            "single_building_proposal_created_use_apply_when_ready": "Propuesta \"{{title}}\" creada. Usa Aplicar al mapa desde los detalles de la propuesta cuando esté lista.",
+            "single_building_design_saved_complete_the_proposal_form_to_submit": "Diseño de edificio único guardado. Completa el formulario de diseño para enviarlo.",
+            "single_building_proposal_created_use_apply_when_ready": "Diseño \"{{title}}\" creada. Usa Aplicar al mapa desde los detalles del diseño cuando esté lista.",
             "single_building_tool_is_unavailable": "La herramienta de edificio único no está disponible.",
-            "structure_proposal_dialog_is_unavailable": "El cuadro de diálogo de propuestas de estructuras no está disponible.",
+            "structure_proposal_dialog_is_unavailable": "El cuadro de diálogo de diseños de estructuras no está disponible.",
             "unable_to_compute_bounds_for_this_block": "No se pudieron calcular los límites de este bloque.",
             "unable_to_determine_map_bounds_for_analysis": "No se pudieron determinar los límites del mapa para el análisis.",
             "unable_to_determine_map_bounds_for_government_plans": "No se pudieron determinar los límites del mapa para los planes gubernamentales.",
@@ -3598,7 +3596,7 @@
             "unable_to_determine_parcel_identifier_for_claims": "No se pudo determinar el identificador de parcela para los reclamos.",
             "unable_to_open_parcel_builder_please_try_again": "No se pudo abrir Parcel Builder. Inténtalo de nuevo.",
             "unable_to_open_claim_portal_please_try_again": "No se pudo abrir el portal de reclamación. Inténtalo de nuevo.",
-            "unable_to_prepare_building_geometry_for_proposal": "No se pudo preparar la geometría del edificio para la propuesta.",
+            "unable_to_prepare_building_geometry_for_proposal": "No se pudo preparar la geometría del edificio para el diseño.",
             "using_cached_osm_road_data": "Usando datos viales de OSM en caché",
             "waiting_for_parcel_merge_to_complete_before_applying_the_government_road_plan": "Esperando a que termine la fusión de parcelas antes de aplicar el plan vial gubernamental…",
             "parcel_data_still_merging_before_government_plan": "Los datos de las parcelas aún se están combinando. Aplicaremos el plan vial gubernamental en cuanto el mapa termine de actualizarse.",
@@ -3634,7 +3632,7 @@
             "no_parcel_at_point": "No se encontró una parcela registrada en este punto.",
             "parcel_lookup_failed": "No se pudo cargar la parcela. Toca de nuevo para reintentarlo.",
             "parcel_boundary_loaded": "Límite de la parcela cargado.",
-            "waiting_for_proposal_before_parcels": "Esperando a que cargue la propuesta antes de obtener las parcelas…",
+            "waiting_for_proposal_before_parcels": "Esperando a que cargue el diseño antes de obtener las parcelas…",
             "debug_mode_enabled": "Modo depuración activado: las acciones peligrosas ahora son visibles",
             "debug_mode_disabled": "Modo depuración desactivado: las acciones peligrosas están ocultas",
             "zoom_in_to_see_buildings": "Acerca el mapa para ver los edificios."
@@ -5509,7 +5507,7 @@
             "cancelled": "Cambio de ciudad cancelado"
         },
         "switchPrompt": {
-            "title": "Esta propuesta es de {requested}: estás viendo {current}",
+            "title": "Este diseño es de {requested}: estás viendo {current}",
             "body": "Abrirla cambia el mapa a {requested} y recarga. Tu trabajo en {current} se conserva y seguirá aquí cuando vuelvas.",
             "stay": "Quedarme en {current}",
             "switch": "Abrir en {requested}"
@@ -5518,76 +5516,76 @@
     "alerts": {
         "messages": {
             "community_vote_has_no_owner_action": "Un voto vecinal lo deciden los vecinos a través de la organización; los propietarios no tienen nada que aceptar.",
-            "owner_vote_not_on_solana": "Los votos de propietarios aún no se pueden acuñar en Solana. Elige otro tipo o mantén la propuesta fuera de la cadena.",
-            "a_proposal_with_the_same_parcels_already_exists": "Ya existe una propuesta con las mismas parcelas.",
-            "an_identical_proposal_already_exists": "Ya existe una propuesta idéntica.",
-            "building_proposal_workflow_is_unavailable": "El flujo de propuestas de edificio no está disponible.",
-            "cannot_undo_acceptance_from_an_executed_proposal_that_has_descendant_parcels": "No se puede deshacer la aceptación de una propuesta ejecutada que tiene parcelas descendientes.",
-            "could_not_prepare_building_data_for_the_proposal_please_try_again": "No se pudieron preparar los datos del edificio para la propuesta. Inténtalo de nuevo.",
-            "proposal_lifecycle_unknown": "Se desconoce el estado de la propuesta. Vuelve a cargarla antes de aceptarla.",
-            "proposal_terms_unavailable": "No se pudieron verificar las condiciones actuales de la propuesta. Vuelva a cargarla antes de aceptarla.",
-            "acceptance_confirmed_status_unavailable": "La aceptación se confirmó en la cadena, pero no se pudo actualizar el estado de la propuesta. Se sigue mostrando el estado anterior. Vuelve a cargar la propuesta para comprobarlo.",
-            "proposal_terms_invalid": "Corrige las condiciones de la propuesta antes de aceptar.",
-            "error_accepting_proposal_please_try_again": "Error al aceptar la propuesta. Inténtalo de nuevo.",
-            "error_rejecting_proposal_please_try_again": "Error al rechazar la propuesta. Inténtalo de nuevo.",
+            "owner_vote_not_on_solana": "Los votos de propietarios aún no se pueden acuñar en Solana. Elige otro tipo o mantén el diseño fuera de la cadena.",
+            "a_proposal_with_the_same_parcels_already_exists": "Ya existe un diseño con las mismas parcelas.",
+            "an_identical_proposal_already_exists": "Ya existe un diseño idéntico.",
+            "building_proposal_workflow_is_unavailable": "El flujo de diseños de edificio no está disponible.",
+            "cannot_undo_acceptance_from_an_executed_proposal_that_has_descendant_parcels": "No se puede deshacer la aceptación de un diseño ejecutada que tiene parcelas descendientes.",
+            "could_not_prepare_building_data_for_the_proposal_please_try_again": "No se pudieron preparar los datos del edificio para el diseño. Inténtalo de nuevo.",
+            "proposal_lifecycle_unknown": "Se desconoce el estado del diseño. Vuelve a cargarla antes de aceptarla.",
+            "proposal_terms_unavailable": "No se pudieron verificar las condiciones actuales del diseño. Vuelva a cargarla antes de aceptarla.",
+            "acceptance_confirmed_status_unavailable": "La aceptación se confirmó en la cadena, pero no se pudo actualizar el estado del diseño. Se sigue mostrando el estado anterior. Vuelve a cargar el diseño para comprobarlo.",
+            "proposal_terms_invalid": "Corrige las condiciones del diseño antes de aceptar.",
+            "error_accepting_proposal_please_try_again": "Error al aceptar el diseño. Inténtalo de nuevo.",
+            "error_rejecting_proposal_please_try_again": "Error al rechazar el diseño. Inténtalo de nuevo.",
             "failed_to_wipe_local_data": "No se pudieron borrar los datos locales:",
             "geolocation_is_not_supported_by_this_browser": "La geolocalización no es compatible con este navegador.",
             "invalid_parcel_identifier": "Identificador de parcela inválido.",
             "invalid_road_shape_please_try_drawing_the_road_again": "Forma de carretera inválida. Intenta dibujarla de nuevo.",
-            "missing_parcels_or_geometry_for_this_proposal": "Faltan parcelas o geometría para esta propuesta.",
+            "missing_parcels_or_geometry_for_this_proposal": "Faltan parcelas o geometría para este diseño.",
             "no_agents_exist_yet_start_the_game_to_create_agents": "Aún no existen agentes. Inicia el juego para crearlos.",
             "no_building_geometry_prepared_please_create_the_building_again": "No hay geometría de edificio preparada. Crea el edificio nuevamente.",
             "no_parcels_affected_by_this_road_please_try_drawing_the_road_again": "Ninguna parcela resultó afectada por esta carretera. Intenta dibujarla de nuevo.",
-            "no_parcels_selected_for_this_proposal": "No hay parcelas seleccionadas para esta propuesta.",
-            "no_parcels_selected_please_select_parcels_before_creating_a_proposal": "No hay parcelas seleccionadas. Selecciona parcelas antes de crear una propuesta.",
+            "no_parcels_selected_for_this_proposal": "No hay parcelas seleccionadas para este diseño.",
+            "no_parcels_selected_please_select_parcels_before_creating_a_proposal": "No hay parcelas seleccionadas. Selecciona parcelas antes de crear un diseño.",
             "no_recorded_owner_acceptance_to_undo": "No hay una aceptación registrada que se pueda deshacer.",
             "only_the_user_who_recorded_this_acceptance_can_undo_it": "Solo el usuario que registró esta aceptación puede deshacerla.",
-            "open_the_buildings_tool_design_your_block_and_click_done_before_creating_this_proposal": "Abre la herramienta de edificios, diseña tu bloque y pulsa Hecho antes de crear esta propuesta.",
-            "open_the_row_houses_tool_design_your_row_and_click_done_before_creating_this_proposal": "Abre la herramienta de casas en hilera, diseña tu hilera y pulsa Hecho antes de crear esta propuesta.",
-            "open_the_parcel_based_tool_generate_buildings_and_click_done_before_creating_this_proposal": "Abre la herramienta basada en parcelas, genera los edificios y pulsa Hecho antes de crear esta propuesta.",
+            "open_the_buildings_tool_design_your_block_and_click_done_before_creating_this_proposal": "Abre la herramienta de edificios, diseña tu bloque y pulsa Hecho antes de crear este diseño.",
+            "open_the_row_houses_tool_design_your_row_and_click_done_before_creating_this_proposal": "Abre la herramienta de casas en hilera, diseña tu hilera y pulsa Hecho antes de crear este diseño.",
+            "open_the_parcel_based_tool_generate_buildings_and_click_done_before_creating_this_proposal": "Abre la herramienta basada en parcelas, genera los edificios y pulsa Hecho antes de crear este diseño.",
             "please_choose_which_owner_share_you_are_accepting_for": "Elige para qué participación de propietario estás aceptando.",
             "please_initialize_the_game_state_first": "Inicializa primero el estado del juego.",
             "please_provide_author_name_and_a_valid_offer": "Indica autor, nombre y una oferta válida.",
             "please_select_a_parcel_first": "Selecciona primero una parcela",
             "please_specify_which_owner_acceptance_to_undo": "Especifica qué aceptación de propietario deseas deshacer.",
             "proposal_type_no_longer_available": "Fusionar / Decidir más tarde ya no está disponible. Usa la herramienta Trazar parcelas.",
-            "proposal_not_found": "Propuesta no encontrada.",
-            "proposal_storage_is_unavailable": "El almacenamiento de propuestas no está disponible.",
-            "select_a_proposal_goal_before_creating_a_proposal": "Selecciona un objetivo de propuesta antes de crearla.",
+            "proposal_not_found": "Diseño no encontrada.",
+            "proposal_storage_is_unavailable": "El almacenamiento de diseños no está disponible.",
+            "select_a_proposal_goal_before_creating_a_proposal": "Selecciona un objetivo de diseño antes de crearla.",
             "select_which_owner_share_you_are_accepting_for": "Selecciona para qué participación de propietario aceptas.",
             "single_building_workflow_is_unavailable": "El flujo del edificio único no está disponible.",
-            "this_exact_proposal_already_exists": "Esta misma propuesta ya existe",
-            "this_exact_proposal_already_exists_2": "Esta misma propuesta ya existe.",
-            "this_owner_has_already_accepted_the_proposal": "Este propietario ya aceptó la propuesta.",
-            "this_owner_has_not_accepted_the_proposal_yet": "Este propietario aún no ha aceptado la propuesta.",
+            "this_exact_proposal_already_exists": "Esta misma diseño ya existe",
+            "this_exact_proposal_already_exists_2": "Esta misma diseño ya existe.",
+            "this_owner_has_already_accepted_the_proposal": "Este propietario ya aceptó el diseño.",
+            "this_owner_has_not_accepted_the_proposal_yet": "Este propietario aún no ha aceptado el diseño.",
             "this_parcel_has_invalid_geometry_and_cannot_be_analyzed": "Esta parcela tiene geometría inválida y no puede analizarse",
-            "this_parcel_has_not_accepted_the_proposal_yet": "Esta parcela aún no ha aceptado la propuesta.",
-            "this_parcel_is_not_part_of_the_proposal": "Esta parcela no forma parte de la propuesta.",
+            "this_parcel_has_not_accepted_the_proposal_yet": "Esta parcela aún no ha aceptado el diseño.",
+            "this_parcel_is_not_part_of_the_proposal": "Esta parcela no forma parte del diseño.",
             "unable_to_detect_your_location": "No se pudo detectar tu ubicación.",
             "unable_to_determine_owner_shares_for_this_parcel": "No se pudieron determinar las participaciones de propietario para esta parcela.",
             "unable_to_determine_the_nearest_city": "No se pudo determinar la ciudad más cercana.",
             "unable_to_determine_which_acceptance_to_undo": "No se pudo determinar qué aceptación deshacer.",
-            "proposal_with_id_not_found": "No se encontró la propuesta con ID {{id}}.",
-            "unable_to_open_proposal_details": "No se pudieron abrir los detalles de la propuesta.",
+            "proposal_with_id_not_found": "No se encontró el diseño con ID {{id}}.",
+            "unable_to_open_proposal_details": "No se pudieron abrir los detalles del diseño.",
             "unable_to_show_parcel": "No se pudo mostrar la parcela {{id}}. La funcionalidad de selección no está disponible.",
             "please_enter_a_valid_boost_amount": "Ingresa un monto válido para impulsar.",
             "please_enter_a_valid_boost_expiry": "Ingresa un timestamp de caducidad válido para el impulso.",
-            "proposal_boost_success": "¡Éxito! Gracias por apoyar esta propuesta con {{amount}} {{currency}}. Ver transacción {{txLink}}",
-            "proposal_boost_not_minted": "Esta propuesta aún no está en cadena. Acuñala antes de impulsarla.",
-            "proposal_boost_wallet_required": "Conecta una billetera para impulsar esta propuesta.",
+            "proposal_boost_success": "¡Éxito! Gracias por apoyar este diseño con {{amount}} {{currency}}. Ver transacción {{txLink}}",
+            "proposal_boost_not_minted": "Este diseño aún no está en cadena. Acuñala antes de impulsarla.",
+            "proposal_boost_wallet_required": "Conecta una billetera para impulsar este diseño.",
             "proposal_boost_missing_token": "La dirección del City Meme Token no está configurada para la red conectada.",
-            "proposal_boost_contract_missing": "La dirección del contrato de propuestas no está configurada para esta red.",
-            "proposal_boost_switch_network": "Cambia tu billetera a la red {{chainId}} para impulsar esta propuesta.",
+            "proposal_boost_contract_missing": "La dirección del contrato de diseños no está configurada para esta red.",
+            "proposal_boost_switch_network": "Cambia tu billetera a la red {{chainId}} para impulsar este diseño.",
             "proposal_boost_failed": "La transacción de impulso falló: {{reason}}",
-            "you_can_only_accept_proposals_for_parcels_you_own": "Solo puedes aceptar propuestas de parcelas que posees.",
-            "you_must_be_logged_in_to_accept_proposals": "Debes iniciar sesión para aceptar propuestas.",
+            "you_can_only_accept_proposals_for_parcels_you_own": "Solo puedes aceptar diseños de parcelas que posees.",
+            "you_must_be_logged_in_to_accept_proposals": "Debes iniciar sesión para aceptar diseños.",
             "you_must_be_logged_in_to_undo_an_acceptance": "Debes iniciar sesión para deshacer una aceptación.",
-            "please_choose_a_proposal_type": "Elige un tipo de propuesta.",
-            "please_enter_a_description_for_the_proposal": "Ingresa una descripción para la propuesta.",
+            "please_choose_a_proposal_type": "Elige un tipo de diseño.",
+            "please_enter_a_description_for_the_proposal": "Ingresa una descripción para el diseño.",
             "please_enter_a_description": "Ingresa una descripción.",
             "please_enter_a_valid_offer_amount": "Ingresa una oferta válida.",
             "please_enter_an_author_name": "Ingresa un nombre de autor.",
-            "copy_proposal_parcels_unavailable": "No se pudieron cargar las parcelas de esta propuesta. Cambia a la ciudad en la que se creó e inténtalo de nuevo.",
+            "copy_proposal_parcels_unavailable": "No se pudieron cargar las parcelas de este diseño. Cambia a la ciudad en la que se creó e inténtalo de nuevo.",
             "road_source_incorporated": "Se aplicó la vía combinada y se retiró ‘{{name}}’ del mapa.",
             "road_source_included_in_replacement": "Esta vía está incluida en ‘{{name}}’. Retira la vía combinada del mapa antes de aplicar esta.",
             "block_needs_a_seed_parcel": "Selecciona primero una parcela: la manzana se detecta creciendo desde la parcela en la que estás.",
@@ -5599,11 +5597,11 @@
             "block_seed_unresolved": "No se pudo leer el identificador de la parcela seleccionada, así que no hay desde dónde formar la manzana.",
             "block_multiselect_unavailable": "La selección múltiple no está disponible, y una manzana se entrega como una selección de varias parcelas.",
             "block_multiselect_off": "No se pudo activar la selección múltiple, y una manzana se entrega como una selección de varias parcelas.",
-            "activity_no_parcel_set": "Esta propuesta no tiene cargado un conjunto canónico de parcelas.",
-            "blockchain_mint_wallet_prompt": "La acuñación en blockchain está disponible, pero no hay ninguna billetera conectada. ¿Quieres conectar una billetera para acuñar esta propuesta en la cadena?",
-            "failed_to_create_proposal": "No se pudo crear la propuesta.",
+            "activity_no_parcel_set": "Este diseño no tiene cargado un conjunto canónico de parcelas.",
+            "blockchain_mint_wallet_prompt": "La acuñación en blockchain está disponible, pero no hay ninguna billetera conectada. ¿Quieres conectar una billetera para acuñar este diseño en la cadena?",
+            "failed_to_create_proposal": "No se pudo crear el diseño.",
             "solana_lens_required": "Elige al menos un miembro de la lente (el botón de la lente) antes de acuñar en Solana.",
-            "solana_accept_in_lens_card": "En Solana, los propietarios dicen sí en la tarjeta Lente de la propuesta: un miembro de la lente atestigua tu propiedad y luego tu billetera firma.",
+            "solana_accept_in_lens_card": "En Solana, los propietarios dicen sí en la tarjeta Lente del diseño: un miembro de la lente atestigua tu propiedad y luego tu billetera firma.",
             "owner_offer_not_attested": "Una oferta del propietario solo puede incluir parcelas que un miembro de tu lente haya atestado como propiedad de tu cartera. {{detail}}"
         }
     },
@@ -5784,8 +5782,8 @@
             "name": "Nombre",
             "ethBalance": "Saldo en ETH",
             "parcelsOwned": "Parcelas en propiedad",
-            "proposalsCreated": "Propuestas creadas",
-            "proposalsApplied": "Propuestas aplicadas",
+            "proposalsCreated": "Diseños creadas",
+            "proposalsApplied": "Diseños aplicadas",
             "you": "(Tú)"
         },
         "newGameConfirm": "¿Seguro que quieres empezar una partida NUEVA? Se borrarán todos los agentes, el progreso de la partida y los datos de propiedad de las parcelas.",
@@ -5796,16 +5794,16 @@
             "unknown_path": "No hay ninguna página en esta dirección. Se muestra el mapa.",
             "agent_location_unavailable": "No se puede ir a {{action}} de {{agent}}: los datos de parcelas aún no están cargados.",
             "minted_parcels_failed": "No se pudieron cargar las parcelas acuñadas: {{error}}",
-            "cannot_apply_building_proposal_missing_parents": "No se puede aplicar la propuesta de edificio, faltan parcelas requisito: {{missing}}",
-            "cannot_apply_proposal_missing_parents": "No se puede aplicar la propuesta, faltan parcelas requisito: {{missing}}",
-            "proposal_conflict_title": "Conflicto de propuestas — misma geografía",
+            "cannot_apply_building_proposal_missing_parents": "No se puede aplicar el diseño de edificio, faltan parcelas requisito: {{missing}}",
+            "cannot_apply_proposal_missing_parents": "No se puede aplicar el diseño, faltan parcelas requisito: {{missing}}",
+            "proposal_conflict_title": "Conflicto de diseños — misma geografía",
             "proposal_conflict_missing_title": "Faltan algunas parcelas",
-            "proposal_conflict_intro": "Para aplicar la propuesta \"{{title}}\" se necesitan parcelas que no están disponibles:",
-            "proposal_conflict_overlaps": "Se superpone con la propuesta aplicada \"{{title}}\"",
+            "proposal_conflict_intro": "Para aplicar el diseño \"{{title}}\" se necesitan parcelas que no están disponibles:",
+            "proposal_conflict_overlaps": "Se superpone con el diseño aplicado \"{{title}}\"",
             "proposal_conflict_shares": {
-                "one": "Comparte {{count}} parcela con esta propuesta.",
-                "few": "Comparte {{count}} parcelas con esta propuesta.",
-                "other": "Comparte {{count}} parcelas con esta propuesta."
+                "one": "Comparte {{count}} parcela con este diseño.",
+                "few": "Comparte {{count}} parcelas con este diseño.",
+                "other": "Comparte {{count}} parcelas con este diseño."
             },
             "proposal_conflict_shares_blocked": {
                 "one": "Comparte {{count}} parcela, pero no se puede deshacer por sí sola — estas se construyen sobre ella:",
@@ -5823,25 +5821,25 @@
             "proposal_conflict_apply_anyway": "Aplicar de todos modos",
             "proposal_conflict_cancel": "Cancelar",
             "proposal_conflict_close": "Cerrar",
-            "cannot_share_this_proposal_right_now": "No se puede compartir esta propuesta en este momento.",
-            "failed_to_apply_road_proposal_review_proposals_for_details": "No se pudo aplicar la propuesta vial. Revisa las propuestas para más detalles.",
+            "cannot_share_this_proposal_right_now": "No se puede compartir este diseño en este momento.",
+            "failed_to_apply_road_proposal_review_proposals_for_details": "No se pudo aplicar el diseño vial. Revisa los diseños para más detalles.",
             "failed_to_encode_share_data": "No se pudieron codificar los datos para compartir.",
-            "failed_to_encode_shared_proposal_data": "No se pudieron codificar los datos de la propuesta compartida.",
+            "failed_to_encode_shared_proposal_data": "No se pudieron codificar los datos del diseño compartida.",
             "failed_to_generate_share_link": "No se pudo generar el enlace para compartir.",
-            "no_applied_proposals_to_share_yet": "Aún no hay propuestas aplicadas para compartir.",
-            "road_proposal_already_exists_or_could_not_be_saved_review_proposals_for_details": "La propuesta vial ya existe o no se pudo guardar. Revisa las propuestas para más detalles.",
-            "onchain_proposal_mint_failed": "La acuñación en cadena de la propuesta falló.",
-            "onchain_proposal_mint_failed_with_reason": "Falló la acuñación en cadena de la propuesta: {{error}}.",
+            "no_applied_proposals_to_share_yet": "Aún no hay diseños aplicados para compartir.",
+            "road_proposal_already_exists_or_could_not_be_saved_review_proposals_for_details": "El diseño vial ya existe o no se pudo guardar. Revisa los diseños para más detalles.",
+            "onchain_proposal_mint_failed": "La acuñación en cadena del diseño falló.",
+            "onchain_proposal_mint_failed_with_reason": "Falló la acuñación en cadena del diseño: {{error}}.",
             "logged_out_ai_controls": "Sesión cerrada. La IA controlará tu agente.",
             "logged_out_agent_inactive": "Sesión cerrada. El agente quedará inactivo.",
-            "proposal_executed_all_parcels": "¡Propuesta {{hash}} ejecutada! Todas las {{count}} parcelas aceptadas.",
-            "proposal_executed": "¡Propuesta {{hash}} ejecutada!",
-            "unable_to_prepare_proposal_for_sharing": "No se pudo preparar la propuesta para compartirla.",
-            "unable_to_prepare_proposals_for_sharing": "No se pudieron preparar las propuestas para compartirlas.",
+            "proposal_executed_all_parcels": "¡Diseño {{hash}} ejecutada! Todas las {{count}} parcelas aceptadas.",
+            "proposal_executed": "¡Diseño {{hash}} ejecutada!",
+            "unable_to_prepare_proposal_for_sharing": "No se pudo preparar el diseño para compartirla.",
+            "unable_to_prepare_proposals_for_sharing": "No se pudieron preparar los diseños para compartirlas.",
             "welcome_back_user": "¡Bienvenido de nuevo, {{name}}! Has tomado el control de tu agente.",
             "welcome_new_user": "Bienvenido, {{name}}. Ahora eres parte de la comunidad de construcción de consenso.",
             "profile_personalized": "¡Genial, {{name}}! Tu perfil está personalizado.",
-            "name_to_publish": "Elige un nombre de perfil para publicar: las propuestas publicadas llevan su autor. Todo lo que queda en este dispositivo funciona sin él.",
+            "name_to_publish": "Elige un nombre de perfil para publicar: los diseños publicados llevan su autor. Todo lo que queda en este dispositivo funciona sin él.",
             "name_to_share": "Elige un nombre de perfil para compartir: un enlace compartido lleva su autor. Todo lo que queda en este dispositivo funciona sin él.",
             "all_parcels_in_block_selected": "¡Todas las parcelas del bloque seleccionadas!"
         }
@@ -5854,7 +5852,7 @@
             "streamingTiles": "Cargando datos 3D…",
             "noCoverage": "No hay cobertura fotorrealista aquí — permanecemos en 3D abstracto.",
             "loadFailed": "No se pudo cargar la vista fotográfica. Inténtalo de nuevo o cambia a 2D.",
-            "carveUnderProposals": "Ocultar edificios reales bajo las propuestas",
+            "carveUnderProposals": "Ocultar edificios reales bajo los diseños",
             "stateSolid": "Sólido",
             "stateGhost": "Transparente",
             "stateSurviving": "Restantes",
@@ -5899,8 +5897,8 @@
             "floorLevel": "Planta {{level}}",
             "xrayError": "No se pudieron mostrar algunos planos.",
             "suggestedLayouts": "Distribuciones sugeridas",
-            "suggestedLayoutsTooltip": "Genera una distribución por defecto para los edificios propuestos sin interior modelado: un núcleo de escalera y ascensor con entrada desde la calle, dos viviendas por núcleo. Es una sugerencia, no parte de la propuesta.",
-            "suggestedNote": "Las distribuciones sugeridas son valores por defecto generados, no parte de la propuesta.",
+            "suggestedLayoutsTooltip": "Genera una distribución por defecto para los edificios propuestos sin interior modelado: un núcleo de escalera y ascensor con entrada desde la calle, dos viviendas por núcleo. Es una sugerencia, no parte del diseño.",
+            "suggestedNote": "Las distribuciones sugeridas son valores por defecto generados, no parte del diseño.",
             "suggestedCount": "Sugeridos: {{buildings}} edificios · {{apartments}} viviendas por planta",
             "suggestedFlagged": "{{count}} en rojo: demasiado pequeño para un núcleo de escalera mínimo.",
             "suggestedPendingStreets": "Los datos de calles se están cargando; las entradas miran a la fachada más larga hasta que lleguen.",
@@ -5914,7 +5912,7 @@
                 "plaster": "Revoco"
             },
             "representationMassing": "Envolvente máxima",
-            "representationMassingTooltip": "Envolvente máxima — el volumen exterior permitido que afirma la propuesta",
+            "representationMassingTooltip": "Envolvente máxima — el volumen exterior permitido que afirma el diseño",
             "representationBuildOut": "Ilustración",
             "representationBuildOutTooltip": "Ilustración — un ejemplo de lo que podría construirse según la norma",
             "representationBoth": "Ambos",
@@ -5966,14 +5964,14 @@
             "salePrice": "Precio de venta {{price}}/m²",
             "constructionPrice": "Coste de construcción {{price}}/m²",
             "amountsIn": "importes en {{currency}}",
-            "proposalLabel": "Propuesta",
+            "proposalLabel": "Diseño",
             "show": "ver",
             "suggestedLayout": "Distribución sugerida",
             "suggestedSummary": "{{cores}} núcleo(s) · {{apartments}} viviendas por planta · {{rooms}} habitaciones",
             "suggestedFlagged": "Ninguna distribución por defecto cabe: {{reason}}"
         },
         "proposalPanel": {
-            "title": "Información de la propuesta",
+            "title": "Información del diseño",
             "parcelsLabel": "Parcelas",
             "suggestedTotals": "Distribuciones sugeridas: {{buildings}} edificios · {{apartmentsPerFloor}} viviendas por planta · {{apartments}} en total",
             "avgPerParcel": "Media / parcela"
@@ -6007,7 +6005,7 @@
             "copyLink": "Copiar enlace",
             "share": "Compartir",
             "tweet": "Compartir en X",
-            "tweetText": "Vista fotorrealista de mi propuesta urbana",
+            "tweetText": "Vista fotorrealista de mi diseño urbana",
             "shareTitle": "Urban Game Theory",
             "savingShare": "Preparando el enlace para compartir…",
             "linkCopied": "Enlace copiado",
@@ -6290,25 +6288,25 @@
                 "pointText": "Toca el mapa para cargar y seleccionar una parcela. Esta fuente no permite cargar todas las parcelas de una zona.",
                 "datedStreamText": "Las parcelas se cargan al acercar y mover el mapa. Esta fuente corresponde a {{version}}; los límites actuales pueden ser distintos.",
                 "streamText": "Las parcelas se cargan desde la fuente local al acercar y mover el mapa. Los municipios cercanos pueden usar datos diferentes.",
-                "text": "Parcelas, propuestas y 3D están listos aquí."
+                "text": "Parcelas, diseños y 3D están listos aquí."
             },
             "source": {
                 "short": "Hay datos abiertos",
-                "text": "Aquí existen datos abiertos de parcelas, pero aún no están en la app. Aun así puedes dibujar un sitio y proponer —sin parcelas, una propuesta solo se ejecuta con el veredicto de una autoridad— o pedir que se añada este lugar."
+                "text": "Aquí existen datos abiertos de parcelas, pero aún no están en la app. Aun así puedes dibujar un sitio y proponer —sin parcelas, un diseño solo se ejecuta con el veredicto de una autoridad— o pedir que se añada este lugar."
             },
             "none": {
                 "short": "Sin datos abiertos",
-                "text": "Buscamos y no encontramos datos abiertos de parcelas aquí. Aun así puedes dibujar un sitio y proponer; sin parcelas, una propuesta solo se ejecuta con el veredicto de una autoridad."
+                "text": "Buscamos y no encontramos datos abiertos de parcelas aquí. Aun así puedes dibujar un sitio y proponer; sin parcelas, un diseño solo se ejecuta con el veredicto de una autoridad."
             },
             "unknown": {
                 "short": "Sin confirmar",
-                "text": "No se han confirmado datos abiertos de parcelas aquí; este lugar no se ha revisado o la comprobación no fue concluyente. Aun así puedes dibujar un sitio y proponer; sin parcelas, una propuesta solo se ejecuta con el veredicto de una autoridad."
+                "text": "No se han confirmado datos abiertos de parcelas aquí; este lugar no se ha revisado o la comprobación no fue concluyente. Aun así puedes dibujar un sitio y proponer; sin parcelas, un diseño solo se ejecuta con el veredicto de una autoridad."
             }
         },
         "popup": {
             "coverageSource": "Fuente de cobertura",
             "location": "Ubicación seleccionada",
-            "locationText": "Abre esta ubicación exacta a nivel de calle para ver o crear propuestas."
+            "locationText": "Abre esta ubicación exacta a nivel de calle para ver o crear diseños."
         },
         "action": {
             "open": "Abrir {{city}}",
@@ -6323,7 +6321,7 @@
         },
         "explore": {
             "chip": "Explorar · {{place}}",
-            "banner": "Aquí no hay parcelas: puedes dibujar un sitio y proponer, pero una propuesta solo puede ejecutarse con el veredicto de una autoridad.",
+            "banner": "Aquí no hay parcelas: puedes dibujar un sitio y proponer, pero un diseño solo puede ejecutarse con el veredicto de una autoridad.",
             "worldView": "Vista del mundo",
             "dismiss": "Cerrar",
             "status": "Aquí no hay datos de parcelas: haz clic en el mapa para dibujar un sitio y proponer."
@@ -6350,7 +6348,7 @@
                 "yes": "Apuesta de {{amount}} a sí",
                 "no": "Apuesta de {{amount}} a no"
             },
-            "openError": "No se pudo abrir la propuesta. Inténtalo de nuevo.",
+            "openError": "No se pudo abrir el diseño. Inténtalo de nuevo.",
             "openAgreementError": "No se pudo abrir el acuerdo. Inténtalo de nuevo.",
             "location": {
                 "near": "cerca de {{place}}",
@@ -6452,8 +6450,8 @@
         }
     },
     "mapSearch": {
-        "placeholder": "Buscar lugares, parcelas, propuestas…",
-        "placeholderNoParcels": "Buscar lugares, propuestas…",
+        "placeholder": "Buscar lugares, parcelas, diseños…",
+        "placeholderNoParcels": "Buscar lugares, diseños…",
         "label": "Buscar en el mapa",
         "open": "Buscar",
         "close": "Cerrar la búsqueda",
@@ -6463,7 +6461,7 @@
             "recent": "Búsquedas recientes",
             "cities": "Ciudades",
             "parcels": "Parcelas",
-            "proposals": "Propuestas",
+            "proposals": "Diseños",
             "places": "Lugares",
             "commands": "Comandos"
         },
@@ -6473,11 +6471,11 @@
         "parcelHint": "Encontrar esta parcela en el mapa",
         "parcelNeedsMunicipality": "Añade el municipio catastral: HR-<número>-{{id}}",
         "parcelNeedsMunicipalityHint": "O mueve el mapa hasta la parcela para que se carguen sus identificadores",
-        "untitledProposal": "Propuesta {{id}}",
+        "untitledProposal": "Diseño {{id}}",
         "localProposal": "En este dispositivo",
         "inCity": "En {{city}}",
-        "proposalsLoading": "Buscando propuestas…",
-        "proposalsError": "No se pudieron buscar propuestas",
+        "proposalsLoading": "Buscando diseños…",
+        "proposalsError": "No se pudieron buscar diseños",
         "proposalDownloading": "Descargando…",
         "placesLoading": "Buscando lugares…",
         "placesError": "No se pudo acceder a la búsqueda de direcciones",
@@ -6511,7 +6509,7 @@
             "stations": "Estaciones",
             "roads": "Calles",
             "areaMonitor": "Monitor de áreas",
-            "proposals": "Propuestas",
+            "proposals": "Diseños",
             "game": "Simulación",
             "activity": "Actividad",
             "settings": "Ajustes",
@@ -6532,7 +6530,7 @@
         },
         "facts": {
             "bare": "Terreno sin catastrar o un hueco entre parcelas: propiedad no establecida.",
-            "noCadastre": "Aquí no hay datos de parcelas. Una propuesta solo puede ejecutarse con el veredicto de una autoridad."
+            "noCadastre": "Aquí no hay datos de parcelas. Un diseño solo puede ejecutarse con el veredicto de una autoridad."
         },
         "notLoaded": "Las parcelas aún no se han cargado aquí: acerca el mapa o espera a que carguen.",
         "actions": {
@@ -6630,10 +6628,10 @@
             "longestNoData": "Fachada: el borde más largo (no hay datos de calles aquí)."
         },
         "proposals": {
-            "none": "Aún no hay propuestas en las parcelas de este sitio.",
+            "none": "Aún no hay diseños en las parcelas de este sitio.",
             "existing": {
-                "one": "Ya hay {{count}} propuesta en estas parcelas",
-                "other": "Ya hay {{count}} propuestas en estas parcelas"
+                "one": "Ya hay {{count}} diseño en estas parcelas",
+                "other": "Ya hay {{count}} diseños en estas parcelas"
             },
             "show": "Ver"
         }
@@ -6643,14 +6641,14 @@
         "siteAreaValue": "Sitio: {{area}} m²",
         "openGroundValue": "Terreno abierto: {{area}} m²",
         "openGroundNote": "Terreno abierto: {{area}} m² de los sitios no tienen parcelas catastrales; las cifras de parcelas cubren solo las parcelas vinculadas.",
-        "grainNoParcels": "Aquí no hay parcelas: estas propuestas están en terreno abierto, así que no hay parcelas resultantes que puntuar."
+        "grainNoParcels": "Aquí no hay parcelas: estas diseños están en terreno abierto, así que no hay parcelas resultantes que puntuar."
     },
     "parcelCompare": {
         "title": "Comparar diseños en la parcela {{number}}",
-        "needTwo": "Al menos dos propuestas deben tocar esta parcela para compararlas.",
-        "pick": "Propuesta {{side}}",
+        "needTwo": "Al menos dos diseños deben tocar esta parcela para compararlas.",
+        "pick": "Diseño {{side}}",
         "openDetails": "Detalles",
-        "previewLabel": "Contorno de la parcela con el terreno de cada propuesta",
+        "previewLabel": "Contorno de la parcela con el terreno de cada diseño",
         "tableLabel": "Comparación para esta parcela",
         "intrusion": "entra {{width}} m",
         "none": "Nada",
@@ -6704,7 +6702,7 @@
             "status": "Estado"
         },
         "bar": {
-            "hint": "Marque dos propuestas para compararlas en esta parcela",
+            "hint": "Marque dos diseños para compararlas en esta parcela",
             "ready": "Dos seleccionadas",
             "compare": "Comparar",
             "tick": "Seleccionar para comparar"
@@ -6831,7 +6829,7 @@
             "summary": "{{blocks}} · {{streets}} ({{arterial}} km arteriales, {{local}} km locales) · {{roads}}",
             "empty": "No hay manzanas elegidas.",
             "zoomIn": "Acerca el mapa para pintar manzanas.",
-            "limit": "Por ahora, como máximo {{max}} manzanas por propuesta.",
+            "limit": "Por ahora, como máximo {{max}} manzanas por diseño.",
             "roadName": "Calles de Schelling {{code}}",
             "roadNameNumbered": "Calles de Schelling {{code}} ({{number}})",
             "description": "Calles del plan de Schelling {{code}} (meridianos y paralelos) alrededor de {{blocks}}.",
@@ -6846,8 +6844,8 @@
                 "other": "{{count}} calles"
             },
             "roadCount": {
-                "one": "{{count}} propuesta vial",
-                "other": "{{count}} propuestas viales"
+                "one": "{{count}} diseño vial",
+                "other": "{{count}} diseños viales"
             }
         }
     },
@@ -6873,7 +6871,7 @@
         "result": "{count} parcelas ilustrativas · {coverage}% de la superficie apta cubierta · {unassigned} edificios sin asignar · {removed} eliminadas. La cobertura describe la generación antes de las eliminaciones.",
         "errors": {
             "storage": "No se pudieron guardar las parcelas en este navegador. Libera espacio de almacenamiento e inténtalo de nuevo.",
-            "inUse": "Una propuesta local utiliza una parcela que este cambio eliminaría. Conserva esa parcela o elimina la propuesta antes de sustituir las estimaciones.",
+            "inUse": "Un diseño local utiliza una parcela que este cambio eliminaría. Conserva esa parcela o elimina el diseño antes de sustituir las estimaciones.",
             "map": "El mapa no está listo. Inténtalo de nuevo.",
             "extent": "Amplía el mapa hasta un área de como máximo 2 km de ancho y de alto, o elige un tamaño de área fijo.",
             "area": "Elige un área válida entre 80°S y 80°N, lejos de la línea internacional de cambio de fecha.",
@@ -6966,7 +6964,7 @@
             "settlesLabel": "Liquidación",
             "agreementDeadline": "Plazo del acuerdo",
             "noDeadline": "No hay fecha límite; este acuerdo no puede tener un mercado abierto.",
-            "authorLabel": "Propuesta por",
+            "authorLabel": "Diseño por",
             "amount": "Importe",
             "max": "Máx.",
             "toWin": "Ganancia de unos {{amount}} si gana {{side}}",
@@ -7117,7 +7115,7 @@
     },
     "community": {
         "pictures": "Antes / después",
-        "title": "Consulta comunitaria",
+        "title": "Acuerdo comunitario no vinculante",
         "errors": {
             "history": "El historial de informes no está disponible o no se pudo verificar. Actualiza para volver a intentarlo.",
             "index": "El servidor devolvió un historial de informes no válido.",
@@ -7167,12 +7165,11 @@
         "dialog": {
             "titleCreate": "Crear acuerdo",
             "titleEdit": "Editar acuerdo",
-            "intro": "Un acuerdo reúne diseños del mapa con quién decide, quién recibe qué suelo y qué dinero se mueve. Por ahora nada sale de este dispositivo.",
+            "intro": "Un acuerdo se refiere a un plan y establece quién decide, quién recibe cada terreno y qué dinero se transfiere. Todavía nada sale de este dispositivo.",
             "save": "Guardar acuerdo"
         },
         "sections": {
-            "consultation": "Consulta",
-            "designs": "Diseños",
+            "consultation": "Acuerdo no vinculante",
             "land": "Suelo",
             "allocation": "Asignación",
             "money": "Dinero",
@@ -7180,7 +7177,7 @@
             "details": "Detalles"
         },
         "designs": {
-            "hint": "Solo los diseños aplicados al mapa pueden formar parte de un acuerdo.",
+            "hint": "Elige los diseños de este plan. Cambiarlos crea una nueva versión del plan; los acuerdos existentes conservan su plan original.",
             "empty": "No hay diseños aplicados. Aplica primero un diseño.",
             "onMap": "Aplicado",
             "mapHint": "Haz clic en un diseño del mapa para añadirlo o quitarlo",
@@ -7218,7 +7215,7 @@
         "rule": {
             "who": "Quién decide",
             "owners": "Solicitar las decisiones de los propietarios",
-            "community": "Consultar a la comunidad",
+            "community": "Solicitar apoyo de la comunidad",
             "binding": "Vinculante: las aprobaciones de los propietarios pueden autorizar la liquidación en la cadena",
             "bindingShort": "Vinculante",
             "nonBinding": "No vinculante",
@@ -7228,7 +7225,7 @@
             }
         },
         "consultation": {
-            "hint": "Identidad de la organización e información de participación opcionales. Una consulta comunitaria recoge opiniones y no transfiere terrenos ni dinero.",
+            "hint": "La identidad de la organización y la información de participación son opcionales. Un acuerdo comunitario no vinculante recoge opiniones y no transfiere terrenos ni dinero.",
             "organiser": "Sitio web de la organización o did:web (opcional)",
             "participationUrl": "URL de participación (HTTPS, opcional)"
         },
@@ -7239,8 +7236,8 @@
         "errors": {
             "consultationOrganiser": "Introduce el sitio web de la organización o un identificador did:web válido.",
             "consultationParticipationUrl": "Introduce una URL de participación HTTPS sin credenciales.",
-            "communityAllocations": "Una consulta comunitaria no puede asignar terrenos.",
-            "communityMoney": "Una consulta comunitaria no puede incluir pagos en efectivo.",
+            "communityAllocations": "Un acuerdo comunitario no vinculante no puede asignar terrenos.",
+            "communityMoney": "Un acuerdo comunitario no vinculante no puede incluir pagos en efectivo.",
             "noDesigns": "Elige al menos un diseño.",
             "designNotApplied": "Todos los diseños deben estar aplicados al mapa.",
             "noInputs": "Los diseños no ocupan suelo catastral.",
@@ -7290,7 +7287,8 @@
             },
             "collapse": "Cerrar acuerdo",
             "removeLocalConfirm": "¿Quitar este acuerdo de este dispositivo? Sus diseños permanecen en el mapa. El acuerdo publicado sigue disponible a través de su enlace.",
-            "compareUnavailable": "Antes / después está disponible cuando el acuerdo coincide con los diseños aplicados en el mapa."
+            "compareUnavailable": "Antes / después está disponible cuando el acuerdo coincide con los diseños aplicados en el mapa.",
+            "designs": "Diseños de este plan"
         },
         "list": {
             "create": "Crear acuerdo",
@@ -7335,7 +7333,8 @@
                 "notACid": "Este no es un enlace de acuerdo.",
                 "notFound": "Este acuerdo no está en el servidor.",
                 "missing": "El acuerdo ya no está en este dispositivo.",
-                "designMissing": "Un diseño de este acuerdo ya no está en este dispositivo."
+                "designMissing": "Un diseño de este acuerdo ya no está en este dispositivo.",
+                "planRequired": "Este acuerdo no tiene una referencia válida a un plan. Créalo de nuevo con un plan."
             },
             "route": {
                 "designsFailed": {
@@ -7464,11 +7463,14 @@
             "failed": "No se pudieron leer los acuerdos acuñados: {{reason}}",
             "refresh": "Actualizar",
             "empty": "Aún no se ha acuñado ningún acuerdo de esta ciudad."
+        },
+        "plan": {
+            "untitled": "Plan sin título"
         }
     },
     "planningViews": {
         "reroll": {
-            "proposed": "Genera otra ilustración propuesta. No cambia nada en los registros.",
+            "proposed": "Genera otra ilustración diseño. No cambia nada en los registros.",
             "permitted": "Genera otro tipo de vivienda y lado de calle permitidos. No cambia nada en los registros."
         },
         "zoningAreas": "Áreas de la fuente urbanística",
@@ -7536,7 +7538,7 @@
         },
         "sourceProposal": "Volumen permitido",
         "close": "Cerrar detalles de la fuente",
-        "obligatory": "Propuesta de fuente obligatoria",
+        "obligatory": "Diseño de fuente obligatoria",
         "sourceEvidenceBadge": "Evidencia de la fuente",
         "approximate": "Aproximado",
         "oneOption": "Una opción calculada según las reglas de la fuente. No representa todos los diseños posibles.",
@@ -7563,7 +7565,7 @@
         "openModel": "Abrir el modelo 3D",
         "displayLabel": "Apariencia: {{role}}",
         "existingScope": "Selección de edificios existentes",
-        "proposedForm": "Representación propuesta",
+        "proposedForm": "Representación diseño",
         "permittedMap": "Volumen permitido en el mapa",
         "footprint": "Huella",
         "steps": "Niveles de altura",
@@ -7644,8 +7646,8 @@
         "permittedMany": "Permitido ({{count}})",
         "building": "Edificio",
         "buildings": "Edificios ({{count}})",
-        "proposal": "Propuesta",
-        "proposals": "Propuestas ({{count}})",
+        "proposal": "Diseño",
+        "proposals": "Diseños ({{count}})",
         "parcelReference": "Parcela catastral {{reference}}",
         "title": "En este punto",
         "agreements": "Acuerdos ({{count}})",
@@ -7755,5 +7757,9 @@
         "input": "Entrada",
         "output": "Salida",
         "noContract": "No se ha publicado un contrato de operaciones para esta abstracción."
+    },
+    "plan": {
+        "name": "Nombre del plan",
+        "label": "Plan"
     }
 }

@@ -26,7 +26,7 @@ import { createRequire } from 'node:module';
 import { parseArgs } from 'node:util';
 import { canonicalBytes } from '../../cid.js';
 import { MAX_PINNED_OBJECT_BYTES } from '../../storage/pinning.js';
-import { agreementObject, communityRule, designObject, isParcelLayout, noMoney } from '../../agents/agreement-objects.js';
+import { agreementObject, communityRule, designObject, isParcelLayout, noMoney, planForDesigns } from '../../agents/agreement-objects.js';
 import { cityMoney } from './frontend-city-money.mjs';
 import { cleanApiBase, createIndexClient } from '../../agents/publication-client.js';
 
@@ -111,7 +111,11 @@ export function planObjects(plan) {
     const seen = new Map();
     return plan.designs.map(({ key, record }) => {
         const label = `${plan.key}/${key}`;
-        const { content, cid } = designObject(canonicalDesignRecord(record, label));
+        const canonical = canonicalDesignRecord(record, label);
+        let object;
+        try { object = designObject(canonical); }
+        catch (error) { fail(`${label}: ${error.message}`); }
+        const { content, cid } = object;
         const bytes = canonicalBytes(content).length;
         if (bytes > MAX_PINNED_OBJECT_BYTES) fail(`${label}: the design is ${bytes} bytes; the courier pins at most ${MAX_PINNED_OBJECT_BYTES}`);
         if (seen.has(cid)) fail(`${plan.key}: designs ${seen.get(cid)} and ${key} are the same object (${cid})`);
@@ -131,12 +135,13 @@ function groundIsCurrent(ground, objects) {
 
 /** The plan's agreement/v1 object (decision A: a community vote, no lens, money, allocations or deadline). */
 export function planAgreement(plan, objects, ground) {
-    const { content, cid } = agreementObject({
+    const { content, cid, plan: namedPlan } = agreementObject({
         title: plan.title,
         author: plan.author,
         sponsor: null,
         city: plan.city,
         createdAt: null,
+        plan: planForDesigns(plan.title, objects),
         designs: objects.map(object => ({ cid: object.cid, goal: object.content.goal, title: object.content.title })),
         parcels: ground.inputs.map(parcel => ({
             parcelId: parcel.parcelId,
@@ -153,7 +158,7 @@ export function planAgreement(plan, objects, ground) {
     });
     const bytes = canonicalBytes(content).length;
     if (bytes > MAX_PINNED_OBJECT_BYTES) fail(`${plan.key}: the agreement is ${bytes} bytes; the courier pins at most ${MAX_PINNED_OBJECT_BYTES}`);
-    return { content, cid, bytes };
+    return { content, cid, bytes, plan: namedPlan };
 }
 
 // The parcels the index would refuse as the agreement's inputs, as routes/agreements.js
@@ -554,7 +559,8 @@ async function stepAgreement(plan, objects, ctx) {
             await saveState(state);
         }
     }
-    const published = await client.publishAgreement(agreement.content, { designs: carried.map(object => ({ cid: object.cid, content: object.content })) });
+    const published = await client.publishAgreement(agreement.content, { plan: agreement.plan,
+        designs: carried.map(object => ({ cid: object.cid, content: object.content })) });
     for (const object of carried) state.value.designs[object.cid].indexed = true;
     state.value.agreements[agreement.cid] = { indexedAt: published.row.createdAt ?? null };
     await saveState(state);

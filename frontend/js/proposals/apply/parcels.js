@@ -210,8 +210,8 @@
                 });
                 const names = Array.from(coverers.values());
                 const message = names.length
-                    ? `A parcel layout cannot take ground another proposal already holds: ${names.map(n => `"${n}"`).join(', ')}. Move the outline off it, or unapply ${names.length === 1 ? 'that proposal' : 'those proposals'} first.`
-                    : 'A parcel layout cannot take ground another proposal already holds. Move the outline off it, or unapply that proposal first.';
+                    ? `A parcel layout cannot take ground another design already holds: ${names.map(n => `"${n}"`).join(', ')}. Move the outline off it, or unapply ${names.length === 1 ? 'that design' : 'those designs'} first.`
+                    : 'A parcel layout cannot take ground another design already holds. Move the outline off it, or unapply that design first.';
                 if (typeof updateStatus === 'function') updateStatus(message);
                 console.warn(`[${stamp()}] [_applyParcelLayoutProposal] ${idLabel}: ground already taken —`, takenParents);
                 try {

@@ -65,7 +65,7 @@ function handleDescendantItemHover(element) {
         const proposalId = element.getAttribute('data-proposal-id');
         if (proposalId) {
             highlightProposalHoverById(proposalId, {
-                color: '#4DB6AC',
+                color: window.MapHighlight.color,
                 weight: 4,
                 dashArray: '4 4',
                 showLabels: true,
@@ -76,7 +76,7 @@ function handleDescendantItemHover(element) {
         const parcelId = element.getAttribute('data-parcel-id');
         if (parcelId) {
             highlightParcelHover(parcelId, {
-                color: '#FFEB3B',
+                color: window.MapHighlight.color,
                 weight: 6,
                 dashArray: '10 8',
                 showLabels: true
@@ -101,7 +101,7 @@ function handleDescendantItemClick(element) {
         if (!parcelId) return;
         focusParcelInMap(parcelId);
         highlightParcelHover(parcelId, {
-            color: '#FFEB3B',
+            color: window.MapHighlight.color,
             weight: 6,
             dashArray: '10 8',
             showLabels: true
@@ -157,7 +157,7 @@ function setProposalCreateButtonState(isCreating) {
     if (!createButton) return;
     const t = getProposalI18nHelper();
     const creatingLabel = t('modal.createProposal.creating', 'Creating...');
-    const submitLabel = t('modal.createProposal.submit', 'Create Proposal');
+    const submitLabel = t('modal.createProposal.submit', 'Create design');
 
     if (isCreating) {
         if (!createButton.dataset.originalText) {
@@ -421,7 +421,7 @@ function getProposalDisplayTitle(proposal, fallbackProposal = null) {
         return typeLabel;
     }
 
-    return fallbackId ? `Proposal ${fallbackId}` : 'Proposal';
+    return fallbackId ? `Design ${fallbackId}` : 'Design';
 }
 
 function getProposalDisplayTypeLabel(proposal, fallbackProposal = null) {
@@ -569,10 +569,10 @@ function buildProposalListItemsHtml(dataset, options = {}) {
         applied: t('modal.roadWidth.proposalList.meta.applied', 'Applied:'),
         minted: t('modal.roadWidth.proposalList.meta.minted', 'Minted:')
     };
-    const emptyText = t('modal.roadWidth.proposalList.empty', 'No proposals match the current filters.');
-    const untitledLabel = t('modal.roadWidth.proposalList.untitled', 'Untitled proposal');
+    const emptyText = t('modal.roadWidth.proposalList.empty', 'No designs match the current filters.');
+    const untitledLabel = t('modal.roadWidth.proposalList.untitled', 'Untitled design');
     const unknownAuthor = t('common.unknown', 'Unknown');
-    const deleteTooltip = t('modal.roadWidth.proposalList.deleteTooltip', 'Delete proposal');
+    const deleteTooltip = t('modal.roadWidth.proposalList.deleteTooltip', 'Delete design');
     const downloadLabel = t('modal.roadWidth.proposalList.actions.download', 'Download');
     const downloadedLabel = t('modal.roadWidth.proposalList.actions.downloaded', 'Downloaded');
 
@@ -643,7 +643,7 @@ function buildProposalListItemsHtml(dataset, options = {}) {
         const agentProvenance = typeof ProposalAgentProvenance !== 'undefined'
             ? ProposalAgentProvenance.read(proposal)
             : null;
-        const agentBadgeLabel = t('panel.proposal.agent.badge', 'Agent proposal');
+    const agentBadgeLabel = t('panel.proposal.agent.badge', 'Agent design');
         const agentBadgeTitle = agentProvenance
             ? `${agentProvenance.persona} · ${agentProvenance.paymentLabel}`
             : '';
@@ -747,7 +747,7 @@ async function handleProposalListItemClick(event) {
     // no "Download?" question (that was an implementation detail asked of the user).
     if (!proposal && source === 'server') {
         try {
-            updateStatus('Downloading proposal…');
+            updateStatus('Downloading design…');
             proposal = await importServerProposal(rowCid);
             // The card still said "Download". Downloading by clicking the ROW leaves the same card
             // on screen as downloading by its own button does, so it has to end in the same state —
@@ -763,7 +763,7 @@ async function handleProposalListItemClick(event) {
             }
             console.error('Failed to download server proposal on click', rowCid, error);
             const t = getProposalI18nHelper();
-            updateStatus(t('modal.roadWidth.proposalList.downloadError', 'Failed to download proposal'));
+            updateStatus(t('modal.roadWidth.proposalList.downloadError', 'Failed to download design'));
             return;
         }
     }
@@ -823,7 +823,7 @@ async function handleProposalListDetailsClick(event) {
                 return;
             }
             console.error('Failed to download server proposal for details', rowCid, error);
-            updateStatus(getProposalI18nHelper()('modal.roadWidth.proposalList.downloadError', 'Failed to download proposal'));
+            updateStatus(getProposalI18nHelper()('modal.roadWidth.proposalList.downloadError', 'Failed to download design'));
             return;
         }
     }
@@ -1173,11 +1173,11 @@ function updateShowProposalsButton() {
         try { opened = localStorage.getItem(`cb:proposal-list-opened:${state.area.arrivalKey}`) === '1'; } catch (_) { }
         button.setAttribute('data-proposal-list-opened', opened ? '1' : '0');
         if (!state.ready) {
-            button.textContent = i18nApi?.t?.('sidebar.proposals.listButtonLoading', 'Proposals List (…)', {}) || 'Proposals List (…)';
+            button.textContent = i18nApi?.t?.('sidebar.proposals.listButtonLoading', 'Designs (…)', {}) || 'Designs (…)';
         } else if (i18nApi && typeof i18nApi.t === 'function') {
             button.textContent = i18nApi.t('sidebar.proposals.listButton', { count: totalProposals });
         } else {
-            button.textContent = `Proposals List (${totalProposals})`;
+            button.textContent = `Designs (${totalProposals})`;
         }
     }
 

@@ -92,7 +92,7 @@ export function designDocument(row, { baseUrl = publicApiBaseUrl() } = {}) {
 
 /**
  * The JSON-LD node of an agreement row ({ cid, content: agreement/v1 }), IRI
- * `<base>/agreements/<cid>#agreement`: its designs as an ordered list of design IRIs, its decision
+ * `<base>/agreements/<cid>#agreement`: its exact plan, its decision
  * rule (content.rule), its deadline (content.deadline) and its input parcels (content.inputs.parcels).
  * @param {{ cid: string, content: object }} row
  * @param {{ baseUrl?: string }} [options] defaults to PUBLIC_API_BASE_URL; unset or not canonical → SEMANTIC_BASE_ERROR (503)
@@ -106,12 +106,8 @@ export function agreementDocument(row, { baseUrl = publicApiBaseUrl() } = {}) {
         'schema:url': ref(`${url}?format=jsonld`), 'cb:cid': cid
     };
     labels(node, content, content.createdAt);
-    const designs = Array.isArray(content.designs) ? content.designs : [];
-    node['cb:designs'] = { '@list': designs.map((design, index) => {
-        const designCid = design && typeof design === 'object' ? design.cid : null;
-        if (!isCid(designCid)) throw recordError(`Design ${index + 1} of agreement ${cid} has no CID.`);
-        return ref(`${base}/designs/${designCid}#design`);
-    }) };
+    if (!isCid(content.planCid)) throw recordError(`Agreement ${cid} has no plan CID.`);
+    node['cb:plan'] = ref(`${base}/plans/${content.planCid}#plan`);
     const rule = decisionRuleOf(content.rule);
     if (rule) node['cb:decisionRule'] = ref(`cb:rule-${rule}`);
     date(node, 'cb:agreementDeadline', content.deadline);

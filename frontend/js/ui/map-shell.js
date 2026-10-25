@@ -431,8 +431,8 @@
         badge.classList.toggle('is-unopened', ready && count > 0 && !opened);
         if (button) {
             button.setAttribute('aria-label', ready
-                ? t('mapShell.proposalsCount', `Proposals (${count})`, { count })
-                : t('mapShell.proposals', 'Proposals'));
+                ? t('mapShell.proposalsCount', `Designs (${count})`, { count })
+                : t('mapShell.proposals', 'Designs'));
         }
     }
 

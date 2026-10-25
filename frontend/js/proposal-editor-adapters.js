@@ -128,7 +128,7 @@
         if (!placement || placement.free !== true) return null;
         const goal = normalizeGoal(draft?.adapterKey || draft?.goal);
         if (!FREE_PLACEMENT_GOALS.has(goal)) {
-            throw new Error(placementMessage('fixedSite', 'This proposal type has a fixed site and cannot be moved.'));
+            throw new Error(placementMessage('fixedSite', 'This design type has a fixed site and cannot be moved.'));
         }
         const site = siteDraftApi().toMultiPolygon(placement.site);
         if (!site) throw new Error(placementMessage('invalidSite', 'A free placement needs a valid polygon site.'));
@@ -230,7 +230,7 @@
         const errors = [];
         const warnings = [];
         if (!draft?.fields?.name || !String(draft.fields.name).trim()) {
-            errors.push(issue('missing-name', 'Add a proposal name.', 'fields.name'));
+            errors.push(issue('missing-name', 'Add a design name.', 'fields.name'));
         }
         // Parcel acts need parcels; material proposals need a site, parcels or their own design
         // geometry (proposals/site-draft.js, PARCEL-OPTIONAL.md).
@@ -239,7 +239,7 @@
         const placementIssue = placementBindingIssue(draft);
         if (placementIssue) errors.push(placementIssue);
         if (!draft?.fields?.description || !String(draft.fields.description).trim()) {
-            warnings.push(issue('missing-description', 'A description will help others understand this proposal.', 'fields.description'));
+            warnings.push(issue('missing-description', 'A description will help others understand this design.', 'fields.description'));
         }
         return { errors, warnings };
     }
@@ -747,9 +747,9 @@
             'road-track': 'Road / Track', buildings: 'Block', row: 'Row houses', parcelBased: 'Detached houses',
             single: 'Freeform building', 'parcel-layout': 'Parcel layout', park: 'Park', square: 'Square', lake: 'Lake',
             station: 'Transit station',
-            'urban-rule': 'Urban rule', 'ownership-transfer': 'Ownership transfer', 'as-is': 'Proposal'
+            'urban-rule': 'Urban rule', 'ownership-transfer': 'Ownership transfer', 'as-is': 'Keep as is'
         };
-        return labels[goal] || String(goal || 'Proposal').replace(/-/g, ' ');
+        return labels[goal] || String(goal || 'Design').replace(/-/g, ' ');
     }
 
     function buildGenericAdapter(key, options = {}) {
@@ -776,7 +776,7 @@
                 const { errors, warnings } = commonValidation(draft);
                 if (key === 'as-is' && !draft.sourceLocalProposalId
                     && (!draft.fields?.ownership || draft.fields.ownership === 'no-change')) {
-                    errors.push(issue('missing-goal', 'Choose a proposal type or an ownership change.', 'goal'));
+                    errors.push(issue('missing-goal', 'Choose a design type or an ownership change.', 'goal'));
                 }
                 return { valid: errors.length === 0, errors, warnings };
             },
@@ -1087,7 +1087,7 @@
                 const context = proposalBuildingContext(proposal);
                 const features = context.buildings?.length ? context.buildings : (context.buildingFeature ? [context.buildingFeature] : []);
                 if (!features.length || features.some(feature => !featureGeometryValid(feature))) {
-                    return { editable: false, reason: 'This building proposal does not contain valid footprint geometry.' };
+                    return { editable: false, reason: 'This building design does not contain valid footprint geometry.' };
                 }
                 return true;
             },
@@ -1110,7 +1110,7 @@
                 const features = context.buildings?.length ? context.buildings : (context.buildingFeature ? [context.buildingFeature] : []);
                 if (!features.length) errors.push(issue('missing-building', 'Create at least one building footprint.', 'editorPayload.context.buildings'));
                 if ((draft.editorPayload?.typology || key) === 'single' && features.length > 1) {
-                    errors.push(issue('freeform-building-count', 'Each Freeform proposal contains one building. Use Done in the geometry editor to save separate buildings.', 'editorPayload.context.buildings'));
+                    errors.push(issue('freeform-building-count', 'Each Freeform design contains one building. Use Done in the geometry editor to save separate buildings.', 'editorPayload.context.buildings'));
                 }
                 features.forEach((feature, index) => {
                     if (!featureGeometryValid(feature)) errors.push(issue('invalid-building', `Building ${index + 1} has an invalid footprint.`, `editorPayload.context.buildings.${index}`, feature?.geometry));
@@ -1194,7 +1194,7 @@
                 const features = context.buildings?.length ? context.buildings : [context.buildingFeature].filter(Boolean);
                 const typology = draft.editorPayload?.typology || key;
                 if (typology === 'single' && features.length !== 1) {
-                    throw new Error('Each Freeform proposal must contain exactly one building.');
+                    throw new Error('Each Freeform design must contain exactly one building.');
                 }
                 if (isFreePlacementDraft(draft)) {
                     const site = draft.editorPayload.placement.site;
@@ -1203,7 +1203,7 @@
                     }
                     context.ineligibleParcels = [];
                     if (context.groundSurface?.polygon && !geometryWithinSite(context.groundSurface.polygon, site)) {
-                        throw new Error(placementMessage('surroundingsOutsideSite', 'The moved surroundings must fit entirely inside the new site. Move the whole proposal or adjust its ground boundary before saving.'));
+                        throw new Error(placementMessage('surroundingsOutsideSite', 'The moved surroundings must fit entirely inside the new site. Move the whole design or adjust its ground boundary before saving.'));
                     }
                 }
                 output.goal = typology === 'single' ? 'single' : 'buildings';
@@ -1422,7 +1422,7 @@
 
         function canEdit(proposal) {
             const adapter = get(proposal);
-            if (!adapter) return { editable: false, reason: 'No editor adapter is registered for this proposal type.' };
+            if (!adapter) return { editable: false, reason: 'No editor adapter is registered for this design type.' };
             const result = typeof adapter.canEdit === 'function' ? adapter.canEdit(proposal) : true;
             if (result === true) return { editable: true, reason: null, adapter };
             if (typeof result === 'string') return { editable: false, reason: result, adapter };

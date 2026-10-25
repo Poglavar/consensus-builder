@@ -754,7 +754,7 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
     if (!sourceProposal?.roadProposal?.definition || !store) {
         throw Object.assign(new Error(`Road ${proposalIdOrHash} is not in this city's proposals`), {
             userMessage: translateRoadText('panel.road.editNotFound',
-                'This road is not among the proposals of the city on the map. Switch to the city it was created in, then try again.')
+                'This road is not among the designs of the city on the map. Switch to the city it was created in, then try again.')
         });
     }
 
@@ -992,7 +992,7 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
         if (componentDefinitions.length > 1 && typeof updateStatus === 'function') {
             updateStatus(translateRoadText(
                 'panel.road.splitIntoStretches',
-                'The edit disconnected the road — it was split into {{count}} separate road proposals.',
+                'The edit disconnected the road — it was split into {{count}} separate road designs.',
                 { count: componentDefinitions.length }
             ));
         }
@@ -2856,7 +2856,7 @@ function roadConflictListText(counts) {
         if (count > 0) parts.push(translateRoadText(key, count === 1 ? one : other, { count }));
     };
     part(counts.buildings, 'blockify.modal.messages.buildingCount', '{{count}} building', '{{count}} buildings');
-    part(counts.plots, 'panel.road.conflictPlots', 'plots of {{count}} proposal', 'plots of {{count}} proposals');
+    part(counts.plots, 'panel.road.conflictPlots', 'plots of {{count}} design', 'plots of {{count}} designs');
     part(counts.parks, 'panel.road.conflictParks', '{{count}} park', '{{count}} parks');
     part(counts.squares, 'panel.road.conflictSquares', '{{count}} square', '{{count}} squares');
     part(counts.lakes, 'panel.road.conflictLakes', '{{count}} lake', '{{count}} lakes');

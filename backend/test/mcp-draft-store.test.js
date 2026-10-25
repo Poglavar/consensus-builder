@@ -5,8 +5,9 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
+import { createRequire } from 'node:module';
 import { createPreviewLinks } from '../agents/mcp-preview-links.js';
-import { createDraftStore } from '../agents/mcp-draft-store.js';
+import { createDraftStore, draftMembersMatch } from '../agents/mcp-draft-store.js';
 import { canonicalBytes, cidOfObject } from '../cid.js';
 const directories = [], stores = [];
 const directory = () => { const path = mkdtempSync(join(tmpdir(), 'mcp-draft-test-')); directories.push(path); return path; };
@@ -14,8 +15,18 @@ afterEach(() => { for (const store of stores.splice(0)) store.dispose(); for (co
 const open = (storeDirectory, options = {}) => { const store = createPreviewLinks({ storeDirectory, origin: 'https://mcp.example', appOrigin: 'https://app.example', ...options }); stores.push(store); return store; };
 const tokenOf = ref => new URL(ref).pathname.split('/').at(-1);
 const design = title => ({ schema: 'design/v1', title, geometry: { type: 'Point', coordinates: [1, 2] } });
+const PlanRecord = createRequire(import.meta.url)('../../frontend/js/plan-record.js');
 
 describe('persistent private draft storage', () => {
+    it('matches agreement members only through a verified plan, never inline legacy fields', () => {
+        const member = design('Agreement member'), cid = cidOfObject(member);
+        const content = PlanRecord.create('Agreement plan', [cid], { at: '45,15,17', mode: '2d' });
+        const plan = { cid: cidOfObject(content), content };
+        const agreement = { schema: 'agreement/v1', planCid: plan.cid };
+        expect(draftMembersMatch(agreement, [{ cid }], plan)).toBe(true);
+        expect(draftMembersMatch({ schema: 'agreement/v1', designs: [{ cid }] }, [{ cid }])).toBe(false);
+        expect(draftMembersMatch(agreement, [{ cid }], { ...plan, cid: cidOfObject({ wrong: true }) })).toBe(false);
+    });
     it('recovers the same bearer reference and exact canonical content after disposal and restart', async () => {
         const path = directory(), first = open(path), content = design('Exact record');
         const preview = first.create({ design: content, parcelSourceId: 'ground' });

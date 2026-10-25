@@ -5389,7 +5389,7 @@
   },
   "agreement": {
     "source": "restatements/pionir-paron/folnegoviceva-rapska",
-    "cid": "bafkreihcc7uk6hnghpghmunfnwa7edsxv37ki4pqd66kepfswttqsj2fhe",
+    "cid": "bafkreia37bh2mkc74rmhziqtruvhjhhubavwrfmfveuyvlegg54vr5y22a",
     "untrusted": {
       "agreement": {
         "schema": "agreement/v1",
@@ -5398,18 +5398,6 @@
         "sponsor": null,
         "city": "zagreb",
         "createdAt": "2026-10-23T10:28:53.393Z",
-        "designs": [
-          {
-            "cid": "bafkreidvyqdxldadckwqcgt7il7peyhniyquvfeiplo5cxdelr77eq7x3y",
-            "goal": "road-track",
-            "title": "Folnegovićeva–Rapska – rekonstrukcija izvedenog stanja – interna prometna mreža"
-          },
-          {
-            "cid": "bafkreieplu56av3t7gpysreuscnwnjlx66pqfepzcoofhigf7gl4c4rguq",
-            "goal": "single",
-            "title": "Folnegovićeva–Rapska – rekonstrukcija izvedenog stanja"
-          }
-        ],
         "inputs": {
           "parcels": [
             {
@@ -5478,7 +5466,8 @@
           "approvalConfig": null,
           "lens": []
         },
-        "deadline": null
+        "deadline": null,
+        "planCid": "bafkreighc2edbr5bgnjyo32iacvhso3bs7ajlgsxzm5d2yyjncccxc5ohm"
       },
       "designs": [
         {
@@ -8440,7 +8429,27 @@
             }
           }
         }
-      ]
+      ],
+      "plan": {
+        "cid": "bafkreighc2edbr5bgnjyo32iacvhso3bs7ajlgsxzm5d2yyjncccxc5ohm",
+        "content": {
+          "schema": "plan/v1",
+          "title": "Worked community agreement plan",
+          "designCids": [
+            "bafkreidvyqdxldadckwqcgt7il7peyhniyquvfeiplo5cxdelr77eq7x3y",
+            "bafkreieplu56av3t7gpysreuscnwnjlx66pqfepzcoofhigf7gl4c4rguq"
+          ],
+          "view": {
+            "at": "45.799881,16.007296,17",
+            "mode": "2d",
+            "city": "zagreb",
+            "language": null,
+            "camera": null,
+            "rotate": false,
+            "settings": {}
+          }
+        }
+      }
     }
   },
   "urban-rule": {

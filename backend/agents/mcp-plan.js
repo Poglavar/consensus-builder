@@ -1,7 +1,7 @@
-// A plan here is an agreement's ordered design composition. Edits create private revisions;
-// canonical records and published commitments are immutable, and all land is derived again.
+// Agreement plan edits create a new exact plan and agreement revision; published commitments are
+// immutable, and all land is derived again from the plan's selected designs.
 import { appTurf as turf } from './mcp-geometry.js';
-import { agreementObject, cidOfObject, designObject, holdersFromRights, isCid } from './agreement-objects.js';
+import { agreementObject, cidOfObject, designObject, holdersFromRights, isCid, planForDesigns } from './agreement-objects.js';
 import { previewArtifact } from './mcp-preview.js';
 import { trustedMetadata } from './mcp-results.js';
 import { roadCutWarning } from './mcp-ground-effects.js';
@@ -31,7 +31,15 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
         }
         const content = artifact?.untrusted?.agreement || artifact?.agreement || artifact?.content || artifact;
         if (content?.schema !== 'agreement/v1') fail('agreement-plan-required', 'Choose an agreement plan. For one design use ugt_modify_design; assemble a collection with ugt_draft_agreement.');
-        const checked = agreementObject({ ...content, parcels: content.inputs?.parcels, openGroundM2: content.inputs?.openGroundM2 });
+        let plan = artifact.plan;
+        if (!plan && content.planCid) plan = await read.request(`/plans/${content.planCid}`);
+        if (plan?.schema === 'plan/v1') plan = { cid: cidOfObject(plan), content: plan };
+        if (plan?.content == null && plan?.plan) plan = { cid: plan.cid, content: plan.plan };
+        if (!plan || plan.cid !== (content.planCid || plan.cid)) fail('plan-reference-invalid', 'The agreement needs its verified plan record.');
+        const memberCids = plan.content?.designCids;
+        if (!Array.isArray(memberCids)) fail('plan-reference-invalid', 'The referenced plan has no design membership.');
+        const checked = agreementObject({ ...content, plan,
+            designs: memberCids.map(cid => ({ cid })), parcels: content.inputs?.parcels, openGroundM2: content.inputs?.openGroundM2 });
         const cid = cidOfObject(content);
         if (checked.cid !== cid || (claimedCid && claimedCid !== cid) || (artifact.cid && artifact.cid !== cid)) fail('cid-mismatch', 'The agreement content does not match its claimed canonical revision.');
         const sourceIds = [...new Set(content.inputs.parcels.map(p => p.parcelSourceId).filter(Boolean))];
@@ -44,13 +52,16 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
             return [actualCid, design];
         }));
         const designs = [];
-        for (const linked of content.designs) {
+        for (const cid of memberCids) {
+            const linked = { cid };
             const resolved = await drafts.resolveDesignSource(carried.get(linked.cid) || linked.cid);
             if (cidOfObject(resolved.content) !== linked.cid) fail('cid-mismatch', 'A linked design differs from the plan commitment.');
             if (parcelSourceId && resolved.parcelSourceId && parcelSourceId !== resolved.parcelSourceId) fail('agreement-source-mismatch', 'A design uses a different parcel source from this plan.');
             designs.push({ cid: linked.cid, content: resolved.content });
         }
-        return { agreement: content, cid, parcelSourceId, designs };
+        const localAgreement = { ...content, plan,
+            designs: designs.map(row => ({ proposalId: row.cid, cid: row.cid, title: row.content.title, goal: row.content.goal })) };
+        return { agreement: localAgreement, plan, cid, parcelSourceId, designs };
     }
 
     function inventory(plan) {
@@ -195,8 +206,9 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
             : previous.inputs.parcels.find(old => old.parcelId === p.parcelId)?.holders || [] }));
         const rule = structuredClone(terms.rule ?? previous.rule);
         if (suppliedRights && rule.approvalConfig) rule.approvalConfig.rights = suppliedRights;
-        const checked = agreementObject({ ...previous, ...Object.fromEntries(['title','author','sponsor','deadline','consultation'].filter(key => Object.hasOwn(terms, key)).map(key => [key, terms[key]])), createdAt: derived.agreement.createdAt,
-            designs: derived.agreement.designs, parcels: inputs, openGroundM2: derived.agreement.inputs.openGroundM2,
+        const revisedPlan = planForDesigns(original.plan.content.title, derived.designs, original.plan.content.view);
+        const checked = agreementObject({ ...previous, plan: revisedPlan, ...Object.fromEntries(['title','author','sponsor','deadline','consultation'].filter(key => Object.hasOwn(terms, key)).map(key => [key, terms[key]])), createdAt: derived.agreement.createdAt,
+            designs: derived.designs.map(row => ({ cid: row.cid, title: row.content.title, goal: row.content.goal })), parcels: inputs, openGroundM2: derived.agreement.inputs.openGroundM2,
             outputs: derived.agreement.outputs, allocations, money: terms.money ?? previous.money, rule });
         const designs = derived.designs;
         const carriesRights = !suppliedRights && (previous.rule.approvalConfig?.rights || inputs.some(p => p.holders.length));
@@ -206,7 +218,8 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
             warnings: ['This is a private revision. The original plan, published designs and prior decisions retain their identity. Review this preview before publishing.',
                 ...(cutWarning ? [cutWarning] : []),
                 ...(carriesRights ? ['Existing rights and holders were carried into the draft without refreshing or verifying them. Review them before publication; no prior signature applies to this revision.'] : [])],
-            ...await previewArtifact({ origin: appOrigin, agreement: checked.content, designs: designs.map(d => d.content), parcelSourceId: derived.parcelSourceId }) };
+            plan: revisedPlan,
+            ...await previewArtifact({ origin: appOrigin, agreement: checked.content, plan: revisedPlan, designs: designs.map(d => d.content), parcelSourceId: derived.parcelSourceId }) };
     }
     return { inspectPlan, editPlan };
 }

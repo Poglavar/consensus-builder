@@ -1,6 +1,7 @@
 // Derive agreement ground on a fresh, isolated fabric using the app's arrangement and hash modules.
 // Only complete cadastral ground is admitted; open or ambiguous ground must be reviewed in the app.
-import { agreementObject, cidOfObject, communityRule, holdersFromRights, noMoney, ownersRule } from './agreement-objects.js';
+import { agreementObject, cidOfObject, communityRule, holdersFromRights, noMoney, ownersRule, planForDesigns } from './agreement-objects.js';
+import { appTurf as turf } from './mcp-geometry.js';
 import { previewArtifact } from './mcp-preview.js';
 import { deriveWithApp } from './mcp-ground-runtime.js';
 import { parcelSourceIdOf } from './mcp-read-tools.js';
@@ -59,14 +60,19 @@ export function createMcpAgreementTools({ read, drafts, appOrigin }) {
                 : rulePreset === 'owner-vote' ? { ...communityRule(), electorate: 'owners', approvalConfig: { schema: 'proposal-approval/v1', rights, policy: { type: 'unanimous' } } }
                     : communityRule();
             const { land, source, ids } = await groundFor({ ...resolved, designs }, rights);
-            const published = agreementObject({ title, author, sponsor, city, createdAt,
+            const bounds = designs.map(d => turf.bbox(turf.feature(read.siteOfDesign(d.content))));
+            const west = Math.min(...bounds.map(b => b[0])), south = Math.min(...bounds.map(b => b[1]));
+            const east = Math.max(...bounds.map(b => b[2])), north = Math.max(...bounds.map(b => b[3]));
+            const plan = planForDesigns(title, designs, { at: `${(south + north) / 2},${(west + east) / 2},17`, mode: '2d', city });
+            const published = agreementObject({ title, author, sponsor, city, createdAt, plan,
                 designs: designs.map(d => ({ cid: d.cid, goal: d.content.goal, title: d.content.title })),
                 parcels: land.inputs.parcels.map(parcel => ({ ...parcel, parcelSourceId: source.parcelSourceId })), openGroundM2: land.inputs.openGroundM2, outputs: land.outputs, allocations,
                 money: money || noMoney(currency), rule, deadline, consultation });
             return { agreement: published.content, cid: published.cid, parcelSourceId: source.parcelSourceId, takes: [...ids], roadChanges, groundEffects, ...(includeGround ? { ground: land } : {}), warnings: ['Draft ground is isolated from other local designs. Review the preview before publishing.',
                 ...(roadCutWarning(groundEffects) ? [roadCutWarning(groundEffects)] : []),
                 ...(roadChanges.length ? ['Road junctions and their land boundaries were authored together. Use the returned revised designs and CIDs when publishing this agreement.'] : [])],
-                ...await previewArtifact({ origin: appOrigin, agreement: published.content, designs: designs.map(d => d.content), parcelSourceId: source.parcelSourceId }), designs: designs.map(d => ({ cid: d.cid, content: d.content })) };
+                ...await previewArtifact({ origin: appOrigin, agreement: published.content, plan, designs: designs.map(d => d.content), parcelSourceId: source.parcelSourceId }),
+                plan, designs: designs.map(d => ({ cid: d.cid, content: d.content })) };
         }
     };
 }

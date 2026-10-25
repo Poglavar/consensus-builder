@@ -15,6 +15,7 @@ const DesignSync = require('../../frontend/js/proposals/design-sync.js');
 const DesignRecord = require('../../frontend/js/design-record.js');
 const Cid = require('../../frontend/js/cid.js');
 const PublishTerms = require('../../frontend/js/proposals/publish-terms.js');
+const PlanRecord = require('../../frontend/js/plan-record.js');
 let NodeCid;
 beforeAll(async () => { NodeCid = await import('../cid.js'); });
 
@@ -51,13 +52,15 @@ function agreement(extra = {}) {
         output('k9-p2', rect(1, 0, 3, 2), 600, ['k9'], 'layout-1', 'plot', [holder('agent-ana')]),
         output('road-1#1', rect(0, 2, 5, 2.2), 100, ['k9', 'k10'], 'road-1', 'corridor', [])
     ];
+    const designs = [
+        { proposalId: 'layout-1', title: 'Lay out k9', goal: 'parcel-layout', cid: DesignRecord.cidOf(layout()) },
+        { proposalId: 'road-1', title: 'New lane', goal: 'road', cid: DesignRecord.cidOf(road()) }
+    ];
+    const planContent = PlanRecord.create('Block seven', designs.map(design => design.cid), { at: '45.8,15.96,16', mode: '2d' });
     return {
         schema: 'agreement/v1', id: 'ag-1', title: 'Block seven', city: 'zagreb',
         createdAt: '2026-10-21T10:00:00.000Z', updatedAt: '2026-10-21T10:00:00.000Z',
-        designs: [
-            { proposalId: 'layout-1', title: 'Lay out k9', goal: 'parcel-layout', cid: DesignRecord.cidOf(layout()) },
-            { proposalId: 'road-1', title: 'New lane', goal: 'road', cid: DesignRecord.cidOf(road()) }
-        ],
+        plan: { cid: Cid.cidOfObject(planContent), content: planContent }, designs,
         inputs, outputs,
         allocations: [{ output: outputs[2].hash, to: { kind: 'public' } }],
         money: { currency: 'EUR', lines: [{ ownerKey: 'agent-ana', amountCents: 5000 }] },
@@ -92,7 +95,7 @@ describe('recordFromPublished', () => {
         ...agreement({ author: 'Ana', sponsor: SPONSOR }),
         inputs: { ...agreement().inputs, parcels: agreement().inputs.parcels.map(parcel => ({ ...parcel, parcelSourceId: 'zagreb-dgu' })) }
     });
-    const row = { cid: Cid.cidOfObject(content), content, createdAt: '2026-10-21T12:00:00.000Z' };
+    const row = { cid: Cid.cidOfObject(content), content, plan: agreement().plan, createdAt: '2026-10-21T12:00:00.000Z' };
     const localIds = new Map([[layoutCid, 'design-layout'], [roadCid, 'design-road']]);
     const localIdOf = cid => localIds.get(cid) || null;
 
@@ -102,14 +105,14 @@ describe('recordFromPublished', () => {
             consultation: { organiser: 'https://ngo.example', participationUrl: 'https://ngo.example/join' } });
         const content = AgreementRecord.published(original);
         const cid = AgreementRecord.publishedCid(original);
-        const imported = AgreementSync.recordFromPublished({ cid, content }, { id: 'ag-imported', apiBase: API, localIdOf });
+        const imported = AgreementSync.recordFromPublished({ cid, content, plan: original.plan }, { id: 'ag-imported', apiBase: API, localIdOf });
         expect(imported.consultation).toEqual({ organiser: 'did:web:ngo.example', participationUrl: 'https://ngo.example/join' });
         expect(AgreementRecord.publishedCid(imported)).toBe(cid);
     });
 
     it('names the designs by their local copies and keeps the pieces derived here when they are the published ones', () => {
         const derived = { outputs: clone(agreement().outputs) };
-        const record = AgreementSync.recordFromPublished(row, { id: 'ag-imported', apiBase: API, localIdOf, derived });
+        const record = AgreementSync.recordFromPublished(row, { id: 'ag-imported', apiBase: API, localIdOf, designOf: id => ({ title: id === 'design-layout' ? 'Lay out k9' : 'New lane', goal: id === 'design-layout' ? 'parcel-layout' : 'road' }), derived });
         expect(record).toMatchObject({ schema: 'agreement/v1', id: 'ag-imported', title: 'Block seven', city: 'zagreb', createdAt: content.createdAt,
             allocations: content.allocations, money: content.money, rule: content.rule, deadline: null,
             published: { cid: row.cid, publishedAt: row.createdAt, apiBase: API } });
@@ -146,7 +149,7 @@ describe('recordFromPublished', () => {
         const cid = Cid.cidOfObject(content);
         const foreign = raw.outputs.map(piece => ({ ...piece, holders: [holder('unrelated-local-owner')] }));
         for (const derived of [null, { outputs: raw.outputs.map(piece => ({ ...piece, holders: [] })) }, { outputs: foreign }]) {
-            const imported = AgreementSync.recordFromPublished({ cid, content }, { id: 'ag-imported', apiBase: API, localIdOf, derived });
+            const imported = AgreementSync.recordFromPublished({ cid, content, plan: raw.plan }, { id: 'ag-imported', apiBase: API, localIdOf, derived });
             const parties = AgreementRecord.ledger(imported).parties;
             expect(parties.map(party => [party.ownerKey, party.contributedM2, party.assignedM2, party.changeM2]))
                 .toEqual([['agent-ana', 1000, 1000, 0], ['agent-ben', 800, 800, 0]]);
@@ -179,7 +182,7 @@ describe('recordFromPublished', () => {
         }
         // Proposed without a wallet: no sponsor, so it can only be proposed again before a mint.
         const unsponsored = AgreementRecord.published(agreement());
-        const bare = { cid: Cid.cidOfObject(unsponsored), content: unsponsored, createdAt: row.createdAt };
+        const bare = { cid: Cid.cidOfObject(unsponsored), content: unsponsored, plan: agreement().plan, createdAt: row.createdAt };
         expect(AgreementSync.recordFromPublished(bare, { id: 'ag-bare', apiBase: API, localIdOf }).published.sponsor).toBeNull();
     });
 
@@ -188,6 +191,12 @@ describe('recordFromPublished', () => {
         expect(error).toMatchObject({ code: 'design-missing' });
         expect(() => AgreementSync.recordFromPublished({ cid: 'nope', content }, { id: 'x', apiBase: API, localIdOf })).toThrow(TypeError);
         expect(() => AgreementSync.recordFromPublished(row, { id: 'x', apiBase: API })).toThrow(/localIdOf/);
+    });
+
+    it('requires the fetched plan snapshot CID to match the agreement content', () => {
+        const otherContent = PlanRecord.create('Other plan', row.plan.content.designCids, row.plan.content.view);
+        const mismatched = { ...row, plan: { cid: Cid.cidOfObject(otherContent), content: otherContent } };
+        expect(() => AgreementSync.recordFromPublished(mismatched, { id: 'x', apiBase: API, localIdOf })).toThrow(/exact plan/);
     });
 });
 
@@ -234,7 +243,7 @@ function fakeServer({ rows = new Map(), designs = new Map(), onchain = null, min
     return { fetch, calls };
 }
 
-function fakeWindow({ blocked = null, applied = true, records = [layout(), road()], saved = [agreement()], server = fakeServer(), wallet = SPONSOR } = {}) {
+function fakeWindow({ blocked = null, applied = true, records = [layout(), road()], saved = [agreement()], server = fakeServer(), wallet = SPONSOR, plans = null } = {}) {
     const proposals = new Map(records.map(record => [record.proposalId, record]));
     const agreements = new Map(saved.map(row => [row.id, clone(row)]));
     const win = {
@@ -255,6 +264,14 @@ function fakeWindow({ blocked = null, applied = true, records = [layout(), road(
         solanaWalletManager: { getState: () => (wallet ? { status: 'connected', accounts: [wallet] } : { status: 'disconnected', accounts: [] }) },
         isApplied: record => applied && record.applied === true,
         isProposalCurrentlyApplied: record => record.applied === true,
+        PlanRecord,
+        MapShare: { capture: () => agreement().plan.content.view },
+        NamedPlans: { fetchPlan: async cid => {
+            const available = plans || new Map(saved.map(row => [row.plan?.cid, row.plan]).filter(([key]) => key));
+            const plan = available.get(cid);
+            if (!plan) throw Object.assign(new Error('plan-not-found'), { code: 'plan-not-found' });
+            return clone(plan);
+        } },
         proposalStorage: {
             getProposal: id => proposals.get(id) || null,
             getAllProposals: () => [...proposals.values()],
@@ -292,31 +309,35 @@ describe('publishAgreement', () => {
         expect(server.calls.map(call => `${call.method} ${call.pathname}`)).toEqual([
             'POST /pins', // the layout, pinned only
             'POST /pins', 'POST /designs', // the road, published on its own
+            'POST /pins', // the plan snapshot
             'POST /pins', 'POST /agreements'
         ]);
         // Authors are stamped before the CIDs are taken, so the agreement links the stamped designs.
         const layoutCid = DesignRecord.cidOf(proposals.get('layout-1'));
         const roadCid = DesignRecord.cidOf(proposals.get('road-1'));
         expect(proposals.get('layout-1').author).toBe('Ana');
-        const body = server.calls[4].body;
+        const body = server.calls[5].body;
         expect(body.designs).toEqual([{ cid: layoutCid, content: DesignRecord.published(proposals.get('layout-1')) }]);
         expect(body.cid).toBe(NodeCid.cidOfObject(body.content));
         expect(result.cid).toBe(body.cid);
-        expect(body.content).toMatchObject({ schema: 'agreement/v1', author: 'Ana', sponsor: SPONSOR, city: 'zagreb',
-            designs: [{ cid: layoutCid, goal: 'parcel-layout', title: 'Lay out k9' }, { cid: roadCid, goal: 'road', title: 'New lane' }] });
+        expect(body.content).toMatchObject({ schema: 'agreement/v1', author: 'Ana', sponsor: SPONSOR, city: 'zagreb', planCid: body.plan.cid });
+        expect(body.content).not.toHaveProperty('designs');
+        expect(body.plan.content.designCids).toEqual([layoutCid, roadCid].sort());
+        expect(body.plan).toEqual(agreements.get('ag-1').plan);
         expect(body.content.inputs.parcels.map(parcel => parcel.parcelSourceId)).toEqual(['zagreb-dgu', 'zagreb-dgu']);
         expect(body.content.outputs.map(piece => piece.producedBy)).toEqual([layoutCid, layoutCid, roadCid]);
 
         const stored = agreements.get('ag-1');
         expect(stored.published).toEqual({ cid: result.cid, publishedAt: '2026-10-21T12:00:05.000Z', apiBase: API, sponsor: SPONSOR });
         expect(stored.designs.map(design => design.cid)).toEqual([layoutCid, roadCid]);
+        expect(stored.plan.cid).toBe(body.content.planCid);
         expect(proposals.get('layout-1').published).toEqual({ cid: layoutCid, publishedAt: '2026-10-21T12:00:05.000Z', apiBase: API });
         expect(proposals.get('road-1').published.cid).toBe(roadCid);
         expect(result.link).toBe(`https://app.example.test/agreements/${result.cid}?city=zg&lang=hr`);
 
         // Proposed once: proposing again sends nothing and answers the same CID.
         expect(await sync.publishAgreement('ag-1')).toEqual({ cid: result.cid, row: null, link: result.link });
-        expect(server.calls).toHaveLength(5);
+        expect(server.calls).toHaveLength(6);
     });
 
     it('proposes without a sponsor when no wallet is connected', async () => {
@@ -348,12 +369,23 @@ describe('fetchAgreement and refusals', () => {
         const content = AgreementRecord.published(agreement());
         const cid = Cid.cidOfObject(content);
         const tamperedCid = Cid.cidOfObject({ another: 'agreement' });
-        const rows = new Map([[cid, { cid, content, createdAt: '2026-10-21T12:00:00.000Z' }], [tamperedCid, { cid: tamperedCid, content }]]);
-        const { sync } = fakeWindow({ server: fakeServer({ rows }) });
+        const plan = agreement().plan;
+        const rows = new Map([[cid, { cid, content, plan, createdAt: '2026-10-21T12:00:00.000Z' }], [tamperedCid, { cid: tamperedCid, content, plan }]]);
+        const { sync } = fakeWindow({ server: fakeServer({ rows }), plans: new Map([[plan.cid, plan]]) });
         expect((await sync.fetchAgreement(cid)).content).toEqual(content);
+        expect((await sync.fetchAgreement(cid)).plan).toEqual(plan);
         expect(await thrown(() => sync.fetchAgreement(tamperedCid))).toMatchObject({ code: 'cid-mismatch' });
         expect(await thrown(() => sync.fetchAgreement(Cid.cidOfObject({ missing: true })))).toMatchObject({ code: 'agreement-not-found' });
         expect(await thrown(() => sync.fetchAgreement('ag-1'))).toMatchObject({ code: 'invalid-cid' });
+    });
+
+    it('refuses a row without the exact plan snapshot', async () => {
+        const plan = PlanRecord.create('Unavailable plan', agreement().plan.content.designCids, agreement().plan.content.view);
+        const content = { ...AgreementRecord.published(agreement()), planCid: Cid.cidOfObject(plan) };
+        const cid = Cid.cidOfObject(content);
+        const rows = new Map([[cid, { cid, content }]]);
+        const { sync } = fakeWindow({ server: fakeServer({ rows }), plans: new Map() });
+        expect(await thrown(() => sync.fetchAgreement(cid))).toMatchObject({ code: 'plan-not-found' });
     });
 
     it('words the index\'s refusals of an agreement', () => {
@@ -499,6 +531,7 @@ describe('proposeAgain', () => {
         expect(copy.published).toEqual({ cid: again.cid, publishedAt: '2026-10-21T12:00:05.000Z', apiBase: API, sponsor: SPONSOR });
         expect(copy.onchain).toBeNull();
         expect(copy.designs).toEqual(before.designs);
+        expect(copy.plan).toEqual(before.plan);
         expect(Date.parse(copy.createdAt)).toBeGreaterThan(Date.parse(before.createdAt));
         const indexedBody = server.calls.at(-1);
         expect(indexedBody).toMatchObject({ method: 'POST', pathname: '/agreements' });
@@ -550,6 +583,8 @@ describe('opening an /agreements link', () => {
         expect(agreements.size).toBe(2);
         expect(opened).toHaveBeenCalledOnce();
         expect(agreements.get(save.mock.results[0].value.id)).toMatchObject({ published: { cid }, title: content.title });
+        expect(agreements.get(save.mock.results[0].value.id).plan).toEqual(agreement().plan);
+        expect(agreements.get(save.mock.results[0].value.id).designs.map(design => design.cid).sort()).toEqual(agreement().plan.content.designCids);
     });
 
     it('keeps a mint this device made that the index has not recorded, and takes the index\'s once it has', async () => {

@@ -936,7 +936,7 @@
             };
             const text = el('p', 'world-popup__text', {
                 text: pointSelection
-                    ? t('world.popup.locationText', 'Open this exact location at street level to view or create proposals.')
+                    ? t('world.popup.locationText', 'Open this exact location at street level to view or create designs.')
                     : place.sourceId
                         ? (place.queryMode === 'point'
                             ? t('world.tier.live.pointText', 'Tap the map to load and select an individual parcel. Loading every parcel in an area is unavailable for this source.')

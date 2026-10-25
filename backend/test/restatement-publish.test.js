@@ -10,7 +10,8 @@ import path from 'node:path';
 import vm from 'node:vm';
 import { createRequire } from 'node:module';
 import { cidOf, canonicalBytes } from '../cid.js';
-import { designObject } from '../agents/agreement-objects.js';
+import { designObject, planForDesigns } from '../agents/agreement-objects.js';
+import { MAX_PINNED_OBJECT_BYTES } from '../storage/pinning.js';
 
 // The checkpoint directory is derived from the home directory when the module loads: every run here
 // writes under a temporary home, never under the real one.
@@ -232,8 +233,8 @@ describe('planObjects', () => {
             .toThrow(/twice: designs one and two are the same object \(bafkrei/);
         expect(() => lib.planObjects(makePlan({ key: 'pool', designs: [{ key: 'layout', record: layoutRecord({ site: null, geometry: SITE }) }] })))
             .toThrow('pool/layout: a parcel layout is published with its site');
-        const huge = buildingRecord({ description: 'x'.repeat(1024 * 1024) });
-        expect(() => lib.planObjects(makePlan({ key: 'huge', designs: [{ key: 'big', record: huge }] }))).toThrow(/huge\/big: the design is \d+ bytes; the courier pins at most/);
+        const huge = buildingRecord({ description: 'x'.repeat(MAX_PINNED_OBJECT_BYTES) });
+        expect(() => lib.planObjects(makePlan({ key: 'huge', designs: [{ key: 'big', record: huge }] }))).toThrow(`huge/big: fileRoot accepts at most ${MAX_PINNED_OBJECT_BYTES} bytes`);
     });
 
     it('needs a fixed source date on every design, never the time of publishing', () => {
@@ -267,7 +268,8 @@ describe('canonicalDesignRecord', () => {
         expect(canonical.roadProposal.definition).toEqual(expected);
         expect(canonical.roadProposal.definition.width).toBe(10);
         // The raw spelling would hash differently from what the app holds after storing it.
-        expect(designObject(canonical).cid).not.toBe(designObject(raw).cid);
+        // The shared publication contract also canonicalizes road profiles.
+        expect(designObject(canonical).cid).toBe(designObject(raw).cid);
         expect(designObject(lib.canonicalDesignRecord(canonical, 'again')).cid).toBe(designObject(canonical).cid);
         expect(lib.canonicalRoadDefinition(canonical.roadProposal.definition)).toEqual(canonical.roadProposal.definition);
     });
@@ -301,7 +303,9 @@ describe('planAgreement', () => {
             allocations: [], money: { currency: 'EUR', lines: [] }, deadline: null,
             rule: { electorate: 'community', binding: false, approvalConfig: null, lens: [] }
         });
-        expect(content.designs).toEqual(objects.map(object => ({ cid: object.cid, goal: object.content.goal, title: object.content.title })));
+        const verifiedPlan = planForDesigns(plan.title, objects);
+        expect(content.planCid).toBe(verifiedPlan.cid);
+        expect(verifiedPlan.content.designCids).toEqual(objects.map(object => object.cid).sort());
         expect(content.inputs.parcels).toEqual(ground.inputs.map(parcel => ({ parcelId: parcel.parcelId, parcelSourceId: 'hr-cadastre', areaM2: parcel.areaM2, holders: [] })));
         expect(content.outputs.map(output => [output.hash, output.producedBy])).toEqual(ground.outputs.map(output => [output.hash, output.producedBy]));
         expect(cid).toBe(cidOf(canonicalBytes(content)));
@@ -744,11 +748,12 @@ describe('--agreement', () => {
         const run = await cli(['--agreement', '--api', API, '--app', APP, '--apply'], { plans: [plan], index });
         expect(run.err).toBe('');
         expect(run.exitCode).toBe(0);
-        // The layout is pinned before the agreement that carries it; both exactly as built.
-        expect(index.pins.map(pin => [pin.kind, pin.cid])).toEqual([['design', objects[2].cid], ['agreement', agreement.cid]]);
-        expect(index.pins[1].content).toEqual(agreement.content);
+        // The layout and named plan are pinned before the agreement that carries them.
+        expect(index.pins.map(pin => [pin.kind, pin.cid])).toEqual([['design', objects[2].cid], ['plan', agreement.plan.cid], ['agreement', agreement.cid]]);
+        expect(index.pins[1].content).toEqual(agreement.plan.content);
+        expect(index.pins[2].content).toEqual(agreement.content);
         const posted = index.calls.find(call => call.method === 'POST' && call.path === '/agreements');
-        expect(posted.body).toEqual({ cid: agreement.cid, content: agreement.content, designs: [{ cid: objects[2].cid, content: objects[2].content }] });
+        expect(posted.body).toEqual({ cid: agreement.cid, content: agreement.content, plan: agreement.plan, designs: [{ cid: objects[2].cid, content: objects[2].content }] });
         expect(run.out).toContain(`${plan.key}: agreement ${agreement.cid} indexed with 1 parcel layout(s) carried · ${APP}/agreements/${agreement.cid}?city=zagreb`);
         const state = readState(API, plan);
         expect(state.agreements[agreement.cid]).toEqual({ indexedAt: '2026-10-22T08:02:00.000Z' });

@@ -123,7 +123,7 @@
 
     function proposalLabel(goal) {
         const adapter = global.proposalEditorAdapterRegistry?.get(goal);
-        return adapter?.label || String(goal || tDraft('proposalDrafts.proposal', 'Proposal')).replace(/-/g, ' ');
+        return adapter?.label || String(goal || tDraft('proposalDrafts.proposal', 'Design')).replace(/-/g, ' ');
     }
 
     function relativeTime(value) {
@@ -146,7 +146,7 @@
         shell = global.document.createElement('aside');
         shell.id = 'proposal-editor-shell';
         shell.className = 'proposal-editor-shell';
-        shell.setAttribute('aria-label', tDraft('proposalDrafts.editorAria', 'Proposal draft editor'));
+        shell.setAttribute('aria-label', tDraft('proposalDrafts.editorAria', 'Design draft editor'));
         global.document.body.appendChild(shell);
         shell.addEventListener('click', handleShellClick);
         shell.addEventListener('input', handleShellInput);
@@ -183,19 +183,19 @@
     }
 
     const DETAILS_COPY = {
-        new: ['proposalDrafts.sections.detailsCopyNew', 'Describe what this proposal does, so others can follow it.'],
-        edit: ['proposalDrafts.sections.detailsCopyEdit', 'Describe what this proposal does. Saving updates it in place; it keeps its id.'],
-        counterproposal: ['proposalDrafts.sections.detailsCopyCounterproposal', 'Describe how this counterproposal differs. The published proposal stays as it is.']
+        new: ['proposalDrafts.sections.detailsCopyNew', 'Describe what this design does, so others can follow it.'],
+        edit: ['proposalDrafts.sections.detailsCopyEdit', 'Describe what this design does. Saving updates it in place; it keeps its id.'],
+        counterproposal: ['proposalDrafts.sections.detailsCopyCounterproposal', 'Describe how this alternative design differs. The published design stays as it is.']
     };
     const REVIEW_NOTICE = {
-        edit: ['proposalDrafts.review.inPlaceNotice', 'Saving updates this proposal in place. It keeps its id.'],
-        counterproposal: ['proposalDrafts.review.counterproposalNotice', 'Saving creates a counterproposal. The published proposal is not changed or removed.']
+        edit: ['proposalDrafts.review.inPlaceNotice', 'Saving updates this design in place. It keeps its id.'],
+        counterproposal: ['proposalDrafts.review.counterproposalNotice', 'Saving creates an alternative design. The published design is not changed or removed.']
     };
 
     function renderDetails(draft) {
         const typeSelector = !draft.sourceLocalProposalId
             ? `<label class="proposal-editor-field">
-                    <span>${escapeHtml(tDraft('proposalDrafts.fields.type', 'Proposal type'))}</span>
+                    <span>${escapeHtml(tDraft('proposalDrafts.fields.type', 'Design type'))}</span>
                     <select data-draft-goal>${(global.proposalEditorAdapterRegistry?.list?.() || [])
                         .map(entry => option(entry.key, entry.label, draft.adapterKey || draft.goal))
                         .join('')}</select>
@@ -203,7 +203,7 @@
             : '';
         return `
             <section class="proposal-editor-section" data-editor-section="details">
-                <h3>${escapeHtml(tDraft('proposalDrafts.sections.detailsTitle', 'Proposal details'))}</h3>
+                <h3>${escapeHtml(tDraft('proposalDrafts.sections.detailsTitle', 'Design details'))}</h3>
                 <p class="proposal-editor-section-copy">${escapeHtml(tDraft(...DETAILS_COPY[draftSaveKind(draft)]))}</p>
                 ${typeSelector}
                 <label class="proposal-editor-field">
@@ -302,7 +302,7 @@
                 ${draft.incompatibilityReason ? `<div class="proposal-editor-unsupported">${escapeHtml(draft.incompatibilityReason)}</div>` : ''}
                 ${canOpen && !draft.incompatibilityReason
                     ? `<button type="button" class="btn btn-primary" data-editor-action="open-design">${escapeHtml(tDraft('proposalDrafts.actions.openDesign', 'Edit design on map'))}</button>`
-                    : `<div class="proposal-editor-card"><p>${escapeHtml(tDraft('proposalDrafts.design.parcelOnly', 'This proposal has no separate design geometry. Parcel highlighting remains live while you edit its other facets.'))}</p></div>`}
+                    : `<div class="proposal-editor-card"><p>${escapeHtml(tDraft('proposalDrafts.design.parcelOnly', 'This design has no separate geometry. Parcel highlighting remains live while you edit its other facets.'))}</p></div>`}
             </section>`;
     }
 
@@ -336,8 +336,8 @@
                 <h3>${escapeHtml(tDraft('proposalDrafts.review.title', 'Review changes'))}</h3>
                 ${REVIEW_NOTICE[draftSaveKind(draft)] ? `<div class="proposal-editor-review-notice">${escapeHtml(tDraft(...REVIEW_NOTICE[draftSaveKind(draft)]))}</div>` : ''}
                 <div class="proposal-editor-card">
-                    <strong>${escapeHtml(summary?.sourceName || draft.sourceLocalProposalId || tDraft('proposalDrafts.review.newProposal', 'New proposal'))}</strong>
-                    <p>${escapeHtml(draft.sourceLocalProposalId || tDraft('proposalDrafts.review.noSource', 'No source proposal'))} → ${escapeHtml(draft.fields?.name || '')}</p>
+                    <strong>${escapeHtml(summary?.sourceName || draft.sourceLocalProposalId || tDraft('proposalDrafts.review.newProposal', 'New design'))}</strong>
+                    <p>${escapeHtml(draft.sourceLocalProposalId || tDraft('proposalDrafts.review.noSource', 'No source design'))} → ${escapeHtml(draft.fields?.name || '')}</p>
                 </div>
                 <dl class="proposal-editor-diff-list">
                     ${rows || `<div class="proposal-editor-diff-row"><dt>${escapeHtml(tDraft('proposalDrafts.review.details', 'Details'))}</dt><dd>${escapeHtml(tDraft('proposalDrafts.review.noFacetChanges', 'No metadata changes'))}</dd></div>`}
@@ -815,13 +815,13 @@
         const proposal = proposalById(proposalIdOrHash);
         if (!proposal) {
             return reportGeometryEditFailure(
-                tDraft('proposalDrafts.errors.sourceMissing', 'Proposal source not found.'),
+                tDraft('proposalDrafts.errors.sourceMissing', 'Design source not found.'),
                 proposalIdOrHash
             );
         }
         if (!canEditProposalGeometry(proposal)) {
             return reportGeometryEditFailure(
-                tDraft('proposalDrafts.errors.notReshapeable', 'This proposal type cannot be reshaped.'),
+                tDraft('proposalDrafts.errors.notReshapeable', 'This design type cannot be reshaped.'),
                 global.ProposalDesignGoals?.keyOf(proposal) || 'unknown'
             );
         }
@@ -830,13 +830,13 @@
             draft = global.proposalDraftStore.createDraftFromProposal(proposal, { activate: true });
         } catch (error) {
             return reportGeometryEditFailure(
-                tDraft('proposalDrafts.errors.draftFailed', 'Could not open this proposal for editing.'),
+                tDraft('proposalDrafts.errors.draftFailed', 'Could not open this design for editing.'),
                 error
             );
         }
         if (!draft) {
             return reportGeometryEditFailure(
-                tDraft('proposalDrafts.errors.draftFailed', 'Could not open this proposal for editing.'),
+                tDraft('proposalDrafts.errors.draftFailed', 'Could not open this design for editing.'),
                 'createDraftFromProposal returned nothing'
             );
         }
@@ -877,7 +877,7 @@
     // The one Freeform building a Block or Row becomes, or the reason it cannot become one.
     const MERGE_REFUSALS = {
         'not-contiguous': ['proposalDrafts.freeform.notContiguous', 'Its buildings do not touch each other, so they cannot become one Freeform building.'],
-        'no-buildings': ['proposalDrafts.freeform.noBuildings', 'This proposal has no buildings to keep.']
+        'no-buildings': ['proposalDrafts.freeform.noBuildings', 'This design has no buildings to keep.']
     };
 
     function mergeRuleBuildings(features) {
@@ -918,8 +918,8 @@
         const params = { name: record?.title || record?.name || record?.proposalId || ruleLabel(typology), rule: ruleLabel(typology), count };
         if (count > 1) {
             return global.CbDialog.confirm(inPlace
-                ? tDraft('proposalDrafts.freeform.confirmLocalMany', '“{{name}}” becomes {{count}} Freeform proposals, one building per house: each parcel\'s massing at the greatest height its {{rule}} rule allows. The first keeps this proposal; the rule\'s parameters no longer apply afterwards.', params)
-                : tDraft('proposalDrafts.freeform.confirmPublishedMany', '“{{name}}” is published, so {{count}} Freeform counterproposals are made, one building per house: each parcel\'s massing at the greatest height its {{rule}} rule allows. The published proposal stays as it is.', params), {
+                ? tDraft('proposalDrafts.freeform.confirmLocalMany', '“{{name}}” becomes {{count}} Freeform designs, one building per house: each parcel\'s massing at the greatest height its {{rule}} rule allows. The first replaces this design; the rule\'s parameters no longer apply afterwards.', params)
+                : tDraft('proposalDrafts.freeform.confirmPublishedMany', '“{{name}}” is published, so {{count}} Freeform designs are created, one building per house: each parcel\'s massing at the greatest height its {{rule}} rule allows. The published design stays as it is.', params), {
                 title: tDraft('proposalDrafts.freeform.titleMany', 'Convert to freeform buildings'),
                 okText: tDraft('proposalDrafts.freeform.convert', 'Convert'),
                 cancelText: tDraft('proposalDrafts.freeform.keepRule', 'Keep the rule')
@@ -927,7 +927,7 @@
         }
         return global.CbDialog.confirm(inPlace
             ? tDraft('proposalDrafts.freeform.confirmLocal', '“{{name}}” becomes one Freeform building: its {{rule}} rule\'s massing at the greatest height the rule allows. The rule\'s parameters no longer apply afterwards: you edit the building, and lower it, directly.', params)
-            : tDraft('proposalDrafts.freeform.confirmPublished', '“{{name}}” is published, so a Freeform counterproposal is made: one building, its {{rule}} rule\'s massing at the greatest height the rule allows. The rule\'s parameters do not apply to it: you edit the building directly. The published proposal stays as it is.', params), {
+            : tDraft('proposalDrafts.freeform.confirmPublished', '“{{name}}” is published, so a Freeform design is created: one building, its {{rule}} rule\'s massing at the greatest height the rule allows. The rule\'s parameters do not apply to it: you edit the building directly. The published design stays as it is.', params), {
             title: tDraft('proposalDrafts.freeform.title', 'Convert to freeform building'),
             okText: tDraft('proposalDrafts.freeform.convert', 'Convert'),
             cancelText: tDraft('proposalDrafts.freeform.keepRule', 'Keep the rule')
@@ -1129,7 +1129,7 @@
             const intro = tDraft('proposalDrafts.freeform.dropMessage', 'The {{rule}} rule builds on its own parcels, so the design cannot simply move. What should happen here?', { rule })
                 + (typeof tryConvert === 'function'
                     ? `\n\n${many
-                        ? tDraft('proposalDrafts.freeform.dropConvertMeaningMany', 'Converting makes each of the {{count}} houses one Freeform proposal: its parcel\'s massing at the greatest height the rule allows. The rule\'s parameters no longer apply to them.', { count: buildings })
+                        ? tDraft('proposalDrafts.freeform.dropConvertMeaningMany', 'Converting makes each of the {{count}} houses one Freeform design: its parcel\'s massing at the greatest height the rule allows. The rule\'s parameters no longer apply to them.', { count: buildings })
                         : tDraft('proposalDrafts.freeform.dropConvertMeaning', 'Converting keeps the rule\'s massing at the greatest height it allows; the rule\'s parameters no longer apply to it.')}`
                     : '');
             const answer = await global.CbDialog.choice(reason ? `${reason}\n\n${intro}` : intro, [
@@ -1712,7 +1712,7 @@
         const receipt = store.getPublishReceipt(draftId);
         if (receipt) {
             if (typeof global.showStyledAlert === 'function') {
-                global.showStyledAlert(tDraft('proposalDrafts.publish.alreadyCreated', 'This draft already created proposal {{id}}.', { id: receipt.persistedProposalId || '' }));
+                global.showStyledAlert(tDraft('proposalDrafts.publish.alreadyCreated', 'This draft already created design {{id}}.', { id: receipt.persistedProposalId || '' }));
             }
             return false;
         }
@@ -1781,7 +1781,7 @@
             } : null
         };
         if (typeof global.showProposalDialog !== 'function') {
-            store.markPublishFailed(draft.id, new Error('Proposal creation is unavailable.'));
+                store.markPublishFailed(draft.id, new Error('Design creation is unavailable.'));
             renderShell();
             return false;
         }
@@ -1805,7 +1805,7 @@
             const source = draft.sourceLocalProposalId ? proposalById(draft.sourceLocalProposalId) : null;
             submit.textContent = source
                 ? global.ProposalLineage.forkSubmitLabel(draft.sourceLocalProposalId, { fork: options.fork === true })
-                : tDraft('proposalDrafts.actions.createProposal', 'Create proposal');
+                : tDraft('proposalDrafts.actions.createProposal', 'Create design');
             submit.dataset.proposalDraftId = draft.id;
         }
         closeProposalEditorShell();
@@ -2086,9 +2086,9 @@
                 const reason = failureInfo?.message || lastFailure || deriveFailure?.message || '';
                 global.showStyledAlert(reason
                     ? tDraft('proposalDrafts.builtButParkedBecause',
-                        'The object was created but could not be placed on the map: {{reason}} It is parked in your proposals list — select it there to see and apply it.',
+                        'The design was created but could not be placed on the map: {{reason}} It is in your designs list — select it there to see and apply it.',
                         { reason })
-                    : tDraft('proposalDrafts.builtButParked', 'The object was created but could not be placed on the map (a conflict blocked it). It is parked in your proposals list — select it there to see and apply it.'));
+                    : tDraft('proposalDrafts.builtButParked', 'The design was created but could not be placed on the map (a conflict blocked it). It is in your designs list — select it there to see and apply it.'));
             }
         } catch (_) { }
         if (landed && (inPlaceSource || proposal.proposalOrigin)

@@ -7,7 +7,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { makeDocument } from './helpers/fake-dom.js';
 
 const require = createRequire(import.meta.url);
-const { localAgreements, mergeRows, fetchPage, createSession, inspect, mountSection, strings } = require('../../frontend/js/design-memberships.js');
+const { localAgreements, localPlans, mergeRows, fetchPage, createSession, inspect, mountAgreements, mountSection, strings } = require('../../frontend/js/design-memberships.js');
 const page = (kind, items = [], nextOffset = null) => Response.json({ [kind]: items, hasMore: nextOffset !== null, nextOffset });
 
 function fixture({ published = true, agreements = [], fetch = vi.fn(async url => page(new URL(url).pathname.slice(1))) } = {}) {
@@ -39,72 +39,59 @@ describe('design membership sessions', () => {
         for (let selection = 0; selection < 2; selection++) {
             const session = await f.win.loadDesignMemberships(f.proposal).then(session => session);
             await session.ready;
-            expect(session.instances('agreements').map(item => item.id)).toEqual(['draft-agreement']);
+            expect(Object.keys(session.groups)).toEqual(['plans']);
+            expect(session.instances('plans')).toEqual([]);
             session.dispose();
         }
     });
-    it('matches exact published revisions and local drafts without matching stale revisions', () => {
-        const agreements = [draft,
-            { id: 'published', published: { cid: 'agreement-current' }, designs: [{ proposalId: 'different-copy', cid: 'design-current' }] },
-            { id: 'old', published: { cid: 'agreement-old' }, designs: [{ proposalId: 'local-design', cid: 'design-old' }] }];
-        expect(localAgreements('local-design', 'design-current', agreements, row => row.published?.cid || null).map(row => row.localId))
-            .toEqual(['draft-agreement', 'published']);
-        expect(localAgreements('local-design', null, agreements, row => row.published?.cid || null).map(row => row.localId))
-            .toEqual(['draft-agreement']);
+    it('lists only agreements that reference this exact plan CID', () => {
+        const agreements = [
+            { id: 'matching', title: 'Same plan', plan: { cid: 'plan-current' }, published: { cid: 'agreement-a' } },
+            { id: 'stale', title: 'Old plan', plan: { cid: 'plan-old' }, published: { cid: 'agreement-b' } },
+            { id: 'unrelated', title: 'Same designs, different plan', designs: [{ proposalId: 'local-design', cid: 'design-current' }] }
+        ];
+        expect(localAgreements('plan-current', agreements, row => row.published?.cid || null).map(row => row.localId)).toEqual(['matching']);
+        expect(localAgreements('plan-old', agreements, row => row.published?.cid || null).map(row => row.localId)).toEqual(['stale']);
     });
 
-    it('preserves a foreign published agreement identity and never treats its stale local id as a draft match', async () => {
-        const foreign = { id: 'foreign-agreement', title: 'Published elsewhere',
-            published: { cid: 'agreement-foreign', apiBase: 'https://other-api.example' },
-            designs: [{ proposalId: 'local-design', cid: 'design-old' }] };
-        const f = fixture({ agreements: [foreign] });
+    it('projects local plans from matching plan memberships only', () => {
+        const agreement = { id: 'a', designs: [{ proposalId: 'local-design' }], plan: { cid: 'plan-a', content: { title: 'Plan A', designCids: ['design-current'] } } };
+        expect(localPlans('local-design', 'design-current', [agreement])).toMatchObject([{ cid: 'plan-a', title: 'Plan A', localDesigns: agreement.designs }]);
+        expect(localPlans('different-design', 'design-other', [agreement])).toEqual([]);
+    });
+
+    it('keeps membership sessions plans-only and queries public plans by exact design CID', async () => {
+        const f = fixture();
         const session = f.session();
         await session.ready;
-        expect(session.groups.agreements.items).toEqual([]);
-        // With its published identity retained, the same local row can only match its exact CID,
-        // never the reused local proposal id for a different published revision.
-        expect(localAgreements('local-design', 'design-current', [foreign], row => row.published?.cid || null)).toEqual([]);
-        expect(localAgreements('local-design', 'design-old', [foreign], row => row.published?.cid || null)[0])
-            .toMatchObject({ cid: 'agreement-foreign', localId: 'foreign-agreement', draft: false, agreement: foreign });
+        expect(Object.keys(session.groups)).toEqual(['plans']);
+        const requestUrl = f.win.fetch.mock.calls.find(([url]) => url.includes('/plans?'))[0];
+        expect(new URL(requestUrl).searchParams.get('design')).toBe('design-current');
+        expect(f.win.fetch.mock.calls.some(([url]) => url.includes('/agreements?'))).toBe(false);
     });
 
-    it('deduplicates imported published agreements while retaining local navigation identity', async () => {
-        const imported = { id: 'imported', title: 'Published consultation', published: { cid: 'agreement-pub', apiBase: 'https://api.example' },
-            designs: [{ proposalId: 'local-design', cid: 'design-current' }], outputs: [{ pieceId: 'rebuilt-land' }] };
-        const f = fixture({ agreements: [imported], fetch: vi.fn(async url => {
-            const kind = new URL(url).pathname.slice(1);
-            return page(kind, kind === 'agreements' ? [{ cid: 'agreement-pub', title: 'Published consultation' }] : []);
-        }) });
-        const session = f.session();
-        await session.ready;
-        const records = session.groups.agreements.items;
-        expect(records).toHaveLength(1);
-        expect(records[0]).toMatchObject({ cid: 'agreement-pub', localId: 'imported', title: 'Published consultation' });
-        expect(session.instances('agreements')).toHaveLength(1);
-    });
-
-    it('keeps the successful list when the other lookup fails and retries only that list', async () => {
+    it('keeps the known plan when the public lookup fails and retries only that list', async () => {
         let plansFail = true;
         const fetch = vi.fn(async url => {
             const kind = new URL(url).pathname.slice(1);
-            return kind === 'plans' && plansFail ? new Response('', { status: 503 }) : page(kind, [{ cid: `${kind}-one`, title: `${kind} result` }]);
+            return plansFail ? new Response('', { status: 503 }) : page(kind, [{ cid: `${kind}-one`, title: `${kind} result` }]);
         });
         const f = fixture({ fetch });
+        f.win.NamedPlans.current = { cid: 'local-plan', content: { title: 'Known plan', designCids: ['design-current'] } };
         const session = f.session();
         await session.ready;
-        expect(session.groups.agreements.items.map(row => row.title)).toContain('agreements result');
-        expect(session.groups.agreements.items.map(row => row.title)).toContain('agreements result');
+        expect(session.groups.plans.items.map(row => row.title)).toContain('Known plan');
         expect(session.groups.plans.error).toBe(true);
         plansFail = false;
         await session.load('plans');
         expect(session.groups.plans.items.map(row => row.title)).toContain('plans result');
-        expect(fetch.mock.calls.filter(([url]) => url.includes('/agreements?'))).toHaveLength(1);
+        expect(fetch).toHaveBeenCalledTimes(2);
     });
 
     it('uses bounded pages and advances until the server reports the end', async () => {
         const fetch = vi.fn(async url => {
             const query = new URL(url), kind = query.pathname.slice(1), offset = Number(query.searchParams.get('offset'));
-            return kind === 'agreements' ? page(kind) : page(kind,
+            return page(kind,
                 Array.from({ length: offset === 0 ? 5 : 2 }, (_, i) => ({ cid: `plan-${offset + i}`, title: `Plan ${offset + i}` })), offset === 0 ? 5 : null);
         });
         const f = fixture({ fetch });
@@ -122,9 +109,8 @@ describe('design membership sessions', () => {
         const f = fixture({ published: false, agreements: [draft] });
         const session = f.session();
         await session.ready;
-        expect(f.win.fetch).not.toHaveBeenCalled();
-        expect(session.instances('agreements')).toMatchObject([{ id: 'draft-agreement', draft: true, title: 'Local consultation' }]);
         expect(session.groups.plans.items).toEqual([]);
+        expect(f.win.fetch).not.toHaveBeenCalled();
     });
 
     it('disposes a session so late lookup results cannot write or notify', async () => {
@@ -166,6 +152,17 @@ describe('design membership sessions', () => {
         for (const payload of [{ plans: [] }, { plans: [], hasMore: true, nextOffset: 0 }]) {
             await expect(fetchPage({ fetch: async () => Response.json(payload), backend: 'https://api.example', kind: 'plans', designCid: 'design-current' }))
                 .rejects.toThrow(/Invalid membership/);
+        }
+    });
+
+    it('queries agreements by exact plan revision and rejects unrelated results', async () => {
+        const fetch = vi.fn(async () => page('agreements', [{ cid: 'agreement-one', planCid: 'plan-current' }]));
+        const request = { fetch, backend: 'https://api.example', kind: 'agreements', planCid: 'plan-current' };
+        expect((await fetchPage(request)).items).toHaveLength(1);
+        expect(new URL(fetch.mock.calls[0][0]).searchParams.get('plan')).toBe('plan-current');
+        for (const planCid of ['plan-old', undefined]) {
+            fetch.mockImplementationOnce(async () => page('agreements', [{ cid: 'agreement-one', planCid }]));
+            await expect(fetchPage(request)).rejects.toThrow('different plan revision');
         }
     });
 });
@@ -241,74 +238,22 @@ describe('read-only parent inspection', () => {
         expect(link.href).toContain('/plans/plan-cid?backend=https%3A%2F%2Fapi.example');
     });
 
-    it('renders the agreement meaning for agreement instances', async () => {
+    it('opens a local agreement from its plan row without applying spatial changes', async () => {
         const doc = makeDocument(), host = doc.createElement('section'); doc.body.appendChild(host);
-        const f = fixture();
-        f.win.i18n.t = key => key === 'designMemberships.agreementMeaning' ? 'Agreement meaning' : key;
-        const session = { groups: { agreements: { loading: false, error: false, nextOffset: null } }, details: vi.fn(async () => ({ members: [], features: [] })) };
-        mountSection(host, 'agreements', { id: 'agreement-cid', cid: 'agreement-cid', label: 'Agreement title' }, session, f.win);
-        await vi.waitFor(() => expect(host.textContent).toContain('Agreement meaning'));
-        expect(host.textContent).toContain('Agreement title');
+        const agreement = { id: 'local-agreement', title: 'Terms', plan: { cid: 'plan-exact' } };
+        const f = fixture({ agreements: [agreement] });
+        f.win.ApplyProposal = { apply: vi.fn() };
+        f.win.DesignSync.applyDesign = vi.fn();
+        mountAgreements(host, { cid: 'plan-exact', draft: true }, f.win);
+        const row = host.querySelector('button');
+        expect(row.textContent).toBe('Terms');
+        row.click();
+        await vi.waitFor(() => expect(f.win.AgreementPanel.open).toHaveBeenCalledWith('local-agreement'));
+        expect(f.win.ApplyProposal.apply).not.toHaveBeenCalled();
+        expect(f.win.DesignSync.applyDesign).not.toHaveBeenCalled();
     });
 
-    it.each(['active', 'expired', 'cancelled'])('inspects a published %s agreement row instead of treating lifecycle status as a placeholder', async status => {
-        const inspectedFeature = { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [] } };
-        const f = fixture({ fetch: vi.fn(async url => {
-            const kind = new URL(url).pathname.slice(1);
-            return page(kind, kind === 'agreements' ? [{ cid: 'agreement-cid', title: 'Published agreement', status }] : []);
-        }) });
-        f.win.AgreementSync.fetchAgreement = vi.fn(async () => ({ content: { designs: [{ cid: 'design-cid', title: 'Exact revision' }] } }));
-        f.win.DesignSync.localCopyOf = vi.fn(() => ({ proposalId: 'local-design', title: 'Exact revision' }));
-        f.win.collectProposalFeatureSets = vi.fn(() => ({ primaryFeatures: [inspectedFeature] }));
-        f.win.ClickStackRelations = { renderGroup: vi.fn(() => makeDocument().createElement('div')) };
-        const session = f.session();
-        await session.ready;
-        const instance = session.instances('agreements')[0];
-        expect(instance).toMatchObject({ cid: 'agreement-cid', status });
-
-        const doc = makeDocument(), host = doc.createElement('section'); doc.body.appendChild(host);
-        const onFocus = vi.fn();
-        mountSection(host, 'agreements', instance, session, f.win, { onFocus });
-        await vi.waitFor(() => expect(onFocus).toHaveBeenCalledOnce());
-
-        expect(host.textContent).toContain(strings.en.agreementMeaning);
-        expect(host.textContent).toContain('Published agreement');
-        expect(host.textContent).not.toContain('None');
-        expect(host.querySelector('a').href).toContain('/agreements/agreement-cid?backend=https%3A%2F%2Fapi.example');
-        expect(f.win.AgreementSync.fetchAgreement).toHaveBeenCalledWith('agreement-cid');
-        expect(onFocus.mock.calls[0][0].features).toEqual([inspectedFeature]);
-    });
-
-    it('omits only a redundant relationship to a single deduplicated visible design', async () => {
-        const renderGroup = vi.fn((_group, doc) => doc.createElement('div'));
-        const render = async hits => {
-            const doc = makeDocument(), host = doc.createElement('section'); doc.body.appendChild(host);
-            const f = fixture();
-            f.win.ClickStackRelations = { renderGroup };
-            const member = { id: 'design-one', label: 'Design one' };
-            const session = {
-                groups: { agreements: { loading: false, error: false, nextOffset: null } },
-                details: vi.fn(async () => ({ members: [member], features: [] }))
-            };
-            const instance = { id: 'agreement-1', cid: 'agreement-1', label: 'Agreement' };
-            mountSection(host, 'agreements', instance, session, f.win, { hits });
-            await vi.waitFor(() => expect(session.details).toHaveBeenCalledOnce());
-            await vi.waitFor(() => expect(instance.features).toEqual([]));
-            return { host, doc, instance };
-        };
-
-        renderGroup.mockClear();
-        const duplicateOnly = await render({ designs: [{ id: 'design-one' }, { id: 'design-one', onParcel: true }] });
-        expect(renderGroup).not.toHaveBeenCalled();
-        expect(duplicateOnly.host.querySelector('.click-stack__membership-details').textContent).not.toContain('Design one');
-
-        renderGroup.mockClear();
-        const twoVisible = await render({ designs: [{ id: 'design-one' }, { id: 'design-two', onParcel: true }] });
-        expect(renderGroup).toHaveBeenCalledOnce();
-        expect(twoVisible.host.querySelector('.click-stack__membership-details').children).toHaveLength(1);
-    });
-
-    it('calls onFocus with inspected geometry after completion even if its host was detached', async () => {
+    it('does not restore stale plan highlights after its host was detached', async () => {
         const doc = makeDocument(), host = doc.createElement('section'); doc.body.appendChild(host);
         const f = fixture();
         let finishInspection;
@@ -321,7 +266,7 @@ describe('read-only parent inspection', () => {
         mountSection(host, 'plans', { id: 'plan-1', cid: 'plan-1', label: 'Plan' }, session, f.win, { onFocus });
         host.remove();
         finishInspection(data);
-        await vi.waitFor(() => expect(onFocus).toHaveBeenCalledWith(expect.objectContaining(data)));
-        expect(onFocus.mock.calls[0][0].features).toEqual(data.features);
+        await Promise.resolve();
+        expect(onFocus).not.toHaveBeenCalled();
     });
 });

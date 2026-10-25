@@ -10,12 +10,14 @@
             const error = root.PlanRecord.validate(artifact.plan);
             if (error) throw new Error(error);
         }
+        if (artifact.agreement && (!artifact.plan || artifact.agreement.planCid !== root.Cid.cidOfObject(artifact.plan)
+            || Object.hasOwn(artifact.agreement, 'designs'))) throw new Error('Draft agreement must reference its exact plan.');
         const collection = artifact.agreement || artifact.plan;
         const designs = collection ? artifact.designs : [artifact.design];
         if (!Array.isArray(designs) || !designs.length) throw new Error('Draft preview needs designs');
         if (collection) {
             const carried = designs.map(content => root.Cid.cidOfObject(content));
-            const linked = artifact.plan ? artifact.plan.designCids : artifact.agreement.designs?.map(design => design.cid);
+            const linked = artifact.plan.designCids;
             if (!Array.isArray(linked) || new Set(carried).size !== carried.length || new Set(linked).size !== linked.length
                 || carried.length !== linked.length || linked.some(cid => !carried.includes(cid))) throw new Error('Draft preview designs must exactly match the collection’s linked CIDs.');
             // Replay order belongs to the collection, not its transport envelope.
@@ -47,8 +49,8 @@
             const derived = root.AgreementGround.derive({ designs: records, fabric: root.LiveParcelFabric,
                 originals: root.AgreementDialog.originalsById(originals.features, root.LiveParcelFabric.featureId),
                 ownerOf: () => [] });
-            const record = root.AgreementSync.recordFromPublished({ cid, content }, { id: `draft-${cid}`, apiBase,
-                localIdOf: designCid => applied.localIds.get(designCid), derived });
+            const record = root.AgreementSync.recordFromPublished({ cid, content, plan: { cid: content.planCid, content: artifact.plan } }, { id: `draft-${cid}`, apiBase,
+                localIdOf: designCid => applied.localIds.get(designCid), designOf: id => root.proposalStorage.getProposal(id), derived });
             delete record.published;
             if (derived.outputs.length !== content.outputs.length || derived.outputs.some(o => !content.outputs.some(expected => expected.hash === o.hash))) throw new Error('Draft agreement ground differs here. Review the designs before creating the agreement.');
             const checked = root.AgreementRecord.validate(record);

@@ -923,7 +923,7 @@
         minimize.setAttribute('title', minimizeLabel);
         minimize.setAttribute('aria-expanded', String(!state.proposeMinimized));
         panel.classList.toggle('is-minimized', state.proposeMinimized);
-        const labels = { info: t('panel.parcel.tabInfo', 'Info'), propose: t('proposalDrafts.tabs.design', 'Design'), proposals: t('panel.parcel.tabProposals', 'Proposals') };
+        const labels = { info: t('panel.parcel.tabInfo', 'Info'), propose: t('proposalDrafts.tabs.design', 'Design'), proposals: t('panel.parcel.tabProposals', 'Designs') };
         const existing = existingProposals();
         panel.querySelectorAll('[data-site-tab]').forEach(button => {
             const tab = button.getAttribute('data-site-tab'), active = tab === state.proposeTab;
@@ -948,9 +948,9 @@
         const sum = summary();
         const ids = sum ? sum.bound.map(hit => hit.parcelId) : [];
         if (!win.ParcelSetProposals || !ids.length) {
-            return { entries: [], html: `<p class="parcel-set-proposals-empty">${escapeHtml(t('siteTool.proposals.none', 'No proposals on this site\'s parcels yet.'))}</p>` };
+            return { entries: [], html: `<p class="parcel-set-proposals-empty">${escapeHtml(t('siteTool.proposals.none', 'No designs on this site\'s parcels yet.'))}</p>` };
         }
-        return win.ParcelSetProposals.view(ids, { emptyText: t('siteTool.proposals.none', 'No proposals on this site\'s parcels yet.'), onPublished: renderPanel });
+        return win.ParcelSetProposals.view(ids, { emptyText: t('siteTool.proposals.none', 'No designs on this site\'s parcels yet.'), onPublished: renderPanel });
     }
 
     function existingProposalsLineHtml() {
@@ -958,7 +958,7 @@
         const count = existingProposals().entries.length;
         if (!count) return '';
         return `<p class="site-panel__existing">
-            <span>${escapeHtml(t('siteTool.proposals.existing', '{{count}} proposals already on these parcels', { count }))}</span>
+            <span>${escapeHtml(t('siteTool.proposals.existing', '{{count}} designs already on these parcels', { count }))}</span>
             <button type="button" class="btn btn-sm" data-site-action="show-proposals">${escapeHtml(t('siteTool.proposals.show', 'Show'))}</button>
         </p>`;
     }

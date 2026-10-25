@@ -200,7 +200,7 @@ async function shareSingleProposal(proposalIdOrProposal) {
     const t = getProposalI18nHelper();
     const proposal = resolveDesignToShare(proposalIdOrProposal);
     if (!proposal) {
-        showEphemeralMessage(t('ephemeral.messages.cannot_share_this_proposal_right_now', 'Cannot share this proposal right now.'), 4000, 'error');
+        showEphemeralMessage(t('ephemeral.messages.cannot_share_this_proposal_right_now', 'Cannot share this design right now.'), 4000, 'error');
         return null;
     }
     const refusal = window.DesignSync.publishedCid(proposal) ? null : window.ProposalPublishTerms.publishRefusal(proposal);
@@ -295,14 +295,14 @@ function sharedCorridorCountPhrase(roads, tracks, tShare) {
 // describes them.
 function sharedPlanProgressView(event, tShare) {
     if (!event || typeof tShare !== 'function') return null;
-    const title = tShare('plan.applyingAllTitle', 'Applying shared proposals');
+    const title = tShare('plan.applyingAllTitle', 'Applying shared designs');
     const count = () => sharedCorridorCountPhrase(event.roads, event.tracks, tShare);
     switch (event.phase) {
         case 'ground-check':
             return {
                 title,
                 status: tShare('plan.progress.groundCheck',
-                    'Checking cadastral ground for {{count}} proposals…', { count: event.members })
+                    'Checking cadastral ground for {{count}} designs…', { count: event.members })
             };
         case 'ground-check-ids':
             return {
@@ -350,7 +350,7 @@ function sharedPlanProgressView(event, tShare) {
             return {
                 title,
                 status: tShare('plan.progress.groundFootprintLoad',
-                    'Loading footprint ground for {{members}} proposals in {{batches}} batches…', event),
+                    'Loading footprint ground for {{members}} designs in {{batches}} batches…', event),
                 progress: { done: 0, total: event.batches || 0 }
             };
         case 'ground-load-footprints-progress':
@@ -365,9 +365,9 @@ function sharedPlanProgressView(event, tShare) {
                 title,
                 status: event.unavailableMembers
                     ? tShare('plan.progress.groundIncomplete',
-                        'Ground check finished: {{unavailableMembers}} proposals still have unavailable parcels.', event)
+                        'Ground check finished: {{unavailableMembers}} designs still have unavailable parcels.', event)
                     : tShare('plan.progress.groundReady',
-                        'Cadastral ground ready: {{cachedMembers}} proposals reused loaded ground; {{loadedMembers}} needed loading.', event)
+                        'Cadastral ground ready: {{cachedMembers}} designs reused loaded ground; {{loadedMembers}} needed loading.', event)
             };
         case 'building-ground-load':
             return {
@@ -434,7 +434,7 @@ function sharedPlanProgressView(event, tShare) {
                 progress: { done: event.done || 0, total: event.total || 0 }
             };
         case 'save':
-            return { title, status: tShare('plan.progress.saving', 'Saving applied proposals…') };
+            return { title, status: tShare('plan.progress.saving', 'Saving applied designs…') };
         case 'corridor-ready':
             return {
                 title,
@@ -443,7 +443,7 @@ function sharedPlanProgressView(event, tShare) {
         case 'rollback':
             return { title, status: tShare('plan.progress.rollback', 'Restoring the parcel fabric after an error…') };
         case 'presentation':
-            return { title, status: tShare('plan.progress.presentation', 'Refreshing the map and proposal list…') };
+            return { title, status: tShare('plan.progress.presentation', 'Refreshing the map and designs list…') };
         case 'corridor-strips':
             return { title, status: tShare('plan.progress.corridorStrips', 'Refreshing road and track surfaces…') };
         default:
@@ -966,12 +966,12 @@ async function handleSharedDesignRoute(cids, options = {}) {
                 result.omitted.push(...toApply.filter(id => conflictingIncoming.has(id)));
                 toApply = toApply.filter(id => !conflictingIncoming.has(id));
             }
-            showProposalLoadOverlay(tShare('plan.materializing', 'Starting proposal materialization…'), {
+            showProposalLoadOverlay(tShare('plan.materializing', 'Starting design preparation…'), {
                 total: toApply.length, title: t('proposals.share.route.title', 'Shared designs')
             });
         }
         if (replaceConflicts) {
-            updateProposalLoadOverlay({ status: tShare('plan.materializing', 'Starting proposal materialization…') });
+            updateProposalLoadOverlay({ status: tShare('plan.materializing', 'Starting design preparation…') });
             const members = [...result.localIds.values()];
             const chosen = await ProposalManager.applyProposalPlan(members, {
                 silent: true, onProgress: reportSharedPlanProgress
@@ -997,7 +997,7 @@ async function handleSharedDesignRoute(cids, options = {}) {
             updateProposalLayer();
             updateShowProposalsButton();
         } else if (toApply.length) {
-            updateProposalLoadOverlay({ status: tShare('plan.materializing', 'Starting proposal materialization…') });
+            updateProposalLoadOverlay({ status: tShare('plan.materializing', 'Starting design preparation…') });
             const scoped = await materializeQueuedSharedProposals(toApply, {
                 planMemberIds: new Set([...result.skipped, ...toApply]),
                 recordFetchProfile: { batchRequests: Math.ceil(valid.length / 1000), individualRequests: 0, batchSupported: true }

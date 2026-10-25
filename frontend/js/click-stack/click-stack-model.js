@@ -35,10 +35,10 @@
     // parcel): it opens like a cadastral parcel, and is where the next design starts. Cadastral
     // parcels below it are the originals it came from. Ground is bare land with no register (the
     // former ground menu): it offers what can be drawn there, and shows only when nothing else is.
-    const ORDER = Object.freeze(['agreements', 'plans', 'designs', 'built', 'permitted', 'formed', 'parcels', 'ground']);
-    const MULTI = new Set(['agreements', 'plans', 'designs', 'built', 'permitted', 'formed', 'parcels']);
-    const EXPANDABLE = new Set(['agreements', 'plans', 'designs', 'built', 'permitted', 'formed', 'parcels', 'ground']);
-    const NEWEST_FIRST = new Set(['agreements', 'plans', 'designs']);
+    const ORDER = Object.freeze(['plans', 'designs', 'built', 'permitted', 'formed', 'parcels', 'ground']);
+    const MULTI = new Set(['plans', 'designs', 'built', 'permitted', 'formed', 'parcels']);
+    const EXPANDABLE = new Set(['plans', 'designs', 'built', 'permitted', 'formed', 'parcels', 'ground']);
+    const NEWEST_FIRST = new Set(['plans', 'designs']);
 
     const time = value => {
         const parsed = typeof value === 'number' ? value : Date.parse(value || '');
@@ -73,7 +73,7 @@
         return top ? top.instances[top.selectedIndex].ref : null;
     }
 
-    // hits: { agreements, plans, designs, built, permitted, formed, parcels } arrays of { id, label, ... }.
+    // hits: { plans, designs, built, permitted, formed, parcels } arrays of { id, label, ... }.
     // options.remembered: the kind last expanded; options.selected: { [kind]: id } to keep a
     // chosen instance (a strip click) when the same spot is rebuilt.
     function buildClickStack(hits = {}, options = {}) {
@@ -142,7 +142,7 @@
         const id = String(instance.id);
         const designs = hits.designs || [], formed = hits.formed || [], parcels = hits.parcels || [];
         const sourceIds = item => (item.feature?.properties?.cadastreParcelIds || []).map(String);
-        const contentOf = item => item?.content || item?.agreement || item?.plan || item || {};
+        const contentOf = item => item?.content || item?.plan || item || {};
         const references = item => {
             const content = contentOf(item);
             const refs = [];
@@ -193,7 +193,7 @@
             const ids = (design.proposal?.cadastreParcelIds || []).map(String);
             return ids.includes(String(parcel.id)) || sourceIds(parcel).some(id => ids.includes(id));
         };
-        if (kind === 'agreements' || kind === 'plans') {
+        if (kind === 'plans') {
             const content = contentOf(instance);
             const records = Array.isArray(content.designs) ? content.designs : null;
             const members = records
@@ -211,7 +211,6 @@
             add('below', 'designs', 'includedDesigns', members);
         } else if (kind === 'designs') {
             add('above', 'plans', 'memberPlans', (hits.plans || []).filter(item => includesDesign(item, instance)));
-            add('above', 'agreements', 'memberAgreements', (hits.agreements || []).filter(item => includesDesign(item, instance)));
             const pieces = formed.filter(item => String(item.designId) === id);
             if (pieces.length) add('below', 'formed', 'formedParcels', pieces);
             else add('below', 'parcels', 'affectsParcels', parcels.filter(item => designUsesParcel(instance, item)));
@@ -221,7 +220,7 @@
         } else if (kind === 'parcels') {
             const parents = formed.filter(item => sourceIds(item).includes(id));
             if (parents.length) add('above', 'formed', 'formedParcels', parents);
-            else add('above', 'designs', 'designsOnParcel', designs.filter(item => designUsesParcel(item, instance)));
+            add('above', 'designs', 'designsOnParcel', designs.filter(item => designUsesParcel(item, instance)));
         }
         return groups;
     }
@@ -230,6 +229,7 @@
     // instance in that target section. Missing/offscreen targets remain useful navigation.
     function visibleContextFor(kind, instance, hits = {}) {
         return contextFor(kind, instance, hits).filter(group => {
+            if (group.relation === 'memberPlans' || group.relation === 'designsOnParcel') return true;
             if (group.count !== 1) return true;
             const visible = instancesOf(group.kind, hits[group.kind]);
             return visible.length !== 1 || visible[0].id !== group.instances[0].id;

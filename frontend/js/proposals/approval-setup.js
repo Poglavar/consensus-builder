@@ -167,7 +167,7 @@
         return `
             <section class="proposal-editor-section" data-editor-section="approval">
                 ${heading ? `<h3>${esc(t('proposalDrafts.approval.title', 'Ownership and approval'))}</h3>` : ''}
-                <p class="proposal-editor-section-copy">${esc(t('proposalDrafts.approval.explainer', 'Upload abstract parcel-owner rights and set who must approve. This data is separate from parcel geometry; missing rights do not block the geometric proposal. Rights describe declared ownership and do not prove authorization.'))}</p>
+                <p class="proposal-editor-section-copy">${esc(t('proposalDrafts.approval.explainer', 'Upload abstract parcel-owner rights and set who must approve. This data is separate from parcel geometry; missing rights do not block the design. Rights describe declared ownership and do not prove authorization.'))}</p>
                 <div class="proposal-editor-card">
                     <h4>${esc(t('proposalDrafts.approval.rightsTitle', 'Parcel-owner rights'))}</h4>
                     <p>${esc(t('proposalDrafts.approval.importHelp', 'Import a parcel-rights JSON file, or load it from a registered source. The previous dataset stays in place if import fails.'))}</p>

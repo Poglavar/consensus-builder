@@ -1,6 +1,6 @@
 // The 3D model view's click stack (click-stack.md, "3D model view"): what one click in the scene
-// stands on, as section cards floating over the scene down the right side: Built, Agreements,
-// Plans, Design, Permitted, Parcel; no panel or header around them. It closes the way the 2D stack does:
+// stands on, as section cards floating over the scene down the right side: Built, Plans, Design,
+// Permitted, Parcel; no panel or header around them. It closes the way the 2D stack does:
 // Escape or a click on nothing. The 2D stack's look (its
 // frame and .click-stack__* classes) with the 3D view's own contents: the
 // Design section holds the whole proposal's figures across all its parcels, the Parcel section the
@@ -14,8 +14,8 @@
 })(typeof window !== 'undefined' ? window : globalThis, function (global) {
     'use strict';
 
-    const ORDER = Object.freeze(['built', 'agreements', 'plans', 'designs', 'permitted', 'parcels']);
-    const ICONS = Object.freeze({ plans: 'fas fa-layer-group', agreements: 'fas fa-file-signature', built: 'fas fa-building', designs: 'fas fa-drafting-compass', permitted: 'fas fa-cube', parcels: 'fas fa-border-all' });
+    const ORDER = Object.freeze(['built', 'plans', 'designs', 'permitted', 'parcels']);
+    const ICONS = Object.freeze({ plans: 'fas fa-layer-group', built: 'fas fa-building', designs: 'fas fa-drafting-compass', permitted: 'fas fa-cube', parcels: 'fas fa-border-all' });
 
     // ── pure rules ────────────────────────────────────────────────────────────────────────────
 
@@ -111,7 +111,6 @@
     function rowTitle(section) {
         switch (section.kind) {
             case 'plans': return t('designMemberships.plan', 'Plan');
-            case 'agreements': return t('designMemberships.agreement', 'Agreement');
             case 'built': return section.multi ? t('clickStack.builtMany', 'Built ({{count}})', { count: section.count }) : t('threeMode.controls.built', 'Built');
             case 'designs': return section.multi ? t('clickStack.designs', 'Designs ({{count}})', { count: section.count }) : t('proposalDrafts.tabs.design', 'Design');
             case 'permitted': return section.multi ? t('clickStack.permittedMany', 'Permitted ({{count}})', { count: section.count }) : t('planningViews.permitted', 'Permitted');
@@ -212,7 +211,7 @@
         try {
             const instance = selectedInstance(state.stack, kind);
             state.adapter.activate(kind, instance, body, options);
-            if (kind === 'plans' || kind === 'agreements') {
+            if (kind === 'plans') {
                 body.replaceChildren();
                 const version = state.membershipVersion;
                 const mount = () => {
@@ -245,7 +244,8 @@
         ensureElement(container);
         state.adapter?.release?.();
         state.adapter = adapter;
-        state.input = input;
+        state.input = { ...input };
+        delete state.input.agreements;
         state.click = options.click || null;
         state.activationOptions = {};
         state.stack = buildThreeStack(input, options);
@@ -365,12 +365,11 @@
             state.memberships = session;
             const selected = Object.fromEntries(state.stack.sections.map(section => [section.kind, section.instances[section.selectedIndex].id]));
             const previous = state.stack;
-            state.input = { ...state.input, plans: session.instances('plans', previous.selectedKind === 'plans'),
-                agreements: session.instances('agreements', previous.selectedKind === 'agreements') };
+            state.input = { ...state.input, plans: session.instances('plans', previous.selectedKind === 'plans') };
             state.input.designs = state.input.designs.map(item => item.id === design.id ? { ...item, cid: session.cid } : item);
             const next = buildThreeStack(state.input, { selected, focus: previous.selectedKind });
             state.stack = { ...next, expanded: previous.expanded && next.sections.some(section => section.kind === previous.expanded) ? previous.expanded : null };
-            const keepBody = !['plans', 'agreements'].includes(previous.expanded)
+            const keepBody = previous.expanded !== 'plans'
                 ? state.el.querySelector(`.click-stack__section[data-kind="${previous.expanded}"] .click-stack__body`) : null;
             render({ keepBody });
             if (keepBody) {

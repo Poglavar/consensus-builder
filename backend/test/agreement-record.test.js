@@ -10,12 +10,15 @@ const require = createRequire(import.meta.url);
 const record = require('../../frontend/js/agreement-record.js');
 const approval = require('../../frontend/js/proposals/approval.js');
 const Cid = require('../../frontend/js/cid.js');
+const PlanRecord = require('../../frontend/js/plan-record.js');
 
 const sha256 = text => createHash('sha256').update(text).digest('hex');
 // The designs' CIDs as a published agreement links them, and the lens member that verifies owners.
 const LAYOUT_CID = Cid.cidOfObject({ schema: 'design/v1', goal: 'parcel-layout', title: 'Lay out block seven' });
 const ROAD_CID = Cid.cidOfObject({ schema: 'design/v1', goal: 'road', title: 'Draw road' });
 const MEMBER = 'lens-member-1';
+const PLAN_CONTENT = PlanRecord.create('Block seven', [LAYOUT_CID, ROAD_CID], { at: '45.8,15.96,16', mode: '2d' });
+const PLAN = { cid: Cid.cidOfObject(PLAN_CONTENT), content: PLAN_CONTENT };
 // Rectangles in units of 1e-3 degree from the test origin.
 function rect(x0, y0, x1, y1) {
     const LON = 15.96, LAT = 45.8;
@@ -47,6 +50,7 @@ function fixture() {
     return {
         schema: 'agreement/v1', id: 'ag-test', title: 'Block seven', city: 'test-city',
         createdAt: '2026-10-21T10:00:00.000Z', updatedAt: '2026-10-21T10:00:00.000Z',
+        plan: { cid: PLAN.cid, content: JSON.parse(JSON.stringify(PLAN_CONTENT)) },
         designs: [
             { proposalId: 'layout-1', title: 'Lay out block seven', goal: 'parcel-layout', cid: LAYOUT_CID },
             { proposalId: 'road-1', title: 'Draw road', goal: 'road', cid: ROAD_CID }
@@ -121,6 +125,7 @@ describe('normalize', () => {
         const once = record.normalize(fixture());
         expect(once.schema).toBe('agreement/v1');
         expect(once.designs.map(design => design.proposalId)).toEqual(['layout-1', 'road-1']);
+        expect(once.plan).toEqual(PLAN);
         expect(once.allocations).toHaveLength(2);
         expect(record.normalize(once)).toEqual(once);
     });
@@ -156,6 +161,8 @@ describe('normalize', () => {
             raw => { raw.allocations[0].to = { kind: 'auction' }; },
             raw => { raw.money.lines.push({ ownerKey: 'agent-ana', amountCents: 5 }); },
             raw => { delete raw.rule; },
+            raw => { raw.plan.cid = LAYOUT_CID; },
+            raw => { raw.plan.content.designCids = [LAYOUT_CID]; },
             raw => { raw.createdAt = 'yesterday'; }
         ];
         broken.forEach(breakIt => {
@@ -166,6 +173,16 @@ describe('normalize', () => {
         const mismatched = fixture();
         mismatched.outputs[0].geometry.coordinates[0][1][0] += 1e-5;
         expect(() => record.normalize(mismatched)).toThrow(/does not match its geometry/);
+    });
+
+    it('accepts a missing plan only on a draft and checks its CID and immutable content', () => {
+        const draft = fixture();
+        draft.plan = null;
+        expect(record.normalize(draft).plan).toBeNull();
+        for (const plan of [{ cid: 'c2-nope', content: PLAN_CONTENT },
+            { cid: PLAN.cid, content: { ...PLAN_CONTENT, title: 'Changed' } }]) {
+            expect(thrownCode(() => record.normalize({ ...fixture(), plan } ) )).toBe('invalid-agreement');
+        }
     });
 });
 
@@ -503,18 +520,16 @@ describe('published', () => {
         published: { cid: Cid.cidOfObject({ any: 'earlier' }), publishedAt: '2026-10-21T12:00:00Z', apiBase: 'https://api.example.test' }
     });
 
-    it('is the agreement/v1 object: designs by CID, inputs with holders, outputs by hash without geometry', () => {
+    it('is the agreement/v1 object: one exact plan CID, inputs with holders, outputs by hash without geometry', () => {
         const raw = local();
         raw.inputs.parcels[0].parcelSourceId = 'zagreb-dgu';
         const object = record.published(raw);
-        expect(Object.keys(object).sort()).toEqual(['allocations', 'author', 'city', 'consultation', 'createdAt', 'deadline', 'designs', 'inputs',
-            'money', 'outputs', 'rule', 'schema', 'sponsor', 'title']);
+        expect(Object.keys(object).sort()).toEqual(['allocations', 'author', 'city', 'consultation', 'createdAt', 'deadline', 'inputs',
+            'money', 'outputs', 'planCid', 'rule', 'schema', 'sponsor', 'title']);
         expect(object).toMatchObject({ schema: 'agreement/v1', title: 'Block seven', author: 'Ana', sponsor: SPONSOR, city: 'test-city',
             createdAt: '2026-10-21T10:00:00.000Z', deadline: null });
-        expect(object.designs).toEqual([
-            { cid: LAYOUT_CID, goal: 'parcel-layout', title: 'Lay out block seven' },
-            { cid: ROAD_CID, goal: 'road', title: 'Draw road' }
-        ]);
+        expect(object.planCid).toBe(PLAN.cid);
+        expect(object).not.toHaveProperty('designs');
         expect(object.inputs).toEqual({
             parcels: [
                 { parcelId: 'k9', parcelSourceId: 'zagreb-dgu', areaM2: 1000, holders: [ana()] },
@@ -541,7 +556,10 @@ describe('published', () => {
 
     it('takes the designs\' CIDs from designCidOf when given, and refuses a design without one', () => {
         const fresh = { 'layout-1': Cid.cidOfObject({ edited: 'layout' }), 'road-1': ROAD_CID };
-        expect(record.published(local(), id => fresh[id]).designs.map(design => design.cid)).toEqual([fresh['layout-1'], ROAD_CID]);
+        const revised = local();
+        revised.plan = { ...PLAN, content: PlanRecord.create('Block seven', Object.values(fresh), PLAN_CONTENT.view) };
+        revised.plan.cid = Cid.cidOfObject(revised.plan.content);
+        expect(record.published(revised, id => fresh[id]).planCid).toBe(revised.plan.cid);
         const unnamed = local();
         unnamed.designs[1].cid = null;
         expect(thrownCode(() => record.published(unnamed))).toBe('invalid-agreement');
@@ -553,6 +571,23 @@ describe('published', () => {
         const object = record.published(fixture());
         expect(object.author).toBeNull();
         expect(object.sponsor).toBeNull();
+    });
+
+    it('requires the selected plan to contain exactly the published design CIDs', () => {
+        for (const cids of [[LAYOUT_CID], [LAYOUT_CID, ROAD_CID, Cid.cidOfObject({ other: true })]]) {
+            const raw = local();
+            raw.plan = { content: PlanRecord.create('Block seven', cids, PLAN_CONTENT.view) };
+            raw.plan.cid = Cid.cidOfObject(raw.plan.content);
+            expect(() => record.published(raw)).toThrow(/differ from the referenced plan/);
+        }
+    });
+
+    it('lets separate agreements reuse the same immutable plan revision', () => {
+        const next = fixture();
+        next.id = 'ag-another';
+        next.title = 'A separate agreement';
+        expect(record.published(next).planCid).toBe(record.published(fixture()).planCid);
+        expect(record.publishedCid(next)).not.toBe(record.publishedCid(fixture()));
     });
 });
 
@@ -574,8 +609,8 @@ describe('publishedCid', () => {
     it('moves with the designs, land, allocations, money, rule, deadline and sponsor', () => {
         const cid = record.publishedCid(fixture());
         const edits = [
-            raw => { raw.designs.reverse(); },
-            raw => { raw.designs[0].cid = Cid.cidOfObject({ another: 'layout' }); },
+            raw => { raw.plan = { content: PlanRecord.create('A revised plan', [LAYOUT_CID, ROAD_CID], PLAN_CONTENT.view) }; raw.plan.cid = Cid.cidOfObject(raw.plan.content); },
+            raw => { raw.designs[0].cid = Cid.cidOfObject({ another: 'layout' }); raw.plan = { content: PlanRecord.create('A revised plan', [raw.designs[0].cid, ROAD_CID], PLAN_CONTENT.view) }; raw.plan.cid = Cid.cidOfObject(raw.plan.content); },
             raw => { raw.inputs.parcels[0].holders = [cyril(1)]; },
             raw => { raw.allocations.pop(); },
             raw => { raw.money.lines[0].amountCents += 1; },

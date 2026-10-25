@@ -1290,7 +1290,7 @@ const ProposalManager = {
                     .join('; ');
                 try {
                     if (typeof showEphemeralMessage === 'function') {
-                        showEphemeralMessage(`Rebuild: ${summary.failed.length} proposal(s) could not re-apply and were set aside: ${names}`, 12000, 'warning');
+                        showEphemeralMessage(`Rebuild: ${summary.failed.length} design(s) could not be reapplied and were set aside: ${names}`, 12000, 'warning');
                     }
                 } catch (_) { }
             }
@@ -3113,7 +3113,7 @@ const ProposalManager = {
         try {
             this._setLastApplyFailure(proposalId, {
                 code: 'ground-held-by-proposal',
-                message: `The ground is held by ${blockers.length} applied proposal(s): ${names}. `
+                message: `The ground is held by ${blockers.length} applied design(s): ${names}. `
                     + 'Apply this one directly to choose it over them.',
                 conflictTitles: blockers.map(alternative => alternative.title || alternative.name || '').filter(Boolean),
                 conflictProposalIds: blockers.map(alternative => String(alternative.proposalId || '')).filter(Boolean)
@@ -3218,7 +3218,7 @@ const ProposalManager = {
         const names = rivals
             .map(alternative => alternative.title || alternative.name || String(alternative.proposalId))
             .join('; ');
-        const message = `${rivals.length} proposal(s) taken off the map — they stand on the same ground: ${names}`;
+            const message = `${rivals.length} design(s) taken off the map — they stand on the same ground: ${names}`;
         try {
             if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 10000, 'warning');
             else if (typeof updateStatus === 'function') updateStatus(message);
@@ -3692,7 +3692,7 @@ const ProposalManager = {
                 }
             } catch (_) { }
             this._refreshUIAfterProposalChange(null);
-            if (typeof updateStatus === 'function') updateStatus('Proposal \"' + title + '\" deleted');
+            if (typeof updateStatus === 'function') updateStatus('Design \"' + title + '\" deleted');
         });
         return true;
     },

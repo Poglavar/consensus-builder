@@ -818,7 +818,7 @@
 
     function proposalDisplayTitle(p) {
         if (!p) return '';
-        return p.title || p.name || p.proposalName || ('Proposal ' + (p.proposalId || p.id || ''));
+        return p.title || p.name || p.proposalName || ('Design ' + (p.proposalId || p.id || ''));
     }
 
     function proposalIdOf(p) {
@@ -1563,8 +1563,6 @@
             built: builtList.map(builtInstance),
             designs: designs.map(p => ({ id: String(proposalIdOf(p)), label: proposalDisplayTitle(p), proposal: p,
                 preserveView: plan.preserveView === true })),
-            agreements: (window.AgreementStore?.list() || []).filter(agreement => agreement.designs.some(design => designs.some(proposal => String(proposalIdOf(proposal)) === String(design.proposalId))))
-                .map(agreement => ({ id: agreement.id, label: agreement.title || agreement.id, agreement })),
             permitted: massingIds.map(id => ({ id, label: items.find(item => item.id === id)?.title || '' })),
             parcels: parcelId ? [{ id: parcelId, label: stackApi.parcelLabel(parcelId), feature: getParcelFeatureById(parcelId) }] : []
         };
@@ -7548,7 +7546,7 @@
         if (floorPlanErrors) lines.push(threeI18n('threeMode.controls.xrayError',
             'Some floor plans could not be displayed.'));
         if (suggestedPlansEnabled) {
-            lines.push(threeI18n('threeMode.controls.suggestedNote', 'Suggested layouts are generated defaults, not part of the proposal.'));
+            lines.push(threeI18n('threeMode.controls.suggestedNote', 'Suggested layouts are generated defaults, not part of the design.'));
             const buildings = suggestedPlanTotals.slices - suggestedPlanTotals.flagged;
             if (buildings) lines.push(threeI18n('threeMode.controls.suggestedCount',
                 `Suggested: ${buildings} buildings · ${suggestedPlanTotals.apartments} apartments per floor`,

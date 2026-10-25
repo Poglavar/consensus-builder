@@ -347,7 +347,7 @@
         banner.textContent = '';
         const place = state.explorePlace;
         banner.appendChild(el('p', 'explore-banner__text', {
-            text: t('world.explore.banner', 'No parcels here: you can draw a site and propose, but a proposal can only execute through an authority\'s verdict.')
+                text: t('world.explore.banner', 'No parcels here: you can draw a site and propose a design, but it can take effect only through an agreement approved by an authority.')
         }));
         // The actions are the shared small buttons (css/primitives.css), Ask the one primary.
         const actions = el('div', 'explore-banner__actions');

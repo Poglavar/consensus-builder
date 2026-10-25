@@ -6,22 +6,38 @@
 
 | Record | Meaning | Relationships |
 |---|---|---|
-| **Design** | One authored change: a road, building, park, parcel layout or rule. Published revisions have immutable content identities. | The same design revision can appear in multiple plans and agreements. |
-| **Plan** | A named spatial composition: selected published design CIDs and a saved map view, recorded as `plan/v1`. | References designs. Contains no decision rule, consent, allocations or payments. |
-| **Agreement** | A decision rule over specified designs, with any land allocations, payments and deadline. It may be a binding owners' arrangement or a non-binding consultation. | References designs directly, independently of any named plan. Its existence or publication does not establish consent or execution. |
+| **Design** | An authored change: a road, building, park, parcel layout or rule. Published revisions have immutable content identities. | The same design revision can appear in multiple plans. Agreement membership follows the plans. |
+| **Plan** | A named spatial collection of design CIDs and a saved map view, recorded as `plan/v1`. | Contains one or more designs; can exist without an agreement. |
+| **Agreement** | A decision rule and any land allocations, payments and deadline concerning a specific plan. | `agreement/v1.planCid` references exactly one immutable plan revision. Several agreements may reference the same plan. |
 
-A plan and an agreement currently have no direct record reference or one-to-one constraint.
-Shared membership in one design does not mean an agreement covers the whole plan. The click stack
-shows each one's actual member designs, and labels a design's reverse links separately.
+The app uses **Plans**, **Designs** and **Agreements**. “Proposal” remains informal language and an
+internal local-record identifier, not a public entity label. Nonbinding and binding describe kinds
+of agreement; “consultation” is not a separate UI noun. The existing `consultation` metadata field
+continues to store optional organiser and participation details.
+
+The click stack contains Plan and Design sections. Parcels link to their Designs, Designs link to
+Plans, and Plans link to Agreements in their own section. Agreement links open a separate dialog.
+Plans and Agreements retain separate share URLs. Execution markets and bets remain attached to
+eligible binding Agreements, so agreements concerning the same plan retain independent markets.
+
+Publication verifies the Plan CID and its exact member set. A local agreement's `designs` field is
+an editing/replay projection; it is not published. `POST /agreements` accepts a carried
+`plan: {cid, content}` and missing designs, indexing all three atomically. The index's `design_cids`
+is derived from the verified Plan solely for reverse lookup. Changing membership or terms creates
+new content identifiers; existing decisions and markets never move to a new revision.
+
+This intentionally breaks the former experimental `agreement/v1` contract that inlined `designs`.
+Old records are left untouched and must be recreated with a Plan reference; there is no compatibility
+reader or automatic conversion of signed or published records. Plan and Design records are unchanged.
 
 Named snapshots were added on 2026-10-24. “Name this plan” in Designs → Share saves the selected
 published designs and view, with a permanent `/plans/<cid>` link. Changing its title, selection or
-view creates a new snapshot; existing links retain their content. This is independent of the former
-named-plan machinery removed in M2. See [named-plan validation and release notes](docs/named-plans-validation.md).
+view creates a new snapshot; existing links retain their content. See
+[named-plan validation and release notes](docs/named-plans-validation.md).
 
-The notes below preserve the historical reasoning, implementation milestones and unresolved findings.
-The former statement that plans have no record was superseded by `plan/v1`; the current glossary
-is [vocabulary.md](vocabulary.md). The present UI clarification changes no record contract.
+The notes below preserve historical reasoning, implementation milestones and unresolved findings.
+The current glossary is [vocabulary.md](vocabulary.md); the contract above supersedes the former
+independent Plan/Agreement design-membership model.
 
 **Historical status (recorded 2026-10-22): M1, M2 and M3 built and tested; M3 committed, nothing pushed or deployed at that time.**
 "Lay out parcels" (M1 a) and the local agreement with its dialog, panel and list (M1 b) came first.

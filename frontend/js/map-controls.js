@@ -297,7 +297,7 @@ async function wipeLocalData(options = {}) {
     try {
         const confirmMessage = (typeof window !== 'undefined' && window.i18n && typeof window.i18n.t === 'function')
             ? window.i18n.t('modal.dataManagement.wipeWarning')
-            : 'This will erase ALL locally stored data (parcels, roads, proposals, proposal drafts, settings). Continue?';
+            : 'This will erase ALL locally stored data (parcels, roads, designs, design drafts, settings). Continue?';
         const confirmed = skipConfirm ? true : await window.showStyledConfirm(confirmMessage, { destructive: true });
         if (!confirmed) return;
         // Delegate to the single canonical eraser (js/wipe-local-data.js) rather than re-clearing a

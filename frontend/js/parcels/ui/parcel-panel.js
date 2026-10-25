@@ -251,7 +251,7 @@
             identityNoteFallback = 'Ground left outside the authored plots by this parcel layout. It is kept separately from the plot outputs.';
         } else if (identityKind === 'formed') {
             identityNoteKey = 'panel.parcel.identity.formedNote';
-            identityNoteFallback = 'Ground formed by the applied proposals. This reference identifies the current piece, not a registered parcel or an authored plot.';
+            identityNoteFallback = 'Ground formed by the applied designs. This reference identifies the current piece, not a registered parcel or an authored plot.';
         } else if (identityKind === 'sourcePart') {
             identityNoteKey = 'panel.parcel.identity.sourcePartNote';
             identityNoteFallback = 'One connected part of a source parcel. This reference identifies the displayed part; the source parcel can contain other parts.';
@@ -474,8 +474,8 @@
             ownershipHtml = `<span class="owner-loading" data-i18n-key="panel.parcel.owner.loading">${tParcel('panel.parcel.owner.loading', {}, 'Loading real ownership data...')}</span>`;
         }
 
-        let proposalsHtml = tParcel('panel.parcel.proposalsSection.empty', {}, 'No proposals');
-        const proposalFallbackTitle = tParcel('panel.parcel.proposalsSection.fallbackTitle', {}, 'Proposal');
+        let proposalsHtml = tParcel('panel.parcel.proposalsSection.empty', {}, 'No designs');
+        const proposalFallbackTitle = tParcel('panel.parcel.proposalsSection.fallbackTitle', {}, 'Design');
         const proposalRoadSuffix = tParcel('panel.parcel.proposalsSection.roadSuffix', {}, ' (Road)');
         const proposalIdLabel = tParcel('panel.parcel.proposalsSection.details.id', {}, 'ID:');
         const proposalAuthorLabel = tParcel('panel.parcel.proposalsSection.details.author', {}, 'Author:');
@@ -702,7 +702,7 @@
         // With nothing here yet, the empty list points to the Propose tab instead of a blank page.
         const proposalsEmptyHtml = `
         <div class="parcel-proposals-empty">
-            <p data-i18n-key="panel.parcel.proposalsSection.empty">${tParcel('panel.parcel.proposalsSection.empty', {}, 'No proposals on this parcel yet.')}</p>
+            <p data-i18n-key="panel.parcel.proposalsSection.empty">${tParcel('panel.parcel.proposalsSection.empty', {}, 'No designs on this parcel yet.')}</p>
             <button type="button" class="btn btn-primary btn-sm parcel-proposals-empty-btn" data-i18n-key="parcelMenu.actions.propose"
                 onclick="(window.switchParcelTab || function(){})(null, 'propose-tab')">${tParcel('parcelMenu.actions.propose', {}, 'Propose here')}</button>
         </div>

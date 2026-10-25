@@ -8,7 +8,12 @@ import { createPreviewLinks } from '../agents/mcp-preview-links.js';
 import { previewArtifact } from '../agents/mcp-preview.js';
 import { cidOfObject } from '../cid.js';
 const links = createRequire(import.meta.url)('../../frontend/js/draft-link.js');
+const PlanRecord = createRequire(import.meta.url)('../../frontend/js/plan-record.js');
 const design = title => ({ schema: 'design/v1', title, geometry: { coordinates: Array.from({ length: 4000 }, (_, i) => [i / 31, i / 71]) } });
+const planOf = designs => {
+    const content = PlanRecord.create('Agreement plan', designs.map(cidOfObject).sort(), { at: '45,15,17', mode: '2d' });
+    return { cid: cidOfObject(content), content };
+};
 const directories = [];
 afterEach(() => { for (const directory of directories.splice(0)) rmSync(directory, { recursive: true, force: true }); });
 const storeOf = options => {
@@ -66,9 +71,18 @@ describe('temporary hosted MCP object references', () => {
             return Response.json(row);
         };
         await expect(links.load(preview.previewUrl, { fetchImpl: wrongSource, cidOf: cidOfObject })).rejects.toThrow(/Invalid private collection member/);
-        const agreement = { schema: 'agreement/v1', designs: designs.map(content => ({ cid: cidOfObject(content) })) };
-        const mixed = store.create({ agreement, designs, designSources, parcelSourceId: 'ground-a' });
+        const agreementPlan = planOf(designs), agreement = { schema: 'agreement/v1', planCid: agreementPlan.cid };
+        const mixed = store.create({ agreement, plan: agreementPlan, designs, designSources, parcelSourceId: 'ground-a' });
         await expect(links.load(mixed.previewUrl, { fetchImpl: fetchFrom(store), cidOf: cidOfObject })).rejects.toThrow(/Invalid private collection member/);
+    });
+    it('refuses agreement previews without the exact valid plan and rejects inline legacy membership', () => {
+        const store = storeOf(), designs = [design('Agreement member')], plan = planOf(designs);
+        expect(() => store.create({ agreement: { schema: 'agreement/v1', planCid: plan.cid }, designs }))
+            .toThrow(expect.objectContaining({ code: 'invalid-draft-plan' }));
+        expect(() => store.create({ agreement: { schema: 'agreement/v1', planCid: plan.cid }, plan: { ...plan, cid: cidOfObject({ wrong: true }) }, designs }))
+            .toThrow(expect.objectContaining({ code: 'invalid-draft-plan' }));
+        expect(() => store.create({ agreement: { schema: 'agreement/v1', planCid: plan.cid, designs: [{ cid: cidOfObject(designs[0]) }] }, plan, designs }))
+            .toThrow(expect.objectContaining({ code: 'invalid-draft-plan' }));
     });
     it('rejects changed content and member redirects to another server before importing anything', async () => {
         const store = storeOf(), content = design('Original');
@@ -105,7 +119,8 @@ describe('temporary hosted MCP object references', () => {
     });
     it('retains an artifact when cache capacity cannot hold its members and never asks for publication', () => {
         const store = storeOf({ maxEntries: 1 }), content = design('Member');
-        const artifact = { agreement: { schema: 'agreement/v1', designs: [{ cid: cidOfObject(content) }] }, designs: [content] };
+        const plan = planOf([content]);
+        const artifact = { agreement: { schema: 'agreement/v1', planCid: plan.cid }, plan, designs: [content] };
         const result = store.create(artifact);
         expect(result).toMatchObject({ previewUrl: null, previewStatus: 'private-artifact', draftArtifact: artifact });
         expect(result.next).toBeUndefined();

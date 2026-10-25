@@ -99,18 +99,15 @@ async function readRecord(kind, cid, env) {
     return resp.ok ? resp.json() : null;
 }
 
-function consultationDescription(content) {
-    const parts = ['Nonbinding community consultation'];
+function agreementDescription(content) {
+    const parts = ['Nonbinding agreement'];
     const organiser = content.consultation?.organiser;
     // Only the immutable agreement is read: naming its organiser never verifies that website.
     if (typeof organiser === 'string' && organiser.startsWith('did:web:')) {
         const host = organiser.slice(8).split(':')[0].replace(/%3A/gi, ':');
         if (host) parts.push(`by ${host}`);
     }
-    if (Array.isArray(content.designs)) {
-        const count = content.designs.length;
-        parts.push(`about ${count} ${count === 1 ? 'design' : 'designs'}`);
-    }
+    if (CID.test(content.planCid || '')) parts.push('about an urban plan');
     let text = parts.join(' ') + '.';
     if (typeof content.deadline === 'string') {
         const deadline = new Date(content.deadline);
@@ -129,8 +126,8 @@ async function recordMeta(kind, cid, url, env, base) {
     const community = kind.api === 'agreements' && content.rule?.electorate === 'community';
     return {
         ...base,
-        title: `${content.title || (community ? 'Community consultation' : kind.label)} · ${DEFAULTS.siteName}`,
-        description: community ? consultationDescription(content) : content.description ? clip(content.description) : base.description,
+        title: `${content.title || (community ? 'Nonbinding agreement' : kind.label)} · ${DEFAULTS.siteName}`,
+        description: community ? agreementDescription(content) : content.description ? clip(content.description) : base.description,
         // Routed through our image endpoint (Route 2), so the card URL is stable and absolute.
         image: `${env.SITE_BASE}/${kind.api}/${encodeURIComponent(cid)}/og-image.png`,
         url: url.toString()

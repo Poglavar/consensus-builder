@@ -55,7 +55,7 @@
         const dialogApi = global.CbDialog.open({
             title: t(
                 'city.switchPrompt.title',
-                'This proposal is in {requested} — you are viewing {current}',
+                'This design is in {requested} — you are viewing {current}',
                 { requested: requestedLabel, current: currentLabel }
             ),
             size: 'md',

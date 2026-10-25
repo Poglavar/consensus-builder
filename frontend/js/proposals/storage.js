@@ -132,7 +132,7 @@ function guestPolicyBlocks(action) {
     if (verdict.allowed) return null;
     const t = getProposalI18nHelper();
     const messages = {
-        publish: ['ephemeral.messages.name_to_publish', 'Choose a profile name to publish: published proposals carry their author. Everything kept on this device works without one.'],
+        publish: ['ephemeral.messages.name_to_publish', 'Choose a profile name to publish: published designs carry their author. Everything kept on this device works without one.'],
         share: ['ephemeral.messages.name_to_share', 'Choose a profile name to share: a share link carries its author. Everything kept on this device works without one.']
     };
     const [key, fallback] = messages[action];
@@ -237,7 +237,7 @@ function deleteProposal(proposalId) {
     try {
         const proposal = proposalStorage.getProposal(proposalId);
         if (!proposal) {
-            updateStatus(t('status.messages.error_proposal_not_found', 'Error: Proposal not found'));
+        updateStatus(t('status.messages.error_proposal_not_found', 'Error: Design not found'));
             return;
         }
 
@@ -288,7 +288,7 @@ function deleteProposal(proposalId) {
             }
         }
 
-        updateStatus(t('status.messages.proposal_deleted', 'Proposal "{{title}}" deleted', { title: proposal.title }));
+        updateStatus(t('status.messages.proposal_deleted', 'Design "{{title}}" deleted', { title: proposal.title }));
 
     } catch (error) {
         console.error('Error deleting proposal:', error);

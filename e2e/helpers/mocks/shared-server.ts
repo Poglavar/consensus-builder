@@ -170,14 +170,19 @@ function designRow(index: SharedIndex, cid: string, content: Record<string, any>
   };
 }
 
-function agreementRow(cid: string, content: Record<string, any>, designs: Array<Record<string, any>>): Record<string, any> {
+function agreementRow(index: SharedIndex, cid: string, content: Record<string, any>, designs: Array<Record<string, any>>): Record<string, any> {
+  const plan = index.plans.get(content.planCid);
+  if (!plan || plan.cid !== content.planCid || cidOfObject(plan.content) !== content.planCid) {
+    throw new Error(`Agreement ${cid} must reference an indexed plan snapshot.`);
+  }
   const deadline = content.deadline ?? null;
   return {
     cid,
     city: designs[0]?.city ?? cityIdOf(content.city),
     title: content.title ?? null,
     author: content.author ?? null,
-    designCids: content.designs.map((design: any) => design.cid),
+    planCid: plan.cid,
+    designCids: [...plan.content.designCids],
     inputParcelIds: (content.inputs?.parcels || []).map((parcel: any) => String(parcel.parcelId)),
     parcelSourceId: content.inputs?.parcels?.[0]?.parcelSourceId ?? null,
     deadline,
@@ -209,7 +214,7 @@ function contestEntry(index: SharedIndex, row: Record<string, any>, contest: str
     kind: 'agreement', cid: row.cid, account, title: row.title, author: row.author, city: row.city,
     status: ['executed', 'cancelled', 'expired'].includes(chainStatus || '') ? chainStatus : deadlinePassed ? 'expired' : 'active',
     chainStatus, deadline: row.deadline, createdAt: row.createdAt,
-    designTitles: (row.content?.designs || []).map((design: any) => design.title ?? null).filter(Boolean),
+    designTitles: row.designCids.map((cid: string) => index.designs.get(cid)?.title ?? null).filter(Boolean),
     screenshotUrl: row.screenshotUrl, screenshotBeforeUrl: row.screenshotBeforeUrl, screenshotPairUrl: row.screenshotPairUrl,
     sponsor: row.onchain?.sponsor ?? null,
     parcelIds: sortedIds(row.inputParcelIds), parcelRefs: [], market,
@@ -263,7 +268,7 @@ function indexEvents(index: SharedIndex): Record<string, any>[] {
     id: `agreement:${row.cid}:proposed`, source: 'live', action: { type: 'propose', agreementCid: row.cid },
     entity: { type: 'agreement', id: row.cid }, ok: true, transaction: null, occurredAt: row.createdAt, recordedAt: row.createdAt,
     message: `Agreement ${row.title || row.cid} was proposed.`,
-    agreementName: row.title ?? null, designGoal: row.content?.designs?.[0]?.goal ?? null, cityId: row.city ?? null,
+    agreementName: row.title ?? null, designGoal: index.designs.get(row.designCids[0])?.goal ?? null, cityId: row.city ?? null,
   }));
   const designs = [...index.designs.values()].map(row => ({
     id: `design:${row.cid}:published`, source: 'live', action: { type: 'design', designCid: row.cid },
@@ -287,6 +292,12 @@ function indexPathOf(request: Request): { root: string; rest: string } | null {
 }
 
 const json = (route: Route, status: number, body: unknown) => route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) });
+const membershipPage = (kind: string, rows: Record<string, any>[], params: URLSearchParams) => {
+  const limit = Math.max(1, Math.min(200, Number(params.get('limit')) || 100));
+  const offset = Math.max(0, Number(params.get('offset')) || 0);
+  const items = rows.slice(offset, offset + limit), hasMore = offset + items.length < rows.length;
+  return { [kind]: items, count: items.length, hasMore, nextOffset: hasMore ? offset + items.length : null };
+};
 const refuse = (route: Route, status: number, code: string, error: string, extra: Record<string, unknown> = {}) => json(route, status, { error, code, ...extra });
 
 function bodyOf(request: Request): any {
@@ -345,10 +356,19 @@ export async function attachSharedIndex(page: Page, index: SharedIndex): Promise
     const { root, rest } = target;
 
     if (root === 'plans') {
+      if (!rest && method === 'GET') {
+        const design = url.searchParams.get('design');
+        const rows = [...index.plans.values()].filter(row => !design || row.content.designCids.includes(design))
+          .map(row => ({ ...row, title: row.content.title, designCids: row.content.designCids })).reverse();
+        return json(route, 200, membershipPage('plans', rows, url.searchParams));
+      }
       if (!rest && method === 'POST') {
         const content = body?.content;
         const cid = cidOfObject(content);
-        if (content.designCids.some((id: string) => !index.designs.has(id))) return refuse(route, 409, 'missing-designs', 'Publish every selected design before saving the plan.');
+        if (!content || content.schema !== 'plan/v1' || !isCid(cid) || !Array.isArray(content.designCids) || !content.designCids.length) {
+          return refuse(route, 400, 'invalid-plan', 'content must be a plan/v1 object with designCids.');
+        }
+        if (content.designCids.some((id: string) => !isCid(id) || !index.designs.has(id))) return refuse(route, 409, 'missing-designs', 'Publish every selected design before saving the plan.');
         const record = { cid, content };
         index.plans.set(cid, record);
         return json(route, 201, record);
@@ -358,7 +378,7 @@ export async function attachSharedIndex(page: Page, index: SharedIndex): Promise
     }
 
     if (root === 'pins' && !rest && method === 'POST') {
-      if (!body || !['design', 'agreement'].includes(body.kind)) return refuse(route, 400, 'invalid-kind', 'kind must be design or agreement.');
+      if (!body || !['design', 'plan', 'agreement'].includes(body.kind)) return refuse(route, 400, 'invalid-kind', 'kind must be design, plan or agreement.');
       if (!isCid(body.cid) || typeof body.bytes !== 'string') return refuse(route, 400, 'bad-request', 'Body must be { kind, cid, bytes }.');
       const bytes = Buffer.from(body.bytes, 'base64');
       const computedCid = cidOfBytes(bytes);
@@ -407,7 +427,21 @@ export async function attachSharedIndex(page: Page, index: SharedIndex): Promise
         if (computedCid !== body.cid) return refuse(route, 400, 'cid-mismatch', `The content is ${computedCid}, not ${body.cid}.`, { cid: body.cid, computedCid });
         const existing = index.agreements.get(body.cid);
         if (existing) return json(route, 409, existing);
-        const linked: string[] = body.content.designs.map((design: any) => design.cid);
+        const carriedPlan = body.plan;
+        if (carriedPlan !== undefined && (!carriedPlan || carriedPlan.cid !== body.content.planCid
+            || !carriedPlan.content || carriedPlan.content.schema !== 'plan/v1'
+            || cidOfObject(carriedPlan.content) !== carriedPlan.cid)) {
+          return refuse(route, 400, 'plan-mismatch', 'The carried plan must match agreement.planCid and its content identifier.');
+        }
+        const plan = carriedPlan || index.plans.get(body.content.planCid);
+        if (!plan || plan.cid !== body.content.planCid || cidOfObject(plan.content) !== body.content.planCid) {
+          return refuse(route, 422, 'plan-not-indexed', 'The agreement references a plan that is not indexed; send its content in plan.');
+        }
+        if (!Array.isArray(plan.content.designCids) || !plan.content.designCids.length
+            || plan.content.designCids.some((designCid: unknown) => !isCid(designCid))) {
+          return refuse(route, 400, 'invalid-plan', 'The referenced plan must list design CIDs.');
+        }
+        const linked: string[] = plan.content.designCids;
         for (const entry of body.designs || []) {
           if (!linked.includes(entry?.cid)) return refuse(route, 400, 'design-not-in-agreement', `Design ${entry?.cid} is not linked by the agreement.`, { design: entry?.cid });
           const outcome = indexDesign(index, entry, { allowLayout: true });
@@ -415,20 +449,23 @@ export async function attachSharedIndex(page: Page, index: SharedIndex): Promise
         }
         const missing = linked.filter(cid => !index.designs.has(cid));
         if (missing.length) return refuse(route, 422, 'design-not-indexed', `The agreement links ${missing.length} design(s) the index does not hold.`, { missing });
-        const row = agreementRow(body.cid, body.content, linked.map(cid => index.designs.get(cid)!));
+        index.plans.set(plan.cid, plan);
+        const row = agreementRow(index, body.cid, body.content, linked.map(cid => index.designs.get(cid)!));
         index.agreements.set(body.cid, row);
         return json(route, 201, row);
       }
       if (!rest && method === 'GET') {
         const design = url.searchParams.get('design');
+        const plan = url.searchParams.get('plan');
         const parcel = url.searchParams.get('parcel');
         const city = cityIdOf(url.searchParams.get('city'));
         const minted = url.searchParams.get('minted');
         if (minted !== null && minted !== '1') return refuse(route, 400, 'bad-request', 'minted must be 1.');
         const agreements = [...index.agreements.values()].filter(row => (!design || row.designCids.includes(design))
+          && (!plan || row.planCid === plan)
           && (!parcel || row.inputParcelIds.includes(parcel)) && (!city || row.city === city)
           && (minted !== '1' || row.onchain)).reverse();
-        return json(route, 200, { agreements, count: agreements.length });
+        return json(route, 200, membershipPage('agreements', agreements, url.searchParams));
       }
       // The index learns the chain account a sponsor minted (M3). It derives and reads nothing here: the
       // pointer is kept as sent, Active with its decision pending; 201 the first time, then 200.
@@ -558,6 +595,18 @@ export function fileDesign(index: SharedIndex, content: Record<string, any>, row
   return cid;
 }
 
+/** Files an immutable plan snapshot that references designs already filed in this mock index. */
+export function filePlan(index: SharedIndex, content: Record<string, any>): string {
+  const cid = cidOfObject(content);
+  if (!content || content.schema !== 'plan/v1' || !isCid(cid)) throw new Error('filePlan needs a plan/v1 object.');
+  if (!Array.isArray(content.designCids) || !content.designCids.length
+      || content.designCids.some((designCid: string) => !isCid(designCid) || !index.designs.has(designCid))) {
+    throw new Error('filePlan needs every referenced design filed first.');
+  }
+  index.plans.set(cid, { cid, content });
+  return cid;
+}
+
 /**
  * Files an agreement/v1 object in the index as if it had been proposed elsewhere (file its designs
  * first: the row takes its city from them); `row` overrides fields of the row, such as `onchain`.
@@ -565,8 +614,13 @@ export function fileDesign(index: SharedIndex, content: Record<string, any>, row
  */
 export function fileAgreement(index: SharedIndex, content: Record<string, any>, row: Record<string, any> = {}): string {
   const cid = cidOfObject(content);
-  const designs = (content.designs || []).map((design: any) => index.designs.get(design.cid)).filter(Boolean);
-  index.agreements.set(cid, { ...agreementRow(cid, content, designs), ...row });
+  if (!content || content.schema !== 'agreement/v1' || Object.hasOwn(content, 'designs') || !isCid(content.planCid)) {
+    throw new Error('fileAgreement needs agreement/v1 content with planCid and no inline designs.');
+  }
+  const plan = index.plans.get(content.planCid);
+  if (!plan) throw new Error(`fileAgreement needs plan ${content.planCid} filed first.`);
+  const designs = plan.content.designCids.map((designCid: string) => index.designs.get(designCid)).filter(Boolean);
+  index.agreements.set(cid, { ...agreementRow(index, cid, content, designs), ...row });
   return cid;
 }
 

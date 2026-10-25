@@ -80,7 +80,7 @@ import {
 import { inspectSettlement, executeSettlement } from './lifecycle-actions.js';
 import { buildRecipe } from './record-builder.js';
 import {
-    agreementObject, deadlineAfterDays, designObject, holdersFromRights, noMoney, ownersRule, parcelOutputs, registryRights
+    agreementObject, deadlineAfterDays, designObject, holdersFromRights, noMoney, ownersRule, parcelOutputs, registryRights, planForDesigns
 } from './agreement-objects.js';
 import { createIndexClient } from './publication-client.js';
 import { mintAgreement } from './agreement-minter.js';
@@ -492,21 +492,22 @@ export async function advancePick({
         const land = parcelLand(candidate);
         const rights = registryRights([{ parcelId: owners[key].parcelId, owners: owners[key].owners }]);
         const holders = holdersFromRights(rights, owners[key].parcelId, walletNames);
-        const { content, cid } = agreementObject({
+        const { content, cid, plan } = agreementObject({
             title: terms.title, author: persona.name, sponsor: wallet, city: design.city ?? city, createdAt,
+            plan: planForDesigns(terms.title, [design]),
             designs: [{ cid: design.cid, goal: design.goal, title: design.title }],
             parcels: land.parcels.map(parcel => ({ ...parcel, holders })), openGroundM2: 0, outputs: land.outputs,
             money: noMoney(cityMoney(design.city ?? city).currentCurrency()),
             rule: ownersRule({ lens: lens.key, rights }), deadline
         });
-        agreements[key] = { cid, content, title: terms.title, deadline, lamports: terms.lamports, soleOwner: owners[key].soleOwner };
+        agreements[key] = { cid, content, plan, title: terms.title, deadline, lamports: terms.lamports, soleOwner: owners[key].soleOwner };
         await save(null, { agreements, lens: lens.key });
         log(`${tag} agreement built: ${cid} · binding, ${owners[key].soleOwner ? 'its sole owner decides' : 'its owners decide'} · deadline ${deadline} · escrow ${terms.lamports} lamports · lens ${lens.name} ${lens.key}`);
     }
     if (!agreements[key].indexedAt) {
         const agreement = agreements[key];
         const published = await run({ type: 'propose', agreementCid: agreement.cid, designCid: designs[key].cid, pickId: pick.pickId },
-            () => index.publishAgreement(agreement.content),
+            () => index.publishAgreement(agreement.content, { plan: agreement.plan }),
             { entity: { type: 'agreement', id: agreement.cid }, message: agreement.soleOwner
                 ? `${persona.name} proposed "${agreement.title}" as a binding agreement on its own parcel ${owners[key].parcelId}.`
                 : `${persona.name} proposed "${agreement.title}" to the owners of parcel ${owners[key].parcelId}.` });

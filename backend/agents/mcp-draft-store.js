@@ -3,13 +3,23 @@ import { randomBytes } from 'node:crypto';
 import { mkdirSync, chmodSync, readdirSync, readFileSync, writeFileSync, openSync, closeSync, fsyncSync, renameSync, unlinkSync, lstatSync } from 'node:fs';
 import { isAbsolute, join } from 'node:path';
 import { canonicalBytes, cidOfObject, isCid } from '../cid.js';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+const PlanRecord = require('../../frontend/js/plan-record.js');
 
 const TOKEN = /^[\w-]{32}$/;
 const full = () => Object.assign(new Error('Private draft storage capacity is full'), { code: 'preview-cache-full' });
 
-export function draftMembersMatch(record, members) {
+export function draftMembersMatch(record, members, plan = null) {
     if (record?.schema === 'design/v1') return true;
-    const expected = record?.schema === 'plan/v1' ? record.designCids : record?.designs?.map(member => member.cid);
+    let expected;
+    if (record?.schema === 'plan/v1') expected = record.designCids;
+    else if (record?.schema === 'agreement/v1') {
+        const content = plan?.content || plan;
+        const cid = plan?.content ? plan.cid : content ? cidOfObject(content) : null;
+        if (!content || cid !== record.planCid || cidOfObject(content) !== cid || PlanRecord.validate(content)) return false;
+        expected = content.designCids;
+    } else return false;
     if (!Array.isArray(expected) || !Array.isArray(members) || expected.length !== members.length) return false;
     const actual = new Set(members.map(member => member?.cid));
     return actual.size === members.length && new Set(expected).size === expected.length
@@ -53,7 +63,9 @@ export function createDraftStore({ directory, now = Date.now, maxEntries = 4096,
         const valid = entry => entry?.version === 1 && TOKEN.test(entry.token) && typeof entry.key === 'string'
             && Number.isFinite(entry.expiresAt) && entry.row && ['design/v1', 'plan/v1', 'agreement/v1'].includes(entry.row.record?.schema)
             && entry.row.cid === cidOfObject(entry.row.record)
-            && draftMembersMatch(entry.row.record, entry.row.designs);
+            && (entry.row.record.schema !== 'agreement/v1' || (entry.row.plan?.cid === entry.row.record.planCid
+                && !PlanRecord.validate(entry.row.plan.content) && cidOfObject(entry.row.plan.content) === entry.row.plan.cid))
+            && draftMembersMatch(entry.row.record, entry.row.designs, entry.row.plan);
         for (const name of readdirSync(directory)) {
             if (!/^[\w-]{32}\.json$/.test(name)) continue;
             try {

@@ -465,7 +465,7 @@
             );
         const note = (typeof opts.note === 'string' && opts.note.trim())
             ? opts.note
-            : (readOnly ? translateLens('modal.lens.readOnlyNote', 'This lens is baked into the proposal and cannot be edited.') : '');
+            : (readOnly ? translateLens('modal.lens.readOnlyNote', 'This lens is baked into the design and cannot be edited.') : '');
         const closeLabel = translateLens('modal.lens.closeLabel', 'Close lens modal');
         const patternCaption = translateLens('modal.lens.patternCaption', 'Pattern updates automatically when you edit the list.');
         const addButtonLabel = translateLens('modal.lens.addButton', '+ Add address');

@@ -91,7 +91,7 @@
         const organiser = consultation.organiser;
         const published = agreement.published?.cid;
         const url = consultation.participationUrl;
-        const intro = `<p class="agreement-panel-note" data-agreement-community-note>${esc(tr('community.intro', 'This consultation asks for non-binding community support. It gives no owner consent and moves no land or money.'))}</p>`;
+        const intro = `<p class="agreement-panel-note" data-agreement-community-note>${esc(tr('community.intro', 'This nonbinding agreement records community support. It gives no owner consent and moves no land or money.'))}</p>`;
         const takePart = url ? `<a class="btn btn-primary" data-community-participate href="${esc(results().httpsUrl(url))}" target="_blank" rel="noopener noreferrer">${esc(tr('community.takePart', 'Take part'))}</a>` : '';
         const identity = organiser ? `<p class="agreement-panel-meta">${esc(tr('community.organiser', 'Organiser'))}: <a href="${esc(did().documentUrl(organiser))}" target="_blank" rel="noopener noreferrer">${esc(organiser)}</a></p>` : '';
         if (!published || !organiser) return intro + identity + takePart;

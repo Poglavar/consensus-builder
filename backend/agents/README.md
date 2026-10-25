@@ -271,9 +271,10 @@ Publishing recomputes the CID and reads the index back, checking both CID and co
 and canonical artifacts appear under `untrusted`; canonical objects are kept intact for reuse.
 Failures return `{ code, message, next }`.
 
-Publish ordinary designs individually, then reference their CIDs in `agreement.designs`. The
-separate `ugt_propose_agreement.designs` argument is only for unpublished linked content, including
-parcel layouts that must be indexed with their agreement. Do not resend already indexed designs.
+Publish ordinary designs individually, then publish a plan that lists their CIDs. Each agreement
+references one exact plan CID. The separate `ugt_propose_agreement.designs` argument carries only
+unpublished plan members, including parcel layouts that must be indexed with their agreement. Do not
+resend already indexed designs.
 The MCP transport and its nginx proxy accept the API's 15 MiB JSON request budget; each canonical
 published object still has its own 10 MiB limit. A larger transport request returns HTTP 413 with
 recovery guidance rather than changing the design/agreement contract.

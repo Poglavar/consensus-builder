@@ -7,7 +7,7 @@ import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady, panMap } from '../helpers/app';
 import { openCity, createSpace, showProposal } from '../helpers/runtime';
 import { mockAllApiRoutes } from '../helpers/mocks/api-routes';
-import { attachSharedIndex, fileAgreement, pageIndex, SharedIndex } from '../helpers/mocks/shared-server';
+import { attachSharedIndex, fileAgreement, filePlan, pageIndex, SharedIndex } from '../helpers/mocks/shared-server';
 
 async function personalizeProfile(page: Page, name: string): Promise<void> {
   await page.locator('#username-display').click();
@@ -121,9 +121,11 @@ test.describe('Worldwide publication and city routing @core', () => {
     const index = pageIndex(author);
     const design = index.designs.get(designCid)!;
     const title = 'Zagreb park agreement';
+    const planCid = filePlan(index, { schema: 'plan/v1', title, designCids: [designCid],
+      view: { at: '45.8,15.96,16', mode: '2d', city: 'zagreb', language: 'en' } });
     const cid = fileAgreement(index, {
       schema: 'agreement/v1', title, author: 'City author', sponsor: null, city: 'zagreb', createdAt: '2026-10-21T08:00:00.000Z',
-      designs: [{ cid: designCid, goal: design.goal, title: design.title }],
+      planCid,
       inputs: { parcels: [{ parcelId: 'HR-335754-1234', areaM2: 100, holders: [] }], openGroundM2: 0 },
       outputs: [], allocations: [], money: { currency: 'EUR', lines: [] },
       rule: { electorate: 'community', binding: false, approvalConfig: null, lens: [] }, deadline: null,
