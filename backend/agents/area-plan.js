@@ -3,6 +3,7 @@
 // may plan on (a live parcel source's features, or the rival's parcels taken from other agents'
 // proposed agreements). Pure: no network, no database; run.mjs fetches and passes the results in.
 import { hash32 } from './algorithmic-picker.js';
+import { buildingBaseline } from './building-baseline.js';
 
 const M_PER_DEG_LAT = 110_540;
 const M_PER_DEG_LNG_EQUATOR = 111_320;
@@ -56,7 +57,7 @@ function finiteNumber(value) {
 /**
  * Planner parcels from a live parcel source's FeatureCollection (GET /parcel-sources/:id?bbox=).
  * These sources carry no buildings and no zoning, so both are left unknown (`builtKnown: false`,
- * `rule: null`) rather than invented; the candidate says so in its rationale.
+ * `rule: null`) rather than invented. Generic previews cannot enter automatic uplift selection.
  */
 export function parcelsFromSource(featureCollection, { turf, place, minAreaM2 = 250, maxAreaM2 = 3000 } = {}) {
     if (!turf) throw new Error('parcelsFromSource: turf must be injected.');
@@ -79,10 +80,7 @@ export function parcelsFromSource(featureCollection, { turf, place, minAreaM2 = 
             areaM2,
             centroid: { lng, lat },
             geometry: feature.geometry,
-            buildingCount: 0,
-            builtFootprintM2: 0,
-            builtGfaM2: 0,
-            builtKnown: false,
+            ...buildingBaseline(),
             rule: null
         });
     }
@@ -169,10 +167,8 @@ export function contestParcels(runs, { persona, runDay, withinDays = 3, floorCap
             areaM2: candidate.areaM2,
             centroid: candidate.centroid ?? null,
             geometry: candidate.geometry,
-            buildingCount: candidate.buildingCount ?? 0,
-            builtFootprintM2: candidate.builtFootprintM2 ?? 0,
-            builtGfaM2: candidate.builtGfaM2 ?? 0,
-            builtKnown: candidate.builtKnown !== false,
+            ...buildingBaseline(candidate),
+            ...(candidate.buildingObservations ? { buildingObservations: { ...candidate.buildingObservations } } : {}),
             rival: { agreementCid: agreement.cid, persona: run.persona, name: pick.name },
             // The same rule origin as the agreement it answers: a parcel planned under a mapped
             // urban rule stays rule-backed, a default-envelope one stays default.

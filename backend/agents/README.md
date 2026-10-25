@@ -29,7 +29,8 @@ next run: lens-approval-client ──▶ publication-client ──▶ lens-appro
 | module | what it is | pure? |
 |---|---|---|
 | `parcel-source.js` | one SQL statement: parcels in a persona's bbox with area, geometry, the GDI buildings on them and the urban rule over them | no |
-| `planner.js` | envelope, one legal build-out, GFA, € gain, persona score | yes (turf injected) |
+| `building-baseline.js` | nullable existing-stock quantities qualified by source and inventory coverage | yes |
+| `planner.js` | envelope, one legal build-out, GFA, supported gain in the city's currency and persona score | yes (turf injected) |
 | `candidate-preflight.js` | the binding the index will give the candidate's design (`proposals/binding.js` checkProposalBinding, as POST /designs runs it): kept only when it is exactly the candidate parcel with complete coverage | orchestration (checker injected) |
 | `algorithmic-picker.js` | guardrails plus seeded variation among the near-best candidates | yes |
 | `llm-picker.js` | the Anthropic Batches step: request building, parsing, cost estimate, submit/await/collect | pure except `runPickBatch` |
@@ -59,6 +60,21 @@ or donate is topped up to 0.5 test USDC (`funding.js`). The escrow lamports an a
 come from the proposer's own SOL and return to it when the agreement expires or is cancelled.
 
 ## The proposer run (`run.mjs`)
+
+Existing-building totals require `buildingSourceId` and `buildingCoverage: 'complete'`, with
+finite nonnegative measurements. A documented empty inventory can report zero. Missing or partial
+coverage leaves the baseline unknown; a missing height leaves GFA unknown even if footprints are
+measured. `parcel-source.js` retains GDI query results in `buildingObservations` (including the
+3.5 m storey-height assumption and missing-height count), but the import provides no parcel-wide
+inventory coverage evidence, so its baseline remains unknown.
+
+Unknown stock still permits a geometry preview. Gain, offers and score components that depend on
+unknown quantities remain null. Generic automatic and LLM selection require a complete named
+baseline, a mapped urban rule and positive supported uplift; the publication/minting path checks
+the same eligibility on resume. This intentionally invalidates older numeric-only candidate
+checkpoints: replan them with the required evidence rather than adapting their assumed zeros.
+The separately screened housing-research policy can select explicit concepts, with unknown gain
+and offer; it does not claim net uplift over existing stock.
 
 For each proposer persona: plan → choose → for each pick, in order, each stage checkpointed in
 `consensus.agent_run.summary` before the next starts:

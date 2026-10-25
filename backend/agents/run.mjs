@@ -66,7 +66,7 @@ import { markAgentRunFailed, safeFailureDiagnostic } from './run-failure.js';
 import { fetchSourceParcels } from './source-fetch.js';
 import { bindingRejection, preflightCandidates, prioritizedPlannedCandidates } from './candidate-preflight.js';
 import { checkProposalBinding } from '../proposals/binding.js';
-import { hash32, selectAlgorithmicPicks } from './algorithmic-picker.js';
+import { hash32, isEligible, selectAlgorithmicPicks } from './algorithmic-picker.js';
 import { buildPickRequests, parsePicks, estimateBatchCostUsd, runPickBatch, pickCustomId, createAgentLlm } from './llm-picker.js';
 import { usdcToAtomic } from './bettor.js';
 import { getRun, startRun, updateRun, recordCosts, dailySpendUsd, assertUnderCap, dailyCapUsd, listRuns, failStaleRuns, STALE_RUN_HOURS } from './ledger.js';
@@ -146,6 +146,11 @@ function parseArgs(argv) {
     if (!CONTROLLERS.includes(args.controller)) usage(2);
     if (!Number.isInteger(args.candidates) || args.candidates < 1) usage(2);
     return args;
+}
+
+// Checkpoint previews can contain unknown measurements. Logging must preserve that distinction.
+export function formatCandidateQuantity(value, digits = 0) {
+    return typeof value === 'number' && Number.isFinite(value) ? value.toFixed(digits) : 'unknown';
 }
 
 function log(message) {
@@ -417,6 +422,7 @@ export async function advancePick({
     mintImpl = mintAgreement, sendAndConfirm = sendAndConfirmPolling,
     now = () => new Date()
 }) {
+    if (!isEligible(candidate)) throw new Error('Candidate has no supported planning basis; replan before publication or minting.');
     const { designs, owners, agreements, mints, onchain, stakes, bindingFailures } = state;
     const wallet = keypair.publicKey.toBase58();
     const staking = usdcToAtomic(stakeUsdc) > 0n;
@@ -628,9 +634,8 @@ async function main() {
                 const prices = cityMoney(city).currentFloorAreaPrices();
                 const money = { currency: prices.currency, salePricePerM2: prices.sale.perSqm };
                 const planned = (persona.housingResearch ? planHousingCandidates : planCandidates)(parcels, persona, { turf, money, limit: args.candidates * 2, seed: seedFor(runKey) });
-                // The default envelope for a parcel without a stated rule (5 floors) is taller than anything
-                // the 2025 GUP actually says in this bbox (3), so rule-backed candidates come first and the
-                // default-rule ones are only used when nothing else is on offer.
+                // Rule-backed previews come first. Automatic uplift selection additionally requires a
+                // complete building baseline; a default envelope alone does not authorize publication.
                 const preflight = await preflightCandidates({
                     db: pool, rankedCandidates: prioritizedPlannedCandidates(planned),
                     limit: args.candidates, scanLimit: args.candidates * 2,
@@ -645,7 +650,7 @@ async function main() {
             logCandidatePreflight(persona.name, preflight);
             log(`${persona.name} ${i + 1}/${personas.length} planned in ${where}: ${parcels.length} parcels → ${candidates.length} candidates`);
             for (const c of candidates) {
-                log(`   ${c.parcelId} ${c.koName ?? ''} ${Math.round(c.areaM2)} m² · built ${c.builtKnown === false ? 'unknown' : `${Math.round(c.builtGfaM2)} m²`} → ${Math.round(c.proposedGfaM2)} m² (${c.plannedFloors ?? c.allowedFloors}/${c.allowedFloors} fl) · gain ${Math.round(c.gain)} ${c.currency} · score ${c.score.toFixed(3)}`);
+                log(`   ${c.parcelId} ${c.koName ?? ''} ${formatCandidateQuantity(c.areaM2)} m² · built ${formatCandidateQuantity(c.builtGfaM2)} m² → ${formatCandidateQuantity(c.proposedGfaM2)} m² (${c.plannedFloors ?? c.allowedFloors}/${c.allowedFloors} fl) · gain ${formatCandidateQuantity(c.gain)} ${c.currency} · score ${formatCandidateQuantity(c.score, 3)}`);
             }
             let run = null;
             if (args.live) {
@@ -705,7 +710,7 @@ async function main() {
                 if (completion.noPicks) report.push(`${e.persona.name}: no design selected · $0.0000`);
             }
         } else {
-            const needPicks = needDecision.filter((entry) => entry.candidates.length);
+            const needPicks = needDecision.filter((entry) => entry.candidates.some(isEligible));
             const requests = buildPickRequests({ llm, runId: `${day}`, day, entries: needPicks });
             const requestsByPersona = new Map(needPicks.map((entry, index) => [entry.persona.name, requests[index]]));
             const estimate = estimateBatchCostUsd(requests);
@@ -727,18 +732,18 @@ async function main() {
             }
             if (stageIndex(args.until) < stageIndex('chosen')) return;
 
-            for (const e of needDecision.filter(entry => !entry.candidates.length)) {
+            for (const e of needDecision.filter(entry => !entry.candidates.some(isEligible))) {
                 e.run = await updateRun(pool, e.runId, { stage: 'chosen', status: 'done', summaryPatch: {
                     controller: 'llm',
                     picks: [],
                     rejectedPicks: [],
                     pickCostUsd: 0,
                     decisionInput: { controller: 'llm', day, candidateIds: [] },
-                    decisionResult: { controller: 'llm', costUsd: 0, reason: 'no-binding-eligible-candidates' },
+                    decisionResult: { controller: 'llm', costUsd: 0, reason: 'no-eligible-planning-candidates' },
                     outcome: 'no-picks'
                 } });
-                log(`${e.persona.name} chosen: 0 picks; no binding-eligible candidates · $0.0000`);
-                report.push(`${e.persona.name}: no binding-eligible candidates · $0.0000`);
+                log(`${e.persona.name} chosen: 0 picks; no eligible planning candidates · $0.0000`);
+                report.push(`${e.persona.name}: no eligible planning candidates · $0.0000`);
             }
 
             if (needPicks.length) {

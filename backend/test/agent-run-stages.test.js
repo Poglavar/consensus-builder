@@ -9,7 +9,7 @@ import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { Keypair } from '@solana/web3.js';
-import { STAGES, advancePick, operatedLens, parcelLand, pickIdFor, rivalIndexStatuses, settlementMessage, stageIndex } from '../agents/run.mjs';
+import { STAGES, advancePick, formatCandidateQuantity, operatedLens, parcelLand, pickIdFor, rivalIndexStatuses, settlementMessage, stageIndex } from '../agents/run.mjs';
 import { agreementAccountOf } from '../agents/agreement-minter.js';
 import { validateDesignContent } from '../routes/designs.js';
 import { validateAgreementContent } from '../routes/agreements.js';
@@ -33,6 +33,8 @@ let journal;
 
 const candidate = (overrides = {}) => ({
     candidateId: `densifier-01:${PARCEL_ID}`, parcelId: PARCEL_ID, parcelSourceId: null, geometry: PARCEL,
+    buildingSourceId: 'survey-fixture', buildingCoverage: 'complete', buildingCount: 0, builtFootprintM2: 0, builtGfaM2: 0, builtKnown: true,
+    score: 1, gain: 100000, proposedGfaM2: 500, allowedFloors: 4, rule: { source: 'urban-rule', maxFloors: 4, minSetbackM: 3 },
     massing: { type: 'Feature', properties: { floors: 4, height: 13 }, geometry: MASSING }, normalizedRule: null, ...overrides
 });
 const pick = { pickId: 'agent-densifier-01-2026-10-22-1', candidateId: `densifier-01:${PARCEL_ID}`, name: 'Four storeys on 1234/1', rationale: 'The rule allows four.' };
@@ -96,6 +98,36 @@ beforeEach(() => {
 });
 
 describe('the stages of one pick', () => {
+    it('formats only finite candidate quantities as numbers', () => {
+        for (const value of [null, undefined, false, NaN]) expect(formatCandidateQuantity(value)).toBe('unknown');
+        expect(formatCandidateQuantity(0)).toBe('0');
+        expect(formatCandidateQuantity(1.2351, 3)).toBe('1.235');
+    });
+    it('rejects an unknown building baseline before any checkpoint or publication', async () => {
+        const h = harness({ cand: candidate({ buildingSourceId: null, buildingCoverage: 'unknown', builtGfaM2: 0, builtKnown: true }) });
+        await expect(h.go()).rejects.toThrow('Candidate has no supported planning basis; replan before publication or minting.');
+        expect(h.saves).toEqual([]);
+        expect(journal).toEqual([]);
+        expect(index.publishDesign).not.toHaveBeenCalled();
+        expect(index.publishAgreement).not.toHaveBeenCalled();
+    });
+    it('refuses to mint an already published checkpoint when its building baseline is unsupported', async () => {
+        const state = freshState();
+        await harness({ state, until: 'proposed' }).go();
+        expect(state.agreements[pick.candidateId].indexedAt).toBeTruthy();
+        journal.length = 0;
+        index.publishDesign.mockClear();
+        index.publishAgreement.mockClear();
+        const resumed = harness({ state, cand: candidate({ buildingCoverage: 'unknown' }) });
+        await expect(resumed.go()).rejects.toThrow(/no supported planning basis/);
+        expect(resumed.saves).toEqual([]);
+        expect(resumed.actions).toEqual([]);
+        expect(journal).toEqual([]);
+        expect(chain.transactions).toHaveLength(0);
+        expect(state.mints).toEqual({});
+        expect(index.publishDesign).not.toHaveBeenCalled();
+        expect(index.publishAgreement).not.toHaveBeenCalled();
+    });
     it('designs, proposes, mints and records, checkpointing the forbidden own-market trade skip', async () => {
         const h = harness();
         expect(await h.go()).toEqual({});

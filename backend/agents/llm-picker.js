@@ -9,6 +9,8 @@
 
 import { computeCost } from '../../../agents/lib/llm-cost/index.mjs';
 import { createLlm } from '../../../agents/lib/llm-cost/llm.mjs';
+import { isEligible } from './algorithmic-picker.js';
+import { buildingBaseline } from './building-baseline.js';
 
 // Where the batch spend lands in the shared ledger (`llm-cost --repo consensus-builder`).
 const LEDGER_REPO = 'consensus-builder';
@@ -98,6 +100,7 @@ function systemPromptFor(persona, day) {
         '- Write each rationale as 2-3 sentences in English, addressed to the parcel owner and to the public: what you propose, and why it is worth their while.',
         `- Write a short name, at most ${MAX_NAME_CHARS} characters.`,
         '- Use ONLY the numbers given to you in the candidate list. Never invent an area, a height, a price or a gain that is not there.',
+        '- A null quantity is unknown, not zero. Never claim an existing floor area or net gain for a research concept with an unknown baseline.',
         '- Answer with JSON matching the schema: an object with a "picks" array, each pick carrying candidateId, name and rationale.'
     ].join('\n');
 }
@@ -105,13 +108,17 @@ function systemPromptFor(persona, day) {
 // Geometry never goes in the prompt: the model is choosing between lots, not drawing them, and a
 // polygon is thousands of tokens of coordinates it cannot use.
 function candidateDigest(candidate) {
+    const baseline = buildingBaseline(candidate);
     return {
         candidateId: candidate.candidateId,
         parcelId: candidate.parcelId,
         koName: candidate.koName ?? null,
         areaM2: round(candidate.areaM2),
-        buildingCount: candidate.buildingCount ?? 0,
-        builtGfaM2: round(candidate.builtGfaM2),
+        buildingCount: baseline.buildingCount,
+        builtGfaM2: round(baseline.builtGfaM2),
+        builtKnown: baseline.builtKnown,
+        buildingSourceId: baseline.buildingSourceId,
+        buildingCoverage: baseline.buildingCoverage,
         allowedFloors: candidate.allowedFloors ?? null,
         proposedGfaM2: round(candidate.proposedGfaM2),
         gain: round(candidate.gain),
@@ -141,6 +148,7 @@ export function pickCustomId(runId, personaName) {
 export function buildPickRequests({ llm, runId, day, entries, maxTokens = 4000 }) {
     const list = Array.isArray(entries) ? entries : [];
     return list
+        .map(entry => entry && ({ ...entry, candidates: (Array.isArray(entry.candidates) ? entry.candidates : []).filter(isEligible) }))
         .filter(entry => entry && entry.persona && entry.persona.name && Array.isArray(entry.candidates) && entry.candidates.length)
         .map(({ persona, candidates }) => llm.batchRequest(pickCustomId(runId, persona.name), {
             system: systemPromptFor(persona, day),
@@ -182,6 +190,10 @@ export function parsePicks(text, candidates, maxPicks) {
         const candidateId = (item && typeof item.candidateId === 'string') ? item.candidateId : null;
         if (!candidateId || !known.has(candidateId)) {
             rejected.push({ candidateId, reason: 'unknown candidateId' });
+            continue;
+        }
+        if (!isEligible(known.get(candidateId))) {
+            rejected.push({ candidateId, reason: 'unsupported planning basis' });
             continue;
         }
         if (seen.has(candidateId)) {

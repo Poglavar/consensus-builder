@@ -4,6 +4,7 @@
 // near-best candidates. A rerun for the same day always makes the same choice.
 
 import { housingPick } from './housing-policy.js';
+import { buildingBaseline } from './building-baseline.js';
 
 const COMPETITIVE_RATIO = 0.9;
 const MAX_COMPETITIVE_CANDIDATES = 3;
@@ -11,8 +12,7 @@ const MAX_NAME_CHARS = 60;
 const GEOMETRY_IDENTITY_KIND = 'geometry-sha256-v1';
 
 function finite(value) {
-    const number = Number(value);
-    return Number.isFinite(number) ? number : null;
+    return typeof value === 'number' && Number.isFinite(value) ? value : null;
 }
 
 function maxPicksOf(persona) {
@@ -80,13 +80,9 @@ function rationaleFor(candidate) {
     const planned = round(candidate.plannedFloors ?? candidate.allowedFloors);
     const allowed = round(candidate.allowedFloors);
     const parcelLabel = geometryDisplayLabel(candidate) || String(candidate.parcelId || '');
-    const ceiling = candidate.rule?.source === 'urban-rule'
-        ? `The mapped urban rule allows ${allowed} floors on parcel ${parcelLabel}`
-        : `No zoning rule is mapped for parcel ${parcelLabel}, so the platform's default envelope applies (${allowed} floors, setbacks from every boundary)`;
+    const ceiling = `The mapped urban rule allows ${allowed} floors on parcel ${parcelLabel}`;
     const builds = planned < allowed ? `; this design builds ${planned}.` : '.';
-    const existing = candidate.builtKnown === false
-        ? `Existing buildings are not measured in this city's data, so the build-out of ${formatInteger(candidate.proposedGfaM2)} m² is counted against an empty plot.`
-        : `The measured build-out increases floor area from ${formatInteger(candidate.builtGfaM2)} m² to ${formatInteger(candidate.proposedGfaM2)} m².`;
+    const existing = `The measured build-out increases floor area from ${formatInteger(candidate.builtGfaM2)} m² to ${formatInteger(candidate.proposedGfaM2)} m².`;
     const rival = candidate.rival ? ` It answers "${candidate.rival.name}" by ${candidate.rival.persona} on the same land, so the two compete in one contest.` : '';
     return `${ceiling}${builds} ${existing}${rival}`;
 }
@@ -95,13 +91,12 @@ function isEligible(candidate) {
     if (candidate?.housing) return candidate.rule?.source === 'housing-research' && candidate.housing.screening?.complete === true && candidate.housing.screening?.excluded === false && candidate.housing.homes >= 10 && candidate.score > 0;
     const score = finite(candidate?.score);
     const gain = finite(candidate?.gain);
-    const built = finite(candidate?.builtGfaM2);
+    const built = buildingBaseline(candidate).builtGfaM2;
     const proposed = finite(candidate?.proposedGfaM2);
     const floors = finite(candidate?.allowedFloors);
-    // The default envelope is eligible only where no rule CAN be mapped (a live parcel source
-    // carries no zoning); where a rule layer exists, a parcel it misses is not a candidate.
-    const ruleOk = candidate?.rule?.source === 'urban-rule'
-        || (candidate?.rule?.source === 'default' && candidate?.builtKnown === false);
+    // The generic autonomous path needs supported stock and a mapped rule. Unknown stock is
+    // never an empty-plot assumption; explicitly scoped housing research has its own gate above.
+    const ruleOk = candidate?.rule?.source === 'urban-rule';
     return Boolean(candidate?.candidateId)
         && ruleOk
         && score !== null && score > 0
@@ -138,7 +133,7 @@ export function selectAlgorithmicPicks({ day, persona, candidates } = {}) {
         rejected: [],
         policy: {
             controller: 'algorithm',
-            eligibility: 'urban-rule (or the default envelope where the parcel source carries no zoning) + positive score + positive floor-area/value uplift',
+            eligibility: 'complete named building inventory + urban-rule + positive score + positive floor-area/value uplift; screened housing research uses its explicit concept policy',
             competitiveRatio: COMPETITIVE_RATIO,
             competitiveLimit: MAX_COMPETITIVE_CANDIDATES,
             seed: `${day || ''}:${personaName}`,

@@ -632,7 +632,7 @@ A source-attributed amount per stated unit, with an explicit currency, basis and
 
 ### Modeled gain
 
-An estimated change in value derived from stated existing and proposed floor areas and valuation assumptions. It is not a balance, cash offer or realized sale proceeds.
+An estimated change in value derived from stated existing and proposed floor areas and valuation assumptions. An unknown existing floor area leaves net gain unknown. It is not a balance, cash offer or realized sale proceeds.
 
 ### Portfolio estimate
 
@@ -821,6 +821,14 @@ A report of specified designs' modeled land, buildings, quantities and agreement
 ### Unknown measurement
 
 A quantity for which sufficient evidence or inputs are unavailable. It is distinct from a known zero; a calculation requiring that missing quantity remains unknown.
+
+### Existing-building baseline
+
+Parcel-wide existing building count, footprint area and gross floor area, each known only when its inputs and inventory coverage support that total. The autonomous parcel planner requires a named building source and complete inventory coverage; unknown or partial coverage cannot establish vacancy. Missing heights leave floor area unknown even when footprints are observed. Height-derived floor counts are estimates with a stated storey-height assumption. Geometry previews and explicit housing-research concepts can exist without a complete baseline, but they do not establish net gain.
+
+### Building observations and coverage
+
+Features returned by a named building source, with their measured footprint area, available estimated floor area and missing-height count. Coverage describes whether that source establishes the complete existing inventory for the parcel: complete, partial or unknown. A successful or untruncated query does not establish complete geographic inventory coverage; an empty result alone does not mean an empty parcel.
 
 ### Locale
 
