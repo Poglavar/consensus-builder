@@ -118,7 +118,9 @@ function fixtures(overrides = {}) {
             outcome: item.agreement.status, source: { hash: 'sha256:' + 'a'.repeat(64), transaction: 'terminal-proof' } }];
         const required = cancelled ? ['cancel', 'resolve', 'claim'] : ['stake'];
         item.activity.push(...required.map(type => ({ action: { type }, transaction: `confirmed-${type}` })));
-        item.activity = item.activity.map(event => ({ ...event, ok: true, provenance: { source: 'solana_transaction' } }));
+        item.activity = item.activity.map(event => ({ ...event, ok: true, provenance: { source: 'solana_transaction' },
+            entity: { type: 'agreement', id: cid }, agreementAccount: item.agreement.account,
+            action: { ...event.action, agreementCid: cid } }));
     }
     return { ...data, ...overrides };
 }
@@ -238,6 +240,8 @@ describe('public hackathon proof audit', () => {
             ['bad source hash', { ...canonical, branches: { ...canonical.branches, evidence: canonical.branches.evidence.map(event => ({ ...event, source: { ...event.source, hash: 'sha256:bad' } })) } }],
             ['wrong source outcome', { ...canonical, branches: { ...canonical.branches, evidence: canonical.branches.evidence.map(event => ({ ...event, outcome: 'executed' })) } }],
             ['failed cancel', { ...canonical, activity: canonical.activity.map(event => event.action.type === 'cancel' ? { ...event, ok: false } : event) }],
+            ['claim on another account', { ...canonical, activity: canonical.activity.map(event => event.action.type === 'claim' ? { ...event, agreementAccount: 'other' } : event) }],
+            ['claim on another agreement', { ...canonical, activity: canonical.activity.map(event => event.action.type === 'claim' ? { ...event, entity: { type: 'agreement', id: EXECUTED } } : event) }],
             ['non-chain resolve', { ...canonical, activity: canonical.activity.map(event => event.action.type === 'resolve' ? { ...event, provenance: { source: 'simulation' } } : event) }],
             ['unconfirmed claim', { ...canonical, activity: canonical.activity.map(event => event.action.type === 'claim' ? { ...event, provenance: { source: 'pending_transaction' } } : event) }]
         ];

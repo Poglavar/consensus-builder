@@ -8,6 +8,8 @@ import { buildHackathonCase, parcelSetIdentity } from '../hackathon/case-model.j
 import { loadActivity, loadCaseAgreement, loadOracleEvents, setupHackathonCasesRoute } from '../routes/hackathon-cases.js';
 import { agreementAccountOf } from '../agreements/onchain.js';
 import { cidOfObject } from '../cid.js';
+import { AgreementClient, AGREEMENT_PROGRAM_ID } from '../agreements/onchain.js';
+import { encodeBase58 } from '../solana/tx-decoder.js';
 import { createRouteApp } from './helpers/create-route-app.js';
 
 const SPONSOR = 'G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg';
@@ -117,6 +119,39 @@ describe('hackathon case model', () => {
 
     it('refuses to build a case without an agreement CID', () => {
         expect(() => buildHackathonCase({ agreement: { title: 'x' } })).toThrow(/cid/);
+    });
+
+    it('verifies an executed outcome separately from optional support, using only its own confirmed transactions', () => {
+        const activity = ['mint', 'stake', 'attest', 'execute', 'resolve', 'claim'].map(type => ({
+            action: { type, agreementCid: CID }, entity: { type: 'agreement', id: CID }, agreementAccount: ACCOUNT,
+            ok: true, transaction: `${type}-tx`, provenance: { source: 'solana_transaction' }
+        }));
+        const input = {
+            agreement: { ...agreement, status: 'executed' }, activity,
+            support: { state: 'available', donations: null, pledges: null },
+            market: { state: 'available', exists: true, account: 'market', yesUsdc: '0.25', noUsdc: '0', resolved: true, outcome: 'YES' },
+            oracleEvents: [{ eventType: 'agreement_lifecycle', subject: { type: 'agreement', id: ACCOUNT }, outcome: 'executed',
+                source: { hash: 'sha256:' + 'a'.repeat(64), transaction: 'execute-tx' } }]
+        };
+        expect(buildHackathonCase(input)).toMatchObject({ state: 'in_progress', outcomeProof: { state: 'verified', outcome: 'YES', missing: [] } });
+        for (const changed of [
+            { ok: false }, { transaction: null }, { provenance: { source: 'agent_run' } },
+            { entity: { type: 'agreement', id: 'other' } }, { agreementAccount: 'other' }
+        ]) {
+            const result = buildHackathonCase({ ...input, activity: activity.map(event => event.action.type === 'claim' ? { ...event, ...changed } : event) });
+            expect(result.outcomeProof).toMatchObject({ state: 'incomplete', missing: ['claim'] });
+        }
+        expect(buildHackathonCase({ ...input, activityError: 'activity unavailable' }).outcomeProof.state).toBe('incomplete');
+        for (const event of [
+            { ...input.oracleEvents[0], eventType: 'agreement_executed' },
+            { ...input.oracleEvents[0], subject: { type: 'agreement', id: 'other' } },
+            { ...input.oracleEvents[0], outcome: 'cancelled' },
+            { ...input.oracleEvents[0], source: { transaction: 'execute-tx' } }
+        ]) {
+            const result = buildHackathonCase({ ...input, oracleEvents: [event] });
+            expect(result.outcomeProof).toMatchObject({ state: 'incomplete', missing: ['evidence'] });
+            expect(result.stages.find(stage => stage.id === 'evidence').state).toBe('pending');
+        }
     });
 });
 
@@ -235,5 +270,33 @@ describe('hackathon case readers', () => {
         ]));
         expect(events.some(event => event.entity?.id === other)).toBe(false);
         expect(pool.query.mock.calls[1][1]).toEqual([CID]);
+    });
+
+    it('reads transactions scoped to the agreement and market, keeping chain provenance over run logs', async () => {
+        const instruction = {
+            index: 0, program: { address: AGREEMENT_PROGRAM_ID },
+            data: encodeBase58(Buffer.from(AgreementClient.IX_DISCRIMINATORS.cancel)),
+            accounts: [{ address: ACCOUNT }, { address: SPONSOR, signer: true }]
+        };
+        const decoded = (signature, status) => ({ signature, status, time: '2026-10-25T10:00:00Z', slot: 42, instructions: [instruction] });
+        const pool = { query: vi.fn(async sql => {
+            if (sql.includes('FROM consensus.agent_run')) return { rows: [{ run_id: 'run', summary: { activities: [{
+                action: { type: 'cancel', agreementCid: CID }, entity: { type: 'agreement', id: CID }, transaction: 'cancel-tx', ok: true
+            }] } }] };
+            if (sql.includes('FROM consensus.solana_transaction')) return { rows: [
+                { raw: decoded('cancel-tx', 'success') }, { raw: decoded('failed-tx', 'failed') }
+            ] };
+            return { rows: [{ cid: CID, title: 'Case', sponsor: SPONSOR, onchain: { account: ACCOUNT } }] };
+        }) };
+        const events = await loadActivity(pool, CID, { decode: raw => raw });
+        const cancelled = events.filter(event => event.action.type === 'cancel');
+        expect(cancelled).toHaveLength(1);
+        expect(cancelled[0]).toMatchObject({ ok: true, transaction: 'cancel-tx', agreementAccount: ACCOUNT,
+            provenance: { source: 'solana_transaction' }, actor: { kind: 'agent', name: 'densifier-01' } });
+        const [sql, [addresses]] = pool.query.mock.calls.find(([query]) => query.includes('FROM consensus.solana_transaction'));
+        expect(sql).toMatch(/touched_addresses && \$1::text\[\]/);
+        expect(addresses).toHaveLength(2);
+        expect(addresses).toContain(ACCOUNT);
+        expect(pool.query.mock.calls[0][1]).toEqual([CID]);
     });
 });

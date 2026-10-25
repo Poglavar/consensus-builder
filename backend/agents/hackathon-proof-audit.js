@@ -85,6 +85,8 @@ function validateProspectiveSettlement(status) {
 function caseAction(caseGraph, type, side = null) {
     return (caseGraph?.activity || []).some(event => event.ok === true
         && event.provenance?.source === 'solana_transaction' && event.action?.type === type
+        && event.entity?.type === 'agreement' && event.entity.id === caseGraph.id
+        && event.action.agreementCid === caseGraph.id && event.agreementAccount === caseGraph.agreement?.account
         && (side === null || String(event.action?.side || '').toLowerCase() === side)
         && Boolean(event.transaction));
 }
@@ -129,7 +131,7 @@ async function readJson(fetchImpl, url) {
 export async function auditHackathonProof({
     baseUrl = 'https://api.urbangametheory.xyz',
     fetchImpl = globalThis.fetch,
-    now = Date.now(),
+    now = null,
     maxRunAgeHours = 48
 } = {}) {
     if (typeof fetchImpl !== 'function') throw new Error('no fetch implementation available');
@@ -161,6 +163,8 @@ export async function auditHackathonProof({
         try { values[key] = await readJson(fetchImpl, values.proofManifest.publicProof[key]); }
         catch (error) { errors[key] = error instanceof Error ? error.message : String(error); }
     }));
+    // A cold manifest request may observe deployments after this audit started.
+    now ??= Date.now();
 
     const expectedFact = `${base}/agent/oracle/facts`;
     const runs = values.runs?.runs || [];

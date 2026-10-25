@@ -390,6 +390,15 @@ describe('hackathon demo executed case card', () => {
         expect(links.filter(link => link.textContent === 'Agreement minted').map(link => link.href)).toEqual(['https://explorer.solana.com/tx/tx-mint?cluster=devnet']);
     });
 
+    it('shows cancellation, NO resolution and winning claim outside the evidence fold', () => {
+        const cancelled = { ...executed, agreement: { ...executed.agreement, status: 'cancelled' },
+            branches: { forecast: { exists: true, resolved: true, outcome: 'NO' } },
+            activity: ['cancel', 'resolve', 'claim'].map(type => ({ action: { type }, ok: true, transaction: `tx-${type}` })) };
+        const element = renderInto(demo.buildDemoModel({ canonicalCase: cancelled }));
+        const path = element.all().find(node => node.className === 'hd-outcome-path');
+        expect(path.all().filter(node => node.tagName === 'A').map(node => node.textContent)).toEqual(['Cancellation', 'Market resolution', 'NO claim']);
+    });
+
     it('keeps an incomplete executed case pending rather than successful', () => {
         const partial = { ...executed, state: 'in_progress', outcomeProof: { state: 'incomplete' }, branches: { forecast: { exists: true, resolved: false } } };
         const model = demo.buildDemoModel({ docs: {}, executedCase: partial });
@@ -415,10 +424,11 @@ describe('hackathon demo executed case card', () => {
             return { ok: true, json: async () => body };
         };
         try {
-            const { values } = await demo.fetchEvidence('https://api');
+            const { values, errors } = await demo.fetchEvidence('https://api');
             expect(requested).toContain('https://api/cases/golden');
             expect(requested.some(url => url.includes('executed'))).toBe(false);
             expect(values.executedCase).toBeUndefined();
+            expect(errors.executedCase).toContain('missing its executed agreement evidence link');
         } finally { globalThis.fetch = previous; }
     });
 
@@ -430,10 +440,11 @@ describe('hackathon demo executed case card', () => {
             return { ok: true, json: async () => (url.endsWith('/hackathon/proof.json') ? { publicProof: {} } : {}) };
         };
         try {
-            const { values } = await demo.fetchEvidence('https://api');
+            const { values, errors } = await demo.fetchEvidence('https://api');
             expect(requested).toContain('https://api/hackathon/proof.json');
             expect(requested.some(url => url.includes('/cases/'))).toBe(false);
             expect(values.canonicalCase).toBeUndefined();
+            expect(errors.canonicalCase).toContain('missing its cancelled agreement evidence link');
         } finally { globalThis.fetch = previous; }
     });
 });

@@ -149,7 +149,9 @@ export function buildHackathonCase({ agreement, activity = [], activityError = n
     const expectedOutcome = agreement.status === 'executed' ? 'YES'
         : ['cancelled', 'expired'].includes(agreement.status) ? 'NO' : null;
     const confirmed = type => activity.some(event => event.ok === true && event.transaction
-        && event.provenance?.source === 'solana_transaction' && event.action?.type === type);
+        && event.provenance?.source === 'solana_transaction' && event.action?.type === type
+        && event.entity?.type === 'agreement' && event.entity.id === agreement.cid
+        && event.action.agreementCid === agreement.cid && event.agreementAccount === agreement.account);
     const requirements = {
         mint: minted && confirmed('mint'),
         forecast: Boolean(market?.exists && (number(market.yesUsdc) > 0 || number(market.noUsdc) > 0) && confirmed('stake')),
