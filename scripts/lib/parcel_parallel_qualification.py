@@ -17,7 +17,7 @@ import parcel_source_stage as stage
 from parcel_source_admission import admit_candidate
 from parcel_city_knowledge import sync_failed_urls
 from parcel_city_integration import run_city_task, verify_in_app, verify_baseline, rebuild_browser_adapters as _rebuild_and_validate_browser_adapters
-from parcel_qualification_workspaces import prepare_workspace, finish_workspace, discard_workspace, reopen_workspace
+from parcel_qualification_workspaces import prepare_workspace, finish_workspace, discard_workspace, reopen_workspace, retain_workspace
 
 
 def now():
@@ -91,7 +91,11 @@ def _worker(child, workspace, result_path, *, feedback=None, turns_used=0):
         if child.stop_requested:
             child.stop_children()
     # Both successes and failures retain their own changed code and logs before slot reuse.
-    finish_workspace(workspace)
+    try:
+        finish_workspace(workspace)
+    except Exception as exc:
+        result = {**result, "status": "failed", "summary": f"Workspace finalization error: {type(exc).__name__}: {exc}",
+                  "workspaceFinalizationError": f"{type(exc).__name__}: {exc}"}
     document = {"result": result, "usage": child.state.get("usage", {}), "finishedAt": now()}
     _write(result_path, document)
     return document
@@ -292,10 +296,12 @@ def _collect(runner, city, receipt, packet, digest, isolation, document):
         try:
             discard_workspace(workspace)
         except Exception as exc:
-            result = {**result, "status": "failed",
-                      "summary": f"Qualification workspace discard error: {type(exc).__name__}: {exc}",
-                      "workspaceDiscardError": f"{type(exc).__name__}: {exc}",
-                      "isolation": isolation}
+            # Cleanup does not revoke an integration that already passed app verification.
+            result = {**result, "workspaceDiscardError": f"{type(exc).__name__}: {exc}", "isolation": isolation}
+            try:
+                result["retainedWorkspace"] = retain_workspace(workspace, result["workspaceDiscardError"])
+            except Exception as retention_error:
+                result["workspaceRetentionError"] = f"{type(retention_error).__name__}: {retention_error}"
         else:
             result.pop("isolation", None)
     runner._city_entry(city)["qualification"] = result
@@ -318,6 +324,44 @@ def _recover_interrupted(workspace):
     finish_workspace(workspace)
 
 
+def _city_failure(runner, city, error, *, isolation=None):
+    """Artifact, slot and collection errors belong to their city, never the batch."""
+    entry = runner._city_entry(city)
+    current = entry.get("qualification", {})
+    message = f"{type(error).__name__}: {error}"[:2000]
+    # Successful results survive a subsequent bookkeeping error.
+    rolled_back = bool(getattr(runner, "shared_write_rolled_back", False))
+    status = "integrated" if current.get("status") == "integrated" and not rolled_back else "failed"
+    if rolled_back:
+        entry.pop("admission", None)
+    result = {**current, "status": status, "processingError": message, "finishedAt": now()}
+    if status == "failed":
+        result["summary"] = message
+    isolation = isolation or current.get("isolation")
+    if isolation:
+        result["isolation"] = isolation
+        try:
+            result["retainedWorkspace"] = retain_workspace(_restore(isolation["workspace"]), message)
+        except Exception as exc:
+            result["workspaceRetentionError"] = f"{type(exc).__name__}: {exc}"[:2000]
+    entry["qualification"] = result
+    runner.log("city qualification error; continuing other cities", cityCode=str(city["cityCode"]), error=message)
+    runner.save_state()
+
+
+def _collect_saved(runner, city, receipt, packet, digest, isolation):
+    try:
+        document = json.loads(Path(isolation["resultPath"]).read_text())
+        if not isinstance(document, dict) or not isinstance(document.get("result"), dict):
+            raise ValueError("isolated worker result must contain a result object")
+        runner.state.setdefault("usage", {}).update(document.get("usage", {}))
+        if document["result"].get("workspaceFinalizationError"):
+            raise RuntimeError(document["result"]["workspaceFinalizationError"])
+        _collect(runner, city, receipt, packet, digest, isolation, document)
+    except Exception as exc:
+        _city_failure(runner, city, exc, isolation=isolation)
+
+
 def advance_candidates(runner, cities, cohort_dir):
     selected = []
     progressed = False
@@ -330,62 +374,66 @@ def advance_candidates(runner, cities, cohort_dir):
         entry = runner._city_entry(city)
         if entry.get("discoveryDecision") != "candidate":
             continue
-        packet = runner._packet(city, cohort_dir)
-        receipt = runner._reviewed_city_receipt(city, packet)
-        if receipt is None:
-            continue
-        digest = stage._sha(runner._receipt_path(f"city:{city['cityCode']}").read_bytes())
-        current = entry.get("qualification", {})
-        if current.get("receiptSha256") and current["receiptSha256"] != digest:
-            entry.setdefault("qualificationHistory", []).append(current)
-            current = {}
-        isolation = current.get("isolation")
-        if current.get("status") in {"running", "ready-isolated"} and isolation:
-            result_path = Path(isolation["resultPath"])
-            if result_path.is_file():
-                _collect(runner, city, receipt, packet, digest, isolation, json.loads(result_path.read_text()))
+        try:
+            packet = runner._packet(city, cohort_dir)
+            receipt = runner._reviewed_city_receipt(city, packet)
+            if receipt is None:
+                continue
+            digest = stage._sha(runner._receipt_path(f"city:{city['cityCode']}").read_bytes())
+            current = entry.get("qualification", {})
+            if current.get("receiptSha256") and current["receiptSha256"] != digest:
+                entry.setdefault("qualificationHistory", []).append(current)
+                current = {}
+            isolation = current.get("isolation")
+            if current.get("status") in {"running", "ready-isolated"} and isolation:
+                result_path = Path(isolation["resultPath"])
+                if result_path.is_file():
+                    _collect_saved(runner, city, receipt, packet, digest, isolation)
+                    progressed = True
+                    continue
+                _recover_interrupted(_restore(isolation["workspace"]))
+                entry.setdefault("qualificationHistory", []).append({**current, "status": "interrupted"})
+                current = {}
+            if current.get("status") in {"integrated", "adapter-ready"}:
+                key = (str(city["cityCode"]), digest)
+                if key in runner.validated_stages:
+                    continue
+                valid, reason = stage.revalidate_stage(runner, city, receipt, packet, current)
+                if valid:
+                    with _shared_write(runner):
+                        still_valid, locked_reason = stage.revalidate_stage(runner, city, receipt, packet, current)
+                        if still_valid:
+                            _admit(runner, city, receipt, current, digest)
+                            blocked = runner.state.get("adapterStageBlocked")
+                            if blocked and blocked.get("cityCode") == str(city["cityCode"]):
+                                raise RuntimeError(blocked.get("reason") or "admission changed files before failing")
+                        else:
+                            entry.setdefault("qualificationHistory", []).append(
+                                {**current, "invalidationReason": locked_reason})
+                            entry["qualification"] = {"status": "pending", "receiptSha256": digest,
+                                                      "summary": "shared runtime changed qualification dependencies; retry against current adapters"}
+                            runner.save_state()
+                    progressed = True
+                    continue
+                entry.setdefault("qualificationHistory", []).append({**current, "invalidationReason": reason})
+                current = {}
+            if current.get("status") not in {None, "pending", "pending-inputs", "running", "interrupted"}:
+                continue
+            input_error = stage.qualification_input_error(runner.root, city, receipt, packet)
+            if input_error:
+                entry["qualification"] = {"status": "pending-inputs", "receiptSha256": digest,
+                                          "summary": input_error}
+                runner.log("city qualification deferred; required evidence unavailable",
+                           cityCode=str(city["cityCode"]), reason=input_error)
+                runner.save_state()
                 progressed = True
                 continue
-            _recover_interrupted(_restore(isolation["workspace"]))
-            entry.setdefault("qualificationHistory", []).append({**current, "status": "interrupted"})
-            current = {}
-        if current.get("status") in {"integrated", "adapter-ready"}:
-            key = (str(city["cityCode"]), digest)
-            if key in runner.validated_stages:
-                continue
-            valid, reason = stage.revalidate_stage(runner, city, receipt, packet, current)
-            if valid:
-                with _shared_write(runner):
-                    still_valid, locked_reason = stage.revalidate_stage(runner, city, receipt, packet, current)
-                    if still_valid:
-                        _admit(runner, city, receipt, current, digest)
-                        blocked = runner.state.get("adapterStageBlocked")
-                        if blocked and blocked.get("cityCode") == str(city["cityCode"]):
-                            raise RuntimeError(blocked.get("reason") or "admission changed files before failing")
-                    else:
-                        entry.setdefault("qualificationHistory", []).append(
-                            {**current, "invalidationReason": locked_reason})
-                        entry["qualification"] = {"status": "pending", "receiptSha256": digest,
-                                                  "summary": "shared runtime changed qualification dependencies; retry against current adapters"}
-                        runner.save_state()
-                progressed = True
-                continue
-            entry.setdefault("qualificationHistory", []).append({**current, "invalidationReason": reason})
-            current = {}
-        if current.get("status") not in {None, "pending", "pending-inputs", "running", "interrupted"}:
-            continue
-        input_error = stage.qualification_input_error(runner.root, city, receipt, packet)
-        if input_error:
-            entry["qualification"] = {"status": "pending-inputs", "receiptSha256": digest,
-                                      "summary": input_error}
-            runner.log("city qualification deferred; required evidence unavailable",
-                       cityCode=str(city["cityCode"]), reason=input_error)
-            runner.save_state()
+            selected.append((city, receipt, packet, digest))
+            if len(selected) == 2:
+                break
+        except Exception as exc:
+            _city_failure(runner, city, exc)
             progressed = True
-            continue
-        selected.append((city, receipt, packet, digest))
-        if len(selected) == 2:
-            break
     if not selected or runner.stop_requested or runner.state.get("adapterStageBlocked"):
         return progressed
     workspace_options = {}
@@ -403,11 +451,10 @@ def advance_candidates(runner, cities, cohort_dir):
     runner._model("review")
     runner._subscription_environment()
     jobs = []
-    prepared = []
-    try:
-        for slot, (city, receipt, packet, digest) in enumerate(selected, 1):
+    for slot, (city, receipt, packet, digest) in enumerate(selected, 1):
+        workspace = None
+        try:
             workspace = prepare_workspace(runner.root, runner.state_dir, slot, city, receipt, packet, **workspace_options)
-            prepared.append((city, digest, workspace))
             _, parent_attempt = stage._next_attempt(stage._stage_city_root(runner.state_dir, str(city["cityCode"])))
             args = copy.copy(runner.args)
             args.repo_root, args.state_dir = workspace["root"], workspace["stateDir"]
@@ -422,23 +469,11 @@ def advance_candidates(runner, cities, cohort_dir):
                                                          "receiptSha256": digest, "isolation": isolation}
             jobs.append((child, city, receipt, packet, digest, workspace, isolation))
             runner.save_state()
-    except Exception as exc:
-        # No model workers have started. Release every slot this batch prepared;
-        # an infrastructure failure must not become a failed source qualification.
-        runner.state["adapterStageBlocked"] = {"cityCode": str(city["cityCode"]),
-            "reason": f"Qualification workspace preparation failed: {type(exc).__name__}: {exc}", "at": now()}
-        cleanup_errors = []
-        for prepared_city, digest, workspace in prepared:
-            runner._city_entry(prepared_city)["qualification"] = {"status": "pending", "receiptSha256": digest}
-            try:
-                finish_workspace(workspace)
-                discard_workspace(workspace)
-            except Exception as cleanup_error:
-                cleanup_errors.append(f"slot {workspace['slot']}: {type(cleanup_error).__name__}: {cleanup_error}")
-        if cleanup_errors:
-            runner.state["adapterStageBlocked"]["workspaceCleanupErrors"] = cleanup_errors
-        runner.save_state()
-        raise
+        except Exception as exc:
+            isolation = {"workspace": stage._jsonable(workspace)} if workspace else None
+            _city_failure(runner, city, exc, isolation=isolation)
+    if not jobs:
+        return True
     runner.qualification_runners = [job[0] for job in jobs]
     runner.state["qualificationWorkers"] = [{"cityCode": str(job[1]["cityCode"]), "slot": index,
                                                "worktree": str(job[0].root)} for index, job in enumerate(jobs, 1)]
@@ -458,7 +493,8 @@ def advance_candidates(runner, cities, cohort_dir):
                     try:
                         future.result()
                     except Exception as exc:
-                        runner.log("isolated worker finalization failed; evidence retained", cityCode=str(city["cityCode"]), error=str(exc))
+                        _city_failure(runner, city, exc, isolation=isolation)
+                        continue
                     runner._city_entry(city)["qualification"]["status"] = "ready-isolated"
                 runner.save_state()
         # No worker can see another city's imports or app writes while it qualifies.
@@ -466,8 +502,9 @@ def advance_candidates(runner, cities, cohort_dir):
             if runner.stop_requested or runner.state.get("adapterStageBlocked"):
                 break
             result_path = Path(isolation["resultPath"])
-            if result_path.is_file():
-                _collect(runner, city, receipt, packet, digest, isolation, json.loads(result_path.read_text()))
+            if runner._city_entry(city).get("qualification", {}).get("status") == "failed":
+                continue
+            _collect_saved(runner, city, receipt, packet, digest, isolation)
     finally:
         runner.qualification_runners = []
         runner.state["qualificationWorkers"] = []

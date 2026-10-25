@@ -4,6 +4,7 @@ import hashlib
 import importlib.util
 import json
 import shutil
+import ssl
 import subprocess
 import tempfile
 import unittest
@@ -468,6 +469,54 @@ class ParcelQualificationWorkspaceTests(unittest.TestCase):
         workspaces.discard_workspace(workspace)
         self.assertFalse(workspace["root"].exists())
         self.assertTrue((job / "backend/node_modules").is_symlink())
+
+    def test_discard_accepts_only_a_real_public_certificate_in_owned_scratch(self):
+        workspace = self.prepare()
+        certificate = workspace["root"] / "tmp/evidence/public-ca.pem"
+        certificate.parent.mkdir(parents=True)
+        der = ssl.create_default_context().get_ca_certs(binary_form=True)[0]
+        certificate.write_text(ssl.DER_cert_to_PEM_cert(der))
+        workspaces.finish_workspace(workspace)
+        workspaces.discard_workspace(workspace)
+        self.assertFalse(workspace["root"].exists())
+
+    def test_certificate_file_with_key_material_or_invalid_der_is_retained(self):
+        workspace = self.prepare()
+        certificate = workspace["root"] / "tmp/evidence/public-ca.pem"
+        certificate.parent.mkdir(parents=True)
+        der = ssl.create_default_context().get_ca_certs(binary_form=True)[0]
+        public = ssl.DER_cert_to_PEM_cert(der)
+        workspaces.finish_workspace(workspace)
+        for text in (public + "-----BEGIN PRIVATE KEY-----\nfixture\n-----END PRIVATE KEY-----\n",
+                     "-----BEGIN CERTIFICATE-----\nZmFrZQ==\n-----END CERTIFICATE-----\n"):
+            certificate.write_text(text)
+            with self.assertRaisesRegex(RuntimeError, "unexpected ignored private path"):
+                workspaces.discard_workspace(workspace)
+            self.assertEqual(certificate.read_text(), text)
+
+    def test_public_certificate_cleanup_refuses_symlink_parents(self):
+        workspace = self.prepare()
+        outside = self.parent.parent / "outside-certificates"
+        outside.mkdir()
+        der = ssl.create_default_context().get_ca_certs(binary_form=True)[0]
+        (outside / "public.pem").write_text(ssl.DER_cert_to_PEM_cert(der))
+        link = workspace["root"] / "tmp/certificates"
+        link.parent.mkdir(exist_ok=True)
+        link.symlink_to(outside, target_is_directory=True)
+        self.assertFalse(workspaces._public_certificate(workspace["root"], "tmp/certificates/public.pem"))
+
+    def test_retained_private_workspace_releases_slot_without_losing_ignored_data(self):
+        workspace = self.prepare()
+        private = workspace["root"] / ".env"
+        private.write_text("FIXTURE_ONLY=preserve\n")
+        workspaces.finish_workspace(workspace)
+        retained = workspaces.retain_workspace(workspace, "cleanup refused private data")
+        self.assertEqual((Path(retained["root"]) / ".env").read_text(), "FIXTURE_ONLY=preserve\n")
+        self.assertFalse(workspace["metadataPath"].exists())
+        fresh = self.prepare()
+        self.assertNotEqual(fresh["runId"], retained["runId"])
+        self.assertFalse((fresh["root"] / ".env").exists())
+        self.assertTrue(Path(retained["root"]).exists())
 
     def test_discard_refuses_unowned_ignored_env_file(self):
         workspace = self.prepare()

@@ -7,6 +7,7 @@ import json
 import os
 import re
 import shutil
+import ssl
 import subprocess
 import uuid
 import copy
@@ -532,6 +533,41 @@ def reopen_workspace(workspace: dict[str, Any]) -> None:
     _write_metadata(path, metadata)
 
 
+def _public_certificate(root: Path, rel: str) -> bool:
+    """Only bounded, regular X.509 certificates are disposable, never PEM key material."""
+    path, parts = root / rel, Path(rel).parts
+    if (path.suffix.lower() != ".pem" or not rel.startswith(("tmp/", "backend/parcels/certificates/"))
+            or any((root / Path(*parts[:i])).is_symlink() for i in range(1, len(parts) + 1))
+            or not path.is_file() or path.stat().st_size > 64 * 1024):
+        return False
+    try:
+        text = path.read_text(encoding="ascii")
+        if not re.fullmatch(r"\s*(?:-----BEGIN CERTIFICATE-----[A-Za-z0-9+/=\s]+-----END CERTIFICATE-----\s*)+", text):
+            return False
+        ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT).load_verify_locations(cadata=text)
+        return True
+    except (OSError, UnicodeError, ValueError, ssl.SSLError):
+        return False
+
+
+def retain_workspace(workspace: dict[str, Any], reason: str) -> dict[str, Any]:
+    """Release a slot by moving its owned checkout intact; never discard private data."""
+    metadata_path = Path(workspace["metadataPath"])
+    metadata = _read_metadata(metadata_path)
+    if (metadata.get("runId") != workspace.get("runId")
+            or metadata.get("slot") != workspace.get("slot")
+            or Path(metadata.get("root", "")).resolve() != Path(workspace["root"]).resolve()
+            or metadata_path.name != f"slot-{workspace['slot']}.json"):
+        raise RuntimeError("qualification workspace retention identity mismatch")
+    owner = metadata_path.parent.parent.parent.parent
+    _preserve_interrupted_preparation(owner, metadata_path, metadata)
+    retained_path = metadata_path.with_name(f"interrupted-{metadata['runId']}.json")
+    retained = _read_metadata(retained_path)
+    retained.update(status="cleanup-blocked", reason=reason[:2000])
+    _write_metadata(retained_path, retained)
+    return {"root": retained["root"], "metadataPath": str(retained_path), "runId": retained["runId"]}
+
+
 def discard_workspace(workspace: dict[str, Any]) -> None:
     """Remove a collected qualification worktree after validating ownership and local data."""
     root = Path(workspace["root"]).resolve()
@@ -610,6 +646,8 @@ def discard_workspace(workspace: dict[str, Any]) -> None:
                 if all(path.is_file() and not path.is_symlink() and path.suffix == ".pyc"
                        for path in files):
                     continue
+        if _public_certificate(root, rel):
+            continue
         if not rel.startswith("tmp/") or _sensitive_path(rel):
             raise RuntimeError(f"unexpected ignored private path prevents workspace discard: {rel}")
 

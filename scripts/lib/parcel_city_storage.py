@@ -259,10 +259,8 @@ def finish_city(runner, city, cohort):
         artifact_root = row.get("qualification", {}).get("artifactRoot")
         if artifact_root:
             recover_qualified_settings(runner, city["cityCode"], artifact_root)
-    # Commit the compact progress marker before discarding temporary inputs.
-    compact = compact_row(row)
-    row.clear()
-    row.update(compact)
+    # Keep recovery references until all owned cleanup has succeeded.
+    row["storagePending"] = True
     runner.save_state()
     for path, _ in documents:
         # Source packets and receipts are pipeline-owned temporary files. Shared app
@@ -294,6 +292,10 @@ def finish_city(runner, city, cohort):
         if evidence.exists():
             remove_owned(evidence, research)
         remove_owned(archive, research)
+    compact = compact_row(row)
+    row.clear()
+    row.update(compact)
+    runner.save_state()
     return True
 
 
@@ -314,15 +316,16 @@ def _sample_paths(value):
 
 def task_finished(runner, directory, task_id):
     """Only live tasks have disk records; completed calls live in shared accounting."""
+    remove_owned(directory, runner.state_dir)
     runner.state.get("pipeline", {}).get("tasks", {}).pop(task_id, None)
     runner.save_state()
-    remove_owned(directory, runner.state_dir)
 
 
 def clear_qualification_scratch(runner):
     """One serialized qualification task owns these directories within each job."""
     rows = runner.state.get("cities", {}).values()
-    if any(row.get("qualification", {}).get("status") in {"running", "ready-isolated"}
+    if any(row.get("storageError") or row.get("storagePending")
+           or row.get("qualification", {}).get("status") in {"running", "ready-isolated"}
            or row.get("qualification", {}).get("workspaceDiscardError") for row in rows):
         return
     for name in ("qualification", "qualification-import-tests", "qualification-workers", "admission-bridge"):

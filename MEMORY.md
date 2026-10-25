@@ -932,3 +932,5 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-25: Model 3D selections retain the camera and composition; volume outlines identify buildings, while hatched ground designs and unfilled parcel boundaries distinguish design intent from coincident land.
 
 - 2026-10-25: Descriptive city labels must not gate design import, reconstruction or rendering; authored geography and actual cadastral source dependencies determine the required ground context.
+
+- Parcel processing must isolate city-specific failures, including artifact and cleanup errors, so one city cannot abort unrelated queued work; successful integrations survive cleanup failures.

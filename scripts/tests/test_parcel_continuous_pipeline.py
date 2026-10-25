@@ -227,6 +227,128 @@ class PipelineTests(unittest.TestCase):
             self.assertEqual(self.pool._select('research', 2), [])
         self.assertTrue(self.pool.waiting_for_claim)
 
+    def test_selection_error_is_scoped_to_one_city(self):
+        self.runner.state['cities']['1'].update(status='pending')
+        self.runner.state['cities']['2'].update(status='pending')
+        original = self.runner._packet
+        def packet(city, cohort):
+            if city['cityCode'] == 1:
+                raise ValueError('bad packet')
+            return {'valid': False, 'errors': ['invalid']}
+        self.runner._packet = packet
+        with patch.object(coordination, 'acquire', return_value={'token': 'claim'}):
+            self.assertEqual(self.pool._select('research', 1), [self.cities[1]])
+        self.assertTrue(self.runner.state['cities']['1']['storageError'])
+        self.runner._packet = original
+
+    def test_finish_cleanup_error_does_not_stop_other_city(self):
+        self.pool.pipeline['tasks']['task'] = {}
+        directory = self.root / 'task'
+        directory.mkdir()
+        pipeline._write(directory / 'result.json', {'cities': {'1': {}, '2': {} }})
+        self.pool.by_code['1'] = self.cities[0]
+        self.pool.by_code['2'] = self.cities[1]
+        self.pool.pipeline['tasks']['task'] = {}
+        with patch.object(pipeline, 'finish_city', side_effect=[RuntimeError('discard'), False]):
+            self.pool._accept('task', {'lane': 'review', 'cityCodes': ['1', '2']}, directory)
+        self.assertIn('finishCity', self.runner.state['cities']['1']['storageError'])
+        self.assertNotIn('storageError', self.runner.state['cities']['2'])
+
+    def test_non_object_stage_result_is_bounded_failure(self):
+        self.pool.pipeline['tasks']['task'] = {}
+        directory = self.root / 'task'
+        directory.mkdir()
+        pipeline._write(directory / 'result.json', [])
+        self.pool.pipeline['tasks']['qualification'] = {}
+        self.pool._accept('qualification', {'lane': 'qualification', 'cityCodes': ['1']}, directory)
+        self.assertEqual(self.runner.state['cities']['1']['pipelineFailures']['qualification'], 1)
+
+    def test_systemic_result_stops_pipeline(self):
+        self.pool.pipeline['tasks']['task'] = {}
+        directory = self.root / 'task'
+        directory.mkdir()
+        pipeline._write(directory / 'result.json', {'cities': {}, 'systemic': True, 'error': 'auth'})
+        self.pool.pipeline['tasks']['research'] = {}
+        self.pool._accept('research', {'lane': 'research', 'cityCodes': ['1']}, directory)
+        self.assertTrue(self.runner.stop_requested)
+        self.assertEqual(self.runner.state['systemicFailure'], 'auth')
+
+    def test_review_selection_skips_one_broken_packet(self):
+        for city in self.cities:
+            self.runner._city_entry(city).update(status='research-complete', packetValid=True)
+        def packet(city, cohort):
+            if city['cityCode'] == 1:
+                raise FileNotFoundError('missing city packet')
+            return {'valid': True}
+        self.runner._packet = packet
+        self.assertEqual(self.pool._select('review', 1), [self.cities[1]])
+        self.assertIn('selection', self.runner.state['cities']['1']['storageError'])
+
+    def test_corrupt_result_and_non_object_checkpoint_are_bounded(self):
+        for content in ('[', '[]', '{"cities":[]}'):
+            with self.subTest(content=content):
+                self.runner.state['cities']['1'].pop('qualification', None)
+                self.runner.state['cities']['1'].pop('pipelineFailures', None)
+                for _ in range(2):
+                    directory = self.root / 'task'
+                    directory.mkdir(exist_ok=True)
+                    (directory / 'result.json').write_text(content)
+                    self.pool.pipeline['tasks']['task'] = {}
+                    self.pool._accept('task', {'lane': 'qualification', 'cityCodes': ['1']}, directory)
+                self.assertEqual(self.runner.state['cities']['1']['qualification']['status'], 'failed')
+        directory.mkdir(exist_ok=True)
+        (directory / 'state.json').write_text('[]')
+        self.pool.pipeline['tasks']['task'] = {}
+        self.pool._accept('task', {'lane': 'qualification', 'cityCodes': ['1']}, directory)
+
+    def test_missing_result_reaches_retry_limit_without_stalling_other_cities(self):
+        for _ in range(2):
+            directory = self.root / 'task'
+            directory.mkdir(exist_ok=True)
+            self.pool.pipeline['tasks']['task'] = {}
+            self.pool._accept('task', {'lane': 'qualification', 'cityCodes': ['1']}, directory)
+        self.assertEqual(self.runner.state['cities']['1']['qualification']['status'], 'failed')
+        self.runner.state['cities']['2'].update(status='reviewed-candidate', discoveryDecision='candidate', packetValid=True)
+        self.assertEqual(self.pool._select('qualification', 1), [self.cities[1]])
+
+    def test_restart_with_bad_input_recovers_saved_cities(self):
+        for content in ('[', '[]'):
+            with self.subTest(content=content):
+                directory = self.root / 'task'
+                directory.mkdir(exist_ok=True)
+                (directory / 'input.json').write_text(content)
+                pipeline._write(directory / 'result.json', {'cities': {'1': {'status': 'reviewed-rejected'}}})
+                self.pool.pipeline['tasks']['task'] = {'status': 'running', 'directory': str(directory),
+                    'lane': 'review', 'cityCodes': ['1']}
+                self.pool.recover()
+                self.assertEqual(self.runner.state['cities']['1']['status'], 'reviewed-rejected')
+                self.assertNotIn('task', self.pool.pipeline['tasks'])
+
+    def test_scratch_failure_and_task_cleanup_failure_keep_diagnostics(self):
+        with patch.object(pipeline, 'clear_city_downloads', side_effect=ValueError('unsafe scratch')), \
+                patch.object(pipeline, 'task_finished', side_effect=PermissionError('protected task')):
+            self.accept('review', {'cities': {'1': {'status': 'reviewed-rejected'}}})
+        self.assertIn('scratchCleanup', self.runner.state['cities']['1']['storageError'])
+        self.assertTrue((self.root / 'task').exists())
+        self.assertEqual(self.runner.state['taskCleanupErrors']['task']['directory'], str(self.root / 'task'))
+        self.assertIn('task', self.pool.pipeline['tasks'])
+
+    def test_cleanup_failure_preserves_qualified_city_without_scheduling_more_llm(self):
+        self.runner.state['cities']['1'].update(status='reviewed-candidate', discoveryDecision='candidate')
+        with patch.object(pipeline, 'finish_city', side_effect=RuntimeError('private artifact retained')):
+            self.accept('qualification', {'cities': {'1': {'qualification': {'status': 'integrated'}}}})
+        row = self.runner.state['cities']['1']
+        self.assertEqual(row['qualification']['status'], 'integrated')
+        self.assertTrue(row['storageError'])
+        self.assertEqual(self.pool._select('qualification', 1), [])
+        self.assertIn('city:1:finishCity', self.runner.state['failedItems'])
+
+    def test_held_city_artifacts_do_not_keep_an_exhausted_queue_spinning(self):
+        for city in self.cities:
+            self.runner._city_entry(city).update(status='research-complete', storageError={'selection': 'bad input'})
+        self.pool.run()
+        self.assertEqual(self.pool.active, {})
+
     def test_stale_candidate_receipt_returns_to_review(self):
         row = self.runner.state['cities']['1']
         row.update(status='reviewed-candidate', discoveryDecision='candidate', packetValid=True)
@@ -298,6 +420,26 @@ class SharedRunnerWriteTests(unittest.TestCase):
         args = self.module.build_parser().parse_args(['--repo-root', str(self.root), '--shared-root', str(self.shared)])
         self.runner = self.module.Runner(args)
         self.runner.log = Mock()
+
+    def test_bad_city_artifact_on_startup_does_not_abort_queue(self):
+        queue = self.root / 'queue.json'
+        queue.write_text('{}')
+        cities = [{'cityCode': '42', 'rank': 1}, {'cityCode': '43', 'rank': 2}]
+        self.runner._load_queue = lambda path: ({}, cities)
+        self.runner._ensure_root_tasks = Mock()
+        self.runner.discovery_workflow = lambda: True
+        self.runner._city_entry = lambda city: self.runner.state.setdefault('cities', {}).setdefault(
+            city['cityCode'], {'status': 'research-complete'})
+        def packet(city, cohort):
+            if city['cityCode'] == '42':
+                raise ValueError('malformed city JSON')
+            return {'valid': True}
+        self.runner._packet = packet
+        self.runner._reviewed_city_receipt = lambda *args: None
+        with patch.object(pipeline.ContinuousPipeline, 'run', return_value=True):
+            self.assertTrue(self.runner._process_queue(queue, once=False)[0])
+        self.assertIn('startup-inputs', self.runner.state['cities']['42']['storageError'])
+        self.assertNotIn('storageError', self.runner.state['cities']['43'])
 
     def test_success_publishes_adapter_for_the_next_task(self):
         original = self.runtime.current_runtime(self.shared)['generation']

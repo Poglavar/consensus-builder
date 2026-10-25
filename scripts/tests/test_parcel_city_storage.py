@@ -61,6 +61,26 @@ class CityStorageTests(unittest.TestCase):
         self.assertTrue(self.packet.exists())
         self.assertNotIn("storageComplete", self.row)
 
+    def test_cleanup_failure_keeps_uncompacted_recovery_references(self):
+        self.row['qualification'] = {'status': 'failed', 'artifactRoot': 'retained-proof'}
+        with patch.object(storage, 'remove_owned', side_effect=PermissionError('protected artifact')):
+            with self.assertRaises(PermissionError):
+                storage.finish_city(self.runner, self.city, self.cohort)
+        self.assertNotIn('storageComplete', self.row)
+        self.assertTrue(self.row['storagePending'])
+        self.assertEqual(self.row['qualification']['artifactRoot'], 'retained-proof')
+        self.assertTrue(self.packet.exists())
+
+    def test_task_cleanup_keeps_checkpoint_until_directory_can_be_removed(self):
+        directory = self.runner.state_dir / 'pipeline-tasks/task'
+        directory.mkdir(parents=True)
+        self.runner.state['pipeline'] = {'tasks': {'task': {'directory': str(directory)}}}
+        with patch.object(storage, 'remove_owned', side_effect=PermissionError('protected task')):
+            with self.assertRaises(PermissionError):
+                storage.task_finished(self.runner, directory, 'task')
+        self.assertIn('task', self.runner.state['pipeline']['tasks'])
+        self.assertTrue(directory.exists())
+
     def test_integration_refusal_reason_survives_compaction_and_cleanup(self):
         self.packet.write_text(json.dumps({
             "status": "complete",

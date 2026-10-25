@@ -181,28 +181,23 @@ class ParallelTests(unittest.TestCase):
         self.assertEqual(self.runner.state["qualificationWorkers"], [])
         self.assertTrue(all(e["qualification"]["status"] == "integrated" for e in self.runner.state["cities"].values()))
 
-    def test_partial_workspace_preparation_failure_releases_slots_and_blocks_qualification(self):
-        workspaces = []
-
+    def test_bad_second_workspace_does_not_cancel_healthy_first_city(self):
         def prepare(root, state_dir, slot, city, receipt, packet):
             if slot == 2:
                 raise RuntimeError("qualification worktree path exists without owned metadata")
-            workspace = self.prepare(root, state_dir, slot, city, receipt, packet)
-            workspaces.append(workspace)
-            return workspace
-
+            return self.prepare(root, state_dir, slot, city, receipt, packet)
+        def qualify(child, city, receipt, packet):
+            return self.result(child, city)
         with patch.object(parallel, "prepare_workspace", side_effect=prepare), \
-                patch.object(parallel, "finish_workspace") as finish, \
-                patch.object(stage, "run_candidate") as qualify:
-            with self.assertRaisesRegex(RuntimeError, "without owned metadata"):
-                parallel.advance_candidates(self.runner, [self.city, {"cityCode": "43"}], self.root)
-
-        qualify.assert_not_called()
-        finish.assert_called_once_with(workspaces[0])
-        self.discard_mock.assert_called_once_with(workspaces[0])
-        self.assertEqual(self.runner._city_entry(self.city)["qualification"]["status"], "pending")
-        self.assertIn("without owned metadata", self.runner.state["adapterStageBlocked"]["reason"])
-        self.assertFalse(parallel.advance_candidates(self.runner, [self.city], self.root))
+                patch.object(parallel, "finish_workspace"), \
+                patch.object(stage, "run_candidate", side_effect=qualify), \
+                patch.object(parallel, "admit_candidate", return_value={"status": "integrated"}):
+            self.assertTrue(parallel.advance_candidates(self.runner, [self.city, {"cityCode": "43"}], self.root))
+        self.assertEqual(self.runner._city_entry(self.city)["qualification"]["status"], "integrated")
+        failed = self.runner._city_entry({"cityCode": "43"})["qualification"]
+        self.assertEqual(failed["status"], "failed")
+        self.assertIn("without owned metadata", failed["summary"])
+        self.assertNotIn("adapterStageBlocked", self.runner.state)
 
     def test_missing_city_inputs_defer_only_that_city_and_healthy_city_integrates(self):
         def inputs(root, city, receipt, packet):
@@ -342,7 +337,7 @@ class ParallelTests(unittest.TestCase):
         self.assertEqual(qualification["status"], "integrated")
         self.assertNotIn("isolation", qualification)
 
-    def test_discard_failure_is_saved_as_failed_and_keeps_recovery_reference(self):
+    def test_discard_failure_preserves_integration_and_keeps_recovery_reference(self):
         _ws, isolation, document = self.isolated()
         with patch.object(parallel, "admit_candidate",
                           return_value={"status": "integrated", "summary": "admitted"}), \
@@ -350,9 +345,63 @@ class ParallelTests(unittest.TestCase):
                              side_effect=RuntimeError("unexpected ignored credential file")):
             parallel._collect(self.runner, self.city, {}, {}, self.digest, isolation, document)
         qualification = self.runner._city_entry(self.city)["qualification"]
-        self.assertEqual(qualification["status"], "failed")
-        self.assertIn("unexpected ignored credential file", qualification["summary"])
+        self.assertEqual(qualification["status"], "integrated")
+        self.assertIn("unexpected ignored credential file", qualification["workspaceDiscardError"])
         self.assertEqual(qualification["isolation"]["runId"], isolation["runId"])
+
+    def test_bad_city_packet_does_not_prevent_healthy_city_qualification(self):
+        def packet(city, cohort):
+            if city["cityCode"] == "42":
+                raise ValueError("broken city packet")
+            return {"valid": True}
+        self.runner._packet = packet
+        with patch.object(parallel, "prepare_workspace", side_effect=self.prepare), \
+                patch.object(parallel, "finish_workspace"), \
+                patch.object(stage, "run_candidate", side_effect=lambda child, city, *_: self.result(child, city)), \
+                patch.object(parallel, "admit_candidate", return_value={"status": "integrated"}):
+            parallel.advance_candidates(self.runner, [self.city, {"cityCode": "43"}], self.root)
+        self.assertEqual(self.runner._city_entry(self.city)["qualification"]["status"], "failed")
+        self.assertEqual(self.runner._city_entry({"cityCode": "43"})["qualification"]["status"], "integrated")
+
+    def test_bad_first_collection_does_not_prevent_second_city_admission(self):
+        original = parallel._collect
+        def collect(runner, city, *args):
+            if city["cityCode"] == "42":
+                raise FileNotFoundError("missing artifact")
+            return original(runner, city, *args)
+        with patch.object(parallel, "prepare_workspace", side_effect=self.prepare), \
+                patch.object(parallel, "finish_workspace"), \
+                patch.object(parallel, "retain_workspace", return_value={"runId": "retained"}), \
+                patch.object(parallel, "_collect", side_effect=collect), \
+                patch.object(stage, "run_candidate", side_effect=lambda child, city, *_: self.result(child, city)), \
+                patch.object(parallel, "admit_candidate", return_value={"status": "integrated"}):
+            parallel.advance_candidates(self.runner, [self.city, {"cityCode": "43"}], self.root)
+        self.assertEqual(self.runner._city_entry(self.city)["qualification"]["status"], "failed")
+        self.assertEqual(self.runner._city_entry({"cityCode": "43"})["qualification"]["status"], "integrated")
+
+    def test_finalization_error_is_written_and_other_city_still_integrates(self):
+        def finish(workspace):
+            if workspace["city"]["cityCode"] == "42":
+                raise RuntimeError("snapshot drift")
+        with patch.object(parallel, "prepare_workspace", side_effect=self.prepare), \
+                patch.object(parallel, "finish_workspace", side_effect=finish), \
+                patch.object(parallel, "retain_workspace", return_value={"runId": "retained"}), \
+                patch.object(stage, "run_candidate", side_effect=lambda child, city, *_: self.result(child, city)), \
+                patch.object(parallel, "admit_candidate", return_value={"status": "integrated"}):
+            parallel.advance_candidates(self.runner, [self.city, {"cityCode": "43"}], self.root)
+        failed = self.runner._city_entry(self.city)["qualification"]
+        self.assertEqual(failed["status"], "failed")
+        document = json.loads(Path(failed["isolation"]["resultPath"]).read_text())
+        self.assertIn("snapshot drift", document["result"]["workspaceFinalizationError"])
+        self.assertEqual(self.runner._city_entry({"cityCode": "43"})["qualification"]["status"], "integrated")
+
+    def test_corrupt_saved_worker_result_fails_only_its_city(self):
+        ws, isolation, _ = self.isolated()
+        Path(isolation["resultPath"]).write_text("[")
+        with patch.object(parallel, "retain_workspace", return_value={"runId": "retained"}):
+            parallel._collect_saved(self.runner, self.city, {}, {}, self.digest, isolation)
+        self.assertEqual(self.runner._city_entry(self.city)["qualification"]["status"], "failed")
+        self.assertNotIn("adapterStageBlocked", self.runner.state)
 
     def test_stop_requested_keeps_finished_worker_for_recovery(self):
         _ws, isolation, document = self.isolated()

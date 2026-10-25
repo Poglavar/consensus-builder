@@ -36,6 +36,16 @@ def _jsonable(value):
     return value
 
 
+def _city_error(runner, code, phase, error):
+    """Hold only the affected city, retaining a bounded diagnostic and its inputs."""
+    message = f"{type(error).__name__}: {error}"[:2000]
+    row = runner.state.setdefault("cities", {}).setdefault(str(code), {})
+    row.setdefault("processingErrors", {})[phase] = message
+    row.setdefault("storageError", {})[phase] = message
+    runner.state.setdefault("failedItems", {})[f"city:{code}:{phase}"] = {
+        "taskId": f"city:{code}", "phase": phase, "reason": message}
+
+
 def execute_task(runner_class, args):
     """A fresh interpreter and independent checkpoint for every stage invocation."""
     spec_path = Path(args.pipeline_task)
@@ -78,12 +88,19 @@ def execute_task(runner_class, args):
             raise ValueError(f"Unknown pipeline lane: {lane}")
         if not systemic and not child.stop_requested:
             for city in cities:
-                record_attempts(child, city, cohort)
+                try:
+                    record_attempts(child, city, cohort)
+                except Exception as exc:
+                    _city_error(child, city["cityCode"], "record-attempts", exc)
     except Exception as exc:
         error = f"{type(exc).__name__}: {exc}"
     finally:
         child.stop_children()
-        clear_city_downloads(child.root, spec["cityCodes"])
+        for code in spec["cityCodes"]:
+            try:
+                clear_city_downloads(child.root, [code])
+            except Exception as exc:
+                _city_error(child, code, "scratchCleanup", exc)
         child.save_state()
         _write(control / "result.json", {"lane": lane, "cities": child.state.get("cities", {}),
             "usage": child.state.get("usage", {}), "failedItems": child.state.get("failedItems", {}),
@@ -119,56 +136,59 @@ class ContinuousPipeline:
             ordered = sorted(self.cities, key=lambda city: 0 if self.runner._city_entry(city).get(
                 "qualification", {}).get("status") in {"running", "ready-isolated"} else 1)
         for city in ordered:
-            code = str(city["cityCode"])
-            if code in busy:
-                continue
-            row = self.runner._city_entry(city)
-            if row.get("storageComplete"):
-                continue
-            status = row.get("status", "pending")
-            if lane == "research":
-                if status not in {"pending", "running"}:
+            try:
+                code = str(city["cityCode"])
+                if code in busy:
                     continue
-                packet = self.runner._packet(city, self.cohort)
-                if packet.get("valid"):
-                    row["status"] = "research-complete"
+                row = self.runner._city_entry(city)
+                if row.get("storageComplete") or row.get("storageError"):
                     continue
-                if row.get("attempts", 0) >= self.runner.args.max_retries:
-                    self.runner._skip_item(f"city:{code}", row, "research", "; ".join(packet.get("errors", [])))
-                    continue
-                try:
-                    self.runner.discovery_claims[code] = coordination.acquire(self.runner.root, code, "web-search")
-                except coordination.ClaimBusy:
-                    self.waiting_for_claim = True
-                    continue
-            elif lane == "review":
-                if status != "research-complete":
-                    continue
-                if not self.runner._packet(city, self.cohort).get("valid"):
-                    row["status"] = "pending"
-                    continue
-            else:
-                if row.get("discoveryDecision") != "candidate" or status not in outcomes.REVIEWED_STATUSES:
-                    continue
-                saved = row.get("qualification", {})
-                if saved.get("status") in {"failed", "blocked-source", "rejected-source", "integration-blocked"}:
-                    continue
-                fingerprint = self.runner._qualification_fingerprint(city, saved)
-                if (fingerprint is not None and saved.get("status") in {"integrated", "adapter-ready"}
-                        and (code, fingerprint) in self.validated):
-                    continue
-                packet = self.runner._packet(city, self.cohort)
-                receipt = self.runner._reviewed_city_receipt(city, packet)
-                if not receipt:
-                    row["status"] = "research-complete" if packet.get("valid") else "pending"
-                    continue
-                if saved.get("status") == "pending-inputs":
-                    if source_stage.qualification_input_error(self.runner.root, city, receipt, packet):
+                status = row.get("status", "pending")
+                if lane == "research":
+                    if status not in {"pending", "running"}:
                         continue
-                    row["qualification"] = {"status": "pending", "receiptSha256": saved.get("receiptSha256")}
-            selected.append(city)
-            if len(selected) >= count:
-                break
+                    packet = self.runner._packet(city, self.cohort)
+                    if packet.get("valid"):
+                        row["status"] = "research-complete"
+                        continue
+                    if row.get("attempts", 0) >= self.runner.args.max_retries:
+                        self.runner._skip_item(f"city:{code}", row, "research", "; ".join(packet.get("errors", [])))
+                        continue
+                    try:
+                        self.runner.discovery_claims[code] = coordination.acquire(self.runner.root, code, "web-search")
+                    except coordination.ClaimBusy:
+                        self.waiting_for_claim = True
+                        continue
+                elif lane == "review":
+                    if status != "research-complete":
+                        continue
+                    if not self.runner._packet(city, self.cohort).get("valid"):
+                        row["status"] = "pending"
+                        continue
+                else:
+                    if row.get("discoveryDecision") != "candidate" or status not in outcomes.REVIEWED_STATUSES:
+                        continue
+                    saved = row.get("qualification", {})
+                    if saved.get("status") in {"failed", "blocked-source", "rejected-source", "integration-blocked"}:
+                        continue
+                    fingerprint = self.runner._qualification_fingerprint(city, saved)
+                    if (fingerprint is not None and saved.get("status") in {"integrated", "adapter-ready"}
+                            and (code, fingerprint) in self.validated):
+                        continue
+                    packet = self.runner._packet(city, self.cohort)
+                    receipt = self.runner._reviewed_city_receipt(city, packet)
+                    if not receipt:
+                        row["status"] = "research-complete" if packet.get("valid") else "pending"
+                        continue
+                    if saved.get("status") == "pending-inputs":
+                        if source_stage.qualification_input_error(self.runner.root, city, receipt, packet):
+                            continue
+                        row["qualification"] = {"status": "pending", "receiptSha256": saved.get("receiptSha256")}
+                selected.append(city)
+                if len(selected) >= count:
+                    break
+            except Exception as exc:
+                _city_error(self.runner, city["cityCode"], "selection", exc)
         return selected
 
     def _start(self, lane, cities):
@@ -200,12 +220,15 @@ class ContinuousPipeline:
                 "--pipeline-task", str(spec_path)], cwd=self.runner.root, stdin=subprocess.DEVNULL,
                 stdout=out, stderr=subprocess.STDOUT, start_new_session=True,
                 env=self.runner._subscription_environment())
-        except Exception:
+        except Exception as exc:
             out.close()
             for code, claim in claims.items():
                 coordination.release(self.runner.root, code, claim["token"])
-            metadata["status"] = "launch-failed"
-            raise
+            metadata.update(status="launch-failed", error=f"{type(exc).__name__}: {exc}"[:2000])
+            for code in codes:
+                _city_error(self.runner, code, "launch", exc)
+            self.runner.save_state()
+            return
         metadata.update(pid=process.pid, pidStartIdentity=coordination.pid_start_identity(process.pid), status="running")
         self.active[task_id] = {"process": process, "spec": spec, "directory": directory, "out": out}
         self.runner.pipeline_jobs = self.active
@@ -215,46 +238,70 @@ class ContinuousPipeline:
 
     def _accept(self, task_id, spec, directory, *, interrupted=False):
         path = directory / "result.json"
-        if path.exists():
-            result = json.loads(path.read_text())
-        else:
+        missing_result = not path.exists()
+        try:
+            result = json.loads(path.read_text()) if not missing_result else None
+        except (OSError, ValueError, TypeError) as exc:
+            result = {"error": f"invalid stage result: {type(exc).__name__}: {exc}"}
+        if result is None:
             state_path = directory / "state.json"
-            saved = json.loads(state_path.read_text()) if state_path.exists() else {}
+            try:
+                saved = json.loads(state_path.read_text()) if state_path.exists() else {}
+            except (OSError, ValueError, TypeError) as exc:
+                saved = {"error": f"invalid stage checkpoint: {type(exc).__name__}: {exc}"}
+            if not isinstance(saved, dict):
+                saved = {}
             result = {"cities": saved.get("cities", {}), "usage": saved.get("usage", {}),
                       "error": "stage stopped without a completed result; saved artifacts retained",
-                      "interrupted": True}
+                      "interrupted": interrupted}
+        if not isinstance(result, dict):
+            result = {"error": "stage result must be a JSON object", "interrupted": False}
+        for field in ("cities", "usage", "failedItems"):
+            if not isinstance(result.get(field, {}), dict):
+                result[field] = {}
+                result["error"] = f"stage {field} must be a JSON object"
+        if not isinstance(result.get("validatedStages", []), list):
+            result["validatedStages"] = []
+        if result.get("adapterStageBlocked") and not isinstance(result["adapterStageBlocked"], dict):
+            result.pop("adapterStageBlocked")
+            result["error"] = "stage adapterStageBlocked must be a JSON object"
         lane = spec["lane"]
         for code in spec["cityCodes"]:
-            current = self.runner.state["cities"][code]
-            child = result.get("cities", {}).get(code, {})
-            if (result.get("error") and not result.get("interrupted")
-                    and not result.get("adapterStageBlocked")):
-                failures = current.setdefault("pipelineFailures", {})
-                failures[lane] = failures.get(lane, 0) + 1
-                if failures[lane] >= self.runner.args.max_retries:
-                    if lane == "qualification":
-                        child["qualification"] = {**child.get("qualification", {}), "status": "failed",
-                            "summary": result["error"]}
-                    else:
-                        self.runner._skip_item(f"city:{code}", current, lane, result["error"])
-                        child["status"] = current["status"]
-            if lane == "qualification":
-                for key in ("qualification", "admission"):
-                    if key in child:
-                        current[key] = child[key]
-                if current.get("qualification", {}).get("status") in {"running", "ready-isolated"} and result.get("interrupted"):
-                    current["qualification"]["status"] = "ready-isolated"
-                digest = current.get("qualification", {}).get("receiptSha256")
-                if (current.get("qualification", {}).get("status") in {"integrated", "adapter-ready"}
-                        and [code, digest] in result.get("validatedStages", [])):
-                    fingerprint = self.runner._qualification_fingerprint(self.by_code[code], current["qualification"])
-                    if fingerprint is not None:
-                        self.validated.add((code, fingerprint))
-            else:
-                current.update({k: v for k, v in child.items() if k not in
-                                {"qualification", "qualificationHistory", "admission", "wupIdentity", "pipelineFailures"}})
-                if current.get("status") == "running" or result.get("interrupted") and not child:
-                    current["status"] = "pending" if lane == "research" else "research-complete"
+            try:
+                current = self.runner.state["cities"].setdefault(code, {})
+                child = result.get("cities", {}).get(code, {})
+                if not isinstance(child, dict):
+                    child = {}
+                if (result.get("error") and not result.get("interrupted")
+                        and not result.get("adapterStageBlocked")):
+                    failures = current.setdefault("pipelineFailures", {})
+                    failures[lane] = failures.get(lane, 0) + 1
+                    if failures[lane] >= self.runner.args.max_retries:
+                        if lane == "qualification":
+                            child["qualification"] = {**child.get("qualification", {}), "status": "failed",
+                                "summary": result["error"]}
+                        else:
+                            self.runner._skip_item(f"city:{code}", current, lane, result["error"])
+                            child["status"] = current["status"]
+                if lane == "qualification":
+                    for key in ("qualification", "admission", "processingErrors", "storageError"):
+                        if key in child:
+                            current[key] = child[key]
+                    if current.get("qualification", {}).get("status") in {"running", "ready-isolated"} and result.get("interrupted"):
+                        current["qualification"]["status"] = "ready-isolated"
+                    digest = current.get("qualification", {}).get("receiptSha256")
+                    if (current.get("qualification", {}).get("status") in {"integrated", "adapter-ready"}
+                            and [code, digest] in result.get("validatedStages", [])):
+                        fingerprint = self.runner._qualification_fingerprint(self.by_code[code], current["qualification"])
+                        if fingerprint is not None:
+                            self.validated.add((code, fingerprint))
+                else:
+                    current.update({k: v for k, v in child.items() if k not in
+                                    {"qualification", "qualificationHistory", "admission", "wupIdentity", "pipelineFailures"}})
+                    if current.get("status") == "running" or result.get("interrupted") and not child:
+                        current["status"] = "pending" if lane == "research" else "research-complete"
+            except Exception as exc:
+                _city_error(self.runner, code, "result", exc)
         forget_histories(self.runner.state["cities"])
         self.runner.state.setdefault("usage", {}).update(result.get("usage", {}))
         self.runner.state.setdefault("failedItems", {}).update(result.get("failedItems", {}))
@@ -265,27 +312,55 @@ class ContinuousPipeline:
             self.runner.stop_requested = True
         if result.get("error"):
             self.runner.log("pipeline stage retained an error", taskId=task_id, lane=lane, error=result["error"])
-        self.pipeline["tasks"][task_id].update(status="interrupted" if result.get("interrupted") else "complete",
+        self.pipeline["tasks"].setdefault(task_id, {}).update(status="interrupted" if result.get("interrupted") else "complete",
                                               error=result.get("error"))
         self.completed += 1
         self.runner.log("pipeline task checkpoint", taskId=task_id, lane=lane,
                         cityCodes=spec["cityCodes"], error=bool(result.get("error")))
         self.runner.save_state()
         # Also covers recovery after a stage was killed before its finally block.
-        clear_city_downloads(self.runner.root, spec["cityCodes"])
+        for code in spec["cityCodes"]:
+            try:
+                clear_city_downloads(self.runner.root, [code])
+            except Exception as exc:
+                _city_error(self.runner, code, "scratchCleanup", exc)
         if not result.get("interrupted"):
             for code in spec["cityCodes"]:
-                finish_city(self.runner, self.by_code[code], self.cohort)
+                try:
+                    finish_city(self.runner, self.by_code[code], self.cohort)
+                except Exception as exc:
+                    _city_error(self.runner, code, "finishCity", exc)
+                    self.runner.save_state()
             if lane == "qualification":
-                clear_qualification_scratch(self.runner)
-        task_finished(self.runner, directory, task_id)
+                try:
+                    clear_qualification_scratch(self.runner)
+                except Exception as exc:
+                    self.runner.state.setdefault("processingErrors", {})[task_id] = f"scratch cleanup: {type(exc).__name__}: {exc}"
+        try:
+            task_finished(self.runner, directory, task_id)
+        except Exception as exc:
+            self.runner.state.setdefault("taskCleanupErrors", {})[task_id] = {
+                "directory": str(directory), "error": f"{type(exc).__name__}: {exc}"[:2000]}
+            self.runner.save_state()
+            self.runner.log("pipeline task cleanup retained artifacts", taskId=task_id, error=str(exc))
 
     def recover(self):
         for task_id, saved in list(self.pipeline["tasks"].items()):
             if saved.get("status") not in {"starting", "running"}:
                 continue
             directory = Path(saved["directory"])
-            spec = json.loads((directory / "input.json").read_text())
+            try:
+                spec = json.loads((directory / "input.json").read_text())
+                if (not isinstance(spec, dict) or spec.get("lane") not in {"research", "review", "qualification"}
+                        or not isinstance(spec.get("cityCodes"), list)):
+                    raise ValueError("invalid saved task input")
+            except (OSError, ValueError, TypeError):
+                saved_cities = saved.get("cities", {})
+                codes = saved.get("cityCodes", list(saved_cities))
+                spec = {"lane": saved.get("lane", "research"),
+                        "cityCodes": codes,
+                        "cities": [self.by_code[code] for code in codes if code in self.by_code],
+                        "args": {}, "state": {"cities": saved_cities}, "cohortDir": str(self.cohort)}
             pid = saved.get("pid")
             if pid and coordination.pid_start_identity(pid) == saved.get("pidStartIdentity"):
                 raise RuntimeError("previous pipeline stage is still alive; refusing duplicate execution")
@@ -320,7 +395,8 @@ class ContinuousPipeline:
                             started = True
                 if not self.active and not started:
                     if self.waiting_for_claim or any(self.runner._city_entry(city).get("status") ==
-                                                     "research-complete" for city in self.cities):
+                                                     "research-complete" and not self.runner._city_entry(city).get("storageError")
+                                                     for city in self.cities):
                         self.runner.save_state()
                         time.sleep(min(1.0, self.runner.args.poll_seconds))
                         continue
