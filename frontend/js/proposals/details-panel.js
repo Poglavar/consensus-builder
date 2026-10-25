@@ -341,18 +341,12 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         proposalPanelTitle.textContent = headerTitle;
         proposalPanelTitle.title = headerTitle; // tooltip while paused or when the marquee is off
     }
-    const proposalDisplayTypeRaw = getProposalDisplayTypeLabel(fullProposal, proposal);
-    const proposalDisplayType = proposalDisplayTypeRaw
-        && proposalDisplayTypeRaw.trim().toLowerCase() !== proposalDisplayTitle.trim().toLowerCase()
-        ? proposalDisplayTypeRaw
-        : '';
+    const proposalType = window.ClickStackRelations.designType({ proposal: fullProposal || proposal }, window);
+    const proposalTypePill = proposalType ? `<span class="cb-badge cb-badge--${proposalType.tone} proposal-type-badge" data-design-goal="${proposalType.goal}"><span aria-hidden="true">${safeAgentText(proposalType.icon)}</span><span>${safeAgentText(proposalType.label)}</span></span>` : '';
     const proposalDisplayDescription = displayText(getProposalDisplayDescription(fullProposal, proposal, proposalDisplayTitle));
     const escapedProposalDisplayTitle = typeof escapeHtml === 'function'
         ? escapeHtml(proposalDisplayTitle)
         : proposalDisplayTitle;
-    const escapedProposalDisplayType = proposalDisplayType && typeof escapeHtml === 'function'
-        ? escapeHtml(proposalDisplayType)
-        : proposalDisplayType;
 
     const formatAuthorForDisplay = (authorRaw) => {
         const author = authorRaw || '';
@@ -773,7 +767,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 ${agentBadgeHtml}
             </div>
             <div class="proposal-heading-row">
-                ${escapedProposalDisplayType ? `<div class="proposal-display-type">${escapedProposalDisplayType}</div>` : ''}
+                ${proposalTypePill}
             </div>
             <div class="proposal-description-row">
                 ${escapedProposalDescription ? `<p class="proposal-description-text">${escapedProposalDescription}</p>` : ''}

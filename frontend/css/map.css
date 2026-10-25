@@ -1063,6 +1063,36 @@ body.three-mode-active #agent-bubbles-container {
     color: var(--cb-text-muted);
 }
 
+/* The authored design type stays visible even when its details section is collapsed. */
+.proposal-type-badge {
+    height: auto;
+    min-height: var(--cb-space-6);
+    padding-block: var(--cb-space-1);
+    font-size: var(--cb-text-md);
+    font-weight: var(--cb-weight-bold);
+    line-height: var(--cb-leading);
+    white-space: normal;
+}
+
+.click-stack__section[data-kind="designs"] .click-stack__row {
+    flex-wrap: wrap;
+}
+
+.click-stack__section[data-kind="designs"] .click-stack__row-detail {
+    order: 1;
+    flex-basis: 100%;
+}
+
+.click-stack__section[data-kind="designs"] .click-stack__chevron {
+    margin-inline-start: auto;
+}
+
+.click-stack__selector-hint {
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+    line-height: var(--cb-leading);
+}
+
 .click-stack__chevron {
     flex: 0 0 auto;
     color: var(--cb-text-muted);

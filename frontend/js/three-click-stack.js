@@ -183,7 +183,12 @@
             const chevron = doc.createElement('i');
             chevron.className = 'click-stack__chevron fas fa-chevron-down';
             chevron.setAttribute('aria-hidden', 'true');
-            row.append(icon, name, detail, chevron);
+            row.append(icon, name);
+            if (section.kind === 'designs') {
+                const pill = global.ClickStackRelations?.renderDesignType(instance, doc, global);
+                if (pill) row.appendChild(pill);
+            }
+            row.append(detail, chevron);
             const heading = doc.createElement('div');
             heading.className = 'click-stack__heading';
             heading.appendChild(row);

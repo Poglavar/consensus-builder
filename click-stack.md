@@ -38,10 +38,13 @@ right-side panels that clicks used to open one at a time.
 
 ## Rows, relationships and expansion
 
-- Every section has a **one-line header row** that stays visible and clickable. Expanding a
+- Every section has a **header row** that stays visible and clickable. Expanding a
   section collapses all the others; at most one is expanded.
 - Collapsed headers are one row: the object kind followed by its selected name or parcel ID,
   truncated with an ellipsis. The cadastral header has no copy button.
+- Design headers also show the selected design's authored type as a prominent colored icon
+  pill, retained when collapsed and repeated in its details. A design name may wrap below the
+  type row. Color supplements the type text and icon; it does not indicate publication or approval.
 - Relationship groups are small, explicitly labelled link groups **inside the expanded card body**.
   Their links wrap to fit the card; they do not create horizontal scrolling. A group navigates
   related objects, never siblings of the object already selected:
@@ -60,6 +63,9 @@ right-side panels that clicks used to open one at a time.
   or agreement details; the link retains the configured `backend` override.
 - When a section has multiple instances, its expanded card contains a compact native selector for
   switching among those peers. A singleton has no selector.
+- The Design selector is labelled **Design to inspect** and names each option by type and title.
+  Its count is the number of separate designs overlapping the location or using its parcel;
+  selecting one changes the inspected design. The helper text explains this relationship.
 - The expanded section is the **action view**:
   - Plan or agreement: meaning, name, included designs and their combined map highlight. "Open
     plan" loads the saved composition; "Agreement details" opens the agreement record.

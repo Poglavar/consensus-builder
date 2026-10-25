@@ -238,7 +238,12 @@
             const detail = doc.createElement('span');
             detail.className = 'click-stack__row-detail';
             detail.textContent = rowDetail(section);
-            row.append(icon, name, detail);
+            row.append(icon, name);
+            if (section.kind === 'designs') {
+                const pill = global.ClickStackRelations?.renderDesignType(instance, doc, global);
+                if (pill) row.appendChild(pill);
+            }
+            row.appendChild(detail);
             if (section.expandable) {
                 const chevron = doc.createElement('i');
                 chevron.className = 'click-stack__chevron fas fa-chevron-down';

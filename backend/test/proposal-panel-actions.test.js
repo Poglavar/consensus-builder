@@ -57,6 +57,7 @@ function render(proposal, { applied = false, road = false, lifecycle = 'Active',
         createElement: () => ({ ...htmlContainer(), get childNodes() { return [{ innerHTML: this.innerHTML }]; }, get firstChild() { return null; } })
     };
     const window = {
+        ClickStackRelations: require('../../frontend/js/click-stack/click-stack-relations.js'),
         ClickStack: { showDesign: vi.fn() },
         CityMoney: require('../../frontend/js/city-money.js'),
         ProposalDesignGoals: require('../../frontend/js/proposals/design-goals.js'),
@@ -325,6 +326,15 @@ describe('proposal details action footer', () => {
         for (const proposal of [layout, park]) {
             expect(parse(render(proposal).footer.innerHTML)('.btn-create-agreement').length).toBe(0);
         }
+    });
+
+    it('keeps a prominent type pill even when the design title is the same as its type', () => {
+        const content = parse(render({ proposalId: 'named-park', goal: 'park', title: 'Park', cadastreParcelIds: [] }).content.innerHTML);
+        const pill = content('.proposal-heading-row .proposal-type-badge');
+        expect(pill.attr('data-design-goal')).toBe('park');
+        expect(pill.hasClass('cb-badge--success')).toBe(true);
+        expect(pill.text()).toContain('Park');
+        expect(pill.find('[aria-hidden="true"]')).toHaveLength(1);
     });
 
     it('renders the primary and contextual actions once, Duplicate named for the design', () => {

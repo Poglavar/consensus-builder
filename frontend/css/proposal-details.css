@@ -72,14 +72,6 @@
     margin: 0 0 6px;
 }
 
-#proposal-details-panel .proposal-display-type {
-    color: var(--cb-text-muted);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-}
-
 #proposal-details-panel .proposal-description-row {
     margin: 0;
     padding: 0;

@@ -19,8 +19,8 @@ const SPOT_B = { lat: 45.82, lng: 15.98 };
 const SPOT_EMPTY = { lat: 45.83, lng: 15.99 };
 const parcelFeature = { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [] } };
 const HITS_A = {
-    designs: [{ id: 'd1', label: 'Park', createdAt: '2026-10-01', proposal: { proposalId: 'd1' } },
-        { id: 'd2', label: 'School', createdAt: '2026-09-01', proposal: { proposalId: 'd2' } }],
+    designs: [{ id: 'd1', label: 'Park', createdAt: '2026-10-01', proposal: { proposalId: 'd1', goal: 'park' } },
+        { id: 'd2', label: 'School', createdAt: '2026-09-01', proposal: { proposalId: 'd2', goal: 'single' } }],
     parcels: [{ id: 'p1', label: '12', feature: parcelFeature, live: true }]
 };
 const HITS_B = { parcels: [{ id: 'p2', label: '13', feature: parcelFeature, live: true }] };
@@ -72,6 +72,7 @@ function loadPanel({ memory = null, withEditLock = false } = {}) {
         navigator: {},
         __clickStackModel: model,
         ClickStackRelations: relations,
+        ProposalDesignGoals: require('../../frontend/js/proposals/design-goals.js'),
         DesignSync: { publishedCid: proposal => proposal?.cid || null },
         DesignMemberships: { mountSection: (body, kind, instance, _session, win, options) => {
             for (const group of model.visibleContextFor(kind, instance, options?.hits || {})) {
@@ -115,6 +116,15 @@ function loadPanel({ memory = null, withEditLock = false } = {}) {
 }
 
 describe('click stack selected objects and contextual navigation', () => {
+    it('names the selected design type prominently in the header, including while collapsed', () => {
+        const h = loadPanel(); h.click(SPOT_A);
+        const pill = () => h.section('designs').querySelector('.click-stack__row .proposal-type-badge');
+        expect(pill().dataset.designGoal).toBe('park');
+        expect(pill().classList.contains('cb-badge--success')).toBe(true);
+        expect(pill().textContent).toContain('Park');
+        h.api.collapse();
+        expect(pill().dataset.designGoal).toBe('park');
+    });
     it('opens a replaced cadastral source on Info rather than its unavailable design palette', () => {
         const h = loadPanel();
         h.context.ClickStackHits.hitsAt.mockReturnValue({ parcels: [{ id: 'source', feature: parcelFeature, live: false }] });

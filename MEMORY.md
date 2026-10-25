@@ -936,3 +936,5 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-25 (SUPERSEDED): Each map tab owns an independent durable workspace; reload restores it, while new or duplicated tabs fork saved work, preventing cross-tab overwrites and replacing secondary-tab recovery mode.
 
 - 2026-10-25: Keep one saved map workspace per browser profile with one editable tab; extra tabs wait, closing preserves the workspace, and automatic or optional independent copies are disabled.
+
+- 2026-10-26: Design sections prominently identify authored type with a colored icon pill; peer selectors name the object being inspected and explain why several designs appear together.

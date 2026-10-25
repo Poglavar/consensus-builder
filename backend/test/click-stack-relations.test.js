@@ -5,6 +5,7 @@ import { makeDocument } from './helpers/fake-dom.js';
 
 const require = createRequire(import.meta.url);
 const relations = require('../../frontend/js/click-stack/click-stack-relations.js');
+const goals = require('../../frontend/js/proposals/design-goals.js');
 
 describe('click stack relationship rendering', () => {
     it('renders translated relation labels and safe related buttons with their routing data', () => {
@@ -35,20 +36,56 @@ describe('click stack relationship rendering', () => {
 
     it('renders a labelled selector for all instances, selects the current id, and omits it for single items', () => {
         const doc = makeDocument();
-        const win = { i18n: { registerTranslations: vi.fn(), t: key => key === 'clickStackRelations.chooseInstance' ? 'Choose item' : key } };
+        const win = { ProposalDesignGoals: goals };
         const wrapper = relations.renderSelector({
             kind: 'designs', multi: true, selectedIndex: 1,
-            instances: [{ id: 'd-1', label: 'First' }, { id: 'd-2', label: 'Second' }]
+            instances: [{ id: 'd-1', label: 'First', goal: 'park' }, { id: 'd-2', label: 'Second', goal: 'urban-rule' }]
         }, doc, win);
 
         const select = wrapper.querySelector('select.click-stack__selector');
         expect(wrapper.tagName).toBe('LABEL');
-        expect(wrapper.textContent).toContain('Choose item');
+        expect(wrapper.textContent).toContain('Design to inspect');
+        expect(wrapper.textContent).toContain('overlap here or use this parcel');
+        expect(select.getAttribute('aria-describedby')).toBe(wrapper.querySelector('small').id);
         expect(select.getAttribute('data-action')).toBe('instance');
         expect(select.getAttribute('data-kind')).toBe('designs');
         expect(select.children.map(option => option.value)).toEqual(['d-1', 'd-2']);
-        expect(select.children.map(option => option.textContent)).toEqual(['First', 'Second']);
+        expect(select.children.map(option => option.textContent)).toEqual(['Park · First', 'Urban rule · Second']);
         expect(select.selectedIndex).toBe(1);
         expect(relations.renderSelector({ multi: false, instances: [{ id: 'one' }] }, doc, win)).toBeNull();
+    });
+
+    it.each(goals.keys)('keeps the authored %s type independent of a misleading design title', goal => {
+        const type = relations.designType({ proposal: { goal, title: 'Park' } }, { ProposalDesignGoals: goals });
+        expect(type).toMatchObject({ goal, label: goals.get(goal).label });
+        expect(type.icon).toBeTruthy();
+        expect(['neutral', 'success', 'warning', 'info', 'primary']).toContain(type.tone);
+        expect(relations.designType({ title: 'Park', type: 'park' }, { ProposalDesignGoals: goals })).toBeNull();
+    });
+
+    it('uses the localized type and existing goal icon safely, including when the title is identical', () => {
+        const doc = makeDocument();
+        const win = { getProposalDisplayTypeLabel: () => '<Park>', getProposalGoalBadge: () => ({ text: '🌳' }) };
+        const pill = relations.renderDesignType({ goal: 'park', title: '<Park>' }, doc, win);
+        expect(pill.classList.contains('cb-badge--success')).toBe(true);
+        expect(pill.dataset.designGoal).toBe('park');
+        expect(pill.children[0].textContent).toBe('🌳');
+        expect(pill.children[0].getAttribute('aria-hidden')).toBe('true');
+        expect(pill.children[1].textContent).toBe('<Park>');
+        expect(pill.querySelector('park')).toBeNull();
+        const road = { goal: 'road-track' };
+        expect(relations.designType(road, { ...win, isTrackProposal: () => true }).icon).toBe('🛤️');
+        expect(relations.designType(road, { ...win, isTrackProposal: () => false }).icon).toBe('🛣️');
+    });
+
+    it.each(['en', 'hr', 'sr', 'es'])('names and explains the design selector in %s', language => {
+        const entries = new Map();
+        const win = { i18n: { registerTranslations(locale, strings) {
+            if (locale === language) Object.entries(strings).forEach(([key, value]) => entries.set(key, value));
+        }, t: key => entries.get(key) || key } };
+        const selector = relations.renderSelector({ kind: 'designs', multi: true, instances: [] }, makeDocument(), win);
+        expect(selector.querySelector('.click-stack__selector-label').textContent).toBe(entries.get('clickStackRelations.chooseDesign'));
+        expect(selector.querySelector('small').textContent).toBe(entries.get('clickStackRelations.designChoicesHint'));
+        expect(selector.querySelector('small').textContent.length).toBeGreaterThan(40);
     });
 });
