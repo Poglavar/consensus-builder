@@ -127,6 +127,15 @@ Every non-map page carries the same header: logo, "Back to the map", language. N
   contests by money, and filters All · Open · Settled · Mine. On desktop it is wider than the
   control sheets and centred on its dock button.
 
+## Map highlights
+
+Map-object selection and hover use the model view's yellow (`#ffdd00`) in 2D, model and aerial
+views, in both themes. `MapHighlight` in `shared-utils.js` supplies Leaflet and Three.js colours;
+`--cb-map-highlight` and its halo tokens supply CSS. A dark halo keeps outlines visible over light
+surfaces. Solid versus dashed boundaries and filled versus hollow shapes distinguish the selected
+design from its source parcels. Ownership, planning roles and invalid geometry retain their own
+meaningful colours when they are not selected.
+
 ## Messages
 
 - Three families, one typography (`ephemerals.md`; `.cb-toast` in css/primitives.css): a

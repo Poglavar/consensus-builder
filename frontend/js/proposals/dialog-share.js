@@ -487,10 +487,10 @@ const SHARE_PLAN_COLORS = [
 
 // Hovering a row answers two questions, and they have two different answers: WHERE the proposal
 // stands (the parcels it occupies) and WHAT it is (its own body — the building footprint, the
-// corridor surface, the park). One colour for both made a hovered building indistinguishable from
-// its neighbours' boundaries, so the body gets its own colour and is drawn last, filled, on top.
-const SHARE_PLAN_HOVER_PARCEL_COLOR = '#FFEB3B'; // parcels involved — dashed, hollow
-const SHARE_PLAN_HOVER_BODY_COLOR = '#00E5FF';   // the proposal itself — solid, lightly filled
+// corridor surface, the park). Both use the shared selection yellow; dashed hollow parcels and
+// a solid, lightly filled body retain the distinction. The body is drawn last, on top.
+const SHARE_PLAN_HOVER_PARCEL_COLOR = window.MapHighlight.color;
+const SHARE_PLAN_HOVER_BODY_COLOR = window.MapHighlight.color;
 
 let _sharePlanPanelState = null; // { root, token }
 const _sharePlanExcludedKeys = new Set(); // explicit exclusions for this Designs panel session

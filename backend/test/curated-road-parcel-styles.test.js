@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
+import { createRequire } from 'node:module';
+const { MapHighlight } = createRequire(import.meta.url)('../../frontend/js/shared-utils.js');
 
 function environment() {
     const features = new Map([
@@ -18,6 +20,7 @@ function environment() {
     const events = [];
     const writes = [];
     const context = {
+        MapHighlight,
         console: { log() {} },
         addEventListener() {},
         CustomEvent,

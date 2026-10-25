@@ -137,13 +137,7 @@
         if (!isRoad && feature.properties.geometries) {
             const splitFeatures = feature.properties.geometries;
             if (splitFeatures && splitFeatures.length > 0) {
-                const style = {
-                    color: '#ff0000',
-                    weight: 3,
-                    opacity: 0.8,
-                    fillColor: '#ff0000',
-                    fillOpacity: 0.3
-                };
+                const style = global.MapHighlight.style({ fillOpacity: 0.3 });
                 global.splitLayer = L.layerGroup().addTo(global.map);
                 splitFeatures.forEach(geom => {
                     const layer = L.geoJSON(geom, { style });

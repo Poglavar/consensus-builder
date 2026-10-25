@@ -156,8 +156,7 @@ describe('share plan panel contract', () => {
     });
 
     it('hovering a row tells the design apart from the ground it stands on, in the shapes the highlight draws', () => {
-        // One colour for both made a hovered building unreadable among its neighbours' boundaries:
-        // the body (footprint/corridor/park) and the parcels are painted as two groups.
+        // Shared yellow uses different geometry styles: the body and parcels remain two groups.
         const hoverFn = sourceSection(panelFn, 'const highlightRowProposal = (key)', 'const frameRowProposal');
         expect(hoverFn).toContain('const bodyFeatures = window.MapPick.bodyOf(proposal);');
         expect(hoverFn).toContain('const parcelFeatures = window.MapPick.groundOf(window.MapPick.parcelsOf(proposal), bodyFeatures);');
@@ -166,11 +165,12 @@ describe('share plan panel contract', () => {
         expect(hoverFn.indexOf('features: parcelFeatures')).toBeLessThan(hoverFn.indexOf('features: bodyFeatures'));
 
         const colorOf = (name) => {
-            const match = dialogShare.match(new RegExp(`const ${name} = '([^']+)'`));
+            const match = dialogShare.match(new RegExp(`const ${name} = ([^;]+);`));
             expect(match, `missing colour constant: ${name}`).toBeTruthy();
             return match[1];
         };
-        expect(colorOf('SHARE_PLAN_HOVER_PARCEL_COLOR')).not.toBe(colorOf('SHARE_PLAN_HOVER_BODY_COLOR'));
+        expect(colorOf('SHARE_PLAN_HOVER_PARCEL_COLOR')).toBe('window.MapHighlight.color');
+        expect(colorOf('SHARE_PLAN_HOVER_BODY_COLOR')).toBe('window.MapHighlight.color');
         expect(hoverFn).toContain('SHARE_PLAN_HOVER_PARCEL_COLOR');
         expect(hoverFn).toContain('SHARE_PLAN_HOVER_BODY_COLOR');
         // The body comes from the design's OWN geometry (MapPick.bodyOf), never from the parcels under it.

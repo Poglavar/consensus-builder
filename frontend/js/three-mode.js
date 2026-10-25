@@ -1364,18 +1364,22 @@
     // boundary, even when both objects have exactly the same geometry. Gaps remain transparent.
     function addStackGroundHatching(group, features) {
         const material = new THREE.ShaderMaterial({
-            uniforms: { pixelRatio: { value: renderer.getPixelRatio() } },
+            uniforms: { pixelRatio: { value: renderer.getPixelRatio() },
+                selectionColor: { value: new THREE.Vector3(...window.MapHighlight.rgb()) },
+                selectionHalo: { value: new THREE.Vector3(...window.MapHighlight.rgb(window.MapHighlight.halo)) } },
             vertexShader: `void main() {
                 gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
             }`,
             fragmentShader: `uniform float pixelRatio;
+                uniform vec3 selectionColor;
+                uniform vec3 selectionHalo;
                 void main() {
                     float phase = mod((gl_FragCoord.x + gl_FragCoord.y) / pixelRatio, 12.0);
                     float distanceToStripe = min(phase, 12.0 - phase);
                     float halo = 1.0 - smoothstep(1.6, 2.4, distanceToStripe);
                     if (halo < 0.01) discard;
                     float stripe = 1.0 - smoothstep(0.6, 1.2, distanceToStripe);
-                    gl_FragColor = vec4(mix(vec3(0.16, 0.125, 0.0), vec3(1.0, 0.867, 0.0), stripe), halo * 0.7);
+                    gl_FragColor = vec4(mix(selectionHalo, selectionColor, stripe), halo * 0.7);
                 }`,
             transparent: true, depthTest: false, depthWrite: false,
             side: THREE.DoubleSide, toneMapped: false
@@ -1423,7 +1427,7 @@
         stackFocusGroup.userData = { kind, id: instance.id, representation };
         // Screen-space widths work on phones and at any zoom, unlike WebGL linewidth on
         // LineBasicMaterial. The dark halo keeps yellow legible over bright roofs and paving.
-        for (const [stroke, color, linewidth] of [['halo', 0x292000, 7], ['yellow', 0xffdd00, 4]]) {
+        for (const [stroke, color, linewidth] of [['halo', window.MapHighlight.haloHex, 7], ['yellow', window.MapHighlight.colorHex, 4]]) {
             const geometry = new THREE.LineSegmentsGeometry();
             geometry.setPositions(segments);
             const material = new THREE.LineMaterial({ color, linewidth, transparent: true,

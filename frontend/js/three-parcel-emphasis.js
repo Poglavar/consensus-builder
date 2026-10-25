@@ -1,10 +1,11 @@
 // Per-object parcel selection styling for the 3D city. Materials are often shared between
 // thousands of meshes, so every changed object receives its own clone and can be restored safely.
 (function (root, factory) {
-    const api = factory();
+    const api = factory(typeof module !== 'undefined' && module.exports
+        ? require('./shared-utils.js').MapHighlight : root.MapHighlight);
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
     if (root) root.ThreeParcelEmphasis = api;
-})(typeof window !== 'undefined' ? window : globalThis, function () {
+})(typeof window !== 'undefined' ? window : globalThis, function (highlight) {
     'use strict';
 
     // `dimOthers` is the isolation look (everything else dimmed); off, only the selected parcel
@@ -24,8 +25,8 @@
         copy.onBeforeCompile = material.onBeforeCompile;
         copy.customProgramCacheKey = material.customProgramCacheKey;
         if (style === 'selected') {
-            if (copy.color && typeof copy.color.set === 'function') copy.color.set(0xffdd00);
-            if (copy.emissive && typeof copy.emissive.set === 'function') copy.emissive.set(0x3d3000);
+            if (copy.color && typeof copy.color.set === 'function') copy.color.set(highlight.colorHex);
+            if (copy.emissive && typeof copy.emissive.set === 'function') copy.emissive.set(highlight.emissiveHex);
             if ('needsUpdate' in copy) copy.needsUpdate = true;
         } else if (style === 'dimmed') {
             if (copy.color && typeof copy.color.multiplyScalar === 'function') copy.color.multiplyScalar(0.24);

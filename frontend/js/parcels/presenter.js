@@ -348,8 +348,8 @@
             if (!layer || typeof layer.setStyle !== 'function') return;
             const isMulti = global.multiParcelSelection?.selectedParcels?.has?.(id);
             const style = isMulti
-                ? { fillColor: '#ff9800', fillOpacity: 0.6, color: '#f57c00', weight: 3 }
-                : (layer._trackStyle ? { ...layer._trackStyle, weight: 4 } : global.selectedParcelStyle);
+                ? { fillColor: global.MapHighlight.color, fillOpacity: 0.6, color: global.MapHighlight.color, weight: 3 }
+                : (layer._trackStyle ? { ...layer._trackStyle, color: global.MapHighlight.color, opacity: 1, weight: 4 } : global.selectedParcelStyle);
             if (style) layer.setStyle(style);
             if (typeof layer.bringToFront === 'function') layer.bringToFront();
         });

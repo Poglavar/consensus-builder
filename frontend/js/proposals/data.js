@@ -1265,9 +1265,9 @@ const multiParcelSelection = {
     addParcelHighlight(parcel) {
         // Apply multi-selection style (matches .parcel-layer.multi-selected CSS)
         parcel.setStyle({
-            fillColor: '#ff9800',
+            fillColor: window.MapHighlight.color,
             fillOpacity: 0.6,
-            color: '#f57c00',
+            color: window.MapHighlight.color,
             weight: 3
         });
         parcel.bringToFront();

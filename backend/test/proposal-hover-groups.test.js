@@ -13,6 +13,8 @@ import { describe, it, expect, beforeAll, beforeEach, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { createRequire } from 'node:module';
+const { MapHighlight } = createRequire(import.meta.url)('../../frontend/js/shared-utils.js');
 
 const featureAt = (lng, lat, id) => ({
     type: 'Feature',
@@ -57,7 +59,7 @@ beforeAll(() => {
     // No panes: getPane/createPane are absent, so ensureProposalHighlightPanes bails and the
     // painter falls back to the default pane. That path must still draw.
     global.map = { addLayer: noop, removeLayer: noop, on: noop };
-    global.window = {};
+    global.window = { MapHighlight };
     global.getParcelDisplayNumberFromFeature = feature => feature?.properties?.id || null;
     global.getFeatureCentroid = () => ({ lat: 45.787, lng: 16.015 });
     global.resolveProposalGoalKey = () => 'park';
@@ -79,7 +81,7 @@ beforeAll(() => {
 
 beforeEach(() => {
     // Fresh overlay groups per test, so clear counts start at zero.
-    global.window = {};
+    global.window = { MapHighlight };
 });
 
 describe('highlightFeatureGroupsForHover', () => {
@@ -149,6 +151,10 @@ describe('highlightFeatureGroupsForHover', () => {
 });
 
 describe('highlightFeaturesForHover', () => {
+    it('uses the same yellow as model selection by default, without tinting the object fill', () => {
+        cap.highlightFeaturesForHover([bodyFeature]);
+        expect(drawn()).toEqual([expect.objectContaining({ color: '#ffdd00', fillColor: '#ffdd00', fillOpacity: 0 })]);
+    });
     it('still paints a single set of features in one style', () => {
         cap.highlightFeaturesForHover([parcelFeature], { color: '#FFEB3B', weight: 6, dashArray: '10 8' });
 

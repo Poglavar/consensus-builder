@@ -669,8 +669,8 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 }
 
 .parcel-layer.multi-selected {
-    fill: color-mix(in srgb, var(--cb-warning) 60%, transparent);
-    stroke: var(--cb-warning);
+    fill: color-mix(in srgb, var(--cb-map-highlight) 60%, transparent);
+    stroke: var(--cb-map-highlight);
     stroke-width: 3;
 }
 

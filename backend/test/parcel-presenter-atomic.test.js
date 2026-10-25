@@ -52,6 +52,7 @@ function environment(options = {}) {
         getLayers: () => Array.from(members)
     };
     const context = {
+        MapHighlight: require('../../frontend/js/shared-utils.js').MapHighlight,
         console,
         Map,
         Set,

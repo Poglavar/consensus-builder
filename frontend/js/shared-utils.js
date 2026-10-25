@@ -12,6 +12,25 @@ const HTML_ESCAPE_CHARS = {
     "'": '&#39;'
 };
 
+// One map-interaction palette for Leaflet and Three.js; CSS token parity is tested.
+const MapHighlight = Object.freeze({
+    color: '#ffdd00',
+    halo: '#292000',
+    emissive: '#3d3000',
+    get colorHex() { return parseInt(this.color.slice(1), 16); },
+    get haloHex() { return parseInt(this.halo.slice(1), 16); },
+    get emissiveHex() { return parseInt(this.emissive.slice(1), 16); },
+    rgb(color = this.color) {
+        const hex = parseInt(color.slice(1), 16);
+        return [(hex >> 16 & 255) / 255, (hex >> 8 & 255) / 255, (hex & 255) / 255];
+    },
+    style(overrides = {}) {
+        return { color: this.color, fillColor: this.color, weight: 4, opacity: 1,
+            fillOpacity: 0, dashArray: null, ...overrides };
+    }
+});
+if (typeof window !== 'undefined') window.MapHighlight = MapHighlight;
+
 // Escapes text for interpolation into HTML. Quotes are escaped too, so the result is also safe
 // inside a quoted attribute value. null/undefined yield '' (not the strings "null"/"undefined").
 function escapeHtml(value) {
@@ -81,6 +100,7 @@ function stableStringify(value) {
 // The browser is unaffected by this block (`module` is undefined there).
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
+        MapHighlight,
         escapeHtml,
         inlineJsArg,
         deepClone,

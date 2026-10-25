@@ -1459,7 +1459,7 @@ async function renderBlockInfoStats(blockName) {
                         ? selectedBlockName
                         : (typeof window !== 'undefined' ? window.selectedBlockName : null);
                     if (currentSelectedBlockName && layerBlockName && currentSelectedBlockName === layerBlockName) {
-                        const parcelHighlightStyle = { fillColor: '#3388ff', fillOpacity: 0.4, color: '#3388ff', weight: 2 };
+                        const parcelHighlightStyle = { fillColor: window.MapHighlight.color, fillOpacity: 0.4, color: window.MapHighlight.color, weight: 2 };
                         layer.setStyle(parcelHighlightStyle);
                     } else {
                         const styleFn = typeof window.getParcelBaseStyle === 'function' ? window.getParcelBaseStyle : null;
@@ -2271,7 +2271,7 @@ function animateFloodfillFromSelected(options = {}) {
             const queue = [startParcel];
             let blockInvalid = false;
             const acceptedStyle = {
-                fillColor: '#3388ff', fillOpacity: 0.4, color: '#3388ff', weight: 2
+                fillColor: window.MapHighlight.color, fillOpacity: 0.4, color: window.MapHighlight.color, weight: 2
             };
             const rejectedStyle = {
                 fillColor: '#fff3f3', fillOpacity: 0.7, color: '#c00', weight: 2
@@ -2762,7 +2762,7 @@ function rehighlightSelectedBlockParcels() {
 
         const block = blockStorage.blocks.get(currentSelected);
         if (!block || !Array.isArray(block.parcels) || block.parcels.length === 0) return;
-        const parcelHighlightStyle = { fillColor: '#3388ff', fillOpacity: 0.4, color: '#3388ff', weight: 2 };
+        const parcelHighlightStyle = { fillColor: window.MapHighlight.color, fillOpacity: 0.4, color: window.MapHighlight.color, weight: 2 };
         block.parcels.forEach(layer => {
             try {
                 if (layer && typeof layer.setStyle === 'function') {

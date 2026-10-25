@@ -152,7 +152,7 @@
         const selection = selected();
         if (selection?.site && (selection.role !== 'permitted' || !selection.volumes.length)) {
             root.L.geoJSON(selection.site, { pane: 'planningSources', interactive: false,
-                style: { color: color(selection.role), weight: 3, fill: false, opacity: 1 } }).addTo(selectionLayer);
+                style: root.MapHighlight.style({ fill: false }) }).addTo(selectionLayer);
         }
         layer.clearLayers();
         hitShapes = [];
@@ -169,7 +169,7 @@
                 const hull = feature.properties.geometryRole === 'bound' && hasBody;
                 // The hull is not a second click target: the configuration inside carries the interaction.
                 const shape = root.L.geoJSON(feature, { pane: 'planningSources', className: hull ? 'planning-bound-outline' : undefined, interactive: !hull,
-                    style: { color: color(item.role), weight: hull ? 1 : active ? 3 : 1.5, dashArray: hull ? '4 4' : null,
+                    style: { color: active ? root.MapHighlight.color : color(item.role), weight: active ? 4 : hull ? 1 : 1.5, dashArray: hull ? '4 4' : null,
                         fillColor: color(item.role), fillOpacity: hull ? 0.06 : display === 'solid' ? 1 : 0.18,
                         opacity: hull ? 0.8 : 1 } });
                 const height = feature.properties.topM;

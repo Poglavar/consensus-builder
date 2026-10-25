@@ -1546,7 +1546,7 @@ function showProposalInfoHoverOverlay(parcelId) {
             return;
         }
         highlightParcelHover(parcelId, {
-            color: '#FFEB3B',
+            color: window.MapHighlight.color,
             weight: 6,
             dashArray: '10 8',
             // No number label on plain MAP hover: it only appeared over proposal-owned parcels,

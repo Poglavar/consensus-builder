@@ -54,8 +54,13 @@
     --cb-parcel-preview-boundary: #7c8aa5;
     --cb-photo-parcel-boundary: #fff3a6;
     --cb-photo-parcel-halo: #282418;
-    --cb-photo-parcel-selected: #48e4f1;
-    --cb-map-pick-highlight: #00e5ff; /* a design picked on the map (js/map-pick.js): the agreement editor's designs */
+    /* Map-object interaction keeps the model view's yellow in both themes and renderers. */
+    --cb-map-highlight: #ffdd00;
+    --cb-map-highlight-halo: #292000;
+    --cb-map-highlight-soft: #fff8cc;
+    --cb-map-highlight-ink: #292000;
+    --cb-photo-parcel-selected: var(--cb-map-highlight);
+    --cb-map-pick-highlight: var(--cb-map-highlight);
 
     --cb-warning: #b45309;
     --cb-warning-soft: #fffbeb;
