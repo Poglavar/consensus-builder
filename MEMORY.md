@@ -940,3 +940,5 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-26: Design sections prominently identify authored type with a colored icon pill; peer selectors name the object being inspected and explain why several designs appear together.
 
 - 2026-10-26: Public vocabulary is Plans, Designs and Agreements. Each Agreement references one immutable Plan revision; Plans own design membership, can have multiple Agreements or none, and bets remain on eligible Agreements. Agreement links belong inside Plan click-stack sections and open separate dialogs.
+
+- 2026-10-26: Model and Google 3D share selection and inspection behaviour; retire the separate photo cadastral picker while retaining boundary drawing as an independent layer.

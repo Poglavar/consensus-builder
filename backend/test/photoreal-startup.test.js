@@ -25,6 +25,16 @@ function findFunction(node, name) {
     return null;
 }
 
+it('does not raycast retained Google tiles after their active scene has been released', () => {
+    const source = readFileSync(new URL('../../frontend/js/photoreal-mode.js', import.meta.url), 'utf8');
+    const declaration = findFunction(parse(source, { sourceType: 'script' }), 'pickPhotoSurface');
+    for (const active of [false, true]) {
+        const context = vm.createContext({ active, internals: null, tiles: {}, grounded: true });
+        const pick = vm.runInContext(`(${source.slice(declaration.start, declaration.end)})`, context);
+        expect(pick({ clientX: 0, clientY: 0 })).toBeNull();
+    }
+});
+
 function bootstrapFixture({ hits = true, absoluteHeight = 120 } = {}) {
     const scene = { parent: null, updateMatrixWorld: vi.fn() };
     const seatNode = { position: { z: 0 } };

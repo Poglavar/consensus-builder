@@ -2066,7 +2066,7 @@
     };
 
     function pickPhotoSurface(event) {
-        if (!tiles || !grounded) return null;
+        if (!active || !internals || !tiles || !grounded) return null;
         const rect = internals.renderer.domElement.getBoundingClientRect();
         const ray = new window.THREE.Raycaster();
         ray.setFromCamera(new window.THREE.Vector2(
@@ -2074,7 +2074,7 @@
             -(event.clientY - rect.top) / rect.height * 2 + 1), internals.camera);
         internals.scene.updateMatrixWorld(true);
         const hit = ray.intersectObject(tiles.group, true).find(hit => googleSourceHitVisibility(hit) === true);
-        return hit?.point || null;
+        return hit ? { point: hit.point, distance: hit.distance } : null;
     }
 
     // -- tile material patch (onBeforeCompile; all patched shaders share corridorUniforms) --
@@ -2445,7 +2445,7 @@
             if (meshSeamCapsActive() && !window.__photorealSeam) throw new Error('photoreal-seam helper missing');
             mercatorK = frame.mercatorScaleFactor(anchor.lat);
             parcelOverlay = window.__photorealParcels.create({ root: window, internals: internals,
-                pickSurface: pickPhotoSurface, uniforms: parcelUniforms });
+                uniforms: parcelUniforms });
 
             // URL-driven entry (frameProposal): hide the abstract 3D behind a loading cover until
             // the composed scene is ready. Skip it when reusing an already-seated session (instant).
@@ -2718,6 +2718,14 @@
         isActive: function () { return active; },
         isLoading: function () { return loading; },
         getViewer: function () { return tiles; },
+        pickSurface: pickPhotoSurface,
+        sourceParcelsAt: function (point) { return parcelOverlay?.at(point.x, point.y) || []; },
+        selectionHeightAt: function (x, y, kind, id) {
+            const authored = kind === 'designs' ? window.corridorTerrainHeightAtForProposal?.(id, x, y) : null;
+            if (typeof authored === 'number' && Number.isFinite(authored)) return authored;
+            const terrain = terrainZAt(x, y);
+            return typeof terrain === 'number' && Number.isFinite(terrain) ? terrain : sampleTileSurfaceZ(x, y);
+        },
         getLoadDiagnostics: function () {
             return { grounded: grounded, bootstrapAttempts: bootstrapAttempts,
                 terrainElevationM: seatNode ? -seatNode.position.z : null,

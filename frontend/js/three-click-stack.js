@@ -1,4 +1,4 @@
-// The 3D model view's click stack (click-stack.md, "3D model view"): what one click in the scene
+// The shared model and Google 3D click stack (click-stack.md): what one click in the scene
 // stands on, as section cards floating over the scene down the right side: Built, Plans, Design,
 // Permitted, Parcel; no panel or header around them. It closes the way the 2D stack does:
 // Escape or a click on nothing. The 2D stack's look (its

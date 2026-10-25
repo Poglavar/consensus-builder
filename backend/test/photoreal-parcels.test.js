@@ -1,4 +1,4 @@
-// Verifies projected source geometry, picking, streamed-shader sharing and overlay resource ownership.
+// Boundary drawing and source geometry remain available to shared 3D selection independently of visibility.
 import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
@@ -60,7 +60,7 @@ describe('source parcel projection and picking', () => {
     });
 });
 
-function fixture({ pending = false } = {}) {
+function fixture({ pending = false, visible = true } = {}) {
     const nodes = new Map();
     function element() {
         const handlers = {};
@@ -69,8 +69,8 @@ function fixture({ pending = false } = {}) {
             addEventListener: (key, fn) => { handlers[key] = fn; },
             removeEventListener: (key, fn) => { if (handlers[key] === fn) delete handlers[key]; } };
     }
-    for (const id of ['photo-parcels-visible', 'photo-parcels-status', 'photo-parcel-selection', 'photo-parcel-close',
-        'photo-parcel-reference', 'photo-parcel-area', 'photo-parcel-overlap']) nodes.set(id, element());
+    for (const id of ['photo-parcels-visible', 'photo-parcels-status']) nodes.set(id, element());
+    nodes.get('photo-parcels-visible').checked = visible;
     const context = { clearRect: vi.fn(), beginPath: vi.fn(), lineTo: vi.fn(), moveTo: vi.fn(), closePath: vi.fn(),
         stroke: vi.fn(), fill: vi.fn() };
     const textures = [];
@@ -85,54 +85,39 @@ function fixture({ pending = false } = {}) {
         getComputedStyle: () => ({ getPropertyValue: () => '#ffffff' }), L: { latLngBounds: (sw, ne) => [sw, ne] },
         CadastralParcelRepository: { ensureBounds: vi.fn(() => source) }, turf: { area: () => 100 }, invalidateThreeView: vi.fn()
     };
-    let adapter;
-    root.ThreeClickStack = {
-        parcelLabel: id => id,
-        show: vi.fn((_input, _options, next) => {
-            adapter?.release(); adapter = next;
-            adapter.activate('parcels', null, { appendChild() {} });
-        }),
-        close: vi.fn(() => { adapter?.release(); adapter = null; })
-    };
     const internals = { originLatLng: () => ({ lat: 0 }), controls: { target: { x: 0, y: 0 } }, latLngToXY: project,
         camera: { position: { distanceTo: () => 400 } },
         xyToLatLng: (x, y) => ({ lat: y, lng: x }), renderer: { domElement: screen } };
-    const pickSurface = vi.fn(() => ({ x: 5, y: 5 }));
-    const overlay = create({ root, internals, pickSurface });
-    const click = (dx = 0) => {
-        screen.handlers.pointerdown({ button: 0, clientX: 10, clientY: 10 });
-        screen.handlers.click({ button: 0, clientX: 10 + dx, clientY: 10 });
-    };
-    return { root, nodes, screen, overlay, texture: textures[0], context, internals, pickSurface, click, response, finish: () => resolve(response) };
+    const overlay = create({ root, internals });
+    return { root, nodes, screen, overlay, texture: textures[0], context, internals, response, finish: () => resolve(response) };
 }
 
 describe('photo overlay lifecycle', () => {
-    it('draws source parcels, suppresses drag clicks, selects/cycles overlaps and clears with Escape', async () => {
+    it('supplies overlapping source geometry without owning any click or keyboard selection handlers', async () => {
         const f = fixture();
         await Promise.resolve();
         expect(f.overlay.uniforms.uParcelOn.value).toBe(1);
         expect(f.context.stroke).toHaveBeenCalled();
-        f.click(30);
-        expect(f.pickSurface).not.toHaveBeenCalled();
-        f.click();
-        expect(f.nodes.get('photo-parcel-reference').textContent).toBe('source-1');
-        expect(f.nodes.get('photo-parcel-selection').hidden).toBe(false);
-        expect(f.root.ThreeClickStack.show).toHaveBeenCalledWith({ parcels: [{ id: 'source-1', label: 'source-1' }] },
-            expect.objectContaining({ focus: 'parcels' }), expect.objectContaining({ activate: expect.any(Function) }));
-        f.click();
-        expect(f.nodes.get('photo-parcel-reference').textContent).toBe('overlap-2');
-        f.root.handlers.keydown({ key: 'Escape' });
-        expect(f.nodes.get('photo-parcel-selection').hidden).toBe(true);
+        expect(f.overlay.at(5, 5).map(parcel => parcel.id)).toEqual(['source-1', 'overlap-2']);
+        expect(f.overlay.at(50, 50)).toEqual([]);
+        expect(f.screen.handlers).toEqual({});
+        expect(f.root.handlers).toEqual({});
         f.overlay.dispose();
+        expect(f.overlay.at(5, 5)).toEqual([]);
     });
-    it('toggles shader visibility without recompiling or leaving an invisible parcel selectable', async () => {
-        const f = fixture();
+    it('toggles boundary ink while source geometry remains available for shared selection', async () => {
+        const f = fixture({ visible: false });
         await Promise.resolve();
+        expect(f.root.CadastralParcelRepository.ensureBounds).toHaveBeenCalledTimes(1);
+        expect(f.overlay.uniforms.uParcelOn.value).toBe(0);
+        expect(f.overlay.at(5, 5)).toHaveLength(2);
         const toggle = f.nodes.get('photo-parcels-visible');
+        toggle.checked = true; toggle.handlers.change();
+        await Promise.resolve();
+        expect(f.overlay.uniforms.uParcelOn.value).toBe(1);
         toggle.checked = false; toggle.handlers.change();
         expect(f.overlay.uniforms.uParcelOn.value).toBe(0);
-        f.click();
-        expect(f.pickSurface).not.toHaveBeenCalled();
+        expect(f.overlay.at(5, 5)).toHaveLength(2);
         f.overlay.dispose();
     });
     it('follows a moved camera target once, but does no repeated source work at rest', async () => {

@@ -160,6 +160,24 @@ nothing, or another selection. It replaced the floating top-left parcel /
   (`backend/test/three-click-stack.test.js`); the 2D model (`click-stack-model.js`) is not shared,
   for section ordering, because 2D puts Design above Built; contextual relationships are shared.
 
-In aerial imagery mode, source-parcel inspection uses the same 3D click-panel frame. Its Parcel
-section hosts the immutable source reference and measured area; Escape closes the selection.
-Design editors remain separate from parcel information and design actions. The experimental parcel-study UI is removed.
+## Google 3D view
+
+Google and model 3D use the same click handler, stack, section bodies, relationship links,
+selection colour, collapse behaviour, repeated-click cycling and Escape dismissal. Selecting
+an object retains the camera and surrounding composition in both views. Building/source
+inspectors and permitted representation choices are available in Google view too.
+
+The photo renderer supplies the visible surface hit and source cadastral geometry. Authored
+geometry in front of that surface selects its design; a raw Google triangle removed by an
+applied design's visual carve does not block that design. A Google surface point resolves
+building identity from known source footprints rather than hidden model meshes. The stack
+also offers formed and source parcels, the parcel's designs and permitted source records.
+Overlapping parcels use the ordinary section selector. A source object without a known
+footprint cannot be identified from Google's unlabelled visual mesh alone.
+
+Yellow selection boundaries follow the loaded photo surface. Authored drawn volumes retain
+volume outlines; Google buildings without an addressable authored mesh use their source
+footprint boundary. Missing surface heights leave gaps rather than introducing zero heights.
+The cadastral boundary layer remains a drawing preference: hiding it neither closes the
+selection nor disables parcel clicks. The former independent photo parcel picker and its
+read-only reference/area card are retired.

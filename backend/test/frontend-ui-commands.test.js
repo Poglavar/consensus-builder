@@ -63,7 +63,6 @@ const NOT_COMMANDS = {
     showClaimsCounts: 'permanently disabled (claims counts not built)',
     'activity-panel-expand': 'Activity sheet expand/collapse toggle handled by the Activity controller',
     'photo-parcels-visible': 'photo-view parcel boundary control handled by PhotorealParcels',
-    'photo-parcel-close': 'photo-view selection close control handled by PhotorealParcels',
     'area-monitor-drawing-undo': 'transient area drawing toolbar action',
     'area-monitor-drawing-cancel': 'transient area drawing toolbar action',
     'dev-badge': 'indicator, not an action',
@@ -168,7 +167,8 @@ describe('rehoused sidebar controls', () => {
         expect(parcelSourceSettingsSource).toContain("root.openImagerySourceSettings = () => api.open(root, 'imagery');");
         expect(shellHtml).not.toContain('id="aerial-city-visible"');
         expect(photorealParcelsSource).toContain("toggle?.addEventListener('change', onToggle)");
-        expect(photorealParcelsSource).toContain("close?.addEventListener('click', clearSelection)");
+        expect(indexHtml).not.toContain('id="photo-parcel-selection"');
+        expect(photorealParcelsSource).not.toContain("element.addEventListener('click'");
     });
 
     it('turns every interactive control in the sheets into a command, or says why not', () => {

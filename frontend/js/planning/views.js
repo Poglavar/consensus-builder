@@ -217,7 +217,6 @@
     }
     function isPhoto() { return root.__mapModeState?.desired === 'photo'; }
     function stateText() {
-        if (isPhoto()) return t('photoNote');
         if (policy().permitted === 'off' && store.get().zoningAreas === 'off') return t('permittedOff');
         if (status === 'loading' && progress?.total) return t('loadingProgress', progress);
         if (status !== 'ready') return t(status);
@@ -231,7 +230,7 @@
     }
     function renderInspector() {
         const item = selected();
-        inspector.hidden = !item || item.role === 'proposed' || isPhoto();
+        inspector.hidden = !item || item.role === 'proposed';
         inspector.replaceChildren();
         if (!item || item.role === 'proposed') return;
         const header = element('header', 'planning-inspector__header');
@@ -426,7 +425,7 @@
         }
         permittedForm.value = permittedControl.value;
         permittedForm.hidden = false;
-        permittedForm.disabled = permittedControl.disabled || isPhoto();
+        permittedForm.disabled = permittedControl.disabled;
         panel.querySelector('[data-planning-setting="permittedMap"]').hidden = !descriptor || root.__mapModeState?.desired === 'model' || isPhoto()
             || descriptor?.capabilities.volumes === false;
         panel.querySelector('.planning-view-status').hidden = noPermittedSource;
@@ -455,7 +454,7 @@
             counts.append(element('dt', '', t(`envelopeUnavailable.${reason}`)), element('dd', '', number(count)));
         }
         panel.querySelector('.planning-inspect-hint').textContent = t('inspectHint');
-        panel.querySelector('.planning-inspect-hint').hidden = policy().permitted === 'off' || !items.length || isPhoto();
+        panel.querySelector('.planning-inspect-hint').hidden = policy().permitted === 'off' || !items.length;
         const model = panel.querySelector('.planning-open-model');
         model.hidden = !isPhoto(); model.textContent = t('openModel');
         renderInspector();
