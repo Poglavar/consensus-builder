@@ -1195,6 +1195,46 @@ body.three-mode-active #agent-bubbles-container {
     font: inherit;
 }
 
+/* The native menu keeps its full option labels; its closed face is the design's title. */
+.click-stack__selector-field {
+    position: relative;
+    display: block;
+    min-width: 0;
+}
+
+.click-stack__selector-field > select { display: block; appearance: none; }
+
+.click-stack__selector-value {
+    position: absolute;
+    inset: 1px;
+    padding: var(--cb-space-1) var(--cb-space-2);
+    align-content: center;
+    padding-right: 2em;
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface);
+    color: var(--cb-text);
+    font-weight: var(--cb-weight-semibold);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    pointer-events: none;
+}
+
+.click-stack__selector-arrow {
+    position: absolute;
+    top: 50%;
+    right: var(--cb-space-2);
+    transform: translateY(-50%);
+    color: var(--cb-text-muted);
+    pointer-events: none;
+}
+
+/* A multi-design selector already names the selected item; singleton cards retain their title. */
+#click-stack .click-stack__section[data-kind="designs"]:has(.click-stack__selector) #proposal-details-panel.is-hosted > .panel-header,
+#three-click-stack .click-stack__section.is-expanded[data-kind="designs"]:has(.click-stack__selector) .click-stack__row-detail {
+    display: none;
+}
+
 .click-stack__chip[aria-pressed="true"] {
     border-color: var(--cb-primary);
     background: var(--cb-primary-soft);

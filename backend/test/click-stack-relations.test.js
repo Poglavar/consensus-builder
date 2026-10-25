@@ -52,7 +52,35 @@ describe('click stack relationship rendering', () => {
         expect(select.children.map(option => option.value)).toEqual(['d-1', 'd-2']);
         expect(select.children.map(option => option.textContent)).toEqual(['Park · First', 'Urban rule · Second']);
         expect(select.selectedIndex).toBe(1);
+        expect(wrapper.querySelector('.click-stack__selector-value').textContent).toBe('Second');
+        expect(wrapper.querySelector('.click-stack__selector-value').getAttribute('aria-hidden')).toBe('true');
+        select.value = 'd-1';
+        select.dispatchEvent({ type: 'change', target: select });
+        expect(wrapper.querySelector('.click-stack__selector-value').textContent).toBe('First');
         expect(relations.renderSelector({ multi: false, instances: [{ id: 'one' }] }, doc, win)).toBeNull();
+    });
+
+    it('adds exact plan membership to menu labels without changing the closed design title', () => {
+        const win = { ProposalDesignGoals: goals, DesignSync: { publishedCid: proposal => proposal.published?.cid },
+            NamedPlans: { current: { content: { title: 'Riverside plan', designCids: ['cid-a', 'cid-b'] } } } };
+        const section = { kind: 'designs', multi: true, selectedIndex: 0, instances: [
+            { id: 'a', label: 'Tower A', proposal: { goal: 'single', published: { cid: 'cid-a' } } },
+            { id: 'b', label: 'Garden', proposal: { goal: 'park', published: { cid: 'cid-b' } } }
+        ] };
+        const wrapper = relations.renderSelector(section, makeDocument(), win, [
+            { label: 'Other plan', membershipDesignCid: 'cid-a' },
+            { label: 'Unrelated plan', membershipDesignCid: 'cid-other' },
+            { label: 'Loading…', membershipPlaceholder: true, membershipDesignCid: 'cid-a' }
+        ]);
+        const select = wrapper.querySelector('select');
+        expect(select.children[0].textContent).toBe(`${goals.get('single').label} · Tower A · Included in plans: Other plan, Riverside plan`);
+        expect(select.children[1].textContent).toBe('Park · Garden · Included in plans: Riverside plan');
+        expect(wrapper.querySelector('.click-stack__selector-value').textContent).toBe('Tower A');
+        relations.updateSelector(section, wrapper, win, [{ label: 'New plan', membershipDesignCid: 'cid-a' }]);
+        expect(wrapper.querySelector('select')).toBe(select);
+        expect(select.children[0].textContent).toContain('New plan, Riverside plan');
+        expect(select.children[0].textContent).not.toContain('Other plan');
+        expect(wrapper.querySelector('.click-stack__selector-value').textContent).toBe('Tower A');
     });
 
     it.each(goals.keys)('keeps the authored %s type independent of a misleading design title', goal => {

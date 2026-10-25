@@ -256,8 +256,11 @@
             if (expanded) {
                 const body = keepBody || doc.createElement('div');
                 body.className = 'click-stack__body';
-                const selector = global.ClickStackRelations?.renderSelector(section, doc, global);
-                if (selector && !keepBody) body.appendChild(selector);
+                if (keepBody) global.ClickStackRelations?.updateSelector(section, body, global, state.hits?.plans);
+                else {
+                    const selector = global.ClickStackRelations?.renderSelector(section, doc, global, state.hits?.plans);
+                    if (selector) body.appendChild(selector);
+                }
                 card.appendChild(body);
             }
             wrap.appendChild(card);

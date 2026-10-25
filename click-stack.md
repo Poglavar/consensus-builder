@@ -65,7 +65,10 @@ right-side panels that clicks used to open one at a time.
 - When a section has multiple instances, its expanded card contains a compact native selector for
   switching among those peers. A singleton has no selector.
 - The Design selector says **Location you clicked has multiple designs. Select which to inspect:**
-  above its options, each named by type and title.
+  above the control. Its closed face shows only the selected design's title. The native menu
+  includes each design's authored type and available exact-revision plan membership alongside
+  its title. The selector replaces the repeated title in the expanded card; a singleton keeps
+  its ordinary title. Membership updates refresh menu labels without replacing the control.
   Its count is the number of separate designs overlapping the location or using its parcel;
   selecting one changes the inspected design.
 - The expanded section is the **action view**:

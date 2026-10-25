@@ -121,7 +121,34 @@
         return choices;
     }
 
-    function renderSelector(section, doc, win) {
+    function designOptionLabel(instance, win, plans = []) {
+        const name = instance.label || instance.id || '';
+        const type = designType(instance, win);
+        const proposal = instance.proposal || instance;
+        const cid = instance.cid || win?.DesignSync?.publishedCid?.(proposal);
+        const current = win?.NamedPlans?.current;
+        const memberships = plans.filter(plan => !plan.membershipPlaceholder && cid
+            && (plan.membershipDesignCid === cid || (plan.designCids || plan.content?.designCids || []).includes(cid)));
+        if (cid && current?.content?.designCids.includes(cid)) memberships.push({ label: current.content.title });
+        const names = [...new Set(memberships.map(plan => plan.label || plan.title).filter(Boolean))];
+        return [type && type.label !== name ? type.label : '', name,
+            names.length ? `${translate('memberPlans', win)} ${names.join(', ')}` : ''].filter(Boolean).join(' · ');
+    }
+
+    function updateSelector(section, container, win, plans = []) {
+        const select = container.querySelector('.click-stack__selector');
+        if (!select || select.dataset.kind !== section.kind) return;
+        [...select.children].forEach((option, index) => {
+            const instance = section.instances[index];
+            option.textContent = section.kind === 'designs' ? designOptionLabel(instance, win, plans) : instance.label || instance.id || '';
+        });
+        select.selectedIndex = Number.isInteger(section.selectedIndex) ? section.selectedIndex : 0;
+        const value = container.querySelector('.click-stack__selector-value');
+        const instance = section.instances[select.selectedIndex];
+        if (value) value.textContent = instance?.label || instance?.id || '';
+    }
+
+    function renderSelector(section, doc, win, plans = []) {
         if (!section?.multi || !doc) return null;
         register(win);
         const id = `click-stack-selector-${++selectorId}`;
@@ -143,15 +170,28 @@
         (section.instances || []).forEach(instance => {
             const option = doc.createElement('option');
             option.value = String(instance.id ?? '');
-            const name = instance.label || instance.id || '';
-            const type = section.kind === 'designs' ? designType(instance, win) : null;
-            option.textContent = type && type.label !== name ? `${type.label} · ${name}` : name;
             select.appendChild(option);
         });
-        select.selectedIndex = Number.isInteger(section.selectedIndex) ? section.selectedIndex : 0;
-        wrap.append(caption, select);
+        wrap.appendChild(caption);
+        if (section.kind === 'designs') {
+            const field = doc.createElement('span');
+            field.className = 'click-stack__selector-field';
+            const value = doc.createElement('span');
+            value.className = 'click-stack__selector-value';
+            value.setAttribute('aria-hidden', 'true');
+            const arrow = doc.createElement('i');
+            arrow.className = 'click-stack__selector-arrow fas fa-chevron-down';
+            arrow.setAttribute('aria-hidden', 'true');
+            field.append(select, value, arrow);
+            wrap.appendChild(field);
+            select.addEventListener('change', () => {
+                const selected = section.instances.find(instance => String(instance.id) === select.value);
+                value.textContent = selected?.label || selected?.id || '';
+            });
+        } else wrap.appendChild(select);
+        updateSelector(section, wrap, win, plans);
         return wrap;
     }
 
-    return Object.freeze({ designType, renderDesignType, renderGroup, renderSelector });
+    return Object.freeze({ designType, designOptionLabel, renderDesignType, renderGroup, renderSelector, updateSelector });
 });

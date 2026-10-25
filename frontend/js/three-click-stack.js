@@ -195,6 +195,7 @@
             if (expanded) {
                 const body = keepBody || doc.createElement('div');
                 body.className = 'click-stack__body';
+                if (keepBody) global.ClickStackRelations?.updateSelector(section, body, global, state.input?.plans);
                 card.appendChild(body);
             }
             wrap.appendChild(card);
@@ -230,7 +231,7 @@
                 }
             }
             const section = state.stack.sections.find(item => item.kind === kind);
-            const selector = global.ClickStackRelations?.renderSelector(section, doc, global);
+            const selector = global.ClickStackRelations?.renderSelector(section, doc, global, state.input?.plans);
             if (selector) body.insertBefore(selector, body.firstChild);
         } catch (error) {
             console.error(`[${new Date().toISOString()}] [ThreeClickStack] the ${kind} section could not open`, error);
