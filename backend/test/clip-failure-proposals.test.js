@@ -378,8 +378,8 @@ describe('apply/buildings.js _formBuildingParcel', () => {
         globalThis.window.__openGround = openGround;
         const host = feature(rect(0, 0, 20, 20), { parcelId: 'ground:abc', openGroundHost: true, groundIds: ['ground:abc'] });
         const self = mixinThis({ _formBuildingParcel: buildingsApply._formBuildingParcel }, [host]);
-        // Intersect #1 measures the host overlap (it works); #2 is the open-ground take.
-        globalThis.turf = failingTurf(['intersect'], (_op, n) => n === 2);
+        // Intersect #1 measures the host overlap; the take and its coarser retries all fail.
+        globalThis.turf = failingTurf(['intersect'], (_op, n) => n >= 2);
         const failure = await expectClipRejection(run(self, {}, rect(5, 5, 10, 10)), 'apply-buildings.groundTake');
         expect(failure.parcelId).toBe('ground:abc');
     });

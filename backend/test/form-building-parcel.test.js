@@ -14,6 +14,7 @@ const { ProposalManager } = require('../../frontend/js/proposal-manager.js');
 require('../../frontend/js/proposal-parcel-identity.js'); // installs _getParcelIdFromFeature etc.
 const formationEdit = require('../../frontend/js/proposals/formation-edit.js');
 const parcelArrangement = require('../../frontend/js/proposals/parcel-arrangement.js');
+const boundary = require('./fixtures/parcel-cut-boundary.json');
 
 const GLOBAL_KEYS = ['window', 'turf', '_resolveRootParcelIdFromProperties',
     '_resolveRootParcelNumberFromProperties', '_calculateGeoJsonArea', 'updateStatus'];
@@ -44,6 +45,7 @@ beforeEach(() => {
     GLOBAL_KEYS.forEach(k => { saved[k] = globalThis[k]; });
     globalThis.turf = turf;
     globalThis.window = {
+        __parcelArrangement: parcelArrangement,
         __formationEdit: formationEdit,
         __cadastreAncestry: { resolveParentsByGeometry: () => ({ ids: ['HR-A', 'HR-B'], coverage: 1 }) }
     };
@@ -93,6 +95,24 @@ describe('building parcel formation routing', () => {
 });
 
 describe('_formBuildingParcel — footprint mode (default)', () => {
+    it('forms the take and remainder on identical boundaries without rewriting authored geometry', async () => {
+        const authored = { geometry: { landTake: structuredClone(boundary.footprint.geometry) } };
+        const original = structuredClone(authored);
+        const manager = makeManager([structuredClone(boundary.host)]);
+        const result = await manager._formBuildingParcel('tower', authored, {},
+            boundary.footprint.geometry, ['GB-host'], 'tower');
+        expect(result.ok).toBe(true);
+        const take = manager.added.find(feature => feature.properties.buildingParcel);
+        const remainders = manager.added.filter(feature => !feature.properties.buildingParcel);
+        expect(take.geometry).toEqual(parcelArrangement.onClipGrid(boundary.footprint).geometry);
+        expect(remainders.length).toBeGreaterThan(0);
+        remainders.forEach(remainder => expect(turf.intersect(take, remainder)).toBeNull());
+        const union = manager.added.reduce((merged, feature) => merged ? turf.union(merged, feature) : feature, null);
+        expect(turf.difference(parcelArrangement.onClipGrid(boundary.host), union)).toBeNull();
+        expect(turf.difference(union, parcelArrangement.onClipGrid(boundary.host))).toBeNull();
+        expect(authored).toEqual(original);
+    });
+
     it('mints the building parcel from the footprint and cuts host remainders back to their owners', async () => {
         const parcels = [parcelOf('HR-A', 0, 2), parcelOf('HR-B', 2, 4)];
         const manager = makeManager(parcels);
@@ -170,6 +190,7 @@ describe('_formBuildingParcel — footprint mode (default)', () => {
         const hosts = [parcelOf('HR-A', 0, 2), parcelOf('HR-B', 2, 4)];
         const manager = makeManager(hosts);
         window.__parcelArrangement = {
+            ...parcelArrangement,
             clipFailure: parcelArrangement.clipFailure,
             clip(operation, left, right) {
                 if (operation === 'intersect') throw new Error('intersection failed explicitly');
@@ -229,7 +250,7 @@ describe('_formBuildingParcel — reviewed take', () => {
         const result = await manager._formBuildingParcel('p-bld', { author: 'Proposer', geometry: { landTake: host.geometry } }, {}, rect(.5, .5, 1, 1.5), [], 'p-bld');
         expect(result.ok).toBe(true);
         expect(manager.added).toHaveLength(1);
-        expect(manager.added[0].geometry).toEqual(host.geometry);
+        expect(manager.added[0].geometry).toEqual(parcelArrangement.onClipGrid(host).geometry);
         expect(manager.hidden).toEqual([host]);
     });
     it('takes a whole parcel beside a cut and retains the neighbour owner and all land', async () => {

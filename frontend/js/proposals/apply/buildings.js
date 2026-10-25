@@ -244,15 +244,15 @@
             } catch (_) { }
             return { ok: false };
         }
-        const arrangement = typeof window !== 'undefined' ? window.__parcelArrangement : null;
-        const clip = (operation, left, right) => arrangement && typeof arrangement.clip === 'function'
-            ? arrangement.clip(operation, left, right) : turfRef[operation](left, right);
+        const arrangement = clipFailureApi();
+        const clip = (operation, left, right, context) => arrangement.clip(operation, left, right,
+            { proposalId: idLabel, ...context });
         const takeCtx = {
             area: f => { try { return turfRef.area(f) || 0; } catch (_) { return 0; } },
             // An overlap that cannot be computed is unknown, not zero: zero decides which
             // parcels the building takes.
             intersectionArea: (a, b) => {
-                try { const hit = clip('intersect', a, b); return hit ? turfRef.area(hit) : 0; } catch (error) {
+                try { const hit = clip('intersect', a, b, { site: 'apply-buildings.intersectionArea' }); return hit ? turfRef.area(hit) : 0; } catch (error) {
                     throw clipFailureApi().clipFailure('intersect', error, { site: 'apply-buildings.intersectionArea', proposalId: idLabel }, [a, b]);
                 }
             }
@@ -260,9 +260,10 @@
         // The exact reviewed take is authored land, never the union of today's whole hosts.
         // Replay may partition that land again, but cannot silently expand it.
         const takeGeometry = proposalData.geometry?.landTake?.geometry || proposalData.geometry?.landTake || footprintGeometry;
-        const takeFeature = { type: 'Feature', properties: {}, geometry: takeGeometry };
+        const takeFeature = arrangement.onClipGrid({ type: 'Feature', properties: {}, geometry: takeGeometry });
         const material = { type: 'Feature', properties: {}, geometry: footprintGeometry };
-        const outside = proposalData.geometry?.landTake ? clip('difference', material, takeFeature) : null;
+        const outside = proposalData.geometry?.landTake
+            ? clip('difference', material, takeFeature, { site: 'apply-buildings.materialOutsideTake' }) : null;
         if (outside && turfRef.area(outside) > Math.min(0.01, turfRef.area(material) * 1e-6)) {
             this._setLastApplyFailure(idLabel, { code: 'building-outside-land-take', message: 'The building extends outside its reviewed land take.' });
             return { ok: false };
@@ -299,7 +300,8 @@
         const groundTakeGeometries = [];
         takenHosts.forEach(entry => {
             let hit = null;
-            try { hit = clip('intersect', footprint, asPlain(entry.feature.geometry)); } catch (error) {
+            try { hit = clip('intersect', footprint, asPlain(entry.feature.geometry),
+                { site: 'apply-buildings.groundTake', parcelId: entry.id }); } catch (error) {
                 // Null would leave the building's open ground out of its own parcel.
                 throw clipFailureApi().clipFailure('intersect', error, { site: 'apply-buildings.groundTake', proposalId: idLabel, parcelId: entry.id }, [footprint, entry.feature]);
             }
@@ -377,7 +379,7 @@
 
         const buildingParcel = {
             type: 'Feature',
-            geometry: JSON.parse(JSON.stringify(takeGeometry)),
+            geometry: JSON.parse(JSON.stringify(takeFeature.geometry)),
             properties: {
                 producedByProposalId: proposalId,
                 buildingParcel: true,
@@ -385,7 +387,7 @@
                 rootParcelNumber: _resolveRootParcelNumberFromProperties(primary ? primary.properties : null) || null,
                 cadastreParcelIds: buildingCadastreIds,
                 ...(groundIds.length ? { groundIds } : {}),
-                calculatedArea: Math.round(_calculateGeoJsonArea(takeGeometry)),
+                calculatedArea: Math.round(_calculateGeoJsonArea(takeFeature.geometry)),
                 isProposed: true,
                 ownershipDetails: JSON.parse(JSON.stringify(proposerOwnership)),
                 ownershipType: 'private'
@@ -412,7 +414,8 @@
         const safeDifference = (aGeometry, bFeature, hostId) => {
             const a = { type: 'Feature', properties: {}, geometry: aGeometry };
             try {
-                return { result: clip('difference', a, bFeature), threw: false, failure: null };
+                return { result: clip('difference', a, bFeature,
+                    { site: 'apply-buildings.hostRemainder', parcelId: hostId }), threw: false, failure: null };
             } catch (error) {
                 const failure = clipFailureApi().clipFailure('difference', error, { site: 'apply-buildings.hostRemainder', proposalId: idLabel, parcelId: hostId }, [a, bFeature]);
                 console.error(`[${new Date().toISOString()}] [_formBuildingParcel] ${failure.message}`);

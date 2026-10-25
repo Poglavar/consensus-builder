@@ -20,9 +20,9 @@
 // which is exactly the signal a consumer (a building standing on it) needs. The hash is taken from a
 // canonicalised ring (fixed precision, fixed winding, fixed starting vertex) so that a piece which is
 // geometrically identical cannot get two different ids because turf happened to emit its vertices
-// starting somewhere else. The precision applies to the KEY only — never to the geometry, which
-// stays exactly as turf produced it (rounding the pipeline is what once left slivers between a
-// corridor and the remainders it cut).
+// starting somewhere else. This key precision is independent of the finer clipping grid below.
+// Clipping retains its calculated intersections; authored/source geometry stays separate from
+// derived takes and remainders, which must share the same clipping precision.
 
 (function (global) {
     'use strict';
@@ -100,6 +100,12 @@
                 coordinates: snapCoordinates(feature.geometry.coordinates, factor)
             }
         };
+    }
+
+    // A formed take must use the same boundary as the subtraction that creates its remainder.
+    // This creates derived geometry; callers must retain the authored/source feature separately.
+    function onClipGrid(feature) {
+        return snapFeature(feature, CLIP_SNAP_DECIMALS);
     }
 
     // Every clip that has run, and every one that needed a coarser grid than the standard one.
@@ -226,7 +232,7 @@
         const t = T();
         clipTrouble.clips += 1;
         try {
-            return t[operation](snapFeature(a, CLIP_SNAP_DECIMALS), snapFeature(b, CLIP_SNAP_DECIMALS));
+            return t[operation](onClipGrid(a), onClipGrid(b));
         } catch (error) {
             for (const decimals of CLIP_RETRY_DECIMALS) {
                 try {
@@ -813,6 +819,7 @@
         // The clipper's own surface, exported so its grid and its failure handling can be tested
         // directly rather than inferred from whatever the arrangement happened to produce.
         clip,
+        onClipGrid,
         clipHealth,
         // One failure type and one report for every polygon clip in the app (see ClipFailure).
         ClipFailure,
