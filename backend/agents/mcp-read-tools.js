@@ -2,6 +2,7 @@
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { appTurf as turf } from './mcp-geometry.js';
+import { trustedMetadata } from './mcp-results.js';
 import { cidOfObject, isCid } from '../cid.js';
 
 const require = createRequire(import.meta.url);
@@ -27,9 +28,21 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
             ...(body ? { method: 'POST', body: JSON.stringify(body) } : {}) });
         const text = await response.text();
         let data;
-        try { data = JSON.parse(text); } catch { throw failure('invalid-upstream-response', `Source returned non-JSON (HTTP ${response.status})`, { action: 'Retry the source later.' }); }
-        if (!response.ok) throw failure(data.code || `http-${response.status}`, data.error || `Source returned HTTP ${response.status}`,
-            data.next || { action: response.status === 429 ? 'Wait for the source rate limit, then retry.' : 'Check the city, source and parcel using ugt_find_place.' });
+        const metadata = { status: response.status, source: url.origin,
+            retryable: response.status === 429 || response.status >= 500 };
+        const retryAfter = response.headers?.get('retry-after');
+        // Only a numeric delay or a valid HTTP date is operational metadata; never copy prose.
+        if (/^\d+$/.test(retryAfter || '') && Number.isSafeInteger(Number(retryAfter))) metadata.retryAfter = Number(retryAfter);
+        else if (retryAfter && /^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \d{2} [A-Z][a-z]{2} \d{4} \d{2}:\d{2}:\d{2} GMT$/.test(retryAfter) && Number.isFinite(Date.parse(retryAfter))) {
+            metadata.retryAfter = Math.max(0, Math.ceil((Date.parse(retryAfter) - Date.now()) / 1000));
+        }
+        try { data = JSON.parse(text); } catch {
+            throw Object.assign(failure('invalid-upstream-response', `Source returned non-JSON (HTTP ${response.status})`, { action: 'Retry the source later.' }), metadata, { upstream: { message: text } });
+        }
+        if (!response.ok) throw Object.assign(failure(`http-${response.status}`, `Source returned HTTP ${response.status}`,
+            { action: response.status === 429 ? 'Wait for the source rate limit, then retry.'
+                : response.status >= 500 ? 'Retry the unavailable source later.' : 'Check the city, source and parcel using ugt_find_place.' }),
+            metadata, { upstream: data });
         return data;
     }
     const mapUrl = (city, bbox) => {
@@ -39,9 +52,12 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
         return url.toString();
     };
     async function parcels({ city, parcelSourceId, parcelIds, point, geometry }) {
-        if (!geometry && (Boolean(parcelIds) === Boolean(point))) throw failure('invalid-parcel-query', 'Provide exactly one of parcel ids or point.', { action: 'Supply parcelId or point.' });
+        if (!geometry && (Boolean(parcelIds) === Boolean(point))) throw Object.assign(failure('invalid-parcel-query', 'Provide exactly one of parcel ids or point.', { action: 'Supply parcelId or point.' }), { field: ['parcelIds', 'point'], constraints: { exactlyOne: ['parcelIds', 'point'] } });
         let source = parcelSourceId;
-        if (!source) throw failure('parcel-source-required', 'Supply an explicit parcelSourceId.', { action: 'Select a dataset from /parcel-sources.' });
+        if (!source) throw Object.assign(failure('parcel-source-required', 'Supply an explicit parcelSourceId.', {
+            tool: 'ugt_list_sources', arguments: { ...(city ? { city } : {}), abstraction: 'parcels' },
+            action: 'Choose a source with the required parcel lookup capability and pass its id as parcelSourceId.'
+        }), { field: 'parcelSourceId', constraints: { required: true, abstraction: 'parcels' } });
         let result;
         if (databaseSources.some(item => item.id === source)) {
             const path = source === 'oss-wfs' ? '/parcels' : `/${source}`;
@@ -101,7 +117,7 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
             return parts.polygons.reduce((out, shape) => out ? turf.union(out, turf.feature(shape)) : turf.feature(shape), null).geometry;
         },
         cities: async () => ({ sources: [...databaseSources, ...(await request('/parcel-sources')).sources] }),
-        approvalLink: args => ({ approvalUrl: approvalLink.build({ origin: appOrigin, ...args }), next: { action: 'Open the link, review the agreement and press the selected action to sign with your wallet.' } }),
+        approvalLink: args => ({ approvalUrl: approvalLink.build({ origin: appOrigin, ...args }), next: trustedMetadata({ action: 'Open the link, review the agreement and press the selected action to sign with your wallet.' }) }),
         async findPlace({ query, city, parcelSourceId, bbox, limit = 5 }) {
             if (isCid(query)) {
                 try { return { candidates: [{ kind: 'design', ...await getDesign({ designCid: query }) }] }; }

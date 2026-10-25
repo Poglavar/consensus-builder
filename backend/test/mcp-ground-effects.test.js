@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { describeRoadCuts } from '../agents/mcp-ground-effects.js';
 import { toolError } from '../agents/mcp-results.js';
 import { createUrbanGameTheoryTools } from '../agents/ugt-agent-tools.js';
-import { createPreviewLinks } from '../agents/mcp-preview-links.js';
+import { createTestPreviewLinks as createPreviewLinks } from './helpers/mcp-preview-store.js';
 
 const box = (west, south, east, north) => ({
     type: 'Polygon', coordinates: [[[west, south], [east, south], [east, north], [west, north], [west, south]]]
@@ -71,7 +71,7 @@ describe('MCP road cut effects', () => {
         })]);
         expect(drafted.groundEffects[0].remainingAreaM2AfterAllRoadCuts).toBeLessThan(drafted.groundEffects[0].authoredAreaM2);
         expect(drafted.warnings.join(' ')).toMatch(/map views/);
-        const revised = await tools.editPlan({ plan: drafted, expectedCid: drafted.cid, terms: { title: 'Revised road cut' } });
+        const revised = await tools.editAgreement({ plan: drafted, expectedCid: drafted.cid, terms: { title: 'Revised road cut' } });
         expect(revised.groundEffects).toEqual(drafted.groundEffects);
         expect(revised.warnings.join(' ')).toMatch(/map views/);
     });

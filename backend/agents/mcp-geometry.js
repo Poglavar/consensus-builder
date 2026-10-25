@@ -14,11 +14,11 @@ export const appTurf = installAppGeometry(context);
 runInContext(readFileSync(new URL('../../frontend/vendor/proj4-2.22.0/proj4.js', import.meta.url), 'utf8'), context, { timeout: 10_000 });
 runInContext(readFileSync(new URL('../../frontend/vendor/noble-hashes-1.8.0/sha256.js', import.meta.url), 'utf8'), context, { timeout: 10_000 });
 const frontend = new URL('../../frontend/js/', import.meta.url);
-for (const path of ['cid.js', 'metric-frame.js', 'corridor-profile.js', 'corridor-osm-form.js', 'corridor-junction.js',
+for (const path of ['cid.js', 'metric-frame.js', 'local-frame.js', 'footprint-geometry.js', 'corridor-profile.js', 'corridor-osm-form.js', 'corridor-junction.js',
     'corridor-transition.js', 'proposals/corridor-levels.js', 'corridor-footprint.js', 'corridor-tunnel.js',
     'corridor-geometry.js', 'proposals/corridor-authoring.js', 'proposals/formation-depth.js',
     'design-record.js', 'parcel-layout-validation.js', 'parcel-layout-layouts.js', 'reparcellization-slice.js',
-    'parcels/schelling-grid.js', 'single-building-geometry.js', 'park-planting.js', 'urban-rule-variation.js', 'intent-editing.js', 'intent-design.js']) {
+    'parcels/schelling-grid.js', 'single-building-geometry.js', 'park-planting.js', 'urban-rule-variation.js', 'building-rule-geometry.js', 'vendor/transit-station-models.js', 'transit-stations.js', 'intent-editing.js', 'intent-design.js']) {
     const url = new URL(path, frontend);
     context.require = createRequire(url);
     runInContext(readFileSync(url, 'utf8'), context, { filename: path, timeout: 10_000 });
@@ -31,4 +31,10 @@ export const corridorRuntime = {
     geometry: context.CorridorGeometry,
     osm: context.__corridorOsmForm,
     footprint: context.__corridorFootprint
+};
+
+// Thin adapters call these same app generators; no parallel construction geometry.
+export const constructorRuntime = {
+    record: context.DesignRecord, singleBuilding: context.SingleBuildingGeometry, footprints: context.FootprintGeometry, rules: context.UrbanRuleVariation,
+    buildingRules: context.BuildingRuleGeometry, stations: context.TransitStations
 };

@@ -50,7 +50,9 @@ function harness(parcel) {
         document: { getElementById: () => ({ disabled: false }) },
         parcel
     };
+    context.window.turf = turf;
     vm.createContext(context);
+    for (const path of ['footprint-geometry.js', 'building-rule-geometry.js']) vm.runInContext(readFileSync(new URL(`../../frontend/js/${path}`, import.meta.url), 'utf8'), context, { filename: path });
     const body = USED.filter(name => functions.has(name)).map(name => functions.get(name)).join('\n');
     vm.runInContext(`
         let rowHouseBlock = { parcels: [{ id: 'L', feature: parcel }], parcelIds: ['L'], site: parcel, valid: true };

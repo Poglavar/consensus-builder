@@ -214,54 +214,12 @@
         return { box, size, center, dimensions };
     }
 
-    // Read the same visible triangles that Three renders, including node and instance transforms.
-    // The map is east/north (X, -Z); the source model is Y-up. Boolean union runs off the UI thread.
-    function modelTriangles(object, center) {
-        const triangles = [];
-        const vertex = new THREE.Vector3();
-        const instanceMatrix = new THREE.Matrix4();
-        const transform = new THREE.Matrix4();
-        object.updateMatrixWorld(true);
-        object.traverseVisible(node => {
-            const geometry = node.isMesh && node.geometry;
-            const position = geometry && geometry.attributes.position;
-            if (!position) return;
-            const index = geometry.index;
-            const count = index ? index.count : position.count;
-            const drawStart = geometry.drawRange.start;
-            const drawEnd = Math.min(count, drawStart + geometry.drawRange.count);
-            const materials = Array.isArray(node.material) ? node.material : [node.material];
-            const groups = Array.isArray(node.material) ? geometry.groups : [{ start: 0, count, materialIndex: 0 }];
-            for (let instance = 0; instance < (node.isInstancedMesh ? node.count : 1); instance++) {
-                transform.copy(node.matrixWorld);
-                if (node.isInstancedMesh) {
-                    node.getMatrixAt(instance, instanceMatrix);
-                    transform.multiply(instanceMatrix);
-                }
-                for (const group of groups) {
-                    if (!materials[group.materialIndex] || materials[group.materialIndex].visible === false) continue;
-                    const start = Math.max(drawStart, group.start);
-                    const end = Math.min(drawEnd, group.start + group.count);
-                    for (let offset = start; offset + 2 < end; offset += 3) {
-                        if (triangles.length >= window.BuildingModelGeometry.MAX_FOOTPRINT_TRIANGLES * 6) throw Object.assign(new Error('Model triangle limit'), { code: 'complex' });
-                        for (let corner = 0; corner < 3; corner++) {
-                            const vertexIndex = index ? index.getX(offset + corner) : offset + corner;
-                            node.getVertexPosition(vertexIndex, vertex).applyMatrix4(transform);
-                            triangles.push(vertex.x - center.x, -(vertex.z - center.z));
-                        }
-                    }
-                }
-            }
-        });
-        return new Float64Array(triangles);
-    }
-
     function cancelFootprintJob() {
         if (footprintJob) footprintJob.cancel();
     }
 
     function extractFootprint(object, center) {
-        const triangles = modelTriangles(object, center);
+        const triangles = window.BuildingModelGeometry.modelTriangles(object, center, THREE);
         return new Promise((resolve, reject) => {
             const worker = new Worker(footprintWorkerUrl);
             let timer;

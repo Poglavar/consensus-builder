@@ -73,6 +73,8 @@ export function createIndexClient({
         requestLabel: ({ method }) => `index-${method.toLowerCase()}`
     });
 
+    const pinned = new Map();
+
     async function call(method, path, body) {
         for (let round = 1; ; round += 1) {
             const headers = { accept: 'application/json' };
@@ -99,10 +101,13 @@ export function createIndexClient({
     async function pin(kind, object) {
         if (!['design', 'agreement'].includes(kind)) throw new Error('kind must be design or agreement');
         const { cid, bytes } = addressOf(object);
+        if (pinned.has(cid)) return pinned.get(cid);
         const result = await call('POST', '/pins', { kind, cid, bytes: bytes.toString('base64') });
         if (!result.ok) throw refusal(`pin ${kind} ${cid}`, result);
         if (result.body?.cid !== cid) throw mismatch(`pin ${kind}`, cid, result.body?.cid);
-        return { cid, pinnedAt: result.body.pinnedAt ?? null };
+        const receipt = { cid, pinnedAt: result.body.pinnedAt ?? null };
+        pinned.set(cid, receipt);
+        return receipt;
     }
 
     /** POST /designs: { row, created } (created false: the CID was indexed already). */
@@ -116,9 +121,13 @@ export function createIndexClient({
 
     /** Pin and index one design/v1 object: { cid, row, created }. A parcel layout is refused by the index: pin it and send it with its agreement. */
     async function publishDesign(content, { parcelSourceId = null } = {}) {
-        const { cid } = await pin('design', content);
-        const { row, created } = await indexDesign(cid, content, { parcelSourceId });
-        return { cid, row, created };
+        const { cid } = addressOf(content);
+        let stage = 'pin-design'; const pinnedCids = [];
+        try {
+            await pin('design', content); pinnedCids.push(cid); stage = 'index-design';
+            const { row, created } = await indexDesign(cid, content, { parcelSourceId });
+            return { cid, row, created };
+        } catch (error) { throw Object.assign(error, { cid, stage, pinnedCids, indexed: false }); }
     }
 
     /** POST /designs/binding: what a design on this site would bind ({ city, parcelSourceId, binding }); nothing is stored. */
@@ -169,9 +178,13 @@ export function createIndexClient({
 
     /** Pin and index one agreement/v1 object: { cid, row, created }. */
     async function publishAgreement(content, { designs = [] } = {}) {
-        const { cid } = await pin('agreement', content);
-        const { row, created } = await indexAgreement(cid, content, { designs });
-        return { cid, row, created };
+        const { cid } = addressOf(content);
+        let stage = 'pin-agreement'; const pinnedCids = [];
+        try {
+            await pin('agreement', content); pinnedCids.push(cid); stage = 'index-agreement';
+            const { row, created } = await indexAgreement(cid, content, { designs });
+            return { cid, row, created };
+        } catch (error) { throw Object.assign(error, { cid, stage, pinnedCids, indexed: false }); }
     }
 
     /**

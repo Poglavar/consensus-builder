@@ -84,7 +84,7 @@ describe('headless app formation host', () => {
         expect(draft.parse({ designs: [design] }).consultation).toBeUndefined();
         expect(draft.safeParse({ designs: [design], consultation: { ...consultation, extra: true } }).success).toBe(false);
         expect(draft.safeParse({ designs: [design], consultation: { organiser: 'x'.repeat(2049), participationUrl: null } }).success).toBe(false);
-        const edit = tools.get('ugt_edit_plan');
+        const edit = tools.get('ugt_edit_agreement');
         expect(edit.parse({ plan: { agreement: {} }, expectedCid: cidOfObject(design), terms: { consultation } }).terms.consultation).toEqual(consultation);
         expect(edit.safeParse({ plan: {}, expectedCid: cidOfObject(design), terms: { consultation: { organiser: null } } }).success).toBe(false);
     });

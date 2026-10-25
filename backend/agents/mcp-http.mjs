@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Stateless public MCP on loopback. This entry deliberately never loads the backend's secret .env.
 import { createServer } from 'node:http';
-import { pathToFileURL } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createMcpHandler } from '@modelcontextprotocol/server';
 import { toNodeHandler, hostHeaderValidation, originValidation } from '@modelcontextprotocol/node';
 import { createUrbanGameTheoryMcpServer } from './mcp-server.mjs';
@@ -18,7 +18,8 @@ export function assertHostedEnvironment(env) {
 
 export function createMcpHttpService({ env = process.env, fetchImpl, factory,
     publicOrigin = 'https://urbangametheory.xyz', maxConcurrent = 8, maxPerMinute = 600,
-    maxPublishPerMinute = 10, now = Date.now, previewOrigin = env.MCP_PREVIEW_ORIGIN || publicOrigin, previewTtlMs } = {}) {
+    maxPublishPerMinute = 10, now = Date.now, previewOrigin = env.MCP_PREVIEW_ORIGIN || publicOrigin, previewTtlMs,
+    storeDirectory = env.MCP_DRAFT_DIRECTORY || fileURLToPath(new URL('../uploads/mcp-drafts/', import.meta.url)) } = {}) {
     assertHostedEnvironment(env);
     const origin = new URL(publicOrigin);
     if (origin.protocol !== 'https:' || origin.username || origin.password || origin.pathname !== '/' || origin.search || origin.hash) throw new Error('MCP_PUBLIC_ORIGIN must be an HTTPS origin');
@@ -26,7 +27,7 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
     const allowed = ['localhost', '127.0.0.1', '[::1]', origin.hostname, new URL(previewOrigin).hostname, new URL(appOrigin).hostname];
     const hostGuard = hostHeaderValidation(allowed), originGuard = originValidation(allowed);
     let active = 0, count = 0, publishes = 0, start = now();
-    const previews = createPreviewLinks({ origin: previewOrigin, appOrigin, now, ...(previewTtlMs == null ? {} : { ttlMs: previewTtlMs }) });
+    const previews = createPreviewLinks({ origin: previewOrigin, appOrigin, storeDirectory, now, ...(previewTtlMs == null ? {} : { ttlMs: previewTtlMs }) });
     const makeServer = factory || (options => createUrbanGameTheoryMcpServer({ mode: 'hosted', env, fetchImpl, ...options }));
     // Count writes at the tool boundary too: this covers legacy clients without MCP routing headers.
     const guardedFactory = () => {
@@ -62,7 +63,7 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
         if (req.url === '/healthz' && req.method === 'GET') return json(200, { service: 'ugt-mcp', status: 'ok', upstreamChecked: false });
         if (req.url === '/mcp/server-card' && req.method === 'GET') return json(200, {
             $schema: 'https://static.modelcontextprotocol.io/schemas/v1/server-card.schema.json',
-            name: 'xyz.urbangametheory/urban-game-theory', version: '0.3.0', description: 'Urban designs, agreements and markets; private drafts and wallet approval links.',
+            name: 'xyz.urbangametheory/urban-game-theory', version: '0.4.0', description: 'Create, edit and publish named urban plans and designs; private drafts and wallet approval links.',
             remotes: [{ type: 'streamable-http', url: `${origin.origin}/mcp`, supportedProtocolVersions: ['2026-07-28', '2025-11-25'] }],
             _meta: { 'xyz.urbangametheory/discovery-status': 'experimental-server-card-extension' }
         });
@@ -73,7 +74,7 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
         if (req.headers['content-length'] && Number(req.headers['content-length']) > MCP_MAX_REQUEST_BYTES) return json(413, {
             code: 'mcp-request-too-large', maxRequestBytes: MCP_MAX_REQUEST_BYTES,
             message: 'This MCP request exceeds the API JSON request limit.',
-            next: { action: 'Publish designs individually, then reference their CIDs in agreement.designs. Only carry unpublished linked designs in the separate designs argument.' }
+            next: { action: 'Pass the returned draftRef and expectedCid to publication tools instead of retransmitting geometry.' }
         });
         count++; active++;
         try { await nodeHandler(req, res); }
@@ -85,13 +86,18 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
     });
     http.requestTimeout = 30_000;
     http.headersTimeout = 10_000;
-    return { http, async close() {
-        previews.clear();
-        await handler.close();
-        if (!http.listening) return;
-        const closed = new Promise((resolve, reject) => http.close(error => error ? reject(error) : resolve()));
-        http.closeIdleConnections();
-        await closed;
+    let closing;
+    return { http, close() {
+        return closing ||= (async () => {
+            // Finish accepted requests before releasing the single-writer draft lock.
+            if (http.listening) {
+                const closed = new Promise((resolve, reject) => http.close(error => error ? reject(error) : resolve()));
+                http.closeIdleConnections();
+                await closed;
+            }
+            try { await handler.close(); }
+            finally { previews.dispose(); }
+        })();
     } };
 }
 

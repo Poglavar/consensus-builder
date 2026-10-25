@@ -177,7 +177,11 @@ function rowHarness() {
     context.closed = [];
     context.window.UrbanRuleVariation = { massingWithRule: value => clone(value) };
     context.window.__siteDraft = require('../../frontend/js/proposals/site-draft.js');
-    vm.runInNewContext(source + dependencies, context);
+    context.window.turf = turf;
+    const sharedGeometry = ['footprint-geometry.js', 'building-rule-geometry.js'].map(path => readFileSync(new URL(`../../frontend/js/${path}`, import.meta.url), 'utf8')).join('\n');
+    vm.createContext(context);
+    vm.runInContext(sharedGeometry, context);
+    vm.runInContext(source + dependencies, context);
     return context;
 }
 

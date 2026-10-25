@@ -20,6 +20,7 @@
             layouts: given.layouts || load('ParcelLayoutLayouts', './parcel-layout-layouts.js'),
             grid: given.grid || load('SchellingGrid', './parcels/schelling-grid.js'),
             validation: given.validation || load('ParcelLayoutValidation', './parcel-layout-validation.js'),
+            corridorGeometry: given.corridorGeometry || load('CorridorGeometry', './corridor-geometry.js'),
             frame: given.frame || load('__metricFrame', './metric-frame.js')
         };
     }
@@ -34,8 +35,12 @@
     function roadProfile(intent, d) {
         if (intent.lanes) {
             if (!intent.lanes.length || intent.lanes.length > 32 || intent.lanes.some(lane => !d.profile.CORRIDOR_LANE_TYPES[lane.type]
-                || !finite(lane.width) || lane.width < 0.25 || lane.width > 20)) fail('Supply 1–32 known lane types, each 0.25–20 metres wide');
+                || !finite(lane.width) || lane.width < 0.25 || lane.width > 20 || (lane.type === 'rail' && ![1000, 1435].includes(lane.gauge ?? 1435)))) fail('Supply 1–32 known lane types, each 0.25–20 metres wide');
             return d.profile.normalizeCorridorProfile({ strips: intent.lanes });
+        }
+        if (intent.kind === 'track') {
+            if (![1000, 1435].includes(intent.gauge ?? 1435)) fail('Track gauge must be 1000 or 1435 millimetres');
+            return d.profile.corridorDefaultTrackProfile(intent.gauge ?? 1435);
         }
         const tags = intent.preset === '2+2' ? { highway: 'primary', lanes: '4', sidewalk: 'both' }
             : intent.preset === '1+1 with cycle lanes' ? { highway: 'residential', lanes: '2', sidewalk: 'both', cycleway: 'lane' }
@@ -56,6 +61,15 @@
         if (d.profile.corridorProfileWidth(profile) > 100) fail('Road cross-section must be at most 100 metres');
         const points = intent.points.map(([lng, lat]) => ({ lat, lng }));
         const definition = { kind: 'road', points: [points], segments: [points], segmentIds: ['intent-street'], profile, width: d.profile.corridorProfileWidth(profile), tunnels: [] };
+        if (profile.strips.some(lane => lane.type === 'rail')) {
+            const speed = intent.speed ?? intent.trackSpeed ?? 120;
+            if (![50, 80, 120, 160, 200, 250].includes(speed)) fail('Track speed must be 50, 80, 120, 160, 200 or 250 km/h');
+            const target = d.corridorGeometry.getMinCurvatureRadius(speed);
+            const minimum = intent.minimumRadiusM ?? intent.trackMinRadius ?? target;
+            if (!finite(minimum) || minimum < target || minimum > 100000) fail('Track minimumRadiusM must meet the selected speed target and be at most 100000 metres');
+            if (d.corridorGeometry.measureCorridorCurvature([points], minimum).length) fail('Track bends violate the authored minimum radius; revise points or the speed target');
+            definition.metadata = { ...intent.metadata, type: 'track', isTrack: true, isRoad: false, isCorridor: true, trackSpeed: speed, trackMinRadius: minimum };
+        } else if (intent.kind === 'track') fail('A track cross-section needs at least one rail lane');
         const material = d.footprint.materialize(definition);
         definition.polygon = material.polygon;
         definition.constructionFrame = material.constructionFrame;
@@ -64,9 +78,9 @@
     function build(intent, given) {
         const d = deps(given);
         if (!d.turf) fail('Turf geometry is unavailable');
-        const site = intent.kind === 'road' ? null : polygon(intent.site, d);
+        const site = ['road', 'track'].includes(intent.kind) ? null : polygon(intent.site, d);
         let record;
-        if (intent.kind === 'road') record = buildRoad(intent, d);
+        if (['road', 'track'].includes(intent.kind)) record = buildRoad(intent, d);
         else if (intent.kind === 'space') {
             if (!['park', 'square', 'lake'].includes(intent.spaceKind)) fail('Space kind must be park, square or lake');
             record = { goal: intent.spaceKind, site, structureProposal: { kind: intent.spaceKind, geometry: site } };
@@ -170,7 +184,7 @@
                         lanes.splice(change.index, 1);
                     }
                 } else fail('This change does not apply to a road');
-                const built = buildRoad({ points, lanes }, d);
+                const built = buildRoad({ points, lanes, metadata: view.metadata, trackSpeed: view.metadata?.trackSpeed, trackMinRadius: view.metadata?.trackMinRadius, ...(view.metadata?.isTrack ? { kind: 'track' } : {}) }, d);
                 Object.assign(record, built);
             } else if (record.structureProposal && change.type === 'set_kind') {
                 if (!['park', 'square', 'lake'].includes(change.value)) fail('Unknown space kind');

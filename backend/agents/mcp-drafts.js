@@ -5,6 +5,8 @@ import { createMcpComparison } from './mcp-compare.js';
 import { previewArtifact } from './mcp-preview.js';
 import { parcelSourceIdOf } from './mcp-read-tools.js';
 import { editedDesign, valueAt } from './mcp-edit.js';
+import { buildTypedDesign, validateTrackDesign } from './mcp-constructors.js';
+import { trustedMetadata } from './mcp-results.js';
 const fail = (code, message, next) => Object.assign(new Error(message), { code, next });
 const geometry = value => value?.type === 'Feature' ? value.geometry : value;
 function union(features) {
@@ -25,7 +27,13 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference }) 
         // A new artifact needs its actual authoring time. A null time would be filled by browser
         // import, changing its CID as soon as the person opened the supposedly exact preview.
         let intent = { ...args, kind, authoredAt: args.authoredAt ?? new Date().toISOString() };
-        if (kind === 'road' && !intent.points) {
+        let parcelFeatures = [];
+        if (kind === 'station') {
+            intent.corridors = await Promise.all((args.corridors || []).map(async input => {
+                const resolved = await resolveDesignSource(input);
+                return { cid: cidOfObject(resolved.content), content: resolved.content };
+            }));
+        } else if ((kind === 'road' || kind === 'track') && !intent.points) {
             let bbox = args.bbox;
             if (!bbox && args.street) {
                 const found = await read.findPlace({ query: args.street, city: args.city, limit: 1 });
@@ -40,9 +48,13 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference }) 
                 : String(f.properties?.name || '').toLowerCase() === String(args.street).toLowerCase()));
             if (ways.length !== 1) throw fail('street-ambiguous', `Found ${ways.length} matching street stretches. Choose one streetId or supply points.`, { action: 'Choose a specific streetId from /streets/near or supply WGS84 points.' });
             intent.points = ways[0].geometry.coordinates;
-        } else if (kind !== 'road') {
+        } else if (!['road', 'track'].includes(kind)) {
+            if (!args.parcelIds?.length && !args.outline) throw fail('site-required', 'Choose source parcels or supply a WGS84 outline.',
+                { tool: 'ugt_help', arguments: { topic: kind === 'building' ? 'ugt_draft_building' : `ugt_draft_${kind.replaceAll('-', '_')}` }, action: 'Supply parcelIds with parcelSourceId, or outline.' });
+            if (args.parcelIds?.length && args.outline) throw fail('site-ambiguous', 'Choose either source parcels or an outline, not both.', { action: 'Remove one of parcelIds or outline.' });
             if (args.parcelIds?.length) {
                 const source = await read.parcels(args);
+                parcelFeatures = source.features;
                 intent.site = union(source.features);
                 intent.parcelSourceId = source.parcelSourceId;
             } else intent.site = geometry(args.outline);
@@ -55,7 +67,8 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference }) 
                 intent.height = items[0].metrics.heightM;
             }
         }
-        const design = builder.build(intent, { turf });
+        const design = ['building', 'station', 'track'].includes(kind)
+            ? buildTypedDesign(intent, { parcels: parcelFeatures }) : builder.build(intent, { turf });
         const checked = designObject({ ...design, createdAt: design.authoredAt });
         return result(checked.content, intent.parcelSourceId || args.parcelSourceId);
     }
@@ -81,17 +94,20 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference }) 
     const resolveDesign = async value => (await resolveDesignSource(value)).content;
     return {
         resolveDesign, resolveDesignSource,
-        draftRoad: args => draft('road', args), draftBuilding: args => draft('building', args),
+        draftRoad: args => draft('road', args), draftTrack: args => draft('track', args), draftStation: args => draft('station', args), draftBuilding: args => draft('building', args),
         draftSpace: args => draft('space', args), draftParcelLayout: args => draft('parcel-layout', args), draftUrbanRule: args => draft('urban-rule', args),
         async inspectDesign({ design, paths = [''] }) {
             const resolved = await resolveDesignSource(design), content = resolved.content;
             return { cid: cidOfObject(content), parcelSourceId: resolved.parcelSourceId,
                 values: paths.map(path => ({ path, untrustedValue: valueAt(content, path) })),
                 editableRoots: Object.keys(content).filter(key => !['schema', 'origin', 'authoredAt'].includes(key)).map(key => `/${key}`),
-                next: { tool: 'ugt_edit_design', action: 'Use this CID as expectedCid. Patch the authored JSON with ordered JSON Pointer edits. Canonical OSM changes rebuild the road footprint; coupled building geometry must remain consistent.' } };
+                next: trustedMetadata({ tool: 'ugt_edit_design', action: 'Use this CID as expectedCid. Patch the authored JSON with ordered JSON Pointer edits. Canonical OSM changes rebuild the road footprint; coupled building geometry must remain consistent.' }) };
         },
         async editDesign({ design, expectedCid, edits, parcelSourceId }) {
             const resolved = await resolveDesignSource(design);
+            if (cidOfObject(resolved.content) !== expectedCid) throw Object.assign(new Error('Inspect the intended design revision before editing.'), {
+                code: 'design-revision-mismatch', currentCid: cidOfObject(resolved.content), expectedCid,
+                next: { tool: 'ugt_inspect_design', arguments: { design }, action: 'Inspect this reference and use its current CID as expectedCid.' } });
             return result(editedDesign(resolved.content, expectedCid, edits), parcelSourceId || resolved.parcelSourceId);
         },
         async modifyDesign({ design, changes, parcelSourceId }) {
@@ -110,6 +126,7 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference }) 
             }
             modified.origin = { cid: cidOfObject(original) };
             modified.authoredAt = new Date().toISOString();
+            validateTrackDesign(modified, original);
             return result(modified, parcelSourceId);
         },
         compare: createMcpComparison({ read, resolveDesign, appOrigin, resolveDraftReference })

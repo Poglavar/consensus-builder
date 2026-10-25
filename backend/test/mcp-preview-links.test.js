@@ -1,12 +1,20 @@
 // Private draft URLs address stored objects; collection manifests never embed member geometry.
 import { createRequire } from 'node:module';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { createPreviewLinks } from '../agents/mcp-preview-links.js';
 import { previewArtifact } from '../agents/mcp-preview.js';
 import { cidOfObject } from '../cid.js';
 const links = createRequire(import.meta.url)('../../frontend/js/draft-link.js');
 const design = title => ({ schema: 'design/v1', title, geometry: { coordinates: Array.from({ length: 4000 }, (_, i) => [i / 31, i / 71]) } });
-const storeOf = options => createPreviewLinks({ origin: 'https://mcp.example', appOrigin: 'https://app.example', ...options });
+const directories = [];
+afterEach(() => { for (const directory of directories.splice(0)) rmSync(directory, { recursive: true, force: true }); });
+const storeOf = options => {
+    const storeDirectory = mkdtempSync(join(tmpdir(), 'mcp-preview-test-')); directories.push(storeDirectory);
+    return createPreviewLinks({ origin: 'https://mcp.example', appOrigin: 'https://app.example', storeDirectory, ...options });
+};
 const tokenOf = reference => new URL(reference).pathname.split('/').at(-1);
 const fetchFrom = store => async url => { const row = store.get(tokenOf(url)); return Response.json(row || { code: 'preview-expired' }, { status: row ? 200 : 410 }); };
 
@@ -45,6 +53,23 @@ describe('temporary hosted MCP object references', () => {
         expect(restored).toEqual({ plan, designs, parcelSourceId: 'ground' });
         expect(await store.resolve(preview.draftRef)).toEqual(restored);
     });
+    it('loads a named plan with each member source and keeps agreements on one source', async () => {
+        const store = storeOf(), designs = [design('First source'), design('Second source')];
+        const designSources = { [cidOfObject(designs[0])]: 'ground-a', [cidOfObject(designs[1])]: 'ground-b' };
+        const plan = { schema: 'plan/v1', designCids: designs.map(cidOfObject).sort() };
+        const preview = store.create({ plan, designs, designSources });
+        expect(await links.load(preview.previewUrl, { fetchImpl: fetchFrom(store), cidOf: cidOfObject }))
+            .toEqual({ plan, designs, designSources, parcelSourceId: null });
+        const wrongSource = async url => {
+            const row = store.get(tokenOf(url));
+            if (row.record.schema === 'design/v1') row.parcelSourceId = 'changed-source';
+            return Response.json(row);
+        };
+        await expect(links.load(preview.previewUrl, { fetchImpl: wrongSource, cidOf: cidOfObject })).rejects.toThrow(/Invalid private collection member/);
+        const agreement = { schema: 'agreement/v1', designs: designs.map(content => ({ cid: cidOfObject(content) })) };
+        const mixed = store.create({ agreement, designs, designSources, parcelSourceId: 'ground-a' });
+        await expect(links.load(mixed.previewUrl, { fetchImpl: fetchFrom(store), cidOf: cidOfObject })).rejects.toThrow(/Invalid private collection member/);
+    });
     it('rejects changed content and member redirects to another server before importing anything', async () => {
         const store = storeOf(), content = design('Original');
         const preview = store.create({ design: content });
@@ -69,10 +94,10 @@ describe('temporary hosted MCP object references', () => {
         let now = 0;
         const store = storeOf({ ttlMs: 100, maxEntries: 1, now: () => now });
         const first = store.create({ design: design('first') }), second = store.create({ design: design('second') });
-        expect(store.get(tokenOf(first.draftRef))).toBeNull();
-        expect(store.get(tokenOf(second.draftRef)).record.title).toBe('second');
+        expect(store.get(tokenOf(first.draftRef)).record.title).toBe('first');
+        expect(second).toMatchObject({ previewStatus: 'private-artifact', previewUrl: null });
+        now = 100; expect(store.get(tokenOf(first.draftRef))).toBeNull();
         await expect(store.resolve(first.draftRef)).rejects.toMatchObject({ code: 'draft-reference-expired' });
-        now = 100; expect(store.get(tokenOf(second.draftRef))).toBeNull();
         const third = store.create({ design: design('third') }); store.clear();
         expect(store.get(tokenOf(third.draftRef))).toBeNull();
         expect(() => storeOf({ origin: 'http://public.example' })).toThrow(/Invalid private draft/);

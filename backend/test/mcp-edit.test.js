@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createPreviewLinks } from '../agents/mcp-preview-links.js';
+import { createTestPreviewLinks as createPreviewLinks } from './helpers/mcp-preview-store.js';
 import { appTurf as turf, intentDesign } from '../agents/mcp-geometry.js';
 import { editedDesign, patchDocument } from '../agents/mcp-edit.js';
 import { cidOfObject } from '../cid.js';

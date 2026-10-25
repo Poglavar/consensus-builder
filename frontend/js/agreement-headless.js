@@ -46,9 +46,20 @@
                 const buildings = row.geometry?.buildings || [];
                 const goal = root.__applyRoute.normalizeGoalKey(row.goal);
                 if (root.ProposalApplyBuildings.shouldFormOwnBuildingParcel(row, goal, buildings.length)) {
-                    const parents = manager._resolveLiveFormationParents(row, row.proposalId, 'building', options);
+                    // Roads already partition the private live fabric. Resolve the surviving
+                    // material and reviewed take against those pieces, just as structure replay
+                    // does, while keeping the immutable authored row in the agreement unchanged.
+                    const landTake = row.geometry?.landTake;
+                    const takeGeometry = landTake?.geometry || landTake;
+                    const carved = manager._groundAfterLaterCorridors(row,
+                        [buildings[0].geometry, ...(takeGeometry ? [takeGeometry] : [])], options);
+                    if (!carved.geometries[0]) throw new Error('A later corridor takes the entire building');
+                    const record = { ...row, geometry: { ...row.geometry,
+                        buildings: [{ ...buildings[0], geometry: carved.geometries[0] }],
+                        ...(takeGeometry ? { landTake: landTake.geometry ? { ...landTake, geometry: carved.geometries[1] } : carved.geometries[1] } : {}) } };
+                    const parents = manager._resolveLiveFormationParents(record, row.proposalId, 'building', options);
                     if (!parents.ok) throw new Error(parents.message);
-                    const formed = await manager._formBuildingParcel(row.proposalId, row, row.buildingProposal, buildings[0].geometry, parents.ids, row.proposalId, parents.features, options);
+                    const formed = await manager._formBuildingParcel(row.proposalId, record, row.buildingProposal, carved.geometries[0], parents.ids, row.proposalId, parents.features, options);
                     if (!formed.ok) throw Object.assign(new Error(lastFailure?.message || 'Building could not form'), lastFailure);
                 }
             }

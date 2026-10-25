@@ -77,7 +77,48 @@
         return { type: 'Feature', properties: {}, geometry };
     }
 
-    const api = { dimensionsFromBounds, projectedFootprint, MAX_FOOTPRINT_TRIANGLES };
+    // Visible scene triangles, shared by the upload dialog and CPU model importer.
+    function modelTriangles(object, center, THREE) {
+        const triangles = [];
+        const vertex = new THREE.Vector3();
+        const instanceMatrix = new THREE.Matrix4();
+        const transform = new THREE.Matrix4();
+        object.updateMatrixWorld(true);
+        object.traverseVisible(node => {
+            const geometry = node.isMesh && node.geometry;
+            const position = geometry && geometry.attributes.position;
+            if (!position) return;
+            const index = geometry.index;
+            const count = index ? index.count : position.count;
+            const drawStart = geometry.drawRange.start;
+            const drawEnd = Math.min(count, drawStart + geometry.drawRange.count);
+            const materials = Array.isArray(node.material) ? node.material : [node.material];
+            const groups = Array.isArray(node.material) ? geometry.groups : [{ start: 0, count, materialIndex: 0 }];
+            for (let instance = 0; instance < (node.isInstancedMesh ? node.count : 1); instance++) {
+                transform.copy(node.matrixWorld);
+                if (node.isInstancedMesh) {
+                    node.getMatrixAt(instance, instanceMatrix);
+                    transform.multiply(instanceMatrix);
+                }
+                for (const group of groups) {
+                    if (!materials[group.materialIndex] || materials[group.materialIndex].visible === false) continue;
+                    const start = Math.max(drawStart, group.start);
+                    const end = Math.min(drawEnd, group.start + group.count);
+                    for (let offset = start; offset + 2 < end; offset += 3) {
+                        if (triangles.length >= MAX_FOOTPRINT_TRIANGLES * 6) throw Object.assign(new Error('Model triangle limit'), { code: 'complex' });
+                        for (let corner = 0; corner < 3; corner++) {
+                            const vertexIndex = index ? index.getX(offset + corner) : offset + corner;
+                            node.getVertexPosition(vertexIndex, vertex).applyMatrix4(transform);
+                            triangles.push(vertex.x - center.x, -(vertex.z - center.z));
+                        }
+                    }
+                }
+            }
+        });
+        return new Float64Array(triangles);
+    }
+
+    const api = { modelTriangles, dimensionsFromBounds, projectedFootprint, MAX_FOOTPRINT_TRIANGLES };
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
     if (global) global.BuildingModelGeometry = api;
 })(typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : globalThis));

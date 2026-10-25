@@ -27,13 +27,14 @@
         for (const content of designs) {
             const checked = root.DesignRecord.validate(content);
             if (!checked.valid) throw new Error(checked.errors[0].message);
+            const cid = root.Cid.cidOfObject(content);
+            const parcelSourceId = artifact.designSources?.[cid] || artifact.parcelSourceId || root.DesignSync.parcelSourceIdOf(content.city);
             const response = await root.fetch(`${apiBase}/designs/binding`, { method: 'POST',
                 headers: { 'content-type': 'application/json' }, body: JSON.stringify({ site: root.__siteBinding.siteOf(content, { turf: root.turf }), city: content.city,
-                    toleranceM: content.toleranceM, parcelSourceId: artifact.parcelSourceId || root.DesignSync.parcelSourceIdOf(content.city) }) });
+                    toleranceM: content.toleranceM, parcelSourceId }) });
             const binding = await response.json();
             if (!response.ok) throw new Error(binding.error || binding.code || 'Draft ground is unavailable');
-            const cid = root.Cid.cidOfObject(content);
-            rows.set(cid, { cid, content, city: content.city, binding: binding.binding });
+            rows.set(cid, { cid, content, city: content.city, parcelSourceId, binding: binding.binding });
         }
         const applied = await root.handleSharedDesignRoute([...rows.keys()], { draftRows: rows, enter3D: true, openDetails: !collection });
         if (applied.blocked || applied.omitted?.length) return applied;

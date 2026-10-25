@@ -80,7 +80,7 @@ describe('generated building design publication', () => {
         expect(pinned.status, JSON.stringify(pinned.body)).toBe(200);
         expect(pinned.body.cid).toBe(cid);
         expect(upstream).toHaveBeenCalledTimes(1);
-        const indexed = await request(app).post('/designs').send({ cid, content });
+        const indexed = await request(app).post('/designs').send({ cid, content, parcelSourceId: 'oss-wfs' });
         expect(indexed.status, JSON.stringify(indexed.body)).toBe(201);
         const reopened = await request(app).get(`/designs/${cid}`);
         expect(reopened.status).toBe(200);

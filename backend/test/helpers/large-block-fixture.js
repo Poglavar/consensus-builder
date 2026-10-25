@@ -34,7 +34,7 @@ function loadRingGenerator() {
     };
     const windowStub = {
         document: documentStub, addEventListener: noop, removeEventListener: noop,
-        confirm: () => true, UrbanRuleVariation: urbanRules
+        confirm: () => true, UrbanRuleVariation: urbanRules, turf, FootprintGeometry: footprint
     };
     const leafletStub = {
         geoJSON: () => ({ addTo() { return this; }, on: noop, bindTooltip() { return this; } }),
@@ -42,7 +42,8 @@ function loadRingGenerator() {
         marker: () => ({ addTo() { return this; } }), layerGroup: () => ({ addTo() { return this; }, clearLayers: noop }),
         featureGroup: () => ({ addTo() { return this; } }), divIcon: () => ({})
     };
-    const source = readFileSync(new URL('../../../frontend/js/building-blocks.js', import.meta.url), 'utf8');
+    const source = readFileSync(new URL('../../../frontend/js/building-rule-geometry.js', import.meta.url), 'utf8') + '\n'
+        + readFileSync(new URL('../../../frontend/js/building-blocks.js', import.meta.url), 'utf8');
     const context = {
         ...footprint, turf, document: documentStub, window: windowStub, L: leafletStub,
         highlightBlock: noop, UrbanRuleVariation: urbanRules, console,

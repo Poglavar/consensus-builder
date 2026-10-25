@@ -3,6 +3,7 @@
 import { appTurf as turf } from './mcp-geometry.js';
 import { agreementObject, cidOfObject, designObject, holdersFromRights, isCid } from './agreement-objects.js';
 import { previewArtifact } from './mcp-preview.js';
+import { trustedMetadata } from './mcp-results.js';
 import { roadCutWarning } from './mcp-ground-effects.js';
 
 const fail = (code, message, next = { action: 'Inspect the current plan, choose explicit object references and retry.' }) => {
@@ -109,7 +110,7 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
             items: matched.slice(offset, offset + limit).map(({ geometry, ...item }) => includeGeometry ? { ...item, geometry } : item),
             total: matched.length, offset, truncated: offset + limit < matched.length,
             selectionBasis: 'References belong to this immutable plan CID. Compass selection requires the whole object bbox beyond the reference bbox; crossing objects are excluded.',
-            next: { tool: 'ugt_edit_plan', action: 'Use expectedCid and explicit refs. Ask the person when their description matches more than one object.' } };
+            next: trustedMetadata({ tool: 'ugt_edit_plan', action: 'Use expectedCid and explicit refs. Ask the person when their description matches more than one object.' }) };
     }
 
     async function editPlan({ plan: value, expectedCid, operations = [], terms = {} }) {

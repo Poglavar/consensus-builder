@@ -5,7 +5,7 @@ import * as turf from '@turf/turf';
 import { validateDesignContent } from '../routes/designs.js';
 import { cidOf, cidOfObject } from '../cid.js';
 import { createUrbanGameTheoryTools } from '../agents/ugt-agent-tools.js';
-import { createPreviewLinks } from '../agents/mcp-preview-links.js';
+import { createTestPreviewLinks as createPreviewLinks } from './helpers/mcp-preview-store.js';
 const require = createRequire(import.meta.url);
 const builder = require('../../frontend/js/intent-design.js');
 const links = require('../../frontend/js/draft-link.js');

@@ -1,0 +1,166 @@
+// Verify parser/model import provenance, upload consent and ready private image responses.
+import { describe, expect, it, vi } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import { createCanvas } from 'canvas';
+import * as THREE from 'three';
+import { createTestPreviewLinks } from './helpers/mcp-preview-store.js';
+import { createMcpAssetTools } from '../agents/mcp-assets.js';
+import { createMcpDraftTools } from '../agents/mcp-drafts.js';
+import { cidOfObject, canonicalBytes } from '../cid.js';
+import { designObject } from '../agents/agreement-objects.js';
+import { appTurf as turf, corridorRuntime } from '../agents/mcp-geometry.js';
+const require = createRequire(import.meta.url);
+const imports = require('../../frontend/js/corridor-import.js');
+const PlanRecord = require('../../frontend/js/plan-record.js');
+const modelGeometry = require('../../frontend/js/building-model-geometry.js');
+const outline = { type: 'Polygon', coordinates: [[[1, 48], [1.0002, 48], [1.0002, 48.0002], [1, 48.0002], [1, 48]]] };
+const osm = JSON.stringify({ elements: [{ type: 'node', id: 1, lat: 48, lon: 1 }, { type: 'node', id: 2, lat: 48, lon: 1.001 },
+    { type: 'way', id: 10, nodes: [1, 2], tags: { highway: 'residential', lanes: '2', name: 'Imported street' } }] });
+function setup(extra = {}) {
+    const calls = [];
+    const read = { siteOfDesign: content => content.site, request: vi.fn(async (path, _query, body) => {
+        calls.push({ path, body });
+        if (path === '/designs/binding') return { parcelSourceId: 'ground', binding: { coverage: 'complete', unknownM2: 0, parcels: [] } };
+        if (path === '/models') return { modelUrl: '/uploads/models/imported.glb' };
+        throw new Error('Unexpected request');
+    }) };
+    const drafts = createMcpDraftTools({ read, appOrigin: 'https://app.example', resolveDraftReference: extra.resolveDraftReference });
+    return { calls, read, drafts, tools: createMcpAssetTools({ read, drafts, appOrigin: 'https://app.example', apiBase: 'https://api.example', ...extra }) };
+}
+// A real glTF model with one concave connected L and nonzero Y bounds, without any external IO.
+function modelData(external = false) {
+    const positions = new Float32Array([0,0,0, 4,0,0, 4,0,-2, 0,0,0, 4,0,-2, 0,0,-2,
+        0,3,-2, 2,3,-2, 2,3,-4, 0,3,-2, 2,3,-4, 0,3,-4]);
+    const binary = Buffer.from(positions.buffer);
+    const json = { asset: { version: '2.0' }, scene: 0, scenes: [{ nodes: [0] }], nodes: [{ mesh: 0 }],
+        meshes: [{ primitives: [{ attributes: { POSITION: 0 } }] }],
+        buffers: [{ byteLength: binary.length, uri: external ? 'https://private.invalid/buffer.bin' : `data:application/octet-stream;base64,${binary.toString('base64')}` }],
+        bufferViews: [{ buffer: 0, byteOffset: 0, byteLength: binary.length }],
+        accessors: [{ bufferView: 0, componentType: 5126, count: positions.length / 3, type: 'VEC3', min: [0,0,-4], max: [4,3,0] }] };
+    return `data:model/gltf+json;base64,${Buffer.from(JSON.stringify(json)).toString('base64')}`;
+}
+
+function glbData() {
+    const json = JSON.parse(Buffer.from(modelData().split(',')[1], 'base64').toString());
+    const binary = Buffer.from(json.buffers[0].uri.split(',')[1], 'base64'); delete json.buffers[0].uri;
+    const text = JSON.stringify(json), jsonBytes = Buffer.from(text + ' '.repeat((4 - Buffer.byteLength(text) % 4) % 4));
+    const bytes = Buffer.alloc(12 + 8 + jsonBytes.length + 8 + binary.length);
+    bytes.writeUInt32LE(0x46546c67, 0); bytes.writeUInt32LE(2, 4); bytes.writeUInt32LE(bytes.length, 8);
+    bytes.writeUInt32LE(jsonBytes.length, 12); bytes.writeUInt32LE(0x4e4f534a, 16); jsonBytes.copy(bytes, 20);
+    bytes.writeUInt32LE(binary.length, 20 + jsonBytes.length); bytes.writeUInt32LE(0x004e4942, 24 + jsonBytes.length); binary.copy(bytes, 28 + jsonBytes.length);
+    return `data:model/gltf-binary;base64,${bytes.toString('base64')}`;
+}
+
+describe('MCP imports and ephemeral visual previews', () => {
+    it('imports GeoJSON through the same building and road builders with exact canonical bytes', async () => {
+        const { tools, drafts, calls } = setup();
+        const args = { format: 'geojson', city: 'place', parcelSourceId: 'ground', authoredAt: '2026-01-01T00:00:00.000Z', height: 12 };
+        const imported = await tools.importDesign({ ...args, data: { type: 'FeatureCollection', features: [
+            { type: 'Feature', geometry: outline, properties: { name: 'Building' } },
+            { type: 'Feature', geometry: { type: 'LineString', coordinates: [[1, 48], [1.001, 48]] }, properties: { name: 'Street' } }
+        ] } });
+        expect(imported.designs).toHaveLength(2);
+        const direct = await drafts.draftBuilding({ ...args, title: 'Building', outline, footprint: outline });
+        expect(canonicalBytes(imported.designs[0].design)).toEqual(canonicalBytes(direct.design));
+        expect(imported.designs.every(row => row.cid === cidOfObject(row.design) && row.previewStatus === 'private-artifact')).toBe(true);
+        expect(calls.every(call => call.path === '/designs/binding')).toBe(true);
+    });
+    it('uses the exact OSM parser, importer and footprint generator', async () => {
+        const { tools } = setup();
+        const args = { format: 'osm', data: osm, city: 'place', author: 'import', parcelSourceId: 'ground', authoredAt: '2026-01-01T00:00:00.000Z' };
+        const answer = await tools.importDesign(args);
+        const parsed = imports.FORMATS.find(format => format.id === 'osm').parse(osm);
+        const [record] = imports.recordsFromImport(parsed, { author: args.author, createdAt: args.authoredAt, source: 'osm', fallbackTitle: 'Imported road' });
+        record.site = corridorRuntime.footprint.materialize(record.roadProposal.definition).polygon;
+        record.city = args.city; record.roadProposal.definition = corridorRuntime.osm.toRecord(record.roadProposal.definition);
+        expect(canonicalBytes(answer.designs[0].design)).toEqual(canonicalBytes(designObject(record).content));
+        expect(answer.import).toMatchObject({ parser: 'app-corridor-import', count: 1 });
+    });
+    it('imports the existing georeferenced OpenDRIVE fixture without a second parser', async () => {
+        const { tools } = setup();
+        const data = readFileSync(new URL('./fixtures/opendrive/t-junction.xodr', import.meta.url), 'utf8');
+        const answer = await tools.importDesign({ format: 'opendrive', data, city: 'place', parcelSourceId: 'ground' });
+        expect(answer.designs).toHaveLength(3);
+        expect(answer.import.placement).toBe('georeference');
+        expect(answer.designs.every(row => row.design.roadProposal.definition.osm?.elements.length)).toBe(true);
+    });
+    it('requires exactly one import payload before fetching, binding or uploading', async () => {
+        const publicFetch = vi.fn(), { tools, calls } = setup({ publicFetch });
+        for (const args of [{}, { data: osm, url: 'https://source.example/network.osm' }]) {
+            await expect(tools.importDesign({ format: 'osm', ...args })).rejects.toMatchObject({ code: 'import-input-required' });
+        }
+        for (const args of [{}, { modelData: modelData(), url: 'https://source.example/model.glb' },
+            { modelData: modelData(), data: Buffer.from('bytes') }, { data: Buffer.from('bytes'), url: 'https://source.example/model.glb' }]) {
+            await expect(tools.importModel({ confirmAssetUpload: true, center: [1, 48], ...args })).rejects.toMatchObject({ code: 'import-input-required' });
+        }
+        expect(publicFetch).not.toHaveBeenCalled(); expect(calls).toEqual([]);
+    });
+    it('guards remote sources and never fetches model resources embedded as external URLs', async () => {
+        const publicFetch = vi.fn(async () => new Response(osm));
+        const { tools, calls } = setup({ publicFetch });
+        await expect(tools.importDesign({ format: 'osm', url: 'https://127.0.0.1/source' })).rejects.toMatchObject({ code: 'invalid-source-url' });
+        expect(publicFetch).not.toHaveBeenCalled();
+        const imported = await tools.importDesign({ format: 'osm', url: 'https://source.example/network.osm', parcelSourceId: 'ground' });
+        expect(imported.designs).toHaveLength(1);
+        expect(publicFetch).toHaveBeenCalledWith('https://source.example/network.osm', { redirect: 'error' });
+        await expect(tools.importModel({ modelData: modelData(true), center: [1, 48], confirmAssetUpload: true })).rejects.toMatchObject({ code: 'model-external-resource' });
+        expect(calls.some(call => call.path === '/models')).toBe(false);
+        await expect(tools.importModel({ data: 'null', center: [1, 48], confirmAssetUpload: true })).rejects.toMatchObject({ code: 'model-data-invalid' });
+    });
+    it.each([['gltf', modelData], ['glb', glbData]])('requires public asset consent and uses the real concave %s mesh footprint', async (_kind, data) => {
+        const { tools, calls } = setup();
+        await expect(tools.importModel({ modelData: data(), center: [1, 48] })).rejects.toMatchObject({ code: 'model-upload-confirmation-required' });
+        expect(calls).toEqual([]);
+        const result = await tools.importModel({ modelData: data(), center: [1, 48], parcelSourceId: 'ground', fileName: 'building.gltf', confirmAssetUpload: true });
+        expect(result.asset).toEqual({ modelUrl: 'https://api.example/uploads/models/imported.glb', public: true, durable: true, footprint: 'projected-model-triangles' });
+        expect(result.design.geometry.buildings[0].geometry.coordinates[0].length).toBeGreaterThan(5);
+        expect(turf.area(turf.feature(result.design.geometry.buildings[0].geometry))).toBeCloseTo(12, 1);
+        expect(result.design.geometry.buildings[0].properties).toMatchObject({ source: 'upload', height: 3, modelUrl: result.asset.modelUrl });
+        expect(result.cid).toBe(cidOfObject(result.draftArtifact.design));
+        expect(calls.map(call => call.path)).toEqual(['/designs/binding', '/models']);
+    });
+    it('uses shared visible-triangle extraction with instance transforms', () => {
+        const scene = new THREE.Scene(), mesh = new THREE.InstancedMesh(new THREE.BoxGeometry(2, 3, 4), new THREE.MeshBasicMaterial(), 1);
+        mesh.setMatrixAt(0, new THREE.Matrix4().makeTranslation(10, 0, 20)); scene.add(mesh);
+        const box = new THREE.Box3().setFromObject(scene), triangles = modelGeometry.modelTriangles(scene, box.getCenter(new THREE.Vector3()), THREE);
+        const footprint = modelGeometry.projectedFootprint(triangles, turf.union);
+        const area = Math.abs(footprint.geometry.coordinates[0].slice(1).reduce((sum, point, index) => { const previous = footprint.geometry.coordinates[0][index]; return sum + previous[0] * point[1] - point[0] * previous[1]; }, 0)) / 2;
+        expect(area).toBeCloseTo(8, 6);
+    });
+    it('renders a real PNG with the existing 2D renderer without persistent image or tile cache writes', async () => {
+        const tile = createCanvas(512, 512).toBuffer('image/png'), fetchImpl = vi.fn(async () => new Response(tile));
+        const { tools, drafts } = setup({ fetchImpl, tileUrl: 'https://tiles.example/{z}/{x}/{y}.png' });
+        const drafted = await drafts.draftBuilding({ outline, footprint: outline, height: 12, parcelSourceId: 'ground' });
+        const result = await tools.renderPreview({ design: drafted.design });
+        const png = Buffer.from(result.image.data, 'base64');
+        expect(png.subarray(0, 8).toString('hex')).toBe('89504e470d0a1a0a');
+        expect(result).toMatchObject({ ready: true, publication: 'private', provenance: { persisted: false, renderer: 'app-map-preview-2d', designCids: [drafted.cid] }, metrics: { width: 1200, height: 630, designCount: 1 } });
+        expect(result.metrics.tiles.loaded).toBe(result.metrics.tiles.total);
+        expect(fetchImpl).toHaveBeenCalled();
+    });
+    it('resolves private and published design and named-plan references before rendering exact members', async () => {
+        const store = createTestPreviewLinks({ origin: 'https://mcp.example', appOrigin: 'https://app.example' });
+        const render2d = vi.fn(async () => ({ buffer: createCanvas(1200, 630).toBuffer('image/png'), width: 1200, height: 630 }));
+        const { tools, drafts, read } = setup({ resolveDraftReference: store.resolve, render2d });
+        const content = (await drafts.draftBuilding({ outline, footprint: outline, height: 12, parcelSourceId: 'ground' })).design;
+        const cid = cidOfObject(content), plan = PlanRecord.create('Private selection', [cid], { at: '48,1,17', mode: '2d', city: null });
+        const planCid = cidOfObject(plan), designRef = store.create({ design: content, parcelSourceId: 'ground' });
+        const planRef = store.create({ plan, designs: [content], designSources: { [cid]: 'ground' } });
+        read.getDesign = vi.fn(async () => ({ cid, untrusted: { design: content }, parcelSourceId: 'ground' }));
+        const request = read.request.getMockImplementation();
+        read.request.mockImplementation(async (path, ...rest) => path === `/plans/${planCid}`
+            ? { cid: planCid, content: plan, designs: [{ cid, content, parcelSourceId: 'ground' }] } : request(path, ...rest));
+        for (const subject of [{ design: designRef.draftRef }, { design: cid }, { plan: planRef.draftRef }, { plan: planCid }]) {
+            expect((await tools.renderPreview(subject)).provenance.designCids).toEqual([cid]);
+            expect(render2d.mock.lastCall[0].map(row => canonicalBytes(row.content))).toEqual([canonicalBytes(content)]);
+        }
+        expect(read.getDesign).toHaveBeenCalledWith({ designCid: cid });
+    });
+    it('does not claim a ready image for partial tiles or unavailable 3D', async () => {
+        const { tools, drafts } = setup({ render2d: async () => ({ buffer: Buffer.from('png'), tiles: { loaded: 1, total: 2 } }) });
+        const drafted = await drafts.draftBuilding({ outline, footprint: outline, height: 12, parcelSourceId: 'ground' });
+        await expect(tools.renderPreview({ design: drafted.design })).rejects.toMatchObject({ code: 'preview-not-ready' });
+        await expect(tools.renderPreview({ design: drafted.design, view: '3d' })).rejects.toMatchObject({ code: 'preview-3d-unavailable' });
+    });
+});

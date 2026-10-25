@@ -66,7 +66,7 @@ describe('MCP comparison measurements', () => {
             parcels: [{ parcelId: 'A', areaM2, holders: [{ ownerKey: 'party-A', share: 1 }] }],
             outputs: [{ hash, areaM2, fromParcelIds: ['A'], role: 'parcel', producedBy: designCid, geometry: site }],
             allocations: [{ output: hash, to: { kind: 'party', ownerKey: 'party-A' } }],
-            money: { currency: 'GBP', lines: [{ ownerKey: 'party-A', amountCents: 12500 }] }, rule: communityRule() });
+            money: { currency: 'GBP', lines: [{ ownerKey: 'party-A', amountCents: 12500 }] }, rule: { ...communityRule(), electorate: 'owners' } });
         const { tools } = toolsFor();
         const result = await tools.compare({ buildingSourceId:'osm', targets: [{ agreement: content }, park], parcelSourceId: 'test' });
         expect(result.alternatives[0].ledger).toMatchObject({ currency: 'GBP', parties: [{ ownerKey: 'party-A', contributedM2: areaM2, assignedM2: areaM2, changeM2: 0, cashCents: 12500 }] });

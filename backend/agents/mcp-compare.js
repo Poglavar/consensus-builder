@@ -1,6 +1,7 @@
 // Comparison uses the app's land, cash ledger and demolition thresholds. Public source failures
 // keep the affected measurement unknown; a missing source never becomes an empty building stock.
 import { createRequire } from 'node:module';
+import { trustedMetadata } from './mcp-results.js';
 import { appTurf as turf } from './mcp-geometry.js';
 import { cidOfObject, isCid } from './agreement-objects.js';
 import { deriveWithApp } from './mcp-ground-runtime.js';
@@ -22,7 +23,10 @@ export function authoredAreas(designs) {
         const buildings = design.geometry?.buildings || [];
         if (design.buildingProposal && !buildings.length) floorAreaM2 = null;
         for (const building of buildings) {
-            const floors = building.properties?.floors ?? design.buildingProposal?.parameters?.floors;
+            const explicitFloors = building.properties?.floors ?? design.buildingProposal?.parameters?.floors;
+            const floorHeight = building.properties?.urbanRule?.floorHeightM;
+            const height = building.properties?.height;
+            const floors = explicitFloors ?? (finite(height) && finite(floorHeight) && floorHeight > 0 ? Math.floor(height / floorHeight) : null);
             if (!finite(floors)) floorAreaM2 = null;
             else if (floorAreaM2 !== null) floorAreaM2 += turf.area(building) * floors;
         }
@@ -33,39 +37,63 @@ export function authoredAreas(designs) {
         roadAreaM2: roads.length ? turf.area(union(roads)) : 0 };
 }
 
-export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDraftReference }) {
+export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDraftReference, plans }) {
     return async function compare({ targets, parcelSourceId, buildingSourceId }) {
         const alternatives = [], warnings = [];
         for (const target of targets) {
+            const supplied = target?.draftArtifact || target;
+            let privateArtifact = null, content = supplied?.untrusted?.plan || supplied?.untrusted?.agreement || supplied?.untrusted?.design || supplied?.plan || supplied?.agreement || supplied?.design || supplied;
+            let sourceId = supplied?.parcelSourceId || target?.parcelSourceId || parcelSourceId, published = false, explicitKind, lookup = target;
             const reference = typeof target === 'string' && !isCid(target) ? target : target?.draftRef;
-            if (reference && !resolveDraftReference) throw fail('draft-reference-unavailable', 'Use canonical draft objects here; hosted references belong to their HTTP server.');
-            const privateArtifact = reference ? await resolveDraftReference(reference) : null;
-            if (privateArtifact && target?.cid && target.cid !== cidOfObject(privateArtifact.agreement || privateArtifact.design)) throw fail('cid-mismatch', 'The draftRef does not identify the supplied CID.');
-            let content = target?.untrusted?.agreement || target?.untrusted?.design || target?.agreement || target?.design || target;
-            let sourceId = target?.parcelSourceId || parcelSourceId;
-            let published = false;
-            if (privateArtifact) { content = privateArtifact.agreement || privateArtifact.design; sourceId = privateArtifact.parcelSourceId || sourceId; }
-            else if (typeof target === 'string') {
-                try {
-                    const row = await read.getDesign({ designCid: target }); content = row.content;
-                    sourceId ||= row.parcelSourceId;
-                    published = true;
-                }
-                catch (error) {
-                    if (!['http-404', 'design-not-found'].includes(error.code)) throw error;
-                    const row = await read.getAgreement({ agreementCid: target }); content = row.content;
-                    sourceId ||= row.parcelSourceId;
-                    published = true;
+            if (reference) {
+                let url;
+                try { url = new URL(reference); } catch { throw fail('invalid-reference', 'Use an app link, CID or private draft reference.'); }
+                const path = url.origin === new URL(appOrigin).origin && url.pathname.match(/^\/(plans|designs|agreements)\/(baf(?:krei|ybei)[a-z2-7]{52})\/?$/);
+                if (path) { explicitKind = path[1]; lookup = path[2]; }
+                else {
+                    if (!resolveDraftReference) throw fail('draft-reference-unavailable', 'Use canonical draft objects here; hosted references belong to their HTTP server.');
+                    privateArtifact = await resolveDraftReference(reference);
+                    content = privateArtifact.plan || privateArtifact.agreement || privateArtifact.design;
+                    sourceId = privateArtifact.parcelSourceId || sourceId;
+                    if (target?.cid && target.cid !== cidOfObject(content)) throw fail('cid-mismatch', 'The draftRef does not identify the supplied CID.');
                 }
             }
-            const isAgreement = content?.schema === 'agreement/v1';
-            const carried = new Map((privateArtifact?.designs || []).map(design => [cidOfObject(design), design]));
-            const designs = isAgreement ? await Promise.all(content.designs.map(d => resolveDesign(carried.get(d.cid) || d.cid))) : [await resolveDesign(content)];
-            if (!isAgreement) content = designs[0];
+            let planResult;
+            if (content?.schema === 'plan/v1' || explicitKind === 'plans') {
+                if (!plans?.getPlan) throw fail('plan-resolver-unavailable', 'Named plan comparison needs the shared named plan resolver.');
+                planResult = await plans.getPlan({ plan: explicitKind ? lookup : privateArtifact || target });
+                content = planResult.plan; published = planResult.publication === 'published';
+            } else if (!privateArtifact && typeof lookup === 'string') {
+                const kinds = explicitKind ? [explicitKind] : ['designs', 'agreements', ...(plans?.getPlan ? ['plans'] : [])];
+                for (let index = 0; index < kinds.length; index++) {
+                    const kind = kinds[index];
+                    try {
+                        if (kind === 'plans') { planResult = await plans.getPlan({ plan: lookup }); content = planResult.plan; }
+                        else {
+                            const row = kind === 'designs' ? await read.getDesign({ designCid: lookup }) : await read.getAgreement({ agreementCid: lookup });
+                            content = row.content || row.untrusted?.content;
+                            sourceId ||= row.parcelSourceId;
+                        }
+                        published = true; break;
+                    } catch (error) { if (!['http-404', 'design-not-found', 'agreement-not-found'].includes(error.code) || index === kinds.length - 1) throw error; }
+                }
+            }
+            const isAgreement = content?.schema === 'agreement/v1', isPlan = content?.schema === 'plan/v1';
+            const carriedRows = privateArtifact?.designs || target?.designs || target?.draftArtifact?.designs || [];
+            const carried = new Map(carriedRows.map(row => { const d = row.content || row.untrusted?.content || row; return [cidOfObject(d), d]; }));
+            const designRows = isPlan ? planResult.designs : null;
+            const designs = isPlan ? designRows.map(row => row.content) : isAgreement
+                ? await Promise.all(content.designs.map(d => resolveDesign(carried.get(d.cid) || d.cid))) : [await resolveDesign(content)];
+            if (!isAgreement && !isPlan) content = designs[0];
+            const unknownPlanSource = isPlan && designRows.some(row => !row.parcelSourceId && !sourceId);
+            const knownSources = new Set((designRows || []).map(row => row.parcelSourceId || sourceId).filter(Boolean));
+            if (knownSources.size === 1) sourceId = [...knownSources][0];
             const cid = cidOfObject(content), scoped = [], parcels = new Map();
             const measurementErrors = [];
             let takes = null, ground = null, ledger = null;
             try {
+                if (unknownPlanSource) throw fail('parcel-source-required', 'One or more named-plan members have no selected parcel source. Combined ground and demolition measurements are unknown.');
+                if (knownSources.size > 1) throw fail('mixed-source-ground-unavailable', 'This named plan uses multiple parcel sources. Combined ground and demolition measurements are unknown.');
                 for (const design of designs) {
                     const answer = await read.request('/designs/binding', {}, { site: read.siteOfDesign(design), city: design.city, parcelSourceId: sourceId });
                     sourceId = parcelSourceIdOf(answer) || sourceId;
@@ -88,7 +116,7 @@ export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDra
                 }
             } catch (error) {
                 measurementErrors.push({ code: error.code || 'ground-unavailable', message: error.message,
-                    next: error.next || { action: 'Retry when complete parcel ground is available.' } });
+                    next: trustedMetadata(error.next || { action: 'Retry when complete parcel ground is available.' }) });
             }
             let buildingsRemoved = null, buildingsCut = null, removedFootprintM2 = null;
             if (ground) {
@@ -118,13 +146,16 @@ export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDra
                     }
                 } catch (error) {
                     measurementErrors.push({ code: error.code || 'buildings-unavailable', message: error.message,
-                        next: error.next || { action: 'Retry the building source.' } });
+                        next: trustedMetadata(error.next || { action: 'Retry the building source.' }) });
                 }
             }
+            const designSources = isPlan ? Object.fromEntries(designRows.filter(row => row.parcelSourceId).map(row => [row.cid, row.parcelSourceId])) : null;
+            const preview = published ? { previewUrl: `${appOrigin}/${isPlan ? 'plans' : isAgreement ? 'agreements' : 'designs'}/${cid}`, previewStatus: 'published' }
+                : await previewArtifact({ origin: appOrigin, ...(isPlan ? { plan: content, designs } : isAgreement ? { agreement: content, designs } : { design: content }), parcelSourceId: sourceId });
+            if (isPlan && preview.draftArtifact) preview.draftArtifact.designSources = designSources;
             alternatives.push({ cid, title: content.title, ...authoredAreas(designs), areaBasis: 'authored-geometry',
                 parcelsTaken: takes, buildingsRemoved, buildingsCut, removedFootprintM2, ledger,
-                measurementErrors, ...(published ? { previewUrl: `${appOrigin}/${isAgreement ? 'agreements' : 'designs'}/${cid}`, previewStatus: 'published' }
-                    : await previewArtifact({ origin: appOrigin, ...(isAgreement ? { agreement: content, designs } : { design: content }), parcelSourceId: sourceId })) });
+                measurementErrors, ...(isPlan ? { designSources } : {}), ...preview });
         }
         warnings.push('Areas describe authored geometry; they are not a prediction of construction. The party ledger is the app’s modeled allocation, not proof of ownership or compensation.');
         return { alternatives, warnings };

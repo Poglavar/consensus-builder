@@ -2,6 +2,7 @@
 import { createRequire } from 'node:module';
 import { appTurf as turf, intentEditing } from './mcp-geometry.js';
 import { cidOfObject, designObject } from './agreement-objects.js';
+import { validateTrackDesign } from './mcp-constructors.js';
 const require = createRequire(import.meta.url);
 const layoutValidation = require('../../frontend/js/parcel-layout-validation.js');
 const goals = require('../../frontend/js/proposals/design-goals.js');
@@ -114,12 +115,16 @@ function validatePayload(record) {
 }
 
 export function editedDesign(original, expectedCid, edits) {
-    if (cidOfObject(original) !== expectedCid) fail('design-revision-mismatch', 'Inspect the intended design revision before editing.');
+    const currentCid = cidOfObject(original);
+    if (currentCid !== expectedCid) throw Object.assign(new Error('Inspect the intended design revision before editing.'), {
+        code: 'design-revision-mismatch', currentCid, expectedCid,
+        next: { tool: 'ugt_inspect_design', arguments: { design: currentCid }, action: 'Inspect the original reference and retry with its currentCid; retain a private draftRef for unpublished designs.' } });
     const draft = patchDocument(original, edits);
     safeValue(draft);
     validatePayload(draft);
     validateGeometryTree(draft);
     intentEditing.reconcile(draft, original, edits, turf);
+    validateTrackDesign(draft, original);
     validateGeometryTree(draft);
     if (draft.parcelLayout) {
         const result = layoutValidation.validate(draft.parcelLayout, { turf, site: draft.site });

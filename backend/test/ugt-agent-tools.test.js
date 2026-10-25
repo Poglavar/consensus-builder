@@ -69,7 +69,10 @@ function fakeApi({ agreements = [] } = {}) {
             designRows.set(body.cid, { cid: body.cid, content: body.content, binding: { parcels: [{ parcelId: PARCEL }] } });
             return json(designRows.get(body.cid), 201);
         }
-        if (method === 'GET' && target.pathname.startsWith('/designs/')) return json(designRows.get(target.pathname.slice('/designs/'.length)));
+        if (method === 'GET' && target.pathname.startsWith('/designs/')) {
+            const row = designRows.get(target.pathname.slice('/designs/'.length));
+            return row ? json(row) : json({ error: 'not found', code: 'design-not-found' }, 404);
+        }
         if (method === 'POST' && target.pathname === '/agreements') {
             rows.set(body.cid, rowOf(body));
             return json(rows.get(body.cid), 201);
@@ -105,8 +108,7 @@ describe('reads', () => {
             `/agreements?city=zagreb&design=${design.cid}&parcel=HR-335550-1%2F1&limit=7`,
             '/agent/activity?limit=12&source=live',
             '/agent/pledges/agreement-account',
-            '/oracle/events?subject=agreement-account&limit=3',
-            '/docs/agents.json'
+            '/oracle/events?subject=agreement-account&limit=3'
         ]);
         expect(tools.config).toMatchObject({
             apiBase: API, appOrigin: 'https://urbangametheory.xyz', cluster: 'solana-devnet', agreementProgram: AGREEMENT_PROGRAM_ID,

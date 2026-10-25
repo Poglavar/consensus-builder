@@ -1,7 +1,11 @@
 // Concrete read/draft contract fixtures and an evaluation seed from a current indexed agreement.
 // No publication, payment, signature or model call. The caller selects the existing agreement.
 import { appTurf as turf, intentDesign as builder } from '../agents/mcp-geometry.js';
+import { buildTypedDesign } from '../agents/mcp-constructors.js';
 import { createMcpReadTools } from '../agents/mcp-read-tools.js';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+const PlanRecord = require('../../frontend/js/plan-record.js');
 import { cidOfObject } from '../cid.js';
 
 export async function acceptanceFixtures({ apiBase, appOrigin, agreementCid, fetchImpl = fetch }) {
@@ -17,11 +21,16 @@ export async function acceptanceFixtures({ apiBase, appOrigin, agreementCid, fet
     const scope = { city, parcelSourceId, parcelIds: [parcelId] };
     const authoredAt = row.content.createdAt || '2026-10-23T00:00:00.000Z';
     const design = builder.build({ kind: 'space', spaceKind: 'park', site, city, authoredAt }, { turf });
-    const building = builder.build({ kind: 'building', site, floors: 4, city, authoredAt }, { turf });
+    const building = buildTypedDesign({ kind: 'building', typology: 'freeform', site, floors: 4, city, authoredAt }, { parcels: source.features });
+    const road = builder.build({ kind: 'road', points: streetPoints, city, authoredAt }, { turf });
+    const track = builder.build({ kind: 'track', points: streetPoints, gauge: 1000, speed: 80, city, authoredAt }, { turf });
+    const view = { at: `${mid},${(bounds[0] + bounds[2]) / 2},17`, mode: '2d', city };
+    const plan = PlanRecord.create('MCP acceptance plan', [cidOfObject(design), cidOfObject(building)], view);
+    const privatePlan = { plan, designs: [design, building], designSources: { [cidOfObject(design)]: parcelSourceId, [cidOfObject(building)]: parcelSourceId } };
     const account = row.onchain?.account;
     if (!account) throw new Error('Choose a minted agreement for chain support/oracle/approval checks');
     const fixtures = {
-        ugt_capabilities: {}, ugt_activity: { limit: 1 }, ugt_list_agreements: { city, limit: 1 },
+        ugt_capabilities: {}, ugt_help: { topic: 'workflow' }, ugt_list_sources: { city, abstraction: 'parcels', limit: 2 }, ugt_activity: { limit: 1 }, ugt_list_agreements: { city, limit: 1 },
         ugt_get_agreement: { agreementCid }, ugt_list_attesters: {}, ugt_support_status: { agreementAccount: account },
         ugt_oracle_events: { agreementAccount: account }, ugt_inspect_verified_fact: { agreementAccount: account },
         ugt_publish_design: { design, parcelSourceId, confirm: false },
@@ -38,10 +47,31 @@ export async function acceptanceFixtures({ apiBase, appOrigin, agreementCid, fet
         ugt_modify_design: { design, parcelSourceId, changes: [{ type: 'retitle', value: 'MCP acceptance draft' }] },
         ugt_inspect_design: { design, paths: ['/structureProposal'] },
         ugt_edit_design: { design, parcelSourceId, expectedCid: cidOfObject(design), edits: [{ op: 'replace', path: '/title', value: 'MCP acceptance edit' }] },
-        ugt_inspect_plan: { plan: agreementCid, filter: { kind: 'design' } },
-        ugt_edit_plan: { plan: agreementCid, expectedCid: agreementCid, terms: { title: 'MCP acceptance revision' } },
+        ugt_inspect_agreement: { plan: agreementCid, filter: { kind: 'design' } },
+        ugt_edit_agreement: { plan: agreementCid, expectedCid: agreementCid, terms: { title: 'MCP acceptance revision' } },
+        ugt_draft_plan: { designs: [{ content: design, parcelSourceId }, { content: building, parcelSourceId }], title: plan.title, view },
+        ugt_get_plan: { plan: privatePlan },
+        ugt_inspect_plan: { plan: privatePlan, filter: { kind: 'design' } },
+        ugt_edit_plan: { plan: privatePlan, expectedCid: cidOfObject(plan), title: 'MCP acceptance revised plan' },
+        ugt_publish_plan: { plan: privatePlan, expectedCid: cidOfObject(plan), confirm: false },
+        ugt_export_draft: { draftRef: { $result: 'ugt_draft_space', path: 'draftRef' } },
+        ugt_import_design: { city, parcelSourceId, format: 'geojson', floors: 3, data: { type: 'Feature', geometry: site, properties: { name: 'Acceptance imported building' } } },
+        ugt_import_model: { city, parcelSourceId, center: [(bounds[0] + bounds[2]) / 2, mid], confirmAssetUpload: false },
+        ugt_render_preview: { design },
+        ugt_draft_track: { city, parcelSourceId, points: streetPoints, gauge: 1000, speed: 80, authoredAt },
+        ugt_draft_station: { city, parcelSourceId, stationType: 'bus', point: [(bounds[0] + bounds[2]) / 2, mid], corridors: [{ content: road, parcelSourceId }] },
+        ugt_submit_feedback: { kind: 'bug', message: 'Acceptance confirmation guard check', confirm: false },
         ugt_compare: { targets: [design, building], parcelSourceId },
         ugt_draft_agreement: { designs: [design], parcelSourceId, currency: row.content.money.currency, title: 'MCP acceptance draft', createdAt: authoredAt }
     };
-    return { fixtures, seed: { ...scope, streetPoints, agreementAccount: account }, provenance: { agreementCid, parcelId, parcelSourceId } };
+    const constructionCases = [
+        ...['freeform', 'block', 'row', 'detached'].map(typology => ({ id: `building-${typology}`, tool: 'ugt_draft_building', arguments: { ...scope, typology, floors: 4, authoredAt } })),
+        { id: 'road', tool: 'ugt_draft_road', arguments: fixtures.ugt_draft_road },
+        { id: 'track', tool: 'ugt_draft_track', arguments: fixtures.ugt_draft_track },
+        ...['bus', 'tram', 'underground', 'elevated'].map(stationType => ({ id: `station-${stationType}`, tool: 'ugt_draft_station', arguments: {
+            city, parcelSourceId, stationType, point: [(bounds[0] + bounds[2]) / 2, mid], corridors: [{ content: stationType === 'bus' ? road : track, parcelSourceId }] } })),
+        ...['park', 'square', 'lake'].map(spaceKind => ({ id: spaceKind, tool: 'ugt_draft_space', arguments: { ...scope, spaceKind, authoredAt } })),
+        { id: 'parcel-layout', tool: 'ugt_draft_parcel_layout', arguments: fixtures.ugt_draft_parcel_layout }
+    ];
+    return { fixtures, constructionCases, seed: { ...scope, streetPoints, agreementAccount: account }, provenance: { agreementCid, parcelId, parcelSourceId } };
 }

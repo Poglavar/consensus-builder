@@ -7,11 +7,16 @@
 import fs from 'node:fs';
 import { randomUUID } from 'node:crypto';
 import { createRequire } from 'node:module';
-import { MCP_LOCAL_TOOLS, MCP_HOSTED_TOOLS } from './mcp-catalog.js';
+import { createMcpDiscoveryTools } from './mcp-discovery.js';
+import { trustedMetadata } from './mcp-results.js';
 import { createMcpAgreementTools } from './mcp-ground.js';
 import { createMcpDraftTools } from './mcp-drafts.js';
 import { createMcpPlanTools } from './mcp-plan.js';
+import { createMcpNamedPlanTools } from './mcp-named-plans.js';
 import { createMcpReadTools } from './mcp-read-tools.js';
+import { createMcpAssetTools } from './mcp-assets.js';
+import { createMcpComparison } from './mcp-compare.js';
+import { createMcpValidationTools } from './mcp-validation.js';
 import os from 'node:os';
 import path from 'node:path';
 import { Keypair, PublicKey } from '@solana/web3.js';
@@ -25,7 +30,7 @@ import { createPaidClient } from './x402-client.js';
 import { fetchLensMembers, parseLensList } from './lens-directory-client.js';
 import { requestOwnershipAttestation } from './lens-ownership-client.js';
 import { createIndexClient } from './publication-client.js';
-import { AGREEMENT_SCHEMA, DESIGN_SCHEMA, agreementObject, cidOfObject, designObject, isParcelLayout } from './agreement-objects.js';
+import { AGREEMENT_SCHEMA, DESIGN_SCHEMA, agreementObject, cidOfObject, designObject, isParcelLayout, isCid } from './agreement-objects.js';
 import {
     AGREEMENT_PROGRAM_ID, AGREEMENT_STATUS, agreementAccountOf, fundAgreement, mintAgreement, readAgreementAccount
 } from './agreement-minter.js';
@@ -187,7 +192,8 @@ function publishedAgreement(content) {
         allocations: content.allocations,
         money: content.money,
         rule: content.rule,
-        deadline: content.deadline ?? null
+        deadline: content.deadline ?? null,
+        consultation: content.consultation ?? null
     });
     const cid = cidOfObject(content);
     if (rebuilt.cid !== cid) {
@@ -280,14 +286,65 @@ export function createUrbanGameTheoryTools({
     const drafts = createMcpDraftTools({ read: companion, appOrigin, resolveDraftReference });
     const agreements = createMcpAgreementTools({ read: companion, drafts, appOrigin });
     function requirePublish(confirm) {
-        if (confirm !== true) throw new Error('confirm must be true: publishing is public and permanent');
+        if (confirm !== true) throw Object.assign(new Error('confirm must be true: publishing is public and permanent'), { code: 'confirmation-required' });
     }
 
-    return {
+    const agreementPlans = createMcpPlanTools({ read: companion, drafts, agreements, appOrigin, resolveDraftReference });
+    const referenceInput = value => typeof value === 'string' || Boolean(value?.draftRef);
+    const checkRevision = (cid, expectedCid, required) => {
+        if (required && !expectedCid) throw Object.assign(new Error('Reference publication requires expectedCid from inspection.'), { code: 'expected-cid-required' });
+        if (expectedCid && expectedCid !== cid) throw Object.assign(new Error('The supplied expectedCid does not match the resolved immutable revision.'), { code: 'revision-mismatch', field: 'expectedCid', currentCid: cid, expectedCid });
+    };
+    const verifiedRow = (row, cid, kind) => {
+        if (!row || row.cid !== cid || !row.content || cidOfObject(row.content) !== cid) throw Object.assign(new Error(`Published ${kind} could not be read back with matching content`), { code: 'cid-mismatch' });
+        return row;
+    };
+    function publicationError(error, state, tool, args) {
+        const inspect = state.kind === 'design' ? { tool: 'ugt_inspect_design', arguments: { design: args.design } }
+            : { tool: 'ugt_inspect_agreement', arguments: { plan: args.agreement } };
+        const next = state.stage === 'resolve'
+            ? { ...inspect, action: 'Inspect this reference and correct the reported fields. Confirm the exact returned CID before publication.' }
+            : { tool, arguments: args, action: 'Retry this same confirmed immutable revision. The index will be checked before any publication write.' };
+        return Object.assign(error, { code: error.code || 'publication-failed', cid: state.cid,
+            stage: error.stage || state.stage, pinnedCids: [...new Set([...state.pinnedCids, ...(error.pinnedCids || [])])],
+            indexed: error.indexed ?? state.indexed, url: state.cid ? `${appOrigin}/${state.kind}s/${state.cid}` : null,
+            next });
+    }
+    async function agreementSource(value, expectedCid) {
+        if (!referenceInput(value)) return { ...publishedAgreement(value), designs: [] };
+        if (!expectedCid) checkRevision(null, expectedCid, true);
+        const reference = typeof value === 'string' ? value : value.draftRef;
+        let cid = isCid(reference) ? reference : null;
+        if (!cid) {
+            try {
+                const url = new URL(reference);
+                if (url.origin === new URL(appOrigin).origin && /^\/agreements\/baf(?:krei|ybei)[a-z2-7]{52}\/?$/.test(url.pathname)) cid = url.pathname.split('/')[2];
+            } catch { /* Private reference validation belongs to its server-side resolver. */ }
+        }
+        let artifact;
+        if (cid) artifact = await companion.getAgreement({ agreementCid: cid });
+        else {
+            if (!resolveDraftReference) throw Object.assign(new Error('Private agreement references require their hosting server.'), { code: 'draft-reference-unavailable' });
+            artifact = await resolveDraftReference(reference);
+        }
+        const checked = publishedAgreement(artifact.agreement || artifact.content);
+        checkRevision(checked.cid, expectedCid, true);
+        if ((cid && cid !== checked.cid) || (value?.cid && value.cid !== checked.cid) || (artifact.cid && artifact.cid !== checked.cid)) throw Object.assign(new Error('The agreement reference content differs from its CID.'), { code: 'cid-mismatch' });
+        return { ...checked, designs: artifact.designs || [], designSources: artifact.designSources || {}, parcelSourceId: artifact.parcelSourceId };
+    }
+
+    const actions = {
+        async exportDraft({ draftRef }) {
+            if (!resolveDraftReference) throw Object.assign(new Error('Use the exact draftArtifact returned by the local client.'), { code: 'draft-reference-unavailable' });
+            const artifact = await resolveDraftReference(draftRef);
+            return { cid: cidOfObject(artifact.design || artifact.plan || artifact.agreement), artifact, publication: 'private',
+                next: trustedMetadata({ action: 'Save this exact artifact. Supply it as canonical input to restore the draft after its reference expires.' }) };
+        },
         ...companion,
         ...drafts,
         ...agreements,
-        ...createMcpPlanTools({ read: companion, drafts, agreements, appOrigin, resolveDraftReference }),
+        inspectAgreement: agreementPlans.inspectPlan,
+        editAgreement: agreementPlans.editPlan,
         config: {
             apiBase,
             appOrigin,
@@ -300,15 +357,7 @@ export function createUrbanGameTheoryTools({
             usdcMint: USDC_DEVNET
         },
 
-        capabilities: async () => {
-            let manifest;
-            try { manifest = { ...await readJson(fetchImpl, `${apiBase}/docs/agents.json`), upstream: { available: true } }; }
-            catch (error) {
-                if (mode !== 'local') throw error;
-                manifest = { upstream: { available: false, code: error.code || 'api-unavailable', next: { tool: 'ugt_chain_agreements', arguments: {} } } };
-            }
-            return { ...manifest, mode, cluster: 'solana-devnet', agreementProgram: AGREEMENT_PROGRAM_ID, tools: mode === 'hosted' ? MCP_HOSTED_TOOLS : MCP_LOCAL_TOOLS, toolPhases: { reads: 'implemented', approvalLinks: 'mint, fund, decide accept, execute, cancel, expire, bet', drafts: 'implemented with complete cadastral ground; unsurveyed/open-ground agreement derivation requires the app', editing: 'inspect exact authored JSON; atomic revision-checked patches and geometry operations; plan add/remove/replace/edit with ground rederivation; see ugt://editing', publication: 'implemented; permanent and public' }, hostedEndpoint: `${appOrigin}/mcp`, unsignedPublication: { confirm: true, requiresKey: false, permanent: true } };
-        },
+        capabilities: createMcpDiscoveryTools({ read: companion, mode, appOrigin }).capabilities,
 
         getActivity: ({ limit = 100, actor, source, action } = {}) => readJson(
             fetchImpl,
@@ -392,46 +441,73 @@ export function createUrbanGameTheoryTools({
 
         // Pin and index one design/v1 object. The index derives its binding (the parcels its site takes)
         // and answers the row. A parcel layout is indexed only with its agreement.
-        async publishDesign({ design, parcelSourceId = null, confirm } = {}) {
+        async publishDesign({ design, parcelSourceId = null, expectedCid, confirm } = {}) {
             requirePublish(confirm);
-            const { content, cid } = publishedDesign(design);
-            if (isParcelLayout(content)) {
-                throw new Error(`design ${cid} is a parcel layout: a layout is published only with the agreement that settles its land; pass it to ugt_propose_agreement in designs: [{ content }]`);
-            }
-            const published = await index().publishDesign(content, { parcelSourceId });
-            if (published.cid !== cid) throw new Error(`the index filed design ${published.cid}, not ${cid}`);
-            const row = await index().getDesign(cid);
-            if (!row || row.cid !== cid || !row.content || cidOfObject(row.content) !== cid) throw new Error('Published design could not be read back with matching content');
-            return { cid, created: published.created, row, previewUrl: `${appOrigin}/designs/${cid}` };
+            const args = { design, parcelSourceId, ...(expectedCid ? { expectedCid } : {}), confirm };
+            const state = { kind: 'design', cid: expectedCid || null, stage: 'resolve', pinnedCids: [], indexed: false };
+            try {
+                const reference = referenceInput(design);
+                if (reference && !expectedCid) checkRevision(null, expectedCid, true);
+                const resolved = reference ? await drafts.resolveDesignSource(design) : null;
+                const { content, cid } = publishedDesign(resolved ? resolved.content : design);
+                state.cid = cid; checkRevision(cid, expectedCid, reference);
+                parcelSourceId ||= resolved?.parcelSourceId || null;
+                // A layout can already be indexed through its agreement, but cannot be published alone.
+                if (isParcelLayout(content)) throw Object.assign(new Error(`design ${cid} is a parcel layout: a layout is published only with the agreement that settles its land; pass it to ugt_propose_agreement in designs: [{ content }]`), { code: 'layout-agreement-required' });
+                state.stage = 'lookup';
+                const existing = await index().getDesign(cid);
+                if (existing) {
+                    verifiedRow(existing, cid, 'design'); state.indexed = true;
+                    return { cid, created: false, row: existing, publication: 'published', url: `${appOrigin}/designs/${cid}`, previewUrl: `${appOrigin}/designs/${cid}` };
+                }
+                state.stage = 'pin-design';
+                const published = await index().publishDesign(content, { parcelSourceId });
+                if (published.cid !== cid) throw Object.assign(new Error(`the index filed design ${published.cid}, not ${cid}`), { code: 'cid-mismatch' });
+                state.pinnedCids.push(cid); state.indexed = true; state.stage = 'readback';
+                const row = verifiedRow(await index().getDesign(cid), cid, 'design');
+                return { cid, created: published.created, row, publication: 'published', url: `${appOrigin}/designs/${cid}`, previewUrl: `${appOrigin}/designs/${cid}` };
+            } catch (error) { throw publicationError(error, state, 'ugt_publish_design', args); }
         },
 
-        // Pin the carried designs and the agreement/v1 object, then index the agreement with them. The
-        // index requires its inputs to be exactly the union of its designs' bindings.
-        async proposeAgreement({ agreement, designs = [], confirm } = {}) {
+        async proposeAgreement({ agreement, designs = [], expectedCid, confirm } = {}) {
             requirePublish(confirm);
-            const { content, cid } = publishedAgreement(agreement);
-            const linked = new Set(content.designs.map(entry => entry.cid));
-            const carried = (Array.isArray(designs) ? designs : []).map((entry, at) => publishedDesign(entry?.content, `designs[${at}].content`));
-            const stray = carried.find(entry => !linked.has(entry.cid));
-            if (stray) throw new Error(`design ${stray.cid} is carried, but the agreement does not link it`);
-            if (new Set(carried.map(entry => entry.cid)).size !== carried.length) throw new Error('a design is carried twice');
-            const client = index();
-            for (const entry of carried) await client.pin('design', entry.content);
-            const published = await client.publishAgreement(content, { designs: carried });
-            if (published.cid !== cid) throw new Error(`the index filed agreement ${published.cid}, not ${cid}`);
-            const row = await client.getAgreement(cid);
-            if (!row || row.cid !== cid || !row.content || cidOfObject(row.content) !== cid) throw new Error('Published agreement could not be read back with matching content');
-            const sponsor = content.sponsor ?? null;
-            return {
-                cid,
-                created: published.created,
-                carried: carried.map(entry => entry.cid),
-                sponsor,
-                account: sponsor ? agreementAccountOf(cid, sponsor) : null,
-                row,
-                previewUrl: `${appOrigin}/agreements/${cid}`,
-                approvalUrl: content.rule.binding && sponsor ? `${appOrigin}/agreements/${cid}?act=mint` : null
-            };
+            const args = { agreement, designs, ...(expectedCid ? { expectedCid } : {}), confirm };
+            const state = { kind: 'agreement', cid: expectedCid || null, stage: 'resolve', pinnedCids: [], indexed: false };
+            try {
+                const source = await agreementSource(agreement, expectedCid), { content, cid } = source;
+                state.cid = cid; checkRevision(cid, expectedCid, referenceInput(agreement));
+                const linked = new Set(content.designs.map(entry => entry.cid));
+                const carried = [];
+                for (const input of [...source.designs, ...designs]) {
+                    const resolved = await drafts.resolveDesignSource(input);
+                    const row = publishedDesign(resolved.content, 'carried design');
+                    if (!linked.has(row.cid)) throw new Error(`design ${row.cid} is carried, but the agreement does not link it`);
+                    if (carried.some(entry => entry.cid === row.cid)) throw new Error('a design is carried twice');
+                    carried.push(row);
+                }
+                const client = index(); state.stage = 'lookup';
+                const existing = await client.getAgreement(cid);
+                let row, created;
+                if (existing) { row = verifiedRow(existing, cid, 'agreement'); created = false; state.indexed = true; }
+                else {
+                    for (const entry of carried) {
+                        state.stage = 'pin-design';
+                        try { await client.pin('design', entry.content); }
+                        catch (error) { error.stage = 'pin-design'; throw error; }
+                        state.pinnedCids.push(entry.cid);
+                    }
+                    state.stage = 'pin-agreement';
+                    const published = await client.publishAgreement(content, { designs: carried });
+                    if (published.cid !== cid) throw Object.assign(new Error(`the index filed agreement ${published.cid}, not ${cid}`), { code: 'cid-mismatch' });
+                    state.pinnedCids.push(cid); state.indexed = true; state.stage = 'readback';
+                    row = verifiedRow(await client.getAgreement(cid), cid, 'agreement'); created = published.created;
+                }
+                const sponsor = content.sponsor ?? null;
+                return { cid, created, carried: carried.map(entry => entry.cid), sponsor,
+                    account: sponsor ? agreementAccountOf(cid, sponsor) : null, row, publication: 'published',
+                    url: `${appOrigin}/agreements/${cid}`, previewUrl: `${appOrigin}/agreements/${cid}`,
+                    approvalUrl: content.rule.binding && sponsor ? `${appOrigin}/agreements/${cid}?act=mint` : null };
+            } catch (error) { throw publicationError(error, state, 'ugt_propose_agreement', args); }
         },
 
         // Create the agreement's account as its sponsor and fund the escrow to `lamports` (also the escrow
@@ -616,4 +692,10 @@ export function createUrbanGameTheoryTools({
             });
         }
     };
+    Object.assign(actions, createMcpNamedPlanTools({ read: companion, drafts, appOrigin, resolveDraftReference,
+        publishDesign: args => actions.publishDesign(args) }));
+    Object.assign(actions, createMcpAssetTools({ read: companion, drafts, plans: actions, appOrigin, apiBase, fetchImpl, resolveDraftReference }));
+    Object.assign(actions, createMcpValidationTools({ read: companion, drafts, plans: actions }));
+    actions.compare = createMcpComparison({ read: companion, resolveDesign: drafts.resolveDesign, plans: actions, appOrigin, resolveDraftReference });
+    return actions;
 }

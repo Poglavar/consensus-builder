@@ -90,6 +90,10 @@ function runFunctions(path, names, bindings) {
         return map.get(name);
     }).join('\n');
     const context = vm.createContext({ console, Error, RangeError, JSON, Math, Number, Array, Object, Promise, setTimeout, ...bindings });
+    if (path.endsWith('/building-blocks.js') && names.includes('simplifyAndClipOutline')) {
+        Object.assign(context.window, { turf: bindings.turf, FootprintGeometry: { sanitizePolygonFeature: bindings.sanitizePolygonFeature, toSingleLargestPolygon: bindings.toSingleLargestPolygon } });
+        vm.runInContext(readFileSync(new URL('../../frontend/js/building-rule-geometry.js', import.meta.url), 'utf8'), context);
+    }
     vm.runInContext(code, context);
     return context;
 }
