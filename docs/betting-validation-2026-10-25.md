@@ -90,3 +90,17 @@ construction completion, or use by outside humans.
 
 The local preview script accepts only its named simulation run and binds to loopback. It is a
 trading harness, not a published San Francisco agreement; its agreement subject is simulated.
+
+## Devnet release follow-up
+
+On 26 October 2026, the targeted `anchor build --program-name proposal_market` completed and
+nine headless Rust checks in `lmsr_market::tests` passed. The program was upgraded on devnet at
+slot `515120833`, in transaction
+[4qaab6jo…R7JCYrE](https://explorer.solana.com/tx/4qaab6joKfAmzUcntMQM5L5TgZNE22vRpBH1LmWUUAGZJVXxFT6mXVVe2bYsqWX3ZCB6Yc7XcM8Upc9UjR7JCYrE?cluster=devnet).
+The downloaded 563,672-byte executable contains the exact 554,384-byte build followed only by
+zero padding. Its deployed SHA-256 is
+`77f9bdc34c8998cd77fa69c9e402c237e297bba471bca2a738204fd10d6c741a`;
+the unpadded local artifact SHA-256 is
+`8404705555feeba6a4f78b942e94d6d9a69d1b699d5229320a403b2cee9d8a4f`.
+The prior deployed binary was saved locally before the upgrade. This is deployment verification;
+no market creation, trade or claim was submitted on public devnet in this follow-up.

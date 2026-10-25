@@ -1,8 +1,8 @@
 // The click stack (click-stack.md): a 2D map click shows everything under the point in one
-// right-docked panel of sections, agreements above designs above formed and cadastral parcels.
+// right-docked panel of sections, plans above designs above formed and cadastral parcels.
 // Clicking the same spot again retains it, another spot switches it, Escape closes it, and the kind
-// of the expanded section is remembered for the next click. Several agreements (or designs, or
-// cadastral parcels) at one spot share one row with a strip of chips.
+// of the expanded section is remembered for the next click. Peer objects share a section with
+// a selector; each plan links to its agreements in a separate dialog.
 import { Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
 import { clickDesignOnMap, clickMapPoint, clickStack, createSpace, drawCorridor, expandStackSection, openCity, stackSection, PARCEL_ID } from '../helpers/runtime';
@@ -41,19 +41,21 @@ async function twoAgreementsOnPark(page: Page, titles = ['First agreement', 'Sec
 const remembered = (page: Page) => page.evaluate(() => localStorage.getItem('cb.clickStack.expanded'));
 
 test.describe('Click stack @core', () => {
-  test('agreement action buttons show its designs and open agreement details', async ({ mockApi: page }) => {
+  test('a plan links to agreement details without making agreements spatial sections', async ({ mockApi: page }) => {
     await twoAgreementsOnPark(page, ['Agreement action coverage']);
-    const agreement = stackSection(page, 'agreements');
-    await expect(agreement.locator('.click-stack__body')).toBeVisible();
-    await agreement.getByRole('button', { name: 'Show its designs', exact: true }).click();
+    await expect(stackSection(page, 'agreements')).toHaveCount(0);
+    await expandStackSection(page, 'plans');
+    const plan = stackSection(page, 'plans');
+    await expect(plan.locator('.click-stack__body')).toBeVisible();
     await expect(page.locator('path.click-stack-map-focus').first()).toBeVisible();
-    await agreement.getByRole('button', { name: 'Details', exact: true }).click();
-    const panel = page.locator('section#agreement-panel');
-    await expect(panel).toBeVisible();
-    await expect(page.locator('#agreement-panel-title')).toBeVisible();
+    await plan.locator('.click-stack__choices[data-kind="agreements"] .click-stack__chip')
+      .filter({ hasText: 'Agreement action coverage' }).click();
+    await expect(page.locator('section#agreement-panel')).toBeVisible();
+    await expect(page.locator('#agreement-panel-title')).toHaveText('Agreement action coverage');
+    await expect(clickStack(page)).toBeHidden();
   });
 
-  test('expanding sections focuses their object, survives mouseout, and collapsed headers stay on one line', async ({ mockApi: page }) => {
+  test('expanding sections retains map focus and collapsed headers keep their identity visible', async ({ mockApi: page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await openCity(page);
     await createSpace(page, 'park');
@@ -77,10 +79,12 @@ test.describe('Click stack @core', () => {
     }
     const connector = await stackSection(page, 'formed').evaluate(el => {
       const style = getComputedStyle(el, '::before');
-      return { left: parseFloat(style.left) + parseFloat(style.borderLeftWidth) / 2, center: el.getBoundingClientRect().width / 2, width: style.borderLeftWidth, color: style.borderLeftColor, z: style.zIndex };
+      const icon = el.querySelector('.click-stack__row > i')!.getBoundingClientRect();
+      return { left: el.getBoundingClientRect().left + parseFloat(style.left) + parseFloat(style.borderLeftWidth) / 2,
+        axis: icon.x + icon.width / 2, width: style.borderLeftWidth, z: style.zIndex };
     });
-    expect(connector.left).toBeCloseTo(connector.center, 0);
-    expect(connector).toMatchObject({ width: '4px', color: 'rgb(0, 0, 0)', z: '-1' });
+    expect(Math.abs(connector.left - connector.axis)).toBeLessThanOrEqual(1);
+    expect(connector).toMatchObject({ width: '4px', z: '-1' });
     await expect(focus.first()).toHaveCSS('animation-name', 'click-stack-focus-pulse');
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await expect(focus.first()).toHaveCSS('animation-name', 'none');
@@ -93,7 +97,13 @@ test.describe('Click stack @core', () => {
     await expect(stack.locator('.click-stack__copy-reference')).toHaveCount(0);
     for (const kind of ['designs', 'formed', 'parcels']) {
       const row = stackSection(page, kind).locator('.click-stack__row');
-      expect((await row.boundingBox())!.height).toBeLessThanOrEqual(48);
+      if (kind === 'designs') {
+        const badge = row.locator('.proposal-type-badge');
+        await expect(badge).toBeVisible();
+        const detail = await row.locator('.click-stack__row-detail').boundingBox();
+        const type = await badge.boundingBox();
+        expect(detail!.y).toBeGreaterThanOrEqual(type!.y + type!.height);
+      } else expect((await row.boundingBox())!.height).toBeLessThanOrEqual(48);
       await expect(row.locator('.click-stack__row-title')).toHaveCSS('white-space', 'nowrap');
       await expect(row.locator('.click-stack__row-detail')).toHaveCSS('text-overflow', 'ellipsis');
     }
@@ -235,36 +245,21 @@ test.describe('Click stack @core', () => {
     await expect(stackSection(page, 'parcels').locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'true');
   });
 
-  test('contextual choices navigate agreement to design and back with a fixed count on mobile', async ({ mockApi: page }) => {
+  test('a plan lists its independent agreements without horizontal overflow on mobile', async ({ mockApi: page }) => {
     const titles = ['Garden neighbourhood — shared streets and public gardens', 'Garden neighbourhood — alternative housing and open spaces'];
     await twoAgreementsOnPark(page, titles);
     await page.setViewportSize({ width: 390, height: 844 });
-    const agreements = stackSection(page, 'agreements');
-    const child = agreements.locator('.click-stack__choices[data-kind="designs"]');
-    await expect(child.locator('.click-stack__choice-count')).toHaveText('(1)');
-    expect(await child.evaluate(el => !!(el.previousElementSibling?.classList.contains('click-stack__card')))).toBe(true);
-    await child.locator('.click-stack__chip').click();
-    const designs = stackSection(page, 'designs');
-    await expect(designs).toHaveClass(/is-selected/);
-    await expect(designs.locator('.click-stack__row-title')).toHaveText('Design');
-    await expect(agreements.locator('.click-stack__choices')).toHaveCount(0);
-    await expect(designs.locator('.click-stack__choices[data-kind="designs"]')).toHaveCount(0);
-    const parents = designs.locator('.click-stack__choices[data-kind="agreements"]');
-    await expect(parents.locator('.click-stack__choice-count')).toHaveText('(2)');
-    expect(await parents.evaluate(el => el.nextElementSibling?.classList.contains('click-stack__card'))).toBe(true);
-    const count = parents.locator('.click-stack__choice-count');
-    const countX = (await count.boundingBox())!.x;
-    await parents.locator('.click-stack__strip').evaluate(el => { el.scrollLeft = el.scrollWidth; });
-    expect((await count.boundingBox())!.x).toBe(countX);
-    await parents.getByRole('button', { name: titles[0], exact: true }).click();
-    await expect(agreements).toHaveClass(/is-selected/);
-    await expect(agreements.locator('.click-stack__summary strong')).toHaveText(titles[0]);
-    await expect(agreements.locator('.click-stack__choices[data-kind="agreements"]')).toHaveCount(0);
-    await agreements.locator('.click-stack__row').click();
-    await expect(agreements).toHaveClass(/is-selected/);
-    await expect(agreements.locator('.click-stack__body')).toHaveCount(0);
-    await expect(page.locator('path.click-stack-map-focus').first()).toBeVisible();
-    await expect(clickStack(page).locator('.click-stack__choices')).toHaveCount(0);
+    await expandStackSection(page, 'plans');
+    const plans = stackSection(page, 'plans');
+    const agreements = plans.locator('.click-stack__choices[data-kind="agreements"]');
+    await expect(agreements.locator('.click-stack__chip')).toHaveCount(2);
+    await expect(stackSection(page, 'agreements')).toHaveCount(0);
+    const size = await clickStack(page).evaluate(el => ({ width: el.clientWidth, scroll: el.scrollWidth }));
+    expect(size.scroll).toBeLessThanOrEqual(size.width);
+    await agreements.getByRole('button', { name: titles[1], exact: true }).click();
+    await expect(page.locator('section#agreement-panel')).toBeVisible();
+    await expect(page.locator('#agreement-panel-title')).toHaveText(titles[1]);
+    await expect(clickStack(page)).toBeHidden();
   });
 
   test('the pieces a road leaves of a parcel open as formed ground that a new design can start on', async ({ mockApi: page }) => {

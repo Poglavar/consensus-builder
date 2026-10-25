@@ -26,8 +26,10 @@ The canonical kind 0 Solana market is sponsored by the agreement's sponsor. Its 
 `['lmsr', agreementAccount, sponsor]`; the agreement account is the subject. The current parameters
 are `b = 100_000_000` atomic units, `closes_at` equal to the on-chain agreement deadline, zero grace,
 and no per-position share cap (`max_position = 0`). These terms are verified by the backend reader.
-The Rust program is in source but has not been deployed with these instructions. Do not describe
-the devnet-USDC flow as live until a release is deployed and verified.
+The ProposalMarket program was upgraded on Solana devnet on 26 October 2026 at slot
+`515120833`. Its downloaded executable matches the built LMSR artifact, including zero padding.
+See the [release evidence](betting-validation-2026-10-25.md#devnet-release-follow-up).
+This verifies deployment; it does not establish a completed public trade with the new instructions.
 
 The LMSR quote begins at 50/50 even with no trades. `b` controls price sensitivity; YES and NO
 inventory move the quoted prices along the scoring rule. A buy quote specifies shares and a maximum

@@ -21,7 +21,7 @@
     const HOSTABLE = ['proposal-details-panel', 'planning-inspector', 'parcel-info-panel'];
     // Right-dock panels the stack never hosts: when one opens, the stack steps aside.
     const DOCKED_ELSEWHERE = ['block-info-panel', 'road-info-panel', 'road-analysis-panel'];
-    const ICONS = Object.freeze({ plans: 'fas fa-layer-group', agreements: 'fas fa-file-signature', designs: 'fas fa-drafting-compass', built: 'fas fa-building',
+    const ICONS = Object.freeze({ plans: 'fas fa-layer-group', designs: 'fas fa-drafting-compass', built: 'fas fa-building',
         permitted: 'fas fa-cube', formed: 'fas fa-vector-square', parcels: 'fas fa-border-all', selection: 'fas fa-object-group', ground: 'fas fa-seedling' });
 
     const state = { el: null, stack: null, latlng: null, hits: null, hosted: null, expanding: false, lastClick: null, observing: false, memberships: null, membershipVersion: 0, membershipDesign: null };
@@ -173,7 +173,6 @@
         switch (section.kind) {
             case 'selection': return t('selectedParcels.count', 'Selected parcels ({{count}})', { count: section.count });
             case 'plans': return t('designMemberships.plan', 'Plan');
-            case 'agreements': return section.multi ? t('agreements', 'Agreements ({{count}})', { count: section.count }) : t('agreement.panel.title', 'Agreement');
             case 'designs': return section.count > 1 ? t('designs', 'Designs ({{count}})', { count: section.count }) : t('proposalDrafts.tabs.design', 'Design');
             case 'built': return section.count > 1 ? t('buildings', 'Buildings ({{count}})', { count: section.count }) : t('building', 'Building');
             case 'permitted': return section.multi ? t('permittedMany', 'Permitted ({{count}})', { count: section.count }) : t('planningViews.permitted', 'Permitted');
@@ -306,8 +305,7 @@
     }
 
     function focusStyle() {
-        return { color: '#0284c7', weight: 5, dashArray: null, fillOpacity: 0,
-            className: 'click-stack-map-focus' };
+        return global.MapHighlight.style({ weight: 5, className: 'click-stack-map-focus' });
     }
 
     function highlightSection(kind, instance) {
@@ -328,7 +326,7 @@
                 global.clearProposalHighlights?.();
                 global.ProposalSelection?.clear?.();
             }
-            if (kind === 'agreements' || kind === 'plans') {
+            if (kind === 'plans') {
                 unhost();
                 const version = state.membershipVersion;
                 const mount = () => {
@@ -391,7 +389,7 @@
                     toolbar.appendChild(wrap);
                 }
             }
-            if (!['plans', 'agreements'].includes(kind)) {
+            if (kind !== 'plans') {
                 const relations = model.visibleContextFor(kind, instance, state.hits);
                 for (const group of relations) body.appendChild(global.ClickStackRelations.renderGroup(group, doc, global));
             }
@@ -441,13 +439,13 @@
     function refreshSpot(latlng) {
         if (!isOpen() || state.latlng !== latlng) return;
         const hits = { ...global.ClickStackHits.hitsAt(latlng) };
+        delete hits.agreements;
         if (state.memberships) {
             hits.plans = state.memberships.instances('plans', state.stack.selectedKind === 'plans');
-            hits.agreements = state.memberships.instances('agreements', state.stack.selectedKind === 'agreements');
             hits.designs = hits.designs.map(item => String(item.proposal?.proposalId) === state.memberships.proposalId
                 ? { ...item, cid: state.memberships.cid } : item);
         }
-        // A list can open an unapplied design or agreement that is not a geometry hit here.
+        // A list can open a design that is not a geometry hit here.
         // A background lookup adds choices; it must not discard the object being inspected.
         const selectedKind = state.stack.selectedKind;
         const focused = model.selectedInstance(state.stack, selectedKind);
@@ -457,7 +455,7 @@
         const selected = Object.fromEntries(state.stack.sections.map(section => [section.kind, section.instances[section.selectedIndex].id]));
         const next = model.buildClickStack(hits, { selected });
         const expanded = state.stack.expanded;
-        state.hits = hits;
+        state.hits = { ...hits };
         state.stack = expanded && next.sections.some(section => section.kind === expanded) ? model.expand(next, expanded)
             : { ...next, expanded: null, selectedKind: next.sections.some(section => section.kind === selectedKind) ? selectedKind : next.selectedKind };
         render();
@@ -548,7 +546,8 @@
         } finally { state.expanding = false; }
         state.stack = stack;
         state.latlng = latlng;
-        state.hits = hits;
+        state.hits = { ...hits };
+        delete state.hits.agreements;
         render();
         const el = ensureElement();
         el.hidden = false;
@@ -638,7 +637,6 @@
                         .then(proposal => showDesign(proposal.proposalId)).catch(error => global.showStyledAlert(error.message));
                 } else showDesign(id);
             }
-            else if (kind === 'agreements') showAgreement(id);
             state.el.querySelector(`.click-stack__section[data-kind="${kind}"]`)?.scrollIntoView?.({ block: 'nearest' });
         } else if (action === 'coords') {
             const text = target.textContent;
@@ -677,15 +675,14 @@
             state.memberships = session;
             const selected = Object.fromEntries(state.stack.sections.map(section => [section.kind, section.instances[section.selectedIndex].id]));
             const previous = state.stack;
-            state.hits = { ...state.hits, plans: session.instances('plans', previous.selectedKind === 'plans'),
-                agreements: session.instances('agreements', previous.selectedKind === 'agreements') };
+            state.hits = { ...state.hits, plans: session.instances('plans', previous.selectedKind === 'plans') };
             // Annotate only the exact inspected revision for relationship matching.
             state.hits.designs = state.hits.designs.map(item => item.id === design.id ? { ...item, cid: session.cid } : item);
             const next = model.buildClickStack(state.hits, { selected });
             const has = kind => next.sections.some(section => section.kind === kind);
             state.stack = { ...next, expanded: previous.expanded && has(previous.expanded) ? previous.expanded : null,
                 selectedKind: has(previous.selectedKind) ? previous.selectedKind : next.selectedKind, topRef: previous.topRef };
-            const keepBody = !['plans', 'agreements'].includes(previous.expanded) ? bodyOf(previous.expanded) : null;
+            const keepBody = previous.expanded !== 'plans' ? bodyOf(previous.expanded) : null;
             render({ keepBody });
             if (keepBody) {
                 [...keepBody.children].filter(child => child.classList.contains('click-stack__choices')).forEach(child => child.remove());
@@ -721,18 +718,6 @@
         // No click opened this spot, so the first click on the design is a new one (it selects what
         // it hits, such as a road's stretch), not "the same spot again", which would close the stack.
         show({ ...stack, topRef: null }, latlng, hits);
-    }
-
-    function showAgreement(id) {
-        const agreement = global.AgreementStore.get(id);
-        if (!agreement) throw new Error(`ClickStack: agreement ${id} is not stored`);
-        const first = agreement.designs.find(design => global.proposalStorage.getProposal(design.proposalId));
-        if (first) showDesign(first.proposalId);
-        const hits = first ? { ...state.hits } : {};
-        hits.agreements = [...(hits.agreements || []).filter(item => item.id !== String(id)),
-            { id: String(id), label: agreement.title || String(id), agreement, designIds: agreement.designs.map(design => String(design.proposalId)) }];
-        const stack = model.expand(model.buildClickStack(hits, { selected: { agreements: String(id) } }), 'agreements');
-        show({ ...stack, topRef: null }, first ? state.latlng : null, hits);
     }
 
     function showParcel(feature) {
@@ -811,6 +796,6 @@
 
     // Selection owns the map focus, including while its details are collapsed.
     const holdsHighlight = () => isOpen() && !!state.stack?.selectedKind;
-    global.ClickStack = Object.freeze({ handleClick, showDesign, showAgreement, showParcel, isDriving: () => state.expanding, syncSelection, fold, close, isOpen, expand, collapse, holdsHighlight,
+    global.ClickStack = Object.freeze({ handleClick, showDesign, showParcel, isDriving: () => state.expanding, syncSelection, fold, close, isOpen, expand, collapse, holdsHighlight,
         current: () => state.stack, point: () => state.latlng });
 })(window);
