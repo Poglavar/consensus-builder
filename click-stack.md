@@ -26,36 +26,47 @@ right-side panels that clicks used to open one at a time.
 
 ## Sections, top to bottom (only those present at the point)
 
-1. **Agreements** that contain any design at the point.
-2. **Designs** at the point (applied proposals), or the proposals on the parcel there.
-3. **Built**: existing buildings at the point, or on the parcel there (a demolished one carries a
+1. **Agreements** that contain a design at the point.
+2. **Plans** whose saved design set contains a design at the point.
+3. **Designs** at the point (applied proposals), or the proposals on the parcel there.
+4. **Built**: existing buildings at the point, or on the parcel there (a demolished one carries a
    "demolished by" badge).
-4. **Permitted**: massing / envelope records.
-5. **Formed parcel**: the live ground a design formed here, with its parcel actions.
-6. **Cadastral parcels** under the point (or under the selected design).
-7. Footer: the coordinates (copyable).
+5. **Permitted**: massing / envelope records.
+6. **Formed parcel**: the live ground a design formed here, with its parcel actions.
+7. **Cadastral parcels** under the point (or under the selected design).
+8. Footer: the coordinates (copyable).
 
-## Rows, strips and expansion
+## Rows, relationships and expansion
 
 - Every section has a **one-line header row** that stays visible and clickable. Expanding a
   section collapses all the others; at most one is expanded.
 - Collapsed headers are one row: the object kind followed by its selected name or parcel ID,
   truncated with an ellipsis. The cadastral header has no copy button.
-- Contextual strips sit close to, but outside, the selected card. A fixed **(count)** at the left
-  precedes horizontally scrolling choices; there is no separate strip heading. They navigate
+- Relationship groups are small, explicitly labelled link groups **inside the expanded card body**.
+  Their links wrap to fit the card; they do not create horizontal scrolling. A group navigates
   related objects, never siblings of the object already selected:
-  - An agreement offers its designs below it, in authored order.
-  - A design offers its agreements above and its formed land below it.
-  - A formed parcel offers its producing design above and source cadastral parcels below it.
-  - A source parcel can offer its formed pieces above it.
-  Selecting a related item selects and expands its section and replaces the old context strips.
+  - A plan or agreement offers its included designs. A plan stores a set of design CIDs; an
+    agreement retains its authored membership order.
+  - A design offers the plans and agreements it belongs to, plus its affected parcels or formed land.
+  - A formed parcel offers its producing design and source cadastral parcels.
+  - A source parcel can offer its formed pieces or designs on that parcel.
+  A group is omitted when its sole target is the same sole visible instance already shown in the
+  target section. Missing or off-screen targets remain useful links. Selecting a related item
+  selects and expands its section.
+- **Plans and agreements are separate sections above Designs.** Their list membership is loaded
+  on demand for the selected exact design revision. Inspecting one reads its referenced designs'
+  geometry and highlights their features without importing or applying those designs. The expanded
+  body explains what a plan or agreement represents and provides an explicit link to open the plan
+  or agreement details; the link retains the configured `backend` override.
+- When a section has multiple instances, its expanded card contains a compact native selector for
+  switching among those peers. A singleton has no selector.
 - The expanded section is the **action view**:
-  - Agreement: summary, "Show its designs" (highlights all of them on the map) and "Details"
-    (opens the agreement panel).
+  - Plan or agreement: meaning, name, included designs and their combined map highlight. "Open
+    plan" loads the saved composition; "Agreement details" opens the agreement record.
   - Design: the proposal's actions panel itself (2026-10-23), without its own − and ×: an
     Overview tab (name, rung badges, type, author, parcel count and one area) and a Details tab
     (land and ownership, verification, the record), with the actions under both; plus the
-    agreements it belongs to as a contextual strip above the card. Starting Before / after from it folds the stack to its
+    member plans and agreements inside the card body. Starting Before / after from it folds the stack to its
     rows (the card stays hosted, so the comparison keeps running); a row click unfolds it.
 - A proposal opened from a list, shared link, restored selection, or just placed (an editor's Done,
   a one-click structure, the create dialog) opens the
@@ -78,7 +89,9 @@ right-side panels that clicks used to open one at a time.
     set. Parcel information and proposal actions open only inside the click panel; there is no
     automatic companion parcel panel beside a selected proposal. Hosted Built/Permitted inspectors have no close
     button: their section heading collapses them or another section takes over.
-- The selected object has a pulsing map outline, retained while collapsed and protected from hover. Reduced motion uses a steady border. The selected collapsed header is highlighted too. Black, 4px connectors run centrally behind the cards.
+- The selected object has a pulsing map outline, retained while collapsed and protected from hover.
+  Reduced motion uses a steady border. The selected card and its distinct circular icon node carry
+  the selected highlight. Short connectors run behind the cards on the icon axis near the left edge.
 - **Memory:** the kind of the expanded section is remembered (also across reloads). The next
   click expands that kind if it exists there, otherwise the topmost section.
 
@@ -93,21 +106,22 @@ right-side panels that clicks used to open one at a time.
 - In Manual or Shift multi-selection, **Selected parcels (N)** replaces the point-specific
   sections. It shows measured total area and hosts the parcel Design / Info / Proposals / Tools tabs for the
   whole selection. Clear keeps selection mode active, including an empty selection; Done exits
-  and clears it. The header can fold while map clicks keep changing the selection. There is no
+  selection mode and retains the selected parcels. The header can fold while map clicks keep changing the selection. There is no
   bottom selection tray. Detect block and Custom site remain in the section, before the tabs.
 
 ## 3D model view
 
 The 3D model view has its own click stack (`frontend/js/three-click-stack.js`, user decisions
-2026-10-23): the 2D stack's frame and row/strip look (`#click-stack, #three-click-stack` share the
+2026-10-23): the 2D stack's frame and card/row/relationship look (`#click-stack, #three-click-stack` share the
 rules in `css/map.css`), with what a click in the scene stands on. Like 2D it has no panel, header or
 close button: the section cards float over the scene, and the stack closes on Escape, a click on
 nothing, or another selection. It replaced the floating top-left parcel /
 "Proposal info" panel.
 
 - Sections, top to bottom: **Built** (the clicked building, and the existing buildings standing on
-  the parcel, as a strip), **Design** (the clicked proposal, or the proposals on the parcel),
-  **Permitted** (the clicked massing, or the parcel's cached massing), **Parcel** (the one parcel).
+  the parcel), **Agreements**, **Plans**, **Design** (the clicked proposal, or the proposals on the
+  parcel), **Permitted** (the clicked massing, or the parcel's cached massing), **Parcel** (the one
+  parcel).
 - The clicked thing's section opens; one section is open at a time.
 - Repeated scene clicks on the same object or map spot advance through the available sections in
   their displayed order, wrapping from Parcel to the first section. This works independently of
@@ -132,7 +146,10 @@ nothing, or another selection. It replaced the floating top-left parcel /
   yellow hatch; formed and cadastral parcel selections remain unfilled, even where their geometry
   is identical to the design. No parcel material changes; reduced motion keeps the outline steady. The shared contextual
   relationship rules connect designs, agreements and parcels; the model view keeps its own section order.
-- The pure rules (order, focus, strips, labels) are in the module's first half and unit tested
+- Plans and agreements use the same lazy exact-revision membership lookup and read-only geometry
+  inspection as 2D; explicit links open their full records. Inspecting parent records never imports
+  or applies member designs.
+- The pure rules (order, focus, relationships, labels) are in the module's first half and unit tested
   (`backend/test/three-click-stack.test.js`); the 2D model (`click-stack-model.js`) is not shared,
   for section ordering, because 2D puts Design above Built; contextual relationships are shared.
 

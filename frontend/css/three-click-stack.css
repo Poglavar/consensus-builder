@@ -18,6 +18,12 @@
     min-height: 0;
 }
 
+#three-click-stack .click-stack__section.is-expanded .click-stack__body {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
 #three-click-stack .click-stack__heading,
 #three-click-stack .click-stack__choices,
 #three-click-stack .click-stack__body > *,

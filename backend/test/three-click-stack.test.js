@@ -1,7 +1,7 @@
 // The 3D model view's click stack (frontend/js/three-click-stack.js): which sections a click in the
 // scene shows, in what order (Built → Design → Permitted → Parcel), which one opens, and which
 // instance a strip shows first. The panel is checked in the browser; these are its pure rules.
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
@@ -9,6 +9,8 @@ import { makeDocument } from './helpers/fake-dom.js';
 
 const require = createRequire(import.meta.url);
 const stack = require('../../frontend/js/three-click-stack.js');
+const relations = require('../../frontend/js/click-stack/click-stack-relations.js');
+const model = require('../../frontend/js/click-stack/click-stack-model.js');
 
 const feature = { type: 'Feature', properties: {}, geometry: null };
 
@@ -57,7 +59,7 @@ describe('3D click stack contextual selection', () => {
 
     it('navigates between design and parcel, keeping collapsed selection focused', () => {
         const document = makeDocument();
-        const context = { document, console, __clickStackModel: require('../../frontend/js/click-stack/click-stack-model.js') };
+        const context = { document, console, __clickStackModel: model, ClickStackRelations: relations };
         context.window = context;
         vm.createContext(context);
         vm.runInContext(readFileSync(new URL('../../frontend/js/three-click-stack.js', import.meta.url), 'utf8'), context);
@@ -65,15 +67,108 @@ describe('3D click stack contextual selection', () => {
         const adapter = { activate: (_kind, item, body) => { body.textContent = item.label; }, focus: (kind, item) => focused.push([kind, item.id]) };
         api.show({ designs: [{ id: 'a', label: 'Garden', proposal: { cadastreParcelIds: ['p'] } }], parcels: [{ id: 'p', label: '12' }] }, { focus: 'designs' }, adapter);
         const section = kind => document.querySelector(`.click-stack__section[data-kind="${kind}"]`);
-        expect(section('designs').querySelector('.click-stack__choices').dataset.kind).toBe('parcels');
-        section('designs').querySelector('[data-id="p"]').click();
+        expect(section('designs').querySelector('.click-stack__choices')).toBeNull();
+        section('parcels').querySelector('.click-stack__row').click();
         expect(api.current()).toMatchObject({ selectedKind: 'parcels', expanded: 'parcels' });
-        expect(section('parcels').querySelector('.click-stack__choices').dataset.kind).toBe('designs');
+        expect(section('parcels').querySelector('.click-stack__choices')).toBeNull();
         section('parcels').querySelector('.click-stack__row').click();
         expect(api.current()).toMatchObject({ selectedKind: 'parcels', expanded: null });
         expect(section('parcels').classList.contains('is-selected')).toBe(true);
         expect(document.querySelector('.click-stack__choices')).toBeNull();
         expect(focused).toEqual([['parcels', 'p']]);
+    });
+
+    it('adds asynchronous memberships without changing design focus, retains collapse, selects native instances, and ignores stale results', async () => {
+        const document = makeDocument();
+        const pending = [];
+        const mounted = [];
+        const context = {
+            document, console, __clickStackModel: model, ClickStackRelations: relations,
+            DesignSync: { publishedCid: proposal => proposal?.cid || null },
+            DesignMemberships: { mountSection: vi.fn((...args) => mounted.push(args)) },
+            loadDesignMemberships: vi.fn((proposal, callback) => new Promise(resolve => pending.push({ proposal, callback, resolve })))
+        };
+        context.window = context;
+        vm.createContext(context);
+        vm.runInContext(readFileSync(new URL('../../frontend/js/three-click-stack.js', import.meta.url), 'utf8'), context);
+        const api = context.ThreeClickStack;
+        const adapter = { activate: vi.fn(), focus: vi.fn() };
+        const first = { id: 'd1', label: 'Road', proposal: { proposalId: 'd1', cid: 'cid-d1' } };
+        const second = { id: 'd2', label: 'Park', proposal: { proposalId: 'd2', cid: 'cid-d2' } };
+        api.show({ designs: [first, second], parcels: [{ id: 'p1' }] }, { focus: 'designs' }, adapter);
+        expect(pending).toHaveLength(1);
+        document.querySelector('.click-stack__section[data-kind="designs"] .click-stack__row').click();
+        expect(api.current().expanded).toBeNull();
+
+        const session = {
+            cid: 'cid-d1', dispose: vi.fn(),
+            instances(kind) { return kind === 'plans'
+                ? [{ id: 'plan-1', label: 'Spatial plan', designCids: ['cid-d1'] }, { id: 'plan-2', label: 'Plan option', designCids: ['cid-d1'] }]
+                : [{ id: 'agreement-1', label: 'Agreement', designCids: ['cid-d1'] }]; }
+        };
+        pending[0].callback(session);
+        pending[0].resolve(session);
+        await Promise.resolve();
+        expect(api.current().sections.map(section => section.kind)).toEqual(['agreements', 'plans', 'designs', 'parcels']);
+        expect(api.current()).toMatchObject({ selectedKind: 'designs', expanded: null });
+
+        document.querySelector('.click-stack__section[data-kind="plans"] .click-stack__row').click();
+        const selector = document.querySelector('.click-stack__section[data-kind="plans"] .click-stack__selector');
+        expect(selector).not.toBeNull();
+        selector.value = 'plan-2';
+        selector.dispatchEvent({ type: 'change', target: selector });
+        const plans = api.current().sections.find(section => section.kind === 'plans');
+        expect(plans.instances[plans.selectedIndex].id).toBe('plan-2');
+        expect(context.DesignMemberships.mountSection).toHaveBeenCalled();
+        const onFocus = mounted.at(-1)[5].onFocus;
+        onFocus({ id: 'plan-2' });
+        expect(adapter.focus).toHaveBeenLastCalledWith('plans', { id: 'plan-2' });
+        document.querySelector('.click-stack__section[data-kind="plans"] .click-stack__row').click();
+        const afterCollapse = adapter.focus.mock.calls.length;
+        onFocus({ id: 'plan-2' });
+        expect(adapter.focus).toHaveBeenCalledTimes(afterCollapse + 1);
+        document.querySelector('.click-stack__section[data-kind="designs"] .click-stack__row').click();
+        const afterSwitch = adapter.focus.mock.calls.length;
+        onFocus({ id: 'plan-2' });
+        expect(adapter.focus).toHaveBeenCalledTimes(afterSwitch);
+
+        const designSelector = document.querySelector('.click-stack__section[data-kind="designs"] .click-stack__selector');
+        designSelector.value = 'd2';
+        designSelector.dispatchEvent({ type: 'change', target: designSelector });
+        expect(pending).toHaveLength(2);
+        const kindsBeforeStale = api.current().sections.map(section => section.kind);
+        pending[0].callback({ cid: 'stale', instances: () => [{ id: 'stale-plan' }], dispose: vi.fn() });
+        expect(api.current().sections.map(section => section.kind)).toEqual(kindsBeforeStale);
+        api.close({ silent: true });
+        pending[1].callback({ cid: 'closed', instances: () => [{ id: 'closed-agreement' }], dispose: vi.fn() });
+        expect(api.isOpen()).toBe(false);
+    });
+
+    it('rejects an in-flight membership result when the same local design publishes a new CID, then resyncs', () => {
+        const document = makeDocument();
+        const proposal = { proposalId: 'd1', cid: 'current' };
+        const pending = [];
+        const context = {
+            document, console, __clickStackModel: model, ClickStackRelations: relations,
+            DesignSync: { publishedCid: record => record?.cid || null },
+            loadDesignMemberships: vi.fn((record, callback) => new Promise(resolve => pending.push({ record, callback, resolve })))
+        };
+        context.window = context;
+        vm.createContext(context);
+        vm.runInContext(readFileSync(new URL('../../frontend/js/three-click-stack.js', import.meta.url), 'utf8'), context);
+        const api = context.ThreeClickStack;
+        api.show({ designs: [{ id: 'd1', label: 'Road', proposal }] }, { focus: 'designs' }, { activate: vi.fn(), focus: vi.fn() });
+        expect(pending).toHaveLength(1);
+        proposal.cid = 'revised';
+        const stale = { cid: 'current', dispose: vi.fn(), instances: () => [{ id: 'stale-plan' }] };
+        pending[0].callback(stale);
+        pending[0].resolve(stale);
+        expect(stale.dispose).toHaveBeenCalled();
+        expect(pending).toHaveLength(2);
+        expect(api.current().sections.map(section => section.kind)).toEqual(['designs']);
+        const current = { cid: 'revised', dispose: vi.fn(), instances: kind => kind === 'plans' ? [{ id: 'current-plan', label: 'Current', membershipDesignCid: 'revised' }] : [] };
+        pending[1].callback(current);
+        expect(api.current().sections.map(section => section.kind)).toEqual(['plans', 'designs']);
     });
 });
 

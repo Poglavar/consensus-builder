@@ -752,7 +752,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         aria-selected="${proposalDetailsTab === id}">${safeAgentText(label)}</button>`;
     const content = `
         <div class="proposal-info">
-            <section data-design-memberships></section>
             <div class="cb-tabs cb-tabs--fill proposal-details-tabs" role="tablist">
                 ${tabButton('overview', tProposal('panel.proposal.tabs.overview', 'Overview'))}
                 ${tabButton('details', tProposal('panel.proposal.tabs.details', 'Details'))}
@@ -1014,8 +1013,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     if (detailsContent) detailsContent.dataset.proposalId = String(proposalKey);
     if (!sameProposal && preserveScrollPosition === null) preservedScrollTop = 0;
     const runPostRender = () => {
-        const memberships = detailsContent?.querySelector('[data-design-memberships]');
-        if (memberships) window.mountDesignMemberships(memberships, fullProposal);
         detailsContent?.querySelectorAll('details[data-proposal-section]').forEach(section => {
             section.open = openSections.has(section.dataset.proposalSection);
         });

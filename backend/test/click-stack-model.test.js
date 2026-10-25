@@ -22,15 +22,65 @@ it('navigates agreement → design → formed parcel → source parcel without o
 const kinds = stack => stack.sections.map(section => section.kind);
 
 describe('click stack model', () => {
-    it('orders agreements, designs, built, permitted, formed parcel, cadastral parcels, showing only what is there', () => {
+    it('orders agreements, plans, designs, built, permitted, formed parcel, cadastral parcels, showing only what is there', () => {
         expect(kinds(model.buildClickStack({ built: [{ id: 'b1' }], parcels: [{ id: 'p1' }] }))).toEqual(['built', 'parcels']);
         expect(kinds(model.buildClickStack({ parcels: [{ id: 'p1' }], permitted: [{ id: 'm1' }], built: [{ id: 'b1' }], formed: [{ id: 'f1' }] })))
             .toEqual(['built', 'permitted', 'formed', 'parcels']);
-        expect(kinds(model.buildClickStack({ parcels: [{ id: 'p1' }], designs: [{ id: 'd1' }], built: [{ id: 'b1' }], permitted: [{ id: 'm1' }], agreements: [{ id: 'a1' }] })))
-            .toEqual(['agreements', 'designs', 'built', 'permitted', 'parcels']);
+        expect(kinds(model.buildClickStack({ parcels: [{ id: 'p1' }], designs: [{ id: 'd1' }], built: [{ id: 'b1' }], permitted: [{ id: 'm1' }], plans: [{ id: 'pl1' }], agreements: [{ id: 'a1' }] })))
+            .toEqual(['agreements', 'plans', 'designs', 'built', 'permitted', 'parcels']);
         expect(model.buildClickStack({}).sections).toEqual([]);
         expect(kinds(model.buildClickStack({ ground: [{ id: 'here' }] }))).toEqual(['ground']);
         expect(model.buildClickStack({ ground: [{ id: 'here' }] }).expanded).toBe('ground');
+    });
+
+    it('relates plans and agreements to exact design identities and labels missing members', () => {
+        const d1 = { id: 'local-1', cid: 'bafy-design-one', label: 'Road' };
+        const d2 = { id: 'local-2', serverId: 'server-2', label: 'Park' };
+        const plan = { id: 'pl', content: { designCids: ['bafy-design-one', 'bafy-missing'] } };
+        const agreement = { id: 'ag', agreement: { designs: [{ proposalId: 'local-2', title: 'Park' }] } };
+        const hits = { plans: [plan], agreements: [agreement], designs: [d1, d2] };
+        expect(model.contextFor('plans', plan, hits).map(group => [group.relation, group.instances.map(item => item.id)]))
+            .toEqual([['includedDesigns', ['local-1', 'bafy-missing']]]);
+        expect(model.contextFor('agreements', agreement, hits)[0].relation).toBe('includedDesigns');
+        expect(model.contextFor('designs', d1, hits).map(group => [group.relation, group.instances.map(item => item.id)]))
+            .toEqual([['memberPlans', ['pl']]]);
+        expect(model.contextFor('designs', d2, hits).map(group => [group.relation, group.instances.map(item => item.id)]))
+            .toEqual([['memberAgreements', ['ag']]]);
+    });
+
+    it('keeps published CID membership separate from an edited local design with the same local id', () => {
+        const edited = { id: 'local-1', cid: 'bafy-new-version', label: 'Edited road' };
+        const plan = { id: 'pl-old', designCids: ['bafy-old-version'] };
+        const agreement = { id: 'ag-old', agreement: { designs: [{ proposalId: 'local-1', cid: 'bafy-old-version' }] } };
+        const hits = { plans: [plan], agreements: [agreement], designs: [edited] };
+        const planMember = model.contextFor('plans', plan, hits)[0].instances[0];
+        const agreementMember = model.contextFor('agreements', agreement, hits)[0].instances[0];
+        expect(planMember).toMatchObject({ id: 'bafy-old-version', serverId: 'bafy-old-version' });
+        expect(agreementMember).toMatchObject({ id: 'bafy-old-version', serverId: 'bafy-old-version' });
+        expect(model.contextFor('designs', edited, hits).map(group => group.kind)).toEqual([]);
+    });
+
+    it('uses a reverse-membership CID witness when a plan summary has no design list', () => {
+        const current = { id: 'local-1', cid: 'bafy-current', label: 'Current revision' };
+        const stale = { id: 'local-1', cid: 'bafy-stale', label: 'Stale revision' };
+        const planSummary = { id: 'plan-1', membershipDesignCid: 'bafy-current', label: 'Plan' };
+        const groups = model.contextFor('designs', current, { designs: [current, stale], plans: [planSummary] });
+        expect(groups.map(group => [group.relation, group.instances.map(item => item.id)]))
+            .toEqual([['memberPlans', ['plan-1']]]);
+        expect(model.contextFor('designs', stale, { designs: [current, stale], plans: [planSummary] })).toEqual([]);
+    });
+
+    it('hides only a redundant singleton relationship to the sole identical visible target', () => {
+        const design = { id: 'd1', label: 'Road' };
+        const agreement = { id: 'a1', agreement: { designs: [{ proposalId: 'd1' }] } };
+        const hits = { designs: [design], agreements: [agreement] };
+        expect(model.contextFor('designs', design, hits).map(group => group.kind)).toEqual(['agreements']);
+        expect(model.visibleContextFor('designs', design, hits)).toEqual([]);
+        expect(model.visibleContextFor('designs', design, { designs: [design], agreements: [{ id: 'a2' }, agreement] }))
+            .toHaveLength(1);
+        // The relationship still navigates when its target isn't represented in the current stack.
+        expect(model.visibleContextFor('agreements', agreement, { designs: [] })[0].instances)
+            .toEqual([{ id: 'd1', label: 'd1' }]);
     });
 
     it('counts instances, selects the newest design and agreement first, and drops duplicates', () => {

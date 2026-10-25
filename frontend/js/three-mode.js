@@ -1459,11 +1459,6 @@
                 withStackDriving(() => window.selectAndHighlightProposal?.(instance.id, null, false, false, true));
                 const proposal = window.proposalStorage?.getProposal?.(instance.id);
                 if (proposal && updateProposalInfoPanel(proposal, getProposalParcelIdSet(proposal))) body.appendChild(parcelInfoPanelEl);
-                if (proposal) {
-                    const memberships = document.createElement('section');
-                    body.appendChild(memberships);
-                    window.mountDesignMemberships(memberships, proposal);
-                }
                 // Editing actions use the same Design section in the map view, never a second
                 // inspector floating beside this scene's figures.
                 const actions = document.createElement('button');

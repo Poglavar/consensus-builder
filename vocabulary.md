@@ -268,6 +268,8 @@ An immutable `plan/v1` snapshot containing a title, a selected set of published 
 
 A private named-plan draft can reference unpublished design revisions carried with it. Publishing that draft first publishes its missing designs, then the named snapshot, and verifies the same content identifiers. Drafting and editing a named plan do not derive agreement ground or reconnect roads.
 
+Plans and agreements independently reference designs; neither record directly references the other. One design can belong to multiple plans and agreements. Sharing a design does not establish that an agreement covers every design in a plan, and there is no one-to-one plan–agreement constraint.
+
 ### Private draft reference
 
 An expiring bearer URL resolving to an immutable unpublished design, agreement or named plan and its exact member revisions. It persists independently of an MCP client session; its stated expiry limits retention. Exported canonical content can restore it after expiry. A private preview is not publication, application, consent or a permanent share link.

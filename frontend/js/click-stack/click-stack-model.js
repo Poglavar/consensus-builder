@@ -35,10 +35,10 @@
     // parcel): it opens like a cadastral parcel, and is where the next design starts. Cadastral
     // parcels below it are the originals it came from. Ground is bare land with no register (the
     // former ground menu): it offers what can be drawn there, and shows only when nothing else is.
-    const ORDER = Object.freeze(['agreements', 'designs', 'built', 'permitted', 'formed', 'parcels', 'ground']);
-    const MULTI = new Set(['agreements', 'designs', 'built', 'permitted', 'formed', 'parcels']);
-    const EXPANDABLE = new Set(['agreements', 'designs', 'built', 'permitted', 'formed', 'parcels', 'ground']);
-    const NEWEST_FIRST = new Set(['agreements', 'designs']);
+    const ORDER = Object.freeze(['agreements', 'plans', 'designs', 'built', 'permitted', 'formed', 'parcels', 'ground']);
+    const MULTI = new Set(['agreements', 'plans', 'designs', 'built', 'permitted', 'formed', 'parcels']);
+    const EXPANDABLE = new Set(['agreements', 'plans', 'designs', 'built', 'permitted', 'formed', 'parcels', 'ground']);
+    const NEWEST_FIRST = new Set(['agreements', 'plans', 'designs']);
 
     const time = value => {
         const parsed = typeof value === 'number' ? value : Date.parse(value || '');
@@ -73,7 +73,7 @@
         return top ? top.instances[top.selectedIndex].ref : null;
     }
 
-    // hits: { agreements, designs, built, permitted, formed, parcels } arrays of { id, label, ... }.
+    // hits: { agreements, plans, designs, built, permitted, formed, parcels } arrays of { id, label, ... }.
     // options.remembered: the kind last expanded; options.selected: { [kind]: id } to keep a
     // chosen instance (a strip click) when the same spot is rebuilt.
     function buildClickStack(hits = {}, options = {}) {
@@ -134,36 +134,107 @@
     function contextFor(kind, instance, hits = {}) {
         if (!instance) return [];
         const groups = [];
-        const add = (position, target, items) => {
+        const add = (position, target, property, items) => {
             const seen = new Set();
             const instances = items.filter(item => item?.id != null && !seen.has(String(item.id)) && seen.add(String(item.id))).map(item => ({ ...item, id: String(item.id) }));
-            if (instances.length) groups.push({ position, kind: target, instances, count: instances.length });
+            if (instances.length) groups.push({ position, kind: target, relation: property, instances, count: instances.length });
         };
         const id = String(instance.id);
         const designs = hits.designs || [], formed = hits.formed || [], parcels = hits.parcels || [];
         const sourceIds = item => (item.feature?.properties?.cadastreParcelIds || []).map(String);
+        const contentOf = item => item?.content || item?.agreement || item?.plan || item || {};
+        const references = item => {
+            const content = contentOf(item);
+            const refs = [];
+            const addValues = values => {
+                if (Array.isArray(values)) values.forEach(value => {
+                    if (value && typeof value === 'object') {
+                        for (const key of ['proposalId', 'designId', 'localId', 'id', 'cid', 'serverId']) {
+                            if (value[key] != null) refs.push(String(value[key]));
+                        }
+                    } else if (value != null) refs.push(String(value));
+                });
+                else if (values != null) refs.push(String(values));
+            };
+            const cids = item?.designCids ?? content.designCids;
+            if (Array.isArray(cids) && cids.length) addValues(cids);
+            else {
+                addValues(item?.designIds);
+                addValues(content.designIds);
+                addValues(content.designs);
+            }
+            return new Set(refs);
+        };
+        const identities = item => new Set([item?.id, item?.localId, item?.proposalId, item?.cid, item?.serverId]
+            .filter(value => value != null).map(String));
+        const includesDesign = (container, design) => {
+            if (container.membershipDesignCid) return [design?.cid, design?.serverId].includes(container.membershipDesignCid);
+            const content = contentOf(container);
+            const cids = container?.designCids ?? content.designCids;
+            if (Array.isArray(cids) && cids.length) {
+                const keys = [design?.cid, design?.serverId].filter(value => value != null).map(String);
+                return keys.some(key => cids.map(String).includes(key));
+            }
+            const records = Array.isArray(content.designs) ? content.designs : null;
+            if (records) {
+                const row = records.find(value => {
+                    const cid = value?.cid ?? value?.designCid;
+                    if (cid != null) return String(cid) === String(design?.cid ?? design?.serverId ?? '');
+                    return [...identities(value)].some(key => identities(design).has(key));
+                });
+                return !!row;
+            }
+            const refs = references(container), keys = identities(design);
+            return [...keys].some(key => refs.has(key));
+        };
+        const designOfRef = ref => designs.find(item => identities(item).has(String(ref)))
+            || { id: String(ref), serverId: String(ref), label: String(ref) };
         const designUsesParcel = (design, parcel) => {
             const ids = (design.proposal?.cadastreParcelIds || []).map(String);
             return ids.includes(String(parcel.id)) || sourceIds(parcel).some(id => ids.includes(id));
         };
-        if (kind === 'agreements') {
-            add('below', 'designs', (instance.agreement?.designs || []).map(design => designs.find(item => item.id === String(design.proposalId))
-                || { id: String(design.proposalId), label: design.title || String(design.proposalId) }));
+        if (kind === 'agreements' || kind === 'plans') {
+            const content = contentOf(instance);
+            const records = Array.isArray(content.designs) ? content.designs : null;
+            const members = records
+                ? records.map(record => {
+                    const cid = record?.cid ?? record?.designCid;
+                    const keys = identities(record);
+                    const found = cid != null
+                        ? designs.find(item => [item?.cid, item?.serverId].some(value => value != null && String(value) === String(cid)))
+                        : designs.find(item => [...identities(item)].some(key => keys.has(key)));
+                    if (found) return found;
+                    const ref = cid ?? record?.proposalId ?? record?.designId ?? record?.localId ?? record?.id ?? record?.serverId;
+                    return ref == null ? null : { id: String(ref), ...(cid != null ? { serverId: String(ref) } : {}), label: record.title || String(ref) };
+                }).filter(Boolean)
+                : [...references(instance)].map(designOfRef);
+            add('below', 'designs', 'includedDesigns', members);
         } else if (kind === 'designs') {
-            add('above', 'agreements', (hits.agreements || []).filter(item => (item.designIds || item.agreement?.designs?.map(design => String(design.proposalId)) || []).includes(id)));
+            add('above', 'plans', 'memberPlans', (hits.plans || []).filter(item => includesDesign(item, instance)));
+            add('above', 'agreements', 'memberAgreements', (hits.agreements || []).filter(item => includesDesign(item, instance)));
             const pieces = formed.filter(item => String(item.designId) === id);
-            if (pieces.length) add('below', 'formed', pieces);
-            else add('below', 'parcels', parcels.filter(item => designUsesParcel(instance, item)));
+            if (pieces.length) add('below', 'formed', 'formedParcels', pieces);
+            else add('below', 'parcels', 'affectsParcels', parcels.filter(item => designUsesParcel(instance, item)));
         } else if (kind === 'formed') {
-            if (instance.designId) add('above', 'designs', [designs.find(item => String(item.id) === String(instance.designId)) || { id: String(instance.designId), label: instance.designLabel || String(instance.designId) }]);
-            add('below', 'parcels', parcels.filter(item => sourceIds(instance).includes(String(item.id))));
+            if (instance.designId) add('above', 'designs', 'createdBy', [designs.find(item => identities(item).has(String(instance.designId))) || { id: String(instance.designId), label: instance.designLabel || String(instance.designId) }]);
+            add('below', 'parcels', 'formedFrom', parcels.filter(item => sourceIds(instance).includes(String(item.id))));
         } else if (kind === 'parcels') {
             const parents = formed.filter(item => sourceIds(item).includes(id));
-            if (parents.length) add('above', 'formed', parents);
-            else add('above', 'designs', designs.filter(item => designUsesParcel(item, instance)));
+            if (parents.length) add('above', 'formed', 'formedParcels', parents);
+            else add('above', 'designs', 'designsOnParcel', designs.filter(item => designUsesParcel(item, instance)));
         }
         return groups;
     }
 
-    return Object.freeze({ ORDER, summarizeSelection, buildSelectionStack, buildClickStack, clickAction, expand, selectInstance, selectedInstance, contextFor });
+    // A relationship strip is redundant only when its sole target is also the sole visible
+    // instance in that target section. Missing/offscreen targets remain useful navigation.
+    function visibleContextFor(kind, instance, hits = {}) {
+        return contextFor(kind, instance, hits).filter(group => {
+            if (group.count !== 1) return true;
+            const visible = instancesOf(group.kind, hits[group.kind]);
+            return visible.length !== 1 || visible[0].id !== group.instances[0].id;
+        });
+    }
+
+    return Object.freeze({ ORDER, summarizeSelection, buildSelectionStack, buildClickStack, clickAction, expand, selectInstance, selectedInstance, contextFor, visibleContextFor });
 });

@@ -1,16 +1,29 @@
-<!-- Design of record for the plan / design / agreement rework: what a design, an agreement and a plan are, what replaces named plans and decision kinds, and the open questions still being settled. -->
+<!-- Current plan/design/agreement contract, followed by historical design notes and unresolved findings. -->
 
 # Plan, design, agreement
 
-**Current addition (2026-10-24): named map snapshots.** “Name this plan” in Designs → Share
-saves a `plan/v1` record containing the title, selected published design CIDs and map view.
-Its `/plans/<cid>` link opens those exact designs through the ordinary shared-design flow.
-Renaming or changing the selection or view creates a different snapshot; old links retain their
-content. Agreements still own land allocations, money and decision rules. This is a small new
-record, independent of the former named-plan machinery removed in M2. The milestone descriptions
-below remain the historical implementation record. See [named-plan validation and release notes](docs/named-plans-validation.md).
+## Current contract
 
-**Status (2026-10-22): M1, M2 and M3 built and tested; M3 committed, nothing pushed or deployed.**
+| Record | Meaning | Relationships |
+|---|---|---|
+| **Design** | One authored change: a road, building, park, parcel layout or rule. Published revisions have immutable content identities. | The same design revision can appear in multiple plans and agreements. |
+| **Plan** | A named spatial composition: selected published design CIDs and a saved map view, recorded as `plan/v1`. | References designs. Contains no decision rule, consent, allocations or payments. |
+| **Agreement** | A decision rule over specified designs, with any land allocations, payments and deadline. It may be a binding owners' arrangement or a non-binding consultation. | References designs directly, independently of any named plan. Its existence or publication does not establish consent or execution. |
+
+A plan and an agreement currently have no direct record reference or one-to-one constraint.
+Shared membership in one design does not mean an agreement covers the whole plan. The click stack
+shows each one's actual member designs, and labels a design's reverse links separately.
+
+Named snapshots were added on 2026-10-24. “Name this plan” in Designs → Share saves the selected
+published designs and view, with a permanent `/plans/<cid>` link. Changing its title, selection or
+view creates a new snapshot; existing links retain their content. This is independent of the former
+named-plan machinery removed in M2. See [named-plan validation and release notes](docs/named-plans-validation.md).
+
+The notes below preserve the historical reasoning, implementation milestones and unresolved findings.
+The former statement that plans have no record was superseded by `plan/v1`; the current glossary
+is [vocabulary.md](vocabulary.md). The present UI clarification changes no record contract.
+
+**Historical status (recorded 2026-10-22): M1, M2 and M3 built and tested; M3 committed, nothing pushed or deployed at that time.**
 "Lay out parcels" (M1 a) and the local agreement with its dialog, panel and list (M1 b) came first.
 M2 (the "M2 build contract" below) publishes designs and agreements as CIDv1 UnixFS files with raw leaves, pinned
 through `POST /pins` and indexed in `consensus.design` / `consensus.agreement`; share links are
@@ -51,12 +64,12 @@ entrypoint; the production `.env` still carries unused Canton variables.
 
 A rework of what sits above a single authored change. Started 2026-10-21 on branch
 `plan-design-agreement` (off `colosseum-worlds-fair` at 3a62b4a7e, which includes the Schelling plan
-layer). Design discussion only so far; nothing below is implemented. This is the living plan:
-decisions are appended as they are made and the open list shrinks.
+layer). These notes preserve the discussion and implementation milestones; the current contract
+above supersedes historical statements where indicated.
 
-## Decisions (user, 2026-10-21)
+## Historical decisions (user, 2026-10-21)
 
-### Two records and one informal word
+### Former two-record model (the no-plan-record position was superseded by `plan/v1`)
 
 | Term | What it is | Record? |
 |---|---|---|

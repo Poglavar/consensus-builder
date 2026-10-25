@@ -56,6 +56,22 @@ describe('click stack hits', () => {
         expect(focus('designs', { id: 'missing' })).toEqual([]);
     });
 
+    it('uses inspected parent features for published plans and agreements without falling back to mutable local designs', () => {
+        const mutable = parcelFeature({ design: 'mutable-local-copy' });
+        const inspected = parcelFeature({ design: 'inspected-canonical-revision' });
+        const { context } = loadHits({ proposals: { 'local-design': { proposalId: 'local-design' } } });
+        context.collectProposalFeatureSets = vi.fn(() => ({ primaryFeatures: [mutable] }));
+        const focus = context.ClickStackHits.featuresFor;
+        const plan = { id: 'plan-cid', cid: 'plan-cid', features: [inspected] };
+        const agreement = { id: 'agreement-cid', cid: 'agreement-cid', features: [inspected],
+            agreement: { designs: [{ proposalId: 'local-design' }] } };
+        expect(focus('plans', plan)).toEqual([inspected]);
+        expect(focus('agreements', agreement)).toEqual([inspected]);
+        expect(focus('plans', { id: 'plan-cid', cid: 'plan-cid', plan: { designCids: ['published-design'] } })).toEqual([]);
+        expect(focus('agreements', { id: 'agreement-cid', cid: 'agreement-cid', agreement: { designs: [{ proposalId: 'local-design' }] } })).toEqual([]);
+        expect(context.collectProposalFeatureSets).not.toHaveBeenCalled();
+    });
+
     it('adds the buildings and proposals of the parcel under the point when no design is there', () => {
         const house = { id: 'b1', feature: { type: 'Feature', properties: { name: 'House' }, geometry: null } };
         const shed = { id: 'b2', feature: { type: 'Feature', properties: { name: 'Shed' }, geometry: null } };

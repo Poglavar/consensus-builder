@@ -872,6 +872,7 @@ body.three-mode-active #agent-bubbles-container {
 #click-stack:not(:has(.is-hosted)),
 #three-click-stack:not(:has(.is-hosted)) {
     bottom: auto;
+    max-height: calc(100dvh - var(--map-shell-top-clearance) - var(--cb-space-2) - var(--right-dock-bottom));
 }
 
 /* Folded for Before / after: only the rows show; the open section's panel stays hosted, hidden. */
@@ -906,7 +907,7 @@ body.three-mode-active #agent-bubbles-container {
 
 .click-stack-map-focus {
     animation: click-stack-focus-pulse 1.4s ease-in-out infinite;
-    filter: drop-shadow(0 0 1px #fff);
+    filter: drop-shadow(0 0 1px var(--cb-surface));
     pointer-events: none;
 }
 
@@ -942,37 +943,57 @@ body.three-mode-active #agent-bubbles-container {
     margin-top: var(--cb-space-3);
 }
 
-/* The connector stays behind the cards, centred between successive sections. */
+/* Short connectors follow the icon axis, keeping the relationship visible in the gaps. */
 .click-stack__section + .click-stack__section::before {
     content: '';
     position: absolute;
-    left: calc(50% - 2px);
+    left: calc(var(--cb-space-3) + 14px - 2px);
     top: calc(-1 * var(--cb-space-3) - 2px);
     height: var(--cb-space-3);
-    border-left: 4px solid #000;
-    z-index: -1;
+    border-left: 4px solid var(--cb-line-strong);
+    z-index: calc(var(--cb-z-local-0) - 1);
     pointer-events: none;
 }
 
 .click-stack__section.is-selected > .click-stack__card {
-    border-color: #facc15;
-    box-shadow: inset 0 0 0 2px #facc15, var(--cb-shadow-sm);
+    border-color: var(--cb-primary);
+    box-shadow: inset 0 0 0 1px var(--cb-primary), var(--cb-shadow-sm);
 }
 
-.click-stack__section.is-selected > .click-stack__card > .click-stack__heading {
-    background: #facc15;
-    border-radius: calc(var(--cb-radius-lg) - 1px);
-    --cb-text: #1c1917;
-    --cb-text-muted: #292524;
-    --cb-primary-soft: #fde047;
-    --cb-focus: #1c1917;
+.click-stack__section .click-stack__row > i:first-child {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 28px;
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--cb-line-strong);
+    border-radius: 50%;
+    background: var(--cb-surface-2);
+}
+
+.click-stack__section.is-selected .click-stack__row > i:first-child {
+    border-color: var(--cb-primary);
+    background: var(--cb-primary-soft);
+    color: var(--cb-primary-soft-ink);
 }
 
 /* The expanded card gives up height down to a floor that keeps its panel's tabs, first lines and
    actions in view; below that the stack itself scrolls. */
 .click-stack__section.is-expanded:has(.is-hosted) {
     flex: 1 1 auto;
-    min-height: min(22rem, 70vh);
+    min-height: min(16rem, 60vh);
+}
+
+.click-stack__section.is-expanded[data-kind="plans"],
+.click-stack__section.is-expanded[data-kind="agreements"] {
+    flex: 0 1 auto;
+    min-height: 0;
+}
+
+.click-stack__membership-details {
+    flex: 0 0 auto;
 }
 
 /* In the phone sheet the expanded card is as tall as its panel, which does not scroll inside
@@ -1052,24 +1073,23 @@ body.three-mode-active #agent-bubbles-container {
     transform: rotate(180deg);
 }
 
-/* Related objects flank the selected card; the count stays fixed while its choices scroll. */
+/* Relationship links sit inside the selected card body as small, wrapping groups. */
 .click-stack__choices {
     display: flex;
-    align-items: center;
-    gap: var(--cb-space-2);
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--cb-space-1);
     flex: 0 0 auto;
     min-width: 0;
-    padding: var(--cb-space-2);
-    border: 1px solid var(--cb-line);
-    border-radius: var(--cb-radius-lg);
-    background: var(--cb-glass-sheet);
-    backdrop-filter: blur(var(--cb-panel-blur));
-    -webkit-backdrop-filter: blur(var(--cb-panel-blur));
+    max-width: 100%;
+    padding: var(--cb-space-1) 0;
     pointer-events: auto;
 }
 
-.click-stack__choice-count {
-    flex: 0 0 auto;
+.click-stack__relation-label,
+.click-stack__selector-label {
+    display: block;
+    min-width: 0;
     font-size: var(--cb-text-sm);
     font-weight: var(--cb-weight-semibold);
     color: var(--cb-text-muted);
@@ -1078,16 +1098,18 @@ body.three-mode-active #agent-bubbles-container {
 .click-stack__strip {
     flex: 1 1 auto;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
     gap: var(--cb-space-1);
+    width: 100%;
     min-width: 0;
-    padding: 2px;
-    overflow-x: auto;
-    scrollbar-width: thin;
+    max-width: 100%;
+    overflow: visible;
 }
 
 /* The expanded card already names its item in the hosted details or agreement summary. */
 #click-stack .click-stack__section.is-expanded[data-kind="designs"] .click-stack__row-detail,
+.click-stack__section.is-expanded[data-kind="plans"] .click-stack__row-detail,
 .click-stack__section.is-expanded[data-kind="agreements"] .click-stack__row-detail,
 .click-stack__section.is-expanded[data-kind="built"] .click-stack__row-detail {
     display: none;
@@ -1108,10 +1130,11 @@ body.three-mode-active #agent-bubbles-container {
 }
 
 .click-stack__chip {
-    flex: 0 0 auto;
-    max-width: min(24rem, calc(100vw - 64px));
-    min-height: 44px;
-    padding: var(--cb-space-2);
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 36px;
+    padding: var(--cb-space-1) var(--cb-space-2);
     border: 1px solid var(--cb-line-strong);
     border-radius: var(--cb-radius-md);
     background: var(--cb-surface);
@@ -1121,6 +1144,27 @@ body.three-mode-active #agent-bubbles-container {
     overflow-wrap: anywhere;
     text-align: left;
     cursor: pointer;
+}
+
+.click-stack__selector-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-1);
+    min-width: 0;
+    max-width: 100%;
+    padding: var(--cb-space-2) 0;
+}
+
+.click-stack__selector {
+    width: 100%;
+    min-width: 0;
+    min-height: var(--cb-control-height);
+    padding: var(--cb-space-1) var(--cb-space-2);
+    border: 1px solid var(--cb-line-strong);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface);
+    color: var(--cb-text);
+    font: inherit;
 }
 
 .click-stack__chip[aria-pressed="true"] {

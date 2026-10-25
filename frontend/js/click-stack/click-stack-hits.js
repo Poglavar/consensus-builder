@@ -154,7 +154,8 @@
             return footprint ? [footprint] : [];
         };
         let features = [];
-        if (kind === 'agreements') features = (instance.agreement?.designs || []).flatMap(design => designFeatures(design.proposalId));
+        if (kind === 'agreements' || kind === 'plans') features = instance.features
+            || (!instance.cid ? (instance.agreement?.designs || []).flatMap(design => designFeatures(design.proposalId)) : []);
         else if (kind === 'designs') features = designFeatures(instance.id);
         else if (kind === 'permitted') {
             const item = instance.item || global.PlanningViews?.getItems?.().find(item => item.id === instance.id);

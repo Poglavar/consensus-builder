@@ -59,6 +59,7 @@
         }).catch(error => ({ error })) : null;
         return {
             link,
+            fetchPlan,
             get current() { return current; },
             async save(content) {
                 const error = win.PlanRecord.validate(content);

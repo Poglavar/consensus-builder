@@ -102,7 +102,7 @@
 
     global.ensureOptionalTool = ensure;
     forward('designDuplication', 'startDesignDuplication', { guardMapMode: true });
-    forward('designMemberships', 'mountDesignMemberships', { guardMapMode: true });
+    forward('designMemberships', 'loadDesignMemberships', { guardMapMode: true });
 
     // Opening a panel or running an analysis is the explicit entry point. Close/cleanup calls
     // from mode switches remain no-ops until that panel has ever been opened.

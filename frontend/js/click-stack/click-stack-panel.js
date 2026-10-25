@@ -21,10 +21,10 @@
     const HOSTABLE = ['proposal-details-panel', 'planning-inspector', 'parcel-info-panel'];
     // Right-dock panels the stack never hosts: when one opens, the stack steps aside.
     const DOCKED_ELSEWHERE = ['block-info-panel', 'road-info-panel', 'road-analysis-panel'];
-    const ICONS = Object.freeze({ agreements: 'fas fa-file-signature', designs: 'fas fa-drafting-compass', built: 'fas fa-building',
+    const ICONS = Object.freeze({ plans: 'fas fa-layer-group', agreements: 'fas fa-file-signature', designs: 'fas fa-drafting-compass', built: 'fas fa-building',
         permitted: 'fas fa-cube', formed: 'fas fa-vector-square', parcels: 'fas fa-border-all', selection: 'fas fa-object-group', ground: 'fas fa-seedling' });
 
-    const state = { el: null, stack: null, latlng: null, hits: null, hosted: null, expanding: false, lastClick: null, observing: false };
+    const state = { el: null, stack: null, latlng: null, hits: null, hosted: null, expanding: false, lastClick: null, observing: false, memberships: null, membershipVersion: 0, membershipDesign: null };
 
     // A key with a dot is a full key shared with the rest of the app; a bare one is clickStack's own.
     function t(key, fallback, params = {}) {
@@ -143,6 +143,7 @@
         el.className = 'click-stack right-dock-panel';
         el.hidden = true;
         el.addEventListener('click', onPanelClick);
+        el.addEventListener('change', onPanelChange);
         el.addEventListener('keydown', event => {
             if (event.key !== 'Escape') return;
             event.preventDefault();
@@ -171,6 +172,7 @@
         const instance = section.instances[section.selectedIndex];
         switch (section.kind) {
             case 'selection': return t('selectedParcels.count', 'Selected parcels ({{count}})', { count: section.count });
+            case 'plans': return t('designMemberships.plan', 'Plan');
             case 'agreements': return section.multi ? t('agreements', 'Agreements ({{count}})', { count: section.count }) : t('agreement.panel.title', 'Agreement');
             case 'designs': return section.count > 1 ? t('designs', 'Designs ({{count}})', { count: section.count }) : t('proposalDrafts.tabs.design', 'Design');
             case 'built': return section.count > 1 ? t('buildings', 'Buildings ({{count}})', { count: section.count }) : t('building', 'Building');
@@ -200,32 +202,12 @@
         return instance.label || '';
     }
 
-    function renderChoices(group) {
-        const choices = doc.createElement('div');
-        choices.className = 'click-stack__choices';
-        choices.dataset.kind = group.kind;
-        choices.setAttribute('role', 'group');
-        choices.setAttribute('aria-label', rowTitle({ ...group, multi: group.count > 1, selectedIndex: 0 }));
-        const count = doc.createElement('span');
-        count.className = 'click-stack__choice-count';
-        count.textContent = `(${group.count})`;
-        const strip = doc.createElement('div');
-        strip.className = 'click-stack__strip';
-        group.instances.forEach(instance => {
-            const chip = button('click-stack__chip', instance.label || instance.id, { action: 'related', kind: group.kind, id: instance.id });
-            chip.title = instance.label || instance.id;
-            strip.appendChild(chip);
-        });
-        choices.append(count, strip);
-        return choices;
-    }
-
-    function render() {
+    function render({ keepBody = null } = {}) {
         const el = ensureElement();
         const { stack } = state;
         // The hosted panel goes home (still open) before the old bodies are dropped; the section
         // that expands next hosts it again.
-        if (state.hosted) unhost({ hide: false });
+        if (state.hosted && !keepBody) unhost({ hide: false });
         el.textContent = '';
         el.setAttribute('aria-label', stack.topRef === 'selection:current'
             ? t('selectedParcels.label', 'Selected parcels') : t('title', 'At this spot'));
@@ -239,10 +221,6 @@
             wrap.classList.toggle('is-expanded', expanded);
             wrap.classList.toggle('is-selected', stack.selectedKind === section.kind);
             const instance = section.instances[section.selectedIndex];
-            // The design body lists complete memberships, including agreements absent from these map hits.
-            const context = expanded ? model.contextFor(section.kind, instance, state.hits)
-                .filter(group => section.kind !== 'designs' || group.kind !== 'agreements') : [];
-            context.filter(group => group.position === 'above').forEach(group => wrap.appendChild(renderChoices(group)));
             const card = doc.createElement('div');
             card.className = 'click-stack__card';
             card.id = `click-stack-${section.kind}-card`;
@@ -256,6 +234,7 @@
             name.className = 'click-stack__row-title';
             // The selector counts the collection; the card always describes one selected item.
             name.textContent = rowTitle(section.multi ? { ...section, multi: false, count: 1 } : section);
+            if (section.multi) name.textContent += ` (${section.count})`;
             const detail = doc.createElement('span');
             detail.className = 'click-stack__row-detail';
             detail.textContent = rowDetail(section);
@@ -271,12 +250,13 @@
             heading.appendChild(row);
             card.appendChild(heading);
             if (expanded) {
-                const body = doc.createElement('div');
+                const body = keepBody || doc.createElement('div');
                 body.className = 'click-stack__body';
+                const selector = global.ClickStackRelations?.renderSelector(section, doc, global);
+                if (selector && !keepBody) body.appendChild(selector);
                 card.appendChild(body);
             }
             wrap.appendChild(card);
-            context.filter(group => group.position === 'below').forEach(group => wrap.appendChild(renderChoices(group)));
             list.appendChild(wrap);
         });
         el.appendChild(list);
@@ -292,39 +272,6 @@
     }
 
     // ── section bodies ────────────────────────────────────────────────────────────────────────
-
-    function designFootprint(key) {
-        const proposal = global.proposalStorage?.getProposal?.(key);
-        try { return proposal ? global.__planOrder?.footprintOf?.(proposal) || null : null; } catch (_) { return null; }
-    }
-
-    function renderAgreement(body, instance) {
-        const agreement = instance.agreement;
-        const summary = doc.createElement('div');
-        summary.className = 'click-stack__summary';
-        const name = doc.createElement('strong');
-        name.textContent = agreement.title || agreement.id;
-        const facts = doc.createElement('span');
-        facts.className = 'click-stack__facts';
-        facts.textContent = t('designs', 'Designs ({{count}})', { count: agreement.designs.length });
-        summary.append(name, facts);
-        const actions = doc.createElement('div');
-        actions.className = 'cb-actions click-stack__actions';
-        actions.append(button('btn btn-sm', t('showDesigns', 'Show its designs'), { action: 'agreement-designs', id: agreement.id }),
-            button('btn btn-sm btn-primary', t('proposalDrafts.tabs.details', 'Details'), { action: 'agreement-details', id: agreement.id }));
-        body.append(summary, actions);
-        showAgreementDesigns(agreement, { fit: false });
-    }
-
-    function showAgreementDesigns(agreement, { fit = true } = {}) {
-        const features = agreement.designs.map(design => designFootprint(String(design.proposalId))).filter(Boolean);
-        global.highlightFeaturesForHover?.(features, focusStyle());
-        if (!fit || !features.length || !global.L || !global.map) return;
-        try {
-            const bounds = global.L.geoJSON({ type: 'FeatureCollection', features }).getBounds();
-            if (bounds.isValid() && !global.map.getBounds().contains(bounds)) global.map.fitBounds(bounds, { padding: [80, 80], maxZoom: 18 });
-        } catch (error) { console.error('[ClickStack] agreement designs could not be framed', error); }
-    }
 
     // The main action of a section: what a person most often came to the spot to do.
     const MAIN_COMMANDS = new Set(['ground.drawSite']);
@@ -376,9 +323,19 @@
                 global.clearProposalHighlights?.();
                 global.ProposalSelection?.clear?.();
             }
-            if (kind === 'agreements') {
+            if (kind === 'agreements' || kind === 'plans') {
                 unhost();
-                renderAgreement(body, instance);
+                const version = state.membershipVersion;
+                const mount = () => {
+                    if (body.isConnected) global.DesignMemberships.mountSection(body, kind, instance, state.memberships, global, {
+                        hits: state.hits, onFocus: item => {
+                            if (state.membershipVersion === version && state.stack?.selectedKind === kind
+                                && model.selectedInstance(state.stack, kind)?.id === item.id) highlightSection(kind, item);
+                        }
+                    });
+                };
+                if (global.DesignMemberships) mount();
+                else global.ensureOptionalTool('designMemberships').then(mount).catch(error => global.showStyledAlert(error.message));
             } else if (kind === 'designs' && instance.serverId) {
                 openPublishedDesign(instance);
             } else if (kind === 'designs') {
@@ -429,6 +386,10 @@
                     toolbar.appendChild(wrap);
                 }
             }
+            if (!['plans', 'agreements'].includes(kind)) {
+                const relations = model.visibleContextFor(kind, instance, state.hits);
+                for (const group of relations) body.appendChild(global.ClickStackRelations.renderGroup(group, doc, global));
+            }
             if (!instance.serverId) highlightSection(kind, instance);
         } catch (error) {
             console.error(`[ClickStack] the ${kind} section could not open`, error);
@@ -475,6 +436,12 @@
     function refreshSpot(latlng) {
         if (!isOpen() || state.latlng !== latlng) return;
         const hits = { ...global.ClickStackHits.hitsAt(latlng) };
+        if (state.memberships) {
+            hits.plans = state.memberships.instances('plans', state.stack.selectedKind === 'plans');
+            hits.agreements = state.memberships.instances('agreements', state.stack.selectedKind === 'agreements');
+            hits.designs = hits.designs.map(item => String(item.proposal?.proposalId) === state.memberships.proposalId
+                ? { ...item, cid: state.memberships.cid } : item);
+        }
         // A list can open an unapplied design or agreement that is not a geometry hit here.
         // A background lookup adds choices; it must not discard the object being inspected.
         const selectedKind = state.stack.selectedKind;
@@ -547,6 +514,7 @@
         if (kind !== 'selection') remember(state.stack.expanded);
         render();
         activate(state.stack.expanded);
+        if (kind === 'designs') syncMemberships();
     }
 
     // The expanded section's header clicked again: everything collapses to rows.
@@ -583,6 +551,7 @@
         doc.body.classList.add('click-stack-open');
         if (stack.expanded) activate(stack.expanded);
         else highlightSection(stack.selectedKind, model.selectedInstance(stack, stack.selectedKind));
+        syncMemberships(true);
     }
 
     function close({ keepPanels = false, keepSelection = false } = {}) {
@@ -607,6 +576,10 @@
             global.hideProposalDetailsPanel?.(true);
         }
         global.highlightFeaturesForHover?.([]);
+        state.memberships?.dispose();
+        state.memberships = null;
+        state.membershipDesign = null;
+        state.membershipVersion++;
         state.stack = null;
         state.hits = null;
         state.latlng = null;
@@ -653,19 +626,71 @@
             if (section?.instances.some(instance => instance.id === id)) {
                 state.stack = model.selectInstance(state.stack, kind, id);
                 expand(kind);
-            } else if (kind === 'designs') showDesign(id);
+            } else if (kind === 'designs') {
+                const related = model.selectedInstance(state.stack, state.stack.selectedKind)?.members?.find(item => item.id === id);
+                if (related?.serverId) {
+                    global.DesignSync.fetchDesign(related.serverId).then(row => global.DesignSync.importDesign(row))
+                        .then(proposal => showDesign(proposal.proposalId)).catch(error => global.showStyledAlert(error.message));
+                } else showDesign(id);
+            }
             else if (kind === 'agreements') showAgreement(id);
             state.el.querySelector(`.click-stack__section[data-kind="${kind}"]`)?.scrollIntoView?.({ block: 'nearest' });
-        } else if (action === 'agreement-designs') {
-            const agreement = model.selectedInstance(state.stack, 'agreements')?.agreement;
-            if (agreement) showAgreementDesigns(agreement);
-        } else if (action === 'agreement-details') {
-            global.AgreementPanel.open(id);
         } else if (action === 'coords') {
             const text = target.textContent;
             global.navigator.clipboard?.writeText(text).then(() => global.updateStatus?.(t('copied', 'Coordinates copied')),
                 error => console.error('[ClickStack] coordinates could not be copied', error));
         }
+    }
+
+    function onPanelChange(event) {
+        const target = event.target;
+        if (target.dataset.action !== 'instance') return;
+        state.stack = model.selectInstance(state.stack, target.dataset.kind, target.value);
+        expand(target.dataset.kind);
+    }
+
+    function syncMemberships(force = false) {
+        if (!global.loadDesignMemberships) return;
+        const design = model.selectedInstance(state.stack, 'designs');
+        const proposal = global.proposalStorage?.getProposal?.(design?.id) || design?.proposal;
+        if (!proposal) return;
+        const key = `${design.id}:${global.DesignSync?.publishedCid(proposal) || ''}`;
+        if (!force && state.membershipDesign === key) return;
+        state.memberships?.dispose();
+        state.memberships = null;
+        state.membershipDesign = key;
+        const version = ++state.membershipVersion;
+        global.loadDesignMemberships(proposal, session => {
+            if (!isOpen() || version !== state.membershipVersion) return;
+            const current = model.selectedInstance(state.stack, 'designs');
+            const currentProposal = global.proposalStorage?.getProposal?.(current?.id) || current?.proposal;
+            if (current?.id !== design.id || (global.DesignSync?.publishedCid(currentProposal) || null) !== session.cid) {
+                session.dispose();
+                syncMemberships(true);
+                return;
+            }
+            state.memberships = session;
+            const selected = Object.fromEntries(state.stack.sections.map(section => [section.kind, section.instances[section.selectedIndex].id]));
+            const previous = state.stack;
+            state.hits = { ...state.hits, plans: session.instances('plans', previous.selectedKind === 'plans'),
+                agreements: session.instances('agreements', previous.selectedKind === 'agreements') };
+            // Annotate only the exact inspected revision for relationship matching.
+            state.hits.designs = state.hits.designs.map(item => item.id === design.id ? { ...item, cid: session.cid } : item);
+            const next = model.buildClickStack(state.hits, { selected });
+            const has = kind => next.sections.some(section => section.kind === kind);
+            state.stack = { ...next, expanded: previous.expanded && has(previous.expanded) ? previous.expanded : null,
+                selectedKind: has(previous.selectedKind) ? previous.selectedKind : next.selectedKind, topRef: previous.topRef };
+            const keepBody = !['plans', 'agreements'].includes(previous.expanded) ? bodyOf(previous.expanded) : null;
+            render({ keepBody });
+            if (keepBody) {
+                [...keepBody.children].filter(child => child.classList.contains('click-stack__choices')).forEach(child => child.remove());
+                for (const group of model.visibleContextFor(previous.expanded, model.selectedInstance(state.stack, previous.expanded), state.hits)) {
+                    keepBody.appendChild(global.ClickStackRelations.renderGroup(group, doc, global));
+                }
+            } else if (state.stack.expanded) activate(state.stack.expanded);
+        }).then(session => {
+            if (version !== state.membershipVersion) session?.dispose();
+        }).catch(error => console.error(`[${new Date().toISOString()}] [ClickStack] memberships could not load`, error));
     }
 
     // Every entry point (a route, list, editor or click) uses its view's Design section.
