@@ -6715,10 +6715,12 @@
             // changes the skin at ownership seams and keeps separate volumes on one parcel alike.
             return prepareProceduralFacadeMeshes(meshes, owner, height, floorHeight, metresPerUnit, city, ownsMaterial);
         };
+        // A building keeps its own hue; parcel slices vary its shade rather than its planning role.
+        const baseColor = new THREE.Color(stringToColor(JSON.stringify(buildingFeature.geometry.coordinates[0][0])));
         const drawUnsliced = () => {
-            const tint = window.PlanningViews && targetGroup === proposedBuildingsGroup && material !== buildingMaterials.massing;
+            const tint = targetGroup === proposedBuildingsGroup && material !== buildingMaterials.massing;
             const surface = tint ? cloneBuildingMaterial(material) : material;
-            if (tint) surface.color.set(window.PlanningViews.color('proposed'));
+            if (tint) surface.color.copy(baseColor);
             const meshes = prepareFacades(polygonFeatureToMeshes(buildingFeature, surface, 0, height), facadeSource, !!tint);
             if (tint && !meshes.length) surface.dispose();
             meshes.forEach(mesh => { if (tint && !hasFacade) markOwnedMaterial(mesh, surface); targetGroup.add(mesh); });
@@ -6744,15 +6746,6 @@
         let totalBuildingArea = 0;
         try { totalBuildingArea = turf.area(buildingFeature); } catch (_) { }
         let slicedArea = 0;
-
-        let buildingId;
-        try {
-            buildingId = JSON.stringify(buildingFeature.geometry.coordinates[0][0]);
-        } catch (e) {
-            buildingId = Math.random().toString();
-        }
-        const baseColor = new THREE.Color(window.PlanningViews && targetGroup === proposedBuildingsGroup
-            ? window.PlanningViews.color('proposed') : stringToColor(buildingId));
 
         // Intersect the building with each candidate parcel and keep only the parcels it
         // actually covers (a bbox overlap is not enough — non-intersecting candidates would

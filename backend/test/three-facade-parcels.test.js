@@ -42,6 +42,7 @@ function viewer(parcelFeatures = parcels) {
     const context = {
         window: { LiveParcelFabric: { queryBounds: () => parcelFeatures }, CityConfigManager: { getCurrentCityId: () => 'zagreb' } },
         turf, THREE, buildingFacades: facades, facadeState: facades.createState(THREE),
+        proposedBuildingsGroup: null, buildingMaterials: { massing: null },
         cloneBuildingMaterial: material, stringToColor: () => '#abcdef', materials: { sliceEdges: {} },
         addBuildingFloorLines: vi.fn(), console,
         polygonFeatureToMeshes: (_feature, surface) => [{
