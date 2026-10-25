@@ -60,7 +60,7 @@ test.describe('proposal button controls: modal and alternate states @features', 
     await openCity(page);
     await openBlockProposalDialog(page);
     const create = page.locator('.create-proposal-modal:visible');
-    for (const landUse of ['square', 'lake', 'single', 'as-is']) {
+    for (const landUse of ['square', 'park', 'lake', 'single', 'as-is']) {
       await create.locator(`.proposal-radio:has(input[name="proposalLandUse"][value="${landUse}"])`).click();
       await expect.poll(() => page.evaluate(() => (window as any).proposalFacets?.landUse)).toBe(landUse);
       const ownership = landUse === 'single' ? 'to-me' : landUse === 'as-is' ? 'no-change' : 'to-city';

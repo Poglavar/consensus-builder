@@ -2,7 +2,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
-import { instrumentControls } from '../helpers/control-source.mjs';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { sourceFiles, instrumentControls } from '../helpers/control-source.mjs';
 
 test('literal, interpolated and concatenated buttons keep their handlers and content', () => {
   const source = `const label = 'Open'; const id = 'details';
@@ -123,4 +126,19 @@ test('ARIA sliders retain their role and require value-change coverage', () => {
   assert.equal(instrumented.sites[0].controlType, 'slider');
   assert.equal(real.role, 'slider');
   assert.equal(context.output, real);
+});
+
+// Exclusions based on a hidden hosted header must fail if its CSS stops hiding it.
+test('guard source files can include styles without adding CSS to the control inventory', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'control-guard-'));
+  try {
+    fs.mkdirSync(path.join(root, 'js'));
+    fs.mkdirSync(path.join(root, 'css'));
+    fs.writeFileSync(path.join(root, 'js', 'app.js'), '');
+    fs.writeFileSync(path.join(root, 'css', 'panel.css'), '.heading { display: none; }');
+    fs.writeFileSync(path.join(root, 'index.html'), '<button>Open</button>');
+    const names = options => sourceFiles(root, options).map(file => path.relative(root, file));
+    assert.deepEqual(names(), ['index.html', 'js/app.js']);
+    assert.deepEqual(names({ includeStyles: true }), ['css/panel.css', 'index.html', 'js/app.js']);
+  } finally { fs.rmSync(root, { recursive: true }); }
 });

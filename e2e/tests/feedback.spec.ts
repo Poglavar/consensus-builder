@@ -1,4 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
+import { selectNativeOption } from '../helpers/controls';
 
 test('feedback form sends the reviewed report and shows its private receipt', async ({ page }) => {
   let sent: Record<string, string> = {};
@@ -10,7 +11,8 @@ test('feedback form sends the reviewed report and shows its private receipt', as
   const privatePage = 'https://urbangametheory.xyz/designs?city=birmingham&token=private#draft=private';
   await page.goto(`/feedback.html?lang=en&page=${encodeURIComponent(privatePage)}`);
   await expect(page.getByLabel('Page or plan link (optional)')).toHaveValue('https://urbangametheory.xyz/designs?city=birmingham');
-  await page.getByLabel('Report type').selectOption('feedback');
+  await selectNativeOption(page.getByLabel('Report type'), 'feedback');
+  await page.getByLabel('Page or plan link (optional)').fill('https://urbangametheory.xyz/?city=new_york');
   await page.getByLabel('Your report', { exact: true }).fill('Please make full-plan sharing clearer.');
   await page.getByRole('button', { name: 'Send report', exact: true }).click();
   await expect(page.getByRole('status')).toContainText('Your report was received');
@@ -34,7 +36,7 @@ test('a failed report keeps its text and reuses its receipt ID on retry in the s
   await page.getByRole('button', { name: 'Pošalji prijavu' }).click();
   await expect(page.getByRole('status')).toContainText('Vaša je prijava zaprimljena');
   expect(sent[1].reportId).toBe(sent[0].reportId);
-  await page.locator('#feedback-language').selectOption('es-ES');
+  await selectNativeOption(page.locator('#feedback-language'), 'es-ES');
   await expect(page.getByRole('button', { name: 'Enviar informe' })).toBeVisible();
 });
 

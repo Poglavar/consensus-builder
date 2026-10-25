@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 import { test, expect } from '../helpers/fixtures';
 import { openCity } from '../helpers/runtime';
+import { selectNativeOption } from '../helpers/controls';
 import type { Page, Route } from '@playwright/test';
 
 const contractModule = { exports: {} as any };
@@ -38,9 +39,11 @@ function metadataFixture() {
     { id: 'fixture-point', abstraction: 'parcels', adapter: 'msda-point', kind: 'default', label: 'Fixture point parcels',
       config: { id: 'fixture-point', endpoint: 'https://registry.example.test/point', queryMode: 'point' } },
   ];
+  sources.push({ ...sources[0], id: 'fixture-arcgis-other', label: 'Alternate polygon parcels', config: { ...sources[0].config, id: 'fixture-arcgis-other' } });
+  const buildings = { id: 'buildings', registered: false, runtime: 'browser', contract: SourceContracts.abstraction('buildings'), adapters: [], sources: [] };
   const family = { id: 'parcels', registered: true, runtime: 'server', contract: parcelsContract, adapters, sources };
   return {
-    catalogue: { schema: 'source-catalogue/v1', abstractions: [family] },
+    catalogue: { schema: 'source-catalogue/v1', abstractions: [family, buildings] },
     contracts: { schema: 'source-contracts/v1', abstractions: [parcelsContract] },
   };
 }
@@ -80,7 +83,7 @@ test.describe('Sources and adapters explorer @features', () => {
     ]);
     expect(new URL(page.url()).searchParams.get('backend')).toBe(backend);
     await expect(page.locator('#source-api-base')).toHaveText(backend);
-    await expect(page.locator('#source-status')).toContainText('1 abstractions · 2 registered sources');
+    await expect(page.locator('#source-status')).toContainText('2 abstractions · 3 registered sources');
   });
 
   test('loads source contracts, switches adapters and sources, and translates the static explorer labels', async ({ mockApi: page }) => {
@@ -90,7 +93,7 @@ test.describe('Sources and adapters explorer @features', () => {
       waitUntil: 'domcontentloaded',
     });
 
-    await expect(page.locator('#source-status')).toContainText('1 abstractions · 2 registered sources');
+    await expect(page.locator('#source-status')).toContainText('2 abstractions · 3 registered sources');
     await expect(page.locator('#source-content')).toBeVisible();
     await expect(page.locator('#source-family')).toHaveValue('parcels');
     await expect(page.locator('#source-adapter')).toHaveValue('arcgis');
@@ -100,16 +103,27 @@ test.describe('Sources and adapters explorer @features', () => {
     await expect(page.locator('#source-example-json')).toContainText('FeatureServer/0');
     await expect(page.locator('#source-operations article h3')).toContainText(['queryBounds', 'queryIds', 'queryGeometry']);
 
-    await page.locator('#source-adapter').selectOption('msda-point');
+    await selectNativeOption(page.locator('#source-config'), 'fixture-arcgis-other');
+    await expect(page.locator('#source-config-json')).toContainText('Alternate polygon parcels');
+    await selectNativeOption(page.locator('#source-family'), 'buildings');
+    await expect(page.locator('#source-adapter')).toBeDisabled();
+    await selectNativeOption(page.locator('#source-family'), 'parcels');
+    await expect(page.locator('#source-adapter')).toBeEnabled();
+    await selectNativeOption(page.locator('#source-adapter'), 'msda-point');
     await expect(page.locator('#source-config')).toHaveValue('fixture-point');
     await expect(page.locator('#source-config-json')).toContainText('"id": "fixture-point"');
     await expect(page.locator('#source-example-json')).toContainText('"queryMode": "point"');
     await expect(page.locator('#source-operations article h3')).toHaveText(['queryPoint']);
 
-    await page.locator('#source-language').selectOption('hr');
+    await selectNativeOption(page.locator('#source-language'), 'hr');
     await expect(page.locator('h1[data-i18n-key="sourceSystem.title"]')).toHaveText('Izvori i adapteri');
     await expect(page.locator('label[for="source-family"]')).toHaveText('Apstrakcija');
     await expect(page.locator('#source-config-title')).toHaveText('Konfiguracija registriranog izvora');
+    const downloaded = page.waitForEvent('download');
+    await page.locator('#source-download').click();
+    const download = await downloaded;
+    expect(download.suggestedFilename()).toBe('source-contracts.v1.json');
+    expect(JSON.parse(readFileSync((await download.path())!, 'utf8'))).toEqual(metadataFixture().contracts);
   });
 
   test('keeps a failed metadata load visibly failed and Retry loads the configured sources', async ({ mockApi: page }) => {
@@ -124,7 +138,7 @@ test.describe('Sources and adapters explorer @features', () => {
     expect(catalogueRequests()).toBe(1);
 
     await page.locator('#source-retry').click();
-    await expect(page.locator('#source-status')).toContainText('1 abstractions · 2 registered sources');
+    await expect(page.locator('#source-status')).toContainText('2 abstractions · 3 registered sources');
     await expect(page.locator('#source-content')).toBeVisible();
     await expect(page.locator('#source-retry')).toBeHidden();
     expect(catalogueRequests()).toBe(2);

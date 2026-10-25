@@ -136,6 +136,8 @@
                     removed: outcomes.removed.length, partial: outcomes.partial.length, parked: parked.length });
                 pending = false;
                 accept.disabled = false;
+                error.hidden = true;
+                accept.removeAttribute('aria-invalid');
                 render();
                 paint();
                 onReview?.();

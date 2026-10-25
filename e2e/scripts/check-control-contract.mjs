@@ -22,7 +22,7 @@ for (const rule of contract.controls) {
   }
 }
 for (const site of sites) if (!expected.has(site.id)) errors.push(`New control needs a contract: ${site.source}:${site.line} ${site.id}`);
-const sources = new Map(sourceFiles().map(file => [path.relative(frontendRoot, file), fs.readFileSync(file, 'utf8')]));
+const sources = new Map(sourceFiles(frontendRoot, { includeStyles: true }).map(file => [path.relative(frontendRoot, file), fs.readFileSync(file, 'utf8')]));
 errors.push(...checkExemptionGuards(contract, sources));
 if (errors.length) {
   errors.forEach(error => console.error(error));
