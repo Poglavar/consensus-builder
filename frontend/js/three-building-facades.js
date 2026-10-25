@@ -7,13 +7,15 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
 
-    // The style laboratory: palette, masonry amount, window width and pilaster spacing.
-    // Fresh terracotta, honey limestone and peach render, with warm white joinery and clay roofs.
+    // Masonry uses punched windows; curtain walls use metre-wide panels and rows per storey.
     // Colours are sRGB; Three converts these to linear light when making the uniforms.
     const STYLES = Object.freeze([
         { id: 'brick', wall: '#dc7952', trim: '#fff2da', roof: '#bf6846', brick: 1, window: 0.48, pilasters: 3 },
         { id: 'stone', wall: '#f2d18c', trim: '#fff7e5', roof: '#c78051', brick: 0, window: 0.44, pilasters: 2 },
-        { id: 'plaster', wall: '#f4b99d', trim: '#fff9ed', roof: '#cd7957', brick: 0, window: 0.52, pilasters: 4 }
+        { id: 'plaster', wall: '#f4b99d', trim: '#fff9ed', roof: '#cd7957', brick: 0, window: 0.52, pilasters: 4 },
+        { id: 'glass-small', trim: '#60727c', roof: '#4c5962', panelWidth: 1, rowsPerStorey: 3 },
+        { id: 'glass-medium', trim: '#60727c', roof: '#4c5962', panelWidth: 1.6, rowsPerStorey: 2 },
+        { id: 'glass-large', trim: '#60727c', roof: '#4c5962', panelWidth: 3.2, rowsPerStorey: 1 }
     ].map(Object.freeze));
 
     // Window proportions repeat across a building; shutter positions vary per opening.
@@ -23,6 +25,7 @@
         { id: 'arched', width: 0.96, height: 1.04, arch: 1 }
     ].map(Object.freeze));
     const SHUTTER_COLORS = Object.freeze(['#288978', '#2f86a6', '#b64e3f', '#678b43']);
+    const GLASS_COLORS = Object.freeze(['#538998', '#638d91', '#7696aa', '#699790', '#8a9ca6', '#867b68', '#45657d', '#5b797c']);
 
     function hashKey(key) {
         let hash = 2166136261;
@@ -36,6 +39,12 @@
         // Building/proposal IDs and regenerated geometry must not change an owner's design.
         const parcelId = p.parcelId == null ? '' : String(p.parcelId).trim();
         if (parcelId) return JSON.stringify([city, 'parcel', parcelId]);
+        return buildingIdentityKey(feature, city);
+    }
+
+    // Glass colour belongs to the original building, including when it spans parcel slices.
+    function buildingIdentityKey(feature, city = '') {
+        const p = feature.properties || {};
         const identity = p.buildingId ?? feature.id ?? p.id;
         if (identity != null) return JSON.stringify([city, p.proposalId, identity]);
         if (p.buildingIndex != null || p.variationSeed != null) {
@@ -52,11 +61,12 @@
         return JSON.stringify([city, p.proposalId, p.parcelId, [...new Set(points)].sort()]);
     }
 
-    function buildingDesign(key, height, storeyHeight = 3.3) {
+    function buildingDesign(key, height, storeyHeight = 3.3, identityKey = key) {
         if (!(typeof height === 'number' && Number.isFinite(height) && height > 0)) {
             throw new TypeError('Facade height must be a positive number.');
         }
         const seed = hashKey(key);
+        const glassSeed = hashKey(identityKey + ':glass');
         return {
             seed,
             style: seed % STYLES.length,
@@ -65,6 +75,8 @@
             windowStyle: hashKey(key + ':windows') % WINDOW_STYLES.length,
             shutters: (hashKey(key + ':shutters') % 4) !== 0,
             shutterColor: hashKey(key + ':shutter-color') % SHUTTER_COLORS.length,
+            glassColor: glassSeed % GLASS_COLORS.length,
+            glassTone: 0.85 + ((glassSeed >>> 8) % 31) * 0.01,
             floorHeight: height / Math.max(1, Math.round(height / storeyHeight)),
             height
         };
@@ -112,11 +124,12 @@
         return {
             cbFacadeEnabled: { value: 0 },
             cbFacadeStyleOverride: { value: -1 },
-            cbFacadeWalls: { value: STYLES.map(s => new THREE.Color(s.wall)) },
+            cbFacadeWalls: { value: STYLES.map(s => new THREE.Color(s.wall || '#ffffff')) },
             cbFacadeTrims: { value: STYLES.map(s => new THREE.Color(s.trim)) },
             cbFacadeRoofs: { value: STYLES.map(s => new THREE.Color(s.roof)) },
             cbFacadeWindowStyles: { value: WINDOW_STYLES.map(s => new THREE.Vector3(s.width, s.height, s.arch)) },
-            cbFacadeSettings: { value: STYLES.map(s => new THREE.Vector3(s.brick, s.window, s.pilasters)) }
+            cbFacadeSettings: { value: STYLES.map(s => new THREE.Vector3(s.brick || 0, s.window || 0, s.pilasters || 0)) },
+            cbFacadePanels: { value: STYLES.map(s => new THREE.Vector3(s.panelWidth || 0, s.rowsPerStorey || 0, 0)) }
         };
     }
 
@@ -130,15 +143,17 @@ varying vec3 vCbFacade;
 varying float vCbFacadeFace;
 uniform float cbFacadeEnabled;
 uniform float cbFacadeStyleOverride;
-uniform vec3 cbFacadeWalls[3];
-uniform vec3 cbFacadeTrims[3];
-uniform vec3 cbFacadeRoofs[3];
-uniform vec3 cbFacadeSettings[3];
+uniform vec3 cbFacadeWalls[${STYLES.length}];
+uniform vec3 cbFacadeTrims[${STYLES.length}];
+uniform vec3 cbFacadeRoofs[${STYLES.length}];
+uniform vec3 cbFacadeSettings[${STYLES.length}];
+uniform vec3 cbFacadePanels[${STYLES.length}];
 uniform vec3 cbFacadeDesign;
 uniform vec3 cbFacadeBuilding;
 uniform vec3 cbFacadeWindowStyles[3];
 uniform vec3 cbFacadeWindows;
 uniform vec3 cbFacadeShutterColor;
+uniform vec3 cbFacadeGlassColor;
 float cbFacadeBox(vec2 p, vec2 halfSize, vec2 aa) {
     vec2 edge = smoothstep(halfSize - aa, halfSize + aa, abs(p));
     return (1.0 - edge.x) * (1.0 - edge.y);
@@ -146,15 +161,33 @@ float cbFacadeBox(vec2 p, vec2 halfSize, vec2 aa) {
 float cbFacadeNoise(vec2 p) {
     return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
 }
-// Integral of one brick interval, with a 3.5% mortar joint at either end. Filtering the
-// interval preserves its area as pixels grow; widening smoothstep joints washed the wall out.
-float cbFacadeBrickIntegral(float x) {
-    return floor(x) * 0.93 + clamp(fract(x) - 0.035, 0.0, 0.93);
+// Area-preserving filtering keeps mortar and thin mullions from shimmering or widening
+// when they become smaller than a pixel. Gap is the joint's fraction of one repeat.
+float cbFacadeJointIntegral(float x, float gap) {
+    float solid = 1.0 - gap;
+    return floor(x) * solid + clamp(fract(x) - gap * 0.5, 0.0, solid);
 }
-float cbFacadeBrickCoverage(float phase, float footprint) {
+float cbFacadeJointCoverage(float phase, float footprint, float gap) {
     float halfWidth = max(footprint, 0.00001) * 0.5;
     float center = fract(phase);
-    return (cbFacadeBrickIntegral(center + halfWidth) - cbFacadeBrickIntegral(center - halfWidth)) / (2.0 * halfWidth);
+    return (cbFacadeJointIntegral(center + halfWidth, gap) - cbFacadeJointIntegral(center - halfWidth, gap)) / (2.0 * halfWidth);
+}
+vec3 cbFacadeCurtainWall(int style) {
+    vec2 panels = cbFacadePanels[style].xy;
+    float columns = max(1.0, floor(vCbFacade.z / panels.x + 0.5));
+    vec2 size = vec2(vCbFacade.z / columns, cbFacadeBuilding.y / panels.y);
+    vec2 grid = vCbFacade.xy / size;
+    vec2 footprint = max(fwidth(grid), vec2(0.00001));
+    vec2 gap = min(vec2(0.055, 0.065) / size, vec2(0.2));
+    float pane = cbFacadeJointCoverage(grid.x, footprint.x, gap.x)
+        * cbFacadeJointCoverage(grid.y, footprint.y, gap.y);
+    float detail = 1.0 - smoothstep(0.35, 1.3, max(footprint.x, footprint.y));
+    float variation = cbFacadeNoise(floor(grid) + vec2(cbFacadeBuilding.z, floor(vCbFacadeFace * 100.0)));
+    // A restrained sky gradient and pane-to-pane reflectance keep the glazing legible.
+    float sky = smoothstep(0.0, max(24.0, cbFacadeBuilding.x), vCbFacade.y);
+    vec3 glass = cbFacadeGlassColor * cbFacadeDesign.z * mix(0.72, 1.2, sky);
+    glass *= 1.0 + (variation - 0.5) * 0.24 * detail;
+    return mix(cbFacadeTrims[style] * 0.65, glass, pane);
 }
 // A shallow segmental arch, clipped to the same rectangle as ordinary windows.
 float cbFacadeOpening(vec2 p, vec2 halfSize, vec2 aa, float arched) {
@@ -174,6 +207,7 @@ vec3 cbFacadeColor(vec3 original) {
     if (cbFacadeEnabled < 0.5) return original;
     int style = int(cbFacadeStyleOverride < 0.0 ? cbFacadeDesign.x : cbFacadeStyleOverride);
     if (vCbFacade.z < 0.01) return cbFacadeRoofs[style];
+    if (cbFacadePanels[style].x > 0.0) return cbFacadeCurtainWall(style);
     vec3 settings = cbFacadeSettings[style];
     vec3 trim = cbFacadeTrims[style];
     vec3 wall = cbFacadeWalls[style] * cbFacadeDesign.z;
@@ -189,8 +223,8 @@ vec3 cbFacadeColor(vec3 original) {
     vec2 brick = vec2(p.x / 0.32, p.y / 0.105);
     vec2 brickFootprint = max(fwidth(brick), vec2(0.00001));
     brick.x += mod(floor(brick.y), 2.0) * 0.5;
-    float brickCoverage = cbFacadeBrickCoverage(brick.x, brickFootprint.x)
-        * cbFacadeBrickCoverage(brick.y, brickFootprint.y);
+    float brickCoverage = cbFacadeJointCoverage(brick.x, brickFootprint.x, 0.07)
+        * cbFacadeJointCoverage(brick.y, brickFootprint.y, 0.07);
     float brickDetail = 1.0 - smoothstep(0.5, 2.0, max(brickFootprint.x, brickFootprint.y));
     vec3 mortar = trim * 0.84;
     vec3 brickColor = wall * (0.97 + 0.06 * cbFacadeNoise(floor(brick)));
@@ -300,11 +334,12 @@ vec3 cbFacadeColor(vec3 original) {
                 cbFacadeDesign: { value: new THREE.Vector3(design.style, design.bayWidth, design.tone) },
                 cbFacadeBuilding: { value: new THREE.Vector3(design.height, design.floorHeight, design.seed % 10000) },
                 cbFacadeWindows: { value: new THREE.Vector3(design.windowStyle, design.shutters ? 1 : 0, 0) },
-                cbFacadeShutterColor: { value: new THREE.Color(SHUTTER_COLORS[design.shutterColor]) }
+                cbFacadeShutterColor: { value: new THREE.Color(SHUTTER_COLORS[design.shutterColor]) },
+                cbFacadeGlassColor: { value: new THREE.Color(GLASS_COLORS[design.glassColor]).multiplyScalar(design.glassTone) }
             });
             patchShader(shader);
         };
-        material.customProgramCacheKey = () => priorKey + '|cb-facades-v4';
+        material.customProgramCacheKey = () => priorKey + '|cb-facades-v5';
         material.needsUpdate = true;
         return material;
     }
@@ -327,5 +362,5 @@ vec3 cbFacadeColor(vec3 original) {
         materials.forEach(material => material.dispose());
     }
 
-    return { STYLES, WINDOW_STYLES, SHUTTER_COLORS, buildingKey, buildingDesign, wallCoordinates, createState, setState, patchShader, configureMaterial, disposeGroup };
+    return { STYLES, WINDOW_STYLES, SHUTTER_COLORS, GLASS_COLORS, buildingKey, buildingIdentityKey, buildingDesign, wallCoordinates, createState, setState, patchShader, configureMaterial, disposeGroup };
 });

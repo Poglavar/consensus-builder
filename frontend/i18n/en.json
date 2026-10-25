@@ -5882,7 +5882,10 @@
                 "mixed": "Mixed palette",
                 "brick": "Brick",
                 "stone": "Pale stone",
-                "plaster": "Plaster"
+                "plaster": "Plaster",
+                "glass-small": "Glass (small panels)",
+                "glass-medium": "Glass (medium panels)",
+                "glass-large": "Glass (large panels)"
             },
             "representationMassing": "Max envelope",
             "representationMassingTooltip": "Max envelope — the outer permitted volume asserted by the design",

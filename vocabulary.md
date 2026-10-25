@@ -438,6 +438,10 @@ A footprint with vertical extent, represented as volumes or extrudable geometry.
 
 The three planning display roles: observed buildings; source-derived permitted massing; and the browser's applied building designs. These roles classify represented content, independently of its display appearance. Buildings and massing settings apply to every represented object in each role across the view; selecting or inspecting a parcel, building or design does not create a separate display configuration. Permitted and Proposed have independent display-only example rolls; rolling either role changes no authored design or source record and leaves the other role's example unchanged.
 
+### Illustrative facade
+
+A display-only architectural skin on a proposed building. The view-wide facade setting offers masonry and small-, medium- or large-panel glass curtain walls, or a deterministic mixture. Glass tint varies by building identity and remains stable across camera moves, height edits and parcel slices; parcel ownership can vary its shade. Panel sizes are measured in metres and storeys. These skins are illustrative appearance, not surveyed materials or authored construction specifications.
+
 ### Reconstructed building envelope
 
 An interpreted exterior form assembled from architectural or geographic evidence. Its provenance and uncertainty differ from a surveyed building and a permitted envelope.

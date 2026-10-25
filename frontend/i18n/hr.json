@@ -5916,7 +5916,10 @@
                 "mixed": "Mješovita paleta",
                 "brick": "Opeka",
                 "stone": "Svijetli kamen",
-                "plaster": "Žbuka"
+                "plaster": "Žbuka",
+                "glass-small": "Staklo (male ploče)",
+                "glass-medium": "Staklo (srednje ploče)",
+                "glass-large": "Staklo (velike ploče)"
             },
             "representationMassing": "Maksimalni gabarit",
             "representationMassingTooltip": "Maksimalni gabarit — najveći dopušteni volumen koji dizajn navodi",

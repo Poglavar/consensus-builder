@@ -525,12 +525,10 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
     color: var(--cb-text-muted);
 }
 
-/* Abstract 3D has four Built states but only three Planned states. Two same-width selects avoid
-   uneven segmented cells and keep long translated labels fully readable. The selects take their
-   look from the base form controls (css/primitives.css); only their width is set here. */
+/* Use the available row width for long facade labels. Base form controls supply the appearance. */
 #model-layer-controls .three-mode-display-select {
-    flex: 0 0 168px;
-    width: 168px;
+    flex: 1 1 168px;
+    width: auto;
     min-width: 0;
 }
 

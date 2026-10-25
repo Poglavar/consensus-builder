@@ -9,7 +9,7 @@ const require = createRequire(import.meta.url);
 const facades = require('../../frontend/js/three-building-facades.js');
 const screenDoor = require('../../frontend/js/three-screen-door.js');
 const THREE = {
-    Color: class { constructor(color) { this.color = color; } },
+    Color: class { constructor(color) { this.color = color; } multiplyScalar(tone) { this.tone = tone; return this; } },
     Vector3: class { constructor(x, y, z) { Object.assign(this, { x, y, z }); } }
 };
 
@@ -74,7 +74,7 @@ describe('procedural building facades', () => {
 
     it('varies within the style grammar and rejects missing heights', () => {
         const designs = Array.from({ length: 50 }, (_, i) => facades.buildingDesign('building-' + i, 10));
-        expect(new Set(designs.map(d => d.style)).size).toBe(3);
+        expect(new Set(designs.map(d => d.style)).size).toBe(6);
         expect(new Set(designs.map(d => d.bayWidth)).size).toBeGreaterThan(3);
         expect(designs.every(d => d.bayWidth >= 2.8 && d.bayWidth <= 3.6)).toBe(true);
         for (const height of [null, undefined, NaN, 0, -1]) expect(() => facades.buildingDesign('x', height)).toThrow();
@@ -89,6 +89,37 @@ describe('procedural building facades', () => {
         expect(designs.some(d => !d.shutters)).toBe(true);
         expect(new Set(designs.filter(d => d.shutters).map(d => facades.SHUTTER_COLORS[d.shutterColor])).size).toBeGreaterThan(1);
         expect([...keys].reverse().map(key => facades.buildingDesign(key, 16.5)).reverse()).toEqual(designs);
+    });
+
+    it('varies glass tints between buildings on the same parcel and retains them across height and neighbour changes', () => {
+        const buildings = Array.from({ length: 50 }, (_, i) => ({ ...rectangle,
+            properties: { parcelId: 'shared-parcel', proposalId: 42, buildingIndex: i } }));
+        const designFor = (building, height = 99) => facades.buildingDesign(facades.buildingKey(building), height, 3.3,
+            facades.buildingIdentityKey(building));
+        const designs = buildings.map(building => designFor(building));
+        expect(new Set(designs.map(d => d.seed)).size).toBe(1);
+        expect(new Set(designs.map(d => d.glassColor)).size).toBeGreaterThan(4);
+        expect(new Set(designs.map(d => `${d.glassColor}:${d.glassTone}`)).size).toBeGreaterThan(25);
+        for (const [index, building] of buildings.entries()) {
+            expect(designFor(building, 198)).toMatchObject({ glassColor: designs[index].glassColor, glassTone: designs[index].glassTone });
+        }
+        expect([...buildings].reverse().map(building => designFor(building)).reverse()).toEqual(designs);
+    });
+
+    it('uses original building identity for glass when preparing a parcel-owned mesh', () => {
+        const owner = { ...rectangle, properties: { parcelId: 'shared-parcel' } };
+        const building = { ...rectangle, properties: { proposalId: 42, buildingIndex: 7 } };
+        const configureMaterial = vi.fn(value => value);
+        const mesh = { material: material(), userData: {}, geometry: {
+            attributes: { position: { array: [] }, normal: { array: [] } }, setAttribute: vi.fn()
+        } };
+        const context = { buildingFacades: { ...facades, configureMaterial }, facadeState: {},
+            THREE: { Float32BufferAttribute: class {} } };
+        vm.runInNewContext(declarationSource('prepareProceduralFacadeMeshes'), context);
+        context.prepareProceduralFacadeMeshes([mesh], owner, 99, 3.3, 1, 'city', true, building);
+        expect(configureMaterial.mock.calls[0][1]).toEqual(facades.buildingDesign(facades.buildingKey(owner, 'city'),
+            99, 3.3, facades.buildingIdentityKey(building, 'city')));
+        expect(mesh.userData.cbFacadeOwned).toBe(true);
     });
 
     it('joins triangulated walls into one metre-scaled span, leaving roof vertices untextured', () => {
@@ -136,6 +167,7 @@ describe('procedural building facades', () => {
         const firstDesign = facades.buildingDesign('a', 20);
         expect(s1.uniforms.cbFacadeWindows.value).toMatchObject({ x: firstDesign.windowStyle, y: firstDesign.shutters ? 1 : 0 });
         expect(s1.uniforms.cbFacadeShutterColor.value.color).toBe(facades.SHUTTER_COLORS[firstDesign.shutterColor]);
+        expect(s1.uniforms.cbFacadeGlassColor.value).toMatchObject({ color: facades.GLASS_COLORS[firstDesign.glassColor], tone: firstDesign.glassTone });
         const key = first.customProgramCacheKey();
         facades.setState(state, true, 'stone');
         expect(s1.uniforms.cbFacadeEnabled.value).toBe(1);
@@ -156,7 +188,7 @@ describe('procedural building facades', () => {
         // Evaluate the actual scalar GLSL math, using JS equivalents of its built-ins. This
         // checks the area-preserving filter itself without a second implementation of it.
         const fragment = facades.patchShader(shader()).fragmentShader;
-        const scalarFunctions = ['cbFacadeBrickIntegral', 'cbFacadeBrickCoverage'].map(name => {
+        const scalarFunctions = ['cbFacadeJointIntegral', 'cbFacadeJointCoverage'].map(name => {
             const declaration = fragment.match(new RegExp(`float ${name}\\([^)]*\\) \\{[\\s\\S]*?\\n\\}`));
             expect(declaration, `Missing shader function ${name}`).not.toBeNull();
             return declaration[0].replace(/^float /, 'function ')
@@ -169,7 +201,7 @@ describe('procedural building facades', () => {
             clamp: (x, low, high) => Math.max(low, Math.min(high, x))
         };
         vm.runInNewContext(scalarFunctions, context);
-        const coverage = context.cbFacadeBrickCoverage;
+        const coverage = (phase, footprint) => context.cbFacadeJointCoverage(phase, footprint, 0.07);
         expect(coverage(0.5, 0.01)).toBeCloseTo(1);
         expect(coverage(0, 0.01)).toBeCloseTo(0);
         for (const footprint of [0.01, 0.07, 0.25, 0.7, 1, 2.3, 4]) {
@@ -177,6 +209,15 @@ describe('procedural building facades', () => {
             expect(samples.every(value => value >= -1e-8 && value <= 1 + 1e-8)).toBe(true);
             expect(samples.reduce((sum, value) => sum + value, 0) / samples.length).toBeCloseTo(0.93, 4);
             expect(coverage(-3.72, footprint)).toBeCloseTo(coverage(8.28, footprint), 10);
+        }
+        // Glass mullions occupy a fixed metric width, even when several panels fit in a pixel.
+        for (const panelWidth of [1, 1.6, 3.2]) {
+            const gap = 0.055 / panelWidth;
+            for (const footprint of [0.01, 0.1, 0.7, 2, 4]) {
+                const samples = Array.from({ length: 2000 }, (_, i) => context.cbFacadeJointCoverage((i + 0.5) / 2000, footprint, gap));
+                expect(samples.every(value => value >= -1e-8 && value <= 1 + 1e-8)).toBe(true);
+                expect(samples.reduce((sum, value) => sum + value, 0) / samples.length).toBeCloseTo(1 - gap, 4);
+            }
         }
     });
 
@@ -206,6 +247,16 @@ describe('procedural building facades', () => {
         expect(saved.get('style')).toBe('plaster');
         expect(context.facadeNote.hidden).toBe(true);
         expect(context.frames).toBe(3);
+        for (const id of ['glass-small', 'glass-medium', 'glass-large']) {
+            context.setFacadeAppearance(true, id);
+            expect(saved.get('style')).toBe(id);
+            expect(context.facadeStyleSelect).toMatchObject({ value: id, disabled: false });
+            const selected = context.facadeState.cbFacadeStyleOverride.value;
+            expect(facades.STYLES[selected].id).toBe(id);
+            expect(context.facadeState.cbFacadePanels.value[selected]).toMatchObject({
+                x: facades.STYLES[selected].panelWidth, y: facades.STYLES[selected].rowsPerStorey
+            });
+        }
     });
 
     it('disposes owned geometry and materials once, retaining imported and shared resources', () => {

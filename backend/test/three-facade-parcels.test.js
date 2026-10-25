@@ -19,6 +19,7 @@ class Color {
     getHSL(target) { Object.assign(target, { h: 0.4, s: 0.6, l: 0.4 }); }
     setHSL(h, s, l) { this.value = [h, s, l]; }
     set(color) { this.value = color.value; }
+    multiplyScalar(tone) { this.tone = tone; return this; }
 }
 const THREE = {
     Color,
@@ -45,6 +46,8 @@ function viewer(parcelFeatures = parcels) {
         proposedBuildingsGroup: null, buildingMaterials: { massing: null },
         cloneBuildingMaterial: material, stringToColor: () => '#abcdef', materials: { sliceEdges: {} },
         addBuildingFloorLines: vi.fn(), console,
+        markOwnedGeometry: (_object, geometry) => geometry,
+        markOwnedMaterial: (_object, surface) => surface,
         polygonFeatureToMeshes: (_feature, surface) => [{
             userData: {}, material: surface,
             geometry: { attributes: { position: { array: new Float32Array(9) }, normal: { array: new Float32Array(9) } },
@@ -61,6 +64,7 @@ function viewer(parcelFeatures = parcels) {
             const uniforms = shader.uniforms;
             return { parcelId: mesh.userData.parcelId, style: uniforms.cbFacadeDesign.value,
                 windows: uniforms.cbFacadeWindows.value, shutters: uniforms.cbFacadeShutterColor.value,
+                glass: uniforms.cbFacadeGlassColor.value,
                 building: uniforms.cbFacadeBuilding.value };
         });
     };
@@ -84,8 +88,12 @@ describe('facades on ownership slices', () => {
         const secondVolume = rectangle(15.0003, 44.0003, 15.0017, 44.0007,
             { ...volume(9).properties, proposalId: 99, variationSeed: 12 });
         const second = render(secondVolume, 28);
-        expect(second.map(({ building, ...appearance }) => appearance))
-            .toEqual(first.map(({ building, ...appearance }) => appearance));
+        expect(second.map(({ building, glass, ...appearance }) => appearance))
+            .toEqual(first.map(({ building, glass, ...appearance }) => appearance));
+        expect(first[0].glass).toEqual(first[1].glass);
+        expect(second[0].glass).toEqual(second[1].glass);
+        expect(second[0].glass).not.toEqual(first[0].glass);
+        expect(render(volume(), 28)[0].glass).toEqual(first[0].glass);
         expect(second.every(slice => slice.building.x === 28 && slice.building.y === 3.5)).toBe(true);
         expect(viewer([...parcels].reverse())(volume())).toEqual(first);
     });
