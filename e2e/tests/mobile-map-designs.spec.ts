@@ -40,7 +40,7 @@ test('Share tab on an empty map offers its location without a profile gate', asy
   await sheet.getByRole('tab', { name: 'Share', exact: true }).click();
   const share = sheet.locator('#designs-share');
   await expect(share.locator('.share-plan-panel--embedded')).toBeVisible();
-  const input = share.locator('.share-plan-link__input');
+  const input = share.locator('.share-plan-link__input[readonly]');
   await expect(input).toBeVisible();
   const url = new URL(await input.inputValue());
   expect(url.searchParams.get('at')).toBe(at);
@@ -77,7 +77,7 @@ test('a published parcel layout starts checked and produces its existing link; a
   await expect(row.locator('.share-plan-row__published')).toBeVisible();
   await expect(row.locator('.share-plan-row__refusal')).toHaveCount(0);
   await expect(row).not.toHaveClass(/is-excluded/);
-  const link = panel.locator('.share-plan-link__input');
+  const link = panel.locator('.share-plan-link__input[readonly]');
   await expect(link).toBeVisible();
   const url = new URL(await link.inputValue());
   expect(url.pathname).toBe(`/designs/${cid}`);
@@ -148,7 +148,7 @@ test('a blocked layout can create and publish its agreement, then Share includes
   await sheet.getByRole('tab', { name: 'Share', exact: true }).click();
   await expect(share.locator('.share-plan-row input')).toBeChecked();
   await expect(share.locator('.share-plan-row__published')).toBeVisible();
-  await expect(share.locator('.share-plan-link__input')).toBeVisible();
+  await expect(share.locator('.share-plan-link__input[readonly]')).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(sheet).toBeHidden();
 });

@@ -1310,7 +1310,19 @@
     {
       "id": "control-5a1c5fdcf6d836-1",
       "source": "index.html",
-      "markup": "<button type=\"button\" id=\"photo-parcel-close\" class=\"close-circle-btn\" aria-label=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label\">"
+      "markup": "<button type=\"button\" id=\"photo-parcel-close\" class=\"close-circle-btn\" aria-label=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label\">",
+      "exempt": "Photo parcel heading delegates closing to the 3D click stack.",
+      "guards": [
+        {
+          "source": "css/photoreal-mode.css",
+          "includes": ".photoreal-parcel-card-heading { display: none; }"
+        },
+        {
+          "source": "js/photoreal-parcels.js",
+          "includes": "root.ThreeClickStack.show({ parcels:"
+        }
+      ],
+      "mustRemainInactive": true
     },
     {
       "id": "control-dc7af30c67cb8d-3",
@@ -1617,14 +1629,36 @@
       "source": "index.html",
       "markup": "<button type=\"button\" id=\"parcel-info-minimize\" class=\"close-circle-btn close-circle-btn--lg\" aria-label=\"Minimize\" title=\"Minimize\" aria-expanded=\"true\" data-i18n-key=\"sidebar.areaMonitor.minimize\" data-i18n-attr=\"aria-label,title\">",
       "interaction": "click",
-      "controlType": "button"
+      "controlType": "button",
+      "exempt": "Hosted parcel panels use the click-stack section row to fold.",
+      "guards": [
+        {
+          "source": "css/map.css",
+          "includes": "#click-stack #parcel-info-panel.is-hosted > .panel-header,\n#click-stack #parcel-info-panel.is-hosted #parcel-info-minimize,\n#click-stack #parcel-info-panel.is-hosted .panel-header .close-button {\n    display: none;\n}"
+        },
+        {
+          "source": "js/parcels/ui/parcel-panel.js",
+          "includes": "return global.ClickStack.showParcel(feature);"
+        }
+      ]
     },
     {
       "id": "control-8d9e346b5d5e19-1",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"close-circle-btn close-circle-btn--lg close-button\" aria-label=\"Close parcel info panel\" onclick=\"(window.Parcels?.uiParcelPanel?.hideParcelInfoPanel || window.hideParcelInfoPanel || function(){})();\">",
       "interaction": "click",
-      "controlType": "button"
+      "controlType": "button",
+      "exempt": "Hosted parcel panels delegate closing to the click stack and Escape.",
+      "guards": [
+        {
+          "source": "css/map.css",
+          "includes": "#click-stack #parcel-info-panel.is-hosted > .panel-header,\n#click-stack #parcel-info-panel.is-hosted #parcel-info-minimize,\n#click-stack #parcel-info-panel.is-hosted .panel-header .close-button {\n    display: none;\n}"
+        },
+        {
+          "source": "js/parcels/ui/parcel-panel.js",
+          "includes": "return global.ClickStack.showParcel(feature);"
+        }
+      ]
     },
     {
       "id": "control-a0de29e6745122-1",
@@ -1729,14 +1763,38 @@
       "source": "index.html",
       "markup": "<button id=\"proposal-details-minimize\" type=\"button\" class=\"close-circle-btn close-circle-btn--lg proposal-details-toggle\" aria-label=\"Minimize proposal details\" title=\"Minimize proposal details\" aria-controls=\"proposal-details-body\" aria-expanded=\"true\" data-i18n-key=\"sidebar.areaMonitor.minimize\" data-i18n-attr=\"aria-label,title\" onclick=\"toggleProposalDetailsPanelMinimized()\">",
       "interaction": "click",
-      "controlType": "button"
+      "controlType": "button",
+      "exempt": "Hosted design panels use the click-stack section row to fold.",
+      "guards": [
+        {
+          "source": "css/map.css",
+          "includes": "#click-stack #proposal-details-panel.is-hosted .panel-header__actions,\n#click-stack #planning-inspector.is-hosted .planning-inspector__header .close-circle-btn,\n#three-click-stack #planning-inspector.is-hosted .planning-inspector__header .close-circle-btn {\n    display: none;\n}"
+        },
+        {
+          "source": "js/proposals/details-panel.js",
+          "includes": "return window.ClickStack.showDesign(getProposalKey(proposal));"
+        }
+      ],
+      "mustRemainInactive": true
     },
     {
       "id": "control-c6128381badaba-1",
       "source": "index.html",
       "markup": "<button id=\"proposal-details-close\" type=\"button\" class=\"close-circle-btn close-circle-btn--lg close-button\" aria-label=\"Close proposal details\" title=\"Close proposal details\" data-i18n-key=\"modal.common.close\" data-i18n-attr=\"aria-label,title\" onclick=\"hideProposalDetailsPanel()\">",
       "interaction": "click",
-      "controlType": "button"
+      "controlType": "button",
+      "exempt": "Hosted design panels delegate closing to the click stack and Escape.",
+      "guards": [
+        {
+          "source": "css/map.css",
+          "includes": "#click-stack #proposal-details-panel.is-hosted .panel-header__actions,\n#click-stack #planning-inspector.is-hosted .planning-inspector__header .close-circle-btn,\n#three-click-stack #planning-inspector.is-hosted .planning-inspector__header .close-circle-btn {\n    display: none;\n}"
+        },
+        {
+          "source": "js/proposals/details-panel.js",
+          "includes": "return window.ClickStack.showDesign(getProposalKey(proposal));"
+        }
+      ],
+      "mustRemainInactive": true
     },
     {
       "id": "control-91b31bd88a10a1-1",
@@ -2310,21 +2368,9 @@
       "id": "control-4a853482db54a9-8",
       "source": "js/agents.js",
       "markup": "<button type=\"button\" class=\"cb-link agent-link-clickable\" data-agent-id=\"${agent.id}\">",
-      "exempt": "The simulation duplicate-result fallback is unreachable for the proposal object created immediately above it: addProposal returns an ID for object input and returns null only for non-object input.",
-      "mustRemainInactive": true,
-      "guards": [
-        {
-          "source": "js/agents.js",
-          "includes": "const proposalId = proposalStorage.addProposal(proposal, {"
-        },
-        {
-          "source": "js/proposals/data.js",
-          "pattern": "addProposal\\(proposal, options = \\{\\}\\) \\{\\n        if \\(!proposal \\|\\| typeof proposal !== 'object'\\) return null;\\n(?:(?!\\breturn\\b)[\\s\\S])*?return normalized\\.proposalId;\\n    \\},",
-          "occurrences": 1
-        }
-      ],
       "interaction": "click",
-      "controlType": "button"
+      "controlType": "button",
+      "dispatchEvidence": "Unknown simulation actions retain an actor link and are exercised alongside refused actions; no agreement decision is executed."
     },
     {
       "id": "control-21e74b3a503422-1",
@@ -3333,27 +3379,9 @@
       "markup": "doc.createElement('button')",
       "variants": [
         {
-          "name": "close",
-          "attrs": {
-            "data-action": "close"
-          }
-        },
-        {
           "name": "row",
           "attrs": {
             "data-action": "row"
-          }
-        },
-        {
-          "name": "instance",
-          "attrs": {
-            "data-action": "instance"
-          }
-        },
-        {
-          "name": "openAgreement",
-          "attrs": {
-            "data-action": "open-agreement"
           }
         },
         {
@@ -3375,45 +3403,9 @@
           }
         },
         {
-          "name": "parcelPropose",
-          "attrs": {
-            "data-command": "parcel.propose"
-          }
-        },
-        {
-          "name": "parcelSelectMore",
-          "attrs": {
-            "data-command": "parcel.selectMore"
-          }
-        },
-        {
-          "name": "parcelHistory",
-          "attrs": {
-            "data-command": "parcel.history"
-          }
-        },
-        {
-          "name": "parcelProposals",
-          "attrs": {
-            "data-command": "parcel.proposals"
-          }
-        },
-        {
           "name": "parcelCompare",
           "attrs": {
             "data-command": "parcel.compare"
-          }
-        },
-        {
-          "name": "parcelTools",
-          "attrs": {
-            "data-command": "parcel.tools"
-          }
-        },
-        {
-          "name": "parcelDetectBlock",
-          "attrs": {
-            "data-command": "parcel.detectBlock"
           }
         },
         {
@@ -3481,11 +3473,18 @@
           "attrs": {
             "data-command": "selection.done"
           }
+        },
+        {
+          "name": "Open a related design, agreement or parcel",
+          "attrs": {
+            "data-action": "related"
+          }
         }
       ],
       "exhaustiveVariants": true,
       "interaction": "click",
-      "controlType": "button"
+      "controlType": "button",
+      "dispatchEvidence": "The stack renders row, related, coords and agreement actions, plus commands from UiCommands; related chips replace the old instance/open-agreement buttons."
     },
     {
       "id": "control-d7ec6e346dbca4-1",
@@ -4819,14 +4818,44 @@
       "source": "js/parcels/ui/parcel-panel.js",
       "markup": "<button type=\"button\" class=\"btn btn-primary btn-sm parcel-proposals-empty-btn\" data-i18n-key=\"parcelMenu.actions.propose\" onclick=\"(window.switchParcelTab || function(){})(null, 'propose-tab')\">",
       "interaction": "click",
-      "controlType": "button"
+      "controlType": "button",
+      "exempt": "The standalone parcel empty-list CTA is inside the hidden Proposals tab; selection uses ParcelSetProposals with its own text-only empty state.",
+      "guards": [
+        {
+          "source": "css/map.css",
+          "includes": "#click-stack .click-stack__section:not([data-kind=\"selection\"]) #parcel-info-panel.is-hosted [data-parcel-tab-id=\"proposals-tab\"] {\n    display: none;\n}"
+        },
+        {
+          "source": "js/parcels/ui/parcel-panel.js",
+          "includes": "return global.ClickStack.showParcel(feature);"
+        },
+        {
+          "source": "js/proposals/data.js",
+          "includes": "window.ParcelSetProposals.render(document.getElementById('proposals-content'), [...this.selectedParcels]"
+        },
+        {
+          "source": "js/parcels/parcel-set-proposals.js",
+          "includes": "return `<p class=\"parcel-set-proposals-empty\">"
+        }
+      ]
     },
     {
       "id": "control-a76a61685bce10-1",
       "source": "js/parcels/ui/parcel-panel.js",
       "markup": "copyTarget.setAttribute('role', 'button')",
       "interaction": "click",
-      "controlType": "button"
+      "controlType": "button",
+      "exempt": "The parcel ID copy action belongs to the hidden standalone panel header; the stack supplies the parcel heading.",
+      "guards": [
+        {
+          "source": "css/map.css",
+          "includes": "#click-stack #parcel-info-panel.is-hosted > .panel-header,\n#click-stack #parcel-info-panel.is-hosted #parcel-info-minimize,\n#click-stack #parcel-info-panel.is-hosted .panel-header .close-button {\n    display: none;\n}"
+        },
+        {
+          "source": "js/parcels/ui/parcel-panel.js",
+          "includes": "return global.ClickStack.showParcel(feature);"
+        }
+      ]
     },
     {
       "id": "control-94dbf05c6c8fd3-1",
@@ -4904,15 +4933,6 @@
           ],
           "attrs": {
             "onclick": "BusyControl.track(this, () => startParcelBuildTool('lake'))"
-          }
-        },
-        {
-          "name": "parcel-build-btn--offer",
-          "classes": [
-            "parcel-build-btn--offer"
-          ],
-          "attrs": {
-            "onclick": "BusyControl.track(this, () => startParcelBuildTool('offer'))"
           }
         },
         {
@@ -5169,13 +5189,6 @@
           "labelPattern": "^Source: .+ · .+$"
         },
         {
-          "name": "Show proposal actions",
-          "classes": [
-            "btn"
-          ],
-          "labelPattern": "^(?:Proposal actions|Acciones de la propuesta)$"
-        },
-        {
           "name": "Select planning source",
           "classes": [
             "planning-layer-select",
@@ -5260,6 +5273,20 @@
             "data-planning-setting": "zoningAreas"
           },
           "interaction": "change"
+        },
+        {
+          "name": "Change permitted representation",
+          "attrs": {
+            "data-planning-setting": "permittedForm"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Show one planning configuration",
+          "classes": [
+            "planning-configurations__pick"
+          ],
+          "interaction": "click"
         }
       ],
       "exhaustiveVariants": true,
@@ -5617,13 +5644,6 @@
           "interaction": "change"
         },
         {
-          "name": "Show one owner's land on the before/after divider",
-          "label": "Show on map",
-          "classes": [
-            "btn"
-          ]
-        },
-        {
           "name": "Go from an owner's deal to the signing review",
           "labelPattern": "review and accept$",
           "classes": [
@@ -5902,7 +5922,26 @@
       "source": "js/proposals/details-panel.js",
       "markup": "<button type=\"button\" class=\"btn btn-proposal-details\" onclick=\"toggleProposalDetailsPanelMinimized(false)\">",
       "interaction": "click",
-      "controlType": "button"
+      "controlType": "button",
+      "exempt": "The compact-card Details action is hidden because the click stack always hosts the full design panel and expands any minimized panel.",
+      "guards": [
+        {
+          "source": "css/proposal-details.css",
+          "includes": "#proposal-details-panel:not(.is-minimized) .btn-proposal-details { display: none; }"
+        },
+        {
+          "source": "js/click-stack/click-stack-panel.js",
+          "includes": "global.selectAndHighlightProposal(key, null, false, true, false, { hosted: true, presentation: 'details' });"
+        },
+        {
+          "source": "js/click-stack/click-stack-panel.js",
+          "includes": "if (id === 'proposal-details-panel' && el.classList.contains('is-minimized')) global.toggleProposalDetailsPanelMinimized?.();"
+        },
+        {
+          "source": "css/map.css",
+          "includes": "#click-stack #proposal-details-panel.is-hosted .panel-header__actions,"
+        }
+      ]
     },
     {
       "id": "control-fb97f1b1e16464-1",
@@ -6068,7 +6107,23 @@
       "source": "js/proposals/dialog-create.js",
       "markup": "<input type=\"radio\" name=\"proposalParcelsMode\" value=\"as-is\" checked onchange=\"onProposalParcelsChange()\">",
       "interaction": "change",
-      "controlType": "radio"
+      "controlType": "radio",
+      "exempt": "The parcel-boundary selector has only one checked choice, as-is; boundary editing belongs to Lay out parcels.",
+      "guards": [
+        {
+          "source": "js/proposals/dialog-create.js",
+          "pattern": "name=\"proposalParcelsMode\"",
+          "occurrences": 1
+        },
+        {
+          "source": "js/proposals/dialog-create.js",
+          "includes": "name=\"proposalParcelsMode\" value=\"as-is\" checked"
+        },
+        {
+          "source": "js/proposals/core.js",
+          "includes": "const normalized = 'as-is';\n    proposalFacetState.parcels = normalized;"
+        }
+      ]
     },
     {
       "id": "control-63bc474cb90614-1",
@@ -6365,15 +6420,21 @@
       "markup": "document.createElement('button')",
       "variants": [
         {
-          "name": "Return to 2D from the proposal list",
-          "label": "Open 2D map",
-          "classes": [
-            "cb-link"
-          ]
+          "name": "Highlight all designs",
+          "label": "All"
+        },
+        {
+          "name": "Highlight published designs",
+          "label": "Published"
+        },
+        {
+          "name": "Highlight unpublished designs",
+          "label": "Not published yet"
         }
       ],
       "interaction": "click",
-      "controlType": "button"
+      "controlType": "button",
+      "exhaustiveVariants": true
     },
     {
       "id": "control-a9e7f6ba35b5c1-1",
@@ -6396,11 +6457,8 @@
       "markup": "document.createElement('button')",
       "variants": [
         {
-          "name": "Close shared plan panel",
-          "label": "Close",
-          "classes": [
-            "close-circle-btn"
-          ]
+          "name": "Copy the selected composition link",
+          "label": "Copy URL"
         }
       ],
       "exhaustiveVariants": true,
@@ -6413,16 +6471,12 @@
       "markup": "document.createElement('button')",
       "variants": [
         {
-          "name": "Highlight all designs",
-          "label": "All"
+          "name": "Name a plan",
+          "label": "Name this plan"
         },
         {
-          "name": "Highlight published designs",
-          "label": "Published"
-        },
-        {
-          "name": "Highlight designs not published yet",
-          "label": "Not published yet"
+          "name": "Rename a plan",
+          "label": "Rename plan"
         }
       ],
       "exhaustiveVariants": true,
@@ -6434,14 +6488,32 @@
       "source": "js/proposals/dialog-share.js",
       "markup": "document.createElement('button')",
       "interaction": "click",
-      "controlType": "button"
+      "controlType": "button",
+      "variants": [
+        {
+          "name": "Save a named plan link",
+          "classes": [
+            "share-plan-save-name"
+          ]
+        }
+      ],
+      "exhaustiveVariants": true
     },
     {
       "id": "control-7cd07576118fe2-5",
       "source": "js/proposals/dialog-share.js",
       "markup": "document.createElement('button')",
       "interaction": "click",
-      "controlType": "button"
+      "controlType": "button",
+      "variants": [
+        {
+          "name": "Publish selected designs",
+          "classes": [
+            "share-plan-publish-selected"
+          ]
+        }
+      ],
+      "exhaustiveVariants": true
     },
     {
       "id": "control-a9e7f6ba35b5c1-2",
@@ -6453,7 +6525,16 @@
     {
       "id": "control-7cd07576118fe2-6",
       "source": "js/proposals/dialog-share.js",
-      "markup": "document.createElement('button')"
+      "markup": "document.createElement('button')",
+      "variants": [
+        {
+          "name": "Create an agreement for the selection",
+          "classes": [
+            "share-plan-create-agreement"
+          ]
+        }
+      ],
+      "exhaustiveVariants": true
     },
     {
       "id": "control-5ea11b34e3cfd2-1",
@@ -6884,9 +6965,9 @@
       "controlType": "checkbox"
     },
     {
-      "id": "control-173d4c13390a1a-1",
+      "id": "control-22a5d13256668e-1",
       "source": "js/single-building.js",
-      "markup": "<input type=\"range\" id=\"single-height-slider\" min=\"3\" max=\"250\" step=\"1\" value=\"${DEFAULT_HEIGHT_M}\">",
+      "markup": "<input type=\"range\" id=\"single-height-slider\" aria-label=\"${modalText.heightLabel}\" min=\"3\" max=\"250\" step=\"1\" value=\"${DEFAULT_HEIGHT_M}\">",
       "interaction": "change",
       "controlType": "range"
     },
@@ -7215,9 +7296,11 @@
       "markup": "doc.createElement('button')"
     },
     {
-      "id": "control-48a3d8be2e79e3-1",
+      "id": "control-4b79316039d31f-1",
       "source": "js/three-mode.js",
-      "markup": "<input type=\"range\" class=\"parcel-panel-price-slider\" data-role=\"${role}\" min=\"${price.min}\" max=\"${price.max}\" step=\"${price.step}\" value=\"${price.perSqm}\">"
+      "markup": "<input type=\"range\" class=\"parcel-panel-price-slider\" data-role=\"${role}\" min=\"${price.min}\" max=\"${price.max}\" step=\"${price.step}\" value=\"${price.perSqm ?? price.min}\"${price.perSqm === null ? ' disabled' : ''}>",
+      "interaction": "change",
+      "controlType": "range"
     },
     {
       "id": "control-0f72c2ba2aa79f-1",
@@ -7324,16 +7407,16 @@
       "controlType": "number"
     },
     {
-      "id": "control-99928240be28c4-1",
+      "id": "control-f0d82ee8e8bb48-1",
       "source": "js/transit-stations.js",
-      "markup": "<input type=\"range\" data-station-editor-bearing-range min=\"0\" max=\"359\" step=\"1\" value=\"${stationEditor.bearing}\">",
+      "markup": "<input type=\"range\" data-station-editor-bearing-range aria-label=\"${stationEditorText('rotation', 'Rotation')}\" min=\"0\" max=\"359\" step=\"1\" value=\"${stationEditor.bearing}\">",
       "interaction": "change",
       "controlType": "range"
     },
     {
-      "id": "control-6615bc8475be7f-1",
+      "id": "control-6b56cdfe3e4f55-1",
       "source": "js/transit-stations.js",
-      "markup": "<input type=\"number\" data-station-editor-bearing min=\"0\" max=\"359\" step=\"1\" value=\"${stationEditor.bearing}\">",
+      "markup": "<input type=\"number\" data-station-editor-bearing aria-label=\"${stationEditorText('rotation', 'Rotation')}\" min=\"0\" max=\"359\" step=\"1\" value=\"${stationEditor.bearing}\">",
       "interaction": "change",
       "controlType": "number"
     },
@@ -8745,9 +8828,286 @@
       "markup": "<a class=\"btn btn-primary\" href=\"/\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-fdecca6b7f8e63-1",
+      "source": "index.html",
+      "markup": "<a id=\"source-system-link\" class=\"btn\" href=\"/sources.html\" data-i18n-key=\"sourceSystem.title\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-c05dffa4f74d38-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"economic-source-settings-button\" class=\"btn\" data-i18n-key=\"economicSources.title\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-8b616de27e0e37-1",
+      "source": "js/economic-source-settings.js",
+      "markup": "global.document.createElement(tag)",
+      "interaction": "auto",
+      "controlType": "dynamic",
+      "variants": [
+        {
+          "name": "Close economic sources",
+          "classes": [
+            "close-circle-btn"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Edit economic-source-name",
+          "attrs": {
+            "id": "economic-source-name"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Edit economic-rate-land",
+          "attrs": {
+            "id": "economic-rate-land"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Edit economic-rate-roadLand",
+          "attrs": {
+            "id": "economic-rate-roadLand"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Edit economic-rate-sale",
+          "attrs": {
+            "id": "economic-rate-sale"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Edit economic-rate-construction",
+          "attrs": {
+            "id": "economic-rate-construction"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Use local economic rates",
+          "interaction": "click",
+          "classes": [
+            "btn",
+            "btn-primary"
+          ]
+        },
+        {
+          "name": "Reset local economic source",
+          "label": "Use configured sources",
+          "interaction": "click"
+        },
+        {
+          "name": "Import local economic rates",
+          "attrs": {
+            "type": "file"
+          },
+          "interaction": "change"
+        }
+      ],
+      "exhaustiveVariants": true,
+      "dispatchEvidence": "The append factory renders close, five editable rate fields, submit, reset and a JSON file input. Static descriptions are not controls."
+    },
+    {
+      "id": "control-7cd07576118fe2-7",
+      "source": "js/proposals/dialog-share.js",
+      "markup": "document.createElement('button')",
+      "interaction": "click",
+      "controlType": "button",
+      "variants": [
+        {
+          "name": "Highlight a selected design",
+          "classes": [
+            "share-plan-row__main"
+          ]
+        }
+      ],
+      "exhaustiveVariants": true
+    },
+    {
+      "id": "control-a9e7f6ba35b5c1-3",
+      "source": "js/proposals/dialog-share.js",
+      "markup": "document.createElement('input')",
+      "interaction": "change",
+      "controlType": "input"
+    },
+    {
+      "id": "control-7cd07576118fe2-8",
+      "source": "js/proposals/dialog-share.js",
+      "markup": "document.createElement('button')",
+      "interaction": "click",
+      "controlType": "button",
+      "variants": [
+        {
+          "name": "Publish one design",
+          "label": "Publish"
+        }
+      ],
+      "exhaustiveVariants": true
+    },
+    {
+      "id": "control-65e1fefeca06b6-1",
+      "source": "js/source-explorer.js",
+      "markup": "document.createElement(tag)",
+      "interaction": "auto",
+      "controlType": "dynamic",
+      "exempt": "This factory creates source descriptions, options, schema details and a temporary download anchor without a button role or button styling. Static source controls own all user interactions.",
+      "mustRemainInactive": true,
+      "guards": [
+        {
+          "source": "js/source-explorer.js",
+          "includes": "link.download = 'source-contracts.v1.json';"
+        },
+        {
+          "source": "js/source-explorer.js",
+          "pattern": "\\bnode\\(['\"](?:button|input|select|textarea)['\"]",
+          "occurrences": 0
+        }
+      ]
+    },
+    {
+      "id": "control-1f666d778d2675-1",
+      "source": "sources.html",
+      "markup": "<select id=\"source-language\" class=\"cb-page-header__lang\" aria-label=\"Language\">",
+      "interaction": "change",
+      "controlType": "select"
+    },
+    {
+      "id": "control-ea2fde5d943a47-1",
+      "source": "sources.html",
+      "markup": "<button id=\"source-retry\" class=\"btn\" type=\"button\" hidden data-i18n-key=\"sourceSystem.retry\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-71d80d7e33a4c8-1",
+      "source": "sources.html",
+      "markup": "<button id=\"source-download\" class=\"btn\" type=\"button\" disabled data-i18n-key=\"sourceSystem.download\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-6ae0f4c0e6b7c9-1",
+      "source": "sources.html",
+      "markup": "<select id=\"source-family\">",
+      "interaction": "change",
+      "controlType": "select"
+    },
+    {
+      "id": "control-3719edd6a0355e-1",
+      "source": "sources.html",
+      "markup": "<select id=\"source-adapter\">",
+      "interaction": "change",
+      "controlType": "select"
+    },
+    {
+      "id": "control-3b3a78a7430f92-1",
+      "source": "sources.html",
+      "markup": "<select id=\"source-config\">",
+      "interaction": "change",
+      "controlType": "select"
     }
   ],
-  "variantExclusions": [],
+  "variantExclusions": [
+    {
+      "name": "Stack parcel.propose moved to panel/palette",
+      "reason": "The parcel panel and palette own this action; the stack renders only commands whose surfaces include parcel-menu.",
+      "guards": [
+        {
+          "source": "js/ui/commands.js",
+          "includes": "parcelCommand('propose', { surfaces: []"
+        }
+      ]
+    },
+    {
+      "name": "Stack parcel.selectMore moved to panel/palette",
+      "reason": "The parcel panel and palette own this action; the stack renders only commands whose surfaces include parcel-menu.",
+      "guards": [
+        {
+          "source": "js/ui/commands.js",
+          "includes": "parcelCommand('selectMore', { surfaces: []"
+        }
+      ]
+    },
+    {
+      "name": "Stack parcel.history moved to panel/palette",
+      "reason": "The parcel panel and palette own this action; the stack renders only commands whose surfaces include parcel-menu.",
+      "guards": [
+        {
+          "source": "js/ui/commands.js",
+          "includes": "parcelCommand('history', { surfaces: []"
+        }
+      ]
+    },
+    {
+      "name": "Stack parcel.proposals moved to panel/palette",
+      "reason": "The parcel panel and palette own this action; the stack renders only commands whose surfaces include parcel-menu.",
+      "guards": [
+        {
+          "source": "js/ui/commands.js",
+          "includes": "parcelCommand('proposals', { surfaces: []"
+        }
+      ]
+    },
+    {
+      "name": "Stack parcel.tools moved to panel/palette",
+      "reason": "The parcel panel and palette own this action; the stack renders only commands whose surfaces include parcel-menu.",
+      "guards": [
+        {
+          "source": "js/ui/commands.js",
+          "includes": "parcelCommand('tools', { surfaces: []"
+        }
+      ]
+    },
+    {
+      "name": "Stack parcel.detectBlock moved to panel/palette",
+      "reason": "The parcel panel and palette own this action; the stack renders only commands whose surfaces include parcel-menu.",
+      "guards": [
+        {
+          "source": "js/ui/commands.js",
+          "includes": "parcelCommand('detectBlock', { surfaces: []"
+        }
+      ]
+    },
+    {
+      "name": "Owner land focus removed from approval dialogs",
+      "reason": "Approval dialogs offer identity and acceptance controls; the details panel offers parcel focus instead.",
+      "guards": [
+        {
+          "source": "js/proposals/approval-panel.js",
+          "pattern": "focusOwnerId|toggleProposalBeforeAfter|Show on map",
+          "occurrences": 0
+        },
+        {
+          "source": "js/proposals/details-panel.js",
+          "includes": "focusParcelId:"
+        }
+      ]
+    },
+    {
+      "name": "Offer removed from parcel build palette",
+      "reason": "Agreements carry terms; the palette creates physical designs and does not render an offer tool.",
+      "guards": [
+        {
+          "source": "js/parcels/ui/proposal-actions.js",
+          "pattern": "key: ['\"]offer['\"]",
+          "occurrences": 0
+        },
+        {
+          "source": "js/parcels/ui/proposal-actions.js",
+          "includes": "PARCEL_BUILD_TOOLS.filter(tool => STRUCTURE_KEYS.includes(tool.key)).map(buttonHtml)"
+        }
+      ]
+    }
+  ],
   "checkRuntimeControls": true,
   "runtimeControls": [
     {

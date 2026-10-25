@@ -136,16 +136,17 @@ export function instrumentControls(source, filename) {
   return { code, sites };
 }
 
-export function sourceFiles(root = frontendRoot) {
+export function sourceFiles(root = frontendRoot, { includeStyles = false } = {}) {
   const files = [];
   const descend = directory => {
     for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
       const full = path.join(directory, entry.name);
       if (entry.isDirectory()) descend(full);
-      else if (/\.m?js$/.test(entry.name)) files.push(full);
+      else if (/\.m?js$/.test(entry.name) || (includeStyles && entry.name.endsWith('.css'))) files.push(full);
     }
   };
   descend(path.join(root, 'js'));
+  if (includeStyles) descend(path.join(root, 'css'));
   for (const entry of fs.readdirSync(root)) if (entry.endsWith('.html')) files.push(path.join(root, entry));
   return files.sort();
 }

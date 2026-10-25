@@ -61,6 +61,7 @@ test.describe('Valuation and costs sources @features', () => {
     await expect(dialog.getByRole('heading', { name: 'Valuation & costs' })).toBeVisible();
     await dialog.locator('#economic-source-name').fill('Neighborhood scenario rates');
     await dialog.locator('#economic-rate-land').fill('321');
+    await dialog.locator('#economic-rate-roadLand').fill('123');
     await dialog.locator('#economic-rate-sale').fill('6543');
     await dialog.locator('#economic-rate-construction').fill('2345');
     await reloadAfter(page, () => dialog.locator('button[form="economic-source-form"]').click());
@@ -68,6 +69,7 @@ test.describe('Valuation and costs sources @features', () => {
     const state = await economicState(page);
     expect(state.cityId).toBe('new_york');
     expect(state.land).toBe(321);
+    expect(state.roadLand).toBe(123);
     expect(state.sale).toBe(6543);
     expect(state.construction).toBe(2345);
     expect(state.landSource).toMatchObject({ sourceId: 'local-rates', sourceName: 'Neighborhood scenario rates', basis: 'assumption' });
@@ -77,6 +79,8 @@ test.describe('Valuation and costs sources @features', () => {
     await openEconomicSources(page);
     await expect(page.locator('#economic-source-settings .economic-source-list')).toContainText('Neighborhood scenario rates');
     await expect(page.locator('#economic-source-settings .economic-source-list')).toContainText('Scenario assumption');
+    await page.locator('#economic-source-settings .close-circle-btn').click();
+    await expect(page.locator('#economic-source-settings')).toHaveCount(0);
   });
 
   test('keeps saved rates isolated to their city', async ({ mockApi: page }) => {

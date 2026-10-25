@@ -26,6 +26,9 @@ test('a narrow building takes a whole parcel, previews demolition, saves and reo
   await open(page);
   const body=await page.evaluate(()=>(window as any).OnMapEditor.getPreview().draftPreview.features[0].geometry);
   await selectNativeOption(page.locator(`[data-parcel-id="${first}"]`),'whole');
+  await page.locator('[data-land-footprint]').click();
+  await expect(page.locator(`[data-parcel-id="${first}"]`)).toHaveValue('footprint');
+  await selectNativeOption(page.locator(`[data-parcel-id="${first}"]`),'whole');
   await expect(page.locator('[data-land-status]')).toContainText('1 buildings removed');
   await expect(page.locator('[data-land-accept]')).not.toBeChecked();
   await page.locator('#single-building-confirm').click();
@@ -101,6 +104,14 @@ test('missing stock blocks acceptance and keeps the unsaved editor open',async({
   await expect(page.locator('[data-land-accept]')).toBeDisabled();
   await expect(page.locator('[data-land-accept]')).not.toBeChecked();
   await expect(page.locator(`${editor} .on-map-editor__panel`)).toBeVisible();
+  await page.route('**/buildings/under', route => {
+    const regions = route.request().postDataJSON().regions;
+    return route.fulfill({ json: { supported: true, truncated: false, source: 'gdi', regions: Object.fromEntries(regions.map((r: any) => [r.key, []])) } });
+  });
+  await page.locator('[data-land-retry]').click();
+  await expect(page.locator('[data-land-accept]')).toBeEnabled();
+  await expect(page.locator('#single-land-take-error')).toBeHidden();
+  await expect(page.locator('[data-land-accept]')).not.toHaveAttribute('aria-invalid', 'true');
 });
 test('mixed parcel choices and Undo update land without changing the uploaded building',async({mockApi:page})=>{
   await open(page);
@@ -151,6 +162,15 @@ test('mobile Done reveals the complete acceptance label above the fixed footer',
 });
 test('loading an untouched land review does not create discardable edits',async({mockApi:page})=>{
  await open(page);
+ const toggle=page.locator(`${editor} .on-map-editor__toggle`);
+ const body=page.locator(`${editor} .on-map-editor__body`);
+ await expect(toggle).toHaveAttribute('aria-expanded','true');
+ await toggle.click();
+ await expect(toggle).toHaveAttribute('aria-expanded','false');
+ await expect(body).toBeHidden();
+ await toggle.click();
+ await expect(toggle).toHaveAttribute('aria-expanded','true');
+ await expect(body).toBeVisible();
  await page.locator(`${editor} .on-map-editor__header .close-circle-btn`).click();
  await expect(page.locator(editor)).toHaveCount(0);
  await expect(page.getByRole('alertdialog')).toHaveCount(0);

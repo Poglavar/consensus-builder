@@ -110,7 +110,7 @@ test.describe('proposal detail button controls @features', () => {
     const row = plan.locator('.share-plan-row').filter({ hasText: /park/i });
     await expect(row.locator('.share-plan-row__published')).toBeVisible();
     await expect(row.getByRole('button', { name: 'Publish', exact: true })).toBeHidden();
-    const mapShareUrl = new URL(await plan.locator('.share-plan-link__input').inputValue());
+    const mapShareUrl = new URL(await plan.locator('.share-plan-link__input[readonly]').inputValue());
     expect(mapShareUrl.pathname).toBe(individualLink.pathname);
     expect(mapShareUrl.searchParams.get('at')).toBe(currentView.at);
     expect(mapShareUrl.searchParams.get('city')).toBe(currentView.city);

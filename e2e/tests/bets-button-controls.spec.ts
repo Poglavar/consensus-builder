@@ -157,6 +157,37 @@ test.describe('Bets shared button variants @features', () => {
     await expect(dialog.locator('[data-market-amount]')).toHaveValue('12.5');
   });
 
+  test('Submit a Yes stake sends the entered amount to the wallet bridge and shows the receipt', async ({ mockApi: page }) => {
+    fileMinted(page);
+    await injectMockSolanaWallet(page, { publicKey: WALLET, providerName: 'phantom' });
+    await routeSolanaReads(page);
+    await page.addInitScript(() => {
+      (window as any).__stakeCalls = [];
+      // Replace only the transaction boundary; the dialog still validates and submits its form.
+      const install = () => {
+        const bridge = (window as any).SolanaMarketBridge;
+        if (!bridge || typeof bridge.stake !== 'function') return false;
+        bridge.stake = async (args: any) => {
+          (window as any).__stakeCalls.push({ proposal: args.proposal, side: args.side, amount: String(args.amount) });
+          return { explorerUrl: 'https://explorer.solana.com/tx/mock?cluster=devnet' };
+        };
+        return true;
+      };
+      const timer = window.setInterval(() => { if (install()) window.clearInterval(timer); }, 0);
+    });
+    await openCity(page);
+    await connectWalletByConnectorId(page, 'solana-phantom');
+    await page.goto(`/?city=zg&bets=${ACCOUNT}&reduceMotion=1`);
+    const dialog = page.locator('#proposalMarketOverlay');
+    await dialog.locator('.bets-dialog__footer .btn-market-yes').click({ timeout: 30_000 });
+    await dialog.locator('[data-market-amount]').fill('2.5');
+    await dialog.locator('[data-market-submit]').click();
+    await expect.poll(() => page.evaluate(() => (window as any).__stakeCalls)).toEqual([
+      { proposal: ACCOUNT, side: 1, amount: '2500000' },
+    ]);
+    await expect(dialog).toContainText('2.5 USDC on yes is in the pool.');
+  });
+
   for (const action of [
     // Minted and Active, with no pool yet: anyone can open the one pool.
     { name: 'Open the pool', status: 'active', pool: null },

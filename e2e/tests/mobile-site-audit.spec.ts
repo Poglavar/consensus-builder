@@ -28,19 +28,25 @@ for (const viewport of [{ width: 320, height: 640 }, { width: 390, height: 844 }
       const box = await sheet.boundingBox();
       expect(box!.x).toBeGreaterThanOrEqual(0);
       expect(box!.x + box!.width).toBeLessThanOrEqual(viewport.width + 1);
-      const expanded = await sheet.evaluate(el => el.classList.contains('mobile-sheet-expanded'));
-      expect(box!.height).toBeGreaterThan(viewport.height * (expanded ? 0.8 : 0.45));
+      // Short records fit their content; long sheets scroll within the available map area.
+      expect(box!.height).toBeGreaterThan(44);
+      expect(box!.y).toBeGreaterThanOrEqual(0);
+      expect(box!.y + box!.height).toBeLessThanOrEqual(viewport.height + 1);
       await sheet.locator(':scope > .mobile-dock-sheet-handle').focus();
       await page.keyboard.press('Home');
       const compact = (await sheet.boundingBox())!.height;
       await page.keyboard.press('End');
-      expect((await sheet.boundingBox())!.height).toBeGreaterThan(compact + 80);
+      expect((await sheet.boundingBox())!.height).toBeGreaterThanOrEqual(compact);
+      await expect(sheet.locator(':scope > .mobile-dock-sheet-handle')).toBeInViewport({ ratio: 1 });
       await page.keyboard.press('Escape');
       await expect(sheet).toBeHidden();
       await expect(page.locator(`#${button}`)).toHaveAttribute('aria-expanded', 'false');
     }
     await page.locator('#settings-button').click();
     const settings = page.locator('#settings-sheet');
+    for (const summary of await settings.locator(':scope > .map-sheet-body > details > summary').all()) await summary.click();
+    await settings.locator(':scope > .mobile-dock-sheet-handle').focus();
+    await page.keyboard.press('End');
     const expanded = (await settings.boundingBox())!.height;
     await dragHandle(page, settings, 120);
     expect((await settings.boundingBox())!.height).toBeLessThan(expanded - 80);
@@ -59,7 +65,9 @@ test('source and approval forms expand, keep actions reachable and cancel throug
   const source = page.locator('#parcel-source-settings');
   await expect(source).toBeVisible();
   await expect(source.locator(':scope > .mobile-dock-sheet-handle')).toHaveCount(1);
-  expect((await source.boundingBox())!.height).toBeGreaterThan(600);
+  expect((await source.boundingBox())!.height).toBeGreaterThan(200);
+  expect((await source.boundingBox())!.height).toBeLessThanOrEqual(640);
+  await expect(source.locator('.cb-dialog__footer')).toBeInViewport({ ratio: 1 });
   await source.locator(':scope > .mobile-dock-sheet-handle').focus();
   await page.keyboard.press('Home');
   await dragHandle(page, source, 130);
@@ -68,7 +76,8 @@ test('source and approval forms expand, keep actions reachable and cancel throug
   await page.evaluate(() => (window as any).ProposalApprovalSetup.openDialog({}));
   const approval = page.locator('.approval-setup-dialog');
   await expect(approval).toBeVisible();
-  expect((await approval.boundingBox())!.height).toBeGreaterThan(600);
+  expect((await approval.boundingBox())!.height).toBeGreaterThan(200);
+  expect((await approval.boundingBox())!.height).toBeLessThanOrEqual(640);
   const apply = approval.locator('.cb-dialog__footer .btn-primary');
   await expect(apply).toBeInViewport({ ratio: 1 });
   // Reproduce keyboard shrink after an explicit resize, while layout height stays unchanged.

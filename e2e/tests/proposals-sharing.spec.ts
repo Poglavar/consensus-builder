@@ -94,7 +94,7 @@ test.describe('Sharing the applied plan @core', () => {
       expect(row.content.author).toBe('Plan author');
     });
     const cids = rows.map(row => row.cid).sort();
-    const link = panel.locator('.share-plan-link__input');
+    const link = panel.locator('.share-plan-link__input[readonly]');
     await expect(linkRow).toBeVisible();
     const fullLink = await link.inputValue();
     await panel.getByRole('button', { name: 'Copy URL', exact: true }).click();

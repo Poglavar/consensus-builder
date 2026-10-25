@@ -2,15 +2,23 @@ import { openDesignReview } from '../helpers/design-review';
 // Purpose: verify proposal metadata (ownership, epoch, tolerance) and list filters through their forms.
 import { test, expect } from '../helpers/fixtures';
 import { selectNativeOption } from '../helpers/controls';
-import { createSpace, openCity, PARCEL_ID, showProposal } from '../helpers/runtime';
+import { openCity, PARCEL_GEOMETRY, PARCEL_ID, showProposal } from '../helpers/runtime';
 
 test('ownership, epoch and parcel tolerance persist from the draft review form', async ({ mockApi: page }) => {
   await openCity(page);
-  const sourceId = await createSpace(page, 'park');
+  const sourceId = await page.evaluate(({ parcelId, geometry }) => (window as any).proposalStorage.addProposal({
+    title: 'Spanish apply label control', goal: 'park', applied: false, lifecycleStatus: 'Active',
+    cadastreParcelIds: [parcelId], geometry, structureProposal: { kind: 'park', geometry, applied: false },
+  }), { parcelId: PARCEL_ID, geometry: PARCEL_GEOMETRY });
   await showProposal(page, sourceId);
   const panel = page.locator('#proposal-details-panel');
-  const expand = panel.getByRole('button', { name: 'Expand', exact: true });
-  if (await expand.isVisible()) await expand.click();
+  const mapAction = panel.locator(`#proposal-action-btn-${sourceId}`);
+  await page.evaluate(() => (window as any).i18n.setLanguage('es'));
+  await expect(mapAction).toContainText('Aplicar al mapa');
+  await mapAction.click();
+  await expect(mapAction).toHaveClass(/btn-danger/);
+  await expect(mapAction).toContainText('Retirar del mapa');
+  await page.evaluate(() => (window as any).i18n.setLanguage('en'));
   const more = panel.locator('summary').filter({ hasText: 'More actions' });
   if (await more.isVisible()) await more.click();
   await openDesignReview(page, sourceId);
@@ -26,6 +34,19 @@ test('ownership, epoch and parcel tolerance persist from the draft review form',
     await expect(form.locator('#proposalName')).toHaveValue('Detailed inherited park title');
     await expect(form.locator('#proposalDescription')).toHaveValue('Keep these authored design details when ownership changes.');
   }
+  await form.locator('.proposal-radio:has(input[name="proposalOwnership"][value="third-party"])').click();
+  await expect(form.locator('#proposalRecipientOptions')).toBeVisible();
+  const recipientAddress = form.locator('#proposalRecipientAddress');
+  await expect(recipientAddress).toBeHidden();
+  await expect(form.locator('input[name="proposalRecipientScope"][value="any"]')).toBeChecked();
+  await form.locator('.proposal-radio:has(input[name="proposalRecipientScope"][value="specific"])').click();
+  await expect.poll(() => page.evaluate(() => (window as any).proposalFacets?.recipientScope)).toBe('specific');
+  await expect(recipientAddress).toBeVisible();
+  await recipientAddress.fill('0x1234567890abcdef');
+  await expect(recipientAddress).toHaveValue('0x1234567890abcdef');
+  await form.locator('.proposal-radio:has(input[name="proposalRecipientScope"][value="any"])').click();
+  await expect.poll(() => page.evaluate(() => (window as any).proposalFacets?.recipientScope)).toBe('any');
+  await form.locator('input[name="proposalOwnership"][value="to-me"]').locator('..').click();
   await expect(form.locator('input[name="proposalParcelsMode"][value="as-is"]')).toBeChecked();
   // A design carries no terms and no decision kind: who decides is the agreement's rule (M2).
   await expect(form.locator('input[name="proposalKind"]')).toHaveCount(0);

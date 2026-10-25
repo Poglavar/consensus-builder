@@ -41,6 +41,18 @@ async function twoAgreementsOnPark(page: Page, titles = ['First agreement', 'Sec
 const remembered = (page: Page) => page.evaluate(() => localStorage.getItem('cb.clickStack.expanded'));
 
 test.describe('Click stack @core', () => {
+  test('agreement action buttons show its designs and open agreement details', async ({ mockApi: page }) => {
+    await twoAgreementsOnPark(page, ['Agreement action coverage']);
+    const agreement = stackSection(page, 'agreements');
+    await expect(agreement.locator('.click-stack__body')).toBeVisible();
+    await agreement.getByRole('button', { name: 'Show its designs', exact: true }).click();
+    await expect(page.locator('path.click-stack-map-focus').first()).toBeVisible();
+    await agreement.getByRole('button', { name: 'Details', exact: true }).click();
+    const panel = page.locator('section#agreement-panel');
+    await expect(panel).toBeVisible();
+    await expect(page.locator('#agreement-panel-title')).toBeVisible();
+  });
+
   test('expanding sections focuses their object, survives mouseout, and collapsed headers stay on one line', async ({ mockApi: page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await openCity(page);

@@ -3,17 +3,21 @@ import { test, expect } from '../helpers/fixtures';
 import { openCity, showProposal, PARCEL_ID, PARCEL_GEOMETRY } from '../helpers/runtime';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
 
-test('the Designs list keeps the selected model view and has no 2D-only instruction', async ({ mockApi: page }) => {
+test('model view hides Designs navigation, and returning to 2D restores the Designs list', async ({ mockApi: page }) => {
   await mockBuildingScene(page);
   await openCity(page);
   await page.locator('#mode-3d-toggle').click();
   await expect(page.locator('#three-container canvas')).toBeVisible({ timeout: 20_000 });
+  await expect(page.locator('#proposals-button')).toBeHidden();
+  await expect(page.locator('body')).toHaveClass(/three-mode-active/);
+  await page.locator('#mode-2d-toggle').click();
+  await expect(page.locator('#proposals-button')).toBeVisible();
   await page.locator('#proposals-button').click();
   await expect(page.locator('#proposals-sheet')).toBeVisible();
   await expect(page.locator('#proposals-sheet .proposal-list-navigation-hint')).toHaveCount(0);
-  await expect(page.locator('body')).toHaveClass(/three-mode-active/);
+  await expect(page.locator('body')).not.toHaveClass(/three-mode-active/);
   await page.locator('#proposals-sheet [data-sheet-close]').click();
-  await expect(page.locator('#mode-3d-toggle')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#mode-2d-toggle')).toHaveAttribute('aria-pressed', 'true');
 });
 
 test('deleting a lake boundary point saves a closed triangle onto the same lake', async ({ mockApi: page }) => {

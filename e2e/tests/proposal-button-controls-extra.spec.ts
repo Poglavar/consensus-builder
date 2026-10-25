@@ -60,7 +60,7 @@ test.describe('proposal button controls: modal and alternate states @features', 
     await openCity(page);
     await openBlockProposalDialog(page);
     const create = page.locator('.create-proposal-modal:visible');
-    for (const landUse of ['square', 'lake', 'single', 'as-is']) {
+    for (const landUse of ['square', 'park', 'lake', 'single', 'as-is']) {
       await create.locator(`.proposal-radio:has(input[name="proposalLandUse"][value="${landUse}"])`).click();
       await expect.poll(() => page.evaluate(() => (window as any).proposalFacets?.landUse)).toBe(landUse);
       const ownership = landUse === 'single' ? 'to-me' : landUse === 'as-is' ? 'no-change' : 'to-city';
@@ -125,7 +125,7 @@ test.describe('proposal button controls: modal and alternate states @features', 
     await expect(status).toHaveText('Select at least one design to share.');
     await selected.check();
     await expect(status).toHaveText('Publish at least one design to get a link.');
-    const link = plan.locator('.share-plan-link__input');
+    const link = plan.locator('.share-plan-link__input[readonly]');
     await expect(link).toBeHidden();
 
     // Publish pins and indexes this one design; the row says Published and the link names its CID.
