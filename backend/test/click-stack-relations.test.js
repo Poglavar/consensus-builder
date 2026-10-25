@@ -44,9 +44,9 @@ describe('click stack relationship rendering', () => {
 
         const select = wrapper.querySelector('select.click-stack__selector');
         expect(wrapper.tagName).toBe('LABEL');
-        expect(wrapper.textContent).toContain('Design to inspect');
-        expect(wrapper.textContent).toContain('overlap here or use this parcel');
-        expect(select.getAttribute('aria-describedby')).toBe(wrapper.querySelector('small').id);
+        expect(wrapper.querySelector('.click-stack__selector-label').textContent).toBe('Location you clicked has multiple designs. Select which to inspect:');
+        expect(wrapper.querySelector('small')).toBeNull();
+        expect(select.getAttribute('aria-describedby')).toBeNull();
         expect(select.getAttribute('data-action')).toBe('instance');
         expect(select.getAttribute('data-kind')).toBe('designs');
         expect(select.children.map(option => option.value)).toEqual(['d-1', 'd-2']);
@@ -85,7 +85,7 @@ describe('click stack relationship rendering', () => {
         }, t: key => entries.get(key) || key } };
         const selector = relations.renderSelector({ kind: 'designs', multi: true, instances: [] }, makeDocument(), win);
         expect(selector.querySelector('.click-stack__selector-label').textContent).toBe(entries.get('clickStackRelations.chooseDesign'));
-        expect(selector.querySelector('small').textContent).toBe(entries.get('clickStackRelations.designChoicesHint'));
-        expect(selector.querySelector('small').textContent.length).toBeGreaterThan(40);
+        expect(selector.querySelector('.click-stack__selector-label').textContent.length).toBeGreaterThan(40);
+        expect(selector.querySelector('small')).toBeNull();
     });
 });

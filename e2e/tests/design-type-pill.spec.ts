@@ -31,10 +31,10 @@ for (const width of [1280, 390]) for (const theme of ['light', 'dark']) {
     await expect(row).toContainText('Design (3)');
     await expect(badge).toHaveText('🌳Park');
     await expect(badge).toBeInViewport();
-    const select = panel.getByLabel('Design to inspect', { exact: true });
+    const select = panel.getByLabel('Location you clicked has multiple designs. Select which to inspect:', { exact: true });
     await expect(select).toBeVisible();
     await expect(select.locator('option')).toHaveText(['Park · River garden', 'Urban rule · Courtyard heights', 'Road or track · Main street']);
-    await expect(panel).toContainText('These designs overlap here or use this parcel.');
+    await expect(panel.locator('.click-stack__selector-hint')).toHaveCount(0);
     const parkStyle = await badge.evaluate(el => ({ color: getComputedStyle(el).color, bg: getComputedStyle(el).backgroundColor }));
     expect(parkStyle.color).not.toBe(parkStyle.bg);
     await select.selectOption('rule');

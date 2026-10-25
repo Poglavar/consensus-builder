@@ -1087,12 +1087,6 @@ body.three-mode-active #agent-bubbles-container {
     margin-inline-start: auto;
 }
 
-.click-stack__selector-hint {
-    color: var(--cb-text-muted);
-    font-size: var(--cb-text-sm);
-    line-height: var(--cb-leading);
-}
-
 .click-stack__chevron {
     flex: 0 0 auto;
     color: var(--cb-text-muted);

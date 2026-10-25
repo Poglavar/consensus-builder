@@ -63,9 +63,10 @@ right-side panels that clicks used to open one at a time.
   or agreement details; the link retains the configured `backend` override.
 - When a section has multiple instances, its expanded card contains a compact native selector for
   switching among those peers. A singleton has no selector.
-- The Design selector is labelled **Design to inspect** and names each option by type and title.
+- The Design selector says **Location you clicked has multiple designs. Select which to inspect:**
+  above its options, each named by type and title.
   Its count is the number of separate designs overlapping the location or using its parcel;
-  selecting one changes the inspected design. The helper text explains this relationship.
+  selecting one changes the inspected design.
 - The expanded section is the **action view**:
   - Plan or agreement: meaning, name, included designs and their combined map highlight. "Open
     plan" loads the saved composition; "Agreement details" opens the agreement record.

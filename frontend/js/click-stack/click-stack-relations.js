@@ -12,37 +12,33 @@
             memberPlans: 'Member of plans:', memberAgreements: 'Member of agreements:',
             includedDesigns: 'Designs:', createdBy: 'Created by design:', formedFrom: 'Formed from cadastral parcels:',
             formedParcels: 'Forms parcels:', affectsParcels: 'Uses cadastral parcels:', designsOnParcel: 'Designs on this parcel:',
-            chooseInstance: 'Choose item', chooseDesign: 'Design to inspect', chooseBuilding: 'Building to inspect',
+            chooseInstance: 'Choose item', chooseDesign: 'Location you clicked has multiple designs. Select which to inspect:', chooseBuilding: 'Building to inspect',
             chooseParcel: 'Parcel to inspect', choosePlan: 'Plan to inspect', chooseAgreement: 'Agreement to inspect',
-            choosePermitted: 'Permitted form to inspect',
-            designChoicesHint: 'These designs overlap here or use this parcel. Select one to view its details.'
+            choosePermitted: 'Permitted form to inspect'
         },
         hr: {
             memberPlans: 'Član planova:', memberAgreements: 'Član sporazuma:',
             includedDesigns: 'Dizajni:', createdBy: 'Izradio dizajn:', formedFrom: 'Nastalo od katastarskih čestica:',
             formedParcels: 'Oblikuje čestice:', affectsParcels: 'Koristi katastarske čestice:', designsOnParcel: 'Dizajni na ovoj čestici:',
-            chooseInstance: 'Odaberite stavku', chooseDesign: 'Dizajn za pregled', chooseBuilding: 'Zgrada za pregled',
+            chooseInstance: 'Odaberite stavku', chooseDesign: 'Na mjestu koje ste kliknuli nalazi se više dizajna. Odaberite koji želite pregledati:', chooseBuilding: 'Zgrada za pregled',
             chooseParcel: 'Čestica za pregled', choosePlan: 'Plan za pregled', chooseAgreement: 'Sporazum za pregled',
-            choosePermitted: 'Dopušteni oblik za pregled',
-            designChoicesHint: 'Ovi se dizajni ovdje preklapaju ili koriste ovu česticu. Odaberite dizajn za pregled njegovih pojedinosti.'
+            choosePermitted: 'Dopušteni oblik za pregled'
         },
         sr: {
             memberPlans: 'Član planova:', memberAgreements: 'Član sporazuma:',
             includedDesigns: 'Dizajni:', createdBy: 'Izradio dizajn:', formedFrom: 'Nastalo od katastarskih parcela:',
             formedParcels: 'Oblikuje parcele:', affectsParcels: 'Koristi katastarske parcele:', designsOnParcel: 'Dizajni na ovoj parceli:',
-            chooseInstance: 'Izaberite stavku', chooseDesign: 'Dizajn za pregled', chooseBuilding: 'Zgrada za pregled',
+            chooseInstance: 'Izaberite stavku', chooseDesign: 'Na mestu koje ste kliknuli nalazi se više dizajna. Izaberite koji želite da pregledate:', chooseBuilding: 'Zgrada za pregled',
             chooseParcel: 'Parcela za pregled', choosePlan: 'Plan za pregled', chooseAgreement: 'Sporazum za pregled',
-            choosePermitted: 'Dozvoljeni oblik za pregled',
-            designChoicesHint: 'Ovi dizajni se ovde preklapaju ili koriste ovu parcelu. Izaberite dizajn za pregled njegovih detalja.'
+            choosePermitted: 'Dozvoljeni oblik za pregled'
         },
         es: {
             memberPlans: 'Miembro de planes:', memberAgreements: 'Miembro de acuerdos:',
             includedDesigns: 'Diseños:', createdBy: 'Creado por el diseño:', formedFrom: 'Formado a partir de parcelas catastrales:',
             formedParcels: 'Forma parcelas:', affectsParcels: 'Usa parcelas catastrales:', designsOnParcel: 'Diseños en esta parcela:',
-            chooseInstance: 'Elegir elemento', chooseDesign: 'Diseño a consultar', chooseBuilding: 'Edificio a consultar',
+            chooseInstance: 'Elegir elemento', chooseDesign: 'En la ubicación donde has hecho clic hay varios diseños. Selecciona cuál consultar:', chooseBuilding: 'Edificio a consultar',
             chooseParcel: 'Parcela a consultar', choosePlan: 'Plan a consultar', chooseAgreement: 'Acuerdo a consultar',
-            choosePermitted: 'Volumen permitido a consultar',
-            designChoicesHint: 'Estos diseños se superponen aquí o utilizan esta parcela. Selecciona uno para ver sus detalles.'
+            choosePermitted: 'Volumen permitido a consultar'
         }
     };
     const keys = Object.freeze({
@@ -154,14 +150,6 @@
         });
         select.selectedIndex = Number.isInteger(section.selectedIndex) ? section.selectedIndex : 0;
         wrap.append(caption, select);
-        if (section.kind === 'designs') {
-            const hint = doc.createElement('small');
-            hint.id = `${id}-hint`;
-            hint.className = 'click-stack__selector-hint';
-            hint.textContent = translate('designChoicesHint', win);
-            select.setAttribute('aria-describedby', hint.id);
-            wrap.appendChild(hint);
-        }
         return wrap;
     }
 
