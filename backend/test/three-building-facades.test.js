@@ -184,6 +184,12 @@ describe('procedural building facades', () => {
         facades.setState(state, true, 'stone');
         expect(s1.uniforms.cbFacadeEnabled.value).toBe(1);
         expect(s2.uniforms.cbFacadeStyleOverride.value).toBe(1);
+        for (const preset of ['glass-small', 'glass-medium', 'glass-large']) {
+            facades.setState(state, true, preset);
+            expect(first.transparent).toBe(false);
+            expect(first.opacity).toBe(1);
+            expect(first.depthWrite).toBe(true);
+        }
         facades.setState(state, false, 'mixed');
         expect(s1.uniforms.cbFacadeEnabled.value).toBe(0);
         expect(s2.uniforms.cbFacadeStyleOverride.value).toBe(-1);

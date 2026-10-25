@@ -194,31 +194,15 @@ vec3 cbFacadeCurtainWall(int style) {
     glass *= 1.0 + (variation - 0.5) * 0.06 * detail;
     return mix(cbFacadeTrims[style] * 0.65, glass, pane);
 }
-// An illustrative sky and skyline reflected in the surface normal. The reflection moves
-// with the camera and strengthens at grazing angles; no scene capture or extra draw pass.
+// Broad sky sheen has no architectural detail: the only window grid is the wall-local one.
+// Grazing-angle reflectance and the lighting pass's specular highlights supply the glass sheen.
 vec3 cbFacadeReflection(vec3 lit, vec3 viewDirection, vec3 surfaceNormal) {
     if (cbFacadeGlazing <= 0.0) return lit;
     vec3 ray = normalize(vec3(vec4(reflect(-viewDirection, surfaceNormal), 0.0) * viewMatrix));
-    float elevation = ray.z;
-    vec3 sky = mix(vec3(0.72, 0.82, 0.94), vec3(0.16, 0.38, 0.72), smoothstep(0.0, 0.8, elevation));
-    float clouds = smoothstep(0.2, 0.8, sin(ray.x * 7.0 + sin(ray.y * 8.0)) * 0.25
-        + sin(ray.y * 13.0 + ray.x * 4.0) * 0.15 + 0.5);
-    sky = mix(sky, vec3(0.92, 0.95, 1.0), clouds * 0.55);
-    float azimuth = atan(ray.y, ray.x) * 24.0;
-    float skyline = -0.04 + cbFacadeNoise(vec2(floor(azimuth), 1.7)) * 0.18;
-    float city = 1.0 - smoothstep(skyline - 0.015, skyline + 0.015, elevation);
-    vec2 windows = vec2(azimuth * 5.0, elevation * 42.0);
-    vec2 windowFootprint = max(fwidth(windows), vec2(0.0001));
-    float reflectedWindows = cbFacadeJointCoverage(windows.x, windowFootprint.x, 0.16)
-        * cbFacadeJointCoverage(windows.y, windowFootprint.y, 0.22);
-    float towerTone = cbFacadeNoise(vec2(floor(azimuth), 4.1));
-    vec3 buildings = mix(vec3(0.12, 0.16, 0.19), vec3(0.42, 0.52, 0.61), towerTone);
-    buildings *= 0.58 + reflectedWindows * 0.62;
-    vec3 environment = mix(sky, buildings, city);
+    vec3 sky = mix(vec3(0.18, 0.23, 0.28), vec3(0.65, 0.80, 0.96), smoothstep(-0.35, 0.65, ray.z));
     float fresnel = pow(1.0 - clamp(dot(viewDirection, surfaceNormal), 0.0, 1.0), 5.0);
     vec3 tint = mix(vec3(1.0), clamp(cbFacadeGlassColor * 2.0, 0.15, 1.0), 0.35);
-    vec3 reflection = environment * tint;
-    return mix(lit, mix(lit * 0.45, reflection, 0.58 + 0.36 * fresnel), cbFacadeGlazing);
+    return mix(lit, sky * tint, cbFacadeGlazing * (0.20 + 0.50 * fresnel));
 }
 // A shallow segmental arch, clipped to the same rectangle as ordinary windows.
 float cbFacadeOpening(vec2 p, vec2 halfSize, vec2 aa, float arched) {
@@ -373,7 +357,7 @@ vec3 cbFacadeColor(vec3 original) {
             });
             patchShader(shader);
         };
-        material.customProgramCacheKey = () => priorKey + '|cb-facades-v6';
+        material.customProgramCacheKey = () => priorKey + '|cb-facades-v7';
         material.needsUpdate = true;
         return material;
     }
