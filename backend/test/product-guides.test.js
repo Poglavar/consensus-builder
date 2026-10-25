@@ -17,14 +17,14 @@ const guidePairs = [
 ];
 const guidePages = guidePairs.flat();
 const clips = ['block', 'row', 'detached', 'freeform', 'readjustment', 'park', 'square', 'lake', 'road', 'track', 'station', 'counterproposal']
-    .map(name => `videos/howto/2026-10-19/${name}`);
+    .map(name => `videos/howto/2026-10-26/${name}`);
 
 describe('public product guides', () => {
     it.each(['how-to-use.html', 'kako-koristiti.html'])('%s explains the current proposal lifecycle', (name) => {
         const html = readFrontend(name);
 
         expect(html).toContain('site-intro-parcels.webp');
-        expect(html).toMatch(/local design applied to the map|lokalni prijedlog koji je već primijenjen/);
+        expect(html).toMatch(/local design applied to the map|lokalni dizajn koji je već primijenjen/);
         expect(html).not.toMatch(/map doesn't change until|karta se ne mijenja dok/);
         expect(html).not.toMatch(/id="drafts"|id="skice"/);
     });
@@ -44,10 +44,10 @@ describe('public product guides', () => {
         expect(html).not.toMatch(/<td>\s*Offer\s*<\/td>|Owner deal|Owner vote|Fork proposal|Propose here|Select more|selection tray|Propose tab|Use as site/i);
     });
 
-    it.each(['how-to-use-road.html', 'kako-koristiti-cesta.html'])('%s describes finished roads as proposals', (name) => {
+    it.each(['how-to-use-road.html', 'kako-koristiti-cesta.html'])('%s describes finished roads as local designs', (name) => {
         const html = readFrontend(name);
 
-        expect(html).toMatch(/creates a local proposal and applies it immediately|stvara lokalni prijedlog i odmah ga primjenjuje/);
+        expect(html).toMatch(/creates a local design and applies it immediately|stvara lokalni dizajn i odmah ga primjenjuje/);
         expect(html).not.toMatch(/built road is not yet a proposal|Izgrađena cesta još nije prijedlog/);
     });
 
@@ -62,7 +62,7 @@ describe('public product guides', () => {
     // composition and no longer contrast it with a named plan.
     it.each([
         ['how-to-use.html', 'The shared composition preserves the applied set and its dependencies.', 'An execution status or source event is evidence of a recorded state; it does not prove payment, legal registration or physical construction.'],
-        ['kako-koristiti.html', 'Dijeljena kompozicija čuva skup primijenjenih prijedloga i njihove ovisnosti.', 'Status izvršenja ili izvorni događaj dokaz je zabilježenog stanja; ne dokazuje plaćanje, pravnu registraciju ni fizičku izgradnju.']
+        ['kako-koristiti.html', 'Dijeljena kompozicija čuva skup primijenjenih dizajna i njihove ovisnosti.', 'Status izvršenja ili izvorni događaj dokaz je zabilježenog stanja; ne dokazuje plaćanje, pravnu registraciju ni fizičku izgradnju.']
     ])('%s distinguishes local sharing and execution evidence', (name, sharing, evidence) => {
         const html = readFrontend(name);
         expect(html).toContain(sharing);

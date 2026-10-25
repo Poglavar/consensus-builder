@@ -1,0 +1,47 @@
+1
+00:00:00,000 --> 00:00:02,659
+Find a published design in Designs and open
+
+2
+00:00:02,728 --> 00:00:05,851
+Details to inspect its source information.
+
+3
+00:00:06,201 --> 00:00:08,430
+Apply the design to inspect it on the
+
+4
+00:00:08,477 --> 00:00:12,041
+map, then open Edit geometry to develop an
+
+5
+00:00:12,087 --> 00:00:13,213
+alternative.
+
+6
+00:00:13,568 --> 00:00:17,121
+Change the geometry, then review and accept the
+
+7
+00:00:17,167 --> 00:00:18,676
+revised land take.
+
+8
+00:00:19,034 --> 00:00:22,413
+Save the revised design as an alternative. The
+
+9
+00:00:22,471 --> 00:00:25,025
+published source remains its reference.
+
+10
+00:00:25,375 --> 00:00:28,452
+The draft keeps its source link. Inspect the
+
+11
+00:00:28,510 --> 00:00:32,120
+alternative in 3D before sharing it or adding
+
+12
+00:00:32,167 --> 00:00:33,409
+it to an agreement.

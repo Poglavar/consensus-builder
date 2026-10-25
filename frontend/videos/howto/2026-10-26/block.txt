@@ -1,0 +1,11 @@
+Click land to open Design, then choose Block.
+
+Choose the whole block, then open the Block rule for those parcels.
+
+Set setbacks, building width and height, and choose what the rule allows.
+
+Done saves a local draft. Applied shows which design is active in this map.
+
+Switch to 3D to compare the built, planned and proposed space.
+
+The highlighted model and comparison panel show the impact of your rule.

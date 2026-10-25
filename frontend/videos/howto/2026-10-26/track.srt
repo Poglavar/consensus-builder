@@ -1,0 +1,27 @@
+1
+00:00:00,000 --> 00:00:02,519
+Select a site in Design and choose Track
+
+2
+00:00:02,752 --> 00:00:04,505
+to draw a rail alignment.
+
+3
+00:00:04,867 --> 00:00:07,862
+Choose the design speed. This sets the minimum
+
+4
+00:00:07,932 --> 00:00:09,883
+curve radius for the alignment.
+
+5
+00:00:10,233 --> 00:00:13,437
+Draw the route with clicks, then choose Finish.
+
+6
+00:00:13,800 --> 00:00:17,469
+Review surface conflicts, then inspect the alignment in
+
+7
+00:00:17,585 --> 00:00:18,444
+3D.
