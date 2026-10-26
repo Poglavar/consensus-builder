@@ -13,7 +13,9 @@ not active credentials, source configuration, binding evidence or ownership.
 Export uses `DesignRecord.published`, not a browser-storage dump or the publication API.
 No URL is changed and nothing is pinned or indexed. Self-contained model data changes the
 exported canonical content, so it has a new CID. Otherwise design CIDs are retained.
-Origin CIDs record lineage, not rendering dependencies that must be fetched.
+Origin CIDs record lineage, not rendering dependencies that must be fetched. Model downloads use
+the same backend asset resolver as rendering, including the selected local backend and stored
+development origins; absolute public model URLs retain their origin.
 
 Import validates the entire envelope before mutation. `PlanFileUI.commitImport` uses
 `ProposalManager.runParcelMutation` with `_mapMutation:false`. Draft definitions and
@@ -35,7 +37,12 @@ existing granular authoring primitives; no new high-level editing tool or browse
 is needed. `expectedCid` and publication confirmation retain their existing meanings. `ugt_export_draft`
 continues to retain exact private artifacts; it is a different transport from the browser download.
 The named-plan test covers importing the portable envelope, inspecting members and revising its title
-without network writes. Shared authoring operations preserve their existing validation.
+without network writes. Shared authoring operations preserve their existing validation. Portable
+binding namespaces pass through the existing MCP source resolver before becoming API selectors
+(`hr-cadastre` uses the `oss-wfs` gateway). Regression coverage exports a browser record, opens and
+edits it through MCP, then checks the source passed to publication; other source IDs stay unchanged.
+The envelope and its retained source observations are not rewritten, so no schema or discovery
+change is needed.
 
 ## Verification
 
@@ -44,7 +51,10 @@ From `backend`, run the focused Vitest suites for `plan-file`, `proposal-storage
 `proposal-import-normalizer`, `proposals-sharing-utils` and `busy-control`.
 The isolated browser fixture in `e2e/tests/plan-file.spec.ts` exercises download, preview/cancel,
 malformed and repeated selection, busy restoration and import confirmation. Its fake mutation
-boundary tests UI behavior, not production datasets or a live database.
+boundary tests UI behavior, not production datasets or a live database. Model-download checks use
+the real browser asset resolver with a different API origin, a stored development origin and an
+absolute public URL. They verify the downloaded embedded bytes and busy-control recovery, and all
+file flows fail on uncaught page errors.
 
 The focused `Portable plan files` pull-request workflow runs these unit/integration suites and
 the isolated Chromium file flows using the repository lockfiles.

@@ -1,7 +1,15 @@
 // Isolated real-browser file/UI checks. No production plans, source API or wallet is contacted.
-import { test, expect } from '@playwright/test';
+import { test as base, expect } from '@playwright/test';
 import path from 'node:path';
 const root = path.resolve(__dirname, '../../frontend');
+const test = base.extend<{ checkPageErrors: void }>({
+  checkPageErrors: [async ({ page }, use) => {
+    const errors: string[] = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await use();
+    expect(errors, 'Uncaught browser errors').toEqual([]);
+  }, { auto: true }],
+});
 
 test.beforeEach(async ({ page }) => {
   await page.route('http://localhost/plan-file-fixture', route => route.fulfill({ contentType: 'text/html', body: '<div id="plan-file-actions"></div><div id="downloads"></div>' }));
@@ -9,7 +17,7 @@ test.beforeEach(async ({ page }) => {
   await page.evaluate(() => { (window as any).MapHighlight = { color: '#469973' }; });
   for (const file of ['vendor/noble-hashes-1.8.0/sha256.js', 'vendor/ipfs-file-cid/ipfs-file-cid.js', 'js/cid.js',
     'js/proposals/authored-record.js', 'js/proposals/formation-depth.js', 'js/design-record.js', 'js/plan-record.js',
-    'js/plan-file.js', 'js/ui/busy-control.js', 'js/ui/modal-escape.js', 'js/ui/dialogs.js', 'js/proposals/dialog-share.js']) {
+    'js/plan-file.js', 'js/data-source.js', 'js/ui/busy-control.js', 'js/ui/modal-escape.js', 'js/ui/dialogs.js', 'js/proposals/dialog-share.js']) {
     await page.addScriptTag({ path: path.join(root, file) });
   }
   await page.evaluate(() => {
@@ -106,3 +114,55 @@ test('JSON and GIS downloads use the selected scope and downloads remain repeata
     await expect(page.getByRole('button', { name: label, exact: true })).toBeEnabled();
   }
 });
+
+for (const [label, reference, expectedUrl] of [
+  ['served path', '/uploads/models/portable.glb', 'http://localhost:4020/uploads/models/portable.glb'],
+  ['old development origin', 'http://localhost:4999/uploads/models/portable.glb', 'http://localhost:4020/uploads/models/portable.glb'],
+  ['public absolute URL', 'https://models.example/uploads/models/portable.glb', 'https://models.example/uploads/models/portable.glb'],
+]) {
+  test(`model download resolves ${label} and embeds the fetched bytes`, async ({ page }) => {
+    // A self-contained GLB with an empty scene is enough to check lossless file transport.
+    const json = Buffer.from(JSON.stringify({ asset: { version: '2.0' }, scene: 0, scenes: [{ nodes: [] }] }));
+    const jsonLength = Math.ceil(json.length / 4) * 4;
+    const glb = Buffer.alloc(20 + jsonLength, 32);
+    glb.writeUInt32LE(0x46546c67, 0); glb.writeUInt32LE(2, 4); glb.writeUInt32LE(glb.length, 8);
+    glb.writeUInt32LE(jsonLength, 12); glb.writeUInt32LE(0x4e4f534a, 16); json.copy(glb, 20);
+    const requests: string[] = [];
+    let release!: () => void;
+    const responseReady = new Promise<void>(resolve => { release = resolve; });
+    await page.route('**/uploads/models/portable.glb', async route => {
+      requests.push(route.request().url());
+      await responseReady;
+      await route.fulfill({ body: glb, contentType: 'model/gltf-binary', headers: { 'Access-Control-Allow-Origin': '*' } });
+    });
+    await page.evaluate(modelUrl => {
+      const w = window as any;
+      const url = new URL(location.href);
+      url.searchParams.set('backend', 'http://localhost:4020');
+      history.replaceState(null, '', url);
+      w.sample = { ...w.sample, goal: 'single', structureProposal: undefined, buildingProposal: {},
+        geometry: { buildings: [{ type: 'Feature', geometry: w.sample.site, properties: { modelUrl } }] } };
+      document.getElementById('downloads')!.appendChild(w.PlanFileUI.controls({ getRecords: () => [w.sample] }));
+    }, reference);
+    const button = page.getByRole('button', { name: 'Download editable plan', exact: true });
+    const downloading = page.waitForEvent('download');
+    try {
+      await button.click();
+      await expect.poll(() => requests.length).toBe(1);
+      await expect(button).toHaveAttribute('aria-busy', 'true');
+      await expect(button).toBeDisabled();
+    } finally { release(); }
+    const download = await downloading;
+    const stream = await download.createReadStream(); const chunks: Buffer[] = [];
+    for await (const chunk of stream!) chunks.push(Buffer.from(chunk));
+    const file = JSON.parse(Buffer.concat(chunks).toString());
+    expect(requests).toEqual([expectedUrl]);
+    expect(download.suggestedFilename()).toBe('plan.ugt.json');
+    expect(file.designs[0].content.geometry.buildings[0].properties.modelUrl).toBe('data:model/gltf-binary;base64,' + glb.toString('base64'));
+    expect(await page.evaluate(file => { const w = window as any; return w.PlanFile.parse(JSON.stringify(file)).schema; }, file)).toBe('ugt-plan-file/v1');
+    expect(await page.evaluate(() => (window as any).sample.geometry.buildings[0].properties.modelUrl)).toBe(reference);
+    expect(await page.evaluate(() => (window as any).errors)).toEqual([]);
+    await expect(button).toBeEnabled();
+    await expect(button).not.toHaveAttribute('aria-busy', 'true');
+  });
+}

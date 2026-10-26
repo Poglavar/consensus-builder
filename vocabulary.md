@@ -156,7 +156,7 @@ A land unit represented by a particular cadastral, tax or other parcel provider.
 
 The provider of parcel identities and geometry, identified by `sourceId`. Jurisdiction and legal authority describe the source but do not replace its identity. A custom source descriptor identifies the selected service and its interpretation. Map lookup and server-side site binding use that same selected parcel source.
 
-The frontend consumer owns source configuration and sends its selected source explicitly. Backend services validate and serve that selection; they do not infer a city default.
+The frontend consumer owns source configuration and sends its selected source explicitly. Backend services validate and serve that selection; they do not infer a city default. A retained cadastral namespace and the API gateway selector can have different identifiers while referring to the same parcel source; choosing a gateway does not rewrite the retained source observation.
 
 ### Source-qualified parcel reference
 

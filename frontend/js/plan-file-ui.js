@@ -23,7 +23,7 @@
             win.setTimeout(() => win.URL.revokeObjectURL(url), 1000);
         }
         async function fetchModel(raw) {
-            const url = new URL(raw, win.location.href);
+            const url = new URL(win.resolveBackendAssetUrl(raw), win.location.href);
             if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) throw new Error(t('modelUrl', 'The model URL cannot be downloaded safely.'));
             const response = await win.fetch(url.href, { credentials: 'omit', referrerPolicy: 'no-referrer', signal: AbortSignal.timeout(30000) });
             if (!response.ok) throw new Error(t('modelFailed', 'A model could not be downloaded. The plan file was not created.'));

@@ -1,9 +1,11 @@
 // Check immutable named-plan composition, explicit selection and verified dependency publication.
 import { describe, expect, it, vi } from 'vitest';
+import { createRequire } from 'node:module';
 import { createMcpNamedPlanTools } from '../agents/mcp-named-plans.js';
 import { createMcpDraftTools } from '../agents/mcp-drafts.js';
 import { appTurf as turf, intentDesign } from '../agents/mcp-geometry.js';
 import { designObject, cidOfObject } from '../agents/agreement-objects.js';
+const File = createRequire(import.meta.url)('../../frontend/js/plan-file.js');
 const box = w => ({type:'Polygon',coordinates:[[[w,51.5],[w+.0005,51.5],[w+.0005,51.5005],[w,51.5005],[w,51.5]]]});
 const view = {at:'51.501,-0.099,17',mode:'model',city:'london',language:'en',settings:{existing:'on'}};
 function fixture() {
@@ -32,8 +34,6 @@ function fixture() {
 }
 describe('first-class named plans',()=>{
     it('opens, inspects and edits a portable plan with the browser validator and no publication', async () => {
-        const { createRequire } = await import('node:module');
-        const File = createRequire(import.meta.url)('../../frontend/js/plan-file.js');
         const { tools, tower, park, calls } = fixture();
         const draft = await tools.draftPlan({ title: 'Portable', designs: [tower, park], view });
         const ordered = [tower, park].sort((a,b) => a.cid.localeCompare(b.cid));
@@ -49,6 +49,28 @@ describe('first-class named plans',()=>{
         expect(revised.plan.title).toBe('Edited portable plan'); expect(file.plan.title).toBe('Portable'); expect(calls).toEqual([]);
         const bad = structuredClone(file); bad.designs[0].content.title = 'Tampered';
         await expect(tools.getPlan({ plan: bad })).rejects.toThrow(/CID/);
+    });
+    it.each([
+        ['hr-cadastre', 'oss-wfs'],
+        ['gb-hmlr-city-of-london', 'gb-hmlr-city-of-london']
+    ])('retains exported source %s through MCP editing and publishes through %s', async (sourceId, gatewayId) => {
+        const { tools, tower, publishDesign, calls } = fixture();
+        const file = await File.create([{
+            ...tower.content, createdAt: tower.content.authoredAt,
+            binding: { parcelSource: { sourceId, snapshotId: 'release-1' } }
+        }], { title: 'Portable source', view });
+        const original = structuredClone(file);
+        const opened = await tools.getPlan({ plan: file });
+        expect(opened.designs[0]).toMatchObject({ cid: tower.cid, content: tower.content, parcelSourceId: gatewayId });
+        const revised = await tools.editPlan({ plan: opened, expectedCid: opened.cid, title: 'Revised portable source' });
+        expect(revised.designs[0].parcelSourceId).toBe(gatewayId);
+        expect(calls).toEqual([]);
+        const published = await tools.publishPlan({ plan: revised, expectedCid: revised.cid, confirm: true });
+        expect(publishDesign).toHaveBeenCalledExactlyOnceWith({
+            design: tower.content, parcelSourceId: gatewayId, expectedCid: tower.cid, confirm: true
+        });
+        expect(published.publication).toBe('published');
+        expect(file).toEqual(original);
     });
     it('drafts plan/v1 without ground or agreement terms and preserves source metadata',async()=>{
         const {tools,tower,park,calls}=fixture();

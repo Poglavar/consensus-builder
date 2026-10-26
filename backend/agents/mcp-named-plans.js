@@ -6,6 +6,7 @@ import { editedDesign } from './mcp-edit.js';
 import { validateTrackDesign } from './mcp-constructors.js';
 import { previewArtifact } from './mcp-preview.js';
 import { trustedMetadata } from './mcp-results.js';
+import { parcelSourceIdOf } from './mcp-read-tools.js';
 const require = createRequire(import.meta.url);
 const PlanRecord = require('../../frontend/js/plan-record.js');
 const PlanFile = require('../../frontend/js/plan-file.js');
@@ -33,7 +34,7 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
         if (artifact?.schema === PlanFile.SCHEMA) {
             const file = PlanFile.parse(JSON.stringify(artifact));
             artifact = { plan: file.plan, designs: file.designs.map(row => ({ ...row,
-                parcelSourceId: file.designSources[row.cid]?.sourceId || null })) };
+                parcelSourceId: parcelSourceIdOf({ binding: { parcelSource: file.designSources[row.cid] } }) || null })) };
         }
         const reference = typeof value === 'string' ? value : value?.draftRef;
         if (reference) {
