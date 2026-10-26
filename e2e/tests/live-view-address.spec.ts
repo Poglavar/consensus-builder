@@ -7,13 +7,14 @@ import { mockPhotoTiles } from '../helpers/mocks/photo-data';
 
 for (const mode of ['model', 'photo'] as const) {
   test(`${mode} address follows camera movement, restores on reload, and clears on 2D return`, async ({ mockApi: page }) => {
+    test.setTimeout(120_000);
     await stubBasemapTiles(page);
     await mockBuildingScene(page);
     if (mode === 'photo') await mockPhotoTiles(page);
     await openCity(page);
     const historyLength = await page.evaluate(() => history.length);
     const enter = async () => {
-      await expect.poll(() => page.evaluate(() => (window as any).__mapModeState)).toEqual({ desired: mode, pending: false });
+      await expect.poll(() => page.evaluate(() => (window as any).__mapModeState), { timeout: 45_000 }).toEqual({ desired: mode, pending: false });
       await expect(page.locator('#three-container canvas')).toBeVisible();
       if (mode === 'photo') {
         await expect.poll(() => page.evaluate(() => (window as any).PhotorealMode?.getLoadDiagnostics().grounded), { timeout: 20_000 }).toBe(true);

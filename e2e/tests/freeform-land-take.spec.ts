@@ -138,8 +138,9 @@ test('Done saves the current demolition answer without separate acceptance',asyn
   });
   await page.locator('#single-building-confirm').click();
   await expect(page.locator(editor)).toHaveCount(0);
-  const saved = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((p:any) => p.goal === 'single' && p.applied));
-  expect(saved.buildingProposal.demolishedBuildings.map((building:any) => building.id)).toContain('new-stock');
+  await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
+    .find((p:any) => p.goal === 'single' && p.applied)?.buildingProposal?.demolishedBuildings?.map((building:any) => building.id) || []))
+    .toContain('new-stock');
 });
 test('mobile Done saves without a separate acceptance checkbox',async({mockApi:page})=>{
  await page.setViewportSize({width:390,height:844});
