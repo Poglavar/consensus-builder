@@ -1,5 +1,7 @@
 # Memory
 
+- 2026-10-26: Every Consensus Builder localhost link must explicitly include its verified `backend`, city and location; copy the complete tested URL into the final answer rather than dropping parameters or relying on saved browser settings. Repeated missing-backend links caused building-data fetch failures.
+
 - 2026-10-26: Publish through Filebase by default, retain Pinata as an explicitly selectable reserve, and configure the read gateway independently; preserve CIDs through the provider adapter. Back up and verify the oldest 250 Pinata files before unpinning that exact set.
 
 - 2026-10-25: The user handles outside-pilot recruitment offline. The current betting contract is dated LMSR with independent points and devnet-USDC books: 1,000 starting points, no wallet needed for points, anonymous opaque points credentials, and explicit simulation-run separation. YES requires a valid on-chain execution timestamp no later than the agreement deadline; late execution, expiry, or active status after grace is NO; cancellation is VOID at half-share per side. The LMSR Solana program is in source but not yet deployed; never present devnet-USDC trading as live until verified after deployment. Complete implementation and instrumentation verification before revising the pitch; until outside participants are available, use clearly labelled simulated visitors. San Francisco uses a separate YES/NO bet for each agreement and YES requires execution by the deadline; both or neither may succeed. The pending choice is whether to create clearly labelled devnet demonstrations with simulated rights or prepare agreements for real counterparties.
@@ -893,7 +895,7 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 
 - 2026-10-23: Freeform land take is reviewed per touched live parcel (footprint cut or whole parcel), stored as exact geometry separate from building massing, and shared by formation, demolition and agreement inputs; changed consequences require renewed acceptance.
 
-- 2026-10-23: Before sharing a local preview link, verify its listening checkout, resolved backend and a real source-data response in the browser; include the backend override when the local API is not running.
+- 2026-10-23: Verify a local preview's listening checkout, resolved backend and real source-data responses in the browser; the strengthened 2026-10-26 rule requires an explicit backend parameter in every shared localhost link.
 - 2026-10-23: Built/GDI survey overlays start Off; when shown, use a faint fill with a contrasting border instead of opaque purple footprints.
 
 - 2026-10-23: Remove the experimental Atlas parcel-study editor from the UI, including its entry point and link/draft restoration; retain Permitted envelope inspection and calculations.

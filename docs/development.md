@@ -79,10 +79,16 @@ Verify the served HTML, captions, media content types and byte-range playback af
 
 ## Verified local preview links
 
+Every localhost preview link shared with the user must explicitly include `backend`, `city` and
+the intended location (`at`, plus camera/selection when relevant). This applies even when a local
+API is running. Local pages normally target port 3000 and can retain `cb_dev_backend_base` and a
+city in browser storage; a link must work independently of those saved settings.
+
 Before sharing a preview, check the listening checkout, the browser's `getBackendBase()` and a
-real parcel/building data response. A static page loading successfully is not an API readiness
-check. Local pages normally target port 3000; when no local API is running, supply the supported
-`backend` query override explicitly (for example, the production API for read-only source data).
+real parcel/building data response. A static page loading successfully or a backend health check
+is not a source-data readiness check. Use a verified local API for local backend changes; the
+production API can supply read-only source data. Copy the complete tested URL into the final
+answer and check that its backend parameter survived: do not manually shorten the URL afterward.
 Production read access does not establish write access: the production origin guard rejects uploads
 from localhost. For model uploads and authoring, use this checkout’s local development API and verify
 a real upload returns a retrievable model URL, plus complete building stock for land-take review.

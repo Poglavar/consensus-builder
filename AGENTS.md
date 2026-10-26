@@ -12,6 +12,18 @@ Make changes in small, verified steps; do not add legacy/new flow branches, comp
 or migrations solely to retain old experimental records. Record intentional contract breaks and
 recreate affected records when needed instead of maintaining parallel implementations.
 
-Before sharing a local preview URL, verify the listening checkout, the browser's resolved backend,
-and real source-data responses for the intended flow, including its required capabilities. A frontend
-HTTP 200 alone is insufficient. If no local API is running, include the supported `backend` URL override explicitly and verify it in the browser.
+## Local preview links — required
+
+Every Consensus Builder localhost link given to the user MUST explicitly include the verified
+`backend` query parameter, even when a local API is running or the browser has a saved override.
+Include `city` and the intended location (`at`, plus camera/selection when relevant). Never rely on
+port 3000 defaults, a saved city, or `cb_dev_backend_base` from a previous browser session.
+
+Before sharing, verify the listening checkout, the browser's resolved `getBackendBase()`, and real
+source-data responses for the intended flow, including required write capabilities. A frontend
+HTTP 200 or backend health check alone is insufficient. Use the local API for flows needing local
+backend changes or uploads; a verified production API may serve read-only source data.
+
+Copy the complete tested URL into the final response. Do not shorten it by dropping `backend`,
+`city`, or other required query parameters. Check the final link itself, not just the browser URL
+used during testing. See [docs/development.md](docs/development.md#verified-local-preview-links).
