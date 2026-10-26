@@ -108,14 +108,14 @@ describe('Data & maintenance section', () => {
         }
     });
 
-    it('keeps only the six Settings groups as accordions and leaves upkeep wrappers flat', () => {
+    it('keeps the eight Settings groups as accordions and leaves upkeep wrappers flat', () => {
         const settings = sheetHtml('settings-sheet');
         const groups = [...settings.matchAll(/<details\b([^>]*)>/g)].flatMap(([, attributes]) => {
             const classes = attributes.match(/\bclass="([^"]*)"/)?.[1].split(/\s+/) || [];
             const section = attributes.match(/\bdata-section="([^"]+)"/)?.[1];
             return classes.includes('accordion-section') && section ? [section] : [];
         });
-        expect(groups).toEqual(['navigation', 'appearance', 'data', 'info', 'game', 'diagnostics']);
+        expect(groups).toEqual(['navigation', 'appearance', 'sources', 'economics', 'data', 'info', 'game', 'diagnostics']);
         const upkeepWrappers = [...settings.matchAll(/<[^>]+data-section="(?:parcels|blocks|roads|proposals)"[^>]*>/g)]
             .map(match => match[0]);
         expect(upkeepWrappers.length).toBeGreaterThanOrEqual(4);
