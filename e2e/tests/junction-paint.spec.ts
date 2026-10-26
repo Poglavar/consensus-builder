@@ -11,6 +11,7 @@ test('a published crossroad edit paints one applied alternative and one junction
   const draw = async (points: number[][], parcelId?: string) => {
     await openParcel(page, 'proposals', parcelId);
     await page.locator('.parcel-transport-btn--road').click();
+    await expect(page.locator('#road-drawing-controls')).toBeVisible();
     for (const [lng, lat] of points) await clickMapPoint(page, lng, lat);
     await page.locator('#finishRoadButton').click();
     await expect(page.locator('#road-drawing-controls')).toBeHidden();
@@ -26,8 +27,9 @@ test('a published crossroad edit paints one applied alternative and one junction
   await page.evaluate(id => {
     const w = window as any;
     const source = w.proposalStorage.getProposal(id);
-    source.published = { cid: w.Cid.cidOfObject({ schema: 'design/v1', title: 'Junction source' }),
+    source.published = { cid: w.DesignRecord.cidOf(source),
       apiBase: 'https://api.example.test', publishedAt: '2026-10-26T00:00:00Z' };
+    w.proposalStorage._indexProposal(source);
     w.proposalStorage.save();
   }, sourceId);
   await showProposal(page, sourceId);
