@@ -1,5 +1,7 @@
 # Memory
 
+- 2026-10-26: Do not add study/concept, illustrative, not-adopted or planning-permission disclaimers to authored plans or UI copy; the tool is already for studies and concepts. Use plain titles and descriptions.
+
 - 2026-10-26: Every Consensus Builder localhost link must explicitly include its verified `backend`, city and location; copy the complete tested URL into the final answer rather than dropping parameters or relying on saved browser settings. Repeated missing-backend links caused building-data fetch failures.
 
 - 2026-10-26: Publish through Filebase by default, retain Pinata as an explicitly selectable reserve, and configure the read gateway independently; preserve CIDs through the provider adapter. Back up and verify the oldest 250 Pinata files before unpinning that exact set.

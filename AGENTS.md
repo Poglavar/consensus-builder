@@ -12,6 +12,12 @@ Make changes in small, verified steps; do not add legacy/new flow branches, comp
 or migrations solely to retain old experimental records. Record intentional contract breaks and
 recreate affected records when needed instead of maintaining parallel implementations.
 
+## Authored copy
+
+Authored plans and UI copy use plain names and descriptions. Do not add study/concept,
+illustrative, not-adopted or planning-permission disclaimers: the tool is already for studies
+and concepts, as the user explicitly requested.
+
 ## Local preview links — required
 
 Every Consensus Builder localhost link given to the user MUST explicitly include the verified
