@@ -1,4 +1,26 @@
 {
+    "planFile": {
+        "modelUrl": "URL modela ne može bezbedno da se preuzme.",
+        "modelFailed": "Model nije mogao da se preuzme. Datoteka plana nije napravljena.",
+        "modelLarge": "Model je prevelik za prenosnu datoteku plana.",
+        "missingMembers": "Neki uvezeni dizajni uklonjeni su sa ovog uređaja. Ponovo uvezite datoteku da biste ih vratili.",
+        "tooLarge": "Datoteke plana ograničene su na 32 MiB.",
+        "json": "Preuzmi plan za uređivanje",
+        "geojson": "Preuzmi GeoJSON",
+        "import": "Uvezi datoteku plana",
+        "importedPlans": "Uvezeni planovi",
+        "help": "Formati datoteka i ograničenja",
+        "design": "Preuzmi dizajn",
+        "review": "Pregled datoteke plana",
+        "cancel": "Odustani",
+        "importDrafts": "Uvezi kao nacrte",
+        "imported": "Plan je uvezen",
+        "open": "Otvori uvezeni plan",
+        "noImports": "Na ovom uređaju nema uvezenih planova.",
+        "preview": "„{{title}}”: {{count}} dizajna. Uvoz dodaje lokalne, neprimenjene nacrte i čuva članove i pogled plana. Postojeći rad ostaje sačuvan. Sporazumi, vlasništvo i potpisi se ne uvoze.",
+        "location": "Sačuvana lokacija (širina, dužina, zum): {{at}}",
+        "importedBody": "Dizajni su sačuvani kao lokalni nacrti. Otvorite uvezeni plan za pregled članova, ponovno preuzimanje ili objavu veze."
+    },
     "workspace": {
         "blocked": {
             "title": "Radni prostor je već otvoren u drugoj kartici",

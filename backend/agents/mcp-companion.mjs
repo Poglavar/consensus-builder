@@ -105,7 +105,7 @@ export function registerMcpCompanion(server, { actions, handler, readOnly, disco
     const view = createNamedPlanViewSchema();
     add('ugt_draft_plan', 'Create a private named plan from design references and a title. No agreement, rights snapshot or complete cadastre is required. A view is derived when omitted.',
         { designs: z.array(designInput).min(1).max(1000), title: z.string().trim().min(1).max(160), view: view.optional() }, 'draftPlan');
-    add('ugt_get_plan', 'Open a named plan/v1 by CID, /plans URL or private draftRef, with exact members and preview URL.', { plan: designInput }, 'getPlan');
+    add('ugt_get_plan', 'Open a named plan/v1 by CID, /plans URL, private draftRef or parsed ugt-plan-file/v1 JSON, with exact members and preview URL. Portable files are validated with the browser codec and remain private.', { plan: designInput }, 'getPlan');
     add('ugt_validate_plan', 'Validate canonical design geometry, retained constraints, building overlaps and station attachments in a named plan. Returns affected refs and issues. Source coverage, existing buildings and statutory compliance remain unknown unless separately assessed.', { plan: designInput }, 'validatePlan');
     add('ugt_inspect_plan', 'Inventory a named plan and its designs/buildings. Use returned explicit refs to select objects for edits. Filters do not mutate the plan.', { plan: designInput, ...inventory }, 'inspectPlan');
     add('ugt_edit_plan', 'Create an immutable named-plan revision: add/remove/replace/edit/modify designs, rename the plan or replace its saved view. Use expectedCid and explicit inspected refs. Retain the old draftRef for undo.',

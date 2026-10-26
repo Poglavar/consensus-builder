@@ -10,6 +10,7 @@ const steps = [
     'Use ugt_list_sources for the relevant location and abstraction. Coverage, source identity and missing evidence stay explicit.',
     'Create designs privately, then ugt_draft_plan with their references and a title. A named plan does not need agreement terms.',
     'Inspect objects with ugt_inspect_plan, then edit explicit refs with expectedCid. Retain the prior draftRef for undo.',
+    'Portable ugt-plan-file/v1 JSON can be passed as plan to ugt_get_plan, ugt_inspect_plan and ugt_edit_plan. It embeds canonical plan/v1 and design/v1 content; importing conveys no publication or consent.',
     'Validate and compare the result, render a preview, and show its URL. An unavailable source is not evidence of empty land.',
     'When publication is authorized, publish the exact reviewed reference and expectedCid. Return the verified permanent URL.',
     'Use agreement tools only for allocations and decision rules. Assemble agreements before publication because roads may be reconnected.'
