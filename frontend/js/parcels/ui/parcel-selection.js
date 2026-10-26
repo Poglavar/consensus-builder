@@ -6,6 +6,7 @@
     // A tool or editor that owns map clicks while it is open; a parcel click (and a box selection,
     // ui/box-select.js) then does nothing.
     function parcelClicksOwnedElsewhere() {
+        if (global.roadDrawingMode) return true;
         if (global.measureMode) return true;
         // Pinpoint owns the click: it reports what is on the ground there ("At this spot"); a parcel
         // menu opening on top of that answer was noise.

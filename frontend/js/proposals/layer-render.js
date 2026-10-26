@@ -597,7 +597,7 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
                 onClick: standsOnMap ? null : event => {
                     // A selected preview is an interaction surface, not a change to the fabric.
                     // Editing tools retain the click through normal Leaflet map bubbling.
-                    if (window.MapPick?.active() || window.measureMode || window.__mapEditLock?.isHeld()
+                    if (window.roadDrawingMode || window.MapPick?.active() || window.measureMode || window.__mapEditLock?.isHeld()
                         || window.isParcelDrawingModeActive?.() || window.pinpointToolIsActive?.()) return;
                     L.DomEvent.stopPropagation(event);
                     const panel = document.getElementById('proposal-details-panel');

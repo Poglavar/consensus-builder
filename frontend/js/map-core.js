@@ -871,7 +871,7 @@ function buildingLayerOptions() {
             // A building click is a map click like any other: the click stack collects everything
             // under the point (click-stack.md), the building being one of its sections.
             layer.on('click', event => {
-                if (window.__mapEditLock?.isHeld()) return;
+                if (window.roadDrawingMode || window.__mapEditLock?.isHeld()) return;
                 L.DomEvent.stopPropagation(event);
                 window.ClickStack.handleClick(event.latlng);
             });
