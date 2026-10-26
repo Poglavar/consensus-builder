@@ -3,6 +3,8 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const geometry = require('../../frontend/js/corridor-geometry.js');
+const planOrder = require('../../frontend/js/proposals/plan-order.js');
+const turf = require('@turf/turf');
 const authoring = require('../../frontend/js/proposals/corridor-authoring.js');
 const { ProposalManager } = require('../../frontend/js/proposal-manager.js');
 
@@ -121,20 +123,59 @@ function managerHarness(existing, derive) {
     };
     const browserRoot = {
         CorridorAuthoring: authoring,
-        CorridorGeometry: geometry
+        CorridorGeometry: geometry,
+        __planOrder: planOrder
     };
     installGlobal('window', browserRoot);
+    installGlobal('turf', turf);
     installGlobal('proposalStorage', storage);
     installGlobal('setProposalApplied', (record, applied) => { record.applied = applied === true; });
     const manager = {
         createCorridorProposalAtomically: ProposalManager.createCorridorProposalAtomically,
         _createCorridorProposalTransactionBody: ProposalManager._createCorridorProposalTransactionBody,
+        _collectAppliedAlternativesForExplicitApply: ProposalManager._collectAppliedAlternativesForExplicitApply,
+        _standDownAppliedRivals: ProposalManager._standDownAppliedRivals,
         _enqueueFabricChange: operation => operation(),
         rematerializeCorridorScope: derive,
         _clearLastApplyFailure: vi.fn(),
         _refreshUIAfterProposalChange: vi.fn()
     };
     return { manager, records, storage, addProposal };
+}
+
+function publishedRevisionFixture() {
+    const polygon = (west, south, east, north) => ({
+        type: 'Polygon',
+        coordinates: [[[west, south], [east, south], [east, north], [west, north], [west, south]]]
+    });
+    const sourceLand = polygon(0, 0, 10, 10);
+    const revisionLand = polygon(5, 0, 15, 10);
+    const disjointLand = polygon(30, 30, 40, 40);
+    const source = corridor('published-source', [[P(0, 0), P(0, 10)]], {
+        identity: { published: PUBLISHED }
+    });
+    source.title = 'Digbeth North Street';
+    source.site = clone(sourceLand);
+    source.roadProposal.definition.polygon = clone(sourceLand);
+    const disjoint = corridor('disjoint-source-copy', [[P(30, 30), P(30, 40)]], {
+        identity: { origin: { cid: PUBLISHED.cid } }
+    });
+    disjoint.site = clone(disjointLand);
+    disjoint.roadProposal.definition.polygon = clone(disjointLand);
+    const revision = corridor(null, [[P(0, 0), P(0, 10)]], {
+        identity: {
+            origin: { cid: PUBLISHED.cid },
+            proposalOrigin: {
+                relation: 'revision',
+                source: { kind: 'design', cid: PUBLISHED.cid },
+                title: 'Digbeth North Street'
+            }
+        }
+    });
+    revision.title = 'Digbeth North Street revision';
+    revision.site = clone(revisionLand);
+    revision.roadProposal.definition.polygon = clone(revisionLand);
+    return { source, disjoint, revision, sourceLand, revisionLand, disjointLand };
 }
 
 describe('atomic corridor authoring plan', () => {
@@ -426,6 +467,55 @@ describe('atomic corridor authoring plan', () => {
 });
 
 describe('corridor authoring commit boundary', () => {
+    it('stands down only overlapping published alternatives when a revision is applied', async () => {
+        const { source, disjoint, revision } = publishedRevisionFixture();
+        const archivedSource = clone(source);
+        const derive = vi.fn(async records => {
+            expect(records.map(record => record.proposalId)).toEqual(['new-road', 'published-source']);
+            expect(records.find(record => record.proposalId === 'published-source').applied).toBe(false);
+            expect(records.find(record => record.proposalId === 'new-road').applied).toBe(true);
+            return { ok: true, failed: [] };
+        });
+        const { manager, records, addProposal } = managerHarness([source, disjoint], derive);
+
+        const result = await manager.createCorridorProposalAtomically(revision);
+
+        expect(result.ok).toBe(true);
+        expect(result.topology.changedProposalIds).toEqual(['published-source']);
+        expect(addProposal).toHaveBeenCalledWith(expect.any(Object), { emitEvent: false });
+        expect(records.get('new-road').applied).toBe(true);
+        expect(records.get('published-source').applied).toBe(false);
+        expect(records.get('disjoint-source-copy').applied).toBe(true);
+        expect(source).toEqual({ ...archivedSource, applied: false });
+        expect(source.published).toEqual(PUBLISHED);
+        expect(source.roadProposal.definition.polygon).toEqual(archivedSource.roadProposal.definition.polygon);
+        expect(derive).toHaveBeenCalledOnce();
+        expect(manager._refreshUIAfterProposalChange.mock.calls.map(([record]) => record.proposalId))
+            .toEqual(['published-source', 'new-road']);
+    });
+
+    it('restores the published road and removes its revision when derivation fails', async () => {
+        const { source, disjoint, revision } = publishedRevisionFixture();
+        const archivedSource = clone(source);
+        const derive = vi.fn(async () => ({
+            ok: false,
+            failed: [{ reason: 'ground derivation failed' }]
+        }));
+        const { manager, records } = managerHarness([source, disjoint], derive);
+
+        const result = await manager.createCorridorProposalAtomically(revision);
+
+        expect(result).toEqual({
+            ok: false,
+            proposalId: null,
+            reason: 'ground derivation failed'
+        });
+        expect(records.has('new-road')).toBe(false);
+        expect(records.get('published-source')).toBe(source);
+        expect(source).toEqual(archivedSource);
+        expect(disjoint.applied).toBe(true);
+    });
+
     it('updates both road sites to rebuilt junction land before deriving or persisting them', async () => {
         const through = corridor('through', [[P(0, 0), P(0, 10)]]);
         const branch = corridor(null, [[P(5, 5), P(0, 5)]]);

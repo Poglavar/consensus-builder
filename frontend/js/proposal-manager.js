@@ -992,6 +992,20 @@ const ProposalManager = {
 
         try { setProposalApplied(stored, true); } catch (_) { stored.applied = true; }
         store._indexProposal?.(stored);
+        // A saved revision is a deliberate choice of occupied ground. Keep the same measured,
+        // geometry-first rival rule as an explicit Apply: an overlapping published source leaves
+        // the map, while a moved/disjoint source remains available alongside its revision.
+        const stoodDownRecords = this._standDownAppliedRivals(stored, {
+            ...options,
+            replaceOccupiedGround: true
+        }) || [];
+        const changedIds = new Set(changedRecords.map(record => String(record.proposalId)));
+        stoodDownRecords.forEach(record => {
+            const id = String(record?.proposalId || '');
+            if (!id || changedIds.has(id)) return;
+            changedIds.add(id);
+            changedRecords.push(record);
+        });
         const recordsMs = _now() - recordsStarted;
 
         const label = stored.title || stored.name || (plan.isTrack ? 'the new track' : 'the new road');

@@ -976,6 +976,9 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
     // its neighbours. Plan and publish these changes inside this same parcel mutation.
     const junctionPeersBefore = new Map();
     const junctionPeersAfter = new Map();
+    const stoodDownRevisions = sourceWasApplied && typeof ProposalManager._standDownAppliedRivals === 'function'
+        ? ProposalManager._standDownAppliedRivals(sourceProposal, { _parcelMutation: mutation, replaceOccupiedGround: true })
+        : [];
     if (sourceWasApplied) {
         const authoring = window.CorridorAuthoring
             || (typeof require === 'function' ? require('./proposals/corridor-authoring.js') : null);
@@ -1020,7 +1023,7 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
             .map(id => store.getProposal(id))
             .filter(Boolean);
         const derived = await ProposalManager.rematerializeCorridorScope?.(
-            [sourceBefore, ...junctionPeersBefore.values(), ...editedRecords, ...junctionPeersAfter.values()],
+            [sourceBefore, ...stoodDownRevisions, ...junctionPeersBefore.values(), ...editedRecords, ...junctionPeersAfter.values()],
             { _parcelMutation: mutation }
         );
         if (!derived || derived.ok !== true) {
