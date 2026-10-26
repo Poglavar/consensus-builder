@@ -99,6 +99,7 @@
             section.appendChild(heading);
             items.forEach(item => {
                 const option = el('div', 'command-palette__item', { id: `command-palette-option-${optionIndex++}`, role: 'option', 'aria-selected': 'false' });
+                option.dataset.command = item.entry.id;
                 const iconNode = el('i', `command-palette__icon ${item.entry.icon}`, { 'aria-hidden': 'true' });
                 const text = el('div', 'command-palette__text');
                 const label = el('div', 'command-palette__label');

@@ -385,13 +385,6 @@
             if (target === 'parcel-info-panel') {
                 const toolbar = doc.getElementById(target)?.querySelector('.parcel-context-actions');
                 const actions = body.querySelector('.click-stack__actions--parcel');
-                const customSite = body.querySelector('[data-command="parcel.useAsSite"]')
-                    || body.querySelector('[data-command="selection.useAsSite"]');
-                const selectionOptions = toolbar?.querySelector('.multi-select-options');
-                if (selectionOptions && customSite) {
-                    customSite.classList.add('parcel-site-action', 'btn-sm');
-                    selectionOptions.appendChild(customSite);
-                }
                 if (toolbar && actions?.children.length) toolbar.appendChild(actions);
                 else actions?.remove();
             }

@@ -67,7 +67,7 @@ test.describe('Click stack @core', () => {
       const selected = await page.evaluate(() => (window as any).currentlyHighlightedProposalId);
       if (kind === 'designs') {
         expect(selected).toBeTruthy();
-        await expect(stackSection(page, kind).locator('.click-stack__body .proposal-type-badge')).toBeVisible();
+        await expect(stackSection(page, kind).locator('.click-stack__body .proposal-badges-row .proposal-type-badge')).toBeVisible();
         await stackSection(page, kind).locator('.click-stack__row').click();
         expect(await page.evaluate(() => (window as any).isProposalUIActive())).toBe(true);
         await expect(focus.first()).toBeVisible();
@@ -144,17 +144,16 @@ test.describe('Click stack @core', () => {
     const selection = panel.locator('.multi-select-group');
     const customSite = panel.getByRole('button', { name: 'Custom site', exact: true });
     await expect(selection).toBeVisible();
-    await expect(customSite).toBeVisible();
+    await expect(customSite).toHaveCount(0);
     const buttons = panel.locator('.multi-select-options > button');
-    await expect(buttons).toHaveCount(3);
+    await expect(buttons).toHaveCount(2);
     const boxes = await buttons.evaluateAll(elements => elements.map(el => {
       const { x, y, width, height } = el.getBoundingClientRect();
       return { x, y, width, height };
     }));
     expect(Math.max(...boxes.map(box=>box.y))-Math.min(...boxes.map(box=>box.y))).toBeLessThanOrEqual(1);
     expect(boxes[0].x+boxes[0].width).toBeLessThanOrEqual(boxes[1].x);
-    expect(boxes[1].x+boxes[1].width).toBeLessThanOrEqual(boxes[2].x);
-    expect(boxes[2].y+boxes[2].height).toBeLessThanOrEqual((await panel.locator('.parcel-tabs').boundingBox())!.y);
+    expect(boxes[1].y+boxes[1].height).toBeLessThanOrEqual((await panel.locator('.parcel-tabs').boundingBox())!.y);
     // The tab choice survives a different parcel and section collapse/reopen.
     await panel.getByRole('tab', { name: 'Info', exact: true }).click();
     await expect(page.locator('#parcel-info-title')).toContainText(PARCEL_ID);
@@ -198,20 +197,20 @@ test.describe('Click stack @core', () => {
       const row=panel.locator('.multi-select-options');
       await expect(row.getByRole('button',{name:'Manual',exact:true})).toBeVisible();
       await expect(row.getByRole('button',{name:'Detect block',exact:true})).toBeVisible();
-      await expect(row.getByRole('button',{name:'Custom site',exact:true})).toBeVisible();
+      await expect(panel.getByRole('button',{name:'Custom site',exact:true})).toHaveCount(0);
       const boxes=await row.locator('button').evaluateAll(elements=>elements.map(el=>{
         const r=el.getBoundingClientRect();return {x:r.x,y:r.y,right:r.right,bottom:r.bottom};
       }));
-      expect(boxes).toHaveLength(3);
+      expect(boxes).toHaveLength(2);
       expect(Math.max(...boxes.map(b=>b.y))-Math.min(...boxes.map(b=>b.y))).toBeLessThanOrEqual(1);
-      expect(boxes[2].right).toBeLessThanOrEqual(width);
+      expect(boxes[1].right).toBeLessThanOrEqual(width);
       expect(boxes[0].right).toBeLessThanOrEqual(boxes[1].x);
-      expect(boxes[1].right).toBeLessThanOrEqual(boxes[2].x);
       await page.screenshot({path:testInfo.outputPath(`selection-row-${width}.png`)});
-      await row.getByRole('button',{name:'Custom site',exact:true}).click();
-      await expect(page.locator('#site-panel')).toBeVisible();
+      const tabWidths=await panel.getByRole('tab').evaluateAll(tabs=>tabs.filter(tab=>tab.getBoundingClientRect().width>0).map(tab=>tab.getBoundingClientRect().width));
+      expect(Math.max(...tabWidths)-Math.min(...tabWidths)).toBeLessThanOrEqual(1);
+      await panel.getByRole('tab',{name:'Info',exact:true}).click();
       await page.keyboard.press('Escape');
-      await expect(page.locator('#site-panel')).toBeHidden();
+      await expect(clickStack(page)).toBeHidden();
     }
   });
 
@@ -231,6 +230,35 @@ test.describe('Click stack @core', () => {
     });
   }
 
+  test('design Details scrolls inside the click stack and its actions remain reachable',async({mockApi:page},testInfo)=>{
+    await openCity(page);
+    const id=await createSpace(page,'park');
+    await page.evaluate(parcelId=>{
+      const w=window as any;
+      for(let i=0;i<14;i++)w.proposalStorage.addProposal({goal:'as-is',title:`Related design ${i}`,cadastreParcelIds:[parcelId],lifecycleStatus:'Active',applied:false});
+    },PARCEL_ID);
+    for(const width of [1280,390]){
+      await page.setViewportSize({width,height:width===1280?600:844});
+      await page.keyboard.press('Escape');
+      await clickDesignOnMap(page,id);
+      const panel=page.locator('#click-stack #proposal-details-panel.is-hosted');
+      await panel.getByRole('tab',{name:'Details',exact:true}).click();
+      const land=panel.locator('details[data-proposal-section="land"]');
+      if(!await land.evaluate(el=>(el as HTMLDetailsElement).open)) await land.locator(':scope > summary').click();
+      const scroller=width>=768?panel.locator('.panel-body'):page.locator('#click-stack .click-stack__sections');
+      await expect.poll(()=>scroller.evaluate(el=>el.scrollHeight-el.clientHeight)).toBeGreaterThan(20);
+      await scroller.hover();
+      const top=await scroller.evaluate(el=>el.scrollTop);
+      await page.mouse.wheel(0,600);
+      await expect.poll(()=>scroller.evaluate(el=>el.scrollTop)).toBeGreaterThan(top);
+      await page.screenshot({path:testInfo.outputPath(`design-details-scroll-${width}.png`)});
+      const actions=panel.locator('.proposal-primary-actions > button:visible');
+      await expect(actions).toHaveCount(6);
+      await actions.last().scrollIntoViewIfNeeded();
+      await expect(actions.last()).toBeVisible();
+    }
+  });
+
   test('a design orders above its formed and cadastral parcels, and the expanded kind is remembered', async ({ mockApi: page }) => {
     await openCity(page);
     const parkId = await createSpace(page, 'park');
@@ -248,13 +276,39 @@ test.describe('Click stack @core', () => {
     const designs = stackSection(page, 'designs');
     await expect(designs.locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'true');
     await expect(designs.locator('.click-stack__body #planning-inspector, .click-stack__body #proposal-details-panel')).toBeVisible();
+    await expect(designs.locator('#proposal-details-content .proposal-type-badge')).toHaveCount(1);
+    const badges=designs.locator('.proposal-badges-row > .cb-badge');
+    await expect(badges.nth(0)).toContainText('Park');
+    await expect(badges.nth(1)).toContainText('Applied');
+    await expect(badges.nth(2)).toContainText('Draft');
+    await expect(badges.nth(2).locator('i')).toBeVisible();
+    const badgeBoxes=await badges.evaluateAll(elements=>elements.map(el=>({y:el.getBoundingClientRect().y,height:el.getBoundingClientRect().height})));
+    expect(Math.max(...badgeBoxes.map(b=>b.y))-Math.min(...badgeBoxes.map(b=>b.y))).toBeLessThanOrEqual(1);
+    expect(Math.max(...badgeBoxes.map(b=>b.height))-Math.min(...badgeBoxes.map(b=>b.height))).toBeLessThanOrEqual(1);
+    const fonts=await designs.evaluate(el=>{
+      const font=(selector:string)=>{const style=getComputedStyle(el.querySelector(selector)!);return {family:style.fontFamily,size:style.fontSize,weight:style.fontWeight};};
+      return {author:font('.proposal-author-row .metric-label'),parcel:font('.proposal-overview-facts .metric-label')};
+    });
+    expect(fonts.author).toEqual(fonts.parcel);
+    const actions=designs.locator('.proposal-primary-actions > button:visible');
+    await expect(actions).toHaveCount(6);
+    const boxes=await actions.evaluateAll(buttons=>buttons.map(button=>{
+      const r=button.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};
+    }));
+    expect(Math.max(...boxes.map(b=>b.width))-Math.min(...boxes.map(b=>b.width))).toBeLessThanOrEqual(1);
+    expect(Math.max(...boxes.map(b=>b.height))-Math.min(...boxes.map(b=>b.height))).toBeLessThanOrEqual(1);
+    for(let i=0;i<6;i+=2){
+      expect(Math.abs(boxes[i].y-boxes[i+1].y)).toBeLessThanOrEqual(1);
+      expect(boxes[i].x).toBeLessThan(boxes[i+1].x);
+      if(i)expect(boxes[i].y).toBeGreaterThan(boxes[i-2].y);
+    }
     // The formed parcel is live ground the design made: it opens like a parcel, and a new design
     // can start on it.
     const formed = stackSection(page, 'formed');
     await expect(formed.locator('.click-stack__row')).toContainText('Formed parcel');
     await expandStackSection(page, 'formed');
     await expect(formed.locator('#parcel-info-panel')).toBeVisible();
-    await expect(formed.locator('[data-command="parcel.useAsSite"]')).toBeVisible();
+    await expect(formed.locator('[data-command="parcel.useAsSite"]')).toHaveCount(0);
 
     // Expanding the cadastral parcel collapses the others; the choice is remembered. The original
     // was consumed by the park: it shows its record, with no actions that build on it.

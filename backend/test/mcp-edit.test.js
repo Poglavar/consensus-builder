@@ -87,6 +87,20 @@ describe('granular authored editing', () => {
         expect(validateDesignContent(next).ok).toBe(true);
         expect(design).toEqual(original);
     });
+    it('reshapes a park or square, updates its land and removes furniture outside the new boundary', () => {
+        for (const spaceKind of ['park','square']) {
+            const design=make('space',{spaceKind,treeCount:0});
+            design.structureProposal.decorationDesign={version:3,trees:[],benches:[
+                {coordinate:[-.0998,51.5002],bearing:0},{coordinate:[-.0982,51.5018],bearing:90}]};
+            const before=structuredClone(design);
+            const geometry={type:'Polygon',coordinates:[[[-.1,51.5],[-.099,51.5],[-.099,51.501],[-.1,51.501],[-.1,51.5]]]};
+            const next=edit(design,[{op:'replace',path:'/structureProposal/geometry',value:geometry}]);
+            expect(next.site).toEqual(geometry);
+            expect(next.structureProposal.decorationDesign.benches).toEqual([before.structureProposal.decorationDesign.benches[0]]);
+            expect(design).toEqual(before);
+            expect(validateDesignContent(next).ok).toBe(true);
+        }
+    });
     it('rejects stale revisions, failed tests, invalid pointers and prototype pollution atomically', () => {
         const design=make('building',{floors:4}), before=structuredClone(design);
         expect(()=>editedDesign(design,cidOfObject({wrong:true}),[{op:'replace',path:'/title',value:'Changed'}])).toThrow(/revision/);

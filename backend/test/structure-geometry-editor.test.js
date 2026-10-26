@@ -5,6 +5,7 @@ const require = createRequire(import.meta.url);
 const {
     normalizeDecorations,
     boundaryFeature,
+    reshapeBoundary,
     hasExplicitDecorationDesign,
     translateCoordinateCollection
 } = require('../../frontend/js/structure-geometry-editor.js');
@@ -74,5 +75,27 @@ describe('structure geometry editor data normalization', () => {
             expect(moved[index][1]).toBeCloseTo(expected[1], 10);
         });
         expect(source).toEqual([[15.9, 45.8], [15.91, 45.81], [15.92, 45.8]]);
+    });
+});
+
+
+describe('shared structure boundary editing', () => {
+    const turf=require('@turf/turf'), shape=require('../../frontend/js/single-building-geometry.js');
+    const outer=[[0,0],[.003,0],[.003,.003],[0,.003],[0,0]];
+    const hole=[[.001,.001],[.002,.001],[.002,.002],[.001,.002],[.001,.001]];
+    const boundary=turf.polygon([outer,hole]);
+    it('supports arbitrary concave shapes, insertion and removal while preserving holes and the source', () => {
+        const before=JSON.stringify(boundary);
+        const ring=[[0,0],[.0015,-.001],[.003,0],[.003,.003],[0,.003]];
+        const next=reshapeBoundary(boundary,ring,shape,turf);
+        expect(next.geometry.coordinates[0]).toHaveLength(6);
+        expect(next.geometry.coordinates[1]).toEqual(hole);
+        expect(JSON.stringify(boundary)).toBe(before);
+        expect(reshapeBoundary(next,outer,shape,turf)).toEqual(boundary);
+    });
+    it('rejects self-crossing outlines, undersized rings and holes outside the edited boundary', () => {
+        for(const ring of [ [[0,0],[.003,.003],[.003,0],[0,.003]], [[0,0],[.003,0]], [[0,0],[.0005,0],[.0005,.0005],[0,.0005]] ]) {
+            expect(reshapeBoundary(boundary,ring,shape,turf)).toBeNull();
+        }
     });
 });

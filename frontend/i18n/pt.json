@@ -33,7 +33,6 @@
         "placement": {
             "snap": "Ajustar às arestas",
             "lock": "Restringir ao terreno inicial",
-            "outside": "Fora do terreno inicial. Guarde para recalcular as parcelas afetadas.",
             "lockOutside": "Mova o projeto para dentro do terreno inicial antes de o bloquear."
         }
     },
@@ -62,7 +61,8 @@
             "refreshing": "A atualizar…",
             "analyzing": "A analisar…",
             "applying": "A aplicar…"
-        }
+        },
+        "done": "Concluído"
     },
     "sidebar": {
         "areaMonitor": {
@@ -999,7 +999,8 @@
             "editSurroundings": "Editar a envolvente",
             "surroundingsPaved": "Pavimentação",
             "surroundingsGreen": "Espaço verde",
-            "surroundingsInfo": "O tratamento da superfície aplica-se ao terreno em redor dos edifícios propostos. A demolição segue a ocupação de terreno do projeto.",
+            "placeHint": "Clique ou toque no mapa para colocar o edifício. Arraste o mapa para o deslocar. Esc cancela.",
+            "surroundingsInfo": "A pavimentação ou o espaço verde ocupa o terreno tomado fora da implantação do edifício. Se apenas a implantação for tomada, não há espaço envolvente.",
             "uploadGeojsonLabel": "Carregar GeoJSON",
             "uploadGlbLabel": "Carregar .glb",
             "uploadNoPolygon": "Não foi possível importar o ficheiro. Utilize implantações de edifícios válidas do tipo Polygon ou MultiPolygon.",
@@ -2313,10 +2314,10 @@
             "stall": "Mesa",
             "statue": "Estátua",
             "erase": "Remover",
-            "move": "Mover"
+            "move": "Mover",
+            "boundary": "Limite"
         },
         "finishPath": "Concluir caminho",
-        "save": "Guardar projeto",
         "hintErase": "Clique num elemento para o remover.",
         "hintPlace": "Clique no mapa para colocar o elemento selecionado.",
         "hintTree": "Clique no mapa para plantar uma árvore. Clique numa árvore plantada para alterar o tipo e a altura.",
@@ -2325,7 +2326,9 @@
         "statusOutside": "Coloque os elementos dentro do limite da estrutura.",
         "statusSaved": "Projeto da estrutura guardado.",
         "hintMove": "Arraste dentro do limite para mover todo o projeto. O contorno e todo o seu conteúdo movem-se em conjunto.",
-        "moveUnavailable": "Não foi possível mover este projeto. Tente novamente."
+        "moveUnavailable": "Não foi possível mover este projeto. Tente novamente.",
+        "hintBoundary": "Arraste a área para a mover ou os vértices para alterar a forma. Toque numa aresta para adicionar um ponto; selecione um ponto para o remover.",
+        "boundaryVertexTitle": "Arraste para alterar a forma do limite"
     },
     "stationEditor": {
         "undo": "Anular",
@@ -2774,7 +2777,7 @@
                 "source": "Parcela de origem {{number}}",
                 "sourcePart": "Parte da parcela de origem {{number}}",
                 "formed": "Porção de terreno formada {{number}}",
-                "formedNote": "Terreno formado pelos projetos aplicados. Esta referência identifica a porção atual, não uma parcela registada nem um lote definido num projeto.",
+                "formedNote": "Terreno formado pelo projeto aplicado.",
                 "sourcePartNote": "Uma parte contínua de uma parcela de origem. Esta referência identifica a parte apresentada; a parcela de origem pode conter outras partes."
             },
             "tabInfo": "Informações",
@@ -7651,7 +7654,7 @@
         "proposalActions": "Ações do projeto",
         "reroll": {
             "proposed": "Sortear outra ilustração proposta. Não altera os registos.",
-            "permitted": "Sortear outro tipo de habitação permitido e outro lado da rua. Não altera os registos."
+            "permitted": "Sortear outro tipo de habitação permitido. Não altera os registos."
         },
         "zoningAreas": "Áreas de zonamento de origem",
         "envelopeTitle": "Envolvente edificável permitida",
@@ -7662,7 +7665,7 @@
         "excludedConfigurations": "Não configurável aqui: {{list}}.",
         "envelopeCoverage": "As envolventes parciais são derivadas da parcela e dos registos de zonamento carregados. As parcelas sem volumetria são contabilizadas por motivo; a ausência de volumetria não demonstra capacidade nula.",
         "envelopeSummary": "{{count}} registos de parcelas analisados: {{shapes}} com envolventes parciais, {{missing}} sem volumetria.",
-        "envelopeNote": "A superfície translúcida é a envolvente máxima de todos os tipos de habitação registados e dos lados da rua assumidos; estas alternativas não podem ser construídas em simultâneo. O volume interior é uma ilustração para um dos lados da rua assumidos: lance os dados ou escolha abaixo. Os limites de área e as regras por resolver continuam a aplicar-se.",
+        "envelopeNote": "A envolvente máxima combina os tipos de habitação registados. A frente orienta-se pelas ruas próximas quando há dados disponíveis; caso contrário, a envolvente inclui todas as orientações suportadas. Escolha um tipo de habitação ou lance os dados para mudar a configuração apresentada. Os limites de área e as regras por resolver continuam a aplicar-se.",
         "assumedSide": "Lado da rua assumido: {{side}}.",
         "lotBelowMinimum": "Lote abaixo do mínimo de {{minimum}}",
         "sideOptions": {
@@ -7811,6 +7814,7 @@
         },
         "evidence": {
             "direct": "Valor direto da fonte",
+            "literal": "Número registado",
             "estimated": "Estimativa da fonte"
         },
         "zoningArea": "Área de zonamento da fonte",

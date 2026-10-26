@@ -61,7 +61,7 @@ describe('geometry-only parcel ownership UI', () => {
 
         ui.fetchAndDisplayRealOwners('GEOM-1');
 
-        expect(target.innerHTML).toContain('Unknown owner');
+        expect(target.innerHTML).toContain('Unknown');
         expect(target.innerHTML).not.toMatch(/Single owner|100%/);
         expect(count.textContent).toBe('Unknown');
         expect(typeLabel.style.display).toBe('none');
@@ -127,7 +127,7 @@ describe('geometry-only parcel ownership UI', () => {
 
         ui.fetchAndDisplayRealOwners('GEOM-1');
 
-        expect(target.innerHTML).toContain('Nepoznat vlasnik');
+        expect(target.innerHTML).toContain('Nepoznato');
         expect(count.textContent).toBe('Nepoznato');
     });
 

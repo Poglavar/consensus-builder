@@ -436,7 +436,7 @@
         parcelCommand('detectBlock', { surfaces: [], modes: ['2d'], labelKey: 'parcelMenu.actions.detectBlock', fallbackLabel: 'Detect block', icon: 'fas fa-fill-drip' }),
         // What the panel does not offer: shown as the parcel section's buttons.
         parcelCommand('compare', { labelKey: 'parcelMenu.actions.compare', fallbackLabel: 'Compare designs', icon: 'fas fa-code-compare' }),
-        parcelCommand('useAsSite', { modes: ['2d'], labelKey: 'parcelMenu.actions.useAsSite', fallbackLabel: 'Custom site', icon: 'fas fa-draw-polygon' }),
+        parcelCommand('useAsSite', { surfaces: [], modes: ['2d'], labelKey: 'parcelMenu.actions.useAsSite', fallbackLabel: 'Custom site', icon: 'fas fa-draw-polygon' }),
 
         // ---- Ground menu (a click where there is no parcel), in menu order ----
         groundCommand('drawSite', { labelKey: 'groundMenu.actions.drawSite', fallbackLabel: 'Draw a site here', icon: 'fas fa-draw-polygon' }),
@@ -454,7 +454,7 @@
             labelKey: 'siteTool.commands.draw', fallbackLabel: 'Draw site', icon: 'fas fa-draw-polygon' },
 
         // ---- Selected parcels section in the click panel ----
-        { id: 'selection.useAsSite', group: 'selection', surfaces: ['parcel-selection'], modes: ['2d'],
+        { id: 'selection.useAsSite', group: 'selection', surfaces: [], modes: ['2d'],
             when: ctx => selectionNonEmpty(ctx) && siteToolIdle(ctx),
             run: ctx => ctx.global.SiteTool.startFromSelection(),
             labelKey: 'parcelMenu.actions.useAsSite', fallbackLabel: 'Custom site', icon: 'fas fa-draw-polygon' },

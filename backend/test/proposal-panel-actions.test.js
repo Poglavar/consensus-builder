@@ -328,13 +328,21 @@ describe('proposal details action footer', () => {
         }
     });
 
-    it('keeps a prominent type pill even when the design title is the same as its type', () => {
+    it('shows the type and state pills in the Overview row, with type first', () => {
         const content = parse(render({ proposalId: 'named-park', goal: 'park', title: 'Park', cadastreParcelIds: [] }).content.innerHTML);
-        const pill = content('.proposal-heading-row .proposal-type-badge');
-        expect(pill.attr('data-design-goal')).toBe('park');
-        expect(pill.hasClass('cb-badge--success')).toBe(true);
-        expect(pill.text()).toContain('Park');
-        expect(pill.find('[aria-hidden="true"]')).toHaveLength(1);
+        const badges = content('.proposal-badges-row > .cb-badge');
+        expect(badges).toHaveLength(2);
+        expect(badges.eq(0).attr('data-design-goal')).toBe('park');
+        expect(badges.eq(0).text()).toContain('Park');
+        expect(badges.eq(1).hasClass('proposal-ladder-badge')).toBe(true);
+        expect(badges.eq(1).text()).toContain('Draft');
+        expect(badges.eq(1).find('[aria-hidden="true"]')).toHaveLength(1);
+        const appliedBadges = parse(render({ proposalId: 'applied-park', goal: 'park', title: 'Park', cadastreParcelIds: [] }, { applied: true }).content.innerHTML)
+            ('.proposal-badges-row > .cb-badge');
+        expect(appliedBadges).toHaveLength(3);
+        expect(appliedBadges.eq(0).attr('data-design-goal')).toBe('park');
+        expect(appliedBadges.eq(1).hasClass('cb-badge--applied')).toBe(true);
+        expect(appliedBadges.eq(2).hasClass('proposal-ladder-badge')).toBe(true);
     });
 
     it('renders the primary and contextual actions once, Duplicate named for the design', () => {
@@ -343,7 +351,7 @@ describe('proposal details action footer', () => {
         const $ = parse(result.footer.innerHTML);
         expect($('.proposal-action-default').length + $('[onclick^="removeProposalFromMap"]').length).toBe(1);
         expect($('[onclick*="shareProposalFromDetails"]').length).toBe(1);
-        expect($('.btn-share-proposal').attr('title')).toBe('Publish this design and copy its link');
+        expect($('.btn-share-proposal').attr('title')).toBe('Share this design or its plan');
         expect($('[onclick^="startDesignDuplication"]').length).toBe(1);
         expect($('.btn-duplicate-design').text().trim()).toBe('Duplicate');
         expect($('.btn-duplicate-design').attr('title')).toBe('Move a copy with the pointer and click to place a new design.');
@@ -395,7 +403,7 @@ describe('proposal details action footer', () => {
     });
 
     it('badges a design published here Published, and anything else Draft', () => {
-        const badge = proposal => parse(render(proposal).content.innerHTML)('.proposal-badges-row .cb-badge').first();
+        const badge = proposal => parse(render(proposal).content.innerHTML)('.proposal-badges-row .proposal-ladder-badge');
         const design = { proposalId: 'park-780', goal: 'park', title: 'Block', cadastreParcelIds: [], site: { type: 'Polygon', coordinates: [[[0, 0], [0.001, 0], [0.001, 0.001], [0, 0]]] } };
         expect(badge(published(design)).hasClass('cb-badge--published')).toBe(true);
         // A bare numeric id says nothing about publication.

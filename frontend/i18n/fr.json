@@ -33,7 +33,6 @@
         "placement": {
             "snap": "Accrocher aux bords",
             "lock": "Limiter au site initial",
-            "outside": "Hors du site initial. Enregistrez pour recalculer les parcelles concernées.",
             "lockOutside": "Déplacez le projet à l’intérieur du site initial avant de le verrouiller."
         }
     },
@@ -62,7 +61,8 @@
             "refreshing": "Actualisation…",
             "analyzing": "Analyse…",
             "applying": "Application…"
-        }
+        },
+        "done": "Terminé"
     },
     "sidebar": {
         "areaMonitor": {
@@ -999,7 +999,8 @@
             "editSurroundings": "Modifier les abords",
             "surroundingsPaved": "Revêtement minéral",
             "surroundingsGreen": "Végétation",
-            "surroundingsInfo": "Le traitement de surface s’applique au terrain autour des bâtiments proposés. La démolition suit l’emprise foncière du projet.",
+            "placeHint": "Cliquez ou touchez la carte pour placer le bâtiment. Faites glisser la carte pour la déplacer. Échap annule.",
+            "surroundingsInfo": "Le revêtement ou l’espace vert occupe le terrain pris en dehors de l’emprise du bâtiment. Une prise limitée à l’emprise ne comporte aucun aménagement extérieur.",
             "uploadGeojsonLabel": "Importer un fichier GeoJSON",
             "uploadGlbLabel": "Importer un fichier .glb",
             "uploadNoPolygon": "Impossible d’importer le fichier. Utilisez des emprises de bâtiments valides de type Polygon ou MultiPolygon.",
@@ -2313,10 +2314,10 @@
             "stall": "Table",
             "statue": "Statue",
             "erase": "Supprimer",
-            "move": "Déplacer"
+            "move": "Déplacer",
+            "boundary": "Contour"
         },
         "finishPath": "Terminer le chemin",
-        "save": "Enregistrer le projet",
         "hintErase": "Cliquez sur un élément pour le supprimer.",
         "hintPlace": "Cliquez sur la carte pour placer l’élément sélectionné.",
         "hintTree": "Cliquez sur la carte pour planter un arbre. Cliquez sur un arbre planté pour modifier son essence et sa hauteur.",
@@ -2325,7 +2326,9 @@
         "statusOutside": "Placez les éléments à l’intérieur du périmètre de la structure.",
         "statusSaved": "Projet de structure enregistré.",
         "hintMove": "Faites glisser à l’intérieur du périmètre pour déplacer l’ensemble du projet. Le contour et tout son contenu se déplacent ensemble.",
-        "moveUnavailable": "Impossible de déplacer ce projet. Réessayez."
+        "moveUnavailable": "Impossible de déplacer ce projet. Réessayez.",
+        "hintBoundary": "Faites glisser la zone pour la déplacer ou ses sommets pour modifier la forme. Touchez un bord pour ajouter un point ; sélectionnez un point pour le supprimer.",
+        "boundaryVertexTitle": "Faites glisser pour modifier le contour"
     },
     "stationEditor": {
         "undo": "Annuler",
@@ -2774,7 +2777,7 @@
                 "source": "Parcelle source {{number}}",
                 "sourcePart": "Partie de parcelle source {{number}}",
                 "formed": "Fragment de terrain formé {{number}}",
-                "formedNote": "Terrain formé par les projets appliqués. Cette référence identifie le fragment actuel, et non une parcelle enregistrée ou un lot dessiné.",
+                "formedNote": "Terrain formé par le projet appliqué.",
                 "sourcePartNote": "Une partie contiguë d’une parcelle source. Cette référence identifie la partie affichée ; la parcelle source peut comporter d’autres parties."
             },
             "tabInfo": "Informations",
@@ -7651,7 +7654,7 @@
         "proposalActions": "Actions sur le projet",
         "reroll": {
             "proposed": "Tirez au sort une autre illustration proposée. Ne modifie aucune donnée enregistrée.",
-            "permitted": "Tirez au sort un autre type de logement autorisé et un autre côté donnant sur la rue. Ne modifie aucune donnée enregistrée."
+            "permitted": "Tirez au sort un autre type de logement autorisé. Ne modifie aucune donnée enregistrée."
         },
         "zoningAreas": "Zones du zonage source",
         "envelopeTitle": "Enveloppe autorisée",
@@ -7662,7 +7665,7 @@
         "excludedConfigurations": "Non configurable ici : {{list}}.",
         "envelopeCoverage": "Les enveloppes partielles sont déduites des données chargées sur les parcelles et le zonage. Les parcelles sans volumétrie sont comptabilisées par motif ; l’absence de volumétrie ne permet pas de conclure à une capacité nulle.",
         "envelopeSummary": "{{count}} fiches de parcelles examinées : {{shapes}} avec une enveloppe partielle, {{missing}} sans volumétrie.",
-        "envelopeNote": "L’enveloppe translucide représente le volume maximal pour l’ensemble des types de logement enregistrés et des côtés supposés donnant sur la rue ; ces variantes ne sont pas réalisables simultanément. Le volume intérieur illustre une seule possibilité pour un côté supposé donnant sur la rue : lancez les dés ou faites votre choix ci-dessous. Les plafonds de surface et les règles non résolues restent applicables.",
+        "envelopeNote": "L’enveloppe maximale combine les types de logement enregistrés. Le côté avant est orienté vers les rues proches lorsque les données sont disponibles ; sinon, l’enveloppe inclut toutes les orientations prises en charge. Choisissez un type de logement ou lancez les dés pour changer la configuration affichée. Les plafonds de surface et les règles non résolues restent applicables.",
         "assumedSide": "Côté supposé donnant sur la rue : {{side}}.",
         "lotBelowMinimum": "Terrain inférieur au minimum de {{minimum}}",
         "sideOptions": {
@@ -7811,6 +7814,7 @@
         },
         "evidence": {
             "direct": "Valeur directe de la source",
+            "literal": "Valeur numérique consignée",
             "estimated": "Estimation de la source"
         },
         "zoningArea": "Zone du zonage source",

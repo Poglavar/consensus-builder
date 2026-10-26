@@ -113,7 +113,7 @@ describe('the left-edge mode strip is never covered on phones', () => {
         expect(ruleBody(panelsCss, '(?:^|\\n)#road-info-panel')).toMatch(/height:\s*auto/);
     });
 
-    it('keeps every road metric box two lines tall, puts Undo / Finish / Cancel in the road panel as equal parts of its last row, and shows the map through phone panels', () => {
+    it('keeps every road metric box two lines tall, puts Undo / Done / Cancel in the road panel as equal parts of its last row, and shows the map through phone panels', () => {
         expect(ruleBody(utilitiesCss, '\\.road-metrics-grid \\.metric-group')).toMatch(/min-height:\s*calc\(2 \* 1\.3em \+ 18px\)/);
         const panel = indexHtml.slice(indexHtml.indexOf('<div id="road-info-panel"'), indexHtml.indexOf('<div id="road-analysis-panel"'));
         const controls = panel.indexOf('id="road-drawing-controls"');
@@ -132,7 +132,7 @@ describe('the left-edge mode strip is never covered on phones', () => {
         expect(tokens.match(/--cb-glass-sheet:/g)).toHaveLength(2);
         const [panelBlock] = mediaBlocksContaining(panelsCss, '(max-width: 767.98px)', '#road-info-panel .road-panel-actions .close-circle-btn--lg');
         expect(ruleBody(panelBlock, '#road-info-panel \\.road-panel-actions \\.close-circle-btn--lg')).toMatch(/height:\s*34px/);
-        expect(indexHtml).toMatch(/data-i18n-key="panel\.road\.finishButtonShort">Finish<\/button>/);
+        expect(indexHtml).toMatch(/data-i18n-key="common\.done">Done<\/button>/);
     });
 
     it('docks the compact proposal card on the bar as a glass sheet with a short centred header', () => {

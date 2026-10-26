@@ -1798,3 +1798,56 @@ Two targeted headed Playwright cases passed (narrow palette and Track tool launc
 the 320 px Freeform capture was visually inspected. Both completed, none stopped,
 and no full or unit suite was run for this reversible visual change. MCP parity:
 no authored operation, schema or geometry changed; existing editing primitives apply.
+
+
+### Direct area editing and panel follow-up, 2026-10-27
+
+Park, square and lake editors open with the whole area and its exterior vertices
+immediately draggable. Edges insert vertices; selected vertices can be removed down
+to the shared triangle minimum. Shared validation rejects crossing boundaries and
+invalid hole placement. The shared history restores boundary and furniture together.
+Moving the whole area refreshes its vertex handles so the next reshape cannot restore
+an old position. Standalone area shapes are editable; building-surroundings child
+editors retain their fixed parent-owned boundary. Geometry completion controls use
+Done, including the road drawing and cross-section editors.
+
+The parcel/selection Custom site shortcuts are removed with the user's approval.
+Draw a site remains available for starting an area on open ground. Advanced contextual
+site commands remain in the command palette under the existing palette-only policy.
+A drawn outline is temporary; applying its park/square/lake forms ground and consumes
+that authored area. The starting-site movement warning is removed; explicitly trying
+to enable an incompatible lock still explains the refusal. Freeform land review is
+live, while final binding is verified on save.
+
+Parcel/site tabs share their row equally. Design actions use two equal columns and
+equal-height rows. The latest pill decision supersedes the earlier removal request:
+Overview has one row ordered type, Applied, Draft/Published, with state icons and
+consistent badge size. Author matches the parcel-count label typography. Details
+scrolls within the desktop host and through the phone sheet; the nested phone scroll
+trap is removed and its action buttons remain reachable. Unknown ownership is shown
+inline as Owner: Unknown. The formed-ground note now says only Ground formed by the
+applied design. Selection guidance explicitly names manual and automatic block selection.
+
+MCP parity: existing granular structure geometry edits update the site and share the
+same furniture-to-ground scoping used by the browser. Targeted edits verify preserved
+source content, updated area and removal of furniture outside a reshaped park/square.
+No tool/schema addition is needed. The editing guide and current vocabulary describe
+the occupied-area relationship.
+
+Targeted verification before the requested full headed run: 220 unique headless unit
+checks across 13 files and 13 distinct headed browser cases passed after repairs.
+The headless unit run ledger is: 5/5 placement; 50/50 parcel/ground commands; 29/29
+structure/MCP; 39/39 with palette checks; 21/22 action-template checks (obsolete Share
+title expectation), then 22/22; 75/75 actions/guides/corridor checks; 18/18 formed
+reference checks, 6/6 unknown ownership, 18/18 shortened formed-note check; 65/66 final
+geometry/palette/mobile checks (obsolete Finish caption expectation), then 27/27 mobile.
+The headed run ledger is: 3/7 (stale moved handles and three normalized-site fixture
+assertions), 6/6 after repairs; 4/5 and 2/3 while isolating the phone scroll trap;
+1/1 after that repair; final panel batch 3/3. All completed; none stopped. Pure
+geometry and browser checks include Undo, insertion/removal, save/reload, lock refusal,
+MCP editing, equal actions/pills, tab sizing, and the fixed-boundary surroundings child.
+A bounded gpt-6-luna worker handled the independent copy/layout/template changes.
+
+The user then explicitly authorized committing all work in the worktree, including
+other sessions' pending planning hover, locale and glossary edits, followed by the
+full headed suite, repairs and deployment. Full-run and release results follow separately.

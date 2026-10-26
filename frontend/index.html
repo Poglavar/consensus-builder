@@ -118,8 +118,8 @@
                 'css/workspace.css',
                 'css/base.css',
                 'css/layout.css',
-                'css/map.css',
-                'css/panels.css?v=20261027-selection-icons',
+                'css/map.css?v=20261027-stack-scroll',
+                'css/panels.css?v=20261027-editor-rows',
                 'css/modals.css?v=20261020-profile-offers',
                 'css/parcel-sources.css',
                 'css/proposals.css?v=20261019-offer-funding',
@@ -1443,7 +1443,7 @@
 
             <div class="cb-actions parcel-context-actions">
                 <div class="multi-select-group">
-                    <span class="multi-select-title" data-i18n-key="panel.parcel.selectMultiple">Select a parcel to start designing. You can also select multiple parcels or a block of parcels.</span>
+                    <span class="multi-select-title" data-i18n-key="panel.parcel.selectMultiple">Select a parcel to start designing. You can also select multiple parcels manually or auto detect and select a block of parcels.</span>
                     <div class="multi-select-options">
                         <button type="button" id="parcel-manual-selection" class="btn btn-sm" aria-pressed="false"
                             onclick="multiParcelSelection.toggle()"
@@ -1714,7 +1714,7 @@
                     <div class="metric-value" id="road-acquire-difficulty">—</div>
                 </div>
             </div>
-            <!-- Undo · Finish · Cancel: the panel's last row while a road or track is drawn (shown by
+            <!-- Undo · Done · Cancel: the panel's last row while a road or track is drawn (shown by
                  js/road-drawing.js). Part of the panel, so it docks, minimises and reads with it; the
                  metrics above scroll and this row stays. -->
             <div id="road-drawing-controls" class="road-panel-controls" hidden>
@@ -1722,7 +1722,7 @@
                     <button id="undoRoadButton" class="btn" onclick="undoLastRoadOrTrackSegment()"
                         data-i18n-key="panel.road.undoButton">Undo (U)</button>
                     <button id="finishRoadButton" class="btn btn-success" onclick="finishRoadOrTrackDrawing()"
-                        data-i18n-key="panel.road.finishButtonShort">Finish</button>
+                        data-i18n-key="common.done">Done</button>
                     <button type="button" class="btn" onclick="cancelRoadOrTrackDrawing()" data-i18n-key="common.cancel">Cancel</button>
                 </div>
             </div>
@@ -2252,7 +2252,7 @@
             'js/ui/activity-panel.js',
             'js/park-planting.js',
             'js/structures.js',
-            'js/structure-geometry-editor.js',
+            'js/structure-geometry-editor.js?v=20261027-boundary-editing',
             'js/vendor/transit-station-models.js',
             'js/transit-alignments.js',
             'js/transit-stations.js'

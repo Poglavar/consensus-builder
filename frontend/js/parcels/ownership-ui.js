@@ -786,8 +786,8 @@
         }
 
         if (!supportsParcelOwnership()) {
-            const unknownOwner = tParcel('common.unknownOwner', {}, 'Unknown owner');
-            target.innerHTML = `<span data-i18n-key="common.unknownOwner">${unknownOwner}</span>`;
+            const unknownOwner = tParcel('common.unknown', {}, 'Unknown');
+            target.innerHTML = `<span data-i18n-key="common.unknown">${unknownOwner}</span>`;
             const countElement = document.getElementById('parcel-owners-count');
             if (countElement) {
                 countElement.removeAttribute('role');

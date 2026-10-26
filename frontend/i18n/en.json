@@ -51,7 +51,6 @@
         "placement": {
             "snap": "Snap to edges",
             "lock": "Lock to starting site",
-            "outside": "Outside the starting site. Save to recalculate affected parcels.",
             "lockOutside": "Move the design inside the starting site before locking it."
         }
     },
@@ -827,7 +826,8 @@
             "refreshing": "Refreshing…",
             "analyzing": "Analyzing…",
             "applying": "Applying…"
-        }
+        },
+        "done": "Done"
     },
     "proposals": {
         "autoName": {
@@ -1437,14 +1437,14 @@
                 "source": "Source parcel {{number}}",
                 "sourcePart": "Source parcel part {{number}}",
                 "formed": "Formed ground piece {{number}}",
-                "formedNote": "Ground formed by the applied designs. This reference identifies the current piece, not a registered parcel or an authored plot.",
+                "formedNote": "Ground formed by the applied design.",
                 "sourcePartNote": "One connected part of a source parcel. This reference identifies the displayed part; the source parcel can contain other parts."
             },
             "tabInfo": "Info",
             "tabProposals": "Designs",
             "tabTools": "Tools",
             "historySection": "History",
-            "selectMultiple": "Select a parcel to start designing. You can also select multiple parcels or a block of parcels.",
+            "selectMultiple": "Select a parcel to start designing. You can also select multiple parcels manually or auto detect and select a block of parcels.",
             "selectManually": "Manual",
             "detectBlock": "Detect block",
             "chooseBlockScope": "Only one parcel is selected. Use this parcel, or detect the whole block?",
@@ -2139,7 +2139,8 @@
             "editSurroundings": "Edit surroundings",
             "surroundingsPaved": "Paving",
             "surroundingsGreen": "Green",
-            "surroundingsInfo": "Surface treatment applies to the land around the proposed buildings. Demolition follows the design’s land take.",
+            "placeHint": "Click or tap the map to place the building. Drag the map to pan. Esc cancels.",
+            "surroundingsInfo": "Paving or green space uses taken land outside the building footprint. Footprint-only takes have no surroundings.",
             "uploadGeojsonLabel": "Upload GeoJSON",
             "uploadGlbLabel": "Upload .glb",
             "uploadNoPolygon": "Could not import the file. Use valid Polygon or MultiPolygon building footprints.",
@@ -6097,11 +6098,11 @@
             "stall": "Table",
             "statue": "Statue",
             "erase": "Remove",
-            "move": "Move"
+            "move": "Move",
+            "boundary": "Boundary"
         },
         "finishPath": "Finish path",
         "undo": "Undo",
-        "save": "Save design",
         "hintErase": "Click an item to remove it.",
         "hintPlace": "Click the map to place the selected item.",
         "hintTree": "Click the map to plant a tree. Click a planted tree to change its kind and height.",
@@ -6110,7 +6111,9 @@
         "statusOutside": "Place items inside the structure boundary.",
         "statusSaved": "Structure design saved.",
         "hintMove": "Drag inside the boundary to move the full design. The outline and all its contents move together.",
-        "moveUnavailable": "Could not move this design. Try again."
+        "moveUnavailable": "Could not move this design. Try again.",
+        "hintBoundary": "Drag the area to move it, or drag boundary points to reshape. Tap an edge to add a point; select a point to remove it.",
+        "boundaryVertexTitle": "Drag to reshape the boundary"
     },
     "stationEditor": {
         "ariaLabel": "Station geometry editor",
@@ -7495,7 +7498,7 @@
     "planningViews": {
         "reroll": {
             "proposed": "Roll another proposed illustration. Changes nothing in the records.",
-            "permitted": "Roll another permitted housing type and street side. Changes nothing in the records."
+            "permitted": "Roll another permitted housing type. Changes nothing in the records."
         },
         "zoningAreas": "Zoning source areas",
         "envelopeTitle": "Permitted envelope",
@@ -7508,7 +7511,7 @@
         "excludedConfigurations": "Not configurable here: {{list}}.",
         "envelopeCoverage": "Partial envelopes are derived from the loaded parcel and zoning records. Parcels without massing are counted by reason; missing massing does not establish zero capacity.",
         "envelopeSummary": "{{count}} parcel records inspected: {{shapes}} with partial envelopes, {{missing}} without massing.",
-        "envelopeNote": "The translucent hull is the maximum envelope across all recorded housing types and assumed street sides; those alternatives are not simultaneously buildable. The volume inside is one illustration for one assumed street side: roll the dice or choose below. Area budgets and unresolved rules still apply.",
+        "envelopeNote": "The maximum envelope combines the recorded housing types. Frontage follows nearby streets when available; otherwise the bound includes all supported orientations. Choose a housing type or roll the dice to change the displayed configuration. Area budgets and unresolved rules still apply.",
         "assumedSide": "Assumed street side: {{side}}.",
         "lotBelowMinimum": "Lot below the {{minimum}} minimum",
         "sideOptions": {
@@ -7658,6 +7661,7 @@
         },
         "evidence": {
             "direct": "Direct source value",
+            "literal": "Recorded number",
             "estimated": "Source estimate"
         },
         "zoningArea": "Source zoning area",

@@ -51,7 +51,6 @@
         "placement": {
             "snap": "Poravnaj sa ivicama",
             "lock": "Zaključaj na početnoj lokaciji",
-            "outside": "Van početne lokacije. Pogođene parcele će biti ponovo izračunate pri čuvanju.",
             "lockOutside": "Pomerite dizajn unutar početne lokacije pre zaključavanja."
         }
     },
@@ -828,7 +827,8 @@
             "refreshing": "Osvežavanje…",
             "analyzing": "Analiza…",
             "applying": "Primena…"
-        }
+        },
+        "done": "Gotovo"
     },
     "proposals": {
         "autoName": {
@@ -1498,7 +1498,7 @@
                 "source": "Izvorna parcela {{number}}",
                 "sourcePart": "Deo izvorne parcele {{number}}",
                 "formed": "Oblikovani deo tla {{number}}",
-                "formedNote": "Tlo oblikovano primenjenim dizajnima. Ova oznaka identifikuje trenutni deo tla, a ne upisanu parcelu ni projektovanu parcelu.",
+                "formedNote": "Tlo oblikovano primenjenim dizajnom.",
                 "sourcePartNote": "Jedan povezani deo izvorne parcele. Ova oznaka identifikuje prikazani deo; izvorna parcela može sadržati i druge delove."
             },
             "metrics": {
@@ -2161,7 +2161,8 @@
             "editSurroundings": "Uredi okolinu",
             "surroundingsPaved": "Popločanje",
             "surroundingsGreen": "Zelenilo",
-            "surroundingsInfo": "Obrada površine odnosi se na zemljište oko predloženih zgrada. Uklanjanje zgrada prati zauzimanje zemljišta projekta.",
+            "placeHint": "Kliknite ili dodirnite mapu da postavite zgradu. Prevucite mapu da je pomerite. Esc otkazuje.",
+            "surroundingsInfo": "Popločanje ili zelenilo koristi zauzeto zemljište izvan osnove zgrade. Zauzimanje samo osnove nema okruženje.",
             "uploadGeojsonLabel": "Učitaj GeoJSON",
             "uploadGlbLabel": "Učitaj .glb",
             "uploadNoPolygon": "Datoteku nije moguće uvesti. Koristite ispravne osnove zgrada tipa Polygon ili MultiPolygon.",
@@ -6131,11 +6132,11 @@
             "stall": "Sto",
             "statue": "Statua",
             "erase": "Ukloni",
-            "move": "Pomeri"
+            "move": "Pomeri",
+            "boundary": "Granica"
         },
         "finishPath": "Završi stazu",
         "undo": "Poništi",
-        "save": "Sačuvaj dizajn",
         "hintErase": "Klikni element da ga ukloniš.",
         "hintPlace": "Klikni na mapu da postaviš izabrani element.",
         "hintTree": "Klikni na mapu da posadiš drvo. Klikni na posađeno drvo da mu promeniš vrstu i visinu.",
@@ -6144,7 +6145,9 @@
         "statusOutside": "Elemente postavljaj unutar granice strukture.",
         "statusSaved": "Dizajn strukture je sačuvan.",
         "hintMove": "Prevucite unutar granice da biste pomerili ceo dizajn. Obris i sav njegov sadržaj pomeraju se zajedno.",
-        "moveUnavailable": "Ovaj dizajn ne može da se pomeri. Pokušajte ponovo."
+        "moveUnavailable": "Ovaj dizajn ne može da se pomeri. Pokušajte ponovo.",
+        "hintBoundary": "Prevucite područje za pomeranje ili tačke granice za promenu oblika. Dodirnite ivicu da dodate tačku; izaberite tačku da je uklonite.",
+        "boundaryVertexTitle": "Prevucite za promenu oblika granice"
     },
     "stationEditor": {
         "ariaLabel": "Uređivač geometrije stanice",
@@ -7541,7 +7544,7 @@
     "planningViews": {
         "reroll": {
             "proposed": "Bacite kockicu za drugu predloženu ilustraciju. Ne menja ništa u zapisima.",
-            "permitted": "Bacite kockicu za drugi dozvoljeni tip stanovanja i uličnu stranu. Ne menja ništa u zapisima."
+            "permitted": "Bacite kockicu za drugi dozvoljeni tip stanovanja. Ne menja ništa u zapisima."
         },
         "zoningAreas": "Područja izvornog plana",
         "envelopeTitle": "Dozvoljeni omotač",
@@ -7554,7 +7557,7 @@
         "excludedConfigurations": "Ovde nije moguće: {{list}}.",
         "envelopeCoverage": "Delimični omotači izvedeni su iz učitanih katastarskih i planskih zapisa. Parcele bez volumena prebrojane su prema razlogu; izostanak volumena ne dokazuje nulti kapacitet.",
         "envelopeSummary": "Pregledano {{count}} katastarskih zapisa: {{shapes}} sa delimičnim omotačima, {{missing}} bez volumena.",
-        "envelopeNote": "Providna ljuska je maksimalni gabarit svih zabeleženih tipova stanovanja i pretpostavljenih uličnih strana; te alternative ne mogu da se izgrade istovremeno. Zapremina unutra je ilustracija za jednu pretpostavljenu uličnu stranu: bacite kockicu ili izaberite ispod. Ograničenja površine i nerazrešena pravila i dalje važe.",
+        "envelopeNote": "Maksimalni gabarit objedinjuje zabeležene tipove stanovanja. Ulična strana određuje se prema obližnjim ulicama kada su podaci dostupni; inače gabarit uključuje sve podržane orijentacije. Izaberite tip stanovanja ili bacite kockicu za promenu prikazane konfiguracije. Ograničenja površine i nerazrešena pravila i dalje važe.",
         "assumedSide": "Pretpostavljena ulična strana: {{side}}.",
         "lotBelowMinimum": "Parcela je manja od minimuma od {{minimum}}",
         "sideOptions": {
@@ -7710,6 +7713,7 @@
         },
         "evidence": {
             "direct": "Direktna izvorna vrednost",
+            "literal": "Zabeleženi broj",
             "estimated": "Procena izvora"
         },
         "zoningArea": "Izvorno područje zoniranja",

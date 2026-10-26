@@ -997,6 +997,11 @@ body.three-mode-active #agent-bubbles-container {
         overscroll-behavior: contain;
     }
 
+    #click-stack .click-stack__body {
+        flex: none;
+        overflow: visible;
+    }
+
     .click-stack__section.is-expanded:has(.is-hosted) {
         flex: 0 0 auto;
         min-height: 0;
@@ -1006,6 +1011,10 @@ body.three-mode-active #agent-bubbles-container {
         flex: none;
         max-height: none;
         overflow: visible;
+    }
+
+    #click-stack #proposal-details-panel.is-hosted .proposal-primary-actions > button:not(.btn-proposal-details) {
+        display: inline-flex;
     }
 }
 
@@ -1334,6 +1343,16 @@ body.three-mode-active #agent-bubbles-container {
 #click-stack #planning-inspector.is-hosted .planning-inspector__header .close-circle-btn,
 #three-click-stack #planning-inspector.is-hosted .planning-inspector__header .close-circle-btn {
     display: none;
+}
+
+/* On desktop, let the hosted proposal panel fill the expanded card's bounded body. Its header and
+   footer stay in view while the panel-body supplies the scroll viewport for long Details content.
+   Phones scroll the click-stack sheet as a whole and keep the hosted body overflow visible below. */
+@media (min-width: 768px) {
+    #click-stack .click-stack__body > #proposal-details-panel.is-hosted {
+        flex: 1 1 auto;
+        min-height: 0;
+    }
 }
 
 /* One cursor for the map surface. Every point on the 2D map now resolves to a claim — the drill

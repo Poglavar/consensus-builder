@@ -21,8 +21,8 @@
     const displaySelection = () => ({ variation: store?.get().permittedVariation || '', scenario: scenarioId || envelopes.ANY_CONFIGURATION, pins });
     const scenarioParam = () => scenarioId && scenarioId !== envelopes.ANY_CONFIGURATION ? scenarioId : '';
     const scenarioLabel = id => id ? t(`scenario.${id}`) : '';
-    // Geometry helpers for client-side realization: turf for clipping, the shared evaluator for setbacks.
-    const geometryDeps = () => ({ geometry: root.turf, assessment: root.PlanningParcelAssessment });
+    // The API supplies oriented volumes; turf joins their footprints for display.
+    const geometryDeps = () => ({ geometry: root.turf });
     const realization = (item, form = store?.get().permittedForm) => ({ form, selection: displaySelection(), deps: geometryDeps() });
     function permittedFeatures(item) { return envelopes.realize(item, realization(item)); }
     const sideWord = (item, edge) => root.i18n.t(`modal.corridor.compass.${envelopes.edgeSide(item.derivation?.parcel, edge)}`);
@@ -174,11 +174,6 @@
                         opacity: hull ? 0.8 : 1 } });
                 const height = feature.properties.topM;
                 const label = item.source.parcel || item.title;
-                const shownConfiguration = feature.properties.configurationId ? item.configurations?.find(entry => entry.id === feature.properties.configurationId) : null;
-                const configuration = shownConfiguration ? scenarioLabel(shownConfiguration.id) : hull ? t('bound') : '';
-                const tooltip = item.assessment.meaning === 'existing-stock-estimate' ? `${label} · ${t('stockBadge')}`
-                    : [label, configuration, height ? root.CbFormat.formatLength(height) : '', lotNote(shownConfiguration)].filter(Boolean).join(' · ');
-                shape.bindTooltip(tooltip, { sticky: true, direction: 'top' });
                 if (item.parcelEnvelope && height && !hull && root.map.getZoom() >= 18) {
                     const center = shape.getBounds().getCenter();
                     root.L.marker(center, { pane: 'planningSources', interactive: false, keyboard: false,
@@ -189,7 +184,7 @@
                 if (feature.properties.frontEdge != null && item.derivation?.parcel) {
                     const ring = item.derivation.parcel.coordinates[0], edge = feature.properties.frontEdge;
                     root.L.polyline([ring[edge], ring[edge + 1]].map(p => [p[1], p[0]]), { pane: 'planningSources', interactive: false,
-                        color: color(item.role), weight: 4, opacity: 0.9 }).bindTooltip(t('assumedSide', { side: sideWord(item, edge) })).addTo(layer);
+                        color: color(item.role), weight: 4, opacity: 0.9 }).addTo(layer);
                 }
                 if (hull) continue;
                 const inspect = () => { if (!root.__mapEditLock?.isHeld()) select(item.id); };
@@ -283,8 +278,11 @@
         if (heights.length > 1) inspector.append(element('p', 'planning-inspector__description', t('heightParts', { heights: heights.map(height => root.CbFormat.formatLength(height)).join(' · ') })));
         const realization = permittedFeatures(item), shown = realization.configuration;
         if (item.configurations?.length) inspector.append(renderConfigurations(item, shown));
-        if (realization.frontEdge != null) inspector.append(element('p', 'planning-inspector__description',
-            `${t('assumedSide', { side: sideWord(item, realization.frontEdge) })} ${t('sideOptions', { count: item.derivation.frontEdges.length })}`));
+        if (realization.frontEdge != null) {
+            inspector.append(element('p', 'planning-inspector__description', t('assumedSide', { side: sideWord(item, realization.frontEdge) })));
+            const frontage = root.StreetFrontage?.basisText(item.sourceEvidence?.frontage);
+            if (frontage) inspector.append(element('p', 'planning-inspector__description', frontage));
+        }
         const assessment = element('div', 'planning-assessment');
         assessment.append(element('strong', '', t('conditionsTitle')), element('p', '', t('conditionsNote')));
         if (sourceResult && item.volumes.length) inspector.append(assessment);

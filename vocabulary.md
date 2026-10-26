@@ -321,7 +321,7 @@ A horizontal outline whose subject must be qualified. A building footprint descr
 
 ### Land take
 
-The exact ground a design consumes. A Freeform design's `geometry.landTake` can combine footprint cuts and whole touched parcels while its material building footprint stays unchanged. It governs land formation and building-removal effects.
+The exact ground a design consumes. A Freeform design's `geometry.landTake` can combine footprint cuts and chosen whole parcels while its material building footprint stays unchanged. A chosen whole parcel remains taken only while a building footprint overlaps it. When the last building leaves, that parcel and its surroundings leave the design, restoring its source state. It governs land formation and building-removal effects. Surrounding paving or green space occupies only taken land outside the building footprint; a footprint-only take has no surroundings.
 
 ### Demolition review
 
@@ -351,7 +351,7 @@ The transverse arrangement of corridor elements, such as lanes and their widths.
 
 ### Structure design
 
-The application's area-feature design category, including parks, squares, lakes and stations. This category is broader than the engineering meaning of a load-bearing structure.
+The application's area-feature design category, including parks, squares, lakes and stations. This category is broader than the engineering meaning of a load-bearing structure. A park, square or lake's authored area is its occupied land and supplies its site when reshaped; applying it forms modeled ground borders. An unsaved drawn outline is temporary and has no land effect until a design is applied.
 
 ### Decoration design
 
@@ -373,7 +373,7 @@ Authored building geometry, parameters and optional architectural evidence belon
 
 ### Freeform building
 
-A building design with one connected authored footprint, including any courtyard holes, and its vertical dimensions. Its land take can extend beyond that footprint. Dragging moves only the selected building footprint; authored surroundings and their furniture stay in place.
+A building design with one connected authored footprint, including any courtyard holes, and its vertical dimensions. Its land take can extend beyond that footprint. Dragging moves only the selected building footprint; surroundings stay anchored on occupied parcels. Leaving a parcel releases its surrounding treatment and furniture.
 
 ### Imported model footprint
 
@@ -448,6 +448,8 @@ The configuration selected for display. This choice changes the inspected illust
 ### Assumed street side
 
 A parcel edge treated as the front for a displayed calculation. It is an explicit modeling assumption unless independently established by the source.
+
+For source parcel envelopes, nearby street geometry selects a stable street-facing lot edge. Setbacks are measured inward from parcel boundaries; the street centreline only informs the orientation. Changing the shown configuration does not change that edge. Without usable street evidence, the result retains all supported edge interpretations as an unoriented outer bound and claims no front edge.
 
 ### Example build-out
 

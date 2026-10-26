@@ -195,6 +195,7 @@ describe('geometry-derived parcel references', () => {
         });
         expect(rendered.title).toBe('Formed ground piece piece-A');
         expect(rendered.info).toContain('identity.formedNote');
+        expect(rendered.info).toContain('Ground formed by the applied design.');
         expect(rendered.info).not.toContain('geometryReferenceNote');
         const copyTarget = rendered.titleElement.children.find(child => child.className === 'parcel-title-id');
         copyTarget.listeners.click();

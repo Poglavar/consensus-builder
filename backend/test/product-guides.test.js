@@ -35,7 +35,8 @@ describe('public product guides', () => {
         expect(html).toContain('<span class="ui-label">Manual mode</span>');
         expect(html).toContain('<span class="ui-label">Selected parcels</span>');
         expect(html).toContain('<span class="ui-label">Done selecting</span>');
-        expect(html).toContain('<span class="ui-label">Custom site</span>');
+        expect(html).not.toContain('<span class="ui-label">Custom site</span>');
+        expect(html).toContain('Draw a site here');
         expect(html).toContain('Share applied designs');
         expect(html).toContain('create an agreement from applied designs');
         expect(html).toContain('Propose');

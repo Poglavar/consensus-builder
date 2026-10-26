@@ -91,10 +91,10 @@
         function update(value) {
             if (closed) return;
             current = featureOf(value);
-            const outside = current && site && !inside(current);
-            warning.textContent = outside
-                ? text('outside', 'Outside the starting site. Affected parcels will be recalculated when you save.') : '';
-            warning.hidden = !outside;
+            // Free placement is the default. Only show a message when the user explicitly
+            // attempts to enable a lock that the current geometry cannot satisfy.
+            warning.textContent = '';
+            warning.hidden = true;
         }
         function setLocked(value) {
             const next = value === true && !!site;

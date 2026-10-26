@@ -531,21 +531,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         </button>
     `
         : '';
-    // Map actions remain available in the compact card and the reader. Details is an explicit
-    // transition into the reader; Fork and the contextual design editors keep distinct labels.
-    const primaryActionsHtml = `
-        <div class="proposal-actions proposal-actions-group proposal-primary-actions">
-            ${mapActionButtonHtml}
-            ${agreementOnlyPublication ? addToAgreementButtonHtml : ''}
-            ${shareButtonHtml}
-            ${agreementOnlyPublication ? '' : addToAgreementButtonHtml}
-            ${duplicateButtonHtml}
-            <button type="button" class="btn btn-proposal-details" onclick="toggleProposalDetailsPanelMinimized(false)">
-                <i class="fas fa-circle-info" aria-hidden="true"></i> ${tProposal('panel.proposal.actions.details', 'Details')}
-            </button>
-        </div>
-        ${mapActionFailureHtml}
-    `;
     // A Block or Row proposal is a rule on its parcels; leaving them is a conversion to one Freeform
     // building (proposals/freeform-conversion.js, proposal-editor-shell.js).
     const convertsToFreeform = proposalKey
@@ -561,7 +546,22 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     `
         : '';
     const additionalActionsHtml = crossSectionButtonHtml + editGeometryButtonHtml + convertToFreeformButtonHtml + compareButtonHtml + driveButtonHtml;
-
+    // Map actions remain available in the compact card and the reader. Details is an explicit
+    // transition into the reader; Fork and the contextual design editors keep distinct labels.
+    const primaryActionsHtml = `
+        <div class="proposal-actions proposal-actions-group proposal-primary-actions">
+            ${mapActionButtonHtml}
+            ${agreementOnlyPublication ? addToAgreementButtonHtml : ''}
+            ${shareButtonHtml}
+            ${agreementOnlyPublication ? '' : addToAgreementButtonHtml}
+            ${duplicateButtonHtml}
+            <button type="button" class="btn btn-proposal-details" onclick="toggleProposalDetailsPanelMinimized(false)">
+                <i class="fas fa-circle-info" aria-hidden="true"></i> ${tProposal('panel.proposal.actions.details', 'Details')}
+            </button>
+            ${additionalActionsHtml}
+        </div>
+        ${mapActionFailureHtml}
+    `;
     const escapedProposalDescription = proposalDisplayDescription && typeof escapeHtml === 'function'
         ? escapeHtml(proposalDisplayDescription)
         : proposalDisplayDescription;
@@ -758,16 +758,14 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             const ladder = displayState.rung;
             const ladderLabel = window.__proposalDisplayState.rungLabel(ladder, tProposal);
             const ladderTitle = escapeHtml(window.__proposalDisplayState.rungHint(ladder, tProposal));
-            const ladderBadge = `<span class="cb-badge cb-badge--${ladder}" title="${ladderTitle}">${ladderLabel}</span>`;
+            const ladderIcon = ladder === 'published' ? 'fa-globe' : 'fa-file-pen';
+            const ladderBadge = `<span class="cb-badge cb-badge--${ladder} proposal-ladder-badge" title="${ladderTitle}"><i class="fas ${ladderIcon}" aria-hidden="true"></i> ${ladderLabel}</span>`;
             const applied = appliedState
                 ? `<span class="cb-badge cb-badge--applied"><i class="fas fa-check" aria-hidden="true"></i> ${mapStatusBadgeLabel}</span>`
                 : '';
-            return ladderBadge + applied;
+            return proposalTypePill + applied + ladderBadge;
         })()}
                 ${agentBadgeHtml}
-            </div>
-            <div class="proposal-heading-row">
-                ${proposalTypePill}
             </div>
             <div class="proposal-description-row">
                 ${escapedProposalDescription ? `<p class="proposal-description-text">${escapedProposalDescription}</p>` : ''}
@@ -1100,9 +1098,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     // Populate footer with action buttons
     const footer = document.getElementById('proposal-details-footer');
     if (footer) {
-        footer.innerHTML = primaryActionsHtml + (additionalActionsHtml
-            ? `<div class="proposal-actions proposal-actions-group proposal-context-actions">${additionalActionsHtml}</div>`
-            : '');
+        footer.innerHTML = primaryActionsHtml;
         const defaultActionButton = footer.querySelector('.proposal-action-default');
         if (defaultActionButton && typeof defaultActionButton.focus === 'function' && !defaultActionButton.disabled) {
             requestAnimationFrame(() => {

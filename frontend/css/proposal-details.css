@@ -65,7 +65,17 @@
 
 #proposal-details-panel .proposal-badges-row {
     justify-content: flex-start;
+    flex-wrap: nowrap;
     margin: 0 0 10px;
+}
+
+#proposal-details-panel .proposal-badges-row > .cb-badge {
+    flex: 0 0 auto;
+    min-height: var(--cb-space-6);
+    padding: var(--cb-space-1) var(--cb-space-2);
+    font-size: var(--cb-text-xs);
+    line-height: var(--cb-leading);
+    white-space: nowrap;
 }
 
 #proposal-details-panel .proposal-heading-row {
@@ -95,12 +105,12 @@
     gap: 6px;
     margin: 14px 0 18px;
     color: var(--cb-text-muted);
-    font-size: 12px;
+    font-size: 14px;
 }
 
 #proposal-details-panel .proposal-author-row .metric-value {
     flex: 0 1 auto;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 500;
 }
 
@@ -158,23 +168,11 @@
 }
 
 #proposal-details-panel .panel-footer:empty { display: none; }
-#proposal-details-panel .proposal-primary-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 0; }
-#proposal-details-panel.is-minimized .proposal-primary-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+#proposal-details-panel .proposal-primary-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 1fr; gap: 8px; margin: 0; }
 #proposal-details-panel .proposal-primary-actions > button { grid-column: auto; order: 0; min-width: 0; min-height: var(--cb-control-height); margin: 0; font-size: 13px; padding: 6px 8px; white-space: normal; }
 
 #proposal-details-panel:not(.is-minimized) .btn-proposal-details { display: none; }
-/* The second row (Edit cross-section, Before / after, …): however many there are, they split the
-   row into equal parts, whatever their labels. */
-#proposal-details-panel .proposal-context-actions { display: grid; grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 8px; margin: 8px 0 0; }
-#proposal-details-panel .proposal-context-actions > button { min-width: 0; min-height: var(--cb-control-height); margin: 0; font-size: 12px; padding: 6px 8px; white-space: normal; }
-
 @media (max-width: 767.98px) {
-    /* On a phone the actions sit two to a row, so a label breaks between words, not inside one
-       ("Unappl y" at three to a row). */
-    #proposal-details-panel .proposal-primary-actions {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
     #proposal-details-panel .proposal-actions-group button {
         overflow-wrap: break-word;
     }
@@ -230,7 +228,6 @@
     #proposal-details-panel:not(.is-minimized) .panel-header h3 { font-size: 20px; }
     #proposal-details-panel .panel-header__actions button { min-width: 44px; min-height: 44px; }
     #proposal-details-panel .proposal-primary-actions > button,
-    #proposal-details-panel .proposal-context-actions > button { min-height: 44px; }
     #proposal-details-panel > .mobile-dock-sheet-handle { display: none; }
     #proposal-details-panel .panel-body { padding: 16px max(16px, env(safe-area-inset-right)) 8px max(16px, env(safe-area-inset-left)); }
     #proposal-details-panel .panel-footer { padding: 10px max(16px, env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); border-radius: 0; }

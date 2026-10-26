@@ -2650,12 +2650,7 @@ function corridorEditorOpenOverlayBody() {
             <div class="corridor-editor-body"></div>
 `,
         footer: `
-                <button type="button" class="btn btn-primary corridor-editor-save"${drawing ? '' : ' disabled'}>${drawing
-                    ? corridorEditorI18n('modal.corridor.applyDrawing', 'Apply to drawing')
-                    // A placed road saves directly: in place, or as a counterproposal of a published one.
-                    : (window.ProposalLineage?.isPublished?.(corridorEditorState.source)
-                        ? corridorEditorI18n('modal.corridor.saveCounterproposal', 'Save as counterproposal')
-                        : corridorEditorI18n('proposalDrafts.actions.saveChanges', 'Save changes'))}</button>
+                <button type="button" class="btn btn-primary corridor-editor-save"${drawing ? '' : ' disabled'}>${corridorEditorI18n('common.done', 'Done')}</button>
             `
     });
     if (!corridorEditorSession) throw new Error('Another geometry editor owns the map.');

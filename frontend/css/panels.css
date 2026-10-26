@@ -511,17 +511,12 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 }
 
 /* The parcel and block panels' tabs: the shared cb-tabs strip (css/primitives.css), inset like the
-   header above it. Four tabs share the parcel strip (Design · Info · Designs · Tools);
-   icon tabs take their own width and the Designs label takes the remaining room. When the labels do not
-   fit, the strip scrolls sideways. The Proposals tab carries its count as a cb-badge. */
+   header above it. Tabs share the available width; when the labels do not fit, the strip scrolls
+   sideways. The Proposals tab carries its count as a cb-badge. */
 #parcel-info-panel .parcel-tabs,
 #block-info-panel .block-tabs {
     flex-shrink: 0;
     padding: 0 var(--cb-space-2);
-}
-
-.parcel-tabs .parcel-tab-btn--icon {
-    flex: 0 0 auto;
 }
 
 .parcel-tab-count,
@@ -1078,6 +1073,21 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
+}
+
+/* Unknown ownership is a single compact fact; known owners keep the list and share layout below. */
+.parcel-owner-section--unknown .parcel-owner-header {
+    justify-content: flex-start;
+    gap: var(--cb-space-2);
+    margin-bottom: 0;
+}
+
+.parcel-owner-section--unknown .parcel-owners-container--unknown {
+    flex: 0 0 auto;
+    width: auto;
+    max-width: none;
+    max-height: none;
+    overflow: visible;
 }
 
 .parcel-owner-header-label {

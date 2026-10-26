@@ -251,7 +251,7 @@
             identityNoteFallback = 'Ground left outside the authored plots by this parcel layout. It is kept separately from the plot outputs.';
         } else if (identityKind === 'formed') {
             identityNoteKey = 'panel.parcel.identity.formedNote';
-            identityNoteFallback = 'Ground formed by the applied designs. This reference identifies the current piece, not a registered parcel or an authored plot.';
+            identityNoteFallback = 'Ground formed by the applied design.';
         } else if (identityKind === 'sourcePart') {
             identityNoteKey = 'panel.parcel.identity.sourcePartNote';
             identityNoteFallback = 'One connected part of a source parcel. This reference identifies the displayed part; the source parcel can contain other parts.';
@@ -417,8 +417,8 @@
             && ['unknown', 'unavailable', 'not available'].includes(feature.properties.ownershipType.trim().toLowerCase());
         const ownershipIsUnknown = !ownershipSupported
             || (unknownOwnershipType && !ownershipListFromProps && !shouldFetchRealOwners && !simulatedOwnershipMode);
-        const unknownOwnerLabel = tParcel('common.unknownOwner', {}, 'Unknown owner');
-        const unknownOwnerHtml = `<span data-i18n-key="common.unknownOwner">${unknownOwnerLabel}</span>`;
+        const unknownOwnerLabel = tParcel('common.unknown', {}, 'Unknown');
+        const unknownOwnerHtml = `<span data-i18n-key="common.unknown">${unknownOwnerLabel}</span>`;
         const simulatedOwnerHtml = ownershipIsUnknown ? '' : buildSimulatedOwnerHtml(parcelId);
         const fallbackOwnerName = tParcel('panel.parcel.owner.single', {}, 'Single owner');
         const fallbackOwnerHtml = ownershipIsUnknown ? unknownOwnerHtml : (simulatedOwnerHtml || `
@@ -645,12 +645,13 @@
 
         const infoContent = `
         ${sourceNoteHtml}
-        <div class="parcel-owner-section">
+        <div class="parcel-owner-section${ownershipIsUnknown ? ' parcel-owner-section--unknown' : ''}">
             <div class="parcel-owner-header">
                 <div class="parcel-owner-header-label" data-i18n-key="panel.parcel.metrics.owner">${ownerLabel}</div>
                 ${ownershipTypeLabel}
                 ${adButtonHtml}
                 ${ownershipIsUnknown ? '' : `<div class="parcel-owner-header-label parcel-owner-header-share" data-i18n-key="panel.parcel.metrics.share">${shareLabel}</div>`}
+                ${ownershipIsUnknown ? `<div class="parcel-owners-container parcel-owners-container--unknown" id="${PARCEL_OWNER_VALUE_ELEMENT_ID}">${ownershipHtml}</div>` : ''}
             </div>
             ${adLink ? `
             <div class="parcel-ad-dialog" id="parcel-ad-dialog" data-ad-link="${adLink}" style="display:none;">
@@ -666,7 +667,7 @@
                 </button>
             </div>
             ` : ''}
-            <div class="parcel-owners-container" id="${PARCEL_OWNER_VALUE_ELEMENT_ID}">${ownershipHtml}</div>
+            ${ownershipIsUnknown ? '' : `<div class="parcel-owners-container" id="${PARCEL_OWNER_VALUE_ELEMENT_ID}">${ownershipHtml}</div>`}
         </div>
         ${identityNoteHtml}
         <div class="parcel-metric-row">

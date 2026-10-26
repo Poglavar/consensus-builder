@@ -224,7 +224,7 @@ test.describe('Single-building placement and immutable replacement @features', (
     await lock.uncheck();
     await dragActive(page, -240);
     const outside = await editorDesign(page);
-    await expect(page.locator('.on-map-editor__placement-warning')).toBeVisible();
+    await expect(page.locator('.on-map-editor__placement-warning')).toBeHidden();
     await lock.click();
     await expect(lock).not.toBeChecked();
     await expect.poll(() => editorDesign(page)).toEqual(outside);

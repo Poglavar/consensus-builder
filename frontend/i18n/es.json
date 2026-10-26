@@ -51,7 +51,6 @@
         "placement": {
             "snap": "Ajustar a los bordes",
             "lock": "Fijar a la ubicación inicial",
-            "outside": "Fuera de la ubicación inicial. Las parcelas afectadas se recalcularán al guardar.",
             "lockOutside": "Mueve el diseño dentro de la ubicación inicial antes de fijarlo."
         }
     },
@@ -827,7 +826,8 @@
             "refreshing": "Actualizando…",
             "analyzing": "Analizando…",
             "applying": "Aplicando…"
-        }
+        },
+        "done": "Listo"
     },
     "proposals": {
         "autoName": {
@@ -1460,7 +1460,7 @@
                 "source": "Parcela de origen {{number}}",
                 "sourcePart": "Parte de la parcela de origen {{number}}",
                 "formed": "Porción de terreno resultante {{number}}",
-                "formedNote": "Terreno formado por los diseños aplicados. Esta referencia identifica la porción actual, no una parcela registrada ni una parcela diseñada.",
+                "formedNote": "Terreno formado por el diseño aplicado.",
                 "sourcePartNote": "Una parte conexa de una parcela de origen. Esta referencia identifica la parte mostrada; la parcela de origen puede contener otras partes."
             },
             "tabInfo": "Info",
@@ -2166,7 +2166,8 @@
             "editSurroundings": "Editar el entorno",
             "surroundingsPaved": "Pavimento",
             "surroundingsGreen": "Verde",
-            "surroundingsInfo": "El tratamiento de la superficie se aplica al terreno alrededor de los edificios propuestos. Las demoliciones siguen la ocupación del terreno del diseño.",
+            "placeHint": "Haz clic o toca el mapa para colocar el edificio. Arrastra el mapa para desplazarlo. Esc cancela.",
+            "surroundingsInfo": "El pavimento o la zona verde ocupa el terreno tomado fuera de la huella del edificio. Si solo se toma la huella, no hay entorno.",
             "uploadGeojsonLabel": "Subir GeoJSON",
             "uploadGlbLabel": "Subir .glb",
             "uploadNoPolygon": "No se pudo importar el archivo. Usa huellas de edificios Polygon o MultiPolygon válidas.",
@@ -6124,11 +6125,11 @@
             "stall": "Mesa",
             "statue": "Estatua",
             "erase": "Eliminar",
-            "move": "Mover"
+            "move": "Mover",
+            "boundary": "Límite"
         },
         "finishPath": "Terminar sendero",
         "undo": "Deshacer",
-        "save": "Guardar diseño",
         "hintErase": "Haz clic en un elemento para eliminarlo.",
         "hintPlace": "Haz clic en el mapa para colocar el elemento seleccionado.",
         "hintTree": "Haz clic en el mapa para plantar un árbol. Haz clic en un árbol plantado para cambiar su tipo y altura.",
@@ -6137,7 +6138,9 @@
         "statusOutside": "Coloca los elementos dentro del límite de la estructura.",
         "statusSaved": "Diseño de la estructura guardado.",
         "hintMove": "Arrastra dentro del límite para mover todo el diseño. El contorno y todo su contenido se mueven juntos.",
-        "moveUnavailable": "No se pudo mover este diseño. Inténtalo de nuevo."
+        "moveUnavailable": "No se pudo mover este diseño. Inténtalo de nuevo.",
+        "hintBoundary": "Arrastra el área para moverla o sus vértices para cambiar la forma. Toca un borde para añadir un punto; selecciona un punto para eliminarlo.",
+        "boundaryVertexTitle": "Arrastra para cambiar la forma del límite"
     },
     "stationEditor": {
         "ariaLabel": "Editor de geometría de estación",
@@ -7523,7 +7526,7 @@
     "planningViews": {
         "reroll": {
             "proposed": "Genera otra ilustración diseño. No cambia nada en los registros.",
-            "permitted": "Genera otro tipo de vivienda y lado de calle permitidos. No cambia nada en los registros."
+            "permitted": "Genera otro tipo de vivienda permitido. No cambia nada en los registros."
         },
         "zoningAreas": "Áreas de la fuente urbanística",
         "envelopeTitle": "Envolvente permitida",
@@ -7536,7 +7539,7 @@
         "excludedConfigurations": "No configurable aquí: {{list}}.",
         "envelopeCoverage": "Las envolventes parciales se derivan de los registros parcelarios y urbanísticos cargados. Las parcelas sin volumen se cuentan por motivo; la ausencia de volumen no demuestra una capacidad nula.",
         "envelopeSummary": "{{count}} registros parcelarios examinados: {{shapes}} con envolventes parciales, {{missing}} sin volumen.",
-        "envelopeNote": "El casco translúcido es la envolvente máxima de todos los tipos de vivienda y lados de calle supuestos registrados; esas alternativas no pueden construirse a la vez. El volumen interior es una ilustración para un lado de calle supuesto: tira el dado o elige abajo. Siguen aplicándose los límites de superficie y las reglas pendientes.",
+        "envelopeNote": "La envolvente máxima combina los tipos de vivienda registrados. El frente se orienta hacia las calles cercanas cuando hay datos; de lo contrario, la envolvente incluye todas las orientaciones admitidas. Elige un tipo de vivienda o tira el dado para cambiar la configuración mostrada. Siguen aplicándose los límites de superficie y las reglas pendientes.",
         "assumedSide": "Lado de calle supuesto: {{side}}.",
         "lotBelowMinimum": "Parcela por debajo del mínimo de {{minimum}}",
         "sideOptions": {
@@ -7686,6 +7689,7 @@
         },
         "evidence": {
             "direct": "Valor directo de la fuente",
+            "literal": "Número registrado",
             "estimated": "Estimación de la fuente"
         },
         "zoningArea": "Área de zonificación de la fuente",

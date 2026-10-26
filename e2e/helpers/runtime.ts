@@ -128,10 +128,24 @@ export async function expandSelectionSection(page: Page): Promise<void> {
   await expect(row).toHaveAttribute('aria-expanded', 'true');
 }
 
+// Contextual site commands remain available through the palette after their parcel shortcuts retire.
+export async function runPaletteCommand(page: Page, command: string): Promise<void> {
+  const label=await page.evaluate(id=>{
+    const w=window as any;
+    return w.UiCommands.labelOf(w.UiCommands.findCommand(id),(key: string)=>w.i18n.t(key));
+  },command);
+  await page.keyboard.press('Meta+k');
+  await expect(page.locator('.command-palette-backdrop')).toBeVisible();
+  await page.locator('.command-palette__input').fill(label);
+  await page.locator(`.command-palette__item[data-command="${command}"]`).click();
+  await expect(page.locator('.command-palette-backdrop')).toBeHidden();
+}
+
 // Selection actions live in the section body, so reveal them before using a command.
 export async function runSelectionCommand(page: Page, command: string): Promise<void> {
   await expandSelectionSection(page);
-  await stackCommand(page, command).click();
+  if (command === 'selection.useAsSite') await runPaletteCommand(page,command);
+  else await stackCommand(page, command).click();
 }
 
 export async function showSelectionDesignTab(page: Page): Promise<void> {
@@ -193,7 +207,8 @@ export async function openParcelAt(page: Page, lng: number, lat: number): Promis
 // The parcel at a point, then one of the parcel section's actions.
 export async function runParcelCommand(page: Page, lng: number, lat: number, command: string): Promise<void> {
   await openParcelAt(page, lng, lat);
-  await stackCommand(page, command).click();
+  if (command === 'parcel.useAsSite') await runPaletteCommand(page,command);
+  else await stackCommand(page, command).click();
 }
 
 // The parcel at a point, with its panel on one tab.

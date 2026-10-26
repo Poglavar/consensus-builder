@@ -212,7 +212,11 @@
         if (record.structureProposal) {
             const space = record.structureProposal;
             if (space.kind !== record.goal) fail('space-kind-mismatch', 'Keep goal and structureProposal.kind together.');
-            if (!same(space.geometry, original.structureProposal?.geometry) && same(record.site, original.site)) record.site = structuredClone(space.geometry);
+            if (!same(space.geometry, original.structureProposal?.geometry)) {
+                if (same(record.site, original.site)) record.site = structuredClone(space.geometry);
+                if (space.decorationDesign) space.decorationDesign = load('ProposalApplyStructures', './proposals/apply/structures.js')
+                    .decorationsOnGround(space.decorationDesign, space.geometry, turf);
+            }
             validateDecorations(space.decorationDesign);
         }
         if (record.buildingProposal) {
