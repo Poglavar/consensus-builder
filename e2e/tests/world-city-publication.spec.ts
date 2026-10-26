@@ -1,6 +1,6 @@
 // Worldwide publication and city routing (projections.md §3, §10 M8, location-first.md phase 4;
 // plan-design-agreement.md M2, M3): a publish sends the design with the parcel source its city binds
-// with, a design follows its geographic context while an agreement confirms its saved-plan city,
+// with, a design focuses its geography while an agreement confirms its saved-plan city,
 // the address bar follows the map, and published routes wait for the profile workspace owner.
 import { Browser, BrowserContext, Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
@@ -95,7 +95,7 @@ test.describe('Worldwide publication and city routing @core', () => {
     expect(indexed.content).not.toHaveProperty('parcelSourceId');
   });
 
-  test('a design opened from another city follows its geographic context without a city-name gate', async ({ mockApi: author, browser }) => {
+  test('a foreign-city design focuses its geography without switching the saved workspace', async ({ mockApi: author, browser }) => {
     // One publish and a device resolving the design's geographic source context.
     test.setTimeout(180_000);
     const cid = await publishPark(author);
@@ -105,7 +105,15 @@ test.describe('Worldwide publication and city routing @core', () => {
     const device = await deviceIn(browser, pageIndex(author), 'new_york', baseURL);
     try {
       await device.page.goto(`/?city=new_york&reduceMotion=1&focusProposal=${cid}`);
-      await expect.poll(() => storedIn(device.page, `design-${cid}`), { timeout: 30_000 }).toEqual({ city: 'zagreb', stored: true });
+      await expect.poll(() => storedIn(device.page, `design-${cid}`), { timeout: 30_000 }).toEqual({ city: 'new_york', stored: true });
+      await expect.poll(() => device.page.evaluate(cid => {
+        const w = window as any, record = w.proposalStorage.getProposal(`design-${cid}`);
+        return !!record && w.map.getBounds().intersects(w.L.geoJSON(w.MapPick.outlineOf(record)).getBounds());
+      }, cid)).toBe(true);
+      expect(await device.page.evaluate(cid => {
+        const w = window as any, record = w.proposalStorage.getProposal(`design-${cid}`);
+        return { city: record.city, cid: w.DesignRecord.cidOf(record) };
+      }, cid)).toEqual({ city: 'zagreb', cid });
       await expect(device.page.locator('.city-switch-dialog')).toHaveCount(0);
       expect(new URL(device.page.url()).searchParams.get('focusProposal')).toBe(cid);
       expect(device.errors).toEqual([]);
