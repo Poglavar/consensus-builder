@@ -745,7 +745,7 @@ function urlFocusNeedsBuildings(ids) {
     }
 }
 
-function enterUrlDrivenViewWhenReady(focusIds) {
+function enterUrlDrivenViewWhenReady(focusIds, viewOptions = {}) {
     const ids = (Array.isArray(focusIds) ? focusIds : []).filter(Boolean).map(String);
     const deadline = Date.now() + 8000;
     const attempt = () => {
@@ -756,7 +756,7 @@ function enterUrlDrivenViewWhenReady(focusIds) {
             ready = ready || feats.some(f => f && f.properties && ids.includes(String(f.properties.proposalId)));
         } catch (_) { ready = true; }
         if (ready || Date.now() > deadline) {
-            enterUrlDrivenView(ids.length ? ids : undefined);
+            enterUrlDrivenView(ids.length ? ids : undefined, viewOptions);
             return;
         }
         setTimeout(attempt, 200);
@@ -817,7 +817,8 @@ function latestAuthoredDesignId(proposalIds) {
  * no existing design is unapplied without that choice. A different city asks to switch first.
  * @param cids the link's design CIDs
  * @param options { openDetails = true, frame = true, enter3D = true, summary = true } — the agreement
- *   route (agreement-sync.js) applies its designs and opens the agreement instead.
+ *   route (agreement-sync.js) applies its designs and opens the agreement instead. Confirming a
+ *   replacement frames the complete incoming plan, superseding a previous URL view.
  * @returns {Promise<{ applied: string[], skipped: string[], omitted: string[], failed: { id, label, reason }[],
  *   blocked: boolean, localIds: Map<string, string> }>} local proposal ids; localIds maps CID → local id
  */
@@ -1022,11 +1023,17 @@ async function handleSharedDesignRoute(cids, options = {}) {
         const standing = [...result.applied, ...result.skipped];
         const focusId = latestAuthoredDesignId(standing);
         const userTookOver = () => !!(replayTakeover && replayTakeover.tookOver());
-        if (focusId && options.frame !== false && !userTookOver()) {
+        const replacedPlan = replaceConflicts && result.applied.length > 0 && !result.failed.length;
+        if (focusId && (replacedPlan || options.frame !== false) && !userTookOver()) {
+            const focusIds = replacedPlan ? standing : [focusId];
             if (typeof window.isThreeModeActive === 'function' && window.isThreeModeActive()) {
-                window.focusThreeModeOnProposals([focusId]);
+                window.focusThreeModeOnProposals(focusIds);
             } else {
-                const bounds = calculateBoundsForLastAppliedProposal(focusId);
+                const bounds = focusIds.reduce((combined, id) => {
+                    const candidate = calculateBoundsForLastAppliedProposal(id);
+                    if (!candidate?.isValid()) return combined;
+                    return combined ? combined.extend(candidate) : candidate;
+                }, null);
                 if (bounds && bounds.isValid()) map.fitBounds(bounds, { padding: [80, 80], maxZoom: 18, animate: false });
             }
         }
@@ -1053,13 +1060,13 @@ async function handleSharedDesignRoute(cids, options = {}) {
             }
         }
 
-        if (sharedView && !userTookOver()) {
+        if (sharedView && !replacedPlan && !userTookOver()) {
             map.setView([sharedView.lat, sharedView.lon], sharedView.zoom ?? map.getZoom(), { animate: false });
         }
         // A link that asks for 3D restores its captured camera when supplied.
         if (options.enter3D !== false && !url3DModeHandled && is3DModeRequestedFromUrl() && standing.length) {
             url3DModeHandled = true;
-            enterUrlDrivenViewWhenReady(standing);
+            enterUrlDrivenViewWhenReady(standing, replacedPlan ? { restoreView: null } : {});
         }
         return result;
     } catch (error) {

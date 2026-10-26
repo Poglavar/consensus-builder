@@ -726,11 +726,11 @@ function tryEnterRealisticMode(options) {
 }
 
 // URL entry shares the same cancellable transition as the mode buttons.
-function enterUrlDrivenView(focusProposalIds) {
+function enterUrlDrivenView(focusProposalIds, viewOptions = {}) {
     const arrival = window.MapShare.arrivalOptions(window.location.search);
     const restoreView = arrival.restoreView
         || ((typeof window.getAiSceneRestoreView === 'function') ? window.getAiSceneRestoreView() : null);
-    const options = { fromUrl: true, focusProposalIds, restoreView, rotate: arrival.rotate, frameProposal: true };
+    const options = { fromUrl: true, focusProposalIds, restoreView, rotate: arrival.rotate, frameProposal: true, ...viewOptions };
     return isRealisticModeRequestedFromUrl() ? tryEnterRealisticMode(options) : tryEnterThreeMode(options);
 }
 
