@@ -8,6 +8,20 @@ const require = createRequire(import.meta.url);
 const { reference } = require('../../frontend/js/planning/source-proposal.js');
 const assessment = require('../../frontend/js/planning/parcel-assessment.js');
 const fail = (code, status = 422) => { throw Object.assign(new Error(code), { code, status }); };
+const componentBounds = new WeakMap();
+
+// Citywide districts can contain thousands of disconnected polygons. Whole components whose
+// boxes miss the full parcel cannot affect its coverage; retain every vertex of the others.
+// This is only a calculation input. The study still exposes the complete source record.
+function zoningNearParcel(geometry, bounds) {
+    if (geometry.type !== 'MultiPolygon') return geometry;
+    if (!componentBounds.has(geometry)) componentBounds.set(geometry, geometry.coordinates.map(coordinates =>
+        ({ coordinates, bbox: turf.bbox(turf.polygon(coordinates)) })));
+    const coordinates = componentBounds.get(geometry).filter(({ bbox }) =>
+        bbox[0] <= bounds[2] && bbox[2] >= bounds[0] && bbox[1] <= bounds[3] && bbox[3] >= bounds[1])
+        .map(component => component.coordinates);
+    return coordinates.length ? { type: 'MultiPolygon', coordinates } : null;
+}
 
 export async function readStudyZoning(provider, query, bbox) {
     const answer = await provider.query(null, { ...query, bbox, limit: 200 });
@@ -48,15 +62,15 @@ export async function loadParcelStudy(query, { sources, parcelProvider = descrip
 
 export function assembleParcelStudy(parcel, descriptor, records) {
     if (turf.area(parcel) > 1000000 || parcel.geometry.type !== 'Polygon') fail('unsupported-parcel-shape');
-    const overlaps = records.filter(item => {
-        const intersection = turf.intersect(parcel, turf.feature(item.site));
-        return intersection && turf.area(intersection) > 0.01;
+    const bounds = turf.bbox(parcel);
+    const overlaps = records.flatMap(source => {
+        const geometry = zoningNearParcel(source.site, bounds);
+        const covered = geometry && turf.intersect(parcel, turf.feature(geometry));
+        return covered && turf.area(covered) > 0.01 ? [{ source, geometry, covered }] : [];
     });
     if (overlaps.length !== 1) fail(overlaps.length ? 'study-multiple-zoning-areas' : 'study-zoning-missing');
-    const source = overlaps[0];
-    const uncovered = turf.difference(parcel, turf.feature(source.site));
-    const covered = turf.intersect(parcel, turf.feature(source.site));
-    if (!covered) fail('study-zoning-missing');
+    const { source, geometry, covered } = overlaps[0];
+    const uncovered = turf.difference(parcel, turf.feature(geometry));
     const context = { schemaVersion: 'planning-parcel-study.v1', source, sourceReference: reference(source.proposal),
         parcel, parcelReference: { sourceId: descriptor.id, parcelId: parcel.id,
             revision: sourceRevision({ id: parcel.id, geometry: parcel.geometry }) },

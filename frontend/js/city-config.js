@@ -5076,6 +5076,7 @@
         ,
         // BEGIN qualification admission 2026-10-11 round2
         arlington_va: {
+            planning: { sourceIds: ['atlas-arlington-va-2023'] },
             id: 'arlington_va', wupCityCode: '8123',
             label: translateCityText('city.labels.arlington_va', 'Arlington (Washington urban area), United States'),
             currency: { locale: 'en-US', code: 'USD' },
@@ -5098,6 +5099,7 @@
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         norfolk: {
+            planning: { sourceIds: ['atlas-norfolk-2024'] },
             id: 'norfolk', wupCityCode: '8102',
             label: translateCityText('city.labels.norfolk', 'Norfolk, United States'),
             currency: { locale: 'en-US', code: 'USD' },
@@ -5472,6 +5474,7 @@
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         dale_city: {
+            planning: { sourceIds: ['atlas-dale-city-2023'] },
             id: 'dale_city', wupCityCode: '8116',
             label: translateCityText('city.labels.dale_city', 'Dale City, United States'),
             currency: { locale: 'en-US', code: 'USD' },
@@ -6682,6 +6685,7 @@
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         manassas_park: {
+            planning: { sourceIds: ['atlas-manassas-park-2023'] },
             id: 'manassas_park', wupCityCode: '8109',
             label: translateCityText('city.labels.manassas_park', 'Manassas Park, United States'),
             currency: { locale: 'en-US', code: 'USD' },
@@ -7298,6 +7302,7 @@
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         sugarland_run: {
+            planning: { sourceIds: ['atlas-sugarland-run-2023'] },
             id: 'sugarland_run', wupCityCode: '8144',
             label: translateCityText('city.labels.sugarland_run', 'Sugarland Run, United States'),
             currency: { locale: 'en-US', code: 'USD' },
@@ -7822,6 +7827,7 @@
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
         },
         arlington: {
+            planning: { sourceIds: ['atlas-arlington-2024'] },
             id: 'arlington',
             wupCityCode: '6413',
             label: translateCityText('city.labels.arlington', 'Arlington, United States'),
@@ -9298,6 +9304,7 @@
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         honolulu: {
+            planning: { sourceIds: ['atlas-honolulu-2023'] },
             id: 'honolulu',
             label: translateCityText('city.labels.honolulu', 'Honolulu, United States'),
             currency: { locale: 'en-US', code: 'USD' },
@@ -9574,6 +9581,7 @@
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         helena: {
+            planning: { sourceIds: ['atlas-helena-2023'] },
             id: 'helena',
             label: translateCityText('city.labels.helena', 'Helena, United States'),
             currency: { locale: 'en-US', code: 'USD' },
@@ -9620,6 +9628,7 @@
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         concord: {
+            planning: { sourceIds: ['atlas-concord-2023'] },
             id: 'concord',
             label: translateCityText('city.labels.concord', 'Concord, United States'),
             currency: { locale: 'en-US', code: 'USD' },
@@ -9948,6 +9957,7 @@
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         nashville: {
+            planning: { sourceIds: ['atlas-nashville-2023'] },
             id: 'nashville',
             label: translateCityText('city.labels.nashville', 'Nashville, United States'),
             currency: { locale: 'en-US', code: 'USD' },
@@ -12789,6 +12799,7 @@
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         lindberg: {
+            planning: { sourceIds: ['atlas-lindberg-2024'] },
             id: 'lindberg', wupCityCode: '6345',
             label: translateCityText('city.labels.lindberg', 'Lindberg, United States'),
             currency: { locale: 'en-US', code: 'USD' },
@@ -14400,6 +14411,7 @@
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         south_central: {
+            planning: { sourceIds: ['atlas-south-central-2023'] },
             id: 'south_central', wupCityCode: '6665',
             label: translateCityText('city.labels.south_central', 'South Central, United States'),
             currency: { locale: 'en-US', code: 'USD' },
@@ -14634,6 +14646,7 @@
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         worcester: {
+            planning: { sourceIds: ['atlas-worcester-2023'] },
             id: 'worcester', wupCityCode: '8469',
             label: translateCityText('city.labels.worcester', 'Worcester, United States'),
             currency: { locale: 'en-US', code: 'USD' },
@@ -14643,6 +14656,7 @@
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         fall_river: {
+            planning: { sourceIds: ['atlas-fall-river-2023'] },
             id: 'fall_river', wupCityCode: '8481',
             label: translateCityText('city.labels.fall_river', 'Fall River, United States'),
             currency: { locale: 'en-US', code: 'USD' },
@@ -14652,6 +14666,7 @@
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         lowell: {
+            planning: { sourceIds: ['atlas-lowell-2023'] },
             id: 'lowell', wupCityCode: '8505',
             label: translateCityText('city.labels.lowell', 'Lowell, United States'),
             currency: { locale: 'en-US', code: 'USD' },
@@ -14661,6 +14676,7 @@
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         lawrence: {
+            planning: { sourceIds: ['atlas-lawrence-2023'] },
             id: 'lawrence', wupCityCode: '8517',
             label: translateCityText('city.labels.lawrence', 'Lawrence, United States'),
             currency: { locale: 'en-US', code: 'USD' },
@@ -14670,6 +14686,7 @@
             buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         lynn: {
+            planning: { sourceIds: ['atlas-lynn-2023'] },
             id: 'lynn', wupCityCode: '8523',
             label: translateCityText('city.labels.lynn', 'Lynn, United States'),
             currency: { locale: 'en-US', code: 'USD' },

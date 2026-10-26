@@ -950,3 +950,9 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-26: Model and Google 3D share selection and inspection behaviour; retire the separate photo cadastral picker while retaining boundary drawing as an independent layer.
 
 - 2026-10-26: Every change to human editing requires an MCP parity check; use shared authoring code and granular tools, and record evidence even when no MCP change is needed.
+
+- 2026-10-26: Enable Permitted for configured US cities using available public Atlas releases first; per-city entries may share a regional adapter URL. Licensed access is being located separately, and broader rule interpretation follows after this usable baseline.
+
+- 2026-10-26: Research existing international zoning/spatial-plan standards before designing a common executable rule model; LADM and INSPIRE provide relevant foundations, while a new core schema remains undecided.
+
+- 2026-10-26: Build Atlas envelope support incrementally, beginning with simple bounds from available setbacks, then adding height and other constraints; expand region by region. Use measured rule-field distributions to choose the next supported cases.

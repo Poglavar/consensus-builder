@@ -1,3 +1,340 @@
 {
-  "sources": []
+  "sources": [
+    {
+      "id": "atlas-arlington-2024",
+      "city": "arlington",
+      "label": "National Zoning Atlas \u00b7 Arlington",
+      "edition": "2024",
+      "url": "https://www.mercatus.org/sites/default/files/2024-10/tx_zoning_atlas_dfw_2024.zip",
+      "product": "districts",
+      "archive": {
+        "geometry": "TX_Zoning_Atlas_DFW_2024/ArlingtonTarrantCountyTX-ZoningDistricts.geojson"
+      },
+      "parcelSourceId": "arlington-tax-parcels"
+    },
+    {
+      "id": "atlas-lindberg-2024",
+      "city": "lindberg",
+      "label": "National Zoning Atlas \u00b7 Lindberg",
+      "edition": "2024",
+      "url": "https://www.mercatus.org/sites/default/files/2024-10/tx_zoning_atlas_dfw_2024.zip",
+      "product": "districts",
+      "archive": {
+        "geometry": "TX_Zoning_Atlas_DFW_2024/ArlingtonTarrantCountyTX-ZoningDistricts.geojson"
+      },
+      "parcelSourceId": "arlington-tax-parcels"
+    },
+    {
+      "id": "atlas-arlington-va-2023",
+      "city": "arlington_va",
+      "label": "National Zoning Atlas \u00b7 Arlington (Washington urban area)",
+      "edition": "2023",
+      "url": "https://www.mercatus.org/sites/default/files/2024-09/va_zoning_atlas_northernva_2023.zip",
+      "product": "districts",
+      "archive": {
+        "geometry": "VA_Zoning_Atlas_NorthernVA_2023.geojson"
+      },
+      "parcelSourceId": "us-va-richmond-parcels"
+    },
+    {
+      "id": "atlas-dale-city-2023",
+      "city": "dale_city",
+      "label": "National Zoning Atlas \u00b7 Dale City",
+      "edition": "2023",
+      "url": "https://www.mercatus.org/sites/default/files/2024-09/va_zoning_atlas_northernva_2023.zip",
+      "product": "districts",
+      "archive": {
+        "geometry": "VA_Zoning_Atlas_NorthernVA_2023.geojson"
+      },
+      "parcelSourceId": "us-va-richmond-parcels"
+    },
+    {
+      "id": "atlas-manassas-park-2023",
+      "city": "manassas_park",
+      "label": "National Zoning Atlas \u00b7 Manassas Park",
+      "edition": "2023",
+      "url": "https://www.mercatus.org/sites/default/files/2024-09/va_zoning_atlas_northernva_2023.zip",
+      "product": "districts",
+      "archive": {
+        "geometry": "VA_Zoning_Atlas_NorthernVA_2023.geojson"
+      },
+      "parcelSourceId": "us-va-richmond-parcels"
+    },
+    {
+      "id": "atlas-sugarland-run-2023",
+      "city": "sugarland_run",
+      "label": "National Zoning Atlas \u00b7 Sugarland Run",
+      "edition": "2023",
+      "url": "https://www.mercatus.org/sites/default/files/2024-09/va_zoning_atlas_northernva_2023.zip",
+      "product": "districts",
+      "archive": {
+        "geometry": "VA_Zoning_Atlas_NorthernVA_2023.geojson"
+      },
+      "parcelSourceId": "us-va-richmond-parcels"
+    },
+    {
+      "id": "atlas-norfolk-2024",
+      "city": "norfolk",
+      "label": "National Zoning Atlas \u00b7 Norfolk",
+      "edition": "2024",
+      "url": "https://www.mercatus.org/sites/default/files/2024-10/va_zoning_atlas_hamptonroads_2024.zip",
+      "product": "districts",
+      "archive": {
+        "geometry": "VA_Zoning_Atlas_HamptonRoads_2024.geojson",
+        "rules": "VA_Zoning_Atlas_HamptonRoads_2024.csv",
+        "join": [
+          {
+            "geometry": "Jurisdiction",
+            "rule": "jurisdiction"
+          },
+          {
+            "geometry": "Abbreviated District Name",
+            "rule": "abbrvname"
+          }
+        ]
+      },
+      "parcelSourceId": "us-va-richmond-parcels"
+    },
+    {
+      "id": "atlas-concord-2023",
+      "city": "concord",
+      "label": "National Zoning Atlas \u00b7 Concord",
+      "edition": "2023",
+      "url": "https://www.mercatus.org/sites/default/files/2024-09/nh_zoning_atlas_2023.zip",
+      "product": "districts",
+      "archive": {
+        "geometry": "NH_Zoning_Atlas_2023.geojson"
+      },
+      "parcelSourceId": "us-nh-concord-parcels"
+    },
+    {
+      "id": "atlas-honolulu-2023",
+      "city": "honolulu",
+      "label": "National Zoning Atlas \u00b7 Honolulu",
+      "edition": "2023",
+      "url": "https://www.mercatus.org/sites/default/files/2024-09/hi_zoning_atlas_2023.zip",
+      "product": "districts",
+      "archive": {
+        "geometry": "HI_Zoning_Atlas_2023.geojson",
+        "rules": "HI_Zoning_Atlas_2023.csv",
+        "join": [
+          {
+            "geometry": "T",
+            "rule": "Jurisdiction"
+          },
+          {
+            "geometry": "Z",
+            "rule": "Full District Name",
+            "stripPrefix": "Abbreviated District Name"
+          }
+        ],
+        "jurisdiction": {
+          "field": "T",
+          "values": [
+            "Honolulu"
+          ]
+        },
+        "repeatedHeaderTail": true
+      },
+      "parcelSourceId": "us-hi-honolulu-parcels"
+    },
+    {
+      "id": "atlas-helena-2023",
+      "city": "helena",
+      "label": "National Zoning Atlas \u00b7 Helena",
+      "edition": "2023",
+      "url": "https://www.mercatus.org/sites/default/files/2024-09/mt_zoning_atlas_2023.zip",
+      "product": "districts",
+      "archive": {
+        "geometry": "MT_Zoning_Atlas_2023.geojson",
+        "rules": "MT_Zoning_Atlas_2023.xlsx",
+        "sheets": [
+          "Zoning Information CountyMunici"
+        ],
+        "join": [
+          {
+            "geometry": "T",
+            "rule": "Jurisdiction"
+          },
+          {
+            "geometry": "Z",
+            "rule": "Full District or Sub-District Name"
+          }
+        ]
+      },
+      "parcelSourceId": "us-mt-helena-parcels"
+    },
+    {
+      "id": "atlas-south-central-2023",
+      "city": "south_central",
+      "label": "National Zoning Atlas \u00b7 South Central",
+      "edition": "2023",
+      "url": "https://www.mercatus.org/sites/default/files/2024-09/mt_zoning_atlas_2023.zip",
+      "product": "districts",
+      "archive": {
+        "geometry": "MT_Zoning_Atlas_2023.geojson",
+        "rules": "MT_Zoning_Atlas_2023.xlsx",
+        "sheets": [
+          "Zoning Information CountyMunici"
+        ],
+        "join": [
+          {
+            "geometry": "T",
+            "rule": "Jurisdiction"
+          },
+          {
+            "geometry": "Z",
+            "rule": "Full District or Sub-District Name"
+          }
+        ]
+      },
+      "parcelSourceId": "us-mt-helena-parcels"
+    },
+    {
+      "id": "atlas-nashville-2023",
+      "city": "nashville",
+      "label": "National Zoning Atlas \u00b7 Nashville",
+      "edition": "2023",
+      "url": "https://www.mercatus.org/sites/default/files/2024-09/tn_zoning_atlas_middletn_2023.zip",
+      "product": "districts",
+      "archive": {
+        "geometry": "TN_Zoning_Atlas_MiddleTN_2023.geojson",
+        "rules": "TN_Zoning_Atlas_MiddleTN_2023_Analog.xlsx",
+        "sheets": [
+          "NashvilleDavidson"
+        ],
+        "jurisdiction": {
+          "field": "T",
+          "values": [
+            "Nashville"
+          ]
+        },
+        "join": [
+          {
+            "geometry": "T",
+            "rule": "Jurisdiction"
+          },
+          {
+            "geometry": "Z",
+            "rule": "Full District Name"
+          }
+        ],
+        "columnNames": {
+          "2": "Secondary Jurisdiction",
+          "3": "Secondary County"
+        }
+      },
+      "parcelSourceId": "us-tn-nashville-parcels"
+    },
+    {
+      "id": "atlas-worcester-2023",
+      "city": "worcester",
+      "label": "National Zoning Atlas \u00b7 Worcester",
+      "edition": "2023",
+      "url": "https://www.mercatus.org/sites/default/files/2025-09/ma_zoning_atlas_2023_1.zip",
+      "product": "districts",
+      "archive": {
+        "geometry": "MA_Zoning_Atlas_2023.geojson",
+        "jurisdiction": {
+          "field": "jurisdiction",
+          "values": [
+            "Worcester",
+            "Fall River",
+            "Lowell",
+            "Lawrence",
+            "Lynn"
+          ]
+        }
+      },
+      "parcelSourceId": "us-ma-massgis-l3-tax-parcels"
+    },
+    {
+      "id": "atlas-fall-river-2023",
+      "city": "fall_river",
+      "label": "National Zoning Atlas \u00b7 Fall River",
+      "edition": "2023",
+      "url": "https://www.mercatus.org/sites/default/files/2025-09/ma_zoning_atlas_2023_1.zip",
+      "product": "districts",
+      "archive": {
+        "geometry": "MA_Zoning_Atlas_2023.geojson",
+        "jurisdiction": {
+          "field": "jurisdiction",
+          "values": [
+            "Worcester",
+            "Fall River",
+            "Lowell",
+            "Lawrence",
+            "Lynn"
+          ]
+        }
+      },
+      "parcelSourceId": "us-ma-massgis-l3-tax-parcels"
+    },
+    {
+      "id": "atlas-lowell-2023",
+      "city": "lowell",
+      "label": "National Zoning Atlas \u00b7 Lowell",
+      "edition": "2023",
+      "url": "https://www.mercatus.org/sites/default/files/2025-09/ma_zoning_atlas_2023_1.zip",
+      "product": "districts",
+      "archive": {
+        "geometry": "MA_Zoning_Atlas_2023.geojson",
+        "jurisdiction": {
+          "field": "jurisdiction",
+          "values": [
+            "Worcester",
+            "Fall River",
+            "Lowell",
+            "Lawrence",
+            "Lynn"
+          ]
+        }
+      },
+      "parcelSourceId": "us-ma-massgis-l3-tax-parcels"
+    },
+    {
+      "id": "atlas-lawrence-2023",
+      "city": "lawrence",
+      "label": "National Zoning Atlas \u00b7 Lawrence",
+      "edition": "2023",
+      "url": "https://www.mercatus.org/sites/default/files/2025-09/ma_zoning_atlas_2023_1.zip",
+      "product": "districts",
+      "archive": {
+        "geometry": "MA_Zoning_Atlas_2023.geojson",
+        "jurisdiction": {
+          "field": "jurisdiction",
+          "values": [
+            "Worcester",
+            "Fall River",
+            "Lowell",
+            "Lawrence",
+            "Lynn"
+          ]
+        }
+      },
+      "parcelSourceId": "us-ma-massgis-l3-tax-parcels"
+    },
+    {
+      "id": "atlas-lynn-2023",
+      "city": "lynn",
+      "label": "National Zoning Atlas \u00b7 Lynn",
+      "edition": "2023",
+      "url": "https://www.mercatus.org/sites/default/files/2025-09/ma_zoning_atlas_2023_1.zip",
+      "product": "districts",
+      "archive": {
+        "geometry": "MA_Zoning_Atlas_2023.geojson",
+        "jurisdiction": {
+          "field": "jurisdiction",
+          "values": [
+            "Worcester",
+            "Fall River",
+            "Lowell",
+            "Lawrence",
+            "Lynn"
+          ]
+        }
+      },
+      "parcelSourceId": "us-ma-massgis-l3-tax-parcels"
+    }
+  ]
 }

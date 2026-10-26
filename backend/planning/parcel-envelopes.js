@@ -36,7 +36,7 @@ const lotUnitsM2 = { acres: 4046.8564224, m2: 1, sqft: 0.09290304 };
 // Whether the parcel reaches a housing type's recorded minimum lot. A platted lot below it is
 // still drawn, flagged: the source records a minimum for new lots, not that this one is unbuildable.
 export function lotAreaTest(parcelM2, constraints = []) {
-    const lot = constraints.find(c => c.quantity === 'lotArea' && c.evidence === 'direct' && Number.isFinite(c.value) && lotUnitsM2[c.unit]);
+    const lot = constraints.find(c => c.quantity === 'lotArea' && ['direct', 'literal'].includes(c.evidence) && Number.isFinite(c.value) && lotUnitsM2[c.unit]);
     const minimumM2 = lot ? lot.value * lotUnitsM2[lot.unit] : null;
     return { status: minimumM2 === null ? 'unknown' : parcelM2 + 0.01 >= minimumM2 ? 'pass' : 'fail', minimumM2, parcelM2 };
 }

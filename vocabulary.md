@@ -399,6 +399,18 @@ An urban-rule design generating separate buildings on selected parcels from its 
 
 A rule or planning instrument supplied by an identified authority or dataset, with its edition and applicability evidence. An authored urban rule does not become an enacted source rule by sharing its name or geometry.
 
+### Zoning district
+
+A source-defined area with a named zoning regime. A base district and an overlay district remain separate source observations when their geography overlaps. Unmapped, extinct and unidentified district records retain those distinctions.
+
+### Atlas slice
+
+A derived Atlas area representing a combination of base-district and overlay rules under the publisher's composition method. It is distinct from the source districts and from a cadastral parcel or a generated building envelope.
+
+### Literal dimensional observation
+
+A complete numeric value recorded in a source field with a known unit, without an unresolved expression or alternative value kind. The `literal` evidence state distinguishes public district-table values from the Atlas Slices product's `direct` numeric method. Both can supply a supported dimensional calculation; neither resolves applicability, missing constraints or overlay precedence.
+
 ### Planning representation
 
 An inspection or display projection of a source record, existing building or authored design. It retains the subject's identity and provenance without becoming a new design or an applied change.
