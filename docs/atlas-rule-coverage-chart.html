@@ -1,0 +1,58 @@
+<div id="atlas-rule-fields">
+  <style>
+    #atlas-rule-fields .facets { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 28px; }
+    #atlas-rule-fields .legend { display: flex; flex-wrap: wrap; gap: 18px; margin-bottom: 20px; }
+    #atlas-rule-fields .swatch { display: inline-block; width: 18px; height: 9px; margin-right: 6px; background: var(--viz-series-1); }
+    #atlas-rule-fields .recorded { opacity: 0.28; }
+    #atlas-rule-fields .row { margin: 0 0 16px; }
+    #atlas-rule-fields .labels { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 5px; }
+    #atlas-rule-fields .values { white-space: nowrap; font-variant-numeric: tabular-nums; }
+    #atlas-rule-fields .track { position: relative; height: 12px; background: var(--muted); }
+    #atlas-rule-fields .mark { position: absolute; top: 0; left: 0; height: 12px; background: var(--viz-series-1); }
+    #atlas-rule-fields .scale { display: flex; justify-content: space-between; color: var(--muted-foreground); margin: 6px 0 18px; }
+    #atlas-rule-fields h3 { margin: 0 0 4px; }
+  </style>
+  <div class="legend" aria-label="Values are numeric coverage followed by any recorded entry">
+    <span><span class="swatch" aria-hidden="true"></span>Numeric</span>
+    <span><span class="swatch recorded" aria-hidden="true"></span>Any entry</span>
+    <span class="text-muted">Share of eligible records</span>
+  </div>
+  <div class="facets"></div>
+  <script type="application/json" id="atlas-rule-fields-data">[{"title":"One family","total":5536,"rows":[{"label":"Front setback","numeric":4231,"recorded":4909},{"label":"Side setback","numeric":3765,"recorded":4871},{"label":"Rear setback","numeric":4346,"recorded":4879},{"label":"Height","numeric":4071,"recorded":4379},{"label":"Minimum lot area","numeric":4105,"recorded":4709},{"label":"Parking per dwelling","numeric":3501,"recorded":4654},{"label":"Floor area ratio","numeric":362,"recorded":629},{"label":"Building coverage","numeric":2268,"recorded":2558}]},{"title":"Four or more families","total":2594,"rows":[{"label":"Front setback","numeric":1453,"recorded":1863},{"label":"Side setback","numeric":1263,"recorded":1841},{"label":"Rear setback","numeric":1574,"recorded":1924},{"label":"Height","numeric":1670,"recorded":1902},{"label":"Minimum lot area","numeric":936,"recorded":1590},{"label":"Units per acre","numeric":570,"recorded":720},{"label":"Units per building","numeric":200,"recorded":333},{"label":"Parking, studio or 1 BR","numeric":1269,"recorded":2029},{"label":"Parking, 2 or more BR","numeric":1099,"recorded":2014},{"label":"Floor area ratio","numeric":387,"recorded":557},{"label":"Building coverage","numeric":916,"recorded":1060}]}]</script>
+  <script>
+    (() => {
+      const root = document.getElementById('atlas-rule-fields');
+      const data = JSON.parse(root.querySelector('#atlas-rule-fields-data').textContent);
+      const panels = root.querySelector('.facets');
+      const percent = (n, total) => (100 * n / total).toFixed(1) + '%';
+      for (const panel of data) {
+        const section = document.createElement('section');
+        const heading = document.createElement('h3');
+        heading.textContent = panel.title;
+        const denominator = document.createElement('div');
+        denominator.className = 'text-muted';
+        denominator.textContent = panel.total.toLocaleString('en-US') + ' eligible records';
+        const scale = document.createElement('div');
+        scale.className = 'scale text-small';
+        for (const value of ['0%', '50%', '100%']) {
+          const tick = document.createElement('span'); tick.textContent = value; scale.append(tick);
+        }
+        section.append(heading, denominator, scale);
+        for (const item of panel.rows) {
+          const row = document.createElement('div'); row.className = 'row';
+          const labels = document.createElement('div'); labels.className = 'labels';
+          const label = document.createElement('span'); label.textContent = item.label;
+          const values = document.createElement('span'); values.className = 'values';
+          values.textContent = percent(item.numeric, panel.total) + ' / ' + percent(item.recorded, panel.total);
+          labels.append(label, values);
+          const track = document.createElement('div'); track.className = 'track'; track.setAttribute('role', 'img');
+          track.setAttribute('aria-label', item.label + ': ' + item.numeric + ' numeric and ' + item.recorded + ' with any entry out of ' + panel.total + ' eligible records.');
+          const recorded = document.createElement('span'); recorded.className = 'mark recorded'; recorded.style.width = percent(item.recorded, panel.total);
+          const numeric = document.createElement('span'); numeric.className = 'mark'; numeric.style.width = percent(item.numeric, panel.total);
+          track.append(recorded, numeric); row.append(labels, track); section.append(row);
+        }
+        panels.append(section);
+      }
+    })();
+  </script>
+</div>

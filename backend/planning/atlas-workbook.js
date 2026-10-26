@@ -1,5 +1,5 @@
-// Read the value cells in named public Atlas worksheets. Formatting, drawings and macros
-// are irrelevant; formulas remain expressions instead of becoming claimed literal rules.
+// Read the value cells in named public Atlas worksheets. Formulas and date-formatted
+// numbers retain their source type instead of becoming claimed literal zoning dimensions.
 import { unzipSync, strFromU8 } from 'fflate';
 import { SaxesParser } from 'saxes';
 
@@ -13,6 +13,28 @@ function xml(bytes, handlers) {
     if (handlers.text) parser.on('text', handlers.text);
     parser.write(strFromU8(bytes)).close();
 }
+function dateFormats(bytes) {
+    const formats = new Map(), styles = []; let inCells = false;
+    if (!bytes) return styles;
+    xml(bytes, { opentag: tag => {
+        if (tag.name === 'numFmt') {
+            if (formats.size >= 10000 || (tag.attributes.formatCode || '').length > 2048) throw new Error('Atlas workbook formats exceed limits');
+            formats.set(Number(tag.attributes.numFmtId), tag.attributes.formatCode);
+        }
+        if (tag.name === 'cellXfs') inCells = true;
+        if (tag.name === 'xf' && inCells) {
+            if (styles.length >= 10000) throw new Error('Atlas workbook styles exceed limits');
+            styles.push(Number(tag.attributes.numFmtId || 0));
+        }
+    }, closetag: tag => { if (tag.name === 'cellXfs') inCells = false; } });
+    return styles.map(id => {
+        const code = formats.get(id);
+        const tokens = (code || '').replace(/"[^"]*"|\\.|_.|\*./g, '');
+        const date = id >= 14 && id <= 22 || id >= 27 && id <= 36 || id >= 45 && id <= 47 || id >= 50 && id <= 58
+            || /\[[hms]+\]/i.test(tokens) || /[ymdhs]/i.test(tokens.replace(/\[[^\]]*\]/g, ''));
+        return date ? code || `builtin:${id}` : null;
+    });
+}
 export function readAtlasWorkbook(bytes, sheetNames) {
     let total = 0;
     function selectedFiles(names) {
@@ -25,9 +47,14 @@ export function readAtlasWorkbook(bytes, sheetNames) {
         if (Object.values(result).reduce((sum, data) => sum + data.length, 0) > 64 * 1024 * 1024) throw new Error('Atlas workbook exceeds size limit');
         return result;
     }
-    const files = selectedFiles(new Set(['xl/workbook.xml', 'xl/_rels/workbook.xml.rels', 'xl/sharedStrings.xml']));
+    const files = selectedFiles(new Set(['xl/workbook.xml', 'xl/_rels/workbook.xml.rels', 'xl/sharedStrings.xml', 'xl/styles.xml']));
     const sheets = new Map(), relationships = new Map();
-    xml(files['xl/workbook.xml'], { opentag: tag => { if (tag.name === 'sheet') sheets.set(tag.attributes.name, tag.attributes['r:id']); } });
+    let dateSystem = '1900';
+    xml(files['xl/workbook.xml'], { opentag: tag => {
+        if (tag.name === 'sheet') sheets.set(tag.attributes.name, tag.attributes['r:id']);
+        if (tag.name === 'workbookPr' && ['1', 'true'].includes(tag.attributes.date1904)) dateSystem = '1904';
+    } });
+    const formats = dateFormats(files['xl/styles.xml']);
     xml(files['xl/_rels/workbook.xml.rels'], { opentag: tag => {
         if (tag.name === 'Relationship' && tag.attributes.TargetMode !== 'External') {
             relationships.set(tag.attributes.Id, tag.attributes.Target.replace(/^\/?xl\//, ''));
@@ -62,9 +89,10 @@ export function readAtlasWorkbook(bytes, sheetNames) {
                     const index = [...reference[1]].reduce((n, c) => n * 26 + c.charCodeAt(0) - 64, 0) - 1;
                     if (index > 255) throw new Error('Atlas worksheet exceeds column limit');
                     if (Object.hasOwn(row, index)) throw new Error('Duplicate Atlas worksheet cell');
-                    cell = { index, type: tag.attributes.t, value: '', formula: '' };
+                    cell = { index, type: tag.attributes.t, format: formats[Number(tag.attributes.s || 0)], value: '', formula: '', hasFormula: false };
                 }
                 if (cell && ['v', 't', 'f'].includes(tag.name)) capture = tag.name;
+                if (cell && tag.name === 'f') cell.hasFormula = true;
             },
             text: text => { if (capture) {
                 cellChars += text.length;
@@ -74,7 +102,10 @@ export function readAtlasWorkbook(bytes, sheetNames) {
             closetag: tag => {
                 if (['v', 't', 'f'].includes(tag.name)) capture = null;
                 if (tag.name === 'c') {
-                    row[cell.index] = cell.formula ? `=${cell.formula}` : cell.type === 's' ? strings[Number(cell.value)] : cell.value;
+                    row[cell.index] = cell.hasFormula ? `=${cell.formula}` : cell.type === 's' ? strings[Number(cell.value)]
+                        : cell.type === 'd' || (!cell.type || cell.type === 'n') && cell.format && cell.value
+                            ? { type: 'spreadsheet-date', value: cell.value, numberFormat: cell.format || 'ISO 8601', dateSystem }
+                            : cell.value;
                     if (row[cell.index] === undefined) throw new Error('Invalid Atlas shared string');
                     cell = null;
                 }

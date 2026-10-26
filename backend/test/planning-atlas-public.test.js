@@ -145,6 +145,28 @@ describe('Public Atlas archives', () => {
         expect(readAtlasWorkbook(workbook, ['Rules'])).toEqual([[['Jurisdiction', 'Height'], ['Example', '35', '=30+5']]]);
         expect(() => readAtlasWorkbook(workbook, ['Missing'])).toThrow('Unknown Atlas worksheet');
     });
+    it('retains date cell types and raw serials instead of using them as zoning dimensions', () => {
+        const workbook = zip({ 'xl/workbook.xml': '<workbook><workbookPr date1904="1"/><sheets><sheet name="Rules" r:id="r1"/></sheets></workbook>',
+            'xl/_rels/workbook.xml.rels': '<Relationships><Relationship Id="r1" Target="worksheets/sheet1.xml"/></Relationships>',
+            'xl/styles.xml': '<styleSheet><numFmts><numFmt numFmtId="164" formatCode="m/d"/><numFmt numFmtId="165" formatCode="0 &quot;ft&quot;"/></numFmts>'
+                + '<cellXfs><xf numFmtId="0"/><xf numFmtId="14"/><xf numFmtId="164"/><xf numFmtId="165"/></cellXfs></styleSheet>',
+            'xl/worksheets/sheet1.xml': '<worksheet><sheetData><row><c r="A1" s="1"><v>45056</v></c><c r="B1" s="2"><v>45219</v></c>'
+                + '<c r="C1" s="3"><v>35</v></c><c r="D1" t="d"><v>2023-10-19</v></c>'
+                + '<c r="E1"><f t="shared" si="0"/><v>35</v></c></row></sheetData></worksheet>' });
+        const [[cells]] = readAtlasWorkbook(workbook, ['Rules']);
+        expect(cells).toEqual([{ type: 'spreadsheet-date', value: '45056', numberFormat: 'builtin:14', dateSystem: '1904' },
+            { type: 'spreadsheet-date', value: '45219', numberFormat: 'm/d', dateSystem: '1904' }, '35',
+            { type: 'spreadsheet-date', value: '2023-10-19', numberFormat: 'ISO 8601', dateSystem: '1904' }, '=']);
+        const record = districtRecord({ Jurisdiction: 'Example', 'Full District Name': 'R1',
+            'Abbreviated District Name': cells[0],
+            '1-Family Front Setback (# of feet)': cells[0], '1-Family Max. Height (# of feet)': cells[2],
+            '1-Family Side Setback (# of feet)': cells[4] }, 0);
+        expect(record.numericEvidence.family1_frontsetbackft.status).toBe('invalid');
+        expect(record.values.family1_frontsetbackft).toBeUndefined();
+        expect(record.values.family1_sidesetbackft).toBeUndefined();
+        expect(record.values.family1_maxheightft).toBe(35);
+        expect(record.code).toBe('R1');
+    });
     it('bounds sparse worksheet rows before materializing a large table', () => {
         const workbook = zip({ 'xl/workbook.xml': '<workbook><sheets><sheet name="Rules" r:id="r1"/></sheets></workbook>',
             'xl/_rels/workbook.xml.rels': '<Relationships><Relationship Id="r1" Target="worksheets/sheet1.xml"/></Relationships>',

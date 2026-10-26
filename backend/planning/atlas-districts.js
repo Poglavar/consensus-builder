@@ -29,7 +29,7 @@ export function districtRecord(properties, featureIndex) {
     const p = Object.fromEntries(Object.entries(properties).map(([key, value]) => [key.trim(), value]));
     const jurisdiction = p.jurisdiction ?? p.Jurisdiction ?? p.T;
     const name = p.name ?? p['Full District Name'] ?? p['Full District or Sub-District Name'] ?? p.Z;
-    const code = p.abbrvname || p['Abbreviated District Name'] || name;
+    const code = [p.abbrvname, p['Abbreviated District Name'], name].find(value => typeof value === 'string' && value.trim());
     if (typeof jurisdiction !== 'string' || !jurisdiction.trim()
         || (!(typeof code === 'string' && code.trim()) && !Number.isSafeInteger(featureIndex))) {
         throw new Error('Invalid Atlas district identity');

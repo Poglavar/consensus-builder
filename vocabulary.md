@@ -409,7 +409,7 @@ A derived Atlas area representing a combination of base-district and overlay rul
 
 ### Literal dimensional observation
 
-A complete numeric value recorded in a source field with a known unit, without an unresolved expression or alternative value kind. The `literal` evidence state distinguishes public district-table values from the Atlas Slices product's `direct` numeric method. Both can supply a supported dimensional calculation; neither resolves applicability, missing constraints or overlay precedence.
+A complete numeric value recorded in a source field with a known unit, without an unresolved expression or alternative value kind. Spreadsheet dates remain date values even when stored as numeric serials; cached formula results are not literal observations. The `literal` evidence state distinguishes public district-table values from the Atlas Slices product's `direct` numeric method. Both can supply a supported dimensional calculation; neither resolves applicability, missing constraints or overlay precedence.
 
 ### Planning representation
 

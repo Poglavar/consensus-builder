@@ -6,6 +6,7 @@ import { readAtlasWorkbook } from './atlas-workbook.js';
 
 const MAX_MEMBER_BYTES = 128 * 1024 * 1024;
 const normal = value => String(value ?? '').trim().replace(/\s+/g, ' ').toLowerCase();
+const heading = value => typeof value === 'string' ? value.trim() : '';
 async function readGeography(bytes, archive) {
     let queue = [], found = false, complete = false, total = 0;
     const unzip = new Unzip(file => {
@@ -61,23 +62,24 @@ export async function readAtlasArchive(bytes, archive) {
         : [parseCsvRows(strFromU8(files[archive.rules]))];
     const index = new Map();
     for (const rows of tables) {
-      const headerIndex = rows.findIndex(row => archive.join.every(({ rule }) => row.map(value => value.trim()).includes(rule)));
+      const headerIndex = rows.findIndex(row => archive.join.every(({ rule }) => row.map(heading).includes(rule)));
       if (headerIndex < 0) throw new Error('Atlas rule table has no matching header');
-      const originalHeader = rows[headerIndex].map(value => value.trim());
+      const originalHeader = rows[headerIndex].map(heading);
       if (Object.keys(archive.columnNames || {}).some(key => Number(key) >= originalHeader.length)) throw new Error('Atlas column override is outside the table');
       const header = originalHeader.map((value, i) => archive.columnNames?.[i] ?? value);
       const filterRule = archive.jurisdiction && archive.join.find(pair => pair.geometry === archive.jurisdiction.field)?.rule;
       for (let row of rows.slice(headerIndex + 1)) {
         const originalRow = row;
-        if (row.every(value => !value.trim())) continue;
+        if (row.every(value => typeof value === 'string' && !value.trim())) continue;
         // Filtering is explicit and uses a configured join column; it never shifts malformed rows.
         if (filterRule && !archive.jurisdiction.values.some(value => normal(row[header.indexOf(filterRule)]) === normal(value))) continue;
         if (archive.repeatedHeaderTail) {
             const repeated = [originalHeader, originalHeader.slice(1)].find(tail => row.length > tail.length
-                && tail.every((value, i) => row[row.length - tail.length + i]?.trim() === value));
+                && tail.every((value, i) => typeof row[row.length - tail.length + i] === 'string'
+                    && row[row.length - tail.length + i].trim() === value));
             if (repeated) row = row.slice(0, row.length - repeated.length);
         }
-        if (row.length > header.length && row.slice(header.length).some(value => value.trim())) throw new Error('Invalid Atlas rule table row');
+        if (row.length > header.length && row.slice(header.length).some(value => typeof value !== 'string' || value.trim())) throw new Error('Invalid Atlas rule table row');
         const record = Object.create(null);
         header.forEach((key, i) => {
             if (!key) return;
