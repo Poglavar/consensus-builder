@@ -825,6 +825,13 @@ A recorded execution of an automated workflow, with its inputs, outcomes and any
 
 Canonical design, named-plan or agreement content returned with its recomputed CID without a pin or index write. Its content address remains meaningful even when its private preview is unavailable.
 
+### Portable plan file
+
+A versioned `ugt-plan-file/v1` JSON envelope containing a `plan/v1`, its exact canonical design members,
+embedded authored model assets and known source references. The plan owns membership and the saved
+view. Import creates local, unapplied drafts and retains that membership; it conveys no publication,
+agreement decisions, signatures or ownership. Referenced source datasets are independent dependencies.
+
 ### Private preview
 
 A temporary means of inspecting a draft artifact. An opaque bearer reference grants access to a stored draft object, independently of permanent publication and wallet approval. Collection previews reference their member designs individually; URLs contain no serialized records or geometry.

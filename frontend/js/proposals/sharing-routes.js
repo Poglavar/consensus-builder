@@ -241,9 +241,11 @@ async function shareProposalFromDetails() {
         'Sharing this design publishes only this design and copies its link. The rest of the plan is not included.'), [
         { value: 'plan', label: t('proposals.share.scope.plan', 'Share the whole plan'), primary: true },
         { value: 'design', label: t('proposals.share.scope.design', 'Share only this design') },
+        { value: 'file', label: t('planFile.design', 'Download design') },
         { value: 'cancel', label: t('common.cancel', 'Cancel') }
     ], { title: t('proposals.share.scope.title', 'Share design or plan?') });
     if (scope === 'design') return shareSingleProposal(proposal);
+    if (scope === 'file') return window.PlanFileUI.design(proposal);
     if (scope !== 'plan') return null;
     try {
         await window.ensureOptionalTool('designMemberships');

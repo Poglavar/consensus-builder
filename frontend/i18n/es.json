@@ -1,4 +1,21 @@
 {
+    "planFile": {
+        "json": "Descargar plan editable",
+        "geojson": "Descargar GeoJSON",
+        "import": "Importar archivo de plan",
+        "importedPlans": "Planes importados",
+        "help": "Formatos y límites",
+        "design": "Descargar diseño",
+        "review": "Revisar archivo de plan",
+        "cancel": "Cancelar",
+        "importDrafts": "Importar como borradores",
+        "imported": "Plan importado",
+        "open": "Abrir plan importado",
+        "noImports": "No se han importado planes en este dispositivo.",
+        "preview": "«{{title}}»: {{count}} diseños. La importación añade borradores locales sin aplicar y guarda los miembros y la vista del plan. Se conserva el trabajo existente. No se importan acuerdos, propiedad ni firmas.",
+        "location": "Ubicación guardada (latitud, longitud, zoom): {{at}}",
+        "importedBody": "Los diseños se guardaron como borradores locales. Abra el plan importado para revisar sus miembros, descargarlo de nuevo o publicar un enlace."
+    },
     "workspace": {
         "blocked": {
             "title": "Ya está abierto en otra pestaña",

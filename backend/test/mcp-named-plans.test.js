@@ -31,6 +31,25 @@ function fixture() {
     return {tools,read,store,plans,refs,calls,publishDesign,tower,park,other,layout};
 }
 describe('first-class named plans',()=>{
+    it('opens, inspects and edits a portable plan with the browser validator and no publication', async () => {
+        const { createRequire } = await import('node:module');
+        const File = createRequire(import.meta.url)('../../frontend/js/plan-file.js');
+        const { tools, tower, park, calls } = fixture();
+        const draft = await tools.draftPlan({ title: 'Portable', designs: [tower, park], view });
+        const ordered = [tower, park].sort((a,b) => a.cid.localeCompare(b.cid));
+        const file = File.parse(JSON.stringify({ schema: File.SCHEMA, plan: draft.plan,
+            designs: ordered.map(row => ({ cid: row.cid, content: row.content })),
+            designSources: Object.fromEntries(ordered.map(row => [row.cid, { sourceId: row.parcelSourceId, snapshotId: null }])) }));
+        const opened = await tools.getPlan({ plan: file });
+        expect(opened.cid).toBe(draft.cid); expect(opened.publication).toBe('private');
+        expect(opened.designs.map(row => row.parcelSourceId).sort()).toEqual(ordered.map(row => row.parcelSourceId).sort());
+        const inventory = await tools.inspectPlan({ plan: file, filter: { kind: 'design' } });
+        expect(inventory.items).toHaveLength(2);
+        const revised = await tools.editPlan({ plan: file, expectedCid: draft.cid, title: 'Edited portable plan' });
+        expect(revised.plan.title).toBe('Edited portable plan'); expect(file.plan.title).toBe('Portable'); expect(calls).toEqual([]);
+        const bad = structuredClone(file); bad.designs[0].content.title = 'Tampered';
+        await expect(tools.getPlan({ plan: bad })).rejects.toThrow(/CID/);
+    });
     it('drafts plan/v1 without ground or agreement terms and preserves source metadata',async()=>{
         const {tools,tower,park,calls}=fixture();
         const result=await tools.draftPlan({title:' Riverside ',designs:[tower,park],view});

@@ -8,6 +8,7 @@ import { previewArtifact } from './mcp-preview.js';
 import { trustedMetadata } from './mcp-results.js';
 const require = createRequire(import.meta.url);
 const PlanRecord = require('../../frontend/js/plan-record.js');
+const PlanFile = require('../../frontend/js/plan-file.js');
 const fail = (code, message, next = { action: 'Inspect the intended named plan revision and use its explicit references.' }) => {
     throw Object.assign(new Error(message), { code, next });
 };
@@ -29,6 +30,11 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
     }
     async function resolvePlan(value) {
         let artifact = value?.draftArtifact || value, requestedCid, published = false;
+        if (artifact?.schema === PlanFile.SCHEMA) {
+            const file = PlanFile.parse(JSON.stringify(artifact));
+            artifact = { plan: file.plan, designs: file.designs.map(row => ({ ...row,
+                parcelSourceId: file.designSources[row.cid]?.sourceId || null })) };
+        }
         const reference = typeof value === 'string' ? value : value?.draftRef;
         if (reference) {
             if (isCid(reference)) requestedCid = reference;

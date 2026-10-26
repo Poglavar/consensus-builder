@@ -1908,6 +1908,9 @@ body.map-pick-highlighting .leaflet-pick-highlight-pane {
     box-sizing: border-box;
 }
 
+.plan-file-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 0; }
+.plan-file-controls a { font-size: 0.85rem; }
+
 /* Map pick mode lockdown: while a surface picks on the map, the map is pan/zoom ONLY. The floating
    shell (its buttons, sheets, the search box and the selection tray) and the mode switches
    are disabled; Leaflet controls too — except zoom, which stays. The / and Ctrl-K shortcuts check

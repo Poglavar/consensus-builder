@@ -1,4 +1,21 @@
 {
+    "planFile": {
+        "json": "Download editable plan",
+        "geojson": "Download GeoJSON",
+        "import": "Import plan file",
+        "importedPlans": "Imported plans",
+        "help": "File formats and limits",
+        "design": "Download design",
+        "review": "Review plan file",
+        "cancel": "Cancel",
+        "importDrafts": "Import as drafts",
+        "imported": "Plan imported",
+        "open": "Open imported plan",
+        "noImports": "No plans have been imported on this device.",
+        "preview": "“{{title}}”: {{count}} designs. Import adds local, unapplied drafts and saves this plan’s membership and view. Existing work stays in place. No agreement, ownership or signature is imported.",
+        "location": "Saved location (latitude, longitude, zoom): {{at}}",
+        "importedBody": "The designs are saved as local drafts. Open the imported plan to review its members, download it again or publish a link."
+    },
     "workspace": {
         "blocked": {
             "title": "Already open in another tab",

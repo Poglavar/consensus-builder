@@ -1,4 +1,21 @@
 {
+    "planFile": {
+        "json": "Preuzmi plan za uređivanje",
+        "geojson": "Preuzmi GeoJSON",
+        "import": "Uvezi datoteku plana",
+        "importedPlans": "Uvezeni planovi",
+        "help": "Formati datoteka i ograničenja",
+        "design": "Preuzmi dizajn",
+        "review": "Pregled datoteke plana",
+        "cancel": "Odustani",
+        "importDrafts": "Uvezi kao nacrte",
+        "imported": "Plan je uvezen",
+        "open": "Otvori uvezeni plan",
+        "noImports": "Na ovom uređaju nema uvezenih planova.",
+        "preview": "„{{title}}”: {{count}} dizajna. Uvoz dodaje lokalne, neprimijenjene nacrte i sprema članove i pogled plana. Postojeći rad ostaje sačuvan. Sporazumi, vlasništvo i potpisi ne uvoze se.",
+        "location": "Spremljena lokacija (širina, dužina, zum): {{at}}",
+        "importedBody": "Dizajni su spremljeni kao lokalni nacrti. Otvorite uvezeni plan za pregled članova, ponovno preuzimanje ili objavu poveznice."
+    },
     "workspace": {
         "blocked": {
             "title": "Radni prostor već je otvoren u drugoj kartici",
