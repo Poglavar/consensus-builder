@@ -1,7 +1,7 @@
 // Worldwide publication and city routing (projections.md §3, §10 M8, location-first.md phase 4;
 // plan-design-agreement.md M2, M3): a publish sends the design with the parcel source its city binds
-// with, a design or an agreement opened from another city asks and then opens in its own city's
-// store, the address bar follows the map, and published design routes wait for the profile workspace owner.
+// with, a design follows its geographic context while an agreement confirms its saved-plan city,
+// the address bar follows the map, and published routes wait for the profile workspace owner.
 import { Browser, BrowserContext, Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady, panMap } from '../helpers/app';
@@ -95,8 +95,8 @@ test.describe('Worldwide publication and city routing @core', () => {
     expect(indexed.content).not.toHaveProperty('parcelSourceId');
   });
 
-  test('a design opened from another city asks, then opens in its own city', async ({ mockApi: author, browser }) => {
-    // one publish and a device booting twice (the wrong city, then the right one)
+  test('a design opened from another city follows its geographic context without a city-name gate', async ({ mockApi: author, browser }) => {
+    // One publish and a device resolving the design's geographic source context.
     test.setTimeout(180_000);
     const cid = await publishPark(author);
     const baseURL = new URL(author.url()).origin;
@@ -105,9 +105,9 @@ test.describe('Worldwide publication and city routing @core', () => {
     const device = await deviceIn(browser, pageIndex(author), 'new_york', baseURL);
     try {
       await device.page.goto(`/?city=new_york&reduceMotion=1&focusProposal=${cid}`);
-      await followToCity(device.page, 'zagreb', 'Zagreb');
-      expect(new URL(device.page.url()).searchParams.get('focusProposal')).toBe(cid);
       await expect.poll(() => storedIn(device.page, `design-${cid}`), { timeout: 30_000 }).toEqual({ city: 'zagreb', stored: true });
+      await expect(device.page.locator('.city-switch-dialog')).toHaveCount(0);
+      expect(new URL(device.page.url()).searchParams.get('focusProposal')).toBe(cid);
       expect(device.errors).toEqual([]);
     } finally {
       await device.context.close();

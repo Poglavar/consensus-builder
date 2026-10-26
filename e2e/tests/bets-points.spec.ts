@@ -7,11 +7,11 @@ let run = '';
 const backend = 'http://127.0.0.1:4684';
 let harness: ChildProcess;
 
-test.beforeEach(async () => {
+test.beforeEach(async ({ baseURL }) => {
   run = `e2e-${randomUUID().replaceAll('-', '').slice(0, 20)}`;
   harness = spawn('node', ['backend/scripts/bets-points-preview.mjs'], {
     cwd: process.cwd().replace(/\/e2e$/, ''), stdio: ['ignore', 'pipe', 'pipe'],
-    env: { ...process.env, POINTS_PREVIEW_RUN: run, POINTS_PREVIEW_PORT: '4684' },
+    env: { ...process.env, POINTS_PREVIEW_RUN: run, POINTS_PREVIEW_PORT: '4684', POINTS_PREVIEW_ORIGIN: new URL(baseURL!).origin },
   });
   let output = '';
   harness.stdout?.on('data', chunk => { output += chunk.toString(); });

@@ -36,7 +36,7 @@ async function openBlockProposalDialog(page: import('@playwright/test').Page): P
   await page.locator('#layers-sheet [data-sheet-close]').click();
   await expect(page.locator('#block-info-panel')).toBeVisible();
   await page.locator('#block-proposals-tab-button').click();
-  await page.locator('#block-proposals-content').getByRole('button', { name: 'Create proposal', exact: true }).click();
+  await page.locator('#block-proposals-content').getByRole('button', { name: 'Create design', exact: true }).click();
   await expect(page.locator('.create-proposal-modal:visible')).toBeVisible();
 }
 
@@ -103,7 +103,7 @@ test.describe('proposal button controls: modal and alternate states @features', 
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write'], { origin: new URL(page.url()).origin });
     await openProposalList(page);
     const sheet = page.locator('#proposals-sheet');
-    const shareTab = sheet.getByRole('tab', { name: 'Share', exact: true });
+    const shareTab = sheet.locator('#shareAppliedProposalsButton');
     await shareTab.click();
 
     const plan = sheet.locator('#designs-share .share-plan-panel--embedded');

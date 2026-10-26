@@ -4,7 +4,7 @@
 // asked and checked; the placeholder program is not on devnet, so nothing is recorded). Once the index
 // records its account the panel reads the account itself: status, decision and escrow, the sponsor's
 // Fund and Cancel, Record decision once its lens lists the decision, Execute when satisfied and funded,
-// Expire after the deadline, Bet on its pool, and the Minted agreements list. A vote is never minted.
+// Expire after the deadline, open the dated-betting inspector, and the Minted agreements list. A vote is never minted.
 // Wallet transactions themselves are out of scope: the chain is the mocked RPC of helpers/agreement-chain.ts.
 import type { Browser, BrowserContext, Locator, Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
@@ -265,14 +265,16 @@ test.describe('Agreements on chain @core', () => {
     await expect(minted.locator('[data-agreement-action="execute"]')).toBeDisabled();
     await expect(minted).toContainText('Its deadline has passed: anyone can expire it, which returns the escrow to the sponsor.');
 
-    // Back to active and pending. Bet opens its pool's dialog: minted, the pool can be opened.
+    // Back to active and pending. Bet opens its inspector, but this undated agreement cannot trade.
     accounts.set(account, encodeAgreementAccount(base));
     await reopen(page, id);
     await expect(minted.locator('[data-agreement-chain-decision="Pending"]')).toBeVisible({ timeout: 30_000 });
     await panel.locator('[data-agreement-action="bet"]').click();
     const bet = page.locator('#proposalMarketOverlay');
     await expect(bet.locator('.cb-dialog__title')).toHaveText(`Will ${TITLE} execute on-chain?`, { timeout: 30_000 });
-    await expect(bet.getByRole('button', { name: 'Open the pool', exact: true })).toBeVisible();
+    await expect(bet).toContainText('No deadline set; this agreement cannot have an open market.');
+    await expect(bet.getByRole('button', { name: 'Seed USDC market', exact: true })).toHaveCount(0);
+    await expect(bet.locator('[data-market-submit]')).toHaveCount(0);
     await bet.locator('.close-circle-btn').click();
     await expect(bet).toHaveCount(0);
 

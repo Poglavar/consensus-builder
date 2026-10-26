@@ -40,7 +40,7 @@ test.describe('Location first @core', () => {
     expect(lat).toBeCloseTo(45.81305, 3);
     expect(lon).toBeCloseTo(15.9706, 3);
     expect(requests.filter(url => url.includes('/parcel-nyc') && !/\.(js|css)(\?|$)/.test(url))).toEqual([]);
-    expect(await page.evaluate(() => localStorage.getItem('cb_current_city'))).toBe('zagreb');
+    expect(await page.evaluate(() => (window as any).BrowserWorkspace.storage.getItem('cb_current_city'))).toBe('zagreb');
   });
 
   test('?at= wins over a contradicting ?city=, which is logged and dropped from the address', async ({ mockApi: page }) => {
@@ -80,7 +80,7 @@ test.describe('Location first @core', () => {
     const parcelApi = requests.filter(url => !/\.(js|css)(\?|$)/.test(url) && /\/parcel(s|-nyc|-ba|-bg|-co|-lj|-sources)\b/.test(url));
     expect(parcelApi).toEqual([]);
     // exploring is not choosing a city: the stored pointer stays
-    expect(await page.evaluate(() => localStorage.getItem('cb_current_city'))).toBe('new_york');
+    expect(await page.evaluate(() => (window as any).BrowserWorkspace.storage.getItem('cb_current_city'))).toBe('new_york');
   });
 
   test('a record link still opens in the city it names', async ({ mockApi: page }) => {

@@ -158,7 +158,7 @@ test.describe('Shared proposal editor shell controls @core', () => {
     const draftId = await editSource(page, sourceId, 'details');
     // The editor's copy follows what saving does: a local record is updated in place.
     await expect(page.locator('[data-editor-section="details"] .proposal-editor-section-copy'))
-      .toHaveText('Describe what this proposal does. Saving updates it in place; it keeps its id.');
+      .toHaveText('Describe what this design does. Saving updates it in place; it keeps its id.');
     await page.locator('[data-draft-path="fields.description"]').fill('Updated description from the proposal editor.');
 
     await page.locator('[data-editor-action="review"]').click();
@@ -209,7 +209,7 @@ test.describe('Shared proposal editor shell controls @core', () => {
     expect(await page.evaluate(id => !!(window as any).DesignSync.publishedCid((window as any).proposalStorage.getProposal(id)), sourceId)).toBe(true);
     await editSource(page, sourceId, 'details');
     await expect(page.locator('[data-editor-section="details"] .proposal-editor-section-copy'))
-      .toHaveText('Describe how this counterproposal differs. The published proposal stays as it is.');
+      .toHaveText('Describe how this alternative design differs. The published design stays as it is.');
     await page.locator('[data-draft-path="fields.description"]').fill('A counterproposal of the published park.');
     await page.locator('[data-editor-action="review"]').click();
     await expect(page.locator('.proposal-editor-review-notice'))

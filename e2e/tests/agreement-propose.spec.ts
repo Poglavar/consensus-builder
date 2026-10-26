@@ -1,6 +1,6 @@
 // Purpose: proposing an agreement from the screen (plan-design-agreement.md, M2 "Browser"): Propose on
-// the agreement panel asks a guest for a profile name, then pins the parcel layout and the
-// agreement/v1 object through POST /pins and indexes the agreement with the layout carried along
+// the agreement panel asks a guest for a profile name, then pins the parcel layout, its plan and the
+// agreement/v1 object through POST /pins and indexes the agreement with the plan and layout carried along
 // (POST /agreements); the panel then shows it Proposed under its CID and no longer offers Edit, and
 // the /agreements/<cid> link imports the agreement and its design on another device.
 import { test, expect } from '../helpers/fixtures';
@@ -57,17 +57,22 @@ test('Propose publishes a community agreement with its parcel layout, and its li
   await expect(panel.locator('[data-agreement-chain="non-binding"]')).toHaveText('A vote is not minted; its decisions are counted off-chain.');
   await expect(panel.locator('[data-agreement-action="mint"], [data-agreement-action="repropose"], [data-agreement-action="bet"]')).toHaveCount(0);
 
-  // Pinned: the layout's design object, then the agreement; indexed: the agreement, the layout sent with it.
+  // Pinned: the layout, its plan and the agreement; the index verifies all three together.
   const posts = postsOf(index);
-  expect(posts.map(request => request.path)).toEqual(['/pins', '/pins', '/agreements']);
-  const [designPin, agreementPin, indexed] = posts;
+  expect(posts.map(request => request.path)).toEqual(['/pins', '/pins', '/pins', '/agreements']);
+  const [designPin, planPin, agreementPin, indexed] = posts;
   expect(designPin.body.kind).toBe('design');
+  expect(planPin.body.kind).toBe('plan');
   expect(agreementPin.body.kind).toBe('agreement');
   const layoutCid = designPin.body.cid;
   const cid = agreementPin.body.cid;
   const designBytes = Buffer.from(designPin.body.bytes, 'base64');
+  const planBytes = Buffer.from(planPin.body.bytes, 'base64');
   const agreementBytes = Buffer.from(agreementPin.body.bytes, 'base64');
   expect(cidOfBytes(designBytes)).toBe(layoutCid);
+  expect(cidOfBytes(planBytes)).toBe(planPin.body.cid);
+  expect(planBytes.toString('utf8')).toBe(canonicalJson(indexed.body.plan.content));
+  expect(indexed.body.plan).toMatchObject({ cid: planPin.body.cid, content: { schema: 'plan/v1', designCids: [layoutCid] } });
   expect(cidOfBytes(agreementBytes)).toBe(cid);
   expect(indexed.body.cid).toBe(cid);
   expect(agreementBytes.toString('utf8')).toBe(canonicalJson(indexed.body.content));
@@ -82,14 +87,16 @@ test('Propose publishes a community agreement with its parcel layout, and its li
     return w.DesignRecord.cidOf(w.proposalStorage.getProposal(id));
   }, layoutId)).toBe(layoutCid);
 
-  // The agreement/v1 object: its design by CID, the land and pieces by hash without geometry, the rule.
+  // The agreement names its immutable plan; land and pieces use hashes without geometry.
   const content = indexed.body.content;
   const [saved] = await storedAgreements(page);
   expect(content).toMatchObject({
     schema: 'agreement/v1', title: TITLE, author: AUTHOR, sponsor: null,
-    designs: [{ cid: layoutCid, goal: 'parcel-layout' }],
+    planCid: planPin.body.cid,
     rule: { electorate: 'community', binding: false },
   });
+  expect(content).not.toHaveProperty('designs');
+  expect(content).not.toHaveProperty('designCids');
   expect(content.inputs.parcels.map((parcel: any) => parcel.parcelId)).toEqual([PARCEL_ID]);
   expect(content.outputs.map((output: any) => output.hash)).toEqual(saved.outputs.map((output: any) => output.hash));
   content.outputs.forEach((output: any) => expect(output).not.toHaveProperty('geometry'));
@@ -106,7 +113,7 @@ test('Propose publishes a community agreement with its parcel layout, and its li
   await page.evaluate(() => navigator.clipboard.writeText(''));
   await panel.locator('[data-agreement-action="link"]').click();
   await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(link);
-  expect(postsOf(index)).toHaveLength(3);
+  expect(postsOf(index)).toHaveLength(4);
 
   // Another device opens the link: the agreement and its layout come from the index, the layout is
   // applied, the pieces re-derive to the published hashes, and the panel opens on it, current.
@@ -126,7 +133,7 @@ test('Propose publishes a community agreement with its parcel layout, and its li
     imported[0].outputs.forEach((output: any) => expect(output.geometry).toBeTruthy());
     expect(await receiver.page.evaluate(id => !!(window as any).isApplied((window as any).proposalStorage.getProposal(id)), `design-${layoutCid}`)).toBe(true);
     // The receiving device only read the index.
-    expect(postsOf(index).filter(request => request.path !== '/designs/batch')).toHaveLength(3);
+    expect(postsOf(index).filter(request => request.path !== '/designs/batch')).toHaveLength(4);
   } finally {
     await receiver.context.close();
   }

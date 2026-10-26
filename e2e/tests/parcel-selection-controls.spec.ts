@@ -60,8 +60,8 @@ test('Escape and Manual toggle off keep the selected parcels and highlights', as
     return { color: layer.options.color, fillColor: layer.options.fillColor };
   }), [PARCEL_ID, second]);
   expect(highlightStyles).toEqual([
-    { color: '#f57c00', fillColor: '#ff9800' },
-    { color: '#f57c00', fillColor: '#ff9800' },
+    { color: '#ffdd00', fillColor: '#ffdd00' },
+    { color: '#ffdd00', fillColor: '#ffdd00' },
   ]);
 
   await manual.click();

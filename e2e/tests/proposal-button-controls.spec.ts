@@ -103,7 +103,7 @@ test.describe('proposal detail button controls @features', () => {
     await page.locator('#proposals-button').click();
     const sheet = page.locator('#proposals-sheet');
     const currentView = await page.evaluate(() => (window as any).MapShare.capture(window));
-    await sheet.getByRole('tab', { name: 'Share', exact: true }).click();
+    await sheet.locator('#shareAppliedProposalsButton').click();
     const plan = sheet.locator('#designs-share .share-plan-panel--embedded');
     await expect(plan).toBeVisible({ timeout: 30000 });
     await expect(plan.locator('.share-plan-progress')).toHaveCount(0, { timeout: 30000 });

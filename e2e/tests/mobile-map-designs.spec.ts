@@ -37,7 +37,7 @@ test('Share tab on an empty map offers its location without a profile gate', asy
   const at = await page.evaluate(() => { const w = window as any; const c = w.map.getCenter(); return [c.lat, c.lng, w.map.getZoom()].join(','); });
   await page.locator('#proposals-button').click();
   const sheet = page.locator('#proposals-sheet');
-  await sheet.getByRole('tab', { name: 'Share', exact: true }).click();
+  await sheet.locator('#shareAppliedProposalsButton').click();
   const share = sheet.locator('#designs-share');
   await expect(share.locator('.share-plan-panel--embedded')).toBeVisible();
   const input = share.locator('.share-plan-link__input[readonly]');
@@ -55,7 +55,7 @@ test('a published parcel layout starts checked and produces its existing link; a
   const { layoutId } = await applyLayout(page);
   await page.locator('#proposals-button').click();
   const sheet = page.locator('#proposals-sheet');
-  await sheet.getByRole('tab', { name: 'Share', exact: true }).click();
+  await sheet.locator('#shareAppliedProposalsButton').click();
   const shareTab = sheet.locator('#designs-share');
   const panel = shareTab.locator('.share-plan-panel--embedded');
   const row = panel.locator('.share-plan-row');
@@ -71,7 +71,7 @@ test('a published parcel layout starts checked and produces its existing link; a
     const w = window as any;
     w.DesignSync.markPublished(w.proposalStorage.getProposal(id), { cid, apiBase: w.resolveBackendBaseUrl(), publishedAt: new Date().toISOString() });
   }, { id: layoutId, cid });
-  await sheet.getByRole('tab', { name: 'Share', exact: true }).click();
+  await sheet.locator('#shareAppliedProposalsButton').click();
   await expect(row.locator('input')).toBeChecked();
   await expect(row.locator('input')).toBeEnabled();
   await expect(row.locator('.share-plan-row__published')).toBeVisible();
@@ -120,7 +120,7 @@ test('a blocked layout can create and publish its agreement, then Share includes
   await applyLayout(page);
   await page.locator('#proposals-button').click();
   const sheet = page.locator('#proposals-sheet');
-  await sheet.getByRole('tab', { name: 'Share', exact: true }).click();
+  await sheet.locator('#shareAppliedProposalsButton').click();
   const share = sheet.locator('#designs-share .share-plan-panel--embedded');
   await expect(share.locator('.share-plan-status')).toContainText('or deselect it');
   await share.locator('.share-plan-create-agreement').click();
@@ -145,7 +145,7 @@ test('a blocked layout can create and publish its agreement, then Share includes
   await page.keyboard.press('Escape');
   await expect(agreement).toBeHidden();
   await page.locator('#proposals-button').click();
-  await sheet.getByRole('tab', { name: 'Share', exact: true }).click();
+  await sheet.locator('#shareAppliedProposalsButton').click();
   await expect(share.locator('.share-plan-row input')).toBeChecked();
   await expect(share.locator('.share-plan-row__published')).toBeVisible();
   await expect(share.locator('.share-plan-link__input[readonly]')).toBeVisible();

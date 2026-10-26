@@ -85,7 +85,7 @@ test.describe('Proposal actions @features', () => {
     await expandProposalDetails(page);
     await openProposalSection(page, 'land');
     const card = page.locator('.proposal-parcel-set-card');
-    await expect(card.getByRole('heading')).toHaveText('Proposals sharing references');
+    await expect(card.getByRole('heading')).toHaveText('Designs sharing references');
     await expect(card.locator('p')).toHaveText('2 declared cadastral references. Of 15 loaded matches, 13 use the same references and 2 share some. Showing 12.');
     await expect(card.locator('[data-related-proposal-id]')).toHaveCount(12);
     const firstRelated = card.locator('[data-related-proposal-id]').first();

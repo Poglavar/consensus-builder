@@ -140,12 +140,12 @@ test.describe('Proposal browsing @features', () => {
     }, { parcelId: PARCEL_ID, geometry: PARCEL_GEOMETRY });
     await clickMapPoint(page, 15.9822, 45.80025);
 
-    // A row names its selected design; the parcel context strip carries the related-design count.
+    // The design header counts peers; the parcel section links to each related design.
     const designs = stackSection(page, 'designs');
-    await expect(designs.locator('.click-stack__row-title')).toHaveText('Design');
+    await expect(designs.locator('.click-stack__row-title')).toHaveText('Design (2)');
     await expandStackSection(page, 'parcels');
     const relatedDesigns = stackSection(page, 'parcels').locator('.click-stack__choices[data-kind="designs"]');
-    await expect(relatedDesigns.locator('.click-stack__choice-count')).toHaveText('(2)');
+    await expect(relatedDesigns.locator('.click-stack__chip')).toHaveCount(2);
     const compare = stackCommand(page, 'parcel.compare');
     await expect(compare).toBeVisible();
     await compare.click();

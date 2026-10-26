@@ -25,7 +25,7 @@ async function openSharePanel(page: Page): Promise<void> {
   const sheet = page.locator('#proposals-sheet');
   if (!(await sheet.isVisible())) await page.locator('#proposals-button').click();
   await expect(sheet).toBeVisible();
-  await sheet.getByRole('tab', { name: 'Share', exact: true }).click();
+  await sheet.locator('#shareAppliedProposalsButton').click();
   await expect(sheet.locator('#designs-share .share-plan-panel--embedded')).toBeVisible();
 }
 

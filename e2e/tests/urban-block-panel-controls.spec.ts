@@ -334,7 +334,7 @@ test('parcel block inspector tabs switch to their supported information and tool
   await proposalsTab.click();
   await expect(proposalsTab).toHaveAttribute('aria-selected', 'true');
   await expect(page.locator('#block-proposals-tab')).toBeVisible();
-  await expect(page.locator('#block-proposals-content')).toContainText(/No proposals for this block yet/i);
+  await expect(page.locator('#block-proposals-content')).toContainText(/No designs for this block yet/i);
 
   await toolsTab.click();
   await expect(toolsTab).toHaveAttribute('aria-selected', 'true');

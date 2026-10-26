@@ -84,7 +84,7 @@ function loadPanel({ memory = null, withEditLock = false } = {}) {
         ClickStackHits: { hitsAt: vi.fn(latlng => hitsBySpot.get(latlng.lat) || {}), featuresFor: vi.fn((_kind, item) => item.feature ? [item.feature] : []) },
         __drillUi: { stackAt: vi.fn(() => [{ kind: 'parcel', id: 'p1', depth: 0 }, { kind: 'proposal', key: 'd1' }]) },
         MapPick: { active: () => false, pick: vi.fn() },
-        highlightFeaturesForHover: vi.fn(),
+        highlightFeaturesForInspection: vi.fn(),
         selectAndHighlightProposal: vi.fn(() => byId('proposal-details-panel')?.classList.add('visible')),
         hideProposalDetailsPanel: vi.fn(() => byId('proposal-details-panel')?.classList.remove('visible')),
         hideParcelInfoPanel: vi.fn(() => byId('parcel-info-panel')?.classList.remove('visible')),
@@ -165,10 +165,10 @@ describe('click stack selected objects and contextual navigation', () => {
         expect(h.stackEl().querySelector('.click-stack__choices')).toBeNull();
         expect(h.stackEl().querySelector('.click-stack__copy-reference')).toBeNull();
         expect(h.api.holdsHighlight()).toBe(true);
-        expect(h.context.highlightFeaturesForHover).toHaveBeenLastCalledWith([parcelFeature], expect.objectContaining({ className: 'click-stack-map-focus' }));
+        expect(h.context.highlightFeaturesForInspection).toHaveBeenLastCalledWith([parcelFeature], expect.objectContaining({ className: 'click-stack-map-focus' }));
         h.api.close();
         expect(h.api.isOpen()).toBe(false);
-        expect(h.context.highlightFeaturesForHover).toHaveBeenLastCalledWith([]);
+        expect(h.context.highlightFeaturesForInspection).toHaveBeenLastCalledWith([]);
     });
 
     it('keeps agreements out of spatial sections and shows parcel designs directly', () => {
@@ -222,15 +222,15 @@ describe('click stack selected objects and contextual navigation', () => {
         expect(h.api.current().sections.find(section => section.kind === 'plans').instances[1].id).toBe('plan-2');
         const planFocus = mounted[0][5].onFocus;
         planFocus({ id: 'plan-2', feature: parcelFeature });
-        expect(h.context.highlightFeaturesForHover).toHaveBeenLastCalledWith([parcelFeature], expect.objectContaining({ className: 'click-stack-map-focus' }));
+        expect(h.context.highlightFeaturesForInspection).toHaveBeenLastCalledWith([parcelFeature], expect.objectContaining({ className: 'click-stack-map-focus' }));
         h.section('plans').querySelector('.click-stack__row').click();
-        const afterCollapse = h.context.highlightFeaturesForHover.mock.calls.length;
+        const afterCollapse = h.context.highlightFeaturesForInspection.mock.calls.length;
         planFocus({ id: 'plan-2', feature: parcelFeature });
-        expect(h.context.highlightFeaturesForHover).toHaveBeenCalledTimes(afterCollapse + 1);
+        expect(h.context.highlightFeaturesForInspection).toHaveBeenCalledTimes(afterCollapse + 1);
         h.api.expand('designs');
-        const afterSwitch = h.context.highlightFeaturesForHover.mock.calls.length;
+        const afterSwitch = h.context.highlightFeaturesForInspection.mock.calls.length;
         planFocus({ id: 'plan-2', feature: parcelFeature });
-        expect(h.context.highlightFeaturesForHover).toHaveBeenCalledTimes(afterSwitch);
+        expect(h.context.highlightFeaturesForInspection).toHaveBeenCalledTimes(afterSwitch);
 
         const select = h.section('designs').querySelector('.click-stack__selector');
         expect(select).not.toBeNull();

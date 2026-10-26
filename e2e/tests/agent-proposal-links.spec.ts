@@ -24,7 +24,7 @@ test('profile design links open the exact local record they name and say when a 
   const items = created.locator('.agent-dialog-proposal-item');
   await expect(items).toHaveCount(2);
   await expect(items.nth(0)).toContainText('Numeric local draft (Local ID 77)');
-  await expect(items.nth(1)).toContainText('Local proposal record unavailable');
+  await expect(items.nth(1)).toContainText('Local design record unavailable');
   await expect(items.nth(1)).toContainText('Local ID 88');
   await expect(created).not.toContainText('(copy)');
   // Only the designs the profile created: no accepted or pending lists any more.

@@ -69,6 +69,7 @@ beforeAll(() => {
         globalThis.__cap = {
             highlightFeatureGroupsForHover,
             highlightFeaturesForHover,
+            highlightFeaturesForInspection,
             clearProposalHoverLayers,
             getParcelFeaturesForHighlight,
             collectProposalHighlightFeatures,
@@ -85,6 +86,19 @@ beforeEach(() => {
 });
 
 describe('highlightFeatureGroupsForHover', () => {
+    it('keeps persistent inspection and transient hover independent when either one is cleared', () => {
+        cap.highlightFeaturesForInspection([bodyFeature], { className: 'click-stack-map-focus' });
+        const selected = global.window.proposalInspectionGroup.layers[0];
+        expect(selected.__feature).toBe(bodyFeature);
+        cap.highlightFeaturesForHover([parcelFeature]);
+        cap.clearProposalHoverLayers();
+        expect(global.window.proposalInspectionGroup.layers).toEqual([selected]);
+        cap.highlightFeaturesForHover([parcelFeature]);
+        cap.highlightFeaturesForInspection([]);
+        expect(global.window.proposalInspectionGroup.layers).toEqual([]);
+        expect(hoverGroup().layers[0].__feature).toBe(parcelFeature);
+    });
+
     it('paints each group in its own style, in order, so the body lands on top of the parcels', () => {
         cap.highlightFeatureGroupsForHover([
             { features: [parcelFeature], color: '#FFEB3B', weight: 6, dashArray: '10 8' },

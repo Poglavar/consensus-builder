@@ -28,7 +28,13 @@ let simulatedClock = null;
 const source = { account, cid, city: 'San Francisco (simulated preview)', closesAt: now() + 7200,
   chainTime: now(), graceSeconds: 0, chainStatus: 'active', executedAt: null, insiders: [] };
 let dropNextTradeResponse = false;
-const app = express(); app.use(cors({ origin: ['http://localhost:5681','http://127.0.0.1:5681'] })); app.use(express.json());
+const previewOrigin = process.env.POINTS_PREVIEW_ORIGIN;
+if (previewOrigin) {
+  const origin = new URL(previewOrigin);
+  if (!['http:', 'https:'].includes(origin.protocol) || !['localhost', '127.0.0.1', '[::1]'].includes(origin.hostname)
+      || origin.origin !== previewOrigin) throw new Error('Points preview origin must be an exact loopback HTTP(S) origin');
+}
+const app = express(); app.use(cors({ origin: previewOrigin ? [previewOrigin] : ['http://localhost:5681','http://127.0.0.1:5681'] })); app.use(express.json());
 app.get('/health', (_req,res) => res.json({status:'ok', mode:'simulated-agreement-real-postgres-ledger', simulationRun:run, account, label:'SIMULATION ONLY'}));
 app.get('/markets', (req,res) => {
   if (!['sf','san_francisco'].includes(req.query.city)) return res.status(404).json({error:'unknown city'});

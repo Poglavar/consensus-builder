@@ -1,5 +1,7 @@
 import { test, expect } from '../helpers/fixtures';
 
+test.use({ seedCity: 'zagreb' });
+
 test.describe('Public urban-planning landing page @core', () => {
   test('explains the product and opens the live map', async ({ mockApi: page }) => {
     await page.goto('/urban-planning.html');
@@ -8,7 +10,7 @@ test.describe('Public urban-planning landing page @core', () => {
     await expect(page.getByRole('heading', { level: 1, name: 'Consensus Builder: free urban planning software' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'A focused map tool for participatory planning' })).toBeVisible();
     await expect(page.locator('body')).not.toContainText(/ArcGIS|Esri/i);
-    await expect(page.locator('main')).toContainText('community zoning and development proposals');
+    await expect(page.locator('main')).toContainText('community zoning and development designs');
     await expect(page.locator('main')).toContainText('does not create an adopted zoning plan');
     await expect(page.getByRole('link', { name: 'planning workflow guide' })).toBeVisible();
     const heroImage = page.locator('main header.intro-with-visual > img');
@@ -24,7 +26,7 @@ test.describe('Public urban-planning landing page @core', () => {
     expect(imageBox).toBeTruthy();
     expect(imageBox!.width / imageBox!.height).toBeCloseTo(2, 1);
     await page.getByRole('link', { name: 'Community planning' }).click();
-    await expect(page.getByRole('heading', { name: 'Community zoning proposals on real ground' })).toBeInViewport();
+    await expect(page.getByRole('heading', { name: 'Community zoning designs on real ground' })).toBeInViewport();
     const lastMapLink = page.getByRole('link', { name: 'Open Consensus Builder and explore the map' });
     await lastMapLink.scrollIntoViewIfNeeded();
     await expect(lastMapLink).toBeInViewport();

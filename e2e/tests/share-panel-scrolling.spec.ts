@@ -58,7 +58,7 @@ test('an individual design replaces every group highlight without changing share
     await expect(page.locator('body')).not.toHaveClass(/map-pick-highlighting/);
     await expect(page.locator('.leaflet-pick-highlight-pane path')).toHaveCount(0);
     await expect(page.locator('.proposal-hover-outline').first()).toBeVisible();
-    expect(await page.evaluate(() => [...document.querySelectorAll('.proposal-hover-outline')].some(el => el.getAttribute('stroke')?.toLowerCase() === '#00e5ff'))).toBe(true);
+    expect(await page.evaluate(() => [...document.querySelectorAll('.proposal-hover-outline')].some(el => el.getAttribute('stroke')?.toLowerCase() === '#ffdd00'))).toBe(true);
   }
   await groups.getByText('Not published yet', { exact: true }).click();
   await expect(row.locator('.share-plan-row__main')).toHaveAttribute('aria-pressed', 'false');

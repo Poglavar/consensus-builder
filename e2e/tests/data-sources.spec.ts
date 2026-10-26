@@ -69,7 +69,10 @@ test.describe('Data sources @features', () => {
     await reloaded; await waitForMapReady(page);
     expect(new URL(page.url()).searchParams.get('buildingSource')).toBe(sourceId('ft'));
     expect(await page.evaluate(() => (window as any).CityConfigManager.getBuildingSourceId())).toBe(sourceId('ft'));
-    expect(await page.evaluate(() => Object.keys(localStorage).some(key => key.startsWith('cb_building_source:') && key.endsWith(':zagreb')))).toBe(true);
+    expect(await page.evaluate(() => {
+      const w = window as any;
+      return w.BrowserWorkspace.storage.getItem(w.ParcelSourceSettings.storageKey('zagreb', w, 'building'));
+    })).toBe(sourceId('ft'));
 
     // Building footprints are fetched only when their layer is enabled. Trigger the first request
     // after the source-switch reload so it proves that the selected source is sent.
@@ -88,7 +91,10 @@ test.describe('Data sources @features', () => {
     await backToDefault; await waitForMapReady(page);
     expect(new URL(page.url()).searchParams.has('buildingSource')).toBe(false);
     expect(await page.evaluate(() => (window as any).CityConfigManager.getBuildingSourceId())).toBe('gdi-3d');
-    expect(await page.evaluate(() => Object.keys(localStorage).some(key => key.startsWith('cb_building_source:') && key.endsWith(':zagreb')))).toBe(false);
+    expect(await page.evaluate(() => {
+      const w = window as any;
+      return w.BrowserWorkspace.storage.getItem(w.ParcelSourceSettings.storageKey('zagreb', w, 'building'));
+    })).toBeNull();
   });
 
   test('A building load that fails says so with a retry and a source of your own, and panning waits like parcels do', async ({ mockApi: page }) => {
@@ -110,7 +116,7 @@ test.describe('Data sources @features', () => {
     // A pan is a burst of moveends; the layer asks once, after the pause.
     await page.evaluate(() => { for (let i = 0; i < 5; i += 1) (window as any).map.panBy([40, 0], { animate: false }); });
     const banner = page.locator('#building-source-status');
-    await expect(banner).toContainText('the OpenStreetMap server is busy');
+    await expect(banner).toContainText('Our server could not complete the building-data request (HTTP 503).');
     await expect(banner).toContainText('Try again in about 2 min, or plug in your own mirror or source.');
     expect(requests).toBe(1);
 

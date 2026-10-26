@@ -404,7 +404,7 @@ test('four owners across three parcels accept only for themselves through a lens
   await useWallet(page, wallets.stranger.address);
   await card(page).locator('[data-approval-action="verify"]').click();
   await dialog(page).locator('[data-approval-verify-submit]').click();
-  await expect(dialog(page).locator('.approval-dialog__status')).toHaveText('This lens member does not recognize this wallet as acting for any owner of this proposal.');
+  await expect(dialog(page).locator('.approval-dialog__status')).toHaveText('This lens member does not recognize this wallet as acting for any owner of this design.');
   await dialog(page).locator('.close-circle-btn').click();
   await expect(page.locator('#proposal-approval-dialog')).toHaveCount(0);
 

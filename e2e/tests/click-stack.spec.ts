@@ -67,6 +67,7 @@ test.describe('Click stack @core', () => {
       const selected = await page.evaluate(() => (window as any).currentlyHighlightedProposalId);
       if (kind === 'designs') {
         expect(selected).toBeTruthy();
+        await expect(stackSection(page, kind).locator('.proposal-type-badge')).toBeVisible();
         await stackSection(page, kind).locator('.click-stack__row').click();
         expect(await page.evaluate(() => (window as any).isProposalUIActive())).toBe(true);
         await expect(focus.first()).toBeVisible();
@@ -97,13 +98,8 @@ test.describe('Click stack @core', () => {
     await expect(stack.locator('.click-stack__copy-reference')).toHaveCount(0);
     for (const kind of ['designs', 'formed', 'parcels']) {
       const row = stackSection(page, kind).locator('.click-stack__row');
-      if (kind === 'designs') {
-        const badge = row.locator('.proposal-type-badge');
-        await expect(badge).toBeVisible();
-        const detail = await row.locator('.click-stack__row-detail').boundingBox();
-        const type = await badge.boundingBox();
-        expect(detail!.y).toBeGreaterThanOrEqual(type!.y + type!.height);
-      } else expect((await row.boundingBox())!.height).toBeLessThanOrEqual(48);
+      expect((await row.boundingBox())!.height).toBeLessThanOrEqual(48);
+      if (kind === 'designs') await expect(row.locator('.proposal-type-badge')).toHaveCount(0);
       await expect(row.locator('.click-stack__row-title')).toHaveCSS('white-space', 'nowrap');
       await expect(row.locator('.click-stack__row-detail')).toHaveCSS('text-overflow', 'ellipsis');
     }

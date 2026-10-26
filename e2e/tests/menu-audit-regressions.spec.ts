@@ -116,7 +116,7 @@ test('Activity Clear scope restores the Actors chooser, event count and run prov
   await expect(modal.locator('#activity-panel-status')).toContainText('2 events');
 });
 
-test('downloading a foreign-city design from Activity discloses the reload and lets the visitor stay', async ({ mockApi: page }) => {
+test('downloading a foreign-city design from Activity keeps the current map and parks the imported design', async ({ mockApi: page }) => {
   const cid = fileDesign(pageIndex(page), {
     schema: 'design/v1', goal: 'park', title: 'London park', description: null, author: 'Remote author',
     city: 'london', site: { type: 'Polygon', coordinates: [[[-0.128, 51.507], [-0.127, 51.507], [-0.127, 51.508], [-0.128, 51.508], [-0.128, 51.507]]] }, toleranceM: null, geometry: null, origin: null,
@@ -129,15 +129,15 @@ test('downloading a foreign-city design from Activity discloses the reload and l
   await expect(openDesign).toBeVisible();
   await openDesign.click();
   await page.getByRole('button', { name: 'Download', exact: true }).click();
-  const prompt = page.locator('.city-switch-dialog');
-  await expect(prompt).toBeVisible();
-  await expect(prompt).toContainText('London');
-  await expect(prompt).toContainText('reloads');
-  await prompt.getByRole('button', { name: /^Stay in Zagreb/ }).click();
-  await expect(prompt).toBeHidden();
+  await expect.poll(() => page.evaluate(cid => (window as any).DesignSync.localCopyOf(cid)?.published?.cid, cid)).toBe(cid);
+  await expect(page.locator('.city-switch-dialog')).toHaveCount(0);
   expect(await page.evaluate(() => (window as any).CityConfigManager.getCurrentCityId())).toBe('zagreb');
   expect(await page.evaluate(() => (window as any).getCurrentUserAgent().id)).toBe(actorId);
-  expect(await page.evaluate(cid => (window as any).DesignSync.localCopyOf(cid), cid)).toBeNull();
+  expect(await page.evaluate(cid => {
+    const w = window as any;
+    const design = w.DesignSync.localCopyOf(cid);
+    return { city: design.city, applied: w.isApplied(design), cid: w.DesignRecord.cidOf(design) };
+  }, cid)).toEqual({ city: 'london', applied: false, cid });
 });
 
 for (const width of [1180, 390]) test(`Designs Browse keeps filtered draft and published cards reachable at ${width}px`, async ({ mockApi: page }) => {

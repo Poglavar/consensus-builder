@@ -287,14 +287,14 @@ test.describe('Supporting pages @core', () => {
     await page.goto('/hackathon-demo.html');
     await expect(page.locator('#hackathon-demo')).toContainText('Running now');
     await expect(page.locator('#hackathon-demo')).toContainText('Two agreements, followed end to end');
-    await expect(page.locator('#judge-path')).toContainText('PENDING means the complete outcome has not been recorded here.');
+    const evidenceCase = page.locator('.hd-case').filter({ hasText: 'Evidence case' });
+    await expect(evidenceCase.locator('.hd-pill')).toHaveText('pending');
     await expect(page.locator('#judge-path')).not.toContainText('Every stage is recorded on Solana devnet.');
     await expect(page.locator('#hackathon-demo')).toContainText('Activity → Simulation');
     await expect(page.locator('#hackathon-demo')).not.toContainText('expand Game');
     // A case is an agreement: its card is named by it and every action deep-links into the explorer by its CID.
-    const evidenceCase = page.locator('.hd-case').filter({ hasText: 'Evidence case' });
     // Its lifecycle is the agreement's status.
-    await expect(evidenceCase).toContainText('active · 1 real cadastral parcel · 0/3 independently verified stages');
+    await expect(evidenceCase).toContainText('active · 1 cadastral parcel · outcome proof incomplete');
     await expect(evidenceCase.getByRole('link', { name: 'Every action in the explorer' }))
       .toHaveAttribute('href', `/?activity=${encodeURIComponent(`agreement:${AGREEMENT_CID}`)}`);
     const beforeRetry = calls.get('/agent/activity') || 0;

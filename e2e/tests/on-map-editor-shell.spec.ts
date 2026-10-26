@@ -180,7 +180,7 @@ test.describe('Shared on-map editor shell @features', () => {
     const modal = page.locator('#plan-stats-modal');
     await expect(modal).toBeVisible();
     await expect(modal.locator('[data-plan-stat="scope"]')).toContainText('1 applied');
-    await modal.getByRole('button', { name: 'Close applied proposal stats' }).click();
+    await modal.getByRole('button', { name: 'Close applied design stats' }).click();
     await expect(modal).toBeHidden();
   });
 

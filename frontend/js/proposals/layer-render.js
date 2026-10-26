@@ -52,6 +52,9 @@ function ensureProposalOverlayGroups() {
     if (!window.proposalBorderGroup) {
         window.proposalBorderGroup = L.featureGroup().addTo(map);
     }
+    if (!window.proposalInspectionGroup) {
+        window.proposalInspectionGroup = L.featureGroup().addTo(map);
+    }
     if (!window.proposalHoverGroup) {
         window.proposalHoverGroup = L.featureGroup().addTo(map);
     }
@@ -79,6 +82,7 @@ function ensureProposalOverlayGroups() {
     if (panes) {
         window.proposalPreviewGroup.__paneName = panes.highlight;
         window.proposalBorderGroup.__paneName = panes.highlight;
+        window.proposalInspectionGroup.__paneName = panes.highlight;
         window.proposalBackgroundGroup.__paneName = panes.highlight;
         window.proposalAcceptedGroup.__paneName = panes.highlight;
         window.proposalBuildingPreviewGroup.__paneName = panes.highlight;
@@ -91,6 +95,7 @@ function ensureProposalOverlayGroups() {
     return {
         preview: window.proposalPreviewGroup,
         border: window.proposalBorderGroup,
+        inspection: window.proposalInspectionGroup,
         hover: window.proposalHoverGroup,
         hoverLabels: window.proposalHoverLabelGroup,
         background: window.proposalBackgroundGroup,
@@ -209,6 +214,16 @@ function clearProposalHoverLayers() {
     const groups = ensureProposalOverlayGroups();
     if (groups.hover) groups.hover.clearLayers();
     if (groups.hoverLabels) groups.hoverLabels.clearLayers();
+}
+
+// Inspection survives pointer hover and mouseout. Its owner clears it when selection closes.
+function highlightFeaturesForInspection(features, style = {}) {
+    const group = ensureProposalOverlayGroups().inspection;
+    if (!group) return;
+    group.clearLayers();
+    for (const feature of features || []) {
+        addFeatureToGroup(feature, group, window.MapHighlight.style(style), null);
+    }
 }
 
 // A hover usually answers more than one question at once: a proposal's own BODY — the building

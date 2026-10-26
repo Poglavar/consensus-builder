@@ -705,7 +705,7 @@ test('3D trees use real instanced geometry, toggle off and restore their saved p
   await expect.poll(instances).toEqual([2, 2]);
 });
 
-test('3D selection isolates a proposal and Show all restores the surrounding scene', async ({ mockApi: page }) => {
+test('3D selection and deselection retain the surrounding scene', async ({ mockApi: page }) => {
   await mockBuildingScene(page);
   await openCity(page);
   await openLayerSection(page, 'buildings');
@@ -715,21 +715,17 @@ test('3D selection isolates a proposal and Show all restores the surrounding sce
   await enter3D(page);
   // Aim the real canvas click at this proposal's rendered pick surface. A canvas-center click can
   // land on an unrelated observed building, which selects that source instead of the authored park.
+  const before = await sceneBuildings(page);
+  expect(before.length).toBeGreaterThan(0);
   const point = await rayVerifiedPickPoint(page, 'proposal', proposalId);
   await page.mouse.click(point.x, point.y);
-  // Isolation is announced by a banner whose close button restores the scene (Show-all button removed in fbe3758d).
-  const banner = page.locator('.three-mode-isolation-banner');
-  const reset = banner.locator('.isolation-banner-close');
-  await expect(banner).toBeVisible();
+  // Selection highlights the authored park while retaining its surrounding building context.
   await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection?.getKey?.())).toBe(proposalId);
-  await expect(banner.locator('.isolation-banner-label')).toHaveText('Design view');
-  const visibleBuildings = () => page.evaluate(() => {
-    let count = 0;
-    (window as any).getThreeModeInternals().scene.traverse((o: any) => { if (o.userData?.isNearbyBuilding3D && o.visible) count++; });
-    return count;
-  });
-  const isolated = await visibleBuildings();
-  await reset.click();
-  await expect(banner).toBeHidden();
-  await expect.poll(visibleBuildings).toBeGreaterThan(isolated);
+  await expect(page.locator('#three-click-stack .click-stack__section[data-kind="designs"]')).toHaveClass(/is-selected/);
+  await expect(page.locator('.three-mode-isolation-banner')).toBeHidden();
+  expect(await sceneBuildings(page)).toEqual(before);
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#three-click-stack')).toBeHidden();
+  await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection?.getKey?.() ?? null)).toBeNull();
+  expect(await sceneBuildings(page)).toEqual(before);
 });

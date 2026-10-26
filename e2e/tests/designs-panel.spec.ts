@@ -30,7 +30,7 @@ test('one Designs button opens a right-side panel with browsing and empty-map sh
   expect(box.x).toBeGreaterThan(1280 / 2);
   expect(box.x + box.width).toBeGreaterThan(1250);
   await expect(panel.locator('#designs-browse')).toBeVisible();
-  await panel.getByRole('tab', { name: 'Share', exact: true }).click();
+  await panel.locator('#shareAppliedProposalsButton').click();
   await expect(panel.locator('.share-plan-link__input[readonly]')).toBeVisible();
   await expect(panel.locator('.share-plan-link__input[readonly]')).toHaveValue(/at=/);
   await expect(page.locator('.cb-dialog:visible')).toHaveCount(0);
@@ -58,7 +58,7 @@ test('the same panel publishes applied designs, supplies their link and releases
   await page.locator('#proposals-button').click();
   const panel = page.locator('#proposals-sheet');
   await expect(panel.locator(`.proposal-list-item[data-proposal-id="${id}"]`)).toBeVisible();
-  await panel.getByRole('tab', { name: 'Share', exact: true }).click();
+  await panel.locator('#shareAppliedProposalsButton').click();
   await expect(panel.locator('.share-plan-row')).toHaveCount(1);
   await expect.poll(() => page.evaluate(() => (window as any).MapPick.active())).toBe('share');
   await panel.locator('.share-plan-publish-selected').click();
@@ -80,7 +80,7 @@ test('the same panel publishes applied designs, supplies their link and releases
   await panel.getByRole('tab', { name: 'Designs', exact: true }).click();
   await expect.poll(() => page.evaluate(() => (window as any).MapPick.active())).toBeNull();
   await expect(page.locator('body')).not.toHaveClass(/map-pick-mode/);
-  await panel.getByRole('tab', { name: 'Share', exact: true }).click();
+  await panel.locator('#shareAppliedProposalsButton').click();
   await expect(panel.locator('.share-plan-row__published')).toBeVisible();
   await expect(panel.locator('.share-plan-row__selection input')).not.toBeChecked();
   await expect(panel.locator('.share-plan-row')).toHaveClass(/is-excluded/);
@@ -88,7 +88,7 @@ test('the same panel publishes applied designs, supplies their link and releases
   await expect(panel).toBeHidden();
   await expect(page.locator('#proposals-button')).toBeFocused();
   await page.locator('#proposals-button').click();
-  await panel.getByRole('tab', { name: 'Share', exact: true }).click();
+  await panel.locator('#shareAppliedProposalsButton').click();
   await expect(panel.locator('.share-plan-row__selection input')).toBeChecked();
   await page.keyboard.press('Escape');
   await expect.poll(() => page.evaluate(() => (window as any).MapPick.active())).toBeNull();
@@ -102,7 +102,7 @@ test('phone Designs and Share use one resizable sheet and keyboard tabs', async 
   await expect(panel.locator(':scope > .mobile-dock-sheet-handle')).toHaveCount(1);
   await panel.getByRole('tab', { name: 'Designs', exact: true }).focus();
   await page.keyboard.press('ArrowRight');
-  await expect(panel.getByRole('tab', { name: 'Share', exact: true })).toHaveAttribute('aria-selected', 'true');
+  await expect(panel.locator('#shareAppliedProposalsButton')).toHaveAttribute('aria-selected', 'true');
   await expect(panel.locator('.share-plan-link__input[readonly]')).toBeVisible();
   await expect(panel.locator('.mobile-dock-sheet-handle')).toHaveCount(1);
   const box = (await panel.boundingBox())!;

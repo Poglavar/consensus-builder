@@ -43,7 +43,7 @@ test.describe('Multi-parcel selection @core', () => {
       const layer = (window as any).ParcelPresenter.getLayer(id);
       return { color: layer.options.color, fillColor: layer.options.fillColor };
     }, 'HR-335754-1235');
-    expect(highlightStyles).toMatchObject({ color: '#f57c00', fillColor: '#ff9800' });
+    expect(highlightStyles).toMatchObject({ color: '#ffdd00', fillColor: '#ffdd00' });
 
     // An ordinary parcel click after Done replaces the retained selection context.
     await clickMapPoint(page, 15.9822, 45.80025);

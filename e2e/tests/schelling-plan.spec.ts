@@ -100,8 +100,8 @@ test('Propose from this plan is the panel\'s next step: painted blocks wait whil
   await expect(panel).toBeHidden();
   const summary = tool.locator('.schelling-propose__summary');
   await expect(summary).toContainText('64 blocks · 18 streets');
-  await expect(summary).toContainText('1 road proposal');
-  await expect(summary).not.toContainText('1 road proposals');
+  await expect(summary).toContainText('1 road design');
+  await expect(summary).not.toContainText('1 road designs');
   const propose = tool.locator('[data-action="propose"]');
 
   await tool.locator('[data-action="clear"]').click();

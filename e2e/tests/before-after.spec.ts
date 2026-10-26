@@ -6,7 +6,7 @@ import { test, expect } from '../helpers/fixtures';
 import type { Page } from '@playwright/test';
 import { openCity, openParcel, createSpace, showProposal, drawCorridor, clickMapPoint, PARCEL_ID, PARCEL_GEOMETRY, showProposalTab, unfoldStack } from '../helpers/runtime';
 import { pageIndex } from '../helpers/mocks/shared-server';
-import { fileIndexedAgreement, MINTED_ACCOUNT as AGREEMENT_ACCOUNT, OPEN_POOL } from '../helpers/agreements';
+import { fileIndexedAgreement, MINTED_ACCOUNT as AGREEMENT_ACCOUNT, OPEN_POOL, selectDevnetUsdc } from '../helpers/agreements';
 // A 1×1 PNG stands in for a rendered picture; the dialog accepts data URLs like any other image.
 const PIXEL_PNG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
 
@@ -293,6 +293,7 @@ test.describe('Before / after on a phone @features', () => {
 });
 
 test.describe('Before / after in the bet dialog @features', () => {
+  test.beforeEach(async ({ mockApi: page }) => { await selectDevnetUsdc(page); });
   for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 }]) {
     test(`keeps the complete portrait image inside its comparison frame at ${viewport.width}px`, async ({ mockApi: page }) => {
       await page.setViewportSize(viewport);
@@ -365,7 +366,7 @@ test.describe('Before / after in the bet dialog @features', () => {
     await page.goto(`/bets/${AGREEMENT_ACCOUNT}?city=zg&reduceMotion=1`);
     const dialog = page.locator('#proposalMarketOverlay');
     await expect(dialog).toBeVisible({ timeout: 30_000 });
-    await expect(dialog.locator('.cb-dialog__title')).toHaveText('Will North park + South square execute on-chain?');
+    await expect(dialog.locator('.cb-dialog__title')).toHaveText(/^Will North park \+ South square execute by /);
     const compare = dialog.locator('.bets-dialog__compare');
     await expect(compare.locator('img')).toHaveCount(2);
     // The two pictures cover the same frame, so the divider compares like with like.

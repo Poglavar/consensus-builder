@@ -313,7 +313,7 @@
 
     function highlightSection(kind, instance) {
         const features = global.ClickStackHits.featuresFor?.(kind, instance) || [];
-        global.highlightFeaturesForHover?.(features, focusStyle());
+        global.highlightFeaturesForInspection?.(features, focusStyle());
     }
 
     // Selects what the expanded section shows (with its map highlight) and hosts its panel.
@@ -324,7 +324,8 @@
         if (!instance || !body) return;
         state.expanding = true;
         try {
-            global.highlightFeaturesForHover?.([]);
+            global.clearProposalHoverLayers?.();
+            global.highlightFeaturesForInspection?.([]);
             if (kind !== 'designs' && kind !== 'selection') {
                 global.clearProposalHighlights?.();
                 global.ProposalSelection?.clear?.();
@@ -582,7 +583,8 @@
             global.ProposalSelection?.clear?.();
             global.hideProposalDetailsPanel?.(true);
         }
-        global.highlightFeaturesForHover?.([]);
+        global.clearProposalHoverLayers?.();
+        global.highlightFeaturesForInspection?.([]);
         state.memberships?.dispose();
         state.memberships = null;
         state.membershipDesign = null;

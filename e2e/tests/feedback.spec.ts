@@ -1,5 +1,6 @@
 import { test, expect } from '../helpers/fixtures';
 import { selectNativeOption } from '../helpers/controls';
+import { openCity } from '../helpers/runtime';
 
 test('feedback form sends the reviewed report and shows its private receipt', async ({ page }) => {
   let sent: Record<string, string> = {};
@@ -41,7 +42,7 @@ test('a failed report keeps its text and reuses its receipt ID on retry in the s
 });
 
 test('the map contact section links to the feedback form', async ({ mockApi: page }) => {
-  await page.goto('/?city=new_york');
+  await openCity(page);
   await expect(page.locator('[data-feedback-link]')).toHaveAttribute('href', '/feedback.html', { timeout: 30_000 });
   await expect(page.locator('[data-feedback-link]')).toContainText('Feedback');
   await page.locator('#settings-button').click();

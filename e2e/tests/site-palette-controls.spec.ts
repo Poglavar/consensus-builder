@@ -86,7 +86,7 @@ test.describe('Site proposals already on its parcels @core', () => {
     await openCity(page);
     await runParcelCommand(page, 15.9822, 45.80025, 'parcel.useAsSite');
     const card = page.locator('#site-panel');
-    await expect(card.locator('.site-panel__existing')).toContainText('1 proposal already on these parcels');
+    await expect(card.locator('.site-panel__existing')).toContainText('1 design already on these parcels');
     await card.locator('[data-site-action="show-proposals"]').click();
     const panel = page.locator('#site-info-panel');
     await expect(panel.locator('[data-site-tab="proposals"]')).toHaveAttribute('aria-selected', 'true');

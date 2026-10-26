@@ -45,7 +45,7 @@ async function economicState(page: import('@playwright/test').Page) {
       construction: floor.construction.perSqm,
       saleSource: floor.sources.sale,
       constructionSource: floor.sources.construction,
-      saved: localStorage.getItem('cb_economic_source:' + city.id)
+      saved: w.BrowserWorkspace.storage.getItem('cb_economic_source:' + city.id)
     };
   });
 }
