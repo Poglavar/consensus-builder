@@ -678,7 +678,7 @@ button.cb-link {
     background: none;
     font: inherit;
     line-height: inherit;
-    text-align: left;
+    text-align: start;
 }
 
 .cb-link:hover {
@@ -918,7 +918,7 @@ button.cb-link {
     background: var(--cb-surface);
     color: var(--cb-text);
     font: inherit;
-    text-align: left;
+    text-align: start;
     cursor: pointer;
     transition: background-color 0.15s ease, border-color 0.15s ease;
 }
@@ -1141,4 +1141,23 @@ button.cb-link {
     .cb-dialog__footer > .btn { flex: 1 1 0; }
     .cb-dialog__body, .cb-page { overflow-wrap: anywhere; }
     input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="hidden"]), select, textarea { font-size: max(16px, 1em); }
+}
+
+/* Preserve spatial map coordinates, attribution corners and numeric scales in either interface
+   direction. Popup copy below follows the selected language. */
+:root[dir="rtl"] .leaflet-map-pane,
+:root[dir="rtl"] .leaflet-control-container,
+:root[dir="rtl"] :is(canvas, .maplibregl-canvas-container) {
+    direction: ltr;
+}
+
+/* URLs, addresses and code stay readable within either interface direction. */
+:is(input[type="url"], input[type="email"], code, pre) {
+    direction: ltr;
+    unicode-bidi: isolate;
+}
+
+:root[dir="rtl"] :is(.leaflet-popup-content, .leaflet-tooltip) {
+    direction: rtl;
+    text-align: start;
 }

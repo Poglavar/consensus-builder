@@ -600,7 +600,7 @@ function renderLanguageOptionsHtml(activeLocale) {
         const label = escapeHtml(translateUM(choice.key, choice.name));
         const pressed = choice.locale === activeLocale ? 'true' : 'false';
         const code = choice.locale.split('-')[0].toUpperCase();
-        return `<button type="button" class="cb-segmented__option" data-language="${choice.locale}" aria-pressed="${pressed}" title="${label}" aria-label="${label}" data-i18n-key="${choice.key}" data-i18n-attr="title,aria-label"><span aria-hidden="true">${choice.flag}</span> ${code}</button>`;
+        return `<button type="button" class="cb-segmented__option" data-language="${choice.locale}" aria-pressed="${pressed}" title="${label}" aria-label="${label}" data-i18n-key="${choice.key}" data-i18n-attr="title,aria-label"><span aria-hidden="true">${choice.flag}</span> <bdi>${code}</bdi></button>`;
     }).join('');
 }
 

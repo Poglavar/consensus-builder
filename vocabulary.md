@@ -882,7 +882,7 @@ Features returned by a named building source, with their measured footprint area
 
 ### Locale
 
-The selected language and regional formatting convention for the interface, numbers and dates. Locale is separate from city, currency and geographic location.
+The selected language and regional formatting convention for the interface, numbers and dates. The language also determines the interface reading direction; map coordinates and technical addresses keep their own direction. Locale is separate from city, currency and geographic location.
 
 ## Activity
 

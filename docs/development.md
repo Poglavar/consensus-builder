@@ -42,12 +42,18 @@ before initial rendering; generated content should also listen for `i18n:transla
 That event follows dictionary registration and DOM translation, including on a language switch.
 Locale-picker buttons use `BusyControl.track` while the dictionary loads.
 
-To add a language, add its locale metadata and dictionary, then run the targeted headless unit
-checks below. Keep interpolation names identical (`{name}` and `{{name}}` are both supported).
+To add a language, add its locale metadata and dictionary, and extend `PlanRecord`’s saved-view
+language set. The parity test checks that the supported UI and saved-plan languages agree. Then run
+the targeted headless unit checks below. Keep interpolation names identical (`{name}` and
+`{{name}}` are both supported).
 Plural entries use CLDR categories (`zero`, `one`, `two`, `few`, `many`, `other`) under the key;
 `count` selects the form through `Intl.PluralRules`. The selected dictionary is exhausted before
-English is considered, and English fallback uses English plural rules. For right-to-left languages,
-include direction and layout verification when adding the locale.
+English is considered, and English fallback uses English plural rules. Arabic uses `ar-EG` with
+right-to-left reading; French defaults to `fr-FR` and Portuguese to `pt-PT`. Registry metadata supplies document direction and resets it on a language switch. Native
+names remain visible in every locale picker. Arabic quantities define all six CLDR forms. Map
+geometry and technical addresses keep left-to-right direction; interface copy follows the locale.
+For additional right-to-left languages, declare `direction: 'rtl'` and verify both desktop and phone
+layouts, including a switch back to a left-to-right language.
 
 ```sh
 cd backend
@@ -56,8 +62,12 @@ npx vitest run --maxWorkers=1 test/i18n-loader.test.js test/i18n-infrastructure.
 
 These checks cover lazy requests, deduplication, retries, stale completions, dictionary shape,
 duplicate keys, placeholders, coverage, plural forms and accidental inline multilingual tables.
-This infrastructure changes display copy only; it adds no authored-record editing operation, so
-no MCP schema or tool change is needed.
+Locale preferences add no new MCP operation. A saved plan can carry any supported UI language;
+`PlanRecord` validates that language and supplies the MCP saved-view input schema and discovered
+plan JSON Schema. `plan-record-schema.test.js` verifies registry parity and drafts plans in the new
+languages through the real in-process MCP transport. Release the API and MCP service with this
+shared-validator change before publishing the frontend, so saved plans in the new languages are
+accepted throughout the write path. No database migration is needed.
 
 ## Private feedback inbox and Telegram
 

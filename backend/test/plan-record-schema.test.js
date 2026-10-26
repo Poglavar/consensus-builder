@@ -1,6 +1,7 @@
 // Keep the published plan schema, shared semantic rules and MCP saved-view validation aligned.
 import { createRequire } from 'node:module';
 import { describe, expect, it } from 'vitest';
+import { testI18n } from './helpers/i18n.js';
 import Ajv2020 from 'ajv/dist/2020.js';
 import { cidOfObject } from '../cid.js';
 import { createMcpDiscoveryTools } from '../agents/mcp-discovery.js';
@@ -22,6 +23,17 @@ describe('shared named-plan JSON Schema',()=>{
         expect(schema.properties.title.maxLength).toBe(PlanRecord.MAX_TITLE);expect(schema.properties.designCids.maxItems).toBe(PlanRecord.MAX_DESIGNS);
         expect(schema.$comment).toContain('Clients ignoring extensions must not claim full validation');
         const changed=PlanRecord.jsonSchema();changed.properties.title.maxLength=1;expect(PlanRecord.jsonSchema().properties.title.maxLength).toBe(PlanRecord.MAX_TITLE);
+    });
+    it('accepts every UI language in browser records, MCP inputs and discovery schemas',()=>{
+        const languages=testI18n().getSupportedLanguages();
+        expect([...schema.properties.view.properties.language.anyOf[1].enum].sort()).toEqual([...languages].sort());
+        const viewSchema=createNamedPlanViewSchema();
+        for(const language of languages){
+            const plan=canonical();plan.view.language=language;
+            expect(PlanRecord.validate(plan)).toBeNull();
+            expect(validate(plan)).toBe(true);
+            expect(viewSchema.parse(plan.view).language).toBe(language);
+        }
     });
     it('matches valid omissions, nulls, views and numeric location forms',()=>{
         const basic={schema:'plan/v1',title:'A',designCids:[cids[0]],view:{at:'0,0,3',mode:'model'}};
@@ -60,8 +72,12 @@ describe('shared named-plan JSON Schema',()=>{
             const resource=await client.readResource({uri:'ugt://schemas/plan'});expect(JSON.parse(resource.contents[0].text)).toEqual(schema);
             const good={title:'Named',designs:[cids[0]],view:{at:'0,0,17',mode:'2d',city:'c'.repeat(100)}};
             expect((await client.callTool({name:'ugt_draft_plan',arguments:good})).isError).not.toBe(true);expect(received).toHaveLength(1);
+            for(const language of ['ar','fr','pt']){
+                const result=await client.callTool({name:'ugt_draft_plan',arguments:{...good,view:{...good.view,language}}});
+                expect(result.isError).not.toBe(true);expect(received.at(-1).view.language).toBe(language);
+            }
             const bad=await client.callTool({name:'ugt_draft_plan',arguments:{...good,view:{...good.view,at:'91,0,17'}}});
-            expect(bad.isError).toBe(true);expect(bad.structuredContent).toMatchObject({code:'invalid-arguments',field:'view.at'});expect(received).toHaveLength(1);
+            expect(bad.isError).toBe(true);expect(bad.structuredContent).toMatchObject({code:'invalid-arguments',field:'view.at'});expect(received).toHaveLength(4);
         }finally{await client.close();await server.close();}
     });
 

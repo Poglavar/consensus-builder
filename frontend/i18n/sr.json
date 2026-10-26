@@ -798,7 +798,10 @@
         "en": "Engleski",
         "es": "Španski",
         "sr": "Srpski",
-        "hr": "Hrvatski"
+        "hr": "Hrvatski",
+        "ar": "العربية",
+        "fr": "Français",
+        "pt": "Português"
     },
     "common": {
         "copied": "Kopirano",
@@ -7918,12 +7921,18 @@
             "to_en_us": "Prebaci na engleski (Sjedinjene Američke Države)",
             "to_es": "Prebaci na španski",
             "to_sr": "Prebaci na srpski",
-            "to_hr": "Prebaci na hrvatski"
+            "to_hr": "Prebaci na hrvatski",
+            "to_ar": "Prebaci na arapski",
+            "to_fr": "Prebaci na francuski",
+            "to_pt": "Prebaci na portugalski"
         },
         "english": "Engleski",
         "spanish": "Španski",
         "serbian": "Srpski",
-        "croatian": "Hrvatski"
+        "croatian": "Hrvatski",
+        "arabic": "Arapski",
+        "french": "Francuski",
+        "portuguese": "Portugalski"
     },
     "parcelReport": {
         "language": "Jezik",

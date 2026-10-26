@@ -9,7 +9,10 @@
         { locale: 'en-US', name: 'English (United States)', flag: '🇺🇸', key: 'language.switcher.to_en_us' },
         { locale: 'es-ES', name: 'Español', flag: '🇪🇸', key: 'language.switcher.to_es' },
         { locale: 'sr-Latn-RS', name: 'Srpski', flag: '🇷🇸', key: 'language.switcher.to_sr' },
-        { locale: 'hr-HR', name: 'Hrvatski', flag: '🇭🇷', key: 'language.switcher.to_hr' }
+        { locale: 'hr-HR', name: 'Hrvatski', flag: '🇭🇷', key: 'language.switcher.to_hr' },
+        { locale: 'ar-EG', name: 'العربية', flag: '🌐', key: 'language.switcher.to_ar', direction: 'rtl' },
+        { locale: 'fr-FR', name: 'Français', flag: '🇫🇷', key: 'language.switcher.to_fr' },
+        { locale: 'pt-PT', name: 'Português', flag: '🇵🇹', key: 'language.switcher.to_pt' }
     ].map(Object.freeze));
     // The viewer picks a locale: a UI language plus the region whose conventions numbers and dates
     // are written in (js/format.js). Money keeps the currency of the place it belongs to
@@ -58,6 +61,8 @@
     function updateDocumentLanguage(lang) {
         if (globalScope.document && globalScope.document.documentElement) {
             globalScope.document.documentElement.setAttribute('lang', lang);
+            const direction = LOCALE_CHOICES.find(choice => choice.locale.split('-')[0] === lang)?.direction || 'ltr';
+            globalScope.document.documentElement.setAttribute('dir', direction);
         }
     }
 

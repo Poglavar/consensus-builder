@@ -958,3 +958,5 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-26: Build Atlas envelope support incrementally, beginning with simple bounds from available setbacks, then adding height and other constraints; expand region by region. Use measured rule-field distributions to choose the next supported cases.
 
 - 2026-10-26: Freeform drags move only the active building footprint; surroundings stay anchored, and the old in-editor building duplication and numbered picker are retired.
+
+- 2026-10-27: Added Arabic, French and Portuguese UI dictionaries through selected-language loading; Arabic sets RTL and Gregorian regional formatting, and saved-plan/MCP validation accepts the same language set so localized plans remain shareable.

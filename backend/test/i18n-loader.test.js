@@ -23,10 +23,10 @@ function boot({ language = 'en', storage, fetchImpl } = {}) {
 }
 
 describe('on-demand dictionaries', () => {
-    it.each(['en', 'es'])('loads only English and selected %s at startup', async language => {
+    it.each(['en', 'es', 'ar', 'fr', 'pt'])('loads only English and selected %s at startup', async language => {
         const f = boot({ language });
         await f.api.translationsReady;
-        expect(f.requests()).toEqual(language === 'en' ? ['i18n/en.json'] : ['i18n/en.json', 'i18n/es.json']);
+        expect(f.requests()).toEqual(language === 'en' ? ['i18n/en.json'] : ['i18n/en.json', `i18n/${language}.json`]);
         expect(f.node.textContent).toBe(language === 'en' ? 'English' : 'Selected');
         expect(f.classes.has('i18n-loading')).toBe(false);
         expect(f.fetch.mock.calls[0][0]).toContain('v=build%20token');
@@ -100,7 +100,7 @@ describe('on-demand dictionaries', () => {
 
     it('does not fetch unregistered languages or arbitrary paths', async () => {
         const f = boot(); await f.api.translationsReady;
-        expect(await f.api.loadLanguage('ar')).toBe(false);
+        expect(await f.api.loadLanguage('zz')).toBe(false);
         expect(await f.api.loadLanguage('../other')).toBe(false);
         expect(f.requests()).toEqual(['i18n/en.json']);
     });

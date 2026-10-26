@@ -9,7 +9,7 @@
     const MAX_DESIGNS = 1000;
     const MAX_TITLE = 160;
     const MODES = Object.freeze(['2d', 'model', 'photo']);
-    const LANGUAGES = Object.freeze(['en', 'hr', 'es', 'sr']);
+    const LANGUAGES = Object.freeze(['en', 'hr', 'es', 'sr', 'ar', 'fr', 'pt']);
     const LIMITS = Object.freeze({ latitude: 85.0511, longitude: 180, zoomMin: 3, zoomMax: 22, city: 100, setting: 200 });
     const CID = /^baf(?:krei[a-z2-7]{52}|ybei[a-z2-7]{52})$/;
     const SETTINGS = ['existing', 'permitted', 'proposed', 'existingScope', 'proposedForm', 'permittedForm',

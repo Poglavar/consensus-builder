@@ -394,7 +394,7 @@ body.site-intro-open { overflow: hidden; }
 .plan-stats-table td {
     padding: var(--cb-space-1) var(--cb-space-2);
     border-bottom: 1px solid var(--cb-line);
-    text-align: left;
+    text-align: start;
 }
 
 .plan-stats-table th {
@@ -403,7 +403,7 @@ body.site-intro-open { overflow: hidden; }
 }
 
 .plan-stats-table .plan-stats-table__number {
-    text-align: right;
+    text-align: end;
     font-variant-numeric: tabular-nums;
 }
 
@@ -1955,7 +1955,7 @@ body.site-intro-open { overflow: hidden; }
 #parcelbased-sidebar .parameter-metrics .metric-row span:last-child {
     color: var(--cb-text-strong);
     font-weight: var(--cb-weight-semibold);
-    text-align: right;
+    text-align: end;
 }
 
 #blockify-sidebar .algorithm-description {

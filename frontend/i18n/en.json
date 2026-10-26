@@ -797,7 +797,10 @@
         "en": "English",
         "es": "Spanish",
         "sr": "Serbian",
-        "hr": "Croatian"
+        "hr": "Croatian",
+        "ar": "العربية",
+        "fr": "Français",
+        "pt": "Português"
     },
     "common": {
         "copied": "Copied",
@@ -7866,12 +7869,18 @@
             "to_en_us": "Switch to English (United States)",
             "to_es": "Switch to Spanish",
             "to_sr": "Switch to Serbian",
-            "to_hr": "Switch to Croatian"
+            "to_hr": "Switch to Croatian",
+            "to_ar": "Switch to Arabic",
+            "to_fr": "Switch to French",
+            "to_pt": "Switch to Portuguese"
         },
         "english": "English",
         "spanish": "Spanish",
         "serbian": "Serbian",
-        "croatian": "Croatian"
+        "croatian": "Croatian",
+        "arabic": "Arabic",
+        "french": "French",
+        "portuguese": "Portuguese"
     },
     "parcelReport": {
         "language": "Language",

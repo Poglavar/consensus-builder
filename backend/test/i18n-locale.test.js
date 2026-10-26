@@ -66,7 +66,7 @@ describe('picking a locale', () => {
     });
 
     it('lists the locales the picker offers', async () => {
-        expect((await loadI18n()).i18n.getSupportedLocales()).toEqual(['en-GB', 'en-US', 'es-ES', 'sr-Latn-RS', 'hr-HR']);
+        expect((await loadI18n()).i18n.getSupportedLocales()).toEqual(['en-GB', 'en-US', 'es-ES', 'sr-Latn-RS', 'hr-HR', 'ar-EG', 'fr-FR', 'pt-PT']);
     });
 });
 
@@ -136,5 +136,37 @@ describe('plural fallback', () => {
         win.i18n.registerTranslations('en', { 'sample.one': 'English one', 'sample.other': 'English other' });
         expect(win.i18n.t('sample', { count: 21 })).toBe('English other');
         expect(win.i18n.t('sample', { count: 1 })).toBe('English one');
+    });
+});
+
+// RTL belongs to the selected UI language and must reset when leaving Arabic.
+describe('new locales and reading direction', () => {
+    it.each([['ar', 'ar-EG'], ['fr', 'fr-FR'], ['pt', 'pt-PT']])('detects and persists %s', async (language, locale) => {
+        const win = await loadI18n({ search: `?lang=${language}` });
+        expect(win.i18n.getLanguage()).toBe(language);
+        expect(win.i18n.getLocale()).toBe(locale);
+        win.i18n.setLanguage(language, { userChoice: true });
+        expect(win.PersistentStorage.data.cb_language).toBe(locale);
+    });
+    it('sets RTL on Arabic startup and restores LTR on a live switch', async () => {
+        const attrs = { lang: 'en' };
+        const document = { documentElement: { setAttribute: (key, value) => { attrs[key] = value; }, getAttribute: key => attrs[key] } };
+        const win = { document, location: { search: '?lang=ar' }, PersistentStorage: fakeStorage() };
+        new Function('window', src)(win);
+        await win.i18n.ready;
+        expect(attrs).toEqual({ lang: 'ar', dir: 'rtl' });
+        win.i18n.setLanguage('fr');
+        expect(attrs).toEqual({ lang: 'fr', dir: 'ltr' });
+        win.i18n.setLanguage('ar');
+        expect(attrs.dir).toBe('rtl');
+        win.i18n.setLanguage('pt');
+        expect(attrs).toEqual({ lang: 'pt', dir: 'ltr' });
+    });
+    it('selects all six Arabic plural categories', async () => {
+        const win = await loadI18n({ search: '?lang=ar' });
+        win.i18n.registerTranslations('ar', Object.fromEntries(['zero', 'one', 'two', 'few', 'many', 'other'].map(form => [`test.count.${form}`, form])));
+        for (const [count, form] of [[0, 'zero'], [1, 'one'], [2, 'two'], [3, 'few'], [11, 'many'], [100, 'other']]) {
+            expect(win.i18n.t('test.count', { count })).toBe(form);
+        }
     });
 });

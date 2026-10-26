@@ -233,7 +233,8 @@ function isCapitalised(word) {
  * and are not protected: the Title Case habit of the legacy surfaces. Proper nouns inside a label are
  * reported too; the baseline absorbs the ones that are legitimate.
  */
-const PROPER_NOUN_KEY_PREFIXES = ['city.labels.', 'languages.'];
+// Language-switch labels contain proper language names, just like the language-name catalog.
+const PROPER_NOUN_KEY_PREFIXES = ['city.labels.', 'languages.', 'language.switcher.to_'];
 
 export function titleCaseLabels(flat) {
     const out = [];
