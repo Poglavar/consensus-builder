@@ -4,7 +4,7 @@
 // copied /designs/<cid> link imports and applies the design on another device, and a second Share
 // sends nothing again.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, createSpace, showProposal, proposalState, chooseProfileName, stubBasemapTiles, openOnAnotherDevice } from '../helpers/runtime';
+import { openCity, createSpace, showProposal, proposalState, chooseProfileName, stubBasemapTiles, openOnAnotherDevice, confirmDesignOnlyShare } from '../helpers/runtime';
 import { canonicalJson, cidOfBytes, cidOfObject, pageIndex, SharedIndex } from '../helpers/mocks/shared-server';
 
 test.beforeEach(async ({ mockApi: page }) => {
@@ -29,11 +29,13 @@ test('Share on an applied park publishes its design object under the CID the bro
   await expect(details.locator('.cb-badge--draft')).toBeVisible();
   // A guest chooses a profile name first: the design carries its author, and nothing left the device.
   await details.locator('.btn-share-proposal').click();
+  await confirmDesignOnlyShare(page);
   await chooseProfileName(page, 'Share author');
   expect(postsOf(index)).toEqual([]);
 
   await showProposal(page, proposalId);
   await details.locator('.btn-share-proposal').click();
+  await confirmDesignOnlyShare(page);
   await expect(details.locator('.cb-badge--published')).toBeVisible({ timeout: 30_000 });
 
   // The courier got the canonical bytes, the index the object they encode, both under one CID that
@@ -72,6 +74,7 @@ test('Share on an applied park publishes its design object under the CID the bro
   // Sharing it again copies the same link and sends nothing: it still hashes to its published CID.
   await page.evaluate(() => navigator.clipboard.writeText(''));
   await details.locator('.btn-share-proposal').click();
+  await confirmDesignOnlyShare(page);
   await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(link);
   expect(postsOf(index)).toHaveLength(2);
 

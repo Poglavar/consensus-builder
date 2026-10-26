@@ -3,7 +3,7 @@
 import { Browser, Page, Request } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
-import { createSpace, openCity, showProposal } from '../helpers/runtime';
+import { createSpace, openCity, showProposal, confirmDesignOnlyShare } from '../helpers/runtime';
 import { attachSharedIndex, cidOfObject, pageIndex, SharedIndex } from '../helpers/mocks/shared-server';
 import { mockAllApiRoutes } from '../helpers/mocks/api-routes';
 
@@ -104,6 +104,7 @@ async function publishPark(page: Page): Promise<{ index: SharedIndex; cid: strin
   const drawingId = await createSpace(page, 'park');
   await showProposal(page, drawingId);
   await page.locator('#proposal-details-panel .btn-share-proposal').click();
+  await confirmDesignOnlyShare(page);
   const index = pageIndex(page);
   await expect.poll(() => index.designs.size, { timeout: 30_000 }).toBe(1);
   await page.evaluate(() => (window as any).hideProposalDetailsPanel(true));

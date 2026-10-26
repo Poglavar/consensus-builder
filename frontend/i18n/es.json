@@ -852,6 +852,13 @@
                 "openFailed": "No se pudo abrir el plan con nombre",
                 "opened": "Se abrió «{{title}}»."
             },
+            "scope": {
+                "title": "¿Compartir diseño o plan?",
+                "message": "Compartir este diseño publica solo este diseño y copia su enlace. El resto del plan no se incluye.",
+                "design": "Compartir solo este diseño",
+                "plan": "Compartir todo el plan",
+                "hint": "Compartir este diseño o su plan"
+            },
             "shareHint": "Publica este diseño y copia su enlace",
             "publishedAs": "Publicado como:",
             "linkCopied": "Diseño publicado. Se ha copiado su enlace.",

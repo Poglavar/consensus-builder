@@ -2,7 +2,7 @@
 import { Browser, BrowserContext, Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
-import { createSpace, openCity, showProposal } from '../helpers/runtime';
+import { createSpace, openCity, showProposal, confirmDesignOnlyShare } from '../helpers/runtime';
 import { mockAllApiRoutes } from '../helpers/mocks/api-routes';
 import { attachSharedIndex, cidOfObject, pageIndex, SharedIndex } from '../helpers/mocks/shared-server';
 
@@ -44,6 +44,7 @@ test.describe('shared dialog button controls @features', () => {
     const localId = await createSpace(authorPage, 'park');
     await showProposal(authorPage, localId);
     await authorPage.locator('#proposal-details-panel .btn-share-proposal').click();
+    await confirmDesignOnlyShare(authorPage);
     const index = pageIndex(authorPage);
     await expect.poll(() => index.designs.size, { timeout: 30_000 }).toBe(1);
     const [cid] = [...index.designs.keys()];

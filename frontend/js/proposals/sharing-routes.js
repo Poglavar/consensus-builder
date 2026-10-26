@@ -1,6 +1,6 @@
 // proposals/sharing-routes.js — sharing designs and opening shared designs (plan-design-agreement.md,
-// M2 "Browser"). Share on a design publishes it (DesignSync.publishDesign) and copies its
-// /designs/<cid> link; the sidebar's share panel (dialog-share.js) publishes a selection and links
+// M2 "Browser"). The design card asks for a sharing scope; sharing that design alone publishes it
+// (DesignSync.publishDesign) and copies its /designs/<cid> link. The sharing panel publishes a selection and links
 // /designs/<cid>,<cid>. handleSharedDesignRoute opens such a link: it reads the designs from the index,
 // imports them, applies them in replay order, frames them and opens the latest one's details
 // (core.js handleProposalRouteFromUrl dispatches the path here; agreement-sync.js reuses it).
@@ -231,11 +231,28 @@ async function shareSingleProposal(proposalIdOrProposal) {
     }
 }
 
-function shareProposalFromDetails() {
-    if (currentProposalDetailsContext) return shareSingleProposal(currentProposalDetailsContext);
+async function shareProposalFromDetails() {
     const panel = document.getElementById('proposal-details-content');
     const idElement = panel ? panel.querySelector('[data-proposal-id]') : null;
-    return shareSingleProposal(idElement ? idElement.getAttribute('data-proposal-id') : null);
+    const proposal = resolveDesignToShare(currentProposalDetailsContext || idElement?.getAttribute('data-proposal-id'));
+    if (!proposal) return null;
+    const t = getProposalI18nHelper();
+    const scope = await window.CbDialog.choice(t('proposals.share.scope.message',
+        'Sharing this design publishes only this design and copies its link. The rest of the plan is not included.'), [
+        { value: 'plan', label: t('proposals.share.scope.plan', 'Share the whole plan'), primary: true },
+        { value: 'design', label: t('proposals.share.scope.design', 'Share only this design') },
+        { value: 'cancel', label: t('common.cancel', 'Cancel') }
+    ], { title: t('proposals.share.scope.title', 'Share design or plan?') });
+    if (scope === 'design') return shareSingleProposal(proposal);
+    if (scope !== 'plan') return null;
+    try {
+        await window.ensureOptionalTool('designMemberships');
+        return await window.DesignMemberships.shareFromDesign(proposal, window);
+    } catch (error) {
+        console.error(`[${new Date().toISOString()}] [share] opening plan sharing failed`, error);
+        window.showStyledAlert(error.message);
+        return null;
+    }
 }
 
 function sharedMaterializationPhase(record) {

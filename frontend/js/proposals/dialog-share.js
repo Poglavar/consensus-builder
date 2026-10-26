@@ -470,9 +470,10 @@ async function showAllProposalsModal() {
     return openDesignsTab('browse');
 }
 
-// --- Applied-composition sharing panel ----------------------------------------------------------
+// --- Design and plan sharing panel ----------------------------------------------------------
 // Sharing lives in the Designs panel alongside the design list. The map stays visible so the
-// applied composition can be read spatially while selecting designs.
+// applied composition can be read spatially while selecting designs. A plan opener also supplies
+// its unapplied members; only that plan's exact members start checked.
 // While the panel is open it picks on the map (js/map-pick.js, MapPick 'share'): the map is pan/zoom
 // ONLY — parcels and proposals are click/hover-inert, the sidebar and mode switches are disabled (CSS
 // lockdown via body.map-pick-mode), and a click on an applied design finds its row. The subset
@@ -493,7 +494,8 @@ const SHARE_PLAN_HOVER_PARCEL_COLOR = window.MapHighlight.color;
 const SHARE_PLAN_HOVER_BODY_COLOR = window.MapHighlight.color;
 
 let _sharePlanPanelState = null; // { root, token }
-const _sharePlanExcludedKeys = new Set(); // explicit exclusions for this Designs panel session
+let _sharePlanScope = null; // exact members and optional named plan supplied by the opener
+const _sharePlanSelectionOverrides = new Map(); // explicit row choices for this Designs panel session
 
 function sharePlanColorForIndex(index) {
     const n = SHARE_PLAN_COLORS.length;
@@ -504,7 +506,10 @@ function closeSharePlanPanel(options = {}) {
     window.DesignSync?.clearPublicationProblem?.();
     const state = _sharePlanPanelState;
     _sharePlanPanelState = null;
-    if (!options.preserveSelection) _sharePlanExcludedKeys.clear();
+    if (!options.preserveSelection) {
+        _sharePlanSelectionOverrides.clear();
+        _sharePlanScope = null;
+    }
     // The pick mode ends with the panel (js/map-pick.js): the lockdown lifts, a subset's highlight
     // and the dimming go, and a map click no longer answers into a list that is not on screen.
     try { window.MapPick.end('share'); } catch (error) { console.error('share plan: ending the map pick failed', error); }
@@ -538,11 +543,13 @@ function showSharePlanPanel(options) {
         const capturedView = window.MapShare.capture(window);
         let shareView = { ...capturedView };
         const applied = proposalStorage.getAllProposals().filter(isProposalCurrentlyApplied);
-        const proposalsByHash = new Map();
-        applied.forEach(proposal => {
-            const key = proposal.proposalId || getProposalKey(proposal);
-            if (!key) return;
-            proposalsByHash.set(String(key), proposal);
+        if (Array.isArray(options?.members)) {
+            _sharePlanScope = { members: options.members, plan: options.plan || null };
+            _sharePlanSelectionOverrides.clear();
+        }
+        const { proposals: proposalsByHash, selected } = window.ShareSelection.prepare(applied, {
+            members: _sharePlanScope?.members ?? null, overrides: _sharePlanSelectionOverrides,
+            keyOf: proposal => proposal.proposalId || getProposalKey(proposal)
         });
         if (applied.length > 0 && proposalsByHash.size === 0) {
             if (typeof showEphemeralMessage === 'function') {
@@ -560,9 +567,7 @@ function showSharePlanPanel(options) {
 
         // An unpublished parcel layout needs an agreement; an existing publication can be linked.
         const publishRefusals = new Map();
-        // Keep explicit exclusions while switching tabs; closing the Designs panel resets them.
-        const selected = new Set(proposalsByHash.keys());
-        for (const key of _sharePlanExcludedKeys) selected.delete(key);
+        // Keep the opener's scope and explicit row choices across tabs; closing Designs resets them.
         // key -> { cid: the CID the design is published as here, or null; publishing }
         const publishState = new Map();
         const isPublished = key => !!(publishState.get(key) || {}).cid;
@@ -800,7 +805,7 @@ function showSharePlanPanel(options) {
 
         const listWrap = document.createElement('div');
         listWrap.className = 'share-plan-list';
-        listWrap.hidden = !applied.length;
+        listWrap.hidden = !proposalsByHash.size;
         container.appendChild(listWrap);
 
         // The link to the selection, shown once every selected design is published.
@@ -813,7 +818,7 @@ function showSharePlanPanel(options) {
         linkInput.type = 'text';
         linkInput.readOnly = true;
         linkInput.className = 'share-plan-link__input';
-        linkInput.setAttribute('aria-label', applied.length ? t('proposals.share.panel.linkLabel', 'Link to the selected designs') : t('mapShell.shareMap', 'Share this map'));
+        linkInput.setAttribute('aria-label', proposalsByHash.size ? t('proposals.share.panel.linkLabel', 'Link to the selected designs') : t('mapShell.shareMap', 'Share this map'));
         const copyBtn = document.createElement('button');
         copyBtn.type = 'button';
         copyBtn.className = 'btn';
@@ -855,7 +860,7 @@ function showSharePlanPanel(options) {
         includeCamera.addEventListener('change', updateViewOptions);
         rotate.addEventListener('change', updateViewOptions);
         shareArea.appendChild(viewOptions);
-        let namedRecord = window.NamedPlans.current;
+        let namedRecord = _sharePlanScope ? _sharePlanScope.plan : window.NamedPlans.current;
         let savingName = false;
         const namedTitle = document.createElement('strong');
         namedTitle.className = 'share-plan-saved-name';
@@ -1023,11 +1028,10 @@ function showSharePlanPanel(options) {
         const onCheckboxChange = (key, checked) => {
             if (checked) {
                 selected.add(key);
-                _sharePlanExcludedKeys.delete(key);
             } else {
                 selected.delete(key);
-                _sharePlanExcludedKeys.add(key);
             }
+            _sharePlanSelectionOverrides.set(key, checked);
             // Toggling a row paints or unpaints THAT row (updateRowState repaints its highlight). The
             // map is not painted when the panel opens (see the fill below) — checked means "in the
             // plan", not "drawn right now".

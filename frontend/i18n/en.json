@@ -852,6 +852,13 @@
                 "openFailed": "The named plan could not be opened",
                 "opened": "Opened “{{title}}”."
             },
+            "scope": {
+                "title": "Share design or plan?",
+                "message": "Sharing this design publishes only this design and copies its link. The rest of the plan is not included.",
+                "design": "Share only this design",
+                "plan": "Share the whole plan",
+                "hint": "Share this design or its plan"
+            },
             "shareHint": "Publish this design and copy its link",
             "publishedAs": "Published as:",
             "linkCopied": "Design published. Its link is copied.",

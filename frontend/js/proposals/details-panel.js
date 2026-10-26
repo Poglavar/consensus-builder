@@ -428,7 +428,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const publishRefusal = window.DesignSync.publishedCid(fullProposal || proposal)
         ? null : window.ProposalPublishTerms.publishRefusal(fullProposal || proposal);
     const agreementOnlyPublication = publishRefusal?.code === 'layout-needs-agreement';
-    // Share publishes the design and copies its link (sharing-routes.js shareSingleProposal). It is
+    // Share asks whether to publish this design alone or open its plan in the sharing panel. It is
     // the main action of an applied design; before it is applied, applying is.
     const shareButtonHtml = publishRefusal
         ? `
@@ -439,7 +439,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     `
         : `
         <button type="button" class="btn ${appliedState ? 'btn-primary' : ''} btn-share-proposal" onclick="BusyControl.track(this, () => shareProposalFromDetails())"
-            title="${safeAgentText(tProposal('proposals.share.shareHint', 'Publish this design and copy its link'))}">
+            title="${safeAgentText(tProposal('proposals.share.scope.hint', 'Share this design or its plan'))}">
             <i class="fas fa-share-alt"></i> ${tProposal('panel.proposal.actions.share', 'Share')}
         </button>
     `;

@@ -284,6 +284,12 @@ export async function showProposal(page: Page, id: string): Promise<void> {
   await expect(page.locator('#planning-inspector')).toBeHidden();
 }
 
+// Sharing from the design card first asks whether to publish the design alone or share its plan.
+export async function confirmDesignOnlyShare(page: Page): Promise<void> {
+  await page.getByRole('alertdialog', { name: 'Share design or plan?', exact: true })
+    .getByRole('button', { name: 'Share only this design', exact: true }).click();
+}
+
 export async function drawCorridor(page: Page, kind: 'road'|'track'): Promise<string> {
   await openParcel(page, 'proposals');
   await page.locator(`.parcel-transport-btn--${kind}`).click();

@@ -854,6 +854,13 @@
                 "openFailed": "Imenovani plan nije moguće otvoriti",
                 "opened": "Otvoren je „{{title}}”."
             },
+            "scope": {
+                "title": "Podijeliti dizajn ili plan?",
+                "message": "Dijeljenjem ovog dizajna objavljuje se samo taj dizajn i kopira njegova poveznica. Ostatak plana nije uključen.",
+                "design": "Podijeli samo ovaj dizajn",
+                "plan": "Podijeli cijeli plan",
+                "hint": "Podijeli ovaj dizajn ili njegov plan"
+            },
             "shareHint": "Objavite ovaj dizajn i kopirajte njegov link",
             "publishedAs": "Objavljeno kao:",
             "linkCopied": "Dizajn je objavljen. Njegov link je kopiran.",

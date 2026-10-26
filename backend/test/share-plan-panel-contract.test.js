@@ -99,7 +99,7 @@ describe('share plan panel contract', () => {
     it('publishes a row through DesignSync and never a parcel layout', () => {
         // A layout is published with the agreement that settles its land (ProposalPublishTerms.publishRefusal).
         expect(panelFn).toContain('const refusal = cid ? null : window.ProposalPublishTerms.publishRefusal(proposal);');
-        expect(panelFn).toContain('const selected = new Set(proposalsByHash.keys());');
+        expect(panelFn).toContain('window.ShareSelection.prepare(applied, {');
         const publish = sourceSection(panelFn, 'const publishRow = async (key) => {', 'const attachRow =');
         expect(publish).toContain('if (!proposal || publishRefusals.has(key)) return;');
         expect(publish).toContain('await window.DesignSync.publishDesign(proposal);');

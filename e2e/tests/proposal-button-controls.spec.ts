@@ -1,7 +1,7 @@
 // Exercise proposal action buttons and assert the resulting UI and stored state: the related-design
 // link, the grain-score Repeat control, and Share publishing a design (POST /pins, /designs).
 import { test, expect } from '../helpers/fixtures';
-import { openCity, createSpace, showProposal, PARCEL_ID, showProposalTab } from '../helpers/runtime';
+import { openCity, createSpace, showProposal, PARCEL_ID, showProposalTab, confirmDesignOnlyShare } from '../helpers/runtime';
 import { pageIndex } from '../helpers/mocks/shared-server';
 
 async function addProposal(page: import('@playwright/test').Page, proposal: Record<string, unknown>): Promise<string> {
@@ -87,6 +87,7 @@ test.describe('proposal detail button controls @features', () => {
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write'], { origin: new URL(page.url()).origin });
     await showExpandedProposal(page, proposalId);
     await page.locator('#proposal-details-footer .btn-share-proposal').click();
+    await confirmDesignOnlyShare(page);
 
     // Share pins and indexes the design under its CID and copies its /designs link.
     const index = pageIndex(page);

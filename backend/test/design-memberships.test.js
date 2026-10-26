@@ -224,6 +224,30 @@ describe('read-only parent inspection', () => {
         expect(win.ApplyProposal.apply).not.toHaveBeenCalled();
     });
 
+    it('retains an exact unpublished local member without downloading or importing it', async () => {
+        const win = inspectionWin();
+        const draft = { proposalId: 'local-draft', title: 'Exact draft' };
+        win.proposalStorage.getProposal.mockReturnValue(draft);
+        win.DesignRecord = { cidOf: vi.fn(() => 'cid-exact') };
+        const data = await inspect('plans', { id: 'plan-1', content: { designCids: ['cid-exact'] },
+            localDesigns: [{ proposalId: draft.proposalId, cid: 'cid-exact' }] }, win);
+        expect(data.members[0].proposal).toBe(draft);
+        expect(win.DesignSync.fetchDesigns).not.toHaveBeenCalled();
+        expect(win.DesignSync.importDesign).not.toHaveBeenCalled();
+    });
+
+    it('does not substitute an edited local record for the plan revision it used to contain', async () => {
+        const row = { cid: 'cid-exact', title: 'Original revision' };
+        const win = inspectionWin({ downloaded: new Map([['cid-exact', row]]) });
+        win.proposalStorage.getProposal.mockReturnValue({ proposalId: 'local-draft', title: 'Edited revision' });
+        win.DesignRecord = { cidOf: vi.fn(() => 'cid-edited') };
+        const data = await inspect('plans', { id: 'plan-1', content: { designCids: ['cid-exact'] },
+            localDesigns: [{ proposalId: 'local-draft', cid: 'cid-exact' }] }, win);
+        expect(data.members[0].proposal.title).toBe('Original revision');
+        expect(win.DesignSync.fetchDesigns).toHaveBeenCalledWith(['cid-exact']);
+        expect(win.DesignSync.importDesign).not.toHaveBeenCalled();
+    });
+
     it('renders the plan meaning and an explicit backend-preserving navigation link', async () => {
         const doc = makeDocument(), host = doc.createElement('section'); doc.body.appendChild(host);
         const f = fixture();

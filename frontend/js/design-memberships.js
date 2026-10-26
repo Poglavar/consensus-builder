@@ -25,6 +25,13 @@
     const planActions = {"en": {"planAgreements": "Agreements referencing this plan:", "emptyAgreements": "No agreements yet.", "createAgreement": "Create agreement"}, "hr": {"planAgreements": "Sporazumi koji se odnose na ovaj plan:", "emptyAgreements": "Još nema sporazuma.", "createAgreement": "Izradi sporazum"}, "sr": {"planAgreements": "Sporazumi koji se odnose na ovaj plan:", "emptyAgreements": "Još nema sporazuma.", "createAgreement": "Napravi sporazum"}, "es": {"planAgreements": "Acuerdos que hacen referencia a este plan:", "emptyAgreements": "Todavía no hay acuerdos.", "createAgreement": "Crear acuerdo"}};
     for (const language of Object.keys(strings)) Object.assign(strings[language], planActions[language]);
     for (const language of Object.keys(strings)) Object.assign(strings[language], explanations[language]);
+    const sharing = {
+        en: { sharePlan: 'Share plan', chooseSharePlan: 'Which plan do you want to share?' },
+        hr: { sharePlan: 'Podijeli plan', chooseSharePlan: 'Koji plan želite podijeliti?' },
+        sr: { sharePlan: 'Podeli plan', chooseSharePlan: 'Koji plan želite da podelite?' },
+        es: { sharePlan: 'Compartir plan', chooseSharePlan: '¿Qué plan quieres compartir?' }
+    };
+    for (const language of Object.keys(strings)) Object.assign(strings[language], sharing[language]);
 
     function localAgreements(planCid, agreements, publishedCidOf) {
         return agreements.filter(agreement => agreement.plan?.cid === planCid).map(agreement => ({
@@ -147,8 +154,11 @@
         const refs = content.designCids.map(cid => ({ cid }));
         const localOf = cid => {
             const published = win.DesignSync.localCopyOf(cid);
+            if (published) return published;
             const ref = instance.localDesigns?.find(ref => ref.cid === cid);
-            return published || (ref ? win.proposalStorage.getProposal(ref.proposalId) : null);
+            const draft = ref ? win.proposalStorage.getProposal(ref.proposalId) : null;
+            // A saved plan names a revision; an edited record under the same local id is not it.
+            return draft && win.DesignRecord.cidOf(draft) === cid ? draft : null;
         };
         const missing = refs.filter(ref => !localOf(ref.cid)).map(ref => ref.cid);
         const downloaded = missing.length ? await win.DesignSync.fetchDesigns(missing) : { rows: new Map(), missing: [] };
@@ -166,6 +176,45 @@
         });
         return { content, members, features, designCids: refs.map(ref => ref.cid).filter(Boolean),
             designIds: members.filter(member => !member.serverId).map(member => member.id) };
+    }
+
+    // Sharing reads exact member revisions in memory; it never applies or imports a plan just to
+    // prepare its checkboxes. The same entry point serves 2D, model 3D and Google 3D sections.
+    async function sharePlan(instance, win, session = null) {
+        const data = session ? await session.details('plans', instance) : await inspect('plans', instance, win);
+        win.ClickStack?.close();
+        win.ThreeClickStack?.close();
+        return win.shareAppliedProposals({ plan: instance.draft ? null : { cid: instance.cid, content: data.content },
+            members: data.members.map(member => member.proposal) });
+    }
+
+    async function shareFromDesign(proposal, win) {
+        const t = translator(win), session = createSession(proposal, win);
+        try {
+            await session.ready;
+            const group = session.groups.plans;
+            for (;;) {
+                const plans = session.instances('plans').filter(plan => !plan.membershipPlaceholder);
+                if (!plans.length) {
+                    if (group.error) throw new Error(t('failed'));
+                    win.ClickStack?.close();
+                    win.ThreeClickStack?.close();
+                    return await win.shareAppliedProposals({ members: [
+                        ...win.proposalStorage.getAllProposals().filter(record => win.isApplied(record)), proposal
+                    ] });
+                }
+                if (plans.length === 1 && group.nextOffset === null) return await sharePlan(plans[0], win, session);
+                const more = group.nextOffset !== null;
+                const choice = await win.CbDialog.choice(t('chooseSharePlan'), [
+                    ...plans.map(plan => ({ value: plan.id, label: plan.label })),
+                    ...(more ? [{ value: 'more', label: t('more') }] : []),
+                    { value: 'cancel', label: win.i18n.t('common.cancel') }
+                ], { title: t('sharePlan') });
+                if (choice === 'more') { await session.load('plans'); continue; }
+                const plan = plans.find(plan => plan.id === choice);
+                return plan ? await sharePlan(plan, win, session) : null;
+            }
+        } finally { session.dispose(); }
     }
 
     // Agreements refer to this exact plan; they open a dialog, never a spatial stack section.
@@ -248,6 +297,15 @@
             if (instance.draft) summary.appendChild(node('span', 'click-stack__facts', t('draft')));
             host.appendChild(summary);
             const actions = node('div', 'cb-actions click-stack__actions');
+            const share = action(t('sharePlan'), async () => {
+                try { await win.BusyControl.track(share, () => sharePlan(instance, win, session)); }
+                catch (error) { win.showStyledAlert(error.message); }
+            });
+            share.className = 'btn btn-primary click-stack__share-plan';
+            const shareIcon = node('i', 'fas fa-share-alt');
+            shareIcon.setAttribute('aria-hidden', 'true');
+            share.replaceChildren(shareIcon, node('span', '', t('sharePlan')));
+            actions.appendChild(share);
             if (instance.cid && !instance.draft) {
                 const link = node('a', 'btn btn-sm', t(kind === 'plans' ? 'openPlan' : 'openAgreement'));
                 link.href = membershipLink(kind, instance.cid, win);
@@ -294,5 +352,6 @@
         } else if (!group.loading && group.nextOffset !== null) host.appendChild(action(t('more'), () => session.load(kind)));
     }
 
-    return { localAgreements, localPlans, mountAgreements, mergeRows, membershipLink, fetchPage, createSession, inspect, mountSection, strings };
+    return { localAgreements, localPlans, mountAgreements, mergeRows, membershipLink, fetchPage, createSession, inspect,
+        sharePlan, shareFromDesign, mountSection, strings };
 });
