@@ -185,7 +185,7 @@ describe('proposal editor adapter registry', () => {
 
     it('has no editor for a goal it does not register', () => {
         expect(registry.get('merge')).toBeNull();
-        expect(registry.canEdit({ goal: 'merge' })).toEqual({ editable: false, reason: 'No editor adapter is registered for this proposal type.' });
+        expect(registry.canEdit({ goal: 'merge' })).toEqual({ editable: false, reason: 'No editor adapter is registered for this design type.' });
         expect(registry.list().map(entry => entry.key)).toEqual(expect.arrayContaining(['road-track', 'parcel-layout', 'park']));
     });
 
@@ -357,6 +357,19 @@ describe('corridor proposal adapter', () => {
         expect(view.width).toBe(12);
         expect(replacement.sourceProposalId).toBeUndefined();
         expect(replacement.proposalId).toBeUndefined();
+    });
+
+    it('updates an extended road site instead of retaining its source boundary and binding', () => {
+        const oldSite = turf.bboxPolygon([15.9, 45.8, 15.91, 45.81]).geometry;
+        const newSite = turf.bboxPolygon([15.9, 45.8, 15.92, 45.81]).geometry;
+        const source = { ...proposal, site: oldSite, binding: { coverage: 'complete' } };
+        source.roadProposal = { definition: { ...proposal.roadProposal.definition, polygon: oldSite } };
+        const draft = draftFor(corridorAdapter, source);
+        draft.editorPayload.definition.polygon = newSite;
+        const saved = corridorAdapter.serializeProposal(draft);
+        expect(saved.site).toEqual({ type: 'MultiPolygon', coordinates: [newSite.coordinates] });
+        expect(saved.binding).toBeUndefined();
+        expect(source.site).toEqual(oldSite);
     });
 
     it('reports a precise read-only reason for invalid corridors without centerlines', () => {
@@ -614,7 +627,7 @@ describe('building proposal adapters', () => {
         const adapter = buildBuildingAdapter('single');
         expect(adapter.canEdit({ goal: 'single', buildingProposal: { parameters: { height: 10 } } })).toEqual({
             editable: false,
-            reason: 'This building proposal does not contain valid footprint geometry.'
+            reason: 'This building design does not contain valid footprint geometry.'
         });
     });
 });

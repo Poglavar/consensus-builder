@@ -1032,6 +1032,12 @@
                 applied: false,
                 isCorridor: true
             };
+            // A redrawn/widened road authors its new land with its footprint, as the structure
+            // editor does. Retaining the source site's old edges rejects valid geometry edits.
+            if (definition.polygon && !same(definition.polygon, corridorDefinition(draft.sourceSnapshot)?.polygon)) {
+                output.site = siteDraftApi().toMultiPolygon(definition.polygon);
+                delete output.binding;
+            }
             return finalizeAuthoredProposal(output);
         },
         summarizeChanges(source, draft) {

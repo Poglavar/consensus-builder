@@ -501,6 +501,7 @@ function sharePlanColorForIndex(index) {
 }
 
 function closeSharePlanPanel(options = {}) {
+    window.DesignSync?.clearPublicationProblem?.();
     const state = _sharePlanPanelState;
     _sharePlanPanelState = null;
     if (!options.preserveSelection) _sharePlanExcludedKeys.clear();

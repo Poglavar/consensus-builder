@@ -736,7 +736,7 @@ function _flatGroundCoverageIsComplete(declaredCount, resolvedCount, coverage, f
 
 const _PROPOSAL_APPLY_FAILURE_TEXT = {
     'proposal-footprint-outside-cadastre': ['outsideCadastre', 'The proposal geometry extends beyond its selected cadastral parcels. Keep it within the selected land, or create a proposal that includes the additional parcels.'],
-    'proposal-footprint-outside-site': ['outsideSite', 'The proposal geometry extends beyond its site. Keep it inside the site, or edit the site before applying.'],
+    'proposal-footprint-outside-site': ['outsideSite', 'The design geometry extends beyond its saved land boundary. Update the land boundary or move the geometry inside it before applying.'],
     'cadastral-ground-unavailable': ['groundUnavailable', 'Cadastral parcel data could not be loaded. Check your connection and try applying again.'],
     'cadastral-ground-absent': ['groundMissing', 'Cadastral parcel data is unavailable for: {{parcels}}. This proposal cannot be applied until those parcels can be loaded.'],
     'proposal-needs-parcels': ['needsParcels', 'This proposal acts on cadastral parcels or has no geometry of its own. Load its parcels before applying.'],
@@ -971,6 +971,7 @@ const ProposalManager = {
             // parcels it now reaches, or the record keeps the land it had before the junction.
             const joined = target.roadProposal.definition;
             if (typeof rebuildRoadDefinitionFootprint === 'function') rebuildRoadDefinitionFootprint(joined);
+            authoring.writeDefinition(target, joined);
             if (typeof declareParcelsUnderRoadLand === 'function') declareParcelsUnderRoadLand(target, joined.polygon);
             authoring.detachPublishedIdentity(target);
             target.updatedAt = changedAt;
@@ -978,6 +979,12 @@ const ProposalManager = {
             changedRecords.push(target);
         }
 
+        // Junction corner land belongs to the newly authored road too. Its site must describe
+        // the rebuilt footprint, rather than the pre-junction ribbon copied into the planner.
+        const newDefinition = plan.proposal.roadProposal.definition;
+        if (typeof rebuildRoadDefinitionFootprint === 'function') rebuildRoadDefinitionFootprint(newDefinition);
+        authoring.writeDefinition(plan.proposal, newDefinition);
+        if (typeof declareParcelsUnderRoadLand === 'function') declareParcelsUnderRoadLand(plan.proposal, newDefinition.polygon);
         const proposalId = store.addProposal(plan.proposal, { emitEvent: false });
         if (!proposalId) fail('Could not save the new corridor.');
         const stored = _getProposalRecord(proposalId, options);

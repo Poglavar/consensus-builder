@@ -2136,6 +2136,10 @@
                 ? adapter.payloadFromDrawingSeed(payload, draft.editorPayload?.definition)
                 : { kind: payload.kind || draft.editorPayload?.kind, definition: payload.definition || payload };
             patch = { editorPayload: converted, previewGeometry: converted.definition?.polygon || null };
+            if (converted.definition?.polygon) {
+                fields.site = global.__siteDraft.toMultiPolygon(converted.definition.polygon);
+                fields.binding = null;
+            }
             if (Array.isArray(options.parcelIds)) fields.selectedParcelIds = options.parcelIds.map(String);
         } else if (kind === 'building') {
             if (!['buildings', 'row', 'parcelBased', 'single'].includes(draft.adapterKey || draft.goal)) return null;

@@ -186,6 +186,52 @@
         const log = (message, ...rest) => console.log(`[${new Date().toISOString()}] [DesignSync] ${message}`, ...rest);
         const warn = (message, ...rest) => console.warn(`[${new Date().toISOString()}] [DesignSync] ${message}`, ...rest);
         const preparedMapPreviews = new Map();
+        let publicationProblemLayer = null;
+
+        function clearPublicationProblem() {
+            if (publicationProblemLayer) publicationProblemLayer.remove();
+            publicationProblemLayer = null;
+        }
+
+        // The server returns the actual rejected pieces, measured with its binding tolerance.
+        // Never reconstruct a different approximation of the failure in the browser.
+        function showPublicationProblem(body) {
+            clearPublicationProblem();
+            if (body?.code !== 'footprint-outside-site' || !body.outsideGeometry || !win.L || !win.map) return false;
+            if (win.isThreeModeActive?.()) win.exitThreeMode?.();
+            const pane = 'pick-highlight';
+            if (!win.map.getPane(pane)) win.map.createPane(pane);
+            const boundary = win.L.geoJSON(body.site, {
+                pane, interactive: false, style: { color: '#facc15', weight: 3, dashArray: '7 5', fill: false }
+            });
+            const outside = win.L.geoJSON(body.outsideGeometry, {
+                pane, interactive: false, style: { color: '#dc2626', weight: 3, fillColor: '#dc2626', fillOpacity: 0.65 }
+            });
+            publicationProblemLayer = win.L.featureGroup([boundary, outside]).addTo(win.map);
+            const sheet = win.document?.getElementById('proposals-sheet');
+            const mobile = sheet && win.matchMedia?.('(max-width: 767.98px)').matches;
+            if (mobile && sheet.getBoundingClientRect().top < 24) {
+                sheet.querySelector(':scope > .mobile-dock-sheet-handle')?.click();
+            }
+            const padding = win.getProposalPanelFitPadding?.(48) || { padding: [48, 48] };
+            if (mobile) {
+                const mapBox = win.map.getContainer().getBoundingClientRect();
+                padding.paddingTopLeft = [48, 72];
+                padding.paddingBottomRight = [48, Math.max(48, mapBox.bottom - sheet.getBoundingClientRect().top + 24)];
+            }
+            win.map.fitBounds(publicationProblemLayer.getBounds(), { ...padding, maxZoom: 21, animate: false });
+            return true;
+        }
+
+        function publicationFailure(localDesign, status, body) {
+            let message = refusalMessage(status, body);
+            const title = localDesign.title || localDesign.name || localDesign.proposalId;
+            if (title) message = t('proposals.share.errors.namedFailure', '“{{title}}”: {{reason}}', { title, reason: message });
+            try {
+                if (showPublicationProblem(body)) message += ' ' + t('proposals.share.errors.siteProblemMap', 'Red marks the area outside the saved land boundary; the dashed yellow line shows that boundary.');
+            } catch (error) { warn('the publication problem could not be drawn', error); }
+            return failure(body?.code || `http-${status}`, message, { status, body, designId: localDesign.proposalId });
+        }
 
         function t(key, fallback, params = {}) {
             if (typeof win.getProposalI18nHelper === 'function') return win.getProposalI18nHelper()(key, fallback, params);
@@ -213,6 +259,7 @@
             if (code === 'pinning-unconfigured') return t('proposals.share.errors.pinningUnconfigured', 'This server cannot pin published designs yet (pinning is not configured).');
             if (code === 'layout-needs-agreement') return t('proposals.share.errors.layoutNeedsAgreement', 'A parcel layout is published with the agreement that settles its land.');
             if (code === 'too-large') return t('proposals.share.errors.tooLarge', 'This design exceeds the 10 MiB publication limit. Reduce its extent or detail before sharing; it is saved locally.');
+            if (code === 'footprint-outside-site') return t('proposals.share.errors.outsideSite', 'The design extends {{area}} m² beyond its saved land boundary. The land boundary must include the geometry before it can be published.', { area: body.outsideM2 });
             if (status === 429) {
                 const seconds = Number(body && body.retryAfterSeconds);
                 return Number.isFinite(seconds) && seconds > 0
@@ -322,11 +369,11 @@
             // The author is content: it is stamped before the CID is taken.
             win.stampCurrentAuthor(localDesign);
             const content = designRecord().published(localDesign);
+            clearPublicationProblem();
             const { cid } = await pinObject('design', content);
             const response = await request('POST', '/designs', { cid, content, parcelSourceId: parcelSourceIdOf(content.city) });
             if (!response.ok && response.status !== 409) {
-                const code = (response.body && response.body.code) || `http-${response.status}`;
-                throw failure(code, refusalMessage(response.status, response.body), { status: response.status, body: response.body });
+                throw publicationFailure(localDesign, response.status, response.body);
             }
             const row = response.body;
             if (!row || row.cid !== cid) throw failure('cid-mismatch', t('proposals.share.errors.cidMismatch', 'The server computed a different identity for this design, so nothing was published.'));
@@ -604,7 +651,7 @@
         return {
             api: {
                 publishDesign, pinDesign, pinObject, markPublished, fetchDesign, fetchDesigns, importDesign, importDraft, localCopyOf,
-                designLink, copyLink, prepareMapPreview, parcelSourceIdOf, refusalMessage,
+                designLink, copyLink, prepareMapPreview, parcelSourceIdOf, refusalMessage, clearPublicationProblem,
                 // A local record's exact CID at the current index, or an index summary's own.
                 publishedCid: record => (isObject(record) && record.indexed === true && cidApi().isCid(record.cid)
                     ? record.cid

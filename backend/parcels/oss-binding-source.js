@@ -142,10 +142,14 @@ export const FOOTPRINT_OUTSIDE_SITE_SQL = `
     authored AS (
         SELECT ST_CollectionExtract(ST_MakeValid(ST_Transform(
                    ST_Segmentize(ST_SetSRID(ST_GeomFromGeoJSON($3), 4326), ${SEGMENT_DEG}), $5::text)), 3) AS g
+    ), outside AS (
+        SELECT d.geom
+        FROM site s, authored a, ST_Dump(ST_CollectionExtract(ST_Difference(s.g, a.g), 3)) d
+        WHERE NOT ST_IsEmpty(ST_Buffer(d.geom, -$4::float8 / 2, 'quad_segs=64'))
     )
-    SELECT COALESCE(sum(${frameArea('d.geom', '$5')}), 0) AS outside_m2
-    FROM site s, authored a, ST_Dump(ST_CollectionExtract(ST_Difference(s.g, a.g), 3)) d
-    WHERE NOT ST_IsEmpty(ST_Buffer(d.geom, -$4::float8 / 2, 'quad_segs=64'))
+    SELECT COALESCE(sum(${frameArea('geom', '$5')}), 0) AS outside_m2,
+           ST_AsGeoJSON(ST_Multi(ST_Transform(ST_Collect(geom), $5::text, 4326)), 9) AS outside_geojson
+    FROM outside
 `;
 
 // A legacy footprint (polygons + buffered centrelines) as WGS84, for a parcel-source binding.

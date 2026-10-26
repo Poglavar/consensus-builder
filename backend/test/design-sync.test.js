@@ -3,7 +3,7 @@
 // rebuilt from an index row, and the browser half on a fake window and a fake courier and index:
 // publishing a design, importing one, finding the local copy of a listed design, the parcel source a
 // city binds with, and the sentence for each refusal.
-import { describe, it, expect, beforeAll, afterEach } from 'vitest';
+import { describe, it, expect, beforeAll, afterEach, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 
@@ -283,6 +283,32 @@ function fakeWindow({ records = [], server = fakeServer(), blocked = null, confi
 }
 
 describe('publishDesign', () => {
+    it('names the rejected design and maps the server-measured overflow and saved boundary', async () => {
+        const record = road();
+        const body = { code: 'footprint-outside-site', outsideM2: 89.9, outsideGeometry: square(15.961, 45.8), site: record.site };
+        const { sync, win } = fakeWindow({ server: fakeServer({ refuseDesigns: { status: 400, body } }) });
+        const overlays = [];
+        const group = { addTo: vi.fn(() => group), getBounds: () => 'review-bounds', remove: vi.fn() };
+        win.L = { geoJSON: (geometry, options) => { overlays.push({ geometry, options }); return geometry; }, featureGroup: () => group };
+        win.map = { getPane: () => true, fitBounds: vi.fn() };
+        win.isThreeModeActive = () => true;
+        win.exitThreeMode = vi.fn();
+        const error = await thrown(() => sync.publishDesign(record));
+        expect(error).toMatchObject({ code: body.code, designId: record.proposalId, body });
+        expect(error.message).toContain('New lane');
+        expect(error.message).toContain('89.9 m²');
+        expect(error.message).toContain('Red marks');
+        expect(error.message).not.toMatch(/proposal/i);
+        expect(overlays.map(item => item.geometry)).toEqual([body.site, body.outsideGeometry]);
+        expect(overlays[0].options.style).toMatchObject({ dashArray: '7 5', fill: false });
+        expect(overlays[1].options.style).toMatchObject({ color: '#dc2626' });
+        expect(win.exitThreeMode).toHaveBeenCalledOnce();
+        expect(win.map.fitBounds).toHaveBeenCalledWith('review-bounds', expect.objectContaining({ animate: false }));
+        sync.clearPublicationProblem();
+        expect(group.remove).toHaveBeenCalledOnce();
+        expect(record.published).toBeUndefined();
+    });
+
     it('reuses an already published parcel layout without a publication or author gate', async () => {
         const record = road({ goal: 'parcel-layout', parcelLayout: { plots: [] } });
         record.published = { cid: DesignRecord.cidOf(record), apiBase: API };
@@ -375,7 +401,7 @@ describe('publishDesign', () => {
         const limited = fakeWindow({ records: [road()], server: fakeServer({ refuseDesigns: { status: 429, body: { retryAfterSeconds: 90 } } }) });
         const error = await thrown(() => limited.sync.publishDesign(limited.stored.get('road-1')));
         expect(error).toMatchObject({ code: 'http-429', status: 429 });
-        expect(error.message).toBe('Too many publications for now. Try again in about 2 min.');
+        expect(error.message).toBe('“New lane”: Too many publications for now. Try again in about 2 min.');
         expect(limited.stored.get('road-1').published).toBeUndefined();
     });
 });
