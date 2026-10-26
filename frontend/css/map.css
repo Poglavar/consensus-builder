@@ -837,8 +837,8 @@ body.three-mode-active #agent-bubbles-container {
     position: fixed;
     right: var(--right-dock-gap);
     top: calc(var(--map-shell-top-clearance) + var(--cb-space-2));
-    bottom: var(--right-dock-bottom);
-    max-height: none;
+    bottom: auto;
+    max-height: calc(100dvh - var(--map-shell-top-clearance) - var(--cb-space-2) - var(--right-dock-bottom));
     padding: 0;
     gap: 0;
     background: transparent;
@@ -849,8 +849,7 @@ body.three-mode-active #agent-bubbles-container {
     box-shadow: none;
     pointer-events: none;
     z-index: var(--cb-z-panel);
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: hidden;
 }
 
 #click-stack.visible,
@@ -863,14 +862,6 @@ body.three-mode-active #agent-bubbles-container {
 #click-stack > .mobile-dock-sheet-handle,
 #three-click-stack > .mobile-dock-sheet-handle {
     pointer-events: auto;
-}
-
-/* The column ends where its content does; only a hosted panel (with its own scrolling body) makes
-   it run to the dock's bottom. */
-#click-stack:not(:has(.is-hosted)),
-#three-click-stack:not(:has(.is-hosted)) {
-    bottom: auto;
-    max-height: calc(100dvh - var(--map-shell-top-clearance) - var(--cb-space-2) - var(--right-dock-bottom));
 }
 
 /* Folded for Before / after: only the rows show; the open section's panel stays hosted, hidden. */
@@ -895,7 +886,7 @@ body.three-mode-active #agent-bubbles-container {
     display: flex;
     flex-direction: column;
     min-height: 0;
-    flex: 1 1 auto;
+    flex: 0 1 auto;
 }
 
 @keyframes click-stack-focus-pulse {
@@ -926,7 +917,7 @@ body.three-mode-active #agent-bubbles-container {
 .click-stack__card {
     display: flex;
     flex-direction: column;
-    flex: 1 1 auto;
+    flex: 0 1 auto;
     min-height: 0;
     border: 1px solid var(--cb-line);
     border-radius: var(--cb-radius-lg);
@@ -987,15 +978,9 @@ body.three-mode-active #agent-bubbles-container {
     filter: drop-shadow(0 0 2px var(--cb-map-highlight-halo));
 }
 
-/* The expanded card gives up height down to a floor that keeps its panel's tabs, first lines and
-   actions in view; below that the stack itself scrolls. */
-.click-stack__section.is-expanded:has(.is-hosted) {
-    flex: 1 1 auto;
-    min-height: min(16rem, 60vh);
-}
-
-.click-stack__section.is-expanded[data-kind="plans"],
-.click-stack__section.is-expanded[data-kind="agreements"] {
+/* Short cards fit their content. Only the expanded body shrinks and scrolls when content is
+   long, leaving the other section headings visible within the dock. */
+.click-stack__section.is-expanded {
     flex: 0 1 auto;
     min-height: 0;
 }
@@ -1007,6 +992,11 @@ body.three-mode-active #agent-bubbles-container {
 /* In the phone sheet the expanded card is as tall as its panel, which does not scroll inside
    itself: the sheet scrolls, so the panel's tabs, text and actions all stay reachable. */
 @media (max-width: 767.98px) {
+    .click-stack__sections {
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+
     .click-stack__section.is-expanded:has(.is-hosted) {
         flex: 0 0 auto;
         min-height: 0;
@@ -1250,9 +1240,16 @@ body.three-mode-active #agent-bubbles-container {
     display: flex;
     flex-direction: column;
     min-height: 0;
-    flex: 1 1 auto;
+    flex: 0 1 auto;
     padding: 0 var(--cb-space-3) var(--cb-space-3);
     overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.click-stack__heading,
+.click-stack__choices,
+.click-stack__body > * {
+    flex: 0 0 auto;
 }
 
 .click-stack__summary {
@@ -1301,7 +1298,7 @@ body.three-mode-active #agent-bubbles-container {
     height: auto;
     max-height: none;
     min-height: 0;
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     margin: 0;
     padding: 0;
     border: 0;
