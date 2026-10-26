@@ -15,7 +15,7 @@
     <script src="js/persistent-storage.js" defer></script>
     <script src="js/data-source.js" defer></script>
     <script src="js/i18n.js" defer></script>
-    <script src="js/feedback-translations.js" defer></script>
+    <script src="js/i18n-loader.js" defer></script>
     <script src="js/feedback.js" defer></script>
 </head>
 <body class="cb-page">
@@ -23,7 +23,7 @@
         <span class="cb-page-header__brand"><img class="cb-page-header__logo" src="images/consensus-builder-logo-2.png" width="28" height="28" alt="">Consensus Builder</span>
         <div class="cb-page-header__title"><h1 data-i18n-key="feedback.title">Feedback &amp; bug reports</h1></div>
         <a class="cb-link cb-back-link" href="/" data-i18n-key="feedback.back">Back to the map</a>
-        <select id="feedback-language" class="cb-page-header__lang" aria-label="Language" data-i18n-key="language.switcher.label" data-i18n-attr="aria-label">
+        <select id="feedback-language" data-i18n-locale-select="locale" class="cb-page-header__lang" aria-label="Language" data-i18n-key="language.switcher.label" data-i18n-attr="aria-label">
             <option value="en-GB">English</option><option value="es-ES">Español</option><option value="hr-HR">Hrvatski</option><option value="sr-Latn-RS">Srpski</option>
         </select>
     </header>

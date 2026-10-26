@@ -1,6 +1,7 @@
 // Shared relationship labels, safe navigation buttons and native instance choices.
 import { createRequire } from 'node:module';
 import { describe, expect, it, vi } from 'vitest';
+import { dictionary, testI18n } from './helpers/i18n.js';
 import { makeDocument } from './helpers/fake-dom.js';
 
 const require = createRequire(import.meta.url);
@@ -10,13 +11,7 @@ const goals = require('../../frontend/js/proposals/design-goals.js');
 describe('click stack relationship rendering', () => {
     it('renders translated relation labels and safe related buttons with their routing data', () => {
         const doc = makeDocument();
-        const translations = new Map();
-        const win = { i18n: {
-            registerTranslations: vi.fn((language, entries) => {
-                if (language === 'hr') Object.entries(entries).forEach(([key, value]) => translations.set(key, value));
-            }),
-            t: key => translations.get(key) || key
-        } };
+        const win = { i18n: testI18n('hr') };
 
         const group = relations.renderGroup({
             relation: 'memberPlans', kind: 'plans', count: 1,
@@ -36,7 +31,7 @@ describe('click stack relationship rendering', () => {
 
     it('renders a labelled selector for all instances, selects the current id, and omits it for single items', () => {
         const doc = makeDocument();
-        const win = { ProposalDesignGoals: goals };
+        const win = { i18n: testI18n(), ProposalDesignGoals: goals };
         const wrapper = relations.renderSelector({
             kind: 'designs', multi: true, selectedIndex: 1,
             instances: [{ id: 'd-1', label: 'First', goal: 'park' }, { id: 'd-2', label: 'Second', goal: 'urban-rule' }]
@@ -61,7 +56,7 @@ describe('click stack relationship rendering', () => {
     });
 
     it('adds exact plan membership to menu labels without changing the closed design title', () => {
-        const win = { ProposalDesignGoals: goals, DesignSync: { publishedCid: proposal => proposal.published?.cid },
+        const win = { i18n: testI18n(), ProposalDesignGoals: goals, DesignSync: { publishedCid: proposal => proposal.published?.cid },
             NamedPlans: { current: { content: { title: 'Riverside plan', designCids: ['cid-a', 'cid-b'] } } } };
         const section = { kind: 'designs', multi: true, selectedIndex: 0, instances: [
             { id: 'a', label: 'Tower A', proposal: { goal: 'single', published: { cid: 'cid-a' } } },
@@ -107,12 +102,9 @@ describe('click stack relationship rendering', () => {
     });
 
     it.each(['en', 'hr', 'sr', 'es'])('names and explains the design selector in %s', language => {
-        const entries = new Map();
-        const win = { i18n: { registerTranslations(locale, strings) {
-            if (locale === language) Object.entries(strings).forEach(([key, value]) => entries.set(key, value));
-        }, t: key => entries.get(key) || key } };
+        const win = { i18n: testI18n(language) };
         const selector = relations.renderSelector({ kind: 'designs', multi: true, instances: [] }, makeDocument(), win);
-        expect(selector.querySelector('.click-stack__selector-label').textContent).toBe(entries.get('clickStackRelations.chooseDesign'));
+        expect(selector.querySelector('.click-stack__selector-label').textContent).toBe(dictionary(language).clickStackRelations.chooseDesign);
         expect(selector.querySelector('.click-stack__selector-label').textContent.length).toBeGreaterThan(40);
         expect(selector.querySelector('small')).toBeNull();
     });

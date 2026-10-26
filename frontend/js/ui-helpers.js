@@ -6,7 +6,7 @@ let isStatusExpanded = false;
 document.addEventListener('DOMContentLoaded', () => {
     const contact = document.querySelector('[data-i18n-key="sidebar.info.contactTitle"]')?.parentElement;
     if (!contact || contact.querySelector('[data-feedback-link]')) return;
-    import('./feedback-translations.js').then(() => {
+    Promise.resolve(window.i18n.translationsReady).then(() => {
         const link = document.createElement('a');
         link.className = 'btn btn-quiet'; link.dataset.feedbackLink = '';
         link.dataset.i18nKey = 'feedback.open'; link.href = '/feedback.html';

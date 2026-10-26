@@ -26,6 +26,39 @@ From the repository root:
 
 The launcher starts this checkout’s frontend and API on available local ports and prints the URL. Stop it with Ctrl-C. The map is plain HTML, CSS and JavaScript; its data-dependent flows still require a working API and datasets.
 
+## Languages and translation loading
+
+`frontend/i18n/<language>.json` is the only source of translated UI copy, including feature,
+feedback, privacy, report and language-switcher strings. Keep language names and locale metadata
+in `LOCALE_CHOICES` in `frontend/js/i18n.js`; the first locale for a language is its default.
+The map picker and satellite-page selects use this registry. Mark a satellite select with
+`data-i18n-locale-select="locale"` (regional preferences) or `"language"` (one option per language).
+
+`i18n-loader.js` loads English as a fallback and the selected language at startup. A switch loads
+only that language. `i18n.loadLanguage(language)` shares in-flight and successful requests; failures
+are reported and may be retried. All requests use one build token per page. Features must use this
+loader rather than fetch or register their own dictionaries. Wait for `i18n.translationsReady`
+before initial rendering; generated content should also listen for `i18n:translationsLoaded`.
+That event follows dictionary registration and DOM translation, including on a language switch.
+Locale-picker buttons use `BusyControl.track` while the dictionary loads.
+
+To add a language, add its locale metadata and dictionary, then run the targeted headless unit
+checks below. Keep interpolation names identical (`{name}` and `{{name}}` are both supported).
+Plural entries use CLDR categories (`zero`, `one`, `two`, `few`, `many`, `other`) under the key;
+`count` selects the form through `Intl.PluralRules`. The selected dictionary is exhausted before
+English is considered, and English fallback uses English plural rules. For right-to-left languages,
+include direction and layout verification when adding the locale.
+
+```sh
+cd backend
+npx vitest run --maxWorkers=1 test/i18n-loader.test.js test/i18n-infrastructure.test.js test/i18n-locale.test.js test/i18n-locale-coverage.test.js test/building-count-plurals.test.js
+```
+
+These checks cover lazy requests, deduplication, retries, stale completions, dictionary shape,
+duplicate keys, placeholders, coverage, plural forms and accidental inline multilingual tables.
+This infrastructure changes display copy only; it adds no authored-record editing operation, so
+no MCP schema or tool change is needed.
+
 ## Private feedback inbox and Telegram
 
 The web form at `/feedback.html` and MCP `ugt_submit_feedback` store reports in the same private

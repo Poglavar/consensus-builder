@@ -14,14 +14,15 @@
     <link rel="stylesheet" href="css/mcp-privacy.css">
     <script src="js/persistent-storage.js" defer></script>
     <script src="js/i18n.js" defer></script>
-    <script src="js/mcp-privacy-translations.js" defer></script>
+    <script src="js/i18n-loader.js" defer></script>
+    <script src="js/mcp-privacy.js" defer></script>
 </head>
 <body class="cb-page">
     <header class="cb-page-header">
         <span class="cb-page-header__brand"><img class="cb-page-header__logo" src="images/consensus-builder-logo-2.png" width="28" height="28" alt="">Consensus Builder</span>
         <div class="cb-page-header__title"><h1 data-i18n-key="mcpPrivacy.title">MCP privacy policy</h1></div>
         <a class="cb-link cb-back-link" href="/" data-i18n-key="mcpPrivacy.back">Back to the map</a>
-        <select id="privacy-language" class="cb-page-header__lang" aria-label="Language" data-i18n-key="language.switcher.label" data-i18n-attr="aria-label">
+        <select id="privacy-language" data-i18n-locale-select="locale" class="cb-page-header__lang" aria-label="Language" data-i18n-key="language.switcher.label" data-i18n-attr="aria-label">
             <option value="en-GB">English</option><option value="es-ES">Español</option><option value="hr-HR">Hrvatski</option><option value="sr-Latn-RS">Srpski</option>
         </select>
     </header>

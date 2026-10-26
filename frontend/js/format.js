@@ -28,7 +28,7 @@
         try {
             const i18n = typeof window !== 'undefined' ? window.i18n : null;
             const lang = i18n && typeof i18n.getLanguage === 'function' ? i18n.getLanguage() : null;
-            return LOCALES[lang] ? lang : FALLBACK_LANG;
+            return (i18n?.getSupportedLanguages?.() || Object.keys(LOCALES)).includes(lang) ? lang : FALLBACK_LANG;
         } catch (_) {
             return FALLBACK_LANG;
         }
@@ -47,9 +47,11 @@
     }
 
     function localeFor(lang) {
-        const language = lang === undefined ? currentLanguage() : (LOCALES[lang] ? lang : FALLBACK_LANG);
+        const registry = typeof window !== 'undefined' ? window.i18n?.getSupportedLocales?.() : null;
+        const defaults = registry ? Object.fromEntries([...registry].reverse().map(locale => [locale.split('-')[0], locale])) : LOCALES;
+        const language = lang === undefined ? currentLanguage() : (defaults[lang] ? lang : FALLBACK_LANG);
         const viewer = currentLocale();
-        return viewer && viewer.split('-')[0] === language ? viewer : LOCALES[language];
+        return viewer && viewer.split('-')[0] === language ? viewer : defaults[language];
     }
 
     function isFiniteNumber(value) {

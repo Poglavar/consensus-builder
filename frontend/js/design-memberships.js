@@ -10,29 +10,6 @@
     'use strict';
     const PAGE_SIZE = 5;
 
-    const strings = {
-        en: { title: 'Included in', plans: 'Plans', agreements: 'Agreements', empty: 'None', loading: 'Loading…', failed: 'Could not load this list.', retry: 'Retry', more: 'Show more', draft: 'Draft', unpublished: 'Publish this design revision to find shared plans.' },
-        hr: { title: 'Dio je', plans: 'Planovi', agreements: 'Sporazumi', empty: 'Nema', loading: 'Učitavanje…', failed: 'Popis nije moguće učitati.', retry: 'Pokušaj ponovno', more: 'Prikaži više', draft: 'Nacrt', unpublished: 'Objavite ovu verziju da biste pronašli povezane planove i sporazume.' },
-        sr: { title: 'Deo je', plans: 'Planovi', agreements: 'Sporazumi', empty: 'Nema', loading: 'Učitavanje…', failed: 'Lista ne može da se učita.', retry: 'Pokušaj ponovo', more: 'Prikaži više', draft: 'Nacrt', unpublished: 'Objavite ovu verziju da biste pronašli povezane planove i sporazume.' },
-        es: { title: 'Incluido en', plans: 'Planes', agreements: 'Acuerdos', empty: 'Ninguno', loading: 'Cargando…', failed: 'No se pudo cargar la lista.', retry: 'Reintentar', more: 'Mostrar más', draft: 'Borrador', unpublished: 'Publica esta versión para encontrar planes y acuerdos compartidos.' }
-    };
-    const explanations = {
-        en: { plan: 'Plan', agreement: 'Agreement', planMeaning: 'A collection of designs and a saved map view.', agreementMeaning: 'Who decides and on what terms: decision rules and any land or payment terms for its included designs.', openPlan: 'Open plan', openAgreement: 'Agreement details', geometryUnavailable: 'Could not load all included designs. Their full extent cannot be highlighted.' },
-        hr: { plan: 'Plan', agreement: 'Sporazum', planMeaning: 'Prostorni prijedlog: imenovani skup dizajna i spremljeni pogled na kartu.', agreementMeaning: 'Tko odlučuje i pod kojim uvjetima: pravila odlučivanja i eventualni uvjeti za zemljište ili plaćanja za uključene dizajne.', openPlan: 'Otvori plan', openAgreement: 'Detalji sporazuma', geometryUnavailable: 'Nije moguće učitati sve uključene dizajne. Njihov puni obuhvat nije moguće istaknuti.' },
-        sr: { plan: 'Plan', agreement: 'Sporazum', planMeaning: 'Prostorni predlog: imenovani skup dizajna i sačuvani pogled na kartu.', agreementMeaning: 'Ko odlučuje i pod kojim uslovima: pravila odlučivanja i eventualni uslovi za zemljište ili plaćanja za uključene dizajne.', openPlan: 'Otvori plan', openAgreement: 'Detalji sporazuma', geometryUnavailable: 'Nije moguće učitati sve uključene dizajne. Njihov pun obuhvat nije moguće istaći.' },
-        es: { plan: 'Plan', agreement: 'Acuerdo', planMeaning: 'La propuesta espacial: un conjunto de diseños con nombre y una vista guardada del mapa.', agreementMeaning: 'Quién decide y bajo qué condiciones: reglas de decisión y, cuando corresponda, condiciones sobre terrenos o pagos para los diseños incluidos.', openPlan: 'Abrir plan', openAgreement: 'Detalles del acuerdo', geometryUnavailable: 'No se pudieron cargar todos los diseños incluidos. No se puede resaltar su extensión completa.' }
-    };
-    const planActions = {"en": {"planAgreements": "Agreements referencing this plan:", "emptyAgreements": "No agreements yet.", "createAgreement": "Create agreement"}, "hr": {"planAgreements": "Sporazumi koji se odnose na ovaj plan:", "emptyAgreements": "Još nema sporazuma.", "createAgreement": "Izradi sporazum"}, "sr": {"planAgreements": "Sporazumi koji se odnose na ovaj plan:", "emptyAgreements": "Još nema sporazuma.", "createAgreement": "Napravi sporazum"}, "es": {"planAgreements": "Acuerdos que hacen referencia a este plan:", "emptyAgreements": "Todavía no hay acuerdos.", "createAgreement": "Crear acuerdo"}};
-    for (const language of Object.keys(strings)) Object.assign(strings[language], planActions[language]);
-    for (const language of Object.keys(strings)) Object.assign(strings[language], explanations[language]);
-    const sharing = {
-        en: { sharePlan: 'Share plan', chooseSharePlan: 'Which plan do you want to share?' },
-        hr: { sharePlan: 'Podijeli plan', chooseSharePlan: 'Koji plan želite podijeliti?' },
-        sr: { sharePlan: 'Podeli plan', chooseSharePlan: 'Koji plan želite da podelite?' },
-        es: { sharePlan: 'Compartir plan', chooseSharePlan: '¿Qué plan quieres compartir?' }
-    };
-    for (const language of Object.keys(strings)) Object.assign(strings[language], sharing[language]);
-
     function localAgreements(planCid, agreements, publishedCidOf) {
         return agreements.filter(agreement => agreement.plan?.cid === planCid).map(agreement => ({
             cid: publishedCidOf(agreement), localId: agreement.id, title: agreement.title,
@@ -81,12 +58,7 @@
     }
 
     function translator(win) {
-        for (const [language, entries] of Object.entries(strings)) win.i18n?.registerTranslations(language,
-            Object.fromEntries(Object.entries(entries).map(([key, value]) => [`designMemberships.${key}`, value])));
-        return key => {
-            const value = win.i18n?.t(`designMemberships.${key}`);
-            return value && value !== `designMemberships.${key}` ? value : strings.en[key];
-        };
+        return key => win.i18n?.t(`designMemberships.${key}`) || key;
     }
 
     // A selection owns one lookup session; folding or changing sections does not restart requests.
@@ -353,5 +325,5 @@
     }
 
     return { localAgreements, localPlans, mountAgreements, mergeRows, membershipLink, fetchPage, createSession, inspect,
-        sharePlan, shareFromDesign, mountSection, strings };
+        sharePlan, shareFromDesign, mountSection };
 });

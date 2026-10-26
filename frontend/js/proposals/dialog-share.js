@@ -56,27 +56,15 @@ function renderProposalListModal() {
     // If i18n is present but not yet ready, wait for it before rendering to avoid key flicker
     try {
         const api = (typeof window !== 'undefined') ? window.i18n : null;
-        if (api && api.ready && typeof api.ready.then === 'function' && !api.__proposalListWaited) {
+        if (api && api.translationsReady && typeof api.translationsReady.then === 'function' && !api.__proposalListWaited) {
             api.__proposalListWaited = true;
-            return api.ready.then(() => renderProposalListModal()).catch(() => renderProposalListModal());
+            return api.translationsReady.then(() => renderProposalListModal()).catch(() => renderProposalListModal());
         }
     } catch (_) { }
 
     const host = document.getElementById('proposal-list-host');
     if (!host) return;
     const modal = ensureProposalListHostModal(host);
-
-    // Ensure proposal list translations are loaded from JSON; if newly hydrated, re-render once.
-    try {
-        const api = (typeof window !== 'undefined') ? window.i18n : null;
-        const currentLang = api && typeof api.getLanguage === 'function' ? api.getLanguage() : null;
-        ensureProposalListTranslations(currentLang).then(hydrated => {
-            if (hydrated) {
-                // Avoid infinite loop: only re-render on the first hydration per language
-                renderProposalListModal();
-            }
-        });
-    } catch (_) { }
 
     const t = getProposalI18nHelper();
 

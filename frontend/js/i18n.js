@@ -2,67 +2,23 @@
     const globalScope = typeof window !== 'undefined' ? window : self;
     const FALLBACK_LANGUAGE = 'en';
     const STORAGE_KEY = 'cb_language';
-    const supportedLanguages = new Set(['en', 'es', 'sr', 'hr']);
+    // This registry is the source for detection, dictionary loading and every locale picker.
+    // Native names and flags are picker metadata; translated copy belongs in i18n/<language>.json.
+    const LOCALE_CHOICES = Object.freeze([
+        { locale: 'en-GB', name: 'English (United Kingdom)', flag: '🇬🇧', key: 'language.switcher.to_en' },
+        { locale: 'en-US', name: 'English (United States)', flag: '🇺🇸', key: 'language.switcher.to_en_us' },
+        { locale: 'es-ES', name: 'Español', flag: '🇪🇸', key: 'language.switcher.to_es' },
+        { locale: 'sr-Latn-RS', name: 'Srpski', flag: '🇷🇸', key: 'language.switcher.to_sr' },
+        { locale: 'hr-HR', name: 'Hrvatski', flag: '🇭🇷', key: 'language.switcher.to_hr' }
+    ].map(Object.freeze));
     // The viewer picks a locale: a UI language plus the region whose conventions numbers and dates
     // are written in (js/format.js). Money keeps the currency of the place it belongs to
     // (js/city-money.js); a locale never converts it. The first locale of a language is its default.
     // The stored preference (cb_language) holds the locale tag; a bare language reads as its default.
-    const SUPPORTED_LOCALES = Object.freeze(['en-GB', 'en-US', 'es-ES', 'sr-Latn-RS', 'hr-HR']);
+    const SUPPORTED_LOCALES = Object.freeze(LOCALE_CHOICES.map(choice => choice.locale));
+    const supportedLanguages = new Set(SUPPORTED_LOCALES.map(locale => locale.split('-')[0]));
     const listeners = new Set();
-    const translations = {
-        en: {
-            'language.switcher.label': 'Language',
-            'language.switcher.aria': 'Language selection',
-            'language.english': 'English',
-            'language.spanish': 'Spanish',
-            'language.serbian': 'Serbian',
-            'language.croatian': 'Croatian',
-            'language.switcher.to_en': 'Switch to English (United Kingdom)',
-            'language.switcher.to_en_us': 'Switch to English (United States)',
-            'language.switcher.to_es': 'Switch to Spanish',
-            'language.switcher.to_sr': 'Switch to Serbian',
-            'language.switcher.to_hr': 'Switch to Croatian'
-        },
-        es: {
-            'language.switcher.label': 'Idioma',
-            'language.switcher.aria': 'Selección de idioma',
-            'language.english': 'Inglés',
-            'language.spanish': 'Español',
-            'language.serbian': 'Serbio',
-            'language.croatian': 'Croata',
-            'language.switcher.to_en': 'Cambiar a inglés (Reino Unido)',
-            'language.switcher.to_en_us': 'Cambiar a inglés (Estados Unidos)',
-            'language.switcher.to_es': 'Cambiar a español',
-            'language.switcher.to_sr': 'Cambiar a serbio',
-            'language.switcher.to_hr': 'Cambiar a croata'
-        },
-        sr: {
-            'language.switcher.label': 'Jezik',
-            'language.switcher.aria': 'Izbor jezika',
-            'language.english': 'Engleski',
-            'language.spanish': 'Španski',
-            'language.serbian': 'Srpski',
-            'language.croatian': 'Hrvatski',
-            'language.switcher.to_en': 'Prebaci na engleski (Ujedinjeno Kraljevstvo)',
-            'language.switcher.to_en_us': 'Prebaci na engleski (Sjedinjene Američke Države)',
-            'language.switcher.to_es': 'Prebaci na španski',
-            'language.switcher.to_sr': 'Prebaci na srpski',
-            'language.switcher.to_hr': 'Prebaci na hrvatski'
-        },
-        hr: {
-            'language.switcher.label': 'Jezik',
-            'language.switcher.aria': 'Odabir jezika',
-            'language.english': 'Engleski',
-            'language.spanish': 'Španjolski',
-            'language.serbian': 'Srpski',
-            'language.croatian': 'Hrvatski',
-            'language.switcher.to_en': 'Prebaci na engleski (Ujedinjena Kraljevina)',
-            'language.switcher.to_en_us': 'Prebaci na engleski (Sjedinjene Američke Države)',
-            'language.switcher.to_es': 'Prebaci na španjolski',
-            'language.switcher.to_sr': 'Prebaci na srpski',
-            'language.switcher.to_hr': 'Prebaci na hrvatski'
-        }
-    };
+    const translations = Object.create(null);
 
     let currentLanguage = FALLBACK_LANGUAGE;
     let currentLocale = SUPPORTED_LOCALES[0];
@@ -189,9 +145,9 @@
 
     // CLDR plural category for the active language. Slavic languages need three forms (1 / 2-4 / 5+),
     // which is why a translation may declare its key as an object of `one`/`few`/`other` variants.
-    function pluralCategory(count) {
+    function pluralCategory(count, language = currentLanguage) {
         try {
-            return new Intl.PluralRules(currentLanguage).select(count);
+            return new Intl.PluralRules(language).select(count);
         } catch (_) {
             return count === 1 ? 'one' : 'other';
         }
@@ -216,11 +172,13 @@
         const count = params ? params.count : undefined;
 
         if (typeof count === 'number' && isFinite(count)) {
-            const forms = [pluralCategory(count), 'other'];
-            for (const form of forms) {
-                const pluralKey = `${key}.${form}`;
-                const template = languageTable[pluralKey] ?? fallbackTable[pluralKey];
-                if (template != null) return template;
+            // Exhaust the selected language before falling back. English has its own plural
+            // rules, which may differ from the selected language's categories.
+            for (const [table, language] of [[languageTable, currentLanguage], [fallbackTable, FALLBACK_LANGUAGE]]) {
+                for (const form of new Set([pluralCategory(count, language), 'other'])) {
+                    const template = table[`${key}.${form}`];
+                    if (template != null) return template;
+                }
             }
         }
 
@@ -327,7 +285,6 @@
     function registerTranslations(lang, entries = {}) {
         const normalized = normalizeLanguage(lang);
         if (!normalized) return;
-        supportedLanguages.add(normalized);
         translations[normalized] = Object.assign({}, translations[normalized] || {}, entries);
     }
 
@@ -344,6 +301,28 @@
 
     function getSupportedLanguages() {
         return Array.from(supportedLanguages);
+    }
+
+    // Satellite selects use the same registry as the map's segmented picker. Their native names
+    // are metadata, so the selected dictionary never has to contain every other language's copy.
+    function populateLocaleSelects() {
+        globalScope.document?.querySelectorAll?.('[data-i18n-locale-select]').forEach(select => {
+            const languageOnly = select.getAttribute('data-i18n-locale-select') === 'language';
+            const seen = new Set();
+            const options = LOCALE_CHOICES.filter(choice => {
+                const language = choice.locale.split('-')[0];
+                if (languageOnly && seen.has(language)) return false;
+                seen.add(language);
+                return true;
+            }).map(choice => {
+                const option = select.ownerDocument.createElement('option');
+                option.value = languageOnly ? choice.locale.split('-')[0] : choice.locale;
+                option.textContent = choice.name;
+                return option;
+            });
+            select.replaceChildren(...options);
+            select.value = languageOnly ? currentLanguage : currentLocale;
+        });
     }
 
     // Bootstrap
@@ -375,7 +354,7 @@
     });
 
     if (globalScope.document && typeof globalScope.document.addEventListener === 'function') {
-        globalScope.document.addEventListener('DOMContentLoaded', () => applyTranslations());
+        globalScope.document.addEventListener('DOMContentLoaded', () => { populateLocaleSelects(); applyTranslations(); });
     }
 
     globalScope.i18n = {
@@ -384,6 +363,7 @@
         getLanguage,
         getLocale,
         getSupportedLocales,
+        getLocaleChoices: () => LOCALE_CHOICES.map(choice => ({ ...choice })),
         getUrlLanguage: readUrlLanguage,
         resolveSessionLanguage,
         registerTranslations,

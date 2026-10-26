@@ -36,7 +36,7 @@
         <span class="cb-page-header__brand"><img class="cb-page-header__logo" src="images/consensus-builder-logo.png" alt="" width="28" height="28"><span>Consensus Builder</span></span>
         <div class="cb-page-header__title"><p data-t="eyebrow">Global land data · Research report</p></div>
         <a class="cb-link cb-back-link" href="/"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i><span data-page-header-key="backToMap">Back to the map</span></a>
-        <select id="report-language" class="cb-page-header__lang" aria-label="Language"><option value="en">English</option><option value="es">Español</option><option value="hr">Hrvatski</option><option value="sr">Srpski</option></select>
+        <select id="report-language" data-i18n-locale-select="language" class="cb-page-header__lang" aria-label="Language"><option value="en">English</option><option value="es">Español</option><option value="hr">Hrvatski</option><option value="sr">Srpski</option></select>
     </header>
     <main>
         <section class="intro" aria-labelledby="report-title">
@@ -107,7 +107,9 @@
         <div class="cb-dialog__body" id="integration-content"></div>
     </dialog>
     <footer><span>Consensus Builder</span><span data-t="footer">A research inventory. Every conclusion retains its scope.</span></footer>
-    <script src="js/ui/page-header.js?v=1"></script>
-    <script type="module" src="js/parcel-coverage-report.js?v=6"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/i18n-loader.js"></script>
+    <script src="js/ui/page-header.js?v=2"></script>
+    <script type="module" src="js/parcel-coverage-report.js?v=7"></script>
 </body>
 </html>

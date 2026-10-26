@@ -4,14 +4,14 @@ import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { describe, expect, it, vi } from 'vitest';
+import { dictionary, testI18n } from './helpers/i18n.js';
 import { makeDocument } from './helpers/fake-dom.js';
 
 const require = createRequire(import.meta.url);
-const { localAgreements, localPlans, mergeRows, fetchPage, createSession, inspect, mountAgreements, mountSection, strings } = require('../../frontend/js/design-memberships.js');
+const { localAgreements, localPlans, mergeRows, fetchPage, createSession, inspect, mountAgreements, mountSection } = require('../../frontend/js/design-memberships.js');
 const page = (kind, items = [], nextOffset = null) => Response.json({ [kind]: items, hasMore: nextOffset !== null, nextOffset });
 
 function fixture({ published = true, agreements = [], fetch = vi.fn(async url => page(new URL(url).pathname.slice(1))) } = {}) {
-    const dictionaries = {};
     const win = {
         fetch, location: new URL('https://app.example/?backend=https%3A%2F%2Fapi.example'),
         console: { warn: vi.fn() }, resolveBackendBaseUrl: () => 'https://api.example',
@@ -20,10 +20,7 @@ function fixture({ published = true, agreements = [], fetch = vi.fn(async url =>
         NamedPlans: { current: null, link: cid => `https://app.example/plans/${cid}` },
         AgreementSync: { agreementLink: cid => `https://app.example/agreements/${cid}` },
         AgreementPanel: { open: vi.fn() }, showStyledAlert: vi.fn(),
-        i18n: {
-            registerTranslations(lang, values) { dictionaries[lang] = { ...dictionaries[lang], ...values }; },
-            t: key => dictionaries.en?.[key] || key
-        }
+        i18n: testI18n()
     };
     const proposal = { proposalId: 'local-design', ...(published ? { cid: 'design-current' } : {}) };
     return { win, proposal, session: options => createSession(proposal, win, options) };
@@ -137,15 +134,15 @@ describe('design membership sessions', () => {
         expect(session.groups.plans.error).toBe(true);
     });
 
-    it.each(['en', 'hr', 'sr', 'es'])('registers membership meaning and action labels in %s', language => {
+    it.each(['en', 'hr', 'sr', 'es'])('uses membership meaning and action labels from %s.json', language => {
         const f = fixture();
-        const registered = {};
-        f.win.i18n.registerTranslations = (lang, entries) => { registered[lang] = entries; };
-        // Session setup registers every supported locale; verify the requested dictionary is complete.
+        f.win.i18n = testI18n(language);
+        const register = vi.spyOn(f.win.i18n, 'registerTranslations');
         f.session();
-        expect(registered[language]['designMemberships.planMeaning']).toBe(strings[language].planMeaning);
-        expect(registered[language]['designMemberships.agreementMeaning']).toBe(strings[language].agreementMeaning);
-        expect(registered[language]['designMemberships.openPlan']).toBe(strings[language].openPlan);
+        for (const key of ['planMeaning', 'agreementMeaning', 'openPlan']) {
+            expect(f.win.i18n.t(`designMemberships.${key}`)).toBe(dictionary(language).designMemberships[key]);
+        }
+        expect(register).not.toHaveBeenCalled();
     });
 
     it('rejects malformed and nonadvancing pages', async () => {
@@ -171,6 +168,7 @@ describe('read-only parent inspection', () => {
     function inspectionWin({ localCopies = new Map(), downloaded = new Map(), missing = [], plan } = {}) {
         const members = [];
         const win = {
+            i18n: testI18n(),
             resolveBackendBaseUrl: () => 'https://api.example',
             NamedPlans: { fetchPlan: vi.fn(async () => ({ content: plan })) },
             AgreementSync: { fetchAgreement: vi.fn(async () => ({ content: plan })) },

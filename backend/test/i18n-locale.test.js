@@ -122,3 +122,19 @@ describe('dictionary startup', () => {
         expect(node.title).toBe('Propuestas');
     });
 });
+
+// Fallback must respect the selected language's forms before consulting English's own plural rules.
+describe('plural fallback', () => {
+    it('prefers selected other over an English singular', async () => {
+        const win = await loadI18n({ search: '?lang=es' });
+        win.i18n.registerTranslations('en', { 'sample.one': 'English one', 'sample.other': 'English other' });
+        win.i18n.registerTranslations('es', { 'sample.other': 'Selected other' });
+        expect(win.i18n.t('sample', { count: 1 })).toBe('Selected other');
+    });
+    it('uses English plural rules for a missing Serbian form', async () => {
+        const win = await loadI18n({ search: '?lang=sr' });
+        win.i18n.registerTranslations('en', { 'sample.one': 'English one', 'sample.other': 'English other' });
+        expect(win.i18n.t('sample', { count: 21 })).toBe('English other');
+        expect(win.i18n.t('sample', { count: 1 })).toBe('English one');
+    });
+});

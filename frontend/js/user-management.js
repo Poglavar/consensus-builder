@@ -588,13 +588,6 @@ function setupWelcomeModalLanguagePicker() {
 // name is the accessible label), the active one aria-pressed. A locale is the UI language plus the
 // region numbers and dates are written for; money keeps the currency of its city (city-money.js).
 // A press sets the locale as the user's choice; i18n's change event keeps every open picker in step.
-const LANGUAGE_PICKER_CHOICES = [
-    { locale: 'en-GB', flag: '🇬🇧', key: 'language.switcher.to_en', fallback: 'Switch to English (United Kingdom)' },
-    { locale: 'en-US', flag: '🇺🇸', key: 'language.switcher.to_en_us', fallback: 'Switch to English (United States)' },
-    { locale: 'es-ES', flag: '🇪🇸', key: 'language.switcher.to_es', fallback: 'Switch to Spanish' },
-    { locale: 'sr-Latn-RS', flag: '🇷🇸', key: 'language.switcher.to_sr', fallback: 'Switch to Serbian' },
-    { locale: 'hr-HR', flag: '🇭🇷', key: 'language.switcher.to_hr', fallback: 'Switch to Croatian' }
-];
 
 function currentLocaleUM() {
     const i18nApi = getI18nApiUM();
@@ -603,8 +596,8 @@ function currentLocaleUM() {
 
 // The options of a picker, for a container that already is the cb-segmented group.
 function renderLanguageOptionsHtml(activeLocale) {
-    return LANGUAGE_PICKER_CHOICES.map(choice => {
-        const label = escapeHtml(translateUM(choice.key, choice.fallback));
+    return getI18nApiUM().getLocaleChoices().map(choice => {
+        const label = escapeHtml(translateUM(choice.key, choice.name));
         const pressed = choice.locale === activeLocale ? 'true' : 'false';
         const code = choice.locale.split('-')[0].toUpperCase();
         return `<button type="button" class="cb-segmented__option" data-language="${choice.locale}" aria-pressed="${pressed}" title="${label}" aria-label="${label}" data-i18n-key="${choice.key}" data-i18n-attr="title,aria-label"><span aria-hidden="true">${choice.flag}</span> ${code}</button>`;
@@ -636,9 +629,12 @@ function bindLanguageSegmented(container, onChange) {
         const selectedLang = targetButton.getAttribute('data-language');
         if (!selectedLang) return;
         if (i18nApi && typeof i18nApi.setLanguage === 'function') {
-            i18nApi.setLanguage(selectedLang, { userChoice: true });
+            window.BusyControl.track(targetButton, async () => {
+                i18nApi.setLanguage(selectedLang, { userChoice: true });
+                setActive();
+                await i18nApi.loadLanguage(selectedLang.split('-')[0]);
+            });
         }
-        setActive();
     };
     container.addEventListener('click', handleOptionClick);
     const unsubscribe = (i18nApi && typeof i18nApi.onChange === 'function') ? i18nApi.onChange(setActive) : null;

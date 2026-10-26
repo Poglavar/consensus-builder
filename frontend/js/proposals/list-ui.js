@@ -17,43 +17,6 @@ function ensureProposalListHostModal(host) {
     return modal;
 }
 
-async function ensureProposalListTranslations(lang) {
-    const api = (typeof window !== 'undefined') ? window.i18n : null;
-    if (!api || typeof api.registerTranslations !== 'function') return false;
-    const targetLang = lang || (typeof api.getLanguage === 'function' ? api.getLanguage() : 'en');
-    if (proposalListTranslationsHydrated.has(targetLang)) return false;
-    const cacheBust = (typeof window !== 'undefined' && typeof window.getCacheBustToken === 'function')
-        ? window.getCacheBustToken()
-        : ((typeof window !== 'undefined' && Array.isArray(window.APP_VERSIONS) && window.APP_VERSIONS.length > 0)
-            ? window.APP_VERSIONS[0].version_number
-            : Date.now());
-    try {
-        const response = await fetch(`i18n/${targetLang}.json?proposalListHydrate=${cacheBust}`, { credentials: 'same-origin' });
-        if (!response.ok) throw new Error(`Failed to load i18n/${targetLang}.json: ${response.status}`);
-        const json = await response.json();
-        const flat = flattenObject(json);
-        // Only register the proposal list subtree to avoid clobbering other runtime translations
-        const subset = {};
-        const prefix = 'modal.roadWidth.proposalList.';
-        Object.entries(flat).forEach(([k, v]) => {
-            if (k.startsWith(prefix)) {
-                subset[k] = v;
-            }
-        });
-        if (Object.keys(subset).length > 0) {
-            api.registerTranslations(targetLang, subset);
-            proposalListTranslationsHydrated.add(targetLang);
-            if (typeof api.applyTranslations === 'function') {
-                api.applyTranslations();
-            }
-            return true;
-        }
-    } catch (err) {
-        console.warn('[i18n] Failed to hydrate proposal list translations', err);
-    }
-    return false;
-}
-
 function syncMultiSelectControls(isActive) {
     document.getElementById('parcel-manual-selection')?.setAttribute('aria-pressed', String(!!isActive));
 }

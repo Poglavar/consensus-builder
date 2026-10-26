@@ -1,4 +1,5 @@
 // Sharing from a design requires an explicit scope; a plan supplies only its exact member revisions.
+import { testI18n } from './helpers/i18n.js';
 import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
@@ -14,7 +15,6 @@ const design = id => ({ proposalId: id, title: id, cid: `cid-${id}` });
 function fixture(planRows = []) {
     const a = design('garden'), b = design('square'), other = design('other');
     const designs = [a, b, other];
-    const dictionaries = {};
     const win = {
         fetch: vi.fn(async () => Response.json({ plans: planRows, hasMore: false, nextOffset: null })),
         console: { warn: vi.fn() }, resolveBackendBaseUrl: () => 'https://api.example.test',
@@ -30,10 +30,7 @@ function fixture(planRows = []) {
         shareAppliedProposals: vi.fn(async () => 'ready'),
         showStyledAlert: vi.fn(), BusyControl: { track: vi.fn((_button, run) => run()) },
         ClickStackRelations: { renderGroup: (_group, doc) => doc.createElement('div') },
-        i18n: {
-            registerTranslations(language, values) { dictionaries[language] = { ...dictionaries[language], ...values }; },
-            t: key => dictionaries.en?.[key] || key
-        }
+        i18n: testI18n()
     };
     return { win, a, b, other };
 }
@@ -91,7 +88,7 @@ describe('plan sharing entry points', () => {
         const f = fixture(rows);
         f.win.CbDialog.choice.mockResolvedValue('plan-two');
         await Memberships.shareFromDesign(f.a, f.win);
-        expect(f.win.CbDialog.choice.mock.calls[0][1].map(choice => choice.label)).toEqual(['One', 'Two', 'common.cancel']);
+        expect(f.win.CbDialog.choice.mock.calls[0][1].map(choice => choice.label)).toEqual(['One', 'Two', 'Cancel']);
         expect(f.win.shareAppliedProposals).toHaveBeenCalledWith({ plan: { cid: 'plan-two', content: rows[1].content }, members: [f.a, f.b] });
     });
     it('does not open sharing when the plan chooser is cancelled', async () => {

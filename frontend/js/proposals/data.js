@@ -165,7 +165,6 @@ function stripProposalCadastreAliases(record) {
     return record;
 }
 
-const proposalListTranslationsHydrated = new Set();
 
 // proposalStorage is the durable authored log, not a snapshot of the current browser's replay.
 // Persist only authored fields + applied/order state. Child ids, formation receipts, parent feature

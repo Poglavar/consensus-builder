@@ -70,19 +70,6 @@ function tParcelMulti(key, params = {}, fallback = '') {
     return String(fallback || key || '').replace(/\{\{\s*(\w+)\s*\}\}/g, (m, k) => (params && k in params) ? params[k] : m);
 }
 
-function flattenObject(node, prefix = '', out = {}) {
-    if (!node || typeof node !== 'object' || Array.isArray(node)) return out;
-    Object.entries(node).forEach(([key, value]) => {
-        const path = prefix ? `${prefix}.${key}` : key;
-        if (value && typeof value === 'object' && !Array.isArray(value)) {
-            flattenObject(value, path, out);
-        } else {
-            out[path] = value;
-        }
-    });
-    return out;
-}
-
 function showProposalAlertMessage(key, fallback, params = {}, alertOptions = {}) {
     const translate = getProposalI18nHelper();
     // The dialog turns this slot into an anchor; translation must not replace it with URL text.
