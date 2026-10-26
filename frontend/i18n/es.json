@@ -459,7 +459,7 @@
     },
     "proposalApplyFailures": {
         "outsideCadastre": "La geometría del diseño se extiende más allá de las parcelas catastrales seleccionadas. Mantenla dentro del terreno seleccionado o crea un diseño que incluya las parcelas adicionales.",
-        "outsideSite": "La geometría del diseño se extiende más allá de su emplazamiento. Mantenla dentro del emplazamiento o edítalo antes de aplicarla.",
+        "outsideSite": "La geometría del diseño supera el límite de terreno guardado. Actualiza el límite o mueve la geometría dentro de él antes de aplicarlo.",
         "groundUnavailable": "No se pudieron cargar los datos de las parcelas catastrales. Comprueba tu conexión e inténtalo de nuevo.",
         "groundMissing": "No hay datos catastrales disponibles para: {{parcels}}. No se puede aplicar este diseño hasta que se carguen esas parcelas.",
         "needsParcels": "Este diseño actúa sobre parcelas catastrales o no tiene geometría propia. Carga sus parcelas antes de aplicarla.",
@@ -867,6 +867,9 @@
                 "rateLimitedFor": "Demasiadas publicaciones por ahora. Inténtalo de nuevo en unos {{minutes}} min.",
                 "rateLimited": "Demasiadas publicaciones por ahora. Espera unos minutos e inténtalo de nuevo.",
                 "refused": "El servidor rechazó este diseño: {{reason}}",
+                "outsideSite": "El diseño se extiende {{area}} m² fuera del límite de terreno guardado. El límite debe incluir la geometría antes de publicarlo.",
+                "namedFailure": "«{{title}}»: {{reason}}",
+                "siteProblemMap": "El rojo indica el área fuera del límite de terreno guardado; la línea amarilla discontinua muestra ese límite.",
                 "networkFailed": "No se pudo contactar con el servidor. Comprueba la conexión e inténtalo de nuevo.",
                 "notFound": "Este diseño no está en el servidor.",
                 "failed": "No se pudo publicar el diseño.",
@@ -6453,14 +6456,15 @@
         }
     },
     "mapSearch": {
-        "placeholder": "Buscar lugares, parcelas, diseños…",
-        "placeholderNoParcels": "Buscar lugares, diseños…",
+        "placeholder": "Buscar lugares, parcelas, planes y diseños…",
+        "placeholderNoParcels": "Buscar lugares, planes y diseños…",
         "label": "Buscar en el mapa",
         "open": "Buscar",
         "close": "Cerrar la búsqueda",
         "clear": "Borrar",
         "cityChip": "Ciudad actual: {{city}}. Abre el globo para elegir otro lugar",
         "groups": {
+            "plans": "Planes",
             "recent": "Búsquedas recientes",
             "cities": "Ciudades",
             "parcels": "Parcelas",
@@ -6477,6 +6481,9 @@
         "untitledProposal": "Diseño {{id}}",
         "localProposal": "En este dispositivo",
         "inCity": "En {{city}}",
+        "plansLoading": "Buscando planes…",
+        "plansError": "No se pudieron buscar planes",
+        "planDesignCount": "{{count}} diseños",
         "proposalsLoading": "Buscando diseños…",
         "proposalsError": "No se pudieron buscar diseños",
         "proposalDownloading": "Descargando…",
@@ -6489,6 +6496,10 @@
         "useMyLocationHint": "Abre la ciudad más cercana a ti"
     },
     "commandPalette": {
+        "actions": {
+            "turnOn": "Activar",
+            "turnOff": "Desactivar"
+        },
         "open": "Paleta de comandos",
         "title": "Paleta de comandos",
         "placeholder": "Escribe un comando…",

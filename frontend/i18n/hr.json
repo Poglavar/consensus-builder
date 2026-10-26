@@ -459,7 +459,7 @@
     },
     "proposalApplyFailures": {
         "outsideCadastre": "Geometrija dizajna prelazi granice odabranih katastarskih čestica. Zadržite je unutar odabranog zemljišta ili izradite dizajn koji uključuje dodatne čestice.",
-        "outsideSite": "Geometrija dizajna prelazi granice lokacije. Zadržite je unutar lokacije ili uredite lokaciju prije primjene.",
+        "outsideSite": "Geometrija dizajna prelazi spremljenu granicu zemljišta. Ažurirajte granicu ili pomaknite geometriju unutar nje prije primjene.",
         "groundUnavailable": "Podaci katastarskih čestica nisu se mogli učitati. Provjerite vezu i pokušajte ponovno.",
         "groundMissing": "Katastarski podaci nisu dostupni za: {{parcels}}. Prijedlog se ne može primijeniti dok se te čestice ne učitaju.",
         "needsParcels": "Ovaj dizajn djeluje na katastarske čestice ili nema vlastitu geometriju. Učitajte njegove čestice prije primjene.",
@@ -869,6 +869,9 @@
                 "rateLimitedFor": "Zasad je previše objava. Pokušajte ponovno za otprilike {{minutes}} min.",
                 "rateLimited": "Zasad je previše objava. Pričekajte nekoliko minuta pa pokušajte ponovno.",
                 "refused": "Poslužitelj je odbio ovaj dizajn: {{reason}}",
+                "outsideSite": "Dizajn prelazi spremljenu granicu zemljišta za {{area}} m². Granica zemljišta mora obuhvatiti geometriju prije objave.",
+                "namedFailure": "„{{title}}”: {{reason}}",
+                "siteProblemMap": "Crveno označava područje izvan spremljene granice zemljišta; isprekidana žuta crta prikazuje tu granicu.",
                 "networkFailed": "Povezivanje s poslužiteljem nije uspjelo. Provjerite vezu i pokušajte ponovno.",
                 "notFound": "Ovaj dizajn nije na poslužitelju.",
                 "failed": "Dizajn nije bilo moguće objaviti.",
@@ -6462,14 +6465,15 @@
         }
     },
     "mapSearch": {
-        "placeholder": "Traži mjesta, čestice, dizajne…",
-        "placeholderNoParcels": "Traži mjesta, dizajne…",
+        "placeholder": "Traži mjesta, čestice, planove, dizajne…",
+        "placeholderNoParcels": "Traži mjesta, planove, dizajne…",
         "label": "Pretraži kartu",
         "open": "Traži",
         "close": "Zatvori pretragu",
         "clear": "Očisti",
         "cityChip": "Trenutni grad: {{city}}. Otvorite globus za odabir drugog mjesta",
         "groups": {
+            "plans": "Planovi",
             "recent": "Nedavne pretrage",
             "cities": "Gradovi",
             "parcels": "Čestice",
@@ -6486,6 +6490,9 @@
         "untitledProposal": "Prijedlog {{id}}",
         "localProposal": "Na ovom uređaju",
         "inCity": "U gradu {{city}}",
+        "plansLoading": "Traženje planova…",
+        "plansError": "Planove nije moguće pretražiti",
+        "planDesignCount": "{{count}} dizajna",
         "proposalsLoading": "Tražim dizajne…",
         "proposalsError": "Pretraga dizajna nije uspjela",
         "proposalDownloading": "Preuzimam…",
@@ -6498,6 +6505,10 @@
         "useMyLocationHint": "Otvara grad najbliži tebi"
     },
     "commandPalette": {
+        "actions": {
+            "turnOn": "Uključi",
+            "turnOff": "Isključi"
+        },
         "open": "Paleta naredbi",
         "title": "Paleta naredbi",
         "placeholder": "Upiši naredbu…",

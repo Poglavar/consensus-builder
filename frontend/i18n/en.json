@@ -459,7 +459,7 @@
     },
     "proposalApplyFailures": {
         "outsideCadastre": "The design geometry extends beyond its selected cadastral parcels. Keep it within the selected land, or create a design that includes the additional parcels.",
-        "outsideSite": "The design geometry extends beyond its site. Keep it inside the site, or edit the site before applying.",
+        "outsideSite": "The design geometry extends beyond its saved land boundary. Update the land boundary or move the geometry inside it before applying.",
         "groundUnavailable": "Cadastral parcel data could not be loaded. Check your connection and try applying again.",
         "groundMissing": "Cadastral parcel data is unavailable for: {{parcels}}. This design cannot be applied until those parcels can be loaded.",
         "needsParcels": "This design acts on cadastral parcels or has no geometry of its own. Load its parcels before applying.",
@@ -867,6 +867,9 @@
                 "rateLimitedFor": "Too many publications for now. Try again in about {{minutes}} min.",
                 "rateLimited": "Too many publications for now. Wait a few minutes and try again.",
                 "refused": "The server refused this design: {{reason}}",
+                "outsideSite": "The design extends {{area}} m² beyond its saved land boundary. The land boundary must include the geometry before it can be published.",
+                "namedFailure": "“{{title}}”: {{reason}}",
+                "siteProblemMap": "Red marks the area outside the saved land boundary; the dashed yellow line shows that boundary.",
                 "networkFailed": "The server could not be reached. Check the connection and try again.",
                 "notFound": "This design is not on the server.",
                 "failed": "The design could not be published.",
@@ -6426,14 +6429,15 @@
         }
     },
     "mapSearch": {
-        "placeholder": "Search places, parcels, designs…",
-        "placeholderNoParcels": "Search places, designs…",
+        "placeholder": "Search places, parcels, plans, designs…",
+        "placeholderNoParcels": "Search places, plans, designs…",
         "label": "Search the map",
         "open": "Search",
         "close": "Close search",
         "clear": "Clear",
         "cityChip": "Current city: {{city}}. Open the globe to choose another place",
         "groups": {
+            "plans": "Plans",
             "recent": "Recent searches",
             "cities": "Cities",
             "parcels": "Parcels",
@@ -6450,6 +6454,9 @@
         "untitledProposal": "Design {{id}}",
         "localProposal": "On this device",
         "inCity": "In {{city}}",
+        "plansLoading": "Searching plans…",
+        "plansError": "Could not search plans",
+        "planDesignCount": "{{count}} designs",
         "proposalsLoading": "Searching designs…",
         "proposalsError": "Could not search designs",
         "proposalDownloading": "Downloading…",
@@ -6462,6 +6469,10 @@
         "useMyLocationHint": "Opens the city closest to you"
     },
     "commandPalette": {
+        "actions": {
+            "turnOn": "Turn on",
+            "turnOff": "Turn off"
+        },
         "open": "Command palette",
         "title": "Command palette",
         "placeholder": "Type a command…",

@@ -178,6 +178,11 @@ The source context captured for a cadastral-dependent calculation or commitment,
 
 The geographic land on which a design operates. An authored site can cover parts of parcels, several parcels or modeled open ground; it can be larger than the building footprint.
 
+The site is a design's saved land boundary, not a restriction against editing its geometry.
+Editing a road's footprint updates its site to the new corridor land and invalidates its old
+parcel binding. Geometry must fit the current authored site at publication; a refusal returns
+the outlying geometry so the map can identify the affected area.
+
 ### Parcel binding
 
 The derived relationship between authored site geometry and a stated parcel source, including intersections, coverage and the intrusion tolerance used. A binding describes the source observed at calculation time, rather than altering the authored geometry.
@@ -261,6 +266,8 @@ A link naming a selected set of published designs and the current map view, incl
 Choosing “Unapply existing & continue” replaces the conflicting applied designs. Incoming buildings and surface spaces replace conflicting applied roads occupying their authored footprints. An incoming parcel layout also replaces applied roads, layouts and content occupying its authored plots; designs outside that ground remain applied. Compatible road junctions and host parcel layouts remain. Unapplied designs remain saved. The replacement commits together, or retains the previous working composition if any member cannot be applied.
 
 Replacement re-derives only the affected ground and its spatial dependencies. Applied designs elsewhere are not replayed as part of that local change.
+
+After a successful confirmed replacement, the view frames all incoming applied designs together, overriding a previous position or camera in the shared URL. A visitor who takes over the view during loading retains control of it.
 
 Selecting an object in model or Google 3D, including a design from a list or a click-stack section, retains the camera and surrounding composition. A yellow pulsing outline follows the selected building or massing's drawn volume, or the authored ground boundary for parcels and ground-only designs; reduced-motion views use a steady outline. Ground-only designs also show a transparent yellow hatch across their authored surface; formed and cadastral parcels use an unfilled boundary, including when a formed parcel shares the design's geometry. Selection does not recolor underlying parcel surfaces or isolate the design. Both 3D views use the same selection sections, inspectors, repeated-click cycling and deselection rules. Google imagery supplies a visible surface position; cadastral and building identities come from source records. Where the Google mesh has no addressable object volume, selection outlines the known source footprint on the loaded surface. Cadastral boundary visibility controls drawing independently of selection.
 

@@ -560,6 +560,10 @@ function writeRoadDefinition(record, definition) {
     if (!record || !definition) return;
     const copy = cloneRoadValue(definition);
     record.roadProposal = { ...(record.roadProposal || {}), definition: copy };
+    if (copy.polygon) {
+        record.site = cloneRoadValue(copy.polygon);
+        delete record.binding;
+    }
 }
 
 function stripRoadDerivedFields(record) {
@@ -967,6 +971,46 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
         }
         store._indexProposal?.(stored);
     });
+    // An applied edit authors the connected junctions too. Their peer profiles are snapshots used
+    // by land and taper construction, so merely rebuilding the edited ribbon leaves stale ends in
+    // its neighbours. Plan and publish these changes inside this same parcel mutation.
+    const junctionPeersBefore = new Map();
+    const junctionPeersAfter = new Map();
+    if (sourceWasApplied) {
+        const authoring = window.CorridorAuthoring
+            || (typeof require === 'function' ? require('./proposals/corridor-authoring.js') : null);
+        if (!authoring?.planCorridorEdit) throw new Error('Corridor junction authoring is unavailable.');
+        const editedIds = new Set([sourceKey, ...extraStretchIds]);
+        for (const id of editedIds) {
+            const edited = store.getProposal(id);
+            const records = store.peekAllProposals?.() || store.getAllProposals();
+            const planned = authoring.planCorridorEdit(id === sourceKey ? sourceBefore : edited, edited, records, {
+                geometry: window.CorridorGeometry,
+                centerlineOf: corridorCenterlineOf,
+                isTrack: corridorIsTrack,
+                isApplied: record => isApplied(record, record?.roadProposal),
+                protectedEdgeKeysOf: definition => corridorProtectedEdgeKeySet(definition?.tunnels, definition?.gradeSeparations)
+            });
+            for (const change of [{ proposalId: id, definition: planned.proposal.roadProposal.definition }, ...planned.existingChanges]) {
+                const target = store.getProposal(change.proposalId);
+                if (!target?.roadProposal?.definition) throw new Error('A connected road disappeared during junction editing.');
+                if (!editedIds.has(String(change.proposalId)) && !junctionPeersBefore.has(String(change.proposalId))) {
+                    junctionPeersBefore.set(String(change.proposalId), cloneRoadValue(target));
+                }
+                const definition = cloneRoadValue(change.definition);
+                rebuildRoadDefinitionFootprint(definition);
+                if (!definition.polygon) throw new Error('A connected road has no land after junction editing.');
+                writeRoadDefinition(target, definition);
+                declareParcelsUnderRoadLand(target, definition.polygon);
+                if (!editedIds.has(String(change.proposalId))) {
+                    authoring.detachPublishedIdentity(target);
+                    junctionPeersAfter.set(String(change.proposalId), target);
+                }
+                target.updatedAt = new Date().toISOString();
+                store._indexProposal?.(target);
+            }
+        }
+    }
     store.save?.();
 
     // Old and new footprints provide the exact local corridor scope. Only the edited road's
@@ -976,7 +1020,7 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
             .map(id => store.getProposal(id))
             .filter(Boolean);
         const derived = await ProposalManager.rematerializeCorridorScope?.(
-            [sourceBefore, ...editedRecords],
+            [sourceBefore, ...junctionPeersBefore.values(), ...editedRecords, ...junctionPeersAfter.values()],
             { _parcelMutation: mutation }
         );
         if (!derived || derived.ok !== true) {
@@ -1413,7 +1457,13 @@ function redrawRoadStrips() {
         const junctionTrims = (typeof corridorEntryJunctionTrims === 'function' && junctions.length)
             ? corridorEntryJunctionTrims(piece.points.map(point => frame.latLngToMetric(point.lat, point.lng)), junctions, frame)
             : null;
-        const segmentLayer = renderCorridorStrips(strips, {
+        // Match the applied corridor paint partition: the junction pass paints its carriageway
+        // and corners once, so draft strips must stop at that same coverage before they render.
+        const junctionPaint = (typeof window !== 'undefined' && window.__corridorJunctionPaint) || null;
+        const paintedStrips = (junctionPaint && junctions.length)
+            ? junctionPaint.clipStrips(strips, junctions)
+            : strips;
+        const segmentLayer = renderCorridorStrips(paintedStrips, {
             pane: CORRIDOR_STRIPS_PANE,
             markings: [], decorations, junctions: [], junctionTrims,
             // Rails come with the cross-section: a rail lane in the profile being drawn lays its track

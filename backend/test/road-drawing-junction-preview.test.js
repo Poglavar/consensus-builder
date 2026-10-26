@@ -10,7 +10,9 @@ import { createRequire } from 'node:module';
 import { loadRoadDrawing, at } from './helpers/road-drawing-env.js';
 
 const require = createRequire(import.meta.url);
+const turf = require('@turf/turf');
 const corridorProfile = require('../../frontend/js/corridor-profile.js');
+const junctionPaint = require('../../frontend/js/corridor-junction-paint.js');
 
 let env = null;
 afterEach(() => {
@@ -74,8 +76,14 @@ describe('applied arms meeting the drawing', () => {
 
 describe('the preview is wired into the junction pass only', () => {
     function spy(impl) {
-        const fn = (...args) => { fn.calls.push(args); return impl(...args); };
+        const fn = (...args) => {
+            fn.calls.push(args);
+            const result = impl(...args);
+            fn.results.push(result);
+            return result;
+        };
         fn.calls = [];
+        fn.results = [];
         return fn;
     }
 
@@ -89,7 +97,7 @@ describe('the preview is wired into the junction pass only', () => {
 
     // The drawing tool with the real corridor-profile builders wrapped in spies, open on the road.
     async function openOver(proposals, globals = {}) {
-        env = loadRoadDrawing({ proposals, renderer: true, globals });
+        env = loadRoadDrawing({ proposals, renderer: true, globals: { __corridorJunctionPaint: junctionPaint, ...globals } });
         const wrapped = {};
         ['buildCorridorJunctionTreatmentsForEntries', 'buildCorridorLaneMarkingsForEntries', 'buildCorridorStrips', 'buildCorridorPieceStrips']
             .forEach(name => { wrapped[name] = globalThis[name] = spy(globalThis[name]); });
@@ -97,9 +105,34 @@ describe('the preview is wired into the junction pass only', () => {
         return wrapped;
     }
     const corridorIdsOf = entries => [...new Set(entries.map(entry => entry.corridorId))];
+    const polygonFeature = polygon => {
+        const rings = polygon.length && Array.isArray(polygon[0]) ? polygon : [polygon];
+        return turf.polygon(rings.map(ring => {
+            const coordinates = ring.map(point => [point.lng, point.lat]);
+            coordinates.push(coordinates[0]);
+            return coordinates;
+        }));
+    };
+    const overlapAreaWith = (strips, geometry) => (strips || [])
+        .filter(strip => strip.type === 'driving')
+        .flatMap(strip => strip.polygons || [])
+        .reduce((area, polygon) => {
+            const overlap = turf.intersect(polygonFeature(polygon), turf.feature(geometry));
+            return area + (overlap ? turf.area(overlap) : 0);
+        }, 0);
 
     it('adds the applied arms to the junction builder, never to the strips or markings', async () => {
-        const wrapped = await openOver([appliedCorridor('p1', 30, PROFILE)]);
+        const node = at(20, 30);
+        // A clean, axis-aligned treatment keeps this wiring regression focused on the render
+        // partition instead of the real builder's very narrow arm geometry at this snapped node.
+        const coverage = [at(10, 20), at(30, 20), at(30, 40), at(10, 40), at(10, 20)];
+        const treatment = {
+            lat: node.lat, lng: node.lng, degree: 3, corridorIds: ['active-drawing', 'p1'],
+            arms: [], surfacePolygons: [coverage], cornerPolygons: []
+        };
+        const wrapped = await openOver([appliedCorridor('p1', 30, PROFILE)], {
+            buildCorridorJunctionTreatmentsForEntries: () => [treatment]
+        });
         // A T: from the south onto the middle of the applied road's first edge.
         await env.click(at(20, -60));
         await env.click(at(20, 27));
@@ -116,7 +149,12 @@ describe('the preview is wired into the junction pass only', () => {
         expect(junctions).toHaveLength(1);
         expect(junctions[0].degree).toBe(3);
         expect([...junctions[0].corridorIds].sort()).toEqual(['active-drawing', 'p1']);
-        expect(junctions[0].lat).toBeCloseTo(at(0, 30).lat, 7);
+        expect(junctions[0].lat).toBeCloseTo(node.lat, 7);
+        const junctionCoverage = junctionPaint.paintOf(junctions[0]).coverage;
+        const rawDraftStrips = wrapped.buildCorridorStrips.results.at(-1);
+        const renderedDraftStrips = env.rendered.strips.at(-1).strips;
+        expect(overlapAreaWith(rawDraftStrips, junctionCoverage)).toBeGreaterThan(0.01);
+        expect(overlapAreaWith(renderedDraftStrips, junctionCoverage)).toBeLessThan(0.01);
         expect(env.session.roadStripLayer).not.toBeNull();
         expect(env.map.hasLayer(env.session.roadStripLayer)).toBe(true);
     });

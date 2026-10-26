@@ -120,25 +120,51 @@ describe('keyed applied-corridor render', () => {
         env.context.refreshAppliedCorridorStrips();
         expect(env.buildCorridorStrips).toHaveBeenCalledTimes(3);
         expect(Array.from(env.state.byId.keys()).sort()).toEqual(['a', 'b', 'c']);
-        expect(Array.from(env.state.junctions.keys()).sort()).toEqual(['a|b@1.000000,1.000000', 'a|c@1.000000,1.000000', 'b|c@1.000000,1.000000']);
+        expect(Array.from(env.state.junctions.keys()).sort()).toEqual(['a|b@1.000000,1.000000#0', 'a|c@1.000000,1.000000#0', 'b|c@1.000000,1.000000#0']);
         expect(env.map.layers.has(env.state.root)).toBe(true);
         expect(env.map.getPane('corridorJunctionsPane').style).toEqual({ zIndex: '656', pointerEvents: 'none' });
         expect(env.map.getPane('corridorMarkingsPane').style).toEqual({ zIndex: '657', pointerEvents: 'none' });
         expect(env.map.getPane('corridorHitPane').style).toEqual({ zIndex: '659', pointerEvents: 'auto' });
     });
 
+    it('keeps same-position junction layers and signatures separate by discrete level', () => {
+        const proposals = [road('a', near(0, 0)), road('b', near(0.0005, 0.0005))];
+        const env = environment(proposals);
+        env.context.refreshAppliedCorridorStrips();
+        const treatment = level => ({
+            lat: 1,
+            lng: 1,
+            level,
+            degree: 3,
+            surfacePolygons: [[[0, 0], [0, 1], [1, 1]]],
+            crosswalkPolygons: [],
+            corridorIds: ['a', 'b'],
+            arms: [{ corridorId: 'a', cut: 4, markingTrim: 8, toward: { lat: 1, lng: 2 } }]
+        });
+        const ground = treatment(0);
+        const bridge = treatment(1);
+        expect(pure.corridorJunctionSignature('a', [ground])).not.toBe(pure.corridorJunctionSignature('a', [bridge]));
+        env.buildCorridorJunctionSet.mockReturnValue([ground, bridge]);
+        proposals[0].roadProposal.definition.points = near(0.0001, 0.0001);
+        env.context.refreshAppliedCorridorStrips();
+        expect(Array.from(env.state.junctions.keys()).sort()).toEqual([
+            'a|b@1.000000,1.000000#0',
+            'a|b@1.000000,1.000000#1'
+        ]);
+    });
+
     it('a refresh with nothing changed builds nothing and keeps every group', () => {
         const env = environment([road('a', near(0, 0)), road('b', near(0.0005, 0.0005))]);
         env.context.refreshAppliedCorridorStrips();
         const groupA = env.state.byId.get('a').group;
-        const junction = env.state.junctions.get('a|b@1.000000,1.000000');
+        const junction = env.state.junctions.get('a|b@1.000000,1.000000#0');
         env.context.refreshAppliedCorridorStrips();
         expect(env.buildCorridorStrips).toHaveBeenCalledTimes(2);
         expect(env.buildCorridorJunctionSet).toHaveBeenCalledTimes(1);
         // The street network changed once (the first draw), so the block view hears of it once.
         expect(env.context.dispatchEvent.mock.calls.map(([event]) => event.type)).toEqual(['appliedCorridorsChanged']);
         expect(env.state.byId.get('a').group).toBe(groupA);
-        expect(env.state.junctions.get('a|b@1.000000,1.000000')).toBe(junction);
+        expect(env.state.junctions.get('a|b@1.000000,1.000000#0')).toBe(junction);
     });
 
     it('rebuilds only the corridor whose definition changed, and only its junctions', () => {
@@ -148,8 +174,8 @@ describe('keyed applied-corridor render', () => {
         const groupA = env.state.byId.get('a').group;
         const groupB = env.state.byId.get('b').group;
         const groupC = env.state.byId.get('c').group;
-        const junctionAC = env.state.junctions.get('a|c@1.000000,1.000000');
-        const junctionAB = env.state.junctions.get('a|b@1.000000,1.000000');
+        const junctionAC = env.state.junctions.get('a|c@1.000000,1.000000#0');
+        const junctionAB = env.state.junctions.get('a|b@1.000000,1.000000#0');
 
         proposals[1].roadProposal.definition.points = near(0.0006, 0.0004);
         env.buildCorridorStrips.mockClear();
@@ -161,8 +187,8 @@ describe('keyed applied-corridor render', () => {
         expect(env.state.byId.get('b').group).not.toBe(groupB);
         expect(env.state.root.hasLayer(groupB)).toBe(false);
         expect(env.state.root.hasLayer(env.state.byId.get('b').group)).toBe(true);
-        expect(env.state.junctions.get('a|c@1.000000,1.000000')).toBe(junctionAC);
-        expect(env.state.junctions.get('a|b@1.000000,1.000000')).not.toBe(junctionAB);
+        expect(env.state.junctions.get('a|c@1.000000,1.000000#0')).toBe(junctionAC);
+        expect(env.state.junctions.get('a|b@1.000000,1.000000#0')).not.toBe(junctionAB);
         expect(env.state.root.hasLayer(junctionAB)).toBe(false);
     });
 
@@ -182,7 +208,7 @@ describe('keyed applied-corridor render', () => {
         expect(env.context.dispatchEvent).toHaveBeenCalledTimes(1);
         expect(env.state.byId.has('c')).toBe(false);
         expect(env.state.root.hasLayer(groupC)).toBe(false);
-        expect(Array.from(env.state.junctions.keys()).sort()).toEqual(['a|b@1.000000,1.000000']);
+        expect(Array.from(env.state.junctions.keys()).sort()).toEqual(['a|b@1.000000,1.000000#0']);
     });
 
     it('only corridors whose bbox touches a changed one are handed to the junction finder', () => {

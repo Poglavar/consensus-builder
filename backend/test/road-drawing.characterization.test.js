@@ -8,10 +8,16 @@ import { createRequire } from 'node:module';
 import { loadRoadDrawing, at, boxRing } from './helpers/road-drawing-env.js';
 
 const Cid = createRequire(import.meta.url)('../../frontend/js/cid.js');
+const corridorGeometry = createRequire(import.meta.url)('../../frontend/js/corridor-geometry.js');
+const corridorAuthoring = createRequire(import.meta.url)('../../frontend/js/proposals/corridor-authoring.js');
+const proj4 = createRequire(import.meta.url)('proj4');
 
 let env = null;
 function open(options) {
-    env = loadRoadDrawing(options);
+    env = loadRoadDrawing({
+        ...options,
+        globals: { proj4, ...(options?.globals || {}) }
+    });
     return env;
 }
 afterEach(() => {
@@ -610,6 +616,8 @@ describe('editing a saved road (updateLocalCorridorGeometry)', () => {
     it('edits one\'s own local road in place: same id, new land, newly reached parcels declared, scope re-derived', async () => {
         const world = open({ parcels: [PARCEL_ON_ROUTE, PARCEL_AT_NEW_END] });
         const record = withProfile(localRoad());
+        record.site = { type: 'Polygon', coordinates: [boxRing(0, -5, 100, 5)] };
+        record.binding = { coverage: 'complete', parcels: [{ parcelId: 'HR-1' }] };
         world.store.addProposal(record);
         const result = await globalThis.updateLocalCorridorGeometry('road-1', definition => {
             definition.points[0][1] = at(150, 0);
@@ -619,6 +627,8 @@ describe('editing a saved road (updateLocalCorridorGeometry)', () => {
         expect(stored).toBe(record);
         expect(near(stored.roadProposal.definition.points[0][1], at(150, 0))).toBe(true);
         expect(stored.roadProposal.definition.polygon.type).toMatch(/Polygon/);
+        expect(stored.site).toEqual(stored.roadProposal.definition.polygon);
+        expect(stored.binding).toBeUndefined();
         expect(stored.cadastreParcelIds).toEqual(['HR-1', 'HR-3']);
         expect(world.store.save.calls.length).toBeGreaterThan(0);
         const [scope] = globalThis.ProposalManager.rematerializeCorridorScope.calls[0];
@@ -627,6 +637,75 @@ describe('editing a saved road (updateLocalCorridorGeometry)', () => {
         expect(globalThis.ProposalManager._refreshUIAfterProposalChange.calls.at(-1)[0]).toBe(record);
         expect(world.store.addProposal.calls).toHaveLength(1);   // only the fixture: no new record
         expect(world.session.corridorApplyIndicatorCount).toBe(0);
+    });
+
+    it('refreshes connected peer profiles and rematerializes old and new land for both roads together', async () => {
+        const world = open();
+        const oldProfile = globalThis.corridorProfileFromLegacy(7.5, 1, false);
+        const peerProfile = globalThis.corridorProfileFromLegacy(5, 0, false);
+        const source = withProfile(localRoad());
+        source.roadProposal.definition.points = [[at(0, 0), at(100, 0)]];
+        source.roadProposal.definition.segmentIds = ['s1'];
+        source.roadProposal.definition.profile = oldProfile;
+        const peer = {
+            proposalId: 'road-peer', applied: true, title: 'Peer road',
+            roadProposal: { definition: {
+                points: [[at(50, 50), at(50, 0)]], segmentIds: ['p1'],
+                profile: peerProfile
+            } }
+        };
+        const planned = corridorAuthoring.planCorridorAuthoring(peer, [source], {
+            geometry: corridorGeometry,
+            isApplied: record => record.applied === true
+        });
+        source.roadProposal.definition = planned.existingChanges[0].definition;
+        const appliedPeer = planned.proposal;
+        appliedPeer.proposalId = 'road-peer';
+        const peerArm = appliedPeer.roadProposal.definition.junctions[0].arms[0];
+        expect(peerArm.profile).toEqual(oldProfile);
+
+        const sourceOldLand = { type: 'Polygon', coordinates: [[[1, 1], [2, 1], [2, 2], [1, 2], [1, 1]]] };
+        const peerOldLand = { type: 'Polygon', coordinates: [[[3, 3], [4, 3], [4, 4], [3, 4], [3, 3]]] };
+        source.site = sourceOldLand;
+        source.binding = { coverage: 'complete' };
+        source.roadProposal.definition.polygon = sourceOldLand;
+        appliedPeer.site = peerOldLand;
+        appliedPeer.binding = { coverage: 'complete' };
+        appliedPeer.roadProposal.definition.polygon = peerOldLand;
+        const unrelated = {
+            proposalId: 'unrelated', applied: true, title: 'Unrelated road',
+            roadProposal: { definition: { points: [[at(300, 300), at(400, 300)]], segmentIds: ['u1'] } }
+        };
+        const unrelatedBefore = JSON.parse(JSON.stringify(unrelated));
+        world.store.addProposal(source);
+        world.store.addProposal(appliedPeer);
+        world.store.addProposal(unrelated);
+
+        const latestProfile = globalThis.corridorProfileFromLegacy(12, 1, false);
+        expect(await globalThis.updateLocalCorridorGeometry('road-1', definition => {
+            definition.profile = latestProfile;
+        })).toBe('road-1');
+
+        const peerAfter = world.store.getProposal('road-peer');
+        const updatedPeerArm = peerAfter.roadProposal.definition.junctions[0].arms[0];
+        expect(updatedPeerArm.profile).toEqual(latestProfile);
+        expect(peerAfter).not.toHaveProperty('binding');
+        expect(source).not.toHaveProperty('binding');
+        expect(unrelated).toEqual(unrelatedBefore);
+
+        expect(globalThis.ProposalManager.rematerializeCorridorScope.calls).toHaveLength(1);
+        const [scope] = globalThis.ProposalManager.rematerializeCorridorScope.calls[0];
+        expect(scope).toHaveLength(4);
+        expect(scope[0]).toMatchObject({ proposalId: 'road-1', site: sourceOldLand });
+        expect(scope[0].roadProposal.definition.profile).toEqual(oldProfile);
+        expect(scope[1]).toMatchObject({ proposalId: 'road-peer', site: peerOldLand });
+        expect(scope[1].roadProposal.definition.junctions[0].arms[0].profile).toEqual(oldProfile);
+        expect(scope[2]).toBe(source);
+        expect(scope[2].site).not.toEqual(sourceOldLand);
+        expect(scope[2].roadProposal.definition.profile).toEqual(latestProfile);
+        expect(scope[3]).toBe(peerAfter);
+        expect(scope[3].site).not.toEqual(peerOldLand);
+        expect(scope[3].roadProposal.definition.junctions[0].arms[0].profile).toEqual(latestProfile);
     });
 
     it('an unchanged definition saves nothing', async () => {
@@ -677,7 +756,7 @@ describe('editing a saved road (updateLocalCorridorGeometry)', () => {
         expect(stretch.title).toBe('Road (2)');
         expect(stretch.roadProposal.definition.segmentIds).toEqual(['s2']);
         expect(stretch.applied).toBe(true);
-        expect(world.lastStatus()).toBe('The edit disconnected the road — it was split into 2 separate road proposals.');
+        expect(world.lastStatus()).toBe('The edit disconnected the road — it was split into 2 separate road designs.');
     });
 
     it('erasing every stretch takes the road off the map', async () => {
@@ -695,7 +774,7 @@ describe('editing a saved road (updateLocalCorridorGeometry)', () => {
         const world = open();
         const failures = [];
         expect(await globalThis.updateLocalCorridorGeometry('nowhere', () => {}, { onFailure: reason => failures.push(reason) })).toBe(false);
-        expect(failures).toEqual(['This road is not among the proposals of the city on the map. Switch to the city it was created in, then try again.']);
+        expect(failures).toEqual(['This road is not among the designs of the city on the map. Switch to the city it was created in, then try again.']);
         expect(world.lastStatus()).toBe('Could not complete that road change — reverted.');
         expect(world.session.corridorApplyIndicatorCount).toBe(0);
     });

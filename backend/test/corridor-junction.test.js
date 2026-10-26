@@ -231,6 +231,98 @@ describe('junction treatments from cross-sections', () => {
         expect(set[0].degree).toBe(3);
         expect(set[0].landPolygons.length).toBeGreaterThan(0);
     });
+
+    it('does not join a point crossing on a different level, but still joins the same level', () => {
+        const crossing = (mainLevel, branchLevel, mainHasVertex = true) => {
+            const lat = 45.8;
+            const lng = 15.97;
+            const offset = 0.0008;
+            const main = [
+                { lat, lng: lng - offset, level: mainLevel },
+                ...(mainHasVertex ? [{ lat, lng, level: mainLevel }] : []),
+                { lat, lng: lng + offset, level: mainLevel }
+            ];
+            const branch = [
+                { lat: lat - offset, lng, level: branchLevel },
+                { lat, lng, level: branchLevel },
+                { lat: lat + offset, lng, level: branchLevel }
+            ];
+            return buildCorridorJunctionSet([
+                { corridorId: 'main', entries: [{ points: main, profile: mainProfile }] },
+                { corridorId: 'branch', entries: [{ points: branch, profile: alleyProfile }] }
+            ]);
+        };
+
+        expect(crossing(0, 0)).toHaveLength(1);
+        expect(crossing(undefined, undefined)).toHaveLength(1);
+        expect(crossing(0, 1)).toEqual([]);
+        // A branch node projected onto an edge is inserted only if its discrete level matches the span.
+        expect(crossing(0, 0, false)).toHaveLength(1);
+        expect(crossing(0, 1, false)).toEqual([]);
+    });
+
+    it('keeps same-position junction treatments distinct by level', () => {
+        const lat = 45.8;
+        const lng = 15.97;
+        const offset = 0.0008;
+        const levels = [0, 1];
+        const junctions = buildCorridorJunctionSet([
+            { corridorId: 'main', entries: levels.map(level => ({
+                segmentId: `main-${level}`,
+                points: [
+                    { lat, lng: lng - offset, level },
+                    { lat, lng, level },
+                    { lat, lng: lng + offset, level }
+                ],
+                profile: mainProfile
+            })) },
+            { corridorId: 'branch', entries: levels.map(level => ({
+                segmentId: `branch-${level}`,
+                points: [
+                    { lat: lat - offset, lng, level },
+                    { lat, lng, level },
+                    { lat: lat + offset, lng, level }
+                ],
+                profile: alleyProfile
+            })) }
+        ]);
+
+        expect(junctions).toHaveLength(2);
+        expect(junctions.map(junction => junction.level).sort()).toEqual([0, 1]);
+        expect(junctions[0].lat).toBeCloseTo(junctions[1].lat, 7);
+        expect(junctions[0].lng).toBeCloseTo(junctions[1].lng, 7);
+    });
+
+    it('chooses equal-width duplicate arms deterministically and normalizes reverse alignment', () => {
+        const leftFootway = { strips: [{ type: 'sidewalk', width: 1 }, { type: 'driving', width: 9 }] };
+        const rightFootway = { strips: [{ type: 'driving', width: 9 }, { type: 'sidewalk', width: 1 }] };
+        const lat = 45.8;
+        const lng = 15.97;
+        const offset = 0.0008;
+        const eastEntry = (profile, segmentId, reverse = false) => ({
+            segmentId,
+            points: reverse ? [{ lat, lng: lng + offset }, { lat, lng }] : [{ lat, lng }, { lat, lng: lng + offset }],
+            profile
+        });
+        const westEntry = { segmentId: 'west', points: [{ lat, lng: lng - offset }, { lat, lng }], profile: mainProfile };
+        const northEntry = { segmentId: 'north', points: [{ lat, lng }, { lat: lat + offset, lng }], profile: alleyProfile };
+        const treatmentFor = eastEntries => buildCorridorJunctionSet([
+            { corridorId: 'main', entries: [...eastEntries, westEntry] },
+            { corridorId: 'branch', entries: [northEntry] }
+        ])[0];
+        const leftFirst = treatmentFor([eastEntry(leftFootway, 'east-left'), eastEntry(rightFootway, 'east-right')]);
+        const rightFirst = treatmentFor([eastEntry(rightFootway, 'east-right'), eastEntry(leftFootway, 'east-left')]);
+
+        expect(corridorProfileEdges(leftFootway).total).toBe(corridorProfileEdges(rightFootway).total);
+        expect(leftFirst.surfacePolygons).toEqual(rightFirst.surfacePolygons);
+        expect(leftFirst.cornerPolygons).toEqual(rightFirst.cornerPolygons);
+
+        const forward = treatmentFor([eastEntry(leftFootway, 'east')]);
+        // The mirrored strip order on a reverse-aligned segment is the same profile facing east.
+        const reverse = treatmentFor([eastEntry(rightFootway, 'east', true)]);
+        expect(forward.surfacePolygons).toEqual(reverse.surfacePolygons);
+        expect(forward.cornerPolygons.map(corner => corner.polygon)).toEqual(reverse.cornerPolygons.map(corner => corner.polygon));
+    });
 });
 
 describe('cutPolylineByStations', () => {
