@@ -100,7 +100,7 @@ test.describe('Editor button effects @features', () => {
     await dialog.locator('#building-upload-confirm').click();
     await expect(dialog).toHaveCount(0);
     await expect(page.locator('#single-building-editor').locator('.on-map-editor__panel')).toBeVisible();
-    await acceptSingleLandTake(page);
+    await waitForSingleLandTakeSummary(page);
     await page.locator('#single-building-confirm').click();
     await expect(page.locator('#single-building-editor')).toHaveCount(0);
     await expect.poll(() => page.evaluate(() => (window as any).pendingBuildingProposalContext?.buildingFeature?.properties?.source)).toBe('upload');
@@ -198,7 +198,7 @@ test.describe('Editor button effects @features', () => {
     await expect(clockwise).toBeEnabled();
     await clockwise.click();
     await expect.poll(() => footprint.getAttribute('d')).not.toBe(counterclockwisePath);
-    await acceptSingleLandTake(page);
+    await waitForSingleLandTakeSummary(page);
     await page.locator('#single-building-confirm').click();
     await expect(modal).toHaveCount(0);
     // Done saved the uploaded footprint, turned both ways, as an applied freeform design: a four-corner
@@ -325,7 +325,7 @@ test.describe('Editor button effects @features', () => {
     // The import hands geometry to the ordinary Freeform editor instead of retaining the legacy Block editor.
     await expect(page.locator('#single-building-editor .on-map-editor__panel')).toBeVisible();
     await expect(page.locator('#map-container .polygon-geometry-editor__vertex')).toHaveCount(4);
-    await acceptSingleLandTake(page);
+    await waitForSingleLandTakeSummary(page);
     await page.locator('#single-building-confirm').click();
     await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((p: any) =>
       p.geometry?.buildings?.some((feature: any) => feature.properties?.geojsonFixture === 'manual-block')))).toBe(true);

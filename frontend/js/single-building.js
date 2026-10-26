@@ -33,6 +33,7 @@
     const HANDLE_PANE = 'onMapEditorHandles';
     let dragMapHandlers = null;
     let singleGroundPreviewLayer = null;
+    let singleGroundPreviewSuspended = false;
     let singleLandTakeReview = null;
     let singleBuildingSeedLandTake = null;
 
@@ -748,6 +749,10 @@
             try { singleMap.removeLayer(singleGroundPreviewLayer); } catch (_) { }
             singleGroundPreviewLayer = null;
         }
+        // The surroundings child editor owns the only live copy while it is open. Land-take
+        // review can finish asynchronously during that time, so clearing once on open is not
+        // enough: its refresh must not recreate the parent preview underneath editable furniture.
+        if (singleGroundPreviewSuspended) return;
         // The preview only degrades (no paint) when the surround cannot be cut; saving the proposal
         // computes the same surface and refuses on the same failure.
         let surface = null;
@@ -1190,6 +1195,7 @@
         }
         singleBlockFeature = null;
         singleGroundBoundary = null;
+        singleGroundPreviewSuspended = false;
         singleBuildingLayers.clear();
         singleHistory?.destroy();
         singleHistory = null;
@@ -1538,7 +1544,15 @@
             }
             document.getElementById('single-ground-treatment-edit').addEventListener('click', () => {
                 window.BuildingSurroundingsEditor.edit({ session: singleSession, surface: currentGroundSurface(),
-                    onOpen: () => singleGroundPreviewLayer?.clearLayers(), onClose: updateGroundPreview, onSave: design => {
+                    onOpen: () => {
+                        singleGroundPreviewSuspended = true;
+                        updateGroundPreview();
+                    },
+                    onClose: () => {
+                        singleGroundPreviewSuspended = false;
+                        updateGroundPreview();
+                    },
+                    onSave: design => {
                     ensureSingleBuildingHistory()?.record();
                     currentGroundDecorationDesign = design;
                     updateRectangleLayers();

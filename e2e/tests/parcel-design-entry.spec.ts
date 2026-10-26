@@ -16,9 +16,13 @@ async function tinyParcel(page: Page) {
   await openParcel(page, 'proposals');
 }
 
-test('a Freeform draft on a tiny parcel keeps a usable footprint on a phone', async ({ mockApi: page }) => {
+test('a Freeform draft on a tiny parcel preserves the chosen phone view and exposes editable handles', async ({ mockApi: page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await tinyParcel(page);
+  const viewBeforeOpening = await page.evaluate(() => {
+    const view = (window as any).map;
+    return { center: view.getCenter(), zoom: view.getZoom() };
+  });
   await page.locator('.parcel-build-btn--single').click();
   const footprint = page.locator('.single-building-fill--active');
   await expect(footprint).toBeVisible();
@@ -29,10 +33,50 @@ test('a Freeform draft on a tiny parcel keeps a usable footprint on a phone', as
   });
   expect(dimensions.area).toBeCloseTo(400, 0);
   expect(dimensions.height).toBe(10);
+  const viewAfterOpening = await page.evaluate(before => {
+    const view = (window as any).map;
+    const center = view.getCenter();
+    const beforePoint = view.latLngToContainerPoint(before.center);
+    const afterPoint = view.latLngToContainerPoint(center);
+    return {
+      zoom: view.getZoom(),
+      centerDisplacementPx: Math.hypot(afterPoint.x - beforePoint.x, afterPoint.y - beforePoint.y),
+    };
+  }, viewBeforeOpening);
+  // Leaflet rounds a center to its pixel grid while the editor redraws layers. The chosen view
+  // is still preserved when that projected displacement is below one screen pixel.
+  expect(viewAfterOpening.zoom).toBe(viewBeforeOpening.zoom);
+  expect(viewAfterOpening.centerDisplacementPx).toBeLessThan(1);
+  // The opening sheet initially covers the lower pair of corners. Its keyboard resize control
+  // must make those map handles reachable without moving the map or changing the draft.
+  const editorPanel = page.locator('#single-building-editor .on-map-editor__panel');
+  const sheetHandle = editorPanel.locator(':scope > .mobile-dock-sheet-handle');
+  await expect(sheetHandle).toBeVisible();
+  await sheetHandle.focus();
+  await page.keyboard.press('Home');
+  await expect.poll(async () => (await editorPanel.boundingBox())?.height || Infinity).toBeLessThan(300);
+  const beforeVertexEdit = await page.evaluate(() => {
+    const layer = Object.values((window as any).map._layers)
+      .find((item: any) => item._path?.classList?.contains('single-building-fill--active')) as any;
+    return layer.feature.geometry.coordinates;
+  });
+  const vertex = page.locator('#map-container .polygon-geometry-editor__vertex').first();
+  await expect(page.locator('#map-container .polygon-geometry-editor__vertex')).toHaveCount(4);
+  const vertexBox = await vertex.boundingBox();
+  if (!vertexBox) throw new Error('Tiny-parcel Freeform vertex handle is not visible');
+  await page.mouse.move(vertexBox.x + vertexBox.width / 2, vertexBox.y + vertexBox.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(vertexBox.x + vertexBox.width / 2 + 8, vertexBox.y + vertexBox.height / 2 - 8, { steps: 4 });
+  await page.mouse.up();
+  await expect.poll(() => page.evaluate(before => {
+    const layer = Object.values((window as any).map._layers)
+      .find((item: any) => item._path?.classList?.contains('single-building-fill--active')) as any;
+    return JSON.stringify(layer.feature.geometry.coordinates) !== JSON.stringify(before);
+  }, beforeVertexEdit)).toBe(true);
   const box = await footprint.boundingBox();
-  expect(Math.min(box!.width, box!.height)).toBeGreaterThan(60);
+  if (!box) throw new Error('Tiny-parcel Freeform footprint is not visible');
   const rotation = await page.locator('#single-building-editor .on-map-editor__tools').boundingBox();
-  expect(rotation!.y).toBeGreaterThan(box!.y + box!.height + 12);
+  expect(rotation!.y).toBeGreaterThan(box.y + box.height + 12);
   await expect(page.locator('#single-building-confirm')).toBeEnabled();
   await expect(page.locator('#single-building-editor details')).toHaveCount(0);
   await expect(page.locator('#single-ground-treatment')).toBeVisible();

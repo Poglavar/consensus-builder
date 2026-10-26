@@ -1708,8 +1708,9 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
     text-overflow: ellipsis;
 }
 
-/* Selection belongs to the parcel, independently of which tab is open. */
-.parcel-context-actions { padding: var(--cb-space-2) 0; gap: var(--cb-space-1); align-items: flex-end; }
+/* Selection belongs to the parcel, independently of which tab is open. Keep its persistent
+   mode controls beside the one-shot parcel actions; a narrow dock can wrap them below. */
+.parcel-context-actions { display: flex; flex-wrap: wrap; padding: var(--cb-space-2) 0; gap: var(--cb-space-1); align-items: flex-end; }
 .parcel-context-actions .click-stack__actions--parcel { margin: 0; min-height: var(--cb-control-height-lg); }
 
 /* The selection section owns count, area and selection actions; Info holds the other totals. */

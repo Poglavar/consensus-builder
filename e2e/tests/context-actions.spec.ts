@@ -215,16 +215,16 @@ test.describe('Map context actions @features', () => {
     await expect(panel.locator('[data-parcel-tab-id="info-tab"]')).toHaveAttribute('aria-selected', 'true');
     await expect(panel.locator('[data-original-parcel-boundary]')).toContainText('Its original boundary is highlighted.');
     expect(await panel.locator('#info-content').evaluate(el => el.firstElementChild?.hasAttribute('data-original-parcel-boundary'))).toBe(true);
+    await page.evaluate(() => (window as any).ClickStack.collapse());
+    await expect(page.locator('path.click-stack-map-focus').first()).toBeVisible();
     const originalOutline = await page.evaluate(id => {
       const w = window as any;
       return {
-        actual: w.proposalHoverGroup.toGeoJSON().features.map((feature: any) => feature.geometry),
+        actual: w.proposalInspectionGroup.toGeoJSON().features.map((feature: any) => feature.geometry),
         original: w.CadastralParcelRepository.get(id).geometry,
       };
     }, PARCEL_ID);
     expect(originalOutline.actual).toEqual([originalOutline.original]);
-    await page.evaluate(() => (window as any).ClickStack.collapse());
-    await expect(page.locator('path.click-stack-map-focus').first()).toBeVisible();
     await expect(page.locator('#click-stack .click-stack__section[data-kind="parcels"]')).toHaveClass(/is-selected/);
     await page.locator('#click-stack .click-stack__section[data-kind="parcels"] .click-stack__row').click();
     await panel.locator('[data-parcel-tab-id="propose-tab"]').click();

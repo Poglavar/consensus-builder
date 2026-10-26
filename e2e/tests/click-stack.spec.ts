@@ -141,8 +141,20 @@ test.describe('Click stack @core', () => {
     const customBox = await customSite.boundingBox();
     const tabsBox = await panel.locator('.parcel-tabs').boundingBox();
     expect(selectionBox && customBox && tabsBox).toBeTruthy();
-    expect(selectionBox!.x).toBeLessThan(customBox!.x);
-    expect(selectionBox!.y + selectionBox!.height).toBeLessThanOrEqual(tabsBox!.y);
+    // The fuller selection guidance wraps below a narrow dock, while a wider dock can keep the
+    // two controls beside each other. In either layout they do not overlap, keep source order,
+    // and both finish before the parcel tabs.
+    const selectionEnds = {
+      right: selectionBox!.x + selectionBox!.width,
+      bottom: selectionBox!.y + selectionBox!.height,
+    };
+    const customEnds = {
+      right: customBox!.x + customBox!.width,
+      bottom: customBox!.y + customBox!.height,
+    };
+    expect(selectionEnds.right <= customBox!.x || selectionEnds.bottom <= customBox!.y).toBe(true);
+    expect(selectionBox!.x <= customBox!.x || selectionBox!.y <= customBox!.y).toBe(true);
+    expect(Math.max(selectionEnds.bottom, customEnds.bottom)).toBeLessThanOrEqual(tabsBox!.y);
     // The tab choice survives a different parcel and section collapse/reopen.
     await panel.getByRole('tab', { name: 'Info', exact: true }).click();
     await expect(page.locator('#parcel-info-title')).toContainText(PARCEL_ID);

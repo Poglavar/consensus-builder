@@ -1,5 +1,5 @@
-// Verify the map search's published-design download through its browser effects: the design index
-// answers GET /designs?q=, Cancel keeps it off this device and Download imports and opens it.
+// Verify the map search's published-design download through its browser effects: the catalogue
+// answers GET /search?q=, Cancel keeps it off this device and Download imports and opens it.
 import { test, expect } from '../helpers/fixtures';
 import { openCity, showProposal, PARCEL_GEOMETRY } from '../helpers/runtime';
 import { cidOfObject, pageIndex } from '../helpers/mocks/shared-server';
@@ -36,17 +36,21 @@ test.describe('proposal button controls fourth pass @features', () => {
     };
 
     await chooseRemoteProposal();
-    expect(index.requests.some(request => request.method === 'GET' && request.path.startsWith('/designs?q=Remote'))).toBe(true);
+    // Search returns lightweight plan/design suggestions. The full design is fetched only after
+    // Download, so cancelling must leave this browser without a local copy.
+    expect(index.requests.some(request => request.method === 'GET' && request.path.startsWith('/search?q=Remote'))).toBe(true);
     await expect(confirm).toBeVisible();
     await confirm.getByRole('button', { name: 'Cancel', exact: true }).click();
     await expect(confirm).toBeHidden();
     expect(await held()).toBe(false);
+    expect(index.requests.some(request => request.method === 'GET' && request.path === `/designs/${cid}`)).toBe(false);
 
     await chooseRemoteProposal();
     await expect(confirm).toBeVisible();
     await confirm.getByRole('button', { name: 'Download', exact: true }).click();
     await expect(confirm).toBeHidden();
     await expect.poll(held).toBe(true);
+    expect(index.requests.some(request => request.method === 'GET' && request.path === `/designs/${cid}`)).toBe(true);
     const imported = await page.evaluate(id => {
       const w = window as any;
       const record = w.proposalStorage.getProposal(id);

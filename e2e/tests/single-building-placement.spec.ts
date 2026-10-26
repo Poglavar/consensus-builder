@@ -329,7 +329,6 @@ test.describe('Single-building placement and immutable replacement @features', (
     const before = await editorDesign(page);
     const draftId = await page.evaluate(() => (window as any).getActiveProposalDesignDraft().id);
     await page.route('**/designs/binding', route => route.fulfill({ status: 503, json: { error: 'binding temporarily unavailable' } }));
-    await acknowledgeLandTake(page);
     const bindingFailure = page.waitForResponse(response => response.request().method() === 'POST'
       && new URL(response.url()).pathname.endsWith('/designs/binding'), { timeout: 20000 });
     await page.locator('#single-building-confirm').click();
@@ -364,6 +363,17 @@ test.describe('Single-building placement and immutable replacement @features', (
     const moveTogether = page.locator('#single-move-together');
     if (!(await moveTogether.isChecked())) await moveTogether.check();
     await dragActive(page, -360);
+    // Land review is debounced. Wait for its derived placement site rather than reading the
+    // transient design that still carries the old take.
+    await expect.poll(() => page.evaluate(sourceSite => {
+      const w = window as any;
+      const site = w.getActiveProposalDesignDraft?.()?.editorPayload?.context?.placement?.site;
+      if (!site) return Infinity;
+      const left = site.type === 'Feature' ? site : w.turf.feature(site);
+      const right = sourceSite.type === 'Feature' ? sourceSite : w.turf.feature(sourceSite);
+      const intersection = w.turf.intersect(left, right);
+      return intersection ? w.turf.area(intersection) : 0;
+    }, publishedBefore.site), { timeout: 20_000 }).toBeLessThan(0.01);
     const moved = await editorDesign(page);
     const overlapAreas = await page.evaluate(({ buildings, ground, sourceBuildings, sourceSite }) => {
       const w = window as any;

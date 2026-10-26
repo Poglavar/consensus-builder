@@ -99,6 +99,9 @@ for (const kind of ['single', 'buildings', 'row']) {
 
 test('a partially invalid GeoJSON upload keeps the existing design unchanged', async ({ mockApi: page }) => {
   await openTool(page, 'single');
+  // The initial land review completes asynchronously and writes the editor preview. Capture the
+  // settled design so this check isolates the rejected upload rather than that normal startup.
+  await waitForLandTakeSummary(page);
   const before = await page.evaluate(() => (window as any).getActiveProposalDesignDraft().editorPayload);
   await page.locator('#single-building-geojson-input').setInputFiles({ name: 'invalid.geojson', mimeType: 'application/geo+json',
     buffer: Buffer.from(JSON.stringify({ type: 'FeatureCollection', features: [courtyard, { type: 'Feature', properties: {}, geometry: { type: 'Point', coordinates: [15.982,45.8002] } }] })) });
@@ -151,7 +154,7 @@ test('a collection from the proposal form Design tab saves every building on Don
   }, courtyard.geometry);
   await page.locator('#single-building-geojson-input').setInputFiles({ name: 'buildings.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(collection)) });
   await expect(page.locator('#single-building-selector option')).toHaveCount(3);
-  await acceptLandTake(page);
+  await waitForLandTakeSummary(page);
   await page.locator('#single-building-confirm').click();
   await expect.poll(async () => (await savedUploads(page)).filter((p: any) => p.applied).length).toBe(3);
 });
