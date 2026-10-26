@@ -281,7 +281,7 @@ function indexEvents(index: SharedIndex): Record<string, any>[] {
 
 // ---- routes ----------------------------------------------------------------------------------------
 
-const INDEX_PATH = /\/(pins|designs|agreements|plans)(?:\/([^?#]*))?$/;
+const INDEX_PATH = /\/(pins|designs|agreements|plans|search)(?:\/([^?#]*))?$/;
 
 function indexPathOf(request: Request): { root: string; rest: string } | null {
   // A navigation to /designs/<cid> or /agreements/<cid> is the app's own page, served by the frontend.
@@ -354,6 +354,19 @@ export async function attachSharedIndex(page: Page, index: SharedIndex): Promise
     const url = new URL(request.url());
     index.requests.push({ method, path: url.pathname + url.search, body });
     const { root, rest } = target;
+
+    if (root === 'search' && !rest && method === 'GET') {
+      const q = (url.searchParams.get('q') || '').toLowerCase();
+      const limit = Math.min(50, Number(url.searchParams.get('limit')) || 20);
+      const plans = [...index.plans.values()]
+        .filter(row => row.content.title.toLowerCase().includes(q) || row.cid === q)
+        .slice(0, limit).map(row => ({ cid: row.cid, title: row.content.title,
+          city: row.content.view.city, designCount: row.content.designCids.length }));
+      const designs = [...index.designs.values()]
+        .filter(row => [row.title, row.author, row.cid].some(value => String(value || '').toLowerCase().includes(q)))
+        .slice(0, limit).map(({ cid, title, author, city, goal }) => ({ cid, title, author, city, goal }));
+      return json(route, 200, { plans, designs });
+    }
 
     if (root === 'plans') {
       if (!rest && method === 'GET') {

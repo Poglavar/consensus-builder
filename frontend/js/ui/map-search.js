@@ -1,6 +1,6 @@
 // ui/map-search.js — the map search box (omnibox) top-left, with the city chip: one input whose
 // grouped, keyboard-navigable results cover cities (configured + the world coverage registry, "Use
-// my location"), parcel ids (locateParcelById), published designs (GET /designs?q=), addresses
+// my location"), parcel ids (locateParcelById), plans and designs (GET /search?q=), addresses
 // (Photon geocoder) and commands (UiCommands). The decisions live in js/ui/search-model.js; this
 // file only renders and wires them. window.MapSearch: initialize, focus, showCities, refreshChip, close.
 (function (win) {
@@ -11,7 +11,7 @@
     const Model = win.SearchModel;
     const RECENT_KEY = 'cb_map_search_recent';
     const PLACE_DEBOUNCE_MS = 350;
-    const PROPOSAL_DEBOUNCE_MS = 250;
+    const CATALOG_DEBOUNCE_MS = 120;
 
     const state = {
         initialized: false,
@@ -29,8 +29,8 @@
         selectable: [],
         activeIndex: -1,
         notes: new Map(),        // item key -> { kind: 'pending' | 'error' | 'info', text }
-        proposals: { query: '', status: 'idle', items: [], timer: null, abort: null },
-        places: { query: '', status: 'idle', items: [], timer: null, abort: null },
+        catalog: { query: '', status: 'idle', results: null, timer: null, abort: null, cache: Model.createQueryCache() },
+        places: { query: '', status: 'idle', results: null, timer: null, abort: null, cache: Model.createQueryCache() },
         coverage: null,
         coverageRequested: false,
         marker: null,
@@ -48,8 +48,6 @@
     };
 
     const log = (...args) => console.info(`[${new Date().toISOString()}] [map-search]`, ...args);
-    const isMac = () => /Mac|iPhone|iPad/.test((win.navigator && (win.navigator.platform || win.navigator.userAgent)) || '');
-    const paletteShortcut = () => (isMac() ? '⌘K' : 'Ctrl K');
 
     // ---- city data ----
     const manager = () => win.CityConfigManager || null;
@@ -240,8 +238,25 @@
         return null;
     }
 
+    function plansGroup(query) {
+        const source = state.catalog;
+        const fresh = source.query === query ? source.results?.plans || [] : [];
+        const saved = [win.NamedPlans?.current, ...(win.AgreementStore?.list?.() || []).map(agreement => agreement.plan)]
+            .filter(record => record?.cid && record.content)
+            .map(record => ({ cid: record.cid, title: record.content.title, city: record.content.view.city,
+                designCount: record.content.designCids.length }));
+        const items = Model.rankPlans([...saved, ...fresh], query).map(plan => item({
+            key: `plan:${plan.cid}`, kind: 'plan', rank: plan.rank, icon: 'fas fa-layer-group', label: plan.title,
+            sublabel: t('mapSearch.planDesignCount', '{{count}} designs', { count: plan.designCount }),
+            run: () => { close({ blur: true }); win.location.assign(win.NamedPlans.link(plan.cid)); }
+        }));
+        const status = statusOf(source, query, t('mapSearch.plansLoading', 'Searching plans…'),
+            t('mapSearch.plansError', 'Could not search plans'));
+        return { id: 'plans', label: t('mapSearch.groups.plans', 'Plans'), items, status: items.length ? null : status };
+    }
+
     function proposalsGroup(query) {
-        const source = state.proposals;
+        const source = state.catalog;
         const current = currentCityId();
         const cityIds = configuredCities().map(city => city.id);
         // Explore is deliberately absent from the city picker, but server results can be authored
@@ -250,7 +265,7 @@
         const exploreId = manager()?.EXPLORE_CITY_ID || 'explore';
         if (!cityIds.includes(exploreId)) cityIds.push(exploreId);
         const codes = cityCodeMap();
-        const fresh = source.query === query ? source.items : [];
+        const fresh = source.query === query ? source.results?.designs || [] : [];
         const local = localProposals(query);
         const withCity = fresh
             .map(raw => Object.assign({}, raw, { cityId: Model.resolveProposalCityId(raw.city, cityIds, codes) }));
@@ -297,7 +312,7 @@
         const source = state.places;
         const cities = configuredCities();
         const current = currentCityId();
-        const fresh = source.query === query ? source.items : [];
+        const fresh = source.query === query ? source.results || [] : [];
         const items = fresh.map(place => {
             const coverageTier = state.coverage ? state.coverage.tierAt(place.lat, place.lon) : null;
             const where = Model.classifyPlaceLocation(place, cities, current, { liveCityId: coverageTier && coverageTier.cityId });
@@ -340,7 +355,8 @@
             kind: 'command',
             rank: entry.rank,
             icon: entry.entry.icon,
-            label: entry.label,
+            label: commands.actionLabel(entry.label, entry.entry.kind === 'toggle'
+                ? doc.getElementById(entry.entry.control)?.checked : null, tFn),
             sublabel: '',
             run: () => runCommand(entry.entry.id)
         }));
@@ -359,20 +375,6 @@
         return { id: 'recent', label: t('mapSearch.groups.recent', 'Recent searches'), items };
     }
 
-    function hintItem() {
-        return item({
-            key: 'hint:palette',
-            kind: 'hint',
-            icon: 'fas fa-terminal',
-            label: t('mapSearch.commandsHint', 'Commands…'),
-            shortcut: paletteShortcut(),
-            run: () => {
-                close({ blur: true });
-                if (win.CommandPalette) win.CommandPalette.open();
-            }
-        });
-    }
-
     function buildGroups() {
         const cls = Model.classifyQuery(state.query, parcelQueryOptions());
         let groups;
@@ -386,36 +388,44 @@
             const all = [];
             if (cls.kinds.includes('city')) all.push(citiesGroup(cls.text, false));
             if (cls.kinds.includes('parcel')) all.push(parcelsGroup(cls.text));
+            if (cls.kinds.includes('plan')) all.push(plansGroup(cls.text));
             if (cls.kinds.includes('proposal')) all.push(proposalsGroup(cls.text));
             if (cls.kinds.includes('address')) all.push(placesGroup(cls.text));
             if (cls.kinds.includes('command')) all.push(commandsGroup(cls.text));
             groups = Model.orderGroups(all);
         }
-        groups.push({ id: 'hint', items: [hintItem()] });
         return groups;
     }
 
     // ---- fetching (debounced, aborted when superseded) ----
     function scheduleFetches() {
         const cls = Model.classifyQuery(state.query, parcelQueryOptions());
-        const wantsProposals = state.mode === 'search' && cls.kinds.includes('proposal');
+        const wantsCatalog = state.mode === 'search' && cls.kinds.includes('proposal');
         const wantsPlaces = state.mode === 'search' && cls.kinds.includes('address');
-        schedule(state.proposals, wantsProposals ? cls.text : '', PROPOSAL_DEBOUNCE_MS, fetchProposals);
+        schedule(state.catalog, wantsCatalog ? cls.text : '', CATALOG_DEBOUNCE_MS, fetchCatalog);
         schedule(state.places, wantsPlaces ? cls.text : '', PLACE_DEBOUNCE_MS, fetchPlaces);
     }
 
     function schedule(source, query, delay, fetcher) {
+        const centre = source === state.places ? win.map?.getCenter() : null;
+        const key = [win.getBackendBase(), win.i18n?.getLanguage(), centre?.lat.toFixed(5), centre?.lng.toFixed(5), query.toLowerCase()].join('|');
+        if (source.key === key && source.query === query && ['loading', 'done'].includes(source.status)) return;
         if (source.timer) win.clearTimeout(source.timer);
         source.timer = null;
-        if (source.query === query && source.status !== 'idle') return;
         if (source.abort) source.abort.abort();
         source.abort = null;
+        source.key = key;
+        source.query = query;
+        source.results = null;
         if (!query) {
             source.query = '';
             source.status = 'idle';
-            source.items = [];
+            source.results = null;
             return;
         }
+        const cached = source.cache.get(key);
+        if (cached !== undefined) { source.results = cached; source.status = 'done'; return; }
+        source.status = 'loading';
         // Debounce: wait for typing to pause before asking a remote service.
         source.timer = win.setTimeout(() => {
             source.timer = null;
@@ -423,12 +433,13 @@
             source.abort = controller;
             source.query = query;
             source.status = 'loading';
-            source.items = [];
+            source.results = null;
             render();
-            fetcher(query, controller.signal)
+            fetcher(query, win.AbortSignal.any([controller.signal, win.AbortSignal.timeout(8000)]))
                 .then(items => {
                     if (controller.signal.aborted) return;
-                    source.items = items;
+                    source.results = items;
+                    source.cache.set(key, items);
                     source.status = 'done';
                 })
                 .catch(error => {
@@ -446,14 +457,14 @@
         }, delay);
     }
 
-    async function fetchProposals(query, signal) {
-        if (typeof win.getBackendBase !== 'function') throw new Error('getBackendBase() is not defined');
-        const base = String(win.getBackendBase() || '').replace(/\/+$/, '');
-        const url = `${base}/designs?q=${encodeURIComponent(query)}&limit=${Model.GROUP_LIMITS.proposals}`;
+    async function fetchCatalog(query, signal) {
+        const base = String(win.getBackendBase()).replace(/\/+$/, '');
+        const url = `${base}/search?q=${encodeURIComponent(query)}&limit=${Math.max(Model.GROUP_LIMITS.plans, Model.GROUP_LIMITS.proposals)}`;
         const response = await win.fetch(url, { signal, headers: { Accept: 'application/json' } });
         if (!response.ok) throw new Error(`HTTP ${response.status} from ${url}`);
         const payload = await response.json();
-        return Array.isArray(payload && payload.designs) ? payload.designs : [];
+        if (!Array.isArray(payload?.plans) || !Array.isArray(payload?.designs)) throw new Error('Invalid plan/design search response');
+        return payload;
     }
 
     async function fetchPlaces(query, signal) {
@@ -472,7 +483,13 @@
 
     // ---- Enter before the remote results arrive ----
     const isPending = source => !!source.timer || source.status === 'loading';
-    const searchesPending = () => state.mode === 'search' && (isPending(state.places) || isPending(state.proposals));
+    const searchesPending = () => {
+        if (state.mode !== 'search') return false;
+        const first = state.selectable[Model.defaultEnterIndex(state.selectable)];
+        if (first?.kind === 'plan') return false;
+        if (isPending(state.catalog)) return true;
+        return first?.kind === 'proposal' ? false : isPending(state.places);
+    };
     const enterOptions = () => ({ pending: searchesPending(), defaultIndex: Model.defaultEnterIndex(state.selectable) });
 
     // A bare Enter pressed while the searches were still running: run the default result now that
@@ -563,8 +580,8 @@
             const status = text => { if (typeof win.updateStatus === 'function') win.updateStatus(text); };
             status(t('mapSearch.proposalDownloading', 'Downloading…'));
             try {
-                // The index row carries the design itself (GET /designs returns whole rows).
-                proposal = await win.DesignSync.importDesign(raw);
+                // Suggestions contain metadata; only the chosen design downloads its full record.
+                proposal = await win.DesignSync.importDesign(await win.DesignSync.fetchDesign(cid));
             } catch (error) {
                 if (error?.code === 'proposal-in-other-city') {
                     await openInItsCity(error.cityId);
@@ -912,6 +929,9 @@
         root.appendChild(field);
         root.appendChild(list);
         slot.prepend(root);
+        // Let the result list scroll, without zooming or dragging the map underneath it.
+        root.addEventListener('wheel', event => event.stopPropagation(), { passive: true });
+        root.addEventListener('pointerdown', event => event.stopPropagation());
         Object.assign(state, { root, input, list, chip, chipIcon, chipLabel, chipShortLabel, clear, back, searchButton });
 
         input.addEventListener('focus', () => { expand(); openList(); });

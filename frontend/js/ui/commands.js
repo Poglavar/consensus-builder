@@ -632,15 +632,23 @@
             const translated = typeof t === 'function' ? t(groupKey, entry.group) : null;
             const groupLabel = translated && translated !== groupKey ? translated : '';
             const rank = needle ? matchRank(normalize(label), normalize(entry.id), needle, normalize(`${entry.group} ${groupLabel}`)) : 0;
+            if (rank === null) return null;
             const available = isAvailable(entry, ctx);
             return { entry, label, rank, available, reason: available ? null : unavailableReason(entry, ctx) };
-        }).filter(item => item.rank !== null);
+        }).filter(Boolean);
         scored.sort((a, b) => (a.rank - b.rank) || a.label.localeCompare(b.label));
         return scored;
     }
 
     function searchCommands(query, ctx, t) {
         return rankCommands(query, ctx, t).filter(item => item.available).map(item => item.entry);
+    }
+
+    function actionLabel(label, on, t) {
+        if (typeof on !== 'boolean') return label;
+        const key = `commandPalette.actions.${on ? 'turnOff' : 'turnOn'}`;
+        const translated = t?.(key);
+        return `${translated && translated !== key ? translated : on ? 'Turn off' : 'Turn on'} · ${label}`;
     }
 
     // The ctx the browser passes to when()/run(). Everything DOM-shaped goes through here, so a
@@ -775,6 +783,7 @@
         isAvailable,
         commandsFor,
         searchCommands,
+        actionLabel,
         rankCommands,
         labelOf,
         runCommand,

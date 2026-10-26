@@ -1,5 +1,5 @@
-// ui/command-palette.js — the command palette: Ctrl/Cmd-K (or Settings → Command palette, or the
-// search box's "Commands…" row) opens a centred list of every UiCommands capability, grouped,
+// ui/command-palette.js — Ctrl/Cmd-K or Settings → Command palette opens the app's shortcuts,
+// grouped by capability,
 // filtered as you type, keyboard navigable; unavailable commands are shown greyed with the reason
 // when the registry knows it. A bottom sheet under 768px. groupPaletteItems is pure and exported
 // for backend/test/frontend-command-palette.test.js; window.CommandPalette in the browser.
@@ -102,7 +102,8 @@
                 const iconNode = el('i', `command-palette__icon ${item.entry.icon}`, { 'aria-hidden': 'true' });
                 const text = el('div', 'command-palette__text');
                 const label = el('div', 'command-palette__label');
-                label.textContent = item.label;
+                const on = toggleStateOf(item.entry, id => doc.getElementById(id));
+                label.textContent = commands.actionLabel(item.label, on, tKey);
                 text.appendChild(label);
                 if (!item.available) {
                     option.setAttribute('aria-disabled', 'true');
@@ -122,14 +123,8 @@
                 }
                 option.appendChild(iconNode);
                 option.appendChild(text);
-                const on = toggleStateOf(item.entry, id => doc.getElementById(id));
                 if (on !== null) {
                     option.setAttribute('aria-checked', on ? 'true' : 'false');
-                    if (on) {
-                        const badge = el('span', 'command-palette__state');
-                        badge.textContent = t('commandPalette.state.on', 'On');
-                        option.appendChild(badge);
-                    }
                 }
                 section.appendChild(option);
             });

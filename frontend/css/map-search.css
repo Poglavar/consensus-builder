@@ -169,8 +169,11 @@ body.app-loading .map-search {
     left: 0;
     width: max(100%, var(--map-search-width));
     max-width: calc(100vw - 2 * var(--map-shell-edge));
-    max-height: calc(100vh - var(--map-search-height) - 40px);
+    max-height: min(65dvh, calc(100dvh - var(--map-search-height) - 40px));
     overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
     box-sizing: border-box;
     padding: 4px 0;
     border: 1px solid var(--cb-line-glass);
