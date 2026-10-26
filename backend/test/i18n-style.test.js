@@ -41,7 +41,7 @@ describe('en.json copy rules', () => {
             .toEqual({ caseConflicts: Math.min(list.length, ceiling), ceiling, sample: [] });
     });
 
-    it('does not add duplicate value groups', () => {
+    it('does not add duplicate copies with identical translations in every locale', () => {
         const ceiling = baseline ? baseline.i18n.duplicateGroups : 0;
         expect(now.i18n.duplicateGroups).toBeLessThanOrEqual(ceiling);
     });

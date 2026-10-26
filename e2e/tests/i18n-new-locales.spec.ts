@@ -50,6 +50,9 @@ test('English startup does not download Arabic, French or Portuguese', async ({ 
 test('Arabic feedback is readable on a phone, preserves URL direction and switches back to French', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/feedback.html?lang=ar');
+  const arrow = page.locator('.cb-back-link > svg.cb-back-link__icon');
+  await expect(arrow).toBeVisible();
+  expect(await arrow.evaluate(el => getComputedStyle(el).transform)).toBe('matrix(-1, 0, 0, 1, 0, 0)');
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
   await page.evaluate(() => (window as any).i18n.translationsReady);
   const input = page.locator('#feedback-page-url');
@@ -61,6 +64,8 @@ test('Arabic feedback is readable on a phone, preserves URL direction and switch
   await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
   await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
   await expect(page.locator('#feedback-submit')).toHaveText('Envoyer le signalement');
+  await expect(arrow).toBeVisible();
+  expect(await arrow.evaluate(el => getComputedStyle(el).transform)).toBe('none');
   await expect(input).toHaveValue('https://example.test/?city=new_york');
 });
 

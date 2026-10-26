@@ -78,7 +78,7 @@ describe('the left-edge mode strip is never covered on phones', () => {
     it('runs the docked bottom sheets edge to edge', () => {
         const [block] = mediaBlocksContaining(utilitiesCss, '(max-width: 767.98px)', '.info-panel.right-dock-panel');
         expect(block).toBeTruthy();
-        expect(ruleBody(block, '\\.info-panel\\.right-dock-panel:not\\(#proposal-details-panel\\)')).toContain('left: var(--info-panel-mobile-inset, 0) !important;');
+        expect(ruleBody(block, '\\.info-panel\\.right-dock-panel:not\\(#proposal-details-panel\\):not\\(\\.mobile-sheet-ready\\)')).toContain('left: var(--info-panel-mobile-inset, 0) !important;');
         // With left AND right set, a 100% width would push the sheet off the right edge.
         expect(mediaBlock(panelsCss, '(max-width: 767.98px)')).toMatch(/--right-dock-width:\s*auto/);
     });
@@ -93,7 +93,7 @@ describe('the left-edge mode strip is never covered on phones', () => {
 
     it('starts the road panel at the bottom and enables the shared drag handle', () => {
         const [block] = mediaBlocksContaining(panelsCss, '(max-width: 767.98px)', '#map-container #road-info-panel');
-        const body = ruleBody(block, '#map-container #road-info-panel');
+        const body = ruleBody(block, '#map-container #road-info-panel:not\\(\\.mobile-sheet-ready\\)');
         expect(body).toMatch(/bottom:\s*0;/);
         expect(body).toMatch(/height:\s*auto/);
         expect(body).toMatch(/max-height:\s*50dvh/);
@@ -197,8 +197,10 @@ describe('proposal details and compact card on phones', () => {
         expect(dockSheet).toContain("const PANEL_SELECTOR = '.info-panel.right-dock-panel:not(.is-hosted)';");
         expect(dockSheet).toContain(".map-sheet, .cb-dialog:not(.cb-dialog--message)");
         expect(dockSheet).toContain('#click-stack, #three-click-stack');
-        expect(mobileSheetsCss).toMatch(/#map-container \.mobile-sheet-ready:not\(\.is-minimized\):not\(\.is-hosted\):not\(\[hidden\]\)/);
-        expect(mobileSheetsCss).toMatch(/height:\s*var\(--mobile-sheet-height, var\(--mobile-sheet-initial-height, 50dvh\)\) !important/);
+        expect(mobileSheetsCss).toMatch(/#map-container \.mobile-sheet-ready:not\(\.is-minimized\):not\(\.is-hosted\):not\(\.is-folded\):not\(\[hidden\]\)/);
+        expect(mobileSheetsCss).toMatch(/height:\s*var\(--mobile-sheet-layout-height, auto\)/);
+        expect(mobileSheetsCss).toContain('--mobile-sheet-layout-height: var(--mobile-sheet-height, var(--mobile-sheet-initial-height, 50dvh))');
+        expect(mobileSheetsCss).not.toContain('!important');
         expect(mobileSheetsCss).toMatch(/#map-container \.mobile-sheet-ready\.mobile-sheet-expanded/);
         const [phone] = mediaBlocksContaining(mapCss, '(max-width: 767.98px)', '#three-click-stack');
         const column = ruleBody(phone, '#click-stack,\\s*#three-click-stack');
@@ -224,7 +226,13 @@ describe('3D and photo view', () => {
         expect(end).toContain('ThreeClickStack?.close({ silent: true })');
         expect(end).toContain('clearIsolation()');
         const closed = threeMode.slice(threeMode.indexOf('        closed() {'), threeMode.indexOf('        closed() {') + 160);
-        expect(closed).toContain('endSelectionView()');
+        expect(closed).toContain('deselectScene()');
+        // Characterize the existing delegate: closing must clear both isolation and selection.
+        const calls = [];
+        const run = new Function('window', 'clearIsolation', `${end}; deselectScene();`);
+        run({ ThreeClickStack: { close: opts => calls.push(['close', opts]) },
+            ProposalSelection: { clear: () => calls.push(['selection']) } }, () => calls.push(['isolation']));
+        expect(calls).toEqual([['close', { silent: true }], ['isolation'], ['selection']]);
     });
 
     it('keeps parcel selection in place while explicit proposal isolation frames its ground', () => {

@@ -1180,7 +1180,7 @@ input.proposal-author-name {
 
 /* Mobile panel as bottom sheet */
 @media (max-width: 767.98px) {
-    .info-panel:not(#proposal-details-panel) {
+    .info-panel:not(#proposal-details-panel):not(.mobile-sheet-ready) {
         left: var(--info-panel-mobile-inset, 0) !important;
         right: 0 !important;
         top: auto !important;
@@ -1197,7 +1197,7 @@ input.proposal-author-name {
 
     /* Docked sheets run edge to edge by default. An active editor can reserve the view strip
        through --info-panel-mobile-inset without fighting these shared positioning rules. */
-    .info-panel.right-dock-panel:not(#proposal-details-panel) {
+    .info-panel.right-dock-panel:not(#proposal-details-panel):not(.mobile-sheet-ready) {
         left: var(--info-panel-mobile-inset, 0) !important;
         border-radius: 12px;
     }

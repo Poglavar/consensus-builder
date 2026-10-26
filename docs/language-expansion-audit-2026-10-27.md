@@ -112,3 +112,76 @@ and language; the browser resolved the intended production read-only API and `/s
 returned HTTP 200 with `source-catalogue/v1`. The listener's working directory was verified as this
 checkout. No live feedback, publication or wallet operation was sent. Translation jobs finished
 with exit code zero, and the dedicated browser was closed after verification.
+
+
+## Follow-up: style and mobile failures resolved
+
+The follow-up fixes the CSS/mobile and shared-header failures recorded here and in the
+[loading audit](i18n-loading-audit-2026-10-26.md). Phone sheet geometry now belongs to the shared
+controller once attached; older panel geometry stops competing with it. The shared stylesheet has
+zero `!important` declarations and zero IDs in `:is()`. The 3D stack uses the shared frame position
+rather than overriding its bottom edge. Activity tabs use the existing local stacking token.
+Short context sheets still fit their contents; navigation lists retain a scrolling viewport.
+
+Every supporting page loads tokens, primitives and page chrome first. Feedback, sources and
+privacy use an inline SVG back arrow outside the translated span, so translation does not erase
+it and no icon font is needed. RTL reverses the arrow; switching to French restores LTR. The
+privacy page title now carries the same Consensus Builder suffix as the other pages.
+
+The mobile source assertions now describe content-fitting sheets and the existing 3D close
+delegate. A characterization test verifies that closing clears both isolation and selection;
+no selection behavior was changed. The 3D browser fixture now includes the utility stylesheet and
+loads the stack/sheet styles in the same order as the app.
+
+English “Open designs” now uses sentence case. The copy auditor previously treated punctuation
+and placeholder differences as case conflicts; it now preserves punctuation and exact parameter
+identity. Reusable duplicate copies must match exactly in English and every translation, since
+identical English can represent distinct meanings or grammatical genders. Five new headless unit
+tests distinguish real regressions from those cases. The case-conflict ceiling tightens from 57
+to 16 and the reusable-copy ceiling from 289 to 227. These count changes reflect the corrected
+measurement, not removal of that many strings. Title-case remains at its existing ceiling of 30.
+No baseline increased.
+
+MCP parity: this follow-up changes presentation, copy and audit coverage only. Human editing
+operations and their shared MCP authoring primitives are unchanged; no schema change is needed.
+No domain definition or record contract changed.
+
+### Follow-up verification
+
+No full suite ran. The final targeted headless unit run passed all 480 tests across nine files:
+
+```sh
+cd backend
+npx vitest run --maxWorkers=1 test/design-tokens.test.js test/css-conflicting-selectors.test.js test/mobile-layout-contract.test.js test/i18n-style.test.js test/page-header.test.js test/page-chrome.test.js test/design-audit.test.js test/mobile-dock-sheet.test.js test/frontend-static-build.test.js
+```
+
+The targeted headless Playwright runs passed all 16 specs across three files:
+
+```sh
+cd e2e
+BASE_URL=http://localhost:8088 npx playwright test tests/three-stack-sizing.spec.ts --project=chromium
+BASE_URL=http://localhost:8088 npx playwright test tests/mobile-site-audit.spec.ts --grep 'primary mobile sheets|source and approval forms|every supporting page|road and cross-section|watched-area and site|forms remain usable' --project=chromium
+BASE_URL=http://localhost:8088 npx playwright test tests/i18n-new-locales.spec.ts --grep 'Arabic feedback' --project=chromium
+```
+
+| Run | Type and scope | Result | Stopped |
+| --- | --- | --- | --- |
+| Failure reproduction | Headless unit, 5 files / 359 tests | 326 passed; 33 failed | No |
+| CSS and audit iteration | Headless unit, 7 files / 381 tests | 361 passed; 20 failed; remaining stylesheet-order and changed-selector assertions corrected | No |
+| Header-order iteration | Headless unit, 7 files / 381 tests | 369 passed; 12 failed; differently indented guide links corrected | No |
+| Header, copy and build check | Headless unit, 5 files / 189 tests | 188 passed; privacy-page title branding failed and was corrected | No |
+| Final targeted validation | Headless unit, 9 files / 480 tests | All passed | No |
+| Final token reuse check | Headless unit, 2 files / 247 tests | All passed | No |
+| Stack sizing startup attempt | Headless Playwright, 1 file / 8 intended specs | Sandbox could not reach preview; startup timed out, zero specs executed | No |
+| Stack sizing | Headless Playwright, 1 file / 8 specs | All passed with local browser access | No |
+| Mobile surfaces | Headless Playwright, 1 file / 7 selected specs | All passed | No |
+| Translated arrow | Headless Playwright, 1 file / 1 selected spec | Passed | No |
+
+A dedicated background headed Chrome rendered the Arabic Layers sheet at 390 × 844: it spanned
+exactly 390 px, its bottom stayed above the dock, the resize handle was present, and there was no
+horizontal overflow. The Arabic feedback header retained a visible right-pointing back arrow;
+a real switch to French retained the arrow and restored its left-pointing direction. Screenshots
+were inspected. The listener was verified as this checkout, the browser resolved the explicitly
+supplied production read-only backend, `/source-system` returned `source-catalogue/v1` with HTTP 200,
+and a building read at the New York preview location returned HTTP 200 with 274 GeoJSON features.
+No live write, feedback submission or publication was sent.

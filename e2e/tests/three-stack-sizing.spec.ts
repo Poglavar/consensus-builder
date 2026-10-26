@@ -10,7 +10,7 @@ for (const viewport of [{ width: 1280, height: 720 }, { width: 390, height: 844 
 
     test.beforeEach(async ({ page }) => {
       await page.setContent('<!doctype html><html><body class="three-mode-active"><main id="map-container"></main></body></html>');
-      for (const file of ['tokens', 'primitives', 'base', 'map', 'panels', 'map-shell', 'planning-views', 'three-click-stack', 'mobile-sheets']) {
+      for (const file of ['tokens', 'primitives', 'base', 'map', 'panels', 'utilities', 'map-shell', 'planning-views', 'mobile-sheets', 'three-click-stack']) {
         await page.addStyleTag({ path: path.join(frontend, `css/${file}.css`) });
       }
       await page.addScriptTag({ path: path.join(frontend, 'js/three-click-stack.js') });

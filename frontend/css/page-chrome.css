@@ -85,7 +85,7 @@
     white-space: nowrap;
 }
 
-.cb-back-link > i {
+.cb-back-link > :is(i, .cb-back-link__icon) {
     margin-inline-end: var(--cb-space-2);
 }
 
@@ -148,6 +148,14 @@
 }
 
 /* A back arrow points toward the preceding reading direction. */
-:root[dir="rtl"] .cb-back-link > i {
+:root[dir="rtl"] .cb-back-link > :is(i, .cb-back-link__icon) {
     transform: scaleX(-1);
+}
+
+/* The shared back arrow also works on pages that do not load an icon font. */
+.cb-back-link__icon {
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+    vertical-align: middle;
 }

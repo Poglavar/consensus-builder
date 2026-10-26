@@ -1576,13 +1576,10 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
         height: min(50vh, calc(100dvh - var(--map-shell-top-clearance) - 20px - min(var(--mobile-dock-sheet-height, 66dvh), 100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance) - 8px)));
     }
     
-    /* The road panel is the phone's bottom block while a road is drawn: full width, on the
-       screen's bottom edge (the navigation bar stands down while drawing, css/map-shell.css), as
-       tall as its content and never more than half the screen, its own Undo / Finish / Cancel row
-       last. It collapses to its header and that row from the minimise circle, so it has no drag
-       handle. The mode strip hangs from the top-left on phones (css/map.css), so nothing on the
-       left needs clearing. */
-    #map-container #road-info-panel {
+    /* Initial road-panel geometry before the shared phone-sheet controller attaches. The
+       controller then owns its full-width position, resizing and dismissal; its own Undo /
+       Finish / Cancel row remains last. The navigation bar stands down while drawing. */
+    #map-container #road-info-panel:not(.mobile-sheet-ready) {
         bottom: 0;
         width: auto;
         max-width: none;

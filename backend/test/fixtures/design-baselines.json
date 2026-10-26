@@ -279,9 +279,9 @@
   "conflicts": [],
   "i18n": {
     "titleCaseLabels": 30,
-    "caseConflicts": 57,
+    "caseConflicts": 16,
     "threeDots": 0,
-    "duplicateGroups": 289
+    "duplicateGroups": 227
   },
   "js": {
     "js/corridor-editor.js": 1,

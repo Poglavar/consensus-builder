@@ -78,3 +78,8 @@ directory was verified as this checkout. Browser specs mock feedback writes; no 
 Across the affected translation and feature scripts, source bytes fell from 122,808 to 47,924
 (73.1 KiB removed from JavaScript across those pages). This is a source-size comparison, not a
 compressed initial-download measurement. The text now lives in selected-language JSON files.
+
+
+The shared-header failures above were resolved in the
+[style and mobile follow-up](language-expansion-audit-2026-10-27.md#follow-up-style-and-mobile-failures-resolved),
+including the stylesheet order, persistent back arrows and complete unfiltered header assertions.

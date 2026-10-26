@@ -19,7 +19,8 @@ const PageHeader = root.CbPageHeader;
 const EXEMPT = new Set(['index.html', 'deck.html', 'deck2.html', 'deck3.html', 'hackathon-demo.html']);
 const pages = readdirSync(FRONTEND).filter(f => f.endsWith('.html') && !EXEMPT.has(f)).sort();
 const html = Object.fromEntries(pages.map(p => [p, readFileSync(path.join(FRONTEND, p), 'utf8')]));
-const backWords = new Set(['en', 'es', 'hr', 'sr'].map(lang => dictionary(lang).pageHeader.backToMap));
+const languages = testI18n().getSupportedLanguages();
+const backWords = new Set(languages.map(lang => dictionary(lang).pageHeader.backToMap));
 const textOf = value => value.replace(/\s+/g, ' ').trim();
 
 describe('satellite page header', () => {
@@ -61,7 +62,7 @@ describe('satellite page header', () => {
         const back = backs.first();
         const href = back.attr('href');
         expect({ page, href }).toEqual({ page, href: expect.stringMatching(/^\/(\?lang=[a-z]{2})?$/) });
-        expect(back.find('i.fa-solid.fa-arrow-left[aria-hidden="true"]')).toHaveLength(1);
+        expect(back.find('i.fa-solid.fa-arrow-left[aria-hidden="true"], svg.cb-back-link__icon[aria-hidden="true"]')).toHaveLength(1);
         expect(backWords.has(textOf(back.text()))).toBe(true);
         expect($('a.cb-back-link')).toHaveLength(1);
     });
@@ -76,7 +77,7 @@ describe('satellite page header', () => {
 
 describe('page-header.js strings', () => {
     it('uses the shared selected dictionary and its English fallback', () => {
-        for (const language of ['en', 'es', 'hr', 'sr']) {
+        for (const language of languages) {
             root.i18n = testI18n(language);
             expect(PageHeader.text('backToMap')).toBe(dictionary(language).pageHeader.backToMap);
         }

@@ -21,11 +21,6 @@
 }
 
 @media (max-width: 767.98px) {
-    #three-click-stack {
-        bottom: auto;
-        max-height: calc(100dvh - var(--map-shell-top-clearance) - var(--cb-space-2) - var(--map-visible-bottom));
-    }
-
     /* A 3D source record can be long, but unlike the 2D hosted editing panels it has no controls
        that must travel with the sheet. Let its body scroll so the other hit headings remain
        available in the phone sheet. */

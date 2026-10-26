@@ -5,15 +5,15 @@
     #map-container .mobile-sheet-ready:not(.is-minimized):not(.is-hosted):not(.is-folded):not([hidden]),
     .on-map-editor__panel.mobile-sheet-ready:not(.is-minimized):not([hidden]),
     .cb-dialog.mobile-sheet-ready {
-        top: auto !important;
+        top: auto;
         bottom: calc(var(--mobile-visual-bottom, 0px) + var(--map-shell-dock-height, 0px));
-        left: 0 !important;
-        right: 0 !important;
+        left: 0;
+        right: 0;
         width: 100%;
         max-width: 100%;
-        height: var(--mobile-sheet-layout-height, auto) !important;
+        height: var(--mobile-sheet-layout-height, auto);
         min-height: 0;
-        max-height: min(var(--mobile-sheet-height, var(--mobile-sheet-initial-height, 50dvh)), calc(var(--mobile-visual-height, 100dvh) - var(--map-shell-dock-height, 0px))) !important;
+        max-height: min(var(--mobile-sheet-height, var(--mobile-sheet-initial-height, 50dvh)), calc(var(--mobile-visual-height, 100dvh) - var(--map-shell-dock-height, 0px)));
         box-sizing: border-box;
         padding: 0;
         border-radius: var(--cb-radius-lg) var(--cb-radius-lg) 0 0;
@@ -35,7 +35,7 @@
         position: fixed;
         bottom: var(--mobile-visual-bottom, 0px);
         margin: 0;
-        max-height: min(var(--mobile-sheet-height, var(--mobile-sheet-initial-height, 50dvh)), var(--mobile-visual-height, 100dvh)) !important;
+        max-height: min(var(--mobile-sheet-height, var(--mobile-sheet-initial-height, 50dvh)), var(--mobile-visual-height, 100dvh));
         padding-bottom: env(safe-area-inset-bottom, 0px);
     }
 
@@ -43,7 +43,7 @@
 
     /* Desktop stacks have transparent gaps between cards. On a phone the whole frame is a
        sheet, including the resize handle, so its glass needs one continuous backing. */
-    #map-container :is(#click-stack, #three-click-stack).mobile-sheet-ready {
+    #map-container .click-stack.mobile-sheet-ready {
         background: var(--cb-glass-sheet);
         backdrop-filter: blur(var(--cb-panel-blur));
         -webkit-backdrop-filter: blur(var(--cb-panel-blur));
@@ -120,8 +120,10 @@
     body :is(.mobile-sheet-ready, .cb-page) :is(.btn, button.btn-quiet, .cb-segmented__option, .cb-tab) { min-height: 44px; }
     body :is(.mobile-sheet-ready, .cb-page) input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="hidden"]),
     body :is(.mobile-sheet-ready, .cb-page) select { min-height: 44px; }
-    :is(#area-monitor-detail-panel, #urban-block-panel, .site-panel).mobile-sheet-ready:not([hidden]):not(.is-minimized) { display: flex; flex-direction: column; }
-    .mobile-sheet-ready > :is(.site-panel__body, .urban-block-info, #urban-block-list-view, #urban-block-details-view) { min-height: 0; flex: 0 1 auto; overflow: auto; }
+    #area-monitor-detail-panel.mobile-sheet-ready:not([hidden]):not(.is-minimized),
+    .urban-block-panel.mobile-sheet-ready:not([hidden]):not(.is-minimized),
+    .site-panel.mobile-sheet-ready:not([hidden]):not(.is-minimized) { display: flex; flex-direction: column; }
+    .mobile-sheet-ready > :is(.site-panel__body, .urban-block-info, .urban-block-list-view, .urban-block-details-view) { min-height: 0; flex: 0 1 auto; overflow: auto; }
     .mobile-sheet-ready > :is(.site-panel__head, .site-panel__actions, .urban-block-panel-header) { flex-shrink: 0; }
     body .mobile-sheet-ready button[aria-label] { min-width: 44px; }
     .cb-page-header .cb-back-link { min-height: 44px; display: inline-flex; align-items: center; }
