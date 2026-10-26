@@ -540,7 +540,7 @@ function showSharePlanPanel(options) {
         const t = getProposalI18nHelper();
         const tShare = getShareI18nHelper();
         if (typeof proposalStorage === 'undefined') return;
-        const capturedView = window.MapShare.capture(window);
+        const capturedView = options?.view || window.MapShare.capture(window);
         let shareView = { ...capturedView };
         const applied = proposalStorage.getAllProposals().filter(isProposalCurrentlyApplied);
         if (Array.isArray(options?.members)) {
@@ -942,6 +942,12 @@ function showSharePlanPanel(options) {
         });
         shareArea.appendChild(agreementAction);
         toolbar.prepend(shareArea);
+        shareArea.appendChild(window.PlanFileUI.controls({
+            getRecords: () => [...selected].map(key => proposalsByHash.get(key)),
+            getView: () => shareView,
+            getSources: () => _sharePlanScope?.plan?.designSources || {},
+            getTitle: () => nameInput.value.trim() || 'My plan'
+        }));
 
         const setStatus = (message) => {
             statusLine.textContent = message || '';

@@ -1,0 +1,53 @@
+name: Portable plan files
+on:
+  pull_request:
+    branches: [colosseum-worlds-fair]
+    paths:
+      - '.github/workflows/portable-plan-files.yml'
+      - 'frontend/**'
+      - 'backend/**'
+      - 'e2e/**'
+permissions:
+  contents: read
+jobs:
+  portable-files:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: |
+            backend/package-lock.json
+            e2e/package-lock.json
+      - name: Install locked backend dependencies
+        run: npm ci --ignore-scripts
+        working-directory: backend
+      - name: Portable files, storage, MCP and share regression checks
+        run: >-
+          npx vitest run
+          test/plan-file.test.js
+          test/proposal-storage-authored-log.test.js
+          test/mcp-named-plans.test.js
+          test/design-record.test.js
+          test/design-sync.test.js
+          test/share-plan-panel-contract.test.js
+          test/share-plan-map-link.test.js
+          test/proposals-sharing-utils.test.js
+          test/busy-control.test.js
+          --pool=threads --maxWorkers=2
+        working-directory: backend
+      - name: Portable format guide uses shared page chrome
+        run: npx vitest run test/page-chrome.test.js test/page-header.test.js --testNamePattern=plan-files --pool=threads --maxWorkers=2
+        working-directory: backend
+      - name: Install locked browser test dependencies
+        run: npm ci
+        working-directory: e2e
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+        working-directory: e2e
+      - name: File download and safe import browser flows
+        run: npx playwright test --config=playwright.plan-file.config.ts
+        working-directory: e2e

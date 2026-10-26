@@ -156,7 +156,7 @@ A land unit represented by a particular cadastral, tax or other parcel provider.
 
 The provider of parcel identities and geometry, identified by `sourceId`. Jurisdiction and legal authority describe the source but do not replace its identity. A custom source descriptor identifies the selected service and its interpretation. Map lookup and server-side site binding use that same selected parcel source.
 
-The frontend consumer owns source configuration and sends its selected source explicitly. Backend services validate and serve that selection; they do not infer a city default.
+The frontend consumer owns source configuration and sends its selected source explicitly. Backend services validate and serve that selection; they do not infer a city default. A retained cadastral namespace and the API gateway selector can have different identifiers while referring to the same parcel source; choosing a gateway does not rewrite the retained source observation.
 
 ### Source-qualified parcel reference
 
@@ -824,6 +824,13 @@ A recorded execution of an automated workflow, with its inputs, outcomes and any
 ### Draft artifact
 
 Canonical design, named-plan or agreement content returned with its recomputed CID without a pin or index write. Its content address remains meaningful even when its private preview is unavailable.
+
+### Portable plan file
+
+A versioned `ugt-plan-file/v1` JSON envelope containing a `plan/v1`, its exact canonical design members,
+embedded authored model assets and known source references. The plan owns membership and the saved
+view. Import creates local, unapplied drafts and retains that membership; it conveys no publication,
+agreement decisions, signatures or ownership. Referenced source datasets are independent dependencies.
 
 ### Private preview
 

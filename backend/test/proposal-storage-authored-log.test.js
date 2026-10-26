@@ -61,6 +61,37 @@ function bootStore() {
 }
 
 describe('proposalStorage authored-log persistence', () => {
+    it('rolls back both definitions and imported plan membership if atomic storage fails, and permits retry', async () => {
+        const File = require('../../frontend/js/plan-file.js');
+        const UI = require('../../frontend/js/plan-file-ui.js');
+        const { ParcelMutation } = require('../../frontend/js/proposals/apply/transaction.js');
+        const { storage, persisted } = bootStore();
+        install('ProposalManager', { runParcelMutation: (kind, proposalId, work) => ParcelMutation.run({ kind, proposalId }, context => work({ _parcelMutation: context }),
+            { runtime: globalThis, proposalStore: storage, storage: PersistentStorage, agentStore: null, fabric: null }) });
+        const site = { type: 'Polygon', coordinates: [[[15,45],[15.001,45],[15.001,45.001],[15,45.001],[15,45]]] };
+        const file = await File.create([{ goal: 'park', title: 'Atomic park', site, structureProposal: { kind: 'park', geometry: site } }], { title: 'Atomic plan', view: { at: '45,15,17', mode: '2d' } });
+        const write = PersistentStorage.atomicWrite;
+        PersistentStorage.atomicWrite = async () => { throw new Error('disk full'); };
+        await expect(UI.browser(globalThis).commitImport(file)).rejects.toThrow('disk full');
+        expect(storage.getAllProposals()).toEqual([]); expect(persisted.size).toBe(0);
+        PersistentStorage.atomicWrite = write;
+        const plan = await UI.browser(globalThis).commitImport(file);
+        expect(storage.getAllProposals()).toHaveLength(1);
+        expect(JSON.parse(persisted.get(UI.PREFIX + plan.cid))).toEqual(plan);
+    });
+    it('restores a portable plan through the real normalizer and reloads with identical authored content', async () => {
+        const File = require('../../frontend/js/plan-file.js');
+        const { storage } = bootStore();
+        const site = { type: 'Polygon', coordinates: [[[15,45],[15.001,45],[15.001,45.001],[15,45.001],[15,45]]] };
+        const file = await File.create([{ goal: 'park', title: 'Portable park', site,
+            createdAt: '2026-10-25T10:00:00.000Z', structureProposal: { kind: 'park', geometry: site } }],
+            { title: 'Portable plan', view: { at: '45,15,17', mode: '2d' } });
+        const result = File.importInto(file, storage, { id: () => 'file-park' });
+        storage.save(); storage.load();
+        const record = storage.getProposal(result.memberIds[0]);
+        expect(record.applied).toBe(false); expect(record).not.toHaveProperty('published');
+        expect(await File.create([record], { title: result.content.title, view: result.content.view })).toEqual(file);
+    });
     it('keeps local keys and design CIDs in separate namespaces', () => {
         const { storage } = bootStore();
         // A design read back from the index is kept under its own local key (DesignSync.importDesign);
