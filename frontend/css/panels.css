@@ -1223,8 +1223,9 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 }
 
 #parcel-info-panel .parcel-context-actions .multi-select-title {
-    font-weight: 600;
+    font-weight: 400;
     font-size: var(--cb-text-sm);
+    line-height: 1.5;
 }
 
 #parcel-info-panel .parcel-context-actions .multi-select-options {

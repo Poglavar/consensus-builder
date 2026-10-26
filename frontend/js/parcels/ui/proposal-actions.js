@@ -152,16 +152,19 @@
             }
             return;
         }
-        // The shared policy decides which fresh proposal types have block semantics. Run it before
-        // per-tool guards (a row on one parcel is exactly where selecting the block solves it).
-        if (await maybeSuggestWholeBlockForFreshProposal(toolKey, ids)) return;
         // A row dictates form across parcels — on a single parcel it degenerates to a building.
         if (toolKey === 'row' && ids.length < 2) {
-            const message = tParcel('panel.parcel.build.rowNeedsTwo', {}, 'Row houses need at least two parcels.');
+            const message = rowSelectionHint();
+            const multi = global.multiParcelSelection;
+            if (multi && !multi.isActive) multi.toggle();
+            multi?.showSelectionInPanel?.();
+            global.switchParcelTab?.(null, 'propose-tab');
             if (typeof global.showEphemeralMessage === 'function') global.showEphemeralMessage(message, 4000, 'info');
             else if (typeof global.updateStatus === 'function') global.updateStatus(message);
             return;
         }
+        // Valid single-parcel tools can still offer the whole block as a larger starting scope.
+        if (await maybeSuggestWholeBlockForFreshProposal(toolKey, ids)) return;
         if (['park', 'square', 'lake'].includes(toolKey)) {
             if (typeof global.instantCreateStructureFromSelection !== 'function') {
                 global.reportProposalDesignSaveFailure?.('proposalDrafts.design.unavailable');
@@ -186,11 +189,18 @@
         }
     }
 
+    function rowSelectionHint() {
+        return tParcel('panel.parcel.build.rowSelectionHint', {},
+            'Row houses need at least two parcels. Select another parcel or use Detect block.');
+    }
+
     // options (the site tool's palette, js/site-drawing.js, reuses this one):
     //   buildHandler     — global called with the tool key (default startParcelBuildTool);
     //   disabled         — { toolKey: reason } shown disabled, the reason as its title and a note;
     //   labels           — { toolKey: label } replaces a tool's label (the site tool names Lay out
     //                      parcels "Subdivide" on a site with open ground).
+    //   selectionCount   — parcel count; unavailable Row houses stays focusable to offer selection.
+    //   selecting        — show the row's selection instructions while manual picking is active.
     // The palette is the shared choice tiles (cb-tiles > cb-tile, css/primitives.css) under section
     // kickers. parcel-build-btn and its --<tool> / parcel-transport-btn--<tool> modifiers stay on each
     // tile as the hooks the specs and the site tool find them by; they paint nothing.
@@ -198,13 +208,15 @@
         const buildHandler = options.buildHandler || 'startParcelBuildTool';
         const disabled = options.disabled || {};
         const labels = options.labels || {};
+        const needsMoreParcels = options.selectionCount === 1;
         const escapeAttr = value => String(value).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
         const buttonHtml = tool => {
             const label = labels[tool.key] || tParcel(tool.labelKey, {}, tool.fallback);
             const reason = disabled[tool.key];
+            const selectionHint = !reason && needsMoreParcels && tool.key === 'row' ? rowSelectionHint() : null;
             return `
             <button type="button" class="cb-tile parcel-build-btn parcel-build-btn--${tool.key}" onclick="BusyControl.track(this, () => ${buildHandler}('${tool.key}'))"
-                title="${escapeAttr(reason || label)}"${reason ? ' disabled aria-disabled="true"' : ''}>
+                title="${escapeAttr(reason || selectionHint || label)}"${reason ? ' disabled aria-disabled="true"' : selectionHint ? ' aria-disabled="true" aria-describedby="parcel-row-selection-hint"' : ''}>
                 <i class="cb-tile__icon fas ${tool.icon}" aria-hidden="true"></i>
                 <span class="cb-tile__label">${label}</span>
             </button>
@@ -247,6 +259,7 @@
                 <section class="parcel-rules-group">
                     <h4 class="cb-kicker">${rulesTitle}</h4>
                     <div class="cb-tiles parcel-rules-grid">${ruleButtons}</div>
+                    ${needsMoreParcels && !disabled.row ? `<p id="parcel-row-selection-hint" class="${options.selecting ? 'parcel-build-disabled-reason' : 'map-shell-sr-only'}">${escapeAttr(rowSelectionHint())}</p>` : ''}
                 </section>
                 <section class="parcel-layout-group">
                     <h4 class="cb-kicker">${layoutTitle}</h4>
@@ -323,7 +336,7 @@
         }
         if (global.ParcelMenuModel.buildPaletteAvailable({
             parcelContextId: targetIds[0], multiSelectActive: !!multi?.isActive, selectionCount: targetIds.length
-        })) container.innerHTML = buildPaletteHtml();
+        })) container.innerHTML = buildPaletteHtml({ selectionCount: targetIds.length, selecting: !!multi?.isActive });
         else container.innerHTML = '';
     }
 

@@ -46,6 +46,46 @@ function loadActions(overrides = {}) {
 }
 
 describe('whole-block fresh-proposal suggestion', () => {
+    it('marks only Row houses unavailable for one parcel and enables it for two', () => {
+        const window = loadActions();
+        const one = window.buildProposalPaletteHtml({ selectionCount: 1 });
+        const buttons = [...one.matchAll(/<button\b[\s\S]*?<\/button>/g)].map(match => match[0]);
+        const unavailable = buttons.filter(button => button.includes('aria-disabled="true"'));
+        expect(unavailable).toHaveLength(1);
+        expect(unavailable[0]).toContain('parcel-build-btn--row');
+        expect(unavailable[0]).not.toMatch(/\sdisabled(?:\s|>)/);
+        expect(unavailable[0]).toContain('Select another parcel or use Detect block.');
+        expect(unavailable[0]).toContain('aria-describedby="parcel-row-selection-hint"');
+        expect(window.buildProposalPaletteHtml({ selectionCount: 2 })).not.toContain('aria-disabled="true"');
+        // Site palettes keep their own explicit restrictions and do not inherit parcel counts.
+        expect(window.buildProposalPaletteHtml()).not.toContain('aria-disabled="true"');
+        expect(window.buildProposalPaletteHtml({ disabled: { row: 'Choose a frontage first.' } }))
+            .toContain(' disabled aria-disabled="true"');
+    });
+
+    it.each([false, true])('a one-parcel Row request guides selection without launching or leaving active mode (%s)', async active => {
+        const selectedParcels = new Set(['parcel-1']);
+        const multi = { isActive: active, selectedParcels, toggle: vi.fn(() => { multi.isActive = true; }), showSelectionInPanel: vi.fn() };
+        const startInstantProposalDesign = vi.fn(), showStyledConfirm = vi.fn(), showEphemeralMessage = vi.fn();
+        const window = loadActions({ currentParcel: { id: 'parcel-1' }, multiParcelSelection: multi,
+            startInstantProposalDesign, showStyledConfirm, showEphemeralMessage });
+        await window.startParcelBuildTool('row');
+        expect(multi.isActive).toBe(true);
+        expect([...selectedParcels]).toEqual(['parcel-1']);
+        expect(multi.toggle).toHaveBeenCalledTimes(active ? 0 : 1);
+        expect(multi.showSelectionInPanel).toHaveBeenCalledOnce();
+        expect(showEphemeralMessage).toHaveBeenCalledWith(expect.stringContaining('Select another parcel'), 4000, 'info');
+        expect(startInstantProposalDesign).not.toHaveBeenCalled();
+        expect(showStyledConfirm).not.toHaveBeenCalled();
+    });
+
+    it('launches Row houses once two parcels are selected', async () => {
+        const startInstantProposalDesign = vi.fn();
+        const window = loadActions({ multiParcelSelection: { isActive: true, selectedParcels: new Set(['a', 'b']) }, startInstantProposalDesign });
+        await window.startParcelBuildTool('row');
+        expect(startInstantProposalDesign).toHaveBeenCalledWith('row', ['a', 'b']);
+    });
+
     it('renders transport icons with full station labels, and no Ownership group (M2: owner offers are gone)', () => {
         const container = { innerHTML: '' };
         const document = {
