@@ -3,7 +3,7 @@
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
     if (root) {
-        root.AppDiagnostics = api.create({ uuid: () => root.crypto.randomUUID() });
+        root.AppDiagnostics = api.create({ uuid: () => root.crypto.randomUUID(), translate: key => root.i18n?.t?.(key) });
         api.install(root, root.AppDiagnostics);
     }
 })(typeof window !== 'undefined' ? window : null, function () {
@@ -56,12 +56,19 @@
             planId: entry.planId, kind: entry.kind, operation: entry.operation, entity: entry.entity,
             outcome: entry.outcome, code: entry.code, context: contextOf(entry.context) };
     }
-    function display(entry) {
+    function display(entry, text) {
         const item = wire(entry);
         const definition = CATALOG[item.code];
-        return { ...item, ...(definition ? { message: definition[0], severity: definition[1], recoverable: definition[2] } : {}) };
+        return { ...item, ...(definition ? { message: text(`diagnostics.errors.${item.code}`, definition[0]), severity: definition[1], recoverable: definition[2] } : {}) };
     }
-    function create({ uuid, now = Date.now } = {}) {
+    function create({ uuid, now = Date.now, translate = () => undefined } = {}) {
+        function text(key, fallback) {
+            try {
+                const value = translate(key);
+                return typeof value === 'string' && value.trim() && value !== key ? value : fallback;
+            } catch { return fallback; }
+        }
+        const show = entry => display(entry, text);
         const id = () => { const value = uuid(); if (!UUID.test(value)) throw new Error('A random UUID is required'); return value; };
         let sessionId = null, lastActivity = 0, entries = [], sending = null, lastSendAt = -Infinity;
         const handles = new Map();
@@ -76,7 +83,7 @@
             if (!sessionId || now() - lastActivity >= 30 * 60 * 1000) { sessionId = id(); handles.clear(); }
             lastActivity = now();
             const entry = { ...wire({ ...row, id: id(), correlationId: row.correlationId || id(), sessionId }), at: now() };
-            entries.push(entry); entries = entries.slice(-MAX_ENTRIES); return display(entry);
+            entries.push(entry); entries = entries.slice(-MAX_ENTRIES); return show(entry);
         }
         function planHandle(key) {
             if (key == null) return null;
@@ -100,11 +107,11 @@
                 prune();
                 const canRemember = error !== null && (typeof error === 'object' || typeof error === 'function');
                 const previous = canRemember && seenErrors.get(error);
-                if (previous && now() - previous.at < MAX_AGE_MS) return display(previous);
+                if (previous && now() - previous.at < MAX_AGE_MS) return show(previous);
                 const safeCode = codeOf(error, code), safeContext = contextOf(context);
                 const key = JSON.stringify([safeCode, safeContext]);
                 const recent = dedupe.get(key);
-                if (recent) return display(recent);
+                if (recent) return show(recent);
                 const value = push({ kind: 'error', operation: null, entity: 'workspace', outcome: 'failure',
                     code: safeCode, planId: null, context: safeContext, correlationId });
                 const remembered = { ...value, at: now() };
@@ -112,7 +119,7 @@
                 if (dedupe.size > MAX_ENTRIES) dedupe.delete(dedupe.keys().next().value);
                 if (canRemember) seenErrors.set(error, remembered);
                 return value;
-            } catch { return { code: 'unexpected', message: CATALOG.unexpected[0], severity: 'error', recoverable: true, correlationId: null }; }
+            } catch { return { code: 'unexpected', message: text('diagnostics.errors.unexpected', CATALOG.unexpected[0]), severity: 'error', recoverable: true, correlationId: null }; }
         }
         async function run(operation, options, action) {
             try {
@@ -124,7 +131,7 @@
                 throw error; // Preserve caller recovery, cancellation and control cleanup.
             }
         }
-        function snapshot() { prune(); return { version: 1, entries: entries.map(display) }; }
+        function snapshot() { prune(); return { version: 1, entries: entries.map(show) }; }
         function exportText() { return JSON.stringify(snapshot(), null, 2) + '\n'; }
         function clear() { entries = []; dedupe = new Map(); seenErrors = new WeakMap(); handles.clear(); sessionId = null; }
         async function send({ enabled = false, confirm = false, fetch, endpoint, timeoutMs = 5000 } = {}) {
@@ -157,7 +164,7 @@
             })();
             try { return await sending; } finally { sending = null; }
         }
-        return { event, report, run, snapshot, exportText, clear, send };
+        return { event, report, run, snapshot, exportText, clear, send, text };
     }
     function install(win, client) {
         // Neither event text, filename, URL, stack nor rejection reason leaves this handler.
@@ -173,30 +180,34 @@
         function controls() {
             const host = win.document.querySelector('#status-log-modal .cb-dialog__footer');
             if (!host || host.querySelector('[data-diagnostics-export]')) return;
-            const note = win.document.createElement('p');
-            note.textContent = 'Diagnostics stay in this tab for up to 24 hours. Downloads contain fixed error codes and action outcomes, without plan content. Nothing is sent automatically.';
-            host.appendChild(note);
-            const button = (label, attribute, action) => {
-                const node = win.document.createElement('button'); node.type = 'button'; node.className = 'btn';
-                node.textContent = label; node.setAttribute(attribute, ''); node.addEventListener('click', action); host.appendChild(node); return node;
+            const label = (node, key, fallback) => {
+                node.setAttribute('data-i18n-key', `diagnostics.ui.${key}`);
+                node.textContent = client.text(`diagnostics.ui.${key}`, fallback);
             };
-            button('Download diagnostics', 'data-diagnostics-export', () => {
+            const note = win.document.createElement('p');
+            label(note, 'notice', 'Diagnostics stay in this tab for up to 24 hours. Downloads contain fixed error codes and action outcomes, without plan content. Nothing is sent automatically.');
+            host.appendChild(note);
+            const button = (key, fallback, attribute, action) => {
+                const node = win.document.createElement('button'); node.type = 'button'; node.className = 'btn';
+                label(node, key, fallback); node.setAttribute(attribute, ''); node.addEventListener('click', action); host.appendChild(node); return node;
+            };
+            button('download', 'Download diagnostics', 'data-diagnostics-export', () => {
                 const url = win.URL.createObjectURL(new win.Blob([client.exportText()], { type: 'application/json' }));
                 const link = win.document.createElement('a'); link.href = url; link.download = 'ugt-diagnostics.json';
                 win.document.body.appendChild(link); link.click(); link.remove(); win.setTimeout(() => win.URL.revokeObjectURL(url), 1000);
             });
-            button('Clear diagnostics', 'data-diagnostics-clear', () => client.clear());
+            button('clear', 'Clear diagnostics', 'data-diagnostics-clear', () => client.clear());
             // The static build and server gate are independently off until rollout review.
             if (win.UGT_DIAGNOSTICS_SUBMISSION_ENABLED === true) {
                 const status = win.document.createElement('span'); status.setAttribute('role', 'status'); host.appendChild(status);
-                const send = button('Send diagnostic report', 'data-diagnostics-send', async () => {
-                    if (!win.confirm('Send the latest 20 redacted diagnostic entries to Urban Game Theory? They include temporary session/plan handles and action outcomes. The server receives your network address as part of the connection.')) return;
+                const send = button('send', 'Send diagnostic report', 'data-diagnostics-send', async () => {
+                    if (!win.confirm(client.text('diagnostics.ui.confirmSend', 'Send the latest 20 redacted diagnostic entries to Urban Game Theory? They include temporary session/plan handles and action outcomes. The server receives your network address as part of the connection.'))) return;
                     try {
                         await win.BusyControl.track(send, async () => {
                             const result = await client.send({ enabled: true, confirm: true, fetch: win.fetch.bind(win), endpoint: win.getBackendBase().replace(/\/$/, '') + '/diagnostics/reports' });
-                            status.textContent = result.ok ? 'Report received.' : 'Report was not sent. Download diagnostics or retry in one minute.';
+                            label(status, result.ok ? 'sent' : 'sendFailed', result.ok ? 'Report received.' : 'Report was not sent. Download diagnostics or retry in one minute.');
                         });
-                    } catch { status.textContent = 'Report was not sent. Download diagnostics instead.'; }
+                    } catch { label(status, 'sendUnavailable', 'Report was not sent. Download diagnostics instead.'); }
                 });
             }
         }

@@ -336,7 +336,7 @@ async function _runProposalMutationBoundary(manager, kind, proposalId, options, 
                 missingIds: error?.parcelIds || []
             });
         }
-        browserRoot.AppDiagnostics?.report(error, { code: 'planning-action-failed', context: { surface: 'draft-editor' } });
+        // The owning operation reports with its specific context and cancellation semantics.
         throw error;
     }
 }

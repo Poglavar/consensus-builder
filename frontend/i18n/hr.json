@@ -7831,5 +7831,37 @@
     "plan": {
         "name": "Naziv plana",
         "label": "Plan"
+    },
+    "diagnostics": {
+        "errors": {
+            "unexpected": "Došlo je do neočekivanog problema. Ponovite radnju ili preuzmite dijagnostiku.",
+            "workspace-unavailable": "Spremljeni radni prostor nije moguće otvoriti. Zatvorite ostale kartice za uređivanje i pokušajte ponovno.",
+            "draft-storage-unavailable": "Nacrt je i dalje u memoriji, ali ga nije moguće spremiti na ovom uređaju. Preuzmite svoj rad prije zatvaranja ove kartice.",
+            "plan-import-failed": "Datoteku plana nije moguće uvesti. Provjerite format i veličinu pa pokušajte ponovno.",
+            "plan-export-failed": "Datoteku nije moguće izraditi. Vaš rad nije promijenjen; pokušajte ponovno preuzeti datoteku.",
+            "plan-save-failed": "Poveznicu plana nije moguće spremiti. Vaš lokalni rad i dalje je dostupan; provjerite vezu i pokušajte ponovno.",
+            "plan-open-failed": "Imenovani plan nije moguće otvoriti. Provjerite poveznicu i vezu pa pokušajte ponovno.",
+            "design-publish-failed": "Dizajn nije moguće objaviti. Provjerite zemljište i geometriju pa pokušajte ponovno.",
+            "design-load-failed": "Objavljene dizajne nije moguće učitati. Provjerite vezu i pokušajte ponovno.",
+            "design-apply-failed": "Dizajn je spremljen, ali ga nije moguće primijeniti na kartu. Pokušajte ga ponovno primijeniti na ploči s dizajnima.",
+            "share-failed": "Poveznicu za dijeljenje nije moguće pripremiti. Pokušajte ponovno na ploči za dijeljenje.",
+            "clipboard-unavailable": "Poveznicu nije moguće kopirati. Označite je i kopirajte ručno.",
+            "network-unavailable": "Nije moguće povezati se s poslužiteljem. Provjerite vezu i pokušajte ponovno.",
+            "publication-rate-limited": "Trenutačno ima previše objava. Pričekajte nekoliko minuta pa pokušajte ponovno.",
+            "publication-too-large": "Dizajn je prevelik za objavu. Smanjite razinu detalja i pokušajte ponovno.",
+            "publication-identity-mismatch": "Objavljeni sadržaj ne odgovara očekivanom identitetu. Pokušajte ponovno ili preuzmite dijagnostiku.",
+            "publication-unavailable": "Pohrana objava nije dostupna. Sačuvajte rad lokalno i pokušajte ponovno kasnije.",
+            "planning-action-failed": "Plansku radnju nije moguće dovršiti. Prethodno spremljeno stanje i dalje je dostupno; pokušajte ponovno."
+        },
+        "ui": {
+            "notice": "Dijagnostika ostaje u ovoj kartici do 24 sata. Preuzete datoteke sadrže unaprijed zadane kodove pogrešaka i ishode radnji, bez sadržaja plana. Ništa se ne šalje automatski.",
+            "download": "Preuzmi dijagnostiku",
+            "clear": "Izbriši dijagnostiku",
+            "send": "Pošalji dijagnostičko izvješće",
+            "confirmSend": "Želite li poslati posljednjih 20 dijagnostičkih zapisa s uklonjenim privatnim sadržajem u Urban Game Theory? Sadrže privremene identifikatore sesije i plana te ishode radnji. Poslužitelj prima vašu mrežnu adresu kao dio veze.",
+            "sent": "Izvješće je zaprimljeno.",
+            "sendFailed": "Izvješće nije poslano. Preuzmite dijagnostiku ili pokušajte ponovno za jednu minutu.",
+            "sendUnavailable": "Izvješće nije poslano. Umjesto toga preuzmite dijagnostiku."
+        }
     }
 }

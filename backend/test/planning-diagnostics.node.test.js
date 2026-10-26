@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
+import { EventEmitter } from 'node:events';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import { createBudget, createDiagnosticStore, createApiObservation, createMcpObserver, validateDiagnosticReport, MAX_BATCH, MAX_ROWS } from '../operations/planning-diagnostics.js';
@@ -177,4 +178,60 @@ test('integration gates precede large body parsing; no deployment or hosted MCP 
     assert.ok(index.indexOf("const origin = req.get('origin')") < index.indexOf('setupPlanningDiagnostics(app, activePool'));
     const mcp = readFileSync(new URL('../agents/mcp-server.mjs', import.meta.url), 'utf8');
     assert.match(mcp, /this\.observeTool\(name/); assert.match(mcp, /diagnosticRecorder = null/);
+});
+
+// Exercise pg-pool's real checkout queue without opening a database connection.
+class InertClient extends EventEmitter {
+    _queryable = true;
+    _ending = false;
+    connect(done) { queueMicrotask(() => done(null)); }
+    end(done) { this._ending = true; queueMicrotask(() => done?.()); }
+    async query(sql) { return { rows: sql.includes('pg_try_advisory') ? [{ locked: true }] : [] }; }
+}
+test('timed-out diagnostic acquisitions keep the shared pool queue bounded and recover after release', async t => {
+    const { Pool } = require('pg');
+    const pool = new Pool({ max: 1, Client: InertClient, idleTimeoutMillis: 0 });
+    let held = await pool.connect();
+    t.after(async () => { held?.release(); await pool.end(); });
+    const store = createDiagnosticStore(pool);
+    assert.deepEqual(await Promise.all([store.insert([]), store.insert([])]), [{ unavailable: true }, { unavailable: true }]);
+    assert.ok(pool.waitingCount <= 2);
+    const later = await Promise.all([store.insert([]), store.insert([])]);
+    assert.ok(later.every(result => result.unavailable || result.busy));
+    assert.ok(pool.waitingCount <= 2, `shared pool retains ${pool.waitingCount} pending acquisitions after callers timed out`);
+    held.release(); held = null;
+    await new Promise(resolve => setImmediate(resolve));
+    assert.equal(pool.waitingCount, 0);
+    assert.deepEqual(await store.insert([]), { accepted: 0 });
+});
+
+test('localized diagnostics retain machine codes and wire identity when the locale changes', () => {
+    const dictionaries = Object.fromEntries(['en', 'es', 'hr', 'sr'].map(lang =>
+        [lang, JSON.parse(readFileSync(new URL(`../../frontend/i18n/${lang}.json`, import.meta.url), 'utf8')).diagnostics]));
+    let language = 'hr';
+    const d = client({ translate: key => key.split('.').slice(1).reduce((value, part) => value?.[part], dictionaries[language]) });
+    const original = Error('synthetic failure');
+    const first = d.report(original, { code: 'plan-import-failed' });
+    const payload = D.wire(first);
+    for (const lang of ['hr', 'es', 'sr', 'en']) {
+        language = lang;
+        assert.deepEqual(Object.keys(dictionaries[lang].errors).sort(), Object.keys(D.CATALOG).sort());
+        assert.deepEqual(Object.keys(dictionaries[lang].ui).sort(), Object.keys(dictionaries.en.ui).sort());
+        assert.equal(d.report(original).message, dictionaries[lang].errors['plan-import-failed']);
+        assert.equal(d.snapshot().entries[0].message, dictionaries[lang].errors['plan-import-failed']);
+        assert.deepEqual(D.wire(d.report(original)), payload);
+    }
+    assert.equal(client({ translate: key => key }).report(Error()).message, D.CATALOG.unexpected[0]);
+    assert.equal(client({ translate: () => { throw Error(); } }).report(Error()).message, D.CATALOG.unexpected[0]);
+});
+
+test('late acquisition rejection releases diagnostics capacity after the caller timeout', async () => {
+    const rejectors = []; let pending = true;
+    const pool = { connect: () => pending ? new Promise((_, reject) => rejectors.push(reject)) : poolModel().connect() };
+    const store = createDiagnosticStore(pool);
+    await Promise.all([store.insert([]), store.insert([])]);
+    assert.deepEqual(await store.insert([]), { busy: true });
+    pending = false; rejectors.forEach(reject => reject(Error('synthetic acquisition failure')));
+    await new Promise(resolve => setImmediate(resolve));
+    assert.deepEqual(await store.insert([]), { accepted: 0 });
 });

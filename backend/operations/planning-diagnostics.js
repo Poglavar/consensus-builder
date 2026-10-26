@@ -52,11 +52,15 @@ export function createDiagnosticStore(pool) {
         async insert(entries) {
             if (active >= 2) return { busy: true };
             active++;
-            let client;
+            let client, abandoned = false;
             try {
-                let abandoned = false, timer;
+                let timer;
                 const pending = Promise.resolve().then(() => pool.connect());
-                pending.then(value => { if (abandoned) value.release(); }).catch(() => {});
+                // A caller timeout cannot cancel pg-pool's checkout. Keep its slot until it
+                // settles so a starved shared pool never accumulates more diagnostics waiters.
+                pending.then(value => {
+                    if (abandoned) { try { value.release(); } finally { active--; } }
+                }, () => { if (abandoned) active--; }).catch(() => {});
                 try {
                     client = await Promise.race([pending, new Promise((_, reject) => {
                         timer = setTimeout(() => { abandoned = true; reject(new Error('diagnostic DB acquisition timeout')); }, 2000);
@@ -85,7 +89,9 @@ export function createDiagnosticStore(pool) {
             } catch {
                 if (client) { try { await client.query('ROLLBACK'); } catch { /* no private error output */ } }
                 return { unavailable: true };
-            } finally { client?.release(); active--; }
+            } finally {
+                if (!abandoned) { try { client?.release(); } finally { active--; } }
+            }
         }
     };
 }

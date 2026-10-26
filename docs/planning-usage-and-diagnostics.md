@@ -53,7 +53,9 @@ recoverability, allowlisted context and random correlation ID. Raw error message
 never copied into its buffer or transport. Unhandled errors/rejections pass through that same
 boundary; duplicate errors are suppressed without preventing the browser's normal handling.
 The UI continues to use existing `finally` cleanup and busy controls.
-The first catalog is English; localization remains a rollout follow-up.
+Catalog messages, diagnostic controls and submission prompts use the current English, Spanish,
+Croatian or Serbian locale, including after a language change. Machine codes and wire payloads
+remain language-independent; English is the fallback while dictionaries load.
 
 The buffer is memory-only: at most 100 entries, expiring after 24 hours when accessed, and gone
 on refresh/tab close. A random session rotates after 30 minutes idle. Plan handles are random,
@@ -82,9 +84,10 @@ legitimate user. Client attribution is forced to `ui / client-report / unknown` 
 MCP/server/test provenance. Malformed/oversize bodies receive fixed responses without raw logging.
 
 Optional storage uses the existing database, with atomic exact-payload ID dedupe/conflict checks,
-an advisory lock, at most two in-flight writes (no unbounded queue), 10,000 retained rows and seven
-days of retained diagnostics. Enabled services prune on startup and hourly, including idle periods;
-reports exclude expired rows even before cleanup. Maximum physical age on an active service is
+an advisory lock, at most two in-flight writes (including pending pool checkouts), 10,000 retained
+rows and seven days of retained diagnostics. A checkout timeout returns promptly but retains its
+concurrency slot until that checkout resolves or rejects; late clients are released immediately.
+Enabled services prune on startup and hourly, including idle periods; reports exclude expired rows even before cleanup. Maximum physical age on an active service is
 approximately seven days plus one hour. If the service stops or all collection is disabled, the
 operator must continue the existing private cleanup command/schedule; a stopped service cannot
 delete data. Backups and infrastructure logs need their own retention review. Dedupe ends when
@@ -112,7 +115,7 @@ the credential-free hosted MCP environment.
 | Portable-file controls | JSON/GeoJSON download completion; import invalid/oversize/cancel/atomic-commit success/failure; safe common alerts and restored controls. | Export success means the browser download was initiated, not that a user retained the file. Import success means the atomic mutation completed, not that designs were applied. |
 | Named plans | Save success only after verified readback; save/open errors through common catalog. | Plan handles are local observations, not conceptual global identities across immutable revisions. |
 | Design publication and sharing | Publish completion/failure/cancel from the exposed UI API; clipboard success/failure and manual-copy fallback; share-panel errors and design-index list failure. | Cached already-published designs can satisfy a publish action; count indexed records separately. Other import/download/preview paths still have their existing errors. |
-| General create/apply and mutation boundary | Common recoverable error records for thrown create/mutation errors; saved-but-not-applied error distinguished from save failure. | Direct creation paths outside the draft store do not yet have complete action counters. Existing validation notices, error branches returning `false`, parcel-source health UI, wallet, agreement, render/3D and source-provider messages remain partly ad hoc. |
+| General create/apply | Owning operation/recovery handlers record thrown errors with their specific code; saved-but-not-applied error distinguished from save failure. The lower mutation boundary propagates errors without pre-classifying them or treating normal replay cancellation as a failure. | Direct creation paths outside the draft store do not yet have complete action counters. Existing validation notices, error branches returning `false`, parcel-source health UI, wallet, agreement, render/3D and source-provider messages remain partly ad hoc. |
 | Runtime/workspace startup | Safe unexpected-error/rejection capture; workspace startup failure. | Handled console-only errors are not all captured; no console monkey-patch or stack capture. |
 | API/MCP | Disabled API outcome observer and unconnected MCP observer with verifiable execution provenance. | Historical UI/MCP/test attribution is unknown; a request header is not trusted attribution. No hosted MCP session/unique-plan counting. |
 
@@ -138,7 +141,9 @@ node --env-file=.env scripts/planning-usage.mjs --days 30
 
 This reads existing publication tables only and returns daily UTC revision counts, separately for
 named plans, designs and agreements. It does not enable collection or access a provider account.
-It returns no authored content, identifiers or user-level rows.
+It returns no authored content, identifiers or user-level rows. The shared database connection
+helper requires a nonempty `DATABASE_URL` before any connection or cleanup; ambient `PG*` settings
+are not an alternative database selection path.
 
 After a separately approved diagnostic schema/rollout, `--diagnostics` includes aggregate
 outcomes and distinct observed session/plan handles, separated by source/evidence/test status.
@@ -165,7 +170,9 @@ when collection is disabled. No new HTTP metrics/dashboard endpoint is provided.
 MCP parity: authored records, editable fields and validators are unchanged. Existing
 `ugt_draft_plan`, `ugt_edit_plan`, design editing and portable-file inspection remain the parity
 paths. The optional MCP observer wraps existing registration without adding tools or changing
-their outputs. Focused tests cover that boundary and existing named-plan/server contracts.
+their outputs. Focused tests cover that boundary and existing named-plan/server contracts. The
+queue, CLI guard, error classification and translation fixes introduce no human editing operation
+or schema/discovery change, so the existing granular MCP operations remain sufficient.
 
 ## Validation and practical limits
 
@@ -173,6 +180,10 @@ New focused checks cover event semantics; safe error/context reconstruction; mal
 reports; bounded rate/concurrency/dedupe/retention/storage; network outages and timeouts; local
 export; unhandled-error storms; real draft-store edits/save failures; portable-control recovery;
 named-plan readback; clipboard recovery; API/MCP attribution and private report semantics.
+Regression checks use the real pg-pool queue under checkout starvation and test late release and
+rejection recovery; real mutation-boundary import/cancellation; a CLI subprocess with missing/empty
+`DATABASE_URL`; and language changes across all four dictionaries. Browser checks also cover
+localized import alerts, disclosure, optional-send confirmation/outcomes and busy cleanup.
 The PostgreSQL integration check is restricted to an explicit disposable test DB and runs in CI.
 Existing authoring/export/share/MCP regression tests are included in the focused workflow.
 

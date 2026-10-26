@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Uses the existing backend DB access. No public dashboard and no new credentials.
-import pg from 'pg';
+import { createPool } from '../db/connection.cjs';
 import { readPlanningUsage } from '../operations/planning-usage.js';
 import { createDiagnosticStore } from '../operations/planning-diagnostics.js';
 const args = process.argv.slice(2);
@@ -11,9 +11,9 @@ for (let i = 0; i < args.length; i++) {
     if (args[i] === '--days') days = Number(args[++i]);
 }
 if (!Number.isInteger(days) || days < 1 || days > 365) throw new Error('days must be an integer from 1 to 365');
-const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL, connectionTimeoutMillis: 5000,
-    statement_timeout: 10000, application_name: 'ugt-private-planning-report' });
+let pool;
 try {
+    pool = createPool({ connectionTimeoutMillis: 5000, statement_timeout: 10000, application_name: 'ugt-private-planning-report' });
     if (args.includes('--prune-diagnostics')) {
         const result = await createDiagnosticStore(pool).insert([]);
         if (result.unavailable || result.busy) throw new Error('Diagnostic cleanup unavailable');
@@ -22,4 +22,4 @@ try {
 } catch {
     console.error('Planning report unavailable. Check existing DB access, publication tables and optional diagnostic schema. No connection details are printed.');
     process.exitCode = 1;
-} finally { await pool.end(); }
+} finally { await pool?.end(); }

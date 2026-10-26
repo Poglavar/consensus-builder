@@ -1,6 +1,7 @@
 // Isolated real-browser file/UI checks. No production plans, source API or wallet is contacted.
 import { test as base, expect } from '@playwright/test';
 import path from 'node:path';
+import { readFileSync } from 'node:fs';
 const root = path.resolve(__dirname, '../../frontend');
 const test = base.extend<{ checkPageErrors: void }>({
   checkPageErrors: [async ({ page }, use) => {
@@ -190,3 +191,72 @@ for (const [label, reference, expectedUrl] of [
     await expect(button).not.toHaveAttribute('aria-busy', 'true');
   });
 }
+
+const diagnosticDictionaries = Object.fromEntries(['en', 'es', 'hr', 'sr'].map(lang =>
+  [lang, JSON.parse(readFileSync(path.join(root, 'i18n', `${lang}.json`), 'utf8')).diagnostics]));
+async function loadDiagnosticLanguages(page: any) {
+  await page.route('http://localhost/i18n/*.json?*', route => {
+    const name = path.basename(new URL(route.request().url()).pathname);
+    return route.fulfill({ contentType: 'application/json', body: readFileSync(path.join(root, 'i18n', name), 'utf8') });
+  });
+  // Keep the real startup order and asynchronous dictionary loading.
+  for (const file of ['js/i18n.js', 'js/i18n-loader.js']) await page.addScriptTag({ path: path.join(root, file) });
+  await page.evaluate(() => (window as any).i18n.translationsReady);
+}
+
+test('diagnostic controls and import errors follow all supported languages after startup', async ({ page }) => {
+  await loadDiagnosticLanguages(page);
+  for (const lang of ['hr', 'es', 'sr', 'en']) {
+    const dictionary = diagnosticDictionaries[lang];
+    await page.evaluate(lang => (window as any).i18n.setLanguage(lang, { persist: false }), lang);
+    await expect(page.locator('[data-diagnostics-export]')).toHaveText(dictionary.ui.download);
+    await expect(page.locator('[data-diagnostics-clear]')).toHaveText(dictionary.ui.clear);
+    await expect(page.locator('[data-i18n-key="diagnostics.ui.notice"]')).toHaveText(dictionary.ui.notice);
+    await choose(page, '{');
+    await expect.poll(() => page.evaluate(() => (window as any).errors.at(-1))).toBe(dictionary.errors['plan-import-failed']);
+    const diagnostic = await page.evaluate(() => (window as any).AppDiagnostics.snapshot().entries.find((row: any) => row.kind === 'error'));
+    expect(diagnostic.code).toBe('plan-import-failed');
+    expect(diagnostic.message).toBe(dictionary.errors['plan-import-failed']);
+  }
+});
+
+test('optional diagnostic sending localizes confirmation and outcomes and keeps its busy state across a language change', async ({ page }) => {
+  await page.goto('http://localhost/plan-file-fixture');
+  await page.evaluate(() => {
+    const w = window as any;
+    w.UGT_DIAGNOSTICS_SUBMISSION_ENABLED = true;
+    w.getBackendBase = () => 'http://localhost';
+    const fetch = w.fetch.bind(w);
+    w.fetch = (url: string, options: any) => url.endsWith('/diagnostics/reports') ? new Promise(resolve => {
+      w.finishDiagnosticSend = () => resolve({ ok: true, json: async () => ({ accepted: JSON.parse(options.body).entries.length }) });
+    }) : fetch(url, options);
+  });
+  for (const file of ['js/app-diagnostics.js', 'js/ui/busy-control.js']) await page.addScriptTag({ path: path.join(root, file) });
+  await loadDiagnosticLanguages(page);
+  await page.evaluate(() => {
+    const w = window as any; w.i18n.setLanguage('hr', { persist: false });
+    w.AppDiagnostics.report(new Error('synthetic failure'));
+  });
+  const confirmations: string[] = [];
+  page.on('dialog', async dialog => { confirmations.push(dialog.message()); await dialog.accept(); });
+  const send = page.locator('[data-diagnostics-send]');
+  await expect(send).toHaveText(diagnosticDictionaries.hr.ui.send);
+  await send.click();
+  await expect(send).toHaveAttribute('aria-busy', 'true');
+  expect(confirmations[0]).toBe(diagnosticDictionaries.hr.ui.confirmSend);
+  await page.evaluate(() => (window as any).i18n.setLanguage('es', { persist: false }));
+  await expect(send).toHaveText(diagnosticDictionaries.es.ui.send);
+  await page.evaluate(() => (window as any).finishDiagnosticSend());
+  await expect(send).not.toHaveAttribute('aria-busy');
+  const status = page.locator('[role=status]');
+  await expect(status).toHaveText(diagnosticDictionaries.es.ui.sent);
+  await page.evaluate(() => (window as any).i18n.setLanguage('sr', { persist: false }));
+  await expect(status).toHaveText(diagnosticDictionaries.sr.ui.sent);
+  await send.click(); // The real one-minute client budget supplies the failure outcome.
+  await expect(status).toHaveText(diagnosticDictionaries.sr.ui.sendFailed);
+  expect(confirmations[1]).toBe(diagnosticDictionaries.sr.ui.confirmSend);
+  await page.evaluate(() => { (window as any).getBackendBase = () => { throw new Error('synthetic configuration failure'); }; });
+  await send.click();
+  await expect(status).toHaveText(diagnosticDictionaries.sr.ui.sendUnavailable);
+  await expect(send).not.toHaveAttribute('aria-busy');
+});

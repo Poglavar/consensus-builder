@@ -8,6 +8,8 @@ const FileUI = require('../../frontend/js/plan-file-ui.js');
 const NamedPlans = require('../../frontend/js/named-plans.js');
 const DesignSync = require('../../frontend/js/proposals/design-sync.js');
 const BusyControl = require('../../frontend/js/ui/busy-control.js');
+const { ProposalManager } = require('../../frontend/js/proposal-manager.js');
+const { cancelledError } = require('../../frontend/js/work-slicer.js');
 const { createProposalDraftStore } = require('../../frontend/js/proposal-drafts.js');
 const secret = 'Private title alice@example.com ?token=SECRET 192.0.2.1';
 class Element {
@@ -122,4 +124,25 @@ test('actual draft store records meaningful edits only and distinguishes memory 
     assert.equal(d.snapshot().entries.filter(e => e.operation === 'edit').length, 2);
     assert.equal(d.snapshot().entries.at(-1).operation, 'save'); assert.equal(d.snapshot().entries.at(-1).outcome, 'failure');
     assert.ok(d.snapshot().entries.some(e => e.code === 'draft-storage-unavailable')); assert.ok(!d.exportText().includes('SECRET'));
+});
+
+test('import failures keep their operation-specific error after the real mutation boundary', async t => {
+    const d = D.create({ uuid: randomUUID });
+    globalThis.AppDiagnostics = d;
+    t.after(() => { delete globalThis.AppDiagnostics; });
+    const error = new Error('synthetic storage failure');
+    await assert.rejects(d.run('import', { entity: 'plan', code: 'plan-import-failed', context: { surface: 'plan-file' } }, () =>
+        ProposalManager.runParcelMutation('import-plan-file', null, async () => { throw error; }, { _mapMutation: false })), caught => caught === error);
+    const diagnostic = d.snapshot().entries.find(entry => entry.kind === 'error');
+    assert.equal(diagnostic.code, 'plan-import-failed');
+    assert.equal(diagnostic.context.surface, 'plan-file');
+});
+
+test('normal replay supersession is not recorded as a planning error', async t => {
+    const d = D.create({ uuid: randomUUID });
+    globalThis.AppDiagnostics = d;
+    t.after(() => { delete globalThis.AppDiagnostics; });
+    const cancelled = cancelledError('city-changed');
+    await assert.rejects(ProposalManager.runParcelMutation('rebuild-applied-fabric', null, async () => { throw cancelled; }, { _mapMutation: false }), caught => caught === cancelled);
+    assert.deepEqual(d.snapshot().entries.filter(entry => entry.kind === 'error'), []);
 });
