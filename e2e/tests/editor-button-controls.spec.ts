@@ -132,7 +132,7 @@ test.describe('Editor button effects @features', () => {
     await expect(undo).toBeDisabled();
   });
 
-  test('single-building Close dismisses its editor; rename, delete, and GeoJSON upload alter the active design', async ({ mockApi: page }) => {
+  test('single-building Close dismisses its editor; GeoJSON upload and rotation alter the active design', async ({ mockApi: page }) => {
     await openCity(page);
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--single').click();
@@ -144,32 +144,7 @@ test.describe('Editor button effects @features', () => {
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--single').click();
     await expect(modal.locator('.on-map-editor__panel')).toBeVisible();
-    const selector = page.locator('#single-building-selector');
-    const initial = await selector.locator('option').count();
-    const firstBuildingId = await selector.inputValue();
-    await page.locator('#single-building-add').click();
-    await expect(selector.locator('option')).toHaveCount(initial + 1);
-    const addedBuildingId = await selector.locator('option').last().getAttribute('value');
-    expect(addedBuildingId).toBeTruthy();
-    const activeFootprint = page.locator('#map-container path.single-building-fill--active');
-    const addedFootprintPath = await activeFootprint.getAttribute('d');
-    await selectNativeOption(selector, firstBuildingId);
-    await expect(selector).toHaveValue(firstBuildingId);
-    await expect.poll(() => activeFootprint.getAttribute('d')).not.toBe(addedFootprintPath);
-    const firstFootprintPath = await activeFootprint.getAttribute('d');
-    await selectNativeOption(selector, addedBuildingId!);
-    await expect(selector).toHaveValue(addedBuildingId!);
-    await expect.poll(() => activeFootprint.getAttribute('d')).toBe(addedFootprintPath);
-    await page.locator('#single-building-rename').click();
-    const name = page.locator('#single-building-name-input');
-    await expect(name).toBeVisible();
-    await name.fill('Renamed test');
-    await name.press('Enter');
-    await expect(selector.locator('option').last()).toHaveText(/Renamed test/);
-    await page.locator('#single-building-delete').click();
-    await expect(selector.locator('option')).toHaveCount(initial);
-    await expect(selector).toHaveValue(firstBuildingId);
-    await expect.poll(() => activeFootprint.getAttribute('d')).toBe(firstFootprintPath);
+    await expect(page.locator('#single-building-add, #single-building-selector, #single-building-rename')).toHaveCount(0);
 
     const uploaded = {
       type: 'Feature', properties: { name: 'fixture footprint' },

@@ -6958,13 +6958,6 @@
       "controlType": "button"
     },
     {
-      "id": "control-6362424f93cd69-1",
-      "source": "js/single-building.js",
-      "markup": "<input id=\"single-move-together\" type=\"checkbox\" checked>",
-      "interaction": "change",
-      "controlType": "checkbox"
-    },
-    {
       "id": "control-22a5d13256668e-1",
       "source": "js/single-building.js",
       "markup": "<input type=\"range\" id=\"single-height-slider\" aria-label=\"${modalText.heightLabel}\" min=\"3\" max=\"250\" step=\"1\" value=\"${DEFAULT_HEIGHT_M}\">",
@@ -6980,51 +6973,6 @@
       "id": "control-e84653727231aa-1",
       "source": "js/single-building.js",
       "markup": "<button class=\"btn btn-sm\" type=\"button\" data-land-whole>"
-    },
-    {
-      "id": "control-0e640774435d93-1",
-      "source": "js/single-building.js",
-      "markup": "<button class=\"btn btn-sm\" type=\"button\" data-land-retry>"
-    },
-    {
-      "id": "control-59192d9ebe58d3-1",
-      "source": "js/single-building.js",
-      "markup": "<input type=\"checkbox\" data-land-accept disabled>"
-    },
-    {
-      "id": "control-c51def6248be9b-1",
-      "source": "js/single-building.js",
-      "markup": "<select id=\"single-building-selector\" aria-label=\"${modalText.buildingsTitle}\">",
-      "interaction": "change",
-      "controlType": "select"
-    },
-    {
-      "id": "control-407d81d9c821c3-1",
-      "source": "js/single-building.js",
-      "markup": "<input type=\"text\" id=\"single-building-name-input\" maxlength=\"20\" hidden aria-label=\"${modalText.renameLabel}\">",
-      "interaction": "change",
-      "controlType": "text"
-    },
-    {
-      "id": "control-4a7ba43af56081-1",
-      "source": "js/single-building.js",
-      "markup": "<button id=\"single-building-rename\" class=\"btn btn-quiet btn-icon\" type=\"button\" aria-label=\"${modalText.renameLabel}\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-c39b7a35eaba15-1",
-      "source": "js/single-building.js",
-      "markup": "<button id=\"single-building-delete\" class=\"btn btn-quiet btn-icon\" type=\"button\" aria-label=\"${modalText.deleteLabel}\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-575ebc1376771d-1",
-      "source": "js/single-building.js",
-      "markup": "<button id=\"single-building-add\" class=\"btn btn-quiet btn-icon\" type=\"button\" aria-label=\"${modalText.addLabel}\">",
-      "interaction": "click",
-      "controlType": "button"
     },
     {
       "id": "control-a75016940a2a30-1",

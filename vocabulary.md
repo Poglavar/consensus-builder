@@ -373,7 +373,7 @@ Authored building geometry, parameters and optional architectural evidence belon
 
 ### Freeform building
 
-A building design with one connected authored footprint, including any courtyard holes, and its vertical dimensions. Its land take can extend beyond that footprint.
+A building design with one connected authored footprint, including any courtyard holes, and its vertical dimensions. Its land take can extend beyond that footprint. Dragging moves only the selected building footprint; authored surroundings and their furniture stay in place.
 
 ### Imported model footprint
 

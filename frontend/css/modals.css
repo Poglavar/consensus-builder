@@ -2511,10 +2511,20 @@ path.geom-handle-edge.is-dragging { stroke-opacity: 0.35; }
 .land-take-review h3, .land-take-review p { margin: 0; }
 .land-take-review p { font-size: var(--cb-text-sm); }
 .land-take-rows { display: grid; gap: var(--cb-space-2); max-height: 12rem; overflow-y: auto; }
-.land-take-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(8rem, 1fr); align-items: center; gap: var(--cb-space-2); }
-.land-take-row span { overflow-wrap: anywhere; }
+.land-take-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--cb-space-2); }
+.land-take-actions .btn { min-width: 0; white-space: normal; }
+.land-take-row {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center;
+    gap: var(--cb-space-2); margin: 0; padding: var(--cb-space-2);
+    border: 1px solid var(--cb-line-glass); border-radius: var(--cb-radius-sm);
+    cursor: pointer;
+}
+.land-take-row:hover, .land-take-row:focus-within, .land-take-row.is-highlighted { border-color: var(--land-focus); }
+.land-take-row select { min-width: 0; width: 100%; font-size: var(--cb-text-sm); }
+.land-take-parcel { display: flex; align-items: center; gap: var(--cb-space-2); min-width: 0; font-size: var(--cb-text-sm); }
+.land-take-parcel-id { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.land-take-percent { flex: none; font-size: var(--cb-text-xs); color: var(--cb-text-muted); }
 .land-take-error { color: var(--cb-danger); font-weight: 600; }
-.land-take-legend { color: var(--cb-text-muted); }
 /* City names can be long: the two choices keep equal tap areas on a phone. */
 @media (max-width: 767.98px) {
     .city-switch-dialog .cb-dialog__footer {

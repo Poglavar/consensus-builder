@@ -95,6 +95,10 @@ for (const published of [false, true]) test(`height-only editing retains demolit
 test('missing stock keeps the unsaved editor open',async({mockApi:page})=>{
   await open(page);
   await page.route('**/buildings/under',route=>route.fulfill({contentType:'application/json',body:JSON.stringify({supported:true,truncated:true,regions:{}})}));
+  await page.locator('[data-land-footprint]').click();
+  await expect(page.locator('[data-land-status]')).toContainText('Could not verify');
+  await expect(page.locator('[data-land-footprint]')).not.toHaveAttribute('aria-busy');
+  await expect(page.locator('[data-land-footprint]')).toBeEnabled();
   await page.locator('#single-building-confirm').click();
   await expect(page.locator('[data-land-status]')).toContainText('Could not verify');
   await expect(page.locator('#single-land-take-error')).toBeVisible();
@@ -104,7 +108,7 @@ test('missing stock keeps the unsaved editor open',async({mockApi:page})=>{
     const regions = route.request().postDataJSON().regions;
     return route.fulfill({ json: { supported: true, truncated: false, source: 'gdi', regions: Object.fromEntries(regions.map((r: any) => [r.key, []])) } });
   });
-  await page.locator('[data-land-retry]').click();
+  await page.locator('[data-land-footprint]').click();
   await expect(page.locator('[data-land-status]')).toContainText('m²');
   await expect(page.locator('#single-land-take-error')).toBeHidden();
 });
@@ -179,4 +183,65 @@ test('Done saves the imported GLB without separate acceptance', async ({ mockApi
   await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().filter((p:any) => p.goal === 'single' && p.applied).length), {timeout:20000}).toBe(1);
   const saved = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((p:any) => p.goal === 'single' && p.applied));
   expect(JSON.stringify(saved.geometry)).toContain('/uploads/models/test-building.glb');
+});
+
+// Row interactions identify the same source parcel in both the list and the map.
+test('parcel rows highlight on hover and click, with equal bulk buttons and compact IDs', async ({ mockApi: page }) => {
+  await open(page);
+  const row = page.locator('.land-take-row').first();
+  await expect(page.locator('[data-land-intro]')).toHaveText('Choose how land is taken from each of the touched parcels (1).');
+  await expect(page.locator('#single-building-add, #single-building-selector, #single-move-together, [data-land-retry], .land-take-legend, [data-land-multi]')).toHaveCount(0);
+  await row.hover();
+  await expect(row).toHaveClass(/is-highlighted/);
+  await expect(page.locator('.land-take-focus')).toHaveCount(1);
+  // Read just geometry from the Leaflet layer (the layer itself has circular references).
+  expect(await page.evaluate(() => {
+    const w = window as any;
+    return (Object.values(w.map._layers).find((l: any) => l._path?.classList.contains('land-take-focus')) as any)?.feature.geometry;
+  })).toEqual({type:'Polygon',coordinates:[[[15.9819,45.8],[15.9825,45.8],[15.9825,45.8005],[15.9819,45.8005],[15.9819,45.8]]]});
+  await page.locator('#single-height-slider').hover();
+  await expect(page.locator('.land-take-focus')).toHaveCount(0);
+  await row.locator('.land-take-parcel-id').click();
+  await page.locator('#single-height-slider').click();
+  await expect(page.locator('.land-take-focus')).toHaveCount(1);
+  await page.setViewportSize({width:390,height:844});
+  const footprint = await page.locator('[data-land-footprint]').boundingBox();
+  const whole = await page.locator('[data-land-whole]').boundingBox();
+  expect(Math.abs(footprint!.width-whole!.width)).toBeLessThan(1);
+  expect(footprint!.y).toBe(whole!.y);
+  const id = page.locator('.land-take-parcel-id').first();
+  expect(await id.evaluate(e => getComputedStyle(e).whiteSpace)).toBe('nowrap');
+});
+
+test('deep zoom reuses native basemap tiles and survives an address round trip', async ({ mockApi: page }) => {
+  await open(page);
+  expect(await page.evaluate(() => (window as any).map.getMaxZoom())).toBe(23);
+  await page.evaluate(() => (window as any).map.setZoom(23, {animate:false}));
+  expect(await page.evaluate(() => (window as any).map.getZoom())).toBe(23);
+  expect(await page.evaluate(() => (window as any).WorldEntryModel.parseAt(new URL(location.href).searchParams.get('at')).zoom)).toBe(23);
+  const tiles = await page.evaluate(() => {
+    const w = window as any;
+    return Object.values(w.map._layers).filter((l:any) => typeof l.getTileUrl === 'function').map((l:any)=>({max:l.options.maxZoom,native:l.options.maxNativeZoom,tileZoom:l._tileZoom}));
+  });
+  expect(tiles).toContainEqual({max:23,native:19,tileZoom:19});
+});
+
+test('bulk land choices keep their spinner until the source review completes', async ({ mockApi: page }) => {
+  await open(page);
+  let release!: () => void;
+  const gate = new Promise<void>(resolve => { release = resolve; });
+  await page.route('**/buildings/under', async route => {
+    await gate;
+    const regions = route.request().postDataJSON().regions;
+    await route.fulfill({json:{supported:true,truncated:false,source:'gdi',regions:Object.fromEntries(regions.map((r:any)=>[r.key,[]]))}});
+  });
+  const button = page.locator('[data-land-whole]');
+  await button.click();
+  await expect(button).toHaveAttribute('aria-busy','true');
+  await expect(button).toBeDisabled();
+  release();
+  await expect(button).not.toHaveAttribute('aria-busy');
+  await expect(button).toBeEnabled();
+  await expect(page.locator('[data-land-status]')).toContainText('m²');
+  await expect(page.locator('[data-land-rows] select')).toHaveValue('whole');
 });

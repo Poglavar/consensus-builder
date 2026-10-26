@@ -318,7 +318,7 @@ test.describe('Designer controls persist their edits @features', () => {
       .some((feature: any) => feature.properties?.proposalId === id), saved.proposalId)).toBe(true);
   });
 
-  test('single-building palette controls save height, surroundings, parcel treatment, and added footprint', async ({ mockApi: page }) => {
+  test('single-building palette controls save height, surroundings, and parcel treatment', async ({ mockApi: page }) => {
     await openCity(page);
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--single').click();
@@ -327,8 +327,6 @@ test.describe('Designer controls persist their edits @features', () => {
       await wholeBlockPrompt.getByRole('button', { name: 'No, just this parcel' }).click();
     }
     await expect(page.locator('#single-building-editor').locator('.on-map-editor__panel')).toBeVisible();
-    const selector = page.locator('#single-building-selector');
-    const initialBuildings = await selector.locator('option').count();
     const height = page.locator('#single-height-slider');
     const oldHeight = Number(await height.inputValue());
     await height.focus();
@@ -339,21 +337,16 @@ test.describe('Designer controls persist their edits @features', () => {
     await selectNativeOption(page.locator('#single-ground-treatment'), 'green');
     const parcelTake = page.locator('#single-land-take [data-parcel-id]').first();
     await selectNativeOption(parcelTake, 'whole');
-    await page.locator('#single-building-add').click();
-    await expect(selector.locator('option')).toHaveCount(initialBuildings + 1);
     await expect(page.locator('#single-land-take [data-land-status]')).toContainText('m²');
     await page.locator('#single-building-confirm').click();
     await expect(page.locator('#single-building-editor')).toHaveCount(0);
 
     const context = await page.evaluate(() => (window as any).pendingBuildingProposalContext);
     expect(context.parameters.height).toBe(oldHeight + 1);
-    expect(context.buildings).toHaveLength(initialBuildings + 1);
+    expect(context.buildings).toHaveLength(1);
     expect(context.groundSurface.treatment).toBe('green');
     expect(context.landTake?.geometry).toBeTruthy();
-    const footprintTake = await page.evaluate(buildings => (window as any).FreeformLandTake.union(buildings, (window as any).turf), context.buildings);
-    // Whole-parcel take is unavailable once the second building is added; the saved take is both
-    // building footprints, which is the land the editor reviewed and accepted.
-    expect(context.landTake).toEqual(footprintTake);
+    expect(context.landTake.geometry.coordinates).toEqual([[[15.9819,45.8],[15.9825,45.8],[15.9825,45.8005],[15.9819,45.8005],[15.9819,45.8]]]);
     expect(context.buildings.every((feature: any) => feature.geometry?.type === 'Polygon')).toBe(true);
   });
 

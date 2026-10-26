@@ -30,6 +30,7 @@ describe('?at= parsing', () => {
 
     it('clamps the zoom into the usable range', () => {
         expect(Model.parseAt('45,15,25').zoom).toBe(Model.MAX_ZOOM);
+        expect(Model.parseAt('45,15,23').zoom).toBe(23);
         expect(Model.parseAt('45,15,0').zoom).toBe(Model.MIN_ZOOM);
         expect(Model.parseAt('45,15,-4').zoom).toBe(Model.MIN_ZOOM);
     });

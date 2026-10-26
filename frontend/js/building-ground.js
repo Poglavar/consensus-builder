@@ -52,7 +52,7 @@
     }
 
     // The surround polygon: the authored ground boundary minus every building footprint on it.
-    // The freeform editor moves this boundary with the design; the starting parcels are optional guides.
+    // Building drags leave this boundary and its authored furniture in place.
     function computeSurfacePolygon(blockFeature, buildingFeatures) {
         if (typeof turf === 'undefined' || typeof turf.difference !== 'function') return null;
         let surface = asFeature(blockFeature);

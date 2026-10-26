@@ -956,3 +956,5 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-26: Research existing international zoning/spatial-plan standards before designing a common executable rule model; LADM and INSPIRE provide relevant foundations, while a new core schema remains undecided.
 
 - 2026-10-26: Build Atlas envelope support incrementally, beginning with simple bounds from available setbacks, then adding height and other constraints; expand region by region. Use measured rule-field distributions to choose the next supported cases.
+
+- 2026-10-26: Freeform drags move only the active building footprint; surroundings stay anchored, and the old in-editor building duplication and numbered picker are retired.

@@ -53,7 +53,6 @@ test('Upload .glb imports into the current Freeform session and Done saves its m
   await page.route('**/models', route => { uploads++; return route.fulfill({ json: { modelUrl: '/uploads/models/direct.glb' } }); });
   await page.route('**/uploads/models/direct.glb', route => route.fulfill({ contentType: 'model/gltf-binary', body: model }));
   await openFreeform(page);
-  await page.locator('#single-building-add').click();
   const before = await features(page);
   await page.locator('#single-building-glb-upload').click();
   const upload = page.locator('#building-upload-modal');
@@ -65,10 +64,9 @@ test('Upload .glb imports into the current Freeform session and Done saves its m
   await expect(page.locator(`${editor} .on-map-editor__panel`)).toBeVisible();
   expect(uploads).toBe(1);
   let after = await features(page);
-  expect(after).toHaveLength(2);
-  expect(after[0]).toEqual(before[0]);
-  expect(after[1].properties).toMatchObject({ modelName: 'direct.glb', modelUrl: '/uploads/models/direct.glb', height: 16 });
-  expectLFootprint(await footprintMeasures(page, after[1]));
+  expect(after).toHaveLength(1);
+  expect(after[0].properties).toMatchObject({ modelName: 'direct.glb', modelUrl: '/uploads/models/direct.glb', height: 16 });
+  expectLFootprint(await footprintMeasures(page, after[0]));
   await page.locator('#single-building-undo').click();
   expect(await features(page)).toEqual(before);
   await page.locator('#single-building-glb-upload').click();
@@ -77,8 +75,8 @@ test('Upload .glb imports into the current Freeform session and Done saves its m
   await upload.locator('#building-upload-confirm').click();
   await expect(upload).toHaveCount(0);
   after = await features(page);
-  expect(after[1].properties.modelUrl).toBe('/uploads/models/direct.glb');
-  expectLFootprint(await footprintMeasures(page, after[1]), false);
+  expect(after[0].properties.modelUrl).toBe('/uploads/models/direct.glb');
+  expectLFootprint(await footprintMeasures(page, after[0]), false);
   await expect(page.locator('#single-land-take [data-land-status]')).toContainText('m²');
   await page.locator('#single-building-confirm').click();
   await expect(page.locator(editor)).toHaveCount(0);

@@ -64,7 +64,7 @@ for (const kind of ['single', 'buildings', 'row']) {
       await page.locator(input).setInputFiles(file);
     }
     await expect(page.locator('#single-building-editor .on-map-editor__panel')).toBeVisible();
-    await expect(page.locator('#single-building-selector option')).toHaveCount(3);
+    await expect(page.locator('#map-container .single-building-fill')).toHaveCount(3);
     // All four exterior and four courtyard vertices are handles on the selected first building.
     await expect(page.locator('#map-container .polygon-geometry-editor__vertex')).toHaveCount(8);
     await page.locator('#single-height-slider').fill('19');
@@ -85,7 +85,7 @@ for (const kind of ['single', 'buildings', 'row']) {
     // Reopen through the ordinary geometry action and save a height edit; never regenerate shape.
     await showProposal(page, kept.proposalId);
     await page.getByRole('button', { name: 'Edit geometry', exact: true }).click();
-    await expect(page.locator('#single-building-selector option')).toHaveCount(1);
+    await expect(page.locator('#map-container .single-building-fill')).toHaveCount(1);
     await expect(page.locator('#map-container .polygon-geometry-editor__vertex')).toHaveCount(8);
     await page.locator('#single-height-slider').fill('20');
     await page.locator('#single-height-slider').dispatchEvent('input');
@@ -107,7 +107,7 @@ test('a partially invalid GeoJSON upload keeps the existing design unchanged', a
     buffer: Buffer.from(JSON.stringify({ type: 'FeatureCollection', features: [courtyard, { type: 'Feature', properties: {}, geometry: { type: 'Point', coordinates: [15.982,45.8002] } }] })) });
   await expect(page.getByRole('alertdialog')).toBeVisible();
   expect(await page.evaluate(() => (window as any).getActiveProposalDesignDraft().editorPayload)).toEqual(before);
-  await expect(page.locator('#single-building-selector option')).toHaveCount(1);
+  await expect(page.locator('#map-container .single-building-fill')).toHaveCount(1);
   expect(await savedUploads(page)).toHaveLength(0);
 });
 
@@ -133,7 +133,7 @@ test('courtyard vertices reshape independently and undo restores the uploaded fo
 test('cancelling a Block upload discards the continued Freeform design session', async ({ mockApi: page }) => {
   await openTool(page, 'buildings');
   await page.locator('#blockify-geojson-input').setInputFiles({ name: 'buildings.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(collection)) });
-  await expect(page.locator('#single-building-selector option')).toHaveCount(3);
+  await expect(page.locator('#map-container .single-building-fill')).toHaveCount(3);
   await page.locator('#single-building-editor').getByRole('button', { name: 'Cancel', exact: true }).last().click();
   const prompt = page.getByRole('alertdialog');
   await expect.poll(async () => await page.locator('#single-building-editor').count() === 0 || await prompt.isVisible()).toBe(true);
@@ -153,7 +153,7 @@ test('a collection from the proposal form Design tab saves every building on Don
     await w.openProposalDraftDesign(draft.id);
   }, courtyard.geometry);
   await page.locator('#single-building-geojson-input').setInputFiles({ name: 'buildings.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(collection)) });
-  await expect(page.locator('#single-building-selector option')).toHaveCount(3);
+  await expect(page.locator('#map-container .single-building-fill')).toHaveCount(3);
   await waitForLandTakeSummary(page);
   await page.locator('#single-building-confirm').click();
   await expect.poll(async () => (await savedUploads(page)).filter((p: any) => p.applied).length).toBe(3);

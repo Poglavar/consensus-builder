@@ -58,7 +58,7 @@
         var config = BASEMAPS[key] || BASEMAPS.openstreetmap;
         var layer;
         if (source) {
-            var options = { maxZoom: 22, maxNativeZoom: source.maxZoom ?? 22, minZoom: source.minZoom ?? 0,
+            var options = { maxZoom: 23, maxNativeZoom: source.maxZoom ?? 22, minZoom: source.minZoom ?? 0,
                 attribution: global.ImagerySource.escapeAttribution(source.attribution || source.name) };
             if (source.bounds) options.bounds = [[source.bounds[1], source.bounds[0]], [source.bounds[3], source.bounds[2]]];
             var base = String(global.getBackendBase()).replace(/\/+$/, '');
@@ -72,7 +72,11 @@
                 global.ParcelSourceSettings.reportFailure(global, translated && translated !== key ? translated : 'Imagery could not be loaded. Retry or choose another source.',
                     'imagery', function () { currentBaseMapKey = null; applyBasemap(global.map, 'imagery'); });
             });
-        } else layer = L.tileLayer(config.url, config.options);
+        } else {
+            // Overzoom reuses native tiles; vector detail stays crisp without finer tile requests.
+            layer = L.tileLayer(config.url, { ...config.options, maxZoom: 23,
+                maxNativeZoom: config.options.maxNativeZoom ?? config.options.maxZoom });
+        }
 
         layer.on('tileerror', function (error) {
             var tile = error.tile;

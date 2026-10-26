@@ -35,6 +35,23 @@ describe('granular authored editing', () => {
         expect(turf.area(next.geometry.buildings[1])).toBeCloseTo(turf.area(design.geometry.buildings[0]),1);
         expect(edit(next,[{op:'remove',path:'/geometry/buildings/0'}]).geometry.buildings).toHaveLength(1);
     });
+    it('moves only a freeform footprint while retaining ground and furniture, and edits land take independently', () => {
+        const design=make('building',{floors:4,coverage:.05});
+        const body=design.geometry.buildings[0];
+        design.geometry.groundBoundary=turf.feature(structuredClone(site));
+        design.geometry.groundSurface={treatment:'green',polygon:turf.difference(turf.feature(site),body).geometry,
+            decorationDesign:{trees:[{coordinate:[-.099,51.501],kind:'broadleaf',heightM:8}]}};
+        design.geometry.landTake={geometry:structuredClone(body.geometry)};
+        const before=structuredClone(design);
+        const next=edit(design,[{op:'transform',path:'/geometry/buildings/0/geometry',eastM:5},
+            {op:'replace',path:'/geometry/landTake/geometry',value:structuredClone(site)}]);
+        expect(next.geometry.buildings[0].geometry).not.toEqual(body.geometry);
+        expect(next.geometry.groundBoundary).toEqual(design.geometry.groundBoundary);
+        expect(next.geometry.groundSurface.decorationDesign).toEqual(design.geometry.groundSurface.decorationDesign);
+        expect(turf.bbox(next.geometry.groundSurface.polygon)).toEqual(turf.bbox(site));
+        expect(next.geometry.landTake.geometry).toEqual(site);
+        expect(design).toEqual(before);
+    });
     it('rejects stale revisions, failed tests, invalid pointers and prototype pollution atomically', () => {
         const design=make('building',{floors:4}), before=structuredClone(design);
         expect(()=>editedDesign(design,cidOfObject({wrong:true}),[{op:'replace',path:'/title',value:'Changed'}])).toThrow(/revision/);

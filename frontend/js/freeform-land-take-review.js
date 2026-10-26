@@ -23,11 +23,17 @@
             return { color, fillColor: color, weight: 2, fillOpacity: kind === 'take' ? 0.12 : 0.25,
                 dashArray: kind === 'remainder' ? '4 4' : null };
         }
-        function paint(focus = null) {
+        let hoveredKey = null, focusedKey = null, selectedKey = null;
+        function paint() {
+            const key = hoveredKey || focusedKey || selectedKey;
+            const focus = current?.rows.find(row => row.key === key)?.feature;
+            rows.querySelectorAll('.land-take-row').forEach(row => {
+                row.classList.toggle('is-highlighted', row.dataset.landKey === key);
+            });
             layers.clearLayers();
             if (!current) return;
             const draw = (geometry, kind) => {
-                if (geometry) env.L.geoJSON(geometry, { pane: session.pane, interactive: false, style: style(kind) }).addTo(layers);
+                if (geometry) env.L.geoJSON(geometry, { pane: session.pane, interactive: false, style: { ...style(kind), ...(kind === 'focus' ? { className: 'land-take-focus', weight: 4 } : {}) } }).addTo(layers);
             };
             draw(current.take, 'take');
             current.rows.forEach(row => draw(row.remainder, 'remainder'));
@@ -39,13 +45,27 @@
         }
         function render() {
             rows.replaceChildren();
-            if (!current) return;
+            panel.querySelector('[data-land-intro]').textContent = text('intro', { count: current?.rows.length || 0 });
             const multi = getBuildings().length > 1;
+            panel.querySelector('[data-land-whole]').disabled = multi || pending || !current;
+            panel.querySelector('[data-land-footprint]').disabled = pending;
+            if (!current) return;
             for (const row of current.rows) {
                 const label = document.createElement('label');
                 label.className = 'land-take-row';
+                label.dataset.landKey = row.key;
                 const name = document.createElement('span');
-                name.textContent = `${row.feature.properties?.BROJ_CESTICE || row.id} · ${Math.round(row.overlapM2 / row.parcelM2 * 100)}%`;
+                name.className = 'land-take-parcel';
+                const id = String(row.feature.properties?.BROJ_CESTICE || row.id);
+                const number = document.createElement('span');
+                number.className = 'land-take-parcel-id';
+                number.textContent = id.length > 13 ? `${id.slice(0, 5)}…${id.slice(-5)}` : id;
+                number.title = id;
+                number.setAttribute('aria-label', id);
+                const percent = document.createElement('span');
+                percent.className = 'land-take-percent';
+                percent.textContent = `${Math.round(row.overlapM2 / row.parcelM2 * 100)}%`;
+                name.append(number, percent);
                 const select = document.createElement('select');
                 select.setAttribute('aria-label', text('parcelChoice', { id: row.id }));
                 select.dataset.parcelId = row.id;
@@ -57,8 +77,11 @@
                     select.append(option);
                 }
                 select.value = row.mode;
-                select.addEventListener('focus', () => paint(row.feature));
-                select.addEventListener('blur', () => paint());
+                label.addEventListener('mouseenter', () => { hoveredKey = row.key; paint(); });
+                label.addEventListener('mouseleave', () => { hoveredKey = null; paint(); });
+                label.addEventListener('click', () => { selectedKey = row.key; paint(); });
+                select.addEventListener('focus', () => { focusedKey = row.key; paint(); });
+                select.addEventListener('blur', () => { focusedKey = null; paint(); });
                 select.addEventListener('change', () => {
                     onHistory();
                     savedTake = null;
@@ -68,13 +91,13 @@
                 label.append(name, select);
                 rows.append(label);
             }
-            panel.querySelector('[data-land-whole]').disabled = multi || pending;
-            panel.querySelector('[data-land-multi]').hidden = !multi;
         }
         async function refresh() {
             const ticket = ++sequence;
             pending = true;
             status.textContent = text('loading');
+            panel.querySelector('[data-land-whole]').disabled = true;
+            panel.querySelector('[data-land-footprint]').disabled = true;
             try {
                 const buildings = getBuildings();
                 const nextKey = JSON.stringify(buildings.map(item => item.geometry));
@@ -123,18 +146,19 @@
             } catch (error) {
                 if (closed || ticket !== sequence) return false;
                 pending = false;
+                render();
                 console.warn('[land-take] Review unavailable', error);
                 status.textContent = text('unavailable');
                 paint();
                 return false;
             }
         }
-        panel.querySelector('[data-land-retry]').addEventListener('click', refresh);
-        for (const mode of ['footprint', 'whole']) panel.querySelector(`[data-land-${mode}]`).addEventListener('click', () => {
+        for (const mode of ['footprint', 'whole']) panel.querySelector(`[data-land-${mode}]`).addEventListener('click', event => {
+            if (env.BusyControl.isBusy(event.currentTarget)) return;
             onHistory();
             savedTake = null;
             whole = mode === 'whole' ? new Set(current?.rows.map(row => row.key)) : new Set();
-            refresh();
+            env.BusyControl.track(event.currentTarget, refresh);
         });
         function schedule() {
             if (closed) return;
@@ -164,7 +188,7 @@
                     error.textContent = text('unavailable');
                     error.hidden = false;
                     error.scrollIntoView({ block: 'nearest' });
-                    panel.querySelector('[data-land-retry]').focus({ preventScroll: true });
+                    panel.querySelector('[data-land-footprint]').focus({ preventScroll: true });
                     return false;
                 }
                 error.hidden = true;

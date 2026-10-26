@@ -2,15 +2,16 @@ import { selectNativeOption } from '../helpers/controls';
 // Real-pointer coverage for whole-building free placement, its starting-parcel guide, snapping,
 // persistence, and the published-source replacement boundary. Geometry reads are observational.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, PARCEL_ID, PARCEL_GEOMETRY, proposalState, showProposal } from '../helpers/runtime';
+import { openCity, openParcel, PARCEL_ID, PARCEL_GEOMETRY, proposalState, showProposal, stubBasemapTiles } from '../helpers/runtime';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 import type { Page } from '@playwright/test';
 
 const EDITOR = '#single-building-editor';
-const DESTINATION_PARCEL_ID = sampleParcels.features[1].properties.parcelId;
+const DESTINATION_PARCEL_ID = sampleParcels.features[2].properties.parcelId;
 const INDEPENDENT_PARCEL_ID = sampleParcels.features[3].properties.parcelId;
 
 async function openSingleEditor(page: Page, cityReady = false, parcelId = PARCEL_ID, multiBuildingDesign = true): Promise<void> {
+  await stubBasemapTiles(page);
   if (!cityReady) await openCity(page);
   await page.evaluate(async id => {
     const w = window as any;
@@ -22,8 +23,20 @@ async function openSingleEditor(page: Page, cityReady = false, parcelId = PARCEL
   await expect(page.locator(`${EDITOR} .on-map-editor__panel`)).toBeVisible();
   await expect(page.locator('#single-building-confirm')).toBeEnabled();
   if (multiBuildingDesign) {
-    // Use the editor's duplicate and surroundings controls to make a real two-building design.
-    await page.locator('#single-building-add').click();
+    // Collections still import as independently saved buildings; there is no add-building UI.
+    const collection = await page.evaluate(() => {
+      const w = window as any;
+      const first = structuredClone(w.OnMapEditor.getPreview().draftPreview.features[0]);
+      first.properties.name = 'West';
+      const second = structuredClone(first);
+      second.properties.name = 'East';
+      const center = w.SingleBuildingGeometry.geometryCenter(first.geometry);
+      const point = w.map.latLngToLayerPoint(center).add(w.L.point(28, 0));
+      second.geometry = w.SingleBuildingGeometry.moveGeometryCenter(first.geometry, w.map.layerPointToLatLng(point));
+      return {type:'FeatureCollection',features:[first,second]};
+    });
+    await page.locator('#single-building-geojson-input').setInputFiles({name:'pair.geojson',mimeType:'application/geo+json',buffer:Buffer.from(JSON.stringify(collection))});
+    await page.evaluate(() => (window as any).map.setView([45.80025,15.9822],18,{animate:false}));
     await selectNativeOption(page.locator('#single-ground-treatment'), 'green');
   }
 }
@@ -127,38 +140,20 @@ async function beginGeometryEdit(page: Page, proposalId: string): Promise<void> 
 }
 
 test.describe('Single-building placement and immutable replacement @features', () => {
-  test('whole-proposal drag moves both buildings and the ground together; one Undo restores them exactly', async ({ mockApi: page }) => {
-    await openSingleEditor(page);
+  test.setTimeout(60_000);
+  test('building drag leaves surrounding ground anchored; one Undo restores the footprint', async ({ mockApi: page }) => {
+    await openSingleEditor(page, false, PARCEL_ID, false);
+    await selectNativeOption(page.locator('#single-ground-treatment'), 'green');
+    await waitForLandTakeReview(page);
     const before = await editorDesign(page);
-    expect(before.buildings).toHaveLength(2);
-    expect(before.ground).toBeTruthy();
-
+    const boundary = await page.evaluate(() => (window as any).getActiveProposalDesignDraft().editorPayload.context.groundBoundary);
     await dragActive(page, -190);
     await waitForLandTakeReview(page);
     const moved = await editorDesign(page);
-    expect(moved.buildings).toHaveLength(2);
-    expect(moved.ground).toBeTruthy();
-
-    const shifts = await page.evaluate(({ before, moved }) => {
-      const w = window as any;
-      const centers = (features: any[]) => features.map(feature => w.turf.centroid(feature).geometry.coordinates);
-      const a = centers(before.buildings);
-      const b = centers(moved.buildings);
-      const boxA = w.turf.bbox(before.ground);
-      const boxB = w.turf.bbox(moved.ground);
-      return [
-        b[0][0] - a[0][0], b[0][1] - a[0][1],
-        b[1][0] - a[1][0], b[1][1] - a[1][1],
-        boxB[0] - boxA[0], boxB[1] - boxA[1]
-      ];
-    }, { before, moved });
-    expect(shifts[0]).toBeLessThan(-0.0005);
-    expect(shifts[2]).toBeCloseTo(shifts[0], 5);
-    expect(shifts[4]).toBeCloseTo(shifts[0], 5);
-    expect(shifts[3]).toBeCloseTo(shifts[1], 5);
-    expect(shifts[5]).toBeCloseTo(shifts[1], 5);
-
-    await page.locator(`${EDITOR} #single-building-undo`).click();
+    expect(moved.buildings[0].geometry).not.toEqual(before.buildings[0].geometry);
+    expect(await page.evaluate(() => (window as any).getActiveProposalDesignDraft().editorPayload.context.groundBoundary)).toEqual(boundary);
+    expect(await page.evaluate(g => (window as any).turf.bbox(g), moved.ground)).toEqual(await page.evaluate(g => (window as any).turf.bbox(g), before.ground));
+    await page.locator('#single-building-undo').click();
     await expect.poll(() => editorDesign(page)).toEqual(before);
   });
 
@@ -170,7 +165,6 @@ test.describe('Single-building placement and immutable replacement @features', (
     const neighborBefore = before.buildings.find(feature => feature.properties?.name !== activeBefore.properties?.name);
     expect(neighborBefore).toBeTruthy();
     await page.locator(`${EDITOR} [data-placement="snap"]`).uncheck();
-    await page.locator('#single-move-together').uncheck();
     await dragActive(page, 24);
     const after = await editorDesign(page);
     const activeAfter = await activeBuilding(page);
@@ -234,7 +228,7 @@ test.describe('Single-building placement and immutable replacement @features', (
   });
 
   test('snap toggle and Alt produce distinct, observable footprint positions', async ({ mockApi: page }) => {
-    await openSingleEditor(page);
+    await openSingleEditor(page, false, PARCEL_ID, false);
     const snap = page.locator(`${EDITOR} [data-placement="snap"]`);
     const undo = page.locator(`${EDITOR} #single-building-undo`);
     const edgeDelta = await pointerDeltaToEastEdge(page);
@@ -260,12 +254,10 @@ test.describe('Single-building placement and immutable replacement @features', (
     test.setTimeout(90_000);
     await openSingleEditor(page);
     await page.locator(`${EDITOR} [data-placement="snap"]`).uncheck();
-    await page.locator('#single-move-together').uncheck();
-    // Duplicating initially overlaps the original. Separate their land before expecting both
+    // The imported pair initially overlaps. Separate their land before expecting both
     // independent proposals to remain applied; overlapping proposals replace each other.
     await dragActive(page, 190);
     await waitForLandTakeReview(page);
-    await page.locator('#single-move-together').check();
     const before = await editorDesign(page);
     expect(await page.evaluate(buildings => (window as any).turf.intersect(buildings[0], buildings[1]), before.buildings)).toBeNull();
     const existingIds = await page.evaluate(() => (window as any).proposalStorage.getAllProposals()
@@ -274,7 +266,7 @@ test.describe('Single-building placement and immutable replacement @features', (
     await waitForLandTakeReview(page);
     const moved = await editorDesign(page);
     expect(moved.buildings.map(feature => feature.geometry)).not.toEqual(before.buildings.map(feature => feature.geometry));
-    expect(moved.ground).not.toEqual(before.ground);
+    expect(await page.evaluate(g => (window as any).turf.bbox(g), moved.ground)).toEqual(await page.evaluate(g => (window as any).turf.bbox(g), before.ground));
     const bindingBodies: any[] = [];
     page.on('request', req => {
       if (req.method() === 'POST' && new URL(req.url()).pathname.endsWith('/designs/binding')) {
@@ -343,7 +335,7 @@ test.describe('Single-building placement and immutable replacement @features', (
       .some((p: any) => p.applied && p.buildingProposal?.typologyType === 'single'))).toBe(false);
   });
 
-  test('a non-overlapping edit of a published source preserves it; a local edit saves in place', async ({ mockApi: page }) => {
+  test('a building edit retains anchored surroundings and revises its published source; a local edit saves in place', async ({ mockApi: page }) => {
     // Two saves and a reload (or a second city load): longer than the default 30 s on a busy host.
     test.setTimeout(90_000);
     const publishedId = await createAppliedSingle(page);
@@ -360,20 +352,8 @@ test.describe('Single-building placement and immutable replacement @features', (
     const publishedBefore = await proposalState(page, publishedId);
     await beginGeometryEdit(page, publishedId);
     await page.locator(`${EDITOR} [data-placement="snap"]`).uncheck();
-    const moveTogether = page.locator('#single-move-together');
-    if (!(await moveTogether.isChecked())) await moveTogether.check();
     await dragActive(page, -360);
-    // Land review is debounced. Wait for its derived placement site rather than reading the
-    // transient design that still carries the old take.
-    await expect.poll(() => page.evaluate(sourceSite => {
-      const w = window as any;
-      const site = w.getActiveProposalDesignDraft?.()?.editorPayload?.context?.placement?.site;
-      if (!site) return Infinity;
-      const left = site.type === 'Feature' ? site : w.turf.feature(site);
-      const right = sourceSite.type === 'Feature' ? sourceSite : w.turf.feature(sourceSite);
-      const intersection = w.turf.intersect(left, right);
-      return intersection ? w.turf.area(intersection) : 0;
-    }, publishedBefore.site), { timeout: 20_000 }).toBeLessThan(0.01);
+    await waitForLandTakeReview(page);
     const moved = await editorDesign(page);
     const overlapAreas = await page.evaluate(({ buildings, ground, sourceBuildings, sourceSite }) => {
       const w = window as any;
@@ -408,7 +388,7 @@ test.describe('Single-building placement and immutable replacement @features', (
     expect(overlapAreas.hasPlacementSite).toBe(true);
     expect(overlapAreas.hasGreenSurface).toBe(true);
     expect(overlapAreas.buildingAreas.flat().every(area => area < 0.01)).toBe(true);
-    expect([overlapAreas.boundaryArea, overlapAreas.placementSiteArea, overlapAreas.greenArea].every(area => area < 0.01)).toBe(true);
+    expect([overlapAreas.boundaryArea, overlapAreas.placementSiteArea, overlapAreas.greenArea].every(area => area > 0.01)).toBe(true);
     await finishSingle(page);
     // The edit is a new design revising the published one, which stays as it was (same CID); the
     // revision links its published source by that CID (origin.cid, and its typed proposalOrigin, M2).
