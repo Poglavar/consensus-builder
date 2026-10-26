@@ -31,8 +31,7 @@
         { key: 'lake', icon: 'fa-water', labelKey: 'panel.parcel.build.lake', fallback: 'Lake' }
     ];
 
-    // Corridors and stops are all transport-network proposals. Keep them together at the end of
-    // the parcel palette instead of presenting Road/Track as unrelated full-width form buttons.
+    // Corridors and stops share the transport group, after urban rules and before parcel layout.
     const PARCEL_TRANSPORT_TOOLS = [
         {
             key: 'road', icon: 'fa-road', labelKey: 'panel.parcel.build.road', fallback: 'Road',
@@ -212,11 +211,8 @@
             ${reason ? `<p class="parcel-build-disabled-reason">${escapeAttr(reason)}</p>` : ''}
         `;
         };
-        // The §15a taxonomy, drawn as labelled groups (rethink-proposals.md, decision 2026-08-05):
-        // Lay out parcels stands alone first — the formation primitive; Block/Row/Detached are
-        // RULES-based tools (form follows parameters → Urban rules); Freeform Building, Park,
-        // Square and Lake all TAKE their parcel (→ Structures). The urban-rule park (use
-        // restriction, no taking) joins the rules group when rules grow that vocabulary.
+        // Structures first, then urban rules and transport. Parcel layout is a separate final
+        // group. Block/Row/Detached remain rules; Freeform, Park, Square and Lake are structures.
         const RULE_KEYS = ['buildings', 'row', 'parcelBased'];
         const STRUCTURE_KEYS = ['single', 'park', 'square', 'lake'];
         const layoutButton = PARCEL_BUILD_TOOLS.filter(tool => tool.key === 'parcel-layout').map(buttonHtml).join('');
@@ -224,6 +220,7 @@
         const structureButtons = PARCEL_BUILD_TOOLS.filter(tool => STRUCTURE_KEYS.includes(tool.key)).map(buttonHtml).join('');
         const rulesTitle = tParcel('panel.parcel.build.rulesCategory', {}, 'Urban rules');
         const structuresTitle = tParcel('panel.parcel.build.structuresCategory', {}, 'Structures');
+        const layoutTitle = tParcel('proposalDrafts.design.parcelLayout', {}, 'Parcel layout');
         // A station tile is a toggle: transit-stations.js marks the type being placed.
         const transportButtons = PARCEL_TRANSPORT_TOOLS
             .filter(tool => tool.stationType || roadToolsEnabled())
@@ -243,18 +240,21 @@
         const transportTitle = tParcel('panel.parcel.build.transport', {}, 'Transport');
         return `
             <div class="parcel-build-palette">
-                <div class="cb-tiles parcel-build-grid">${layoutButton}</div>
-                <section class="parcel-rules-group">
-                    <h4 class="cb-kicker">${rulesTitle}</h4>
-                    <div class="cb-tiles parcel-rules-grid">${ruleButtons}</div>
-                </section>
                 <section class="parcel-structures-group">
                     <h4 class="cb-kicker">${structuresTitle}</h4>
                     <div class="cb-tiles parcel-structures-grid">${structureButtons}</div>
                 </section>
+                <section class="parcel-rules-group">
+                    <h4 class="cb-kicker">${rulesTitle}</h4>
+                    <div class="cb-tiles parcel-rules-grid">${ruleButtons}</div>
+                </section>
                 <section class="parcel-transport-group">
                     <h4 class="cb-kicker">${transportTitle}</h4>
                     <div class="cb-tiles parcel-transport-grid">${transportButtons}</div>
+                </section>
+                <section class="parcel-layout-group">
+                    <h4 class="cb-kicker">${layoutTitle}</h4>
+                    <div class="cb-tiles parcel-build-grid">${layoutButton}</div>
                 </section>
             </div>
         `;

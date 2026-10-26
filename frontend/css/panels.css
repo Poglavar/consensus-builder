@@ -373,10 +373,9 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 
 /* Build palette (js/parcels/ui/proposal-actions.js): everything creatable on the selected
    parcel(s). The §15a taxonomy as groups, each a cb-kicker over the shared choice tiles
-   (cb-tiles > cb-tile, css/primitives.css): Land readjustment first on its own (the formation
-   primitive), then Urban rules (Block / Row houses / Detached — rules-based), Structures (Freeform,
-   Park, Square, Lake — they take their parcel), Transport and Ownership. Only the spacing lives
-   here; the tiles take their look from primitives.css. */
+   (cb-tiles > cb-tile, css/primitives.css): Structures, Urban rules, Transport, then Parcel layout
+   in its own final section. Only the spacing lives here; the tiles take their look from
+   primitives.css. */
 .parcel-build-palette {
     display: flex;
     flex-direction: column;
