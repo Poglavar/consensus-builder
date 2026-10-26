@@ -18,6 +18,17 @@ async function openLayers(page: Page): Promise<void> {
 const count = (page: Page, selector: string) => page.locator(selector).count();
 const schellingParam = (page: Page) => new URL(page.url()).searchParams.get('schelling');
 
+async function clickVisibleCell(page: Page, selected = false): Promise<void> {
+  const cells = page.locator(`path.schelling-propose__cell${selected ? '.is-selected' : ''}`);
+  const id = await cells.evaluateAll(nodes => nodes.find(node => {
+    const box = node.getBoundingClientRect();
+    const x = box.x + box.width / 2, y = box.y + box.height / 2;
+    return x > 0 && y > 0 && x < innerWidth && y < innerHeight && document.elementFromPoint(x, y) === node;
+  })?.getAttribute('data-schelling-cell'));
+  expect(id, 'an unobstructed block is available to paint').toBeTruthy();
+  await page.locator(`path.schelling-propose__cell[data-schelling-cell="${id}"]`).click();
+}
+
 test('the Layers switch opens the plan with its own panel, whose settings redraw it and follow the address', async ({ mockApi: page }) => {
   await openCity(page);
   await page.evaluate(() => (window as any).map.setView([45.80025, 15.9822], 17, { animate: false }));
@@ -111,7 +122,7 @@ test('Propose from this plan is the panel\'s next step: painted blocks wait whil
   await tool.locator('[data-action="superblock"]').click();
   await expect(summary).toContainText('64 blocks');
   // A press on a chosen block takes it out; the summary and the drawn street land follow.
-  await page.locator('path.schelling-propose__cell.is-selected').first().click();
+  await clickVisibleCell(page, true);
   await expect(summary).toContainText('63 blocks');
 
   // Escape goes back to the plan's panel; the painted blocks are there on return.
@@ -125,7 +136,7 @@ test('Propose from this plan is the panel\'s next step: painted blocks wait whil
 
   // Keep it small for the proposal itself: one block and its four streets.
   await tool.locator('[data-action="clear"]').click();
-  await page.locator('path.schelling-propose__cell').nth(5).click();
+  await clickVisibleCell(page);
   await expect(summary).toContainText('1 block · 4 streets');
   await expect.poll(() => count(page, 'path.schelling-propose__street')).toBe(4);
 

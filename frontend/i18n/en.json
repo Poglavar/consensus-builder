@@ -649,7 +649,7 @@
             "changed": "Changed",
             "unchanged": "Unchanged",
             "inPlaceNotice": "Saving updates this design in place. It keeps its id.",
-            "counterproposalNotice": "Saving creates a alternative design. The published design is not changed or removed."
+            "counterproposalNotice": "Saving creates an alternative design. The published design is not changed or removed."
         },
         "validation": {
             "valid": "Ready to review",
@@ -1954,7 +1954,7 @@
             "snapsToStreet": "Snaps to {{name}}",
             "snapsToUnnamedStreet": "Snaps to an existing street",
             "editNotFound": "This road is not among the designs of the city on the map. Switch to the city it was created in, then try again.",
-            "savedAsCounterproposal": "The published road stays as it is; your edit was saved as a alternative design."
+            "savedAsCounterproposal": "The published road stays as it is; your edit was saved as an alternative design."
         },
         "roadAnalysis": {
             "title": "Road width analysis",

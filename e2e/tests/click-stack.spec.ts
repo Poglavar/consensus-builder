@@ -67,7 +67,7 @@ test.describe('Click stack @core', () => {
       const selected = await page.evaluate(() => (window as any).currentlyHighlightedProposalId);
       if (kind === 'designs') {
         expect(selected).toBeTruthy();
-        await expect(stackSection(page, kind).locator('.proposal-type-badge')).toBeVisible();
+        await expect(stackSection(page, kind).locator('.click-stack__body .proposal-type-badge')).toBeVisible();
         await stackSection(page, kind).locator('.click-stack__row').click();
         expect(await page.evaluate(() => (window as any).isProposalUIActive())).toBe(true);
         await expect(focus.first()).toBeVisible();

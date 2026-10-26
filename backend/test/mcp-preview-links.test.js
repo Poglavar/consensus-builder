@@ -84,6 +84,20 @@ describe('temporary hosted MCP object references', () => {
         expect(() => store.create({ agreement: { schema: 'agreement/v1', planCid: plan.cid, designs: [{ cid: cidOfObject(designs[0]) }] }, plan, designs }))
             .toThrow(expect.objectContaining({ code: 'invalid-draft-plan' }));
     });
+    it('carries the exact saved plan through browser agreement previews and rejects missing or altered plans', async () => {
+        const store = storeOf(), designs = [design('Agreement member')], plan = planOf(designs);
+        const agreement = { schema: 'agreement/v1', planCid: plan.cid };
+        const preview = store.create({ agreement, plan, designs, parcelSourceId: 'ground' });
+        const decoded = await links.load(preview.previewUrl, { fetchImpl: fetchFrom(store), cidOf: cidOfObject });
+        expect(decoded).toEqual({ agreement, plan: plan.content, designs, parcelSourceId: 'ground' });
+        expect(await store.resolve(preview.draftRef)).toEqual(decoded);
+        for (const invalidPlan of [undefined, { ...plan, content: { ...plan.content, title: 'Changed' } }, { ...plan, cid: cidOfObject({ wrong: true }) }]) {
+            const manifest = store.get(tokenOf(preview.draftRef));
+            manifest.plan = invalidPlan;
+            await expect(links.load(preview.previewUrl, { fetchImpl: async () => Response.json(manifest), cidOf: cidOfObject }))
+                .rejects.toThrow(/saved plan/);
+        }
+    });
     it('rejects changed content and member redirects to another server before importing anything', async () => {
         const store = storeOf(), content = design('Original');
         const preview = store.create({ design: content });

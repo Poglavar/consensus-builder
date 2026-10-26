@@ -1292,6 +1292,13 @@
         clearIsolation();
     }
 
+    // A user dismissing the scene selection also clears the shared design selection. An outside
+    // inspector change only ends the old view, so it can retain the selection it just made.
+    function deselectScene() {
+        endSelectionView();
+        window.ProposalSelection?.clear?.();
+    }
+
     // Inspector selection follows stack sections; those changes must not end the scene selection.
     let stackDriving = false;
     let stackInspector = null;   // { el, parent, next, selectedId } while the stack hosts the inspector
@@ -1520,8 +1527,7 @@
             }
         },
         closed() {
-            endSelectionView();
-            try { window.ProposalSelection?.clear?.(); } catch (_) { }
+            deselectScene();
         }
     };
 
@@ -1648,7 +1654,7 @@
         close.className = 'close-circle-btn isolation-banner-close';
         close.innerHTML = '&times;';
         close.setAttribute('aria-label', threeI18n('threeMode.isolation.exitAria', 'Exit this view'));
-        close.addEventListener('click', () => endSelectionView());
+        close.addEventListener('click', () => deselectScene());
         isolationBannerEl.appendChild(close);
         threeContainer.appendChild(isolationBannerEl);
         return isolationBannerEl;
@@ -8991,12 +8997,12 @@
             // The scene presents this selection; no separate 2D details panel is opened.
             window.selectAndHighlightProposal?.(plan.proposal.id, parcelId, false, false, true);
         }
-        if (plan.parcel?.action === 'clear') { endSelectionView(); return; }
+        if (plan.parcel?.action === 'clear') { deselectScene(); return; }
         // A parcel's massing is opened from its section, not on every click.
         if (plan.parcel) viewParcel(plan.parcel.id);
         // A click on nothing closes the stack, as in 2D (it has no close button of its own).
         if (!plan.parcel && !plan.proposal && !plan.selectMassing && !plan.inspectBuilding) {
-            if (window.ThreeClickStack?.isOpen?.()) endSelectionView();
+            if (window.ThreeClickStack?.isOpen?.()) deselectScene();
             return;
         }
         showClickStack(picked, plan, click, resolved.hits);
@@ -9037,7 +9043,7 @@
         });
         if (action === 'pass') return;
         if (action === 'cancel-walk') cancelWalkPick();
-        else if (action === 'clear-isolation') endSelectionView();
+        else if (action === 'clear-isolation') deselectScene();
         if (action !== 'block-2d-native') evt.preventDefault();
         evt.stopImmediatePropagation();
     }

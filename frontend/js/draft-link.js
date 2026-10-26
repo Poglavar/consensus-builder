@@ -48,6 +48,8 @@
         if (!Array.isArray(row.designs) || !row.designs.length) throw new Error('The private collection has no designs');
         const designs = [], designSources = {};
         const namedPlan = row.record.schema === 'plan/v1';
+        if (!namedPlan && (row.plan?.content?.schema !== 'plan/v1' || row.plan.cid !== row.record.planCid
+            || cidOf(row.plan.content) !== row.plan.cid)) throw new Error('The private agreement does not match its saved plan');
         for (const member of row.designs) {
             const child = await get(member.draftRef, member.cid);
             if (child.record.schema !== 'design/v1' || (!namedPlan && child.parcelSourceId !== row.parcelSourceId)
@@ -56,6 +58,7 @@
             designSources[member.cid] = child.parcelSourceId;
         }
         return { [row.record.schema === 'plan/v1' ? 'plan' : 'agreement']: row.record, designs, parcelSourceId: row.parcelSourceId,
+            ...(!namedPlan ? { plan: row.plan.content } : {}),
             ...(namedPlan && row.designSources ? { designSources } : {}) };
     }
     return { reference, load, MAX_OBJECT_BYTES };

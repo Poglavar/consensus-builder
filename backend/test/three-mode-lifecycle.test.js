@@ -43,6 +43,29 @@ function threeModeListenerRegistration(eventName) {
     return threeModeSource.slice(registration.start, registration.end);
 }
 
+it('Escape ends the scene view and clears the shared design selection', () => {
+    const calls = [];
+    const context = loadInContext(threeModeDeclarations(['handleThreeModeKeyboardContext', 'deselectScene', 'endSelectionView']), {
+        window: {
+            ThreeClickStack: { isOpen: () => true, close: options => calls.push(['close', options.silent]) },
+            ProposalSelection: { clear: () => calls.push('deselect') }
+        },
+        clearIsolation: () => calls.push('clear-isolation'),
+        keyboardContext: { classifyThreeModeKeydown: () => 'clear-isolation' },
+        pendingIntroAutoRotate: false, controls: null, manualAutoRotateActive: false,
+        isActive: true, walkPickActive: false, isolatedParcelId: null, isolatedProposalId: null, viewedParcelId: null,
+        document: { body: { classList: { contains: () => false } } }
+    });
+    context.handleThreeModeKeyboardContext({
+        key: 'Escape', preventDefault: () => calls.push('prevent-default'),
+        stopImmediatePropagation: () => calls.push('stop-propagation')
+    });
+    expect(calls).toEqual([['close', true], 'clear-isolation', 'deselect', 'prevent-default', 'stop-propagation']);
+    calls.length = 0;
+    context.endSelectionView();
+    expect(calls).toEqual([['close', true], 'clear-isolation']);
+});
+
 it('resolves an obsolete mode request as false after a pending scene entry is cancelled', async () => {
     const calls = [];
     let finishSceneEntry;
@@ -328,6 +351,7 @@ function warmEnterFixture() {
         windowMapShell: null,
         MapShell: { closeSheets() {}, syncModeAvailability() { calls.syncModeAvailability += 1; } },
         scheduleViewAngleHint() {},
+        stopIntroAutoRotate() {},
         updateModeButtonStates() {},
         getWalkUrlBase: () => null,
         showRenderingOverlay() {},

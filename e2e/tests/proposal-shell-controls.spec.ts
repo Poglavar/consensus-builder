@@ -163,7 +163,7 @@ test.describe('Shared proposal editor shell controls @core', () => {
 
     await page.locator('[data-editor-action="review"]').click();
     await expect(page.locator('.proposal-editor-review')).toContainText('Updated description from the proposal editor.');
-    await expect(page.locator('.proposal-editor-review-notice')).toHaveText('Saving updates this proposal in place. It keeps its id.');
+    await expect(page.locator('.proposal-editor-review-notice')).toHaveText('Saving updates this design in place. It keeps its id.');
     await expect.poll(() => page.evaluate(id => (window as any).proposalDraftStore.getDraft(id).state, draftId)).toBe('review');
 
     await page.locator('[data-editor-action="back-to-edit"]').click();
@@ -213,6 +213,6 @@ test.describe('Shared proposal editor shell controls @core', () => {
     await page.locator('[data-draft-path="fields.description"]').fill('A counterproposal of the published park.');
     await page.locator('[data-editor-action="review"]').click();
     await expect(page.locator('.proposal-editor-review-notice'))
-      .toHaveText('Saving creates a counterproposal. The published proposal is not changed or removed.');
+      .toHaveText('Saving creates an alternative design. The published design is not changed or removed.');
   });
 });

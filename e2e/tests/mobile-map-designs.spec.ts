@@ -134,7 +134,7 @@ test('a blocked layout can create and publish its agreement, then Share includes
   const agreement = agreementPanel(page);
   const box = await agreement.boundingBox();
   expect(box!.height).toBeLessThanOrEqual(844 / 2 + 1);
-  await expect(agreement.locator('.agreement-panel-kind')).toHaveText('Agreement');
+  await expect(agreement.locator('.agreement-panel-kind')).toHaveText('Nonbinding community agreement');
   await expect(agreement.locator('[data-agreement-action="close"]')).toBeHidden();
   await expect(agreement.getByRole('button', { name: 'Remove from this device', exact: true })).toBeVisible();
   await agreement.locator('[data-agreement-action="propose"]').click();

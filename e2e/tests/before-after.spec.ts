@@ -366,7 +366,7 @@ test.describe('Before / after in the bet dialog @features', () => {
     await page.goto(`/bets/${AGREEMENT_ACCOUNT}?city=zg&reduceMotion=1`);
     const dialog = page.locator('#proposalMarketOverlay');
     await expect(dialog).toBeVisible({ timeout: 30_000 });
-    await expect(dialog.locator('.cb-dialog__title')).toHaveText(/^Will North park \+ South square execute by /);
+    await expect(dialog.locator('.cb-dialog__title')).toHaveText(/^Will (North park \+ South square|South square \+ North park) execute by /);
     const compare = dialog.locator('.bets-dialog__compare');
     await expect(compare.locator('img')).toHaveCount(2);
     // The two pictures cover the same frame, so the divider compares like with like.
