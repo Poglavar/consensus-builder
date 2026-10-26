@@ -191,6 +191,14 @@ Editing a road's footprint updates its site to the new corridor land and invalid
 parcel binding. Geometry must fit the current authored site at publication; a refusal returns
 the outlying geometry so the map can identify the affected area.
 
+### Parcel fit
+
+An authored park, square or lake boundary set to whole source-parcel geometry. A touched parcel
+has at least 0.25 m² of overlap with the current outline. “The biggest” selects the touched parcel
+with the largest total area; “All touched” uses their union. Parcel holes remain holes, and a lake
+must remain one connected area. Saving the fit updates the design’s site. Furniture contained by the new boundary keeps its
+authored position; furniture outside it is removed.
+
 ### Parcel binding
 
 The derived relationship between authored site geometry and a stated parcel source, including intersections, coverage and the intrusion tolerance used. A binding describes the source observed at calculation time, rather than altering the authored geometry.

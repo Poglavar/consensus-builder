@@ -18,7 +18,7 @@ for (const path of ['cid.js', 'metric-frame.js', 'local-frame.js', 'footprint-ge
     'corridor-transition.js', 'proposals/corridor-levels.js', 'corridor-footprint.js', 'corridor-tunnel.js',
     'corridor-geometry.js', 'proposals/corridor-authoring.js', 'proposals/formation-depth.js',
     'design-record.js', 'parcel-layout-validation.js', 'parcel-layout-layouts.js', 'reparcellization-slice.js',
-    'parcels/schelling-grid.js', 'single-building-geometry.js', 'park-planting.js', 'urban-rule-variation.js', 'building-rule-geometry.js', 'vendor/transit-station-models.js', 'transit-stations.js', 'intent-editing.js', 'intent-design.js']) {
+    'parcels/schelling-grid.js', 'single-building-geometry.js', 'lake-geometry.js', 'park-planting.js', 'urban-rule-variation.js', 'building-rule-geometry.js', 'vendor/transit-station-models.js', 'transit-stations.js', 'intent-editing.js', 'intent-design.js']) {
     const url = new URL(path, frontend);
     context.require = createRequire(url);
     runInContext(readFileSync(url, 'utf8'), context, { filename: path, timeout: 10_000 });

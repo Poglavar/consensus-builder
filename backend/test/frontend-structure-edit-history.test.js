@@ -6,11 +6,13 @@ import { readFileSync } from 'node:fs';
 import { createContext, runInContext } from 'node:vm';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
+import { appTurf } from '../agents/mcp-geometry.js';
 
 const editorSource = readFileSync(fileURLToPath(new URL('../../frontend/js/structure-geometry-editor.js', import.meta.url)), 'utf8');
 const require = createRequire(import.meta.url);
 globalThis.proj4 ||= require('proj4');
 const SingleBuildingGeometry = require('../../frontend/js/single-building-geometry.js');
+const LakeGeometry = require('../../frontend/js/lake-geometry.js');
 // A stored park/square tree: its point and its look (park-planting.js).
 const tree = (lng, lat) => ({ coordinate: [lng, lat], kind: 'broadleaf', heightM: 10 });
 
@@ -53,6 +55,11 @@ function makeEditorHarness(decorations, options = {}) {
         removeEventListener(type) { delete this.listeners[type]; },
         fire() { this.listeners.click?.(); }
     };
+    const fitButton = {
+        dataset: { action: 'fit-parcels' }, disabled: false, classList: makeClassList(), attributes: {},
+        setAttribute(name, value) { this.attributes[name] = value; },
+        removeAttribute(name) { delete this.attributes[name]; }
+    };
     const groups = [];
     const previewLayers = [];
     const panel = {
@@ -73,17 +80,18 @@ function makeEditorHarness(decorations, options = {}) {
             if (selector === '[data-role="lake-error"]') return lakeError;
             if (selector === '[data-action="save"]') return lakeSave;
             if (selector === '[data-action="undo"]') return undoButton;
+            if (selector === '[data-action="fit-parcels"]') return fitButton;
             return /finish-path/.test(selector) ? finishButton : (/data-role/.test(selector) ? element : null);
         },
         fireClick({ tool, action }) {
             const target = {
                 closest(selector) {
                     if (tool && selector === '.structure-geometry-tools [data-tool]') return { dataset: { tool } };
-                    if (action && selector === '[data-action]') return { dataset: { action } };
+                    if (action && selector === '[data-action]') return action === 'fit-parcels' ? fitButton : { dataset: { action } };
                     return null;
                 }
             };
-            this.listeners.click({ target });
+            return this.listeners.click({ target });
         }
     };
 
@@ -223,7 +231,11 @@ function makeEditorHarness(decorations, options = {}) {
     };
     const context = createContext({
         document, map, L, GeometryEditHistory: historyFactory,
-        SingleBuildingGeometry,
+        SingleBuildingGeometry, LakeGeometry,
+        StructureParcelFit: require('../../frontend/js/structure-parcel-fit.js'),
+        BusyControl: require('../../frontend/js/ui/busy-control.js'),
+        CbDialog: { choice: vi.fn(async () => options.fitMode === undefined ? 'largest' : options.fitMode), alert: vi.fn(async () => {}) },
+        CadastralParcelRepository: { ensureFootprint: vi.fn(options.lookup || (async () => ({ result: { features: options.parcels || [] } }))) },
         __parkPlanting: require('../../frontend/js/park-planting.js'),
         turf: {
             booleanPointInPolygon(point) {
@@ -345,12 +357,13 @@ function makeEditorHarness(decorations, options = {}) {
         parks: [], squares: [],
         console
     });
+    if (options.turf) context.turf = options.turf;
     context.window = context;
     runInContext(editorSource, context, { filename: 'frontend/js/structure-geometry-editor.js' });
 
     return {
         context, panel, groups, markers, previewLayers, historyInstances, document,
-        undoButton, finishButton,
+        undoButton, finishButton, fitButton,
         draft,
         groundRecords,
         lakeError,
@@ -949,5 +962,116 @@ describe('structure geometry editor history wiring', () => {
         expect(harness.isMapDraggingEnabled()).toBe(false);
         expect(harness.listenerCount('map', 'touchmove')).toBe(0);
         expect(harness.listenerCount('document', 'touchend')).toBe(0);
+    });
+});
+
+
+describe('structure editor parcel fitting', () => {
+    const box = (w, s, e, n) => appTurf.bboxPolygon([w, s, e, n]);
+    const first = box(-.1, 51.5, -.099, 51.501);
+    const bigger = box(-.099, 51.5, -.097, 51.501);
+    const boundary = box(-.0998, 51.5002, -.0989, 51.5008).geometry;
+    const decorations = { version: 3, trees: [tree(-.0995, 51.5005)], paths: [], benches: [] };
+    const harnessFor = (options = {}) => makeEditorHarness(decorations, {
+        geometry: boundary, turf: appTurf, parcels: [first, bigger], ...options
+    });
+    const fit = h => h.panel.fireClick({ action: 'fit-parcels' });
+
+    it.each(['park', 'square', 'lake'])('fits the %s outline, undoes it, and saves the new site', async kind => {
+        const h = harnessFor({ kind });
+        expect(h.open()).toBe(true);
+        expect(h.panel.innerHTML).toContain('data-action="fit-parcels"');
+        await fit(h);
+        expect(h.boundaryLayer().feature.geometry).toEqual(bigger.geometry);
+        expect(h.undoButton.disabled).toBe(false);
+        h.undoButton.fire();
+        expect(h.boundaryLayer().feature.geometry).toEqual(boundary);
+        expect(h.undoButton.disabled).toBe(true);
+        await fit(h);
+        h.save();
+        expect(h.savedPayload.structureProposal.geometry).toEqual(bigger.geometry);
+        expect(h.syncOptions.placement.site).toEqual(bigger.geometry);
+        if (kind === 'lake') expect(h.savedPayload.structureProposal.lakeGraphics.geometry).toEqual(bigger.geometry);
+        else expect(h.savedPayload.structureProposal.decorationDesign.trees[0].coordinate).toEqual(decorations.trees[0].coordinate);
+        expect(h.fitButton.disabled).toBe(false);
+        expect(h.fitButton.attributes['aria-busy']).toBeUndefined();
+    });
+
+    it('uses all touched parcels when requested', async () => {
+        const h = harnessFor({ fitMode: 'all' });
+        h.open(); await fit(h);
+        expect(appTurf.area(h.boundaryLayer().feature)).toBeCloseTo(appTurf.area(first) + appTurf.area(bigger), 4);
+        expect(h.context.CbDialog.choice).toHaveBeenCalledWith(expect.any(String), [
+            { value: 'largest', label: 'The biggest' }, { value: 'all', label: 'All touched' }
+        ], expect.any(Object));
+    });
+
+    it('shows the shared spinner throughout lookup and ignores a duplicate click', async () => {
+        let resolve;
+        const h = harnessFor({ lookup: () => new Promise(done => { resolve = done; }) });
+        h.open(); const pending = fit(h);
+        await Promise.resolve();
+        expect(h.fitButton.disabled).toBe(true);
+        expect(h.fitButton.attributes['aria-busy']).toBe('true');
+        expect(h.fitButton.classList.contains('cb-busy')).toBe(true);
+        await fit(h);
+        expect(h.context.CadastralParcelRepository.ensureFootprint).toHaveBeenCalledOnce();
+        resolve({ result: { features: [first, bigger] } }); await pending;
+        expect(h.fitButton.disabled).toBe(false);
+        expect(h.fitButton.classList.contains('cb-busy')).toBe(false);
+    });
+
+    it.each(['empty', 'failed'])('keeps the outline and restores the button after an %s lookup', async outcome => {
+        const h = harnessFor({ lookup: async () => {
+            if (outcome === 'failed') throw new Error('network failed');
+            return { result: { features: [] } };
+        } });
+        h.open(); await fit(h);
+        expect(h.boundaryLayer().feature.geometry).toEqual(boundary);
+        expect(h.undoButton.disabled).toBe(true);
+        expect(h.context.CbDialog.alert).toHaveBeenCalledOnce();
+        expect(h.fitButton.disabled).toBe(false);
+        expect(h.fitButton.attributes['aria-busy']).toBeUndefined();
+    });
+
+    it('cancels without fetching or adding an undo entry', async () => {
+        const h = harnessFor({ fitMode: null }); h.open(); await fit(h);
+        expect(h.context.CadastralParcelRepository.ensureFootprint).not.toHaveBeenCalled();
+        expect(h.boundaryLayer().feature.geometry).toEqual(boundary);
+        expect(h.undoButton.disabled).toBe(true);
+        expect(h.fitButton.disabled).toBe(false);
+    });
+
+    it.each(['close', 'move'])('discards a pending result after a %s', async action => {
+        let resolve;
+        const h = harnessFor({ lookup: () => new Promise(done => { resolve = done; }) });
+        h.open(); const pending = fit(h);
+        await vi.waitFor(() => expect(typeof resolve).toBe('function'));
+        if (action === 'close') { h.cancel(); h.open(); }
+        else {
+            h.panel.fireClick({ tool: 'move' });
+            h.boundaryLayer().fire('mousedown', { latlng: { lng: -.0995, lat: 51.5005 }, originalEvent: {} });
+            h.fireMap('mousemove', { latlng: { lng: -.0985, lat: 51.5005 } }); h.fireMap('mouseup');
+        }
+        const current = structuredClone(h.boundaryLayer().feature.geometry);
+        resolve({ result: { features: [first, bigger] } }); await pending;
+        expect(h.boundaryLayer().feature.geometry).toEqual(current);
+        expect(h.context.CbDialog.alert).not.toHaveBeenCalled();
+    });
+
+    it('respects the starting-site lock', async () => {
+        const h = harnessFor(); h.open(); h.mapEditorSessions.at(-1).placement.setLocked(true); await fit(h);
+        expect(h.boundaryLayer().feature.geometry).toEqual(boundary);
+        expect(h.context.CbDialog.alert).toHaveBeenCalledWith('Unlock the starting site to fit these parcels.');
+    });
+
+    it('rejects a disconnected lake fit before adding undo history', async () => {
+        const separated = box(-.0988, 51.5, -.097, 51.501);
+        const h = harnessFor({ kind: 'lake', fitMode: 'all', parcels: [first, separated],
+            geometry: box(-.0998, 51.5002, -.0985, 51.5008).geometry });
+        h.open(); const before = structuredClone(h.boundaryLayer().feature.geometry); await fit(h);
+        expect(h.boundaryLayer().feature.geometry).toEqual(before);
+        expect(h.undoButton.disabled).toBe(true);
+        expect(h.context.CbDialog.alert).toHaveBeenCalledWith(expect.stringContaining('one connected area'));
     });
 });

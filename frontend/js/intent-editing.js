@@ -217,6 +217,13 @@
                 if (space.decorationDesign) space.decorationDesign = load('ProposalApplyStructures', './proposals/apply/structures.js')
                     .decorationsOnGround(space.decorationDesign, space.geometry, turf);
             }
+            if (space.kind === 'lake' && !same(space.geometry, original.structureProposal?.geometry)) {
+                const lake = load('LakeGeometry', './lake-geometry.js');
+                const shape = load('SingleBuildingGeometry', './single-building-geometry.js');
+                if (!lake.isEditable(space.geometry, shape.isSimpleRing)) fail('invalid-lake', 'A lake boundary must form one connected area.');
+                space.lakeGraphics = lake.build(space.geometry, { turf });
+                if (!space.lakeGraphics) fail('invalid-lake', 'Could not build lake shore and water graphics.');
+            }
             validateDecorations(space.decorationDesign);
         }
         if (record.buildingProposal) {

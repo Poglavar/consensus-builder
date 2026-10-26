@@ -8,6 +8,7 @@ import { cidOfObject, isCid } from '../cid.js';
 const require = createRequire(import.meta.url);
 const approvalLink = require('../../frontend/js/approval-link.js');
 const footprintParts = require('../../frontend/js/proposals/footprint-parts.js');
+const { MIN_INTERSECTION_M2 } = require('../../frontend/js/proposals/plan-order.js');
 const search = require('../../frontend/js/ui/search-model.js');
 const browserSources = require('../../frontend/js/browser-source-readers.js');
 const databaseSources = JSON.parse(readFileSync(new URL('../../frontend/data/source-catalog.json', import.meta.url), 'utf8')).databaseSources;
@@ -52,7 +53,9 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
         return url.toString();
     };
     async function parcels({ city, parcelSourceId, parcelIds, point, geometry }) {
-        if (!geometry && (Boolean(parcelIds) === Boolean(point))) throw Object.assign(failure('invalid-parcel-query', 'Provide exactly one of parcel ids or point.', { action: 'Supply parcelId or point.' }), { field: ['parcelIds', 'point'], constraints: { exactlyOne: ['parcelIds', 'point'] } });
+        const selectors = [parcelIds, point, geometry].filter(value => value !== undefined && value !== null);
+        if (selectors.length !== 1) throw Object.assign(failure('invalid-parcel-query', 'Provide exactly one of parcel ids, point or outline geometry.', { action: 'Supply parcelId, point or geometry.' }), { field: ['parcelIds', 'point', 'geometry'], constraints: { exactlyOne: ['parcelIds', 'point', 'geometry'] } });
+        if (geometry && !['Polygon', 'MultiPolygon'].includes(geometry.type)) throw Object.assign(failure('invalid-parcel-query', 'Outline geometry must be a Polygon or MultiPolygon.', { action: 'Supply a polygonal outline.' }), { field: 'geometry', constraints: { allowedTypes: ['Polygon', 'MultiPolygon'] } });
         let source = parcelSourceId;
         if (!source) throw Object.assign(failure('parcel-source-required', 'Supply an explicit parcelSourceId.', {
             tool: 'ugt_list_sources', arguments: { ...(city ? { city } : {}), abstraction: 'parcels' },
@@ -77,6 +80,7 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
             } else if (source === 'oss-wfs') {
                 const answer = geometry ? await request('/parcels/under', {}, { geometry, srid: 4326, parcelsOnly: true })
                     : await request(path, { coordinates: point.join(',') });
+                if (answer.truncated) throw failure('parcel-coverage-incomplete', 'Database parcel query was truncated.', { action: 'Choose a smaller outline.' });
                 features = answer.features.map(normalize);
             } else {
                 const bounds = geometry ? turf.bbox(turf.feature(geometry)) : [point[0] - 0.00001, point[1] - 0.00001, point[0] + 0.00001, point[1] + 0.00001];
@@ -89,6 +93,13 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
             ? await request(`/parcel-sources/${encodeURIComponent(source)}/under`, {}, { geometry })
             : await request(`/parcel-sources/${encodeURIComponent(source)}`, parcelIds ? { ids: parcelIds.join(',') } : { point: point.join(',') });
         if (result.complete !== true) throw failure('parcel-coverage-incomplete', 'The parcel source did not return complete coverage.', { action: 'Retry when the parcel source is available; do not draft from partial ground.' });
+        if (geometry) {
+            const outline = turf.feature(geometry);
+            result = { ...result, features: result.features.filter(feature => {
+                const overlap = turf.intersect(feature, outline);
+                return overlap && turf.area(overlap) >= MIN_INTERSECTION_M2;
+            }) };
+        }
         if (parcelIds && parcelIds.some(id => !result.features.some(f => String(f.id ?? f.properties?.parcelId) === id))) {
             throw failure('parcel-missing', 'One or more requested parcels are absent.', { action: 'Correct the parcel ids using ugt_find_place.' });
         }
@@ -141,7 +152,14 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
                     previewUrl: mapUrl(city, [...feature.geometry.coordinates, ...feature.geometry.coordinates]) }))].slice(0, limit), warnings: agreements.count >= 100 ? ['Agreement title search covers the latest 100 agreements.'] : [] };
         },
         async parcelContext(args) {
-            const result = await parcels({ ...args, parcelIds: args.parcelId ? [args.parcelId] : undefined });
+            const result = await parcels({ city: args.city, parcelSourceId: args.parcelSourceId,
+                parcelIds: args.parcelId ? [args.parcelId] : undefined, point: args.point, geometry: args.geometry });
+            if (args.geometry) return {
+                ...result,
+                parcelAreasM2: Object.fromEntries(result.features.map(feature => [
+                    String(feature.id ?? feature.properties?.parcelId), turf.area(feature)
+                ]))
+            };
             if (result.features.length !== 1) throw failure('parcel-ambiguous', 'The point must identify exactly one parcel.', { action: 'Choose a parcelId from ugt_find_place.' });
             const parcel = result.features[0], id = String(parcel.id ?? parcel.properties.parcelId), bbox = turf.bbox(parcel);
             const [designs, agreements, markets, buildings, history, planning] = await Promise.all([

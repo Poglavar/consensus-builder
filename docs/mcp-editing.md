@@ -47,6 +47,60 @@ votes, signatures, funding or execution state. Publication remains a separate co
 | `ugt_validate_plan` | Check authored geometry, retained constraints, building overlaps and station attachment presence; source coverage and statutory compliance remain explicit unknowns. |
 | `ugt_compare` | Compare revisions and expose absent source measurements as unknown. |
 
+### Fit a public space to source parcels
+
+`ugt_parcel_context` accepts exactly one of `parcelId`, `point` or a polygonal `geometry`. For an
+outline query, supply an explicit `parcelSourceId` and a GeoJSON `Polygon` or `MultiPolygon`:
+
+```json
+{
+  "city": "london",
+  "parcelSourceId": "<source id from ugt_list_sources>",
+  "geometry": {"type":"Polygon","coordinates":[[[-0.1,51.5],[-0.098,51.5],[-0.098,51.502],[-0.1,51.502],[-0.1,51.5]]]}
+}
+```
+
+The result contains `complete`, `parcelSourceId`, `features` with the complete touched source
+parcel geometries, and `parcelAreasM2` keyed by parcel ID. A touch needs at least 0.25 m² of overlap,
+matching the map editor and parcel ancestry floor; edge-only contacts are excluded. Choose
+the largest parcel by its full `parcelAreasM2` value, or use every returned feature for the all
+parcels choice. The returned parcel geometries remain source ground; inspect and edit the space
+design separately.
+
+Inspect the design's authored geometry and site, then use its returned CID as `expectedCid`:
+
+```json
+{"design":"<draftRef or CID>","paths":["/structureProposal/geometry","/site"]}
+```
+
+For the largest parcel, pass its returned geometry as the replacement value for both authored
+paths. For multiple parcels, seed temporary geometry fields with the returned parcel geometries,
+union them with the generic `ugt_edit_design` `union` operation, copy the union to the structure
+geometry and `/site`, then remove the temporary fields in the same ordered edit. For two parcels,
+the core operation sequence is:
+
+```json
+{
+  "design": "<same draftRef or CID>",
+  "expectedCid": "<CID from inspection>",
+  "edits": [
+    {"op":"add","path":"/structureProposal/_fitA","value":{"type":"Polygon","coordinates":[[[-0.1,51.5],[-0.099,51.5],[-0.099,51.502],[-0.1,51.502],[-0.1,51.5]]]}},
+    {"op":"add","path":"/structureProposal/_fitB","value":{"type":"Polygon","coordinates":[[[-0.099,51.5],[-0.098,51.5],[-0.098,51.502],[-0.099,51.502],[-0.099,51.5]]]}},
+    {"op":"union","path":"/structureProposal/_fitA","from":"/structureProposal/_fitB"},
+    {"op":"copy","from":"/structureProposal/_fitA","path":"/structureProposal/geometry"},
+    {"op":"copy","from":"/structureProposal/_fitA","path":"/site"},
+    {"op":"remove","path":"/structureProposal/_fitB"},
+    {"op":"remove","path":"/structureProposal/_fitA"}
+  ]
+}
+```
+
+Repeat the union step for each remaining parcel. The ordered patch is atomic; only the final
+canonical design is returned. Existing authored decorations and other design metadata are
+retained when the patch changes only the fitted geometry and site. A boundary edit also updates an
+otherwise unchanged site automatically. Lakes use the map editor’s shared connected-boundary
+validator and shore/water generator; a disconnected lake fit is rejected.
+
 Use the CID returned by inspection as `expectedCid`. Array indices are valid within that exact
 revision. Edits run sequentially on a private copy, with the whole operation rejected on failure.
 `test` can add finer assertions. An object `add` sets a property; an array `add` inserts, and `-`

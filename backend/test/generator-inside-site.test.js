@@ -198,7 +198,7 @@ describe('row houses (one unit per parcel, row-house.js rebuildRowUnits)', () =>
 describe('structures (proposals/geometry.js buildGeometryFromParcels)', () => {
     it('a park on the two parcels binds exactly them', () => {
         const src = read('../../frontend/js/proposals/geometry.js');
-        const body = src.slice(src.indexOf('function buildGeometryFromParcels('), src.indexOf('function computeLakeZonesForGeometry('));
+        const body = src.slice(src.indexOf('function buildGeometryFromParcels('), src.indexOf('function buildLakeGraphicsFromGeometry('));
         const build = (0, eval)(`(${body})`); // eslint-disable-line no-eval
         expect(boundIds(build(SOURCES))).toEqual(['S1', 'S2']);
     });

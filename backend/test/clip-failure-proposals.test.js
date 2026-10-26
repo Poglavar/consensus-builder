@@ -472,7 +472,7 @@ describe('proposal-editor-adapters prepareParcelSelection', () => {
 
 // Classic scripts (top-level functions): loaded into a vm context as the page loads them.
 function classicContext(file, extra = {}) {
-    const context = { console, window: { __parcelArrangement: A }, turf, LAKE_SHORE_TARGET_RATIO: 0.2, LAKE_GRAPHICS_VERSION: 1, ...extra };
+    const context = { console, window: { __parcelArrangement: A }, turf, LakeGeometry: require('../../frontend/js/lake-geometry.js'), ...extra };
     vm.createContext(context);
     vm.runInContext(readFileSync(new URL(file, import.meta.url), 'utf8'), context);
     return context;
@@ -498,7 +498,7 @@ describe('proposals/geometry.js', () => {
         ctx.turf = failingTurf(['difference']);
         const before = siteCount('proposals-geometry.lakeShore');
         const transitionBefore = siteCount('proposals-geometry.lakeTransition');
-        const zones = ctx.computeLakeZonesForGeometry(feature(rect(0, 0, 100, 100)), {});
+        const zones = ctx.buildLakeGraphicsFromGeometry(rect(0, 0, 100, 100), {});
         expect(zones).toBeTruthy();
         expect(siteCount('proposals-geometry.lakeShore')).toBeGreaterThan(before);
         expect(siteCount('proposals-geometry.lakeTransition')).toBe(transitionBefore + 1);
