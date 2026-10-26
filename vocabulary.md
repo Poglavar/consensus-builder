@@ -72,11 +72,11 @@ An immutable `community-result/v1` record containing the agreement CID, organise
 
 ### Agreement input
 
-Land consumed by the included designs, with its source-qualified cadastral references and holder snapshot. Inputs can also include modeled open ground.
+Land represented by the included designs, with source-qualified cadastral references and a holder snapshot. Inputs can include modeled open ground: the union of each qualifying design site's geometry outside its bound cadastral parcels, not an area inferred from a binding summary.
 
 ### Agreement output
 
-A land piece standing on the input land after the included designs are applied. Its committed identity is a `piece1-sha256:` hash of the defined output projection, not a permanent cadastral identifier.
+A land piece standing on the input land after the included designs are applied. Outputs include materialized fabric pieces and any remaining modeled open-ground host that has no materialized piece. Such a host is carried as geometry with no claimed holder or cadastral identity. Its committed identity is a `piece1-sha256:` hash of the defined output projection, not a permanent cadastral identifier.
 
 An unchanged whole cadastral parcel commits to its source geometry, including its Polygon or MultiPolygon type. Splits and designed pieces commit to their resulting geometry. An unchanged whole parcel without a different allocation retains the holders named in the agreement's published inputs.
 

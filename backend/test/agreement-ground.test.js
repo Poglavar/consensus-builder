@@ -9,6 +9,8 @@ const turf = require('@turf/turf');
 const ground = require('../../frontend/js/agreement-ground.js');
 const record = require('../../frontend/js/agreement-record.js');
 const approval = require('../../frontend/js/proposals/approval.js');
+const openGround = require('../../frontend/js/proposals/open-ground.js');
+const siteBinding = require('../../frontend/js/proposals/site-binding.js');
 const Cid = require('../../frontend/js/cid.js');
 const { createLiveParcelFabric } = require('../../frontend/js/parcels/live-fabric.js');
 
@@ -27,6 +29,7 @@ const clone = value => JSON.parse(JSON.stringify(value));
 function fakeFabric(pieces) {
     return {
         producedBy: proposalId => pieces.filter(p => p.properties.producedByProposalId === proposalId).map(clone),
+        list: () => pieces.map(clone),
         entriesForCadastre: (ids, query = {}) => Array.from(ids)
             .flatMap(id => pieces.filter(p => (p.properties.cadastreParcelIds || []).includes(id)))
             .filter(p => query.includeCorridors === true || p.properties.isCorridor !== true)
@@ -57,7 +60,7 @@ const originals = new Map([
 // The layout declares k9 (padded and repeated); the road declares nothing and reaches k10 only
 // through the body it produced.
 const designs = () => [
-    { proposalId: 'layout-1', goal: 'parcel-layout', cadastreParcelIds: [' k9 ', 'k9'], parcelLayout: { algorithm: 'equal', openGroundM2: 12.5 } },
+    { proposalId: 'layout-1', goal: 'parcel-layout', cadastreParcelIds: [' k9 ', 'k9'], parcelLayout: { algorithm: 'equal' } },
     { proposalId: 'road-1', goal: 'road', cadastreParcelIds: [] }
 ];
 const ana = { ownerKey: 'agent-ana', displayName: 'Ana', share: 1 };
@@ -119,7 +122,92 @@ describe('derive', () => {
         expect(inputs.parcels[0].areaM2).toBeCloseTo(turf.area(originals.get('k9')), 6);
         expect(inputs.parcels[1].areaM2).toBeCloseTo(turf.area(originals.get('k10')), 6);
         expect(inputs.parcels.map(parcel => parcel.holders)).toEqual([[ana], [boris]]);
-        expect(inputs.openGroundM2).toBe(12.5);
+        expect(inputs.openGroundM2).toBe(0);
+    });
+
+    it('measures partial-binding open ground from the host geometry and includes its produced piece once', () => {
+        const original = piece('k9', rect(0, 0, 5, 10));
+        const cadastralBody = piece('body-cadastre', rect(0, 0, 5, 10), {
+            cadastreParcelIds: ['k9'], groundIds: ['ground:site-hash'], producedByProposalId: 'building-1'
+        });
+        const groundBody = piece('body-ground', rect(5, 0, 10, 10), {
+            groundIds: ['ground:site-hash'], producedByProposalId: 'building-1'
+        });
+        const fabric = fakeFabric([cadastralBody, groundBody]);
+        const design = {
+            proposalId: 'building-1', cadastreParcelIds: ['k9'], site: rect(0, 0, 10, 10),
+            binding: { coverage: 'partial', unsurveyedM2: 1 }
+        };
+        const { inputs, outputs } = ground.derive({ designs: [design], fabric,
+            originals: new Map([['k9', original]]), ownerOf, area, openGround, siteBinding, turf });
+        const expectedOpen = turf.area(turf.feature(rect(5, 0, 10, 10)));
+        expect(inputs.openGroundM2).toBeCloseTo(expectedOpen, 3);
+        expect(inputs.openGroundM2).not.toBe(1); // never turn binding.unsurveyedM2 into geometry
+        expect(outputs.map(output => output.pieceId).sort()).toEqual(['body-cadastre', 'body-ground']);
+    });
+
+    it('deduplicates shared ground outputs and includes surviving ground descendants', () => {
+        const original = piece('k9', rect(0, 0, 5, 10));
+        const shared = piece('shared-ground', rect(5, 0, 7, 10), {
+            groundIds: ['ground:site-hash'], producedByProposalId: 'design-1'
+        });
+        const remainder = piece('ground-remainder', rect(7, 0, 10, 10), {
+            groundIds: ['ground:site-hash']
+        });
+        const fabric = fakeFabric([shared, remainder]);
+        fabric.producedBy = id => (id === 'design-1' || id === 'design-2') ? [clone(shared)] : [];
+        const design = id => ({ proposalId: id, cadastreParcelIds: ['k9'], site: rect(0, 0, 10, 10),
+            binding: { coverage: 'partial', unsurveyedM2: 1 } });
+        const { inputs, outputs } = ground.derive({ designs: [design('design-1'), design('design-2')], fabric,
+            originals: new Map([['k9', original]]), ownerOf, area, openGround, siteBinding, turf });
+        expect(inputs.openGroundM2).toBeCloseTo(turf.area(turf.feature(rect(5, 0, 10, 10))), 3);
+        expect(outputs.map(output => output.pieceId).sort()).toEqual(['ground-remainder', 'shared-ground']);
+    });
+
+    it('refuses partial-site ground observations when original parcel geometry is unavailable', () => {
+        const body = piece('body-ground', rect(5, 0, 10, 10), {
+            groundIds: ['ground:site-hash'], producedByProposalId: 'building-1'
+        });
+        const design = { proposalId: 'building-1', cadastreParcelIds: ['k9'], site: rect(0, 0, 10, 10),
+            binding: { coverage: 'partial', unsurveyedM2: 1000 } };
+        expect(() => ground.derive({ designs: [design], fabric: fakeFabric([body]), originals: new Map(), ownerOf, area,
+            openGround, siteBinding, turf })).toThrow(/original parcel geometry is missing/);
+    });
+
+    it('refuses ground provenance when the geometry services are unavailable', () => {
+        const body = piece('body-ground', rect(5, 0, 10, 10), {
+            groundIds: ['ground:site-hash'], producedByProposalId: 'building-1'
+        });
+        const design = { proposalId: 'building-1', cadastreParcelIds: ['k9'], site: rect(0, 0, 10, 10),
+            binding: { coverage: 'partial', unsurveyedM2: 1000 } };
+        expect(() => ground.derive({ designs: [design], fabric: fakeFabric([body]),
+            originals: new Map([['k9', piece('k9', rect(0, 0, 5, 10))]]), ownerOf, area,
+            openGround: {}, siteBinding, turf })).toThrow(/without its geometry services/);
+    });
+
+    it('includes a transient host as an unchanged output when no parcels were formed on it', () => {
+        const original = piece('k9', rect(0, 0, 5, 10));
+        const fabric = fakeFabric([piece('k9', original.geometry, { cadastreParcelIds: ['k9'] })]);
+        const design = { proposalId: 'multi-building', cadastreParcelIds: ['k9'], site: rect(0, 0, 10, 10),
+            binding: { coverage: 'partial', unsurveyedM2: 1 } };
+        const { inputs, outputs } = ground.derive({ designs: [design], fabric,
+            originals: new Map([['k9', original]]), ownerOf, area, openGround, siteBinding, turf });
+        expect(inputs.openGroundM2).toBeCloseTo(turf.area(turf.feature(rect(5, 0, 10, 10))), 3);
+        const host = outputs.find(output => output.pieceId.startsWith('open-ground:'));
+        expect(host).toMatchObject({ role: 'parcel', fromParcelIds: [], producedBy: null, holders: [] });
+        expect(host.geometry).toEqual(rect(5, 0, 10, 10));
+        expect(host.hash).toBe(record.outputHash(host.geometry));
+    });
+
+    it('unions overlapping partial-site hosts instead of counting them twice', () => {
+        const original = piece('k9', rect(0, 0, 5, 10));
+        const fabric = fakeFabric([piece('k9', original.geometry, { cadastreParcelIds: ['k9'] })]);
+        const design = id => ({ proposalId: id, cadastreParcelIds: ['k9'], site: rect(0, 0, 10, 10),
+            binding: { coverage: 'partial', unsurveyedM2: 1 } });
+        const { inputs, outputs } = ground.derive({ designs: [design('first'), design('second')], fabric,
+            originals: new Map([['k9', original]]), ownerOf, area, openGround, siteBinding, turf });
+        expect(inputs.openGroundM2).toBeCloseTo(turf.area(turf.feature(rect(5, 0, 10, 10))), 3);
+        expect(outputs.filter(output => output.pieceId.startsWith('open-ground:'))).toHaveLength(1);
     });
 
     it('reads every piece on the input land, corridors included, once each, sorted by parcels then area', () => {
@@ -171,7 +259,7 @@ describe('derive', () => {
         };
         const result = record.validate(agreement);
         expect(result.valid).toBe(true);
-        expect(result.warnings.map(warning => warning.code)).toEqual(['open-ground']);
+        expect(result.warnings.map(warning => warning.code)).toEqual([]);
         expect(record.normalize(agreement).outputs.map(output => output.hash)).toEqual(derived.outputs.map(output => output.hash));
     });
 });

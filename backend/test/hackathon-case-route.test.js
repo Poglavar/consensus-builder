@@ -14,6 +14,8 @@ import { createRouteApp } from './helpers/create-route-app.js';
 
 const SPONSOR = 'G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg';
 const CID = cidOfObject({ schema: 'agreement/v1', title: 'Three-parcel courtyard' });
+const DESIGN_CID = cidOfObject({ schema: 'design/v1', title: 'Case fixture design' });
+const PLAN_CID = cidOfObject({ schema: 'plan/v1', title: 'Case fixture plan', designCids: [DESIGN_CID], view: { at: '45.8,15.9,15', mode: '2d' } });
 const ACCOUNT = agreementAccountOf(CID, SPONSOR);
 
 // The agreement as loadCaseAgreement hands it to the case model.
@@ -218,12 +220,32 @@ describe('GET /hackathon/cases/:cid', () => {
         errorSpy.mockRestore();
         expect(failing.status).toBe(500);
     });
+
+    it('returns 410 for a retired agreement and preserves 500 for a corrupt current-contract row', async () => {
+        let indexedRow = {
+            cid: CID, city: 'london', title: 'Three-parcel courtyard', author: 'planner-01',
+            design_cids: [], input_parcel_ids: ['HR-1-1'], parcel_source_id: null, deadline: null, status: 'active',
+            content: { schema: 'agreement/v1', designs: [{ title: 'retired inline design' }] }, onchain: null,
+            screenshot_url: null, screenshot_before_url: null, screenshot_pair_url: null, created_at: new Date('2026-09-22T08:00:00Z')
+        };
+        const pool = { query: vi.fn(async () => ({ rows: [indexedRow] })) };
+        const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+        const response = await request(appWith({ agreementReader: (_pool, cid) => loadCaseAgreement(pool, cid) })).get(`/hackathon/cases/${CID}`);
+        expect(response.status).toBe(410);
+        expect(response.body.code).toBe('retired-agreement-format');
+
+        indexedRow = { ...indexedRow, content: { schema: 'agreement/v1' } };
+        const corrupt = await request(appWith({ agreementReader: (_pool, cid) => loadCaseAgreement(pool, cid) })).get(`/hackathon/cases/${CID}`);
+        expect(corrupt.status).toBe(500);
+        expect(corrupt.body.error).toBe('Failed to build hackathon case');
+        errorSpy.mockRestore();
+    });
 });
 
 describe('hackathon case readers', () => {
     const indexRow = (overrides = {}) => ({
-        cid: CID, city: 'zagreb', title: 'Three-parcel courtyard', author: 'planner-01', design_cids: [], input_parcel_ids: ['HR-1-1'],
-        parcel_source_id: null, deadline: null, status: 'active', content: { sponsor: SPONSOR }, onchain: null,
+        cid: CID, city: 'london', title: 'Three-parcel courtyard', author: 'planner-01', design_cids: [DESIGN_CID], input_parcel_ids: ['HR-1-1'],
+        parcel_source_id: null, deadline: null, status: 'active', content: { schema: 'agreement/v1', planCid: PLAN_CID, sponsor: SPONSOR }, onchain: null,
         screenshot_url: null, screenshot_before_url: null, screenshot_pair_url: null, created_at: new Date('2026-09-22T08:00:00Z'), ...overrides
     });
     const poolOf = rows => ({ query: vi.fn(async () => ({ rows })) });
@@ -232,8 +254,8 @@ describe('hackathon case readers', () => {
         const recorded = await loadCaseAgreement(poolOf([indexRow({ onchain: { account: ACCOUNT, status: 'executed' }, status: 'executed' })]), CID);
         expect(recorded).toMatchObject({ cid: CID, sponsor: SPONSOR, status: 'executed', account: ACCOUNT, inputParcelIds: ['HR-1-1'], createdAt: '2026-09-22T08:00:00.000Z' });
         expect((await loadCaseAgreement(poolOf([indexRow()]), CID)).account).toBe(ACCOUNT);
-        expect((await loadCaseAgreement(poolOf([indexRow({ content: { sponsor: null } })]), CID)).account).toBeNull();
-        expect((await loadCaseAgreement(poolOf([indexRow({ content: { sponsor: 'not-a-wallet' } })]), CID)).account).toBeNull();
+        expect((await loadCaseAgreement(poolOf([indexRow({ content: { schema: 'agreement/v1', planCid: PLAN_CID, sponsor: null } })]), CID)).account).toBeNull();
+        expect((await loadCaseAgreement(poolOf([indexRow({ content: { schema: 'agreement/v1', planCid: PLAN_CID, sponsor: 'not-a-wallet' } })]), CID)).account).toBeNull();
         expect(await loadCaseAgreement(poolOf([]), CID)).toBeNull();
     });
 

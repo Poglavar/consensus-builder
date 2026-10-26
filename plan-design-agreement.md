@@ -351,10 +351,13 @@ the `proposal:<id>` rows. It never takes part in `ParcelMutation`: an agreement 
 - **Inputs are derived, never typed.** For each design: its declared `cadastreParcelIds` plus the
   cadastral ids of the pieces the fabric says it produced. Area comes from the original cadastral
   feature; holders from the local owner records (`parcel_<id>_owner`; a joint-pool agent expands to
-  its members). Open ground is the sum of the layouts' `openGroundM2`.
-- **Outputs are read from the fabric**: `LiveParcelFabric.entriesForCadastre(inputIds, { includeCorridors: true })`,
-  so plots, remainders, corridor bodies, split parts and untouched parcels all appear; holders are
-  what the fabric carries. Outputs are sorted by `fromParcelIds`, then area descending, then hash.
+  its members). Open ground is measured from the union of qualifying design sites outside their
+  bound original parcel geometries; a binding's area summary cannot replace that geometry.
+- **Outputs include the current ground**: `LiveParcelFabric.entriesForCadastre(inputIds, { includeCorridors: true })`
+  supplies plots, remainders, corridor bodies, split parts and untouched parcels. Current fabric
+  pieces on the modeled open-ground hosts are included too; any unformed host remainder is an
+  unchanged geometry output without a claimed holder or cadastral identity. Outputs are sorted
+  by `fromParcelIds`, then area descending, then hash.
 - **Decision rule** = the existing approval engine, unchanged: `rule.approvalConfig` is a
   `proposal-approval/v1` config (rights, policy, regime) and the engine's `inspect`/`tally` take
   `{ cadastreParcelIds: input ids, approvalConfig, lens }`. The three decision kinds become

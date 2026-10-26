@@ -200,6 +200,9 @@ export function setupHackathonCasesRoute(app, pool, {
                 }
             }));
         } catch (error) {
+            if (error?.code === 'retired-agreement-format') {
+                return res.status(410).json({ error: error.message, code: error.code });
+            }
             console.error('GET /hackathon/cases/:cid failed', error);
             return res.status(500).json({ error: 'Failed to build hackathon case' });
         }

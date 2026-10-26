@@ -9,6 +9,11 @@
     'use strict';
     const record = () => root.AgreementRecord
         || (typeof require === 'function' ? require('./agreement-record.js') : null);
+    const openGroundApi = () => root.__openGround
+        || (typeof require === 'function' ? require('./proposals/open-ground.js') : null);
+    const siteBindingApi = () => root.__siteBinding
+        || (typeof require === 'function' ? require('./proposals/site-binding.js') : null);
+    const turfApi = () => root.turf || null;
 
     // Locale-independent natural order (digit runs by value, the rest by code point), so the input
     // order is the same on every machine: it will be part of the agreement's content in M2.
@@ -99,7 +104,8 @@
      * @param area (feature) → m² (turf.area)
      * @returns {{ inputs: { parcels: { parcelId, areaM2, holders }[], openGroundM2 }, outputs: object[] }}
      */
-    function derive({ designs, fabric, originals, ownerOf, area = areaOf } = {}) {
+    function derive({ designs, fabric, originals, ownerOf, area = areaOf,
+        openGround: openGroundOption, siteBinding: siteBindingOption, turf: turfOption } = {}) {
         if (!Array.isArray(designs) || designs.some(design => !design || design.proposalId == null)) {
             throw new TypeError('derive needs design records with a proposalId.');
         }
@@ -118,11 +124,96 @@
             const measured = original ? area(original) : null;
             return { parcelId, areaM2: finite(measured) && measured >= 0 ? committedArea(measured) : null, holders: holdersOf(ownerOf, parcelId) };
         });
-        const openGroundM2 = designs.reduce((sum, design) => sum + Math.max(0, Number(design.parcelLayout && design.parcelLayout.openGroundM2) || 0), 0);
+        const featureById = new Map();
+        (fabric.entriesForCadastre(parcelIds, { includeCorridors: true }) || []).forEach(feature => {
+            const id = feature?.properties?.parcelId;
+            if (id === undefined || id === null || String(id) === '') {
+                featureById.set(`!missing:${featureById.size}`, feature);
+                return;
+            }
+            if (!featureById.has(String(id))) featureById.set(String(id), feature);
+        });
+
+        // Reconstruct the actual unsurveyed part from design geometry and immutable parcel geometry.
+        // binding.unsurveyedM2 is only an area summary and cannot stand in for the missing polygon.
+        const openGround = openGroundOption || openGroundApi();
+        const siteBinding = siteBindingOption || siteBindingApi();
+        const turf = turfOption || turfApi();
+        const openGroundEligible = design => {
+            if (openGround && typeof openGround.hasOpenGround === 'function' && siteBinding) {
+                return openGround.hasOpenGround(design, { siteBinding, turf });
+            }
+            const coverage = design?.binding?.coverage;
+            return !!siteBinding?.siteOf?.(design, { turf })
+                && (!idsOf(design?.cadastreParcelIds).length || coverage === 'partial' || coverage === 'none');
+        };
+        const anyOpenGroundDesign = designs.some(openGroundEligible);
+        if (anyOpenGroundDesign && (!openGround || !siteBinding || !turf
+            || typeof openGround.openGroundGeometry !== 'function' || typeof siteBinding.siteOf !== 'function')) {
+            throw new Error('Agreement ground cannot measure open-ground sites without its geometry services.');
+        }
+        const hostGeometries = [];
+        if (anyOpenGroundDesign) {
+            designs.filter(openGroundEligible).forEach(design => {
+                const site = siteBinding.siteOf(design, { turf });
+                if (!site) throw new Error(`Agreement ground cannot resolve the open-ground site for ${design.proposalId}.`);
+                const parcels = idsOf(design.cadastreParcelIds).map(id => ({
+                    id, geometry: originals?.get?.(id)?.geometry || originals?.get?.(id)
+                }));
+                const missing = parcels.filter(parcel => !parcel.geometry).map(parcel => parcel.id);
+                if (missing.length) throw new Error(`Agreement ground cannot resolve open ground; original parcel geometry is missing for ${missing.join(', ')}.`);
+                const geometry = openGround.openGroundGeometry(site, parcels, { turf, siteBinding, toleranceM: design.toleranceM });
+                if (geometry) hostGeometries.push(geometry);
+            });
+        }
+        const clip = (operation, left, right) => {
+            const arrangement = root.__parcelArrangement;
+            if (arrangement && typeof arrangement.clip === 'function') return arrangement.clip(operation, left, right);
+            return turf[operation](left, right);
+        };
+        const featureOf = geometry => geometry?.type === 'Feature' ? geometry : turf.feature(geometry);
+        let hostGeometry = null;
+        hostGeometries.forEach(geometry => {
+            const feature = featureOf(geometry);
+            hostGeometry = hostGeometry ? clip('union', hostGeometry, feature) : feature;
+            if (!hostGeometry) throw new Error('Agreement ground could not combine open-ground host geometries.');
+        });
+        let openGroundM2 = 0;
+        const syntheticOutputs = [];
+        if (hostGeometry) {
+            const hostArea = area(hostGeometry);
+            if (!finite(hostArea) || hostArea < 0) throw new Error('Agreement open-ground host could not be measured.');
+            openGroundM2 = committedArea(hostArea);
+            if (typeof fabric.list !== 'function') throw new Error('Agreement ground needs LiveParcelFabric.list() to resolve open-ground descendants.');
+            const descendants = fabric.list().filter(feature => Array.isArray(feature.properties?.groundIds)
+                && feature.properties.groundIds.length > 0 && feature.geometry);
+            let represented = null;
+            descendants.forEach(feature => {
+                const intersection = clip('intersect', featureOf(feature.geometry), hostGeometry);
+                if (!intersection) return;
+                const measured = area(intersection);
+                if (!finite(measured) || measured <= 0) return;
+                represented = represented ? clip('union', represented, intersection) : intersection;
+                if (!represented) throw new Error(`Agreement open-ground descendants could not be combined at ${feature.properties?.parcelId || 'unknown piece'}.`);
+                const id = feature.properties?.parcelId;
+                if (id !== undefined && id !== null && String(id) !== '' && !featureById.has(String(id))) featureById.set(String(id), feature);
+            });
+            const residual = represented ? clip('difference', hostGeometry, represented) : hostGeometry;
+            if (residual) {
+                const geometry = outputGeometry({ geometry: residual.geometry || residual }, null, 'parcel');
+                const hash = record().outputHash(geometry);
+                const residualArea = area(geometry);
+                if (!finite(residualArea) || residualArea <= 0) throw new Error('Residual open-ground geometry could not be measured.');
+                syntheticOutputs.push({ hash, pieceId: `open-ground:${hash.slice('piece1-sha256:'.length)}`,
+                    areaM2: committedArea(residualArea), fromParcelIds: [], producedBy: null,
+                    role: 'parcel', holders: [], geometry });
+            }
+        }
+        const outputFeatures = Array.from(featureById.values());
 
         const seen = new Set();
         const outputs = [];
-        (fabric.entriesForCadastre(parcelIds, { includeCorridors: true }) || []).forEach(feature => {
+        outputFeatures.forEach(feature => {
             const props = (feature && feature.properties) || {};
             if (props.parcelId === undefined || props.parcelId === null || String(props.parcelId) === '') {
                 throw new Error('A piece on the agreement land has no parcelId.');
@@ -145,6 +236,7 @@
                 geometry
             });
         });
+        outputs.push(...syntheticOutputs);
         outputs.sort((a, b) => numeric(a.fromParcelIds.join(','), b.fromParcelIds.join(','))
             || b.areaM2 - a.areaM2 || compare(a.hash, b.hash));
         return { inputs: { parcels, openGroundM2 }, outputs };

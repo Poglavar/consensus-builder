@@ -12,3 +12,5 @@ Four expired deadlines were renewed to `2026-11-01T23:17:08.000Z` during recreat
 - `bafkreihvc2s2gtqkijuda3scyjfdpb2so2eru4gwdcdwomilcvhzanim4q` — from `2026-10-25T23:15:07.000Z`
 
 The mapping records each renewal’s new deadline and the readback verification timestamp. It contains CID references only, without holder data.
+
+Fresh catalog readback covered 17 cities and returned 60 current entries. A retired agreement detail lookup returned HTTP 410 with code `retired-agreement-format`.
