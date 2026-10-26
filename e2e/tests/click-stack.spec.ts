@@ -132,29 +132,29 @@ test.describe('Click stack @core', () => {
     await expect(panel.locator('.panel-header')).toBeHidden();
     const designTab = panel.getByRole('tab', { name: 'Design', exact: true });
     await expect(designTab).toHaveAttribute('aria-selected', 'true');
-    await expect(panel.getByRole('tab').first()).toHaveText('Design');
+    await expect(panel.getByRole('tab').first()).toHaveAccessibleName('Design');
+    await expect(designTab).toHaveAttribute('title','Design');
+    await expect(designTab.locator('.fa-pen')).toBeVisible();
+    await expect(designTab).toHaveText('');
+    const infoTab=panel.getByRole('tab',{name:'Info',exact:true});
+    await expect(infoTab.locator('.fa-circle-info')).toBeVisible();
+    await expect(infoTab).toHaveAttribute('title','Info');
+    await expect(infoTab).toHaveText('');
+    await expect(panel.locator('.parcel-transport-btn--track .cb-icon-track')).toHaveCSS('mask-image', /track\.svg/);
     const selection = panel.locator('.multi-select-group');
     const customSite = panel.getByRole('button', { name: 'Custom site', exact: true });
     await expect(selection).toBeVisible();
     await expect(customSite).toBeVisible();
-    const selectionBox = await selection.boundingBox();
-    const customBox = await customSite.boundingBox();
-    const tabsBox = await panel.locator('.parcel-tabs').boundingBox();
-    expect(selectionBox && customBox && tabsBox).toBeTruthy();
-    // The fuller selection guidance wraps below a narrow dock, while a wider dock can keep the
-    // two controls beside each other. In either layout they do not overlap, keep source order,
-    // and both finish before the parcel tabs.
-    const selectionEnds = {
-      right: selectionBox!.x + selectionBox!.width,
-      bottom: selectionBox!.y + selectionBox!.height,
-    };
-    const customEnds = {
-      right: customBox!.x + customBox!.width,
-      bottom: customBox!.y + customBox!.height,
-    };
-    expect(selectionEnds.right <= customBox!.x || selectionEnds.bottom <= customBox!.y).toBe(true);
-    expect(selectionBox!.x <= customBox!.x || selectionBox!.y <= customBox!.y).toBe(true);
-    expect(Math.max(selectionEnds.bottom, customEnds.bottom)).toBeLessThanOrEqual(tabsBox!.y);
+    const buttons = panel.locator('.multi-select-options > button');
+    await expect(buttons).toHaveCount(3);
+    const boxes = await buttons.evaluateAll(elements => elements.map(el => {
+      const { x, y, width, height } = el.getBoundingClientRect();
+      return { x, y, width, height };
+    }));
+    expect(Math.max(...boxes.map(box=>box.y))-Math.min(...boxes.map(box=>box.y))).toBeLessThanOrEqual(1);
+    expect(boxes[0].x+boxes[0].width).toBeLessThanOrEqual(boxes[1].x);
+    expect(boxes[1].x+boxes[1].width).toBeLessThanOrEqual(boxes[2].x);
+    expect(boxes[2].y+boxes[2].height).toBeLessThanOrEqual((await panel.locator('.parcel-tabs').boundingBox())!.y);
     // The tab choice survives a different parcel and section collapse/reopen.
     await panel.getByRole('tab', { name: 'Info', exact: true }).click();
     await expect(page.locator('#parcel-info-title')).toContainText(PARCEL_ID);
@@ -187,6 +187,32 @@ test.describe('Click stack @core', () => {
     await page.keyboard.press('Escape');
     await expect(stack).toBeHidden();
     await expect(page.locator('#parcel-info-panel')).toBeHidden();
+  });
+
+  test('selection controls share one row on narrow screens and remain clean when reopening', async ({ mockApi: page }, testInfo) => {
+    await openCity(page);
+    for (const width of [390, 320]) {
+      await page.setViewportSize({width,height:844});
+      await clickMapPoint(page,15.9822,45.80025);
+      const panel=page.locator('#parcel-info-panel');
+      const row=panel.locator('.multi-select-options');
+      await expect(row.getByRole('button',{name:'Manual',exact:true})).toBeVisible();
+      await expect(row.getByRole('button',{name:'Detect block',exact:true})).toBeVisible();
+      await expect(row.getByRole('button',{name:'Custom site',exact:true})).toBeVisible();
+      const boxes=await row.locator('button').evaluateAll(elements=>elements.map(el=>{
+        const r=el.getBoundingClientRect();return {x:r.x,y:r.y,right:r.right,bottom:r.bottom};
+      }));
+      expect(boxes).toHaveLength(3);
+      expect(Math.max(...boxes.map(b=>b.y))-Math.min(...boxes.map(b=>b.y))).toBeLessThanOrEqual(1);
+      expect(boxes[2].right).toBeLessThanOrEqual(width);
+      expect(boxes[0].right).toBeLessThanOrEqual(boxes[1].x);
+      expect(boxes[1].right).toBeLessThanOrEqual(boxes[2].x);
+      await page.screenshot({path:testInfo.outputPath(`selection-row-${width}.png`)});
+      await row.getByRole('button',{name:'Custom site',exact:true}).click();
+      await expect(page.locator('#site-panel')).toBeVisible();
+      await page.keyboard.press('Escape');
+      await expect(page.locator('#site-panel')).toBeHidden();
+    }
   });
 
   // Corridors save through their own atomic transaction (createCorridorProposalAtomically), not

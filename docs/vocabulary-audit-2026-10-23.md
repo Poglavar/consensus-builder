@@ -1755,3 +1755,28 @@ Playwright cases reached the replacement but failed a fixture expectation: inten
 a published fixture's goal invalidates its CID lookup. After accounting for that fixture state,
 both headed cases passed at 390 px and 1280 px, including unchanged unrelated state, skip/cancel,
 reload and reference-only private import. No full suite ran and no run was stopped.
+
+
+### Parcel controls and icons, 2026-10-27
+
+Manual, Detect block and Custom site share one non-wrapping row in the parcel,
+formed-ground and multi-parcel contexts, including 320 px and 390 px viewports.
+Hosting cleanup removes the temporary Custom site button before another context opens.
+Design and Info use pen and information icons with translated accessible names and
+titles in both parcel and authored-site panels. Track uses a shared rails-and-sleepers
+SVG; station controls retain vehicle icons.
+
+Custom site is retained: it authors a working boundary for parks, squares, blocks and
+synthetic row/detached plots, including partial parcels and open ground. Selecting or
+reshaping it does not author replacement parcel borders. Freeform building dragging
+does not replace those uses. This preserves the existing Site and Parcel layout
+contracts; no glossary definition, record schema or editing operation changes.
+MCP parity: this is presentation only. Existing site geometry and granular design
+edits remain available through the existing MCP authoring and editing operations.
+
+Verification: targeted headless unit `click-stack-panel.test.js` passed 36/36.
+Targeted headed Playwright batches passed 4/4 (selection hosting), 5/5 (icon tabs
+and shared controls), 2/2 (Track rendering and real tool launch), and 1/1 (final
+narrow layout). Those are 12 executions of six distinct cases. All runs completed;
+none stopped and no full suite ran. The Track capture and 320 px control-row capture
+were visually inspected. No deployment was performed.

@@ -441,7 +441,7 @@
         // ---- Ground menu (a click where there is no parcel), in menu order ----
         groundCommand('drawSite', { labelKey: 'groundMenu.actions.drawSite', fallbackLabel: 'Draw a site here', icon: 'fas fa-draw-polygon' }),
         groundCommand('road', { labelKey: 'panel.parcel.build.road', fallbackLabel: 'Road', icon: 'fas fa-road' }),
-        groundCommand('track', { labelKey: 'panel.parcel.build.track', fallbackLabel: 'Track', icon: 'fas fa-train' }),
+        groundCommand('track', { labelKey: 'panel.parcel.build.track', fallbackLabel: 'Track', icon: 'cb-icon-track' }),
         groundCommand('busStation', { labelKey: 'panel.parcel.build.busStation', fallbackLabel: 'Bus station', icon: 'fas fa-bus' }),
         groundCommand('tramStation', { labelKey: 'panel.parcel.build.tramStation', fallbackLabel: 'Tram station', icon: 'fas fa-tram' }),
         groundCommand('undergroundStation', { labelKey: 'panel.parcel.build.undergroundStation', fallbackLabel: 'Metro station', icon: 'fas fa-train-subway' }),

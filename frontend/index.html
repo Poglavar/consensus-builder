@@ -114,12 +114,12 @@
         (function () {
             var cssFiles = [
                 'css/tokens.css',
-                'css/primitives.css',
+                'css/primitives.css?v=20261027-track-icon',
                 'css/workspace.css',
                 'css/base.css',
                 'css/layout.css',
                 'css/map.css',
-                'css/panels.css?v=20261027-style',
+                'css/panels.css?v=20261027-selection-icons',
                 'css/modals.css?v=20261020-profile-offers',
                 'css/parcel-sources.css',
                 'css/proposals.css?v=20261019-offer-funding',
@@ -1462,14 +1462,16 @@
                  strip is the shared cb-tabs (css/primitives.css); parcel-tab-btn / parcel-tabs stay
                  as the hooks switchParcelTab (js/parcels/proposals.js) and the specs find them by. -->
             <div class="cb-tabs cb-tabs--fill parcel-tabs" role="tablist">
-                <button type="button" class="cb-tab parcel-tab-btn" role="tab" aria-selected="true"
+                <button type="button" class="cb-tab parcel-tab-btn parcel-tab-btn--icon" role="tab" aria-selected="true"
                     aria-controls="propose-tab" data-parcel-tab-id="propose-tab"
-                    onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'propose-tab')"><span
-                        class="parcel-tab-label" data-i18n-key="proposalDrafts.tabs.design">Design</span></button>
-                <button type="button" class="cb-tab parcel-tab-btn" role="tab" aria-selected="false"
+                    onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'propose-tab')"
+                    aria-label="Design" title="Design" data-i18n-key="proposalDrafts.tabs.design" data-i18n-attr="aria-label,title"><i
+                        class="fas fa-pen" aria-hidden="true"></i></button>
+                <button type="button" class="cb-tab parcel-tab-btn parcel-tab-btn--icon" role="tab" aria-selected="false"
                     aria-controls="info-tab" data-parcel-tab-id="info-tab"
-                    onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'info-tab')"><span
-                        class="parcel-tab-label" data-i18n-key="panel.parcel.tabInfo">Info</span></button>
+                    onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'info-tab')"
+                    aria-label="Info" title="Info" data-i18n-key="panel.parcel.tabInfo" data-i18n-attr="aria-label,title"><i
+                        class="fas fa-circle-info" aria-hidden="true"></i></button>
                 <button type="button" class="cb-tab parcel-tab-btn" role="tab" aria-selected="false"
                     aria-controls="proposals-tab" data-parcel-tab-id="proposals-tab"
                     onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'proposals-tab')"><span
@@ -2394,7 +2396,7 @@
             'js/proposal-warnings.js',
             'js/polygon-geometry-editor.js',
             'js/street-frontage.js',
-            'js/site-drawing.js?v=20261020-local-estimates',
+            'js/site-drawing.js?v=20261027-tab-icons',
             'js/building-density-stats.js',
             'js/blockify-map-fit.js',
             'js/design-change-tracker.js',

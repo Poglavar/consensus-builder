@@ -85,6 +85,7 @@
         state.hosted = null;
         hosted.el.classList.remove('is-hosted');
         hosted.el.querySelector('.click-stack__actions--parcel')?.remove();
+        hosted.el.querySelector('.parcel-site-action')?.remove();
         if (hosted.parent) hosted.parent.insertBefore(hosted.el, hosted.next && hosted.next.parentNode === hosted.parent ? hosted.next : null);
         if (!hide) return;
         if (hosted.el.id === 'planning-inspector') global.PlanningViews?.select(null);
@@ -384,14 +385,15 @@
             if (target === 'parcel-info-panel') {
                 const toolbar = doc.getElementById(target)?.querySelector('.parcel-context-actions');
                 const actions = body.querySelector('.click-stack__actions--parcel');
-                if (toolbar && actions) toolbar.appendChild(actions);
-                const customSite = body.querySelector('[data-command="selection.useAsSite"]');
-                if (toolbar && customSite) {
-                    const wrap = doc.createElement('div');
-                    wrap.className = 'cb-actions click-stack__actions--parcel';
-                    wrap.appendChild(customSite);
-                    toolbar.appendChild(wrap);
+                const customSite = body.querySelector('[data-command="parcel.useAsSite"]')
+                    || body.querySelector('[data-command="selection.useAsSite"]');
+                const selectionOptions = toolbar?.querySelector('.multi-select-options');
+                if (selectionOptions && customSite) {
+                    customSite.classList.add('parcel-site-action', 'btn-sm');
+                    selectionOptions.appendChild(customSite);
                 }
+                if (toolbar && actions?.children.length) toolbar.appendChild(actions);
+                else actions?.remove();
             }
             if (kind !== 'plans') {
                 const relations = model.visibleContextFor(kind, instance, state.hits);

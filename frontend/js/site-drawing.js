@@ -883,8 +883,8 @@
                 <button type="button" class="close-circle-btn close-circle-btn--lg close-button" data-site-action="close-propose"></button>
             </div>
             <div class="cb-tabs cb-tabs--fill parcel-tabs" role="tablist">
-                <button type="button" role="tab" class="cb-tab parcel-tab-btn" aria-selected="false" data-site-tab="info"><span class="parcel-tab-label"></span></button>
-                <button type="button" role="tab" class="cb-tab parcel-tab-btn" aria-selected="false" data-site-tab="propose"><span class="parcel-tab-label"></span></button>
+                <button type="button" role="tab" class="cb-tab parcel-tab-btn parcel-tab-btn--icon" aria-selected="false" data-site-tab="info"><i class="fas fa-circle-info" aria-hidden="true"></i></button>
+                <button type="button" role="tab" class="cb-tab parcel-tab-btn parcel-tab-btn--icon" aria-selected="false" data-site-tab="propose"><i class="fas fa-pen" aria-hidden="true"></i></button>
                 <button type="button" role="tab" class="cb-tab parcel-tab-btn" aria-selected="false" data-site-tab="proposals"><span class="parcel-tab-label"></span><span class="cb-badge cb-badge--count parcel-tab-count" hidden></span></button>
             </div>
             <div class="panel-body">
@@ -927,7 +927,12 @@
         const existing = existingProposals();
         panel.querySelectorAll('[data-site-tab]').forEach(button => {
             const tab = button.getAttribute('data-site-tab'), active = tab === state.proposeTab;
-            button.querySelector('.parcel-tab-label').textContent = labels[tab];
+            const label = button.querySelector('.parcel-tab-label');
+            if (label) label.textContent = labels[tab];
+            else {
+                button.setAttribute('aria-label', labels[tab]);
+                button.setAttribute('title', labels[tab]);
+            }
             const badge = button.querySelector('.parcel-tab-count');
             if (badge) { badge.textContent = existing.entries.length ? String(existing.entries.length) : ''; badge.hidden = !existing.entries.length; }
             button.setAttribute('aria-selected', String(active));

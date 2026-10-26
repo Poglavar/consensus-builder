@@ -511,8 +511,8 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 }
 
 /* The parcel and block panels' tabs: the shared cb-tabs strip (css/primitives.css), inset like the
-   header above it. Four tabs share the parcel strip (Info · Propose · Proposals · Tools); the
-   text tabs split the room and Tools, an icon, takes only its own width. When the labels do not
+   header above it. Four tabs share the parcel strip (Design · Info · Designs · Tools);
+   icon tabs take their own width and the Designs label takes the remaining room. When the labels do not
    fit, the strip scrolls sideways. The Proposals tab carries its count as a cb-badge. */
 #parcel-info-panel .parcel-tabs,
 #block-info-panel .block-tabs {
@@ -520,7 +520,7 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
     padding: 0 var(--cb-space-2);
 }
 
-#parcel-info-panel .parcel-tab-btn--icon {
+.parcel-tabs .parcel-tab-btn--icon {
     flex: 0 0 auto;
 }
 
@@ -1220,6 +1220,8 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
     justify-content: center;
     margin: 0;
     gap: 4px;
+    width: 100%;
+    min-width: 0;
 }
 
 #parcel-info-panel .parcel-context-actions .multi-select-title {
@@ -1230,11 +1232,18 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 
 #parcel-info-panel .parcel-context-actions .multi-select-options {
     display: flex;
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
     gap: var(--cb-space-1);
     min-height: var(--cb-control-height-lg);
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    width: 100%;
+}
+
+#parcel-info-panel .multi-select-options > .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    white-space: normal;
 }
 
 /* Proposal list in parcel info panel */
@@ -1705,8 +1714,7 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
     text-overflow: ellipsis;
 }
 
-/* Selection belongs to the parcel, independently of which tab is open. Keep its persistent
-   mode controls beside the one-shot parcel actions; a narrow dock can wrap them below. */
+/* Selection controls share one row, independently of the open parcel tab. */
 .parcel-context-actions { display: flex; flex-wrap: wrap; padding: var(--cb-space-2) 0; gap: var(--cb-space-1); align-items: flex-end; }
 .parcel-context-actions .click-stack__actions--parcel { margin: 0; min-height: var(--cb-control-height-lg); }
 

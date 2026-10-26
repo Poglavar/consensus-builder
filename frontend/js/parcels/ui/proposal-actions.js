@@ -38,7 +38,7 @@
             titleKey: 'sidebar.roads.drawManualTooltip', titleFallback: 'Open the manual road drawing tool'
         },
         {
-            key: 'track', icon: 'fa-train', labelKey: 'panel.parcel.build.track', fallback: 'Track',
+            key: 'track', icon: 'cb-icon-track', labelKey: 'panel.parcel.build.track', fallback: 'Track',
             titleKey: 'sidebar.roads.drawTrackTooltip', titleFallback: 'Open the manual track drawing tool with curvature constraints'
         },
         {

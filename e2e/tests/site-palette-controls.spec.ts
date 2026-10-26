@@ -92,9 +92,17 @@ test.describe('Site proposals already on its parcels @core', () => {
     await expect(panel.locator('[data-site-tab="proposals"]')).toHaveAttribute('aria-selected', 'true');
     await expect(panel.locator('[data-site-tab="proposals"] .parcel-tab-count')).toHaveText('1');
     await expect(panel.locator(`[data-site-tab-panel="proposals"] [data-server-id="${publishedCid}"]`)).toContainText('Published park');
-    await panel.locator('[data-site-tab="info"]').click();
+    const infoTab=panel.getByRole('tab',{name:'Info',exact:true});
+    await expect(infoTab.locator('.fa-circle-info')).toBeVisible();
+    await expect(infoTab).toHaveAttribute('title','Info');
+    await expect(infoTab).toHaveText('');
+    await infoTab.click();
     await expect(panel.locator('[data-site-tab-panel="info"]')).toContainText('Bound parcels (1)');
-    await panel.locator('[data-site-tab="propose"]').click();
+    const designTab=panel.getByRole('tab',{name:'Design',exact:true});
+    await expect(designTab.locator('.fa-pen')).toBeVisible();
+    await expect(designTab).toHaveAttribute('title','Design');
+    await expect(designTab).toHaveText('');
+    await designTab.click();
     await expect(panel.locator('[data-site-tab-panel="propose"] .parcel-build-btn--park')).toBeVisible();
   });
 });
@@ -207,8 +215,14 @@ test.describe('Site build palette controls @core', () => {
   for (const item of [
     { key: 'road', status: '#road-drawing-controls', label: 'Road' },
     { key: 'track', status: '#road-drawing-controls', label: 'Track' },
-  ]) test(`${item.label} opens the real corridor drawing tool from the site palette`, async ({ mockApi: page }) => {
+  ]) test(`${item.label} opens the real corridor drawing tool from the site palette`, async ({ mockApi: page }, testInfo) => {
     const { panel } = await beginParcelSite(page);
+    if (item.key === 'track') {
+      const track=panel.locator('.parcel-transport-btn--track');
+      await expect(track.locator('.cb-icon-track')).toHaveCSS('mask-image', /track\.svg/);
+      await track.scrollIntoViewIfNeeded();
+      await page.screenshot({path:testInfo.outputPath('track-icon.png')});
+    }
     await panel.locator(`.parcel-transport-btn--${item.key}`).click();
     if (item.key === 'track') {
       await expect(page.locator('#track-speed-confirm-btn')).toBeVisible();
