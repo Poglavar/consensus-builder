@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import http from 'node:http';
 import { closeSync, fsyncSync, openSync, unlinkSync, writeSync } from 'node:fs';
-import { createHash, createHmac, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { open, readFile, rename, unlink, mkdir } from 'node:fs/promises';
 import { dirname, join, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -30,17 +30,6 @@ function parseOrigin(value) {
     try { url = new URL(value); } catch { throw new Error('publicOrigin must be an origin URL'); }
     if (!['http:', 'https:'].includes(url.protocol) || url.origin !== value) throw new Error('publicOrigin must be an origin URL');
     return url.origin;
-}
-function cookieValue(header, name) {
-    for (const piece of (header || '').split(';')) {
-        const index = piece.indexOf('=');
-        if (index > 0 && piece.slice(0, index).trim() === name) return piece.slice(index + 1).trim();
-    }
-    return '';
-}
-function safeEqualText(a, b) {
-    const aa = Buffer.from(a), bb = Buffer.from(b);
-    return aa.length === bb.length && timingSafeEqual(aa, bb);
 }
 function isUuid(value) {
     return typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
@@ -91,8 +80,8 @@ function validateStore(store, batch) {
     }
 }
 
-export async function createReviewServer({ bundleDir, dataDir, token, basePath = '/', publicOrigin }) {
-    if (typeof bundleDir !== 'string' || typeof dataDir !== 'string' || typeof token !== 'string' || Buffer.byteLength(token, 'utf8') < 8) throw new Error('bundleDir, dataDir and a token of at least 8 bytes are required');
+export async function createReviewServer({ bundleDir, dataDir, verifyAccess, basePath = '/', publicOrigin }) {
+    if (typeof bundleDir !== 'string' || typeof dataDir !== 'string' || typeof verifyAccess !== 'function') throw new Error('bundleDir, dataDir and an Access verifier are required');
     const bundle = resolve(bundleDir), data = resolve(dataDir);
     if (!bundleDir.startsWith('/') || !dataDir.startsWith('/')) throw new Error('bundleDir and dataDir must be absolute paths');
     if (bundle === data || bundle.startsWith(`${data}${sep}`) || data.startsWith(`${bundle}${sep}`)) throw new Error('bundleDir and dataDir must be separate');
@@ -123,18 +112,6 @@ export async function createReviewServer({ bundleDir, dataDir, token, basePath =
         throw error;
     }
 
-    const cookieName = 'plot_review_session';
-    const cookiePath = prefix;
-    const secureCookie = origin.startsWith('https:') ? '; Secure' : '';
-    const sign = nonce => createHmac('sha256', token).update(nonce).digest('base64url');
-    const authenticated = req => {
-        const raw = cookieValue(req.headers.cookie, cookieName);
-        const split = raw.indexOf('.');
-        if (split < 1) return false;
-        const nonce = raw.slice(0, split), signature = raw.slice(split + 1);
-        return /^[A-Za-z0-9_-]{32,}$/.test(nonce) && safeEqualText(signature, sign(nonce));
-    };
-    let authFailures = 0, authWindow = Date.now();
     let mutationQueue = Promise.resolve();
     const imageHashes = new Map(batch.samples.map(sample => [sample.id, sample.image_sha256]));
     const apiPath = name => `${prefix}api/${name}`;
@@ -157,33 +134,20 @@ export async function createReviewServer({ bundleDir, dataDir, token, basePath =
     const requireOrigin = req => {
         if (req.headers.origin !== origin || req.headers['sec-fetch-site'] === 'cross-site') throw Object.assign(new Error('Cross-origin request rejected'), { status: 403 });
     };
-    const requireAuth = req => { if (!authenticated(req)) throw Object.assign(new Error('Authentication required'), { status: 401 }); };
     const server = http.createServer(async (req, res) => {
         res.setHeader('X-Content-Type-Options', 'nosniff');
         res.setHeader('Referrer-Policy', 'no-referrer');
+        res.setHeader('X-Robots-Tag', 'noindex, nofollow');
         try {
+            try { await verifyAccess(req.headers['cf-access-jwt-assertion']); }
+            catch { throw Object.assign(new Error('Sign in with Cloudflare Access'), { status: 401 }); }
             const url = new URL(req.url, origin);
             const path = url.pathname;
             if (url.searchParams.has('token') || url.searchParams.has('auth')) throw Object.assign(new Error('Authentication is not accepted in query parameters'), { status: 400 });
             if (!['GET', 'HEAD', 'POST', 'PUT'].includes(req.method)) throw Object.assign(new Error('Method not allowed'), { status: 405 });
-            if (path === apiPath('session')) {
-                if (req.method === 'GET' || req.method === 'HEAD') return sendJson(res, 200, { authenticated: authenticated(req) });
-                if (req.method !== 'POST') throw Object.assign(new Error('Method not allowed'), { status: 405 });
-                requireOrigin(req);
-                if (Date.now() - authWindow > 15 * 60_000) { authWindow = Date.now(); authFailures = 0; }
-                if (authFailures >= 10) throw Object.assign(new Error('Too many authentication attempts'), { status: 429 });
-                const body = await readBody(req);
-                if (typeof body?.token !== 'string' || !safeEqualText(body.token, token)) {
-                    authFailures++;
-                    throw Object.assign(new Error('Invalid token'), { status: 401 });
-                }
-                authFailures = 0;
-                const nonce = randomBytes(32).toString('base64url');
-                return sendJson(res, 200, { authenticated: true }, { 'Set-Cookie': `${cookieName}=${nonce}.${sign(nonce)}; Path=${cookiePath}; Max-Age=2592000; HttpOnly; SameSite=Strict${secureCookie}` });
-            }
+            if (path === apiPath('session') && ['GET', 'HEAD'].includes(req.method)) return sendJson(res, 200, { authenticated: true });
             if (path === apiPath('health') && ['GET', 'HEAD'].includes(req.method)) return sendJson(res, 200, { status: 'ok' });
             if (path.startsWith(apiPath(''))) {
-                requireAuth(req);
                 if (path === apiPath('batch') && ['GET', 'HEAD'].includes(req.method)) return sendJson(res, 200, batch);
                 if (path === apiPath('reviews') && ['GET', 'HEAD'].includes(req.method)) return sendJson(res, 200, { schema: REVIEW_SCHEMA, batch_hash: batch.batch_hash, batch, reviews: currentReviews(), history: store.history });
                 const reviewPrefix = apiPath('reviews/');
@@ -223,7 +187,6 @@ export async function createReviewServer({ bundleDir, dataDir, token, basePath =
                 throw Object.assign(new Error('Not found'), { status: 404 });
             }
             if (path.startsWith(`${prefix}images/`)) {
-                requireAuth(req);
                 if (!['GET', 'HEAD'].includes(req.method)) throw Object.assign(new Error('Method not allowed'), { status: 405 });
                 const imageName = path.slice(`${prefix}images/`.length);
                 const imageMatch = imageName.match(/^([A-Za-z0-9_-]{1,120})\.jpg$/);
@@ -259,11 +222,18 @@ export async function createReviewServer({ bundleDir, dataDir, token, basePath =
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
-    const { ANNOTATION_BUNDLE: bundleDir, ANNOTATION_DATA: dataDir, ANNOTATION_TOKEN: token,
+    const { ANNOTATION_BUNDLE: bundleDir, ANNOTATION_DATA: dataDir,
         ANNOTATION_BASE_PATH: basePath = '/', ANNOTATION_ORIGIN: publicOrigin, ANNOTATION_PORT = '8787' } = process.env;
     const port = Number(ANNOTATION_PORT);
     if (!Number.isInteger(port) || port < 1024 || port > 65535) throw new Error('ANNOTATION_PORT must be between 1024 and 65535');
-    const server = await createReviewServer({ bundleDir, dataDir, token, basePath, publicOrigin });
+    // The hub validates the signature, audience and owner against Cloudflare's JWKS.
+    // This fixed loopback check fails closed if that verifier is unavailable.
+    const verifyAccess = async assertion => {
+        if (typeof assertion !== 'string' || !assertion) throw new Error('Missing Access assertion');
+        const response = await fetch('http://127.0.0.1:4330/admin/api/access-check', { headers: { 'cf-access-jwt-assertion': assertion }, redirect: 'error', signal: AbortSignal.timeout(5000) });
+        if (response.status !== 204) throw new Error('Invalid Access assertion');
+    };
+    const server = await createReviewServer({ bundleDir, dataDir, verifyAccess, basePath, publicOrigin });
     server.listen(port, '127.0.0.1', () => console.log(`Annotation review listening on loopback port ${port}`));
     const close = () => server.close(() => process.exit(0));
     process.on('SIGTERM', close); process.on('SIGINT', close);

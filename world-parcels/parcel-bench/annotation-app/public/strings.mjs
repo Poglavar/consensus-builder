@@ -1,8 +1,8 @@
 // This standalone research tool has one language; it does not load the map application's locales.
 export const strings = {
   title: 'Autokatastar', subtitle: 'A few observations. A better map.',
-  unlock: 'Open your review pack', unlockHint: 'Enter your access key once, then download the images for your trip.',
-  accessKey: 'Access key', open: 'Open pack', trip: 'Download for trip', sync: 'Sync now', backup: 'Export backup',
+  unlock: 'Open your review pack', unlockHint: 'Sign in with Cloudflare, then download the images for your trip.',
+  signIn: 'Sign in with Cloudflare', open: 'Open pack', trip: 'Download for trip', sync: 'Sync now', backup: 'Export backup',
   separate: 'Separate', same_surface: 'Same area', unclear: 'Unclear',
   question: 'Do A and B belong to separate visible areas?',
   explanation: 'Look for walls, fences, paths, vegetation edges, or a clear change in use. Judge what you can see.',
@@ -19,7 +19,7 @@ export const strings = {
   noOffline: 'Offline download needs HTTPS or localhost.', partial: '{n} / {total} images on this phone',
   conflict: 'This pair has a different saved review on the server. Compare before choosing which to keep.',
   keepLocal: 'Keep this phone’s review', keepRemote: 'Use server review', serverReview: 'Server review',
-  loginNeeded: 'Reconnect and unlock to sync. Your local reviews are safe.',
+  loginNeeded: 'Sign in through /admin/ in another tab, then sync again. Your local reviews are safe.',
   newBatch: 'The server has a different pack. Your saved pack is still here. Export it before switching packs.',
   imageError: 'Image unavailable. Connect and download the pack before travelling.',
   imageLoading: 'Loading image…', empty: 'Place two points before choosing an answer.',
