@@ -25,6 +25,47 @@ async function searchFor(page: any, query: string) {
   return input;
 }
 
+test('typing reuses the city catalogue and resolves source settings only for place matches', async ({ mockApi: page }) => {
+  await page.route('https://photon.komoot.io/api/**', route => route.fulfill({ json: { features: [{
+    geometry: { coordinates: [15.975, 45.81] },
+    properties: { name: 'Test library' }
+  }] } }));
+  await openCity(page);
+  await page.evaluate(() => {
+    const w = window as any;
+    const manager = w.CityConfigManager;
+    const counts = w.__searchReads = { catalogues: 0, sources: 0 };
+    for (const [key, counter] of [['getAvailableCities', 'catalogues'], ['getPlaceDataKey', 'sources']]) {
+      const original = manager[key];
+      manager[key] = function (...args: any[]) {
+        // Coverage loading also reads the catalogue. Count only work on the search render path.
+        if (new Error().stack?.includes('/js/ui/map-search.js')) counts[counter]++;
+        return original.apply(this, args);
+      };
+    }
+  });
+  await page.locator('.map-search__icon-button').click();
+  expect(await page.evaluate(() => (window as any).__searchReads)).toEqual({ catalogues: 1, sources: 0 });
+  // One input burst, before either remote debounce fires. The input must not reread the world's
+  // city/source settings for each letter or for each result group.
+  await page.locator('#map-search-input').evaluate((input: HTMLInputElement) => {
+    for (const value of ['T', 'Te', 'Tes', 'Test library']) {
+      input.value = value;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  });
+  expect(await page.evaluate(() => (window as any).__searchReads)).toEqual({ catalogues: 1, sources: 0 });
+  await expect(page.locator('.map-search__item--place')).toContainText('Test library');
+  const settled = await page.evaluate(() => (window as any).__searchReads);
+  expect(settled.catalogues).toBe(1);
+  expect(settled.sources).toBeGreaterThan(0);
+  expect(settled.sources).toBeLessThan(10);
+  // Reopening refreshes source choices rather than keeping a permanent snapshot.
+  await page.locator('#map-search-input').press('Escape');
+  await page.locator('#map-search-input').press('ArrowDown');
+  expect(await page.evaluate(() => (window as any).__searchReads.catalogues)).toBe(2);
+});
+
 test('plans precede designs, metadata is cached, and Commands menu is absent', async ({ mockApi: page }) => {
   const { index } = seed(page, 2);
   await page.route('https://photon.komoot.io/api/**', route => route.fulfill({ json: { features: [] } }));

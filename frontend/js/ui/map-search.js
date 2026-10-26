@@ -33,6 +33,7 @@
         places: { query: '', status: 'idle', results: null, timer: null, abort: null, cache: Model.createQueryCache() },
         coverage: null,
         coverageRequested: false,
+        cityCatalog: null,
         marker: null,
         enterPendingFor: null    // the query a bare Enter was pressed on while results were loading
     };
@@ -59,27 +60,38 @@
     function configuredCities() {
         const m = manager();
         if (!m || typeof m.getAvailableCities !== 'function') return [];
+        const language = win.i18n?.getLanguage();
+        const backend = win.getBackendBase();
+        if (state.cityCatalog?.manager === m && state.cityCatalog.language === language
+            && state.cityCatalog.backend === backend) return state.cityCatalog.cities;
         // The label in the UI language (city.labels.<id>); the configured English label stays an
         // alias, so "Belgrade" still finds Beograd in a Serbian UI.
-        return m.getAvailableCities().map(config => ({
+        const cities = m.getAvailableCities().map(config => ({
             id: config.id,
             label: cityLabel(config.id, config.label || config.id),
             aliases: config.label && cityLabel(config.id, config.label) !== config.label ? [config.label] : [],
             center: typeof m.getCityCenter === 'function' ? m.getCityCenter(config) : null,
             // the location data the city reads (cadastre and buildings): an in-place move stays
-            // only within the same
-            parcelSource: m.getPlaceDataKey(config.id)
+            // only within the same parcel and building sources.
+            // Only the current and nearest cities need their source settings compared. Resolving
+            // every city's settings here made each keystroke perform thousands of storage reads.
+            get parcelSource() { return m.getPlaceDataKey(config.id); }
         }));
+        state.cityCatalog = { manager: m, language, backend, cities, codes: null };
+        return cities;
     }
 
     function cityCodeMap() {
         const m = manager();
         const out = {};
         if (!m || typeof m.getCityCodeForCityId !== 'function') return out;
-        configuredCities().forEach(city => {
+        const cities = configuredCities();
+        if (state.cityCatalog.codes) return state.cityCatalog.codes;
+        cities.forEach(city => {
             const code = m.getCityCodeForCityId(city.id);
             if (code) out[code] = city.id;
         });
+        state.cityCatalog.codes = out;
         return out;
     }
 
@@ -152,7 +164,7 @@
 
     function citiesGroup(query, withLocation) {
         const current = currentCityId();
-        const items = Model.rankCities(query, configuredCities(), current).map(city => item({
+        const items = Model.rankCities(query, configuredCities(), current).slice(0, Model.GROUP_LIMITS.cities).map(city => item({
             key: `city:${city.id}`,
             kind: 'city',
             rank: city.rank,
@@ -739,6 +751,9 @@
     }
 
     function openList() {
+        // Source choices may have changed since the previous search. Reuse this snapshot across
+        // keystrokes and remote responses, then refresh it when the search is reopened.
+        if (!state.open) state.cityCatalog = null;
         state.open = true;
         state.root.classList.add('is-open');
         ensureCoverage();
@@ -878,6 +893,7 @@
     }
 
     function syncTexts() {
+        state.cityCatalog = null;
         if (!state.input) return;
         // Without a cadastre (explore) there are no parcels to find.
         const config = manager();
