@@ -12,7 +12,8 @@ const uuid = () => crypto.randomUUID();
 const imageCacheName = `autokatastar-images:${new URL('./', location.href).pathname}`;
 const notice = message => { $('notice').textContent = message; };
 async function api(path, options = {}) {
-  const response = await fetch(`api/${path}`, { ...options, cache: 'no-store', headers: { 'Content-Type': 'application/json', ...options.headers }, signal: AbortSignal.timeout(15000) });
+  const response = await fetch(`api/${path}`, { ...options, redirect: 'manual', cache: 'no-store', headers: { 'Content-Type': 'application/json', ...options.headers }, signal: AbortSignal.timeout(15000) });
+  if (response.type === 'opaqueredirect' || response.status === 401 || /text\/html/i.test(response.headers.get('content-type') || '')) throw Object.assign(new Error(t('loginNeeded')), { status: 401 });
   const body = await response.json();
   if (!response.ok) throw Object.assign(new Error(body.error || `HTTP ${response.status}`), { status: response.status, body });
   return body;
@@ -191,11 +192,6 @@ async function connect() {
   if (!state) await change(() => makeState(batch));
   await sync(); renderTask(); await offlineStatus();
 }
-$('unlock-form').addEventListener('submit', async event => {
-  event.preventDefault();
-  try { await api('session', { method: 'POST', body: JSON.stringify({ token: $('token').value }) }); $('token').value = ''; notice(''); await connect(); }
-  catch (error) { notice(error.status ? error.message : t('noConnection')); }
-});
 document.querySelectorAll('[data-relation]').forEach(button => button.addEventListener('click', () => void answer(button.dataset.relation)));
 $('anchors').onclick = () => { mode = mode === 'anchors' ? 'review' : 'anchors'; anchorStep = 0; renderEditor(); };
 $('trace').onclick = () => { mode = mode === 'trace' ? 'review' : 'trace'; renderEditor(); };
