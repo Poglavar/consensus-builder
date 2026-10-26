@@ -241,13 +241,24 @@
     font-size: var(--cb-text-sm);
 }
 
-/* Rail infrastructure, distinct from the train icons used for stations. */
-.cb-icon-track {
+/* Monochrome authoring icons inherit the control colour. */
+.cb-icon-track,
+.cb-icon-freeform {
     display: inline-block;
     width: 1em;
     height: 1em;
     background-color: currentColor;
-    mask: url('../assets/icons/track.svg') center / contain no-repeat;
+    mask-position: center;
+    mask-size: contain;
+    mask-repeat: no-repeat;
+}
+
+.cb-icon-track {
+    mask-image: url('../assets/icons/track.svg');
+}
+
+.cb-icon-freeform {
+    mask-image: url('../assets/icons/freeform.svg');
 }
 
 .btn-block {

@@ -24,7 +24,7 @@
         { key: 'buildings', icon: 'fa-city', labelKey: 'panel.parcel.build.block', fallback: 'Block' },
         { key: 'row', icon: 'fa-grip-horizontal', labelKey: 'panel.parcel.build.row', fallback: 'Row houses' },
         { key: 'parcelBased', icon: 'fa-home', labelKey: 'panel.parcel.build.parcelBased', fallback: 'Detached' },
-        { key: 'single', icon: 'fa-ruler-combined', labelKey: 'panel.parcel.build.single', fallback: 'Freeform' },
+        { key: 'single', icon: 'cb-icon-freeform', labelKey: 'panel.parcel.build.single', fallback: 'Freeform' },
         { key: 'parcel-layout', icon: 'fa-vector-square', labelKey: 'panel.parcel.build.layOutParcels', fallback: 'Lay out parcels' },
         { key: 'park', icon: 'fa-tree', labelKey: 'panel.parcel.build.park', fallback: 'Park' },
         { key: 'square', icon: 'fa-chess-board', labelKey: 'panel.parcel.build.square', fallback: 'Square' },

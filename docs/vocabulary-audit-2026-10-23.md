@@ -1780,3 +1780,21 @@ and shared controls), 2/2 (Track rendering and real tool launch), and 1/1 (final
 narrow layout). Those are 12 executions of six distinct cases. All runs completed;
 none stopped and no full suite ran. The Track capture and 320 px control-row capture
 were visually inspected. No deployment was performed.
+
+
+**Custom site clarification and Freeform icon, 2026-10-27:** “building layout” above
+means the area supplied to a generator, not an individual building footprint. Block
+receives the drawn area as one synthetic superparcel. Row/Detached first slice it
+into temporary plots along a frontage, then pass those plots to their generators.
+The distinction from cadastral source boundaries does not remove the conceptual
+overlap with parcel layout: those temporary plots act as working parcels. Freeform
+uses the area as initial context/guide and can be placed elsewhere. Whether to retire
+the building branch of Custom site or route it through parcel layout remains an open
+product decision; no such flow was removed in this change. Park/square area drawing
+still has a separate use.
+
+Freeform now uses an irregular pentagon outline through the shared SVG mask styling.
+Two targeted headed Playwright cases passed (narrow palette and Track tool launch);
+the 320 px Freeform capture was visually inspected. Both completed, none stopped,
+and no full or unit suite was run for this reversible visual change. MCP parity:
+no authored operation, schema or geometry changed; existing editing primitives apply.
