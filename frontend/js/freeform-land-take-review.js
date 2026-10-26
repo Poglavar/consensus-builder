@@ -6,21 +6,15 @@
         const panel = session.content.querySelector('#single-land-take');
         const rows = panel.querySelector('[data-land-rows]');
         const status = panel.querySelector('[data-land-status]');
-        const accept = panel.querySelector('[data-land-accept]');
         const error = document.createElement('p');
         error.id = 'single-land-take-error';
         error.className = 'land-take-error';
         error.setAttribute('role', 'alert');
         error.hidden = true;
-        const confirmation = document.createElement('div');
-        confirmation.className = 'land-take-confirmation';
-        const acceptLabel = accept.closest('label');
-        acceptLabel.before(confirmation);
-        confirmation.append(error, acceptLabel);
-        accept.setAttribute('aria-describedby', error.id);
+        status.after(error);
         const layers = env.L.featureGroup().addTo(session.map);
         let whole = new Set(), parcels = [], current = null, savedTake = initialTake;
-        let sequence = 0, timer = null, closed = false, signature = null, reviewed = null;
+        let sequence = 0, timer = null, closed = false;
         let geometryKey = null, stock = [], outcomes = null, pending = false, baseline = null;
         const text = (key, params = {}) => env.i18n.t(`landTake.${key}`, params);
         function style(kind) {
@@ -42,10 +36,6 @@
             outcomes?.partial.forEach(item => { draw(item.demolishedPart, 'removed'); draw(item.remainder, 'retained'); });
             outcomes?.retained.forEach(building => draw(building, 'retained'));
             if (focus) draw(focus, 'focus');
-        }
-        function invalidate() {
-            accept.checked = false;
-            reviewed = null;
         }
         function render() {
             rows.replaceChildren();
@@ -73,7 +63,6 @@
                     onHistory();
                     savedTake = null;
                     if (select.value === 'whole') whole.add(row.key); else whole.delete(row.key);
-                    invalidate();
                     refresh();
                 });
                 label.append(name, select);
@@ -85,12 +74,11 @@
         async function refresh() {
             const ticket = ++sequence;
             pending = true;
-            accept.disabled = true;
             status.textContent = text('loading');
             try {
                 const buildings = getBuildings();
                 const nextKey = JSON.stringify(buildings.map(item => item.geometry));
-                if (geometryKey !== null && nextKey !== geometryKey) { savedTake = null; invalidate(); }
+                if (geometryKey !== null && nextKey !== geometryKey) savedTake = null;
                 geometryKey = nextKey;
                 const footprint = api.union(buildings, env.turf);
                 await env.CadastralParcelRepository.ensureFootprint(footprint);
@@ -106,8 +94,6 @@
                 }
                 if (baseline === null) baseline = JSON.stringify(current.take.geometry);
                 onChange(current.take, current.rows.some(row => row.mode === 'whole'));
-                const nextSignature = JSON.stringify(current.take.geometry);
-                if (signature !== nextSignature) { invalidate(); signature = nextSignature; }
                 outcomes = null;
                 render();
                 paint();
@@ -126,18 +112,10 @@
                 outcomes = api.demolitionPreview(current.take, real, env.splitDemolitionFootprint, env.turf);
                 const parked = hits.filter(hit => env.corridorTunnelHitProposalId(hit)).map(hit => hit.feature);
                 outcomes.parked = parked;
-                const review = JSON.stringify([signature,
-                    outcomes.removed.map(item => [item.properties?.source, item.properties?.id, item.geometry]).sort((a, b) => String(a[0]).localeCompare(String(b[0])) || String(a[1]).localeCompare(String(b[1]))),
-                    outcomes.partial.map(item => [item.building.properties?.source, item.building.properties?.id, item.demolishedPart, item.remainder]).sort((a, b) => String(a[0]).localeCompare(String(b[0])) || String(a[1]).localeCompare(String(b[1]))),
-                    parked.map(item => item.properties?.proposalId).sort()]);
-                if (reviewed !== null && reviewed !== review) invalidate();
-                panel.dataset.review = review;
                 status.textContent = text('summary', { area: Math.round(current.areaM2), parcels: current.rows.length,
                     removed: outcomes.removed.length, partial: outcomes.partial.length, parked: parked.length });
                 pending = false;
-                accept.disabled = false;
                 error.hidden = true;
-                accept.removeAttribute('aria-invalid');
                 render();
                 paint();
                 onReview?.();
@@ -145,30 +123,21 @@
             } catch (error) {
                 if (closed || ticket !== sequence) return false;
                 pending = false;
-                invalidate();
                 console.warn('[land-take] Review unavailable', error);
                 status.textContent = text('unavailable');
-                panel.dataset.review = '';
                 paint();
                 return false;
             }
         }
         panel.querySelector('[data-land-retry]').addEventListener('click', refresh);
-        accept.addEventListener('change', () => {
-            reviewed = accept.checked ? panel.dataset.review : null;
-            error.hidden = true;
-            accept.removeAttribute('aria-invalid');
-        });
         for (const mode of ['footprint', 'whole']) panel.querySelector(`[data-land-${mode}]`).addEventListener('click', () => {
             onHistory();
             savedTake = null;
             whole = mode === 'whole' ? new Set(current?.rows.map(row => row.key)) : new Set();
-            invalidate();
             refresh();
         });
         function schedule() {
             if (closed) return;
-            accept.disabled = true;
             clearTimeout(timer);
             timer = setTimeout(refresh, 300);
         }
@@ -187,21 +156,18 @@
                 ] : [] };
             },
             snapshot() { return current?.take || null; },
-            restore(take) { savedTake = take; whole.clear(); geometryKey = null; invalidate(); schedule(); },
+            restore(take) { savedTake = take; whole.clear(); geometryKey = null; schedule(); },
             async prepare() {
                 clearTimeout(timer);
-                const wasAccepted = accept.checked;
                 const ready = await refresh();
-                if (!ready || !accept.checked || !reviewed) {
-                    error.textContent = text(!ready ? 'unavailable' : wasAccepted ? 'reviewChanged' : 'acceptRequired');
+                if (!ready) {
+                    error.textContent = text('unavailable');
                     error.hidden = false;
-                    accept.setAttribute('aria-invalid', 'true');
-                    confirmation.scrollIntoView({ block: 'nearest' });
-                    (accept.disabled ? panel.querySelector('[data-land-retry]') : accept).focus({ preventScroll: true });
+                    error.scrollIntoView({ block: 'nearest' });
+                    panel.querySelector('[data-land-retry]').focus({ preventScroll: true });
                     return false;
                 }
                 error.hidden = true;
-                accept.removeAttribute('aria-invalid');
                 return true;
             },
             destroy() { closed = true; sequence++; clearTimeout(timer); layers.remove(); }

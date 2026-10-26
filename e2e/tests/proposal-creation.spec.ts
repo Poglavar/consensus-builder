@@ -59,9 +59,7 @@ test.describe('Proposal creation and map lifecycle @features', () => {
         }
       }
       if (type === 'single') {
-        const landAcceptance = page.locator('#single-land-take [data-land-accept]');
-        await expect(landAcceptance).toBeEnabled({ timeout: 15_000 });
-        await landAcceptance.check();
+        await expect(page.locator('#single-land-take [data-land-status]')).toContainText('m²', { timeout: 15_000 });
       }
       await expect(page.locator(done)).toBeVisible();
       await expect(page.locator(done)).toBeEnabled({ timeout: 15000 });

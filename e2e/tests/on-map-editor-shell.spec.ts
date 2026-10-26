@@ -224,8 +224,8 @@ test.describe('Shared on-map editor shell @features', () => {
       const root = page.locator(editor.root);
       await expect(page.locator(editor.done)).toBeEnabled({ timeout: 20_000 });
       if (kind === 'single') {
-        // The freeform land-take review refines its initial placement preview asynchronously.
-        await expect(page.locator('#single-land-take [data-land-accept]')).toBeEnabled({ timeout: 20_000 });
+        // The freeform land-take summary refines its initial placement preview asynchronously.
+        await expect(page.locator('#single-land-take [data-land-status]')).toContainText('m²', { timeout: 20_000 });
       }
       await expectEditorDockedRight(page, editor.root);
       const preview = await page.evaluate(() => JSON.parse(JSON.stringify((window as any).OnMapEditor.getPreview())));

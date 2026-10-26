@@ -9,11 +9,8 @@ import { surveyResponse } from '../helpers/mocks/survey-data';
 
 const BLOCK_PARCEL_IDS = ['HR-335754-1234', 'HR-335754-1235', 'HR-335754-1236', 'HR-335754-1237', 'HR-335754-1238'];
 
-async function acceptSingleLandTake(page: any) {
-  const acceptance = page.locator('#single-land-take [data-land-accept]');
-  await expect(acceptance).toBeVisible();
-  await expect(acceptance).toBeEnabled({ timeout: 20_000 });
-  await acceptance.check();
+async function waitForSingleLandTakeSummary(page: any) {
+  await expect(page.locator('#single-land-take [data-land-status]')).toContainText('m²', { timeout: 20_000 });
 }
 
 async function openRowHouseEditor(page: any) {
@@ -69,7 +66,7 @@ test.describe('Editor button effects @features', () => {
     await page.locator('.parcel-build-btn--single').click();
     const placement = page.locator('#single-building-editor');
     await expect(placement.locator('.on-map-editor__panel')).toBeVisible();
-    await acceptSingleLandTake(page);
+    await waitForSingleLandTakeSummary(page);
     await page.locator('#single-building-confirm').click();
     const savedId = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().slice(-1)[0]?.proposalId);
     expect(savedId).toBeTruthy();

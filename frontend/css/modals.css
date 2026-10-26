@@ -2513,9 +2513,6 @@ path.geom-handle-edge.is-dragging { stroke-opacity: 0.35; }
 .land-take-rows { display: grid; gap: var(--cb-space-2); max-height: 12rem; overflow-y: auto; }
 .land-take-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(8rem, 1fr); align-items: center; gap: var(--cb-space-2); }
 .land-take-row span { overflow-wrap: anywhere; }
-.land-take-accept { display: flex; align-items: start; gap: var(--cb-space-2); }
-.land-take-accept input { flex: 0 0 auto; }
-.land-take-confirmation { display: grid; gap: var(--cb-space-2); }
 .land-take-error { color: var(--cb-danger); font-weight: 600; }
 .land-take-legend { color: var(--cb-text-muted); }
 /* City names can be long: the two choices keep equal tap areas on a phone. */

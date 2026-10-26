@@ -79,9 +79,7 @@ test('Upload .glb imports into the current Freeform session and Done saves its m
   after = await features(page);
   expect(after[1].properties.modelUrl).toBe('/uploads/models/direct.glb');
   expectLFootprint(await footprintMeasures(page, after[1]), false);
-  const acceptance = page.locator('#single-land-take [data-land-accept]');
-  await expect(acceptance).toBeEnabled();
-  await acceptance.check();
+  await expect(page.locator('#single-land-take [data-land-status]')).toContainText('m²');
   await page.locator('#single-building-confirm').click();
   await expect(page.locator(editor)).toHaveCount(0);
   await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().filter((p: any) =>

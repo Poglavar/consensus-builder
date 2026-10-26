@@ -89,22 +89,16 @@ async function pointerDeltaToEastEdge(page: Page): Promise<number> {
   });
 }
 
-function landTakeAcceptControl(page: Page) {
-  return page.locator('#single-land-take [data-land-accept]');
+function landTakeStatus(page: Page) {
+  return page.locator('#single-land-take [data-land-status]');
 }
 
 async function waitForLandTakeReview(page: Page): Promise<void> {
-  await expect(landTakeAcceptControl(page)).toBeEnabled();
-}
-
-async function acknowledgeLandTake(page: Page): Promise<void> {
-  const accept = landTakeAcceptControl(page);
-  await expect(accept).toBeEnabled();
-  if (!(await accept.isChecked())) await accept.check();
+  await expect(landTakeStatus(page)).toContainText('m²');
 }
 
 async function finishSingle(page: Page): Promise<void> {
-  await acknowledgeLandTake(page);
+  await waitForLandTakeReview(page);
   await page.locator('#single-building-confirm').click();
   await expect(page.locator(EDITOR)).toHaveCount(0, { timeout: 20000 });
 }

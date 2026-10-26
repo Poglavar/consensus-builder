@@ -5,11 +5,8 @@ import { selectNativeOption } from '../helpers/controls';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 
 async function finishEditor(page: any, editor: any, done: string) {
-  const acceptance = editor.locator('[data-land-accept]');
-  if (await acceptance.count()) {
-    await expect(acceptance).toBeEnabled();
-    await acceptance.check();
-  }
+  const landStatus = editor.locator('[data-land-status]');
+  if (await landStatus.count()) await expect(landStatus).toContainText('m²');
   await page.locator(done).click();
   const proceed = page.getByRole('button', { name: 'Proceed anyway' });
   await expect.poll(async () => await editor.count() === 0 || await proceed.isVisible()).toBe(true);
@@ -38,9 +35,9 @@ async function openBuildingEditor(page: any, tool: string, typology: string, don
     if (await scope.isVisible()) await scope.getByRole('button', { name: 'No, just this parcel' }).click();
     await expect(page.locator(done)).toBeEnabled({ timeout: 45_000 });
     if (typology === 'single') {
-      await expect(page.locator('[data-land-accept]')).toBeEnabled();
+      await expect(page.locator('[data-land-status]')).toContainText('m²');
       await page.locator('[data-land-whole]').click();
-      await expect(page.locator('[data-land-accept]')).toBeEnabled();
+      await expect(page.locator('[data-land-status]')).toContainText('m²');
     }
 }
 

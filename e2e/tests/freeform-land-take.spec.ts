@@ -9,14 +9,13 @@ async function open(page: any) {
   await openParcel(page, 'proposals');
   await page.locator('#parcel-info-panel .parcel-build-btn--single').click();
   await expect(page.locator(`${editor} .on-map-editor__panel`)).toBeVisible();
-  await expect(page.locator('[data-land-accept]')).toBeEnabled();
+  await expect(page.locator('[data-land-status]')).toContainText('m²');
 }
 async function finish(page: any) {
-  await page.locator('[data-land-accept]').check();
   await page.locator('#single-building-confirm').click();
   await expect(page.locator(editor)).toHaveCount(0);
 }
-test('a narrow building takes a whole parcel, previews demolition, saves and reopens', async ({ mockApi: page }) => {
+test('a narrow building takes a whole parcel, previews demolition, saves and reopens', async ({ mockApi: page }, testInfo) => {
   await page.route('**/buildings/under', route => {
     const regions = route.request().postDataJSON().regions;
     route.fulfill({ contentType: 'application/json', body: JSON.stringify({ supported:true, source:'gdi', truncated:false,
@@ -30,9 +29,8 @@ test('a narrow building takes a whole parcel, previews demolition, saves and reo
   await expect(page.locator(`[data-parcel-id="${first}"]`)).toHaveValue('footprint');
   await selectNativeOption(page.locator(`[data-parcel-id="${first}"]`),'whole');
   await expect(page.locator('[data-land-status]')).toContainText('1 buildings removed');
-  await expect(page.locator('[data-land-accept]')).not.toBeChecked();
-  await page.locator('#single-building-confirm').click();
-  await expect(page.locator(`${editor} .on-map-editor__panel`)).toBeVisible();
+  await expect(page.locator('[data-land-accept]')).toHaveCount(0);
+  await page.screenshot({ path: testInfo.outputPath('land-take-without-acceptance.png') });
   await finish(page);
   await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().filter((p:any)=>p.goal==='single'&&p.applied).length), {timeout:20000}).toBe(1);
   const saved=await page.evaluate(()=>(window as any).proposalStorage.getAllProposals().find((p:any)=>p.goal==='single'&&p.applied));
@@ -57,7 +55,7 @@ for (const published of [false, true]) test(`height-only editing retains demolit
   await open(page);
   await selectNativeOption(page.locator(`[data-parcel-id="${first}"]`), 'whole');
   await page.locator('#single-height-slider').fill('250');
-  await expect(page.locator('[data-land-accept]')).toBeEnabled();
+  await expect(page.locator('[data-land-status]')).toContainText('m²');
   await finish(page);
   const current = () => page.evaluate(() => {
     const w = window as any;
@@ -81,7 +79,7 @@ for (const published of [false, true]) test(`height-only editing retains demolit
   await page.keyboard.press('ArrowLeft');
   await expect(page.locator('#single-height-slider')).toHaveValue('249');
   expect(await current()).toEqual(before);
-  await expect(page.locator('[data-land-accept]')).toBeEnabled();
+  await expect(page.locator('[data-land-status]')).toContainText('m²');
   await expect(page.locator('[data-land-status]')).toContainText('1 buildings removed');
   await finish(page);
   await expect.poll(current).toMatchObject({ height: 249,
@@ -94,24 +92,21 @@ for (const published of [false, true]) test(`height-only editing retains demolit
     }, before.id)).toEqual({ applied: false, height: 250 });
   } else expect((await current()).id).toBe(before.id);
 });
-test('missing stock blocks acceptance and keeps the unsaved editor open',async({mockApi:page})=>{
+test('missing stock keeps the unsaved editor open',async({mockApi:page})=>{
   await open(page);
-  await page.locator('[data-land-accept]').check();
   await page.route('**/buildings/under',route=>route.fulfill({contentType:'application/json',body:JSON.stringify({supported:true,truncated:true,regions:{}})}));
   await page.locator('#single-building-confirm').click();
   await expect(page.locator('[data-land-status]')).toContainText('Could not verify');
   await expect(page.locator('#single-land-take-error')).toBeVisible();
-  await expect(page.locator('[data-land-accept]')).toBeDisabled();
-  await expect(page.locator('[data-land-accept]')).not.toBeChecked();
+  await expect(page.locator('[data-land-accept]')).toHaveCount(0);
   await expect(page.locator(`${editor} .on-map-editor__panel`)).toBeVisible();
   await page.route('**/buildings/under', route => {
     const regions = route.request().postDataJSON().regions;
     return route.fulfill({ json: { supported: true, truncated: false, source: 'gdi', regions: Object.fromEntries(regions.map((r: any) => [r.key, []])) } });
   });
   await page.locator('[data-land-retry]').click();
-  await expect(page.locator('[data-land-accept]')).toBeEnabled();
+  await expect(page.locator('[data-land-status]')).toContainText('m²');
   await expect(page.locator('#single-land-take-error')).toBeHidden();
-  await expect(page.locator('[data-land-accept]')).not.toHaveAttribute('aria-invalid', 'true');
 });
 test('mixed parcel choices and Undo update land without changing the uploaded building',async({mockApi:page})=>{
   await open(page);
@@ -122,43 +117,36 @@ test('mixed parcel choices and Undo update land without changing the uploaded bu
   await expect(choices.nth(0)).toHaveValue('footprint');
   await expect(choices.nth(1)).toHaveValue('footprint');
   await selectNativeOption(page.locator(`[data-parcel-id="${first}"]`),'whole');
-  await expect(page.locator('[data-land-accept]')).toBeEnabled();
+  await expect(page.locator('[data-land-status]')).toContainText('m²');
   const preview=await page.evaluate(()=>({buildings:(window as any).OnMapEditor.getPreview().draftPreview.features,
     take:(window as any).getActiveProposalDesignDraft().editorPayload.context.landTake}));
   expect(preview.buildings[0].geometry).toEqual(building.geometry);
   const areas=await page.evaluate(({take,building})=>({land:(window as any).turf.area(take),body:(window as any).turf.area(building)}),{take:preview.take,building});
   expect(areas.land).toBeGreaterThan(areas.body*3);
-  await page.locator('[data-land-accept]').check();
   await page.locator('#single-building-undo').click();
   await expect(page.locator(`[data-parcel-id="${first}"]`)).toHaveValue('footprint');
-  await expect(page.locator('[data-land-accept]')).not.toBeChecked();
+  await expect(page.locator('[data-land-accept]')).toHaveCount(0);
 });
-test('a changed demolition answer requires a fresh acceptance before saving',async({mockApi:page})=>{
+test('Done saves the current demolition answer without separate acceptance',async({mockApi:page})=>{
   await open(page);
   await selectNativeOption(page.locator(`[data-parcel-id="${first}"]`),'whole');
-  await expect(page.locator('[data-land-accept]')).toBeEnabled();
-  await page.locator('[data-land-accept]').check();
+  await expect(page.locator('[data-land-status]')).toContainText('m²');
   await page.route('**/buildings/under',route=>{
     const regions=route.request().postDataJSON().regions;
     route.fulfill({contentType:'application/json',body:JSON.stringify({supported:true,truncated:false,source:'gdi',
       regions:Object.fromEntries(regions.map((r:any)=>[r.key,[{id:'new-stock',geometry:{type:'Polygon',coordinates:[[[15.98192,45.80002],[15.98198,45.80002],[15.98198,45.80008],[15.98192,45.80008],[15.98192,45.80002]]]}}]]))})});
   });
   await page.locator('#single-building-confirm').click();
-  await expect(page.locator('[data-land-status]')).toContainText('1 buildings removed');
-  await expect(page.locator('#single-land-take-error')).toContainText('changed');
-  await expect(page.locator('[data-land-accept]')).not.toBeChecked();
-  await expect(page.locator(`${editor} .on-map-editor__panel`)).toBeVisible();
+  await expect(page.locator(editor)).toHaveCount(0);
+  const saved = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((p:any) => p.goal === 'single' && p.applied));
+  expect(saved.buildingProposal.demolishedBuildings.map((building:any) => building.id)).toContain('new-stock');
 });
-test('mobile Done reveals the complete acceptance label above the fixed footer',async({mockApi:page})=>{
+test('mobile Done saves without a separate acceptance checkbox',async({mockApi:page})=>{
  await page.setViewportSize({width:390,height:844});
  await open(page);
- await page.locator('#single-building-confirm').click();
- const label=page.locator('.land-take-accept');
- await expect(label).toBeInViewport();
- const box=await label.boundingBox();
- const footer=await page.locator(`${editor} .on-map-editor__footer`).boundingBox();
- expect(box!.y+box!.height).toBeLessThanOrEqual(footer!.y+1);
- await expect(page.locator('[data-land-accept]')).not.toBeChecked();
+ await expect(page.locator('[data-land-accept]')).toHaveCount(0);
+ await finish(page);
+ await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().filter((p:any) => p.goal === 'single' && p.applied).length)).toBe(1);
 });
 test('loading an untouched land review does not create discardable edits',async({mockApi:page})=>{
  await open(page);
@@ -176,7 +164,7 @@ test('loading an untouched land review does not create discardable edits',async(
  await expect(page.getByRole('alertdialog')).toHaveCount(0);
 });
 
-test('Done explains the required land review and saves the imported GLB after acceptance', async ({ mockApi: page }) => {
+test('Done saves the imported GLB without separate acceptance', async ({ mockApi: page }) => {
   await page.route('**/models', route => route.fulfill({ json: { modelUrl: '/uploads/models/test-building.glb' } }));
   await open(page);
   await page.locator('#single-building-glb-upload').click();
@@ -184,11 +172,8 @@ test('Done explains the required land review and saves the imported GLB after ac
   await expect(page.locator('#building-upload-confirm')).toBeEnabled({ timeout: 20000 });
   await page.locator('#building-upload-confirm').click();
   await expect(page.locator('#building-upload-modal')).toHaveCount(0);
-  await expect(page.locator('[data-land-accept]')).toBeEnabled();
-  await page.locator('#single-building-confirm').click();
-  await expect(page.locator('#single-land-take-error')).toHaveText('Review the land take and accept its effects before saving.');
-  await expect(page.locator('#single-land-take-error')).toBeInViewport();
-  expect(await page.evaluate(() => (window as any).proposalStorage.getAllProposals().filter((p:any) => p.goal === 'single').length)).toBe(0);
+  await expect(page.locator('[data-land-status]')).toContainText('m²');
+  await expect(page.locator('[data-land-accept]')).toHaveCount(0);
   await finish(page);
   await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().filter((p:any) => p.goal === 'single' && p.applied).length), {timeout:20000}).toBe(1);
   const saved = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((p:any) => p.goal === 'single' && p.applied));

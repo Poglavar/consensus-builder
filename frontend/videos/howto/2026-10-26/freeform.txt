@@ -2,6 +2,6 @@ Choose Freeform building and keep the selected parcel as the starting site.
 
 Drag the corners to reshape the footprint. Use the height slider to set the building’s height.
 
-Review the land taken from each parcel and the building removals. Accept the preview, then save the design.
+Review the land taken from each parcel and the building removals. Then save the design.
 
 Switch to 3D. Tilt, rotate and zoom to inspect the building’s shape and surroundings.

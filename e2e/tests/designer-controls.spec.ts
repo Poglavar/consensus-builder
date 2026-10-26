@@ -274,8 +274,7 @@ test.describe('Designer controls persist their edits @features', () => {
       name: 'building.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(uploaded)),
     });
     await expect(page.locator('#single-building-editor .on-map-editor__panel')).toBeVisible();
-    await expect(page.locator('#single-land-take [data-land-accept]')).toBeEnabled();
-    await page.locator('#single-land-take [data-land-accept]').check();
+    await expect(page.locator('#single-land-take [data-land-status]')).toContainText('m²');
     await page.locator('#single-building-confirm').click();
     await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
       .some((p: any) => p.applied && p.goal === 'single' && p.geometry?.buildings?.[0]?.properties?.name === 'fixture manual footprint'))).toBe(true);
@@ -342,8 +341,7 @@ test.describe('Designer controls persist their edits @features', () => {
     await selectNativeOption(parcelTake, 'whole');
     await page.locator('#single-building-add').click();
     await expect(selector.locator('option')).toHaveCount(initialBuildings + 1);
-    await expect(page.locator('#single-land-take [data-land-accept]')).toBeEnabled();
-    await page.locator('#single-land-take [data-land-accept]').check();
+    await expect(page.locator('#single-land-take [data-land-status]')).toContainText('m²');
     await page.locator('#single-building-confirm').click();
     await expect(page.locator('#single-building-editor')).toHaveCount(0);
 

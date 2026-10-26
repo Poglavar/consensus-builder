@@ -26,8 +26,7 @@ for (const mode of ['2d', 'model']) {
         return apply.apply(this, args);
       };
     });
-    await expect(page.locator('#single-land-take [data-land-accept]')).toBeEnabled();
-    await page.locator('#single-land-take [data-land-accept]').check();
+    await expect(page.locator('#single-land-take [data-land-status]')).toContainText('m²');
     await page.locator('#single-building-confirm').click();
     await expect(page.locator('#single-building-editor')).toHaveCount(0);
     await expect.poll(() => page.evaluate(() => typeof (window as any).releaseSaveHandoff)).toBe('function');

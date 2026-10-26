@@ -10,11 +10,8 @@ const multipart = { type: 'Feature', properties: { name: 'Small buildings', floo
   geometry: { type: 'MultiPolygon', coordinates: [[ring(15.9823,45.80010,0.00005)],[ring(15.9823,45.80025,0.00004)]] } };
 const collection = { type: 'FeatureCollection', features: [courtyard, multipart] };
 
-async function acceptLandTake(page: any) {
-  const acceptance = page.locator('#single-land-take [data-land-accept]');
-  await expect(acceptance).toBeVisible();
-  await expect(acceptance).toBeEnabled({ timeout: 20_000 });
-  await acceptance.check();
+async function waitForLandTakeSummary(page: any) {
+  await expect(page.locator('#single-land-take [data-land-status]')).toContainText('m²', { timeout: 20_000 });
 }
 
 // Geometry editing uses fixture ground. Live background tiles can remain pending through the
@@ -72,7 +69,7 @@ for (const kind of ['single', 'buildings', 'row']) {
     await expect(page.locator('#map-container .polygon-geometry-editor__vertex')).toHaveCount(8);
     await page.locator('#single-height-slider').fill('19');
     await page.locator('#single-height-slider').dispatchEvent('input');
-    await acceptLandTake(page);
+    await waitForLandTakeSummary(page);
     await page.locator('#single-building-confirm').click();
     await expect.poll(async () => (await savedUploads(page)).filter((p: any) => p.applied).length).toBe(3);
     const records = await savedUploads(page);
@@ -92,7 +89,7 @@ for (const kind of ['single', 'buildings', 'row']) {
     await expect(page.locator('#map-container .polygon-geometry-editor__vertex')).toHaveCount(8);
     await page.locator('#single-height-slider').fill('20');
     await page.locator('#single-height-slider').dispatchEvent('input');
-    await acceptLandTake(page);
+    await waitForLandTakeSummary(page);
     await page.locator('#single-building-confirm').click();
     await expect.poll(() => page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.geometry?.buildings?.[0]?.properties.height, kept.proposalId)).toBe(20);
     const edited = (await savedUploads(page)).find((p: any) => p.proposalId === kept.proposalId);
