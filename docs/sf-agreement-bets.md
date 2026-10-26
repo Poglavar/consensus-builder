@@ -1,4 +1,4 @@
-<!-- Reviewable replacement questions for the Candlestick designs; no agreement is invented here. -->
+<!-- Reviewable intents and prepared, unpublished devnet demonstrations for the Candlestick designs. -->
 # Candlestick: bets on two agreements
 
 The featured pair is two independent YES/NO bets: **Will the Courtyard Candlestick agreement execute
@@ -9,29 +9,37 @@ YES requires recorded execution, after the required approvals, verification and 
 deadline. Expiry or missing the deadline settles NO. Cancellation settles VOID and pays half per
 share. Execution does not establish a planning approval, building permit or completed construction.
 
-The [reviewable intents](sf-agreement-bets.json) preserve each stored design's existing expiry as a
-proposed deadline, at whole-second resolution. They name the qualified parcel IDs and hash the
-stored geometry. They deliberately contain no agreement CID or market address: those must identify
-the newly published binding agreements, not the retired proposal-program accounts.
+The [reviewable records](sf-agreement-bets.json) preserve each source design's existing expiry as the
+proposed deadline, at whole-second resolution. The agreements are prepared as explicitly labelled
+devnet demonstrations with simulated rights. Their prepared agreement and plan CIDs are not
+publication receipts; the Pinata upload failed with HTTP 403 `pinning-quota-exhausted`. Neither
+agreement was indexed or minted, and neither market exists. The `agreementCid`, `agreementAccount`
+and `marketAccount` fields therefore remain null. Existing source hashes and deadlines are retained.
 
-The source inventory on 25 October 2026 found two local imported design records:
+The source inventory on 25 October 2026 found two imported design records:
 
 | Source record | Stored geometry | Proposed deadline, UTC |
 | --- | --- | --- |
 | `sf-candlestick-courtyard-2026` | 1,105 building footprints | 9 October 2027, 08:19:27 |
 | `sf-candlestick-fivepoint-2024` | 99 modeled volumes | 9 October 2027, 09:01:31 |
 
-Each names 116 DataSF parcel IDs. Neither supplies a current published agreement, sponsor,
-owner acceptance or an executable binding rule. The FivePoint importer's newer 110-volume output
-must not silently replace the stored 99-volume source while retaining its identity.
+The prepared design records retain their original building geometry and all 116 original parcel references. Each design
+has since been published under a new design CID; the FivePoint importer's newer 110-volume output
+was not substituted while retaining the original identity. Current site binding includes 118
+Courtyard parcels and 117 FivePoint parcels. The two open-ground calculations produce 122 and 121
+output pieces, respectively, with about 76,206.6 m² of modeled open ground apiece. That ground is
+geometry outside the bound parcels, not a claim of legal ownership. Each site was unioned with
+its imported building footprints to contain their full extent; the authored building geometry is
+unchanged.
 
-There are two concrete publication choices: explicitly labelled devnet demonstration agreements
-with simulated rights, or agreements prepared for real counterparties to review. The source models
-do not authorize signing for the developer, concept author or landowners. Their names describe the
-design provenance; they are not endorsements of the agreement or its market.
+The simulated rights snapshot assigns each input parcel to one demonstration wallet. This is not
+landowner consent, acceptance by a real counterparty, or an endorsement by the developer or concept
+author. The labels and names describe design provenance only.
 
-Once that choice and the missing agreement terms are supplied, publish and mint each current
-agreement, read back its canonical sponsor/CID account and deadline, then expose both in the shared
-land contest. Points books open for eligible dated agreements. Each sponsor separately seeds its
-devnet-USDC LMSR book after the current program is deployed. An old permit market keeps its original
-question and settlement rule; these are new agreement bets.
+On 26 October 2026, the prepared plan and agreement records could not be pinned because the storage
+service returned HTTP 403 `pinning-quota-exhausted`; neither agreement was published or minted and
+neither appeared in the market index. See the dated [preparation and validation record](sf-demo-validation-2026-10-26.md).
+At that observation, the demonstration wallet held 58.723938
+devnet USDC against a combined canonical market seed of 138.629440 USDC, a 79.905502 USDC shortfall.
+This is a dated balance observation, not a current-balance guarantee. Publication, indexing, minting
+and funding remain prerequisites to exposing these executable devnet agreement bets with simulated rights.

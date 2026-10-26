@@ -1,7 +1,7 @@
 {
   "schema": "agreement-bet-intents/v1",
   "city": "san_francisco",
-  "publicationState": "local-review-only",
+  "publicationState": "prepared-labelled-devnet-demos-pinning-blocked",
   "relationship": "independent yes/no bets; both may execute or neither may execute",
   "recipeId": "agreement-execution-by-deadline-v1",
   "assets": [
@@ -153,14 +153,28 @@
       "agreementCid": null,
       "agreementAccount": null,
       "marketAccount": null,
-      "state": "requires-agreement-setup",
+      "state": "prepared-labelled-devnet-demo-pinning-blocked",
       "unresolved": [
-        "counterparties and sponsor",
-        "qualified ground and rights snapshot",
-        "binding owner approval rule and verifier",
-        "funding and allocation terms",
-        "public devnet demonstration or real participant agreement"
-      ]
+        "Pinata publication quota; no agreement or plan was published or indexed",
+        "Minting the agreement account and creating its market after publication",
+        "Real owner rights and consent are not represented by the simulated demo holder",
+        "Devnet USDC seed funding shortfall at the 2026-10-26 observation"
+      ],
+      "publishedDesignCid": "bafybeiaiubi5q7wwjyyiavt223lxtr72vezmtwpmfvpy3jgrsaerpslnyq",
+      "preparedPlanCid": "bafkreic6kpty3f5iyfr4mnittekslxnrcwylsspas2x77c2yy6entz4cne",
+      "preparedAgreementCid": "bafkreiarw7qlptbgq2eiccwcmcg5yiuazh5i3zcx7lmt4ly32j4f6q6aj4",
+      "rightsSnapshot": {
+        "kind": "simulated",
+        "holders": 1,
+        "wallet": "4EXtquCoNRBXvfVgDRfBSXSWzrBctcqLwwUau96Umeqk",
+        "realOwnerConsent": false
+      },
+      "ground": {
+        "inputParcels": 118,
+        "outputPieces": 122,
+        "openGroundM2": 76206.601095,
+        "openGroundBasis": "Union of the current design sites outside their bound cadastral parcels; legal ownership unknown."
+      }
     },
     {
       "key": "fivepoint",
@@ -300,14 +314,46 @@
       "agreementCid": null,
       "agreementAccount": null,
       "marketAccount": null,
-      "state": "requires-agreement-setup",
+      "state": "prepared-labelled-devnet-demo-pinning-blocked",
       "unresolved": [
-        "counterparties and sponsor",
-        "qualified ground and rights snapshot",
-        "binding owner approval rule and verifier",
-        "funding and allocation terms",
-        "public devnet demonstration or real participant agreement"
-      ]
+        "Pinata publication quota; no agreement or plan was published or indexed",
+        "Minting the agreement account and creating its market after publication",
+        "Real owner rights and consent are not represented by the simulated demo holder",
+        "Devnet USDC seed funding shortfall at the 2026-10-26 observation"
+      ],
+      "publishedDesignCid": "bafkreihwnn54kntvooptfzcta4li5urn2cnvjkb5lwldr6yvofkknmrloi",
+      "preparedPlanCid": "bafkreih6kmeom5v4m4jxpx4qbxrvnc3gmm7h2llqacmasrbcsknyyb2ciy",
+      "preparedAgreementCid": "bafkreidtnissamp6q7hql35z4izn5k546puin3q7ou7gm7izvi4xswywx4",
+      "rightsSnapshot": {
+        "kind": "simulated",
+        "holders": 1,
+        "wallet": "4EXtquCoNRBXvfVgDRfBSXSWzrBctcqLwwUau96Umeqk",
+        "realOwnerConsent": false
+      },
+      "ground": {
+        "inputParcels": 117,
+        "outputPieces": 121,
+        "openGroundM2": 76206.629452,
+        "openGroundBasis": "Union of the current design sites outside their bound cadastral parcels; legal ownership unknown."
+      }
     }
-  ]
+  ],
+  "preparation": {
+    "observedAt": "2026-10-26",
+    "status": "Both labelled devnet demo agreements and their plan records are prepared, but publication failed before indexing or minting.",
+    "failure": {
+      "service": "Pinata",
+      "httpStatus": 403,
+      "code": "pinning-quota-exhausted"
+    },
+    "rights": "Simulated single-wallet rights for a devnet demonstration only; no real owner consent or acceptance is represented.",
+    "geometry": "The designs retain their imported building geometry. Each site is unioned with the imported footprints to contain their full extent.",
+    "fundingObservation": {
+      "observedDevnetUsdc": 58.723938,
+      "canonicalSeedRequired": 138.62944,
+      "shortfall": 79.905502,
+      "asOf": "2026-10-26",
+      "note": "Dated observation only; not a current balance guarantee."
+    }
+  }
 }
