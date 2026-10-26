@@ -67,6 +67,26 @@ describe('granular authored editing', () => {
         expect(design).toEqual(before);
         expect(validateDesignContent(next).ok).toBe(true);
     });
+    it('moves a building off its former whole parcel through the same reviewed land contract', () => {
+        const design=make('building',{floors:4,coverage:.05});
+        const body=design.geometry.buildings[0], before=structuredClone(design);
+        design.geometry.landTake=turf.feature(structuredClone(site));
+        design.geometry.groundBoundary=turf.feature(structuredClone(site));
+        design.geometry.groundSurface={treatment:'paved',polygon:turf.difference(turf.feature(site),body).geometry,
+            decorationDesign:{trees:[{coordinate:[-.099,51.501],kind:'broadleaf',heightM:8}]}};
+        const original=structuredClone(design);
+        const moved=structuredClone(body);
+        moved.geometry.coordinates=moved.geometry.coordinates.map(ring=>ring.map(([x,y])=>[x+.01,y]));
+        const next=edit(design,[
+            {op:'replace',path:'/geometry/buildings/0/geometry',value:moved.geometry},
+            {op:'replace',path:'/geometry/landTake',value:moved},
+            {op:'replace',path:'/site',value:moved.geometry}
+        ]);
+        expect(next.geometry.groundSurface).toBeNull();
+        expect(turf.intersect(turf.feature(next.site),turf.feature(before.site))).toBeNull();
+        expect(validateDesignContent(next).ok).toBe(true);
+        expect(design).toEqual(original);
+    });
     it('rejects stale revisions, failed tests, invalid pointers and prototype pollution atomically', () => {
         const design=make('building',{floors:4}), before=structuredClone(design);
         expect(()=>editedDesign(design,cidOfObject({wrong:true}),[{op:'replace',path:'/title',value:'Changed'}])).toThrow(/revision/);

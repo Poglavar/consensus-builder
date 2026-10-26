@@ -31,15 +31,28 @@ describe('Freeform reviewed land take', () => {
   sameArea(p.take,turf.union(A,B));
   expect(land.contains(p.take,[body],turf)).toBe(true);
  });
- it('keeps chosen whole ground after a building moves away, until the footprint-only choice clears it', () => {
+ it('releases whole parcels when their last building leaves, including saved choices and edge contact', () => {
   const first=plan(), whole=new Set([first.rows[0].key]);
-  const moved=rect(.005,.0005,.001,.001);
-  const retained=plan({buildings:[moved],whole});
-  expect(retained.rows.map(row=>[row.id,row.mode,row.overlapM2])).toEqual([['A','whole',0]]);
-  sameArea(retained.take,turf.union(A,moved));
-  const footprintOnly=plan({buildings:[moved],whole:new Set()});
-  sameArea(footprintOnly.take,moved);
-  expect(footprintOnly.rows).toHaveLength(0);
+  const before=JSON.stringify([A,B]);
+  for (const moved of [rect(.005,.0005,.001,.001), rect(.002,.0005,.001,.001)]) {
+   for (const choices of [{whole},{savedTake:turf.union(A,body)}]) {
+    const released=plan({buildings:[moved],...choices});
+    expect(released.rows.some(row=>row.id==='A')).toBe(false);
+    sameArea(released.take,moved);
+    const stock=rect(.0002,.0002,.0002,.0002);
+    expect(land.demolitionPreview(released.take,[stock],splitDemolitionFootprint,turf).retained).toEqual([stock]);
+    const remaining=new Set(released.rows.filter(row=>row.mode==='whole').map(row=>row.key));
+    expect(plan({whole:remaining}).rows[0].mode).toBe('footprint');
+   }
+  }
+  expect(JSON.stringify([A,B])).toBe(before);
+ });
+ it('retains an occupied whole parcel even when its real overlap rounds to zero percent', () => {
+  const first=plan(), tiny=rect(.001999,.0005,.001,.001);
+  const p=plan({buildings:[tiny],whole:new Set([first.rows[0].key])});
+  expect(Math.round(p.rows[0].overlapM2/p.rows[0].parcelM2*100)).toBe(0);
+  expect(p.rows[0].mode).toBe('whole');
+  sameArea(p.take,turf.union(A,tiny));
  });
  it('recovers mixed choices from saved geometry without durable live IDs', () => {
   const savedTake=turf.union(A,body), p=plan({savedTake});

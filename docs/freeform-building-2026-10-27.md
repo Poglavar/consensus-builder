@@ -21,10 +21,13 @@ is empty. Choosing All footprint removes the surface and its furniture; choosing
 whole parcels permits a surface again. Land-choice controls wait for the first
 review instead of accepting a click before any parcels are known.
 
-Chosen whole parcels remain taken when a building moves away. Their surrounding
-ground stays anchored, until the user changes that land choice. A replacement that
-retains this ground overlaps its published source and unapplies that source locally;
-the original published geometry and CID remain unchanged. An imported collection
+Follow-up correction: whole parcels remain taken only while a building overlaps
+them. Moving the last building away releases that parcel, paving, planting and
+removal effects, returning the parcel to its source state. Ground stays anchored
+while its parcel is occupied. Undo restores the previous building and whole-parcel
+choice. A moved fork that no longer overlaps its source can coexist with that
+source; the published source geometry and CID remain unchanged. This supersedes
+the earlier retention rule and its corresponding test expectation. An imported collection
 saves separate footprint-only designs, each with its own building site.
 
 This intentionally changes the earlier experimental behavior that allowed a
@@ -92,3 +95,42 @@ the vocabulary. Their Freeform edits remain in the worktree together with the
 scoped hover test, following the workspace rule against committing mixed files.
 The local commit contains the remaining files owned by this task. The task's own
 shared-file hunks are preserved separately in `/tmp/ugt-freeform-shared.patch`.
+
+
+## Follow-up: release unoccupied parcels
+
+The reported zero-overlap paved parcel was reproduced by the land planner's explicit
+whole-parcel exception. Whole and recovered saved choices now require positive
+footprint overlap, with the existing numerical edge-contact tolerance. Once dropped,
+a parcel's whole choice is forgotten; moving back does not silently restore paving.
+Undo restores the authored take and furniture from the history snapshot instead.
+Review reads immutable source cadastral boundaries, including when reopening an
+applied design whose own live fragments would otherwise hide its occupied yard.
+
+The ground surface is clipped to the recomputed take; leaving the last whole parcel
+also clears stale furniture. Save uses the same take for site, binding and demolition.
+The pure regression checks edge contact, saved choices, source immutability, removal
+preview and tiny genuine overlap that merely rounds to 0%. Browser checks cover
+actual drag, Undo, save/reopen, source CID preservation and local edit identity.
+MCP parity uses existing atomic edits to the building, land take and site; the
+shared reconciler removes released ground/furniture. No new tool/schema is needed.
+
+Targeted run ledger for this follow-up (no full suite was run):
+
+| Type and scope | Result |
+| --- | --- |
+| Headless unit, 3 files, initial run | 42 passed, 1 failed: lifecycle fixture omitted the occupied-parcel flag. |
+| Headless unit, same 3 files with MCP case | 43 passed, 1 failed: test fixture used cross-realm Turf options. |
+| Headless unit, corrected fixtures | 44 passed. |
+| Headed Playwright, 2 selected drag cases | Stopped after 1 pass; second case stalled during trace/failure collection, reported not run. |
+| Headless Playwright, release case, first diagnostic | Failed: reopening queried the design's own live parcel fragments. |
+| Headless Playwright, release case, source lookup corrected | Failed: test dragged before initial review completed. |
+| Headless Playwright, release case, initial review awaited | Failed: saved absent surface is omitted, not serialized as null. |
+| Headed Playwright, final 5 selected cases in 2 files, tracing off | All 5 passed; completed. |
+| Headless unit, final 3 files | All 44 passed; completed. |
+
+The headed capture `released-parcel.png` was visually inspected: the old parcel is
+absent from review, land take is the 400 m² footprint, and removal counts are zero.
+All owned Playwright browsers closed with their completed or stopped runs.
+The vocabulary correction remains alongside another session's street-front glossary
+edit and is intentionally left uncommitted under the shared-worktree rule.

@@ -104,11 +104,11 @@
                 if (geometryKey !== null && nextKey !== geometryKey) savedTake = null;
                 geometryKey = nextKey;
                 const footprint = api.union(buildings, env.turf);
-                const region = api.union([footprint, savedTake,
-                    ...(current?.rows.filter(row => row.mode === 'whole' && whole.has(row.key)).map(row => row.feature) || [])], env.turf);
+                const region = footprint;
                 await env.CadastralParcelRepository.ensureFootprint(region);
                 if (closed || ticket !== sequence) return false;
-                parcels = env.LiveParcelFabric.queryBounds(env.turf.bbox(region), { includeCorridors: false });
+                // Review source parcels, not the fragments this applied design itself produced.
+                parcels = env.__cadastreAncestry.loadedCadastreParcels(env.turf.bbox(region)).map(item => item.feature);
                 current = api.plan({ buildings, parcels, whole, savedTake, turf: env.turf });
                 savedTake = null;
                 whole = new Set(current.rows.filter(row => row.mode === 'whole').map(row => row.key));

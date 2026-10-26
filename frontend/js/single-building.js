@@ -681,8 +681,8 @@
     function refreshSingleLandTakePreview(take, hasWholeParcels, choiceChanged = false) {
         if (choiceChanged) {
             singleGroundBoundary = cloneSingleFeature(take);
-            if (!hasWholeParcels) currentGroundDecorationDesign = null;
         }
+        if (!hasWholeParcels) currentGroundDecorationDesign = null;
         updateGroundPreview();
         refreshSingleBuildingDensityStats();
         singleSession?.placement?.update(currentPlacementSite());

@@ -31,14 +31,13 @@
             const host = feature(parcel);
             const intersection = turf.intersect(footprint, host);
             const overlapM2 = intersection ? turf.area(intersection) : 0;
+            // Whole-parcel surroundings belong to a building on that parcel, not a separate paving tool.
+            if (overlapM2 <= Math.min(0.001, turf.area(footprint) * 1e-6)) continue;
             const id = String(host.properties?.parcelId ?? host.id ?? '');
             const key = JSON.stringify([id, host.geometry]);
             const parcelM2 = turf.area(host);
             const savedRemainder = savedTake ? turf.difference(host, feature(savedTake)) : null;
             const mode = whole.has(key) || (savedTake && (!savedRemainder || turf.area(savedRemainder) < Math.min(0.01, parcelM2 * 1e-6))) ? 'whole' : 'footprint';
-            // Whole parcels keep their anchored surroundings when the building moves away.
-            // A numerical edge contact alone still takes no land from an unchosen parcel.
-            if (mode !== 'whole' && overlapM2 <= Math.min(0.001, turf.area(footprint) * 1e-6)) continue;
             if (mode === 'whole') extra.push(host);
             rows.push({ key, id, feature: host, mode, overlapM2, parcelM2,
                 take: mode === 'whole' ? host : intersection,

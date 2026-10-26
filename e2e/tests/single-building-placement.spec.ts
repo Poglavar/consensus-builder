@@ -338,7 +338,7 @@ test.describe('Single-building placement and immutable replacement @features', (
       .some((p: any) => p.applied && p.buildingProposal?.typologyType === 'single'))).toBe(false);
   });
 
-  test('a building edit retains anchored surroundings and revises its published source; a local edit saves in place', async ({ mockApi: page }) => {
+  test('moving away releases the old parcel and surroundings; Undo restores them and saved edits stay isolated', async ({ mockApi: page }, testInfo) => {
     // Two saves and a reload (or a second city load): longer than the default 30 s on a busy host.
     test.setTimeout(90_000);
     const publishedId = await createAppliedSingle(page);
@@ -354,9 +354,19 @@ test.describe('Single-building placement and immutable replacement @features', (
     expect(await page.evaluate(id => (window as any).DesignSync.publishedCid((window as any).proposalStorage.getProposal(id)), publishedId)).toBe(publishedCid);
     const publishedBefore = await proposalState(page, publishedId);
     await beginGeometryEdit(page, publishedId);
+    await expect(page.locator(`#single-land-take select[data-parcel-id="${PARCEL_ID}"]`)).toHaveValue('whole');
+    await expect(page.locator('#single-ground-treatment')).toBeEnabled();
     await page.locator(`${EDITOR} [data-placement="snap"]`).uncheck();
+    const beforeMove = await editorDesign(page);
     await dragActive(page, -360);
-    await waitForLandTakeReview(page);
+    await expect(page.locator(`#single-land-take select[data-parcel-id="${PARCEL_ID}"]`)).toHaveCount(0);
+    await expect(page.locator('#single-ground-treatment')).toBeDisabled();
+    await page.locator('#single-building-undo').click();
+    await expect.poll(() => editorDesign(page)).toEqual(beforeMove);
+    await expect(page.locator(`#single-land-take select[data-parcel-id="${PARCEL_ID}"]`)).toHaveValue('whole');
+    await dragActive(page, -360);
+    await expect(page.locator(`#single-land-take select[data-parcel-id="${PARCEL_ID}"]`)).toHaveCount(0);
+    await expect(page.locator('#single-ground-treatment')).toBeDisabled();
     const moved = await editorDesign(page);
     const overlapAreas = await page.evaluate(({ buildings, ground, sourceBuildings, sourceSite }) => {
       const w = window as any;
@@ -389,9 +399,12 @@ test.describe('Single-building placement and immutable replacement @features', (
     });
     expect(overlapAreas.hasBoundary).toBe(true);
     expect(overlapAreas.hasPlacementSite).toBe(true);
-    expect(overlapAreas.hasGreenSurface).toBe(true);
+    expect(overlapAreas.hasGreenSurface).toBe(false);
     expect(overlapAreas.buildingAreas.flat().every(area => area < 0.01)).toBe(true);
-    expect([overlapAreas.boundaryArea, overlapAreas.placementSiteArea, overlapAreas.greenArea].every(area => area > 0.01)).toBe(true);
+    expect(overlapAreas.boundaryArea).toBeGreaterThan(0.01); // Authored boundary stays anchored, but consumes no land.
+    expect(overlapAreas.placementSiteArea).toBeLessThan(0.01);
+    expect(overlapAreas.greenArea).toBe(0);
+    await page.screenshot({ path: testInfo.outputPath('released-parcel.png') });
     await finishSingle(page);
     // The edit is a new design revising the published one, which stays as it was (same CID); the
     // revision links its published source by that CID (origin.cid, and its typed proposalOrigin, M2).
@@ -404,13 +417,21 @@ test.describe('Single-building placement and immutable replacement @features', (
         && !p.published
         && p.applied).length, { sourceId: publishedId, sourceCid: publishedCid })).toBe(1);
     const publishedAfter = await proposalState(page, publishedId);
-    // Its replacement still takes the original whole parcel for the anchored surroundings,
-    // so the source is unapplied while its published content remains immutable.
-    expect(publishedAfter.applied).toBe(false);
+    // The moved fork no longer takes the source parcel; the published source stays applied.
+    expect(publishedAfter.applied).toBe(true);
     expect(publishedAfter.geometry).toEqual(publishedBefore.geometry);
     expect(await page.evaluate(id => (window as any).DesignSync.publishedCid((window as any).proposalStorage.getProposal(id)), publishedId)).toBe(publishedCid);
 
-    // The applied fork reserves the first parcel. Create the local
+    const forkId = await page.evaluate(sourceId => (window as any).proposalStorage.getAllProposals()
+      .find((p: any) => p.proposalId !== sourceId && p.proposalOrigin?.relation === 'revision' && p.applied).proposalId, publishedId);
+    const fork = await proposalState(page, forkId);
+    expect(fork.geometry.groundSurface).toBeUndefined();
+    await beginGeometryEdit(page, forkId);
+    await expect(page.locator(`#single-land-take select[data-parcel-id="${PARCEL_ID}"]`)).toHaveCount(0);
+    await expect(page.locator('#single-ground-treatment')).toBeDisabled();
+    await finishSingle(page);
+
+    // Create the local
     // fixture on a separate parcel so this assertion does not depend on reopening it.
     const localId = await createAppliedSingle(page, INDEPENDENT_PARCEL_ID);
     const localBefore = await proposalState(page, localId);

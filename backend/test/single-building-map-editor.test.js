@@ -216,7 +216,7 @@ describe('single-building map editor lifecycle', () => {
             this.probe.read=()=>({ singleGroundBoundary, currentGroundDecorationDesign });`,
             { ...effects, review, boundary, decoration, session, probe, cloneSingleFeature: value => structuredClone(value) });
 
-        refresh();
+        refresh(take, true);
 
         expect(probe.read().singleGroundBoundary).toBe(boundary);
         expect(probe.read().currentGroundDecorationDesign).toBe(decoration);
@@ -229,7 +229,7 @@ describe('single-building map editor lifecycle', () => {
         refresh(take, true, true);
         expect(probe.read().singleGroundBoundary).toEqual(take);
         expect(probe.read().currentGroundDecorationDesign).toBe(decoration);
-        refresh(take, false, true);
+        refresh(take, false); // Leaving the last whole parcel also clears furniture without a menu change.
         expect(probe.read().currentGroundDecorationDesign).toBeNull();
         expect(review.take).toBe(take);
     });
