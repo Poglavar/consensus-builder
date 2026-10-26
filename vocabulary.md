@@ -275,6 +275,8 @@ Selecting an object in model or Google 3D, including a design from a list or a c
 
 Restoring a saved camera retains the map's display settings and surrounding context. Its selected design is highlighted without isolating it from the shared composition.
 
+Opening the Freeform building editor preserves the current map view. Choosing another city for exploration leaves the previous shared plan and its saved view behind.
+
 In 3D, sharing can include the captured camera position and angle, independently of the optional “Rotate on arrival” choice. Rotation defaults off, orbits the view's focal point and starts when the view is ready, after terrain alignment in Google 3D. The first click, touch, scroll or key input stops rotation or cancels it while the scene loads. Reduced-motion views remain still. Unnamed links carry these choices in `camera` and `rotate` URL parameters; named plans save them in their view.
 
 The browser address follows completed view switches and the current 3D camera target, heading, pitch and range. Moving the camera updates the view without publishing designs or changing the plan referenced by the address. Private draft preview references remain in the address while navigating their view.
@@ -323,7 +325,7 @@ The exact ground a design consumes. A Freeform design's `geometry.landTake` can 
 
 ### Demolition review
 
-The modeled full building removals and partial cuts caused by a land take. Acceptance acknowledges those shown consequences in the editor; it is distinct from an owner's agreement decision and from real-world demolition.
+The preview of modeled full building removals and partial cuts caused by a land take. It updates with the design and does not require a separate acceptance before saving. It is distinct from an owner's agreement decision and from real-world demolition.
 
 Reviewing a replacement design evaluates observed stock before the source design's own removals. Application evaluates removals against the transaction's applied composition, including sources stood down by that replacement; an unchanged land take does not lose its removals merely because the source is still visible until commit.
 

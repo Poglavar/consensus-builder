@@ -1414,7 +1414,7 @@
             "tabProposals": "Predlozi",
             "tabTools": "Alati",
             "historySection": "Istorija",
-            "selectMultiple": "Izaberi više parcela",
+            "selectMultiple": "Izaberite parcelu da započnete projektovanje. Možete izabrati i više parcela ili ceo blok parcela.",
             "selectManually": "Ručno",
             "detectBlock": "Detektuj blok",
             "chooseBlockScope": "Izabrana je samo jedna parcela. Koristiti ovu parcelu ili otkriti ceo blok?",
@@ -1425,6 +1425,7 @@
                 "title": "Izgradi",
                 "block": "Blok",
                 "rowNeedsTwo": "Nizovi kuća zahtevaju bar dve parcele.",
+                "rowSelectionHint": "Kuće u nizu zahtevaju najmanje dve parcele. Izaberite još jednu parcelu ili upotrebite Otkrij blok.",
                 "row": "Niz kuća",
                 "parcelBased": "Slobodnostojeće",
                 "single": "Slobodna zgrada",
@@ -5604,6 +5605,7 @@
             "copy_proposal_parcels_unavailable": "Nije moguće učitati parcele ovog dizajna. Prebacite se na grad u kojem je napravljen i pokušajte ponovo.",
             "road_source_incorporated": "Primenjen je spojeni put, a ‘{{name}}’ je uklonjen sa mape.",
             "road_source_included_in_replacement": "Ovaj put je uključen u ‘{{name}}’. Uklonite spojeni put sa mape pre nego što primenite ovaj.",
+            "block_parcel_limit_exceeded": "Traženje bloka je zaustavljeno: povezano područje prelazi ograničenje od {{limit}} parcela. Ručno izaberite manju grupu parcela.",
             "block_needs_a_seed_parcel": "Prvo izaberi parcelu — blok se traži šireći se od parcele na kojoj jesi.",
             "block_neighbour_not_fully_visible": "Blok nije moguće složiti: parcela {{id}} pripada bloku, ali izlazi izvan ivice prikaza. Traženje bloka prati samo parcele koje su u celosti vidljive — odzumiraj dok ceo blok ne stane u prikaz pa ponovo pritisni Detektuj blok.",
             "block_no_parcels_in_view": "U prikazu nema običnih parcela od kojih bi se složio blok — samo putevi i pruge.",
@@ -7714,8 +7716,6 @@
         "copied": "Koordinate su kopirane"
     },
     "landTake": {
-        "acceptRequired": "Pregledajte zauzeće zemljišta i prihvatite njegove efekte pre čuvanja.",
-        "reviewChanged": "Zauzeće zemljišta ili efekti rušenja su se promenili. Pregledajte ih i ponovo prihvatite pre čuvanja.",
         "invalid": "Provereno zauzimanje zemljišta mora sadržati zgradu i biti unutar obuhvata.",
         "title": "Zauzimanje zemljišta",
         "intro": "Izaberite zemljište koje se uzima od svake dodirnute parcele. Zgrada zadržava svoj oblik.",
@@ -7726,8 +7726,7 @@
         "parcelChoice": "Zemljište uzeto od {{id}}",
         "loading": "Provera parcela i postojećih zgrada…",
         "summary": "{{area}} m² · {{parcels}} parcela · {{removed}} uklonjenih zgrada · {{partial}} delimično uklonjenih · {{parked}} predloženih zgrada isključenih sa mape",
-        "unavailable": "Nije moguće proveriti zemljište i postojeće zgrade. Pokušajte ponovo pre prihvatanja; nedostupni podaci ne znače prazno zemljište.",
-        "accept": "Prihvatam ovo zauzimanje zemljišta i prikazano uklanjanje zgrada.",
+        "unavailable": "Nije moguće proveriti zemljište i postojeće zgrade. Pokušajte ponovo pre čuvanja; nedostupni podaci ne znače prazno zemljište.",
         "legend": "Plavo: zauzeto zemljište · isprekidano: preostalo zemljište · crveno: uklonjene zgrade · zeleno: zadržane zgrade",
         "multi": "Sačuvajte nepovezane zgrade zasebno pre izbora celih parcela.",
         "retry": "Ponovi proveru"

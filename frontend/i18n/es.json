@@ -1442,7 +1442,7 @@
             "tabProposals": "Diseños",
             "tabTools": "Herramientas",
             "historySection": "Historial",
-            "selectMultiple": "Seleccionar múltiples parcelas",
+            "selectMultiple": "Selecciona una parcela para empezar a diseñar. También puedes seleccionar varias parcelas o una manzana de parcelas.",
             "selectManually": "Manual",
             "detectBlock": "Detectar bloque",
             "chooseBlockScope": "Solo hay una parcela seleccionada. ¿Usar esta parcela o detectar el bloque completo?",
@@ -1453,6 +1453,7 @@
                 "title": "Construir",
                 "block": "Manzana",
                 "rowNeedsTwo": "Las casas en hilera necesitan al menos dos parcelas.",
+                "rowSelectionHint": "Las casas adosadas necesitan al menos dos parcelas. Selecciona otra parcela o usa Detectar manzana.",
                 "row": "Casas en hilera",
                 "parcelBased": "Aislada",
                 "single": "Edificio libre",
@@ -5598,6 +5599,7 @@
             "copy_proposal_parcels_unavailable": "No se pudieron cargar las parcelas de este diseño. Cambia a la ciudad en la que se creó e inténtalo de nuevo.",
             "road_source_incorporated": "Se aplicó la vía combinada y se retiró ‘{{name}}’ del mapa.",
             "road_source_included_in_replacement": "Esta vía está incluida en ‘{{name}}’. Retira la vía combinada del mapa antes de aplicar esta.",
+            "block_parcel_limit_exceeded": "La detección de la manzana se detuvo: el área conectada supera el límite de {{limit}} parcelas. Selecciona manualmente un grupo más pequeño de parcelas.",
             "block_needs_a_seed_parcel": "Selecciona primero una parcela: la manzana se detecta creciendo desde la parcela en la que estás.",
             "block_neighbour_not_fully_visible": "No se puede formar la manzana: la parcela {{id}} pertenece a ella pero se sale del borde de la vista. La detección solo sigue parcelas totalmente visibles: aleja el zoom hasta que quepa toda la manzana y pulsa Detectar bloque otra vez.",
             "block_no_parcels_in_view": "No hay parcelas ordinarias a la vista con las que formar una manzana, solo calles y vías.",
@@ -7690,8 +7692,6 @@
         "copied": "Coordenadas copiadas"
     },
     "landTake": {
-        "acceptRequired": "Revisa la ocupación del suelo y acepta sus efectos antes de guardar.",
-        "reviewChanged": "La ocupación del suelo o los efectos de demolición han cambiado. Revísalos y acéptalos de nuevo antes de guardar.",
         "invalid": "El terreno revisado debe contener el edificio y quedar dentro del ámbito.",
         "title": "Ocupación del terreno",
         "intro": "Elige el terreno que se toma de cada parcela tocada. El edificio conserva su forma.",
@@ -7702,8 +7702,7 @@
         "parcelChoice": "Terreno tomado de {{id}}",
         "loading": "Comprobando parcelas y edificios existentes…",
         "summary": "{{area}} m² · {{parcels}} parcelas · {{removed}} edificios eliminados · {{partial}} parcialmente recortados · {{parked}} edificios propuestos retirados del mapa",
-        "unavailable": "No se pudieron verificar el terreno y los edificios. Reintenta antes de aceptar; la falta de datos no significa que el terreno esté vacío.",
-        "accept": "Acepto esta ocupación del terreno y las eliminaciones de edificios mostradas.",
+        "unavailable": "No se pudieron verificar el terreno y los edificios. Reintenta antes de guardar; la falta de datos no significa que el terreno esté vacío.",
         "legend": "Azul: terreno ocupado · discontinuo: terreno restante · rojo: edificios eliminados · verde: edificios conservados",
         "multi": "Guarda los edificios desconectados por separado antes de elegir parcelas completas.",
         "retry": "Reintentar revisión"

@@ -1455,7 +1455,6 @@
                                 <p data-land-multi hidden>${translateSingleBuildingText('landTake.multi')}</p>
                                 <p class="land-take-legend">${translateSingleBuildingText('landTake.legend')}</p>
                                 <p data-land-status role="status" aria-live="polite"></p>
-                                <label class="land-take-accept"><input type="checkbox" data-land-accept disabled><span>${translateSingleBuildingText('landTake.accept')}</span></label>
                             </section>
                             <div class="building-picker-row">
                                 <select id="single-building-selector" aria-label="${modalText.buildingsTitle}"></select>
@@ -1696,8 +1695,8 @@
             onChange: refreshSingleLandTakePreview
         });
         singleBuildingSeedLandTake = null;
-        // Frame the editable object once. Later edits leave the user's camera alone.
-        singleSession.fitFeature(singleRectFeature);
+        // Opening placement keeps the view the user chose, including the surrounding context.
+        // An automatic fit here also queued a surprise camera move on returning from model 3D.
         syncSingleBuildingView();
         ensureSingleBuildingHistory();
         singleBuildingDesignChanges().capture();

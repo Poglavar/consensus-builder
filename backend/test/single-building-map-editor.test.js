@@ -78,6 +78,49 @@ function closeHarness(options = {}) {
 }
 
 describe('single-building map editor lifecycle', () => {
+    it.each(['2d', 'model'])('mounts placement without taking over the %s view', mode => {
+        const feature = { type: 'Feature', geometry: { type: 'Polygon', coordinates: [] } };
+        const entry = { id: 'building-1', feature };
+        const view = { center: [12, 34], zoom: 18, queuedFit: false };
+        const before = structuredClone(view);
+        const session = {
+            map: { on: vi.fn() }, setPreview: vi.fn(),
+            fitFeature: vi.fn(() => {
+                if (mode === 'model') view.queuedFit = true;
+                else { view.center = [13, 35]; view.zoom = 21; }
+            })
+        };
+        const draw = vi.fn(), sync = vi.fn(), focus = vi.fn();
+        const stubs = {
+            session, document: { getElementById: () => ({ focus }) },
+            window: { FreeformLandTakeReview: { mount: vi.fn(() => ({})) } },
+            getSelectedBlockFeature: () => feature, cloneSingleFeature: value => value,
+            translateSingleBuildingText: (_key, fallback) => fallback,
+            drawBlockOnMap: draw, normalizeGroundTreatment: () => 'none',
+            computeInitialPlacement: () => ({ center: [12, 34], width: 10, length: 10 }),
+            addNewBuildingEntry: vi.fn(() => entry), refreshBuildingSelector: vi.fn(), setActiveBuilding: vi.fn(),
+            syncSingleBuildingView: sync, ensureSingleBuildingHistory: vi.fn(),
+            singleBuildingDesignChanges: () => ({ capture: vi.fn() }), tryStartDragFromMap: vi.fn(),
+            refreshSingleLandTakePreview: vi.fn(), singleBuildingPreview: vi.fn()
+        };
+        const variables = `const DEFAULT_HEIGHT_M=12;
+            let singleBlockFeature, singleGroundBoundary, singleBuildingSeedGroundBoundary=null, singleMoveTogether,
+                singleEditor={}, singleSession=this.session, singleMap, buildingEntries=[], activeBuildingId, nextBuildingId,
+                currentGroundTreatment, currentGroundDecorationDesign, singleBuildingSeedDecorationDesign=null,
+                singleBuildingSeedGroundTreatment=null, currentHeightM, currentRotationDeg, singleRectFeature,
+                singleBuildingSeedBuildings=null, singleLandTakeReview, singleBuildingSeedLandTake=null;`;
+        // Execute the real mount tail with an existing editor frame: only its UI shell is stubbed.
+        const bindings = Object.keys(stubs).filter(key => key !== 'session').map(key => `const ${key}=this.${key};`).join('\n');
+        const context = { ...stubs };
+        vm.runInNewContext(`${variables}\n${bindings}\n${functions.get('mountSingleBuildingMapEditor')}\nthis.mount=mountSingleBuildingMapEditor;`, context);
+
+        expect(context.mount()).toBe(true);
+        expect(draw).toHaveBeenCalledWith(feature);
+        expect(sync).toHaveBeenCalledOnce();
+        expect(focus).toHaveBeenCalledWith({ preventScroll: true });
+        expect(view).toEqual(before);
+    });
+
     it('includes authored surroundings and the reviewed land take in the placement site', () => {
         const ground = turf.bboxPolygon([0, 0, 4, 4]);
         const take = turf.bboxPolygon([3, 0, 5, 2]);

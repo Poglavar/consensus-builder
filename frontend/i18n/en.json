@@ -1419,7 +1419,7 @@
             "tabProposals": "Designs",
             "tabTools": "Tools",
             "historySection": "History",
-            "selectMultiple": "Select multiple parcels",
+            "selectMultiple": "Select a parcel to start designing. You can also select multiple parcels or a block of parcels.",
             "selectManually": "Manual",
             "detectBlock": "Detect block",
             "chooseBlockScope": "Only one parcel is selected. Use this parcel, or detect the whole block?",
@@ -1430,6 +1430,7 @@
                 "title": "Build",
                 "block": "Block",
                 "rowNeedsTwo": "Row houses need at least two parcels.",
+                "rowSelectionHint": "Row houses need at least two parcels. Select another parcel or use Detect block.",
                 "row": "Row houses",
                 "parcelBased": "Detached",
                 "single": "Freeform building",
@@ -5571,6 +5572,7 @@
             "copy_proposal_parcels_unavailable": "Could not load this design's parcels. Switch to the city it was created in, then try again.",
             "road_source_incorporated": "Applied the combined road and removed ‘{{name}}’ from the map.",
             "road_source_included_in_replacement": "This road is included in ‘{{name}}’. Remove the combined road from the map before applying this one.",
+            "block_parcel_limit_exceeded": "Block detection stopped: the connected area exceeds the {{limit}}-parcel limit. Select a smaller group of parcels manually.",
             "block_needs_a_seed_parcel": "Select a parcel first — block detection grows outwards from the parcel you are on.",
             "block_neighbour_not_fully_visible": "Cannot form the block: parcel {{id}} belongs to it but runs past the edge of the view. Block detection only follows parcels that are entirely visible — zoom out until the whole block fits, then press Detect block again.",
             "block_no_parcels_in_view": "There are no ordinary parcels in view to build a block from — only roads and tracks.",
@@ -7662,8 +7664,6 @@
         "copied": "Coordinates copied"
     },
     "landTake": {
-        "acceptRequired": "Review the land take and accept its effects before saving.",
-        "reviewChanged": "The land take or demolition effects changed. Review and accept them again before saving.",
         "invalid": "The reviewed land take must contain the building and fit within the site.",
         "title": "Land take",
         "intro": "Choose the land taken from each touched parcel. The building keeps its shape.",
@@ -7674,8 +7674,7 @@
         "parcelChoice": "Land taken from {{id}}",
         "loading": "Checking parcels and existing buildings…",
         "summary": "{{area}} m² · {{parcels}} parcels · {{removed}} buildings removed · {{partial}} partially cut · {{parked}} proposed buildings parked",
-        "unavailable": "Could not verify the land and existing buildings. Retry before accepting; missing data does not mean empty ground.",
-        "accept": "I accept this land take and the shown building removals.",
+        "unavailable": "Could not verify the land and existing buildings. Retry before saving; missing data does not mean empty ground.",
         "legend": "Blue: land taken · dashed: remaining land · red: removed buildings · green: retained buildings",
         "multi": "Save disconnected buildings separately before choosing whole parcels.",
         "retry": "Retry review"
