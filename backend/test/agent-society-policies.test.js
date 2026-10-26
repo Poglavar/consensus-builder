@@ -65,7 +65,7 @@ describe('contrarian policy (preservationist-01)', () => {
         expect(tower.floorAreaM2).toBeGreaterThan(4700);
         expect(contrarian.densityEvidence({ name: 'A 20-storey tower' })).toMatchObject({ source: 'heuristic', score: 2000 + 100 });
         // The linked designs' titles count as text too.
-        expect(contrarian.densityEvidence({ name: 'Deal', designs: [{ title: '8 storeys of apartments' }] })).toMatchObject({ source: 'heuristic', score: 800 + 50 + 50 });
+        expect(contrarian.densityEvidence({ name: 'Deal', designContents: [{ title: '8 storeys of apartments' }] })).toMatchObject({ source: 'heuristic', score: 800 + 50 + 50 });
         expect(contrarian.densityEvidence({ name: 'Pocket park', designContents: [{ description: 'green square' }] })).toMatchObject({ source: 'none', score: 0 });
     });
 

@@ -18,7 +18,10 @@ export function settlement(market, agreement, nowSeconds = Math.floor(Date.now()
     }
     const status = String(agreement?.chainStatus || '').toLowerCase();
     const source = { chainStatus: status, executedAt: agreement?.executedAt || 0 };
-    const outcome = contract.executionOutcome(source, market, nowSeconds);
+    // The chain codec preserves i64 deadlines as bigint; the shared rules validate safe integer seconds.
+    const terms = { closesAt: typeof market.closesAt === 'bigint' ? Number(market.closesAt) : market.closesAt,
+        graceSeconds: market.graceSeconds };
+    const outcome = contract.executionOutcome(source, terms, nowSeconds);
     return outcome ? { outcome, resolveFirst: true } : null;
 }
 

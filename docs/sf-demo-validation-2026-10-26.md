@@ -55,3 +55,23 @@ No human editing behavior changed. Publication used the existing index client, a
 ## Points UI verification
 
 A headed Chrome session used the isolated `sf-release-20261026` test realm on the production API, excluded from public standings. The UI bought 19.090282 YES shares for 10 points, then sold 9.545141 shares for 5.113584 points. Ledger readback confirmed 995.113584 points and 9.545141 YES shares remain; reloading preserved the same account, balance and position. Receipts: buy `2f790a7f-673d-4cd6-929b-670f3959ff87`, sell `98411168-20e7-4d37-bae3-b394a2385a8c`.
+
+## Bot deadline conversion follow-up
+
+The collection policy passed a chain-decoded `closesAt` BigInt directly into the shared settlement
+rules, which require safe integer Unix seconds. A bot's first trade could succeed, but the next turn
+failed while checking its existing position. The collection boundary now converts the decoded
+BigInt before invoking those rules; unsafe, negative and incorrectly typed values still fail.
+The unit and settlement definitions are unchanged, so no glossary change was needed. No human
+editing behavior or MCP primitive changed.
+
+Validation used the actual market decoder and a held position. The new regression initially failed
+with `closesAt must be unix seconds` (11 passed, one failed). A three-file targeted headless unit run
+then exposed one stale fixture using inline design membership (42 passed, one failed); the fixture
+now supplies current design contents. The final three-file targeted headless unit run passed all 43
+checks. No full suite was run and no tests were stopped.
+
+Read-only dry runs of preservationist-01, skeptic-02 and backer-01 against the production agreement
+index and devnet markets completed at 19:04–19:05 UTC on 26 October. All three read existing positions
+and selected their next eligible SF bet. These runs signed no transaction, wrote no ledger state,
+transferred no funds and sent no notification.

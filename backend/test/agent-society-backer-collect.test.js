@@ -2,11 +2,16 @@
 // (agents/policies/collect.js), on agreements: which open agreement the backer bets YES on, and which
 // settled market position a persona claims (winning share, VOID half-payout, already claimed, not
 // yet resolvable). Markets, positions and chain statuses are keyed by the agreement account.
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import { createRequire } from 'node:module';
 import * as backer from '../agents/policies/backer.js';
 import * as contrarian from '../agents/policies/contrarian.js';
 import { decideCollect, decideTurn, settlement } from '../agents/policies/collect.js';
 import { societyHistory } from '../agents/policies/history.js';
+import { lmsrMarketAccount } from './helpers/agent-chain-fakes.js';
+
+const require = createRequire(import.meta.url);
+const marketClient = require('../../frontend/js/solana/lmsr-client.js');
 
 const NOW = Date.parse('2026-10-22T12:00:00Z');
 const OWN_WALLET = 'OwnWallet1111111111111111111111111111111111';
@@ -147,6 +152,33 @@ describe('collect step: claims a persona is owed', () => {
         expect(settlement(null, settled[0], Math.floor(NOW / 1000))).toBeNull();
         const decision = decideCollect({ ...base, agreements: [settled[4], settled[1], settled[3]] });
         expect(decision).toMatchObject({ action: null, capped: false, options: [] });
+    });
+
+    it('continues to the role policy when an existing position uses a decoded bigint deadline', () => {
+        const closesAt = Math.floor(Date.parse('2026-11-01T00:00:00Z') / 1000);
+        const decoded = marketClient.decodeMarket(lmsrMarketAccount({
+            agreement: '11111111111111111111111111111111', sponsor: '11111111111111111111111111111111', closesAt
+        }).data);
+        expect(decoded.closesAt).toBe(BigInt(closesAt));
+        const open = agreement('open');
+        const role = vi.fn(() => ({ action: null, options: [], capped: false, reason: 'Policy reached.' }));
+        expect(decideTurn(role, { agreements: [open], markets: { [open.account]: decoded },
+            positions: { [open.account]: { yes: position(20000n) } }, nowSeconds: closesAt - 1 }))
+            .toMatchObject({ step: 'role', action: null, owedClaims: 0 });
+        expect(role).toHaveBeenCalledOnce();
+
+        expect(settlement(decoded, open, closesAt)).toEqual({ outcome: 'no', resolveFirst: true });
+        expect(settlement(decoded, agreement('exec', { chainStatus: 'executed', executedAt: closesAt }), closesAt + 1))
+            .toEqual({ outcome: 'yes', resolveFirst: true });
+        expect(settlement(decoded, agreement('late', { chainStatus: 'executed', executedAt: closesAt + 1 }), closesAt + 1))
+            .toEqual({ outcome: 'no', resolveFirst: true });
+    });
+
+    it('keeps rejecting unsafe or invalid deadline values at the settlement boundary', () => {
+        for (const closesAt of [BigInt(Number.MAX_SAFE_INTEGER) + 1n, -1n, '1800000000', NaN]) {
+            expect(() => settlement(market(0n, 0n, { closesAt }), agreement('open'), Math.floor(NOW / 1000)))
+                .toThrow('closesAt must be unix seconds');
+        }
     });
 
     it('leaves a resolve-first claim for a later turn when only one signed action is left', () => {
