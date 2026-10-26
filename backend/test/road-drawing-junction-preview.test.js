@@ -50,6 +50,19 @@ describe('applied arms meeting the drawing', () => {
         expect(arms[0].points).toEqual([P(45.8, 15.971), P(45.8, 15.972)]);
     });
 
+    it('keeps stacked nodes separate and only projects onto a same-level edge', () => {
+        const elevated = { ...street, points: street.points.map(point => ({ ...point, level: 1 })) };
+        const atLevel = (lng, level) => ({ ...P(45.8, lng), level });
+        expect(appliedArmsMeetingDrawing([[atLevel(15.971, 0)]], [elevated])).toEqual([]);
+        expect(appliedArmsMeetingDrawing([[atLevel(15.9705, 0)]], [elevated])).toEqual([]);
+        const shared = atLevel(15.9705, 1);
+        const arms = appliedArmsMeetingDrawing([[atLevel(15.9705, 0)], [shared]], [elevated]);
+        expect(arms).toHaveLength(1);
+        expect(arms[0].points[1]).toEqual(shared);
+        expect(appliedArmsMeetingDrawing([[shared]], [{ ...elevated,
+            points: [atLevel(15.97, 0), atLevel(15.971, 1)] }])).toEqual([]);
+    });
+
     it('leaves alone a near miss that is not a shared node', () => {
         // 2 cm north of the centre line: snapping would have landed on it; this did not.
         const nearMiss = P(45.8 + 0.02 / 111320, 15.9705);
@@ -130,8 +143,10 @@ describe('the preview is wired into the junction pass only', () => {
             lat: node.lat, lng: node.lng, degree: 3, corridorIds: ['active-drawing', 'p1'],
             arms: [], surfacePolygons: [coverage], cornerPolygons: []
         };
+        const previewUpdates = [];
         const wrapped = await openOver([appliedCorridor('p1', 30, PROFILE)], {
-            buildCorridorJunctionTreatmentsForEntries: () => [treatment]
+            buildCorridorJunctionTreatmentsForEntries: () => [treatment],
+            setCorridorDrawingJunctionPreview: junctions => previewUpdates.push(junctions)
         });
         // A T: from the south onto the middle of the applied road's first edge.
         await env.click(at(20, -60));
@@ -155,8 +170,11 @@ describe('the preview is wired into the junction pass only', () => {
         const renderedDraftStrips = env.rendered.strips.at(-1).strips;
         expect(overlapAreaWith(rawDraftStrips, junctionCoverage)).toBeGreaterThan(0.01);
         expect(overlapAreaWith(renderedDraftStrips, junctionCoverage)).toBeLessThan(0.01);
+        expect(previewUpdates.at(-1)).toEqual(junctions);
         expect(env.session.roadStripLayer).not.toBeNull();
         expect(env.map.hasLayer(env.session.roadStripLayer)).toBe(true);
+        env.api.clearRoadStripLayer();
+        expect(previewUpdates.at(-1)).toEqual([]);
     });
 
     it('draws the transition pieces like the applied renderer does', async () => {
@@ -206,5 +224,19 @@ describe('the preview is wired into the junction pass only', () => {
         expect(arms.map(arm => arm.corridorId)).toEqual(['track-1']);
         expect(arms[0].points).toHaveLength(3);
         expect(env.api.appliedJunctionArmsForDrawing([])).toEqual([]);
+    });
+
+    it('borrows the renderer’s surface runs rather than a protected bridge or tunnel span', () => {
+        const proposal = appliedCorridor('bridge', 30, PROFILE);
+        const calls = [];
+        env = loadRoadDrawing({ proposals: [proposal], globals: {
+            corridorJunctionEntriesFor: (record, definition) => {
+                calls.push([record.proposalId, definition]);
+                return []; // The applied renderer excluded this protected span.
+            }
+        } });
+        expect(env.api.appliedJunctionArmsForDrawing([{ points: [at(50, -60), at(50, 30)] }])).toEqual([]);
+        expect(calls).toHaveLength(1);
+        expect(calls[0][0]).toBe('bridge');
     });
 });

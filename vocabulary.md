@@ -257,6 +257,8 @@ The durable local working state for this site in one browser profile, containing
 
 A shared same-level centerline node and its incident street arms, with the cross-sections and corner land needed to connect them. Each participating road design records its split stretches and the neighbouring arms needed to rebuild its own footprint. A crossing at different levels or through a protected bridge/tunnel span is not a road junction.
 
+A level is a discrete topology label, with omitted levels treated as ground level zero; it is not an elevation in metres. Editing a participating road refreshes the affected neighbouring arm definitions. The junction owns its shared visible surface, including during drawing previews, so participating road strips do not paint over that surface. See the [junction audit](docs/junction-creation-audit-2026-10-26.md).
+
 MCP agreement drafting and revision author the included roads as a complete network before parcel binding and agreement output calculation. Changed junctions produce revised road designs and CIDs. Reading, applying or comparing published records does not rewrite their topology.
 
 ### Map share

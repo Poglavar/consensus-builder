@@ -8,8 +8,10 @@ import { createRequire } from 'node:module';
 import vm from 'node:vm';
 
 const require = createRequire(import.meta.url);
+const turf = require('@turf/turf');
 const pure = require('../../frontend/js/corridor-render.js');
 const renderSource = readFileSync(new URL('../../frontend/js/corridor-render.js', import.meta.url), 'utf8');
+const junctionPaintSource = readFileSync(new URL('../../frontend/js/corridor-junction-paint.js', import.meta.url), 'utf8');
 
 function leafletStub() {
     const makeLayer = (kind, extra = {}) => {
@@ -83,7 +85,7 @@ function environment(proposals) {
         return out;
     });
     const context = {
-        console,
+        console, turf,
         Map, Set, Array, Number, JSON, Math, Object, String, Infinity, Error, Promise,
         setTimeout, clearTimeout,
         L, map,
@@ -109,7 +111,21 @@ function environment(proposals) {
     // The refresh is a step function run by work-slicer.js, loaded before it in the browser.
     context.__workSlicer = require('../../frontend/js/work-slicer.js');
     vm.runInNewContext(renderSource, context);
-    return { context, map, buildCorridorStrips, buildCorridorJunctionSet, state: context.__corridorRenderState, proposals };
+    const clipped = [];
+    const enableJunctionPaint = () => {
+        vm.runInNewContext(junctionPaintSource, context);
+        const paint = context.__corridorJunctionPaint;
+        context.__corridorJunctionPaint = {
+            ...paint,
+            clipStrips(strips, junctions) {
+                const result = paint.clipStrips(strips, junctions);
+                clipped.push({ strips, junctions, result });
+                return result;
+            }
+        };
+        return clipped;
+    };
+    return { context, map, buildCorridorStrips, buildCorridorJunctionSet, state: context.__corridorRenderState, proposals, enableJunctionPaint, clipped };
 }
 
 const near = (lat, lng) => [{ lat, lng }, { lat: lat + 0.001, lng: lng + 0.001 }];
@@ -286,6 +302,60 @@ describe('sliced applied-corridor refresh', () => {
         await env.context.refreshAppliedCorridorStripsSliced(slicer);
         expect(env.buildCorridorStrips).toHaveBeenCalledTimes(4);
         expect(env.context.dispatchEvent.mock.calls.map(([event]) => event.type)).toEqual(['appliedCorridorsChanged']);
+    });
+});
+
+describe('drawing-junction preview masks applied corridors', () => {
+    const rect = (south, west, north, east) => [
+        { lat: south, lng: west }, { lat: south, lng: east },
+        { lat: north, lng: east }, { lat: north, lng: west }, { lat: south, lng: west }
+    ];
+    const featureOf = polygon => {
+        const first = polygon[0];
+        const rings = Array.isArray(first) && (Array.isArray(first[0]) || (first[0] && typeof first[0] === 'object')) ? polygon : [polygon];
+        return turf.polygon(rings.map(ring => {
+            const coordinates = ring.map(point => Array.isArray(point) ? [point[1], point[0]] : [point.lng, point.lat]);
+            coordinates.push(coordinates[0]);
+            return coordinates;
+        }));
+    };
+    const overlapArea = (strips, geometry) => (strips || []).flatMap(strip => strip.polygons || [])
+        .reduce((total, polygon) => {
+            const overlap = turf.intersect(featureOf(polygon), turf.feature(geometry));
+            return total + (overlap ? turf.area(overlap) : 0);
+        }, 0);
+    const treatment = (level, surfacePolygons) => ({
+        lat: 0.004, lng: 0.004, level, degree: 3, surfacePolygons, crosswalkPolygons: [], cornerPolygons: [],
+        corridorIds: ['a', 'b'], arms: ['a', 'b'].map(corridorId => ({ corridorId, cut: 4, markingTrim: 8, toward: { lat: 0.005, lng: 0.005 } }))
+    });
+
+    it('masks only the preview site, suppresses its old same-level junction, and restores the base mask on clear', () => {
+        const proposals = [road('a', near(0, 0)), road('b', near(0.0005, 0.0005))];
+        const env = environment(proposals);
+        const stripRing = [[0, 0], [0, 0.01], [0.01, 0.01], [0.01, 0], [0, 0]];
+        env.buildCorridorStrips.mockReturnValue([{ type: 'lane', polygons: [stripRing] }]);
+        const base = treatment(0, [rect(0.002, 0.002, 0.006, 0.006)]);
+        const overpass = treatment(1, [rect(0.002, 0.002, 0.006, 0.006)]);
+        env.buildCorridorJunctionSet.mockReturnValue([base, overpass]);
+        env.context.refreshAppliedCorridorStrips();
+        const clips = env.enableJunctionPaint();
+        const preview = {
+            ...treatment(0, [rect(0.001, 0.001, 0.009, 0.009)]),
+            corridorIds: ['active-drawing', 'a', 'b']
+        };
+
+        env.context.setCorridorDrawingJunctionPreview([preview]);
+
+        const activeClip = clips.filter(call => call.junctions.includes(preview)).at(-1);
+        expect(overlapArea(activeClip.strips, env.context.__corridorJunctionPaint.paintOf(preview).coverage)).toBeGreaterThan(0);
+        expect(overlapArea(activeClip.result, env.context.__corridorJunctionPaint.paintOf(preview).coverage)).toBeLessThan(0.01);
+        expect(Array.from(env.state.junctions.keys()).sort()).toEqual(['a|b@0.004000,0.004000#1']);
+
+        env.context.setCorridorDrawingJunctionPreview([]);
+
+        const restoredClip = clips.filter(call => call.junctions.includes(base)).at(-1);
+        expect(overlapArea(restoredClip.result, env.context.__corridorJunctionPaint.paintOf(preview).coverage)).toBeGreaterThan(0.01);
+        expect(Array.from(env.state.junctions.keys()).sort()).toEqual(['a|b@0.004000,0.004000#0', 'a|b@0.004000,0.004000#1']);
     });
 });
 
