@@ -7807,5 +7807,37 @@
     "plan": {
         "name": "Nombre del plan",
         "label": "Plan"
+    },
+    "diagnostics": {
+        "errors": {
+            "unexpected": "Se produjo un problema inesperado. Repite la acción o descarga los diagnósticos.",
+            "workspace-unavailable": "No se pudo abrir el espacio de trabajo guardado. Cierra las demás pestañas de edición y vuelve a intentarlo.",
+            "draft-storage-unavailable": "El borrador sigue en la memoria, pero no se pudo guardar en este dispositivo. Descarga tu trabajo antes de cerrar esta pestaña.",
+            "plan-import-failed": "No se pudo importar el archivo del plan. Comprueba el formato y el tamaño, y vuelve a intentarlo.",
+            "plan-export-failed": "No se pudo crear el archivo. Tu trabajo no ha cambiado; vuelve a intentar la descarga.",
+            "plan-save-failed": "No se pudo guardar el enlace del plan. Tu trabajo local sigue disponible; comprueba la conexión y vuelve a intentarlo.",
+            "plan-open-failed": "No se pudo abrir el plan indicado. Comprueba el enlace y la conexión, y vuelve a intentarlo.",
+            "design-publish-failed": "No se pudo publicar el diseño. Revisa el terreno y la geometría, y vuelve a intentarlo.",
+            "design-load-failed": "No se pudieron cargar los diseños publicados. Comprueba la conexión y vuelve a intentarlo.",
+            "design-apply-failed": "El diseño está guardado, pero no se pudo aplicar al mapa. Vuelve a intentar aplicarlo desde el panel de diseños.",
+            "share-failed": "No se pudo preparar el enlace para compartir. Vuelve a intentarlo desde el panel para compartir.",
+            "clipboard-unavailable": "No se pudo copiar el enlace. Selecciónalo y cópialo manualmente.",
+            "network-unavailable": "No se pudo conectar con el servidor. Comprueba la conexión y vuelve a intentarlo.",
+            "publication-rate-limited": "Hay demasiadas publicaciones por ahora. Espera unos minutos y vuelve a intentarlo.",
+            "publication-too-large": "El diseño es demasiado grande para publicarlo. Reduce su nivel de detalle y vuelve a intentarlo.",
+            "publication-identity-mismatch": "El contenido publicado no coincide con la identidad esperada. Vuelve a intentarlo o descarga los diagnósticos.",
+            "publication-unavailable": "El almacenamiento de publicaciones no está disponible. Conserva tu trabajo localmente y vuelve a intentarlo más tarde.",
+            "planning-action-failed": "No se pudo completar la acción de planificación. El estado guardado anterior sigue disponible; vuelve a intentarlo."
+        },
+        "ui": {
+            "notice": "Los diagnósticos permanecen en esta pestaña hasta 24 horas. Las descargas contienen códigos de error predefinidos y resultados de acciones, sin contenido del plan. No se envía nada automáticamente.",
+            "download": "Descargar diagnósticos",
+            "clear": "Borrar diagnósticos",
+            "send": "Enviar informe de diagnóstico",
+            "confirmSend": "¿Enviar a Urban Game Theory las 20 entradas de diagnóstico más recientes, con datos sensibles eliminados? Incluyen identificadores temporales de sesión y plan, y resultados de acciones. El servidor recibe tu dirección de red como parte de la conexión.",
+            "sent": "Informe recibido.",
+            "sendFailed": "No se envió el informe. Descarga los diagnósticos o vuelve a intentarlo dentro de un minuto.",
+            "sendUnavailable": "No se envió el informe. Descarga los diagnósticos."
+        }
     }
 }

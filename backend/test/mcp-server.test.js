@@ -28,9 +28,9 @@ afterEach(async () => {
     server = null;
 });
 
-async function connect(tools) {
+async function connect(tools, options = {}) {
     const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
-    server = createUrbanGameTheoryMcpServer({ tools });
+    server = createUrbanGameTheoryMcpServer({ tools, ...options });
     client = new Client({ name: 'ugt-test', version: '1.0.0' });
     await Promise.all([server.connect(serverTransport), client.connect(clientTransport)]);
 }
@@ -53,11 +53,12 @@ async function toolsByName() {
 describe('Urban Game Theory MCP server', () => {
     it('exposes exact private inspection and granular edits through the actual MCP schemas', async () => {
         const calls=[];
+        const observations=[];
         const tools=createUrbanGameTheoryTools({mode:'hosted',env:{},fetchImpl:async(url)=>{
             calls.push(new URL(url).pathname);
             return Response.json({parcelSourceId:'fixture',binding:{coverage:'complete',parcels:[{parcelId:'A'}]}});
         }});
-        await connect(tools);
+        await connect(tools, { diagnosticRecorder: row => observations.push(row), env: { NODE_ENV: 'test' } });
         const drafted=await client.callTool({name:'ugt_draft_space',arguments:{city:'london',spaceKind:'park',treeCount:2,
             outline:{type:'Polygon',coordinates:[[[-.1,51.5],[-.099,51.5],[-.099,51.501],[-.1,51.501],[-.1,51.5]]]}}});
         expect(drafted.isError).not.toBe(true);
@@ -70,6 +71,10 @@ describe('Urban Game Theory MCP server', () => {
         expect(edited.structuredContent.untrusted.design.title).toBe('Edited garden');
         expect(edited.structuredContent.untrusted.design.structureProposal.decorationDesign.trees).toHaveLength(1);
         expect(calls.every(path=>path==='/designs/binding')).toBe(true);
+        expect(observations.map(row => [row.operation, row.outcome])).toEqual([['create', 'success'], ['edit', 'success']]);
+        expect(observations.every(row => row.source === 'mcp' && row.test === 'known-test' && row.sessionId === null)).toBe(true);
+        expect(JSON.stringify(observations)).not.toContain('Edited garden');
+        expect(JSON.stringify(observations)).not.toContain('coordinates');
     });
     it('publishes one declared tool surface for designs, agreements, editing, markets, support, activity and oracle facts', async () => {
         await connect(stubTools());
@@ -82,8 +87,9 @@ describe('Urban Game Theory MCP server', () => {
 
     it('refuses malformed successful authoring output while keeping structured recovery errors valid', async () => {
         const tools = stubTools();
+        const observations = [];
         tools.draftBuilding = vi.fn(async () => ({ cid: DESIGN_CID }));
-        await connect(tools);
+        await connect(tools, { diagnosticRecorder: row => observations.push(row) });
         const args = { city: 'london', typology: 'freeform', floors: 4 };
         const malformed = await client.callTool({ name: 'ugt_draft_building', arguments: args });
         expect(malformed).toMatchObject({ isError: true, structuredContent: { code: 'invalid-tool-output' } });
@@ -92,6 +98,7 @@ describe('Urban Game Theory MCP server', () => {
         const refused = await client.callTool({ name: 'ugt_draft_building', arguments: args });
         expect(refused).toMatchObject({ isError: true, structuredContent: { code: 'ground-unavailable', next: expect.any(Object) } });
         expect(refused.structuredContent).not.toHaveProperty('cid');
+        expect(observations.map(row => row.outcome)).toEqual(['failure', 'failure']);
     });
 
     it('marks reads read-only, publishing additive and idempotent, and chain actions destructive', async () => {

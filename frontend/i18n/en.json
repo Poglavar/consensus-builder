@@ -7779,5 +7779,37 @@
     "plan": {
         "name": "Plan name",
         "label": "Plan"
+    },
+    "diagnostics": {
+        "errors": {
+            "unexpected": "An unexpected problem occurred. Retry the action or download diagnostics.",
+            "workspace-unavailable": "The saved workspace could not be opened. Close other editing tabs and retry.",
+            "draft-storage-unavailable": "The draft is still in memory, but could not be saved on this device. Download your work before closing this tab.",
+            "plan-import-failed": "The plan file could not be imported. Check its format and size, then try again.",
+            "plan-export-failed": "The file could not be created. Your work is unchanged; retry the download.",
+            "plan-save-failed": "The plan link could not be saved. Your local work remains available; check the connection and retry.",
+            "plan-open-failed": "The named plan could not be opened. Check the link and connection, then retry.",
+            "design-publish-failed": "The design could not be published. Review its land and geometry, then retry.",
+            "design-load-failed": "Published designs could not be loaded. Check the connection and retry.",
+            "design-apply-failed": "The design is saved, but could not be applied to the map. Retry applying it from the designs panel.",
+            "share-failed": "The share link could not be prepared. Retry from the share panel.",
+            "clipboard-unavailable": "The link could not be copied. Select the link and copy it manually.",
+            "network-unavailable": "The server could not be reached. Check the connection and retry.",
+            "publication-rate-limited": "Too many publications for now. Wait a few minutes and retry.",
+            "publication-too-large": "The design is too large to publish. Reduce its detail and retry.",
+            "publication-identity-mismatch": "The published content did not match its expected identity. Retry or download diagnostics.",
+            "publication-unavailable": "Publication storage is unavailable. Keep your work locally and retry later.",
+            "planning-action-failed": "The planning action could not finish. Your previous saved state remains available; retry the action."
+        },
+        "ui": {
+            "notice": "Diagnostics stay in this tab for up to 24 hours. Downloads contain fixed error codes and action outcomes, without plan content. Nothing is sent automatically.",
+            "download": "Download diagnostics",
+            "clear": "Clear diagnostics",
+            "send": "Send diagnostic report",
+            "confirmSend": "Send the latest 20 redacted diagnostic entries to Urban Game Theory? They include temporary session/plan handles and action outcomes. The server receives your network address as part of the connection.",
+            "sent": "Report received.",
+            "sendFailed": "Report was not sent. Download diagnostics or retry in one minute.",
+            "sendUnavailable": "Report was not sent. Download diagnostics instead."
+        }
     }
 }

@@ -22,6 +22,8 @@
         const routeCid = parsePath(win.location.pathname);
         let current = null;
         const t = (key, fallback, params) => win.getProposalI18nHelper()(key, fallback, params);
+        const observe = (operation, options, action) => win.AppDiagnostics
+            ? win.AppDiagnostics.run(operation, { ...options, context: { surface: 'named-plan' } }, action) : action();
         const backend = () => win.resolveBackendBaseUrl().replace(/\/$/, '');
         const verify = (row, cid) => {
             const error = win.PlanRecord.validate(row?.content);
@@ -62,6 +64,7 @@
             fetchPlan,
             get current() { return current; },
             async save(content) {
+                return observe('save', { entity: 'plan', planKey: content, code: 'plan-save-failed' }, async () => {
                 const error = win.PlanRecord.validate(content);
                 if (error) throw new Error(error);
                 const cid = win.Cid.cidOfObject(content);
@@ -69,12 +72,14 @@
                 // Read back the durable record before presenting its link as saved.
                 current = await fetchPlan(cid);
                 return { ...current, link: link(cid) };
+                });
             },
             async open() {
                 const result = await arrive();
                 if (!result || result.redirecting) return;
                 if (result.error) {
-                    win.showStyledAlert(result.error.message, { title: t('proposals.share.named.openFailed', 'The named plan could not be opened') });
+                    const diagnostic = win.AppDiagnostics?.report(result.error, { code: 'plan-open-failed', context: { surface: 'named-plan' } });
+                    win.showStyledAlert(diagnostic?.message || 'The named plan could not be opened. Check the link and retry.', { title: t('proposals.share.named.openFailed', 'The named plan could not be opened') });
                     return;
                 }
                 current = result.record;
