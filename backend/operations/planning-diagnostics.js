@@ -108,7 +108,7 @@ export const MCP_ACTIONS = Object.freeze({
     ugt_draft_urban_rule: ['create', 'design']
 });
 export function createMcpObserver({ record = null, knownTest = false } = {}) {
-    return async (name, call) => {
+    return async (name, call, isSuccessful = result => !result?.isError) => {
         const action = MCP_ACTIONS[name];
         if (!record || !action) return call();
         const note = outcome => {
@@ -119,7 +119,12 @@ export function createMcpObserver({ record = null, knownTest = false } = {}) {
                     context: { surface: 'mcp' }, source: 'mcp', evidence: 'server', test: knownTest ? 'known-test' : 'unknown' })).catch(() => {});
             } catch { /* optional diagnostics never change tool results */ }
         };
-        try { const result = await call(); note(result?.isError ? 'failure' : 'success'); return result; }
+        try {
+            const result = await call();
+            let valid = false;
+            try { valid = isSuccessful(result); } catch { /* rejected output is a failure, never telemetry text */ }
+            note(valid ? 'success' : 'failure'); return result;
+        }
         catch (error) { note('failure'); throw error; }
     };
 }

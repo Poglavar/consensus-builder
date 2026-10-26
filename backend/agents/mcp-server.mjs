@@ -84,11 +84,13 @@ class UrbanGameTheoryMcpServer extends McpServer {
     registerTool(name, config, handler) {
         const words = name.replace(/^ugt_/, '').replaceAll('_', ' ');
         const title = config.title || words.charAt(0).toUpperCase() + words.slice(1);
+        const outputSchema = config.outputSchema || resultSchemaFor(name);
         this.contracts.set(name, { name, title, description: config.description,
             inputSchema: z.toJSONSchema(config.inputSchema), outputSchema: z.toJSONSchema(config.outputSchema || resultSchemaFor(name)), annotations: config.annotations });
-        return super.registerTool(name, { ...config, title, outputSchema: config.outputSchema || resultSchemaFor(name),
+        return super.registerTool(name, { ...config, title, outputSchema,
             annotations: { ...config.annotations, title } }, (args, context) => this.observeTool(name, () => args?.[INVALID_ARGUMENTS]
-            ? { ...success(toolError(args[INVALID_ARGUMENTS])), isError: true } : handler(args, context)));
+            ? { ...success(toolError(args[INVALID_ARGUMENTS])), isError: true } : handler(args, context),
+            result => !result?.isError && outputSchema.safeParse(result?.structuredContent).success));
     }
 }
 

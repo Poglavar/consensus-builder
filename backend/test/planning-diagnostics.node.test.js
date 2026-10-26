@@ -125,6 +125,8 @@ test('MCP observation records actual tool completion, preserves results/errors a
     assert.ok(!JSON.stringify(rows).includes('SECRET'));
     assert.equal(await createMcpObserver({ record: () => { throw Error(privateText); } })('ugt_edit_plan', async () => 42), 42);
     assert.equal(await createMcpObserver()('ugt_edit_plan', async () => 42), 42);
+    await observe('ugt_draft_plan', async () => ({ content: privateText }), () => false);
+    assert.equal(rows.at(-1).outcome, 'failure');
 });
 
 function poolModel({ locked = true, fail = false, mismatch = false } = {}) {
