@@ -83,6 +83,13 @@ test.describe('Urban blocks @features', () => {
 
     await openLayerSection(page, 'blocks');
     await expect(sheet).toBeVisible();
+    await sheet.locator('#urban-blocks-browse').click();
+    await expect(page.locator('#urban-block-panel')).toBeVisible();
+    await expect(page.locator('#urban-block-list button[data-block-id]')).toHaveCount(1);
+    await expect(sheet).toBeHidden();
+    expect(requests).toHaveLength(2);
+
+    await openLayerSection(page, 'blocks');
     await toggle.uncheck();
     await expect.poll(() => drawnBlocks(page)).toBe(0);
     await expect(refresh).toBeDisabled();

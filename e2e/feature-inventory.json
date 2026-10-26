@@ -351,25 +351,19 @@
       ]
     },
     {
-      "id": "proposals.mintedAgreements",
-      "specs": [
-        "tests/agreement-chain.spec.ts"
-      ]
-    },
-    {
       "id": "proposals.clearLocal",
       "specs": [
         "tests/settings-maintenance.spec.ts"
       ]
     },
     {
-      "id": "activity.explorer",
+      "id": "activity.events",
       "specs": [
         "tests/activity-controls.spec.ts"
       ]
     },
     {
-      "id": "activity.agents",
+      "id": "activity.actors",
       "specs": [
         "tests/activity-controls.spec.ts"
       ]
@@ -399,7 +393,7 @@
       ]
     },
     {
-      "id": "activity.statusLog",
+      "id": "settings.statusLog",
       "specs": [
         "tests/search-and-commands.spec.ts"
       ]
@@ -519,12 +513,6 @@
       ]
     },
     {
-      "id": "selection.propose",
-      "specs": [
-        "tests/multi-parcel-selection.spec.ts"
-      ]
-    },
-    {
       "id": "selection.useAsSite",
       "specs": [
         "tests/context-actions.spec.ts"
@@ -564,12 +552,6 @@
       "id": "settings.commandPalette",
       "specs": [
         "tests/search-and-commands.spec.ts"
-      ]
-    },
-    {
-      "id": "settings.dataSource",
-      "specs": [
-        "tests/settings-maintenance.spec.ts"
       ]
     },
     {
@@ -628,6 +610,12 @@
     },
     {
       "id": "urbanBlocks.refresh",
+      "specs": [
+        "tests/urban-blocks.spec.ts"
+      ]
+    },
+    {
+      "id": "urbanBlocks.browse",
       "specs": [
         "tests/urban-blocks.spec.ts"
       ]

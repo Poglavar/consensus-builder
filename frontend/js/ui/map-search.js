@@ -150,7 +150,7 @@
         if (shell && typeof shell.openWorldView === 'function') {
             close({ blur: true });
             const opening = win.BusyControl.track(state.chip, () => shell.openWorldView(opts));
-            opening.catch(error => console.error(`[${new Date().toISOString()}] [map-search] the world view failed to open`, error));
+            opening.catch(error => win.WorldEntry.reportOpenFailure(error));
             return true;
         }
         return false;

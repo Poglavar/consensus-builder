@@ -125,7 +125,7 @@ test.describe('Activity and simulation controls @features', () => {
     await expect(panel).toBeHidden();
   });
 
-  test('the command palette Actors action opens the actor view', async ({ mockApi: page }) => {
+  test('the command palette Actors and Events actions open their respective views', async ({ mockApi: page }) => {
     await openCity(page);
     await page.keyboard.press('Meta+k');
     const palette = page.locator('.command-palette-backdrop');
@@ -139,6 +139,14 @@ test.describe('Activity and simulation controls @features', () => {
     await expect(panel.locator('[data-activity-actors]')).toBeVisible();
     await panel.locator('[data-sheet-close]').click();
     await expect(panel).toBeHidden();
+
+    await page.keyboard.press('Meta+k');
+    await expect(palette).toBeVisible();
+    await page.locator('.command-palette__input').fill('Events');
+    await page.locator('.command-palette__item').filter({ hasText: 'Events' }).first().click();
+    await expect(panel).toBeVisible();
+    await expect(panel.locator('[data-activity-view="events"]')).toHaveAttribute('aria-selected', 'true');
+    await expect(panel.locator('#activity-events-pane')).toBeVisible();
   });
 
   test('ordinary filters are temporarily overridden by a deep scope and restored when it clears', async ({ mockApi: page }) => {

@@ -6247,7 +6247,7 @@
         }
     },
     "world": {
-        "openFailed": "No se pudo iniciar la vista del mundo. Comprueba la compatibilidad gráfica del navegador e inténtalo de nuevo. Puedes seguir usando el mapa.",
+        "openFailed": "No se pudo iniciar la vista del mundo. Puedes seguir usando el mapa 2D y buscar otra ciudad.",
         "title": "Elige un lugar",
         "hint": "Arrastra para girar · selecciona una ciudad o una ubicación exacta",
         "reach": {

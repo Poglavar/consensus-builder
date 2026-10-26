@@ -6220,7 +6220,7 @@
         }
     },
     "world": {
-        "openFailed": "World view could not start. Check your browser’s graphics support and try again. You can keep using the map.",
+        "openFailed": "World view could not start. You can keep using the 2D map and search for another city.",
         "title": "Choose a place",
         "hint": "Drag to spin · select a city or an exact location",
         "reach": {

@@ -53,12 +53,15 @@ describe('importing a published design', () => {
         const ineligibleParcels = [{ status: 'below-min-plot', geometry: blockMassing.geometry, wouldBe: blockMassing }];
         const row = rowOf({
             proposalId: 'shared-block', goal: 'buildings', title: 'Block 1', createdAt: '2026-10-20T09:00:00.000Z',
-            geometry: { buildings: [blockMassing], blockMassing },
+            geometry: { buildings: [blockMassing] },
             buildingProposal: { typologyType: 'block', blockName: 'Block 1', ineligibleParcels }
         });
         const record = localDesignFromRow(row, { apiBase: API });
         expect(record.buildingProposal).toMatchObject({ typologyType: 'block', blockName: 'Block 1', ineligibleParcels });
-        expect(record.geometry.blockMassing.geometry.coordinates).toHaveLength(2);
+        expect(record.geometry.buildings).toHaveLength(1);
+        expect(record.geometry.buildings[0].geometry.coordinates).toHaveLength(2);
+        expect(row.content.geometry.buildings[0].geometry.coordinates).toEqual(blockMassing.geometry.coordinates);
+        expect(record.geometry.buildings[0].geometry.coordinates).toEqual(blockMassing.geometry.coordinates);
         expect(DesignRecord.cidOf(record)).toBe(row.cid);
     });
 

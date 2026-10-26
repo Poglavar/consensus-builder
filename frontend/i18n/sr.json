@@ -6254,7 +6254,7 @@
         }
     },
     "world": {
-        "openFailed": "Prikaz sveta nije mogao da se pokrene. Proverite grafičku podršku pregledača i pokušajte ponovo. Možete nastaviti da koristite mapu.",
+        "openFailed": "Prikaz sveta nije mogao da se pokrene. Možete nastaviti da koristite 2D mapu i potražiti drugi grad.",
         "title": "Izaberite mesto",
         "hint": "Prevuci za okretanje · izaberi grad ili tačnu lokaciju",
         "reach": {

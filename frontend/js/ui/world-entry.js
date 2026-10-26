@@ -6,6 +6,7 @@
 //
 // API (window.WorldEntry)
 //   open(opts) -> Promise    opts: { closable?: false, focus: { lat, lon, zoom? } | Place }
+//   reportOpenFailure(error)    shared warning for controls that call open
 //   ownsBoot() -> boolean    true while a first-visit globe is (about to be) open; an explicitly
 //                            requested intro waits for 'worldview:landed' instead of stacking on it
 //   explorePlaceName() -> string   the explored place for the city chip ('' until known)
@@ -44,7 +45,7 @@
 
     function reportOpenFailure(error) {
         console.error(`[${new Date().toISOString()}] [world-entry] world view failed to open`, error);
-        global.showEphemeralMessage?.(t('world.openFailed', 'World view could not start. Check your browser’s graphics support and try again. You can keep using the map.'), 8000, 'warning');
+        global.showEphemeralMessage?.(t('world.openFailed', 'World view could not start. You can keep using the 2D map and search for another city.'), 8000, 'warning');
     }
 
     function landed(reason) {
@@ -454,6 +455,7 @@
 
     global.WorldEntry = {
         open,
+        reportOpenFailure,
         // Only an explicit arrival view belongs to a shared link. map-core later writes the
         // remembered local view into ?at=, which must not stop the link framing its own designs.
         arrivalMapView: () => Model.parseAt(new URLSearchParams(entryLocation.search).get('at')),
