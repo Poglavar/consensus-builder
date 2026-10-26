@@ -119,6 +119,8 @@
     if (typeof MutationObserver === 'function' && document.body) {
         new MutationObserver(paintModeLocks).observe(document.body, { attributes: true, attributeFilter: ['class'] });
     }
+    const addressSync = root.MapShare.createAddressSync(root);
+    root.addEventListener('threecamerachange', addressSync.schedule);
     const controller = root.__mapModeTransition.createController({
         loadModel: root.__ensure3DModeStack,
         loadPhoto: root.__ensurePhotorealMode,
@@ -126,7 +128,10 @@
         leaveModel: () => root.__threeModeDriver?.exit(),
         enterPhoto: options => root.PhotorealMode.activate(options),
         leavePhoto: options => root.PhotorealMode?.deactivate(options),
-        onChange: paint,
+        onChange: state => {
+            paint(state);
+            if (!state.pending) addressSync.write();
+        },
         onError: (error, mode) => {
             console.error(`[${new Date().toISOString()}] [map-mode] Mode transition failed`, { mode, error });
             const key = 'mapShell.viewFailed';

@@ -61,6 +61,8 @@ function loadMapModeLoader({ roadDrawingMode, OnMapEditor } = {}) {
         OnMapEditor,
         location: { search: '' },
         appendBuildToken: path => path,
+        MapShare: require('../../frontend/js/map-share.js'),
+        addEventListener: vi.fn(),
         dispatchEvent: vi.fn(),
         updateModeButtonStates: vi.fn(),
         __mapModeTransition: { createController: vi.fn(() => controller) },

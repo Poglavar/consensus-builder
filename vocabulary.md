@@ -277,6 +277,8 @@ Restoring a saved camera retains the map's display settings and surrounding cont
 
 In 3D, sharing can include the captured camera position and angle, independently of the optional “Rotate on arrival” choice. Rotation defaults off, orbits the view's focal point and starts when the view is ready, after terrain alignment in Google 3D. The first click, touch, scroll or key input stops rotation or cancels it while the scene loads. Reduced-motion views remain still. Unnamed links carry these choices in `camera` and `rotate` URL parameters; named plans save them in their view.
 
+The browser address follows completed view switches and the current 3D camera target, heading, pitch and range. Moving the camera updates the view without publishing designs or changing the plan referenced by the address. Private draft preview references remain in the address while navigating their view.
+
 Its social preview is a derived 2D image of the included designs' authored map geometry, framed together independently of the interactive camera. The image is cached by the unique set of design CIDs and renderer revision; it is not authored plan content. Missing or failed images can be regenerated from those published records.
 
 When shared designs conflict with the current map, the person chooses whether to unapply the existing conflicting designs and continue, skip the conflicting incoming designs, or cancel. Unapplying existing conflicts and deriving the chosen plan is atomic; failure retains the previous map. Every design remains saved, and unrelated applied designs remain on the map. Overlapping road revisions are conflicts; ordinary roads meeting at a junction remain compatible.

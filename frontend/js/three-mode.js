@@ -8052,6 +8052,7 @@
         resizeObserver = new ResizeObserver(handleResize);
         resizeObserver.observe(threeContainer);
         controls?.addEventListener('change', invalidateThreeView);
+        controls?.addEventListener('change', () => window.dispatchEvent(new Event('threecamerachange')));
         controls?.addEventListener('start', invalidateThreeView);
 
         // Parcel selection emphasizes it in place; click empty/again or Escape to reset.

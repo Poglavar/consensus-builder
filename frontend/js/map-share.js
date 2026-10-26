@@ -1,5 +1,5 @@
 // A public share names published designs and their view; it does not convey consent.
-// The browser captures before any selection panel changes the map; the URL helpers are pure.
+// Share links and the live address use the same geographic camera representation.
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -20,13 +20,14 @@
     function capture(win) {
         const center = win.map.getCenter();
         const mode = win.__mapModeState?.desired || '2d';
+        const camera = mode === '2d' ? null : win.getThree3DGeoView?.();
         const settings = win.PlanningScene?.settings(win.PlanningViews?.getState());
         const source = new URLSearchParams(win.location?.search || '');
         if (settings) for (const key of ['planningSource', 'planningScenario']) {
             if (source.has(key)) settings[key] = source.get(key);
         }
-        return { mode, at: [center.lat, center.lng, win.map.getZoom()].join(','),
-            camera: mode === '2d' ? null : win.getThree3DGeoView?.(),
+        return { mode, at: [camera?.targetLat ?? center.lat, camera?.targetLng ?? center.lng, win.map.getZoom()].join(','),
+            camera,
             rotate: mode !== '2d' && source.get('rotate') === '1',
             language: win.i18n?.getLanguage?.(),
             ...(source.has('backend') ? { backend: source.get('backend') } : {}),
@@ -35,21 +36,42 @@
     }
     function link(base, context) {
         const url = new URL(base);
-        for (const key of ['3d', 'photo', 'model', 'mode3d', 'real', 'rl', 'rw', 'camera', 'rotate', 'draft']) url.searchParams.delete(key);
-        url.searchParams.set('at', context.at);
+        url.searchParams.delete('draft');
         if (context.city) url.searchParams.set('city', context.city);
         if (context.language) url.searchParams.set('lang', context.language);
         if (context.backend) url.searchParams.set('backend', context.backend);
         for (const [key, value] of Object.entries(context.settings || {})) url.searchParams.set(key, value);
+        return address(url, context);
+    }
+    // Updating the address must retain private preview references and the current content route.
+    function address(base, context) {
+        const url = new URL(base);
+        for (const key of ['3d', 'photo', 'model', 'mode3d', 'real', 'rl', 'rw', 'camera', 'rotate']) url.searchParams.delete(key);
+        url.searchParams.set('at', context.at);
         if (context.mode === 'model') url.searchParams.set('3d', '');
         if (context.mode === 'photo') url.searchParams.set('photo', '');
         if (context.camera) url.searchParams.set('camera', fields.map(key => context.camera[key]).join(','));
         if (context.mode !== '2d') url.searchParams.set('rotate', context.rotate === true ? '1' : '0');
         return url.toString();
     }
+    function createAddressSync(win) {
+        let timer = null;
+        function write() {
+            if (!win.map?.getCenter || win.__mapModeState?.pending) return;
+            if (win.BrowserWorkspace && win.BrowserWorkspace.status !== 'ready') return;
+            const next = address(win.location.href, capture(win));
+            if (next !== win.location.href) win.history.replaceState(win.history.state, '', next);
+        }
+        function schedule() {
+            // Sample the latest pose at most four times a second, including the final settled pose.
+            if (timer !== null) return;
+            timer = win.setTimeout(() => { timer = null; write(); }, 250);
+        }
+        return { write, schedule };
+    }
     function arrivalOptions(search) {
         const params = new URLSearchParams(search);
         return { restoreView: readCamera(params.get('camera')), rotate: params.get('rotate') === '1' };
     }
-    return Object.freeze({ readCamera, capture, link, arrivalOptions });
+    return Object.freeze({ readCamera, capture, link, address, createAddressSync, arrivalOptions });
 });

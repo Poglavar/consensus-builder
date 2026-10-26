@@ -120,6 +120,8 @@ const AT_VIEW = (() => {
 // on the address is a plain location (location-first.md), and a stale label can't contradict it.
 let dropCityParam = !!(window.CityConfigManager?.getBootEntry?.()?.dropCityParam);
 map.on('moveend', () => {
+    // The hidden Leaflet map is a data anchor in 3D; its camera owns the live address instead.
+    if (window.__mapModeState && window.__mapModeState.desired !== '2d') return;
     if (window.BrowserWorkspace && window.BrowserWorkspace.status !== 'ready') return;
     if (!window.WorldEntryModel) return;
     try {
