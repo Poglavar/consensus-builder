@@ -145,14 +145,17 @@ describe('the stages of one pick', () => {
 
         const agreement = h.state.agreements[key];
         expect(agreement.cid).toBe(cidOf(canonicalBytes(agreement.content)));
+        expect(agreement.plan.content.designCids).toEqual([design.cid]);
         expect(agreement).toMatchObject({ title: pick.name, lamports: '1000', soleOwner: true, status: 'active', deadline: new Date(START_MS + 7 * 86400000).toISOString() });
+        expect(agreement.plan.content.view).toMatchObject({ at: '45.80015,15.9702,17', mode: '2d', city: h.args.city });
         expect(agreement.content).toMatchObject({
             sponsor: WALLET, author: 'densifier-01', city: 'zagreb', deadline: agreement.deadline,
-            designs: [{ cid: design.cid, goal: 'buildings', title: pick.name }],
+            planCid: agreement.plan.cid,
             inputs: { parcels: [{ parcelId: PARCEL_ID, holders: [{ ownerKey: WALLET, displayName: 'densifier-01', share: 1 }] }], openGroundM2: 0 },
             outputs: [{ hash: agreementRecord.outputHash(PARCEL), role: 'parcel', producedBy: null, fromParcelIds: [PARCEL_ID] }],
             rule: { electorate: 'owners', binding: true, lens: [LENS], approvalConfig: { policy: { type: 'unanimous' } } }
         });
+        expect(agreement.content).not.toHaveProperty('designs');
 
         const account = agreementAccountOf(agreement.cid, WALLET);
         expect(h.state.mints[key]).toMatchObject({ account, created: true, escrowLamports: '1000', cluster: 'devnet' });
@@ -315,6 +318,18 @@ describe('run.mjs helpers', () => {
         expect(index.getAgreement).toHaveBeenCalledTimes(3);
         // An index that cannot answer fails the contest planning rather than guessing the rival open.
         await expect(rivalIndexStatuses({ getAgreement: async () => { throw new Error('index down'); } }, ['cid-executed'])).rejects.toThrow('index down');
+    });
+
+    it('marks only retired-agreement 410s as retired admission and propagates other lookup errors', async () => {
+        const retired = Object.assign(new Error('Old inline agreement'), { status: 410, code: 'retired-agreement-format' });
+        await expect(rivalIndexStatuses({ getAgreement: async () => { throw retired; } }, ['cid-old']))
+            .resolves.toEqual({ 'cid-old': 'retired' });
+        for (const error of [
+            Object.assign(new Error('broken row'), { status: 500, code: 'invalid-agreement-record' }),
+            Object.assign(new Error('gone'), { status: 410, code: 'other-410' })
+        ]) {
+            await expect(rivalIndexStatuses({ getAgreement: async () => { throw error; } }, ['cid-bad'])).rejects.toBe(error);
+        }
     });
 
     it('writes one activity line per settlement step', () => {

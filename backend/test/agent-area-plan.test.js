@@ -174,6 +174,9 @@ describe('parcels a persona has used and rival parcels', () => {
         for (const status of ['active', null, undefined]) {
             expect(contestParcels([open], { persona: 'gentle-01', runDay: '2026-10-11', indexStatuses: { [cid]: status } }), String(status)).toHaveLength(1);
         }
+        // This index admission state is not a chain lifecycle status; the retired record is excluded
+        // from contest candidates without being described as expired, executed or cancelled.
+        expect(contestParcels([open], { persona: 'gentle-01', runDay: '2026-10-11', indexStatuses: { [cid]: 'retired' } })).toEqual([]);
     });
 
     it('carries the rival candidate\'s own parcel source into contest planning', () => {

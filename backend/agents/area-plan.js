@@ -133,9 +133,9 @@ export function rivalAgreementCids(runs, { persona, runDay, withinDays = 3 } = {
 /**
  * The rival's parcels: land other proposers proposed an agreement on in the last `withinDays` days and
  * whose agreement is still open (its deadline ahead of the run day, neither executed nor cancelled nor
- * expired), as planner parcels carrying the stored geometry and what was measured there. An agreement
- * on the same parcels puts both into one contest, which is how the Bets list groups competing
- * agreements. `floorCap` builds lower than the ceiling (planner.js keeps the ceiling as
+ * expired, and still in the current index contract), as planner parcels carrying the stored geometry
+ * and what was measured there. An agreement on the same parcels puts both into one contest, which is
+ * how the Bets list groups competing agreements. `floorCap` builds lower than the ceiling (planner.js keeps the ceiling as
  * `allowedFloors`), so the rival offers a different build-out, never a copy.
  *
  * Whether a rival is closed comes from two places: the chain status its index row records
@@ -152,7 +152,7 @@ export function contestParcels(runs, { persona, runDay, withinDays = 3, floorCap
     const closed = new Set((runs || []).flatMap(run => Object.entries(run?.summary?.settlements || {})
         .filter(([, record]) => record?.execution || record?.expiry).map(([account]) => account)));
     for (const { run, summary, pick, agreement } of recentRivalPicks(runs, { persona, runDay, withinDays })) {
-        if (CLOSED_CHAIN_STATUSES.includes(indexStatuses[agreement.cid])) continue;
+        if (indexStatuses[agreement.cid] === 'retired' || CLOSED_CHAIN_STATUSES.includes(indexStatuses[agreement.cid])) continue;
         if (closed.has(summary.mints?.[pick.candidateId]?.account)) continue;
         const candidate = (summary.candidates || []).find(item => item.candidateId === pick.candidateId);
         if (!candidate?.geometry || byParcel.has(candidate.parcelId)) continue;

@@ -80,7 +80,7 @@ import {
 import { inspectSettlement, executeSettlement } from './lifecycle-actions.js';
 import { buildRecipe } from './record-builder.js';
 import {
-    agreementObject, deadlineAfterDays, designObject, holdersFromRights, noMoney, ownersRule, parcelOutputs, registryRights, planForDesigns
+    agreementObject, deadlineAfterDays, designObject, holdersFromRights, mapViewFromGeometry, noMoney, ownersRule, parcelOutputs, registryRights, planForDesigns
 } from './agreement-objects.js';
 import { createIndexClient } from './publication-client.js';
 import { mintAgreement } from './agreement-minter.js';
@@ -345,14 +345,19 @@ export async function settleStage({
     }
 }
 
-// The chain status each rival agreement's index row records (onchain.status: written at mint and
-// refreshed on every pass of the lifecycle oracle, oracle/agreement-lifecycle.js), by CID; null for
-// one the index holds no account of.
+// Rival index admission by CID: a current agreement returns its recorded chain status (onchain.status,
+// refreshed by the lifecycle oracle), or null without an account. Only a retired-format HTTP 410 maps
+// to `retired`, which is an index admission state, not a chain lifecycle status.
 export async function rivalIndexStatuses(index, cids) {
     const statuses = {};
     for (const cid of cids) {
-        const row = await index.getAgreement(cid);
-        statuses[cid] = row?.onchain?.status ?? null;
+        try {
+            const row = await index.getAgreement(cid);
+            statuses[cid] = row?.onchain?.status ?? null;
+        } catch (error) {
+            if (error?.status === 410 && error?.code === 'retired-agreement-format') statuses[cid] = 'retired';
+            else throw error;
+        }
     }
     return statuses;
 }
@@ -494,7 +499,7 @@ export async function advancePick({
         const holders = holdersFromRights(rights, owners[key].parcelId, walletNames);
         const { content, cid, plan } = agreementObject({
             title: terms.title, author: persona.name, sponsor: wallet, city: design.city ?? city, createdAt,
-            plan: planForDesigns(terms.title, [design]),
+            plan: planForDesigns(terms.title, [design], mapViewFromGeometry([candidate.geometry], design.content.city ?? city)),
             designs: [{ cid: design.cid, goal: design.goal, title: design.title }],
             parcels: land.parcels.map(parcel => ({ ...parcel, holders })), openGroundM2: 0, outputs: land.outputs,
             money: noMoney(cityMoney(design.city ?? city).currentCurrency()),
