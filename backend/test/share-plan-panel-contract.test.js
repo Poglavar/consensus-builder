@@ -35,7 +35,7 @@ describe('share plan panel contract', () => {
     const panelFn = sourceSection(dialogShare, 'function showSharePlanPanel(', 'function showSimpleShareModal(');
     const closeFn = sourceSection(dialogShare, 'function closeSharePlanPanel(', 'function showSharePlanPanel');
     const begin = sourceSection(panelFn, 'window.MapPick.begin({', '}).catch(');
-    const fill = sourceSection(panelFn, '(async () => {', "console.error('share plan: filling the panel failed'");
+    const fill = sourceSection(panelFn, '(async () => {', "const diagnostic = window.AppDiagnostics?.report(error, { code: 'share-failed'");
 
     it('opens as a right-docked panel, never through the share modal', () => {
         expect(panelFn).toContain("panelRoot.className = 'share-plan-panel share-plan-panel--embedded'");

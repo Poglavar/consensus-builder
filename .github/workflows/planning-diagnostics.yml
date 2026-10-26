@@ -33,7 +33,9 @@ jobs:
         with:
           node-version: '22'
           cache: npm
-          cache-dependency-path: backend/package-lock.json
+          cache-dependency-path: |
+            backend/package-lock.json
+            e2e/package-lock.json
       - name: Install locked dependencies
         run: npm ci --ignore-scripts
         working-directory: backend
@@ -42,6 +44,9 @@ jobs:
         working-directory: backend
         env:
           UGT_DIAGNOSTIC_TEST_DB: postgres://postgres@127.0.0.1:5432/postgres
+      - name: Build existing canvas dependency for MCP imports
+        run: npm rebuild canvas
+        working-directory: backend
       - name: Existing authoring, publication, import/export and MCP regressions
         run: >-
           npx vitest run
@@ -50,3 +55,12 @@ jobs:
           test/share-plan-panel-contract.test.js test/busy-control.test.js
           --pool=threads --maxWorkers=2
         working-directory: backend
+      - name: Install locked browser dependencies
+        run: npm ci
+        working-directory: e2e
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+        working-directory: e2e
+      - name: File and redacted diagnostic download browser flows
+        run: npx playwright test --config=playwright.plan-file.config.ts
+        working-directory: e2e
