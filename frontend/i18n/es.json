@@ -6470,6 +6470,10 @@
         "close": "Cerrar la búsqueda",
         "clear": "Borrar",
         "cityChip": "Ciudad actual: {{city}}. Abre el globo para elegir otro lugar",
+        "sharing": {
+            "local": "Cambios locales: usa Compartir para incluirlos en un enlace.",
+            "shared": "Esta vista está lista para compartir."
+        },
         "groups": {
             "plans": "Planes",
             "recent": "Búsquedas recientes",

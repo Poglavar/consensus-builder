@@ -307,6 +307,14 @@ const proposalStorage = {
         });
         this.nextProposalId = draft.nextProposalId;
         this._hasPendingSave = false;
+        this._notifyChanged();
+    },
+
+    _notifyChanged() {
+        // Publication and any synchronous rollback finish before observers read the composition.
+        if (typeof document !== 'undefined' && document.dispatchEvent) {
+            queueMicrotask(() => document.dispatchEvent(new Event('proposalStorageChanged')));
+        }
     },
 
     restoreMutationSnapshot(snapshot) {
@@ -511,7 +519,11 @@ const proposalStorage = {
             });
             puts.set(PROPOSALS_MANIFEST_KEY, proposalManifest(this.nextProposalId));
             const write = Promise.resolve(PersistentStorage.atomicWrite({ puts, deletes }))
-                .then(() => { this._persistFragments = fragments; });
+                .then(() => {
+                    this._persistFragments = fragments;
+                    // Includes edits, deletion, application and publication, even without a redraw.
+                    this._notifyChanged();
+                });
             // Fire-and-forget callers still report failures. A plan's final save awaits the same
             // promise, so its saving phase cannot finish before the durable write does.
             write.catch(error => {

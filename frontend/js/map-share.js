@@ -69,9 +69,34 @@
         }
         return { write, schedule };
     }
+    // Publication alone is insufficient: the address must name the exact applied revisions too.
+    function compositionStatus(win) {
+        if (!win.proposalStorage || !win.DesignSync || !win.isApplied) return 'pending';
+        if (win.BrowserWorkspace?.status === 'loading') return 'pending';
+        const applied = win.proposalStorage.getAllProposals().filter(win.isApplied);
+        const current = applied.map(record => {
+            try { return win.DesignSync.publishedCid(record); } catch (_) { return null; }
+        });
+        if (current.some(cid => !cid)) return 'local';
+        const path = new URL(win.location.href).pathname.replace(/\/$/, '');
+        let referenced = win.DesignSync.parseDesignsPath(path);
+        if (path.startsWith('/plans/')) {
+            const plan = win.NamedPlans?.current;
+            if (!plan || path !== `/plans/${plan.cid}`) return 'pending';
+            referenced = plan.content.designCids;
+        } else if (path.startsWith('/agreements/')) {
+            const agreement = win.AgreementSync?.localCopyOf(path.slice('/agreements/'.length));
+            if (!agreement) return 'pending';
+            referenced = agreement.plan.content.designCids;
+        } else if (!referenced) {
+            referenced = [];
+        }
+        const signature = cids => JSON.stringify([...new Set(cids)].sort());
+        return signature(current) === signature(referenced) ? 'shared' : 'local';
+    }
     function arrivalOptions(search) {
         const params = new URLSearchParams(search);
         return { restoreView: readCamera(params.get('camera')), rotate: params.get('rotate') === '1' };
     }
-    return Object.freeze({ readCamera, capture, link, address, createAddressSync, arrivalOptions });
+    return Object.freeze({ readCamera, capture, link, address, createAddressSync, compositionStatus, arrivalOptions });
 });

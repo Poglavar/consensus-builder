@@ -6479,6 +6479,10 @@
         "close": "Zatvori pretragu",
         "clear": "Očisti",
         "cityChip": "Trenutni grad: {{city}}. Otvorite globus za odabir drugog mjesta",
+        "sharing": {
+            "local": "Lokalne izmjene — upotrijebite Dijeli kako biste ih uključili u poveznicu.",
+            "shared": "Ovaj je prikaz spreman za dijeljenje."
+        },
         "groups": {
             "plans": "Planovi",
             "recent": "Nedavne pretrage",

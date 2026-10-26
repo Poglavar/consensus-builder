@@ -864,10 +864,15 @@
         }
         state.chip.classList.toggle('is-explore', exploring);
         // The globe icon says where the chip goes (the world view), as on the World view button.
-        state.chipIcon.className = exploring ? 'fas fa-compass' : 'fas fa-earth-europe';
+        state.chipIcon.className = `map-search__planet ${exploring ? 'fas fa-compass' : 'fas fa-earth-europe'}`;
         state.chipLabel.textContent = label;
         state.chipShortLabel.textContent = shortLabel;
-        const title = t('mapSearch.cityChip', 'Current city: {{city}}. Open the globe to choose another place', { city: label });
+        const shareState = win.MapShare.compositionStatus(win);
+        state.chip.dataset.shareState = shareState;
+        const shareHint = shareState === 'local'
+            ? t('mapSearch.sharing.local', 'Local changes — use Share to include them in a link.')
+            : shareState === 'shared' ? t('mapSearch.sharing.shared', 'This view is ready to share.') : '';
+        const title = [t('mapSearch.cityChip', 'Current city: {{city}}. Open the globe to choose another place', { city: label }), shareHint].filter(Boolean).join(' ');
         state.chip.title = title;
         state.chip.setAttribute('aria-label', title);
     }
@@ -949,6 +954,8 @@
 
     // ---- public API ----
     function focus() {
+        // In 3D this control is just the planet; search remains a 2D interaction.
+        if (win.__mapModeState?.desired !== '2d' && win.__mapModeState) return;
         if (!state.input) return;
         expand();
         state.input.focus();
@@ -981,6 +988,8 @@
         win.addEventListener('i18n:translationsLoaded', syncTexts);
         if (win.i18n && typeof win.i18n.onChange === 'function') win.i18n.onChange(syncTexts);
         win.addEventListener('cityChanged', syncChip);
+        doc.addEventListener('proposalStorageChanged', syncChip);
+        win.addEventListener('mapmodechange', () => { close({ blur: true }); syncChip(); });
     }
 
     win.MapSearch = { initialize, focus, showCities, refreshChip: () => syncChip(), close: () => close({ blur: true, clearMarker: true }) };

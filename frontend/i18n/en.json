@@ -6443,6 +6443,10 @@
         "close": "Close search",
         "clear": "Clear",
         "cityChip": "Current city: {{city}}. Open the globe to choose another place",
+        "sharing": {
+            "local": "Local changes — use Share to include them in a link.",
+            "shared": "This view is ready to share."
+        },
         "groups": {
             "plans": "Plans",
             "recent": "Recent searches",

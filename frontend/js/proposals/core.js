@@ -1036,6 +1036,8 @@ async function handleProposalRouteFromUrl() {
             'plan.loadFailed', 'The linked plan or proposal could not be loaded. Please try again.'));
         if (typeof showEphemeralMessage === 'function') showEphemeralMessage(getShareI18nHelper()(
             'plan.loadFailed', 'The linked plan or proposal could not be loaded. Please try again.'), 8000, 'error');
+    } finally {
+        window.MapSearch?.refreshChip();
     }
 }
 
