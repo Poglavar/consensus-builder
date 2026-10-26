@@ -2,7 +2,8 @@
 // the exact bytes go up as one file with cidVersion 1, and Pinata's CID must be the one the bytes
 // were computed to have. fetch is stubbed; nothing leaves the machine.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { MAX_PINNED_OBJECT_BYTES, PINATA_FILE_ENDPOINT, pinBytes, pinFileToPinata } from '../storage/pinning.js';
+import { MAX_PINNED_OBJECT_BYTES, pinBytes } from '../storage/pinning.js';
+import { PINATA_FILE_ENDPOINT, pinFileToPinata } from '../storage/providers/pinata.js';
 import { canonicalBytes, cidOf } from '../cid.js';
 import { designContent } from './helpers/content-fixtures.js';
 
@@ -16,6 +17,7 @@ function pinata(answer = { IpfsHash: cid, Timestamp: '2026-10-21T10:00:00Z' }, {
 }
 
 beforeEach(() => {
+    vi.stubEnv('IPFS_PINNING_PROVIDER', 'pinata');
     vi.stubEnv('PINATA_API_KEY', 'test-key');
     vi.stubEnv('PINATA_API_SECRET', 'test-secret');
     vi.spyOn(console, 'log').mockImplementation(() => {});
@@ -109,12 +111,12 @@ describe('pinFileToPinata', () => {
         await expect(pinFileToPinata({ bytes, fileName: 'x.json' })).rejects.toMatchObject({ code: 'pin-failed', status: 502 });
     });
 
-    it('leaves out the metadata and options it is not given', async () => {
+    it('keeps the file CID version fixed and omits absent metadata', async () => {
         const fetchImpl = pinata();
-        await expect(pinFileToPinata({ bytes, fileName: 'image.png', contentType: 'image/png' })).resolves.toEqual({ cid, pinnedAt: '2026-10-21T10:00:00.000Z' });
+        await expect(pinFileToPinata({ bytes, fileName: 'image.png', contentType: 'image/png' })).resolves.toEqual({ cid, pinnedAt: '2026-10-21T10:00:00Z' });
         const form = fetchImpl.mock.calls[0][1].body;
         expect(form.get('pinataMetadata')).toBeNull();
-        expect(form.get('pinataOptions')).toBeNull();
+        expect(JSON.parse(form.get('pinataOptions'))).toEqual({ cidVersion: 1 });
         expect(form.get('file').type).toBe('image/png');
     });
 });

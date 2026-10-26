@@ -4,6 +4,7 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
+import { cidOf } from '../cid.js';
 import { setupIpfsRoute } from '../routes/ipfs.js';
 import { createRouteApp } from './helpers/create-route-app.js';
 import { MAX_UPLOAD_IMAGE_BYTES, UPLOAD_RATE_MAX, validateNftMetadata } from '../utils/nft-asset-upload.js';
@@ -40,17 +41,19 @@ const ROUTES = [
 afterEach(() => {
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
 });
 
 describe.each(ROUTES)('%s relay guard', (_name, setup, path) => {
     let app;
     let fetchMock;
     beforeEach(() => {
+        vi.stubEnv('IPFS_PINNING_PROVIDER', 'pinata');
         process.env.PINATA_API_KEY = 'k';
         process.env.PINATA_API_SECRET = 's';
         app = createRouteApp(setup);
         app.set('trust proxy', true); // req.ip from X-Forwarded-For, as behind prod's one trusted hop
-        fetchMock = vi.fn(async () => ({ ok: true, json: async () => ({ IpfsHash: 'h' }) }));
+        fetchMock = vi.fn(async (_url, init) => ({ ok: true, json: async () => ({ IpfsHash: cidOf(new Uint8Array(await init.body.get('file').arrayBuffer())) }) }));
         vi.stubGlobal('fetch', fetchMock);
     });
 
@@ -101,9 +104,10 @@ describe.each(ROUTES)('%s relay guard', (_name, setup, path) => {
 
 describe('ipfs relay pins the sniffed type, not the declared one', () => {
     it('names and types the pinned file from the bytes', async () => {
+        vi.stubEnv('IPFS_PINNING_PROVIDER', 'pinata');
         process.env.PINATA_API_KEY = 'k';
         process.env.PINATA_API_SECRET = 's';
-        const fetchMock = vi.fn(async () => ({ ok: true, json: async () => ({ IpfsHash: 'h' }) }));
+        const fetchMock = vi.fn(async (_url, init) => ({ ok: true, json: async () => ({ IpfsHash: cidOf(new Uint8Array(await init.body.get('file').arrayBuffer())) }) }));
         vi.stubGlobal('fetch', fetchMock);
         const res = await request(createRouteApp(setupIpfsRoute)).post('/ipfs/upload')
             .send({ imageData: JPEG.replace('image/jpeg', 'text/html'), metadata: parcelMetadata(), fileName: 'evil.html' });

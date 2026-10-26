@@ -10,7 +10,7 @@ import { createMockPool } from './helpers/mock-pool.js';
 import { createContentApp } from './helpers/create-app.js';
 import { scriptedCadastre } from './helpers/content-fixtures.js';
 import { canonicalBytes, cidOf } from '../cid.js';
-import { PINATA_FILE_ENDPOINT } from '../storage/pinning.js';
+import { PINATA_FILE_ENDPOINT } from '../storage/providers/pinata.js';
 const require = createRequire(import.meta.url);
 const DesignRecord = require('../../frontend/js/design-record.js');
 const BrowserCid = require('../../frontend/js/cid.js');
@@ -49,6 +49,7 @@ describe('generated building design publication', () => {
         expect(BrowserCid.parse(cid).codec).toBe(count === 1 ? 0x55 : 0x70);
         expect(DesignRecord.validate(content).valid).toBe(true);
 
+        vi.stubEnv('IPFS_PINNING_PROVIDER', 'pinata');
         vi.stubEnv('PINATA_API_KEY', 'test-key');
         vi.stubEnv('PINATA_API_SECRET', 'test-secret');
         vi.spyOn(console, 'log').mockImplementation(() => {});

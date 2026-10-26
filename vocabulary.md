@@ -104,6 +104,14 @@ Removal of a browser-local agreement copy. Its designs retain their map applicat
 
 The retention of canonical record bytes and their inclusion in the publication index. A locally computed CID, preview, saved draft or local map application does not by itself constitute publication.
 
+### Pinning provider
+
+The configured service retaining published IPFS content. Filebase is the current upload provider; Pinata remains selectable in reserve through `IPFS_PINNING_PROVIDER`. Provider adapters retain the application's CID scheme and verify the service's returned CID. An upload failure does not automatically publish through another provider.
+
+### Read gateway
+
+The HTTP service resolving an IPFS CID for a reader. `IPFS_READ_GATEWAY` selects generated asset URLs independently of the upload provider. Changing storage or gateway configuration does not change published content identifiers or rewrite existing URLs.
+
 ### CID
 
 The content address of canonical design or agreement bytes: CIDv1, SHA-256, base32, using the UnixFS file scheme with fixed 256 KiB chunks and raw leaves. A single-leaf file has a raw root; a multi-chunk file has a DAG-PB root. The CID identifies content, independently of the API indexing it.

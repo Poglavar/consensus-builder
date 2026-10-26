@@ -442,8 +442,8 @@ had to be made are marked **(call)**.
   (0x70, `bafybei…`). The publication budget is 10 MiB, independently of chunk size.
   Identical sole-building and whole-block features are stored once under `geometry.buildings`;
   affected older duplicate records require review and republication under this canonical contract.
-  Pinata files use `cidVersion: 1`; the courier compares its answer with the computed CID and refuses
-  on a difference, so a wrong assumption fails loudly at the first pin, never silently.
+  Provider adapters preserve this CID scheme: Filebase imports the exact CAR DAG and Pinata uses
+  `cidVersion: 1`. The courier compares the provider's answer with the computed CID and refuses a difference.
 - **Design object** `design/v1`: `{ schema, goal, title, description, author, city, site, toleranceM,
   roadProposal | buildingProposal | structureProposal | parcelLayout (cleaned
   as `proposalContentPayload` cleans them today), geometry, origin: { cid } | null, authoredAt }`.
@@ -466,8 +466,9 @@ had to be made are marked **(call)**.
 ### Courier and index (server)
 
 - `POST /pins` `{ kind: 'design' | 'agreement', cid, bytes (base64) }`: recompute the CID, pin the
-  exact bytes through Pinata with `cidVersion: 1`, compare, answer `{ cid, pinnedAt }` or 409
-  `cid-mismatch`. 1 MB per object. Walrus is removed entirely (storage module, route, scripts,
+  exact bytes through the configured provider adapter, compare, answer `{ cid, pinnedAt }` or 409
+  `cid-mismatch`. 10 MiB per object. Upload provider and HTTP read gateway are configured independently.
+  Walrus is removed entirely (storage module, route, scripts,
   frontend provider switch, CSP entry, tests).
 - Tables, one definition each under `backend/db/`: `design` (`cid` PK, `city`, `goal`, `title`,
   `author`, `site` geometry, `bounds`, `binding` JSONB = the parcels the server finds under the site,

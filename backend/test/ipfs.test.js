@@ -1,13 +1,18 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { setupIpfsRoute } from '../routes/ipfs.js';
+import { cidOf } from '../cid.js';
 import { createRouteApp } from './helpers/create-route-app.js';
 
+const imageCid = cidOf(Buffer.from('iVBORw0KGgoAAAAAAAAAAAAAAAAAAAAA', 'base64'));
+const successfulPin = async (_url, init) => ({ ok: true, json: async () => ({ IpfsHash: cidOf(new Uint8Array(await init.body.get('file').arrayBuffer())) }) });
 let app;
 const originalApiKey = process.env.PINATA_API_KEY;
 const originalApiSecret = process.env.PINATA_API_SECRET;
 
 beforeEach(() => {
+    vi.stubEnv('IPFS_PINNING_PROVIDER', 'pinata');
+    vi.stubEnv('IPFS_READ_GATEWAY', 'https://gateway.pinata.cloud/ipfs');
     app = createRouteApp(setupIpfsRoute);
     process.env.PINATA_API_KEY = 'test-key';
     process.env.PINATA_API_SECRET = 'test-secret';
@@ -16,6 +21,7 @@ beforeEach(() => {
 afterEach(() => {
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
     process.env.PINATA_API_KEY = originalApiKey;
     process.env.PINATA_API_SECRET = originalApiSecret;
 });
@@ -158,7 +164,7 @@ describe('POST /ipfs/upload', () => {
         const fetchMock = vi.fn()
             .mockResolvedValueOnce({
                 ok: true,
-                json: async () => ({ IpfsHash: 'imageHash' })
+                json: async () => ({ IpfsHash: imageCid })
             })
             .mockResolvedValueOnce({
                 ok: false,
@@ -184,7 +190,7 @@ describe('POST /ipfs/upload', () => {
         const fetchMock = vi.fn()
             .mockResolvedValueOnce({
                 ok: true,
-                json: async () => ({ IpfsHash: 'imageHash' })
+                json: async () => ({ IpfsHash: imageCid })
             })
             .mockResolvedValueOnce({
                 ok: true,
@@ -206,15 +212,7 @@ describe('POST /ipfs/upload', () => {
     });
 
     it('uploads image and metadata to Pinata and returns ipfs urls', async () => {
-        const fetchMock = vi.fn()
-            .mockResolvedValueOnce({
-                ok: true,
-                json: async () => ({ IpfsHash: 'imageHash' })
-            })
-            .mockResolvedValueOnce({
-                ok: true,
-                json: async () => ({ IpfsHash: 'metadataHash' })
-            });
+        const fetchMock = vi.fn(successfulPin);
         vi.stubGlobal('fetch', fetchMock);
 
         const res = await request(app)
@@ -229,24 +227,16 @@ describe('POST /ipfs/upload', () => {
 
         expect(res.status).toBe(200);
         expect(res.body).toEqual({
-            imageUri: 'ipfs://imageHash',
-            imageGatewayUrl: 'https://gateway.pinata.cloud/ipfs/imageHash',
-            metadataUri: 'ipfs://metadataHash',
-            metadataGatewayUrl: 'https://gateway.pinata.cloud/ipfs/metadataHash'
+            imageUri: `ipfs://${imageCid}`,
+            imageGatewayUrl: `https://gateway.pinata.cloud/ipfs/${imageCid}`,
+            metadataUri: expect.stringMatching(/^ipfs:\/\/baf/),
+            metadataGatewayUrl: expect.stringMatching(/^https:\/\/gateway\.pinata\.cloud\/ipfs\/baf/)
         });
         expect(fetchMock).toHaveBeenCalledTimes(2);
     });
 
     it('enriches metadata with image links and preserves an existing external url', async () => {
-        const fetchMock = vi.fn()
-            .mockResolvedValueOnce({
-                ok: true,
-                json: async () => ({ IpfsHash: 'imageHash' })
-            })
-            .mockResolvedValueOnce({
-                ok: true,
-                json: async () => ({ IpfsHash: 'metadataHash' })
-            });
+        const fetchMock = vi.fn(successfulPin);
         vi.stubGlobal('fetch', fetchMock);
 
         const res = await request(app)
@@ -262,13 +252,13 @@ describe('POST /ipfs/upload', () => {
         expect(res.status).toBe(200);
 
         const secondCall = fetchMock.mock.calls[1];
-        expect(secondCall[0]).toBe('https://api.pinata.cloud/pinning/pinJSONToIPFS');
-        const metadataBody = JSON.parse(secondCall[1].body);
-        expect(metadataBody.pinataMetadata.name).toBe('Proposal NFT-metadata.json');
-        expect(metadataBody.pinataContent).toMatchObject({
+        expect(secondCall[0]).toBe('https://api.pinata.cloud/pinning/pinFileToIPFS');
+        expect(JSON.parse(secondCall[1].body.get('pinataMetadata')).name).toBe('Proposal NFT-metadata.json');
+        const metadataBody = JSON.parse(await secondCall[1].body.get('file').text());
+        expect(metadataBody).toMatchObject({
             name: 'Proposal NFT',
-            image: 'ipfs://imageHash',
-            image_url: 'https://gateway.pinata.cloud/ipfs/imageHash',
+            image: `ipfs://${imageCid}`,
+            image_url: `https://gateway.pinata.cloud/ipfs/${imageCid}`,
             external_url: 'https://example.com/proposals/1'
         });
     });
