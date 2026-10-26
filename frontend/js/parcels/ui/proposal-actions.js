@@ -31,7 +31,7 @@
         { key: 'lake', icon: 'fa-water', labelKey: 'panel.parcel.build.lake', fallback: 'Lake' }
     ];
 
-    // Corridors and stops share the transport group, after urban rules and before parcel layout.
+    // Corridors and stops share the final transport group, after parcel layout.
     const PARCEL_TRANSPORT_TOOLS = [
         {
             key: 'road', icon: 'fa-road', labelKey: 'panel.parcel.build.road', fallback: 'Road',
@@ -211,8 +211,8 @@
             ${reason ? `<p class="parcel-build-disabled-reason">${escapeAttr(reason)}</p>` : ''}
         `;
         };
-        // Structures first, then urban rules and transport. Parcel layout is a separate final
-        // group. Block/Row/Detached remain rules; Freeform, Park, Square and Lake are structures.
+        // Structures first, then urban rules, parcel layout and transport. Block/Row/Detached
+        // remain rules; Freeform, Park, Square and Lake are structures.
         const RULE_KEYS = ['buildings', 'row', 'parcelBased'];
         const STRUCTURE_KEYS = ['single', 'park', 'square', 'lake'];
         const layoutButton = PARCEL_BUILD_TOOLS.filter(tool => tool.key === 'parcel-layout').map(buttonHtml).join('');
@@ -248,13 +248,13 @@
                     <h4 class="cb-kicker">${rulesTitle}</h4>
                     <div class="cb-tiles parcel-rules-grid">${ruleButtons}</div>
                 </section>
-                <section class="parcel-transport-group">
-                    <h4 class="cb-kicker">${transportTitle}</h4>
-                    <div class="cb-tiles parcel-transport-grid">${transportButtons}</div>
-                </section>
                 <section class="parcel-layout-group">
                     <h4 class="cb-kicker">${layoutTitle}</h4>
                     <div class="cb-tiles parcel-build-grid">${layoutButton}</div>
+                </section>
+                <section class="parcel-transport-group">
+                    <h4 class="cb-kicker">${transportTitle}</h4>
+                    <div class="cb-tiles parcel-transport-grid">${transportButtons}</div>
                 </section>
             </div>
         `;

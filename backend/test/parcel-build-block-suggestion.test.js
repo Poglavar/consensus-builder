@@ -76,12 +76,12 @@ describe('whole-block fresh-proposal suggestion', () => {
         expect(html).toContain('Elevated station');
         expect(html).not.toContain('parcel-ownership-group');
         expect(html).not.toContain('parcel-build-btn--offer');
-        // Transport follows the construction tools, before the final parcel-layout section.
+        // Transport follows the construction tools and parcel-layout section.
         expect(html.indexOf('parcel-build-btn--park')).toBeGreaterThan(-1);
         expect(html.indexOf('parcel-build-btn--park')).toBeLessThan(html.indexOf('parcel-transport-group'));
     });
 
-    it('offers structures, rules, transport and a final parcel-layout section, and opens its tool', async () => {
+    it('offers structures, rules, parcel layout and transport, and opens the layout tool', async () => {
         const container = { innerHTML: '' };
         const document = {
             querySelector: vi.fn(() => null),
@@ -96,7 +96,7 @@ describe('whole-block fresh-proposal suggestion', () => {
         expect(html).toContain('Lay out parcels');
         expect(html).not.toContain('parcel-build-btn--reparcellization');
         expect([...html.matchAll(/<section class="(parcel-[\w-]+-group)">/g)].map(match => match[1]))
-            .toEqual(['parcel-structures-group', 'parcel-rules-group', 'parcel-transport-group', 'parcel-layout-group']);
+            .toEqual(['parcel-structures-group', 'parcel-rules-group', 'parcel-layout-group', 'parcel-transport-group']);
         expect(html.indexOf('parcel-build-btn--parcel-layout')).toBeGreaterThan(html.indexOf('parcel-layout-group'));
 
         await window.startParcelBuildTool('parcel-layout');
