@@ -2,7 +2,7 @@ import { selectNativeOption } from '../helpers/controls';
 // Real-pointer coverage for whole-building free placement, its starting-parcel guide, snapping,
 // persistence, and the published-source replacement boundary. Geometry reads are observational.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, PARCEL_ID, PARCEL_GEOMETRY, proposalState, showProposal, stubBasemapTiles } from '../helpers/runtime';
+import { placeFreeformBuilding, openCity, openParcel, PARCEL_ID, PARCEL_GEOMETRY, proposalState, showProposal, stubBasemapTiles } from '../helpers/runtime';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 import type { Page } from '@playwright/test';
 
@@ -20,6 +20,7 @@ async function openSingleEditor(page: Page, cityReady = false, parcelId = PARCEL
   await expect.poll(() => page.evaluate(id => !!(window as any).LiveParcelFabric.get(id), parcelId)).toBe(true);
   await openParcel(page, 'proposals', parcelId);
   await page.locator('#parcel-info-panel .parcel-build-btn--single').click();
+  await placeFreeformBuilding(page);
   await expect(page.locator(`${EDITOR} .on-map-editor__panel`)).toBeVisible();
   await expect(page.locator('#single-building-confirm')).toBeEnabled();
   if (multiBuildingDesign) {
@@ -37,7 +38,6 @@ async function openSingleEditor(page: Page, cityReady = false, parcelId = PARCEL
     });
     await page.locator('#single-building-geojson-input').setInputFiles({name:'pair.geojson',mimeType:'application/geo+json',buffer:Buffer.from(JSON.stringify(collection))});
     await page.evaluate(() => (window as any).map.setView([45.80025,15.9822],18,{animate:false}));
-    await selectNativeOption(page.locator('#single-ground-treatment'), 'green');
   }
 }
 
@@ -124,6 +124,8 @@ async function createAppliedSingle(page: Page, parcelId = PARCEL_ID): Promise<st
   // This helper is for single-proposal lineage checks; leave the two-house design to the
   // dedicated import/save contract test below.
   await openSingleEditor(page, true, parcelId, false);
+  await page.locator('[data-land-whole]').click();
+  await expect(page.locator('#single-ground-treatment')).toBeEnabled();
   await selectNativeOption(page.locator('#single-ground-treatment'), 'green');
   await finishSingle(page);
   await expect.poll(() => page.evaluate(previous => (window as any).proposalStorage.getAllProposals()
@@ -143,11 +145,13 @@ test.describe('Single-building placement and immutable replacement @features', (
   test.setTimeout(60_000);
   test('building drag leaves surrounding ground anchored; one Undo restores the footprint', async ({ mockApi: page }) => {
     await openSingleEditor(page, false, PARCEL_ID, false);
+    await page.locator('[data-land-whole]').click();
+    await expect(page.locator('#single-ground-treatment')).toBeEnabled();
     await selectNativeOption(page.locator('#single-ground-treatment'), 'green');
     await waitForLandTakeReview(page);
     const before = await editorDesign(page);
     const boundary = await page.evaluate(() => (window as any).getActiveProposalDesignDraft().editorPayload.context.groundBoundary);
-    await dragActive(page, -190);
+    await dragActive(page, -24);
     await waitForLandTakeReview(page);
     const moved = await editorDesign(page);
     expect(moved.buildings[0].geometry).not.toEqual(before.buildings[0].geometry);
@@ -177,9 +181,8 @@ test.describe('Single-building placement and immutable replacement @features', (
       return JSON.stringify(current?.geometry) !== JSON.stringify(feature.geometry);
     });
     expect(changedFootprints).toHaveLength(1);
-    const beforeBox = await page.evaluate(geometry => (window as any).turf.bbox(geometry), before.ground);
-    const afterBox = await page.evaluate(geometry => (window as any).turf.bbox(geometry), after.ground);
-    expect(afterBox).toEqual(beforeBox);
+    expect(before.ground).toBeNull();
+    expect(after.ground).toBeNull();
   });
 
   test('parcel Lock rejects an outside drag and refuses to crop a design already outside', async ({ mockApi: page }) => {
@@ -249,7 +252,7 @@ test.describe('Single-building placement and immutable replacement @features', (
     expect(bounds.east).toBeLessThan(15.9825 - 0.000003);
   });
 
-  test('Done saves two one-building proposals with exact sites and parcels; only the first keeps surroundings', async ({ mockApi: page }) => {
+  test('Done saves two footprint-only buildings with exact sites and parcels and no surroundings', async ({ mockApi: page }) => {
     // Two saves and a reload (or a second city load): longer than the default 30 s on a busy host.
     test.setTimeout(90_000);
     await openSingleEditor(page);
@@ -266,7 +269,8 @@ test.describe('Single-building placement and immutable replacement @features', (
     await waitForLandTakeReview(page);
     const moved = await editorDesign(page);
     expect(moved.buildings.map(feature => feature.geometry)).not.toEqual(before.buildings.map(feature => feature.geometry));
-    expect(await page.evaluate(g => (window as any).turf.bbox(g), moved.ground)).toEqual(await page.evaluate(g => (window as any).turf.bbox(g), before.ground));
+    expect(before.ground).toBeNull();
+    expect(moved.ground).toBeNull();
     const bindingBodies: any[] = [];
     page.on('request', req => {
       if (req.method() === 'POST' && new URL(req.url()).pathname.endsWith('/designs/binding')) {
@@ -294,9 +298,8 @@ test.describe('Single-building placement and immutable replacement @features', (
       .toEqual(moved.buildings.map(feature => feature.geometry).sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b))));
     const first = saved[0];
     const second = saved[1];
-    expect(first.geometry.groundSurface.treatment).toBe('green');
-    expect(first.geometry.groundSurface.polygon).toEqual(moved.ground);
-    expect(first.geometry.groundBoundary).toBeTruthy();
+    expect(first.geometry.groundSurface || null).toBeNull();
+    expect(first.geometry.groundBoundary || null).toBeNull();
     expect(second.geometry.groundSurface || null).toBeNull();
     expect(second.geometry.groundBoundary || null).toBeNull();
     const boundParcelIds = saved.flatMap((proposal: any) => proposal.binding.parcels.map((parcel: any) => parcel.parcelId));
@@ -401,11 +404,13 @@ test.describe('Single-building placement and immutable replacement @features', (
         && !p.published
         && p.applied).length, { sourceId: publishedId, sourceCid: publishedCid })).toBe(1);
     const publishedAfter = await proposalState(page, publishedId);
-    expect(publishedAfter.applied).toBe(true);
+    // Its replacement still takes the original whole parcel for the anchored surroundings,
+    // so the source is unapplied while its published content remains immutable.
+    expect(publishedAfter.applied).toBe(false);
     expect(publishedAfter.geometry).toEqual(publishedBefore.geometry);
     expect(await page.evaluate(id => (window as any).DesignSync.publishedCid((window as any).proposalStorage.getProposal(id)), publishedId)).toBe(publishedCid);
 
-    // The published source and its applied fork may reserve the first parcel. Create the local
+    // The applied fork reserves the first parcel. Create the local
     // fixture on a separate parcel so this assertion does not depend on reopening it.
     const localId = await createAppliedSingle(page, INDEPENDENT_PARCEL_ID);
     const localBefore = await proposalState(page, localId);

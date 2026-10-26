@@ -1230,7 +1230,8 @@
                 else delete output.geometry.groundBoundary;
                 const landTake = typology === 'single' ? clone(context.landTake || null) : null;
                 if (landTake) {
-                    if (!geometryWithinSite(landTake, output.site) || !features.every(building => geometryWithinSite(building, landTake))) {
+                    if (!geometryWithinSite(landTake, output.site) || !features.every(building => geometryWithinSite(building, landTake))
+                        || (groundSurface?.polygon && !geometryWithinSite(groundSurface.polygon, landTake))) {
                         throw new Error(global.i18n?.t?.('landTake.invalid') || 'The reviewed land take must contain the building and fit within the site.');
                     }
                     output.geometry.landTake = landTake;

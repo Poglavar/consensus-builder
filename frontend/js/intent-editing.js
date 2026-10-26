@@ -290,6 +290,10 @@
                 for (const building of items) if (ground) ground = turf.difference(ground, building);
                 record.geometry.groundSurface = ground ? { ...surface, polygon: ground.geometry } : null;
             }
+            if (record.geometry.landTake && record.geometry.groundSurface) {
+                const ground = load('BuildingGround', './building-ground.js');
+                record.geometry.groundSurface = ground.clipSurfaceToLandTake(record.geometry.groundSurface, record.geometry.landTake, turf);
+            }
             validateDecorations(record.geometry?.groundSurface?.decorationDesign);
         }
     }

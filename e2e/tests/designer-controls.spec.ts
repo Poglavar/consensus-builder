@@ -1,6 +1,6 @@
 import { selectNativeOption } from '../helpers/controls';
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, clickMapPoint, closeParcel, showSelectionDesignTab, parcelTab } from '../helpers/runtime';
+import { placeFreeformBuilding, openCity, openParcel, clickMapPoint, closeParcel, showSelectionDesignTab, parcelTab } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
 
@@ -322,6 +322,7 @@ test.describe('Designer controls persist their edits @features', () => {
     await openCity(page);
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--single').click();
+    await placeFreeformBuilding(page);
     const wholeBlockPrompt = page.getByRole('alertdialog');
     if (await wholeBlockPrompt.isVisible().catch(() => false)) {
       await wholeBlockPrompt.getByRole('button', { name: 'No, just this parcel' }).click();
@@ -334,10 +335,10 @@ test.describe('Designer controls persist their edits @features', () => {
     // A rotation is disabled when the footprint cannot rotate inside the selected parcel.
     // This fixture's initial placement is constrained, so exercise the supported height and
     // surface controls without bypassing that real geometry gate.
-    await selectNativeOption(page.locator('#single-ground-treatment'), 'green');
     const parcelTake = page.locator('#single-land-take [data-parcel-id]').first();
     await selectNativeOption(parcelTake, 'whole');
     await expect(page.locator('#single-land-take [data-land-status]')).toContainText('m²');
+    await selectNativeOption(page.locator('#single-ground-treatment'), 'green');
     await page.locator('#single-building-confirm').click();
     await expect(page.locator('#single-building-editor')).toHaveCount(0);
 

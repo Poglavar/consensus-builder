@@ -9480,6 +9480,7 @@
         return {
             scene: scene, camera: camera, renderer: renderer, controls: controls,
             latLngToXY: latLngToXY, xyToLatLng: xyToLatLng,
+            pickGroundLatLng: pickGroundLatLngFromEvent,
             originLatLng: function () { const ll = xyToLatLng(0, 0); return { lat: ll.lat, lng: ll.lng }; },
             groundStats: function () { return groundLayer ? groundLayer.stats() : null; }
         };

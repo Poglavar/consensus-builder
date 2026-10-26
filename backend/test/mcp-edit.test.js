@@ -52,6 +52,21 @@ describe('granular authored editing', () => {
         expect(next.geometry.landTake.geometry).toEqual(site);
         expect(design).toEqual(before);
     });
+    it('a footprint-only land-take edit removes surrounding ground and furniture', () => {
+        const design=make('building',{floors:4,coverage:.05});
+        const body=design.geometry.buildings[0];
+        design.geometry.landTake=turf.feature(structuredClone(site));
+        design.geometry.groundBoundary=turf.feature(structuredClone(site));
+        design.geometry.groundSurface={treatment:'green',polygon:turf.difference(turf.feature(site),body).geometry,
+            decorationDesign:{trees:[{coordinate:[-.099,51.501],kind:'broadleaf',heightM:8}]}};
+        const before=structuredClone(design);
+        const next=edit(design,[{op:'replace',path:'/geometry/landTake',value:body}]);
+        expect(next.geometry.groundSurface).toBeNull();
+        expect(next.geometry.buildings).toEqual(design.geometry.buildings);
+        expect(next.geometry.landTake).toEqual(body);
+        expect(design).toEqual(before);
+        expect(validateDesignContent(next).ok).toBe(true);
+    });
     it('rejects stale revisions, failed tests, invalid pointers and prototype pollution atomically', () => {
         const design=make('building',{floors:4}), before=structuredClone(design);
         expect(()=>editedDesign(design,cidOfObject({wrong:true}),[{op:'replace',path:'/title',value:'Changed'}])).toThrow(/revision/);

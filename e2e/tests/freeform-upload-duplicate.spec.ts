@@ -1,6 +1,6 @@
 // Real UI coverage for direct GLB import and fresh, click-to-place design copies.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, stubBasemapTiles, createSpace, showProposal, proposalState, clickMapPoint } from '../helpers/runtime';
+import { placeFreeformBuilding, openCity, openParcel, stubBasemapTiles, createSpace, showProposal, proposalState, clickMapPoint } from '../helpers/runtime';
 import { createBuildingGlb } from '../helpers/model-fixture';
 
 const model = createBuildingGlb('l');
@@ -10,6 +10,7 @@ async function openFreeform(page: any) {
   await openCity(page);
   await openParcel(page, 'proposals');
   await page.locator('#parcel-info-panel .parcel-build-btn--single').click();
+  await placeFreeformBuilding(page);
   await expect(page.locator(`${editor} .on-map-editor__panel`)).toBeVisible();
 }
 const features = (page: any) => page.evaluate(() => (window as any).OnMapEditor.getPreview().draftPreview.features);

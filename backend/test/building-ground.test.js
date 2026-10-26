@@ -20,6 +20,23 @@ function square(west, south, side) {
 const BLOCK = square(15.97, 45.81, 0.0009);          // ~100 x 100 m parcel block
 const BUILDING = square(15.9702, 45.8102, 0.0002);   // ~22 x 22 m building inside it
 
+describe('surroundings within the land take', () => {
+    it('removes the surface for a footprint-only take and keeps it for a whole parcel', () => {
+        const surface = BuildingGround.buildSurface('green', BLOCK, [BUILDING]);
+        expect(BuildingGround.clipSurfaceToLandTake(surface, BUILDING, turf)).toBeNull();
+        const whole = BuildingGround.clipSurfaceToLandTake(surface, BLOCK, turf);
+        expect(turf.area(turf.feature(whole.polygon))).toBeCloseTo(turf.area(BLOCK) - turf.area(BUILDING), 3);
+    });
+    it('clips a mixed take without moving its original boundary', () => {
+        const surface = BuildingGround.buildSurface('paved', BLOCK, [BUILDING]);
+        const take = square(15.9701, 45.8101, 0.0004);
+        const clipped = BuildingGround.clipSurfaceToLandTake(surface, take, turf);
+        expect(turf.difference(turf.feature(clipped.polygon), take)).toBeNull();
+        expect(turf.intersect(turf.feature(clipped.polygon), BUILDING)).toBeNull();
+        expect(surface.polygon).toEqual(BuildingGround.buildSurface('paved', BLOCK, [BUILDING]).polygon);
+    });
+});
+
 describe('normalizeTreatment', () => {
     it('accepts the two real treatments', () => {
         expect(BuildingGround.normalizeTreatment('paved')).toBe('paved');

@@ -31,6 +31,16 @@ describe('Freeform reviewed land take', () => {
   sameArea(p.take,turf.union(A,B));
   expect(land.contains(p.take,[body],turf)).toBe(true);
  });
+ it('keeps chosen whole ground after a building moves away, until the footprint-only choice clears it', () => {
+  const first=plan(), whole=new Set([first.rows[0].key]);
+  const moved=rect(.005,.0005,.001,.001);
+  const retained=plan({buildings:[moved],whole});
+  expect(retained.rows.map(row=>[row.id,row.mode,row.overlapM2])).toEqual([['A','whole',0]]);
+  sameArea(retained.take,turf.union(A,moved));
+  const footprintOnly=plan({buildings:[moved],whole:new Set()});
+  sameArea(footprintOnly.take,moved);
+  expect(footprintOnly.rows).toHaveLength(0);
+ });
  it('recovers mixed choices from saved geometry without durable live IDs', () => {
   const savedTake=turf.union(A,body), p=plan({savedTake});
   expect(p.rows.map(r=>r.mode)).toEqual(['whole','footprint']);

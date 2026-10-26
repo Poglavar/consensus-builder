@@ -621,6 +621,19 @@ describe('building proposal adapters', () => {
             expect(saved.geometry.landTake).toBeUndefined();
             expect(saved.buildingProposal.takeWholeParcels).toBeUndefined();
         });
+        it('refuses surrounding ground outside a Freeform footprint-only take', () => {
+            const adapter = buildBuildingAdapter('single');
+            const draft = draftFor(adapter, freeform);
+            draft.editorPayload.context.landTake = freeform.geometry.buildings[0];
+            const site = turf.buffer(feature, 0.01, { units: 'kilometers' });
+            draft.fields.site = site.geometry;
+            draft.editorPayload.context.groundSurface = null;
+            expect(adapter.serializeProposal(draft).geometry.landTake).toEqual(feature);
+            const surface = turf.difference(site, feature);
+            expect(surface).toBeTruthy();
+            draft.editorPayload.context.groundSurface = { treatment: 'green', polygon: surface.geometry };
+            expect(() => adapter.serializeProposal(draft)).toThrow(/land take/i);
+        });
     });
 
     it('classifies invalid building data as read-only', () => {

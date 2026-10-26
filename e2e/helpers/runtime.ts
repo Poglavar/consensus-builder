@@ -68,6 +68,28 @@ export async function clickMapPoint(page: Page, lng: number, lat: number): Promi
   await page.mouse.click(point.x, point.y);
 }
 
+// Finish the explicit placement step using a real pointer on the draft's selected starting land.
+export async function placeFreeformBuilding(page: Page): Promise<void> {
+  await expect(page.locator('#single-building-editor')).toHaveAttribute('data-placing', 'true');
+  const at = await page.evaluate(() => {
+    const w = window as any;
+    const site = w.getActiveProposalDesignDraft()?.fields?.site;
+    const [lng, lat] = w.turf.pointOnFeature(site?.type === 'Feature' ? site : w.turf.feature(site)).geometry.coordinates;
+    const three = w.isThreeModeActive?.() && w.getThreeModeInternals?.();
+    if (three) {
+      const [x, y] = three.latLngToXY(lat, lng);
+      const point = new w.THREE.Vector3(x, y, 0).project(three.camera);
+      const rect = three.renderer.domElement.getBoundingClientRect();
+      return { x: rect.left + (point.x + 1) * rect.width / 2, y: rect.top + (1 - point.y) * rect.height / 2 };
+    }
+    const point = w.map.latLngToContainerPoint([lat, lng]);
+    const rect = w.map.getContainer().getBoundingClientRect();
+    return { x: rect.left + point.x, y: rect.top + point.y };
+  });
+  await page.mouse.click(at.x, at.y);
+  await expect(page.locator('#single-building-editor')).not.toHaveAttribute('data-placing');
+}
+
 // A real mouse click on an applied design on the map: a point inside its shape (MapPick.outlineOf, the
 // shape a pick highlights) is brought to `at` (fractions of the map's size, clear of the dock or a
 // sheet) and clicked once nothing covers the map there (a notice can sit over it for a few seconds).

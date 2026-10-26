@@ -86,13 +86,13 @@
                     onHistory();
                     savedTake = null;
                     if (select.value === 'whole') whole.add(row.key); else whole.delete(row.key);
-                    refresh();
+                    refresh({ choiceChanged: true });
                 });
                 label.append(name, select);
                 rows.append(label);
             }
         }
-        async function refresh() {
+        async function refresh({ choiceChanged = false } = {}) {
             const ticket = ++sequence;
             pending = true;
             status.textContent = text('loading');
@@ -104,9 +104,11 @@
                 if (geometryKey !== null && nextKey !== geometryKey) savedTake = null;
                 geometryKey = nextKey;
                 const footprint = api.union(buildings, env.turf);
-                await env.CadastralParcelRepository.ensureFootprint(footprint);
+                const region = api.union([footprint, savedTake,
+                    ...(current?.rows.filter(row => row.mode === 'whole' && whole.has(row.key)).map(row => row.feature) || [])], env.turf);
+                await env.CadastralParcelRepository.ensureFootprint(region);
                 if (closed || ticket !== sequence) return false;
-                parcels = env.LiveParcelFabric.queryBounds(env.turf.bbox(footprint), { includeCorridors: false });
+                parcels = env.LiveParcelFabric.queryBounds(env.turf.bbox(region), { includeCorridors: false });
                 current = api.plan({ buildings, parcels, whole, savedTake, turf: env.turf });
                 savedTake = null;
                 whole = new Set(current.rows.filter(row => row.mode === 'whole').map(row => row.key));
@@ -116,7 +118,7 @@
                     current = api.plan({ buildings, parcels, whole, turf: env.turf });
                 }
                 if (baseline === null) baseline = JSON.stringify(current.take.geometry);
-                onChange(current.take, current.rows.some(row => row.mode === 'whole'));
+                onChange(current.take, current.rows.some(row => row.mode === 'whole'), choiceChanged);
                 outcomes = null;
                 render();
                 paint();
@@ -158,7 +160,7 @@
             onHistory();
             savedTake = null;
             whole = mode === 'whole' ? new Set(current?.rows.map(row => row.key)) : new Set();
-            env.BusyControl.track(event.currentTarget, refresh);
+            env.BusyControl.track(event.currentTarget, () => refresh({ choiceChanged: true }));
         });
         function schedule() {
             if (closed) return;

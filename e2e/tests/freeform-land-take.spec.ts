@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, stubBasemapTiles, showProposal } from '../helpers/runtime';
+import { placeFreeformBuilding, openCity, openParcel, stubBasemapTiles, showProposal } from '../helpers/runtime';
 import { selectNativeOption } from '../helpers/controls';
 const editor = '#single-building-editor';
 const first = 'HR-335754-1234';
@@ -8,6 +8,7 @@ async function open(page: any) {
   await openCity(page);
   await openParcel(page, 'proposals');
   await page.locator('#parcel-info-panel .parcel-build-btn--single').click();
+  await placeFreeformBuilding(page);
   await expect(page.locator(`${editor} .on-map-editor__panel`)).toBeVisible();
   await expect(page.locator('[data-land-status]')).toContainText('m²');
 }
@@ -23,10 +24,16 @@ test('a narrow building takes a whole parcel, previews demolition, saves and reo
         geometry:{type:'Polygon',coordinates:[[[15.98192,45.80002],[15.98198,45.80002],[15.98198,45.80008],[15.98192,45.80008],[15.98192,45.80002]]]} }]])) }) });
   });
   await open(page);
+  await expect(page.locator('#single-ground-treatment')).toBeDisabled();
+  await expect(page.locator('#single-ground-treatment-edit')).toBeDisabled();
   const body=await page.evaluate(()=>(window as any).OnMapEditor.getPreview().draftPreview.features[0].geometry);
   await selectNativeOption(page.locator(`[data-parcel-id="${first}"]`),'whole');
+  await expect(page.locator('#single-ground-treatment')).toBeEnabled();
   await page.locator('[data-land-footprint]').click();
   await expect(page.locator(`[data-parcel-id="${first}"]`)).toHaveValue('footprint');
+  await expect(page.locator('#single-ground-treatment')).toBeDisabled();
+  await expect(page.locator('#single-ground-treatment-edit')).toBeDisabled();
+  expect(await page.evaluate(() => (window as any).getActiveProposalDesignDraft().editorPayload.context.groundSurface)).toBeNull();
   await selectNativeOption(page.locator(`[data-parcel-id="${first}"]`),'whole');
   await expect(page.locator('[data-land-status]')).toContainText('1 buildings removed');
   await expect(page.locator('[data-land-accept]')).toHaveCount(0);
@@ -153,8 +160,14 @@ test('mobile Done saves without a separate acceptance checkbox',async({mockApi:p
  await finish(page);
  await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().filter((p:any) => p.goal === 'single' && p.applied).length)).toBe(1);
 });
-test('loading an untouched land review does not create discardable edits',async({mockApi:page})=>{
+test('reopening an unchanged land review does not create discardable edits',async({mockApi:page})=>{
  await open(page);
+ await finish(page);
+ await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((p:any) => p.goal === 'single' && p.applied))).toBe(true);
+ const savedId = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((p:any) => p.goal === 'single' && p.applied).proposalId);
+ await showProposal(page, savedId);
+ await page.locator('#proposal-details-footer .btn-edit-geometry').click();
+ await expect(page.locator('[data-land-status]')).toContainText('m²');
  const toggle=page.locator(`${editor} .on-map-editor__toggle`);
  const body=page.locator(`${editor} .on-map-editor__body`);
  await expect(toggle).toHaveAttribute('aria-expanded','true');
@@ -189,7 +202,8 @@ test('Done saves the imported GLB without separate acceptance', async ({ mockApi
 test('parcel rows highlight on hover and click, with equal bulk buttons and compact IDs', async ({ mockApi: page }) => {
   await open(page);
   const row = page.locator('.land-take-row').first();
-  await expect(page.locator('[data-land-intro]')).toHaveText('Choose how land is taken from each of the touched parcels (1).');
+  await expect(page.locator('[data-land-intro]')).toHaveText('Choose the land taken from each touched parcel. The building keeps its shape.');
+  await expect(page.locator('.land-take-row')).toHaveCount(1);
   await expect(page.locator('#single-building-add, #single-building-selector, #single-move-together, [data-land-retry], .land-take-legend, [data-land-multi]')).toHaveCount(0);
   await row.hover();
   await expect(row).toHaveClass(/is-highlighted/);

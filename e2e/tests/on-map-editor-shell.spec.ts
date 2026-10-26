@@ -1,7 +1,7 @@
 // Purpose: exercise the shared editor shell where map context, mode changes, and narrow screens
 // used to make controls drift, disappear, or unlock too early.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, openBlockEditor, clickMapPoint, createBuilding, PARCEL_GEOMETRY, closeParcel, showSelectionDesignTab } from '../helpers/runtime';
+import { placeFreeformBuilding, openCity, openParcel, openBlockEditor, clickMapPoint, createBuilding, PARCEL_GEOMETRY, closeParcel, showSelectionDesignTab } from '../helpers/runtime';
 import { buildings3D, mockBuildingScene } from '../helpers/mocks/building-data';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import type { Page } from '@playwright/test';
@@ -52,6 +52,7 @@ async function openEditor(page: Page, kind: 'block' | 'single' | 'detached' | 'r
   await openParcel(page, 'proposals');
   if (kind === 'single') {
     await page.locator('.parcel-build-btn--single').click();
+    await placeFreeformBuilding(page);
     return { root: '#single-building-editor', done: '#single-building-confirm', cancel: '#single-building-editor .on-map-editor__header .close-circle-btn' };
   }
   await page.locator('.parcel-build-btn--parcelBased').click();

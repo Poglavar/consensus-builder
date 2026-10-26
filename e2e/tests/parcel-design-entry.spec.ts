@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel } from '../helpers/runtime';
+import { placeFreeformBuilding, openCity, openParcel } from '../helpers/runtime';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 import { isApiDataRequest } from '../helpers/mocks/api-routes';
 import type { Page } from '@playwright/test';
@@ -24,6 +24,7 @@ test('a Freeform draft on a tiny parcel preserves the chosen phone view and expo
     return { center: view.getCenter(), zoom: view.getZoom() };
   });
   await page.locator('.parcel-build-btn--single').click();
+  await placeFreeformBuilding(page);
   const footprint = page.locator('.single-building-fill--active');
   await expect(footprint).toBeVisible();
   const dimensions = await page.evaluate(() => {

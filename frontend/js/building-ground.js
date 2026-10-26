@@ -80,6 +80,19 @@
         return { treatment: normalized, polygon, ...(decorationDesign ? { decorationDesign: JSON.parse(JSON.stringify(decorationDesign)) } : {}) };
     }
 
+    // Surroundings consume land too. A footprint-only take leaves no surface to author.
+    function clipSurfaceToLandTake(surface, take, turfApi) {
+        if (!surface || !take) return null;
+        const land = asFeature(take.geometry || take), ground = asFeature(surface.polygon);
+        if (!land || !ground) return null;
+        let clipped;
+        try { clipped = turfApi.intersect(ground, land); } catch (error) {
+            throw clipFailureOf('intersect', error, 'building-ground.clipSurfaceToLandTake', [ground, land]);
+        }
+        if (!clipped || turfApi.area(clipped) < MIN_SURFACE_AREA_M2) return null;
+        return { ...surface, polygon: clipped.geometry };
+    }
+
     function surfaceOf(proposal) {
         const raw = proposal && proposal.geometry ? proposal.geometry.groundSurface : null;
         if (!raw || typeof raw !== 'object') return null;
@@ -193,6 +206,7 @@
         normalizeTreatment: normalizeTreatment,
         computeSurfacePolygon: computeSurfacePolygon,
         buildSurface: buildSurface,
+        clipSurfaceToLandTake,
         surfaceOf: surfaceOf,
         treatmentOf: treatmentOf,
         moveDecorationDesign,
