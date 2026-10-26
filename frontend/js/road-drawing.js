@@ -2619,6 +2619,10 @@ function restoreBuildingsAfterRoadDrawing() {
 // decision about buildings. GDI (the survey detection and cutting run on) switches on
 // automatically, no dialog; a survey combination the user already chose is left alone.
 function ensureRoadOperationBuildings(bounds) {
+    // This prepares the Leaflet editing viewport, never the model/photo scene. A 3D selection
+    // must not reload 2D footprints and trigger another 3D rebuild/selection notification.
+    if ((window.__mapModeState?.desired && window.__mapModeState.desired !== '2d')
+        || window.__pending3DMode || window.isThreeModeActive?.()) return Promise.resolve();
     try {
         const dialog = window.BuildingLayersDialog;
         const current = (dialog && typeof dialog.currentBuildingLayerState === 'function')

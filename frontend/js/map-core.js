@@ -967,10 +967,17 @@ function updateTotalSpentDisplay() {
 
 let buildingFollowTimer = null;
 
+function isTwoDimensionalViewportActive() {
+    const mode = window.__mapModeState;
+    if (mode && (mode.pending || mode.desired !== '2d')) return false;
+    return typeof window.isThreeModeActive !== 'function' || !window.isThreeModeActive();
+}
+
 // Set up map event handlers
 function setupMapEventHandlers() {
     // Map movement handlers
-    map.on('moveend', () => {
+    const handleMoveEnd = () => {
+        if (!isTwoDimensionalViewportActive()) return;
         if (!isMapMoving) return;
         if (typeof ParcelFetchController !== 'undefined' && ParcelFetchController && typeof ParcelFetchController.handleMoveEnd === 'function') {
             ParcelFetchController.handleMoveEnd(map, {
@@ -996,6 +1003,7 @@ function setupMapEventHandlers() {
         const debounceMs = (parcelFetchConfig && typeof parcelFetchConfig.getDebounce === 'function') ? parcelFetchConfig.getDebounce() : 500;
         buildingFollowTimer = setTimeout(() => {
             buildingFollowTimer = null;
+            if (!isTwoDimensionalViewportActive()) return;
             followMap.forEach(([id, fetcher]) => {
                 const box = document.getElementById(id);
                 if (box && box.checked && fetcher) fetcher();
@@ -1003,15 +1011,18 @@ function setupMapEventHandlers() {
         }, debounceMs);
 
         isMapMoving = false;
-    });
+    };
+    map.on('moveend', handleMoveEnd);
 
     // Add handlers for map movement start
     map.on('movestart', () => {
+        if (!isTwoDimensionalViewportActive()) return;
         isMapMoving = true;
     });
 
     // Add event listener for zoom
-    map.on('zoomend', () => {
+    const handleZoomEnd = () => {
+        if (!isTwoDimensionalViewportActive()) return;
         // No cadastre in the explore city: only a chosen session plan has parcel layers to show or hide.
         if (MapCityConfigManager && typeof MapCityConfigManager.hasParcelData === 'function'
             && !MapCityConfigManager.hasParcelData()
@@ -1044,10 +1055,34 @@ function setupMapEventHandlers() {
         if (typeof updateVisibleParcelsCount === 'function') {
             updateVisibleParcelsCount();
         }
+    };
+    map.on('zoomend', handleZoomEnd);
+
+    window.addEventListener('mapmodechange', event => {
+        const mode = event.detail || window.__mapModeState;
+        if (mode?.desired !== '2d' || mode.pending) {
+            if (buildingFollowTimer) clearTimeout(buildingFollowTimer);
+            buildingFollowTimer = null;
+            if (typeof window.buildingsTimeout !== 'undefined') {
+                clearTimeout(window.buildingsTimeout);
+                window.buildingsTimeout = null;
+            }
+            if (typeof window.parcelsTimeout !== 'undefined') {
+                clearTimeout(window.parcelsTimeout);
+                window.parcelsTimeout = null;
+            }
+            return;
+        }
+        // The Leaflet viewport is parked while model/photo is active. Reapply its zoom visibility
+        // and fetch the current view when it becomes the active map again.
+        handleZoomEnd();
+        isMapMoving = true;
+        handleMoveEnd();
     });
 
     // Add map click handler to close visualization and panels
     map.on('click', () => {
+        if (!isTwoDimensionalViewportActive()) return;
         if (typeof hideParcelInfoPanel === 'function') {
             hideParcelInfoPanel();
         }

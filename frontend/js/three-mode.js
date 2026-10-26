@@ -5923,7 +5923,12 @@
         try {
             const t0 = performance.now();
             const source = graph || buildLifeGraph();
-            const bounds = lifeSurfaceBounds(lifeProjector());
+            // Cover the camera's full rendering reach, not just the fetched street square. The
+            // initial far plane is 200 km; orbit zoom can extend it to 10 × distance (plus margin).
+            // Only pavement expands: road geometry, population and source requests stay bounded.
+            const k = lifeMercatorK();
+            const bounds = window.__groundGeometry.pavementBounds(lifeSurfaceBounds(lifeProjector()),
+                200000 / k, (camera?.far || 0) / k, (controls?.maxDistance || 0) * 12 / k);
             const result = source ? window.__groundGeometry.buildGroundGeometry({ carriageways: source.surface.carriageways, bounds }) : null;
             const cuts = groundCutFootprintFeatures();
             if (result?.plane && cuts.length) {

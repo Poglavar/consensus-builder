@@ -186,15 +186,32 @@
     }
 
     // Auto-run: parcels land in bursts per moveend, so debounce like the buildings viewport fetch.
+    function isTwoDimensionalViewportActive() {
+        const mode = global.__mapModeState;
+        if (mode && (mode.pending || mode.desired !== '2d')) return false;
+        return typeof global.isThreeModeActive !== 'function' || !global.isThreeModeActive();
+    }
+
     function scheduleCuratedRoadRefresh() {
-        if (!curatedRoadsAvailable()) return;
+        if (!isTwoDimensionalViewportActive() || !curatedRoadsAvailable()) return;
         if (curatedRoadFetchTimer) clearTimeout(curatedRoadFetchTimer);
         curatedRoadFetchTimer = setTimeout(() => {
             curatedRoadFetchTimer = null;
+            if (!isTwoDimensionalViewportActive()) return;
             fetchCuratedRoadParcels().catch(error => console.error('[curated-roads] background fetch failed', error));
         }, 800);
     }
     global.addEventListener('parcelDataLoaded', scheduleCuratedRoadRefresh);
+    global.addEventListener('mapmodechange', event => {
+        const mode = event.detail || global.__mapModeState;
+        if (mode?.desired !== '2d' || mode.pending) {
+            if (curatedRoadFetchTimer) clearTimeout(curatedRoadFetchTimer);
+            curatedRoadFetchTimer = null;
+            return;
+        }
+        // Refresh the viewport's road classification when Leaflet becomes the active view again.
+        scheduleCuratedRoadRefresh();
+    });
 
     const api = {
         addRoadParcel,

@@ -721,6 +721,9 @@
         if (!map || !global.L) return;
         if (busy) return;
         clearHandles();
+        // Selection is shared with 3D. Leaflet handles, editing zoom and footprint preloads are not.
+        if ((global.__mapModeState?.desired && global.__mapModeState.desired !== '2d')
+            || global.__pending3DMode || global.isThreeModeActive?.()) return;
         if (drawingActive()) return;
         const proposal = selectedCorridorProposal();
         if (!proposal) return;
@@ -947,6 +950,7 @@
     }
 
     function initialize() {
+        global.addEventListener?.('mapmodechange', refresh);
         if (global.ProposalSelection?.subscribe) {
             global.ProposalSelection.subscribe(refresh);
         }

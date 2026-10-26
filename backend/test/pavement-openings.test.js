@@ -4,7 +4,7 @@ import { createRequire } from 'node:module';
 import * as turf from '@turf/turf';
 import earcut from 'earcut';
 const require = createRequire(import.meta.url);
-const { buildPavementGeometry } = require('../../frontend/js/life/ground-geometry.js');
+const { buildPavementGeometry, pavementBounds } = require('../../frontend/js/life/ground-geometry.js');
 const polygon = coordinates => turf.polygon(coordinates);
 const square = (a,b,c,d) => [[a,b],[c,b],[c,d],[a,d],[a,b]];
 const deps = { difference: turf.difference, triangulate: (outer, holes) => {
@@ -23,6 +23,16 @@ function triangles(part) {
 const covers = (part, xy) => triangles(part).some(triangle => turf.booleanPointInPolygon(turf.point(xy), triangle));
 
 describe('pavement openings', () => {
+    it('extends coverage beyond the data square while preserving lake holes and mesh size', () => {
+        const openings = [polygon([square(20,20,80,80)])];
+        const before = buildPavementGeometry([0,0,100,100], openings, deps);
+        const after = buildPavementGeometry(pavementBounds([0,0,100,100], 200000), openings, deps);
+        expect(covers(after, [50,50])).toBe(false);
+        expect(covers(after, [-10000,10000])).toBe(true);
+        expect(after.triangles).toBe(before.triangles);
+        expect(after.positions.length).toBe(before.positions.length);
+    });
+
     it('leaves recessed lake water visible while retaining surrounding pavement', () => {
         const part = buildPavementGeometry([0,0,100,100], [polygon([square(20,20,80,80)])], deps);
         expect(covers(part, [50,50])).toBe(false);

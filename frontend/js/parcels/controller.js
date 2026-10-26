@@ -1,8 +1,14 @@
 (function (global) {
     'use strict';
 
+    function isTwoDimensionalViewportActive() {
+        var mode = global.__mapModeState;
+        if (mode && (mode.pending || mode.desired !== '2d')) return false;
+        return typeof global.isThreeModeActive !== 'function' || !global.isThreeModeActive();
+    }
+
     function handleMoveEnd(map, options) {
-        if (!map) return;
+        if (!map || !isTwoDimensionalViewportActive()) return;
         if (!map._loaded || typeof map.getBounds !== 'function') {
             return;
         }
@@ -26,7 +32,9 @@
                 if (typeof global.buildingsTimeout !== 'undefined') {
                     clearTimeout(global.buildingsTimeout);
                 }
-                global.buildingsTimeout = setTimeout(global.fetchBuildings, 1000);
+                global.buildingsTimeout = setTimeout(function () {
+                    if (isTwoDimensionalViewportActive()) global.fetchBuildings();
+                }, 1000);
             }
         } catch (_) { /* ignore */ }
 
@@ -53,6 +61,7 @@
             ? parcelFetchConfig.getDebounce()
             : 500;
         global.parcelsTimeout = setTimeout(function () {
+            if (!isTwoDimensionalViewportActive()) return;
             if (typeof global.fetchParcelData !== 'function') return;
             // No cache inspection here. The repository returns immediately when this exact ground
             // is already retained and joins an existing request when another consumer got there first.

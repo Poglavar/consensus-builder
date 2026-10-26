@@ -5,7 +5,7 @@ import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { buildGroundGeometry, ribbonEdges, splitAtSharpBends, MITRE_LIMIT, DISC_SEGMENTS, MARK_HALF_M, MARK_DASH_M, MARK_GAP_M, MARK_LIFT_M } = require('../../frontend/js/life/ground-geometry.js');
+const { buildGroundGeometry, pavementBounds, ribbonEdges, splitAtSharpBends, MITRE_LIMIT, DISC_SEGMENTS, MARK_HALF_M, MARK_DASH_M, MARK_GAP_M, MARK_LIFT_M } = require('../../frontend/js/life/ground-geometry.js');
 
 const P = (part, i) => [part.positions[i * 3], part.positions[i * 3 + 1], part.positions[i * 3 + 2]];
 function triangleArea2(part, t) {
@@ -255,6 +255,27 @@ describe('junctions', () => {
 });
 
 describe('pavement plane and input hygiene', () => {
+    it('covers rendering reach without increasing road geometry or pavement triangle count', () => {
+        const bounds = [-100, -50, 100, 50];
+        const ways = [{ pts: [[0, 0], [100, 0]], halfWidth: 3.5 }];
+        const before = build(ways, bounds);
+        const expanded = pavementBounds(bounds, 200000);
+        const after = build(ways, expanded);
+        expect(expanded).toEqual([-200100, -200050, 200100, 200050]);
+        expect(bounds).toEqual([-100, -50, 100, 50]);
+        expect(after.plane.triangles).toBe(2);
+        expect(after.plane.positions.length).toBe(before.plane.positions.length);
+        expect(after.stats).toEqual(before.stats);
+        for (const part of ['roadbed', 'lid', 'kerb', 'markings']) expect(after[part]).toEqual(before[part]);
+    });
+
+    it('retains finite coverage before orbit framing supplies a finite zoom limit', () => {
+        expect(pavementBounds([-100, -50, 100, 50], 200000, Infinity))
+            .toEqual([-200100, -200050, 200100, 200050]);
+        expect(pavementBounds([-100, -50, 100, 50], 200000, 360000))
+            .toEqual([-360100, -360050, 360100, 360050]);
+    });
+
     it('spans the bounds as two triangles at z 0', () => {
         const { plane, stats } = build([], [-100, -50, 100, 50]);
         expect(plane.triangles).toBe(2);
