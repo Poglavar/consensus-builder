@@ -3,15 +3,17 @@ import { validateBounds } from '../parcels/source-contract.js';
 import { planningRepresentations, planningParcel, planningRecord, getPlanningSources, providersFor } from '../planning/sources.js';
 import { loadParcelStudy } from '../planning/parcel-study.js';
 import { loadParcelEnvelopes } from '../planning/parcel-envelopes.js';
+import { createFrontageStreetRegistry, NETWORK_ENVIRONMENT_SOURCES } from '../sources/network-environment.js';
 
 function validCity(city) { return city === undefined || typeof city === 'string' && /^[a-z][a-z0-9_-]{0,79}$/.test(city); }
 function validSource(source) { return source === undefined || (typeof source === 'string' && /^[a-z0-9_-]{1,100}$/.test(source)); }
 
 export function setupPlanningRoutes(app, pool, { sources = getPlanningSources(),
+    streetProvider = createFrontageStreetRegistry(pool).open(NETWORK_ENVIRONMENT_SOURCES.frontage),
     query = (pool, query) => planningRepresentations(pool, query, sources),
     parcelQuery = (pool, query) => planningParcel(pool, query, sources),
     studyQuery = query => loadParcelStudy(query, { sources }),
-    envelopeQuery = query => loadParcelEnvelopes(query, { sources }) } = {}) {
+    envelopeQuery = query => loadParcelEnvelopes(query, { sources, streetProvider }) } = {}) {
     app.get('/planning/envelopes', async (req, res) => {
         res.set('Cache-Control', 'no-store');
         const { city, source, scenario } = req.query;

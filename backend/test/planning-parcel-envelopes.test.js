@@ -35,6 +35,8 @@ const provider = (changes={}) => createAtlasProvider({type:'FeatureCollection',f
 const query = {city:'colorado',source:metadata.id,bbox};
 const options = (features=[parcel()],source=provider(),complete=true) => ({sources:[source],
     parcelProvider:() => ({queryBounds:vi.fn(async () => ({features,complete}))})});
+const streetData = (latitude=39.9999) => ({ type:'FeatureCollection', source:'overpass', partial:false, truncated:false,
+    features:[turf.lineString([[-105.002,latitude],[-105,latitude]],{osm_id:'street-one',name:'Example Street',highway:'residential'})] });
 
 describe('viewport parcel envelopes', () => {
     it('produces an outer bound plus every recorded configuration without creating a study or proposal', async () => {
@@ -82,6 +84,51 @@ describe('viewport parcel envelopes', () => {
             expect(outside ? turf.area(outside) : 0).toBeLessThan(0.01);
         }
         expect(turf.difference(turf.feature(envelope.geometry),parcel())).toBeNull();
+    });
+    it('orients every configuration from nearby streets and measures setbacks from the original lot lines', async () => {
+        const features = [parcel()], before = JSON.stringify(features);
+        const streetProvider = { near:vi.fn(async () => streetData()) };
+        const opts = { ...options(features,provider({family1_frontsetbackft_method:'direct_number'})),streetProvider };
+        const result = await loadParcelEnvelopes({...query,bbox:[-105.0009,40.0001,-105.0008,40.0002]},opts);
+        const item = result.items[0], config = item.configurations.find(c => c.id === 'family1');
+        expect(item.sourceEvidence).toMatchObject({frontEdge:0,envelopeMeaning:'outer-bound-across-configurations',
+            frontage:{basis:'street',source:'overpass',street:{name:'Example Street',id:'street-one'}}});
+        expect(item.derivation.frontEdges).toEqual([0]);
+        expect(item.configurations.every(c => c.edgeInterpretations === 1)).toBe(true);
+        const [w,s,e,n] = turf.bbox(turf.feature(config.volumes[0].geometry));
+        const distanceM = (a,b) => turf.distance(turf.point(a),turf.point(b),{units:'meters'});
+        expect(distanceM([w,bbox[1]],[w,s])).toBeCloseTo(20*0.3048,2);
+        expect(distanceM([e,n],[e,bbox[3]])).toBeCloseTo(10*0.3048,2);
+        // The lookup covers the complete source parcel and nearby roads, not only the viewport.
+        expect(streetProvider.near).toHaveBeenCalledTimes(1);
+        const lookup = streetProvider.near.mock.calls[0][0];
+        expect(lookup[0]).toBeLessThan(bbox[0]); expect(lookup[1]).toBeLessThan(bbox[1]);
+        expect(lookup[2]).toBeGreaterThan(bbox[2]); expect(lookup[3]).toBeGreaterThan(bbox[3]);
+        // Moving the road to the other side changes the front and both server-derived forms.
+        streetProvider.near.mockResolvedValue(streetData(40.0005));
+        const opposite = (await loadParcelEnvelopes(query,opts)).items[0];
+        expect(opposite.sourceEvidence.frontEdge).toBe(2);
+        expect(opposite.configurations[0].volumes[0].geometry).not.toEqual(config.volumes[0].geometry);
+        expect(opposite.volumes[0].geometry).not.toEqual(item.volumes[0].geometry);
+        expect(JSON.stringify(features)).toBe(before);
+    });
+    it.each(['partial','truncated','failure','no-street'])('retains an unoriented bound when streets are %s', async state => {
+        const streetProvider = {near:vi.fn(async () => {
+            if (state === 'failure') throw new Error('Street source unavailable');
+            return {...streetData(),features:state === 'no-street' ? [] : streetData().features,
+                partial:state === 'partial',truncated:state === 'truncated'};
+        })};
+        const item = (await loadParcelEnvelopes(query,{...options(),streetProvider})).items[0];
+        expect(item.sourceEvidence).toMatchObject({frontEdge:null,frontage:{basis:'unknown',
+            reason:state === 'no-street' ? 'no-facing-street' : 'street-data-unavailable'}});
+        expect(item.derivation.frontEdges).toEqual([0,1,2,3]);
+        expect(envelopes.frontEdgeFor(item,{variation:'2'})).toBeNull();
+        expect(item.volumes).toHaveLength(1);
+    });
+    it('skips street lookup when the parcel source returns no parcels', async () => {
+        const streetProvider = {near:vi.fn()};
+        expect((await loadParcelEnvelopes(query,{...options([]),streetProvider})).items).toEqual([]);
+        expect(streetProvider.near).not.toHaveBeenCalled();
     });
     it('lists a configuration whose height is estimated as unavailable rather than dropping or drawing it', async () => {
         const result = await loadParcelEnvelopes(query,options([parcel()],provider({family1_maxheightft_method:'estimation'})));
@@ -197,30 +244,30 @@ describe('configuration display logic', () => {
         expect(map.map(f => f.properties.geometryRole)).toEqual(['bound','body']);
         expect(map[1].properties.topM).toBeCloseTo(13.716, 6);
     });
-    it('rolls the assumed street side with the configuration and derives that side\'s body inside the parcel', () => {
-        const parcelGeometry = turf.bboxPolygon(bbox).geometry;
-        const constraints = [{quantity:'sideSetback',value:5,unit:'ft',evidence:'direct'},{quantity:'rearSetback',value:10,unit:'ft',evidence:'direct'},
-            {quantity:'height',value:35,unit:'ft',evidence:'direct'}];
-        const derived = { ...item(), derivation: { parcel: parcelGeometry, covered: parcelGeometry, frontEdges: [0,1,2,3] },
-            configurations: [{ id:'family1', treatment:'allowed', unavailableReason:null, constraints, volumes:[{id:'u',geometry:parcelGeometry,baseM:0,topM:10.668}] }] };
+    it('keeps the street-facing edge and server geometry when configurations are shuffled or pinned', async () => {
+        const derived = (await loadParcelEnvelopes(query,{...options(),streetProvider:{near:async () => streetData()}})).items[0];
+        const parcelGeometry = derived.derivation.parcel;
         const deps = { geometry: turf, assessment: core };
         const first = envelopes.realize(derived, { form:'both', selection:{ variation:'' }, deps });
         expect(first.body).toHaveLength(1);
-        expect([0,1,2,3]).toContain(first.frontEdge);
+        expect(first.frontEdge).toBe(0);
         expect(first.body[0].properties).toMatchObject({ geometryRole:'body', configurationId:'family1', frontEdge:first.frontEdge, topM:expect.closeTo(10.668, 6) });
         const footprint = turf.area(first.body[0]);
         expect(footprint).toBeLessThan(turf.area(turf.feature(parcelGeometry)));
         expect(turf.difference(first.body[0], turf.feature(parcelGeometry))).toBeNull();
-        const second = envelopes.realize(derived, { form:'both', selection:{ variation:'1' }, deps });
-        expect(second.frontEdge).not.toBe(first.frontEdge);
-        expect(JSON.stringify(second.body[0].geometry)).not.toBe(JSON.stringify(first.body[0].geometry));
-        // Without the evaluator the configuration's own all-sides volume is drawn and no side is claimed.
+        for (const selection of [{variation:'1'},{variation:'2'},{scenario:'family2'},{pins:{[derived.id]:'family1'}}]) {
+            const result = envelopes.realize(derived,{form:'both',selection,deps});
+            expect(result.frontEdge).toBe(0);
+            expect(result.body[0].geometry).toEqual(result.configuration.volumes[0].geometry);
+        }
+        // The API and browser use the same oriented volume, without another client-side solve.
         const plain = envelopes.realize(derived, { form:'both', selection:{ variation:'' } });
-        expect(plain.frontEdge).toBeNull(); expect(plain.body[0].geometry).toEqual(parcelGeometry);
+        expect(plain.frontEdge).toBe(0); expect(plain.body[0].geometry).toEqual(first.body[0].geometry);
         expect(envelopes.mapFeatures(derived, { detail:'footprint', form:'both', selection:{ variation:'' }, deps })
             .map(f => [f.properties.geometryRole, f.properties.frontEdge])).toEqual([['bound', undefined], ['body', first.frontEdge]]);
         expect([0,1,2,3].map(edge => envelopes.edgeSide(parcelGeometry, edge))).toEqual(['s','e','n','w']);
         expect(envelopes.frontEdgeFor({ id:'x' }, {})).toBeNull();
+        expect(envelopes.frontEdgeFor({...derived,sourceEvidence:{frontEdge:3}})).toBeNull();
     });
     it('rerolls permitted and proposed variations independently and preserves settings and selection', () => {
         const store = scene.createStore({ permittedForm:'bound', proposedForm:'massing' });
@@ -239,6 +286,13 @@ describe('configuration display logic', () => {
         expect(store.get()).toBe(beforeInvalid);
         expect(store.reroll()).toBe(beforeInvalid);
         expect(store.get()).toBe(beforeInvalid);
+    });
+    it('labels a street edge by its outward direction despite uneven source digitization or reversed winding', () => {
+        const [w,s,e,n] = bbox;
+        const bottom = Array.from({length:21},(_,i) => [w+(e-w)*i/20,s]);
+        const ring = [...bottom,[e,n],[w,n],[w,s]];
+        expect(envelopes.edgeSide({type:'Polygon',coordinates:[ring]},22)).toBe('w');
+        expect(envelopes.edgeSide({type:'Polygon',coordinates:[ring.slice().reverse()]},0)).toBe('w');
     });
     it('shows a fixed Illustration control for a source with one calculated option', () => {
         const source = { id: 'cached-option', capabilities: { volumes: true } };

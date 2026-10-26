@@ -7,7 +7,9 @@ import { assembleParcelStudy, readStudyZoning, studyParcelSource, withScenarioSo
 import { runtimeParcelSource } from '../parcels/sources.js';
 import { validateBounds } from '../parcels/source-contract.js';
 import { configurationTreatments } from './providers/atlas.js';
-const core = createRequire(import.meta.url)('../../frontend/js/planning/parcel-assessment.js');
+const require = createRequire(import.meta.url);
+const core = require('../../frontend/js/planning/parcel-assessment.js');
+const plots = require('../../frontend/js/proposals/site-plots.js');
 const fail = (code, status = 422) => { throw Object.assign(new Error(code), { code, status }); };
 const intersects = (a, b) => a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1];
 const knownReasons = ['overlapping-parcel-identities', 'use-prohibited', 'use-not-recorded', 'missing-direct-height', 'empty-supported-bound',
@@ -43,7 +45,7 @@ export function lotAreaTest(parcelM2, constraints = []) {
 
 // One configuration per usable housing type. A configuration without a direct height or
 // without space inside its supported setbacks is listed with its reason, never drawn.
-export function parcelConfigurations(baseContext, scenarios, zonesByScenario, geometryOps = turf) {
+export function parcelConfigurations(baseContext, scenarios, zonesByScenario, geometryOps = turf, frontEdge = null) {
     const configurations = [], excluded = {};
     let parcelM2 = null;
     const parcelArea = () => parcelM2 ??= geometryOps.area(baseContext.parcel);
@@ -52,7 +54,11 @@ export function parcelConfigurations(baseContext, scenarios, zonesByScenario, ge
         const treatment = context?.source.assessment.status || null;
         if (!context || !configurationTreatments.includes(treatment)) { excluded[scenario] = treatment || 'unrecorded'; continue; }
         let bound, unavailableReason = null;
-        try { bound = core.unorientedEnvelope(context, geometryOps); }
+        try {
+            bound = Number.isInteger(frontEdge)
+                ? { ...core.derive(context, frontEdge, geometryOps), interpretations: 1, edges: [frontEdge] }
+                : core.unorientedEnvelope(context, geometryOps);
+        }
         catch (error) { unavailableReason = error.message === 'unsupported-parcel-shape' ? error.message : 'envelope-geometry-error'; }
         if (!unavailableReason && (bound.heightM === null || bound.heightM <= 0)) unavailableReason = 'missing-direct-height';
         else if (!unavailableReason && !bound.geometry) unavailableReason = 'empty-supported-bound';
@@ -84,7 +90,27 @@ function omissionReason(configurations, excluded) {
     return 'envelope-geometry-error';
 }
 
-export async function loadParcelEnvelopes(query, { sources, parcelProvider = descriptor => runtimeParcelSource(descriptor) } = {}) {
+// One cached source read covers the full parcels and the scorer's reach beyond their lot lines.
+// Missing or partial streets cannot establish a preferred front; retain the unoriented bound.
+async function readFrontageStreets(bounds, streetProvider) {
+    if (!streetProvider) return null;
+    const [w, s, e, n] = bounds, marginM = plots.FRONTAGE_STREET_MAX_DISTANCE_M + 5;
+    const dLat = marginM / 111320, dLng = dLat / Math.cos((s + n) / 2 * Math.PI / 180);
+    try {
+        const data = await streetProvider.near([w - dLng, s - dLat, e + dLng, n + dLat]);
+        return data?.type === 'FeatureCollection' && Array.isArray(data.features) && !data.partial && !data.truncated ? data : null;
+    } catch (_) { return null; }
+}
+
+function parcelFrontage(parcel, streets) {
+    if (!streets) return { frontEdge: null, evidence: { basis: 'unknown', reason: 'street-data-unavailable' } };
+    const scores = plots.frontageScores(parcel, streets.features, { turf }), best = scores[0];
+    if (!best) return { frontEdge: null, evidence: { basis: 'unknown', reason: 'no-facing-street', source: streets.source } };
+    return { frontEdge: best.index, evidence: { basis: 'street', source: streets.source, street: best.street,
+        distanceM: best.distanceM, score: best.score, candidateEdges: scores.map(edge => edge.index) } };
+}
+
+export async function loadParcelEnvelopes(query, { sources, parcelProvider = descriptor => runtimeParcelSource(descriptor), streetProvider } = {}) {
     validateBounds(query.bbox, 0.5);
     const provider = sourcesFor(query, sources)[0];
     if (!query.source || !provider) fail('study-unavailable');
@@ -97,15 +123,19 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
     const fullBounds = records.length ? [Math.min(...records.map(r => r.bbox[0])), Math.min(...records.map(r => r.bbox[1])),
         Math.max(...records.map(r => r.bbox[2])), Math.max(...records.map(r => r.bbox[3]))] : query.bbox;
     const scenarios = provider.descriptor.scenarios || [provider.descriptor.scenario];
-    const zonesByScenario = Object.fromEntries(await Promise.all(scenarios.map(async scenario =>
-        [scenario, await readStudyZoning(provider, { ...query, scenario }, fullBounds)])));
+    const [zoneEntries, streets] = await Promise.all([
+        Promise.all(scenarios.map(async scenario => [scenario, await readStudyZoning(provider, { ...query, scenario }, fullBounds)])),
+        records.length ? readFrontageStreets(fullBounds, streetProvider) : null
+    ]);
+    const zonesByScenario = Object.fromEntries(zoneEntries);
     const overlapProblems = parcelOverlapProblems(records);
     const items = [], unavailable = [];
     for (const { parcel } of records) {
         try {
             if (overlapProblems.has(parcel.id)) fail(overlapProblems.get(parcel.id));
             const context = assembleParcelStudy(parcel, descriptor, zonesByScenario[scenarios[0]]);
-            const { configurations, excluded, frontEdges } = parcelConfigurations(context, scenarios, zonesByScenario);
+            const frontage = parcelFrontage(parcel, streets);
+            const { configurations, excluded, frontEdges } = parcelConfigurations(context, scenarios, zonesByScenario, turf, frontage.frontEdge);
             const bound = outerBound(configurations);
             if (!bound) fail(omissionReason(configurations, excluded));
             const id = `envelope:${provider.descriptor.id}:${parcel.id}`;
@@ -115,16 +145,16 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
                 volumes: [{ id: `${id}:bound`, geometry: bound.geometry, baseM: 0, topM: bound.heightM }],
                 configurations: configurations.map(configuration => ({ ...configuration,
                     volumes: configuration.volumes.map(volume => ({ ...volume, id: `${id}:${volume.id}` })) })),
-                // Enough for a client to redraw one configuration on one assumed street side with the
-                // shared evaluator: the original parcel, the zoning-covered part and the usable edges.
+                // Retain original lot lines and the edge interpretations used by the evaluator.
                 derivation: { parcel: parcel.geometry, covered: context.coveredGeometry, frontEdges },
                 spatialReference: { horizontal: 'OGC:CRS84', vertical: 'relative-ground', unit: 'm' },
                 authority: { effect: 'unknown', applicability: 'unresolved' },
                 assessment: { meaning: 'outer-bound', status: 'unresolved', geometry: 'derived-parcel', constraints: 'partial', current: true },
                 metrics: { footprintM2: bound.areaM2, heightM: bound.heightM }, constraints: [],
                 sourceEvidence: { zoningRecordId: context.source.source.recordId, parcelReference: context.parcelReference,
-                    sourceCoverage: context.sourceCoverage, frontEdge: null, excludedConfigurations: excluded,
-                    envelopeMeaning: 'outer-bound-across-configurations-and-front-edge-interpretations' } });
+                    sourceCoverage: context.sourceCoverage, frontEdge: frontage.frontEdge, frontage: frontage.evidence,
+                    excludedConfigurations: excluded, envelopeMeaning: frontage.frontEdge === null
+                        ? 'outer-bound-across-configurations-and-front-edge-interpretations' : 'outer-bound-across-configurations' } });
         } catch (error) {
             const reason = knownReasons.includes(error.code || error.message) ? error.code || error.message : 'envelope-geometry-error';
             unavailable.push({ parcelId: parcel.id, reason });

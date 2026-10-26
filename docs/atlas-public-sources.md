@@ -77,3 +77,25 @@ Among 5,536 eligible one-family records, 3,523 have all three numeric setbacks a
 Aggregate status sums and regional totals were reconciled. The Page text and both embeds were read back; both chart fragments were visually checked in a headed browser at 736 px and 360 px widths. The authenticated browser redirected the Page URL to its home view, so the native Page layout remains unverified. No authoring behavior changed, and the date evidence remains available through the same site/MCP read paths; no new MCP edit operation is needed.
 
 The independent [standards research](zoning-standards-research.md) compares LADM, INSPIRE, XPlanung, STOP/TPOD and other relevant models. It does not introduce a replacement core schema in this change.
+
+## Street-facing setbacks follow-up
+
+The previous viewport display chose a front edge from a hash of the parcel identity plus the shuffle counter. It never consulted streets, and its maximum envelope combined every supported edge orientation. A real Arlington browser check reproduced edge changes on shuffle.
+
+Viewport envelopes now reuse the existing `site-plots` frontage scorer and the registered `osm-frontage` reader. One lookup covers the complete source parcels plus a 35 m margin; the existing scorer considers nearby, outward-facing street segments within 30 m and approximately parallel to an edge. Its selected edge is used for every housing configuration and their combined maximum envelope. Front, side and rear setbacks are offsets from the original parcel boundary, not distances from a road centreline. Street evidence and candidate edges remain in `sourceEvidence.frontage`; the selected index remains in `sourceEvidence.frontEdge`.
+
+The client renders those server-derived volumes and shuffles housing types only. Missing, partial, truncated or failed street reads retain an explicitly unoriented outer bound with no claimed front edge. This is a frontage inference, not a complete corner-lot or multi-frontage rule evaluator. If the selected street-facing orientation is unsupported, the parcel is withheld instead of switching to an unrelated edge.
+
+Headless unit run record for this follow-up (none stopped; no full suite):
+
+| Scope | Result |
+| --- | --- |
+| Parcel envelopes (1 file) | 29/29 passed, including road-dependent orientation, offsets from lot lines, unchanged source vertices, one bounded street read, unresolved street evidence and shuffle invariance. |
+| MCP drafts, public Atlas and site plots (3 files) | 47/48 passed. The untouched park-agreement draft test fails at `mcp-drafts.test.js:33` because `agreement.agreement.designs` is absent; it does not request planning envelopes. Public Atlas and frontage scorer tests passed. |
+| Frontage compass follow-up: parcel envelopes (1 file) | 30/30 passed. The edge's outward normal, independent of uneven vertex spacing and ring winding, supplies its compass label. |
+
+No authoring operation or authored schema changed. Existing MCP permitted-building drafting reads `/planning/envelopes`, so the same server calculation supplies its maximum envelope. A live request through `createMcpReadTools` returned the same eight street-oriented Arlington envelopes as the bounded API check; no new MCP operation was needed.
+
+The headed browser reproduced the old rotating frontage, then verified fixed frontage across all 19 displayed envelopes after a real shuffle. The same source items and street-oriented volumes were visible in 2D and 3D. One previously displayed parcel is now withheld because the street-facing orientation is unsupported; the full viewport reports 34 unsupported parcel shapes and six multiple-zone exclusions. The selected parcel's inspector names North Quincy Street, and the final one-family preview explicitly resolves the local backend and Arlington city. The frontend/API listener directories and frontend `no-store` response were checked. Translated descriptions and the literal-number evidence label were checked as parsed JSON and in the headed browser.
+
+Orientation does not resolve unparsed values. In the inspected Arlington R-10 one-family record, the adapter can currently apply the recorded 25 ft rear setback and 35 ft height. Its front setback, side setback and minimum lot area remain expressions that this increment does not parse. Consequently, the displayed geometry is still a partial envelope even with a correctly inferred front.

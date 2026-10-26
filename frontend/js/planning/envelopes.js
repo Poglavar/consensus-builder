@@ -1,9 +1,9 @@
 // Realises Permitted viewport envelopes for display. The server ships the specs: one outer bound
 // per parcel, the configurations (housing types) with their direct constraints and lot test, and
-// the derivation inputs (parcel, zoning-covered part, usable front edges). This module turns those
+// the frontage evidence used to orient them. This module turns those
 // plus a display selection (per-parcel pins, the pinned housing type, the dice counter) into
 // renderer-agnostic volumes; the map and the model only extrude what it returns. Pure: geometry
-// operations and the shared evaluator come in as `deps`, so it runs headless in tests and in Node.
+// operations come in as `deps`, so it runs headless in tests and in Node.
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -35,37 +35,27 @@
         const pool = candidates.some(qualifies) ? candidates.filter(qualifies) : candidates;
         return pool[(hash(String(item.id)) + (Number(variation) || 0)) % pool.length];
     }
-    // The assumed street side rolls with the configuration: the same counter, a different seed, so
-    // one roll changes both. Null when the item carries no derivation inputs.
-    function frontEdgeFor(item, { variation = '' } = {}) {
+    // Frontage belongs to the parcel's source evidence; changing the housing type cannot rotate it.
+    function frontEdgeFor(item) {
         const edges = item?.derivation?.frontEdges;
-        if (!Array.isArray(edges) || !edges.length) return null;
-        return edges[(hash(`${item.id}#edge`) + (Number(variation) || 0)) % edges.length];
+        const edge = item?.sourceEvidence?.frontEdge;
+        return Number.isInteger(edge) && Array.isArray(edges) && edges.includes(edge) ? edge : null;
     }
-    // Which side of the parcel an edge faces, as a compass key, from the ring centroid to the edge midpoint.
+    // Compass direction of the outward edge normal; collinear digitization cannot skew it.
     function edgeSide(geometry, index) {
         const ring = geometry?.coordinates?.[0];
         if (!ring || !ring[index + 1]) return null;
         const points = ring.slice(0, -1), n = points.length;
-        const cx = points.reduce((sum, p) => sum + p[0], 0) / n, cy = points.reduce((sum, p) => sum + p[1], 0) / n;
         const a = ring[index], b = ring[index + 1];
-        const dx = ((a[0] + b[0]) / 2 - cx) * Math.cos(cy * Math.PI / 180), dy = (a[1] + b[1]) / 2 - cy;
-        const bearing = (Math.atan2(dx, dy) * 180 / Math.PI + 360) % 360;
+        const signedArea = points.reduce((sum, p, i) => {
+            const q = points[(i + 1) % n], origin = points[0];
+            return sum + (p[0] - origin[0]) * (q[1] - origin[1]) - (q[0] - origin[0]) * (p[1] - origin[1]);
+        }, 0);
+        const dx = (b[0] - a[0]) * Math.cos((a[1] + b[1]) / 2 * Math.PI / 180), dy = b[1] - a[1];
+        if (!signedArea || !(Math.hypot(dx, dy) > 0)) return null;
+        const outward = signedArea > 0 ? [dy, -dx] : [-dy, dx];
+        const bearing = (Math.atan2(outward[0], outward[1]) * 180 / Math.PI + 360) % 360;
         return ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'][Math.round(bearing / 45) % 8];
-    }
-    // One configuration drawn on one assumed street side, with the shared evaluator. Without the
-    // evaluator, or when the derivation fails, the configuration's own (all-sides) volume is drawn.
-    function configurationBody(item, configuration, selection, deps) {
-        const frontEdge = frontEdgeFor(item, selection);
-        const fallback = { volumes: configuration.volumes || [], frontEdge: null };
-        if (frontEdge === null || !deps?.assessment || !deps?.geometry || !Array.isArray(configuration.constraints)) return fallback;
-        try {
-            const context = { parcel: { type: 'Feature', geometry: item.derivation.parcel },
-                coveredGeometry: item.derivation.covered || null, source: { constraints: configuration.constraints } };
-            const bound = deps.assessment.derive(context, frontEdge, deps.geometry);
-            if (!bound.geometry || !(bound.heightM > 0)) return fallback;
-            return { frontEdge, volumes: [{ id: `${item.id}:${configuration.id}:edge${frontEdge}`, geometry: bound.geometry, baseM: 0, topM: bound.heightM }] };
-        } catch (_) { return fallback; }
     }
     function volumeFeatures(item, geometryRole = 'body', configurationId = null) {
         if (item?.spatialReference?.horizontal !== 'OGC:CRS84' || item?.spatialReference?.unit !== 'm'
@@ -80,11 +70,11 @@
     }
     // The volumes a Permitted item draws: `bound` is the translucent outer hull, `body` the shown
     // configuration. Items without configurations (one calculated option) draw their volumes as body.
-    function realize(item, { form = 'both', selection = {}, deps = null } = {}) {
+    function realize(item, { form = 'both', selection = {} } = {}) {
         if (!Array.isArray(item?.configurations) || !item.configurations.length) return { bound: [], body: volumeFeatures(item), configuration: null, frontEdge: null };
         const shownForm = forms.includes(form) ? form : 'both';
         const configuration = configurationFor(item, selection);
-        const realization = configuration ? configurationBody(item, configuration, selection, deps) : { volumes: [], frontEdge: null };
+        const realization = configuration ? { volumes: configuration.volumes || [], frontEdge: frontEdgeFor(item) } : { volumes: [], frontEdge: null };
         const body = shownForm === 'bound' || !configuration ? [] : volumeFeatures({ ...item, volumes: realization.volumes }, 'body', configuration.id)
             .map(feature => ({ ...feature, properties: { ...feature.properties, frontEdge: realization.frontEdge } }));
         const bound = shownForm === 'configuration' && body.length ? [] : volumeFeatures(item, 'bound');

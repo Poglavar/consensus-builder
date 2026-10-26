@@ -57,3 +57,20 @@ The present evidence supports considering these foundations if and when a core p
 
 It does **not** support adopting any one of them as a complete common zoning schema, nor converting NZA/LUL data into unconditional development entitlement. Before an executable profile is proposed, it needs explicit decisions about the legal/source authority, applicability geometry, effects (permission, requirement, prohibition), conditions/exceptions, overlay conflict policy, units and measurement bases, temporal validity, unsupported states and explainable assessment results. Each source adapter must preserve native fields and citations alongside mapped values.
 
+## Access and an incremental INSPIRE profile
+
+Checked **2026-10-27**. ISO sells the normative text of ISO 19152-5:2025; its listing offers a sample and prices the publication at CHF 159. International standardisation does not itself imply free access or an open redistribution licence. No official free full text was identified in this check. [ISO publication and sample](https://www.iso.org/standard/81267.html?browse=tc).
+
+INSPIRE's current Land Use technical guidance is freely available under CC BY 4.0. Its feature catalogue separates plans, zoning elements, supplementary regulations and official documentation; it also distinguishes real-world validity from data-version lifespan. [Published technical guidance and licence](https://github.com/INSPIRE-MIF/technical-guidelines/blob/main/data/lu/dataspecification_lu.adoc).
+
+The following are application recommendations, not implemented contracts or a claim of INSPIRE conformance:
+
+| Part to borrow | Benefit for this app | Existing starting point |
+| --- | --- | --- |
+| `SpatialPlan` identity and membership | Group zones under the plan and edition that introduced them. | Provider/record identity, edition and pinned source revision already exist. |
+| `ZoningElement` and `SupplementaryRegulation` relationships | Retain base geography and additional restrictions separately, so an inspector can explain which records affect a parcel. | Atlas district identity and overlay evidence already remain available. Conflict evaluation still needs a local rule. |
+| `OfficialDocumentation` | Link a displayed constraint to its source instrument, text or map. | Source URLs exist; precise article/page locators would add value when the source supplies them. |
+| Validity and version lifespan | Answer which plan applied on a date and distinguish a legal change from a refreshed download. | Effective-date fields currently remain null, and source projections are latest-only. Populate real dates before adding historical queries. |
+
+Start with one actual European source and a small adapter into the current records. Preserve its native identifiers and terms, then add only the relationships needed to inspect that source. Full GML storage, comprehensive HILUCS remapping and conformance infrastructure have no immediate consumer here. The reusable benefit is source interpretation and traceability; dimensional parsing, frontage, corner-lot treatment and geometry evaluation remain separate, incremental solver work.
+
