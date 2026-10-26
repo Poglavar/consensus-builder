@@ -1,7 +1,7 @@
 {
   "schema": "agreement-bet-intents/v1",
   "city": "san_francisco",
-  "publicationState": "prepared-labelled-devnet-demos-pinning-blocked",
+  "publicationState": "published-active-funded-devnet-demos",
   "relationship": "independent yes/no bets; both may execute or neither may execute",
   "recipeId": "agreement-execution-by-deadline-v1",
   "assets": [
@@ -20,7 +20,7 @@
       "agreementLabel": "Courtyard Candlestick",
       "question": "Will the Courtyard Candlestick agreement execute on-chain by 2027-10-09T08:19:27Z?",
       "proposedDeadline": "2027-10-09T08:19:27Z",
-      "deadlineBasis": "Existing source record expiry, floored to chain seconds; not a published agreement deadline.",
+      "deadlineBasis": "Published agreement deadline preserves the source record expiry, floored to chain seconds.",
       "sourceRecord": {
         "table": "public.proposal",
         "proposalId": "sf-candlestick-courtyard-2026",
@@ -150,19 +150,13 @@
           "US-CA-SF-8812001"
         ]
       },
-      "agreementCid": null,
-      "agreementAccount": null,
-      "marketAccount": null,
-      "state": "prepared-labelled-devnet-demo-pinning-blocked",
+      "agreementCid": "bafkreiarw7qlptbgq2eiccwcmcg5yiuazh5i3zcx7lmt4ly32j4f6q6aj4",
+      "agreementAccount": "CK9WF4vP3p726PPgHRnks1TNTWhts18ifFmJV2nWfQim",
+      "marketAccount": "6oziGSBmAbPkzKLeryUAiJbSPmbCnHEjkfWyhWb2pmMd",
+      "state": "active-published-funded",
       "unresolved": [
-        "Pinata publication quota; no agreement or plan was published or indexed",
-        "Minting the agreement account and creating its market after publication",
-        "Real owner rights and consent are not represented by the simulated demo holder",
-        "Devnet USDC seed funding shortfall at the 2026-10-26 observation"
+        "Agreement execution and market settlement remain pending while the market is open."
       ],
-      "publishedDesignCid": "bafybeiaiubi5q7wwjyyiavt223lxtr72vezmtwpmfvpy3jgrsaerpslnyq",
-      "preparedPlanCid": "bafkreic6kpty3f5iyfr4mnittekslxnrcwylsspas2x77c2yy6entz4cne",
-      "preparedAgreementCid": "bafkreiarw7qlptbgq2eiccwcmcg5yiuazh5i3zcx7lmt4ly32j4f6q6aj4",
       "rightsSnapshot": {
         "kind": "simulated",
         "holders": 1,
@@ -174,14 +168,18 @@
         "outputPieces": 122,
         "openGroundM2": 76206.601095,
         "openGroundBasis": "Union of the current design sites outside their bound cadastral parcels; legal ownership unknown."
-      }
+      },
+      "planCid": "bafkreic6kpty3f5iyfr4mnittekslxnrcwylsspas2x77c2yy6entz4cne",
+      "publishedDesignCid": "bafybeiaiubi5q7wwjyyiavt223lxtr72vezmtwpmfvpy3jgrsaerpslnyq",
+      "indexedAt": "2026-10-26T13:43:45.079Z",
+      "mintTransaction": "zBt4V1XMBxRD1woXt5JnrzHr33pdo3WngPRspMWruzpoFzqmGspbWVQq74Wy6P2NH84h9TgBionhMcV2wXo4dq5"
     },
     {
       "key": "fivepoint",
       "agreementLabel": "FivePoint Candlestick",
       "question": "Will the FivePoint Candlestick agreement execute on-chain by 2027-10-09T09:01:31Z?",
       "proposedDeadline": "2027-10-09T09:01:31Z",
-      "deadlineBasis": "Existing source record expiry, floored to chain seconds; not a published agreement deadline.",
+      "deadlineBasis": "Published agreement deadline preserves the source record expiry, floored to chain seconds.",
       "sourceRecord": {
         "table": "public.proposal",
         "proposalId": "sf-candlestick-fivepoint-2024",
@@ -311,19 +309,13 @@
           "US-CA-SF-8812001"
         ]
       },
-      "agreementCid": null,
-      "agreementAccount": null,
-      "marketAccount": null,
-      "state": "prepared-labelled-devnet-demo-pinning-blocked",
+      "agreementCid": "bafkreidtnissamp6q7hql35z4izn5k546puin3q7ou7gm7izvi4xswywx4",
+      "agreementAccount": "DKZLF9UbwUJFNCRLvi8Vi4bv92nXVUPvXZ2pASbmLhrc",
+      "marketAccount": "5vHueyLSkimsimazkUQmYsDyJuqipms7Jx5Tnp8VAQJN",
+      "state": "active-published-funded",
       "unresolved": [
-        "Pinata publication quota; no agreement or plan was published or indexed",
-        "Minting the agreement account and creating its market after publication",
-        "Real owner rights and consent are not represented by the simulated demo holder",
-        "Devnet USDC seed funding shortfall at the 2026-10-26 observation"
+        "Agreement execution and market settlement remain pending while the market is open."
       ],
-      "publishedDesignCid": "bafkreihwnn54kntvooptfzcta4li5urn2cnvjkb5lwldr6yvofkknmrloi",
-      "preparedPlanCid": "bafkreih6kmeom5v4m4jxpx4qbxrvnc3gmm7h2llqacmasrbcsknyyb2ciy",
-      "preparedAgreementCid": "bafkreidtnissamp6q7hql35z4izn5k546puin3q7ou7gm7izvi4xswywx4",
       "rightsSnapshot": {
         "kind": "simulated",
         "holders": 1,
@@ -335,25 +327,103 @@
         "outputPieces": 121,
         "openGroundM2": 76206.629452,
         "openGroundBasis": "Union of the current design sites outside their bound cadastral parcels; legal ownership unknown."
-      }
+      },
+      "planCid": "bafkreih6kmeom5v4m4jxpx4qbxrvnc3gmm7h2llqacmasrbcsknyyb2ciy",
+      "publishedDesignCid": "bafkreihwnn54kntvooptfzcta4li5urn2cnvjkb5lwldr6yvofkknmrloi",
+      "indexedAt": "2026-10-26T13:43:49.711Z",
+      "mintTransaction": "3LT9cnnaY1LWHK1Ft3gzhCzcob91BNgp4HFyzNmRZE5QD4fbU89vNetkiMXR7zzX1azWeKtPFT2MiJPdTCX9jZJU"
     }
   ],
   "preparation": {
     "observedAt": "2026-10-26",
-    "status": "Both labelled devnet demo agreements and their plan records are prepared, but publication failed before indexing or minting.",
-    "failure": {
+    "status": "Historical preparation attempt: Pinata publication failed, then a later publication route succeeded; both agreements are now published, indexed, minted, and funded.",
+    "historicalPinningAttempt": {
       "service": "Pinata",
       "httpStatus": 403,
-      "code": "pinning-quota-exhausted"
+      "code": "pinning-quota-exhausted",
+      "note": "Filebase default endpoint also returned HTTP 403 AccountProblem; a Pinata reserve path was used successfully."
     },
-    "rights": "Simulated single-wallet rights for a devnet demonstration only; no real owner consent or acceptance is represented.",
+    "rights": "Simulated single-wallet rights for a devnet demonstration; no real owner consent or acceptance is represented.",
     "geometry": "The designs retain their imported building geometry. Each site is unioned with the imported footprints to contain their full extent.",
-    "fundingObservation": {
+    "historicalFundingObservation": {
       "observedDevnetUsdc": 58.723938,
       "canonicalSeedRequired": 138.62944,
       "shortfall": 79.905502,
       "asOf": "2026-10-26",
-      "note": "Dated observation only; not a current balance guarantee."
+      "note": "Historical balance before the later deposit; current markets were funded with 138.629440 USDC in total."
+    },
+    "publicationReceipt": {
+      "observedAt": "2026-10-26T13:54:08.438Z",
+      "seedTransaction": "5P9fbzuNfKqbTURDXF69EYC7X4f7ZC1NQREXLi9vt1MAahHp1HMimQdniNXxPMzH5imgk7NRwKBVScA5k7FUCMA3",
+      "walletUsdcAfterSeeding": 0.094498,
+      "verification": "Public agreement content, on-chain pointers and both tradable markets verified; exact Pinata gateway bytes were verified for all four plans and agreements."
     }
+  },
+  "publicationObservedAt": "2026-10-26T13:54:08.438Z",
+  "funding": {
+    "totalUsdcDeposited": 138.62944,
+    "walletUsdcAfterSeeding": 0.094498,
+    "marketSeedUsdcEach": 69.31472,
+    "seedAtomicEach": "69314720",
+    "transaction": "5P9fbzuNfKqbTURDXF69EYC7X4f7ZC1NQREXLi9vt1MAahHp1HMimQdniNXxPMzH5imgk7NRwKBVScA5k7FUCMA3",
+    "verifiedAt": "2026-10-26T13:45:33.106Z"
+  },
+  "tradeVerification": {
+    "kind": "operator-controlled-devnet-verification",
+    "agreementCid": "bafkreiarw7qlptbgq2eiccwcmcg5yiuazh5i3zcx7lmt4ly32j4f6q6aj4",
+    "subject": "CK9WF4vP3p726PPgHRnks1TNTWhts18ifFmJV2nWfQim",
+    "market": "6oziGSBmAbPkzKLeryUAiJbSPmbCnHEjkfWyhWb2pmMd",
+    "trader": "FoPmPhKE6bykLoumQSvygZCSJYLkxBfsqjE3ybMvSjYs",
+    "startedAt": "2026-10-26T13:48:50.975Z",
+    "verifiedAt": "2026-10-26T13:48:59.692Z",
+    "buy": {
+      "marketPda": "6oziGSBmAbPkzKLeryUAiJbSPmbCnHEjkfWyhWb2pmMd",
+      "signature": "4aqNc6zQpnabXKgXLKQeXRdKhxZeoUM95dPtYumSs2VP25qkpmnCBZDDGRPSrPRjgGZfqjFjkeX3TG8eUgrxEpqx",
+      "shares": "199899",
+      "quotedCost": "100000",
+      "maxCost": "100000",
+      "replayed": false
+    },
+    "sell": {
+      "marketPda": "6oziGSBmAbPkzKLeryUAiJbSPmbCnHEjkfWyhWb2pmMd",
+      "signature": "4dmWMDHUG6PnayZBH52UVd53eqgnkG5Gg8dWtedyCeTZ9ym2FoxE2aG6XQTJem7QZ8fbioAaU8PyFVSdwoyUJCCa",
+      "shares": "99949",
+      "quotedReturn": "50011",
+      "minReturn": "50011",
+      "replayed": false
+    },
+    "remainingShares": "99950",
+    "usdcBefore": "3.51",
+    "usdcAfter": "3.460011"
+  },
+  "pointsVerification": {
+    "realm": "sf-release-20261026",
+    "account": "0aab8422-e9f1-47a9-8284-cea76551b21c",
+    "balanceAtomic": "995113584",
+    "remainingYesSharesAtomic": "9545141",
+    "receipts": [
+      {
+        "action": "sell",
+        "agreementAccount": "CK9WF4vP3p726PPgHRnks1TNTWhts18ifFmJV2nWfQim",
+        "amount": "5113584",
+        "balance": "995113584",
+        "createdAt": "2026-10-26T13:52:11.499Z",
+        "id": "98411168-20e7-4d37-bae3-b394a2385a8c",
+        "requestId": "d778b1f9-0e13-454a-a1a4-c8d6b445967f",
+        "shares": "9545141",
+        "side": "yes"
+      },
+      {
+        "action": "buy",
+        "agreementAccount": "CK9WF4vP3p726PPgHRnks1TNTWhts18ifFmJV2nWfQim",
+        "amount": "10000000",
+        "balance": "990000000",
+        "createdAt": "2026-10-26T13:49:50.715Z",
+        "id": "2f790a7f-673d-4cd6-929b-670f3959ff87",
+        "requestId": "c77dcc3b-a3e7-49bd-8ea5-5dc4e02fef41",
+        "shares": "19090282",
+        "side": "yes"
+      }
+    ]
   }
 }
