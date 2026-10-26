@@ -1,0 +1,9 @@
+Find a published design in Designs and open Details to inspect its source information.
+
+Apply the design to inspect it on the map, then open Edit geometry to develop an alternative.
+
+Change the geometry, then review and accept the revised land take.
+
+Save the revised design as an alternative. The published source remains its reference.
+
+The draft keeps its source link. Inspect the alternative in 3D before sharing it or adding it to an agreement.

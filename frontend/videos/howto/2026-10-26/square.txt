@@ -1,0 +1,7 @@
+Select a parcel and choose Square to create a public-space design.
+
+Use Edit geometry to place fountains, trees, benches, tables and statues.
+
+Save the design to apply the square and its furniture to the map.
+
+View the square in 3D. Tilt, rotate and zoom to inspect the layout at street scale.

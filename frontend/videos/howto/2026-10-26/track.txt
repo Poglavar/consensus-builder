@@ -1,0 +1,7 @@
+Select a site in Design and choose Track to draw a rail alignment.
+
+Choose the design speed. This sets the minimum curve radius for the alignment.
+
+Draw the route with clicks, then choose Finish.
+
+Review surface conflicts, then inspect the alignment in 3D.

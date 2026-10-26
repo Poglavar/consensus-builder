@@ -1,0 +1,11 @@
+Choose Road in the Design panel to draw a new street.
+
+Edit the cross-section. Choose a preset, then adjust lanes for traffic, cycling and walking.
+
+Use a standard profile as the starting point, then apply it to the drawing.
+
+Draw the route with clicks, then choose Finish.
+
+Review conflicts with existing buildings. Choose a surface road, a tunnel, or another route.
+
+Inspect the road in 3D. Tilt, rotate and zoom to review its cross-section and connections.

@@ -1,0 +1,47 @@
+1
+00:00:00,000 --> 00:00:03,239
+Choose a station type. Place a tram stop
+
+2
+00:00:03,471 --> 00:00:05,294
+against a compatible track.
+
+3
+00:00:05,644 --> 00:00:09,115
+The preview turns green when aligned. Click to
+
+4
+00:00:09,197 --> 00:00:11,437
+create the station and apply it to the
+
+5
+00:00:11,484 --> 00:00:12,099
+map.
+
+6
+00:00:12,449 --> 00:00:15,398
+Edit the station footprint to adjust its position,
+
+7
+00:00:15,711 --> 00:00:17,882
+then save the revised design.
+
+8
+00:00:18,232 --> 00:00:21,529
+Drag the centre marker to reposition the footprint,
+
+9
+00:00:21,947 --> 00:00:23,387
+then choose Done.
+
+10
+00:00:23,737 --> 00:00:27,510
+Inspect the platform and shelter in 3D. Tilt,
+
+11
+00:00:27,708 --> 00:00:30,668
+rotate and zoom to check the station in
+
+12
+00:00:30,749 --> 00:00:31,725
+context.

@@ -1,0 +1,43 @@
+1
+00:00:00,000 --> 00:00:03,808
+Click land to open Design, then choose Block.
+
+2
+00:00:04,167 --> 00:00:06,942
+Choose the whole block, then open the Block
+
+3
+00:00:07,023 --> 00:00:08,765
+rule for those parcels.
+
+4
+00:00:09,115 --> 00:00:12,761
+Set setbacks, building width and height, and choose
+
+5
+00:00:12,900 --> 00:00:14,688
+what the rule allows.
+
+6
+00:00:15,048 --> 00:00:18,961
+Done saves a local draft. Applied shows which
+
+7
+00:00:19,019 --> 00:00:21,782
+design is active in this map.
+
+8
+00:00:22,148 --> 00:00:25,329
+Switch to 3D to compare the built, planned
+
+9
+00:00:25,492 --> 00:00:27,024
+and proposed space.
+
+10
+00:00:27,381 --> 00:00:30,400
+The highlighted model and comparison panel show the
+
+11
+00:00:30,469 --> 00:00:32,304
+impact of your rule.

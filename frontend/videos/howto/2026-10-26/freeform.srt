@@ -1,0 +1,35 @@
+1
+00:00:00,000 --> 00:00:03,262
+Choose Freeform building and keep the selected parcel
+
+2
+00:00:03,495 --> 00:00:05,016
+as the starting site.
+
+3
+00:00:05,367 --> 00:00:08,513
+Drag the corners to reshape the footprint. Use
+
+4
+00:00:08,548 --> 00:00:11,451
+the height slider to set the building’s height.
+
+5
+00:00:11,801 --> 00:00:14,518
+Review the land taken from each parcel and
+
+6
+00:00:14,564 --> 00:00:18,256
+the building removals. Accept the preview, then save
+
+7
+00:00:18,291 --> 00:00:19,231
+the design.
+
+8
+00:00:19,601 --> 00:00:23,072
+Switch to 3D. Tilt, rotate and zoom to
+
+9
+00:00:23,154 --> 00:00:26,103
+inspect the building’s shape and surroundings.
