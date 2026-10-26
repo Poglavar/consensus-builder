@@ -18,6 +18,15 @@ Authored plans and UI copy use plain names and descriptions. Do not add study/co
 illustrative, not-adopted or planning-permission disclaimers: the tool is already for studies
 and concepts, as the user explicitly requested.
 
+## MCP editing parity
+
+Every change to human editing must include an MCP parity check: anything a person can edit on
+the site must also be editable by an agent through MCP. Prefer shared authoring code and granular
+inspect/edit operations over a new high-level tool for each request. Check existing primitives
+before adding tools; update affected schemas, validation and discovery in the same change.
+Record how parity was verified, or why no MCP change was needed. Follow the checklist in
+[docs/development.md](docs/development.md#mcp-parity-check).
+
 ## Local preview links — required
 
 Every Consensus Builder localhost link given to the user MUST explicitly include the verified

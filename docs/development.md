@@ -64,6 +64,25 @@ npx vitest run test/product-guides.test.js
 
 See [TEST.md](../TEST.md) for browser fixtures, database-backed checks and their limitations. An entire suite is a separate, potentially expensive run; choose it deliberately rather than treating it as a quick smoke check. Browser fixtures with mocked APIs do not verify production data or live wallet transactions.
 
+### MCP parity check
+
+Every change to human editing includes this check, even when no MCP code change is needed:
+
+- Identify the authored records and operations changed by the site editor. Confirm that an agent
+  can inspect the relevant state and make the equivalent edits using existing granular tools.
+- Reuse shared generators and validators. If existing primitives cannot express the operation,
+  expose it through MCP and update the affected input/output schemas, discovery and editing docs
+  in the same change. Preserve coupled fields, revision identity and confirmation requirements.
+- Verify the affected MCP path with a targeted headless check or an existing relevant test, and
+  report the evidence. If no MCP change is required, state which shared code or existing operation
+  provides parity. A successful browser edit alone does not establish MCP parity.
+- When releasing, include the MCP service deployment/restart if its code or imported shared modules
+  changed, then verify discovery and the affected operation against that release. Update directory
+  copy and packaged plugin instructions when their claims change; the endpoint normally stays the
+  same. Release authorization remains separate from this checklist.
+
+See [MCP editing](mcp-editing.md) for supported primitives and authored-field boundaries.
+
 ## Public guides and videos
 
 English `frontend/how-to-use*.html` and Croatian `frontend/kako-koristiti*.html` share `frontend/css/howto.css`. Keep the language pairs, navigation anchors and procedures aligned. The hub links to each relevant walkthrough. Keep domain wording aligned with the [code-grounded vocabulary](../vocabulary.md): distinguish source parcels, formed ground and authored plots; local application from named-plan membership; and observed evidence from legal or physical completion. State units, currencies and valuation bases wherever a money amount appears.

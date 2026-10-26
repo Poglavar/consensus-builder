@@ -948,3 +948,5 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-26: Public vocabulary is Plans, Designs and Agreements. Each Agreement references one immutable Plan revision; Plans own design membership, can have multiple Agreements or none, and bets remain on eligible Agreements. Agreement links belong inside Plan click-stack sections and open separate dialogs.
 
 - 2026-10-26: Model and Google 3D share selection and inspection behaviour; retire the separate photo cadastral picker while retaining boundary drawing as an independent layer.
+
+- 2026-10-26: Every change to human editing requires an MCP parity check; use shared authoring code and granular tools, and record evidence even when no MCP change is needed.
