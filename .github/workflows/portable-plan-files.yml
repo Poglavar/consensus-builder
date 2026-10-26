@@ -46,5 +46,5 @@ jobs:
         run: npx playwright install --with-deps chromium
         working-directory: e2e
       - name: File download and safe import browser flows
-        run: npm test -- tests/plan-file.spec.ts --workers=1
+        run: npx playwright test --config=playwright.plan-file.config.ts
         working-directory: e2e

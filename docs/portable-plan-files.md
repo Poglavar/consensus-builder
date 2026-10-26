@@ -48,6 +48,8 @@ boundary tests UI behavior, not production datasets or a live database.
 
 The focused `Portable plan files` pull-request workflow runs these unit/integration suites and
 the isolated Chromium file flows using the repository lockfiles.
+Run the browser fixture with `cd e2e && npx playwright test --config=playwright.plan-file.config.ts`;
+it needs no frontend or source-data server.
 
 ## Deferred composed GLB export
 
