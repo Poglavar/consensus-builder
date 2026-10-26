@@ -1,5 +1,10 @@
 {
     "planFile": {
+        "modelUrl": "URL modela ne može se sigurno preuzeti.",
+        "modelFailed": "Model se nije mogao preuzeti. Datoteka plana nije izrađena.",
+        "modelLarge": "Model je prevelik za prijenosnu datoteku plana.",
+        "missingMembers": "Neki uvezeni dizajni uklonjeni su s ovog uređaja. Ponovno uvezite datoteku da biste ih vratili.",
+        "tooLarge": "Datoteke plana ograničene su na 32 MiB.",
         "json": "Preuzmi plan za uređivanje",
         "geojson": "Preuzmi GeoJSON",
         "import": "Uvezi datoteku plana",

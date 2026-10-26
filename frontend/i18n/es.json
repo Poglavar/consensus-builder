@@ -1,5 +1,10 @@
 {
     "planFile": {
+        "modelUrl": "La URL del modelo no se puede descargar de forma segura.",
+        "modelFailed": "No se pudo descargar un modelo. No se creó el archivo del plan.",
+        "modelLarge": "El modelo es demasiado grande para un archivo de plan portátil.",
+        "missingMembers": "Se eliminaron algunos diseños importados de este dispositivo. Importe de nuevo el archivo para restaurarlos.",
+        "tooLarge": "Los archivos de plan están limitados a 32 MiB.",
         "json": "Descargar plan editable",
         "geojson": "Descargar GeoJSON",
         "import": "Importar archivo de plan",

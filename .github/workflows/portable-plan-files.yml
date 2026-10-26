@@ -27,7 +27,7 @@ jobs:
         working-directory: backend
       - name: Portable files, storage, MCP and share regression checks
         run: >-
-          npm test --
+          npx vitest run
           test/plan-file.test.js
           test/proposal-storage-authored-log.test.js
           test/mcp-named-plans.test.js
@@ -37,7 +37,10 @@ jobs:
           test/share-plan-map-link.test.js
           test/proposals-sharing-utils.test.js
           test/busy-control.test.js
-          --maxWorkers=2
+          --pool=threads --maxWorkers=2
+        working-directory: backend
+      - name: Portable format guide uses shared page chrome
+        run: npx vitest run test/page-chrome.test.js test/page-header.test.js --testNamePattern=plan-files --pool=threads --maxWorkers=2
         working-directory: backend
       - name: Install locked browser test dependencies
         run: npm ci
