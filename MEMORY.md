@@ -1,5 +1,7 @@
 # Memory
 
+- 2026-10-26: Park, square and lake geometry editors offer Fit parcel(s); “The biggest” means largest total parcel area among touched parcels, while “All touched” uses their whole boundaries.
+
 - 2026-10-26: Do not add study/concept, illustrative, not-adopted or planning-permission disclaimers to authored plans or UI copy; the tool is already for studies and concepts. Use plain titles and descriptions.
 
 - 2026-10-26: Every Consensus Builder localhost link must explicitly include its verified `backend`, city and location; copy the complete tested URL into the final answer rather than dropping parameters or relying on saved browser settings. Repeated missing-backend links caused building-data fetch failures.

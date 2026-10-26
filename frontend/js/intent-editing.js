@@ -213,6 +213,13 @@
             const space = record.structureProposal;
             if (space.kind !== record.goal) fail('space-kind-mismatch', 'Keep goal and structureProposal.kind together.');
             if (!same(space.geometry, original.structureProposal?.geometry) && same(record.site, original.site)) record.site = structuredClone(space.geometry);
+            if (space.kind === 'lake' && !same(space.geometry, original.structureProposal?.geometry)) {
+                const lake = load('LakeGeometry', './lake-geometry.js');
+                const shape = load('SingleBuildingGeometry', './single-building-geometry.js');
+                if (!lake.isEditable(space.geometry, shape.isSimpleRing)) fail('invalid-lake', 'A lake boundary must form one connected area.');
+                space.lakeGraphics = lake.build(space.geometry, { turf });
+                if (!space.lakeGraphics) fail('invalid-lake', 'Could not build lake shore and water graphics.');
+            }
             validateDecorations(space.decorationDesign);
         }
         if (record.buildingProposal) {

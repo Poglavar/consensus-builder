@@ -1683,10 +1683,6 @@ const PROPOSAL_GOAL_TYPE_LABELS = {
     'parcel-layout': 'Parcel layout'
 };
 
-const LAKE_GRAPHICS_VERSION = 3;
-
-const LAKE_SHORE_TARGET_RATIO = 0.2;
-
 const proposalListState = {
     source: 'local',
     filterType: 'all',

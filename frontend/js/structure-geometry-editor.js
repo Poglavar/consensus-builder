@@ -626,11 +626,7 @@
 
     function lakeBoundaryFailure(graphics) {
         const geometry = graphics?.geometry || state.boundary?.geometry;
-        const ring = lakeOuterRing({ geometry });
-        let simpleRing = false;
-        try { simpleRing = !!global.SingleBuildingGeometry?.isSimpleRing?.(ring); } catch (_) { }
-        if (!graphics || !oneConnectedLakeGeometry(geometry)
-            || !Array.isArray(ring) || ring.length < 4 || !simpleRing) {
+        if (!graphics || !global.LakeGeometry.isEditable(geometry, global.SingleBuildingGeometry?.isSimpleRing)) {
             return {
                 code: 'proposal-footprint-invalid',
                 message: t('lakeInvalid', 'A lake boundary must form one connected area. Adjust the outline and try again.')
@@ -804,10 +800,11 @@
             : '';
         const undoLabel = t('undo', 'Undo');
         const undo = `<button type="button" class="btn btn-sm" data-action="undo" aria-label="${undoLabel}"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i>${undoLabel}</button>`;
+        const fit = state.subeditor ? '' : `<button type="button" class="btn btn-sm" data-action="fit-parcels"><i class="fa-solid fa-vector-square" aria-hidden="true"></i>${t('fitParcels', 'Fit parcel(s)')}</button>`;
         const finish = state.kind === 'park'
             ? `<button type="button" class="btn btn-sm" data-action="finish-path" hidden>${t('finishPath', 'Finish path')}</button>`
             : '';
-        return `${error}<div class="structure-geometry-footer-tools">${undo}${finish}</div>
+        return `${error}<div class="structure-geometry-footer-tools">${undo}${fit}${finish}</div>
             <div class="structure-geometry-footer-actions"><button type="button" class="btn btn-primary" data-action="save">${state.subeditor ? t('done', 'Done') : t('save', 'Save design')}</button></div>`;
     }
 
@@ -867,9 +864,60 @@
         const toolButton = event.target?.closest?.('.structure-geometry-tools [data-tool]');
         const tool = toolButton?.dataset.tool;
         if (tool) return setTool(tool);
-        const action = event.target?.closest?.('[data-action]')?.dataset.action;
+        const button = event.target?.closest?.('[data-action]');
+        const action = button?.dataset.action;
         if (action === 'finish-path') finishPath();
         else if (action === 'save') saveEditor();
+        else if (action === 'fit-parcels') return fitParcels(button);
+    }
+
+    async function fitParcels(button) {
+        if (!state.session || state.subeditor || global.BusyControl.isBusy(button)) return;
+        const session = state.session;
+        button.disabled = true;
+        try {
+            await global.BusyControl.track(button, async () => {
+                const mode = await global.CbDialog.choice(
+                    t('fitChoice', 'Fit to the largest touched cadastral parcel, or to all touched parcels?'),
+                    [{ value: 'largest', label: t('fitLargest', 'The biggest') },
+                        { value: 'all', label: t('fitAll', 'All touched') }],
+                    { title: t('fitParcels', 'Fit parcel(s)') });
+                if (!mode || state.session !== session) return;
+                const boundary = clone(state.boundary);
+                const fingerprint = JSON.stringify(boundary.geometry);
+                try {
+                    const lookup = await global.CadastralParcelRepository.ensureFootprint(boundary.geometry);
+                    // A closed editor or an intervening geometry edit owns the newer state.
+                    if (state.session !== session || JSON.stringify(state.boundary.geometry) !== fingerprint) return;
+                    const fitted = global.StructureParcelFit.fit({
+                        boundary, parcels: lookup.result.features, mode, turf: global.turf
+                    });
+                    const next = boundaryFeature(fitted.geometry);
+                    if (session.placement?.accepts && !session.placement.accepts(next)) {
+                        await global.CbDialog.alert(t('fitLocked', 'Unlock the starting site to fit these parcels.'));
+                        return;
+                    }
+                    if (state.kind === 'lake') {
+                        const graphics = global.buildLakeGraphicsFromGeometry(next.geometry);
+                        const failure = lakeBoundaryFailure(graphics);
+                        if (failure) { await global.CbDialog.alert(failure.message); return; }
+                    }
+                    if (JSON.stringify(next.geometry) === fingerprint) return;
+                    recordHistory();
+                    state.boundary = next;
+                    session.placement?.update?.(next);
+                    render();
+                    state.polygonEditor?.render?.({ refreshRing: true });
+                } catch (error) {
+                    if (state.session !== session) return;
+                    await global.CbDialog.alert(error?.code === 'no-touched-parcels'
+                        ? t('fitNoParcels', 'No cadastral parcels overlap this outline.')
+                        : t('fitUnavailable', 'Could not load the parcels. Try again.'));
+                }
+            });
+        } finally {
+            button.disabled = false;
+        }
     }
 
     function onMapClick(event) {
