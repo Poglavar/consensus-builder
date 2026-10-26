@@ -576,8 +576,9 @@ function runWithButtonBusyState(button, busyLabel, task, options) {
     // followed a language switch).
     const originalHtml = button.innerHTML;
     const wasDisabled = button.disabled;
-    const busyClass = opts.busyClass;
+    const busyClass = opts.busyClass || 'cb-busy';
     const hadBusyClass = busyClass ? button.classList.contains(busyClass) : false;
+    const originalAriaBusy = button.getAttribute('aria-busy');
 
     // busyLabel is plain text, or { key, fallback } translated through window.i18n.
     let busyText = busyLabel;
@@ -590,6 +591,7 @@ function runWithButtonBusyState(button, busyLabel, task, options) {
         button.textContent = busyText;
     }
     button.disabled = true;
+    button.setAttribute('aria-busy', 'true');
     if (busyClass) {
         button.classList.add(busyClass);
     }
@@ -601,6 +603,8 @@ function runWithButtonBusyState(button, busyLabel, task, options) {
             button.innerHTML = originalHtml;
         }
         button.disabled = wasDisabled;
+        if (originalAriaBusy === null) button.removeAttribute('aria-busy');
+        else button.setAttribute('aria-busy', originalAriaBusy);
         if (busyClass && !hadBusyClass) {
             button.classList.remove(busyClass);
         }

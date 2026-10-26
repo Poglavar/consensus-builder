@@ -37,6 +37,12 @@ function failBlockDetection(message) {
     return true;
 }
 
+function failBlockParcelLimit() {
+    return failBlockDetection(tBlock('alerts.messages.block_parcel_limit_exceeded',
+        { limit: window.__parcelBlockTopology.MAX_BLOCK_PARCELS },
+        'Block detection stopped: the connected area exceeds the {{limit}}-parcel limit. Select a smaller group of parcels manually.'));
+}
+
 function applyBlockTranslations(root) {
     const apply = (typeof window !== 'undefined' && window.i18n && typeof window.i18n.applyTranslations === 'function')
         ? window.i18n.applyTranslations
@@ -1995,7 +2001,7 @@ function revealBlockParcels(blockParcels) {
 // A whole-block suggestion replaces its one-parcel source selection; the explicit Detect button
 // remains additive so users can deliberately collect more than one block.
 function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
-    const button = document.querySelector('button[onclick="animateFloodfillFromSelected()"]');
+    const button = document.querySelector('.multi-select-detect-btn');
 
     const run = async () => {
         const services = liveBlockServices();
@@ -2089,6 +2095,7 @@ function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
         let searchBounds = map.getBounds();
         for (let expansion = 0; expansion < BLOCK_SEARCH_MAX_EXPANSIONS; expansion++) {
             if (attempt.result && attempt.result.isValid) break;
+            if (attempt.result?.invalidReason === 'parcel_limit_exceeded') break;
             if (!repository || typeof repository.ensureBounds !== 'function') break;
             searchBounds = searchBounds.pad(BLOCK_SEARCH_EXPANSION_PAD);
             // A failure to load the wider ground is an error, not an answer: it propagates to the
@@ -2109,6 +2116,8 @@ function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
             const idLabel = invalidParcelId || unknownLabel;
             const reason = floodResult ? floodResult.invalidReason : null;
 
+            if (reason === 'parcel_limit_exceeded') return failBlockParcelLimit();
+
             // The rule is about the VIEWPORT, not about roads: a block is grown only through
             // parcels that lie entirely inside the current view, so that a partly-loaded neighbour
             // cannot produce a partial block. Say exactly that, and say which parcel broke it —
@@ -2117,7 +2126,7 @@ function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
             // Deliberately NO camera move and NO selection change: this used to fly the map to the
             // offending parcel and select it, which threw away both the view and the selection the
             // user was working with to deliver what is only a message.
-            // Only the two visibility outcomes have a message of their own; anything else is an
+            // Visibility outcomes also have a message of their own; anything else is an
             // internal failure and must not be dressed up as one of them.
             if (reason === 'start_not_fully_visible') {
                 return failBlockDetection(tBlock('alerts.messages.block_seed_not_fully_visible', {},
@@ -2251,7 +2260,7 @@ function animateFloodfillFromSelected(options = {}) {
             'Could not resolve the selected parcel in the live map, so there is nothing to grow a block from.'));
         return;
     }
-    const button = document.querySelector('button[onclick="animateFloodfillFromSelected()"]');
+    const button = document.querySelector('.multi-select-detect-btn');
 
     const run = () => new Promise(resolve => {
         let finished = false;
@@ -2267,6 +2276,7 @@ function animateFloodfillFromSelected(options = {}) {
             const neighborMap = liveBlockNeighborGraph(parcelIdFromLayer(startParcel));
 
             const visited = new Set();
+            const queued = new Set([parcelIdFromLayer(startParcel)]);
             const blockParcels = [];
             const queue = [startParcel];
             let blockInvalid = false;
@@ -2344,7 +2354,14 @@ function animateFloodfillFromSelected(options = {}) {
                     const neighbors = findNeighbors(current, neighborMap);
                     for (const neighbor of neighbors) {
                         const nId = parcelIdFromLayer(neighbor);
-                        if (nId && !visited.has(nId)) queue.push(neighbor);
+                        if (!nId || queued.has(nId)) continue;
+                        if (queued.size >= window.__parcelBlockTopology.MAX_BLOCK_PARCELS) {
+                            failBlockParcelLimit();
+                            finish();
+                            return;
+                        }
+                        queued.add(nId);
+                        queue.push(neighbor);
                     }
                     setTimeout(animateStep, 100);
                 } catch (err) {

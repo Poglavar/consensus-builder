@@ -14,6 +14,9 @@ recreate affected records when needed instead of maintaining parallel implementa
 
 ## Authored copy
 
+Buttons that start potentially slow work must show a spinner for the lifetime of that work,
+using the shared busy-control helpers; restore their state on success and failure.
+
 Authored plans and UI copy use plain names and descriptions. Do not add study/concept,
 illustrative, not-adopted or planning-permission disclaimers: the tool is already for studies
 and concepts, as the user explicitly requested.
