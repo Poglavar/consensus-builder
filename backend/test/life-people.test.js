@@ -29,6 +29,35 @@ function blockScene() {
 }
 
 describe('people population', () => {
+    it('retains the authored square density when a large OSM context consumes the crowd cap', () => {
+        const b = lifeGraph.createGraphBuilder();
+        b.addSquare({ type: 'Feature', geometry: { type: 'Polygon', coordinates: [square(-50, -100, 50, -50)] } }, identity);
+        b.addOsmRoads([{ type: 'Feature', geometry: { type: 'Polygon', coordinates: [square(-290, 20, 290, 290)] },
+            properties: { highway_type: 'pedestrian', tags: { area: 'yes' } } }], identity);
+        const graph = b.build();
+        const surface = buildWalkableSurface({ bounds: [-300, -300, 300, 300], ...graph.surface });
+        const sim = createSimulation(graph, surface, { seed: 3, maxPeople: 64, maxVehicles: 0 });
+        const inSquare = sim.people.filter(p => p.x >= -50 && p.x <= 51 && p.y >= -100 && p.y <= -50);
+        expect(sim.people).toHaveLength(64);
+        expect(inSquare.length).toBeGreaterThanOrEqual(Math.round(surface.stats.authoredPreferredAreaM2 * PERSON_PER_M2));
+        expect(sim.people.some(p => p.y > 20)).toBe(true);
+    });
+
+    it('excludes blocked footprints from the authored walking allocation', () => {
+        const b = lifeGraph.createGraphBuilder();
+        b.addPark({ type: 'Feature', geometry: { type: 'Polygon', coordinates: [square(-50, -50, 50, 50)] } }, identity);
+        b.addBlockedFeature({ type: 'Feature', geometry: { type: 'Polygon', coordinates: [square(-60, -60, 60, 60)] } }, identity);
+        b.addOsmRoads([{ type: 'Feature', geometry: { type: 'LineString', coordinates: [[-150, 100], [150, 100]] },
+            properties: { highway_type: 'footway' } }], identity);
+        const graph = b.build();
+        const surface = buildWalkableSurface({ bounds: [-170, -170, 170, 170], ...graph.surface });
+        expect(surface.stats.authoredPreferredAreaM2).toBe(0);
+        const sim = createSimulation(graph, surface, { seed: 3, maxPeople: 64, maxVehicles: 0 });
+        expect(sim.people.length).toBeGreaterThan(0);
+        expect(sim.people.every(p => surface.classAt(p.x, p.y) === CLASS.PREFERRED)).toBe(true);
+        expect(sim.people.every(p => p.y > 90)).toBe(true);
+    });
+
     it('sizes the crowd from the walkable area and respects the cap', () => {
         const { graph, surface } = blockScene();
         const expected = Math.round((surface.stats.preferredAreaM2 + 0.05 * surface.stats.openAreaM2) * PERSON_PER_M2);

@@ -85,11 +85,16 @@ Four classic scripts, three of them pure and node-tested:
      rider); cruise 8–24 m/s by road class; random non-U-turn exit at nodes; per-track following with
      a 2 m standstill gap and 0.9 s headway, so vehicles never overlap on a track; dead end respawns;
      one vehicle per 45 lane-metres up to the cap;
-   - people: one per 250 m² of preferred walking space (plus 5% of open ground) up to the cap,
+   - people: one per 250 m² of preferred walking space (plus 5% of open ground) up to the cap.
+     Allocate that density to authored park, square and corridor walking space first, then
+     distribute the remaining budget across the loaded neighbourhood, so a large OSM context
+     does not leave the design empty. Buildings, carriageways and obstacles remain excluded;
      1.0–1.5 m/s, straight legs to random surface destinations, pauses of 2–8 s, walk-cycle phase
      from distance walked; `replaceSurface` repaints under the crowd when footprints arrive late and
      only moves whoever now stands inside one;
    - caps 100 vehicles / 64 people, halved on small screens.
+   - this allocation is shared rendering behavior for human-authored and MCP-authored designs;
+     it adds no editing operation or authored-record field, so no MCP schema change is needed.
 4. `frontend/js/three-life.js` (three.js). One `InstancedMesh` per part: vehicle bodies, cabins/window
    bands, wheels (four per vehicle), person heads, torsos, arms (two per person), legs (two per
    person); per-instance colour; motorcycle riders reuse the person parts. Limbs swing as

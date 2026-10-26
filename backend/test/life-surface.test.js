@@ -175,6 +175,11 @@ describe('graph → surface hand-off', () => {
         });
         const graph = b.build();
         const surface = buildWalkableSurface({ bounds: [-60, -20, 60, 20], ...graph.surface });
+        expect(surface.stats.authoredPreferredAreaM2).toBeGreaterThan(300);
+        const spawn = surface.randomSpawn(mulberry32(7), true);
+        expect(surface.classAt(...spawn)).toBe(CLASS.PREFERRED);
+        expect(Math.abs(spawn[1])).toBeGreaterThan(3);
+        expect(Math.abs(spawn[1])).toBeLessThan(6);
         expect(surface.classAt(0, 0)).toBe(CLASS.CARRIAGEWAY);
         expect(surface.classAt(0, 2.5)).toBe(CLASS.CARRIAGEWAY);
         expect(surface.classAt(0, 4)).toBe(CLASS.PREFERRED);

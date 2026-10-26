@@ -28,13 +28,14 @@
         const h = Math.ceil(spanY / cell);
         const cls = new Uint8Array(w * h).fill(CLASS.OPEN);
         const zc = new Uint8Array(w * h);
+        const authoredCells = new Uint8Array(w * h);
         const toCol = x => Math.floor((x - minX) / cell);
         const toRow = y => Math.floor((y - minY) / cell);
         const inGrid = (col, row) => col >= 0 && row >= 0 && col < w && row < h;
         const notBlocked = old => old !== CLASS.BLOCKED;
         const always = () => true;
 
-        function stampDisc(x, y, r, c, z, rule) {
+        function stampDisc(x, y, r, c, z, rule, authored) {
             const c0 = Math.max(0, toCol(x - r)), c1 = Math.min(w - 1, toCol(x + r));
             const r0 = Math.max(0, toRow(y - r)), r1 = Math.min(h - 1, toRow(y + r));
             const r2 = r * r;
@@ -48,11 +49,12 @@
                     if (!rule(cls[i])) continue;
                     cls[i] = c;
                     zc[i] = z;
+                    if (authored) authoredCells[i] = 1;
                 }
             }
         }
 
-        function stampPolyline(pts, r, c, z, rule) {
+        function stampPolyline(pts, r, c, z, rule, authored) {
             if (!Array.isArray(pts) || pts.length < 2) return;
             const step = Math.max(cell * 0.5, 0.25);
             for (let i = 0; i < pts.length - 1; i++) {
@@ -61,13 +63,13 @@
                 const n = Math.max(1, Math.ceil(len / step));
                 for (let k = 0; k <= n; k++) {
                     const t = k / n;
-                    stampDisc(a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, r, c, z, rule);
+                    stampDisc(a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, r, c, z, rule, authored);
                 }
             }
         }
 
         // Even-odd scanline fill over all rings (outer + holes) of one polygon.
-        function fillPolygon(rings, c, z, rule) {
+        function fillPolygon(rings, c, z, rule, authored) {
             let rMin = Infinity, rMax = -Infinity;
             rings.forEach(ring => ring.forEach(p => {
                 const row = toRow(p[1]);
@@ -92,14 +94,15 @@
                         if (!rule(cls[i])) continue;
                         cls[i] = c;
                         zc[i] = z;
+                        if (authored) authoredCells[i] = 1;
                     }
                 }
             }
         }
 
         // Paint order: preferred space first, carriageways over it, footprints over everything.
-        (input.bands || []).forEach(b => stampPolyline(b.pts, b.halfWidth, CLASS.PREFERRED, b.zcode || 0, notBlocked));
-        (input.fills || []).forEach(f => fillPolygon(f.rings, CLASS.PREFERRED, f.zcode || 0, notBlocked));
+        (input.bands || []).forEach(b => stampPolyline(b.pts, b.halfWidth, CLASS.PREFERRED, b.zcode || 0, notBlocked, b.authored));
+        (input.fills || []).forEach(f => fillPolygon(f.rings, CLASS.PREFERRED, f.zcode || 0, notBlocked, f.authored));
         (input.carriageways || []).forEach(c => stampPolyline(c.pts, c.halfWidth, CLASS.CARRIAGEWAY, c.zcode || 0, notBlocked));
         (input.blocked || []).forEach(b => {
             if (Array.isArray(b.rings)) fillPolygon(b.rings, CLASS.BLOCKED, 0, always);
@@ -107,9 +110,13 @@
         });
 
         const preferred = [];
+        const authoredPreferred = [];
         let open = 0, carriageway = 0, blocked = 0;
         for (let i = 0; i < cls.length; i++) {
-            if (cls[i] === CLASS.PREFERRED) preferred.push(i);
+            if (cls[i] === CLASS.PREFERRED) {
+                preferred.push(i);
+                if (authoredCells[i]) authoredPreferred.push(i);
+            }
             else if (cls[i] === CLASS.OPEN) open++;
             else if (cls[i] === CLASS.CARRIAGEWAY) carriageway++;
             else blocked++;
@@ -164,7 +171,8 @@
         }
 
         // A spawn point in preferred space, or anywhere open when the scene has none.
-        function randomSpawn(rng) {
+        function randomSpawn(rng, authored) {
+            if (authored && authoredPreferred.length) return cellPoint(authoredPreferred[Math.floor(rng() * authoredPreferred.length)], rng);
             if (preferred.length) return cellPoint(preferred[Math.floor(rng() * preferred.length)], rng);
             for (let attempt = 0; attempt < 200; attempt++) {
                 const i = Math.floor(rng() * cls.length);
@@ -179,7 +187,8 @@
             cell, width: w, height: h, bounds: [minX, minY, maxX, maxY],
             stats: {
                 cellM: cell, cells: cls.length, preferred: preferred.length, open, carriageway, blocked,
-                preferredAreaM2: preferred.length * cell * cell, openAreaM2: open * cell * cell
+                preferredAreaM2: preferred.length * cell * cell, openAreaM2: open * cell * cell,
+                authoredPreferredAreaM2: authoredPreferred.length * cell * cell
             }
         };
     }

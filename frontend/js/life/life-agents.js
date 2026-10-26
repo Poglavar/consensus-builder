@@ -315,7 +315,10 @@
 
         function placePerson(p) {
             if (!walk) return false;
-            const point = walk.randomSpawn(rng);
+            // Keep the intended density in authored public space before spending the remaining
+            // crowd budget on the loaded neighbourhood. OSM context must not dilute the design.
+            const authoredCount = Math.min(maxPeople, Math.round(walk.stats.authoredPreferredAreaM2 * PERSON_PER_M2));
+            const point = walk.randomSpawn(rng, p.id < authoredCount);
             if (!point) return false;
             p.x = point[0]; p.y = point[1]; p.z = walk.zAt(p.x, p.y);
             p.target = walk.randomTarget(p.x, p.y, WANDER_RADIUS_M, rng);
