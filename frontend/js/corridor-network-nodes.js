@@ -242,9 +242,10 @@
         }
     }
 
-    global.CorridorNetworkNodes = { normalize, deferred };
+    const isDeferred = () => suppressed > 0;
+    global.CorridorNetworkNodes = { normalize, deferred, isDeferred };
     if (typeof module === 'object' && module.exports) {
-        module.exports = { normalize, deferred, planarLength, writeBackIsSafe };
+        module.exports = { normalize, deferred, isDeferred, planarLength, writeBackIsSafe };
     }
     // The explicit one-off migration over an existing plan (the codebase keeps migrations explicit
     // rather than healing at boot — see ProposalManager's initial replay). Call it from the console.

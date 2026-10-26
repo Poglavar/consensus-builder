@@ -708,6 +708,35 @@ describe('editing a saved road (updateLocalCorridorGeometry)', () => {
         expect(scope[3].roadProposal.definition.junctions[0].arms[0].profile).toEqual(latestProfile);
     });
 
+    it('does not node half-moved junctions while a shared-road edit is held', async () => {
+        const world = open({ globals: { CorridorNetworkNodes: { isDeferred: () => true } } });
+        const source = withProfile(localRoad());
+        source.roadProposal.definition.points = [[at(0, 0), at(50, 0)], [at(50, 0), at(100, 0)]];
+        source.roadProposal.definition.segmentIds = ['s1', 's2'];
+        source.roadProposal.definition.junctions = [{ ...at(50, 0), arms: [{ toward: at(50, -100), profile: source.roadProposal.definition.profile }] }];
+        const peer = withProfile(localRoad({ proposalId: 'peer' }));
+        peer.roadProposal.definition.points = [[at(50, -100), at(50, 0)]];
+        peer.roadProposal.definition.junctions = [{ ...at(50, 0), arms: [
+            { toward: at(0, 0), profile: source.roadProposal.definition.profile },
+            { toward: at(100, 0), profile: source.roadProposal.definition.profile }
+        ] }];
+        world.store.addProposal(source);
+        world.store.addProposal(peer);
+        const peerBefore = structuredClone(peer);
+        const destination = at(75, -25);
+        expect(await globalThis.updateLocalCorridorGeometry('road-1', definition => {
+            const moved = corridorGeometry.moveCorridorNodes(definition.points, definition.junctions,
+                [{ segIndex: 0, pointIndex: 1 }, { segIndex: 1, pointIndex: 0 }], destination);
+            definition.points = definition.segments = moved.segments;
+            definition.junctions = moved.junctions;
+        })).toBe('road-1');
+        expect(peer).toEqual(peerBefore);
+        expect(source.roadProposal.definition.segments).toHaveLength(2);
+        expect(source.roadProposal.definition.segments.every(segment => segment.length === 2)).toBe(true);
+        expect(source.roadProposal.definition.junctions).toHaveLength(1);
+        expect(near(source.roadProposal.definition.junctions[0], destination)).toBe(true);
+    });
+
     it('an unchanged definition saves nothing', async () => {
         const world = open();
         world.store.addProposal(withProfile(localRoad()));

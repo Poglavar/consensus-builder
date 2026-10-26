@@ -979,7 +979,9 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
     const stoodDownRevisions = sourceWasApplied && typeof ProposalManager._standDownAppliedRivals === 'function'
         ? ProposalManager._standDownAppliedRivals(sourceProposal, { _parcelMutation: mutation, replaceOccupiedGround: true })
         : [];
-    if (sourceWasApplied) {
+    // Shared-node drags and undo restore several roads in sequence. Their stored junctions move
+    // with the vertices; discovering crossings before every leg lands would author transient nodes.
+    if (sourceWasApplied && !window.CorridorNetworkNodes?.isDeferred?.()) {
         const authoring = window.CorridorAuthoring
             || (typeof require === 'function' ? require('./proposals/corridor-authoring.js') : null);
         if (!authoring?.planCorridorEdit) throw new Error('Corridor junction authoring is unavailable.');
@@ -1290,9 +1292,12 @@ function redrawRoadVertexMarkers() {
 // Rebuilt on commit only — never on mousemove, where the rubber-band preview stays a plain outline.
 let roadStripLayer = null;
 
-function clearRoadStripLayer() {
+function clearRoadStripLayer(preserveJunctionPreview = false) {
     if (roadStripLayer && map.hasLayer(roadStripLayer)) map.removeLayer(roadStripLayer);
     roadStripLayer = null;
+    if (!preserveJunctionPreview && typeof setCorridorDrawingJunctionPreview === 'function') {
+        setCorridorDrawingJunctionPreview([]);
+    }
 }
 
 // The arms of applied corridors at the nodes the drawing shares with them, for the junction preview.
@@ -1306,16 +1311,17 @@ function clearRoadStripLayer() {
 function appliedArmsMeetingDrawing(drawingSegments, appliedEntries) {
     const NODE_DEG = 1e-7;
     const ON_EDGE_M = 0.01;
+    const levelOf = point => typeof point?.level === 'number' && Number.isFinite(point.level) ? point.level : 0;
     const vertices = [];
     const seen = new Set();
     (drawingSegments || []).forEach(segment => (Array.isArray(segment) ? segment : []).forEach(point => {
         const lat = Number(point && point.lat);
         const lng = Number(point && point.lng);
         if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
-        const key = `${lat.toFixed(7)},${lng.toFixed(7)}`;
+        const key = `${lat.toFixed(7)},${lng.toFixed(7)}#${levelOf(point)}`;
         if (seen.has(key)) return;
         seen.add(key);
-        vertices.push({ lat, lng });
+        vertices.push(typeof point.level === 'number' && Number.isFinite(point.level) ? { lat, lng, level: point.level } : { lat, lng });
     }));
     const arms = [];
     (appliedEntries || []).forEach(entry => {
@@ -1325,7 +1331,8 @@ function appliedArmsMeetingDrawing(drawingSegments, appliedEntries) {
             const metresPerDegLng = 111320 * Math.cos(vertex.lat * Math.PI / 180);
             for (let i = 0; i < points.length; i += 1) {
                 const point = points[i];
-                if (Math.abs(point.lat - vertex.lat) < NODE_DEG && Math.abs(point.lng - vertex.lng) < NODE_DEG) {
+                if (levelOf(point) === levelOf(vertex)
+                    && Math.abs(point.lat - vertex.lat) < NODE_DEG && Math.abs(point.lng - vertex.lng) < NODE_DEG) {
                     const piece = [];
                     if (i > 0) piece.push(points[i - 1]);
                     piece.push(vertex);
@@ -1338,6 +1345,7 @@ function appliedArmsMeetingDrawing(drawingSegments, appliedEntries) {
                 // In metres on a plane through the edge's start: the edge is a→b, the vertex p.
                 const a = points[i];
                 const b = points[i + 1];
+                if (levelOf(a) !== levelOf(vertex) || levelOf(b) !== levelOf(vertex)) continue;
                 const bx = (b.lng - a.lng) * metresPerDegLng;
                 const by = (b.lat - a.lat) * 111320;
                 const px = (vertex.lng - a.lng) * metresPerDegLng;
@@ -1371,7 +1379,9 @@ function appliedJunctionArmsForDrawing(entries) {
         (proposalStorage?.getAllProposals?.() || []).forEach(proposal => {
             const definition = proposal?.roadProposal?.definition;
             if (!definition || !isApplied(proposal, proposal.roadProposal)) return;
-            const segmentEntries = corridorSegmentEntries(definition);
+            const segmentEntries = typeof corridorJunctionEntriesFor === 'function'
+                ? corridorJunctionEntriesFor(proposal, definition)
+                : corridorSegmentEntries(definition);
             const own = [Infinity, Infinity, -Infinity, -Infinity];
             segmentEntries.forEach(entry => (entry.points || []).forEach(point => {
                 own[0] = Math.min(own[0], point.lng); own[1] = Math.min(own[1], point.lat);
@@ -1391,13 +1401,16 @@ function appliedJunctionArmsForDrawing(entries) {
 }
 
 function redrawRoadStrips() {
-    clearRoadStripLayer();
+    clearRoadStripLayer(true);
     // Without a cross-section the corridor keeps its plain green fill; with one, the fill would hide
     // the strips, so the corridor becomes an outline around them.
     const restoreCorridorFill = () => {
         if (roadPolygonLayer) roadPolygonLayer.setStyle({ fillOpacity: 0.3 });
     };
-    if (!roadProfile || typeof buildCorridorStrips !== 'function') return restoreCorridorFill();
+    if (!roadProfile || typeof buildCorridorStrips !== 'function') {
+        if (typeof setCorridorDrawingJunctionPreview === 'function') setCorridorDrawingJunctionPreview([]);
+        return restoreCorridorFill();
+    }
 
     // Drawing and applied corridors share the same non-interactive render panes. These calls used
     // to omit `pane`, creating a second canvas in Leaflet's default overlayPane. Once the drawing
@@ -1416,7 +1429,10 @@ function redrawRoadStrips() {
             corridorId: 'active-drawing'
         }))
         .filter(entry => Array.isArray(entry.points) && entry.points.length >= 2);
-    if (!entries.length) return restoreCorridorFill();
+    if (!entries.length) {
+        if (typeof setCorridorDrawingJunctionPreview === 'function') setCorridorDrawingJunctionPreview([]);
+        return restoreCorridorFill();
+    }
 
     // Same renderer as applied corridors — see js/corridor-render.js — in the session's frame. The
     // drawing iterates PIECES like they do: each stretch's body plus the transition zones where its
@@ -1437,6 +1453,7 @@ function redrawRoadStrips() {
         ? buildCorridorJunctionTreatmentsForEntries(pieces.concat(appliedArms), frame)
             .filter(junction => !Array.isArray(junction.corridorIds) || junction.corridorIds.includes('active-drawing'))
         : [];
+    if (typeof setCorridorDrawingJunctionPreview === 'function') setCorridorDrawingJunctionPreview(junctions);
     // Lane lines stop at the stop lines of those same junctions, the shared ones included.
     const markingsByPiece = (typeof buildCorridorLaneMarkingsForEntries === 'function')
         ? buildCorridorLaneMarkingsForEntries(pieces, frame, { junctions })
@@ -1480,7 +1497,10 @@ function redrawRoadStrips() {
             drewAny = true;
         }
     });
-    if (!drewAny) return restoreCorridorFill();
+    if (!drewAny) {
+        if (typeof setCorridorDrawingJunctionPreview === 'function') setCorridorDrawingJunctionPreview([]);
+        return restoreCorridorFill();
+    }
     if (junctions.length && typeof renderCorridorJunctions === 'function') {
         renderCorridorJunctions(junctions, group, CORRIDOR_JUNCTIONS_PANE);
     }
