@@ -336,6 +336,7 @@ async function _runProposalMutationBoundary(manager, kind, proposalId, options, 
                 missingIds: error?.parcelIds || []
             });
         }
+        browserRoot.AppDiagnostics?.report(error, { code: 'planning-action-failed', context: { surface: 'draft-editor' } });
         throw error;
     }
 }

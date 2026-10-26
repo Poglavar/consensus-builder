@@ -396,6 +396,11 @@
     }
 
     function createProposalDraftStore(options = {}) {
+        const diagnostics = options.diagnostics || global.AppDiagnostics;
+        const observeDraft = (operation, saved) => {
+            diagnostics?.event(operation, 'success', { entity: 'design', context: { surface: 'draft-editor' } });
+            diagnostics?.event('save', saved ? 'success' : 'failure', { entity: 'design', context: { surface: 'draft-editor' } });
+        };
         const storage = options.storage || global.BrowserWorkspace?.storage || global.localStorage || null;
         const storageKey = options.storageKey || PROPOSAL_DRAFT_STORAGE_KEY;
         const now = options.now || (() => new Date());
@@ -462,11 +467,13 @@
                 }
                 if (!persistenceWarningShown) {
                     persistenceWarningShown = true;
-                    console.warn('[ProposalDraftStore] Could not persist drafts (storage full or unavailable) — keeping them in memory only', lastError);
+                    const diagnostic = diagnostics?.report(lastError, { code: 'draft-storage-unavailable', context: { surface: 'draft-editor' } });
+                    if (diagnostic && typeof global.showEphemeralMessage === 'function') global.showEphemeralMessage(diagnostic.message, 8000, 'error');
+                    console.warn('[ProposalDraftStore] Drafts remain in memory; device storage is unavailable. Download work before closing.');
                 }
                 return false;
             }
-            return true;
+            return false; // A memory-only draft must not be counted as a successful device save.
         }
 
         // Erase every draft, receipt, and stored byte of this store — used by "wipe ALL local data".
@@ -581,7 +588,7 @@
             }, now);
             envelope.drafts.push(draft);
             if (input.activate !== false) envelope.activeDraftId = draft.id;
-            persist();
+            observeDraft('create', persist());
             notify('create', draft.id);
             return cloneDraftValue(draft);
         }
@@ -678,7 +685,8 @@
             if (!normalized) throw new TypeError('Proposal draft updates must preserve an explicit canonical goal.');
             const index = envelope.drafts.findIndex(item => item.id === draftId);
             envelope.drafts[index] = normalized;
-            persist();
+            const saved = persist();
+            if (meaningfulChange) observeDraft('edit', saved);
             if (updateOptions.validate === true) validateDraft(draftId);
             else notify('update', draftId);
             return getDraft(draftId);

@@ -910,8 +910,8 @@ function showSharePlanPanel(options) {
                 updateShareUrl();
                 setStatus(t('proposals.share.named.saved', 'Plan saved. Its permanent link is ready to copy.'));
             } catch (error) {
-                console.error(`[${new Date().toISOString()}] [named-plan] Saving failed`, error);
-                setStatus(t('proposals.share.named.saveFailed', 'The plan could not be saved: {{reason}}', { reason: error.message }));
+                const diagnostic = window.AppDiagnostics?.report(error, { code: 'plan-save-failed', context: { surface: 'named-plan' } });
+                setStatus(diagnostic?.message || 'The plan link could not be saved. Retry when connected.');
             } finally {
                 savingName = false;
                 saveName.disabled = !nameInput.value.trim() || [...selected].some(key => !isPublished(key)) || !selected.size;
@@ -936,8 +936,8 @@ function showSharePlanPanel(options) {
             const designIds = [...selected];
             closeSharePlanPanel();
             Promise.resolve(window.AgreementDialog.open({ designIds })).catch(error => {
-                console.error(`[${new Date().toISOString()}] [share-plan] opening agreement failed`, error);
-                showEphemeralMessage(error.message, 5000, 'error');
+                const diagnostic = window.AppDiagnostics?.report(error, { code: 'planning-action-failed', context: { surface: 'share-panel' } });
+                showEphemeralMessage(diagnostic?.message || 'The planning action could not finish. Please retry.', 5000, 'error');
             });
         });
         shareArea.appendChild(agreementAction);
@@ -1059,8 +1059,8 @@ function showSharePlanPanel(options) {
             } catch (error) {
                 publishState.set(key, { cid: null, publishing: false });
                 if (!(error && error.cancelled)) {
-                    console.error(`[${new Date().toISOString()}] [share-plan] publishing ${key} failed`, error);
-                    setStatus((error && error.message) || t('proposals.share.errors.failed', 'The design could not be published.'));
+                    const diagnostic = window.AppDiagnostics?.report(error, { code: 'design-publish-failed', context: { surface: 'design-index' } });
+                    setStatus(diagnostic?.message || t('proposals.share.errors.failed', 'The design could not be published.'));
                 }
             }
             updateRowState(key);
@@ -1247,8 +1247,8 @@ function showSharePlanPanel(options) {
                 }, 'proposals.share.panel.checking', 'Checking {{done}}/{{total}} designs…')) return;
                 updateShareUrl();
             } catch (error) {
-                console.error('share plan: filling the panel failed', error);
-                setStatus(error.message || t('ephemeral.messages.failed_to_generate_share_link', 'Failed to generate share link.'));
+                const diagnostic = window.AppDiagnostics?.report(error, { code: 'share-failed', context: { surface: 'share-panel' } });
+                setStatus(diagnostic?.message || t('ephemeral.messages.failed_to_generate_share_link', 'Failed to generate share link.'));
             } finally {
                 // Backstop: a cancelled build (panel closed mid-fill) or a throw before the line
                 // above must not leave the opener's dialog spinning with no way out.
@@ -1257,7 +1257,7 @@ function showSharePlanPanel(options) {
             }
         })();
     } catch (error) {
-        console.error('showSharePlanPanel failed', error);
+        window.AppDiagnostics?.report(error, { code: 'share-failed', context: { surface: 'share-panel' } });
         // Undo any partially-entered lockdown so a failure never leaves the map inert.
         try { closeSharePlanPanel(); } catch (_) { }
         if (typeof showEphemeralMessage === 'function') {

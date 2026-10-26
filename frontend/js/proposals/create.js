@@ -840,8 +840,8 @@ async function createProposal() {
             const applied = await ProposalManager.applyProposal(proposalId);
             if (!applied) throw new Error('The saved proposal could not be derived from the cadastral fabric.');
         } catch (replayError) {
-            console.warn('[createProposal] Could not replay the saved proposal', replayError);
-            updateStatus('Design saved, but it could not be applied to the cadastral fabric.');
+            const diagnostic = window.AppDiagnostics?.report(replayError, { code: 'design-apply-failed', context: { surface: 'draft-editor' } });
+            updateStatus(diagnostic?.message || 'Design saved, but it could not be applied to the cadastral fabric.');
         }
 
         const openProposalDetails = () => {
@@ -862,10 +862,10 @@ async function createProposal() {
         openProposalDetails();
 
     } catch (error) {
-        console.error('Error creating proposal:', error);
         markDraftPublishFailed(error);
         const fallback = t('alerts.messages.failed_to_create_proposal', 'Failed to create design.');
-        const message = (error && error.message) ? error.message : fallback;
+        const diagnostic = window.AppDiagnostics?.report(error, { code: 'planning-action-failed', context: { surface: 'draft-editor' } });
+        const message = diagnostic?.message || fallback;
         if (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function') {
             window.showStyledAlert(message);
         } else {
