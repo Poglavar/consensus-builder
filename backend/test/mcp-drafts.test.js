@@ -13,6 +13,21 @@ const approval = require('../../frontend/js/approval-link.js');
 const site = { type: 'Polygon', coordinates: [[[-0.1, 51.5], [-0.099, 51.5], [-0.099, 51.501], [-0.1, 51.501], [-0.1, 51.5]]] };
 const common = { site, city: 'london', title: 'A drawing', authoredAt: '2026-10-23T00:00:00.000Z' };
 describe('intent design artifacts', () => {
+    it('enforces Row parcel eligibility and allows a site-first Row through the MCP draft operation', async () => {
+        const first = { type:'Feature', id:'A', properties:{parcelId:'A'}, geometry:site };
+        const tools = createUrbanGameTheoryTools({ mode:'hosted', env:{}, fetchImpl:async url => {
+            const path = new URL(url).pathname;
+            if (path === '/parcel-sources/test-source') return Response.json({ complete:true, features:[first] });
+            if (path === '/designs/binding') return Response.json({ parcelSourceId:'test-source', binding:{coverage:'complete', parcels:[{parcelId:'A'}]} });
+            throw new Error(`Unexpected route ${path}`);
+        } });
+        await expect(tools.draftBuilding({ city:'london', parcelSourceId:'test-source', parcelIds:['A'], typology:'row' }))
+            .rejects.toMatchObject({ code:'row-needs-two-parcels' });
+        const result = await tools.draftBuilding({ city:'london', parcelSourceId:'test-source', outline:site, typology:'row' });
+        expect(result.design.goal).toBe('row');
+        expect(result.design.site).toEqual(site);
+        expect(result.design.geometry.buildings.length).toBeGreaterThan(0);
+    });
     it('modifies, compares and assembles private drafts by reference without copying geometry or publishing', async () => {
         const store = createPreviewLinks({ origin: 'https://mcp.example', appOrigin: 'https://urbangametheory.xyz' });
         const paths = [];
@@ -29,8 +44,12 @@ describe('intent design artifacts', () => {
         expect(fork.parcelSourceId).toBe('private-test');
         await expect(tools.modifyDesign({ design: { draftRef: first.draftRef, cid: fork.cid }, changes: [{ type: 'retitle', value: 'Wrong identity' }] })).rejects.toMatchObject({ code: 'cid-mismatch' });
         await expect(tools.modifyDesign({ design: { design: first.design, cid: fork.cid }, changes: [{ type: 'retitle', value: 'Wrong copied identity' }] })).rejects.toMatchObject({ code: 'cid-mismatch' });
-        const agreement = store.decorate(await tools.draftAgreement({ currency: 'EUR', designs: [first.draftRef] }));
-        expect(agreement.agreement.designs[0].cid).toBe(first.cid);
+        const plan = store.decorate(await tools.draftPlan({ designs: [first.draftRef], title: 'Park agreement plan' }));
+        const ground = await tools.inspectGround({ designs: [first.draftRef] });
+        const allocations = ground.outputs.map(output => ({ output: output.hash, to: { kind: 'public' } }));
+        const agreement = store.decorate(await tools.draftAgreement({ currency: 'EUR', plan: plan.draftRef, allocations }));
+        expect(agreement.agreement.planCid).toBe(plan.cid);
+        expect(agreement.plan.content.designCids).toContain(first.cid);
         const compared = await tools.compare({ buildingSourceId:'osm', targets: [fork.draftRef, agreement.draftRef] });
         expect(compared.alternatives.every(alternative => alternative.measurementErrors.length === 0)).toBe(true);
         expect(paths.some(path => /^\/designs\//.test(path) && path !== '/designs/binding')).toBe(false);
@@ -96,10 +115,13 @@ describe('intent design artifacts', () => {
             throw new Error(`Unexpected source route ${path}`);
         } });
         expect((await tools.modifyDesign({ design: cid, changes: [{ type: 'retitle', value: 'A fork' }] })).parcelSourceId).toBe('non-default');
-        expect((await tools.draftAgreement({ currency: 'EUR', designs: [cid] })).parcelSourceId).toBe('non-default');
+        const plan = await tools.draftPlan({ designs: [cid], title: 'Indexed source plan' });
+        const ground = await tools.inspectGround({ designs: [cid] });
+        const allocations = ground.outputs.map(output => ({ output: output.hash, to: { kind: 'public' } }));
+        expect((await tools.draftAgreement({ currency: 'EUR', plan: plan.draftArtifact, allocations })).parcelSourceId).toBe('non-default');
         const compared = await tools.compare({ buildingSourceId:'osm', targets: [cid, cid] });
         expect(compared.alternatives.every(a => a.measurementErrors.length === 0)).toBe(true);
-        expect(bindings).toEqual(['non-default', 'non-default', 'non-default', 'non-default']);
+        expect(bindings).toEqual(['non-default', 'non-default', 'non-default', 'non-default', 'non-default']);
     });
 });
 describe('approval links', () => {

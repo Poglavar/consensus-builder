@@ -92,6 +92,8 @@ let currentSimplifyM = DEFAULT_SIMPLIFY_M;
 // the modal map fine-tunes an individual position. This keeps the block fully parametric/shareable.
 let gapPositions = [];
 let wingPositions = [];
+let currentGapWidth = 5;
+let currentWingLength = 10;
 let lastOuterRing = null;        // last generated outer ring ([lng,lat], closed) for handle projection
 let lastSuperparcel = null;      // the exact parcel outline, to clip the building so nothing pokes out
 let blockifyHandleLayer = null;  // Leaflet layer group holding the draggable gap/wing handles
@@ -276,6 +278,7 @@ function blockifyGeometrySnapshot() {
         mode: blockifyMode,
         feature: blockifyClone(generatedBuildingFeature),
         features: blockifyClone(generatedBuildingFeatures),
+        outerRing: blockifyClone(lastOuterRing),
             manualOuterRing: blockifyMode === 'manual'
                 ? (blockifyOuterRing(generatedBuildingFeature) || blockifyClone(manualOuterRing))
                 : blockifyClone(manualOuterRing),
@@ -283,6 +286,7 @@ function blockifyGeometrySnapshot() {
             setback: currentSetback, width: currentBuildingWidth, height: currentBuildingHeight,
             chamfer: currentChamferM, simplify: currentSimplifyM,
             gaps: blockifyClone(gapPositions), wings: blockifyClone(wingPositions),
+            gapWidth: currentGapWidth, wingLength: currentWingLength,
             ruleKind: blockRuleKind, minHeight: blockMinHeightM, minDepth: blockMinDepthM,
             minPlotArea: blockMinPlotAreaM2, seed: blockVariationSeed
         }
@@ -295,6 +299,7 @@ function restoreBlockifyGeometrySnapshot(snapshot) {
     generatedBuildingFeature = blockifyClone(snapshot.feature);
     generatedBuildingFeatures = blockifyClone(snapshot.features);
     manualOuterRing = blockifyClone(snapshot.manualOuterRing) || [];
+    lastOuterRing = blockifyClone(snapshot.outerRing);
     const params = snapshot.params || {};
     currentSetback = params.setback ?? currentSetback;
     currentBuildingWidth = params.width ?? currentBuildingWidth;
@@ -303,6 +308,8 @@ function restoreBlockifyGeometrySnapshot(snapshot) {
     currentSimplifyM = params.simplify ?? currentSimplifyM;
     gapPositions = blockifyClone(params.gaps) || [];
     wingPositions = blockifyClone(params.wings) || [];
+    currentGapWidth = params.gapWidth ?? currentGapWidth;
+    currentWingLength = params.wingLength ?? currentWingLength;
     blockRuleKind = params.ruleKind || DEFAULT_BLOCK_RULE_KIND;
     blockMinHeightM = params.minHeight ?? 0;
     blockMinDepthM = params.minDepth ?? 0;
@@ -313,6 +320,9 @@ function restoreBlockifyGeometrySnapshot(snapshot) {
     updateManualToggleLabel();
     if (generatedBuildingFeature?.geometry) {
         displayBuildingInModal(generatedBuildingFeature);
+        if (blockifyMode === 'parametric') {
+            renderGapWingHandles();
+        }
         if (blockifyMode === 'manual') renderManualPolygonEditor();
     } else if (Array.isArray(generatedBuildingFeatures)) displayBuildingsInModal(generatedBuildingFeatures);
 }
@@ -1632,7 +1642,7 @@ function showBlockifyModal() {
         }
 
         // Add slider event listeners
-        document.getElementById('setback-slider').addEventListener('input', function (e) {
+        blockifyHistory.bindInput(document.getElementById('setback-slider'), function (e) {
             currentSetback = parseFloat(e.target.value);
             document.getElementById('setback-value').textContent = CbFormat.formatNumber(currentSetback, { maxFractionDigits: 1, minFractionDigits: 1 });
             generateBuildingInModal();
@@ -1640,7 +1650,7 @@ function showBlockifyModal() {
 
         const chamferSlider = document.getElementById('chamfer-slider');
         if (chamferSlider) {
-            chamferSlider.addEventListener('input', function (e) {
+            blockifyHistory.bindInput(chamferSlider, function (e) {
                 currentChamferM = parseFloat(e.target.value);
                 document.getElementById('chamfer-value').textContent = CbFormat.formatNumber(currentChamferM, { maxFractionDigits: 1, minFractionDigits: 1 });
                 generateBuildingInModal();
@@ -1649,14 +1659,14 @@ function showBlockifyModal() {
 
         const simplifySlider = document.getElementById('simplify-slider');
         if (simplifySlider) {
-            simplifySlider.addEventListener('input', function (e) {
+            blockifyHistory.bindInput(simplifySlider, function (e) {
                 currentSimplifyM = parseFloat(e.target.value);
                 document.getElementById('simplify-value').textContent = CbFormat.formatNumber(currentSimplifyM, { maxFractionDigits: 1, minFractionDigits: 1 });
                 generateBuildingInModal();
             });
         }
 
-        document.getElementById('width-slider').addEventListener('input', function (e) {
+        blockifyHistory.bindInput(document.getElementById('width-slider'), function (e) {
             if (blockifyMode === 'manual') return;
             currentBuildingWidth = parseFloat(e.target.value);
             document.getElementById('width-value').textContent = CbFormat.formatNumber(currentBuildingWidth, { maxFractionDigits: 1, minFractionDigits: 1 });
@@ -1665,7 +1675,7 @@ function showBlockifyModal() {
 
         const heightSlider = document.getElementById('height-slider');
         if (heightSlider) {
-            heightSlider.addEventListener('input', function (e) {
+            blockifyHistory.bindInput(heightSlider, function (e) {
                 currentBuildingHeight = parseFloat(e.target.value);
                 document.getElementById('height-value').textContent = CbFormat.formatNumber(currentBuildingHeight, { maxFractionDigits: 1, minFractionDigits: 1 });
                 // Only affects 3D extrusion; regenerate 3D using the current geometry
@@ -1696,6 +1706,8 @@ function showBlockifyModal() {
         if (blockRuleTypeSelect) {
             blockRuleTypeSelect.value = blockRuleKind;
             blockRuleTypeSelect.addEventListener('change', function (e) {
+                if (blockRuleKind === e.target.value) return;
+                blockifyHistory?.record();
                 blockRuleKind = e.target.value;
                 syncBlockMinHeightSlider();
                 if (generatedBuildingFeature) displayBuildingInModal(generatedBuildingFeature);
@@ -1706,6 +1718,7 @@ function showBlockifyModal() {
         if (blockRegenerate) {
             // Only the seed moves: the massing, and every number read off it, stay put.
             blockRegenerate.addEventListener('click', function () {
+                blockifyHistory?.record();
                 blockVariationSeed = (Math.floor(Math.random() * 0xffffffff) >>> 0);
                 if (generatedBuildingFeature) displayBuildingInModal(generatedBuildingFeature);
             });
@@ -1713,7 +1726,7 @@ function showBlockifyModal() {
 
         const blockMinHeightSlider = document.getElementById('blockify-minheight-slider');
         if (blockMinHeightSlider) {
-            blockMinHeightSlider.addEventListener('input', function (e) {
+            blockifyHistory.bindInput(blockMinHeightSlider, function (e) {
                 blockMinHeightM = parseFloat(e.target.value);
                 document.getElementById('blockify-minheight-value').textContent = CbFormat.formatNumber(blockMinHeightM, { maxFractionDigits: 1, minFractionDigits: 1 });
                 refreshBlockPieceHeights();
@@ -1723,7 +1736,7 @@ function showBlockifyModal() {
 
         const blockMinDepthSlider = document.getElementById('blockify-mindepth-slider');
         if (blockMinDepthSlider) {
-            blockMinDepthSlider.addEventListener('input', function (e) {
+            blockifyHistory.bindInput(blockMinDepthSlider, function (e) {
                 blockMinDepthM = parseFloat(e.target.value);
                 document.getElementById('blockify-mindepth-value').textContent = CbFormat.formatNumber(blockMinDepthM, { maxFractionDigits: 1, minFractionDigits: 1 });
                 if (generatedBuildingFeature) displayBuildingInModal(generatedBuildingFeature);
@@ -1732,7 +1745,7 @@ function showBlockifyModal() {
 
         const blockMinPlotSlider = document.getElementById('blockify-minplot-slider');
         if (blockMinPlotSlider) {
-            blockMinPlotSlider.addEventListener('input', function (e) {
+            blockifyHistory.bindInput(blockMinPlotSlider, function (e) {
                 blockMinPlotAreaM2 = parseFloat(e.target.value);
                 document.getElementById('blockify-minplot-value').textContent = blockMinPlotAreaM2.toString();
                 if (generatedBuildingFeature) displayBuildingInModal(generatedBuildingFeature);
@@ -1746,7 +1759,7 @@ function showBlockifyModal() {
             gapsSlider.disabled = false;
             gapsSlider.value = 0;
             document.getElementById('gaps-value').textContent = '0';
-            gapsSlider.addEventListener('input', function (e) {
+            blockifyHistory.bindInput(gapsSlider, function (e) {
                 document.getElementById('gaps-value').textContent = e.target.value;
                 gapPositions = syncPositions(gapPositions, parseInt(e.target.value) || 0);
                 generateBuildingInModal();
@@ -1754,7 +1767,8 @@ function showBlockifyModal() {
         }
         if (gapWidthSlider) {
             gapWidthSlider.disabled = false;
-            gapWidthSlider.addEventListener('input', function (e) {
+            blockifyHistory.bindInput(gapWidthSlider, function (e) {
+                currentGapWidth = parseFloat(e.target.value);
                 document.getElementById('gap-width-value').textContent = e.target.value;
                 generateBuildingInModal();
             });
@@ -1767,7 +1781,7 @@ function showBlockifyModal() {
             wingsSlider.disabled = false;
             wingsSlider.value = 0;
             document.getElementById('wings-value').textContent = '0';
-            wingsSlider.addEventListener('input', function (e) {
+            blockifyHistory.bindInput(wingsSlider, function (e) {
                 document.getElementById('wings-value').textContent = e.target.value;
                 wingPositions = syncPositions(wingPositions, parseInt(e.target.value) || 0);
                 generateBuildingInModal();
@@ -1775,7 +1789,8 @@ function showBlockifyModal() {
         }
         if (wingLengthSlider) {
             wingLengthSlider.disabled = false;
-            wingLengthSlider.addEventListener('input', function (e) {
+            blockifyHistory.bindInput(wingLengthSlider, function (e) {
+                currentWingLength = parseFloat(e.target.value);
                 document.getElementById('wing-length-value').textContent = e.target.value;
                 generateBuildingInModal();
             });
@@ -1868,6 +1883,8 @@ function showBlockifyModal() {
     blockExcludedParcels = [];
     gapPositions = [];
     wingPositions = [];
+    currentGapWidth = 5;
+    currentWingLength = 10;
     blockifyMode = 'parametric';
     blockifyPendingVertexActionIndex = null;
     manualOuterRing = [];
@@ -1930,6 +1947,8 @@ function applyBlockifySeedState(seed) {
 
     if (Array.isArray(seed.gaps)) gapPositions = JSON.parse(JSON.stringify(seed.gaps));
     if (Array.isArray(seed.wings)) wingPositions = JSON.parse(JSON.stringify(seed.wings));
+    currentGapWidth = num(seed.gapWidth) ?? currentGapWidth;
+    currentWingLength = num(seed.wingLength) ?? currentWingLength;
 
     // What the rule compels, and the variation it was saved with. Restoring the seed is what makes
     // a reopened design redraw the SAME street rather than a fresh one under the same name.
@@ -1983,6 +2002,8 @@ function syncBlockifyControlsFromState() {
     setSlider('height-slider', 'height-value', currentBuildingHeight);
     setSlider('gaps-slider', 'gaps-value', Array.isArray(gapPositions) ? gapPositions.length : 0, 0);
     setSlider('wings-slider', 'wings-value', Array.isArray(wingPositions) ? wingPositions.length : 0, 0);
+    setSlider('gap-width-slider', 'gap-width-value', currentGapWidth, 0);
+    setSlider('wing-length-slider', 'wing-length-value', currentWingLength, 0);
 
     const exactRadio = document.getElementById('blockify-rule-exact');
     const additionalRadio = document.getElementById('blockify-rule-additional');
@@ -2373,7 +2394,7 @@ function generateBuildingInModal() {
         const gapsSlider = document.getElementById('gaps-slider');
         const gapWidthSlider = document.getElementById('gap-width-slider');
         const numGaps = gapsSlider ? parseInt(gapsSlider.value) : 0;
-        const gapWidth = gapWidthSlider ? parseFloat(gapWidthSlider.value) : 0; // in meters
+        const gapWidth = currentGapWidth; // in meters
         // Keep rings explicitly closed for distance math
         const ensureClosedRing = (coords = []) => {
             if (!Array.isArray(coords) || coords.length === 0) return [];
@@ -2403,7 +2424,7 @@ function generateBuildingInModal() {
         const wingsSlider = document.getElementById('wings-slider');
         const wingLengthSlider = document.getElementById('wing-length-slider');
         const numWings = wingsSlider ? parseInt(wingsSlider.value) : 0;
-        const wingLength = wingLengthSlider ? parseFloat(wingLengthSlider.value) : 0;
+        const wingLength = currentWingLength;
         gapPositions = syncPositions(gapPositions, numGaps); wingPositions = syncPositions(wingPositions, numWings);
         buildingFeature = window.BuildingRuleGeometry.blockMassingFromRing(ring, superparcel, {
             width: currentWidth, setback: SETBACK, chamferM: Number(currentChamferM) || 0, simplifyM: currentSimplifyM,
@@ -2548,6 +2569,7 @@ function autosaveBlockifyDraft(featuresOverride = null) {
             typology: 'block',
             simplify: Number(currentSimplifyM),
             gaps: JSON.parse(JSON.stringify(gapPositions || [])),
+            gapWidth: currentGapWidth, wingLength: currentWingLength,
             wings: JSON.parse(JSON.stringify(wingPositions || [])),
             manualOuterRing: blockifyMode === 'manual' && Array.isArray(manualOuterRing)
                 ? manualOuterRing.map(coordinate => [coordinate[0], coordinate[1]])
@@ -2835,6 +2857,8 @@ function renderGapWingHandles() {
                 iconAnchor: [9, 9]
             })
         });
+        let beforeDrag = null;
+        marker.on('dragstart', () => { beforeDrag = posArray[idx]; blockifyHistory?.record?.(); });
         marker.on('dragend', () => {
             try {
                 const ll = marker.getLatLng();
@@ -2844,6 +2868,8 @@ function renderGapWingHandles() {
                     posArray[idx] = (((loc / ringLenM) % 1) + 1) % 1;
                 }
             } catch (_) { }
+            if (beforeDrag === posArray[idx]) blockifyHistory?.discardLast?.();
+            beforeDrag = null;
             generateBuildingInModal();
         });
         marker.addTo(blockifyHandleLayer);
@@ -3511,6 +3537,7 @@ async function saveBlockifyDesignForProposal() {
             typology: 'block',
             simplify: Number.isFinite(Number(currentSimplifyM)) ? Number(currentSimplifyM) : null,
             gaps: Array.isArray(gapPositions) ? JSON.parse(JSON.stringify(gapPositions)) : [],
+            gapWidth: currentGapWidth, wingLength: currentWingLength,
             wings: Array.isArray(wingPositions) ? JSON.parse(JSON.stringify(wingPositions)) : [],
             manualOuterRing: (blockifyMode === 'manual' && Array.isArray(manualOuterRing))
                 ? manualOuterRing.map(c => [c[0], c[1]])

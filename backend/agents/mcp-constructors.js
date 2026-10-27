@@ -80,7 +80,8 @@ export function buildTypedDesign(intent, { parcels = [] } = {}) {
         design.buildingProposal.parameters.rotation = rotation;
         return runtime.record.published({ ...design, goal: 'single', createdAt: design.authoredAt });
     }
-    if (!entries.length) fail('parcel-source-required', 'Building rules need exact source parcels.', 'parcelIds', { minItems: 1 });
+    if (typology === 'row' && entries.length && new Set(entries.map(entry => entry.parcelId)).size < 2) fail('row-needs-two-parcels', 'Row houses need at least two selected parcels.', 'parcelIds', { minItems: 2, unique: true });
+    if (!entries.length && typology !== 'row') fail('parcel-source-required', 'Building rules need exact source parcels.', 'parcelIds', { minItems: 1 });
     const minPlotAreaM2 = number(intent.minPlotAreaM2, 50, 'minPlotAreaM2', 0, 1_000_000);
     if (typology === 'detached') {
         const rule = runtime.rules.normalizeParcelRule({ typology: 'parcelBased', kind: ruleKind(intent, 'max'), maxFloors: floors,
@@ -103,7 +104,11 @@ export function buildTypedDesign(intent, { parcels = [] } = {}) {
     let depth = number(intent.depthM, typology === 'row' ? 10 : 15, 'depthM', 1, 1000);
     let massing, parameters;
     if (typology === 'row') {
-        const block = { site: feature(site), parcels: entries.map(p => ({ feature: p.feature })) };
+        const rowParcels = entries.length ? entries.map(p => p.feature) : runtime.sitePlots.cutPlots(site, {
+            plotWidthM: runtime.sitePlots.ROW_PLOT_WIDTH_M, turf
+        });
+        if (rowParcels.length < 2) fail('row-needs-two-plots', 'The site needs at least two row plots.', 'outline', { minItems: 2 });
+        const block = { site: feature(site), parcels: rowParcels.map(p => ({ feature: p })) };
         const initial = { lengthM: 40, depthM: 10, height };
         const sizing = runtime.buildingRules.createRowPlacement(initial);
         const dimensions = intent.lengthM == null || intent.depthM == null ? sizing.calculate(block) : null;
@@ -142,7 +147,10 @@ export function buildTypedDesign(intent, { parcels = [] } = {}) {
     }
     massing.properties = { ...massing.properties, use: intent.use || 'residential' };
     massing = runtime.rules.massingWithRule(massing, rule, seed, { turf });
-    const split = runtime.rules.splitMassingByParcels(massing, entries, rule, seed, { turf, largestPolygon: runtime.footprints.toSingleLargestPolygon });
+    // The site-first Row editor saves the continuous massing, using synthetic plots for sizing;
+    // splitting it into tiny synthetic pieces would wrongly exclude valid small buildings.
+    const split = typology === 'row' && !entries.length ? { pieces: [massing] }
+        : runtime.rules.splitMassingByParcels(massing, entries, rule, seed, { turf, largestPolygon: runtime.footprints.toSingleLargestPolygon });
     if (!split.pieces.length) fail('building-rule-no-room', 'No source parcel can satisfy this building rule.', 'parcelIds', { excluded: split.excluded });
     return publish(intent, { goal: typology === 'row' ? 'row' : 'buildings', site, buildingProposal: { typologyType: typology === 'row' ? 'row' : 'block', parameters },
         geometry: { buildings: split.pieces, blockMassing: massing } });

@@ -990,6 +990,7 @@
                 "nameOfferToSell": "عرض للبيع"
             },
             "recipientPlaceholder": "اسم المستلم أو عنوان 0x",
+            "recipientRequired": "أدخل اسم المستلم أو عنوانه.",
             "recipientScope": {
                 "specific": "عنوان محدد",
                 "any": "أي شخص"
@@ -5031,7 +5032,8 @@
                 "schellingLaidOut": "مقاسم مخطط شيلينغ {{code}}. شرائط الشوارع بينها مقاسم أيضا.",
                 "schellingFailed": "تعذر وضع مقاسم شيلينغ هنا: {{reason}}",
                 "nodeOnPool": "تقع هذه العقدة على محيط الأرض المجمعة: وهي تخص الجيران، لا هذا التقسيم.",
-                "uploadUnavailable": "يتطلب رفع GeoJSON محرك الأشكال الهندسية، الذي لم يتم تحميله."
+                "uploadUnavailable": "يتطلب رفع GeoJSON محرك الأشكال الهندسية، الذي لم يتم تحميله.",
+                "uploadTooMany": "استخدم {{count}} مضلعًا على الأكثر في مخطط واحد."
             }
         },
         "publishWithAgreement": "ينشر تقسيم الأراضي مع الاتفاق الخاص به. اقترح اتفاقا يتضمنه."

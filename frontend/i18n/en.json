@@ -2844,6 +2844,7 @@
                 "thirdParty": "Third party"
             },
             "recipientPlaceholder": "Recipient name or 0x address",
+            "recipientRequired": "Enter a recipient name or address.",
             "recipientScope": {
                 "specific": "Specific address",
                 "any": "Anyone"
@@ -3235,7 +3236,8 @@
                 "schellingLaidOut": "Plots of Schelling plan {{code}}. The street strips between them are plots too.",
                 "schellingFailed": "Schelling plots could not be laid out here: {{reason}}",
                 "nodeOnPool": "That node sits on the pool outline: it belongs to the neighbours, not to this layout.",
-                "uploadUnavailable": "GeoJSON upload needs the geometry engine, which has not loaded."
+                "uploadUnavailable": "GeoJSON upload needs the geometry engine, which has not loaded.",
+                "uploadTooMany": "Use at most {{count}} polygons in one layout."
             },
             "validation": {
                 "missing-plots": "Add at least one plot.",

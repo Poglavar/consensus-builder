@@ -428,7 +428,7 @@ An urban-rule design generating perimeter building form and courtyard space from
 
 ### Row rule
 
-An urban-rule design generating a row arrangement of buildings from its land and stated dimensions. Its complete footprint must remain within the selected land, including its disconnected boundaries and excluding gaps and holes. An unplaceable footprint cannot be finished as a Row design.
+An urban-rule design generating a row arrangement of buildings from its land and stated dimensions. Creation uses at least two distinct selected parcels, or at least two frontage plots cut from an authored site. Its complete footprint must remain within the selected land, including its disconnected boundaries and excluding gaps and holes. An unplaceable footprint cannot be finished as a Row design.
 
 ### Detached rule
 

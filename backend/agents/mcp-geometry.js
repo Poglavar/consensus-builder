@@ -17,7 +17,7 @@ const frontend = new URL('../../frontend/js/', import.meta.url);
 for (const path of ['cid.js', 'metric-frame.js', 'local-frame.js', 'footprint-geometry.js', 'corridor-profile.js', 'corridor-osm-form.js', 'corridor-junction.js',
     'corridor-transition.js', 'proposals/corridor-levels.js', 'corridor-footprint.js', 'corridor-tunnel.js',
     'corridor-geometry.js', 'proposals/corridor-authoring.js', 'proposals/formation-depth.js',
-    'design-record.js', 'parcel-layout-validation.js', 'parcel-layout-layouts.js', 'reparcellization-slice.js',
+    'design-record.js', 'parcel-layout-validation.js', 'parcel-layout-layouts.js', 'reparcellization-slice.js', 'proposals/site-plots.js',
     'parcels/schelling-grid.js', 'single-building-geometry.js', 'park-planting.js', 'urban-rule-variation.js', 'building-rule-geometry.js', 'vendor/transit-station-models.js', 'transit-stations.js', 'intent-editing.js', 'intent-design.js']) {
     const url = new URL(path, frontend);
     context.require = createRequire(url);
@@ -36,5 +36,5 @@ export const corridorRuntime = {
 // Thin adapters call these same app generators; no parallel construction geometry.
 export const constructorRuntime = {
     record: context.DesignRecord, singleBuilding: context.SingleBuildingGeometry, footprints: context.FootprintGeometry, rules: context.UrbanRuleVariation,
-    buildingRules: context.BuildingRuleGeometry, stations: context.TransitStations
+    buildingRules: context.BuildingRuleGeometry, stations: context.TransitStations, sitePlots: context.__sitePlots
 };

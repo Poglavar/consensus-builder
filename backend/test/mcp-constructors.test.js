@@ -7,14 +7,20 @@ const site = { type: 'Polygon', coordinates: [[[15,45],[15.002,45],[15.002,45.00
 const parcel = { type: 'Feature', id: 'A', properties: { parcelId: 'A' }, geometry: site };
 const common = { kind: 'building', site, city: 'london', floors: 4, authoredAt: '2026-01-01T00:00:00.000Z' };
 const options = { parcels: [parcel] };
+const rowParcels = [
+    { ...parcel, geometry: { type:'Polygon', coordinates:[[[15,45],[15.001,45],[15.001,45.002],[15,45.002],[15,45]]] } },
+    { ...parcel, id:'B', properties:{parcelId:'B'}, geometry: { type:'Polygon', coordinates:[[[15.001,45],[15.002,45],[15.002,45.002],[15.001,45.002],[15.001,45]]] } }
+];
+const rowOptions = { parcels: rowParcels };
 const track = () => buildTypedDesign({ kind: 'track', points: [[15,45],[15.002,45]], gauge: 1000, speed: 80, authoredAt: common.authoredAt });
 describe('MCP shared construction generators', () => {
     it.each([['freeform','single'],['block','buildings'],['row','row'],['detached','parcelBased']])('creates %s as its actual canonical typology', (typology, goal) => {
-        const design = buildTypedDesign({ ...common, typology }, options);
+        const selected = typology === 'row' ? rowOptions : options;
+        const design = buildTypedDesign({ ...common, typology }, selected);
         expect(design.goal).toBe(goal);
         expect(design.schema).toBe('design/v1');
         expect(design.geometry.buildings.length).toBeGreaterThan(0);
-        expect(buildTypedDesign({ ...common, typology }, options)).toEqual(design);
+        expect(buildTypedDesign({ ...common, typology }, selected)).toEqual(design);
         for (const building of design.geometry.buildings) expect(turf.booleanWithin(building, parcel)).toBe(true);
     });
     it('derives freeform floors from an explicit height when floors are omitted', () => {
@@ -24,8 +30,8 @@ describe('MCP shared construction generators', () => {
     it('uses app editor defaults for Block, Row and Freeform starting geometry', () => {
         const block = buildTypedDesign({ kind: 'building', typology: 'block', site }, options);
         expect(block.buildingProposal.parameters).toMatchObject({ height: 17.5, width: 15, setback: 2, rule: { kind: 'exact', minPlotAreaM2: 50 } });
-        const row = buildTypedDesign({ kind: 'building', typology: 'row', site }, options);
-        const dimensions = constructorRuntime.buildingRules.createRowPlacement().calculate({ site: parcel, parcels: [{feature:parcel}] });
+        const row = buildTypedDesign({ kind: 'building', typology: 'row', site }, rowOptions);
+        const dimensions = constructorRuntime.buildingRules.createRowPlacement().calculate({ site: parcel, parcels: rowParcels.map(feature => ({feature})) });
         expect(row.buildingProposal.parameters).toMatchObject({ length: dimensions.maxLength, width: dimensions.maxLength/2, height: 12, rule: { kind: 'exact', minPlotAreaM2: 50 } });
         const freeform = buildTypedDesign({ kind: 'building', typology: 'freeform', site }, options);
         const [lng, lat] = turf.pointOnFeature(parcel).geometry.coordinates;
@@ -37,8 +43,8 @@ describe('MCP shared construction generators', () => {
         const ring = constructorRuntime.buildingRules.blockRingOutline(parcel, parcel, { setback: 4, width: 9, simplifyM: 0 });
         expect(block.geometry.blockMassing.geometry.coordinates[0]).toEqual(ring.outer.geometry.coordinates[0]);
         expect(block.geometry.blockMassing.geometry.coordinates).toHaveLength(2);
-        const row = buildTypedDesign({ ...common, typology: 'row', lengthM: 45, depthM: 14, chamferM: 2, rotationDegrees: 12 }, options);
-        const generated = constructorRuntime.buildingRules.rowFootprint({ site: parcel, parcels: [{feature: parcel}] }, { lengthM:45,depthM:14,chamferM:2,rotationRadians:12*Math.PI/180,height:12 });
+        const row = buildTypedDesign({ ...common, typology: 'row', lengthM: 45, depthM: 14, chamferM: 2, rotationDegrees: 12 }, rowOptions);
+        const generated = constructorRuntime.buildingRules.rowFootprint({ site: parcel, parcels: rowParcels.map(feature => ({feature})) }, { lengthM:45,depthM:14,chamferM:2,rotationRadians:12*Math.PI/180,height:12 });
         expect(row.geometry.blockMassing.geometry).toEqual(generated.feature.geometry);
         expect(row.geometry.blockMassing.geometry.coordinates[0]).toHaveLength(9);
     });
@@ -46,17 +52,25 @@ describe('MCP shared construction generators', () => {
         const origin = [15,45], mx = 1/(111320*Math.cos(Math.PI/4)), my = 1/110540;
         const make = points => ({type:'Polygon',coordinates:[points.map(([x,y])=>[origin[0]+x*mx,origin[1]+y*my])]});
         for (const geometry of [make([[0,0],[60,0],[60,12],[12,12],[12,60],[0,60],[0,0]]), make([[0,0],[12,0],[12,12],[0,12],[0,0]])]) {
-            const source = { ...parcel, geometry }, params = {kind:'building',typology:'row',site:geometry};
-            const generated = buildTypedDesign(params,{parcels:[source]});
-            expect(constructorRuntime.singleBuilding.footprintWithinBoundary(generated.geometry.blockMassing,source,turf)).toBe(true);
+            const source = { ...parcel, geometry }, params = {kind:'building',typology:'row',site:geometry,minPlotAreaM2:0};
+            const plots = constructorRuntime.sitePlots.cutPlots(geometry, {plotWidthM:7,turf});
+            const generated = buildTypedDesign(params);
+            expect(constructorRuntime.singleBuilding.footprintWithinBoundary(generated.geometry.blockMassing || generated.geometry.buildings[0],source,turf)).toBe(true);
             expect(generated.buildingProposal.parameters.length).toBeGreaterThan(4);
             const runtime = constructorRuntime.buildingRules.createRowPlacement();
-            const dimensions = runtime.calculate({site:source,parcels:[{feature:source}]});
+            const dimensions = runtime.calculate({site:source,parcels:plots.map(feature => ({feature}))});
             expect(generated.buildingProposal.parameters.length).toBeCloseTo(dimensions.maxLength);
-            const exact = buildTypedDesign({...params,lengthM:8,depthM:4},{parcels:[source]});
+            const exact = buildTypedDesign({...params,lengthM:8,depthM:4});
             expect(exact.buildingProposal.parameters).toMatchObject({length:8,width:4});
-            expect(() => buildTypedDesign({...params,lengthM:400,depthM:100},{parcels:[source]})).toThrow(/does not fit/);
+            expect(() => buildTypedDesign({...params,lengthM:400,depthM:100})).toThrow(/does not fit/);
         }
+    });
+    it('requires two distinct selected parcels for Row and allows an outline cut into plots', () => {
+        const intent = { ...common, typology:'row' };
+        expect(() => buildTypedDesign(intent, options)).toThrow(/at least two selected parcels/);
+        expect(() => buildTypedDesign(intent, { parcels:[parcel, parcel] })).toThrow(/at least two selected parcels/);
+        expect(buildTypedDesign(intent, rowOptions).goal).toBe('row');
+        expect(buildTypedDesign(intent).goal).toBe('row');
     });
     it('applies typed Block gaps, wings and chamfer through the shared editor shaping path', () => {
         const args={kind:'building',typology:'block',site};

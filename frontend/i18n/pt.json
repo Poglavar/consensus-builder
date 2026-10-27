@@ -942,6 +942,7 @@
                 "nameOfferToSell": "Oferta de venda"
             },
             "recipientPlaceholder": "Nome do destinatário ou endereço 0x",
+            "recipientRequired": "Introduza o nome ou o endereço do destinatário.",
             "recipientScope": {
                 "specific": "Endereço específico",
                 "any": "Qualquer pessoa"
@@ -4846,7 +4847,8 @@
                 "schellingLaidOut": "Lotes do plano de Schelling {{code}}. As faixas de rua entre eles também são lotes.",
                 "schellingFailed": "Não foi possível dispor aqui os lotes de Schelling: {{reason}}",
                 "nodeOnPool": "Esse nó está no contorno do terreno agrupado: pertence aos vizinhos, não a esta disposição.",
-                "uploadUnavailable": "O carregamento de GeoJSON requer o motor de geometria, que não foi carregado."
+                "uploadUnavailable": "O carregamento de GeoJSON requer o motor de geometria, que não foi carregado.",
+                "uploadTooMany": "Use no máximo {{count}} polígonos em uma divisão."
             }
         },
         "publishWithAgreement": "Uma disposição parcelar é publicada com o respetivo acordo. Proponha um acordo que a inclua."

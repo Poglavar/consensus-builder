@@ -34,7 +34,7 @@ async function openBlock(page: Page) {
   await expect.poll(() => page.evaluate(() => (window as any).blockStorage.blocks.size)).toBeGreaterThan(0);
   await page.locator('#showBlockListButton').click();
   await page.locator('#blocks-content .block-item').first().click();
-  await page.locator('#layers-sheet [data-sheet-close]').click();
+  await expect(page.locator('#layers-sheet')).toBeHidden();
   await expect(page.locator('#block-info-panel')).toBeVisible();
   await expect(page.locator('#parcel-info-panel')).toBeHidden();
   return page.evaluate(() => JSON.parse(document.querySelector('#block-info-title')!.getAttribute('data-i18n-params')!).name);
@@ -94,7 +94,7 @@ for (const kind of ['road', 'building', 'park'] as const) {
     await page.locator('#block-info-panel .close-button').click();
     await openLayerSection(page, 'blocks');
     await page.locator('#blocks-content .block-item').first().click();
-    await page.locator('#layers-sheet [data-sheet-close]').click();
+    await expect(page.locator('#layers-sheet')).toBeHidden();
     await page.locator('#block-proposals-tab-button').click();
     const row = page.locator(`#block-proposals-content .proposal-list-item[data-proposal-id="${id}"]`);
     await row.getByRole('button', { name: /Apply to map$/ }).click();

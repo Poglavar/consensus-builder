@@ -1,5 +1,15 @@
 // proposals/create.js — extracted from proposals.js (behavior-preserving relocation).
 
+function buildingSiteFromSelection(ids, resolve, siteFromFeatures) {
+    const features = ids.map(id => resolve(id));
+    if (!features.length || features.some(feature => !feature?.geometry)) {
+        throw new Error('Could not resolve the selected land for the building site.');
+    }
+    const site = siteFromFeatures(features);
+    if (!site) throw new Error('Could not construct the selected building site.');
+    return site;
+}
+
 // The city a proposal belongs to, as a city id ('zagreb', 'new_york', …) — the same form the
 // backend's `proposal.city` column stores. Recorded on the proposal itself so its origin survives
 // being uploaded from elsewhere, opened from a link, or copied.
@@ -249,6 +259,12 @@ async function createProposal() {
     }
     if (!description) {
         showProposalAlertMessage('please_enter_a_description', 'Please enter a description.');
+        return;
+    }
+    const recipient = window.proposalFacets;
+    if (!window.validateProposalRecipient(recipient || {})) {
+        showProposalAlertMessage('recipient_required', t('modal.createProposal.recipientRequired', 'Enter a recipient name or address.'));
+        document.getElementById('proposalRecipientAddress')?.focus();
         return;
     }
 
@@ -664,6 +680,13 @@ async function createProposal() {
                 : (selectedTool === 'row' ? 'row' : (selectedTool === 'parcelBased' ? 'parcelBased' : 'block'));
 
             const designParcelIds = pendingBuildingContext.parcelIds.map(String).filter(Boolean);
+
+            // The editor's selected live land, including parcels without generated buildings,
+            // is the authored site. Never infer the site from the generated footprints.
+            if (!proposal.site && selectedTool !== 'single') {
+                const resolve = window.resolveDesignParcelFeature || (id => liveFabric.get(id));
+                proposal.site = buildingSiteFromSelection(designParcelIds, resolve, window.__siteDraft.siteFromFeatures);
+            }
 
             proposal.primaryType = 'Urban Rule';
             proposal.goal = selectedTool === 'single' ? 'single' : 'buildings';

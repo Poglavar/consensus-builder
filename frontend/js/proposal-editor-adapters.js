@@ -238,6 +238,13 @@
         if (groundIssue) errors.push(issue(groundIssue.code, groundIssue.message, groundIssue.path));
         const placementIssue = placementBindingIssue(draft);
         if (placementIssue) errors.push(placementIssue);
+        const validateRecipient = global.validateProposalRecipient || (typeof require === 'function'
+            ? require('./proposal-drafts.js').validateProposalRecipient : null);
+        if (!validateRecipient) throw new Error('Proposal recipient validation is unavailable.');
+        if (!validateRecipient(draft?.fields || {})) {
+            errors.push(issue('recipient-required', translate('modal.createProposal.recipientRequired',
+                'Enter a recipient name or address.'), 'fields.recipientAddress'));
+        }
         if (!draft?.fields?.description || !String(draft.fields.description).trim()) {
             warnings.push(issue('missing-description', 'A description will help others understand this design.', 'fields.description'));
         }

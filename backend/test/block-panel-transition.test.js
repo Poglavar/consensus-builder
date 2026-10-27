@@ -30,3 +30,22 @@ it('opening block details dismisses the parcel panel before showing the block ac
     context.showBlockInfo('test block', true);
     expect(transitions).toEqual(['parcel:hidden', 'block:visible']);
 });
+
+it('selecting a block from Layers closes sheets before opening block details', () => {
+    const transitions = [];
+    const items = [];
+    const context = vm.createContext({
+        window: { addEventListener() {}, MapShell: { closeSheets: () => transitions.push('sheets:closed') } },
+        document: {
+            getElementById: id => id === 'blocks-content' ? { innerHTML: '', appendChild: item => items.push(item) } : null,
+            createElement: () => ({ dataset: {} })
+        },
+        console, setTimeout, clearTimeout
+    });
+    vm.runInContext(readFileSync(new URL('../../frontend/js/parcel-blocks.js', import.meta.url), 'utf8'), context);
+    context.window.blockStorage.blocks.set('test block', { parcels: [] });
+    context.highlightAndCenterBlock = name => transitions.push(`block:${name}`);
+    context.updateBlocksList();
+    items[0].onclick();
+    expect(transitions).toEqual(['sheets:closed', 'block:test block']);
+});

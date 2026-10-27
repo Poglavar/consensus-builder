@@ -382,6 +382,18 @@ describe('uploading a GeoJSON layout', () => {
         expect(w.state.slices).toBe(before);
         expect(w.statusText()).toBe('Uploaded polygons do not overlap with selected parcels.');
     });
+
+    it('rejects an oversized file before changing the layout or its history', async () => {
+        const w = world({ globals: { FileReader: FakeFileReader } });
+        await w.editor.openParcelLayoutEditor();
+        const before = w.state.slices;
+        const depth = w.state.historyCtl.depth();
+        const feature = { type: 'Feature', properties: {}, geometry: box(0, 0, 1, 1) };
+        upload(w, { type: 'FeatureCollection', features: Array(1001).fill(feature) });
+        expect(w.state.slices).toBe(before);
+        expect(w.state.historyCtl.depth()).toBe(depth);
+        expect(w.statusText()).toBe('Use at most 1000 polygons in one layout.');
+    });
 });
 
 describe('before and after', () => {
@@ -575,6 +587,28 @@ describe('other starting layouts and pools', () => {
         w.$('[data-reparcel-commit]').click();
         expect(globalThis.pendingParcelLayout).toMatchObject({ poolSource: 'site', parcelIds: ['P1'] });
         expect(globalThis.pendingParcelLayout.openGroundM2).toBeCloseTo(area(site) - area(PARCELS[0].geometry), -1);
+    });
+
+    it('reopens its own applied ground but still refuses ground held by another design', async () => {
+        const site = box(0, 0, 60, 50);
+        const holder = id => ({ type: 'Feature', properties: { producedByProposalId: id }, geometry: site });
+        let features = [holder('layout-1')];
+        const layout = { poolSource: 'site', pool: site, parcelIds: ['P1'], openGroundM2: area(site) - area(PARCELS[0].geometry),
+            plots: [{ geometry: site, source: 'manual' }] };
+        const w = world({ selection: null, pendingLayout: layout, globals: {
+            getActiveProposalDesignDraft: () => ({ sourceLocalProposalId: 'layout-1' }),
+            LiveParcelFabric: { queryBounds: () => features },
+            __openGround: { bboxOf: () => [], groundIdsOf: () => ['open-1'] },
+            proposalStorage: { getProposal: id => ({ title: id === 'other' ? 'Other design' : id }) }
+        } });
+        const pool = await w.editor.buildSitePool(w.editor.sitePoolOfPendingLayout());
+        expect(pool.boundParcelIds).toEqual(['P1']);
+        features = [holder('layout-1'), holder('other')];
+        expect(await w.editor.buildSitePool(w.editor.sitePoolOfPendingLayout())).toEqual({ error: 'taken', names: ['Other design'] });
+        features = [holder('layout-1')];
+        expect(await w.editor.openParcelLayoutEditor()).toBe(true);
+        w.$('[data-reparcel-commit]').click();
+        expect(globalThis.pendingParcelLayout).toMatchObject({ poolSource: 'site', parcelIds: ['P1'] });
     });
 });
 

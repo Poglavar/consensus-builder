@@ -94,7 +94,7 @@ describe('fresh building editor launch results', () => {
         let resolveOpen;
         const pendingOpen = new Promise(resolve => { resolveOpen = resolve; });
         const launcher = loadListUiFunction(launcherName, {
-            getCurrentParcelSelectionContext: () => ({ ids: ['p1'] }),
+            getCurrentParcelSelectionContext: () => ({ ids: ['p1', 'p2'] }),
             shouldStopFreshProposalForWholeBlock: async () => false,
             formatParcelSelectionLabel: () => 'Block A',
             getPendingBuildingSeedFor: () => null,
@@ -1500,6 +1500,19 @@ describe('site-first drafts', () => {
     });
 });
 
+describe('ownership recipient draft validation', () => {
+    it.each(['', '   '])('refuses a specific recipient with empty text %j', recipientAddress => {
+        const adapter = registry.get('ownership-transfer');
+        const draft = draftFor(adapter, { proposalId: 'transfer', goal: 'ownership-transfer', title: 'Transfer',
+            cadastreParcelIds: ['parcel-1'], facets: { ownership: 'third-party', recipientScope: 'specific', recipientAddress } });
+        expect(adapter.validate(draft).errors.map(error => error.code)).toContain('recipient-required');
+        draft.fields.recipientAddress = 'Recipient';
+        expect(adapter.validate(draft).errors.map(error => error.code)).not.toContain('recipient-required');
+        draft.fields.recipientScope = 'any'; draft.fields.recipientAddress = '';
+        expect(adapter.validate(draft).errors.map(error => error.code)).not.toContain('recipient-required');
+    });
+});
+
 describe('free-placement binding handoff', () => {
     const SITE = {
         type: 'MultiPolygon',
@@ -1545,6 +1558,33 @@ describe('free-placement binding handoff', () => {
         const fn = loadProposalEditorShellFunction('rebindFreePlacementDraft', { global }, prefix);
         return { fn, bindingRequest, fetch };
     }
+
+    it.each(['park', 'square', 'lake'])('requires a verified binding on initial %s site creation', async kind => {
+        let draft;
+        const updateDraft = vi.fn((_id, patch) => {
+            draft = { ...draft, fields: { ...draft.fields, ...patch.fields },
+                editorPayload: { ...draft.editorPayload, ...patch.editorPayload } };
+            return draft;
+        });
+        const store = { createDraft: options => (draft = { id: 'fresh-site', ...options }),
+            getDraft: () => draft, updateDraft, validateDraft: () => draft };
+        const start = loadProposalEditorShellFunction('instantCreateStructureFromSite', {
+            global: { proposalDraftStore: store, buildLakeGraphicsFromGeometry: geometry => ({ geometry }) },
+            STRUCTURE_KIND_LABELS: { park: 'Park', square: 'Square', lake: 'Lake' }, currentCityId: () => 'london',
+            polygonOfSite: site => ({ type: 'Polygon', coordinates: site.coordinates[0] }),
+            structureGeometryIsOneArea: () => true, siteDraftFields: context => ({ site: context.site, binding: context.binding }),
+            instantCreateProposalFromDraft: id => id
+        });
+        await start(kind, { site: SITE, binding: { source: 'server:live-cadastre', coverage: 'unknown', parcels: [] } });
+        const unknown = loadRebind(store, { source: 'server:live-cadastre', coverage: 'unknown', parcels: [] });
+        await expect(unknown.fn(draft.id)).rejects.toThrow(/cannot verify/);
+        expect(updateDraft).not.toHaveBeenCalled();
+        expect(draft.editorPayload.placement.bindingStatus).toBe('pending');
+        const confirmed = loadRebind(store, { source: 'server:live-cadastre', coverage: 'none', parcels: [] });
+        await confirmed.fn(draft.id);
+        expect(draft.editorPayload.placement.bindingStatus).toBe('bound');
+        expect(draft.fields.binding.coverage).toBe('none');
+    });
 
     function shellFunctionSource(name) {
         const ast = parse(proposalEditorShellSource, { sourceType: 'script' });

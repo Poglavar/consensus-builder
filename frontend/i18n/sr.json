@@ -2872,6 +2872,7 @@
                 "thirdParty": "Treća strana"
             },
             "recipientPlaceholder": "Ime ili 0x adresa primaoca",
+            "recipientRequired": "Unesite ime ili adresu primaoca.",
             "recipientScope": {
                 "specific": "Određena adresa",
                 "any": "Bilo ko"
@@ -3267,7 +3268,8 @@
                 "schellingLaidOut": "Parcele Šelingovog plana {{code}}. Ulični pojasevi između njih takođe su parcele.",
                 "schellingFailed": "Šelingove parcele ovde nisu mogle da se rasporede: {{reason}}",
                 "nodeOnPool": "Taj čvor je na obodu obuhvata: pripada susedima, ne ovom rasporedu.",
-                "uploadUnavailable": "Za otpremanje GeoJSON-a potreban je geometrijski modul, koji nije učitan."
+                "uploadUnavailable": "Za otpremanje GeoJSON-a potreban je geometrijski modul, koji nije učitan.",
+                "uploadTooMany": "U jednom rasporedu koristite najviše {{count}} poligona."
             },
             "validation": {
                 "missing-plots": "Dodajte bar jednu parcelu.",

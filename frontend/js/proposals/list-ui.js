@@ -219,6 +219,11 @@ async function launchRowHouseToolForSelection() {
         updateStatus('Select parcels before launching the row house tool.');
         return false;
     }
+    if (selection.ids.length < 2) {
+        const t = getProposalI18nHelper();
+        updateStatus(t('panel.parcel.build.rowSelectionHint', 'Row houses need at least two parcels. Select another parcel or use Detect block.'));
+        return false;
+    }
     if (await shouldStopFreshProposalForWholeBlock('row', selection)) return false;
     if (typeof openRowHouseForParcels !== 'function') {
         updateStatus('Row house tool is unavailable.');

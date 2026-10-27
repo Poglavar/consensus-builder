@@ -1238,6 +1238,9 @@
             // started as a selection's outline (it may have been reshaped since).
             fields: siteDraftFields(siteContext, []),
             editorPayload: {
+                // A drawn site needs the same authoritative binding on first placement as on
+                // later moves. A preview with unknown coverage must not become applied ground.
+                placement: { free: true, site: JSON.parse(JSON.stringify(siteContext.site)), bindingStatus: 'pending' },
                 structureProposal: { kind, applied: false, geometry: structureGeometry, blockName: null, lakeGraphics: lakeGraphics || null }
             },
             previewGeometry: structureGeometry

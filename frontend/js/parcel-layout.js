@@ -2042,6 +2042,11 @@
     // does not cover stays as one leftover plot. It is one undo step, and a file that misses the
     // pool entirely leaves the layout as it was.
     function applyUploadedGeometry(features) {
+        const maxPlots = window.ParcelLayoutValidation.MAX_PLOTS;
+        if (features.filter(feature => /^(Polygon|MultiPolygon)$/.test(feature?.geometry?.type || '')).length > maxPlots) {
+            setStatus(t('parcelLayout.editor.status.uploadTooMany', 'Use at most {{count}} polygons in one layout.', { count: maxPlots }), 'error');
+            return;
+        }
         if (typeof turf === 'undefined') {
             setStatus(t('parcelLayout.editor.status.uploadUnavailable', 'GeoJSON upload needs the geometry engine, which has not loaded.'), 'error');
             return;
@@ -3424,11 +3429,13 @@
         const fabric = window.LiveParcelFabric;
         const ground = window.__openGround;
         const order = window.__planOrder;
+        const sourceId = window.getActiveProposalDesignDraft?.()?.sourceLocalProposalId;
         if (fabric && typeof fabric.queryBounds === 'function' && ground && order && typeof order.intersectionArea === 'function') {
             const siteFeature = { type: 'Feature', properties: {}, geometry: site };
             const holders = new Set();
             fabric.queryBounds(ground.bboxOf(site))
-                .filter(feature => ground.groundIdsOf(feature).length && feature.properties && feature.properties.producedByProposalId)
+                .filter(feature => ground.groundIdsOf(feature).length && feature.properties && feature.properties.producedByProposalId
+                    && String(feature.properties.producedByProposalId) !== String(sourceId || ''))
                 .filter(feature => Number(order.intersectionArea(siteFeature, feature)) >= (Number(order.MIN_INTERSECTION_M2) || 0.25))
                 .forEach(feature => holders.add(String(feature.properties.producedByProposalId)));
             if (holders.size) {

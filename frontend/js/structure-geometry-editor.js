@@ -20,7 +20,8 @@
         reselectKey: null,
         lakeError: null,
         initialSite: null,
-        subeditor: null
+        subeditor: null,
+        initialSignature: null
     };
 
     // Everything the editor draws lives in its own pane ABOVE the structure panes (squares
@@ -884,6 +885,27 @@
         }
     }
 
+    function designSignature() {
+        return JSON.stringify([state.boundary, state.decorations, state.pathPoints]);
+    }
+
+    async function requestCloseEditor() {
+        if (state.initialSignature !== designSignature()) {
+            const translate = (key, fallback) => {
+                const value = global.i18n?.t?.(key);
+                return value && value !== key ? value : fallback;
+            };
+            const proceed = await global.CbDialog.confirm(
+                `${translate('proposalDrafts.discardDesign.title', 'Discard this design?')}\n${translate('proposalDrafts.discardDesign.body', 'Closing the editor throws away the changes you made here. Use Done to keep them.')}`,
+                { destructive: true,
+                    okText: translate('proposalDrafts.discardDesign.confirm', 'Discard'),
+                    cancelText: translate('proposalDrafts.discardDesign.cancel', 'Keep editing') }
+            );
+            if (!proceed) return;
+        }
+        closeEditor(false);
+    }
+
     function closeEditor(saved) {
         const subeditor = state.subeditor;
         const isCommit = global.isProposalDesignCommitSession?.() === true;
@@ -913,6 +935,7 @@
         state.initialSite = null;
         state.decorations = null;
         state.subeditor = null;
+        state.initialSignature = null;
         if (historyCtl) { historyCtl.destroy(); historyCtl = null; }
         state.tool = null;
         state.pathPoints = [];
@@ -1047,7 +1070,7 @@
                 }
             },
             modes: ['2d'],
-            onCancel: () => closeEditor(false),
+            onCancel: requestCloseEditor,
             onModeChange: mode => {
                 if (mode === '2d' && state.session === session) session.fitFeature(boundary, { maxZoom: 20 });
             }
@@ -1062,6 +1085,7 @@
             return false;
         }
         state.session = session;
+        state.initialSignature = designSignature();
         state.draftId = draft.id;
         state.panel = session.root;
         state.panel.addEventListener('click', handlePanelClick);
@@ -1085,7 +1109,7 @@
     }
 
     global.openStructureGeometryEditor = openStructureGeometryEditor;
-    global.closeStructureGeometryEditor = () => closeEditor(false);
+    global.closeStructureGeometryEditor = requestCloseEditor;
     // While the editor is open, the map belongs to it: parcel click/hover handlers consult this.
     global.isStructureGeometryEditorActive = () => !!state.draftId;
 

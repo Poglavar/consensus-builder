@@ -11,6 +11,11 @@
     const designGoals = global.ProposalDesignGoals || (typeof require === 'function'
         ? require('./proposals/design-goals.js') : null);
 
+    function validateProposalRecipient(fields = {}) {
+        return fields.ownership !== 'third-party' || fields.recipientScope !== 'specific'
+            || (typeof fields.recipientAddress === 'string' && fields.recipientAddress.trim().length > 0);
+    }
+
     function cloneDraftValue(value) {
         if (value === undefined || value === null) return value;
         try {
@@ -977,6 +982,7 @@
     }
 
     global.PROPOSAL_DRAFT_SCHEMA_VERSION = PROPOSAL_DRAFT_SCHEMA_VERSION;
+    global.validateProposalRecipient = validateProposalRecipient;
     global.PROPOSAL_DRAFT_STORAGE_KEY = PROPOSAL_DRAFT_STORAGE_KEY;
     global.createProposalDraftStore = createProposalDraftStore;
     function attachDefaultStore() {
@@ -1000,6 +1006,7 @@
             PROPOSAL_DRAFT_SCHEMA_VERSION,
             PROPOSAL_DRAFT_STORAGE_KEY,
             createProposalDraftStore,
+            validateProposalRecipient,
             cloneDraftValue,
             normalizeGoalKey,
             envelopeWithHistoryLimit

@@ -942,6 +942,7 @@
                 "nameOfferToSell": "Offre de vente"
             },
             "recipientPlaceholder": "Nom du bénéficiaire ou adresse 0x",
+            "recipientRequired": "Saisissez le nom ou l’adresse du bénéficiaire.",
             "recipientScope": {
                 "specific": "Adresse spécifique",
                 "any": "N’importe qui"
@@ -4846,7 +4847,8 @@
                 "schellingLaidOut": "Lots du plan de Schelling {{code}}. Les bandes de voirie entre eux sont également des lots.",
                 "schellingFailed": "Impossible de disposer les lots de Schelling ici : {{reason}}",
                 "nodeOnPool": "Ce nœud se trouve sur le contour du regroupement : il appartient aux voisins, pas à ce découpage.",
-                "uploadUnavailable": "L’importation GeoJSON nécessite le moteur géométrique, qui n’est pas chargé."
+                "uploadUnavailable": "L’importation GeoJSON nécessite le moteur géométrique, qui n’est pas chargé.",
+                "uploadTooMany": "Utilisez au plus {{count}} polygones dans un même découpage."
             }
         },
         "publishWithAgreement": "Une répartition parcellaire est publiée avec son accord. Proposez un accord qui l’inclut."

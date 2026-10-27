@@ -917,7 +917,10 @@ function updateBlocksList() {
                     <span>${block.name}</span>
                     <span class="block-count">${block.count} parcels</span>
                 `;
-        blockItem.onclick = () => highlightAndCenterBlock(block.name);
+        blockItem.onclick = () => {
+            window.MapShell?.closeSheets();
+            highlightAndCenterBlock(block.name);
+        };
         blocksContent.appendChild(blockItem);
     });
 }

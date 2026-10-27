@@ -2871,6 +2871,7 @@
                 "thirdParty": "Tercero"
             },
             "recipientPlaceholder": "Nombre o dirección 0x del destinatario",
+            "recipientRequired": "Introduce el nombre o la dirección del destinatario.",
             "recipientScope": {
                 "specific": "Dirección específica",
                 "any": "Cualquiera"
@@ -3262,7 +3263,8 @@
                 "schellingLaidOut": "Parcelas del plan de Schelling {{code}}. Las franjas de calle entre ellas también son parcelas.",
                 "schellingFailed": "Aquí no se pudieron trazar parcelas de Schelling: {{reason}}",
                 "nodeOnPool": "Ese nodo está en el contorno agrupado: pertenece a los vecinos, no a este trazado.",
-                "uploadUnavailable": "La subida de GeoJSON necesita el motor de geometría, que no se ha cargado."
+                "uploadUnavailable": "La subida de GeoJSON necesita el motor de geometría, que no se ha cargado.",
+                "uploadTooMany": "Usa como máximo {{count}} polígonos en una distribución."
             },
             "validation": {
                 "missing-plots": "Añade al menos una parcela.",

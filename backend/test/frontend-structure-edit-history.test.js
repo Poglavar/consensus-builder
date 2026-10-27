@@ -10,7 +10,9 @@ import { fileURLToPath } from 'node:url';
 const editorSource = readFileSync(fileURLToPath(new URL('../../frontend/js/structure-geometry-editor.js', import.meta.url)), 'utf8');
 const require = createRequire(import.meta.url);
 globalThis.proj4 ||= require('proj4');
+const realTurf = require('@turf/turf');
 const SingleBuildingGeometry = require('../../frontend/js/single-building-geometry.js');
+const ProposalApplyStructures = require('../../frontend/js/proposals/apply/structures.js');
 // A stored park/square tree: its point and its look (park-planting.js).
 const tree = (lng, lat) => ({ coordinate: [lng, lat], kind: 'broadleaf', heightM: 10 });
 
@@ -223,9 +225,12 @@ function makeEditorHarness(decorations, options = {}) {
     };
     const context = createContext({
         document, map, L, GeometryEditHistory: historyFactory,
+        CbDialog: { confirm: vi.fn(async () => true) },
         SingleBuildingGeometry,
+        ProposalApplyStructures,
         __parkPlanting: require('../../frontend/js/park-planting.js'),
         turf: {
+            ...realTurf,
             booleanPointInPolygon(point) {
                 if (options.rejectOutsidePoints !== true) return true;
                 const [lng, lat] = point.coordinates;
@@ -384,7 +389,7 @@ function makeEditorHarness(decorations, options = {}) {
                 : (savedPayload?.structureProposal?.decorationDesign || savedDecorations);
         },
         // The header × is the editor's only way out without saving (the shell's onCancel).
-        cancel() { mapEditorOptions.at(-1).onCancel(); },
+        cancel() { return mapEditorOptions.at(-1).onCancel(); },
         undo() { document.fireKey({ key: 'z', ctrlKey: true, preventDefault() {} }); }
     };
 }
@@ -392,6 +397,24 @@ function makeEditorHarness(decorations, options = {}) {
 const currentMarkers = harness => harness.groups.at(-1).items.filter(item => typeof item.getLatLng === 'function');
 
 describe('structure geometry editor history wiring', () => {
+    it.each(['park', 'square', 'lake'])('guards changed %s designs and closes clean designs without a prompt', async kind => {
+        const clean = makeEditorHarness(null, { kind });
+        expect(clean.open()).toBe(true);
+        await clean.cancel();
+        expect(clean.context.CbDialog.confirm).not.toHaveBeenCalled();
+        expect(clean.context.isStructureGeometryEditorActive()).toBe(false);
+
+        const changed = makeEditorHarness(null, { kind });
+        expect(changed.open()).toBe(true);
+        expect(changed.polygonEditorOptions.onCommit({ ring: [[0, 0], [0.8, 0], [0.8, 0.8], [0, 0.8]], reason: 'insert' })).toBe(true);
+        changed.context.CbDialog.confirm.mockResolvedValueOnce(false).mockResolvedValueOnce(true);
+        await changed.cancel();
+        expect(changed.context.isStructureGeometryEditorActive()).toBe(true);
+        await changed.cancel();
+        expect(changed.context.isStructureGeometryEditorActive()).toBe(false);
+        expect(changed.context.CbDialog.confirm).toHaveBeenCalledTimes(2);
+    });
+
     it('restores the selected proposal actions after cancelling a geometry edit', () => {
         const harness = makeEditorHarness(null, { commitSession: true });
         harness.context.ProposalSelection.getKey = () => 'proposal-1';
@@ -416,7 +439,6 @@ describe('structure geometry editor history wiring', () => {
         const harness = makeEditorHarness(null, { kind: 'lake', geometry });
 
         expect(harness.open()).toBe(true);
-        harness.panel.fireClick({ tool: 'move' });
         harness.boundaryLayer().fire('mousedown', { latlng: { lng: 15.0005, lat: 45.8005 }, originalEvent: {} });
         harness.fireMap('mousemove', { latlng: { lng: 15.002, lat: 45.802 } });
         harness.fireMap('mouseup');
@@ -430,18 +452,19 @@ describe('structure geometry editor history wiring', () => {
         expect(harness.context.isStructureGeometryEditorActive()).toBe(false);
     });
 
-    it('keeps the lake geometry validity gate when a reshape would make a self-crossing ring', () => {
+    it('rejects a lake reshape that would create a self-crossing ring without damaging the saved outline', () => {
         const geometry = { type: 'Polygon', coordinates: [[[15, 45.8], [15.001, 45.8], [15.001, 45.801], [15, 45.801], [15, 45.8]]] };
         const harness = makeEditorHarness(null, { kind: 'lake', geometry });
         expect(harness.open()).toBe(true);
         const crossed = [[0, 0], [1, 1], [0, 1], [1, 0]];
-        expect(harness.polygonEditorOptions.onCommit({ ring: crossed, reason: 'insert' })).toBe(true);
-        expect(harness.lakeError.hidden).toBe(false);
-        expect(harness.lakeSave.disabled).toBe(true);
-        harness.save();
-        expect(harness.context.isStructureGeometryEditorActive()).toBe(true);
-        expect(harness.savedPayload).toBeNull();
-        harness.cancel();
+        expect(harness.polygonEditorOptions.onCommit({ ring: crossed, reason: 'insert' })).toBe(false);
+        expect(harness.boundaryLayer().feature.geometry).toEqual(geometry);
+        expect(harness.lakeError.hidden).toBe(true);
+        expect(harness.lakeSave.disabled).toBe(false);
+        const saved = harness.save().structureProposal;
+        expect(saved.geometry).toEqual(geometry);
+        expect(saved.lakeGraphics.version).toBe('fresh');
+        expect(harness.context.isStructureGeometryEditorActive()).toBe(false);
     });
 
     it('edits and saves a lake boundary with freshly derived graphics', () => {
@@ -455,9 +478,10 @@ describe('structure geometry editor history wiring', () => {
 
         expect(harness.open()).toBe(true);
         expect(harness.panel.innerHTML).toContain('Lake boundary editor');
-        expect(harness.panel.innerHTML).toContain('data-tool="move"');
+        expect(harness.panel.innerHTML).not.toContain('data-tool=');
+        expect(harness.panel.innerHTML).toContain('data-role="lake-error"');
         expect(harness.polygonEditorOptions.ring).toEqual([...originalRing, originalRing[0]]);
-        expect(harness.polygonEditorOptions.undoTitle).toBe('Undo lake boundary edit');
+        expect(harness.polygonEditorOptions.undoTitle).toBe('Undo');
         expect(harness.polygonEditorOptions.onCommit({ ring: editedRing, reason: 'move' })).toBe(true);
 
         const saved = harness.save().structureProposal;
@@ -470,17 +494,19 @@ describe('structure geometry editor history wiring', () => {
         expect(harness.finishedDrafts).toEqual(['draft-1']);
     });
 
-    it('keeps lake boundary edits cancellable and routes undo commits back into the outline', () => {
+    it('keeps lake boundary edits cancellable and routes undo commits back into the outline', async () => {
         const originalRing = [[0, 0], [1, 0], [1, 1], [0, 1]];
         const geometry = { type: 'Polygon', coordinates: [[...originalRing, originalRing[0]]] };
         const harness = makeEditorHarness(null, { kind: 'lake', geometry });
         const movedRing = [[0, 0], [1.2, 0], [1, 1], [0, 1]];
 
         expect(harness.open()).toBe(true);
-        harness.polygonEditorOptions.onCommit({ ring: movedRing, reason: 'move' });
-        harness.polygonEditorOptions.onCommit({ ring: originalRing, reason: 'undo' });
-        expect(harness.polygonEditorOptions.onCommit({ ring: originalRing, reason: 'undo' })).toBe(true);
-        harness.cancel();
+        expect(harness.polygonEditorOptions.onCommit({ ring: movedRing, reason: 'insert' })).toBe(true);
+        expect(harness.boundaryLayer().feature.geometry.coordinates[0]).toEqual([...movedRing, movedRing[0]]);
+        harness.undoButton.fire();
+        expect(harness.boundaryLayer().feature.geometry).toEqual(geometry);
+        expect(harness.polygonEditorDestroyed).toBe(false);
+        await harness.cancel();
 
         expect(harness.savedPayload).toBeNull();
         expect(harness.draft.editorPayload.structureProposal.geometry).toEqual(geometry);
@@ -494,7 +520,7 @@ describe('structure geometry editor history wiring', () => {
             paths: [[[15.0002, 45.8002], [15.0004, 45.8004]]], benches: [{ coordinate: [15.00045, 45.80025], bearing: 35 }]
         }],
         ['square', { fountains: [[15.0003, 45.8003]], trees: [tree(15.0006, 45.8006)], benches: [{ coordinate: [15.0004, 45.8004], bearing: 15 }], stalls: [[15.0002, 45.8006]], statues: [[15.0007, 45.8003]] }]
-    ])('moves the whole %s design in metric space as one undoable gesture', (kind, decorations) => {
+    ])('moves the whole %s design in metric space as one undoable boundary gesture', (kind, decorations) => {
         const geometry = { type: 'Polygon', coordinates: [[[15, 45.8], [15.001, 45.8], [15.001, 45.801], [15, 45.801], [15, 45.8]]] };
         const originalDecorations = JSON.parse(JSON.stringify(decorations));
         const harness = makeEditorHarness(decorations, { kind, geometry });
@@ -522,7 +548,6 @@ describe('structure geometry editor history wiring', () => {
         ].map(point => [point[0], point[1]]).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
 
         expect(harness.open()).toBe(true);
-        harness.panel.fireClick({ tool: 'move' });
         harness.boundaryLayer().fire('mousedown', { latlng: from, originalEvent: {} });
         expect(harness.isMapDraggingEnabled()).toBe(false);
         harness.fireMap('mousemove', { latlng: intermediate });
@@ -565,30 +590,38 @@ describe('structure geometry editor history wiring', () => {
     it.each([
         ['park', { trees: [tree(15.0003, 45.8003)], paths: [[[15.0002, 45.8002], [15.0004, 45.8004]]] }],
         ['square', { fountains: [[15.0003, 45.8003]], benches: [{ coordinate: [15.0004, 45.8004], bearing: 25 }] }]
-    ])('routes %s decoration hits through the whole-boundary Move tool', (kind, decorations) => {
+    ])('keeps %s decoration handles tied to their active tool while the boundary moves', (kind, decorations) => {
         const geometry = { type: 'Polygon', coordinates: [[[15, 45.8], [15.001, 45.8], [15.001, 45.801], [15, 45.801], [15, 45.8]]] };
         const originalDecorations = JSON.parse(JSON.stringify(decorations));
         const harness = makeEditorHarness(decorations, { kind, geometry });
         expect(harness.open()).toBe(true);
-        const editableMarkers = currentMarkers(harness);
-        expect(editableMarkers.length).toBeGreaterThan(0);
-        expect(editableMarkers[0].options.draggable).toBe(true);
-        expect(editableMarkers[0].options.interactive).not.toBe(false);
+        const boundaryModeMarkers = currentMarkers(harness);
+        expect(boundaryModeMarkers.length).toBeGreaterThan(0);
+        expect(boundaryModeMarkers.every(marker => marker.options.draggable === false && marker.options.interactive === false)).toBe(true);
         let pathLayer = harness.groups.at(-1).items.find(item => item.options?.className === 'structure-geometry-draggable');
-        if (kind === 'park') {
-            expect(pathLayer.options.interactive).not.toBe(false);
-            expect(pathLayer.events.mousedown).toBeTypeOf('function');
-        }
-
-        harness.panel.fireClick({ tool: 'move' });
-        const movedMarkers = currentMarkers(harness);
-        expect(movedMarkers.every(marker => marker.options.draggable === false && marker.options.interactive === false)).toBe(true);
-        expect(movedMarkers.every(marker => !marker.events.dragstart && !marker.events.click)).toBe(true);
-        pathLayer = harness.groups.at(-1).items.find(item => item.options?.className === 'structure-geometry-draggable');
         if (kind === 'park') {
             expect(pathLayer.options.interactive).toBe(false);
             expect(pathLayer.events.mousedown).toBeUndefined();
         }
+
+        const movedMarkers = currentMarkers(harness);
+        expect(movedMarkers.every(marker => marker.options.draggable === false && marker.options.interactive === false)).toBe(true);
+        expect(movedMarkers.every(marker => !marker.events.dragstart && !marker.events.click)).toBe(true);
+        if (kind === 'park') {
+            expect(pathLayer.options.interactive).toBe(false);
+            expect(pathLayer.events.mousedown).toBeUndefined();
+        }
+
+        // Furniture handles become interactive only in a real placement mode; Boundary mode
+        // owns whole-area movement and keeps every decoration handle inert.
+        harness.panel.fireClick({ tool: kind === 'park' ? 'tree' : 'fountain' });
+        expect(currentMarkers(harness).every(marker => marker.options.draggable && marker.options.interactive)).toBe(true);
+        if (kind === 'park') {
+            pathLayer = harness.groups.at(-1).items.find(item => item.options?.className === 'structure-geometry-draggable');
+            expect(pathLayer.options.interactive).toBe(true);
+            expect(pathLayer.events.mousedown).toBeTypeOf('function');
+        }
+        harness.panel.fireClick({ tool: 'boundary' });
 
         const from = { lng: 15.0005, lat: 45.8005 };
         const to = { lng: 15.0007, lat: 45.8006 };
@@ -634,7 +667,6 @@ describe('structure geometry editor history wiring', () => {
         const harness = makeEditorHarness({ trees: [tree(15.0004, 45.8004)] }, { kind: 'park', geometry });
         expect(harness.open()).toBe(true);
         expect(harness.mapEditorSessions[0].placement.setLocked(true)).toBe(true);
-        harness.panel.fireClick({ tool: 'move' });
         harness.boundaryLayer().fire('mousedown', { latlng: { lng: 15.0005, lat: 45.8005 }, originalEvent: {} });
         harness.fireMap('mousemove', { latlng: { lng: 15.002, lat: 45.802 } });
         harness.fireMap('mouseup');
@@ -665,7 +697,6 @@ describe('structure geometry editor history wiring', () => {
         harness.undoButton.fire();
         expect(harness.boundaryLayer().feature.geometry).toEqual(geometry);
 
-        harness.panel.fireClick({ tool: 'move' });
         harness.boundaryLayer().fire('mousedown', { latlng: { lng: 15.0005, lat: 45.8005 }, originalEvent: {} });
         harness.fireMap('mousemove', { latlng: { lng: 15.0007, lat: 45.8007 } });
         harness.fireMap('mouseup');
@@ -734,7 +765,7 @@ describe('structure geometry editor history wiring', () => {
         expect(harness.open()).toBe(true);
         expect(harness.panel.innerHTML).not.toContain('data-role="hint"');
         expect(harness.panel.innerHTML).toContain('data-action="finish-path"');
-        expect(harness.mapEditorSessions[0].hints.at(-1)).toBe('Select an item to begin.');
+        expect(harness.mapEditorSessions[0].hints.at(-1)).toBe('Drag the area to move it, or drag boundary points to reshape. Tap an edge to add a point; select a point to remove it.');
 
         harness.panel.fireClick({ tool: 'path' });
         expect(harness.finishButton.hidden).toBe(false);
@@ -772,6 +803,7 @@ describe('structure geometry editor history wiring', () => {
     it('restores a tree coordinate after a marker drag is undone', () => {
         const harness = makeEditorHarness({ trees: [tree(0.2, 0.2)], version: 3 });
         expect(harness.open()).toBe(true);
+        harness.panel.fireClick({ tool: 'tree' });
         const marker = currentMarkers(harness)[0];
         marker.fire('dragstart');
         marker.setLatLng([0.35, 0.4]); // Leaflet uses [latitude, longitude].
@@ -790,6 +822,7 @@ describe('structure geometry editor history wiring', () => {
         const harness = makeEditorHarness(decorations, { kind, rejectOutsidePoints: true });
         expect(harness.open()).toBe(true);
         expect(harness.context.turf.booleanPointInPolygon(harness.context.turf.point([0.4, 0.35]))).toBe(true);
+        harness.panel.fireClick({ tool: kind === 'park' ? (type === 'benches' ? 'bench' : 'tree') : 'fountain' });
         const marker = currentMarkers(harness)[0];
 
         marker.setLatLng([0.35, 0.4]);
@@ -806,6 +839,7 @@ describe('structure geometry editor history wiring', () => {
     it.each(['null', 'throw'])('keeps the park editor open after draft sync %s and preserves edits for retry', (syncBehavior) => {
         const harness = makeEditorHarness({ trees: [tree(0.2, 0.2)], version: 3 }, { syncBehavior });
         expect(harness.open()).toBe(true);
+        harness.panel.fireClick({ tool: 'tree' });
         const marker = currentMarkers(harness)[0];
         marker.setLatLng([0.35, 0.4]);
         marker.fire('dragend');
@@ -874,6 +908,7 @@ describe('structure geometry editor history wiring', () => {
     it('does not report local success while saving a valid commit-session draft', () => {
         const harness = makeEditorHarness({ trees: [tree(0.2, 0.2)], version: 3 }, { commitSession: true });
         expect(harness.open()).toBe(true);
+        harness.panel.fireClick({ tool: 'tree' });
         const marker = currentMarkers(harness)[0];
         marker.setLatLng([0.35, 0.4]);
         marker.fire('dragend');
@@ -890,6 +925,7 @@ describe('structure geometry editor history wiring', () => {
         const harness = makeEditorHarness(decorations, { kind });
 
         expect(harness.open()).toBe(true);
+        harness.panel.fireClick({ tool: kind === 'park' ? 'tree' : 'fountain' });
         const marker = currentMarkers(harness)[0];
         expect(marker.options.pane).toBe('onMapEditorHandles');
         expect(marker.options.zIndexOffset).toBeUndefined();
@@ -911,7 +947,8 @@ describe('structure geometry editor history wiring', () => {
         });
 
         expect(harness.open()).toBe(true);
-        const path = harness.previewLayers.find(layer => layer.options?.className === 'structure-geometry-draggable');
+        harness.panel.fireClick({ tool: 'path' });
+        const path = [...harness.previewLayers].reverse().find(layer => layer.options?.className === 'structure-geometry-draggable');
         expect(path).toBeDefined();
         const activeListenersBeforeDrag = {
             map: ['mousemove', 'touchmove', 'mouseup', 'touchend', 'touchcancel']
@@ -942,6 +979,7 @@ describe('structure geometry editor history wiring', () => {
         });
 
         expect(harness.open()).toBe(true);
+        harness.panel.fireClick({ tool: 'path' });
         const path = harness.previewLayers.find(layer => layer.options?.className === 'structure-geometry-draggable');
         path.fire('touchstart', { latlng: { lng: 0.1, lat: 0.2 }, originalEvent: {} });
         harness.fireDocument('touchend');
