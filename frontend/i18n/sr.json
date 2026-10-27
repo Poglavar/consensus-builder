@@ -7544,7 +7544,7 @@
     "planningViews": {
         "reroll": {
             "proposed": "Bacite kockicu za drugu predloženu ilustraciju. Ne menja ništa u zapisima.",
-            "permitted": "Bacite kockicu za drugi dozvoljeni tip stanovanja. Ne menja ništa u zapisima."
+            "permitted": "Prikaži drugi primer zgrade unutar dozvoljenih granica. Ne menja zapise."
         },
         "zoningAreas": "Područja izvornog plana",
         "envelopeTitle": "Dozvoljeni omotač",
@@ -7557,7 +7557,7 @@
         "excludedConfigurations": "Ovde nije moguće: {{list}}.",
         "envelopeCoverage": "Delimični omotači izvedeni su iz učitanih katastarskih i planskih zapisa. Parcele bez volumena prebrojane su prema razlogu; izostanak volumena ne dokazuje nulti kapacitet.",
         "envelopeSummary": "Pregledano {{count}} katastarskih zapisa: {{shapes}} sa delimičnim omotačima, {{missing}} bez volumena.",
-        "envelopeNote": "Maksimalni gabarit objedinjuje zabeležene tipove stanovanja. Ulična strana određuje se prema obližnjim ulicama kada su podaci dostupni; inače gabarit uključuje sve podržane orijentacije. Izaberite tip stanovanja ili bacite kockicu za promenu prikazane konfiguracije. Ograničenja površine i nerazrešena pravila i dalje važe.",
+        "envelopeNote": "Maksimalni gabarit objedinjuje zabeležene tipove stanovanja. Ulična strana određuje se prema obližnjim ulicama kada su podaci dostupni; inače gabarit uključuje sve podržane orijentacije. Izaberite tip stanovanja pa bacite kockicu za drugi primer zgrade unutar njegovih granica. Ograničenja površine i nerazrešena pravila i dalje važe.",
         "assumedSide": "Pretpostavljena ulična strana: {{side}}.",
         "lotBelowMinimum": "Parcela je manja od minimuma od {{minimum}}",
         "sideOptions": {

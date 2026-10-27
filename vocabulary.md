@@ -444,6 +444,8 @@ The comparison of a parcel's area with a configuration's stated minimum lot area
 ### Shown configuration
 
 The configuration selected for display. This choice changes the inspected illustration, not the source record, permitted limits or authored agreement.
+The housing-type selector and per-parcel pins choose this configuration. The Permitted dice
+varies a sample building inside its derived volumes while retaining that choice and frontage.
 
 ### Assumed street side
 
@@ -453,7 +455,8 @@ For source parcel envelopes, nearby street geometry selects a stable street-faci
 
 ### Example build-out
 
-One illustrative building realization within an authored urban-rule envelope. It is neither the maximum permitted capacity nor an existing building.
+One illustrative building realization within an authored urban-rule envelope or a source-derived
+configuration's volumes. It is neither the maximum permitted capacity nor an existing building.
 
 The comparison controls label this **Illustration**. A source's one calculated option or displayed configuration is also labeled Illustration, retaining its own assessment and source qualifications.
 

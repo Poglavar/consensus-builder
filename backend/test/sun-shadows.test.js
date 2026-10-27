@@ -215,6 +215,21 @@ describe('the sun in the scene', () => {
         });
     }
 
+    it('gives a replaced planning subtree its shadow flags before the next draw', () => {
+        handle.beforeRender({ fullFrame: true }, new Date('2026-06-21T10:00:00Z'));
+        const replacement = mesh(lit(), 30);
+        expect(replacement.castShadow).toBeFalsy();
+        renderer.shadowMap.needsUpdate = false;
+        handle.syncObjects(replacement);
+        expect(replacement.castShadow).toBe(true);
+        expect(replacement.receiveShadow).toBe(true);
+        expect(renderer.shadowMap.needsUpdate).toBe(true);
+        threeSun.state.enabled = false;
+        handle.syncObjects(replacement);
+        expect(replacement.castShadow).toBe(false);
+        expect(replacement.receiveShadow).toBe(false);
+    });
+
     it('plays the day from a frame hook only while playing, one full day per cycle', () => {
         expect(hooks.size).toBe(0);
         threeSun.state.playing = true;

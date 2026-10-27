@@ -622,6 +622,7 @@
                 material.dispose();
             }
         }
+        sunLayer?.syncObjects(planningSourcesGroup);
         invalidateThreeView();
     }
 

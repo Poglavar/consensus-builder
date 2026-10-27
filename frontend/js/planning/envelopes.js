@@ -12,7 +12,7 @@
     'use strict';
     const ANY_CONFIGURATION = 'all';
     const forms = Object.freeze(['bound', 'configuration', 'both']);
-    // FNV-1a: the same parcel lands on the same configuration in the map, the model and a shared link.
+    // FNV-1a: the same parcel lands on the same configuration and sample in map and model.
     function hash(text) {
         let h = 0x811c9dc5;
         for (let i = 0; i < text.length; i++) { h ^= text.charCodeAt(i); h = Math.imul(h, 0x01000193); }
@@ -23,8 +23,9 @@
     // for, but the roll prefers the types the parcel qualifies for.
     const qualifies = configuration => configuration.lotArea?.status !== 'fail';
     // Which configuration an item shows: a per-item pin wins, then a pinned housing type, then
-    // a deterministic roll over the drawable configurations. Null means only the bound is shown.
-    function configurationFor(item, { variation = '', scenario = ANY_CONFIGURATION, pins = {} } = {}) {
+    // a deterministic choice among drawable configurations. Dice vary the building inside it.
+    // Null means only the bound is shown.
+    function configurationFor(item, { scenario = ANY_CONFIGURATION, pins = {} } = {}) {
         const list = Array.isArray(item?.configurations) ? item.configurations : [];
         if (!list.length) return null;
         const pinned = pins[item.id] ? list.find(configuration => configuration.id === pins[item.id]) : null;
@@ -33,7 +34,7 @@
         const candidates = list.filter(drawable);
         if (!candidates.length) return null;
         const pool = candidates.some(qualifies) ? candidates.filter(qualifies) : candidates;
-        return pool[(hash(String(item.id)) + (Number(variation) || 0)) % pool.length];
+        return pool[hash(String(item.id)) % pool.length];
     }
     // Frontage belongs to the parcel's source evidence; changing the housing type cannot rotate it.
     function frontEdgeFor(item) {
@@ -70,11 +71,35 @@
     }
     // The volumes a Permitted item draws: `bound` is the translucent outer hull, `body` the shown
     // configuration. Items without configurations (one calculated option) draw their volumes as body.
-    function realize(item, { form = 'both', selection = {} } = {}) {
+    function sampleVolumes(item, configuration, variation, geometry) {
+        if (!configuration.volumes?.length) return [];
+        const step = Number(variation) || 0;
+        const seed = hash(`${item.id}:${configuration.id}`);
+        // A bounded sequence gives consecutive rolls different proportions, including when the
+        // chosen housing type has just one maximum box. Keep its street-facing orientation.
+        const scale = 0.62 + ((seed + step * 7) % 17) / 60;
+        const heightScale = step % 5 === 0 ? 1 : 0.65 + ((seed + step * 3) % 7) / 20;
+        const base = Math.min(...configuration.volumes.map(volume => volume.baseM));
+        const roof = base + (Math.max(...configuration.volumes.map(volume => volume.topM)) - base) * heightScale;
+        return configuration.volumes.flatMap(volume => {
+            const topM = Math.min(volume.topM, roof);
+            if (topM <= volume.baseM) return [];
+            const source = geometry.feature(volume.geometry);
+            const smaller = geometry.transformScale(source, scale);
+            // Scaling a concave or holed polygon about its centre can leave its original shape.
+            // Intersection keeps every sampled piece inside the exact source volume.
+            const clipped = geometry.intersect(source, smaller);
+            return clipped ? [{ ...volume, geometry: clipped.geometry, topM }] : [];
+        });
+    }
+
+    function realize(item, { form = 'both', selection = {}, deps = {} } = {}) {
         if (!Array.isArray(item?.configurations) || !item.configurations.length) return { bound: [], body: volumeFeatures(item), configuration: null, frontEdge: null };
         const shownForm = forms.includes(form) ? form : 'both';
         const configuration = configurationFor(item, selection);
-        const realization = configuration ? { volumes: configuration.volumes || [], frontEdge: frontEdgeFor(item) } : { volumes: [], frontEdge: null };
+        const realization = configuration && shownForm !== 'bound'
+            ? { volumes: sampleVolumes(item, configuration, selection.variation, deps.geometry), frontEdge: frontEdgeFor(item) }
+            : { volumes: [], frontEdge: null };
         const body = shownForm === 'bound' || !configuration ? [] : volumeFeatures({ ...item, volumes: realization.volumes }, 'body', configuration.id)
             .map(feature => ({ ...feature, properties: { ...feature.properties, frontEdge: realization.frontEdge } }));
         const bound = shownForm === 'configuration' && body.length ? [] : volumeFeatures(item, 'bound');

@@ -1925,3 +1925,29 @@ Separate observation retained for investigation: one direct 3D reload captured a
 parcel snapshot before source parcels arrived, and the warm scene reused that snapshot.
 Rebuilding after source load restored the 61 parcel surfaces. This is distinct from the
 reproduced coplanar-paving leak; a general source-readiness fix is not included here.
+
+### October 27: Permitted sample-building dice
+
+The Arlington reproduction pinned One-family. The former dice changed only a housing-type
+counter, so that pin left the drawn volume unchanged. Per the user's decision, the dice now
+varies a sample building's footprint and height inside the selected configuration's volumes.
+Housing type, per-parcel pins, source frontage and the outer bound remain fixed. Source records
+and authored designs are not changed. The shared 2D/3D realization clips samples against exact
+source polygons, including holes and concavities, and caps stepped parts at one sample roof.
+
+Both dice use the shared busy-control ring until their resulting frame is ready, including
+reduced-motion mode. Rebuilt Permitted meshes receive shadow flags immediately rather than
+waiting for the periodic sun sweep, removing the apparent shadow on/off behavior.
+
+Verification: 67 targeted headless unit checks in five files passed. The targeted headed
+Permitted and Proposed browser cases both passed, covering fixed housing type, changed sample,
+busy lifetime, unchanged source data, independent role variations and immediate shadow flags.
+An older proposed-map unit fixture was corrected to supply the current proposedVariation key;
+its existing geometry and immutability assertions are retained. The real local Arlington
+check changed its sample, retained One-family and source volumes, restored the dice control,
+and immediately retained all seven shadow-casting sample meshes. No full suite was run.
+
+MCP parity: this is a display-only realization, not a new authored editing operation. Source
+inspection and editable authored geometry remain available through the existing parcel-context
+and design inspect/edit primitives; source constraints and their records are unchanged. No MCP
+schema or service change is needed. The current display meaning is recorded in the glossary.

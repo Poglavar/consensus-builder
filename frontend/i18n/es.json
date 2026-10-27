@@ -7526,7 +7526,7 @@
     "planningViews": {
         "reroll": {
             "proposed": "Genera otra ilustración diseño. No cambia nada en los registros.",
-            "permitted": "Genera otro tipo de vivienda permitido. No cambia nada en los registros."
+            "permitted": "Generar otro edificio de ejemplo dentro de los límites permitidos. No modifica los registros."
         },
         "zoningAreas": "Áreas de la fuente urbanística",
         "envelopeTitle": "Envolvente permitida",
@@ -7539,7 +7539,7 @@
         "excludedConfigurations": "No configurable aquí: {{list}}.",
         "envelopeCoverage": "Las envolventes parciales se derivan de los registros parcelarios y urbanísticos cargados. Las parcelas sin volumen se cuentan por motivo; la ausencia de volumen no demuestra una capacidad nula.",
         "envelopeSummary": "{{count}} registros parcelarios examinados: {{shapes}} con envolventes parciales, {{missing}} sin volumen.",
-        "envelopeNote": "La envolvente máxima combina los tipos de vivienda registrados. El frente se orienta hacia las calles cercanas cuando hay datos; de lo contrario, la envolvente incluye todas las orientaciones admitidas. Elige un tipo de vivienda o tira el dado para cambiar la configuración mostrada. Siguen aplicándose los límites de superficie y las reglas pendientes.",
+        "envelopeNote": "La envolvente máxima combina los tipos de vivienda registrados. El frente se orienta hacia las calles cercanas cuando hay datos; de lo contrario, la envolvente incluye todas las orientaciones admitidas. Elige un tipo de vivienda y tira el dado para generar otro edificio de ejemplo dentro de sus límites. Siguen aplicándose los límites de superficie y las reglas pendientes.",
         "assumedSide": "Lado de calle supuesto: {{side}}.",
         "lotBelowMinimum": "Parcela por debajo del mínimo de {{minimum}}",
         "sideOptions": {

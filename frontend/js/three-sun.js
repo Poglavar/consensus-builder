@@ -297,7 +297,17 @@
         };
         syncPlayback();
         renderSheet();
-        return { beforeRender, detach, onFrame };
+        return { beforeRender, detach, onFrame, syncObjects };
+    }
+
+    // Newly rebuilt subtrees must join the next shadow draw immediately, rather than waiting
+    // for the periodic scene sweep (an on-demand view may not render again after that sweep).
+    function syncObjects(object) {
+        const a = attached;
+        if (!a || !object) return;
+        applyShadowFlags(object, state.enabled && !a.isPhotoActive(),
+            new Set((a.excludedRoots() || []).filter(Boolean)));
+        a.renderer.shadowMap.needsUpdate = true;
     }
 
     function detach() {

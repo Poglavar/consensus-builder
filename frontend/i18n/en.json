@@ -7498,7 +7498,7 @@
     "planningViews": {
         "reroll": {
             "proposed": "Roll another proposed illustration. Changes nothing in the records.",
-            "permitted": "Roll another permitted housing type. Changes nothing in the records."
+            "permitted": "Roll another sample building within the permitted limits. Changes nothing in the records."
         },
         "zoningAreas": "Zoning source areas",
         "envelopeTitle": "Permitted envelope",
@@ -7511,7 +7511,7 @@
         "excludedConfigurations": "Not configurable here: {{list}}.",
         "envelopeCoverage": "Partial envelopes are derived from the loaded parcel and zoning records. Parcels without massing are counted by reason; missing massing does not establish zero capacity.",
         "envelopeSummary": "{{count}} parcel records inspected: {{shapes}} with partial envelopes, {{missing}} without massing.",
-        "envelopeNote": "The maximum envelope combines the recorded housing types. Frontage follows nearby streets when available; otherwise the bound includes all supported orientations. Choose a housing type or roll the dice to change the displayed configuration. Area budgets and unresolved rules still apply.",
+        "envelopeNote": "The maximum envelope combines the recorded housing types. Frontage follows nearby streets when available; otherwise the bound includes all supported orientations. Choose a housing type, then roll the dice for another sample building within its limits. Area budgets and unresolved rules still apply.",
         "assumedSide": "Assumed street side: {{side}}.",
         "lotBelowMinimum": "Lot below the {{minimum}} minimum",
         "sideOptions": {

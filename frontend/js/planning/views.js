@@ -339,8 +339,8 @@
         }
         inspector.append(footer);
     }
-    // Every configuration the source records for this parcel, with the shown one marked. Picking
-    // one pins it for this parcel only; the dice keeps rolling the others.
+    // Every source configuration, with the shown one marked. Picking one pins the housing type;
+    // the dice varies the sample building without changing that choice.
     function renderConfigurations(item, shown) {
         const section = element('section', 'planning-configurations');
         section.append(element('h3', '', t('configurationsTitle')));
@@ -655,7 +655,7 @@
             console.error('[planning] Could not read providers', error); status = 'error'; render();
         }
     }
-    // Configured sources offer every housing type plus "all" (rolled per parcel); other sources list their scenarios.
+    // Configured sources offer every housing type plus "all" (chosen per parcel); other sources list their scenarios.
     function populateScenarios(requested) {
         const descriptor = sourceOptions.find(source => source.id === sourceId);
         const scenarios = descriptor?.scenarios || [descriptor?.scenario].filter(Boolean);
@@ -726,20 +726,18 @@
         }
         const zoningField = element('label', 'planning-source-field planning-zoning-field');
         zoningField.append(element('span', 'planning-zoning-label'), control('zoningAreas')); body.append(zoningField);
-        // The die turns once per roll. With reduced motion the roll is immediate; otherwise it starts
-        // on the next paint, so the synchronous re-derivation runs under the turn, not before it.
+        // Paint the shared busy ring before re-derivation, including with reduced motion, and
+        // keep it until the resulting 3D frame has landed. Prevent overlapping rolls.
         for (const reroll of panel.querySelectorAll('[data-planning-reroll]')) {
-            const die = reroll.querySelector('i');
             const role = reroll.dataset.planningReroll;
-            for (const event of ['animationend', 'animationcancel']) die.addEventListener(event, () => reroll.classList.remove('is-rolling'));
-            reroll.addEventListener('click', () => {
-                if (root.__reducedMotion) { store.reroll(role); return; }
-                if (reroll.classList.contains('is-rolling')) return;
-                reroll.classList.add('is-rolling');
-                requestAnimationFrame(() => requestAnimationFrame(() => {
+            reroll.addEventListener('click', async () => {
+                if (root.BusyControl.isBusy(reroll)) return;
+                try { await root.BusyControl.track(reroll, async () => {
+                    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
                     store.reroll(role);
-                    if (getComputedStyle(die).animationName === 'none') reroll.classList.remove('is-rolling');
-                }));
+                    if (root.isThreeModeActive?.()) await root.ThreeSceneReady.wait({ requireExisting: false });
+                    else await new Promise(requestAnimationFrame);
+                }); } catch (error) { console.error('[planning] Could not finish housing type roll', error); }
             });
         }
         panel.querySelector('.planning-open-model').addEventListener('click', () => root.requestMapMode('model'));

@@ -82,6 +82,11 @@ test('Permitted keeps its envelope controls and ignores retired parcel-study lin
   await expect(heightLabel).toHaveCount(1,{timeout:45_000});
   const shown = async () => page.evaluate(() => { const shown = (window as any).PlanningViews.permittedFeatures((window as any).PlanningViews.getItems()[0]);
     return { configuration: shown.configuration.id, frontEdge: shown.frontEdge }; });
+  const shownHeight = () => page.evaluate(() => {
+    const w = window as any, shown = w.PlanningViews.permittedFeatures(w.PlanningViews.getItems()[0]);
+    const features = shown.body.length ? shown.body : shown.bound;
+    return w.CbFormat.formatLength(Math.max(...features.map((feature:any) => feature.properties.topM)));
+  });
   const first = await shown();
   // Two-family is flagged below its minimum lot, so the roll keeps the parcel on one-family.
   expect(first.configuration).toBe('family1');
@@ -99,13 +104,13 @@ test('Permitted keeps its envelope controls and ignores retired parcel-study lin
   await panel.locator('#planning-reroll').click();
   expect(await shown()).toEqual(rolled);
   await selectNativeOption(panel.locator('.planning-scenario-select'), 'family2');
-  await expect(heightLabel).toHaveText('13.7 m');
+  await expect(heightLabel).toHaveText(await shownHeight());
   expect((await shown()).configuration).toBe('family2');
   await selectNativeOption(panel.locator('.planning-scenario-select'), 'all');
   // Envelopes carry every housing type: the control redraws them without another viewport read.
   expect(envelopeReads).toBe(1);
   await selectNativeOption(panel.locator('[data-planning-setting="permittedForm"]'), 'bound');
-  await expect(heightLabel).toHaveText('13.7 m');
+  await expect(heightLabel).toHaveText(await shownHeight());
   await selectNativeOption(panel.locator('[data-planning-setting="permittedForm"]'), 'both');
   await expect(panel.locator('[data-planning-setting="zoningAreas"]')).toHaveValue('off');
   await selectNativeOption(panel.locator('[data-planning-setting="permitted"]'), 'off');
@@ -128,10 +133,48 @@ test('Permitted keeps its envelope controls and ignores retired parcel-study lin
   // Picking a configuration pins it for this parcel; the inspector marks it and the map follows.
   await inspector.locator('[data-configuration="family1"] button').click();
   await expect(inspector.locator('[data-configuration="family1"] button')).toHaveAttribute('aria-pressed','true');
-  await expect(heightLabel).toHaveText('10.7 m');
+  await expect(heightLabel).toHaveText(await shownHeight());
   await expect(inspector.getByText(/^Assumed street side: (north|east|south|west)\./)).toBeVisible();
   await expect(page.getByRole('button', { name: 'Test a parcel here', exact: true })).toHaveCount(0);
   await expect(page.locator('[data-study-input], [data-study-results]')).toHaveCount(0);
+  // A fixed housing type still rolls a new sample; busy feedback covers the resulting 3D frame
+  // even with reduceMotion=1, and replacement meshes retain their shadows immediately.
+  await page.locator('#mode-3d-toggle').click();
+  await expect.poll(() => page.evaluate(() => !!(window as any).getThreeModeInternals?.())).toBe(true);
+  await page.evaluate(() => (window as any).ThreeSceneReady.wait({ requireExisting: false }));
+  await page.getByRole('button',{name:'Buildings and massing',exact:true}).click();
+  await selectNativeOption(panel.locator('.planning-scenario-select'), 'family1');
+  const beforeSample = await page.evaluate(() => JSON.stringify((window as any).PlanningViews.permittedFeatures((window as any).PlanningViews.getItems()[0]).body));
+  const busy = await page.evaluate(() => {
+    const w = window as any;
+    w.__finishRoll = null;
+    const wait = w.ThreeSceneReady.wait.bind(w.ThreeSceneReady);
+    w.__restoreRollWait = () => { w.ThreeSceneReady.wait = wait; };
+    w.ThreeSceneReady.wait = async (options:any) => {
+      await wait(options);
+      await new Promise(resolve => { w.__finishRoll = resolve; });
+    };
+    const button = document.getElementById('planning-reroll-permitted')!;
+    button.click();
+    return { busy: button.getAttribute('aria-busy'), ring: button.classList.contains('cb-busy') };
+  });
+  expect(busy).toEqual({ busy:'true', ring:true });
+  await expect.poll(() => page.evaluate(() => typeof (window as any).__finishRoll)).toBe('function');
+  await expect(panel.locator('#planning-reroll-permitted')).toHaveAttribute('aria-busy','true');
+  expect(await page.evaluate(() => JSON.stringify((window as any).PlanningViews.permittedFeatures((window as any).PlanningViews.getItems()[0]).body))).not.toBe(beforeSample);
+  await expect(panel.locator('.planning-scenario-select')).toHaveValue('family1');
+  const shadows = await page.evaluate(() => {
+    const flags:boolean[] = [];
+    (window as any).getThreeModeInternals().scene.traverse((mesh:any) => {
+      if (mesh.isMesh && mesh.userData.planningRepresentationId && mesh.material.opacity >= 0.15) flags.push(mesh.castShadow);
+    });
+    return flags;
+  });
+  expect(shadows.length).toBeGreaterThan(0);
+  expect(shadows.every(Boolean)).toBe(true);
+  await page.evaluate(() => { const w=window as any; w.__restoreRollWait(); w.__finishRoll(); });
+  await expect(panel.locator('#planning-reroll-permitted')).not.toHaveAttribute('aria-busy','true');
+  await page.locator('#mode-2d-toggle').click();
   await page.screenshot({ path: '/tmp/permitted-without-parcel-study.png' });
   await page.reload();
   await waitForMapReady(page);
