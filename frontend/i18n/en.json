@@ -7279,7 +7279,14 @@
             "ruleCommunityBinding": "A community vote cannot be binding.",
             "deadlineInvalid": "The deadline must be a date in the future.",
             "secondaryTab": "Another tab holds this city's data; agreements can be edited there only.",
-            "published": "A proposed agreement cannot be edited; propose a new one."
+            "published": "A proposed agreement cannot be edited; propose a new one.",
+            "planRequired": "Choose a saved plan.",
+            "planMembership": "Every design must belong to the selected plan.",
+            "landUnbalanced": "The total input and output land areas must balance.",
+            "inputShares": "Input ownership shares must total 100 %.",
+            "allocationRequired": "Allocate every resulting piece.",
+            "settlementInvalid": "Review the cash settlement amounts.",
+            "moneyUnbalanced": "Cash payments must balance."
         },
         "warnings": {
             "ruleNotReady": "The rule cannot be evaluated yet: {{reason}}",
@@ -7320,7 +7327,7 @@
         },
         "list": {
             "create": "Create agreement",
-            "empty": "No agreements yet. Apply designs, then create one.",
+            "empty": "No agreements yet. Create a plan first, then create its agreement.",
             "designs": {
                 "one": "{{count}} design",
                 "other": "{{count}} designs"
@@ -7493,6 +7500,33 @@
         },
         "plan": {
             "untitled": "Untitled plan"
+        },
+        "workflow": {
+            "choosePlan": "Choose a saved plan",
+            "noPlans": "Create a plan first. Open Plans and choose Create plan.",
+            "savePlan": "Save plan on this device",
+            "planSaved": "Plan saved on this device. You can now create its agreement.",
+            "applyPlan": "Apply plan designs",
+            "planNotApplied": "Apply every design of this saved plan before reading its land.",
+            "rules": "Rules",
+            "inputs": "Input parcels",
+            "outputs": "Output parcels",
+            "persons": "Persons",
+            "chooseRecipient": "Choose recipient",
+            "sponsor": "Sponsor",
+            "person": "Person",
+            "putsIn": "Puts in",
+            "receives": "Receives",
+            "rateReadOnly": "Compensation: {{rate}} per m². Change it in Rules.",
+            "landTotals": "Land in: {{input}} · Land out: {{output}}",
+            "rights": "Parcel ownership rights",
+            "lens": "Lens operations",
+            "compensation": "Compensation",
+            "byArea": "Balance land differences in money",
+            "noCash": "No cash compensation",
+            "rate": "Compensation per m² ({{currency}})",
+            "contribution": "Land contribution (%)",
+            "contributionHint": "Compensation covers differences from the remaining land entitlement after this contribution."
         }
     },
     "planningViews": {
@@ -8031,6 +8065,40 @@
         "countryRegional": "Subnational sources",
         "countryNone": "No national source established",
         "countryUnchecked": "No completed national finding"
+    },
+    "planDialog": {
+        "plan": "Plan",
+        "savedPlans": "Saved plans",
+        "createPlan": "Create plan",
+        "editPlan": "Edit plan",
+        "saveRevision": "Save new revision",
+        "name": "Plan name",
+        "addDesigns": "Add designs",
+        "search": "Search designs",
+        "selected": "{{count}} selected",
+        "untitledDesign": "Untitled design",
+        "noDesigns": "No designs available.",
+        "revisionHint": "Saving changes creates a new plan revision. Existing links stay unchanged.",
+        "cancel": "Cancel",
+        "designMissing": "This design is no longer available on this device.",
+        "choosePlan": "Choose a plan",
+        "newPlan": "Create a new plan",
+        "addToPlan": "Add to plan",
+        "sharePlan": "Share plan",
+        "shareFixed": "Shares this saved plan and its exact designs. To change designs, edit the plan first.",
+        "planLink": "Plan link",
+        "publishAndCopy": "Publish and copy link",
+        "publishing": "Publishing plan…",
+        "copied": "Link copied.",
+        "copyLinkManually": "Copy the link above.",
+        "copyLink": "Copy link",
+        "createAgreement": "Create agreement",
+        "openPlan": "Open plan",
+        "noPlans": "No saved plans yet.",
+        "membersMissing": "Some plan designs could not be found.",
+        "revisionChanged": "The plan changed while it was being resolved. Try again.",
+        "publicationFailed": "A plan design could not be published.",
+        "shareDesignHint": "Share this design"
     },
     "pageHeader": {
         "backToMap": "Back to the map"

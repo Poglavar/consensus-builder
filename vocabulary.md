@@ -48,7 +48,7 @@ A new authored version of a design or agreement. Published content retains its o
 
 ### Agreement
 
-An arrangement referencing exactly one immutable plan revision, with input land and holders, output pieces, allocations, money, a decision rule and a deadline. Published `agreement/v1` content names the plan with `planCid` and its outputs by piece hash. The plan supplies all design membership; the agreement has no independently authored spatial layout or design list. Several agreements can reference the same plan. A local editing record can cache design references for replay and preparation, but publication must match the referenced plan exactly.
+An arrangement referencing exactly one immutable plan revision, with input land and holders, output pieces, allocations, money, a decision rule and a deadline. Published `agreement/v1` content names the plan with `planCid` and its outputs by piece hash. The plan supplies all design membership; it must be created independently before it is selected for an agreement. The agreement has no independently authored spatial layout or design list. Several agreements can reference the same plan. A local editing record can cache design references for replay and preparation, but publication must match the referenced plan exactly.
 
 ### Binding owners' agreement
 
@@ -78,11 +78,11 @@ Land represented by the included designs, with source-qualified cadastral refere
 
 A land piece standing on the input land after the included designs are applied. Outputs include materialized fabric pieces and any remaining modeled open-ground host that has no materialized piece. Such a host is carried as geometry with no claimed holder or cadastral identity. Its committed identity is a `piece1-sha256:` hash of the defined output projection, not a permanent cadastral identifier.
 
-An unchanged whole cadastral parcel commits to its source geometry, including its Polygon or MultiPolygon type. Splits and designed pieces commit to their resulting geometry. An unchanged whole parcel without a different allocation retains the holders named in the agreement's published inputs.
+An unchanged whole cadastral parcel commits to its source geometry, including its Polygon or MultiPolygon type. Splits and designed pieces commit to their resulting geometry. Even an unchanged whole parcel needs an explicit single recipient in an owners’ agreement.
 
 ### Allocation
 
-The proposed assignment of an agreement output to a party, the public or joint holders with stated shares. It describes the intended result, independently of the input land's current rights.
+The proposed assignment of an agreement output to exactly one input-land party or to the public. Every output in an owners’ agreement has an explicit allocation. Joint output ownership and implicit carried-holder allocations are not supported; separate recipients require separate output parcels. Input parcels can still have several owners with stated shares.
 
 ### Sponsor
 
@@ -263,7 +263,7 @@ MCP agreement drafting and revision author the included roads as a complete netw
 
 ### Map share
 
-A link naming a selected set of published designs and the current map view, including location and 2D, model 3D or realistic 3D mode. Sharing a plan starts with its exact member revisions selected, including members not applied on the map; unrelated applied designs are available but unselected. Opening sharing without a plan starts with the entire applied working composition. Explicit row choices persist while switching Designs panel tabs and reset when the panel closes. A design card's Share action asks whether to publish and link only that design or open plan sharing; preparing plan sharing does not import, apply or publish its members. An unnamed map share carries its design CIDs and view in the URL. “Name this plan” saves a named plan snapshot instead. Neither form creates an agreement. “Designs” names the map's design browser; “Agreements” names arrangements and decision rules concerning exact plan revisions.
+A design link shares exactly one published design revision. A plan link shares exactly one saved plan revision; its share dialog cannot change its name, membership or view. Create plan chooses a name, designs and saved view without publication. Add to plan opens creation or a reviewed revision of a chosen saved plan. Saving any change creates a new immutable snapshot; existing links remain unchanged. Create agreement starts a separate agreement editor from a saved plan, and agreement sharing uses that agreement's own flow. “Plan” names the dialog containing the design library and saved plans.
 
 Choosing “Unapply existing & continue” replaces the conflicting applied designs. Incoming buildings and surface spaces replace conflicting applied roads occupying their authored footprints. An incoming parcel layout also replaces applied roads, layouts and content occupying its authored plots; designs outside that ground remain applied. Compatible road junctions and host parcel layouts remain. Unapplied designs remain saved. The replacement commits together, or retains the previous working composition if any member cannot be applied.
 
@@ -500,6 +500,8 @@ The source-qualified building footprints considered by an operation, with any kn
 
 ### Party
 
+An agreement can name an abstract input party as `parcel-owner:<parcelId>`, displayed as “Owner(s) of parcel X”, when no ownership source is plugged in. This identifies the unknown owner group of that input parcel for allocation and accounting; it is not verified ownership. Imported ownership rights can replace the abstract group with identified holders and their shares. Abstract parties can draft allocations and compensation without a lens or names.
+
 A person, organization or authority identified for rights, allocations or decisions. A party can hold different rights in different parcels; the rights engine's `ownerId` is a party identifier, not an assertion of universal ownership.
 
 ### Rights holder
@@ -656,7 +658,7 @@ The area or modeled value a party is due under the readjustment's stated contrib
 
 ### Readjustment cash
 
-Incoming or outgoing balancing money in the deal's explicit fiat currency, represented canonically in integer cents. Outgoing cash, incoming cash and net balance are separate amounts.
+Incoming or outgoing balancing money in the agreement’s explicit fiat currency, represented canonically in integer cents. With area compensation, each party receives or pays the difference between its remaining land entitlement and allocated land multiplied by the stated currency-per-m² rate; positive cash is received and negative cash is paid. A scheme may permit a capped proportional land contribution before compensation. The sponsor pays or receives the balancing cash. A no-cash rule produces no money lines. Cash is calculated from the rules and allocations, not entered per person.
 
 ### Token balance
 

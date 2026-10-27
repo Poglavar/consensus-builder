@@ -428,8 +428,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const publishRefusal = window.DesignSync.publishedCid(fullProposal || proposal)
         ? null : window.ProposalPublishTerms.publishRefusal(fullProposal || proposal);
     const agreementOnlyPublication = publishRefusal?.code === 'layout-needs-agreement';
-    // Share asks whether to publish this design alone or open its plan in the sharing panel. It is
-    // the main action of an applied design; before it is applied, applying is.
+    // Share publishes this exact design; adding it to a plan is a separate action.
     const shareButtonHtml = publishRefusal
         ? `
         <button type="button" class="btn btn-share-proposal" disabled aria-disabled="true" aria-describedby="proposal-publish-later-note">
@@ -438,22 +437,19 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     `
         : `
         <button type="button" class="btn ${appliedState ? 'btn-primary' : ''} btn-share-proposal" onclick="BusyControl.track(this, () => shareProposalFromDetails())"
-            title="${safeAgentText(tProposal('proposals.share.scope.hint', 'Share this design or its plan'))}">
+            title="${safeAgentText(tProposal('planDialog.shareDesignHint', 'Share this design'))}">
             <i class="fas fa-share-alt"></i> ${tProposal('panel.proposal.actions.share', 'Share')}
         </button>
     `;
 
-    // Add to agreement (plan-design-agreement.md, M1 b; UI decision 2026-10-22) over an applied
-    // design: a new agreement, or one this device holds that is not proposed yet
-    // (AgreementDialog.addDesign) — who decides, who receives which piece and what money moves. A
-    // parcel layout leaves the device only with its agreement, so there it is the main action, before
-    // the disabled Share; elsewhere it follows Share.
-    const addToAgreementButtonHtml = (appliedState === true && proposalKey) ? `
-        <button type="button" class="btn ${agreementOnlyPublication ? 'btn-primary ' : ''}btn-create-agreement" onclick="window.AgreementDialog.addDesign(${inlineJsArg(proposalKey)})">
-            <i class="fas fa-handshake" aria-hidden="true"></i> ${tProposal('panel.proposal.actions.addToAgreement', 'Add to agreement')}
+    const addToPlanButtonHtml = proposalKey
+        ? `
+        <button type="button" class="btn btn-add-to-plan" onclick="BusyControl.track(this, () => window.PlanDialog.addDesign(${inlineJsArg(proposalKey)}))">
+            <i class="fas fa-list" aria-hidden="true"></i> ${tProposal('planDialog.addToPlan', 'Add to plan')}
         </button>
     ` : '';
 
+    // Agreement creation belongs to a saved plan's actions, whose membership is fixed.
     // Duplicate places fresh movable geometry. Site-bound acts and rules have no free-copy action.
     // Edit geometry below still opens the source's design tool under the ordinary edit contract.
     const duplicateButtonHtml = proposalKey && window.ProposalDesignGoals.canDuplicate(fullProposal)
@@ -550,9 +546,8 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const primaryActionsHtml = `
         <div class="proposal-actions proposal-actions-group proposal-primary-actions">
             ${mapActionButtonHtml}
-            ${agreementOnlyPublication ? addToAgreementButtonHtml : ''}
             ${shareButtonHtml}
-            ${agreementOnlyPublication ? '' : addToAgreementButtonHtml}
+            ${addToPlanButtonHtml}
             ${duplicateButtonHtml}
             <button type="button" class="btn btn-proposal-details" onclick="toggleProposalDetailsPanelMinimized(false)">
                 <i class="fas fa-circle-info" aria-hidden="true"></i> ${tProposal('panel.proposal.actions.details', 'Details')}

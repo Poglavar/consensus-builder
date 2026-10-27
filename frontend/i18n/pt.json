@@ -1899,7 +1899,7 @@
         },
         "list": {
             "create": "Criar acordo",
-            "empty": "Ainda não há acordos. Aplique projetos e crie um acordo.",
+            "empty": "Ainda não há acordos. Crie primeiro um plano e depois o respetivo acordo.",
             "designs": {
                 "one": "{{count}} projeto",
                 "other": "{{count}} projetos"
@@ -1958,7 +1958,14 @@
             "ruleCommunityBinding": "Uma votação comunitária não pode ser vinculativa.",
             "deadlineInvalid": "O prazo tem de ser uma data futura.",
             "secondaryTab": "Outro separador detém os dados desta cidade; os acordos só podem ser editados nesse separador.",
-            "published": "Um acordo proposto não pode ser editado; proponha um novo."
+            "published": "Um acordo proposto não pode ser editado; proponha um novo.",
+            "planRequired": "Escolha um plano guardado.",
+            "planMembership": "Todos os projetos têm de pertencer ao plano selecionado.",
+            "landUnbalanced": "A área total de entrada e saída tem de estar equilibrada.",
+            "inputShares": "As quotas de propriedade de entrada têm de totalizar 100 %.",
+            "allocationRequired": "Atribua cada parcela resultante.",
+            "settlementInvalid": "Reveja os montantes da liquidação em dinheiro.",
+            "moneyUnbalanced": "Os pagamentos em dinheiro têm de estar equilibrados."
         },
         "warnings": {
             "ruleNotReady": "Ainda não é possível avaliar a regra: {{reason}}",
@@ -1967,6 +1974,33 @@
         },
         "plan": {
             "untitled": "Plano sem título"
+        },
+        "workflow": {
+            "choosePlan": "Escolher um plano guardado",
+            "noPlans": "Crie primeiro um plano. Abra Planos e escolha Criar plano.",
+            "savePlan": "Guardar plano neste dispositivo",
+            "planSaved": "Plano guardado neste dispositivo. Já pode criar o respetivo acordo.",
+            "applyPlan": "Aplicar projetos do plano",
+            "planNotApplied": "Aplique todos os projetos deste plano guardado antes de consultar o terreno.",
+            "rules": "Regras",
+            "inputs": "Parcelas de entrada",
+            "outputs": "Parcelas resultantes",
+            "persons": "Pessoas",
+            "chooseRecipient": "Escolher destinatário",
+            "sponsor": "Patrocinador",
+            "person": "Pessoa",
+            "putsIn": "Contribui",
+            "receives": "Recebe",
+            "rateReadOnly": "Compensação: {{rate}} por m². Altere-a em Regras.",
+            "landTotals": "Terreno de entrada: {{input}} · Terreno resultante: {{output}}",
+            "rights": "Direitos de propriedade das parcelas",
+            "lens": "Operações de lente",
+            "compensation": "Compensação",
+            "byArea": "Equilibrar diferenças de terreno em dinheiro",
+            "noCash": "Sem compensação monetária",
+            "rate": "Compensação por m² ({{currency}})",
+            "contribution": "Contribuição de terreno (%)",
+            "contributionHint": "A compensação cobre as diferenças do direito restante ao terreno após esta contribuição."
         }
     },
     "workspace": {
@@ -7864,6 +7898,40 @@
         "contactTitle": "Questões e pedidos de acesso e eliminação",
         "contact": "Utilize o formulário de comentários abaixo para contactar o responsável pela manutenção sobre privacidade, acesso, retificação ou eliminação de dados sob o nosso controlo. Inclua um comprovativo de receção do relato ou outra referência para podermos identificar o registo. Os pedidos são analisados tendo em conta as informações disponíveis e as limitações do armazenamento público e de terceiros. As futuras alterações a este aviso serão datadas nesta página.",
         "contactLink": "Contactar o responsável pela manutenção / pedir revisão de dados"
+    },
+    "planDialog": {
+        "plan": "Plano",
+        "savedPlans": "Planos guardados",
+        "createPlan": "Criar plano",
+        "editPlan": "Editar plano",
+        "saveRevision": "Guardar nova versão",
+        "name": "Nome do plano",
+        "addDesigns": "Adicionar propostas",
+        "search": "Pesquisar propostas",
+        "selected": "{{count}} selecionadas",
+        "untitledDesign": "Proposta sem título",
+        "noDesigns": "Não há propostas disponíveis.",
+        "revisionHint": "Guardar alterações cria uma nova versão do plano. As ligações existentes permanecem inalteradas.",
+        "cancel": "Cancelar",
+        "designMissing": "Esta proposta já não está disponível neste dispositivo.",
+        "choosePlan": "Escolher um plano",
+        "newPlan": "Criar um novo plano",
+        "addToPlan": "Adicionar ao plano",
+        "sharePlan": "Partilhar plano",
+        "shareFixed": "Partilha este plano guardado e as respetivas propostas exatas. Para alterar as propostas, edita primeiro o plano.",
+        "planLink": "Ligação do plano",
+        "publishAndCopy": "Publicar e copiar ligação",
+        "publishing": "A publicar o plano…",
+        "copied": "Ligação copiada.",
+        "copyLinkManually": "Copia a ligação acima.",
+        "copyLink": "Copiar ligação",
+        "createAgreement": "Criar acordo",
+        "openPlan": "Abrir plano",
+        "noPlans": "Ainda não há planos guardados.",
+        "membersMissing": "Não foi possível encontrar algumas propostas do plano.",
+        "revisionChanged": "O plano mudou durante o carregamento. Tenta novamente.",
+        "publicationFailed": "Não foi possível publicar uma proposta do plano.",
+        "shareDesignHint": "Compartilhar este projeto"
     },
     "pageHeader": {
         "backToMap": "Voltar ao mapa"

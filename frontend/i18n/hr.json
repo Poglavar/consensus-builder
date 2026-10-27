@@ -7320,7 +7320,14 @@
             "ruleCommunityBinding": "Glasanje zajednice ne može biti obvezujuće.",
             "deadlineInvalid": "Rok mora biti datum u budućnosti.",
             "secondaryTab": "Podatke ovog grada drži druga kartica; sporazumi se mogu uređivati samo ondje.",
-            "published": "Predloženi sporazum ne može se uređivati; predložite novi."
+            "published": "Predloženi sporazum ne može se uređivati; predložite novi.",
+            "planRequired": "Odaberite spremljeni plan.",
+            "planMembership": "Svaki nacrt mora pripadati odabranom planu.",
+            "landUnbalanced": "Ukupna površina ulaznog i izlaznog zemljišta mora biti jednaka.",
+            "inputShares": "Vlasnički udjeli na ulazu moraju ukupno iznositi 100 %.",
+            "allocationRequired": "Dodijelite svaku rezultirajuću česticu.",
+            "settlementInvalid": "Provjerite iznose novčanog poravnanja.",
+            "moneyUnbalanced": "Novčana plaćanja moraju biti uravnotežena."
         },
         "warnings": {
             "ruleNotReady": "Pravilo se još ne može procijeniti: {{reason}}",
@@ -7361,7 +7368,7 @@
         },
         "list": {
             "create": "Stvori sporazum",
-            "empty": "Još nema sporazuma. Primijenite dizajne, a zatim stvorite sporazum.",
+            "empty": "Još nema sporazuma. Najprije izradite plan, a zatim njegov sporazum.",
             "designs": {
                 "one": "{{count}} dizajn",
                 "few": "{{count}} dizajna",
@@ -7539,6 +7546,33 @@
         },
         "plan": {
             "untitled": "Plan bez naziva"
+        },
+        "workflow": {
+            "choosePlan": "Odaberi spremljeni plan",
+            "noPlans": "Najprije izradite plan. Otvorite Planovi i odaberite Izradi plan.",
+            "savePlan": "Spremi plan na ovom uređaju",
+            "planSaved": "Plan je spremljen na ovom uređaju. Sada možete izraditi sporazum.",
+            "applyPlan": "Primijeni nacrte plana",
+            "planNotApplied": "Primijenite sve nacrte ovog spremljenog plana prije čitanja zemljišta.",
+            "rules": "Pravila",
+            "inputs": "Ulazne čestice",
+            "outputs": "Izlazne čestice",
+            "persons": "Osobe",
+            "chooseRecipient": "Odaberi primatelja",
+            "sponsor": "Pokrovitelj",
+            "person": "Osoba",
+            "putsIn": "Unosi",
+            "receives": "Prima",
+            "rateReadOnly": "Naknada: {{rate}} po m². Promijenite je u pravilima.",
+            "landTotals": "Ulazno zemljište: {{input}} · Izlazno zemljište: {{output}}",
+            "rights": "Prava vlasništva nad česticama",
+            "lens": "Operacije leće",
+            "compensation": "Naknada",
+            "byArea": "Novčano izravnanje razlika u zemljištu",
+            "noCash": "Bez novčane naknade",
+            "rate": "Naknada po m² ({{currency}})",
+            "contribution": "Doprinos zemljišta (%)",
+            "contributionHint": "Naknada pokriva razlike u preostalom pravu na zemljište nakon ovog doprinosa."
         }
     },
     "planningViews": {
@@ -8083,6 +8117,40 @@
         "countryRegional": "Podnacionalni izvori",
         "countryNone": "Nije utvrđen nacionalni izvor",
         "countryUnchecked": "Nema dovršenog nacionalnog nalaza"
+    },
+    "planDialog": {
+        "plan": "Plan",
+        "savedPlans": "Spremljeni planovi",
+        "createPlan": "Izradi plan",
+        "editPlan": "Uredi plan",
+        "saveRevision": "Spremi novu verziju",
+        "name": "Naziv plana",
+        "addDesigns": "Dodaj projekte",
+        "search": "Pretraži projekte",
+        "selected": "Odabrano: {{count}}",
+        "untitledDesign": "Projekt bez naziva",
+        "noDesigns": "Nema dostupnih projekata.",
+        "revisionHint": "Spremanje promjena izrađuje novu verziju plana. Postojeće poveznice ostaju nepromijenjene.",
+        "cancel": "Odustani",
+        "designMissing": "Ovaj projekt više nije dostupan na ovom uređaju.",
+        "choosePlan": "Odaberi plan",
+        "newPlan": "Izradi novi plan",
+        "addToPlan": "Dodaj u plan",
+        "sharePlan": "Podijeli plan",
+        "shareFixed": "Dijeli ovaj spremljeni plan i njegove točne projekte. Za promjenu projekata prvo uredi plan.",
+        "planLink": "Poveznica plana",
+        "publishAndCopy": "Objavi i kopiraj poveznicu",
+        "publishing": "Objavljivanje plana…",
+        "copied": "Poveznica je kopirana.",
+        "copyLinkManually": "Kopiraj poveznicu iznad.",
+        "copyLink": "Kopiraj poveznicu",
+        "createAgreement": "Izradi sporazum",
+        "openPlan": "Otvori plan",
+        "noPlans": "Još nema spremljenih planova.",
+        "membersMissing": "Neki projekti iz plana nisu pronađeni.",
+        "revisionChanged": "Plan se promijenio tijekom učitavanja. Pokušaj ponovno.",
+        "publicationFailed": "Projekt iz plana nije moguće objaviti.",
+        "shareDesignHint": "Podijeli ovaj dizajn"
     },
     "pageHeader": {
         "backToMap": "Natrag na kartu"

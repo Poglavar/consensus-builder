@@ -69,9 +69,12 @@
         const backend = win.resolveBackendBaseUrl().replace(/\/$/, '');
         const cid = win.DesignSync.publishedCid(proposal);
         const local = localPlans(proposal.proposalId, cid, win.AgreementStore.list());
+        const revision = win.DesignRecord?.cidOf(proposal) || cid;
+        const saved = (win.NamedPlans.list?.() || []).filter(plan => plan.content.designCids.includes(revision))
+            .map(plan => ({ ...plan, title: plan.content.title, draft: Array.isArray(plan.designs) && !plan.published }));
         const knownPlan = win.NamedPlans.current;
         const groups = {
-            plans: { items: mergeRows(local, cid && knownPlan?.content.designCids.includes(cid)
+            plans: { items: mergeRows(local, saved, cid && knownPlan?.content.designCids.includes(cid)
                 ? [{ cid: knownPlan.cid, title: knownPlan.content.title, content: knownPlan.content,
                     designCids: knownPlan.content.designCids, draft: false }] : []) }
         };
@@ -123,21 +126,25 @@
     async function inspect(kind, instance, win) {
         if (kind !== 'plans') throw new Error('Only plans have spatial stack sections.');
         const content = instance.content || (await win.NamedPlans.fetchPlan(instance.cid)).content;
+        const snapshot = win.PlanWorkspace ? await win.PlanWorkspace.resolve({ ...instance, content }) : null;
         const refs = content.designCids.map(cid => ({ cid }));
         const localOf = cid => {
             const published = win.DesignSync.localCopyOf(cid);
             if (published) return published;
-            const ref = instance.localDesigns?.find(ref => ref.cid === cid);
+            const carriedIndex = snapshot?.content.designCids.indexOf(cid) ?? -1;
+            const ref = instance.localDesigns?.find(ref => ref.cid === cid)
+                || (carriedIndex >= 0 ? { proposalId: snapshot.memberIds[carriedIndex] } : null);
             const draft = ref ? win.proposalStorage.getProposal(ref.proposalId) : null;
             // A saved plan names a revision; an edited record under the same local id is not it.
             return draft && win.DesignRecord.cidOf(draft) === cid ? draft : null;
         };
-        const missing = refs.filter(ref => !localOf(ref.cid)).map(ref => ref.cid);
+        const carried = new Map((snapshot?.designs || []).map(member => [member.cid, member]));
+        const missing = refs.filter(ref => !localOf(ref.cid) && !carried.has(ref.cid)).map(ref => ref.cid);
         const downloaded = missing.length ? await win.DesignSync.fetchDesigns(missing) : { rows: new Map(), missing: [] };
         if (downloaded.missing.length) throw new Error(translator(win)('geometryUnavailable'));
         const members = refs.map(ref => {
             const local = localOf(ref.cid);
-            const proposal = local || (ref.cid ? win.DesignSync.localDesignFromRow(downloaded.rows.get(ref.cid), { apiBase: win.resolveBackendBaseUrl() }) : null);
+            const proposal = local || (ref.cid ? win.DesignSync.localDesignFromRow(carried.get(ref.cid) || downloaded.rows.get(ref.cid), { apiBase: win.resolveBackendBaseUrl() }) : null);
             if (!proposal) throw new Error(translator(win)('geometryUnavailable'));
             return { id: String(local?.proposalId || ref.cid), cid: ref.cid, ...(local ? {} : { serverId: ref.cid }), label: proposal.title || proposal.name || ref.cid, proposal };
         });
@@ -156,37 +163,8 @@
         const data = session ? await session.details('plans', instance) : await inspect('plans', instance, win);
         win.ClickStack?.close();
         win.ThreeClickStack?.close();
-        return win.shareAppliedProposals({ plan: instance.draft ? null : { cid: instance.cid, content: data.content },
+        return win.shareAppliedProposals({ plan: { cid: instance.cid, content: data.content },
             members: data.members.map(member => member.proposal) });
-    }
-
-    async function shareFromDesign(proposal, win) {
-        const t = translator(win), session = createSession(proposal, win);
-        try {
-            await session.ready;
-            const group = session.groups.plans;
-            for (;;) {
-                const plans = session.instances('plans').filter(plan => !plan.membershipPlaceholder);
-                if (!plans.length) {
-                    if (group.error) throw new Error(t('failed'));
-                    win.ClickStack?.close();
-                    win.ThreeClickStack?.close();
-                    return await win.shareAppliedProposals({ members: [
-                        ...win.proposalStorage.getAllProposals().filter(record => win.isApplied(record)), proposal
-                    ] });
-                }
-                if (plans.length === 1 && group.nextOffset === null) return await sharePlan(plans[0], win, session);
-                const more = group.nextOffset !== null;
-                const choice = await win.CbDialog.choice(t('chooseSharePlan'), [
-                    ...plans.map(plan => ({ value: plan.id, label: plan.label })),
-                    ...(more ? [{ value: 'more', label: t('more') }] : []),
-                    { value: 'cancel', label: win.i18n.t('common.cancel') }
-                ], { title: t('sharePlan') });
-                if (choice === 'more') { await session.load('plans'); continue; }
-                const plan = plans.find(plan => plan.id === choice);
-                return plan ? await sharePlan(plan, win, session) : null;
-            }
-        } finally { session.dispose(); }
     }
 
     // Agreements refer to this exact plan; they open a dialog, never a spatial stack section.
@@ -278,19 +256,17 @@
             shareIcon.setAttribute('aria-hidden', 'true');
             share.replaceChildren(shareIcon, node('span', '', t('sharePlan')));
             actions.appendChild(share);
-            if (instance.cid && !instance.draft) {
-                const link = node('a', 'btn btn-sm', t(kind === 'plans' ? 'openPlan' : 'openAgreement'));
-                link.href = membershipLink(kind, instance.cid, win);
-                actions.appendChild(link);
-            }
-            actions.appendChild(action(t('createAgreement'), async () => {
+            const createAgreement = action(t('createAgreement'), async () => {
                 try {
-                    const data = session ? await session.details(kind, instance) : await inspect(kind, instance, win);
-                    if (instance.draft) return await win.AgreementDialog.open({ plan: { cid: instance.cid, content: data.content },
-                        designIds: data.members.map(member => member.id) });
-                    await win.AgreementSync.createForPlan({ cid: instance.cid, content: data.content });
+                    let selectedPlan;
+                    await win.BusyControl.track(createAgreement, async () => {
+                        const data = session ? await session.details(kind, instance) : await inspect(kind, instance, win);
+                        selectedPlan = win.NamedPlans.remember({ cid: instance.cid, content: data.content }, data.members.map(member => member.id));
+                    });
+                    await win.AgreementDialog.open({ plan: selectedPlan });
                 } catch (error) { win.showStyledAlert(error.message); }
-            }));
+            });
+            actions.appendChild(createAgreement);
             host.appendChild(actions);
             mountAgreements(host, instance, win);
             const details = node('div', 'click-stack__membership-details');
@@ -325,5 +301,5 @@
     }
 
     return { localAgreements, localPlans, mountAgreements, mergeRows, membershipLink, fetchPage, createSession, inspect,
-        sharePlan, shareFromDesign, mountSection };
+        sharePlan, mountSection };
 });

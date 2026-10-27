@@ -7306,7 +7306,14 @@
             "ruleCommunityBinding": "Un voto vecinal no puede ser vinculante.",
             "deadlineInvalid": "El plazo debe ser una fecha futura.",
             "secondaryTab": "Otra pestaña tiene los datos de esta ciudad; los acuerdos solo se pueden editar allí.",
-            "published": "Un acuerdo propuesto no se puede editar; propón uno nuevo."
+            "published": "Un acuerdo propuesto no se puede editar; propón uno nuevo.",
+            "planRequired": "Elige un plan guardado.",
+            "planMembership": "Todos los diseños deben pertenecer al plan seleccionado.",
+            "landUnbalanced": "La superficie total de entrada y salida debe coincidir.",
+            "inputShares": "Las participaciones de propiedad de entrada deben sumar el 100 %.",
+            "allocationRequired": "Asigna cada parcela resultante.",
+            "settlementInvalid": "Revisa los importes de la liquidación en efectivo.",
+            "moneyUnbalanced": "Los pagos en efectivo deben cuadrar."
         },
         "warnings": {
             "ruleNotReady": "Todavía no se puede evaluar la regla: {{reason}}",
@@ -7347,7 +7354,7 @@
         },
         "list": {
             "create": "Crear acuerdo",
-            "empty": "Aún no hay acuerdos. Aplica diseños y luego crea uno.",
+            "empty": "Aún no hay acuerdos. Crea primero un plan y luego su acuerdo.",
             "designs": {
                 "one": "{{count}} diseño",
                 "other": "{{count}} diseños"
@@ -7521,6 +7528,33 @@
         },
         "plan": {
             "untitled": "Plan sin título"
+        },
+        "workflow": {
+            "choosePlan": "Elegir un plan guardado",
+            "noPlans": "Primero crea un plan. Abre Planes y elige Crear plan.",
+            "savePlan": "Guardar plan en este dispositivo",
+            "planSaved": "Plan guardado en este dispositivo. Ya puedes crear su acuerdo.",
+            "applyPlan": "Aplicar diseños del plan",
+            "planNotApplied": "Aplica todos los diseños de este plan guardado antes de consultar el terreno.",
+            "rules": "Reglas",
+            "inputs": "Parcelas de entrada",
+            "outputs": "Parcelas resultantes",
+            "persons": "Personas",
+            "chooseRecipient": "Elegir destinatario",
+            "sponsor": "Patrocinador",
+            "person": "Persona",
+            "putsIn": "Aporta",
+            "receives": "Recibe",
+            "rateReadOnly": "Compensación: {{rate}} por m². Cámbiala en Reglas.",
+            "landTotals": "Terreno aportado: {{input}} · Terreno resultante: {{output}}",
+            "rights": "Derechos de propiedad de parcelas",
+            "lens": "Operaciones de lentes",
+            "compensation": "Compensación",
+            "byArea": "Equilibrar diferencias de terreno con dinero",
+            "noCash": "Sin compensación en efectivo",
+            "rate": "Compensación por m² ({{currency}})",
+            "contribution": "Contribución de terreno (%)",
+            "contributionHint": "La compensación cubre las diferencias del derecho restante sobre el terreno tras esta contribución."
         }
     },
     "planningViews": {
@@ -8059,6 +8093,40 @@
         "countryRegional": "Fuentes subnacionales",
         "countryNone": "No se identificó una fuente nacional",
         "countryUnchecked": "No hay un hallazgo nacional completo"
+    },
+    "planDialog": {
+        "plan": "Plan",
+        "savedPlans": "Planes guardados",
+        "createPlan": "Crear plan",
+        "editPlan": "Editar plan",
+        "saveRevision": "Guardar nueva versión",
+        "name": "Nombre del plan",
+        "addDesigns": "Añadir diseños",
+        "search": "Buscar diseños",
+        "selected": "{{count}} seleccionados",
+        "untitledDesign": "Diseño sin título",
+        "noDesigns": "No hay diseños disponibles.",
+        "revisionHint": "Al guardar los cambios se crea una nueva versión del plan. Los enlaces existentes no cambian.",
+        "cancel": "Cancelar",
+        "designMissing": "Este diseño ya no está disponible en este dispositivo.",
+        "choosePlan": "Elegir un plan",
+        "newPlan": "Crear un plan nuevo",
+        "addToPlan": "Añadir al plan",
+        "sharePlan": "Compartir plan",
+        "shareFixed": "Comparte este plan guardado y sus diseños exactos. Para cambiar los diseños, edita primero el plan.",
+        "planLink": "Enlace del plan",
+        "publishAndCopy": "Publicar y copiar enlace",
+        "publishing": "Publicando el plan…",
+        "copied": "Enlace copiado.",
+        "copyLinkManually": "Copia el enlace de arriba.",
+        "copyLink": "Copiar enlace",
+        "createAgreement": "Crear acuerdo",
+        "openPlan": "Abrir plan",
+        "noPlans": "Aún no hay planes guardados.",
+        "membersMissing": "No se encontraron algunos diseños del plan.",
+        "revisionChanged": "El plan cambió mientras se resolvía. Inténtalo de nuevo.",
+        "publicationFailed": "No se pudo publicar un diseño del plan.",
+        "shareDesignHint": "Compartir este diseño"
     },
     "pageHeader": {
         "backToMap": "Volver al mapa"

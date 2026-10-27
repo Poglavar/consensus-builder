@@ -1899,7 +1899,7 @@
         },
         "list": {
             "create": "Créer un accord",
-            "empty": "Aucun accord pour le moment. Appliquez des projets, puis créez un accord.",
+            "empty": "Aucun accord pour le moment. Créez d’abord un plan, puis son accord.",
             "designs": {
                 "one": "{{count}} projet",
                 "other": "{{count}} projets"
@@ -1958,7 +1958,14 @@
             "ruleCommunityBinding": "Un vote de la communauté ne peut pas être contraignant.",
             "deadlineInvalid": "La date limite doit être une date future.",
             "secondaryTab": "Un autre onglet détient les données de cette ville ; les accords ne peuvent être modifiés que dans cet onglet.",
-            "published": "Un accord proposé ne peut pas être modifié ; proposez-en un nouveau."
+            "published": "Un accord proposé ne peut pas être modifié ; proposez-en un nouveau.",
+            "planRequired": "Choisissez un plan enregistré.",
+            "planMembership": "Chaque projet doit appartenir au plan sélectionné.",
+            "landUnbalanced": "Les superficies totales d’entrée et de sortie doivent être équilibrées.",
+            "inputShares": "Les parts de propriété à l’entrée doivent totaliser 100 %.",
+            "allocationRequired": "Attribuez chaque parcelle résultante.",
+            "settlementInvalid": "Vérifiez les montants du règlement en espèces.",
+            "moneyUnbalanced": "Les paiements en espèces doivent être équilibrés."
         },
         "warnings": {
             "ruleNotReady": "La règle ne peut pas encore être évaluée : {{reason}}",
@@ -1967,6 +1974,33 @@
         },
         "plan": {
             "untitled": "Plan sans titre"
+        },
+        "workflow": {
+            "choosePlan": "Choisir un plan enregistré",
+            "noPlans": "Créez d’abord un plan. Ouvrez Plans et choisissez Créer un plan.",
+            "savePlan": "Enregistrer le plan sur cet appareil",
+            "planSaved": "Plan enregistré sur cet appareil. Vous pouvez maintenant créer son accord.",
+            "applyPlan": "Appliquer les projets du plan",
+            "planNotApplied": "Appliquez tous les projets de ce plan enregistré avant de lire le terrain.",
+            "rules": "Règles",
+            "inputs": "Parcelles d’entrée",
+            "outputs": "Parcelles résultantes",
+            "persons": "Personnes",
+            "chooseRecipient": "Choisir le bénéficiaire",
+            "sponsor": "Sponsor",
+            "person": "Personne",
+            "putsIn": "Apporte",
+            "receives": "Reçoit",
+            "rateReadOnly": "Indemnité : {{rate}} par m². Modifiez-la dans Règles.",
+            "landTotals": "Terrain apporté : {{input}} · Terrain résultant : {{output}}",
+            "rights": "Droits de propriété des parcelles",
+            "lens": "Opérations de lentille",
+            "compensation": "Indemnité",
+            "byArea": "Compenser les différences de terrain en argent",
+            "noCash": "Aucune compensation en espèces",
+            "rate": "Indemnité par m² ({{currency}})",
+            "contribution": "Contribution foncière (%)",
+            "contributionHint": "L’indemnité couvre les différences de droit foncier restant après cette contribution."
         }
     },
     "workspace": {
@@ -7864,6 +7898,40 @@
         "contactTitle": "Questions et demandes d’accès ou de suppression",
         "contact": "Utilisez le formulaire de retour ci-dessous pour contacter le responsable de maintenance au sujet de la confidentialité, de l’accès, de la rectification ou de la suppression des données sous notre contrôle. Incluez un accusé de réception de signalement ou une autre référence afin que nous puissions identifier l’enregistrement. Les demandes sont examinées en fonction des informations disponibles et des limites du stockage public et tiers. Les modifications futures de cette notice seront datées sur cette page.",
         "contactLink": "Contacter le responsable de maintenance / demander un examen des données"
+    },
+    "planDialog": {
+        "plan": "Plan",
+        "savedPlans": "Plans enregistrés",
+        "createPlan": "Créer un plan",
+        "editPlan": "Modifier le plan",
+        "saveRevision": "Enregistrer une nouvelle version",
+        "name": "Nom du plan",
+        "addDesigns": "Ajouter des conceptions",
+        "search": "Rechercher des conceptions",
+        "selected": "{{count}} sélectionnés",
+        "untitledDesign": "Conception sans titre",
+        "noDesigns": "Aucune conception disponible.",
+        "revisionHint": "Enregistrer les modifications crée une nouvelle version du plan. Les liens existants restent inchangés.",
+        "cancel": "Annuler",
+        "designMissing": "Cette conception n’est plus disponible sur cet appareil.",
+        "choosePlan": "Choisir un plan",
+        "newPlan": "Créer un nouveau plan",
+        "addToPlan": "Ajouter au plan",
+        "sharePlan": "Partager le plan",
+        "shareFixed": "Partage ce plan enregistré et ses conceptions exactes. Pour modifier les conceptions, modifiez d’abord le plan.",
+        "planLink": "Lien du plan",
+        "publishAndCopy": "Publier et copier le lien",
+        "publishing": "Publication du plan…",
+        "copied": "Lien copié.",
+        "copyLinkManually": "Copiez le lien ci-dessus.",
+        "copyLink": "Copier le lien",
+        "createAgreement": "Créer un accord",
+        "openPlan": "Ouvrir le plan",
+        "noPlans": "Aucun plan enregistré pour le moment.",
+        "membersMissing": "Certaines conceptions du plan sont introuvables.",
+        "revisionChanged": "Le plan a changé pendant son chargement. Réessayez.",
+        "publicationFailed": "Une conception du plan n’a pas pu être publiée.",
+        "shareDesignHint": "Partager ce projet"
     },
     "pageHeader": {
         "backToMap": "Retour à la carte"
