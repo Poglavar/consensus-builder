@@ -204,7 +204,7 @@ inline DOMContentLoaded boot (after PersistentStorage.ready: initializeUser, ini
 initializeSidebar, initializeMapCore, gameState.updateGameUI, initializeVersionHistory,
 initBlockchainSync); road/corridor scripts; import map (three 0.184.0 jsDelivr, 3d-tiles-renderer
 esm.sh) + window.whenThreeReady(); more scripts; lazy 3D stack loader (__ensure3DModeStack) + mode
-shim; area-monitor/*, unsaved-work-guard, boot-ready.js (removes body.app-loading).
+shim; area-monitor/*, boot-ready.js (removes body.app-loading).
 
 ## Behavioral coverage update — 2026-10-02
 

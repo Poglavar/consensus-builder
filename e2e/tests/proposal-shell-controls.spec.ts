@@ -1,6 +1,7 @@
 // Exercise the proposal shell through selection, design, validation, and save controls.
 import { test, expect } from '../helpers/fixtures';
-import { clickMapPoint, openCity, openParcel, showProposal, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
+import { mockAllApiRoutes } from '../helpers/mocks/api-routes';
+import { clickMapPoint, openCity, openParcel, showProposal, createSpace, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
 
 async function addParkSource(
   page: import('@playwright/test').Page,
@@ -44,6 +45,36 @@ async function editSource(
 }
 
 test.describe('Shared proposal editor shell controls @core', () => {
+  test('refresh and close preserve an unpublished design and editor draft without a leave warning', async ({ mockApi: page }) => {
+    test.setTimeout(90_000);
+    await openCity(page);
+    const sourceId = await createSpace(page, 'park');
+    const draftId = await editSource(page, sourceId, 'details');
+    const description = 'Saved locally before refreshing.';
+    await page.locator('[data-draft-path="fields.description"]').fill(description);
+    await page.locator('[data-draft-path="fields.description"]').press('Tab');
+    await expect.poll(() => page.evaluate(id => (window as any).proposalDraftStore.getDraft(id)?.fields.description, draftId)).toBe(description);
+    expect(await page.evaluate(id => (window as any).DesignSync.publishedCid((window as any).proposalStorage.getProposal(id)), sourceId)).toBeFalsy();
+    const dialogs: string[] = [];
+    page.on('dialog', dialog => { dialogs.push(dialog.type()); void dialog.accept(); });
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await expect.poll(() => page.evaluate(id => (window as any).proposalDraftStore?.getDraft(id)?.fields.description, draftId)).toBe(description);
+    await expect.poll(() => page.evaluate(id => !!(window as any).proposalStorage?.getProposal(id), sourceId)).toBe(true);
+    expect(dialogs).toEqual([]);
+    const url = page.url();
+    // Real user activation makes a beforeunload handler eligible to display its browser prompt.
+    await page.locator('#proposals-button').click();
+    await page.close({ runBeforeUnload: true });
+    await expect.poll(() => page.isClosed()).toBe(true);
+    expect(dialogs).toEqual([]);
+    const reopened = await page.context().newPage();
+    await mockAllApiRoutes(reopened);
+    await reopened.goto(url, { waitUntil: 'domcontentloaded' });
+    await expect.poll(() => reopened.evaluate(id => (window as any).proposalDraftStore?.getDraft(id)?.fields.description, draftId)).toBe(description);
+    await expect.poll(() => reopened.evaluate(id => !!(window as any).proposalStorage?.getProposal(id), sourceId)).toBe(true);
+    await reopened.close();
+  });
+
   test('parcel fields autosave and survive a reload without changing the source', async ({ mockApi: page }) => {
     test.setTimeout(60_000);
     await openCity(page);

@@ -266,3 +266,15 @@ Verification: 11 headless unit checks in `frontend-ground-menu.test.js` and one 
 Playwright scenario in `world-and-ground.spec.ts` passed, including both 1280px and 390px button
 geometry and drawing/cancellation. Manual headed inspection used a bare-ground fixture at desktop
 and mobile widths; the dedicated browser was closed. No full suite ran.
+
+### Refreshing and closing the editor (2026-10-27)
+
+There is no blanket native leave-page warning for unpublished designs. Publication is separate
+from saving: designs persist automatically in the browser workspace, editor drafts persist as
+edited, and saved plans and agreements remain in that workspace. Existing draft-flush and cleanup
+handlers still run on exit. Unfinished SiteTool drawings and unsubmitted plan/agreement forms are
+transient; removing the publication-based guard does not add autosave to those forms.
+This changes navigation presentation only; authored editing and MCP primitives are unchanged.
+Verification: two targeted headless Playwright scenarios in `proposal-shell-controls.spec.ts`
+passed, covering draft autosave and an unpublished design plus edited draft surviving refresh,
+closing with unload handlers enabled, and reopening without a leave-page prompt. No full suite ran.
