@@ -126,28 +126,57 @@ Every change to human editing includes this check, even when no MCP code change 
 
 See [MCP editing](mcp-editing.md) for supported primitives and authored-field boundaries.
 
-## Plan dialog and authoring boundaries
+## Lists and authoring boundaries
 
-The **Plan dialog** contains the **Designs library** and **Saved plans** tabs. **Create plan**
-opens the **Plan composer**, which chooses a name, member revisions and saved view and writes only
-local storage. **Add to plan** opens a new composition or a reviewed revision of a saved plan.
-The **Plan details** dialog owns Edit plan, Share plan and Create agreement. The **Share plan**
-dialog publishes or copies exactly one saved revision; it never edits membership. A design's
-Share action publishes or copies only that design. Agreement creation and sharing remain in the
-agreement editor and agreement details respectively.
+The **Lists panel** contains **Designs**, **Plans**, and **Agreements** tabs. One **Source and filters**
+section preserves the browser/published scope, search, publication filter, and ordering across tabs.
+Search operates on loaded rows; published plans and agreements expose Load more. Designs retain
+an explicit 1,000-row limit. Rows open their details in the click stack, which highlights their
+geometry without applying a plan. Sharing uses each record's existing publication flow.
+
+**Create plan** in Designs starts **Plan selection**: check designs, then Continue to the
+**Plan composer** with those exact members selected. The composer chooses a name, member revisions
+and saved view and writes only local storage. **Add to plan** opens a new composition or a reviewed
+revision. A plan row offers **Create agreement** with that exact plan as its subject. Draft agreements
+are reviewed and proposed in agreement details before their public link can be shared.
+
+Record removal belongs only to Lists. **Remove from browser** confirms and removes the local copy;
+published links remain available. Removing a plan deletes its library entry, not its members or any
+agreement's embedded plan reference. Membership inspection can still follow that reference.
+The stored-plan list deliberately excludes plans inferred only from an agreement. The Share plan
+dialog publishes or copies one saved revision and never edits membership.
 
 `PlanComposition` carries canonical member content alongside the immutable `plan/v1` content so
 later local design edits cannot change a saved plan. `PlanWorkspace` resolves and publishes those
 exact revisions. The public plan format and publication policy are unchanged. Presentation uses
-shared `CbDialog`, `BusyControl`, `btn` and `cb-actions` categories; `css/plan-dialog.css` supplies
+shared `CbDialog`, `BusyControl`, `btn` and `cb-actions` categories; `css/plan-dialog.css` and `css/lists.css` supply
 layout and reads the shared theme roles from `css/primitives.css`.
 
 MCP parity uses existing `ugt_draft_plan`, `ugt_inspect_plan`, `ugt_edit_plan` and `ugt_publish_plan`
 operations, with the same `PlanRecord` validator and immutable member content. Adding a design is
 an `ugt_edit_plan` add operation against the inspected CID; it returns a new private revision.
-No new MCP tool or schema is needed for this separation of dialogs. Targeted
+No new MCP editing tool or schema is needed: list removal changes browser storage only, not a
+published record or authored membership. Lists adds no new authored fields. Targeted
 `mcp-named-plans.test.js`, `plan-composition.test.js` and `plan-workspace.test.js` cover independent
 creation, membership edits, old-revision isolation and exact dependency publication.
+
+### Lists verification (2026-10-27)
+
+- Six targeted headless unit files: 102/103 initially passed; the locale failure was an explicit-key
+  requirement. Its 22 checks passed after correction. The Lists file gained a fourth check for command
+  registration and browser-only deletion; all four passed. The plan-workspace file gained a fifth
+  check for retaining confirmed publication on an existing local snapshot. Named-plan MCP operations
+  passed in the initial targeted run.
+- Five targeted headless Playwright scenarios: the three existing plan-sharing scenarios passed.
+  Lists desktop initially used a stale selector; mobile hit a startup timeout. The two-scenario rerun
+  passed desktop; mobile then attempted the intentionally clipped desktop close control. Using keyboard
+  dismissal, its one-scenario rerun passed. Both viewport flows cover creation, inspection and removal.
+- Two additional headless UI files: 49/55 checks passed. The new Agreements command was registered
+  after this check. Remaining failures concern existing track-icon assumptions, the economic-settings
+  command, and agreement-editor style baselines. The global control inventory also has unrelated drift;
+  the Lists factory, changed tab controls and retired list controls have current contract entries.
+- Manual headed browser: desktop and 390px mobile, translated controls, no horizontal overflow,
+  real published plan and parcel reads, and a published plan opened in the click stack and saved locally.
 
 ## Parcel layout handle presentation
 

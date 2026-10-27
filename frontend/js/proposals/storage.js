@@ -258,8 +258,7 @@ function deleteProposal(proposalId) {
             || !!proposal.parcelLayout
         );
         if (managedByProposalManager && typeof ProposalManager !== 'undefined' && ProposalManager.deleteProposal) {
-            ProposalManager.deleteProposal(proposalId);
-            return;
+            return ProposalManager.deleteProposal(proposalId);
         }
 
         // Remove the proposal from storage

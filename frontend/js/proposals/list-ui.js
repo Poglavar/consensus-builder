@@ -877,44 +877,21 @@ async function mountProposalList() {
     finally { _proposalListMountPromise = null; }
 }
 
-// Plan sheet: the design library and saved snapshots. Creation and sharing use separate dialogs.
-function setDesignsPanelTab(tab) {
-    const plans = tab === 'plans';
-    document.getElementById('designs-browse').hidden = plans;
-    document.getElementById('designs-plans').hidden = !plans;
-    for (const [id, active] of [['designs-browse-tab', !plans], ['shareAppliedProposalsButton', plans]]) {
-        const button = document.getElementById(id);
-        button.setAttribute('aria-selected', String(active));
-        button.tabIndex = active ? 0 : -1;
-    }
-}
-
+// The three lists share their scope and filters through ListsPanel.
+function setDesignsPanelTab(tab) { return window.ListsPanel.select(tab); }
 function openDesignsTab(tab) {
-    ++_designsPanelRequest;
     if (!window.MapShell.isOpen('proposals-sheet')) window.MapShell.openSheet('proposals-sheet');
-    setDesignsPanelTab(tab);
-    return tab === 'plans' ? window.PlanDialog.showPlans() : mountProposalList();
+    return window.ListsPanel.select(tab);
 }
-
 function handleProposalSheetOpened(event) {
-    if (event?.detail?.id !== 'proposals-sheet') return;
-    setDesignsPanelTab('browse'); mountProposalList();
+    if (event?.detail?.id === 'proposals-sheet') window.ListsPanel.open();
 }
 function handleProposalSheetClosed(event) {
-    if (event?.detail?.id !== 'proposals-sheet') return;
-    _designsPanelRequest++; closeProposalList({ fromSheet: true }); setDesignsPanelTab('browse');
+    if (event?.detail?.id === 'proposals-sheet') closeProposalList({ fromSheet: true });
 }
 if (typeof document !== 'undefined') {
     document.addEventListener('mapshell:sheetopened', handleProposalSheetOpened);
     document.addEventListener('mapshell:sheetclosed', handleProposalSheetClosed);
-    document.addEventListener('keydown', event => {
-        const tab = event.target.closest?.('.designs-panel-tabs [role="tab"]');
-        if (!tab || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
-        event.preventDefault();
-        const plans = event.key === 'End' || (event.key !== 'Home' && tab.id === 'designs-browse-tab');
-        document.getElementById(plans ? 'shareAppliedProposalsButton' : 'designs-browse-tab').focus();
-        openDesignsTab(plans ? 'plans' : 'browse');
-    });
 }
 
 // The fitBounds padding that frames content in the map a panel leaves visible. A panel with room

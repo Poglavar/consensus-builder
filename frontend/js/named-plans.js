@@ -40,17 +40,17 @@
             win.PersistentStorage.setItem(`plan:${row.cid}`, JSON.stringify(row));
             return row;
         }
-        function list() {
+        function list({ storedOnly = false } = {}) {
             const rows = new Map();
             win.PersistentStorage.forEach((raw, key) => {
                 if (!String(key).startsWith('plan:') && !String(key).startsWith('ugt-imported-plan:')) return;
                 try { const row = JSON.parse(raw); verify(row, row.cid); rows.set(row.cid, row); }
                 catch (error) { win.console.warn('[NamedPlans] Invalid local plan', key, error.message); }
             });
-            for (const agreement of win.AgreementStore?.list?.() || []) {
+            for (const agreement of storedOnly ? [] : win.AgreementStore?.list?.() || []) {
                 if (agreement.plan && !rows.has(agreement.plan.cid)) rows.set(agreement.plan.cid, { ...agreement.plan, memberIds: agreement.designs.map(row => row.proposalId) });
             }
-            if (current) rows.set(current.cid, { ...rows.get(current.cid), ...current });
+            if (current && !storedOnly) rows.set(current.cid, { ...rows.get(current.cid), ...current });
             return [...rows.values()].sort((a, b) => a.content.title.localeCompare(b.content.title));
         }
         async function request(method, path, body) {
@@ -87,6 +87,12 @@
             fetchPlan,
             remember,
             list,
+            remove(cid) {
+                win.PersistentStorage.removeItem(`plan:${cid}`);
+                win.PersistentStorage.removeItem(`ugt-imported-plan:${cid}`);
+                if (current?.cid === cid) current = null;
+                win.dispatchEvent(new win.CustomEvent('planschange'));
+            },
             get current() { return current; },
             async save(content) {
                 return observe('save', { entity: 'plan', planKey: content, code: 'plan-save-failed' }, async () => {

@@ -1657,7 +1657,6 @@ function buildBlockProposalListItem(proposal) {
 
     const metaInfo = metaParts.join(' • ');
     const typeLabel = isRoadProposal ? 'Road' : isBuildingProposal ? 'Building' : isStructureProposal ? (proposal.structureProposal.kind ? proposal.structureProposal.kind.charAt(0).toUpperCase() + proposal.structureProposal.kind.slice(1) : 'Structure') : '';
-    const deleteLabel = tBlock('modal.roadWidth.proposalList.deleteTooltip', {}, 'Delete proposal');
 
     // The lifecycle reads as the proposals list does (proposalLadderBadgesHtml, proposals/list-ui.js);
     // "Applied" is the row's map action, so it is not repeated as a badge.
@@ -1669,9 +1668,7 @@ function buildBlockProposalListItem(proposal) {
                 <div class="cb-actions proposal-actions">
                     ${actionButtons}
                     ${proposalLadderBadgesHtml(proposal, { applied: false })}
-                    <button type="button" class="btn btn-sm btn-icon btn-danger proposal-delete-btn" onclick="event.stopPropagation(); if (typeof deleteProposal === 'function') deleteProposal('${proposal.proposalId}')" title="${deleteLabel}" aria-label="${deleteLabel}">
-                        <i class="fas fa-trash" aria-hidden="true"></i>
-                    </button>
+
                 </div>
             </div>
             <div class="proposal-list-meta">${metaInfo}</div>

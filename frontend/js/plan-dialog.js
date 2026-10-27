@@ -125,14 +125,5 @@
             getView:()=>row.content.view,getTitle:()=>row.content.title,getSources:()=>row.designSources||{},importAllowed:false }));
         dialog=openDialog(t('plan'),body);return dialog;
     }
-    function showPlans() {
-        const host=document.getElementById('designs-plans');host.replaceChildren();
-        const actions=node('div','cb-actions');actions.append(button(t('createPlan'),()=>create(),true));host.append(actions);
-        const plans=win.PlanWorkspace.list();if(!plans.length)host.append(node('p','sheet-note',t('noPlans')));
-        for(const plan of plans){const row=node('div','plan-dialog__saved');row.append(node('strong','',plan.content.title));
-            row.append(button(t('openPlan'),()=>details(plan)),button(t('sharePlan'),()=>share(plan)));host.append(row);}
-        return host;
-    }
-    win.PlanDialog=Object.freeze({create,addDesign,share,details,showPlans});
-    win.addEventListener('planschange',()=>{const host=document.getElementById('designs-plans');if(host&&!host.hidden)showPlans();});
+    win.PlanDialog=Object.freeze({create,addDesign,share,details});
 })(window);

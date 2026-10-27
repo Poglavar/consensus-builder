@@ -23,6 +23,10 @@ function server({ records = new Map(), designs = [a, b], pin = vi.fn(async ({ ci
             const matching = [...records.values()].filter(row => row.content.designCids.includes(params[0])).sort((x, y) => x.cid.localeCompare(y.cid));
             return { rows: matching.slice(params[2], params[2] + params[1]).map(row => ({ cid: row.cid, title: row.content.title, design_count: row.content.designCids.length })) };
         }
+        if (sql.includes("content->'view'->>'city'")) {
+            const matching = [...records.values()].filter(row => !params[0] || row.content.view.city === params[0]).sort((a,b) => a.cid.localeCompare(b.cid));
+            return { rows: matching.slice(params[2], params[2] + params[1]) };
+        }
         if (sql.startsWith('SELECT cid, content')) return { rows: records.has(params[0]) ? [records.get(params[0])] : [] };
         if (sql.startsWith('SELECT cid FROM consensus.design')) return { rows: designs.map(cid => ({ cid })) };
         if (sql.startsWith('INSERT INTO consensus.plan')) { records.set(params[0], { cid: params[0], content: JSON.parse(params[1]) }); return { rows: [] }; }
@@ -108,9 +112,21 @@ describe('named plan records and API', () => {
         expect((await request(app).get(`/plans?design=${b}&limit=20`)).body.count).toBe(2);
         expect((await request(app).get(`/plans?design=${cidOf(Buffer.from('no match'))}`)).body).toEqual({ plans: [], count: 0, hasMore: false, nextOffset: null });
     });
-    it('rejects missing or malformed design and pagination before querying', async () => {
+    it('browses published plans by city without a design, with bounded pages', async () => {
+        const other = PlanRecord.create('Another city', [b], { ...view, city: 'london' });
+        const records = new Map([content, other].map(content => [Cid.cidOfObject(content), { cid: Cid.cidOfObject(content), content }]));
+        const { app } = server({ records });
+        const first = await request(app).get('/plans?limit=1');
+        expect(first.status).toBe(200); expect(first.body).toMatchObject({ count: 1, hasMore: true, nextOffset: 1 });
+        const second = await request(app).get('/plans?limit=1&offset=1');
+        expect(second.body).toMatchObject({ count: 1, hasMore: false });
+        expect(second.body.plans[0].cid).not.toBe(first.body.plans[0].cid);
+        const filtered = await request(app).get('/plans?city=birmingham');
+        expect(filtered.body.plans).toEqual([{ cid, content, title: content.title, designCount: 2 }]);
+    });
+    it('rejects malformed design and pagination before querying', async () => {
         const { app, pool } = server();
-        for (const query of ['', '?design=bad', `?design=${a}&limit=0`, `?design=${a}&limit=51`, `?design=${a}&limit=1.5`, `?design=${a}&offset=-1`, `?design=${a}&offset=1000001`]) {
+        for (const query of ['?design=bad', '?city[]=bad', `?design=${a}&limit=0`, `?design=${a}&limit=51`, `?design=${a}&limit=1.5`, `?design=${a}&offset=-1`, `?design=${a}&offset=1000001`]) {
             expect((await request(app).get(`/plans${query}`)).status).toBe(400);
         }
         expect(pool.query).not.toHaveBeenCalled();

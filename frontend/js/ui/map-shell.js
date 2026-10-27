@@ -411,29 +411,11 @@
         updateMapViewportInsets();
     }
 
-    // The Proposals button carries the same count as the "Proposals List (N)" button inside its
-    // sheet. That button's count is written in one place (list-ui.js updateShowProposalsButton) as
-    // data-i18n-params, so the badge follows that attribute rather than asking a second time.
+    // Lists contains three record types; a design-only count would mislabel its contents.
     function syncProposalsBadge() {
-        const source = doc.getElementById('showProposalsButton');
         const badge = doc.getElementById('proposals-button-count');
-        const button = doc.getElementById('proposals-button');
-        if (!source || !badge) return;
-        let count = 0;
-        try {
-            const params = JSON.parse(source.getAttribute('data-i18n-params') || '{}');
-            count = Number.isFinite(Number(params.count)) ? Number(params.count) : 0;
-        } catch (_) { count = 0; }
-        badge.textContent = String(count);
-        const ready = source.getAttribute('data-proposal-count-ready') !== '0';
-        const opened = source.getAttribute('data-proposal-list-opened') === '1';
-        badge.hidden = !ready;
-        badge.classList.toggle('is-unopened', ready && count > 0 && !opened);
-        if (button) {
-            button.setAttribute('aria-label', ready
-                ? t('mapShell.proposalsCount', `Designs (${count})`, { count })
-                : t('mapShell.proposals', 'Designs'));
-        }
+        if (badge) badge.hidden = true;
+        doc.getElementById('proposals-button')?.setAttribute('aria-label', t('lists.title', 'Lists'));
     }
 
     function watchProposalsBadge() {

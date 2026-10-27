@@ -919,13 +919,6 @@
       "controlType": "button"
     },
     {
-      "id": "control-66db320a28a868-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"proposals-button\" class=\"map-shell-button map-shell-button--labelled\" data-sheet-target=\"proposals-sheet\" aria-controls=\"proposals-sheet\" aria-expanded=\"false\" title=\"Designs\" data-i18n-key=\"mapShell.proposals\" data-i18n-attr=\"title\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-cbcda6bb9a8258-1",
       "source": "index.html",
       "markup": "<button type=\"button\" id=\"activity-button\" class=\"map-shell-button map-shell-button--labelled\" data-sheet-target=\"activity-sheet\" aria-controls=\"activity-sheet\" aria-expanded=\"false\" title=\"Activity\" data-i18n-key=\"mapShell.activity\" data-i18n-attr=\"title\">",
@@ -1485,18 +1478,6 @@
       "controlType": "button"
     },
     {
-      "id": "control-62f199cc04d2cf-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"designs-browse-tab\" class=\"cb-segmented__option\" role=\"tab\" aria-selected=\"true\" aria-controls=\"designs-browse\" onclick=\"openDesignsTab('browse')\">"
-    },
-    {
-      "id": "control-ff8699b69fa31a-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"shareAppliedProposalsButton\" class=\"cb-segmented__option\" role=\"tab\" tabindex=\"-1\" aria-selected=\"false\" aria-controls=\"designs-plans\" onclick=\"openDesignsTab('plans')\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-5594b773f51c35-1",
       "source": "index.html",
       "markup": "<button id=\"showProposalsButton\" hidden class=\"btn btn-block btn-primary\" onclick=\"showAllProposalsModal()\" data-i18n-key=\"sidebar.proposals.listButton\" data-i18n-params='{\"count\":0}'>",
@@ -1637,13 +1618,6 @@
       "id": "control-ef7c7846791b15-1",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"btn btn-danger debug-only-control\" onclick=\"clearDetectedRoads()\" data-i18n-key=\"sidebar.roads.clearTooltip\" data-i18n-attr=\"title\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-5018d1a0891414-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" class=\"btn btn-danger debug-only-control\" onclick=\"clearLocalProposalData()\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -2602,13 +2576,6 @@
       "id": "control-b0cd763a3a6218-1",
       "source": "js/agreement-panel.js",
       "markup": "<button type=\"button\" class=\"btn\" data-agreement-action=\"edit\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-935837d726073d-1",
-      "source": "js/agreement-panel.js",
-      "markup": "<button type=\"button\" class=\"btn btn-quiet\" data-agreement-action=\"delete\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -4191,13 +4158,6 @@
       "controlType": "button"
     },
     {
-      "id": "control-ece141a9981297-1",
-      "source": "js/parcel-blocks.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm btn-icon btn-danger proposal-delete-btn\" onclick=\"event.stopPropagation(); if (typeof deleteProposal === 'function') deleteProposal('${proposal.proposalId}')\" title=\"${deleteLabel}\" aria-label=\"${deleteLabel}\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-0e4111a03e48d6-1",
       "source": "js/parcel-blocks.js",
       "markup": "<button type=\"button\" class=\"btn btn-primary btn-block\" onclick=\"createProposalFromBlock(${inlineJsArg(blockName)})\">",
@@ -4865,6 +4825,11 @@
       "controlType": "button"
     },
     {
+      "id": "control-ec00f19db4edfd-2",
+      "source": "js/parcels/ui/claim.js",
+      "markup": "global.document.createElement('button')"
+    },
+    {
       "id": "control-fcfaf601bf30e5-1",
       "source": "js/parcels/ui/parcel-panel.js",
       "markup": "<button type=\"button\" class=\"cb-link block-tag\" onclick=\"${blockAction}\">",
@@ -4935,6 +4900,11 @@
           "includes": "return global.ClickStack.showParcel(feature);"
         }
       ]
+    },
+    {
+      "id": "control-9af9fb9173dbcf-1",
+      "source": "js/parcels/ui/parcel-panel.js",
+      "markup": "<button type=\"button\" class=\"cb-link\" onclick=\"showProposalDetails(${inlineJsArg(proposal.proposalId)}, ${inlineJsArg(parcelId)})\">"
     },
     {
       "id": "control-94dbf05c6c8fd3-1",
@@ -5889,9 +5859,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-6722faca57f7e8-1",
+      "id": "control-5337cbe7487528-1",
       "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn btn-quiet btn-sm btn-compare-parcel\" data-focus-parcel=\"${safeAgentText(String(parcelId))}\" aria-pressed=\"${parcelCompare.isActive(proposalKeyForCompare) && parcelCompare.activeFocus() === String(parcelId) ? 'true' : 'false'}\" title=\"${tProposal('mapCompare.sliderLabel', 'Before and after comparison')}\" onclick=\"event.stopPropagation(); event.preventDefault(); BusyControl.track(this, () =>",
+      "markup": "<button type=\"button\" class=\"btn btn-quiet btn-compare-parcel\" data-focus-parcel=\"${safeAgentText(String(parcelId))}\" aria-pressed=\"${parcelCompare.isActive(proposalKeyForCompare) && parcelCompare.activeFocus() === String(parcelId) ? 'true' : 'false'}\" title=\"${tProposal('mapCompare.sliderLabel', 'Before and after comparison')}\" onclick=\"event.stopPropagation(); event.preventDefault(); BusyControl.track(this, () =>",
       "interaction": "click",
       "controlType": "button"
     },
@@ -6049,9 +6019,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-96ac67cb1a1482-1",
+      "id": "control-486b7a464be372-1",
       "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn btn-quiet btn-sm proposal-id-copy\" title=\"${escapedProposalDisplayId}\" onclick=\"copyProposalIdToClipboard(${inlineJsArg(String(fullProposal.proposalId || proposal.proposalId || ''))})\">",
+      "markup": "<button type=\"button\" class=\"btn btn-quiet proposal-id-copy\" title=\"${escapedProposalDisplayId}\" onclick=\"copyProposalIdToClipboard(${inlineJsArg(String(fullProposal.proposalId || proposal.proposalId || ''))})\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -6070,6 +6040,26 @@
         }
       ],
       "exhaustiveVariants": true
+    },
+    {
+      "id": "control-3b7eccd53f54e4-1",
+      "source": "js/proposals/details-panel.js",
+      "markup": "<button type=\"button\" class=\"cb-link\" ${replacedDataAttr} ${geometryDataAttr} onclick=\"handleProposalParcelClick(${inlineJsArg(parcelId)}, event)\" title=\"${parcelTooltip}\">"
+    },
+    {
+      "id": "control-4f363d99a196fa-1",
+      "source": "js/proposals/details-panel.js",
+      "markup": "<button type=\"button\" class=\"btn descendant-item\" data-descendant-type=\"proposal\" data-proposal-id=\"${descendantId}\">"
+    },
+    {
+      "id": "control-8f40822830e2c1-1",
+      "source": "js/proposals/details-panel.js",
+      "markup": "<button type=\"button\" class=\"btn descendant-item\" data-descendant-type=\"parcel\" data-parcel-id=\"${safeAgentText(descendantKey)}\">"
+    },
+    {
+      "id": "control-f3dc331d58ba0b-1",
+      "source": "js/proposals/details-panel.js",
+      "markup": "<button type=\"button\" class=\"btn descendant-item\" data-descendant-type=\"parcel\" data-parcel-id=\"${descendantKey}\">"
     },
     {
       "id": "control-cd73c88bd50cc9-1",
@@ -6445,62 +6435,6 @@
       "id": "control-e3261ea7078417-2",
       "source": "js/proposals/dialog-create.js",
       "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-267181c66c803b-1",
-      "source": "js/proposals/dialog-share.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm btn-quiet proposal-filters-toggle\" aria-expanded=\"${filtersOpen ? 'true' : 'false'}\" aria-controls=\"proposal-list-controls\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-03236ba56d9f30-1",
-      "source": "js/proposals/dialog-share.js",
-      "markup": "<select id=\"proposal-filter-type\" aria-label=\"${escapeHtml(modalStrings.filters.goal)}\">",
-      "interaction": "change",
-      "controlType": "select"
-    },
-    {
-      "id": "control-b13b5f34ba63c5-1",
-      "source": "js/proposals/dialog-share.js",
-      "markup": "<select id=\"proposal-filter-publication\" aria-label=\"${escapeHtml(statusFilterLabel)}\">",
-      "interaction": "change",
-      "controlType": "select"
-    },
-    {
-      "id": "control-f93014943c10ea-1",
-      "source": "js/proposals/dialog-share.js",
-      "markup": "<input type=\"text\" id=\"proposal-filter-search\" placeholder=\"${escapeHtml(modalStrings.filters.searchPlaceholder)}\" data-i18n-key=\"modal.roadWidth.proposalList.filters.searchPlaceholder\" data-i18n-attr=\"placeholder\" value=\"${escapeHtml(proposalListState.searchText)}\">",
-      "interaction": "change",
-      "controlType": "text"
-    },
-    {
-      "id": "control-1eb4b690f1ab6a-1",
-      "source": "js/proposals/dialog-share.js",
-      "markup": "<select id=\"proposal-sort\">",
-      "interaction": "change",
-      "controlType": "select"
-    },
-    {
-      "id": "control-11ae7bfc940af3-1",
-      "source": "js/proposals/dialog-share.js",
-      "markup": "<button type=\"button\" class=\"cb-segmented__option proposal-source-btn\" aria-pressed=\"${source === 'local' ? 'true' : 'false'}\" data-source=\"local\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-d18442e9ad78c8-1",
-      "source": "js/proposals/dialog-share.js",
-      "markup": "<button type=\"button\" class=\"cb-segmented__option proposal-source-btn\" aria-pressed=\"${source === 'server' ? 'true' : 'false'}\" data-source=\"server\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-996552fb4b2490-1",
-      "source": "js/proposals/dialog-share.js",
-      "markup": "<button class=\"proposal-server-retry\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -7212,13 +7146,6 @@
       "markup": "doc.createElement('button')"
     },
     {
-      "id": "control-4b79316039d31f-1",
-      "source": "js/three-mode.js",
-      "markup": "<input type=\"range\" class=\"parcel-panel-price-slider\" data-role=\"${role}\" min=\"${price.min}\" max=\"${price.max}\" step=\"${price.step}\" value=\"${price.perSqm ?? price.min}\"${price.perSqm === null ? ' disabled' : ''}>",
-      "interaction": "change",
-      "controlType": "range"
-    },
-    {
       "id": "control-0f72c2ba2aa79f-1",
       "source": "js/three-mode.js",
       "markup": "document.createElement('button')",
@@ -7314,6 +7241,13 @@
       "id": "control-46b5da01d9d0cc-7",
       "source": "js/three-mode.js",
       "markup": "document.createElement('input')"
+    },
+    {
+      "id": "control-f6339260a755a6-1",
+      "source": "js/three-mode.js",
+      "markup": "<input id=\"${id}\" type=\"range\" class=\"parcel-panel-price-slider\" data-role=\"${role}\" min=\"${price.min}\" max=\"${price.max}\" step=\"${price.step}\" value=\"${price.perSqm ?? price.min}\"${price.perSqm === null ? ' disabled' : ''}>",
+      "interaction": "change",
+      "controlType": "range"
     },
     {
       "id": "control-d1342cf843b1ad-1",
@@ -9074,6 +9008,139 @@
       "markup": "<button class=\"btn btn-primary\" type=\"submit\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-c4e16ca66e1e10-1",
+      "source": "js/lists-panel.js",
+      "markup": "doc.createElement(tag)",
+      "interaction": "auto",
+      "controlType": "dynamic",
+      "exhaustiveVariants": true,
+      "variants": [
+        {
+          "name": "Open a list record",
+          "classes": [
+            "lists-item__title"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Create plan",
+          "label": "Create plan",
+          "interaction": "click"
+        },
+        {
+          "name": "Create agreement",
+          "label": "Create agreement",
+          "interaction": "click"
+        },
+        {
+          "name": "Continue",
+          "label": "Continue",
+          "interaction": "click"
+        },
+        {
+          "name": "Cancel",
+          "label": "Cancel",
+          "interaction": "click"
+        },
+        {
+          "name": "Share",
+          "label": "Share",
+          "interaction": "click"
+        },
+        {
+          "name": "Remove from browser",
+          "label": "Remove from browser",
+          "interaction": "click"
+        },
+        {
+          "name": "This browser",
+          "label": "This browser",
+          "interaction": "click"
+        },
+        {
+          "name": "Published",
+          "label": "Published",
+          "interaction": "click"
+        },
+        {
+          "name": "Reset",
+          "label": "Reset",
+          "interaction": "click"
+        },
+        {
+          "name": "Refresh",
+          "label": "Refresh",
+          "interaction": "click"
+        },
+        {
+          "name": "Load more",
+          "label": "Load more",
+          "interaction": "click"
+        },
+        {
+          "name": "Select a design",
+          "attrs": {
+            "type": "checkbox"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Search loaded records",
+          "attrs": {
+            "type": "search"
+          },
+          "interaction": "input"
+        },
+        {
+          "name": "Filter publication",
+          "attrs": {
+            "data-list-filter": "publication"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Sort records",
+          "attrs": {
+            "data-list-filter": "sort"
+          },
+          "interaction": "change"
+        }
+      ]
+    },
+    {
+      "id": "control-93a59c64772c39-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"proposals-button\" class=\"map-shell-button map-shell-button--labelled\" data-sheet-target=\"proposals-sheet\" aria-controls=\"proposals-sheet\" aria-expanded=\"false\" title=\"Lists\" data-i18n-key=\"lists.title\" data-i18n-attr=\"title\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-e1326c7eb592fe-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"designs-browse-tab\" class=\"cb-segmented__option\" role=\"tab\" aria-selected=\"true\" aria-controls=\"designs-browse\" data-list-tab=\"designs\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-1a2e63d515a933-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"shareAppliedProposalsButton\" class=\"cb-segmented__option\" role=\"tab\" tabindex=\"-1\" aria-selected=\"false\" aria-controls=\"designs-plans\" data-list-tab=\"plans\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-f10ec25ff421ef-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"designs-agreements-tab\" class=\"cb-segmented__option\" role=\"tab\" tabindex=\"-1\" aria-selected=\"false\" aria-controls=\"designs-agreements\" data-list-tab=\"agreements\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-56b96b1ca1b37d-1",
+      "source": "js/click-stack/click-stack-relations.js",
+      "markup": "doc.createElement('button')"
     }
   ],
   "variantExclusions": [

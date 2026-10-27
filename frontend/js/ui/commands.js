@@ -388,15 +388,15 @@
 
         // ---- Proposals sheet ----
         { id: 'proposals.list', group: 'proposals', surfaces: ['proposals'], run: callGlobal('showAllProposalsModal'),
-            labelKey: 'mapShell.commands.proposalsList', fallbackLabel: 'Open Designs', icon: 'fas fa-list-ul' },
+            labelKey: 'lists.title', fallbackLabel: 'Lists', icon: 'fas fa-list-ul' },
         control('planStatsButton', { id: 'proposals.planStats', group: 'proposals', surfaces: ['proposals'],
             labelKey: 'sidebar.proposals.planStats.buttonLabel', fallbackLabel: 'Applied design stats', icon: 'fas fa-chart-pie' }),
         control('roosterScoreButton', { id: 'proposals.grainScore', group: 'proposals', surfaces: ['proposals'],
             labelKey: 'sidebar.proposals.grainScore.buttonLabel', fallbackLabel: 'Urban rooster', icon: 'fas fa-crow' }),
         control('shareAppliedProposalsButton', { id: 'proposals.plans', group: 'proposals', surfaces: ['proposals'],
-            labelKey: 'planDialog.savedPlans', fallbackLabel: 'Saved plans', icon: 'fas fa-layer-group' }),
-        { id: 'proposals.clearLocal', group: 'proposals', surfaces: ['settings'], debugOnly: true, run: callGlobal('clearLocalProposalData'),
-            labelKey: 'sidebar.proposals.clearButton', fallbackLabel: 'Clear Designs From Local Storage', icon: 'fas fa-trash' },
+            labelKey: 'lists.plans', fallbackLabel: 'Plans', icon: 'fas fa-layer-group' }),
+        control('designs-agreements-tab', { id: 'proposals.agreements', group: 'proposals', surfaces: ['proposals'],
+            labelKey: 'sidebar.proposals.agreementsButton', fallbackLabel: 'Agreements', icon: 'fas fa-handshake' }),
 
         // ---- Activity panel views and Settings > Diagnostics simulation controls ----
         { id: 'activity.events', group: 'activity', surfaces: ['activity'], run: callGlobal('openActivityPanel', { view: 'events' }),

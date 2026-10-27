@@ -26,6 +26,12 @@ describe('plan workspace',()=>{
   const h=harness(),row=snapshot();h.api.save(row);
   expect(h.store.get(`plan:${row.cid}`)).toContain(row.cid);expect(h.calls).toHaveLength(0);expect(h.win.fetch).not.toHaveBeenCalled();expect(h.events).toEqual(['planschange']);
  });
+ it('retains confirmed publication when opening a remote version of a local snapshot',async()=>{
+  const h=harness(),row=snapshot();h.api.save(row);
+  expect((await h.api.resolve({...row,published:true})).published).toBe(true);
+  expect(JSON.parse(h.store.get(`plan:${row.cid}`)).published).toBe(true);
+  expect(h.win.fetch).not.toHaveBeenCalled();
+ });
  it('resolves a carried snapshot independently of later live-record edits',async()=>{
   const h=harness(),row=snapshot();h.api.save(row);design.title='Changed live design';
   const resolved=await h.api.resolve(row);expect(resolved.designs[0].content.title).toBe('Pocket park');expect(h.win.DesignSync.fetchDesigns).not.toHaveBeenCalled();

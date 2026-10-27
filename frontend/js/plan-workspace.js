@@ -17,12 +17,16 @@
         const row=await response.json();
         if(!response.ok)throw new Error(row.error||win.i18n.t('planDialog.publicationFailed'));
         if(win.PlanRecord.validate(row.content)||row.cid!==plan.cid||win.Cid.cidOfObject(row.content)!==plan.cid)throw new Error(win.i18n.t('planDialog.revisionChanged'));
+        if (Array.isArray(plan.designs) && !plan.published) save({ ...plan, published: true });
         return {...row,link:win.NamedPlans.link(row.cid)};
     }
     async function resolve(plan, members = []) {
         const cached = win.PersistentStorage.getItem(key(plan.cid));
         const row = cached ? JSON.parse(cached) : plan;
-        if (Array.isArray(row.designs)) { win.PlanComposition.validate(row); return row; }
+        if (Array.isArray(row.designs)) {
+            win.PlanComposition.validate(row);
+            return plan.published && !row.published ? save({ ...row, published: true }) : row;
+        }
         const available = new Map();
         for (const record of [...win.proposalStorage.getAllProposals(), ...members]) {
             try { available.set(win.DesignRecord.cidOf(record), record); }
@@ -39,7 +43,7 @@
             plan.content.designCids.map(cid => ({ ...available.get(cid),
                 ...(plan.designSources?.[cid] ? { planFileSource: plan.designSources[cid] } : {}) })), plan.content.view);
         if (snapshot.cid !== plan.cid) throw new Error(win.i18n.t('planDialog.revisionChanged'));
-        return save(snapshot);
+        return save({ ...snapshot, ...(plan.published ? { published: true } : {}) });
     }
     async function publish(plan) {
         const row = await resolve(plan);
