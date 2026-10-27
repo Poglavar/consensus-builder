@@ -1,6 +1,6 @@
 // Exercise every action of the site's proposal panel ("Propose here") through its real UI handlers.
 import { test, expect } from '../helpers/fixtures';
-import { clickMapPoint, openCity, publishOn, PARCEL_ID, runParcelCommand } from '../helpers/runtime';
+import { clickMapPoint, openCity, placeFreeformBuilding, publishOn, PARCEL_ID, runParcelCommand } from '../helpers/runtime';
 
 const SECOND_PARCEL_ID = 'HR-335754-1235';
 
@@ -61,10 +61,13 @@ async function expectFreeformDraftSite(page: import('@playwright/test').Page, au
         w.turf.feature(guideGeometry),
         w.turf
       ));
+    const sameFootprint = !!draft?.fields?.site && !!buildingsSite
+      && w.turf.booleanEqual(w.turf.feature(draft.fields.site), w.turf.feature(buildingsSite));
     return {
       guideGeometry,
       draftSite: draft?.fields?.site || null,
       buildingsSite,
+      sameFootprint,
       placement: draft?.editorPayload?.placement || null,
       insideGuide,
       groundTreatment: draft?.editorPayload?.context?.groundSurface?.treatment || 'none',
@@ -74,10 +77,11 @@ async function expectFreeformDraftSite(page: import('@playwright/test').Page, au
   expect(state.guideGeometry).toEqual(authoredSite);
   expect(state.insideGuide).toBe(true);
   expect(state.placement?.free).toBe(true);
-  expect(state.groundTreatment).toBe('paved');
+  expect(state.groundTreatment).toBe('none');
   expect(state.takeWholeParcels).toBe(false);
-  // Paving surrounds the footprint within the authored site; the material footprint is smaller.
-  expect(state.draftSite).toEqual(authoredSite);
+  // The authored site stays a placement guide; the footprint alone defines land take.
+  expect(state.sameFootprint).toBe(true);
+  expect(state.draftSite).not.toEqual(authoredSite);
 }
 
 test.describe('Site proposals already on its parcels @core', () => {
@@ -115,7 +119,11 @@ test.describe('Site build palette controls @core', () => {
     const { panel, site } = await beginParcelSite(page);
     await panel.locator(`.parcel-build-btn--${item.key}`).click();
     await expect(page.locator(item.surface).locator('.on-map-editor__panel')).toBeVisible();
-    if (item.key === 'single') await expectFreeformDraftSite(page, site);
+    if (item.key === 'single') {
+      await placeFreeformBuilding(page);
+      await expect(page.locator('#single-land-take [data-land-status]')).toContainText('m²');
+      await expectFreeformDraftSite(page, site);
+    }
     else await expectActiveDraftSite(page, site, item.adapter);
   });
 

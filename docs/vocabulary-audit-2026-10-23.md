@@ -1851,3 +1851,50 @@ A bounded gpt-6-luna worker handled the independent copy/layout/template changes
 The user then explicitly authorized committing all work in the worktree, including
 other sessions' pending planning hover, locale and glossary edits, followed by the
 full headed suite, repairs and deployment. Full-run and release results follow separately.
+
+
+### Full headed release verification, 2026-10-27
+
+The explicitly requested all-worktree commit is `dceddc791`, including the pending
+planning hover regression, shared locale copy and glossary changes from the other
+session. A frozen Git export of that commit ran the full configured Chromium suite
+headed, with one background worker and traces disabled (failure screenshots retained).
+The complete run finished in 42.8 minutes: **888 passed, 23 failed, 0 skipped** across
+911 tests in 198 files. It was not stopped. This is the initial-run result, not an
+all-green full-suite claim for later repairs.
+
+Repairs were verified while the frozen run continued:
+
+- Two PostgreSQL ledger cases lacked the local database setting in the frozen export.
+  Only DATABASE_URL was supplied after verifying the local geodata target and ledger
+  schema; both headed cases passed. No application change was required.
+- Mobile plan sections now retain natural height in the shared sheet, so agreement
+  chips do not paint beneath the following section. One headed case passed, retaining
+  the overflow and click assertions.
+- The phone Designs sheet compacts its plan-file utility row and excess spacing,
+  preserving the unchanged card-space and first/last action reachability requirements.
+  The capacity and list-layout headed checks both passed.
+- Agreement sheets now use the shared resize height instead of a fixed half-screen
+  override. The headed resize and persisted-layout case passed.
+- Explicit government road-plan Apply now honors its existing ignoreZoomGuard flag;
+  automatic application keeps the zoom guard. The headed tools/apply case passed.
+  This is a viewport gate correction, not a new authored operation; existing MCP
+  road geometry authoring is independent of browser zoom and needs no schema change.
+- Browser fixtures now complete the real Freeform placement click, await committed
+  canonical records, supply isolated-selector i18n, use accessible icon-tab identifiers,
+  and assert current copy, footprint-only land and source-backed fixed frontage.
+  Geometry, ring, persistence, identity, theme, reachability and retired-flow assertions
+  remain in place. The GeoJSON spec passed all seven headed cases; the four isolated
+  type-pill cases and each remaining failing case passed headed rechecks.
+
+After all repairs, the failed test names were collected and listed before execution:
+exactly **23 tests in 15 files**. This combined targeted headed recheck completed with
+**23 passed, 0 failed, 0 skipped** in 1.2 minutes. No second full suite was run.
+The separate feature-inventory check passed: 106 commands indexed across 73 spec files.
+The production static build also succeeded. Targeted headless unit checks reached
+221 distinct passing cases; no full unit suite was run.
+
+The remote development branch had advanced with separate diagnostics work. The
+release uses its own branch for the verified worktree, preserving the divergent
+remote branch. Production build metadata is the source of truth for the deployed
+commit and build number.

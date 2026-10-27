@@ -196,8 +196,10 @@ test.describe('Whole-site placement editing @features', () => {
     await expect(tree).toHaveCSS('width', '23px');
     await editor.locator('[data-action="save"]').click();
     await expect(editor).toHaveCount(0);
-    const saved = await page.evaluate(id => (window as any).proposalStorage.getAllProposals()
-      .find((p: any) => p.proposalId === id)?.structureProposal.decorationDesign.trees[0], proposalId);
+    const readSavedTree = () => page.evaluate(id => (window as any).proposalStorage.getAllProposals()
+      .find((p: any) => p.proposalId === id)?.structureProposal?.decorationDesign?.trees?.[0] || null, proposalId);
+    await expect.poll(readSavedTree).not.toBeNull();
+    const saved = await readSavedTree();
     expect(saved.heightM).toBe(9);
     await showProposal(page, proposalId);
     await page.locator('#proposal-details-footer .btn-edit-geometry').click();
