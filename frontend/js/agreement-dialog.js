@@ -497,7 +497,7 @@
             persons: '<div data-agreement-persons></div>'
         };
         return '<ul class="agreement-issues agreement-issues--error" data-agreement-errors aria-live="assertive"></ul><ul class="agreement-issues agreement-issues--warning" data-agreement-warnings aria-live="polite"></ul>'
-            + `<div class="cb-tabs agreement-editor__tabs" role="tablist" aria-label="${esc(t('agreement.panel.title', 'Agreement'))}">${TABS.map(tab => `<button type="button" role="tab" id="agreement-tab-${tab}" aria-controls="agreement-tabpanel-${tab}" aria-selected="${tab === 'inputs'}" tabindex="${tab === 'inputs' ? 0 : -1}" data-agreement-tab="${tab}">${esc(tabLabel(tab))}</button>`).join('')}</div>`
+            + `<div class="cb-tabs agreement-editor__tabs" role="tablist" aria-label="${esc(t('agreement.panel.title', 'Agreement'))}">${TABS.map(tab => `<button type="button" class="cb-tab" role="tab" id="agreement-tab-${tab}" aria-controls="agreement-tabpanel-${tab}" aria-selected="${tab === 'inputs'}" tabindex="${tab === 'inputs' ? 0 : -1}" data-agreement-tab="${tab}">${esc(tabLabel(tab))}</button>`).join('')}</div>`
             + TABS.map(tab => `<section role="tabpanel" id="agreement-tabpanel-${tab}" aria-labelledby="agreement-tab-${tab}" data-agreement-tabpanel="${tab}"${tab === 'inputs' ? '' : ' hidden'}>${panels[tab]}</section>`).join('');
     }
 

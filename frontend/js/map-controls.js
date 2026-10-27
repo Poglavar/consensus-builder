@@ -445,7 +445,7 @@ function toggleLayer(layerType) {
 
 // Update block section button states based on checkbox and selection state
 function updateBlockButtonStates() {
-    const blockButtons = document.querySelectorAll('.accordion-section[data-section="blocks"] .btn-group button');
+    const blockButtons = document.querySelectorAll('[data-feature="parcelBlocks"] .cb-actions button');
 
     // Predicate used below to exclude road parcels from the block's parcel count. It resolves the
     // same way toggleAccordion does; previously this was referenced as a bare `isRoadFn`, which only

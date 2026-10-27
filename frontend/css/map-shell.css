@@ -89,7 +89,7 @@
     cursor: pointer;
 }
 
-.layer-actions .btn-group { margin-bottom: var(--cb-space-2); }
+.layer-actions .cb-actions { margin-bottom: var(--cb-space-2); }
 
 .layer-source-actions { margin-bottom: var(--cb-space-3); }
 
@@ -481,12 +481,6 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     height: min(var(--sheet-max-height, 70vh), 80vh, 880px);
 }
 
-.map-sheet .btn-group {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
 /* Sections share the same spacing whether their controls fold or stay visible. */
 .map-sheet-body > .accordion-section + .accordion-section {
     margin-top: 12px;
@@ -561,10 +555,7 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
 }
 
 /* ---- Controls inside the sheets ----
-   One compact layout for everything rehoused from the sidebar: full-width rows with an icon,
-   whatever role the button carries (the roles keep their colours, css/primitives.css). Scoped to
-   .map-sheet so the same classes elsewhere (modals, panels) keep their layout. Rows are 36px on
-   desktop and 44px touch targets on phones. */
+   Fields keep compact rows; actions use the shared button and action-group primitives. */
 .map-sheet {
     --sheet-row-height: 36px;
 }
@@ -587,19 +578,6 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     display: flex;
     flex-direction: column;
     gap: 6px;
-}
-
-/* Sheet rows: every button in a sheet is a full-width row aligned with the reading direction. Only the
-   layout lives here; the role classes keep their colours (css/utilities.css), so a primary, a
-   success or a danger button inside a sheet looks like one anywhere else. */
-.map-sheet .btn:not(.btn-sm):not(.btn-icon) {
-    justify-content: flex-start;
-    gap: 8px;
-    width: 100%;
-    min-height: var(--sheet-row-height);
-    margin: 0;
-    padding: 7px 12px;
-    text-align: start;
 }
 
 .map-sheet .btn > i {

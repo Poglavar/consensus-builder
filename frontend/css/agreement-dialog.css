@@ -42,24 +42,6 @@
     border-radius: var(--cb-radius-md);
     background: var(--cb-surface-2);
 }
-.agreement-editor__tabs button {
-    min-height: var(--cb-control-height);
-    padding: var(--cb-space-2);
-    border: 1px solid transparent;
-    border-radius: var(--cb-radius-sm);
-    background: transparent;
-    color: var(--cb-text-muted);
-    font: inherit;
-    font-size: var(--cb-text-md);
-    font-weight: var(--cb-weight-medium);
-    cursor: pointer;
-}
-.agreement-editor__tabs button[aria-selected="true"] {
-    background: var(--cb-surface);
-    border-color: var(--cb-line);
-    color: var(--cb-text-strong);
-    box-shadow: var(--cb-shadow-sm);
-}
 .agreement-editor .proposal-editor-field { gap: var(--cb-space-2); min-width: 0; }
 .agreement-editor .proposal-editor-field > span,
 .agreement-editor .agreement-fieldset legend { font-size: var(--cb-text-md); }

@@ -188,11 +188,6 @@
 .site-intro-actions .site-intro-skip { margin-right: auto; }
 
 .site-intro-reopen {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--cb-space-2);
     margin-top: var(--cb-space-3);
 }
 

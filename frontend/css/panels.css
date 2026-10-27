@@ -366,10 +366,7 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
     /* Icon, label and width wrap as whole words onto a second centred line when the column is
        too narrow for "Edit cross-section · 7.5 m" on one. */
     flex-wrap: wrap;
-    justify-content: center;
-    text-align: center;
     white-space: nowrap;
-    font-size: var(--cb-text-sm);
 }
 
 /* Build palette (js/parcels/ui/proposal-actions.js): everything creatable on the selected
@@ -572,7 +569,6 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
     font-size: var(--cb-text-sm);
 }
 
-#parcel-info-panel .parcel-tab-content .btn,
 #parcel-info-panel .parcel-tab-content .cb-tile {
     font-size: var(--cb-text-base);
 }

@@ -395,11 +395,6 @@ button.status-log-message {
     /* Prevent overflow */
 }
 
-/* Force buttons in groups to fill container width */
-.btn-group .btn {
-    width: 100%;
-}
-
 /* 2x2 Grid layout for specific button groups */
 .btn-grid-2x2 {
     display: grid;
@@ -1239,11 +1234,6 @@ input.proposal-author-name {
     .btn-group {
         flex-direction: column;
         gap: 8px;
-    }
-
-    /* Force equal width buttons in groups */
-    .btn-group .btn {
-        width: 100%;
     }
 
     .btn-grid-2x2 {

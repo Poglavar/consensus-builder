@@ -142,8 +142,8 @@
    .btn-sm       the small size · .btn-block the full-width row · .btn-icon a square icon-only button
    [aria-pressed="true"]  the one selected look of every toggle: primary-soft fill, primary border.
    No other class paints a button (backend/test/ui-vocabulary.test.js); a surface may lay its
-   buttons out (width, grid, order) but takes the look from here. Sheets lay theirs out as rows
-   (css/map-shell.css). Everything is a token, so a theme changes the whole family at once. ---- */
+   buttons out (width, grid, order) but takes the look from here. Everything is a token, so a
+   theme changes the whole family at once. ---- */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -1077,7 +1077,7 @@ button.cb-link {
 
 /* ---- Actions row ----
    A line of buttons: one gap, wrapping on narrow widths. --end aligns them right (a dialog's own
-   footer does this already); --stack puts every button on its own full-width row. */
+   footer does this already); --stack uses full-width rows; --grid pairs related actions. */
 .cb-actions {
     display: flex;
     flex-wrap: wrap;
@@ -1096,6 +1096,23 @@ button.cb-link {
 
 .cb-actions--stack .btn {
     width: 100%;
+}
+
+.cb-actions--grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+}
+
+.cb-actions--grid > .btn {
+    width: 100%;
+    min-width: 0;
+}
+
+@media (max-width: 359.98px) {
+    .cb-actions--grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
 }
 
 /* ---- Dialog: message, choice and prompt forms (js/ui/dialogs.js) ----

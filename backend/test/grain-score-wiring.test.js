@@ -22,7 +22,7 @@ describe('grain score wiring', () => {
         expect(lists).toContain('win.showPlanStatsModal(await planOf(row))');
         expect(lists).toContain('win.summonUrbanistRooster(await planOf(row))');
         expect(lists).toContain('/images/grain-rooster-critic.png');
-        expect(index).toContain("'css/grain-score.css'");
+        expect(index).toMatch(/'css\/grain-score\.css(?:\?[^']*)?'/);
         expect(index).toContain("'js/proposals/grain-score-rules.js'");
         expect(index).toContain("'js/proposals/grain-score.js'");
     });

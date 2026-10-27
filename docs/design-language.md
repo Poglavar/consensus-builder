@@ -71,6 +71,10 @@ Every non-map page carries the same header: logo, "Back to the map", language. N
   (`backend/test/ui-vocabulary.test.js`): a component class beside `btn` may position
   (width, grid, order), never colour. No gold, teal or gradient buttons; the only highlight is
   `cb-shimmer`, on at most one control per surface.
+- **Action groups** use `cb-actions`: buttons keep their shared centered appearance and natural
+  width. `cb-actions--grid` pairs related actions in equal columns, stacking on narrow phones;
+  `cb-actions--stack` explicitly requests full-width rows. Panels must not turn every button into
+  a left-aligned menu row or override the button family's type size and selected appearance.
 - **Links** are `cb-link`: primary colour, underlined, on an `<a>` or on a `<button class="cb-link">`
   when the click runs script (never `href="#"`). `cb-link--external` adds the one ↗ mark and goes
   with `target="_blank" rel="noopener"`; the mark is never typed into a string. `cb-link--quiet`

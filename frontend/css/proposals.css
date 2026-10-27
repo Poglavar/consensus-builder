@@ -235,7 +235,6 @@
     gap: 6px;
     margin: 0;
 }
-#proposal-list-actions .btn { min-height: 40px; margin: 0; font-size: var(--cb-text-sm); }
 #proposal-list-actions .grain-score-button__portrait,
 #proposal-list-actions .grain-score-button__hint,
 #proposal-list-actions .grain-score-button__empty { display: none; }
@@ -1467,13 +1466,10 @@ textarea.proposal-description-input {
     margin: 12px 0;
 }
 
-.proposal-actions-group button {
-    width: auto;
-    min-height: 40px;
-    margin: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+.proposal-actions-group > .btn {
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
 }
 
 /* One filled action per card (docs/design-language.md): it comes first and takes the whole row;
@@ -1482,18 +1478,6 @@ textarea.proposal-description-input {
 .proposal-actions-group > .btn-success {
     order: -1;
     grid-column: 1 / -1;
-}
-
-/* Phones: the card starts right of the mode buttons, so a half-row is ~125px. The generic mobile
-   .btn padding (16px a side) left ~70px for icon + label and cut "Fork proposal" to "Fork prop…";
-   tighter padding, and a label that wraps to a second line rather than losing its end. */
-@media (max-width: 767.98px) {
-    .proposal-actions-group button {
-        padding: 8px 6px;
-        white-space: normal;
-        line-height: 1.2;
-        overflow-wrap: anywhere;
-    }
 }
 
 @media (min-width: 768px) {
@@ -1505,16 +1489,6 @@ textarea.proposal-description-input {
         gap: 6px;
     }
 
-    .proposal-actions-group button {
-        width: auto;
-        min-height: 36px;
-        margin: 0;
-        padding: 6px 8px;
-        overflow: hidden;
-        font-size: 12.5px;
-        line-height: 1.2;
-        white-space: normal;
-    }
 }
 
 /* Why a parcel layout has no Share yet: it leaves the device with its agreement (M2). */

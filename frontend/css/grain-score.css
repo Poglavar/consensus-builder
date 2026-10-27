@@ -458,12 +458,6 @@
     margin-top: 13px;
 }
 
-.grain-score-actions .btn {
-    min-height: 36px;
-    margin: 0;
-    font-size: 11px;
-}
-
 body.grain-score-mode #proposal-details-panel,
 body.grain-score-mode #parcel-info-panel,
 body.grain-score-mode #block-info-panel {
