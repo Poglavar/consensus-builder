@@ -58,22 +58,14 @@
    keeps its bottom edge and the credits and scale bar share the row from the corners. */
 .map-shell-cluster--bottom-right {
     bottom: var(--map-shell-edge);
-    left: var(--map-shell-centre, 50%);
+    left: 50%;
     transform: translateX(-50%);
     align-items: center;
     justify-content: center;
 }
 
-/* A docked panel runs down to the bottom-right corner on a wide map (--right-dock-bottom,
-   css/panels.css), so the pills and the status line centre in the map left of the dock instead
-   of under it. Below 900px the panels stop above the pills and the centre stays the map's. */
-@media (min-width: 900px) {
-    body:has(#parcel-info-panel.visible),
-    body:has(#road-info-panel.visible),
-    body:has(#proposal-details-panel.visible:not(.is-minimized)) {
-        --map-shell-centre: calc((100% - var(--right-dock-width) - 2 * var(--right-dock-gap)) / 2);
-    }
-}
+/* Navigation stays centred on the viewport. DockClearance shortens the inspection column only
+   where its horizontal extent meets navigation or feedback; the controls never move for it. */
 
 .map-shell-cluster--bottom-right .map-shell-button--labelled {
     flex: 0 0 auto;

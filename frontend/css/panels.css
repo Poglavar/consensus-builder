@@ -31,15 +31,13 @@
 :root {
     --right-dock-width: 400px;
     --right-dock-gap: 10px;
-    /* Where the dock's panels end. On a map wide enough for the bottom pills to sit clear of the
-       column (pills recentre in the map left of it, css/map-shell.css) the panels run down to the
-       screen's bottom-right corner; on a narrower one they stop above the pills. */
+    /* Phones reserve the navigation row; desktop clearance follows actual control bounds. */
     --right-dock-bottom: var(--map-shell-bottom-clearance);
 }
 
-@media (min-width: 900px) {
+@media (min-width: 768px) {
     :root {
-        --right-dock-bottom: var(--right-dock-gap);
+        --right-dock-bottom: var(--right-dock-clearance, var(--map-shell-bottom-clearance));
     }
 }
 

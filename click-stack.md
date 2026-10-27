@@ -43,6 +43,9 @@ right-side panels that clicks used to open one at a time.
   Selecting a neighbouring row moves this window; the complete inventory remains available.
   Every displayed section has a clickable header. Expanding a section collapses the others;
   at most one is expanded. There is no coordinate footer.
+- Desktop navigation and feedback stay centred on the viewport when inspection opens. The
+  right column can extend to the bottom edge while it clears those controls horizontally; where
+  they overlap, its maximum height stops above the highest visible control with a small gap.
 - Collapsed headers are one row: the object kind followed by its selected name or parcel ID,
   truncated with an ellipsis. The cadastral header has no copy button.
 - A collapsed Design header shows only “Design” and the selected name on one line, with no

@@ -294,7 +294,7 @@ button.status-log-message {
    and status toast share its width and spacing, so wrapped messages cannot overlap each other. */
 .map-feedback-stack {
     position: absolute;
-    left: var(--map-shell-centre, 50%);
+    left: 50%;
     bottom: var(--map-shell-bottom-clearance);
     transform: translateX(-50%);
     z-index: var(--cb-z-map-chrome);
