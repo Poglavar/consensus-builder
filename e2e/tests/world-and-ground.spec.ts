@@ -1,3 +1,4 @@
+import { openPlanActions } from '../helpers/plan-actions';
 // The world globe and the ground around a city: the Proposals pill, the globe's search, location and
 // city picks, its activity feed (agreements proposed and decided, bets on them: plan-design-agreement.md
 // M3) and city counts, wheel-out to the globe, data-source requests and open ground.
@@ -404,7 +405,7 @@ test.describe('World navigation and open ground @features', () => {
     await createSpace(page, 'park');
     await page.locator('#proposals-button').click();
     // Plan-wide actions sit in the collapsed "Plan actions" group (fbe3758d).
-    await page.locator('#roosterScoreButton').click();
+    await (await openPlanActions(page)).getByRole('button', { name: 'Urban rooster', exact: true }).click();
     const panel = page.locator('#grain-score-panel');
     await expect(panel).toBeVisible();
     await expect(panel.locator('[data-grain-role="result"]')).toBeVisible({ timeout: 20000 });

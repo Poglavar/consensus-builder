@@ -422,7 +422,10 @@ export async function attachSharedIndex(page: Page, index: SharedIndex): Promise
       }
       if (rest === 'binding' && method === 'POST') {
         if (!body?.site) return refuse(route, 400, 'bad-request', 'Body must be { site, toleranceM?, city?, parcelSourceId? }.');
-        return json(route, 200, { city: null, parcelSourceId: null, binding: fixtureSiteBinding(body.site, Number(body.toleranceM) || 0, index.cadastre) });
+        return json(route, 200, { city: null, parcelSourceId: body.parcelSourceId, binding: {
+          ...fixtureSiteBinding(body.site, Number(body.toleranceM) || 0, index.cadastre),
+          parcelSource: { sourceId: body.parcelSourceId, snapshotId: null },
+        } });
       }
       if (/^[^/]+$/.test(rest) && method === 'GET') {
         if (!isCid(rest)) return refuse(route, 400, 'invalid-cid', 'Not a design CID.');

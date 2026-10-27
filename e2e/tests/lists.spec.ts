@@ -12,6 +12,20 @@ for (const width of [1280, 390]) {
     await expect(page.locator('#proposals-button')).toHaveAccessibleName('Lists');
     await expect(sheet.getByRole('tab')).toHaveCount(3);
     await expect(sheet.locator('#lists-controls')).toHaveCount(1);
+    await expect(sheet.getByRole('button', { name: 'Import plan file', exact: true })).toBeHidden();
+    await expect(sheet.locator('#proposal-list-host .fa-tree')).toBeVisible();
+    await expect(sheet.locator('#proposal-list-host .fa-share-nodes')).toBeVisible();
+    await expect(sheet.locator('#proposal-list-host .fa-trash-can')).toBeVisible();
+    const expectInsets = async () => {
+      const insets = await sheet.evaluate(el => {
+        const body = el.querySelector('.lists-body')!.getBoundingClientRect();
+        return ['#lists-controls', '#lists-actions', '#lists-status', '[role="tabpanel"]:not([hidden])']
+          .map(selector => { const rect = el.querySelector(selector)!.getBoundingClientRect();
+            return { left: rect.left - body.left, right: body.right - rect.right }; });
+      });
+      for (const inset of insets) { expect(inset.left).toBeGreaterThanOrEqual(10); expect(inset.right).toBeGreaterThanOrEqual(10); }
+    };
+    await expectInsets();
     await expect(sheet.locator('input[type=checkbox]')).toHaveCount(0);
     await sheet.locator('#lists-actions').getByRole('button', { name: 'Create plan', exact: true }).click();
     const next = sheet.getByRole('button', { name: 'Continue', exact: true }); await expect(next).toBeDisabled();
@@ -19,10 +33,23 @@ for (const width of [1280, 390]) {
     const form = page.locator('.plan-composer'); await expect(form.locator('input[type=checkbox]')).toBeChecked();
     await form.getByLabel('Plan name', { exact: true }).fill('Residents plan');
     await form.getByRole('button', { name: 'Create plan', exact: true }).click();
-    await expect(page.locator('.plan-details')).toBeVisible();
+    await expect(page.locator('#click-stack .click-stack__section[data-kind="plans"] .click-stack__row')).toHaveAttribute('aria-expanded', 'true');
     await page.keyboard.press('Escape');
     await page.locator('#proposals-button').click(); await sheet.getByRole('tab', { name: 'Plans', exact: true }).click();
+    await expect(sheet.locator('#designs-browse')).toBeHidden();
     const planRow = sheet.locator('#designs-plans .lists-item').filter({ hasText: 'Residents plan' });
+    await expect(sheet.locator('#designs-plans').getByRole('button', { name: 'Import plan file', exact: true })).toBeVisible();
+    await expect(sheet.locator('#designs-plans [data-plan-file-action="import"] .fa-file-import')).toBeVisible();
+    await expect(planRow.locator('.lists-item__icon .fa-layer-group')).toBeVisible();
+    await expect(planRow.getByRole('button', { name: 'Plan stats', exact: true })).toBeVisible();
+    const rooster = planRow.getByRole('button', { name: 'Urban rooster', exact: true });
+    await expect(rooster.locator('img')).toBeVisible();
+    expect(await rooster.locator('img').evaluate(img => getComputedStyle(img).filter)).toBe('none');
+    await planRow.getByRole('button', { name: 'Plan stats', exact: true }).click();
+    await expect(page.locator('#plan-stats-modal [data-plan-stat="scope"]')).toContainText('Residents plan');
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#plan-stats-modal')).toBeHidden();
+    await expectInsets();
     await expect(planRow).toContainText('Draft'); await expect(planRow).toContainText('This browser');
     await planRow.getByRole('button', { name: 'Residents plan', exact: true }).click();
     await expect(page.locator('#click-stack .click-stack__section[data-kind="plans"]')).toBeVisible();
@@ -32,7 +59,12 @@ for (const width of [1280, 390]) {
     await sheet.getByRole('searchbox').fill('Residents');
     await sheet.getByRole('tab', { name: 'Agreements', exact: true }).click();
     await expect(sheet.getByRole('searchbox')).toHaveValue('Residents');
+    await expect(sheet.locator('#designs-browse')).toBeHidden();
+    await expect(sheet.locator('#designs-plans')).toBeHidden();
     const agreementRow = sheet.locator('#designs-agreements .lists-item').filter({ hasText: 'Residents agreement' });
+    await expect(sheet.getByRole('button', { name: 'Import plan file', exact: true })).toBeHidden();
+    await expect(agreementRow.locator('.lists-item__icon .fa-handshake')).toBeVisible();
+    await expectInsets();
     await agreementRow.getByRole('button', { name: 'Residents agreement', exact: true }).click();
     await expect(page.locator('#click-stack')).toContainText('Residents agreement');
     await expect(page.locator('[data-agreement-action="delete"]')).toHaveCount(0);

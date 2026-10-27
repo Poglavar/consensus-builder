@@ -1111,15 +1111,6 @@ function updateShowProposalsButton() {
         sharePlanButton.disabled = false;
     }
 
-    // The grain inspector has the same plan-level scope as Share and Plan Stats. Keep its empty
-    // state in lockstep with apply/unapply instead of making the user discover an empty scorecard.
-    if (typeof window !== 'undefined' && typeof window.updateGrainScoreButtonState === 'function') {
-        window.updateGrainScoreButtonState();
-    }
-    if (typeof window !== 'undefined' && typeof window.updatePlanStatsButtonState === 'function') {
-        window.updatePlanStatsButtonState();
-    }
-
     // no-op safety: the observer below is idempotent, and the button may only now exist
     watchProposalsSectionVisibility();
     watchProposalCountArrival();

@@ -1,5 +1,5 @@
 /* Common list chrome; colours and controls come from the shared theme. */
-#proposals-sheet .lists-body { display: flex; flex-direction: column; gap: var(--cb-space-2); overflow: auto; }
+#proposals-sheet > .map-sheet-body.lists-body { padding: var(--cb-space-3); box-sizing: border-box; display: flex; flex-direction: column; gap: var(--cb-space-2); overflow: auto; }
 .lists-controls { display: grid; gap: var(--cb-space-2); padding: var(--cb-space-3); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-md); }
 .lists-filters { display: grid; grid-template-columns: 1fr 1fr; gap: var(--cb-space-2); }
 .lists-controls > label, .lists-filters label { display: grid; gap: 4px; min-width: 0; color: var(--cb-text-muted); font-size: .85rem; }
@@ -24,3 +24,25 @@
 .lists-filter-details summary { cursor: pointer; color: var(--cb-text-muted); padding-block: var(--cb-space-1); }
 .lists-filter-details[open] { display: grid; gap: var(--cb-space-2); }
 .lists-refresh { justify-self: end; }
+
+/* Every tab uses the same inset and spacing, including empty states and file actions. */
+#proposals-sheet #proposal-list-host { display: grid; overflow: visible; flex: none; }
+#proposals-sheet #designs-browse:not([hidden]) { display: grid; gap: var(--cb-space-3); }
+#proposals-sheet #designs-plans { gap: var(--cb-space-3); }
+#proposals-sheet #plan-file-actions .plan-file-controls { padding: 0; }
+.lists-controls { flex-shrink: 0; }
+.lists-item { --lists-accent: var(--cb-text-muted); border-inline-start: 3px solid var(--lists-accent); background: color-mix(in srgb, var(--lists-accent) 4%, var(--cb-surface)); }
+.lists-item[data-list-tone="nature"] { --lists-accent: var(--cb-success); }
+.lists-item[data-list-tone="water"] { --lists-accent: var(--cb-info); }
+.lists-item[data-list-tone="building"], .lists-item[data-list-tone="plan"] { --lists-accent: var(--cb-primary); }
+.lists-item[data-list-tone="agreement"] { --lists-accent: var(--cb-warning); }
+.lists-item__title { min-width: 0; }
+.lists-item__icon { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; flex: 0 0 32px; border-radius: var(--cb-radius-sm); color: var(--lists-accent); background: color-mix(in srgb, var(--lists-accent) 10%, transparent); }
+.lists-share-icon { color: var(--cb-info); }
+.lists-item__remove { margin-inline-start: auto; }
+.lists-rooster__portrait {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    flex: none;
+}

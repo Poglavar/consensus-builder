@@ -1,7 +1,5 @@
-// Institut za zrnatost — parcel inspection for the applied composition.
-//
-// The map already contains the authoritative derived parcel fabric. This module reads that fabric,
-// measures each resulting parcel, lets the rooster visit it, and only then reveals the scorecard.
+// Parcel inspection for one exact saved plan. The private ground snapshot supplies
+// the measured shapes; the map presents the rooster’s visit and scorecard.
 (function (global) {
     'use strict';
 
@@ -26,6 +24,8 @@
     const state = {
         ui: null,
         prepared: null,
+        preparing: false,
+        plan: null,
         running: false,
         runToken: 0,
         priorMapView: null,
@@ -53,28 +53,6 @@
             if (typeof map !== 'undefined' && map) return map;
         } catch (_) { /* global lexical binding may not exist in a headless test */ }
         return global.map || null;
-    }
-
-    function appliedProposals() {
-        if (typeof proposalStorage === 'undefined' || !proposalStorage
-            || typeof proposalStorage.getAllProposals !== 'function') return [];
-        const all = proposalStorage.getAllProposals() || [];
-        return all.filter(proposal => {
-            if (typeof isProposalCurrentlyApplied === 'function') {
-                try { return isProposalCurrentlyApplied(proposal); } catch (_) { /* fall through */ }
-            }
-            return !!(proposal && proposal.applied === true);
-        });
-    }
-
-    function updateButtonState() {
-        const button = document.getElementById('roosterScoreButton');
-        if (!button) return;
-        const count = appliedProposals().length;
-        const disabled = count === 0 || state.running;
-        button.disabled = disabled;
-        button.classList.toggle('grain-score-button--empty', count === 0);
-        button.setAttribute('aria-disabled', String(disabled));
     }
 
     function setNodeText(root, role, value) {
@@ -293,8 +271,8 @@
         const { panel } = ensureUi();
         setNodeText(panel, 'eyebrow', t('sidebar.proposals.grainScore.institute', 'Institut za zrnatost'));
         setNodeText(panel, 'title', t('sidebar.proposals.grainScore.title', 'Urban grain score'));
-        setNodeText(panel, 'planName', t('sidebar.proposals.grainScore.appliedComposition', 'Applied composition'));
-        setNodeText(panel, 'route', t('sidebar.proposals.grainScore.localScope', 'Local composition · score stays in this browser'));
+        setNodeText(panel, 'planName', state.plan?.content.title || '');
+        setNodeText(panel, 'route', t('sidebar.proposals.grainScore.localScope', 'Plan score · stays in this browser'));
         const close = panel.querySelector('[data-grain-action="close"]');
         if (close) close.setAttribute('aria-label', t('sidebar.proposals.grainScore.closeAria', 'Close grain score'));
         renderSoundControl();
@@ -411,32 +389,11 @@
         button.setAttribute('aria-pressed', String(sound.enabled));
     }
 
-    function proposalsForScore() {
-        const proposals = appliedProposals();
-        if (!proposals.length) {
-            renderError(t('sidebar.proposals.grainScore.noApplied', 'Apply at least one proposal before summoning the rooster.'));
-            return null;
-        }
-        return proposals;
-    }
-
-    async function prepareExperience() {
+    async function prepareExperience(plan) {
         state.prepared = null;
-        const initialProposals = proposalsForScore();
-        if (!initialProposals) return null;
-        const initialCadastreIds = Array.from(new Set(initialProposals.flatMap(yieldApi.cadastreIdsOf)));
-        if (initialCadastreIds.length && global.CadastralParcelRepository?.ensureIds) {
-            try { await global.CadastralParcelRepository.ensureIds(initialCadastreIds); }
-            catch (error) { console.warn('[grain-score] could not load cadastral ground', error); }
-        }
-        // Loading ground can publish a new fabric revision or let another application complete.
-        // Recheck the applied set after that await, then capture and measure synchronously.
-        const proposals = proposalsForScore();
-        if (!proposals) return null;
-        const cadastreIds = Array.from(new Set(proposals.flatMap(yieldApi.cadastreIdsOf)));
-        const materializedFeatures = global.LiveParcelFabric?.entriesForCadastre
-            ? global.LiveParcelFabric.entriesForCadastre(cadastreIds, { includeCorridors: false })
-            : [];
+        const snapshot = await global.PlanAnalysis.prepare(plan);
+        const proposals = snapshot.records;
+        const { materializedFeatures, cadastralFeatures } = snapshot;
         const fabric = yieldApi.resultingParcels(proposals, {
             appliedOnly: true,
             materializedFeatures
@@ -447,7 +404,6 @@
             renderError(t('groundStats.grainNoParcels', 'No parcels here: these proposals stand on open ground, so there are no resulting parcels to score.'));
             return null;
         }
-        const cadastralFeatures = cadastreIds.map(id => global.CadastralParcelRepository?.get?.(id)).filter(Boolean);
         const rows = rules.measureParcelRows(fabric.resulting, materializedFeatures, cadastralFeatures);
         const items = rows.filter(row => row.feature && Number.isFinite(row.widthMeters) && Number.isFinite(row.depthMeters));
         if (!items.length) {
@@ -691,7 +647,6 @@
         if (state.running || !state.prepared) return;
         const token = ++state.runToken;
         state.running = true;
-        updateButtonState();
         saveAndSimplifyChrome();
         const { overlay, panel } = ensureUi();
         panel.hidden = true;
@@ -703,7 +658,6 @@
         if (!items.length) {
             state.running = false;
             renderError(t('sidebar.proposals.grainScore.noGeometry', 'The resulting parcel shapes could not be measured.'));
-            updateButtonState();
             return;
         }
         disableMapInteractions();
@@ -759,20 +713,26 @@
         ));
         restoreMapInteractions();
         state.running = false;
-        updateButtonState();
         await new Promise(resolve => setTimeout(resolve, reduceMotion ? 10 : 700));
         if (token !== state.runToken) return;
         renderResult();
     }
 
-    async function summonUrbanistRooster() {
-        if (state.running) return;
+    async function summonUrbanistRooster(plan) {
+        if (state.running || state.preparing) return;
+        state.plan = plan;
+        state.preparing = true;
+        const token = state.runToken;
         const soundPreparation = sound.prepare();
         saveAndSimplifyChrome();
         renderLoading();
-        const prepared = await prepareExperience();
-        if (!prepared) return;
-        await runInspection({ soundPreparation });
+        try {
+            const prepared = await prepareExperience(plan);
+            if (!prepared || token !== state.runToken) return;
+            await runInspection({ soundPreparation });
+        } catch (error) {
+            if (token === state.runToken) renderError(error.message);
+        } finally { state.preparing = false; }
     }
 
     function closeExperience() {
@@ -793,25 +753,10 @@
         }
         state.prepared = null;
         state.priorMapView = null;
-        updateButtonState();
     }
 
-    function initialize() {
-        const button = document.getElementById('roosterScoreButton');
-        if (button && !button.dataset.grainScoreBound) {
-            button.dataset.grainScoreBound = '1';
-            button.addEventListener('click', event => {
-                event.preventDefault();
-                void summonUrbanistRooster();
-            });
-        }
-        updateButtonState();
-    }
-
-    document.addEventListener('DOMContentLoaded', initialize);
     if (global.i18n && typeof global.i18n.onChange === 'function') {
         global.i18n.onChange(() => {
-            updateButtonState();
             if (!state.ui || state.ui.panel.hidden) return;
             if (state.running) return;
             if (state.prepared && !state.ui.panel.querySelector('[data-grain-role="result"]').hidden) renderResult();
@@ -819,7 +764,6 @@
         });
     }
 
-    global.updateGrainScoreButtonState = updateButtonState;
     global.summonUrbanistRooster = summonUrbanistRooster;
     global.closeGrainScore = closeExperience;
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -1494,20 +1494,6 @@
       "controlType": "button"
     },
     {
-      "id": "control-a63b0586537cf0-1",
-      "source": "index.html",
-      "markup": "<button id=\"planStatsButton\" class=\"btn btn-block plan-stats-button\" disabled aria-disabled=\"true\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-3911781d4db76b-1",
-      "source": "index.html",
-      "markup": "<button id=\"roosterScoreButton\" class=\"btn grain-score-button\" type=\"button\" disabled title=\"Urban rooster\" data-i18n-key=\"sidebar.proposals.grainScore.buttonLabel\" data-i18n-attr=\"title,aria-label\" aria-label=\"Urban rooster\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-dc7af30c67cb8d-6",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
@@ -9106,6 +9092,16 @@
             "data-list-filter": "sort"
           },
           "interaction": "change"
+        },
+        {
+          "name": "Plan stats",
+          "label": "Plan stats",
+          "interaction": "click"
+        },
+        {
+          "name": "Urban rooster",
+          "label": "Urban rooster",
+          "interaction": "click"
         }
       ]
     },
@@ -9141,6 +9137,34 @@
       "id": "control-56b96b1ca1b37d-1",
       "source": "js/click-stack/click-stack-relations.js",
       "markup": "doc.createElement('button')"
+    },
+    {
+      "id": "control-81498b74fc7752-1",
+      "source": "js/plan-file-ui.js",
+      "markup": "doc.createElement('button')",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-81498b74fc7752-2",
+      "source": "js/plan-file-ui.js",
+      "markup": "doc.createElement('button')",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-042471578a5164-1",
+      "source": "js/plan-file-ui.js",
+      "markup": "doc.createElement('input')",
+      "interaction": "change",
+      "controlType": "input"
+    },
+    {
+      "id": "control-81498b74fc7752-3",
+      "source": "js/plan-file-ui.js",
+      "markup": "doc.createElement('button')",
+      "interaction": "click",
+      "controlType": "button"
     }
   ],
   "variantExclusions": [

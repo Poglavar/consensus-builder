@@ -1,19 +1,33 @@
+import { openPlanActions } from '../helpers/plan-actions';
 import { test, expect } from '../helpers/fixtures';
-import { openCity, createBuilding } from '../helpers/runtime';
+import { openCity, createBuilding, createSpace } from '../helpers/runtime';
 
 test.describe('Plan arithmetic @features', () => {
-  test('applied buildings yield floor area, housing, people and sales; assumptions recalculate the displayed totals', async ({ mockApi: page }) => {
+  test('a saved plan counts its unapplied building independently of an unrelated applied park', async ({ mockApi: page }) => {
+    test.setTimeout(120_000);
     await openCity(page);
-    await createBuilding(page);
+    const building = await createBuilding(page);
+    const row = await openPlanActions(page, 'Inspection plan', [building]);
     await page.locator('#proposals-button').click();
-    // Plan-wide actions sit in the collapsed "Plan actions" group (fbe3758d).
-    await page.locator('#planStatsButton').click();
+    await page.evaluate(id => (window as any).ProposalManager.unapplyProposal(id), building);
+    await createSpace(page, 'park');
+    const mapState = () => page.evaluate(() => {
+      const w = window as any;
+      return JSON.stringify({ designs: w.proposalStorage.getAllProposals(), fabric: w.LiveParcelFabric.list(), agents: w.agentStorage.getAllAgents() });
+    });
+    const before = await mapState();
+    await page.locator('#proposals-button').click();
+    await page.locator('[data-list-tab="plans"]').click();
+    await row.getByRole('button', { name: 'Plan stats', exact: true }).click();
     const modal = page.locator('#plan-stats-modal');
     await expect(modal).toBeVisible();
-    await expect(modal.getByRole('heading', { name: 'Applied design stats', exact: true })).toBeVisible();
-    await expect(modal.locator('[data-plan-stat="scope"]')).toContainText('1 applied');
-    await test.info().attach('applied-proposal-stats', { body: await modal.screenshot(), contentType: 'image/png' });
+    expect(await mapState()).toBe(before);
+    await expect(modal.getByRole('heading', { name: 'Plan stats', exact: true })).toBeVisible();
+    await expect(modal.locator('[data-plan-stat="scope"]')).toContainText('Inspection plan');
+    await test.info().attach('saved-plan-stats', { body: await modal.screenshot(), contentType: 'image/png' });
     const value = (key: string) => modal.locator(`[data-plan-stat="${key}"]`).innerText();
+    expect(await value('buildings')).toMatch(/^1 /);
+    expect(await value('open-space')).toBe('0');
     const floorArea = await value('floor-area');
     expect(Number(floorArea.replace(/[^\d]/g, ''))).toBeGreaterThan(0);
     const sales = await value('sales-value');
@@ -47,7 +61,7 @@ test.describe('Plan arithmetic @features', () => {
       expect(await input.evaluate((el: HTMLInputElement) => el.validity.rangeUnderflow || el.validity.rangeOverflow || el.validity.valueMissing)).toBe(false);
     }
     expect(await value('floor-area')).toBe(floorArea);
-    await modal.getByRole('button', { name: 'Close applied design stats' }).click();
+    await modal.getByRole('button', { name: 'Close plan stats' }).click();
     await expect(modal).toBeHidden();
   });
 });

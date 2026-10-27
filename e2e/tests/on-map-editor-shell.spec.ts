@@ -1,3 +1,4 @@
+import { openPlanActions } from '../helpers/plan-actions';
 // Purpose: exercise the shared editor shell where map context, mode changes, and narrow screens
 // used to make controls drift, disappear, or unlock too early.
 import { test, expect } from '../helpers/fixtures';
@@ -163,25 +164,20 @@ test.describe('Shared on-map editor shell @features', () => {
     await expect(menu.locator('[data-command="parcel.view3d"]')).toHaveCount(0);
   });
 
-  test('Plan stats stays disabled for an empty plan, then opens after an applied building is created', async ({ mockApi: page }) => {
+  test('Plan stats belongs to saved plans, including unapplied designs', async ({ mockApi: page }) => {
     await openCity(page);
-    const actions = page.locator('#proposal-list-actions');
-    const openActionsIfNeeded = async () => {
-      if (!(await actions.isVisible())) await page.locator('#proposals-button').click();
-    };
-    await openActionsIfNeeded();
-    const statsButton = page.locator('#planStatsButton');
-    await expect(statsButton).toBeDisabled();
     await page.locator('#proposals-button').click();
-
-    await createBuilding(page);
-    await openActionsIfNeeded();
-    await expect(statsButton).toBeEnabled();
-    await statsButton.click();
+    await page.locator('[data-list-tab="plans"]').click();
+    await expect(page.getByRole('button', { name: 'Plan stats', exact: true })).toHaveCount(0);
+    await page.locator('#proposals-button').click();
+    const id = await createBuilding(page);
+    await page.evaluate(id => (window as any).ProposalManager.unapplyProposal(id), id);
+    const row = await openPlanActions(page);
+    await row.getByRole('button', { name: 'Plan stats', exact: true }).click();
     const modal = page.locator('#plan-stats-modal');
     await expect(modal).toBeVisible();
-    await expect(modal.locator('[data-plan-stat="scope"]')).toContainText('1 applied');
-    await modal.getByRole('button', { name: 'Close applied design stats' }).click();
+    await expect(modal.locator('[data-plan-stat="scope"]')).toContainText('Inspection plan');
+    await modal.getByRole('button', { name: 'Close plan stats' }).click();
     await expect(modal).toBeHidden();
   });
 

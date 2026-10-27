@@ -22,8 +22,12 @@
             const el = doc.createElement(tag); if (cls) el.className = cls;
             if (text !== undefined) el.textContent = text; return el;
         };
-        function button(label, action, cls = '') {
+        const icon = name => {
+            const el = node('i', `fas fa-${name}`); el.setAttribute('aria-hidden', 'true'); return el;
+        };
+        function button(label, action, cls = '', iconName = null) {
             const el = node('button', `btn btn-sm ${cls}`, label); el.type = 'button';
+            if (iconName) el.prepend(icon(iconName));
             el.addEventListener('click', () => {
                 if (win.BusyControl.isBusy(el)) return;
                 win.BusyControl.track(el, action).catch(error => win.showStyledAlert(error.message));
@@ -32,7 +36,7 @@
         }
         const city = () => win.normalizeCityCodeForApi(win.resolveCurrentCityCode());
         const cacheKey = () => `${win.DesignSync.apiBase()}:${city()}:${state.tab}`;
-        const host = () => doc.getElementById({ designs: 'proposal-list-host', plans: 'designs-plans', agreements: 'designs-agreements' }[state.tab]);
+        const host = () => doc.getElementById({ designs: 'proposal-list-host', plans: 'plan-list-host', agreements: 'designs-agreements' }[state.tab]);
         const opened = () => win.MapShell?.isOpen('proposals-sheet');
         function localRows(kind) {
             if (kind === 'designs') return win.proposalStorage.getAllProposals().map(record => ({
@@ -121,19 +125,19 @@
             if (state.tab === 'designs') {
                 if (!state.selecting) actions.append(button(t('planDialog.createPlan'), () => {
                     state.selecting = true; state.selected.clear(); renderActions(); renderRows();
-                }, 'btn-primary'));
+                }, 'btn-primary', 'layer-group'));
                 else {
                     actions.append(node('span', 'lists-selection-count', t('planDialog.selected', { count: state.selected.size })));
                     const next = button(t('lists.continue'), async () => {
                         const members = [...state.selected.values()];
                         win.MapShell.closeSheets(); state.selecting = false; state.selected.clear();
                         await win.PlanDialog.create({ members });
-                    }, 'btn-primary'); next.disabled = !state.selected.size;
-                    actions.append(next, button(t('common.cancel'), () => { state.selecting = false; state.selected.clear(); renderActions(); renderRows(); }));
+                    }, 'btn-primary', 'arrow-right'); next.disabled = !state.selected.size;
+                    actions.append(next, button(t('common.cancel'), () => { state.selecting = false; state.selected.clear(); renderActions(); renderRows(); }, '', 'xmark'));
                 }
             } else if (state.tab === 'plans') actions.append(button(t('planDialog.createPlan'), () => {
                 win.MapShell.closeSheets(); return win.PlanDialog.create();
-            }, 'btn-primary'));
+            }, 'btn-primary', 'layer-group'));
             else actions.append(node('span', 'sheet-note', t('lists.agreementHint')));
         }
         function renderRows() {
@@ -149,6 +153,15 @@
             for (const row of visible) {
                 const item = node('article', `lists-item${state.active === `${kind}:${row.key}` ? ' is-selected' : ''}`);
                 item.dataset.listId = row.key;
+                const goal = row.local?.goal || row.record.goal || row.record.content?.goal;
+                const appearance = kind === 'plans' ? ['layer-group', 'plan']
+                    : kind === 'agreements' ? ['handshake', 'agreement']
+                    : ({ park: ['tree', 'nature'], lake: ['water', 'water'], square: ['border-all', 'place'],
+                        station: ['train', 'place'], single: ['building', 'building'], buildings: ['building', 'building'],
+                        row: ['building', 'building'], parcelBased: ['house', 'building'], 'road-track': ['road', 'place'],
+                        'parcel-layout': ['draw-polygon', 'plan'], 'urban-rule': ['ruler-combined', 'plan'],
+                        'ownership-transfer': ['handshake', 'agreement'], 'as-is': ['location-dot', 'place'] }[goal] || ['pen-ruler', 'place']);
+                item.dataset.listTone = appearance[1];
                 const heading = node('div', 'lists-item__heading');
                 if (kind === 'designs' && state.selecting) {
                     const label = node('label', 'lists-item__selection');
@@ -164,7 +177,8 @@
                     }); label.append(check); heading.append(label);
                 }
                 const title = button(row.title, () => inspect(row, kind), 'btn-quiet lists-item__title');
-                heading.append(title); item.append(heading);
+                const mark = node('span', 'lists-item__icon'); mark.append(icon(appearance[0]));
+                title.prepend(mark); heading.append(title); item.append(heading);
                 const badges = node('div', 'lists-item__badges');
                 if (kind === 'designs' && row.local) badges.innerHTML = win.proposalLadderBadgesHtml(row.local);
                 else badges.append(node('span', `cb-badge cb-badge--${row.published ? 'published' : 'draft'}`, t(row.published ? 'common.lifecycle.published' : 'common.lifecycle.draft')));
@@ -177,14 +191,30 @@
                 if (kind === 'plans') item.append(node('p', 'sheet-note', t('agreement.list.designs', { count: row.record.content?.designCids.length ?? row.record.designCount })));
                 if (kind === 'agreements' && row.local) item.append(node('p', 'sheet-note', win.AgreementPanel.ruleShort(row.local.rule)));
                 const actions = node('div', 'cb-actions lists-item__actions');
-                const shareButton = button(t('panel.proposal.actions.share'), () => share(row, kind));
+                const shareButton = button(t('panel.proposal.actions.share'), () => share(row, kind), '', 'share-nodes');
+                shareButton.querySelector('i').classList.add('lists-share-icon');
                 if (kind === 'agreements' && !row.published) shareButton.title = t('lists.proposeFirst');
                 actions.append(shareButton);
-                if (kind === 'plans') actions.append(button(t('planDialog.createAgreement'), async () => {
-                    const plan = await win.PlanWorkspace.resolve(await planOf(row));
-                    win.MapShell.closeSheets(); return win.AgreementDialog.open({ plan });
-                }));
-                if (row.local) actions.append(button(t('lists.remove'), () => remove(row, kind), 'btn-quiet'));
+                if (kind === 'plans') {
+                    actions.append(button(t('sidebar.proposals.planStats.buttonLabel'), async () => {
+                        await win.showPlanStatsModal(await planOf(row));
+                    }, '', 'chart-pie'));
+                    const rooster = button(t('sidebar.proposals.grainScore.buttonLabel'), async () => {
+                        await win.summonUrbanistRooster(await planOf(row));
+                    }, 'lists-rooster');
+                    const portrait = node('img', 'lists-rooster__portrait');
+                    portrait.src = '/images/grain-rooster-critic.png'; portrait.alt = '';
+                    portrait.width = 32; portrait.height = 32;
+                    rooster.prepend(portrait); actions.append(rooster);
+                    actions.append(button(t('planDialog.createAgreement'), async () => {
+                        const plan = await win.PlanWorkspace.resolve(await planOf(row));
+                        win.MapShell.closeSheets(); return win.AgreementDialog.open({ plan });
+                    }, '', 'handshake'));
+                }
+                if (row.local) {
+                    const trash = button('', () => remove(row, kind), 'btn-danger btn-icon lists-item__remove', 'trash-can');
+                    trash.setAttribute('aria-label', t('lists.remove')); trash.title = t('lists.remove'); actions.append(trash);
+                }
                 item.append(actions); list.append(item);
             }
             if (!visible.length && !page?.loading) list.append(node('p', 'sheet-note', t('lists.empty')));
@@ -202,7 +232,7 @@
                     renderActions(); renderRows();
                     if (value === 'published' && !state.remote.has(cacheKey())) await load();
                     controls();
-                }, 'cb-segmented__option');
+                }, 'cb-segmented__option', value === 'local' ? 'laptop' : 'globe');
                 el.dataset.listSource = value; el.setAttribute('aria-pressed', String(state.source === value)); scopes.append(el);
             }
             box.append(scopes);
@@ -229,13 +259,14 @@
                 state.search = ''; state.publication = 'all'; state.sort = 'title'; controls(); renderRows();
             }, 'btn-quiet'));
             filters.append(actions); box.append(filters);
-            if (state.source === 'published') box.append(button(t('agreement.minted.refresh'), () => load(), 'lists-refresh'));
+            if (state.source === 'published') box.append(button(t('agreement.minted.refresh'), () => load(), 'lists-refresh', 'arrows-rotate'));
         }
         function init() {
             if (ready) return;
             ready = true;
             const tabs = [...doc.querySelectorAll('[data-list-tab]')];
             tabs.forEach((tab, index) => {
+                tab.prepend(icon({ designs: 'pen-ruler', plans: 'layer-group', agreements: 'handshake' }[tab.dataset.listTab]));
                 tab.addEventListener('click', () => win.BusyControl.track(tab, () => select(tab.dataset.listTab)));
                 tab.addEventListener('keydown', event => {
                     if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;

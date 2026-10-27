@@ -1,3 +1,4 @@
+import { openPlanActions } from '../helpers/plan-actions';
 // Verify shared dynamic dialogs and controls produce the expected corridor, plan, and claim effects.
 import { test, expect } from '../helpers/fixtures';
 import { clickMapPoint, createBuilding, createSpace, drawCorridor, openCity, openParcel } from '../helpers/runtime';
@@ -235,7 +236,7 @@ test.describe('shared dynamic button factories @features', () => {
     }, firstId);
 
     await page.locator('#proposals-button').click();
-    await page.locator('#planStatsButton').click();
+    await (await openPlanActions(page)).getByRole('button', { name: 'Plan stats', exact: true }).click();
     const modal = page.locator('#plan-stats-modal');
     await expect(modal).toBeVisible();
     const section = modal.locator('[data-plan-stat="epoch-section"]');
@@ -250,7 +251,7 @@ test.describe('shared dynamic button factories @features', () => {
     expect(await secondYearProposals.innerText()).toBe('2');
     await section.locator('[data-epoch-view="added"]').click();
     await expect.poll(() => secondYearProposals.innerText()).toBe(addedCount);
-    await modal.getByRole('button', { name: 'Close applied design stats' }).click();
+    await modal.getByRole('button', { name: 'Close plan stats' }).click();
     await expect(modal).toBeHidden();
   });
 

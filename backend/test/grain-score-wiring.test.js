@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 const here = relative => fileURLToPath(new URL(relative, import.meta.url));
 const read = relative => readFileSync(here(relative), 'utf8');
 const index = read('../../frontend/index.html');
+const lists = read('../../frontend/js/lists-panel.js');
 const scoreSource = read('../../frontend/js/proposals/grain-score.js');
 const locales = ['en', 'hr', 'es', 'sr'];
 
@@ -16,9 +17,11 @@ function lookup(object, path) {
 
 describe('grain score wiring', () => {
     it('puts one plan-level action beside Plan Stats and loads its code and styles', () => {
-        expect(index).toContain('id="planStatsButton"');
-        expect(index).toContain('id="roosterScoreButton"');
-        expect(index.indexOf('id="roosterScoreButton"')).toBeGreaterThan(index.indexOf('id="planStatsButton"'));
+        expect(index).not.toContain('id="planStatsButton"');
+        expect(index).not.toContain('id="roosterScoreButton"');
+        expect(lists).toContain('win.showPlanStatsModal(await planOf(row))');
+        expect(lists).toContain('win.summonUrbanistRooster(await planOf(row))');
+        expect(lists).toContain('/images/grain-rooster-critic.png');
         expect(index).toContain("'css/grain-score.css'");
         expect(index).toContain("'js/proposals/grain-score-rules.js'");
         expect(index).toContain("'js/proposals/grain-score.js'");
@@ -38,7 +41,7 @@ describe('grain score wiring', () => {
 
     it('reads its strings from one key family, and none of the retired named-plan ones', () => {
         expect(cardKeys.length).toBeGreaterThan(20);
-        expect(cardKeys).toEqual(expect.arrayContaining(['title', 'appliedComposition', 'localScope', 'countTitle', 'fineTitle', 'methodologyBody',
+        expect(cardKeys).toEqual(expect.arrayContaining(['title', 'localScope', 'countTitle', 'fineTitle', 'methodologyBody',
             'missingGeometry', 'soundOn', 'soundOff', 'progress', 'complete']));
         for (const retired of ['namedScope', 'exactMembersRequired', 'otherApplied', 'fabricChanged']) expect(cardKeys).not.toContain(retired);
     });

@@ -130,15 +130,29 @@ See [MCP editing](mcp-editing.md) for supported primitives and authored-field bo
 
 The **Lists panel** contains **Designs**, **Plans**, and **Agreements** tabs. One **Source and filters**
 section preserves the browser/published scope, search, publication filter, and ordering across tabs.
+The shared body supplies the inset for every tab. Plan-file import and imported-plan controls live
+in Plans. The file format remains a plan, even with a single member; this presentation change
+adds no authored fields or MCP editing operations. Record icons and subtle tints follow their type,
+while action buttons retain accessible names and shared busy controls.
 Search operates on loaded rows; published plans and agreements expose Load more. Designs retain
 an explicit 1,000-row limit. Rows open their details in the click stack, which highlights their
 geometry without applying a plan. Sharing uses each record's existing publication flow.
 
 **Create plan** in Designs starts **Plan selection**: check designs, then Continue to the
-**Plan composer** with those exact members selected. The composer chooses a name, member revisions
+**Plan composer** with those exact members selected. Saving opens the exact saved plan in the
+current view's expanded Plan click-stack section. The composer chooses a name, member revisions
 and saved view and writes only local storage. **Add to plan** opens a new composition or a reviewed
 revision. A plan row offers **Create agreement** with that exact plan as its subject. Draft agreements
 are reviewed and proposed in agreement details before their public link can be shared.
+
+**Plan stats** and **Urban rooster** belong to each saved plan row. `PlanAnalysis` resolves exact
+members, obtains their source bindings and source parcels, and calls `AgreementHeadless.materialize`
+with private fabric, ownership and storage ports. It does not read or change the displayed composition.
+Unapplied members count; unrelated applied designs do not. The rooster retains its colored portrait.
+The old map-wide statistics button and `?planStats=1` applied-composition follower are removed.
+No authored contract changes or new MCP editing operations are needed; MCP ground inspection uses
+`AgreementHeadless.derive` over the same formation handlers. Targeted tests check the shared host,
+exact-member/source resolution and unchanged map state while inspecting an unapplied plan member.
 
 Record removal belongs only to Lists. **Remove from browser** confirms and removes the local copy;
 published links remain available. Removing a plan deletes its library entry, not its members or any
@@ -177,6 +191,31 @@ creation, membership edits, old-revision isolation and exact dependency publicat
   the Lists factory, changed tab controls and retired list controls have current contract entries.
 - Manual headed browser: desktop and 390px mobile, translated controls, no horizontal overflow,
   real published plan and parcel reads, and a published plan opened in the click stack and saved locally.
+
+
+### List polish and plan analysis verification (2026-10-27)
+
+- Headless Playwright, `lists.spec.ts` (two viewport scenarios): the first spacing run had one
+  startup timeout and one pass; the next passed both after fixing hidden-tab CSS precedence.
+- Headless unit tests, three stats/render/wiring files: 35 passed. Three analysis/formation files:
+  15 passed and two large fixtures exceeded the default five-second deadline. Rerunning the affected
+  `mcp-ground.test.js` with a 60-second deadline passed all 10 tests.
+- Headless Playwright, Lists, Plan stats and rooster interaction (five scenarios): initially three
+  passed; mobile used a hidden close control and composition used a retired selector. The rerun
+  passed four; the extended plan-isolation scenario exhausted its 30-second setup/test budget.
+  The final run of Plan stats and design-list layout passed all three scenarios. Across these final
+  runs, seven distinct scenarios pass, including unchanged map state while an unapplied saved
+  building is measured beside an unrelated applied park. No run was stopped; no full suite ran.
+- Headless unit tests, six targeted files: 85/88 passed. The three existing command-registry failures
+  concern the custom track icon and unregistered economic-settings control. After removing obsolete
+  timer scaffolding, the Plan stats rendering file passed all 14 checks again.
+- Static control inventory still reports unrelated drift in other screens. The retired map-wide
+  buttons were removed from the command/coverage contracts, and plan-row and import actions were
+  registered. Other browser specs referencing the moved actions now use the shared plan-row helper;
+  those whole specs were not rerun.
+- Manual headed browser: desktop and 390px mobile; real plan binding and source parcel reads;
+  named statistics and completed rooster score; unchanged designs, live parcels and ownership.
+  The dedicated verification browser was closed. Source syntax and whitespace checks passed.
 
 ## Parcel layout handle presentation
 

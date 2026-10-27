@@ -1,39 +1,10 @@
-// proposals/plan-stats.js — statistics for the proposals currently applied in this browser.
-//
-// The arithmetic is NOT here. It is in proposals/plan-yield.js, which is pure and unit-tested, and
-// which backend/scripts/plan-yield.js runs over the database — so a figure read off this dialog and
-// a figure quoted from the command line come from the same code. This file is the thin part: pick
-// the applied proposals, resolve the geometry of parcels the composition leaves standing,
-// and draw the result.
-//
-// The old resulting-parcel count read Leaflet's current viewport, so a large plan could report four
-// parcels. The current count reads the authoritative LiveParcelFabric over the plan's complete
-// cadastral scope. Proposal records supply that scope; they never store generated parcel ids.
+// Statistics for one exact saved plan, independently of the displayed map.
 (function () {
     // The sales price is in the city's currency and starts at the city's default (city-money.js).
     const salesPrice = () => window.CityMoney.currentAssumptions();
 
     let latestStats = null;
     let epochView = 'added';
-    let planStatsBusy = false;
-
-    function updatePlanStatsButtonState() {
-        const button = document.getElementById('planStatsButton');
-        if (!button) return;
-        let appliedCount = 0;
-        try {
-            const proposals = typeof proposalStorage !== 'undefined' && typeof proposalStorage.getAllProposals === 'function'
-                ? proposalStorage.getAllProposals() : [];
-            const isApplied = typeof isProposalCurrentlyApplied === 'function'
-                ? isProposalCurrentlyApplied
-                : proposal => proposal && proposal.applied === true;
-            appliedCount = (Array.isArray(proposals) ? proposals : []).filter(isApplied).length;
-        } catch (_) { /* storage may not be ready yet; the empty state is safe */ }
-        const disabled = appliedCount === 0 || planStatsBusy;
-        button.disabled = disabled;
-        button.setAttribute('aria-disabled', String(disabled));
-    }
-
     function yieldApi() {
         return (typeof window !== 'undefined' && window.__planYield) ? window.__planYield : null;
     }
@@ -92,16 +63,6 @@
         return CbFormat.formatMoney(Number(value), salesPrice().currency, { missing: '—' });
     }
 
-    // Current output comes from the live fabric; an untouched cadastral result comes from the
-    // immutable repository. There is no third parcel store and Leaflet is never queried for data.
-    function getParcelFeature(parcelId) {
-        if (!parcelId) return null;
-        const id = parcelId.toString();
-        return window.LiveParcelFabric?.get?.(id)
-            || window.CadastralParcelRepository?.get?.(id)
-            || null;
-    }
-
     function readAssumptionsFromModal(modal, { normalizeInput = null } = {}) {
         const api = yieldApi();
         const defaults = api ? api.DEFAULTS : {};
@@ -126,74 +87,33 @@
         };
     }
 
-    function computePlanStatsSync(assumptions) {
+    function computePlanStatsSync(snapshot, assumptions) {
         const api = yieldApi();
-        const all = (typeof proposalStorage !== 'undefined' && typeof proposalStorage.getAllProposals === 'function')
-            ? proposalStorage.getAllProposals()
-            : [];
-        if (!api) {
-            return { unavailable: true, proposalsTotal: all.length };
-        }
-
-        const applied = all.filter(p => p && p.applied === true);
-        // Open space as it stands on the map: parks/squares/lakes carved by later roads.
-        const appliedBodies = new Map();
-        ['parks', 'squares', 'lakes'].forEach(name => {
-            (Array.isArray(window[name]) ? window[name] : []).forEach(feature => {
-                const id = feature && feature.properties && feature.properties.proposalId;
-                if (id !== undefined && id !== null && feature.geometry) appliedBodies.set(String(id), feature);
-            });
-        });
+        const { records, materializedFeatures, cadastralFeatures, plan } = snapshot;
         const openSpaceAreaOf = proposal => {
-            const feature = appliedBodies.get(String(proposal && proposal.proposalId));
-            if (!feature || !window.turf) return null;
-            try { return window.turf.area(feature); } catch (_) { return null; }
+            const pieces = materializedFeatures.filter(f => f.properties?.producedByProposalId === proposal.proposalId
+                && f.properties?.structureType === proposal.structureProposal?.kind);
+            return pieces.length ? pieces.reduce((sum, f) => sum + api.geometryAreaM2(f), 0) : null;
         };
-        const result = api.planYield(applied, { ...assumptions, openSpaceAreaOf });
-        const cadastreIds = Array.from(new Set(applied.flatMap(proposal => (
-            Array.isArray(proposal?.cadastreParcelIds) ? proposal.cadastreParcelIds.map(String) : []
-        ))));
-        const materializedFeatures = window.LiveParcelFabric?.entriesForCadastre
-            ? window.LiveParcelFabric.entriesForCadastre(cadastreIds, { includeCorridors: false })
-            : [];
-        const parcels = api.resultingParcels(applied, { materializedFeatures });
-
-        // Only the AREA needs the map. Count what we could measure so the average carries its own
-        // confidence instead of pretending the parcels it could not reach do not exist.
-        let measuredArea = 0;
-        let measuredCount = 0;
+        const result = api.planYield(records, { ...assumptions, openSpaceAreaOf });
+        const parcels = api.resultingParcels(records, { materializedFeatures });
+        const byId = new Map([...cadastralFeatures, ...materializedFeatures].map(f => [String(f.properties?.parcelId ?? f.id), f]));
+        let measuredArea = 0, measuredCount = 0;
         parcels.resulting.forEach(id => {
-            const feature = getParcelFeature(id);
+            const feature = byId.get(id);
             const area = feature ? api.geometryAreaM2(feature) : 0;
-            if (area > 0) {
-                measuredArea += area;
-                measuredCount += 1;
-            }
+            if (area > 0) { measuredArea += area; measuredCount += 1; }
         });
-
-        // Parcel figures are binding metrics: a plan whose proposals bind no cadastral parcel (all
-        // on open ground) has none, and says so with null rather than a count of 0.
-        const noParcels = applied.length > 0 && parcels.bound === false;
-        const ground = siteStatsApi() ? siteStatsApi().planGround(applied) : null;
-
-        return {
-            unavailable: false,
-            proposalsTotal: all.length,
-            proposalsCounted: applied.length,
-            yield: result,
+        const noParcels = parcels.bound === false;
+        const ground = siteStatsApi()?.planGround(records);
+        return { unavailable: false, planTitle: plan.content.title,
+            proposalsTotal: records.length, proposalsCounted: records.length, yield: result,
             parcelCount: noParcels ? null : parcels.resulting.length,
             parcelProduced: noParcels ? null : parcels.produced.length,
             parcelConsumed: noParcels ? null : parcels.consumed.length,
             parcelMeasuredCount: noParcels ? null : measuredCount,
             parcelMeasuredArea: noParcels ? null : measuredArea,
-            openGroundM2: ground && finiteNumber(ground.openGroundM2) ? ground.openGroundM2 : null
-        };
-    }
-
-    function computePlanStatsAsync(assumptions) {
-        return new Promise(resolve => {
-            requestAnimationFrame(() => resolve(computePlanStatsSync(assumptions)));
-        });
+            openGroundM2: ground && finiteNumber(ground.openGroundM2) ? ground.openGroundM2 : null };
     }
 
     // Looks live in css/modals.css (.plan-stats-*) and css/primitives.css, never inline.
@@ -251,7 +171,7 @@
         dialog.tabIndex = -1;
 
         const header = el('div', 'cb-dialog__header');
-        const title = el('h2', 'cb-dialog__title', tPlanStats('sidebar.proposals.planStats.modalTitle', 'Applied proposal stats'));
+        const title = el('h2', 'cb-dialog__title', tPlanStats('sidebar.proposals.planStats.modalTitle', 'Plan stats'));
         title.id = 'plan-stats-title';
         title.setAttribute('data-i18n-key', 'sidebar.proposals.planStats.modalTitle');
         header.appendChild(title);
@@ -259,7 +179,7 @@
         const closeBtn = el('button', 'close-circle-btn', '×');
         closeBtn.type = 'button';
         closeBtn.setAttribute('data-plan-stats-close', '');
-        closeBtn.setAttribute('aria-label', tPlanStats('sidebar.proposals.planStats.closeAria', 'Close applied proposal stats'));
+        closeBtn.setAttribute('aria-label', tPlanStats('sidebar.proposals.planStats.closeAria', 'Close plan stats'));
         closeBtn.addEventListener('click', () => hidePlanStatsModal());
         header.appendChild(closeBtn);
 
@@ -438,8 +358,8 @@
 
         set('scope', tPlanStats(
             'sidebar.proposals.planStats.scope',
-            '{{counted}} applied proposals counted of {{total}} on this map.',
-            { counted: formatNumber(stats.proposalsCounted), total: formatNumber(stats.proposalsTotal) }
+            '{{title}} · Designs: {{counted}}',
+            { title: stats.planTitle, counted: formatNumber(stats.proposalsCounted) }
         ));
 
         if (noParcels) set('resulting-parcels', tPlanStats('groundStats.noParcels', 'No parcels here'));
@@ -497,17 +417,6 @@
         if (modal) modal.hidden = true;
     }
 
-    function setPlanStatsButtonBusy(busy) {
-        planStatsBusy = !!busy;
-        const button = document.getElementById('planStatsButton');
-        if (!button) return;
-        const label = button.querySelector('.plan-stats-label');
-        const spinner = button.querySelector('.plan-stats-spinner');
-        if (label) label.style.display = busy ? 'none' : '';
-        if (spinner) spinner.style.display = busy ? 'inline-flex' : 'none';
-        updatePlanStatsButtonState();
-    }
-
     // Changing an assumption re-derives EVERY figure, not just the one beside the input: apartments
     // feed people, and both appear per period as well as in total, so a partial update is how two
     // numbers on one screen come to disagree. Nothing is measured again — the geometry did not move
@@ -538,150 +447,12 @@
         });
     }
 
-    async function openPlanStats() {
-        setPlanStatsButtonBusy(true);
-        try {
-            const modal = ensureModal();
-            bindAssumptionInputs(modal);
-            const stats = await computePlanStatsAsync(readAssumptionsFromModal(modal));
-            renderPlanStatsModal(stats);
-        } catch (error) {
-            console.warn('Failed to compute plan stats', error);
-        } finally {
-            setPlanStatsButtonBusy(false);
-        }
+    async function openPlanStats(plan) {
+        const snapshot = await window.PlanAnalysis.prepare(plan);
+        const modal = ensureModal();
+        bindAssumptionInputs(modal);
+        renderPlanStatsModal(computePlanStatsSync(snapshot, readAssumptionsFromModal(modal)));
     }
-
-    // ?planStats=1 opens this dialog on load, so a document can CITE the figures with a
-    // URL instead of telling the reader to find a button. Anything but 0/false counts as on.
-    const PLAN_STATS_URL_KEYS = ['planStats', 'plan-stats'];
-    const PLAN_STATS_WAIT_MS = 30000;      // how long to wait for the first applied proposal
-    const PLAN_STATS_QUIET_MS = 20000;     // stop following once the plan has not moved for this long
-    const PLAN_STATS_RERENDER_MS = 10000;  // floor between re-renders while the plan is still applying
-    const PLAN_STATS_FOLLOW_MS = 300000;   // hard ceiling on following, whatever happens
-    const PLAN_STATS_POLL_MS = 250;
-
-    function planStatsRequestedByUrl() {
-        let params;
-        try {
-            params = new URLSearchParams(window.location.search);
-        } catch (_) {
-            return false;
-        }
-        return PLAN_STATS_URL_KEYS.some(key => {
-            const value = params.get(key);
-            return value !== null && value !== '0' && value !== 'false';
-        });
-    }
-
-    function planSnapshot() {
-        if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') {
-            return { total: 0, applied: 0 };
-        }
-        const all = proposalStorage.getAllProposals() || [];
-        return { total: all.length, applied: all.filter(p => p && p.applied === true).length };
-    }
-
-    function planStatsModalIsOpen() {
-        const modal = document.getElementById('plan-stats-modal');
-        return !!modal && modal.hidden === false;
-    }
-
-    // A plan does not arrive at once. The dialog counts only APPLIED proposals and computes
-    // once, and on the real Šibenik plan the applied flags resolve over more than a minute
-    // (measured: 138 → 149 across 35 s, long after all 299 proposals were in). Opening on the
-    // first sighting therefore quotes a fraction of the plan, and opening on "nothing yet"
-    // quotes a plan of zeros indistinguishable from a genuinely empty one.
-    //
-    // Waiting for the stream to "settle" cannot be made sound either — a quiet gap between two
-    // polls looks exactly like the end of it. So: never open on nothing, then keep watching and
-    // RE-RENDER whenever the plan moves under us, until it goes quiet or the reader closes the
-    // dialog. The figures converge on the truth instead of freezing part-way. Re-rendering
-    // preserves whatever assumptions the reader typed, because openPlanStats reads them back
-    // out of the modal first.
-    function openPlanStatsWhenPlanIsLoaded() {
-        const waitUntil = Date.now() + PLAN_STATS_WAIT_MS;
-        const followUntil = Date.now() + PLAN_STATS_FOLLOW_MS;
-        let shown = null;        // what the dialog currently displays
-        let previous = null;     // what the previous poll saw
-        let lastChangeAt = Date.now();
-        let lastRenderAt = 0;
-
-        (function attempt() {
-            const now = planSnapshot();
-
-            // "Quiet" means the PLAN stopped moving, which is not the same as "nothing new to
-            // draw". The store briefly empties and refills while proposals are applied, and
-            // measuring quiet against the rendered snapshot let that lull count as the end of
-            // loading: the follower gave up at 0 applied and never saw the 159 that followed.
-            if (!previous || now.total !== previous.total || now.applied !== previous.applied) {
-                lastChangeAt = Date.now();
-            }
-            previous = now;
-
-            // Re-rendering is not free — it re-runs plan-yield and walks every resulting parcel's
-            // geometry — and the plan is at its most expensive exactly while it is applying:
-            // a 299-proposal plan applies one proposal at a time, ~3.6 s each, for about 18
-            // minutes, on this same main thread. Following it change-for-change would put a full
-            // recompute into every one of those gaps. The first render is immediate; after that
-            // the figures refresh on a floor, and the final state is guaranteed by the quiet rule
-            // below rather than by catching every intermediate value.
-            const changed = !shown || now.total !== shown.total || now.applied !== shown.applied;
-            const dueForRender = !shown || (Date.now() - lastRenderAt) >= PLAN_STATS_RERENDER_MS;
-            if (now.applied > 0 && changed && dueForRender) {
-                // Opened once already and the reader closed it — their call, stop following.
-                if (shown && !planStatsModalIsOpen()) return;
-                shown = now;
-                lastRenderAt = Date.now();
-                openPlanStats();
-            } else if (!shown && Date.now() >= waitUntil) {
-                console.warn(`[plan-stats] ?planStats: nothing applied after ${PLAN_STATS_WAIT_MS} ms `
-                    + `(${now.applied} of ${now.total}) — opening with what is loaded`);
-                openPlanStats();
-                return;
-            }
-
-            const quiet = shown && (Date.now() - lastChangeAt) >= PLAN_STATS_QUIET_MS;
-            const givingUp = quiet || Date.now() >= followUntil;
-            if (givingUp) {
-                // The throttle above means the LAST change is the one most likely to have been
-                // skipped — and stopping here on a stale figure is precisely the quotable-but-wrong
-                // number this whole path exists to avoid. Draw the final state before letting go.
-                //
-                // Unreachable while RERENDER_MS < QUIET_MS, because the render floor is then always
-                // crossed before the quiet window expires and the normal path above has already
-                // redrawn. It is the backstop for someone changing those constants: set the floor
-                // above the quiet window and this becomes the only thing standing between the
-                // reader and a stale number. Its test fails when both are gone.
-                const stale = now.applied > 0
-                    && (!shown || now.total !== shown.total || now.applied !== shown.applied);
-                if (stale && planStatsModalIsOpen()) {
-                    shown = now;
-                    openPlanStats();
-                }
-                return;
-            }
-            setTimeout(attempt, PLAN_STATS_POLL_MS);
-        })();
-    }
-
-    function initializePlanStatsUi() {
-        const button = document.getElementById('planStatsButton');
-        if (button && !button.dataset.planStatsBound) {
-            button.dataset.planStatsBound = '1';
-            button.addEventListener('click', event => {
-                if (event) event.preventDefault();
-                openPlanStats();
-            });
-        }
-        updatePlanStatsButtonState();
-        if (planStatsRequestedByUrl()) openPlanStatsWhenPlanIsLoaded();
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        initializePlanStatsUi();
-    });
 
     window.showPlanStatsModal = openPlanStats;
-    window.updatePlanStatsButtonState = updatePlanStatsButtonState;
 })();

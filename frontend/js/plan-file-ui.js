@@ -105,6 +105,10 @@
                 body.appendChild(button);
             }
         }
+        function actionIcon(button, name) {
+            const icon = doc.createElement('i'); icon.className = `fas fa-${name}`;
+            icon.setAttribute('aria-hidden', 'true'); button.prepend(icon);
+        }
         function controls({ getRecords = null, getView = () => win.MapShare.capture(win), getTitle = () => 'My plan', getSources = () => ({}), importAllowed = true } = {}) {
             const group = doc.createElement('div'); group.className = 'plan-file-controls';
             let busy = false;
@@ -112,6 +116,7 @@
             const button = (label, action, hook) => {
                 const b = doc.createElement('button'); b.type = 'button'; b.className = 'btn'; b.textContent = label;
                 b.dataset.planFileAction = hook;
+                actionIcon(b, hook === 'plans' ? 'folder-open' : 'download');
                 b.addEventListener('click', async () => {
                     if (busy) return;
                     busy = true; buttons.forEach(c => { c.disabled = true; });
@@ -136,6 +141,7 @@
             // same file to be chosen again after cancellation or validation failure.
             const choose = doc.createElement('button'); choose.type = 'button'; choose.className = 'btn';
             choose.textContent = t('import', 'Import plan file'); choose.dataset.planFileAction = 'import';
+            actionIcon(choose, 'file-import');
             choose.addEventListener('click', () => { if (!busy) input.click(); });
             buttons.push(choose); group.append(choose, input);
             input.addEventListener('change', async () => {

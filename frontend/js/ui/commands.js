@@ -27,7 +27,7 @@
         'gameCheckbox', 'game-datetime', 'game-turns', 'turn-interval-slider', 'turn-interval-value',
         'turn-progress-fill', 'turn-progress-time', 'game-play-pause-btn',
         // Proposals sheet
-        'showProposalsButton', 'planStatsButton', 'roosterScoreButton',
+        'showProposalsButton',
         'shareAppliedProposalsButton',
         // Layers sheet: parcels
         'parcelsCheckbox', 'showAdParcelsCheckbox', 'showParcelNumbers', 'showOwnerCounts',
@@ -389,10 +389,6 @@
         // ---- Proposals sheet ----
         { id: 'proposals.list', group: 'proposals', surfaces: ['proposals'], run: callGlobal('showAllProposalsModal'),
             labelKey: 'lists.title', fallbackLabel: 'Lists', icon: 'fas fa-list-ul' },
-        control('planStatsButton', { id: 'proposals.planStats', group: 'proposals', surfaces: ['proposals'],
-            labelKey: 'sidebar.proposals.planStats.buttonLabel', fallbackLabel: 'Applied design stats', icon: 'fas fa-chart-pie' }),
-        control('roosterScoreButton', { id: 'proposals.grainScore', group: 'proposals', surfaces: ['proposals'],
-            labelKey: 'sidebar.proposals.grainScore.buttonLabel', fallbackLabel: 'Urban rooster', icon: 'fas fa-crow' }),
         control('shareAppliedProposalsButton', { id: 'proposals.plans', group: 'proposals', surfaces: ['proposals'],
             labelKey: 'lists.plans', fallbackLabel: 'Plans', icon: 'fas fa-layer-group' }),
         control('designs-agreements-tab', { id: 'proposals.agreements', group: 'proposals', surfaces: ['proposals'],
