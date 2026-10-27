@@ -90,3 +90,16 @@ Verification: seven targeted headless unit files passed (91 tests). Six targeted
 
 
 Two targeted headed Playwright layout cases passed, followed by three targeted headed cases after saving screenshot artifacts and adding Escape assertions. The latter checks that Escape first closes the lens dialog and then the agreement, with full interaction restored. Desktop screenshots of all four tabs and a phone Rules screenshot were visually inspected. The real preview additionally confirmed equal 179px footer buttons, the 70px centered lens button and native modal blocking. Its explicit local API returned one real cadastral parcel and a complete one-parcel design binding (both HTTP 200); frontend and API listening process working directories matched this checkout.
+
+
+## Plan click-stack layout and return context
+
+Plan section actions now share a two-column row with equal-sized Share plan and Create agreement buttons. Agreements and included designs use full-width rows with matching group insets and spacing, in both stack renderers. Creating an agreement from this section retains the caller behind the native modal. Header close, Cancel and Escape return to the same expanded plan, map point and selection, with map focus restored. Creating successfully returns to that section and refreshes its agreement list instead of opening a different dock. Other entry points retain their existing post-save behavior. Phone dismissal uses the shared sheet handle, Cancel and Escape; its header X is intentionally hidden by the shared mobile sheet style.
+
+MCP parity: these changes affect navigation, focus and presentation only. The authored plan and agreement formats and editing fields are unchanged. Existing plan inspection and agreement draft/edit operations still edit the same content; no new MCP mutation or schema is needed.
+
+Targeted verification: five headless unit files passed (110 tests: memberships, stack sharing/panel, optional tool loading and agreement store). The initial three-case headless Playwright run had one pass and two failures: the creation assertion needed an explicit recipient selection, and the phone test tried to click the intentionally hidden header X. The creation check now selects Proposer and the phone check uses its visible sheet dismissal controls. No runs were stopped.
+
+A two-case targeted headed Playwright run passed desktop return/create/list refresh; the phone case repeated the hidden-X locator issue before the phone test was corrected.
+
+Final verification: the corrected phone case passed in a targeted headed Playwright run; its screenshot and the desktop screenshot were visually inspected. All three targeted headless Playwright cases then passed, covering both viewport widths and the independent-agreement list. The verified preview still resolved the local API; real parcel lookup and complete design binding both returned HTTP 200. No tests were stopped.

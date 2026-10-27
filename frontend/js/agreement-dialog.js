@@ -560,7 +560,7 @@
 
     // A plan is selected before ground is read. Designs are a read-only projection of that exact
     // revision; changing a plan's membership is a separate plan-authoring operation.
-    async function open({ agreementId = null, electorate = 'owners', plan = null } = {}) {
+    async function open({ agreementId = null, electorate = 'owners', plan = null, preserveContext = false } = {}) {
         const doc = root.document, api = root.AgreementRecord;
         const existing = agreementId ? root.AgreementStore.get(agreementId) : null;
         if (agreementId && !existing) throw new Error(`Agreement ${agreementId} is not on this device.`);
@@ -588,7 +588,7 @@
         const panels = root.AgreementPanel;
         const replaced = panels?.isOpen?.() ? panels.current() : null;
         if (replaced) panels.close();
-        makeWay(doc);
+        if (!preserveContext) makeWay(doc);
         const panel = ensurePanel(doc), body = panel.querySelector('[data-agreement-editor-body]');
         const form = panel.querySelector('form'), saveButton = panel.querySelector('[data-agreement-action="save"]');
         // Native modality makes the background inert without changing map handlers or control state.
@@ -619,7 +619,7 @@
             panel.classList.remove('visible'); body.replaceChildren(); doc.body.classList.remove('agreement-editor-open');
             if (modal.open) modal.close();
             parent.appendChild(panel); modal.remove();
-            const reopen = result?.id || replaced;
+            const reopen = preserveContext ? replaced : result?.id || replaced;
             if (reopen) Promise.resolve(panels.open(reopen)).catch(report);
             resolveClosed(result || null);
         }

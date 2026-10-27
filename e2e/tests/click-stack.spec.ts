@@ -6,7 +6,7 @@
 import { Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
 import { clickDesignOnMap, clickMapPoint, clickStack, createSpace, drawCorridor, expandStackSection, openCity, stackSection, PARCEL_ID } from '../helpers/runtime';
-import { agreementPanel, proposeOverPark } from '../helpers/agreements';
+import { agreementPanel, agreementEditor, editorSave, storedAgreements, proposeOverPark } from '../helpers/agreements';
 
 const SECOND_PARCEL_ID = 'HR-335754-1235';
 
@@ -54,6 +54,62 @@ test.describe('Click stack @core', () => {
     await expect(page.locator('#agreement-panel-title')).toHaveText('Agreement action coverage');
     await expect(clickStack(page)).toBeHidden();
   });
+
+  for (const width of [1280, 390]) {
+    test(`plan section keeps its caller after agreement close and creation at ${width}px`, async ({ mockApi: page }, testInfo) => {
+      await page.setViewportSize({ width, height: 844 });
+      await twoAgreementsOnPark(page);
+      await expandStackSection(page, 'plans');
+      const section = stackSection(page, 'plans');
+      const trigger = section.locator('.click-stack__create-agreement');
+      const share = section.locator('.click-stack__share-plan');
+      const agreements = section.locator('.click-stack__choices[data-kind="agreements"]');
+      await expect(agreements.locator('.click-stack__chip')).toHaveCount(2);
+      const shareBox = await share.boundingBox(), createBox = await trigger.boundingBox();
+      expect(Math.abs(shareBox!.height - createBox!.height)).toBeLessThan(1);
+      expect(Math.abs(shareBox!.width - createBox!.width)).toBeLessThan(1);
+      expect(Math.abs(shareBox!.y - createBox!.y)).toBeLessThan(1);
+      const geometry = await agreements.evaluate(el => {
+        const group = el.getBoundingClientRect();
+        return [...el.querySelectorAll('.click-stack__chip')].map(row => { const r = row.getBoundingClientRect(); return { left: r.left - group.left, right: group.right - r.right }; });
+      });
+      expect(geometry.every(row => row.left >= 12 && row.right >= 12)).toBe(true);
+      const before = await page.evaluate(() => {
+        const w = window as any, state = w.ClickStack.current(), map = w.map;
+        return { selected: state.selectedKind, expanded: state.expanded, point: w.ClickStack.point(), top: state.topRef,
+          center: [map.getCenter().lat, map.getCenter().lng], zoom: map.getZoom() };
+      });
+      for (const close of [width < 768 ? 'handle' : 'header', 'cancel', 'escape']) {
+        await trigger.click(); await expect(agreementEditor(page)).toBeVisible();
+        await expect(clickStack(page)).toBeVisible();
+        if (close === 'header') await agreementEditor(page).locator('.panel-header [data-agreement-action="cancel"]').click();
+        else if (close === 'handle') { await agreementEditor(page).locator(':scope > .mobile-dock-sheet-handle').focus(); await page.keyboard.press('Escape'); }
+        else if (close === 'cancel') await agreementEditor(page).locator('.panel-footer [data-agreement-action="cancel"]').click();
+        else await page.keyboard.press('Escape');
+        await expect(agreementEditor(page)).toBeHidden(); await expect(clickStack(page)).toBeVisible();
+        const after = await page.evaluate(() => {
+          const w = window as any, state = w.ClickStack.current(), map = w.map;
+          return { selected: state.selectedKind, expanded: state.expanded, point: w.ClickStack.point(), top: state.topRef,
+            center: [map.getCenter().lat, map.getCenter().lng], zoom: map.getZoom() };
+        });
+        expect(after).toEqual(before);
+        await expect(trigger).toBeFocused();
+        await expect(page.locator('path.click-stack-map-focus').first()).toBeVisible();
+      }
+      const screenshot = testInfo.outputPath('plan-section.png');
+      await section.screenshot({ path: screenshot });
+      await testInfo.attach('Plan section', { path: screenshot, contentType: 'image/png' });
+      const count = (await storedAgreements(page)).length;
+      await trigger.click();
+      await agreementEditor(page).getByRole('tab', { name: 'Output parcels', exact: true }).click();
+      await agreementEditor(page).locator('[data-agreement-allocation-mode]').selectOption('proposer');
+      await expect(editorSave(agreementEditor(page))).toBeEnabled();
+      await editorSave(agreementEditor(page)).click(); await expect(agreementEditor(page)).toBeHidden();
+      await expect(clickStack(page)).toBeVisible(); await expect(agreementPanel(page)).toBeHidden();
+      await expect(agreements.locator('.click-stack__chip')).toHaveCount(3);
+      expect((await storedAgreements(page)).length).toBe(count + 1);
+    });
+  }
 
   test('expanding sections retains map focus and collapsed headers keep their identity visible', async ({ mockApi: page }) => {
     await page.setViewportSize({ width: 390, height: 844 });

@@ -1279,6 +1279,50 @@ body.three-mode-active #agent-bubbles-container {
     margin-bottom: var(--cb-space-2);
 }
 
+/* Saved-plan contents share one inset and row rhythm in both map stacks. */
+.click-stack__body.click-stack__plan {
+    gap: var(--cb-space-3);
+    padding: var(--cb-space-3);
+}
+.click-stack__plan > .click-stack__facts,
+.click-stack__plan > .click-stack__summary,
+.click-stack__plan > .click-stack__actions { margin: 0; }
+.click-stack__plan > .click-stack__actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--cb-space-2);
+}
+.click-stack__plan > .click-stack__actions > .btn {
+    width: 100%;
+    min-width: 0;
+    min-height: var(--cb-control-height);
+    white-space: normal;
+}
+.click-stack__plan .click-stack__choices {
+    gap: var(--cb-space-2);
+    box-sizing: border-box;
+    padding: var(--cb-space-3);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface-2);
+}
+.click-stack__plan .click-stack__strip {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--cb-space-2);
+}
+.click-stack__plan .click-stack__chip {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    padding: var(--cb-space-2) var(--cb-space-3);
+    font-size: var(--cb-text-md);
+    line-height: var(--cb-leading);
+    text-decoration: none;
+}
+.click-stack__plan .click-stack__choices .click-stack__facts { margin: 0; }
+
 .click-stack__coords {
     pointer-events: auto;
     text-shadow: var(--cb-text-halo);

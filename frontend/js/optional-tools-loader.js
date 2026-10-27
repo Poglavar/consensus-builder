@@ -8,7 +8,7 @@
         roadDetection: ['js/osm-roads-source.js', 'js/road-detection.js'],
         singleBuilding: ['js/single-building.js'],
         designDuplication: ['js/design-duplication.js'],
-        designMemberships: ['js/design-memberships.js'],
+        designMemberships: ['js/design-memberships.js?v=20261027-plan-stack'],
         rowHouse: ['js/row-house.js'],
         parcelBased: ['js/parcel-based.js'],
         buildingUpload: ['js/single-building.js', 'js/building-model-geometry.js', 'js/building-upload.js']

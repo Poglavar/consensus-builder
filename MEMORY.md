@@ -970,3 +970,5 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-27: Output parcels supports proposer acquisition without prior input ownership, with all-Proposer/all-Public bulk allocation or individual recipients; scheme-derived compensation is funded through the balancing sponsor.
 
 - 2026-10-27: Agreement authoring blocks map and unrelated controls until Create/Cancel; its shared striped Lens button edits the same persistent preference as agent details, while agreements retain individual lens snapshots.
+
+- 2026-10-27: Creating an agreement from a Plan click-stack section preserves that caller on close/cancel and returns there after creation, refreshing its agreement list rather than opening another dock.

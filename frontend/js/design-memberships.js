@@ -225,6 +225,10 @@
             } finally { loading = false; render(); }
         }
         if (offset !== null) load(); else render();
+        return () => {
+            items = mergeRows(localAgreements(instance.cid, win.AgreementStore.list(), agreement => agreement.published?.cid || null), items);
+            render();
+        };
     }
 
     function mountSection(host, kind, instance, session, win, { onFocus = () => {}, hits = {} } = {}) {
@@ -239,6 +243,7 @@
             const button = node('button', 'btn btn-sm', text); button.type = 'button';
             button.addEventListener('click', run); return button;
         };
+        host.classList.add('click-stack__plan');
         const intro = node('p', 'click-stack__facts', t(kind === 'plans' ? 'planMeaning' : 'agreementMeaning'));
         host.appendChild(intro);
         if (!instance.membershipPlaceholder) {
@@ -256,6 +261,7 @@
             shareIcon.setAttribute('aria-hidden', 'true');
             share.replaceChildren(shareIcon, node('span', '', t('sharePlan')));
             actions.appendChild(share);
+            let refreshAgreements;
             const createAgreement = action(t('createAgreement'), async () => {
                 try {
                     let selectedPlan;
@@ -263,12 +269,15 @@
                         const data = session ? await session.details(kind, instance) : await inspect(kind, instance, win);
                         selectedPlan = win.NamedPlans.remember({ cid: instance.cid, content: data.content }, data.members.map(member => member.id));
                     });
-                    await win.AgreementDialog.open({ plan: selectedPlan });
+                    const saved = await win.AgreementDialog.open({ plan: selectedPlan, preserveContext: true });
+                    if (saved) refreshAgreements();
+                    onFocus(instance);
                 } catch (error) { win.showStyledAlert(error.message); }
             });
+            createAgreement.className = 'btn click-stack__create-agreement';
             actions.appendChild(createAgreement);
             host.appendChild(actions);
-            mountAgreements(host, instance, win);
+            refreshAgreements = mountAgreements(host, instance, win);
             const details = node('div', 'click-stack__membership-details');
             host.appendChild(details);
             const load = async () => {
