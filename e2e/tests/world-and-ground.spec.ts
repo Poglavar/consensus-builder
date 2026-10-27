@@ -392,6 +392,24 @@ test.describe('World navigation and open ground @features', () => {
     await page.evaluate(() => (window as any).map.setView([45.8008, 15.9817], 18, { animate: false }));
     await clickMapPoint(page, 15.9817, 45.8008);
     await expect(page.locator('#click-stack .click-stack__section[data-kind="ground"]')).toBeVisible();
+    const ground = page.locator('#click-stack .click-stack__section[data-kind="ground"]');
+    await expect(ground.getByRole('button', { name: 'Draw a parcel', exact: true })).toBeVisible();
+    await expect(ground.locator('.click-stack__facts')).toHaveText('Unsurveyed ground or a gap between parcels.');
+    for (const width of [1280, 390]) {
+      await page.setViewportSize({ width, height: 844 });
+      const boxes = await ground.locator('.click-stack__actions > button').evaluateAll(buttons => buttons.map(button => {
+        const { x, y, width } = button.getBoundingClientRect(); return { x, y, width };
+      }));
+      expect(boxes).toHaveLength(7);
+      expect(boxes[0].width).toBeGreaterThan(boxes[1].width * 1.9);
+      for (const i of [1, 3, 5]) {
+        expect(Math.abs(boxes[i].width - boxes[i + 1].width)).toBeLessThan(1);
+        expect(Math.abs(boxes[i].y - boxes[i + 1].y)).toBeLessThan(1);
+        expect(boxes[i + 1].x).toBeGreaterThan(boxes[i].x);
+        expect(boxes[i].y).toBeGreaterThan(boxes[i - 1].y);
+      }
+    }
+    await page.setViewportSize({ width: 1280, height: 844 });
     await page.locator('#click-stack [data-command="ground.drawSite"]').click();
     await expect(page.locator('#site-panel')).toBeVisible();
     await expect.poll(() => page.evaluate(() => (window as any).SiteTool.isActive())).toBe(true);

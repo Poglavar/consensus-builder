@@ -255,3 +255,14 @@ from localhost. For model uploads and authoring, use this checkout’s local dev
 a real upload returns a retrievable model URL, plus complete building stock for land-take review.
 A link without a city retains the browser's saved city. Do not change cities just to conceal a
 source failure, and do not describe a mocked browser check as proof of live source availability.
+
+### Bare-ground menu presentation (2026-10-27)
+
+The first action reads **Draw a parcel**; its existing drawing operation is unchanged. It spans
+both columns above three equal-width pairs of transport actions. Bare-ground copy reads
+“Unsurveyed ground or a gap between parcels.” in all seven locales. This is copy/layout only:
+MCP authoring primitives and schemas are unchanged, so no MCP editing change is required.
+Verification: 11 headless unit checks in `frontend-ground-menu.test.js` and one targeted headless
+Playwright scenario in `world-and-ground.spec.ts` passed, including both 1280px and 390px button
+geometry and drawing/cancellation. Manual headed inspection used a bare-ground fixture at desktop
+and mobile widths; the dedicated browser was closed. No full suite ran.

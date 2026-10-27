@@ -60,7 +60,7 @@
         }
         return {
             titleKey: 'groundMenu.title.bare', title: 'No parcel here',
-            factsKey: 'groundMenu.facts.bare', facts: 'Unsurveyed ground or a gap between parcels: nobody\'s land that we know of.'
+            factsKey: 'groundMenu.facts.bare', facts: 'Unsurveyed ground or a gap between parcels.'
         };
     }
 
