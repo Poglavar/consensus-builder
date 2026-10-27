@@ -799,7 +799,7 @@
             return false;
         }
 
-        if (!isZoomSuitableForGovernmentPlanApply()) {
+        if (!opts.ignoreZoomGuard && !isZoomSuitableForGovernmentPlanApply()) {
             stats.result = 'skipped-zoom';
             stats.durationMs = Math.round(getNowMs() - startTime);
             logAutoApplyStats(stats);

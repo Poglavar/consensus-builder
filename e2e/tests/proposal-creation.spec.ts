@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, createSpace, proposalState, showProposal, clickMapPoint, drawCorridor, PARCEL_ID, openParcelTabAt, closeParcel, showSelectionDesignTab } from '../helpers/runtime';
+import { placeFreeformBuilding, openCity, openParcel, createSpace, proposalState, showProposal, clickMapPoint, drawCorridor, PARCEL_ID, openParcelTabAt, closeParcel, showSelectionDesignTab } from '../helpers/runtime';
 
 test.describe('Proposal creation and map lifecycle @features', () => {
   for (const kind of ['park', 'square', 'lake'] as const) {
@@ -52,6 +52,7 @@ test.describe('Proposal creation and map lifecycle @features', () => {
         await showSelectionDesignTab(page);
       }
       await page.locator(`.parcel-build-btn--${type}`).click();
+      if (type === 'single') await placeFreeformBuilding(page);
       if (type === 'buildings') {
         const prompt = page.getByRole('alertdialog');
         if (await prompt.isVisible().catch(() => false)) {

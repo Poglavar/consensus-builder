@@ -40,7 +40,7 @@ test('Permitted keeps its envelope controls and ignores retired parcel-study lin
     derivation:{parcel:geometry,covered:geometry,frontEdges:[0,1,2,3]},
     spatialReference:{horizontal:'OGC:CRS84',vertical:'relative-ground',unit:'m'},
     assessment:{meaning:'outer-bound',status:'unresolved'},metrics:{heightM:13.716,footprintM2:1000},constraints:[],
-    sourceEvidence:{parcelReference:input.parcelReference,zoningRecordId:'slice-test',excludedConfigurations:{family3:'prohibited'}}};
+    sourceEvidence:{parcelReference:input.parcelReference,zoningRecordId:'slice-test',frontEdge:0,excludedConfigurations:{family3:'prohibited'}}};
   const zone={...input.source,title:'Synthetic zoning area',areas:[{geometry}],volumes:[],metrics:{heightM:null},
     assessment:{meaning:'zoning-area',status:'allowed'}};
   let envelopeReads = 0, studyReads = 0;
@@ -90,11 +90,11 @@ test('Permitted keeps its envelope controls and ignores retired parcel-study lin
   await page.getByRole('button',{name:'Buildings and massing',exact:true}).click();
   const panel=page.locator('#planning-views');
   await expect(panel.locator('.planning-scenario-select')).toHaveValue('all');
-  // Rolling the dice turns the assumed street side and keeps the qualifying housing type; pinning a type overrides the roll.
+  // The housing type roll preserves frontage evidence; pinning a type overrides the roll.
   const proposedBeforeRoll = await page.evaluate(() => (window as any).PlanningViews.getState().proposedVariation);
   await panel.locator('#planning-reroll-permitted').click();
   const rolled = await shown();
-  expect(rolled.frontEdge).not.toBe(first.frontEdge); expect(rolled.configuration).toBe('family1');
+  expect(rolled.frontEdge).toBe(first.frontEdge); expect(rolled.configuration).toBe('family1');
   expect(await page.evaluate(() => (window as any).PlanningViews.getState().proposedVariation)).toBe(proposedBeforeRoll);
   await panel.locator('#planning-reroll').click();
   expect(await shown()).toEqual(rolled);

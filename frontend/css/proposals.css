@@ -393,6 +393,43 @@
 }
 
 @media (max-width: 767.98px) {
+    /* The Designs sheet keeps its resize affordance, title and both tabs, but gives back enough
+       vertical space for the cards. Its plan-file actions are a compact two-column utility row. */
+    #proposals-sheet > .mobile-dock-sheet-handle {
+        flex-basis: 32px;
+        height: 32px;
+        min-height: 32px;
+    }
+
+    #proposals-sheet .map-sheet-header {
+        padding-block: 0;
+    }
+
+    #proposals-sheet .designs-panel-tabs {
+        margin-block: 0;
+    }
+
+    #proposals-sheet .designs-panel-tabs .cb-segmented__option {
+        min-height: 40px;
+    }
+
+    #plan-file-actions .plan-file-controls {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 4px 8px;
+        padding-block: 4px;
+    }
+
+    #plan-file-actions .plan-file-controls > .btn {
+        min-height: 36px;
+        margin: 0;
+    }
+
+    #plan-file-actions .plan-file-controls > a {
+        grid-column: 1 / -1;
+        line-height: 1.2;
+    }
+
     .proposal-list-toolbar {
         display: flex;
         align-items: center;

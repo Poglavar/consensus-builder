@@ -18,7 +18,7 @@ test.describe('Parcel diagnostics @features', () => {
       const metres = Number(metrics.length);
       return metres.toLocaleString('en-GB', { maximumFractionDigits: metres < 100 ? 1 : 0 });
     });
-    await page.locator('.parcel-tab-btn').filter({ hasText: 'Info' }).click();
+    await page.locator('#parcel-info-panel .parcel-tab-btn[data-parcel-tab-id="info-tab"]').click();
     await expect(page.locator('#roadMeasurements')).toBeVisible();
     await expect(page.locator('#roadMeasurements .metric-value').first()).toHaveText(new RegExp(`^${length.replace(/[.,]/g, '\\$&')}\\s?m$`)); // narrow no-break space before the unit
     await expect(page.locator('#roadMeasurements')).not.toContainText(/NaN|N\/A|undefined/);

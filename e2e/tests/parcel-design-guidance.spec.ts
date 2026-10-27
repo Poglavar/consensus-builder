@@ -12,7 +12,7 @@ for (const phone of [false, true]) {
       const row = page.locator('.parcel-build-btn--row');
       const hint = 'Row houses need at least two parcels. Select another parcel or use Detect block.';
       await expect(page.locator('#parcel-info-panel .multi-select-title')).toHaveText(
-        'Select a parcel to start designing. You can also select multiple parcels or a block of parcels.');
+        'Select a parcel to start designing. You can also select multiple parcels manually or auto detect and select a block of parcels.');
       await expect(row).toHaveAttribute('aria-disabled', 'true');
       await expect(row).toHaveAttribute('title', hint);
       await expect(row).toHaveCSS('opacity', '0.5');
