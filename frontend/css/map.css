@@ -294,21 +294,21 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
 /* The 3D view's value figures (Built / Planned / Proposed), shown inside the Design and Parcel
    sections of its click stack (js/three-click-stack.js, css/three-click-stack.css). */
 .three-mode-parcel-panel {
-    font-size: var(--cb-text-sm);
+    font-size: var(--cb-text-base);
     color: var(--cb-text);
 }
 
 /* Proposal panel: "Parcels: N" subnote and the average-gain-per-parcel line. */
 .three-mode-parcel-panel .parcel-panel-subnote {
-    font-size: var(--cb-text-xs);
-    color: var(--cb-text-faint);
-    margin: 0 0 8px;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+    margin: 0 0 var(--cb-space-2);
 }
 
 .three-mode-parcel-panel .parcel-panel-avg {
     margin-top: 2px;
-    font-weight: 600;
-    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-semibold);
+    font-size: var(--cb-text-base);
 }
 
 .three-mode-parcel-panel .parcel-panel-avg:empty {
@@ -343,15 +343,19 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
 }
 
 .three-mode-parcel-panel .parcel-panel-table th {
-    font-weight: 600;
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-semibold);
     color: var(--cb-text-muted);
+}
+
+.three-mode-parcel-panel .parcel-panel-table thead th {
     border-bottom: 1px solid var(--cb-line);
 }
 
 .three-mode-parcel-panel .parcel-panel-note {
-    font-size: var(--cb-text-xs);
-    color: var(--cb-text-faint);
-    margin: 4px 0 8px;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+    margin: var(--cb-space-1) 0 var(--cb-space-2);
     text-align: right;
 }
 
@@ -373,7 +377,8 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
 
 .three-mode-parcel-panel .parcel-panel-slider-label {
     display: block;
-    font-weight: 600;
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-semibold);
     color: var(--cb-text-muted);
     padding-top: 4px;
 }
@@ -383,7 +388,7 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
 }
 
 /* The Profit row label explains its formula on hover. */
-.three-mode-parcel-panel .parcel-panel-table td[title] {
+.three-mode-parcel-panel .parcel-panel-table th[title] {
     cursor: help;
 }
 
@@ -832,6 +837,22 @@ body.three-mode-active #agent-bubbles-container {
    action view: the planning inspector, proposal card or parcel info panel is moved inside and
    loses its own docking (the .is-hosted rules below). On phones the stack is the bottom sheet.
    The 3D model view's stack (#three-click-stack, js/three-click-stack.js) takes the same frame. */
+.click-stack {
+    font-family: var(--cb-font-sans);
+    font-size: var(--cb-text-base);
+    font-weight: var(--cb-weight-normal);
+    line-height: var(--cb-leading);
+    color: var(--cb-text);
+}
+
+.click-stack__title {
+    margin: 0;
+    font-size: var(--cb-text-lg);
+    font-weight: var(--cb-weight-semibold);
+    line-height: var(--cb-leading);
+    overflow-wrap: anywhere;
+}
+
 #click-stack,
 #three-click-stack {
     position: fixed;
@@ -1023,7 +1044,7 @@ body.three-mode-active #agent-bubbles-container {
     align-items: center;
     gap: var(--cb-space-2);
     width: 100%;
-    min-height: 40px;
+    min-height: var(--cb-control-height-touch);
     padding: var(--cb-space-2) var(--cb-space-3);
     border: 0;
     border-radius: var(--cb-radius-lg);
@@ -1075,8 +1096,8 @@ body.three-mode-active #agent-bubbles-container {
     height: auto;
     min-height: var(--cb-space-6);
     padding-block: var(--cb-space-1);
-    font-size: var(--cb-text-md);
-    font-weight: var(--cb-weight-bold);
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-semibold);
     line-height: var(--cb-leading);
     white-space: normal;
 }
@@ -1141,7 +1162,7 @@ body.three-mode-active #agent-bubbles-container {
 /* The expanded card already names its item in the hosted details or agreement summary. */
 #click-stack .click-stack__section.is-expanded[data-kind="designs"] .click-stack__row-detail,
 .click-stack__section.is-expanded[data-kind="plans"] .click-stack__row-detail,
-.click-stack__section.is-expanded[data-kind="agreements"] .click-stack__row-detail,
+.click-stack__section.is-expanded[data-kind="agreements"]:has(.click-stack__selector) .click-stack__row-detail,
 .click-stack__section.is-expanded[data-kind="built"] .click-stack__row-detail {
     display: none;
 }
@@ -1160,17 +1181,10 @@ body.three-mode-active #agent-bubbles-container {
     flex: 0 1 auto;
     min-width: 0;
     max-width: 100%;
-    min-height: 36px;
-    padding: var(--cb-space-1) var(--cb-space-2);
-    border: 1px solid var(--cb-line-strong);
-    border-radius: var(--cb-radius-md);
-    background: var(--cb-surface);
-    color: var(--cb-text);
-    font-size: var(--cb-text-sm);
     white-space: normal;
     overflow-wrap: anywhere;
     text-align: left;
-    cursor: pointer;
+    justify-content: flex-start;
 }
 
 .click-stack__selector-wrap {
@@ -1234,23 +1248,13 @@ body.three-mode-active #agent-bubbles-container {
     display: none;
 }
 
-.click-stack__chip[aria-pressed="true"] {
-    border-color: var(--cb-primary);
-    background: var(--cb-primary-soft);
-    color: var(--cb-primary-soft-ink);
-}
-
-.click-stack__chip:focus-visible {
-    outline: 2px solid var(--cb-focus);
-    outline-offset: 1px;
-}
-
 .click-stack__body {
     display: flex;
     flex-direction: column;
     min-height: 0;
     flex: 0 1 auto;
-    padding: 0 var(--cb-space-3) var(--cb-space-3);
+    gap: var(--cb-space-3);
+    padding: var(--cb-space-3);
     overflow-y: auto;
     overscroll-behavior: contain;
 }
@@ -1264,19 +1268,19 @@ body.three-mode-active #agent-bubbles-container {
 .click-stack__summary {
     display: flex;
     flex-direction: column;
-    gap: 2px;
-    margin-bottom: var(--cb-space-2);
+    gap: var(--cb-space-1);
+    margin: 0;
 }
 
 .click-stack__facts {
-    margin: 0 0 var(--cb-space-2);
-    font-size: var(--cb-text-sm);
+    margin: 0;
+    font-size: var(--cb-text-base);
     color: var(--cb-text-muted);
 }
 
 .click-stack__actions {
     flex-wrap: wrap;
-    margin-bottom: var(--cb-space-2);
+    margin: 0;
 }
 
 /* Saved-plan contents share one inset and row rhythm in both map stacks. */
@@ -1298,14 +1302,6 @@ body.three-mode-active #agent-bubbles-container {
     min-height: var(--cb-control-height);
     white-space: normal;
 }
-.click-stack__plan .click-stack__choices {
-    gap: var(--cb-space-2);
-    box-sizing: border-box;
-    padding: var(--cb-space-3);
-    border: 1px solid var(--cb-line);
-    border-radius: var(--cb-radius-md);
-    background: var(--cb-surface-2);
-}
 .click-stack__plan .click-stack__strip {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
@@ -1317,26 +1313,11 @@ body.three-mode-active #agent-bubbles-container {
     width: 100%;
     box-sizing: border-box;
     padding: var(--cb-space-2) var(--cb-space-3);
-    font-size: var(--cb-text-md);
     line-height: var(--cb-leading);
-    text-decoration: none;
 }
 .click-stack__plan .click-stack__choices .click-stack__facts { margin: 0; }
 
-.click-stack__coords {
-    pointer-events: auto;
-    text-shadow: var(--cb-text-halo);
-    align-self: flex-start;
-    margin-top: var(--cb-space-2);
-    padding: 2px var(--cb-space-2);
-    border: 0;
-    background: transparent;
-    color: var(--cb-text-muted);
-    font: inherit;
-    font-size: var(--cb-text-xs);
-    font-variant-numeric: tabular-nums;
-    cursor: copy;
-}
+
 
 /* A panel hosted in an expanded section is part of the card: no docking, size, frame or sheet of
    its own. Two ids each, so these win over each panel's own id rules. */
@@ -1367,6 +1348,25 @@ body.three-mode-active #agent-bubbles-container {
 
 #click-stack .is-hosted .mobile-dock-sheet-handle {
     display: none;
+}
+
+/* The section body supplies the outer inset; hosted readers supply only their internal rhythm. */
+#click-stack #parcel-info-panel.is-hosted .panel-body,
+#click-stack #proposal-details-panel.is-hosted .panel-body {
+    padding: var(--cb-space-3) 0;
+    font-size: var(--cb-text-base);
+}
+
+#click-stack #proposal-details-panel.is-hosted .panel-header {
+    padding: 0 0 var(--cb-space-3);
+}
+
+#click-stack #proposal-details-panel.is-hosted .panel-footer {
+    padding: var(--cb-space-3) 0 0;
+}
+
+#click-stack #parcel-info-panel.is-hosted .parcel-tabs {
+    margin-inline: 0;
 }
 
 /* In the stack the section row folds the parcel and Escape closes the spot, and the parcel's
@@ -1712,7 +1712,7 @@ body.three-mode-active #agent-bubbles-container {
     }
 }
 
-.click-stack__heading { display: flex; align-items: center; }
+.click-stack__heading { display: flex; align-items: center; margin: 0; font: inherit; }
 .click-stack__heading > .click-stack__row { flex: 1; min-width: 0; width: auto; }
 
 /* Agreement terms are context for the selected plan and share the stack's section rhythm. */

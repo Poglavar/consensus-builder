@@ -209,11 +209,12 @@
 .agreement-panel-heading {
     margin: 0;
     font-size: var(--cb-text-base);
+    font-weight: var(--cb-weight-semibold);
 }
 
 .agreement-panel-rule {
     margin: 0;
-    font-size: var(--cb-text-md);
+    font-size: var(--cb-text-base);
     line-height: var(--cb-leading);
 }
 
@@ -446,3 +447,33 @@
 .community-setup pre { max-width: 100%; overflow-x: auto; font-size: var(--cb-text-xs); }
 .community-history summary,
 .community-setup summary { cursor: pointer; font-weight: var(--cb-weight-medium); }
+
+/* Agreement properties have one home: the expanded, scrolling agreement stack section. */
+#click-stack #agreement-panel.info-panel.right-dock-panel.is-hosted,
+#three-click-stack #agreement-panel.info-panel.right-dock-panel.is-hosted {
+    position: static;
+    inset: auto;
+    display: block;
+    width: 100%;
+    max-width: none;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    overflow: visible;
+}
+#click-stack #agreement-panel.is-hosted > .panel-header,
+#three-click-stack #agreement-panel.is-hosted > .panel-header { display: none; }
+#click-stack #agreement-panel.is-hosted > .panel-body,
+#three-click-stack #agreement-panel.is-hosted > .panel-body {
+    padding: 0;
+    max-height: none;
+    overflow: visible;
+}

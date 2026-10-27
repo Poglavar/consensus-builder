@@ -118,13 +118,14 @@
                 'css/tokens.css',
                 'css/primitives.css?v=20261027-authoring-icons',
                 'css/workspace.css',
+                'css/community-voting.css',
                 'css/base.css',
                 'css/layout.css',
-                'css/map.css?v=20261027-plan-stack',
-                'css/panels.css?v=20261027-editor-rows',
+                'css/map.css?v=20261027-stack-semantics',
+                'css/panels.css?v=20261027-fixed-navigation',
                 'css/modals.css?v=20261027-agreement-focus',
                 'css/parcel-sources.css',
-                'css/proposals.css?v=20261019-offer-funding',
+                'css/proposals.css?v=20261027-stack-semantics',
                 'css/grain-score.css',
                 'css/proposal-editor.css?v=20261027-experimental',
                 'css/structure-geometry-editor.css',
@@ -137,10 +138,10 @@
                 'css/game.css',
                 'css/actor-explorer.css',
                 'css/road-analysis.css',
-                'css/utilities.css?v=20261027-style',
+                'css/utilities.css?v=20261027-fixed-navigation',
                 'css/photoreal-mode.css',
                 'css/ai-scene.css',
-                'css/map-shell.css',
+                'css/map-shell.css?v=20261027-fixed-navigation',
                 'css/activity-feed.css?v=20261027-style',
                 'css/area-monitor-list.css',
                 'css/map-credits.css',
@@ -154,15 +155,16 @@
                 'css/urban-blocks.css',
                 'css/urban-blocks-playground.css',
                 'css/schelling-plan.css',
-                'css/proposal-details.css?v=20261020-source-state',
+                'css/proposal-details.css?v=20261027-stack-semantics',
                 'css/plan-dialog.css',
+                'css/lists.css',
                 'css/proposal-approval.css?v=20261020-approval-rules',
-                'css/agreement.css?v=20261025-community',
+                'css/agreement.css?v=20261027-stack-properties',
                 'css/agreement-dialog.css?v=20261027-agreement-focus',
                 'css/mobile-sheets.css?v=20261027-style',
-                'css/planning-views.css?v=20261021-envelopes',
+                'css/planning-views.css?v=20261027-stack-semantics',
                 'css/three-sun.css',
-                'css/three-click-stack.css?v=20261027-style'
+                'css/three-click-stack.css?v=20261027-stack-semantics'
             ];
             var cacheBuster = (typeof window !== 'undefined' && typeof window.getCacheBustToken === 'function')
                 ? window.getCacheBustToken()
@@ -493,9 +495,9 @@
         <div id="map-shell-bottom-right" class="map-shell-cluster map-shell-cluster--bottom-right" data-map-modes="2d" data-sheet-anchor>
             <button type="button" id="proposals-button" class="map-shell-button map-shell-button--labelled"
                 data-sheet-target="proposals-sheet" aria-controls="proposals-sheet" aria-expanded="false"
-                title="Designs" data-i18n-key="mapShell.proposals" data-i18n-attr="title">
+                title="Lists" data-i18n-key="lists.title" data-i18n-attr="title">
                 <i class="fas fa-pencil-ruler" aria-hidden="true"></i>
-                <span class="map-shell-button-label" data-i18n-key="mapShell.proposals">Designs</span>
+                <span class="map-shell-button-label" data-i18n-key="lists.title">Lists</span>
                 <span id="proposals-button-count" class="map-shell-badge" aria-hidden="true">0</span>
             </button>
             <button type="button" id="activity-button" class="map-shell-button map-shell-button--labelled"
@@ -1014,58 +1016,30 @@
             <div class="map-sheet-header">
                 <h2 id="proposals-sheet-title" class="map-sheet-title">
                     <span class="accordion-title-text" data-section-title="proposals"
-                        data-i18n-key="planDialog.plan">Plan</span>
+                        data-i18n-key="lists.title">Lists</span>
                 </h2>
                 <button type="button" class="map-sheet-close close-circle-btn close-circle-btn--lg" data-sheet-close
                     aria-label="Close" title="Close" data-i18n-key="common.close" data-i18n-attr="aria-label,title">×</button>
             </div>
-            <div class="designs-panel-tabs cb-segmented" role="tablist" aria-label="Designs" data-i18n-key="mapShell.proposals" data-i18n-attr="aria-label">
-                <button type="button" id="designs-browse-tab" class="cb-segmented__option" role="tab" aria-selected="true" aria-controls="designs-browse" onclick="openDesignsTab('browse')">
-                    <span data-i18n-key="mapShell.proposals">Designs</span>
-                </button>
-                <button type="button" id="shareAppliedProposalsButton" class="cb-segmented__option" role="tab" tabindex="-1" aria-selected="false" aria-controls="designs-plans" onclick="openDesignsTab('plans')">
-                    <span data-i18n-key="planDialog.savedPlans">Saved plans</span>
-                </button>
+            <div class="designs-panel-tabs cb-segmented" role="tablist" aria-label="Lists" data-i18n-key="lists.title" data-i18n-attr="aria-label">
+                <button type="button" id="designs-browse-tab" class="cb-segmented__option" role="tab" aria-selected="true" aria-controls="designs-browse" data-list-tab="designs"><span data-i18n-key="mapShell.proposals">Designs</span></button>
+                <button type="button" id="shareAppliedProposalsButton" class="cb-segmented__option" role="tab" tabindex="-1" aria-selected="false" aria-controls="designs-plans" data-list-tab="plans"><span data-i18n-key="lists.plans">Plans</span></button>
+                <button type="button" id="designs-agreements-tab" class="cb-segmented__option" role="tab" tabindex="-1" aria-selected="false" aria-controls="designs-agreements" data-list-tab="agreements"><span data-i18n-key="sidebar.proposals.agreementsButton">Agreements</span></button>
             </div>
-            <div class="map-sheet-body sheet-section-body">
+            <div class="map-sheet-body sheet-section-body lists-body">
+                <div id="lists-controls" class="lists-controls"></div>
+                <div id="lists-actions" class="cb-actions lists-actions"></div>
+                <p id="lists-status" class="sheet-note" role="status"></p>
                 <div id="designs-browse" role="tabpanel" aria-labelledby="designs-browse-tab">
-                <div id="proposal-list-host"></div>
-                <div id="plan-file-actions"></div>
-                <nav id="proposal-list-actions" aria-label="Design actions" data-i18n-key="mapShell.designActions" data-i18n-attr="aria-label">
-                <div class="control-group">
-                    <div class="btn-group">
-                        <button id="showProposalsButton" hidden class="btn btn-block btn-primary" onclick="showAllProposalsModal()"
-                            data-i18n-key="sidebar.proposals.listButton" data-i18n-params='{"count":0}'>Designs List (0)</button>
-                        <button id="planStatsButton" class="btn btn-block plan-stats-button" disabled aria-disabled="true">
-                            <i class="fas fa-chart-pie" aria-hidden="true"></i>
-                            <span class="plan-stats-label"
-                                data-i18n-key="sidebar.proposals.planStats.buttonLabel">Applied design stats</span>
-                            <span class="plan-stats-spinner" aria-live="polite"
-                                style="display: none; gap: 6px; align-items: center;">
-                                <i class="fas fa-spinner fa-spin"></i>
-                                <span class="plan-stats-spinner-text"
-                                    data-i18n-key="sidebar.proposals.planStats.calculating">Calculating...</span>
-                            </span>
-                        </button>
-                        <button id="roosterScoreButton" class="btn grain-score-button" type="button" disabled
-                            title="Urban rooster"
-                            data-i18n-key="sidebar.proposals.grainScore.buttonLabel"
-                            data-i18n-attr="title,aria-label" aria-label="Urban rooster">
-                            <img class="grain-score-button__portrait" src="/images/grain-rooster-critic.png"
-                                width="44" height="44" alt="">
-                            <span class="grain-score-button__copy">
-                                <strong data-i18n-key="sidebar.proposals.grainScore.buttonLabel">Urban rooster</strong>
-                                <small class="grain-score-button__hint"
-                                    data-i18n-key="sidebar.proposals.grainScore.buttonHint">Let him inspect every resulting parcel</small>
-                                <small class="grain-score-button__empty"
-                                    data-i18n-key="sidebar.proposals.grainScore.buttonEmpty">Apply a design first</small>
-                            </span>
-                        </button>
-                    </div>
+                <div id="proposal-list-host" class="lists-rows"></div>
+                <button id="showProposalsButton" hidden class="btn btn-block btn-primary" onclick="showAllProposalsModal()"
+                    data-i18n-key="sidebar.proposals.listButton" data-i18n-params='{"count":0}'>Designs List (0)</button>
                 </div>
-            </nav>
+                <div id="designs-plans" role="tabpanel" aria-labelledby="shareAppliedProposalsButton" hidden>
+                    <div id="plan-file-actions"></div>
+                    <div id="plan-list-host" class="lists-rows"></div>
                 </div>
-                <div id="designs-plans" role="tabpanel" aria-labelledby="shareAppliedProposalsButton" hidden></div>
+                <div id="designs-agreements" class="lists-rows" role="tabpanel" aria-labelledby="designs-agreements-tab" hidden></div>
             </div>
         </section>
 
@@ -1275,14 +1249,6 @@
                                     data-i18n-key="sidebar.roads.clearTooltip" data-i18n-attr="title">
                                     <i class="fas fa-trash" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.clearButton">Clear Roads from Local Storage</span>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="control-group" data-section="proposals">
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-danger debug-only-control" onclick="clearLocalProposalData()">
-                                    <i class="fas fa-trash" aria-hidden="true"></i>
-                                    <span data-i18n-key="sidebar.proposals.clearButton">Clear Designs From Local Storage</span>
                                 </button>
                             </div>
                         </div>
@@ -1812,7 +1778,7 @@
     <script>
         window.__CB_WORKSPACE_REQUIRED__ = true;
         window.writeVersionedLocalScripts([
-            'js/optional-tools-loader.js?v=20261027-plan-stack',
+            'js/optional-tools-loader.js?v=20261027-stack-properties',
             'js/shared-utils.js',
             'js/ui/banner-stack.js',
             // bundle:start foundation
@@ -1843,7 +1809,8 @@
             'js/named-plans.js?v=20261027-agreement-tabs',
             'js/plan-composition.js',
             'js/plan-workspace.js',
-            'js/plan-dialog.js',
+            'js/plan-dialog.js?v=20261027-create-plan-stack',
+            'js/lists-panel.js',
             'js/wipe-local-data.js',
             'js/world/world-entry-model.js?v=20261020-point-destinations',
             'data/boot-coverage.js',
@@ -1967,13 +1934,14 @@
             'js/ui/busy-control.js',
             'js/ui/commands.js',
             'js/ui/map-shell.js',
+            'js/ui/dock-clearance.js',
             'js/planning/scene.js?v=20261021-envelopes',
             'js/planning/envelopes.js?v=20261021-envelopes',
             'js/planning/representations.js?v=20261020-qualified-inspection',
             'js/planning/source-proposal.js',
             'js/planning/feed.js',
             'js/planning/parcel-assessment.js?v=20261021-permitted-envelopes',
-            'js/planning/views.js?v=20261027-no-hover',
+            'js/planning/views.js?v=20261027-stack-semantics',
             'js/approval-link.js',
             'js/draft-link.js',
             'js/draft-preview.js',
@@ -2013,9 +1981,9 @@
             'js/parcels/ui/box-select.js',
             'js/parcels/share-format.js',
             'js/parcels/parcel-set-proposals.js',
-            'js/parcels/ui/parcel-panel.js?v=20261019-plot-provenance',
+            'js/parcels/ui/parcel-panel.js?v=20261027-stack-semantics',
             'js/parcels/ui/locate.js',
-            'js/parcels/ui/road.js',
+            'js/parcels/ui/road.js?v=20261027-stack-semantics',
             'js/parcels/ui/labels.js',
             'js/parcels/ui/owner-counts.js',
             'js/parcels/ui/proposal-counts.js',
@@ -2049,9 +2017,9 @@
             'js/parcels/blocks.js',
             'js/parcels/blockchain.js',
             'js/browser-ownership-source.js',
-            'js/parcels/ownership-ui.js',
+            'js/parcels/ownership-ui.js?v=20261027-stack-semantics',
             'js/parcels/ui/visibility.js',
-            'js/parcels/ui/claim.js',
+            'js/parcels/ui/claim.js?v=20261027-stack-semantics',
             'js/parcels/index.js',
             'js/parcels/route.js',
             'js/proposals/selection.js',
@@ -2152,15 +2120,15 @@
             'js/proposals/execution.js?v=20261020-consent-evidence',
             'js/proposals/layer-render.js',
             'js/proposals/drill-ui.js',
-            'js/click-stack/click-stack-model.js',
-            'js/click-stack/click-stack-relations.js',
-            'js/click-stack/click-stack-hits.js',
-            'js/click-stack/click-stack-panel.js',
+            'js/click-stack/click-stack-model.js?v=20261027-stack-properties',
+            'js/click-stack/click-stack-relations.js?v=20261027-stack-semantics',
+            'js/click-stack/click-stack-hits.js?v=20261027-member-ground',
+            'js/click-stack/click-stack-panel.js?v=20261027-member-ground',
             'js/proposals/market-view.js?v=20261019-market-evidence',
             'js/proposals/parcel-set-relations.js?v=20261020-reference-relations',
             'js/proposals/approval-panel.js?v=20261027-experimental',
             'js/proposals/parcel-history-card.js?v=20261020-anchor-observation',
-            'js/proposals/details-panel.js?v=20261027-agreement-tabs',
+            'js/proposals/details-panel.js?v=20261027-stack-semantics',
             'js/proposals/parcel-compare.js?v=20261020-comparison-status',
             'js/proposals/parcel-compare-ui.js?v=20261020-comparison-status',
             'js/proposals/create.js?v=20261020-mint-identifiers',
@@ -2179,16 +2147,19 @@
             'js/design-record.js',
             'js/plan-file.js',
             'js/plan-file-ui.js?v=20261027-agreement-tabs',
+            'js/community/voting.js',
+            'js/community/voting-roster.js',
+            'js/community/voting-ui.js',
             'js/community/did-web.js',
             'js/community/result.js',
             'js/community/consultation.js',
             'js/agreement-record.js?v=20261027-proposer-allocation',
             'js/agreement-ground.js?v=20261027-agreement-tabs',
             'js/agreement-store.js',
-            'js/agreement-dialog.js?v=20261027-plan-context',
-            'js/agreement-panel.js?v=20261027-proposer-allocation',
+            'js/agreement-dialog.js?v=20261027-stack-properties',
+            'js/agreement-panel.js?v=20261027-stack-properties',
             'js/agreement-list.js?v=20261027-agreement-tabs',
-            'js/agreement-sync.js?v=20261027-agreement-tabs',
+            'js/agreement-sync.js?v=20261027-stack-properties',
             'js/building-floor-plans.js',
             'js/default-floor-plan-rooms.js',
             'js/default-floor-plans.js',
@@ -2204,6 +2175,8 @@
             'js/proposals/site-stats.js',
             'js/proposals/maintenance.js',
             'js/proposals/demolition-prefetch.js',
+            'js/agreement-headless.js',
+            'js/plan-analysis.js',
             'js/proposals/grain-score.js',
             'js/proposals/plan-stats.js',
             'js/parcel-coverage-debug.js',
@@ -2410,7 +2383,7 @@
     <script>
         window.writeVersionedLocalScripts([
             'js/map-mode-transition.js',
-            'js/map-mode-loader.js'
+            'js/map-mode-loader.js?v=20261027-stack-properties'
         ]);
     </script>
     <!-- <script src="js/memory-monitor.js"></script> -->

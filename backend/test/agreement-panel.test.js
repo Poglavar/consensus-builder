@@ -228,7 +228,7 @@ describe('panel HTML', () => {
         expect(panel.actionsHtml({ canCompare: false })).toMatch(/data-agreement-action="compare" aria-pressed="false" disabled/);
         expect(panel.actionsHtml({ canCompare: true, comparing: true })).toMatch(/data-agreement-action="compare" aria-pressed="true">/);
         expect(panel.actionsHtml()).toContain('data-agreement-action="edit"');
-        expect(panel.actionsHtml()).toMatch(/class="btn btn-quiet" data-agreement-action="delete"/);
+        expect(panel.actionsHtml()).not.toContain('data-agreement-action="delete"');
     });
 
     it('offers Propose only for a current agreement not yet proposed, and no Edit once proposed', () => {
@@ -243,7 +243,7 @@ describe('panel HTML', () => {
         expect(proposed).not.toContain('data-agreement-action="propose"');
         expect(proposed).not.toContain('data-agreement-action="edit"');
         expect(proposed).toMatch(/class="btn btn-primary" data-agreement-action="compare"/);
-        expect(proposed).toContain('data-agreement-action="delete"');
+        expect(proposed).not.toContain('data-agreement-action="delete"');
     });
 
     it('renders a secondary-tab agreement as content only, without edit, delete, chain, vote or design actions', () => {
@@ -302,7 +302,7 @@ describe('panel HTML', () => {
             rule: { electorate: 'owners', binding: false, approvalConfig: null, lens: [] } }));
         const browser = panel.browserPanel(win);
 
-        await browser.openReadOnly(viewRecord);
+        await browser.mount({ replaceChildren: vi.fn(), isConnected: true }, { agreement: viewRecord, readOnly: true });
         await Promise.resolve();
         await Promise.resolve();
 
@@ -312,7 +312,7 @@ describe('panel HTML', () => {
         expect(title.textContent).toBe('Read-only view');
         expect(panelBody.innerHTML).toContain('data-agreement-read-only');
         expect(panelBody.innerHTML).toContain('data-agreement-read-only-status');
-        expect(panelBody.innerHTML).toContain(`/plans/${viewRecord.plan.cid}`);
+        expect(panelBody.innerHTML).toContain('data-agreement-action="plan"');
         expect(panelBody.innerHTML).toContain('Designs in this plan');
         expect(panelBody.innerHTML).not.toContain('Reading the land under the designs');
         expect(panelBody.innerHTML).not.toContain('data-agreement-action="edit"');

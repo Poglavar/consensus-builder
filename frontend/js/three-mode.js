@@ -920,22 +920,27 @@
         const columns = ['built', 'planned', 'proposed'];
         const off = column => (m[column] ? '' : ' class="is-unavailable"');
         const cells = (render, column) => (m[column] ? render(m[column]) : '—');
-        const row = (label, render) => `<tr><td>${label}</td>${columns.map(c => `<td${off(c)}>${cells(render, c)}</td>`).join('')}</tr>`;
-        const moneyRow = (label, key, hint = '') => `<tr><td${hint ? ` title="${escapeHtml(hint)}"` : ''}>${label}</td>${columns.map(c => `<td data-cell="${key}:${c}"${off(c)}>—</td>`).join('')}</tr>`;
-        const slider = (role, labelRole, price) => `
-            <label class="parcel-panel-slider-label" data-role="${labelRole}"></label>
-            <input type="range" class="parcel-panel-price-slider" data-role="${role}"
+        const row = (label, render) => `<tr><th scope="row">${label}</th>${columns.map(c => `<td${off(c)}>${cells(render, c)}</td>`).join('')}</tr>`;
+        const moneyRow = (label, key, hint = '') => `<tr><th scope="row"${hint ? ` title="${escapeHtml(hint)}"` : ''}>${label}</th>${columns.map(c => `<td data-cell="${key}:${c}"${off(c)}>—</td>`).join('')}</tr>`;
+        const slider = (role, labelRole, price) => {
+            const id = `parcel-panel-${role}`;
+            return `
+            <label for="${id}" class="parcel-panel-slider-label" data-role="${labelRole}"></label>
+            <input id="${id}" type="range" class="parcel-panel-price-slider" data-role="${role}"
                 min="${price.min}" max="${price.max}" step="${price.step}" value="${price.perSqm ?? price.min}"${price.perSqm === null ? ' disabled' : ''}>`;
+        };
         return `
             <table class="parcel-panel-table">
-                <tr><th></th>${columns.map(c => `<th${off(c)}>${L[c]}</th>`).join('')}</tr>
-                ${row(L.volume, v => `${formatInt(v.volume)} m³`)}
-                ${row(L.floorArea, v => CbFormat.formatArea(Number(v.floorArea) || 0))}
-                ${moneyRow(L.value, 'value')}
-                ${moneyRow(L.constructionCost, 'constructionCost')}
-                ${moneyRow(L.profit, 'profit', L.profitNote)}
+                <thead><tr><th scope="col"></th>${columns.map(c => `<th scope="col"${off(c)}>${L[c]}</th>`).join('')}</tr></thead>
+                <tbody>
+                    ${row(L.volume, v => `${formatInt(v.volume)} m³`)}
+                    ${row(L.floorArea, v => CbFormat.formatArea(Number(v.floorArea) || 0))}
+                    ${moneyRow(L.value, 'value')}
+                    ${moneyRow(L.constructionCost, 'constructionCost')}
+                    ${moneyRow(L.profit, 'profit', L.profitNote)}
+                </tbody>
             </table>
-            <div class="parcel-panel-note">${L.floorNote} · ${escapeHtml(threeI18n('threeMode.parcelPanel.amountsIn', 'amounts in {{currency}}', { currency: prices.currency }))}</div>
+            <p class="parcel-panel-note">${L.floorNote} · ${escapeHtml(threeI18n('threeMode.parcelPanel.amountsIn', 'amounts in {{currency}}', { currency: prices.currency }))}</p>
             ${slider('sale-slider', 'sale-label', prices.sale)}
             ${slider('construction-slider', 'construction-label', prices.construction)}`;
     }
@@ -970,10 +975,10 @@
         const L = panelLabels();
         const suggestedText = suggestedParcelPanelText(parcelId);
         const suggestedRow = suggestedText ? `
-            <div class="parcel-panel-subnote parcel-panel-suggested">${escapeHtml(threeI18n('threeMode.parcelPanel.suggestedLayout', 'Suggested layout'))}: ${escapeHtml(suggestedText)}</div>` : '';
+            <p class="parcel-panel-subnote parcel-panel-suggested">${escapeHtml(threeI18n('threeMode.parcelPanel.suggestedLayout', 'Suggested layout'))}: ${escapeHtml(suggestedText)}</p>` : '';
         // The full cadastral id: the stack's row shows the short number.
         panel.innerHTML = `
-            <div class="parcel-panel-subnote parcel-id-text">${escapeHtml(String(parcelId))}</div>
+            <p class="parcel-panel-subnote parcel-id-text">${escapeHtml(String(parcelId))}</p>
             ${suggestedRow}
             ${metricsTableHtml(L, {
                 built: { volume: m.builtVolume, floorArea: m.builtFloorArea },
@@ -1037,7 +1042,7 @@
         const suggestedLine = suggestedProposalPanelText(proposal);
         if (suggestedLine) lines.push(suggestedLine);
         panel.innerHTML = `
-            ${lines.map(line => `<div class="parcel-panel-subnote">${escapeHtml(line)}</div>`).join('')}
+            ${lines.map(line => `<p class="parcel-panel-subnote">${escapeHtml(line)}</p>`).join('')}
             ${metricsTableHtml(L, {
                 built: { volume: summary.builtVolume, floorArea: summary.builtFloorArea },
                 planned,
@@ -1492,7 +1497,7 @@
                 // inspector floating beside this scene's figures.
                 const actions = document.createElement('button');
                 actions.type = 'button';
-                actions.className = 'btn btn-sm';
+                actions.className = 'btn';
                 actions.textContent = threeI18n('planningViews.proposalActions', 'Design actions');
                 actions.addEventListener('click', async () => {
                     await window.requestMapMode('2d');
@@ -1627,12 +1632,12 @@
         return true;
     }
 
-    function showThreeModePlan(instance) {
+    function showThreeModePlan(instance, { agreement = null } = {}) {
         if (!isActive) return false;
         window.AgreementPanel?.close();
-        window.ThreeClickStack.show({ plans: [instance], planContext: instance, designs: instance.members },
-            { focus: 'plans', selected: { plans: instance.id }, container: document.getElementById('map-container') || document.body }, clickStackAdapter);
-        return true;
+        window.ThreeClickStack.show({ plans: [instance], planContext: instance, designs: instance.members, agreements: agreement ? [agreement] : [], agreementContext: agreement },
+            { focus: agreement ? 'agreements' : 'plans', selected: { plans: instance.id, ...(agreement ? { agreements: agreement.id } : {}) }, container: document.getElementById('map-container') || document.body }, clickStackAdapter);
+        return agreement ? window.ThreeClickStack.ready() : true;
     }
 
     function showThreeModeParcel(parcelId) {

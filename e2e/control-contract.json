@@ -3,99 +3,6 @@
   "allowedSkips": [],
   "controls": [
     {
-      "id": "control-2342074e0cb4ee-1",
-      "source": "js/plan-dialog.js",
-      "markup": "document.createElement(tag)",
-      "interaction": "auto",
-      "controlType": "dynamic",
-      "exhaustiveVariants": true,
-      "variants": [
-        {
-          "name": "Create a saved plan",
-          "label": "Create plan",
-          "interaction": "click"
-        },
-        {
-          "name": "Save a new plan revision",
-          "label": "Save new revision",
-          "interaction": "click"
-        },
-        {
-          "name": "Cancel plan editing",
-          "label": "Cancel",
-          "interaction": "click"
-        },
-        {
-          "name": "Open a saved plan",
-          "label": "Open plan",
-          "interaction": "click"
-        },
-        {
-          "name": "Share a saved plan",
-          "label": "Share plan",
-          "interaction": "click"
-        },
-        {
-          "name": "Edit a saved plan",
-          "label": "Edit plan",
-          "interaction": "click"
-        },
-        {
-          "name": "Create agreement from saved plan",
-          "label": "Create agreement",
-          "interaction": "click"
-        },
-        {
-          "name": "Publish a plan and copy its link",
-          "label": "Publish and copy link",
-          "interaction": "click"
-        },
-        {
-          "name": "Copy a published plan link",
-          "label": "Copy link",
-          "interaction": "click"
-        },
-        {
-          "name": "Enter a plan name",
-          "label": "Plan name",
-          "interaction": "change"
-        },
-        {
-          "name": "Search plan designs",
-          "label": "Search designs",
-          "interaction": "change"
-        },
-        {
-          "name": "Select plan members",
-          "attrs": {
-            "type": "checkbox"
-          },
-          "interaction": "change"
-        },
-        {
-          "name": "Choose saved camera",
-          "attrs": {
-            "data-plan-view": "camera"
-          },
-          "interaction": "change"
-        },
-        {
-          "name": "Choose saved rotation",
-          "attrs": {
-            "data-plan-view": "rotate"
-          },
-          "interaction": "change"
-        }
-      ]
-    },
-    {
-      "id": "control-156bc1c5231592-1",
-      "source": "js/workspace-screen.js",
-      "markup": "doc.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-7c855b74f4e1c7-1",
       "source": "deck.html",
       "markup": "<button type=\"button\" id=\"deck-prev\" aria-label=\"Previous slide\">",
@@ -159,9 +66,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-373d0b5dbd2de8-1",
+      "id": "control-11c5bd5304a944-1",
       "source": "feedback.html",
-      "markup": "<select id=\"feedback-language\" class=\"cb-page-header__lang\" aria-label=\"Language\" data-i18n-key=\"language.switcher.label\" data-i18n-attr=\"aria-label\">"
+      "markup": "<select id=\"feedback-language\" data-i18n-locale-select=\"locale\" class=\"cb-page-header__lang\" aria-label=\"Language\" data-i18n-key=\"language.switcher.label\" data-i18n-attr=\"aria-label\">"
     },
     {
       "id": "control-bd8175d3b11ddd-1",
@@ -919,6 +826,13 @@
       "controlType": "button"
     },
     {
+      "id": "control-93a59c64772c39-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"proposals-button\" class=\"map-shell-button map-shell-button--labelled\" data-sheet-target=\"proposals-sheet\" aria-controls=\"proposals-sheet\" aria-expanded=\"false\" title=\"Lists\" data-i18n-key=\"lists.title\" data-i18n-attr=\"title\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-cbcda6bb9a8258-1",
       "source": "index.html",
       "markup": "<button type=\"button\" id=\"activity-button\" class=\"map-shell-button map-shell-button--labelled\" data-sheet-target=\"activity-sheet\" aria-controls=\"activity-sheet\" aria-expanded=\"false\" title=\"Activity\" data-i18n-key=\"mapShell.activity\" data-i18n-attr=\"title\">",
@@ -1394,28 +1308,23 @@
       "markup": "<input id=\"photo-parcels-visible\" type=\"checkbox\" checked>"
     },
     {
-      "id": "control-5a1c5fdcf6d836-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"photo-parcel-close\" class=\"close-circle-btn\" aria-label=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label\">",
-      "exempt": "Photo parcel heading delegates closing to the 3D click stack.",
-      "guards": [
-        {
-          "source": "css/photoreal-mode.css",
-          "includes": ".photoreal-parcel-card-heading { display: none; }"
-        },
-        {
-          "source": "js/photoreal-parcels.js",
-          "includes": "root.ThreeClickStack.show({ parcels:"
-        }
-      ],
-      "mustRemainInactive": true
-    },
-    {
       "id": "control-dc7af30c67cb8d-3",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
-      "interaction": "click",
-      "controlType": "button"
+      "exempt": "Photo parcel heading delegates closing to the 3D click stack.",
+      "guards": [
+        {
+          "source": "index.html",
+          "pattern": "<button\\s+type=\"button\"\\s+class=\"map-sheet-close\\s+close-circle-btn\\s+close-circle-btn--lg\"\\s+data-sheet-close\\s+aria-label=\"Close\"\\s+title=\"Close\"\\s+data-i18n-key=\"common\\.close\"\\s+data-i18n-attr=\"aria-label,title\">",
+          "occurrences": 8
+        },
+        {
+          "source": "index.html",
+          "pattern": "<button\\s+type=\"button\"\\s+class=\"map-sheet-close\\s+close-circle-btn\\s+close-circle-btn--lg\"\\s+data-sheet-close\\s+aria-label=\"Close\"\\s+title=\"Close\"\\s+data-i18n-key=\"common\\.close\"\\s+data-i18n-attr=\"aria-label,title\">",
+          "occurrences": 8
+        }
+      ],
+      "mustRemainInactive": true
     },
     {
       "id": "control-ad81ecd7c9543e-1",
@@ -1478,6 +1387,27 @@
       "controlType": "button"
     },
     {
+      "id": "control-e1326c7eb592fe-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"designs-browse-tab\" class=\"cb-segmented__option\" role=\"tab\" aria-selected=\"true\" aria-controls=\"designs-browse\" data-list-tab=\"designs\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-1a2e63d515a933-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"shareAppliedProposalsButton\" class=\"cb-segmented__option\" role=\"tab\" tabindex=\"-1\" aria-selected=\"false\" aria-controls=\"designs-plans\" data-list-tab=\"plans\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-f10ec25ff421ef-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"designs-agreements-tab\" class=\"cb-segmented__option\" role=\"tab\" tabindex=\"-1\" aria-selected=\"false\" aria-controls=\"designs-agreements\" data-list-tab=\"agreements\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-5594b773f51c35-1",
       "source": "index.html",
       "markup": "<button id=\"showProposalsButton\" hidden class=\"btn btn-block btn-primary\" onclick=\"showAllProposalsModal()\" data-i18n-key=\"sidebar.proposals.listButton\" data-i18n-params='{\"count\":0}'>",
@@ -1508,7 +1438,9 @@
     {
       "id": "control-dc7af30c67cb8d-7",
       "source": "index.html",
-      "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">"
+      "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
+      "interaction": "click",
+      "controlType": "button"
     },
     {
       "id": "control-af7ee31982a05d-1",
@@ -1580,6 +1512,20 @@
       "controlType": "button"
     },
     {
+      "id": "control-fdecca6b7f8e63-1",
+      "source": "index.html",
+      "markup": "<a id=\"source-system-link\" class=\"btn\" href=\"/sources.html\" data-i18n-key=\"sourceSystem.title\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-c05dffa4f74d38-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"economic-source-settings-button\" class=\"btn\" data-i18n-key=\"economicSources.title\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-ccd18ba64c54d8-1",
       "source": "index.html",
       "markup": "<button type=\"button\" id=\"showParcelCoverageButton\" data-map-modes=\"2d\" class=\"btn\" title=\"Visualize which grid cells are cached locally and how they compare to the current view.\" data-i18n-key=\"sidebar.parcels.coverageTooltip\" data-i18n-attr=\"title\">",
@@ -1608,9 +1554,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-a8f53ccbe41ea8-1",
+      "id": "control-6c8aa20fa93de8-1",
       "source": "index.html",
-      "markup": "<button type=\"button\" id=\"wipeLocalDataButton\" class=\"btn btn-danger\" onclick=\"wipeLocalData()\" title=\"Clear all locally stored data (parcels, roads, proposals, settings)\" data-i18n-key=\"sidebar.info.wipeDataTooltip\" data-i18n-attr=\"title\">",
+      "markup": "<button type=\"button\" id=\"wipeLocalDataButton\" class=\"btn btn-danger\" onclick=\"wipeLocalData()\" title=\"Clear all locally stored data (parcels, roads, designs, settings)\" data-i18n-key=\"sidebar.info.wipeDataTooltip\" data-i18n-attr=\"title\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -1721,16 +1667,16 @@
       "controlType": "button"
     },
     {
-      "id": "control-d4561e660a22f2-1",
+      "id": "control-b4e4da87e76fda-1",
       "source": "index.html",
-      "markup": "<button type=\"button\" class=\"cb-tab parcel-tab-btn\" role=\"tab\" aria-selected=\"true\" aria-controls=\"propose-tab\" data-parcel-tab-id=\"propose-tab\" onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'propose-tab')\">",
+      "markup": "<button type=\"button\" class=\"cb-tab parcel-tab-btn parcel-tab-btn--icon\" role=\"tab\" aria-selected=\"true\" aria-controls=\"propose-tab\" data-parcel-tab-id=\"propose-tab\" onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'propose-tab')\" aria-label=\"Design\" title=\"Design\" data-i18n-key=\"proposalDrafts.tabs.design\" data-i18n-attr=\"aria-label,title\">",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-302bcfc52ca851-1",
+      "id": "control-7218dab41820f2-1",
       "source": "index.html",
-      "markup": "<button type=\"button\" class=\"cb-tab parcel-tab-btn\" role=\"tab\" aria-selected=\"false\" aria-controls=\"info-tab\" data-parcel-tab-id=\"info-tab\" onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'info-tab')\">",
+      "markup": "<button type=\"button\" class=\"cb-tab parcel-tab-btn parcel-tab-btn--icon\" role=\"tab\" aria-selected=\"false\" aria-controls=\"info-tab\" data-parcel-tab-id=\"info-tab\" onclick=\"(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'info-tab')\" aria-label=\"Info\" title=\"Info\" data-i18n-key=\"panel.parcel.tabInfo\" data-i18n-attr=\"aria-label,title\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -1805,39 +1751,43 @@
       "controlType": "button"
     },
     {
-      "id": "control-e6e0aa4eed8ddb-1",
+      "id": "control-232552470d38d3-1",
       "source": "index.html",
-      "markup": "<button id=\"proposal-details-minimize\" type=\"button\" class=\"close-circle-btn close-circle-btn--lg proposal-details-toggle\" aria-label=\"Minimize proposal details\" title=\"Minimize proposal details\" aria-controls=\"proposal-details-body\" aria-expanded=\"true\" data-i18n-key=\"sidebar.areaMonitor.minimize\" data-i18n-attr=\"aria-label,title\" onclick=\"toggleProposalDetailsPanelMinimized()\">",
+      "markup": "<button id=\"proposal-details-minimize\" type=\"button\" class=\"close-circle-btn close-circle-btn--lg proposal-details-toggle\" aria-label=\"Minimize design details\" title=\"Minimize design details\" aria-controls=\"proposal-details-body\" aria-expanded=\"true\" data-i18n-key=\"sidebar.areaMonitor.minimize\" data-i18n-attr=\"aria-label,title\" onclick=\"toggleProposalDetailsPanelMinimized()\">",
       "interaction": "click",
       "controlType": "button",
       "exempt": "Hosted design panels use the click-stack section row to fold.",
       "guards": [
         {
-          "source": "css/map.css",
-          "includes": "#click-stack #proposal-details-panel.is-hosted .panel-header__actions,\n#click-stack #planning-inspector.is-hosted .planning-inspector__header .close-circle-btn,\n#three-click-stack #planning-inspector.is-hosted .planning-inspector__header .close-circle-btn {\n    display: none;\n}"
+          "source": "index.html",
+          "pattern": "<button\\s+id=\"proposal-details-minimize\"\\s+type=\"button\"\\s+class=\"close-circle-btn\\s+close-circle-btn--lg\\s+proposal-details-toggle\"\\s+aria-label=\"Minimize\\s+design\\s+details\"\\s+title=\"Minimize\\s+design\\s+details\"\\s+aria-controls=\"proposal-details-body\"\\s+aria-expanded=\"true\"\\s+data-i18n-key=\"sidebar\\.areaMonitor\\.minimize\"\\s+data-i18n-attr=\"aria-label,title\"\\s+onclick=\"toggleProposalDetailsPanelMinimized\\(\\)\">",
+          "occurrences": 1
         },
         {
-          "source": "js/proposals/details-panel.js",
-          "includes": "return window.ClickStack.showDesign(getProposalKey(proposal));"
+          "source": "index.html",
+          "pattern": "<button\\s+id=\"proposal-details-minimize\"\\s+type=\"button\"\\s+class=\"close-circle-btn\\s+close-circle-btn--lg\\s+proposal-details-toggle\"\\s+aria-label=\"Minimize\\s+design\\s+details\"\\s+title=\"Minimize\\s+design\\s+details\"\\s+aria-controls=\"proposal-details-body\"\\s+aria-expanded=\"true\"\\s+data-i18n-key=\"sidebar\\.areaMonitor\\.minimize\"\\s+data-i18n-attr=\"aria-label,title\"\\s+onclick=\"toggleProposalDetailsPanelMinimized\\(\\)\">",
+          "occurrences": 1
         }
       ],
       "mustRemainInactive": true
     },
     {
-      "id": "control-c6128381badaba-1",
+      "id": "control-f6903e5946954d-1",
       "source": "index.html",
-      "markup": "<button id=\"proposal-details-close\" type=\"button\" class=\"close-circle-btn close-circle-btn--lg close-button\" aria-label=\"Close proposal details\" title=\"Close proposal details\" data-i18n-key=\"modal.common.close\" data-i18n-attr=\"aria-label,title\" onclick=\"hideProposalDetailsPanel()\">",
+      "markup": "<button id=\"proposal-details-close\" type=\"button\" class=\"close-circle-btn close-circle-btn--lg close-button\" aria-label=\"Close design details\" title=\"Close design details\" data-i18n-key=\"modal.common.close\" data-i18n-attr=\"aria-label,title\" onclick=\"hideProposalDetailsPanel()\">",
       "interaction": "click",
       "controlType": "button",
       "exempt": "Hosted design panels delegate closing to the click stack and Escape.",
       "guards": [
         {
-          "source": "css/map.css",
-          "includes": "#click-stack #proposal-details-panel.is-hosted .panel-header__actions,\n#click-stack #planning-inspector.is-hosted .planning-inspector__header .close-circle-btn,\n#three-click-stack #planning-inspector.is-hosted .planning-inspector__header .close-circle-btn {\n    display: none;\n}"
+          "source": "index.html",
+          "pattern": "<button\\s+id=\"proposal-details-close\"\\s+type=\"button\"\\s+class=\"close-circle-btn\\s+close-circle-btn--lg\\s+close-button\"\\s+aria-label=\"Close\\s+design\\s+details\"\\s+title=\"Close\\s+design\\s+details\"\\s+data-i18n-key=\"modal\\.common\\.close\"\\s+data-i18n-attr=\"aria-label,title\"\\s+onclick=\"hideProposalDetailsPanel\\(\\)\">",
+          "occurrences": 1
         },
         {
-          "source": "js/proposals/details-panel.js",
-          "includes": "return window.ClickStack.showDesign(getProposalKey(proposal));"
+          "source": "index.html",
+          "pattern": "<button\\s+id=\"proposal-details-close\"\\s+type=\"button\"\\s+class=\"close-circle-btn\\s+close-circle-btn--lg\\s+close-button\"\\s+aria-label=\"Close\\s+design\\s+details\"\\s+title=\"Close\\s+design\\s+details\"\\s+data-i18n-key=\"modal\\.common\\.close\"\\s+data-i18n-attr=\"aria-label,title\"\\s+onclick=\"hideProposalDetailsPanel\\(\\)\">",
+          "occurrences": 1
         }
       ],
       "mustRemainInactive": true
@@ -1913,9 +1863,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-6ff5ccf308df4d-1",
+      "id": "control-a0eb06a09c8d15-1",
       "source": "index.html",
-      "markup": "<button id=\"finishRoadButton\" class=\"btn btn-success\" onclick=\"finishRoadOrTrackDrawing()\" data-i18n-key=\"panel.road.finishButtonShort\">",
+      "markup": "<button id=\"finishRoadButton\" class=\"btn btn-success\" onclick=\"finishRoadOrTrackDrawing()\" data-i18n-key=\"common.done\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -1993,9 +1943,7 @@
     {
       "id": "control-47a38be19f6b20-1",
       "source": "index.html",
-      "markup": "<button type=\"button\" class=\"close-circle-btn close-circle-btn--lg close-button\" aria-label=\"Close\" data-i18n-key=\"modal.common.close\" data-i18n-attr=\"aria-label,title\" onclick=\"hideOSMRoadSegmentListPopup()\">",
-      "interaction": "click",
-      "controlType": "button"
+      "markup": "<button type=\"button\" class=\"close-circle-btn close-circle-btn--lg close-button\" aria-label=\"Close\" data-i18n-key=\"modal.common.close\" data-i18n-attr=\"aria-label,title\" onclick=\"hideOSMRoadSegmentListPopup()\">"
     },
     {
       "id": "control-cb9aa935ea5081-1",
@@ -2019,9 +1967,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-113fb38e085ccf-1",
+      "id": "control-23cfba29006a31-1",
       "source": "index.html",
-      "markup": "<button type=\"button\" class=\"site-intro-dot\" data-site-intro-page=\"2\" aria-label=\"A proposal starts a conversation\" data-i18n-key=\"modal.siteIntro.tour.consent.title\" data-i18n-attr=\"aria-label\">",
+      "markup": "<button type=\"button\" class=\"site-intro-dot\" data-site-intro-page=\"2\" aria-label=\"A design starts a conversation\" data-i18n-key=\"modal.siteIntro.tour.consent.title\" data-i18n-attr=\"aria-label\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -2454,25 +2402,19 @@
       "controlType": "button"
     },
     {
-      "id": "control-9d62d5684da658-1",
+      "id": "control-5e79f4bc9789f7-1",
       "source": "js/agreement-dialog.js",
-      "markup": "<input type=\"checkbox\" data-agreement-design=\"${esc(id)}\"${chosen.has(id) ? ' checked' : ''}>",
-      "interaction": "change",
-      "controlType": "checkbox"
+      "markup": "<button type=\"button\" class=\"cb-option agreement-object-row\" data-agreement-inspect=\"${kind}\" data-agreement-object-id=\"${esc(item.id)}\" aria-pressed=\"false\">"
     },
     {
-      "id": "control-35922d4500ab71-1",
+      "id": "control-a0f1fda054e51a-1",
       "source": "js/agreement-dialog.js",
-      "markup": "<select data-agreement-allocation=\"${esc(output.hash)}\">",
-      "interaction": "change",
-      "controlType": "select"
+      "markup": "<select data-agreement-allocation=\"${esc(output.hash)}\"${mode !== 'individual' ? ' disabled' : ''}>"
     },
     {
-      "id": "control-5a374c1ec1825f-1",
+      "id": "control-cd6b751451f75f-1",
       "source": "js/agreement-dialog.js",
-      "markup": "<input type=\"number\" step=\"0.01\" data-agreement-cash=\"${esc(party.ownerKey)}\" value=\"${esc(shown(cash[party.ownerKey]))}\">",
-      "interaction": "change",
-      "controlType": "number"
+      "markup": "<select data-agreement-allocation-mode>"
     },
     {
       "id": "control-d7f25321d05961-1",
@@ -2503,6 +2445,40 @@
       "controlType": "date"
     },
     {
+      "id": "control-e85c2aec25c5b0-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"text\" data-agreement-organiser value=\"${esc(organiser)}\" autocomplete=\"off\">",
+      "interaction": "change",
+      "controlType": "text"
+    },
+    {
+      "id": "control-f5dcabcb4100a0-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"url\" data-agreement-participation-url value=\"${esc(participationUrl)}\" autocomplete=\"off\">",
+      "interaction": "change",
+      "controlType": "url"
+    },
+    {
+      "id": "control-3b9b0bd995410a-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<select data-agreement-plan>"
+    },
+    {
+      "id": "control-21646ea3437496-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<button type=\"button\" class=\"btn btn-icon btn-sm lens-pattern-button\" data-lens-pattern data-agreement-action=\"lens\" title=\"' + esc(t('modal.lens.triggerDescription', 'Lens for viewing the world')) + '\" aria-label=\"' + esc(t('modal.lens.triggerDescription', 'Lens for viewing the world')) + '\">"
+    },
+    {
+      "id": "control-bf8d7b03464e13-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<button type=\"button\" class=\"btn\" data-agreement-action=\"rights\">"
+    },
+    {
+      "id": "control-fa6b29e8171296-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<button type=\"button\" role=\"tab\" id=\"agreement-tab-${tab}\" aria-controls=\"agreement-tabpanel-${tab}\" aria-selected=\"${tab === 'inputs'}\" tabindex=\"${tab === 'inputs' ? 0 : -1}\" data-agreement-tab=\"${tab}\">"
+    },
+    {
       "id": "control-cd7e81d4355a78-1",
       "source": "js/agreement-dialog.js",
       "markup": "<button type=\"button\" class=\"close-circle-btn close-circle-btn--lg close-button\" data-agreement-action=\"cancel\">"
@@ -2516,6 +2492,31 @@
       "id": "control-49edf6b4a33df1-1",
       "source": "js/agreement-dialog.js",
       "markup": "<button type=\"submit\" class=\"btn btn-primary\" data-agreement-action=\"save\">"
+    },
+    {
+      "id": "control-54d91c923f8713-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<select data-agreement-compensation>"
+    },
+    {
+      "id": "control-9f18c569dadfeb-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"range\" min=\"0\" max=\"${Math.max(100000, terms.rateCentsPerM2)}\" step=\"100\" value=\"${terms.rateCentsPerM2}\" data-agreement-rate-slider>"
+    },
+    {
+      "id": "control-e91e3a435018d7-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"number\" min=\"0\" max=\"100000000\" step=\"0.01\" value=\"${terms.rateCentsPerM2 / 100}\" data-agreement-rate aria-label=\"${esc(t('agreement.workflow.rate', 'Compensation per m² ({{currency}})', { currency: state.currency }))}\">"
+    },
+    {
+      "id": "control-3bda5525b8f6d2-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"range\" min=\"0\" max=\"${limit}\" step=\"1\" value=\"${terms.contributionBasisPoints}\" data-agreement-contribution>"
+    },
+    {
+      "id": "control-6f58e3c4f41453-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<button type=\"button\" class=\"btn\" data-agreement-action=\"apply-plan\">"
     },
     {
       "id": "control-0a64b72e8540f2-1",
@@ -2533,6 +2534,13 @@
       "id": "control-e98071567cd733-1",
       "source": "js/agreement-list.js",
       "markup": "<button type=\"button\" class=\"btn btn-primary\" data-agreement-action=\"create\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-54217211dcc585-1",
+      "source": "js/agreement-list.js",
+      "markup": "<button type=\"button\" class=\"btn btn-secondary\" data-agreement-action=\"community\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -2618,6 +2626,11 @@
       "markup": "<button type=\"button\" class=\"close-circle-btn close-circle-btn--lg close-button\" data-agreement-action=\"close\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-e6b3924a886a42-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-agreement-action=\"plan\">"
     },
     {
       "id": "control-35e78e7eb2adc9-1",
@@ -2729,6 +2742,11 @@
       "markup": "<a class=\"btn btn-block ai-scene-download\" download=\"ai-scene.png\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-2c36d031b18489-1",
+      "source": "js/app-diagnostics.js",
+      "markup": "win.document.createElement('button')"
     },
     {
       "id": "control-75e7420b75e40b-1",
@@ -3132,6 +3150,11 @@
       "controlType": "dynamic"
     },
     {
+      "id": "control-267c2dcf7f873d-1",
+      "source": "js/bets/bets-ui.js",
+      "markup": "doc.createElement(tag)"
+    },
+    {
       "id": "control-b6522655f01dc6-1",
       "source": "js/building-blocks.js",
       "markup": "document.createElement('button')",
@@ -3526,6 +3549,176 @@
       "dispatchEvidence": "The stack renders row, related, coords and agreement actions, plus commands from UiCommands; related chips replace the old instance/open-agreement buttons."
     },
     {
+      "id": "control-56b96b1ca1b37d-1",
+      "source": "js/click-stack/click-stack-relations.js",
+      "markup": "doc.createElement('button')"
+    },
+    {
+      "id": "control-d12f64e8b91aa1-1",
+      "source": "js/click-stack/click-stack-relations.js",
+      "markup": "doc.createElement('select')"
+    },
+    {
+      "id": "control-f4c1140e2687eb-1",
+      "source": "js/community/consultation.js",
+      "markup": "<a class=\"btn btn-sm btn-secondary\" href=\"${esc(report.url)}\" target=\"_blank\" rel=\"noopener noreferrer\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-a108dd8d21cf34-1",
+      "source": "js/community/consultation.js",
+      "markup": "<a class=\"btn btn-sm btn-quiet\" href=\"https://ipfs.io/ipfs/${esc(row.cid)}\" target=\"_blank\" rel=\"noopener noreferrer\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-a7967998fd27c6-1",
+      "source": "js/community/consultation.js",
+      "markup": "<a class=\"btn btn-primary\" data-community-participate href=\"${esc(results().httpsUrl(url))}\" target=\"_blank\" rel=\"noopener noreferrer\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-b5f12974f391d3-1",
+      "source": "js/community/consultation.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm btn-secondary\" data-community-action=\"${action}\"${enabled ? '' : ' disabled'}>",
+      "interaction": "click",
+      "controlType": "button",
+      "exhaustiveVariants": true,
+      "variants": [
+        {
+          "name": "refresh",
+          "attrs": {
+            "data-community-action": "refresh"
+          }
+        },
+        {
+          "name": "compose",
+          "attrs": {
+            "data-community-action": "compose"
+          }
+        },
+        {
+          "name": "cancel",
+          "attrs": {
+            "data-community-action": "cancel"
+          }
+        },
+        {
+          "name": "connect",
+          "attrs": {
+            "data-community-action": "connect"
+          }
+        }
+      ]
+    },
+    {
+      "id": "control-92575c480bd287-1",
+      "source": "js/community/consultation.js",
+      "markup": "<textarea data-community-statement rows=\"3\" required>",
+      "interaction": "change",
+      "controlType": "textarea"
+    },
+    {
+      "id": "control-2740bc1d254811-1",
+      "source": "js/community/consultation.js",
+      "markup": "<input type=\"url\" data-community-url value=\"${esc(state.url || '')}\" placeholder=\"https://\">",
+      "interaction": "change",
+      "controlType": "url"
+    },
+    {
+      "id": "control-3deb8cc83eceb5-1",
+      "source": "js/community/consultation.js",
+      "markup": "<button class=\"btn btn-primary\" type=\"submit\"${enabled ? '' : ' disabled'}>",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-e1029cea863ad8-1",
+      "source": "js/community/voting-roster.js",
+      "markup": "<textarea data-roster-labels rows=\"3\" autocomplete=\"off\" spellcheck=\"false\">",
+      "interaction": "change",
+      "controlType": "textarea"
+    },
+    {
+      "id": "control-10b105cd4afd98-1",
+      "source": "js/community/voting-roster.js",
+      "markup": "<input type=\"number\" data-roster-count min=\"1\" max=\"100\" value=\"${local.count}\">",
+      "interaction": "change",
+      "controlType": "number"
+    },
+    {
+      "id": "control-e4374213c4d1e1-1",
+      "source": "js/community/voting-roster.js",
+      "markup": "<button type=\"button\" class=\"btn btn-secondary\" data-roster-action=\"generate\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-a6c0f91f5466eb-1",
+      "source": "js/community/voting-roster.js",
+      "markup": "<button type=\"button\" class=\"btn btn-secondary\" data-roster-action=\"save\"${local.entries.length?'':' disabled'}>",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-50a8e67ef685c0-1",
+      "source": "js/community/voting-roster.js",
+      "markup": "<button type=\"button\" class=\"btn btn-secondary\" data-roster-action=\"csv\"${local.entries.length?'':' disabled'}>",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-f576436f1fdf0a-1",
+      "source": "js/community/voting-roster.js",
+      "markup": "<input type=\"file\" accept=\"application/json,.json\" data-roster-import>",
+      "interaction": "change",
+      "controlType": "file"
+    },
+    {
+      "id": "control-aea91cac9f1cd2-1",
+      "source": "js/community/voting-roster.js",
+      "markup": "<button type=\"button\" class=\"btn btn-quiet\" data-roster-action=\"remove\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-7cab48c88021a0-1",
+      "source": "js/community/voting-ui.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm btn-secondary\" data-voting-action=\"${action}\"${disabled?' disabled':''}>",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-963b2e7676244f-1",
+      "source": "js/community/voting-ui.js",
+      "markup": "<input type=\"text\" data-voting-code class=\"voting-code\" value=\"${esc(s.inputCode || '')}\" autocomplete=\"off\" autocorrect=\"off\" autocapitalize=\"characters\" spellcheck=\"false\" maxlength=\"100\" placeholder=\"KRM-TAV-DBN-WEX-HPS\" required>",
+      "interaction": "change",
+      "controlType": "text"
+    },
+    {
+      "id": "control-72686cfd91044b-1",
+      "source": "js/community/voting-ui.js",
+      "markup": "<button class=\"btn btn-primary\" type=\"submit\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-d57d2413c773a3-1",
+      "source": "js/community/voting-ui.js",
+      "markup": "<input type=\"radio\" name=\"community-vote\" value=\"${choice}\"${choice===(s.selected || entry.choice)?' checked':''} required>",
+      "interaction": "change",
+      "controlType": "radio"
+    },
+    {
+      "id": "control-72686cfd91044b-2",
+      "source": "js/community/voting-ui.js",
+      "markup": "<button class=\"btn btn-primary\" type=\"submit\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-d7ec6e346dbca4-1",
       "source": "js/corridor-editor.js",
       "markup": "<button type=\"button\" class=\"btn corridor-fit-move\" data-shift=\"${fit.shift}\">",
@@ -3864,6 +4057,89 @@
       "markup": "doc.createElement('button')"
     },
     {
+      "id": "control-96905098f37cf6-1",
+      "source": "js/design-memberships.js",
+      "markup": "host.ownerDocument.createElement('button')"
+    },
+    {
+      "id": "control-7610a8c3dcff8b-1",
+      "source": "js/design-memberships.js",
+      "markup": "doc.createElement(tag)"
+    },
+    {
+      "id": "control-8b616de27e0e37-1",
+      "source": "js/economic-source-settings.js",
+      "markup": "global.document.createElement(tag)",
+      "interaction": "auto",
+      "controlType": "dynamic",
+      "variants": [
+        {
+          "name": "Close economic sources",
+          "classes": [
+            "close-circle-btn"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Edit economic-source-name",
+          "attrs": {
+            "id": "economic-source-name"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Edit economic-rate-land",
+          "attrs": {
+            "id": "economic-rate-land"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Edit economic-rate-roadLand",
+          "attrs": {
+            "id": "economic-rate-roadLand"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Edit economic-rate-sale",
+          "attrs": {
+            "id": "economic-rate-sale"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Edit economic-rate-construction",
+          "attrs": {
+            "id": "economic-rate-construction"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Use local economic rates",
+          "interaction": "click",
+          "classes": [
+            "btn",
+            "btn-primary"
+          ]
+        },
+        {
+          "name": "Reset local economic source",
+          "label": "Use configured sources",
+          "interaction": "click"
+        },
+        {
+          "name": "Import local economic rates",
+          "attrs": {
+            "type": "file"
+          },
+          "interaction": "change"
+        }
+      ],
+      "exhaustiveVariants": true,
+      "dispatchEvidence": "The append factory renders close, five editable rate fields, submit, reset and a JSON file input. Static descriptions are not controls."
+    },
+    {
       "id": "control-655d2b64af149d-1",
       "source": "js/ens/ens-name.js",
       "markup": "<button type=\"button\" class=\"cb-link cb-link--quiet ens-name-value\" title=\"${copyLabel}: ${fullName}\"` + ` aria-label=\"${copyLabel}: ${fullName}\"` + ` onclick=\"copyEnsName(${inlineJsArg(name)}, this)\">",
@@ -3974,6 +4250,116 @@
       "markup": "<button type=\"button\" class=\"btn btn-sm lens-add-btn\" id=\"lens-add-btn\" title=\"${addButtonTitle}\" data-i18n-key=\"modal.lens.addButton\" data-i18n-attr=\"text\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-c4e16ca66e1e10-1",
+      "source": "js/lists-panel.js",
+      "markup": "doc.createElement(tag)",
+      "interaction": "auto",
+      "controlType": "dynamic",
+      "exhaustiveVariants": true,
+      "variants": [
+        {
+          "name": "Open a list record",
+          "classes": [
+            "lists-item__title"
+          ],
+          "interaction": "click"
+        },
+        {
+          "name": "Create plan",
+          "label": "Create plan",
+          "interaction": "click"
+        },
+        {
+          "name": "Create agreement",
+          "label": "Create agreement",
+          "interaction": "click"
+        },
+        {
+          "name": "Continue",
+          "label": "Continue",
+          "interaction": "click"
+        },
+        {
+          "name": "Cancel",
+          "label": "Cancel",
+          "interaction": "click"
+        },
+        {
+          "name": "Share",
+          "label": "Share",
+          "interaction": "click"
+        },
+        {
+          "name": "Remove from browser",
+          "label": "Remove from browser",
+          "interaction": "click"
+        },
+        {
+          "name": "This browser",
+          "label": "This browser",
+          "interaction": "click"
+        },
+        {
+          "name": "Published",
+          "label": "Published",
+          "interaction": "click"
+        },
+        {
+          "name": "Reset",
+          "label": "Reset",
+          "interaction": "click"
+        },
+        {
+          "name": "Refresh",
+          "label": "Refresh",
+          "interaction": "click"
+        },
+        {
+          "name": "Load more",
+          "label": "Load more",
+          "interaction": "click"
+        },
+        {
+          "name": "Select a design",
+          "attrs": {
+            "type": "checkbox"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Search loaded records",
+          "attrs": {
+            "type": "search"
+          },
+          "interaction": "input"
+        },
+        {
+          "name": "Filter publication",
+          "attrs": {
+            "data-list-filter": "publication"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Sort records",
+          "attrs": {
+            "data-list-filter": "sort"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Plan stats",
+          "label": "Plan stats",
+          "interaction": "click"
+        },
+        {
+          "name": "Urban rooster",
+          "label": "Urban rooster",
+          "interaction": "click"
+        }
+      ]
     },
     {
       "id": "control-64262b34995f97-1",
@@ -4797,18 +5183,18 @@
       "controlType": "dynamic"
     },
     {
-      "id": "control-52a0fbb1c20d27-1",
-      "source": "js/parcels/ui/claim.js",
-      "markup": "global.document.createElement('input')",
-      "interaction": "change",
-      "controlType": "input"
-    },
-    {
       "id": "control-ec00f19db4edfd-1",
       "source": "js/parcels/ui/claim.js",
       "markup": "global.document.createElement('button')",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-52a0fbb1c20d27-1",
+      "source": "js/parcels/ui/claim.js",
+      "markup": "global.document.createElement('input')",
+      "interaction": "change",
+      "controlType": "input"
     },
     {
       "id": "control-ec00f19db4edfd-2",
@@ -4821,6 +5207,11 @@
       "markup": "<button type=\"button\" class=\"cb-link block-tag\" onclick=\"${blockAction}\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-9af9fb9173dbcf-1",
+      "source": "js/parcels/ui/parcel-panel.js",
+      "markup": "<button type=\"button\" class=\"cb-link\" onclick=\"showProposalDetails(${inlineJsArg(proposal.proposalId)}, ${inlineJsArg(parcelId)})\">"
     },
     {
       "id": "control-8ac4337e59b12a-1",
@@ -4886,11 +5277,6 @@
           "includes": "return global.ClickStack.showParcel(feature);"
         }
       ]
-    },
-    {
-      "id": "control-9af9fb9173dbcf-1",
-      "source": "js/parcels/ui/parcel-panel.js",
-      "markup": "<button type=\"button\" class=\"cb-link\" onclick=\"showProposalDetails(${inlineJsArg(proposal.proposalId)}, ${inlineJsArg(parcelId)})\">"
     },
     {
       "id": "control-94dbf05c6c8fd3-1",
@@ -5193,6 +5579,120 @@
       "id": "control-4b5316733a58cb-1",
       "source": "js/photoreal-mode.js",
       "markup": "seatDebugEl.setAttribute('role', 'button')",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-2342074e0cb4ee-1",
+      "source": "js/plan-dialog.js",
+      "markup": "document.createElement(tag)",
+      "interaction": "auto",
+      "controlType": "dynamic",
+      "exhaustiveVariants": true,
+      "variants": [
+        {
+          "name": "Create a saved plan",
+          "label": "Create plan",
+          "interaction": "click"
+        },
+        {
+          "name": "Save a new plan revision",
+          "label": "Save new revision",
+          "interaction": "click"
+        },
+        {
+          "name": "Cancel plan editing",
+          "label": "Cancel",
+          "interaction": "click"
+        },
+        {
+          "name": "Open a saved plan",
+          "label": "Open plan",
+          "interaction": "click"
+        },
+        {
+          "name": "Share a saved plan",
+          "label": "Share plan",
+          "interaction": "click"
+        },
+        {
+          "name": "Edit a saved plan",
+          "label": "Edit plan",
+          "interaction": "click"
+        },
+        {
+          "name": "Create agreement from saved plan",
+          "label": "Create agreement",
+          "interaction": "click"
+        },
+        {
+          "name": "Publish a plan and copy its link",
+          "label": "Publish and copy link",
+          "interaction": "click"
+        },
+        {
+          "name": "Copy a published plan link",
+          "label": "Copy link",
+          "interaction": "click"
+        },
+        {
+          "name": "Enter a plan name",
+          "label": "Plan name",
+          "interaction": "change"
+        },
+        {
+          "name": "Search plan designs",
+          "label": "Search designs",
+          "interaction": "change"
+        },
+        {
+          "name": "Select plan members",
+          "attrs": {
+            "type": "checkbox"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Choose saved camera",
+          "attrs": {
+            "data-plan-view": "camera"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Choose saved rotation",
+          "attrs": {
+            "data-plan-view": "rotate"
+          },
+          "interaction": "change"
+        }
+      ]
+    },
+    {
+      "id": "control-81498b74fc7752-1",
+      "source": "js/plan-file-ui.js",
+      "markup": "doc.createElement('button')",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-81498b74fc7752-2",
+      "source": "js/plan-file-ui.js",
+      "markup": "doc.createElement('button')",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-042471578a5164-1",
+      "source": "js/plan-file-ui.js",
+      "markup": "doc.createElement('input')",
+      "interaction": "change",
+      "controlType": "input"
+    },
+    {
+      "id": "control-81498b74fc7752-3",
+      "source": "js/plan-file-ui.js",
+      "markup": "doc.createElement('button')",
       "interaction": "click",
       "controlType": "button"
     },
@@ -5845,11 +6345,36 @@
       "controlType": "button"
     },
     {
+      "id": "control-02fc99c475593a-1",
+      "source": "js/proposals/data.js",
+      "markup": "<div class=\"selected-parcel-item\" data-parcel-id=\"${escapeHtml(String(parcelId))}\" tabindex=\"0\" role=\"button\" aria-label=\"${escapeHtml(parcelLabel)}\">"
+    },
+    {
       "id": "control-5337cbe7487528-1",
       "source": "js/proposals/details-panel.js",
       "markup": "<button type=\"button\" class=\"btn btn-quiet btn-compare-parcel\" data-focus-parcel=\"${safeAgentText(String(parcelId))}\" aria-pressed=\"${parcelCompare.isActive(proposalKeyForCompare) && parcelCompare.activeFocus() === String(parcelId) ? 'true' : 'false'}\" title=\"${tProposal('mapCompare.sliderLabel', 'Before and after comparison')}\" onclick=\"event.stopPropagation(); event.preventDefault(); BusyControl.track(this, () =>",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-3b7eccd53f54e4-1",
+      "source": "js/proposals/details-panel.js",
+      "markup": "<button type=\"button\" class=\"cb-link\" ${replacedDataAttr} ${geometryDataAttr} onclick=\"handleProposalParcelClick(${inlineJsArg(parcelId)}, event)\" title=\"${parcelTooltip}\">"
+    },
+    {
+      "id": "control-4f363d99a196fa-1",
+      "source": "js/proposals/details-panel.js",
+      "markup": "<button type=\"button\" class=\"btn descendant-item\" data-descendant-type=\"proposal\" data-proposal-id=\"${descendantId}\">"
+    },
+    {
+      "id": "control-8f40822830e2c1-1",
+      "source": "js/proposals/details-panel.js",
+      "markup": "<button type=\"button\" class=\"btn descendant-item\" data-descendant-type=\"parcel\" data-parcel-id=\"${safeAgentText(descendantKey)}\">"
+    },
+    {
+      "id": "control-f3dc331d58ba0b-1",
+      "source": "js/proposals/details-panel.js",
+      "markup": "<button type=\"button\" class=\"btn descendant-item\" data-descendant-type=\"parcel\" data-parcel-id=\"${descendantKey}\">"
     },
     {
       "id": "control-d097b1cc842125-1",
@@ -5913,6 +6438,22 @@
       "controlType": "button"
     },
     {
+      "id": "control-0707278b1ad024-1",
+      "source": "js/proposals/details-panel.js",
+      "markup": "<button type=\"button\" class=\"btn btn-add-to-plan\" onclick=\"BusyControl.track(this, () =>",
+      "interaction": "click",
+      "controlType": "button",
+      "variants": [
+        {
+          "name": "Add design to a plan",
+          "classes": [
+            "btn-add-to-plan"
+          ]
+        }
+      ],
+      "exhaustiveVariants": true
+    },
+    {
       "id": "control-08edf049b57aee-1",
       "source": "js/proposals/details-panel.js",
       "markup": "<button type=\"button\" class=\"btn btn-duplicate-design\" onclick=\"startDesignDuplication(${inlineJsArg(proposalKey)})\" title=\"${tProposal('panel.proposal.actions.duplicateDesignHint', 'Move a copy with the pointer and click to place a new design.')}\" aria-label=\"${tProposal('panel.proposal.actions.duplicateDesign', 'Duplicate')}\">",
@@ -5948,6 +6489,13 @@
       "controlType": "button"
     },
     {
+      "id": "control-fb97f1b1e16464-1",
+      "source": "js/proposals/details-panel.js",
+      "markup": "<button type=\"button\" class=\"btn btn-convert-freeform\" onclick=\"convertProposalToFreeform(${inlineJsArg(proposalKey)})\" title=\"${safeAgentText(tProposal('panel.proposal.actions.convertToFreeformHint', 'Keep the rule\\'s massing at the greatest height it allows, as one building you edit directly. The rule\\'s parameters no longer apply afterwards.'))}\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-ec8968b312551c-1",
       "source": "js/proposals/details-panel.js",
       "markup": "<button type=\"button\" class=\"btn btn-proposal-details\" onclick=\"toggleProposalDetailsPanelMinimized(false)\">",
@@ -5972,13 +6520,6 @@
           "includes": "#click-stack #proposal-details-panel.is-hosted .panel-header__actions,"
         }
       ]
-    },
-    {
-      "id": "control-fb97f1b1e16464-1",
-      "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn btn-convert-freeform\" onclick=\"convertProposalToFreeform(${inlineJsArg(proposalKey)})\" title=\"${safeAgentText(tProposal('panel.proposal.actions.convertToFreeformHint', 'Keep the rule\\'s massing at the greatest height it allows, as one building you edit directly. The rule\\'s parameters no longer apply afterwards.'))}\">",
-      "interaction": "click",
-      "controlType": "button"
     },
     {
       "id": "control-246d3e927d4430-1",
@@ -6010,42 +6551,6 @@
       "markup": "<button type=\"button\" class=\"btn btn-quiet proposal-id-copy\" title=\"${escapedProposalDisplayId}\" onclick=\"copyProposalIdToClipboard(${inlineJsArg(String(fullProposal.proposalId || proposal.proposalId || ''))})\">",
       "interaction": "click",
       "controlType": "button"
-    },
-    {
-      "id": "control-0707278b1ad024-1",
-      "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn btn-add-to-plan\" onclick=\"BusyControl.track(this, () =>",
-      "interaction": "click",
-      "controlType": "button",
-      "variants": [
-        {
-          "name": "Add design to a plan",
-          "classes": [
-            "btn-add-to-plan"
-          ]
-        }
-      ],
-      "exhaustiveVariants": true
-    },
-    {
-      "id": "control-3b7eccd53f54e4-1",
-      "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"cb-link\" ${replacedDataAttr} ${geometryDataAttr} onclick=\"handleProposalParcelClick(${inlineJsArg(parcelId)}, event)\" title=\"${parcelTooltip}\">"
-    },
-    {
-      "id": "control-4f363d99a196fa-1",
-      "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn descendant-item\" data-descendant-type=\"proposal\" data-proposal-id=\"${descendantId}\">"
-    },
-    {
-      "id": "control-8f40822830e2c1-1",
-      "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn descendant-item\" data-descendant-type=\"parcel\" data-parcel-id=\"${safeAgentText(descendantKey)}\">"
-    },
-    {
-      "id": "control-f3dc331d58ba0b-1",
-      "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn descendant-item\" data-descendant-type=\"parcel\" data-parcel-id=\"${descendantKey}\">"
     },
     {
       "id": "control-cd73c88bd50cc9-1",
@@ -6853,14 +7358,14 @@
       "controlType": "range"
     },
     {
-      "id": "control-1d1f07bc1c7d1c-1",
+      "id": "control-899ec4d6210e9f-1",
       "source": "js/single-building.js",
-      "markup": "<button class=\"btn btn-sm\" type=\"button\" data-land-footprint>"
+      "markup": "<button class=\"btn btn-sm\" type=\"button\" data-land-footprint disabled>"
     },
     {
-      "id": "control-e84653727231aa-1",
+      "id": "control-d5a9469646b417-1",
       "source": "js/single-building.js",
-      "markup": "<button class=\"btn btn-sm\" type=\"button\" data-land-whole>"
+      "markup": "<button class=\"btn btn-sm\" type=\"button\" data-land-whole disabled>"
     },
     {
       "id": "control-a75016940a2a30-1",
@@ -6987,16 +7492,16 @@
       "controlType": "button"
     },
     {
-      "id": "control-57506424af127c-1",
+      "id": "control-a83062b22b1d6e-1",
       "source": "js/site-drawing.js",
-      "markup": "<button type=\"button\" role=\"tab\" class=\"cb-tab parcel-tab-btn\" aria-selected=\"false\" data-site-tab=\"info\">",
+      "markup": "<button type=\"button\" role=\"tab\" class=\"cb-tab parcel-tab-btn parcel-tab-btn--icon\" aria-selected=\"false\" data-site-tab=\"info\">",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-86984da7e93e4b-1",
+      "id": "control-5e25cee22213b7-1",
       "source": "js/site-drawing.js",
-      "markup": "<button type=\"button\" role=\"tab\" class=\"cb-tab parcel-tab-btn\" aria-selected=\"false\" data-site-tab=\"propose\">",
+      "markup": "<button type=\"button\" role=\"tab\" class=\"cb-tab parcel-tab-btn parcel-tab-btn--icon\" aria-selected=\"false\" data-site-tab=\"propose\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -7027,6 +7532,26 @@
       "markup": "<button type=\"button\" class=\"close-circle-btn site-panel__close\" data-site-action=\"cancel\" aria-label=\"${escapeHtml(closeLabel)}\" title=\"${escapeHtml(closeLabel)}\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-65e1fefeca06b6-1",
+      "source": "js/source-explorer.js",
+      "markup": "document.createElement(tag)",
+      "interaction": "auto",
+      "controlType": "dynamic",
+      "exempt": "This factory creates source descriptions, options, schema details and a temporary download anchor without a button role or button styling. Static source controls own all user interactions.",
+      "mustRemainInactive": true,
+      "guards": [
+        {
+          "source": "js/source-explorer.js",
+          "includes": "link.download = 'source-contracts.v1.json';"
+        },
+        {
+          "source": "js/source-explorer.js",
+          "pattern": "\\bnode\\(['\"](?:button|input|select|textarea)['\"]",
+          "occurrences": 0
+        }
+      ]
     },
     {
       "id": "control-4db10a36078b55-1",
@@ -7132,6 +7657,13 @@
       "markup": "doc.createElement('button')"
     },
     {
+      "id": "control-f6339260a755a6-1",
+      "source": "js/three-mode.js",
+      "markup": "<input id=\"${id}\" type=\"range\" class=\"parcel-panel-price-slider\" data-role=\"${role}\" min=\"${price.min}\" max=\"${price.max}\" step=\"${price.step}\" value=\"${price.perSqm ?? price.min}\"${price.perSqm === null ? ' disabled' : ''}>",
+      "interaction": "change",
+      "controlType": "range"
+    },
+    {
       "id": "control-0f72c2ba2aa79f-1",
       "source": "js/three-mode.js",
       "markup": "document.createElement('button')",
@@ -7227,13 +7759,6 @@
       "id": "control-46b5da01d9d0cc-7",
       "source": "js/three-mode.js",
       "markup": "document.createElement('input')"
-    },
-    {
-      "id": "control-f6339260a755a6-1",
-      "source": "js/three-mode.js",
-      "markup": "<input id=\"${id}\" type=\"range\" class=\"parcel-panel-price-slider\" data-role=\"${role}\" min=\"${price.min}\" max=\"${price.max}\" step=\"${price.step}\" value=\"${price.perSqm ?? price.min}\"${price.perSqm === null ? ' disabled' : ''}>",
-      "interaction": "change",
-      "controlType": "range"
     },
     {
       "id": "control-d1342cf843b1ad-1",
@@ -7830,6 +8355,13 @@
       "controlType": "button"
     },
     {
+      "id": "control-156bc1c5231592-1",
+      "source": "js/workspace-screen.js",
+      "markup": "doc.createElement('button')",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-cae2c228a5e4e1-1",
       "source": "js/world/globe.js",
       "markup": "document.createElement(tag)",
@@ -8406,9 +8938,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-fe8ec2147785ba-1",
+      "id": "control-ad2c6a9f2b0204-1",
       "source": "lens.html",
-      "markup": "<select id=\"lc-language\" class=\"cb-page-header__lang\" aria-label=\"Language\" data-i18n-key=\"language.switcher.aria\" data-i18n-attr=\"aria-label\">",
+      "markup": "<select id=\"lc-language\" data-i18n-locale-select=\"language\" class=\"cb-page-header__lang\" aria-label=\"Language\" data-i18n-key=\"language.switcher.aria\" data-i18n-attr=\"aria-label\">",
       "interaction": "change",
       "controlType": "select"
     },
@@ -8477,9 +9009,14 @@
       "markup": "<button id=\"lc-decision-submit\" class=\"btn btn-primary lc-submit\" type=\"submit\" data-i18n-key=\"lensConsole.decision.submit\">"
     },
     {
-      "id": "control-18d9348af66042-1",
+      "id": "control-90b8899758fd13-1",
+      "source": "mcp-privacy.html",
+      "markup": "<select id=\"privacy-language\" data-i18n-locale-select=\"locale\" class=\"cb-page-header__lang\" aria-label=\"Language\" data-i18n-key=\"language.switcher.label\" data-i18n-attr=\"aria-label\">"
+    },
+    {
+      "id": "control-db9abc56513439-1",
       "source": "parcel-coverage-report.html",
-      "markup": "<select id=\"report-language\" class=\"cb-page-header__lang\" aria-label=\"Language\">",
+      "markup": "<select id=\"report-language\" data-i18n-locale-select=\"language\" class=\"cb-page-header__lang\" aria-label=\"Language\">",
       "interaction": "change",
       "controlType": "select"
     },
@@ -8589,6 +9126,48 @@
       "controlType": "button"
     },
     {
+      "id": "control-277c34f0e17e71-1",
+      "source": "sources.html",
+      "markup": "<select id=\"source-language\" data-i18n-locale-select=\"language\" class=\"cb-page-header__lang\" aria-label=\"Language\">",
+      "interaction": "change",
+      "controlType": "select"
+    },
+    {
+      "id": "control-ea2fde5d943a47-1",
+      "source": "sources.html",
+      "markup": "<button id=\"source-retry\" class=\"btn\" type=\"button\" hidden data-i18n-key=\"sourceSystem.retry\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-71d80d7e33a4c8-1",
+      "source": "sources.html",
+      "markup": "<button id=\"source-download\" class=\"btn\" type=\"button\" disabled data-i18n-key=\"sourceSystem.download\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-6ae0f4c0e6b7c9-1",
+      "source": "sources.html",
+      "markup": "<select id=\"source-family\">",
+      "interaction": "change",
+      "controlType": "select"
+    },
+    {
+      "id": "control-3719edd6a0355e-1",
+      "source": "sources.html",
+      "markup": "<select id=\"source-adapter\">",
+      "interaction": "change",
+      "controlType": "select"
+    },
+    {
+      "id": "control-3b3a78a7430f92-1",
+      "source": "sources.html",
+      "markup": "<select id=\"source-config\">",
+      "interaction": "change",
+      "controlType": "select"
+    },
+    {
       "id": "control-3abdbd3f1cac2d-1",
       "source": "tx-explorer.html",
       "markup": "<button id=\"tx-refresh\" type=\"button\" class=\"btn\">",
@@ -8662,507 +9241,6 @@
       "id": "control-0ec33f514c2473-2",
       "source": "urban-planning.html",
       "markup": "<a class=\"btn btn-primary\" href=\"/\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-fdecca6b7f8e63-1",
-      "source": "index.html",
-      "markup": "<a id=\"source-system-link\" class=\"btn\" href=\"/sources.html\" data-i18n-key=\"sourceSystem.title\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-c05dffa4f74d38-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"economic-source-settings-button\" class=\"btn\" data-i18n-key=\"economicSources.title\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-8b616de27e0e37-1",
-      "source": "js/economic-source-settings.js",
-      "markup": "global.document.createElement(tag)",
-      "interaction": "auto",
-      "controlType": "dynamic",
-      "variants": [
-        {
-          "name": "Close economic sources",
-          "classes": [
-            "close-circle-btn"
-          ],
-          "interaction": "click"
-        },
-        {
-          "name": "Edit economic-source-name",
-          "attrs": {
-            "id": "economic-source-name"
-          },
-          "interaction": "change"
-        },
-        {
-          "name": "Edit economic-rate-land",
-          "attrs": {
-            "id": "economic-rate-land"
-          },
-          "interaction": "change"
-        },
-        {
-          "name": "Edit economic-rate-roadLand",
-          "attrs": {
-            "id": "economic-rate-roadLand"
-          },
-          "interaction": "change"
-        },
-        {
-          "name": "Edit economic-rate-sale",
-          "attrs": {
-            "id": "economic-rate-sale"
-          },
-          "interaction": "change"
-        },
-        {
-          "name": "Edit economic-rate-construction",
-          "attrs": {
-            "id": "economic-rate-construction"
-          },
-          "interaction": "change"
-        },
-        {
-          "name": "Use local economic rates",
-          "interaction": "click",
-          "classes": [
-            "btn",
-            "btn-primary"
-          ]
-        },
-        {
-          "name": "Reset local economic source",
-          "label": "Use configured sources",
-          "interaction": "click"
-        },
-        {
-          "name": "Import local economic rates",
-          "attrs": {
-            "type": "file"
-          },
-          "interaction": "change"
-        }
-      ],
-      "exhaustiveVariants": true,
-      "dispatchEvidence": "The append factory renders close, five editable rate fields, submit, reset and a JSON file input. Static descriptions are not controls."
-    },
-    {
-      "id": "control-65e1fefeca06b6-1",
-      "source": "js/source-explorer.js",
-      "markup": "document.createElement(tag)",
-      "interaction": "auto",
-      "controlType": "dynamic",
-      "exempt": "This factory creates source descriptions, options, schema details and a temporary download anchor without a button role or button styling. Static source controls own all user interactions.",
-      "mustRemainInactive": true,
-      "guards": [
-        {
-          "source": "js/source-explorer.js",
-          "includes": "link.download = 'source-contracts.v1.json';"
-        },
-        {
-          "source": "js/source-explorer.js",
-          "pattern": "\\bnode\\(['\"](?:button|input|select|textarea)['\"]",
-          "occurrences": 0
-        }
-      ]
-    },
-    {
-      "id": "control-1f666d778d2675-1",
-      "source": "sources.html",
-      "markup": "<select id=\"source-language\" class=\"cb-page-header__lang\" aria-label=\"Language\">",
-      "interaction": "change",
-      "controlType": "select"
-    },
-    {
-      "id": "control-ea2fde5d943a47-1",
-      "source": "sources.html",
-      "markup": "<button id=\"source-retry\" class=\"btn\" type=\"button\" hidden data-i18n-key=\"sourceSystem.retry\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-71d80d7e33a4c8-1",
-      "source": "sources.html",
-      "markup": "<button id=\"source-download\" class=\"btn\" type=\"button\" disabled data-i18n-key=\"sourceSystem.download\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-6ae0f4c0e6b7c9-1",
-      "source": "sources.html",
-      "markup": "<select id=\"source-family\">",
-      "interaction": "change",
-      "controlType": "select"
-    },
-    {
-      "id": "control-3719edd6a0355e-1",
-      "source": "sources.html",
-      "markup": "<select id=\"source-adapter\">",
-      "interaction": "change",
-      "controlType": "select"
-    },
-    {
-      "id": "control-3b3a78a7430f92-1",
-      "source": "sources.html",
-      "markup": "<select id=\"source-config\">",
-      "interaction": "change",
-      "controlType": "select"
-    },
-    {
-      "id": "control-e85c2aec25c5b0-1",
-      "source": "js/agreement-dialog.js",
-      "markup": "<input type=\"text\" data-agreement-organiser value=\"${esc(organiser)}\" autocomplete=\"off\">",
-      "interaction": "change",
-      "controlType": "text"
-    },
-    {
-      "id": "control-f5dcabcb4100a0-1",
-      "source": "js/agreement-dialog.js",
-      "markup": "<input type=\"url\" data-agreement-participation-url value=\"${esc(participationUrl)}\" autocomplete=\"off\">",
-      "interaction": "change",
-      "controlType": "url"
-    },
-    {
-      "id": "control-54217211dcc585-1",
-      "source": "js/agreement-list.js",
-      "markup": "<button type=\"button\" class=\"btn btn-secondary\" data-agreement-action=\"community\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-f4c1140e2687eb-1",
-      "source": "js/community/consultation.js",
-      "markup": "<a class=\"btn btn-sm btn-secondary\" href=\"${esc(report.url)}\" target=\"_blank\" rel=\"noopener noreferrer\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-a108dd8d21cf34-1",
-      "source": "js/community/consultation.js",
-      "markup": "<a class=\"btn btn-sm btn-quiet\" href=\"https://ipfs.io/ipfs/${esc(row.cid)}\" target=\"_blank\" rel=\"noopener noreferrer\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-a7967998fd27c6-1",
-      "source": "js/community/consultation.js",
-      "markup": "<a class=\"btn btn-primary\" data-community-participate href=\"${esc(results().httpsUrl(url))}\" target=\"_blank\" rel=\"noopener noreferrer\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-b5f12974f391d3-1",
-      "source": "js/community/consultation.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm btn-secondary\" data-community-action=\"${action}\"${enabled ? '' : ' disabled'}>",
-      "interaction": "click",
-      "controlType": "button",
-      "exhaustiveVariants": true,
-      "variants": [
-        {
-          "name": "refresh",
-          "attrs": {
-            "data-community-action": "refresh"
-          }
-        },
-        {
-          "name": "compose",
-          "attrs": {
-            "data-community-action": "compose"
-          }
-        },
-        {
-          "name": "cancel",
-          "attrs": {
-            "data-community-action": "cancel"
-          }
-        },
-        {
-          "name": "connect",
-          "attrs": {
-            "data-community-action": "connect"
-          }
-        }
-      ]
-    },
-    {
-      "id": "control-92575c480bd287-1",
-      "source": "js/community/consultation.js",
-      "markup": "<textarea data-community-statement rows=\"3\" required>",
-      "interaction": "change",
-      "controlType": "textarea"
-    },
-    {
-      "id": "control-2740bc1d254811-1",
-      "source": "js/community/consultation.js",
-      "markup": "<input type=\"url\" data-community-url value=\"${esc(state.url || '')}\" placeholder=\"https://\">",
-      "interaction": "change",
-      "controlType": "url"
-    },
-    {
-      "id": "control-3deb8cc83eceb5-1",
-      "source": "js/community/consultation.js",
-      "markup": "<button class=\"btn btn-primary\" type=\"submit\"${enabled ? '' : ' disabled'}>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-e1029cea863ad8-1",
-      "source": "js/community/voting-roster.js",
-      "markup": "<textarea data-roster-labels rows=\"3\" autocomplete=\"off\" spellcheck=\"false\">",
-      "interaction": "change",
-      "controlType": "textarea"
-    },
-    {
-      "id": "control-10b105cd4afd98-1",
-      "source": "js/community/voting-roster.js",
-      "markup": "<input type=\"number\" data-roster-count min=\"1\" max=\"100\" value=\"${local.count}\">",
-      "interaction": "change",
-      "controlType": "number"
-    },
-    {
-      "id": "control-e4374213c4d1e1-1",
-      "source": "js/community/voting-roster.js",
-      "markup": "<button type=\"button\" class=\"btn btn-secondary\" data-roster-action=\"generate\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-a6c0f91f5466eb-1",
-      "source": "js/community/voting-roster.js",
-      "markup": "<button type=\"button\" class=\"btn btn-secondary\" data-roster-action=\"save\"${local.entries.length?'':' disabled'}>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-50a8e67ef685c0-1",
-      "source": "js/community/voting-roster.js",
-      "markup": "<button type=\"button\" class=\"btn btn-secondary\" data-roster-action=\"csv\"${local.entries.length?'':' disabled'}>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-f576436f1fdf0a-1",
-      "source": "js/community/voting-roster.js",
-      "markup": "<input type=\"file\" accept=\"application/json,.json\" data-roster-import>",
-      "interaction": "change",
-      "controlType": "file"
-    },
-    {
-      "id": "control-aea91cac9f1cd2-1",
-      "source": "js/community/voting-roster.js",
-      "markup": "<button type=\"button\" class=\"btn btn-quiet\" data-roster-action=\"remove\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-7cab48c88021a0-1",
-      "source": "js/community/voting-ui.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm btn-secondary\" data-voting-action=\"${action}\"${disabled?' disabled':''}>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-963b2e7676244f-1",
-      "source": "js/community/voting-ui.js",
-      "markup": "<input type=\"text\" data-voting-code class=\"voting-code\" value=\"${esc(s.inputCode || '')}\" autocomplete=\"off\" autocorrect=\"off\" autocapitalize=\"characters\" spellcheck=\"false\" maxlength=\"100\" placeholder=\"KRM-TAV-DBN-WEX-HPS\" required>",
-      "interaction": "change",
-      "controlType": "text"
-    },
-    {
-      "id": "control-72686cfd91044b-1",
-      "source": "js/community/voting-ui.js",
-      "markup": "<button class=\"btn btn-primary\" type=\"submit\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-d57d2413c773a3-1",
-      "source": "js/community/voting-ui.js",
-      "markup": "<input type=\"radio\" name=\"community-vote\" value=\"${choice}\"${choice===(s.selected || entry.choice)?' checked':''} required>",
-      "interaction": "change",
-      "controlType": "radio"
-    },
-    {
-      "id": "control-72686cfd91044b-2",
-      "source": "js/community/voting-ui.js",
-      "markup": "<button class=\"btn btn-primary\" type=\"submit\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-c4e16ca66e1e10-1",
-      "source": "js/lists-panel.js",
-      "markup": "doc.createElement(tag)",
-      "interaction": "auto",
-      "controlType": "dynamic",
-      "exhaustiveVariants": true,
-      "variants": [
-        {
-          "name": "Open a list record",
-          "classes": [
-            "lists-item__title"
-          ],
-          "interaction": "click"
-        },
-        {
-          "name": "Create plan",
-          "label": "Create plan",
-          "interaction": "click"
-        },
-        {
-          "name": "Create agreement",
-          "label": "Create agreement",
-          "interaction": "click"
-        },
-        {
-          "name": "Continue",
-          "label": "Continue",
-          "interaction": "click"
-        },
-        {
-          "name": "Cancel",
-          "label": "Cancel",
-          "interaction": "click"
-        },
-        {
-          "name": "Share",
-          "label": "Share",
-          "interaction": "click"
-        },
-        {
-          "name": "Remove from browser",
-          "label": "Remove from browser",
-          "interaction": "click"
-        },
-        {
-          "name": "This browser",
-          "label": "This browser",
-          "interaction": "click"
-        },
-        {
-          "name": "Published",
-          "label": "Published",
-          "interaction": "click"
-        },
-        {
-          "name": "Reset",
-          "label": "Reset",
-          "interaction": "click"
-        },
-        {
-          "name": "Refresh",
-          "label": "Refresh",
-          "interaction": "click"
-        },
-        {
-          "name": "Load more",
-          "label": "Load more",
-          "interaction": "click"
-        },
-        {
-          "name": "Select a design",
-          "attrs": {
-            "type": "checkbox"
-          },
-          "interaction": "change"
-        },
-        {
-          "name": "Search loaded records",
-          "attrs": {
-            "type": "search"
-          },
-          "interaction": "input"
-        },
-        {
-          "name": "Filter publication",
-          "attrs": {
-            "data-list-filter": "publication"
-          },
-          "interaction": "change"
-        },
-        {
-          "name": "Sort records",
-          "attrs": {
-            "data-list-filter": "sort"
-          },
-          "interaction": "change"
-        },
-        {
-          "name": "Plan stats",
-          "label": "Plan stats",
-          "interaction": "click"
-        },
-        {
-          "name": "Urban rooster",
-          "label": "Urban rooster",
-          "interaction": "click"
-        }
-      ]
-    },
-    {
-      "id": "control-93a59c64772c39-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"proposals-button\" class=\"map-shell-button map-shell-button--labelled\" data-sheet-target=\"proposals-sheet\" aria-controls=\"proposals-sheet\" aria-expanded=\"false\" title=\"Lists\" data-i18n-key=\"lists.title\" data-i18n-attr=\"title\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-e1326c7eb592fe-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"designs-browse-tab\" class=\"cb-segmented__option\" role=\"tab\" aria-selected=\"true\" aria-controls=\"designs-browse\" data-list-tab=\"designs\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-1a2e63d515a933-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"shareAppliedProposalsButton\" class=\"cb-segmented__option\" role=\"tab\" tabindex=\"-1\" aria-selected=\"false\" aria-controls=\"designs-plans\" data-list-tab=\"plans\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-f10ec25ff421ef-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"designs-agreements-tab\" class=\"cb-segmented__option\" role=\"tab\" tabindex=\"-1\" aria-selected=\"false\" aria-controls=\"designs-agreements\" data-list-tab=\"agreements\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-56b96b1ca1b37d-1",
-      "source": "js/click-stack/click-stack-relations.js",
-      "markup": "doc.createElement('button')"
-    },
-    {
-      "id": "control-81498b74fc7752-1",
-      "source": "js/plan-file-ui.js",
-      "markup": "doc.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-81498b74fc7752-2",
-      "source": "js/plan-file-ui.js",
-      "markup": "doc.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-042471578a5164-1",
-      "source": "js/plan-file-ui.js",
-      "markup": "doc.createElement('input')",
-      "interaction": "change",
-      "controlType": "input"
-    },
-    {
-      "id": "control-81498b74fc7752-3",
-      "source": "js/plan-file-ui.js",
-      "markup": "doc.createElement('button')",
       "interaction": "click",
       "controlType": "button"
     }

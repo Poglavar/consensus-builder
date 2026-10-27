@@ -14,6 +14,7 @@
 })(typeof window !== 'undefined' ? window : globalThis, function (global) {
     'use strict';
 
+    const model = typeof module === 'object' && module.exports ? require('./click-stack/click-stack-model.js') : global.__clickStackModel;
     const ORDER = Object.freeze(['built', 'agreements', 'plans', 'designs', 'permitted', 'parcels']);
     const ICONS = Object.freeze({ agreements: 'fas fa-file-signature', plans: 'fas fa-layer-group', built: 'fas fa-building', designs: 'fas fa-drafting-compass', permitted: 'fas fa-cube', parcels: 'fas fa-border-all' });
 
@@ -144,13 +145,17 @@
         el.hidden = true;
         el.addEventListener('click', onPanelClick);
         el.addEventListener('change', onPanelChange);
-        el.addEventListener('keydown', event => { if (event.key === 'Escape') { event.preventDefault(); close(); } });
+        el.addEventListener('keydown', event => {
+            if (event.key !== 'Escape' || event.defaultPrevented || global.isEditableTarget?.(event.target) || global.isAnyModalOpen?.()) return;
+            event.preventDefault(); close();
+        });
         container.appendChild(el);
         state.el = el;
         return el;
     }
 
     function render({ keepBody = null } = {}) {
+        if (!keepBody) global.AgreementPanel?.release?.(state.el);
         const el = state.el;
         const { stack } = state;
         // Whatever the old body hosted goes home first; the expanded section hosts it again.
@@ -159,7 +164,7 @@
         el.setAttribute('aria-label', t('clickStack.title', 'At this spot'));
         const list = doc.createElement('div');
         list.className = 'click-stack__sections';
-        stack.sections.forEach(section => {
+        model.visibleSections(stack).forEach(section => {
             const expanded = stack.expanded === section.kind;
             const instance = section.instances[section.selectedIndex];
             const wrap = doc.createElement('section');
@@ -172,11 +177,14 @@
             card.id = `three-click-stack-${section.kind}-card`;
             const row = button('click-stack__row', undefined, { action: 'row', kind: section.kind });
             row.setAttribute('aria-expanded', String(expanded));
+            row.setAttribute('aria-controls', `three-click-stack-${section.kind}-content`);
             const icon = doc.createElement('i');
             icon.className = ICONS[section.kind];
             icon.setAttribute('aria-hidden', 'true');
             const name = doc.createElement('span');
+            name.id = `three-click-stack-${section.kind}-label`;
             name.className = 'click-stack__row-title';
+            wrap.setAttribute('aria-labelledby', name.id);
             name.textContent = rowTitle(section.multi ? { ...section, multi: false, count: 1 } : section);
             const detail = doc.createElement('span');
             detail.className = 'click-stack__row-detail';
@@ -191,14 +199,22 @@
                 if (pill) row.appendChild(pill);
             }
             row.append(detail, chevron);
-            const heading = doc.createElement('div');
+            const heading = doc.createElement('h2');
             heading.className = 'click-stack__heading';
             heading.appendChild(row);
             card.appendChild(heading);
             if (expanded) {
                 const body = keepBody || doc.createElement('div');
                 body.className = 'click-stack__body';
+                body.id = `three-click-stack-${section.kind}-content`;
+                body.setAttribute('role', 'region');
+                body.setAttribute('aria-labelledby', name.id);
                 if (keepBody) global.ClickStackRelations?.updateSelector(section, body, global, state.input?.plans);
+                card.appendChild(body);
+            } else {
+                const body = doc.createElement('div');
+                body.id = `three-click-stack-${section.kind}-content`;
+                body.hidden = true;
                 card.appendChild(body);
             }
             wrap.appendChild(card);
@@ -212,6 +228,7 @@
         if (!isOpen() || !global.DesignMemberships?.createAgreementScope) return;
         if (!state.agreementScope) state.agreementScope = global.DesignMemberships.createAgreementScope(global, {
             getPlan: () => state.stack && selectedInstance(state.stack, 'plans'),
+            getAgreement: () => state.input?.agreementContext,
             onChange(rows, group) {
                 if (!isOpen()) return;
                 state.agreementGroup = group;
@@ -222,9 +239,11 @@
                 const has = kind => next.sections.some(section => section.kind === kind);
                 state.stack = { ...next, expanded: has(previous.expanded) ? previous.expanded : null,
                     selectedKind: has(previous.selectedKind) ? previous.selectedKind : 'plans' };
-                const keepBody = state.stack.expanded && state.stack.expanded !== 'agreements'
+                const sameAgreement = state.stack.expanded === 'agreements' && selectedInstance(previous, 'agreements')?.id === selectedInstance(state.stack, 'agreements')?.id;
+                const keepBody = state.stack.expanded && (state.stack.expanded !== 'agreements' || sameAgreement)
                     ? state.el.querySelector(`.click-stack__section[data-kind="${state.stack.expanded}"] .click-stack__body`) : null;
                 render({ keepBody }); if (!keepBody) activate();
+                if (keepBody && state.stack.expanded === 'agreements') global.DesignMemberships.updateAgreementGroup(keepBody, group, global);
             }
         });
         state.agreementScope.sync();
@@ -240,7 +259,7 @@
             state.adapter.activate(kind, instance, body, options);
             if (kind === 'agreements') {
                 body.replaceChildren();
-                global.DesignMemberships.mountAgreement(body, instance, global, { group: state.agreementGroup,
+                state.agreementReady = global.DesignMemberships.mountAgreement(body, instance, global, { group: state.agreementGroup,
                     onFocus: item => { if (isOpen() && state.stack.selectedKind === 'agreements' && selectedInstance(state.stack, 'agreements')?.id === item.id) state.adapter.focus?.('agreements', item); } });
             } else if (kind === 'plans') {
                 body.replaceChildren();
@@ -311,6 +330,7 @@
     // and the scene is told so it can leave the views the stack opened.
     function close({ silent = false } = {}) {
         if (!isOpen()) return;
+        global.AgreementPanel?.release?.(state.el);
         const adapter = state.adapter;
         adapter?.release?.();
         state.memberships?.dispose();
@@ -325,6 +345,11 @@
         state.el.textContent = '';
         doc.body.classList.remove('three-click-stack-open');
         if (!silent) adapter?.closed?.();
+    }
+
+    function collapse() {
+        if (!isOpen()) return;
+        state.stack = { ...state.stack, expanded: null }; render(); activate();
     }
 
     function isOpen() {
@@ -415,6 +440,7 @@
         }).catch(error => console.error(`[${new Date().toISOString()}] [ThreeClickStack] memberships could not load`, error));
     }
 
-    return Object.freeze({ ...pure, show, refresh, close, isOpen, cycleForClick,
+    return Object.freeze({ ...pure, show, refresh, close, collapse, isOpen, cycleForClick, ready: () => state.agreementReady,
+        restoreFocus: () => { if (isOpen()) state.adapter.focus?.(state.stack.selectedKind, selectedInstance(state.stack, state.stack.selectedKind)); },
         expanded: () => state.stack?.expanded || null, current: () => state.stack });
 });

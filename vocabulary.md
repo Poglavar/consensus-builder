@@ -74,6 +74,18 @@ The website identified by a community agreement's `consultation.organiser`. Its 
 
 An immutable `community-result/v1` record containing the agreement CID, organiser DID, signing wallet, a plain-text statement, optional HTTPS report link, signing time and a committed DID-document snapshot, with a wallet signature over those fields. Reports are content-addressed, pinned and indexed append-only; later statements retain earlier reports as history. Reports may follow the agreement deadline and require no mint or chain transaction. Readers reverify both the signed record and the website's current wallet list. Solana message signatures are the implemented signing method.
 
+### Code electorate
+
+A community agreement's optional `consultation.voting` record (`community-voting/v1`) commits a random list identifier and a sorted, unique set of voting-code verifiers. Eligibility is fixed by that agreement's CID. Changing the list creates a new agreement with separate ballots; votes never transfer automatically. An organiser assigns and distributes the codes and is trusted to determine eligibility. Names, contact details and their code assignments stay in the organiser's browser or local voter-list file.
+
+### Voting code
+
+A reusable, randomly generated credential authorizing one ballot on each agreement that explicitly commits its verifier. The current format is fifteen letters, displayed in groups of three, with I, L and O excluded; case, spaces and dashes do not affect its value. A verifier is PBKDF2-HMAC-SHA256 with 600,000 iterations and the voting-list identifier as domain-separated salt. Published verifiers are not credentials. Possession of the original code authorizes voting and reading that ballot's private history; it does not identify the human using it.
+
+### Community ballot
+
+The latest Support, Oppose or Abstain choice for one eligible code and one exact agreement CID. Every changed choice is appended to a server-timestamped history with a monotonically increasing version. An update must name the version the voter reviewed. The latest choice counts once; repeating a request does not count twice. The deadline closes changes while code holders can continue reading history. An organiser's signed result statement remains separate from these server-counted ballots.
+
 ### Agreement input
 
 Land represented by the included designs, with source-qualified cadastral references and a holder snapshot. Inputs can include modeled open ground: the union of each qualifying design site's geometry outside its bound cadastral parcels, not an area inferred from a binding summary.
@@ -271,7 +283,7 @@ MCP agreement drafting and revision author the included roads as a complete netw
 
 ### Map share
 
-A design link shares exactly one published design revision. A plan link shares exactly one saved plan revision; its share dialog cannot change its name, membership or view. Create plan chooses a name, designs and saved view without publication. Add to plan opens creation or a reviewed revision of a chosen saved plan. Saving any change creates a new immutable snapshot; existing links remain unchanged. Create agreement starts a separate agreement editor from a saved plan, and agreement sharing uses that agreement's own flow. “Plan” names the dialog containing the design library and saved plans.
+A design link shares exactly one published design revision. A plan link shares exactly one saved plan revision; its share dialog cannot change its name, membership or view. Create plan chooses a name, designs and saved view without publication. Add to plan opens creation or a reviewed revision of a chosen saved plan. Saving any change creates a new immutable snapshot; existing links remain unchanged. Create agreement starts a separate agreement editor from a saved plan, and agreement sharing uses that agreement's own flow. “Lists” names the panel containing Designs, Plans and Agreements. Its browser scope contains local library records; its published scope reads the public index. Removing a browser copy does not withdraw a published record, remove plan members, or change an agreement’s exact plan reference.
 
 Choosing “Unapply existing & continue” replaces the conflicting applied designs. Incoming buildings and surface spaces replace conflicting applied roads occupying their authored footprints. An incoming parcel layout also replaces applied roads, layouts and content occupying its authored plots; designs outside that ground remain applied. Compatible road junctions and host parcel layouts remain. Unapplied designs remain saved. The replacement commits together, or retains the previous working composition if any member cannot be applied.
 
@@ -299,9 +311,11 @@ When shared designs conflict with the current map, the person chooses whether to
 
 An immutable `plan/v1` snapshot containing a title, a selected set of published design CIDs and a map view. Its canonical content has its own CID and permanent `/plans/<cid>` link. Changing the title, membership or saved view creates a new snapshot and link; existing links keep their original content. It references existing designs without changing their authorship, geometry or publication. It carries no land allocations, money or decision rules; those belong to an agreement. The backend address used to access a plan is transport configuration, not part of its content.
 
+Plan stats and the urban rooster evaluate one exact saved plan revision, including unapplied members. Parcel figures derive from its members and source cadastral ground in isolation; unrelated map designs and the current map extent do not affect them. Evaluation does not apply the plan.
+
 A private named-plan draft can reference unpublished design revisions carried with it. Publishing that draft first publishes its missing designs, then the named snapshot, and verifies the same content identifiers. Drafting and editing a named plan do not derive agreement ground or reconnect roads.
 
-A plan contains one or more designs and can exist without an agreement. Each agreement references one exact plan revision; any number of agreements may reference that revision. Editing a plan never changes an existing agreement’s subject. Plans and agreements have separate share links. The map click stack contains spatial Plan and Design sections: parcels link to designs, designs link to plans, and plans link to their agreements. Agreement links open a separate dialog rather than another spatial section.
+A plan contains one or more designs and can exist without an agreement. Each agreement references one exact plan revision; any number of agreements may reference that revision. Editing a plan never changes an existing agreement’s subject. Plans and agreements have separate share links. The map click stack orders Agreements above Plans, scoped to the selected exact plan revision, followed by Designs and source objects; it displays the selected level and its nearest available neighbours. Agreements inherit their plan’s extent for inspection; they are not independent spatial picks. Multiple agreements share a selector. The expanded Agreement section contains the full scrollable properties and actions. Its Plan button selects that exact plan in the current view without navigation, importing or applying its designs.
 
 ### Private draft reference
 

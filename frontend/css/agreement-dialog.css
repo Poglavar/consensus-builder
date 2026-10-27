@@ -3,7 +3,7 @@
 
 /* The native modal owns input and focus; its transparent full-screen host keeps the map visible
    behind the dock and gives the shared ownership/lens dialogs the same top layer. */
-.agreement-editor-modal {
+.cb-dialog-overlay.agreement-editor-modal {
     position: fixed;
     inset: 0;
     width: 100vw;
@@ -17,6 +17,7 @@
     color: var(--cb-text);
     overflow: hidden;
 }
+.cb-dialog-overlay.agreement-editor-modal:not([open]) { display: none; }
 .agreement-editor-modal::backdrop { background: var(--cb-backdrop); }
 
 .agreement-section[hidden],
@@ -36,7 +37,7 @@
     overflow: visible;
     position: sticky;
     top: 0;
-    z-index: 1;
+    z-index: var(--cb-z-local-1);
     border: 1px solid var(--cb-line);
     border-radius: var(--cb-radius-md);
     background: var(--cb-surface-2);
@@ -124,15 +125,16 @@
     min-width: 0;
     box-sizing: border-box;
     padding: var(--cb-space-3);
-    border: 1px solid var(--cb-line);
-    border-radius: var(--cb-radius-md);
-    background: var(--cb-surface);
-    font-size: var(--cb-text-md);
     line-height: var(--cb-leading);
     text-align: start;
     white-space: normal;
 }
-.agreement-object-row:hover, .agreement-object-row:focus-visible, .agreement-object-row[aria-pressed="true"] { background: var(--cb-primary-soft); border-color: var(--cb-primary); }
+.agreement-allocation-row {
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface);
+    font-size: var(--cb-text-base);
+}
 .agreement-object-row__title, .agreement-allocation-row__piece { font-weight: var(--cb-weight-medium); color: var(--cb-text-strong); overflow-wrap: anywhere; }
 .agreement-object-row__facts { color: var(--cb-text-muted); font-size: var(--cb-text-sm); overflow-wrap: anywhere; }
 

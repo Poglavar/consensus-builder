@@ -63,7 +63,7 @@
         for (const instance of group.instances || []) {
             const chip = doc.createElement('button');
             chip.type = 'button';
-            chip.className = 'click-stack__chip';
+            chip.className = 'btn click-stack__chip';
             chip.textContent = instance.label || instance.id || '';
             chip.title = instance.label || instance.id || '';
             chip.dataset.action = 'related';
@@ -90,8 +90,18 @@
     }
 
     function updateSelector(section, container, win, plans = []) {
-        const select = container.querySelector('.click-stack__selector');
-        if (!select || select.dataset.kind !== section.kind) return;
+        let select = container.querySelector('.click-stack__selector');
+        if (!section.multi) { select?.closest('.click-stack__selector-wrap')?.remove(); return; }
+        if (!select) {
+            const wrapper = renderSelector(section, container.ownerDocument, win, plans);
+            if (wrapper) container.insertBefore(wrapper, container.firstChild);
+            return;
+        }
+        if (select.dataset.kind !== section.kind) return;
+        const ids = section.instances.map(instance => String(instance.id));
+        if (select.children.length !== ids.length || [...select.children].some((option, index) => option.value !== ids[index])) {
+            select.replaceChildren(...ids.map(id => { const option = container.ownerDocument.createElement('option'); option.value = id; return option; }));
+        }
         [...select.children].forEach((option, index) => {
             const instance = section.instances[index];
             option.textContent = section.kind === 'designs' ? designOptionLabel(instance, win, plans) : instance.label || instance.id || '';

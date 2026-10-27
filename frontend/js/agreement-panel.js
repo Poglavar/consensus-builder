@@ -1,7 +1,7 @@
 // agreement-panel.js — one agreement of this device docked on the right of the map
 // (plan-design-agreement.md, "M1 (b) build contract"): whether it still matches the map, its designs,
 // the land it settles, who receives each resulting piece, the ledger, the decision rule and the
-// deadline, with Before / after (over its input parcels), Edit and Delete. Propose puts a current
+// deadline, with Before / after (over its input parcels) and Edit. Removal belongs to Lists. Propose puts a current
 // agreement to its parties (M2, agreement-sync.js); a proposed one shows its CID with its link, the
 // index's status and the owners' decisions (proposals/approval-panel.js), and is no longer edited.
 // On chain (M3, solana/agreement-bridge.js): its sponsor mints a proposed binding agreement; a minted
@@ -260,7 +260,7 @@
 
     // ---- HTML (pure) -----------------------------------------------------------------------------
 
-    const sectionHtml = (title, content) => `<section class="agreement-panel-section"><h4 class="agreement-panel-heading">${esc(title)}</h4>${content}</section>`;
+    const sectionHtml = (title, content) => `<section class="agreement-panel-section"><h3 class="agreement-panel-heading">${esc(title)}</h3>${content}</section>`;
 
     function statusHtml({ checking, error, status, designTitles, readOnly = false }, tr = t) {
         if (readOnly) return `<p class="agreement-panel-note" data-agreement-read-only-status>${esc(tr('agreement.publish.readOnlyStatus', 'Read-only view. Local map status is not evaluated.'))}</p>`;
@@ -288,7 +288,6 @@
             + `<i class="fas fa-left-right" aria-hidden="true"></i> ${esc(tr('mapCompare.toggle', 'Before / after'))}</button>`
             + (canBet && !readOnly ? `<button type="button" class="btn" data-agreement-action="bet"><i class="fas fa-chart-line" aria-hidden="true"></i> ${esc(tr('agreement.panel.actions.bet', 'Bet'))}</button>` : '')
             + (published || readOnly ? '' : `<button type="button" class="btn" data-agreement-action="edit"><i class="fas fa-pen" aria-hidden="true"></i> ${esc(tr('agreement.panel.actions.edit', 'Edit'))}</button>`)
-            + (readOnly ? '' : `<button type="button" class="btn btn-quiet" data-agreement-action="delete"><i class="fas fa-folder-minus" aria-hidden="true"></i> ${esc(tr('agreement.panel.actions.removeLocal', 'Remove from this device'))}</button>`)
             + '</div>';
     }
 
@@ -564,6 +563,7 @@
         const community = win.CommunityConsultation?.createController(win, {
             changed: () => { if (isOpen()) renderPanel(); }
         });
+        const voting = win.CommunityVotingUI?.createController(win);
         const log = (message, ...rest) => console.log(`[${new Date().toISOString()}] [AgreementPanel] ${message}`, ...rest);
         const isOpen = () => !!(state.panel && state.panel.classList.contains('visible'));
         const designOf = id => (state.readOnlyDesigns && state.readOnlyDesigns.get(id))
@@ -662,14 +662,14 @@
                     : t('agreement.publish.rederive', 'Its pieces are known here by their hashes only: apply its designs on the same ground to re-derive them and compare.'))}</p>`
                 : '';
             return status
-                + (agreement.plan ? sectionHtml(t('plan.label', 'Plan'), published
-                    ? `<a class="btn btn-sm" href="${esc(win.NamedPlans.link(agreement.plan.cid))}">${esc(agreement.plan.content.title)}</a>`
-                    : `<p class="agreement-panel-hint">${esc(agreement.plan.content.title)}</p>`) : '')
+                + (agreement.plan ? sectionHtml(t('plan.label', 'Plan'),
+                    `<button type="button" class="btn btn-sm" data-agreement-action="plan">${esc(agreement.plan.content.title)}</button>`) : '')
                 + byHashOnly
                 + actionsHtml({ canCompare: current, comparing: comparing(state.id), canPropose: current && !published, published, canBet: binding && betAvailable(agreement), readOnly })
                 + (!current && !readOnly ? `<p class="agreement-panel-hint" data-agreement-compare-unavailable>${esc(t('agreement.panel.compareUnavailable', 'Before / after is available when this agreement matches the designs applied on the map.'))}</p>` : '')
                 + publishedHtml({ published: agreement.published, remote: observedRemote(state.remote, chainView(agreement)?.chain), electorate: agreement.rule && agreement.rule.electorate, readOnly, consultation: community && agreement.consultation })
                 + (community && agreement.rule?.electorate === 'community' ? '<section class="agreement-panel-section" data-community-consultation></section>' : '')
+                + (voting && agreement.rule?.electorate === 'community' && agreement.consultation?.voting && agreement.published ? '<section class="agreement-panel-section" data-community-voting></section>' : '')
                 + (community && agreement.rule?.electorate === 'community' ? win.CommunityConsultation.picturesHtml(state.remote) : '')
                 + (binding ? chainHtml({ ...chainView(agreement), readOnly }) : nonBindingChainHtml(agreement.published))
                 + designsHtml(designRows(agreement, { designOf, isApplied: win.isApplied, typeLabel }), t, readOnly)
@@ -689,6 +689,7 @@
             close.title = closeLabel;
             panel.querySelector('[data-agreement-region="body"]').innerHTML = bodyHtml();
             community?.render(panel.querySelector('[data-community-consultation]'), state.agreement);
+            voting?.render(panel.querySelector('[data-community-voting]'), state.agreement);
             // The owners' decisions on a proposed agreement (proposals/approval-panel.js).
             const slot = panel.querySelector('[data-approval-card-slot]');
             if (slot && win.ProposalApprovalPanel && !state.readOnlyAgreement) {
@@ -908,31 +909,18 @@
         }
 
         async function edit() {
-            const id = state.id;
+            const id = state.id, planCid = state.agreement?.plan?.cid;
             try {
-                await win.AgreementDialog.open({ agreementId: id });
+                await win.AgreementDialog.open({ agreementId: id, preserveContext: true });
             } catch (error) {
                 report(`editing ${id} failed`, error);
                 return;
             }
+            const saved = store().get(id);
+            if (saved?.plan?.cid && saved.plan.cid !== planCid) { await win.ClickStack.showAgreement(saved); return; }
             if (state.id === id && isOpen()) refresh();
-        }
-
-        async function remove() {
-            const id = state.id;
-            const confirmed = await win.CbDialog.confirm(t('agreement.panel.removeLocalConfirm', 'Remove this agreement from this device? Its designs stay on the map. Any published agreement remains available through its link.'), {
-                okText: t('agreement.panel.actions.removeLocal', 'Remove from this device'),
-                cancelText: t('common.cancel', 'Cancel')
-            });
-            if (!confirmed || state.id !== id) return;
-            try {
-                store().remove(id);
-            } catch (error) {
-                report(`deleting ${id} failed`, error);
-                return;
-            }
-            log(`deleted ${id}`);
-            close();
+            if (win.ThreeClickStack?.isOpen()) win.ThreeClickStack.restoreFocus();
+            else win.ClickStack?.restoreFocus();
         }
 
         // Propose (agreement-sync.js): publishes the designs and the agreement, then copies the link.
@@ -1192,9 +1180,10 @@
             const action = event.target.closest('[data-agreement-action]');
             if (!action || action.disabled) return;
             const actionName = action.getAttribute('data-agreement-action');
-            if (state.readOnlyAgreement && !['close', 'link'].includes(actionName)) return;
+            if (state.readOnlyAgreement && !['close', 'link', 'plan'].includes(actionName)) return;
             switch (actionName) {
                 case 'close': close(); break;
+                case 'plan': win.BusyControl.track(action, () => win.ClickStack.showPlan(state.agreement.plan, { designs: state.agreement.designs, draft: !state.agreement.published })).catch(error => win.showStyledAlert(error.message)); break;
                 case 'compare': win.BusyControl.track(action, () => win.toggleAgreementBeforeAfter(state.id)); break;
                 case 'propose': win.BusyControl.track(action, () => propose()); break;
                 case 'link': copyLink(); break;
@@ -1207,13 +1196,12 @@
                 case 'expire': expire(); break;
                 case 'bet': bet(); break;
                 case 'edit': edit(); break;
-                case 'delete': remove(); break;
                 default: break;
             }
         }
 
         function onKeyDown(event) {
-            if (event.key !== 'Escape' || event.defaultPrevented || !isOpen()) return;
+            if (event.key !== 'Escape' || event.defaultPrevented || !isOpen() || state.panel?.classList.contains('is-hosted')) return;
             if (typeof win.isEditableTarget === 'function' && win.isEditableTarget(event.target)) return;
             if (typeof win.isAnyModalOpen === 'function' && win.isAnyModalOpen()) return;
             event.preventDefault();
@@ -1249,20 +1237,13 @@
             state.wired = true;
         }
 
-        // The agreement takes the right dock: the sheets, a parcel's panel and a design's panel make way.
-        function makeWay() {
-            if (win.MapShell && typeof win.MapShell.closeSheets === 'function') win.MapShell.closeSheets();
-            win.ClickStack?.close({ keepPanels: true });
-            if (doc.getElementById('parcel-info-panel')?.classList.contains('visible') && typeof win.hideParcelInfoPanel === 'function') win.hideParcelInfoPanel();
-            if (doc.getElementById('proposal-details-panel')?.classList.contains('visible') && typeof win.hideProposalDetailsPanel === 'function') win.hideProposalDetailsPanel(true);
-        }
-
         async function openRecord(id, readOnlyAgreement = null, readOnlyDesigns = null) {
             const agreementId = idOf(id);
             if (!agreementId) throw new Error('AgreementPanel.open: an agreement id is required');
             wire();
             const token = ++state.token;
             community?.reset();
+            voting?.reset();
             // Another agreement's before / after does not belong to this one.
             if (state.id && state.id !== agreementId && comparing(state.id)) win.ProposalBeforeAfter.dispose();
             if (state.id !== agreementId) {
@@ -1278,13 +1259,14 @@
             state.check = null;
             state.error = null;
             state.checking = true;
-            makeWay();
             renderPanel();
             await refresh(token);
         }
 
         async function open(id) {
-            return openRecord(id);
+            const agreement = store().get(id);
+            if (!agreement) throw new Error(`Agreement ${id} is not on this device.`);
+            return win.ClickStack.showAgreement(agreement);
         }
 
         async function openReadOnly(agreement, { designs = [] } = {}) {
@@ -1295,12 +1277,42 @@
             const entries = designs instanceof Map ? designs : new Map(
                 (Array.isArray(designs) ? designs : []).map(design => [idOf(design && design.proposalId), design])
             );
-            return openRecord(id, agreement, entries);
+            return win.ClickStack.showAgreement(agreement, { readOnly: true, designs: entries });
+        }
+
+        async function mount(host, instance) {
+            let resolved;
+            if (instance.readOnly) resolved = { agreement: instance.agreement, designs: instance.designs || [], readOnly: true };
+            else if (instance.localId) resolved = { agreement: store().get(instance.localId), designs: [], readOnly: false };
+            else resolved = await win.AgreementSync.resolveDetails(instance.cid);
+            if (host.isConnected === false) return null;
+            const panel = ensurePanel();
+            if (!state.home) state.home = { parent: panel.parentNode, next: panel.nextSibling };
+            state.host = host; panel.classList.add('is-hosted'); host.replaceChildren(panel);
+            const record = resolved.agreement;
+            const entries = resolved.designs instanceof Map ? resolved.designs : new Map(resolved.designs.map(design => [idOf(design.proposalId), design]));
+            await openRecord(record.id || record.published?.cid, resolved.readOnly ? record : null, resolved.readOnly ? entries : null);
+            return panel;
+        }
+
+        function release(container) {
+            if (!state.host || (container && !container.contains(state.host))) return;
+            const panel = state.panel, home = state.home;
+            state.host = null; panel.classList.remove('is-hosted');
+            if (home?.parent) home.parent.insertBefore(panel, home.next?.parentNode === home.parent ? home.next : null);
+            close();
         }
 
         // The before / after lives and dies with the panel.
         function close() {
+            if (state.host) {
+                const owner = state.host.closest?.('#three-click-stack') ? win.ThreeClickStack : win.ClickStack;
+                release();
+                if (owner?.isOpen() && !owner.isDriving?.()) owner.collapse();
+                return;
+            }
             community?.reset();
+            voting?.reset();
             state.token += 1;
             if (comparing(state.id)) win.ProposalBeforeAfter.dispose();
             state.id = null;
@@ -1318,7 +1330,7 @@
             doc.body.classList.remove('agreement-panel-open');
         }
 
-        return { open, openReadOnly, close, isOpen, current: () => state.id };
+        return { open, openReadOnly, mount, release, close, isOpen, current: () => state.id };
     }
 
     return {

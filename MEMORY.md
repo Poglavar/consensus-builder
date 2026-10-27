@@ -978,3 +978,9 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-27: Click stacks display the selected level and its nearest available neighbours, omit raw coordinates, and host full Agreement properties in the expanded section so inspection needs only one surface.
 
 - 2026-10-27: Community voting uses reusable random codes assigned and distributed by a trusted organiser; personal assignments stay in local browser/files, and immutable agreement verifiers fix eligibility. Adding or replacing codes requires a new agreement with separate votes. Code holders may change votes and inspect every change; server-side guessing limits supplement code entropy.
+
+- The Lists panel has Designs, Plans and Agreements with shared scope/filters; deletion belongs in those lists, while design apply/unapply remains a map operation. Plan creation uses an explicit checkbox selection mode and agreement creation starts from a selected plan.
+
+- 2026-10-27: Desktop navigation and messaging retain their viewport anchors; the click stack uses bottom-row space when clear and shortens only where it would overlap visible controls.
+
+- 2026-10-27: Finishing plan creation or saving a plan revision opens that exact snapshot in the current view's Plan click-stack section instead of the small action dialog.

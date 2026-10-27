@@ -374,7 +374,7 @@
 
     // Parcels and designs share one inspectable row: title and supporting facts, never membership controls.
     function inspectionListHtml(items, kind, hook) {
-        return `<ul class="agreement-object-list" ${hook}>${items.map(item => `<li data-agreement-${kind === 'parcel' ? 'input' : 'plan-design'}="${esc(item.id)}"><button type="button" class="btn btn-quiet agreement-object-row" data-agreement-inspect="${kind}" data-agreement-object-id="${esc(item.id)}" aria-pressed="false"><span class="agreement-object-row__title">${esc(item.title)}</span><span class="agreement-object-row__facts">${esc(item.facts)}</span></button></li>`).join('')}</ul>`;
+        return `<ul class="agreement-object-list" ${hook}>${items.map(item => `<li data-agreement-${kind === 'parcel' ? 'input' : 'plan-design'}="${esc(item.id)}"><button type="button" class="cb-option agreement-object-row" data-agreement-inspect="${kind}" data-agreement-object-id="${esc(item.id)}" aria-pressed="false"><span class="agreement-object-row__title">${esc(item.title)}</span><span class="agreement-object-row__facts">${esc(item.facts)}</span></button></li>`).join('')}</ul>`;
     }
     function inputsTableHtml(parcels) {
         return `<h4 class="agreement-object-heading">${esc(t('agreement.land.inputsHeading', 'Input parcels'))}</h4>`
@@ -597,7 +597,7 @@
         // Auxiliary dialogs belong inside this top layer so they stay interactive too.
         const parent = panel.parentElement;
         const modal = doc.createElement('dialog');
-        modal.className = 'agreement-editor-modal';
+        modal.className = 'cb-dialog-overlay agreement-editor-modal';
         modal.setAttribute('aria-labelledby', 'agreement-editor-title');
         modal.appendChild(panel); doc.body.appendChild(modal);
         panel.querySelector('#agreement-editor-title').textContent = t(existing ? 'agreement.dialog.titleEdit' : 'agreement.dialog.titleCreate', existing ? 'Edit agreement' : 'Create agreement');

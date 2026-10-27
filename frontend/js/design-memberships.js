@@ -168,9 +168,14 @@
     }
 
     // Agreements belong to the selected exact plan, not to independently picked geometry.
-    function createAgreementScope(win, { getPlan, onChange }) {
+    function createAgreementScope(win, { getPlan, getAgreement = () => null, onChange }) {
         let plan = null, generation = 0, items = [], offset = null, loading = false, failed = false, controller = null;
-        const locals = () => plan ? localAgreements(plan.cid, win.AgreementStore.list(), row => row.published?.cid || null) : [];
+        const locals = () => {
+            if (!plan) return [];
+            const pinned = getAgreement();
+            return mergeRows(localAgreements(plan.cid, win.AgreementStore.list(), row => row.published?.cid || null),
+                pinned?.readOnly && pinned.plan?.cid === plan.cid ? [pinned] : []);
+        };
         const notify = () => {
             const version = generation;
             queueMicrotask(() => {
@@ -216,31 +221,30 @@
     function mountAgreement(host, instance, win, { onFocus = () => {}, group = {} } = {}) {
         const doc = host.ownerDocument, t = translator(win);
         host.classList.add('click-stack__agreement');
-        const title = doc.createElement('h4'); title.className = 'agreement-object-heading'; title.textContent = instance.label;
-        host.appendChild(title);
-        const agreement = instance.agreement || instance.content;
-        if (agreement?.rule && win.AgreementPanel) {
-            const details = doc.createElement('div'); details.className = 'click-stack__agreement-terms';
-            details.innerHTML = win.AgreementPanel.ruleHtml(win.AgreementPanel.ruleSummary(agreement.rule))
-                + (agreement.rule.electorate === 'owners' ? win.AgreementPanel.allocationHtml(win.AgreementPanel.allocationLines(agreement)) : '');
-            host.appendChild(details);
+        const slot = doc.createElement('div'); slot.className = 'click-stack__agreement-properties'; host.appendChild(slot);
+        if (!instance.localId && !instance.readOnly && !instance.membershipPlaceholder) {
+            const loading = doc.createElement('p'); loading.className = 'agreement-hint'; loading.setAttribute('role', 'status'); loading.textContent = t('loading'); slot.appendChild(loading);
         }
-        const details = doc.createElement('button'); details.type = 'button'; details.className = 'btn'; details.textContent = t('openAgreement');
-        details.addEventListener('click', () => win.BusyControl.track(details, async () => {
-            if (instance.localId) await win.AgreementPanel.open(instance.localId);
-            else await win.AgreementSync.openDetails(instance.cid);
-        }).catch(error => win.showStyledAlert(error.message)));
-        if (!instance.membershipPlaceholder) host.appendChild(details);
-        if (group.failed || group.more) {
-            const more = doc.createElement('button'); more.type = 'button'; more.className = 'btn btn-sm';
-            more.textContent = t(group.failed ? 'retry' : 'more'); more.disabled = group.loading;
-            more.addEventListener('click', () => win.BusyControl.track(more, group.load)); host.appendChild(more);
-        }
-        if (instance.membershipPlaceholder) return;
+        const ready = !instance.membershipPlaceholder ? win.AgreementPanel.mount(slot, instance).catch(error => {
+            if (!host.isConnected) return;
+            const notice = doc.createElement('p'); notice.className = 'agreement-alert'; notice.textContent = error.message;
+            slot.replaceChildren(notice);
+        }) : Promise.resolve(null);
+        updateAgreementGroup(host, group, win);
+        if (instance.membershipPlaceholder) return ready;
         inspect('plans', instance.plan, win).then(data => {
             if (!host.isConnected) return;
             Object.assign(instance, { features: data.features }); onFocus(instance);
         }).catch(error => win.console.warn(`[${new Date().toISOString()}] [DesignMemberships] agreement extent unavailable`, error));
+        return ready;
+    }
+
+    function updateAgreementGroup(host, group, win) {
+        host.querySelector('.click-stack__agreement-more')?.remove();
+        if (!group.failed && !group.more) return;
+        const more = host.ownerDocument.createElement('button'); more.type = 'button'; more.className = 'btn click-stack__agreement-more';
+        more.textContent = translator(win)(group.failed ? 'retry' : 'more'); more.disabled = group.loading;
+        more.addEventListener('click', () => win.BusyControl.track(more, group.load)); host.appendChild(more);
     }
 
     function mountSection(host, kind, instance, session, win, { onFocus = () => {}, hits = {} } = {}) {
@@ -252,7 +256,7 @@
             return element;
         };
         const action = (text, run) => {
-            const button = node('button', 'btn btn-sm', text); button.type = 'button';
+            const button = node('button', 'btn', text); button.type = 'button';
             button.addEventListener('click', run); return button;
         };
         host.classList.add('click-stack__plan');
@@ -260,7 +264,7 @@
         host.appendChild(intro);
         if (!instance.membershipPlaceholder) {
             const summary = node('div', 'click-stack__summary');
-            summary.appendChild(node('strong', '', instance.label));
+            summary.appendChild(node('h3', 'click-stack__title', instance.label));
             if (instance.draft) summary.appendChild(node('span', 'click-stack__facts', t('draft')));
             host.appendChild(summary);
             const actions = node('div', 'cb-actions click-stack__actions');
@@ -318,6 +322,6 @@
         } else if (!group.loading && group.nextOffset !== null) host.appendChild(action(t('more'), () => session.load(kind)));
     }
 
-    return { localAgreements, localPlans, createAgreementScope, mountAgreement, mergeRows, membershipLink, fetchPage, createSession, inspect,
+    return { localAgreements, localPlans, createAgreementScope, mountAgreement, updateAgreementGroup, mergeRows, membershipLink, fetchPage, createSession, inspect,
         sharePlan, mountSection };
 });
