@@ -33,5 +33,33 @@
         });
         return bytes;
     }
-    return { forEach, geometryBytes };
+    // A source response must not cancel an in-flight build of an unrelated family. Collect
+    // synchronous notifications and drain later requests before resolving entry's await.
+    function createRefreshQueue(build) {
+        let batch = null;
+        return {
+            get pending() { return batch !== null; },
+            request(family = 'all') {
+                if (!batch) {
+                    const current = { families: new Set() };
+                    batch = current;
+                    current.promise = Promise.resolve().then(async () => {
+                        try {
+                            while (batch === current && current.families.size) {
+                                const families = current.families;
+                                current.families = new Set();
+                                await build(families.has('all') || families.size > 1 ? 'all' : [...families][0]);
+                            }
+                        } finally {
+                            if (batch === current) batch = null;
+                        }
+                    });
+                }
+                batch.families.add(family);
+                return batch.promise;
+            },
+            cancel() { batch = null; }
+        };
+    }
+    return { forEach, geometryBytes, createRefreshQueue };
 });

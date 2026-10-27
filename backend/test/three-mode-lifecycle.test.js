@@ -239,6 +239,7 @@ it('does not reschedule an inactive render frame', () => {
 it('marks pending uploaded-model loads incomplete before the exit path clears their counter', () => {
     let aborted = false;
     const context = loadInContext(threeModeDeclarations(['stopSceneWork']), {
+        buildingRefreshQueue: { pending: false, cancel() {} },
         sceneAbort: { abort() { aborted = true; } },
         buildingBuildPending: false,
         pendingModelLoads: 2,
@@ -367,8 +368,8 @@ function warmEnterFixture() {
         buildingWorkIncomplete: false,
         applyRetainedBuildingDisplay() { calls.retained += 1; return true; },
         rebuild3DBuildingsOnly: async () => { calls.rebuild += 1; },
-        // Shared display policy moved to PlanningViews; enter3D refreshes this view on resume.
-        syncPlanningView3D() { calls.syncPlanningView += 1; },
+        applyModeVisibility() { calls.syncPlanningView += 1; },
+        rebuildPlanningSources3D() {},
         activeProposalDraftComparison: null,
         console,
         clearTimeout() {},
