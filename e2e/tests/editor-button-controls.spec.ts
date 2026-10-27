@@ -69,6 +69,8 @@ test.describe('Editor button effects @features', () => {
     await expect(placement.locator('.on-map-editor__panel')).toBeVisible();
     await waitForSingleLandTakeSummary(page);
     await page.locator('#single-building-confirm').click();
+    await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
+      .filter((p: any) => p.applied && p.buildingProposal?.typologyType === 'single').length)).toBe(1);
     const savedId = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().slice(-1)[0]?.proposalId);
     expect(savedId).toBeTruthy();
     await showProposal(page, savedId);

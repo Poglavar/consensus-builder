@@ -1002,7 +1002,7 @@ body.three-mode-active #agent-bubbles-container {
         overflow: visible;
     }
 
-    .click-stack__section.is-expanded:has(.is-hosted) {
+    .click-stack__section.is-expanded {
         flex: 0 0 auto;
         min-height: 0;
     }

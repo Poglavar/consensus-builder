@@ -14,6 +14,14 @@ for (const width of [1280, 390]) for (const theme of ['light', 'dark']) {
     }
     await page.evaluate(() => {
       const w = window as any;
+      // The focused fixture loads the shared selector renderer directly, so provide the same
+      // English strings the application i18n bundle supplies in a full page.
+      w.i18n = { t(key: string) {
+        return ({
+          'clickStackRelations.chooseDesign': 'Location you clicked has multiple designs. Select which to inspect:',
+          'clickStackRelations.memberPlans': 'Included in plans:'
+        } as Record<string, string>)[key] || key;
+      } };
       w.getProposalGoalBadge = (goal: string) => ({ text: { park: '🌳', 'urban-rule': '📜📐', 'road-track': '🛣️' }[goal] });
       w.DesignSync = { publishedCid: (proposal: any) => proposal.published?.cid };
       w.NamedPlans = { current: { content: { title: 'Riverside plan', designCids: ['park-revision', 'rule-revision'] } } };

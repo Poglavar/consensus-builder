@@ -1,6 +1,6 @@
 // Complete GeoJSON footprints use the standard Freeform editor and save as editable buildings.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, showProposal, closeParcel, showSelectionDesignTab } from '../helpers/runtime';
+import { openCity, openParcel, showProposal, closeParcel, showSelectionDesignTab, placeFreeformBuilding } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 
 const ring = (x: number, y: number, size: number) => [[x,y],[x+size,y],[x+size,y+size],[x,y+size],[x,y]];
@@ -42,6 +42,7 @@ async function openTool(page: any, kind: string) {
   await expect.poll(async () => await editor.isVisible() || await prompt.isVisible()).toBe(true);
   if (await prompt.isVisible()) await prompt.getByRole('button', { name: 'No, just this parcel' }).click();
   await expect(editor).toBeVisible();
+  if (kind === 'single') await placeFreeformBuilding(page);
 }
 
 const savedUploads = (page: any) => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
@@ -152,6 +153,7 @@ test('a collection from the proposal form Design tab saves every building on Don
     const draft = w.proposalDraftStore.createDraft({ cityId: 'zagreb', goal: 'single', adapterKey: 'single', fields: { site, selectedParcelIds: [] }, editorPayload: {} });
     await w.openProposalDraftDesign(draft.id);
   }, courtyard.geometry);
+  await placeFreeformBuilding(page);
   await page.locator('#single-building-geojson-input').setInputFiles({ name: 'buildings.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(collection)) });
   await expect(page.locator('#map-container .single-building-fill')).toHaveCount(3);
   await waitForLandTakeSummary(page);
