@@ -10,7 +10,7 @@
     const keys = Object.freeze({
         memberPlans: 'memberPlans', includedDesigns: 'includedDesigns',
         createdBy: 'createdBy', formedFrom: 'formedFrom', formedParcels: 'formedParcels',
-        affectsParcels: 'affectsParcels', designsOnParcel: 'designsOnParcel'
+        affectsParcels: 'affectsParcels', designsOnParcel: 'designsOnParcel', affectedBy: 'affectedBy'
     });
 
     function translate(key, win) {

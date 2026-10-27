@@ -105,8 +105,13 @@
             });
         }
         let built = [];
-        try { built = (global.buildingsAt?.(latlng) || []).map(hit => ({ id: hit.id, feature: hit.feature, demolition: hit.demolition,
-            tunnelled: hit.tunnelled, label: buildingLabel(hit.feature) })); }
+        try { built = (global.buildingsAt?.(latlng) || []).map(hit => {
+            const by = hit.demolition?.proposalKey || hit.demolition?.proposalId;
+            const proposal = by ? global.proposalStorage?.getProposal?.(by) : null;
+            return { id: hit.id, feature: hit.feature, demolition: hit.demolition,
+                ...(proposal ? { affectedDesign: { id: String(by), label: designLabel(proposal, by), proposal } } : {}),
+                tunnelled: hit.tunnelled, label: buildingLabel(hit.feature) };
+        }); }
         catch (error) { console.error('[ClickStack] buildings could not be hit-tested', error); }
         let permitted = [];
         try {

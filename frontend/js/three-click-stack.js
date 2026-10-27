@@ -322,6 +322,7 @@
             state.activationOptions = { fromCycle: true };
             render();
             activate();
+            if (state.stack.selectedKind === 'built' || state.stack.selectedKind === 'designs') syncMemberships();
         }
         return true;
     }
@@ -387,7 +388,7 @@
             render();
             activate();
         }
-        if (state.stack?.selectedKind === 'designs') syncMemberships();
+        if (state.stack?.selectedKind === 'designs' || state.stack?.selectedKind === 'built') syncMemberships();
     }
 
     function onPanelChange(event) {
@@ -396,14 +397,18 @@
         state.stack = expand(selectInstance(state.stack, target.dataset.kind, target.value), target.dataset.kind);
         render();
         activate();
-        if (target.dataset.kind === 'designs') syncMemberships();
+        if (target.dataset.kind === 'designs' || target.dataset.kind === 'built') syncMemberships();
     }
 
     function syncMemberships(force = false) {
         if (!global.loadDesignMemberships) return;
         const design = selectedInstance(state.stack, 'designs');
         const proposal = global.proposalStorage?.getProposal?.(design?.id) || design?.proposal;
-        if (!proposal) return;
+        if (!proposal || state.stack.selectedKind === 'built') {
+            state.memberships?.dispose(); state.memberships = null; state.membershipDesign = null;
+            state.membershipVersion++;
+            return;
+        }
         const key = `${design.id}:${global.DesignSync?.publishedCid(proposal) || ''}`;
         if (!force && state.membershipDesign === key) return;
         state.memberships?.dispose();

@@ -38,6 +38,17 @@ it('shows one neighbouring level on either side without dropping the rest of the
     expect(sections).toHaveLength(5);
 });
 
+it('shows an observed building with its parcel instead of an authored-plan chain', () => {
+    const sections = ['plans', 'designs', 'built', 'permitted', 'formed', 'parcels'].map(kind => ({ kind }));
+    expect(model.visibleSections({ sections, selectedKind: 'built' }).map(row => row.kind)).toEqual(['built', 'parcels']);
+    expect(sections).toHaveLength(6);
+    const designs = [{ id: 'demolisher', label: 'Redevelop' }, { id: 'nearby', label: 'Nearby park' }];
+    const hits = { designs, plans: [{ id: 'plan' }] };
+    expect(model.contextFor('built', { id: 'house' }, hits)).toEqual([]);
+    const links = model.visibleContextFor('built', { id: 'house', demolition: { proposalKey: 'demolisher' } }, hits);
+    expect(links.map(group => [group.relation, group.instances.map(row => row.id)])).toEqual([['affectedBy', ['demolisher']]]);
+});
+
 describe('click stack model', () => {
     it('orders plans, designs, built, permitted, formed parcel, cadastral parcels, showing only what is there', () => {
         expect(kinds(model.buildClickStack({ built: [{ id: 'b1' }], parcels: [{ id: 'p1' }] }))).toEqual(['built', 'parcels']);

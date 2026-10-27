@@ -41,6 +41,11 @@ right-side panels that clicks used to open one at a time.
 
 - The stack displays the selected level and the nearest available level above and below it.
   Selecting a neighbouring row moves this window; the complete inventory remains available.
+  Observed-building inspection instead shows Building and its cadastral parcel: source buildings
+  are baseline context, not members of a surrounding Plan. An explicit design impact appears as an
+  **Affected by design** link inside the building card; overlap alone does not establish that link.
+  Selecting the link opens the design's own authored context. Leaving a design for a source building
+  disposes its membership lookup, including pending responses, so refresh cannot restore stale Plans.
   Every displayed section has a clickable header. Expanding a section collapses the others;
   at most one is expanded. There is no coordinate footer.
 - Parallel action buttons share their row's width equally, including pairs and triples. Larger
@@ -171,6 +176,8 @@ nothing, or another selection. It replaced the floating top-left parcel /
   opens this section; authored selections never open the Buildings and massing inspector.
   Parcel open: the same figures for the one parcel.
 - Built and Permitted host the Buildings and massing inspector.
+- Selecting an observed building shows only Built and its cadastral parcel, with the same explicit
+  **Affected by design** links as 2D. The complete hit inventory remains available for navigation.
 - A proposal click's parcel is the proposal's own parcel slice under the point, not the slab the ray
   reaches beside a tall design (`three-click-plan.js`).
 - Selection and expansion are independent here too. Collapsing retains the selected header and

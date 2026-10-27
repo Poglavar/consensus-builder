@@ -131,6 +131,8 @@
     // Keep the complete hit inventory while showing only the selected level and its neighbours.
     function visibleSections(stack) {
         if (!stack?.sections?.length) return [];
+        // Observed buildings are baseline objects, not members of the surrounding authored plan.
+        if (stack.selectedKind === 'built') return stack.sections.filter(section => section.kind === 'built' || section.kind === 'parcels');
         const selected = Math.max(0, stack.sections.findIndex(section => section.kind === stack.selectedKind));
         return stack.sections.slice(Math.max(0, selected - 1), selected + 2);
     }
@@ -219,6 +221,10 @@
                 }).filter(Boolean)
                 : [...references(instance)].map(designOfRef);
             add('below', 'designs', 'includedDesigns', members);
+        } else if (kind === 'built') {
+            const by = instance.demolition?.proposalKey || instance.demolition?.proposalId;
+            if (by) add('above', 'designs', 'affectedBy', [designs.find(item => identities(item).has(String(by)))
+                || instance.affectedDesign || { id: String(by), label: String(by) }]);
         } else if (kind === 'designs') {
             add('above', 'plans', 'memberPlans', (hits.plans || []).filter(item => includesDesign(item, instance)));
             const pieces = formed.filter(item => String(item.designId) === id);
@@ -239,7 +245,7 @@
     // instance in that target section. Missing/offscreen targets remain useful navigation.
     function visibleContextFor(kind, instance, hits = {}) {
         return contextFor(kind, instance, hits).filter(group => {
-            if (group.relation === 'memberPlans' || group.relation === 'designsOnParcel') return true;
+            if (['memberPlans', 'designsOnParcel', 'affectedBy'].includes(group.relation)) return true;
             if (group.count !== 1) return true;
             const visible = instancesOf(group.kind, hits[group.kind]);
             return visible.length !== 1 || visible[0].id !== group.instances[0].id;

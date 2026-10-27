@@ -23,6 +23,24 @@ it('places scoped agreements immediately above Plans in the model view', () => {
 });
 
 describe('3D click stack contextual selection', () => {
+    it('disposes design memberships when inspecting observed buildings and rejects late updates', async () => {
+        const document = makeDocument(), pending = [];
+        const context = { document, console, __clickStackModel: model, ClickStackRelations: relations, i18n: testI18n(),
+            DesignSync: { publishedCid: proposal => proposal?.cid || null },
+            loadDesignMemberships: vi.fn((proposal, callback) => new Promise(resolve => pending.push({ callback, resolve }))) };
+        context.window = context; vm.createContext(context);
+        vm.runInContext(readFileSync(new URL('../../frontend/js/three-click-stack.js', import.meta.url), 'utf8'), context);
+        const api = context.ThreeClickStack, adapter = { activate: vi.fn(), focus: vi.fn() };
+        api.show({ designs: [{ id: 'design', proposal: { proposalId: 'design', cid: 'cid' } }] }, { focus: 'designs' }, adapter);
+        const session = { cid: 'cid', proposalId: 'design', dispose: vi.fn(), instances: () => [{ id: 'plan' }] };
+        pending[0].callback(session); pending[0].resolve(session); await Promise.resolve();
+        api.show({ built: [{ id: 'house', feature }], parcels: [{ id: 'parcel', feature }] }, { focus: 'built' }, adapter);
+        pending[0].callback(session);
+        expect(session.dispose).toHaveBeenCalled();
+        expect(api.current().sections.map(row => row.kind)).toEqual(['built', 'parcels']);
+        const currentRoot = [...document.querySelectorAll('#three-click-stack')].at(-1);
+        expect([...currentRoot.querySelectorAll('.click-stack__section')].map(row => row.dataset.kind)).toEqual(['built', 'parcels']);
+    });
     it('hides the design count and authored type while collapsed, retaining the selected design name', () => {
         const document = makeDocument();
         const context = {
